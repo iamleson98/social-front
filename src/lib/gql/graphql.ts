@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+import type { DocumentTypeDecoration } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -19,30 +19,30 @@ export type Scalars = {
    * value as specified by
    * [iso8601](https://en.wikipedia.org/wiki/ISO_8601).
    */
-  Date: { input: any; output: any; }
+  Date: { input: string; output: string; }
   /**
    * The `DateTime` scalar type represents a DateTime
    * value as specified by
    * [iso8601](https://en.wikipedia.org/wiki/ISO_8601).
    */
-  DateTime: { input: any; output: any; }
+  DateTime: { input: string; output: string; }
   /** The `Day` scalar type represents number of days by integer value. */
-  Day: { input: any; output: any; }
+  Day: { input: number; output: number; }
   /**
    * Custom Decimal implementation.
    *
    * Returns Decimal as a float in the API,
    * parses float to the Decimal on the way back.
    */
-  Decimal: { input: any; output: any; }
+  Decimal: { input: number; output: number; }
   /**
    * The `GenericScalar` scalar type represents a generic
    * GraphQL scalar value that could be:
    * String, Boolean, Int, Float, List or Object.
    */
-  GenericScalar: { input: any; output: any; }
-  JSON: { input: any; output: any; }
-  JSONString: { input: any; output: any; }
+  GenericScalar: { input: unknown; output: unknown; }
+  JSON: { input: unknown; output: unknown; }
+  JSONString: { input: string; output: string; }
   /**
    * Metadata is a map of key-value pairs, both keys and values are `String`.
    *
@@ -54,21 +54,21 @@ export type Scalars = {
    * }
    * ```
    */
-  Metadata: { input: any; output: any; }
+  Metadata: { input: Record<string, string>; output: Record<string, string>; }
   /** The `Minute` scalar type represents number of minutes by integer value. */
-  Minute: { input: any; output: any; }
+  Minute: { input: number; output: number; }
   /**
    * Nonnegative Decimal scalar implementation.
    *
    * Should be used in places where value must be nonnegative (0 or greater).
    */
-  PositiveDecimal: { input: any; output: any; }
-  UUID: { input: any; output: any; }
+  PositiveDecimal: { input: number; output: number; }
+  UUID: { input: string; output: string; }
   /** Variables of this type must be set to null in mutations. They will be replaced with a filename from a following multipart part containing a binary file. See: https://github.com/jaydenseric/graphql-multipart-request-spec. */
-  Upload: { input: any; output: any; }
-  WeightScalar: { input: any; output: any; }
+  Upload: { input: unknown; output: unknown; }
+  WeightScalar: { input: unknown; output: unknown; }
   /** _Any value scalar as defined by Federation spec. */
-  _Any: { input: any; output: any; }
+  _Any: { input: unknown; output: unknown; }
 };
 
 /**
@@ -851,6 +851,7 @@ export type Allocation = Node & {
  *     within the channel
  *
  *     PRIORITIZE_HIGH_STOCK - allocate stock in a warehouse with the most stock
+ *
  */
 export enum AllocationStrategyEnum {
   PrioritizeHighStock = 'PRIORITIZE_HIGH_STOCK',
@@ -1262,6 +1263,7 @@ export enum AppExtensionMountEnum {
  *
  *     POPUP - app's extension will be mounted as a popup window
  *     APP_PAGE - redirect to app's page
+ *
  */
 export enum AppExtensionTargetEnum {
   AppPage = 'APP_PAGE',
@@ -4409,6 +4411,7 @@ export type CheckoutAddressValidationRules = {
  *     NONE - the funds are not authorized
  *     PARTIAL - the cover funds don't cover fully the checkout's total
  *     FULL - the cover funds covers the checkout's total
+ *
  */
 export enum CheckoutAuthorizeStatusEnum {
   Full = 'FULL',
@@ -4446,6 +4449,7 @@ export type CheckoutBillingAddressUpdate = {
  *     PARTIAL - the funds that are charged don't cover the checkout's total
  *     FULL - the funds that are charged fully cover the checkout's total
  *     OVERCHARGED - the charged funds are bigger than checkout's total
+ *
  */
 export enum CheckoutChargeStatusEnum {
   Full = 'FULL',
@@ -10201,6 +10205,8 @@ export type Margin = {
  *
  *     PAYMENT_FLOW - new orders marked as paid will receive a
  *     `Payment` object, that will cover the `order.total`.
+ *
+ *
  */
 export enum MarkAsPaidStrategyEnum {
   PaymentFlow = 'PAYMENT_FLOW',
@@ -15915,6 +15921,7 @@ export type OrderAddNoteInput = {
  *     `order.total`-`order.totalGrantedRefund`
  *     FULL - the funds that are authorized and charged fully cover the
  *     `order.total`-`order.totalGrantedRefund`
+ *
  */
 export enum OrderAuthorizeStatusEnum {
   Full = 'FULL',
@@ -16263,6 +16270,7 @@ export type OrderCapture = {
  *     `order.total`-`order.totalGrantedRefund`
  *     OVERCHARGED - the charged funds are bigger than the
  *     `order.total`-`order.totalGrantedRefund`
+ *
  */
 export enum OrderChargeStatusEnum {
   Full = 'FULL',
@@ -19231,6 +19239,7 @@ export enum PaymentGatewayInitializeTokenizationErrorCode {
  *     SUCCESSFULLY_INITIALIZED - The payment gateway was successfully initialized.
  *     FAILED_TO_INITIALIZE - The payment gateway was not initialized.
  *     FAILED_TO_DELIVER - The request to initialize payment gateway was not delivered.
+ *
  */
 export enum PaymentGatewayInitializeTokenizationResult {
   FailedToDeliver = 'FAILED_TO_DELIVER',
@@ -19490,6 +19499,7 @@ export type PaymentMethodRequestDeleteError = {
  *     PENDING - The payment method is pending tokenization.
  *     FAILED_TO_TOKENIZE - The payment method was not tokenized.
  *     FAILED_TO_DELIVER - The request to tokenize payment method was not delivered.
+ *
  */
 export enum PaymentMethodTokenizationResult {
   AdditionalActionRequired = 'ADDITIONAL_ACTION_REQUIRED',
@@ -24659,7 +24669,11 @@ export type Query = {
    * Requires one of the following permissions: AUTHENTICATED_STAFF_USER, AUTHENTICATED_APP.
    */
   taxCountryConfiguration?: Maybe<TaxCountryConfiguration>;
-  /** Requires one of the following permissions: AUTHENTICATED_STAFF_USER, AUTHENTICATED_APP. */
+  /**
+   *
+   *
+   * Requires one of the following permissions: AUTHENTICATED_STAFF_USER, AUTHENTICATED_APP.
+   */
   taxCountryConfigurations?: Maybe<Array<TaxCountryConfiguration>>;
   /** List of all tax rates available from tax gateway. */
   taxTypes?: Maybe<Array<TaxType>>;
@@ -28062,6 +28076,7 @@ export type StockUpdateInput = {
  *     SKIP - stocks are not checked and not updated.
  *     UPDATE - only do update, if there is enough stock.
  *     FORCE - force update, if there is not enough stock.
+ *
  */
 export enum StockUpdatePolicyEnum {
   Force = 'FORCE',
@@ -28166,6 +28181,7 @@ export enum StoredPaymentMethodRequestDeleteErrorCode {
  *     FAILED_TO_DELETE - The stored payment method was not deleted.
  *     FAILED_TO_DELIVER - The request to delete the stored payment method was not
  *     delivered.
+ *
  */
 export enum StoredPaymentMethodRequestDeleteResult {
   FailedToDelete = 'FAILED_TO_DELETE',
@@ -28952,6 +28968,7 @@ export enum TimePeriodTypeEnum {
  *     The following flows are possible:
  *     INTERACTIVE - Payment method can be used for 1 click checkout - it's prefilled in
  *     checkout form (might require additional authentication from user)
+ *
  */
 export enum TokenizedPaymentFlowEnum {
   Interactive = 'INTERACTIVE'
@@ -29001,6 +29018,7 @@ export type TransactionAction = {
  *     CHARGE - Represents the charge action.
  *     REFUND - Represents a refund action.
  *     CANCEL - Represents a cancel action. Added in Saleor 3.12.
+ *
  */
 export enum TransactionActionEnum {
   Cancel = 'CANCEL',
@@ -29265,6 +29283,7 @@ export enum TransactionEventReportErrorCode {
  *     CANCEL_FAILURE - represents failure cancel.
  *     CANCEL_REQUEST - represents cancel request.
  *     INFO - represents info event.
+ *
  */
 export enum TransactionEventTypeEnum {
   AuthorizationActionRequired = 'AUTHORIZATION_ACTION_REQUIRED',
@@ -29292,6 +29311,7 @@ export enum TransactionEventTypeEnum {
  *
  *     AUTHORIZATION - the processed transaction should be only authorized
  *     CHARGE - the processed transaction should be charged.
+ *
  */
 export enum TransactionFlowStrategyEnum {
   Authorization = 'AUTHORIZATION',
@@ -33049,17 +33069,57 @@ export type _Service = {
   sdl?: Maybe<Scalars['String']['output']>;
 };
 
-export type FindUserQueryVariables = Exact<{
-  userId: Scalars['ID']['input'];
+export type GetProductsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetProductsQuery = { __typename?: 'Query', products?: { __typename?: 'ProductCountableConnection', edges: Array<{ __typename?: 'ProductCountableEdge', node: { __typename: 'Product', id: string } }> } | null };
+
+export type TokenCreateMutationVariables = Exact<{
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
 }>;
 
 
-export type FindUserQuery = { __typename?: 'Query', user?: (
-    { __typename?: 'User' }
-    & { ' $fragmentRefs'?: { 'UserFieldsFragment': UserFieldsFragment } }
-  ) | null };
+export type TokenCreateMutation = { __typename?: 'Mutation', tokenCreate?: { __typename: 'CreateToken', token?: string | null, refreshToken?: string | null, user?: { __typename: 'User', id: string, email: string } | null } | null };
 
-export type UserFieldsFragment = { __typename?: 'User', id: string, username?: string | null, role?: string | null } & { ' $fragmentName'?: 'UserFieldsFragment' };
+export class TypedDocumentString<TResult, TVariables>
+  extends String
+  implements DocumentTypeDecoration<TResult, TVariables>
+{
+  __apiType?: DocumentTypeDecoration<TResult, TVariables>['__apiType'];
 
-export const UserFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]} as unknown as DocumentNode<UserFieldsFragment, unknown>;
-export const FindUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"findUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]} as unknown as DocumentNode<FindUserQuery, FindUserQueryVariables>;
+  constructor(private value: string, public __meta__?: Record<string, any>) {
+    super(value);
+  }
+
+  toString(): string & DocumentTypeDecoration<TResult, TVariables> {
+    return this.value;
+  }
+}
+
+export const GetProductsDocument = new TypedDocumentString(`
+    query GetProducts {
+  products(first: 5) {
+    edges {
+      node {
+        __typename
+        id
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<GetProductsQuery, GetProductsQueryVariables>;
+export const TokenCreateDocument = new TypedDocumentString(`
+    mutation TokenCreate($email: String!, $password: String!) {
+  tokenCreate(email: $email, password: $password) {
+    token
+    refreshToken
+    __typename
+    user {
+      id
+      __typename
+      email
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<TokenCreateMutation, TokenCreateMutationVariables>;

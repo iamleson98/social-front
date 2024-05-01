@@ -1,5 +1,8 @@
 # create-svelte
 
+# icon lib
+https://icon-sets.iconify.design/fa6-regular/
+
 Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
 
 ## Creating a project

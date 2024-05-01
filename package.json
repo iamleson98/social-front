@@ -13,14 +13,18 @@
 		"test:integration": "playwright test",
 		"test:unit": "vitest",
 		"pull-schema": "houdini pull-schema",
-		"generate": "graphql-codegen"
+		"generate": "graphql-codegen --config .graphqlrc.ts"
 	},
 	"devDependencies": {
 		"@fontsource/fira-mono": "^4.5.10",
-		"@graphql-codegen/cli": "5.0.0",
+		"@graphql-codegen/cli": "^5.0.0",
 		"@graphql-codegen/client-preset": "4.1.0",
-		"@iconify/svelte": "^4.0.1",
+		"@graphql-codegen/typescript-resolvers": "^4.0.6",
+		"@iconify-json/system-uicons": "^1.1.12",
+		"@iconify/tailwind": "^1.0.1",
 		"@kitql/graphql-codegen": "^0.5.4",
+		"@melt-ui/pp": "^0.3.1",
+		"@melt-ui/svelte": "^0.77.0",
 		"@neoconfetti/svelte": "^1.0.0",
 		"@next/env": "^14.2.2",
 		"@playwright/test": "^1.28.1",
@@ -45,14 +49,16 @@
 		"svelte-check": "^3.6.0",
 		"tailwindcss": "^3.4.3",
 		"tslib": "^2.4.1",
-		"typescript": "^5.0.0",
+		"typescript": "^5.4.5",
 		"vite": "^5.0.3",
 		"vitest": "^1.2.0"
 	},
 	"type": "module",
 	"dependencies": {
 		"@graphql-typed-document-node/core": "^3.2.0",
+		"@iconify-json/fa6-regular": "^1.1.19",
 		"@kitql/client": "^0.5.12",
-		"dotenv": "^16.4.5"
+		"dotenv": "^16.4.5",
+		"graphql": "^16.8.1"
 	}
 }

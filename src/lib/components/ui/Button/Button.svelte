@@ -2,7 +2,6 @@
 	import type { SocialColor, SocialRadius, SocialSize } from '../common';
 	import { buttonVariantColorsMap, type ButtonVariant } from './button.types';
 	import { Spin } from '$lib/components/ui';
-	import Icon from '@iconify/svelte';
 
 	export let variant: ButtonVariant = 'filled';
 	export let ref: HTMLElement | null = null;
@@ -15,7 +14,15 @@
 	export let radius: SocialRadius = 'rounded-md';
 	export let classes: string = '';
 	export let loading: boolean = false;
+	/**
+	 * @param startIcon should have format "icon-[fa6-regular--envelop]" for tailwindcss to understand.
+	 * @doc Please refer to https://icon-sets.iconify.design/fa6-regular/ for available font awesome icons.
+	 */
 	export let startIcon: string | null = null;
+	/**
+	 * @param endIcon should have format "icon-[fa6-regular--envelop]" for tailwindcss to understand.
+	 * @doc Please refer to https://icon-sets.iconify.design/fa6-regular/ for available font awesome icons.
+	 */
 	export let endIcon: string | null = null;
 	export let id: string | null = null;
 	export let fullWidth: boolean = false;
@@ -27,7 +34,7 @@
 </script>
 
 <button
-	class={`${buttonVariantColorsMap[variant][color]} btn ${upper ? 'uppercase' : ''} btn-${size} ${radius} ${classes} ${fullWidth ? 'w-full' : ''}`}
+	class={`${buttonVariantColorsMap[variant][color]} social-btn ${upper ? 'uppercase' : ''} social-btn-${size} ${radius} ${classes} ${fullWidth ? 'w-full' : ''}`}
 	{type}
 	bind:this={ref}
 	on:click
@@ -44,7 +51,7 @@
 		{#if loading}
 			<Spin classes="mr-2" />
 		{:else}
-			<Icon icon={startIcon} class="mr-2 text-inherit" />
+			<span class={`mr-2 text-inherit ${startIcon}`}></span>
 		{/if}
 	{/if}
 	<slot />
@@ -52,17 +59,17 @@
 		{#if loading}
 			<Spin classes="ml-2" />
 		{:else}
-			<Icon icon={endIcon} class="ml-2 text-inherit" />
+			<span class={`ml-2 text-inherit ${endIcon}`}></span>
 		{/if}
 	{/if}
 </button>
 
 <style lang="postcss">
-	.btn {
+	.social-btn {
 		@apply cursor-pointer relative outline-none select-none appearance-none text-center flex justify-center items-center leading-none grow-0 font-semibold active:scale-[.988];
 		-webkit-tap-highlight-color: transparent;
 	}
-	.btn:disabled,
+	.social-btn:disabled,
 	button:disabled {
 		cursor: not-allowed !important;
 		user-select: none !important;
@@ -74,19 +81,19 @@
 		-webkit-touch-callout: none !important;
 		@apply text-gray-400 bg-gray-200;
 	}
-	.btn-xs {
+	.social-btn-xs {
 		@apply h-[30px] py-0 px-[14px] text-xs;
 	}
-	.btn-sm {
+	.social-btn-sm {
 		@apply h-9 py-0 px-[18px] text-sm;
 	}
-	.btn-md {
+	.social-btn-md {
 		@apply h-[42px] py-0 px-[22px] text-base;
 	}
-	.btn-lg {
+	.social-btn-lg {
 		@apply h-[50px] py-0 px-[26px] text-lg;
 	}
-	.btn-xl {
+	.social-btn-xl {
 		@apply h-[60px] py-0 px-8 text-xl;
 	}
 </style>
