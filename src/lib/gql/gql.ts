@@ -14,18 +14,33 @@ import * as types from './graphql';
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "query GetProducts {\n  products(first: 5) {\n    edges {\n      node {\n        __typename\n        id\n      }\n    }\n  }\n}": types.GetProductsDocument,
-    "mutation TokenCreate($email: String!, $password: String!) {\n  tokenCreate(email: $email, password: $password) {\n    token\n    refreshToken\n    __typename\n    user {\n      id\n      __typename\n      email\n    }\n  }\n}": types.TokenCreateDocument,
+    "fragment UserDetail on User {\n  id\n  email\n  firstName\n  lastName\n  avatar {\n    url\n    alt\n  }\n}": types.UserDetailFragmentDoc,
+    "mutation TokenCreate($email: String!, $password: String!) {\n  tokenCreate(email: $email, password: $password) {\n    token\n    user {\n      id\n      email\n      firstName\n      lastName\n      avatar {\n        url\n        alt\n      }\n    }\n  }\n}\n\nmutation AccountCreate($input: AccountRegisterInput!) {\n  accountRegister(input: $input) {\n    requiresConfirmation\n  }\n}": types.TokenCreateDocument,
+    "query CurrentUser {\n  me {\n    ...UserDetail\n  }\n}": types.CurrentUserDocument,
+    "fragment ProductItem on Product {\n  id\n  name\n  slug\n  pricing {\n    priceRange {\n      start {\n        gross {\n          amount\n          currency\n        }\n      }\n      stop {\n        gross {\n          amount\n          currency\n        }\n      }\n    }\n  }\n  category {\n    id\n    name\n  }\n  thumbnail(size: 1000, format: WEBP) {\n    url\n    alt\n  }\n}": types.ProductItemFragmentDoc,
+    "query ProductList($first: Int, $last: Int, $before: String, $after: String, $channel: String, $search: String, $sortBy: ProductOrder, $filter: ProductFilterInput, $where: ProductWhereInput) {\n  products(\n    first: $first\n    last: $last\n    before: $before\n    after: $after\n    channel: $channel\n    search: $search\n    sortBy: $sortBy\n    filter: $filter\n    where: $where\n  ) {\n    edges {\n      node {\n        ...ProductItem\n      }\n    }\n  }\n}": types.ProductListDocument,
 };
 
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "query GetProducts {\n  products(first: 5) {\n    edges {\n      node {\n        __typename\n        id\n      }\n    }\n  }\n}"): typeof import('./graphql').GetProductsDocument;
+export function graphql(source: "fragment UserDetail on User {\n  id\n  email\n  firstName\n  lastName\n  avatar {\n    url\n    alt\n  }\n}"): typeof import('./graphql').UserDetailFragmentDoc;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "mutation TokenCreate($email: String!, $password: String!) {\n  tokenCreate(email: $email, password: $password) {\n    token\n    refreshToken\n    __typename\n    user {\n      id\n      __typename\n      email\n    }\n  }\n}"): typeof import('./graphql').TokenCreateDocument;
+export function graphql(source: "mutation TokenCreate($email: String!, $password: String!) {\n  tokenCreate(email: $email, password: $password) {\n    token\n    user {\n      id\n      email\n      firstName\n      lastName\n      avatar {\n        url\n        alt\n      }\n    }\n  }\n}\n\nmutation AccountCreate($input: AccountRegisterInput!) {\n  accountRegister(input: $input) {\n    requiresConfirmation\n  }\n}"): typeof import('./graphql').TokenCreateDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "query CurrentUser {\n  me {\n    ...UserDetail\n  }\n}"): typeof import('./graphql').CurrentUserDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "fragment ProductItem on Product {\n  id\n  name\n  slug\n  pricing {\n    priceRange {\n      start {\n        gross {\n          amount\n          currency\n        }\n      }\n      stop {\n        gross {\n          amount\n          currency\n        }\n      }\n    }\n  }\n  category {\n    id\n    name\n  }\n  thumbnail(size: 1000, format: WEBP) {\n    url\n    alt\n  }\n}"): typeof import('./graphql').ProductItemFragmentDoc;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "query ProductList($first: Int, $last: Int, $before: String, $after: String, $channel: String, $search: String, $sortBy: ProductOrder, $filter: ProductFilterInput, $where: ProductWhereInput) {\n  products(\n    first: $first\n    last: $last\n    before: $before\n    after: $after\n    channel: $channel\n    search: $search\n    sortBy: $sortBy\n    filter: $filter\n    where: $where\n  ) {\n    edges {\n      node {\n        ...ProductItem\n      }\n    }\n  }\n}"): typeof import('./graphql').ProductListDocument;
 
 
 export function graphql(source: string) {

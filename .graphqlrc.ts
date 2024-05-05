@@ -6,11 +6,11 @@ loadEnvConfig(process.cwd());
 let schema = process.env.VITE_GRAPHQL_API_END_POINT;
 
 if (!schema) {
-  console.error(
-    "Before GraphQL types can be generated, you need to set NEXT_PUBLIC_SALEOR_API_URL environment variable.",
-  );
-  console.error("Follow development instructions in the README.md file.");
-  process.exit(1);
+	console.error(
+		"Before GraphQL types can be generated, you need to set NEXT_PUBLIC_SALEOR_API_URL environment variable.",
+	);
+	console.error("Follow development instructions in the README.md file.");
+	process.exit(1);
 }
 
 const config: CodegenConfig = {

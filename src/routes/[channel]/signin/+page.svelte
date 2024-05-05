@@ -1,6 +1,8 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
+	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui';
+	import { HTTPStatusBadRequest, HTTPStatusServerError } from '$lib/utils/types';
+	import type { ActionData } from './$types';
 
 	const passwordButtonIconsMap = {
 		password: 'icon-[system-uicons--eye]',
@@ -11,50 +13,14 @@
 	let passwordFieldType: 'text' | 'password' = 'password';
 	let email: string = '';
 	let password: string = '';
-	let loginError: any | null = null;
 	let loading: boolean = false;
 
-	function togglePasswordType() {
-		passwordFieldType = passwordFieldType === 'password' ? 'text' : 'password';
-	}
+	export let form: ActionData;
 
-	function handleLogin() {
-		loading = true;
+	const togglePasswordType = () =>
+		(passwordFieldType = passwordFieldType === 'password' ? 'text' : 'password');
 
-		const loginMutation = graphql(`
-			mutation TokenCreate($email: String!, $password: String!) {
-				tokenCreate(email: $email, password: $password) {
-					token
-					refreshToken
-					user {
-						id
-						email
-					}
-					errors {
-						field
-						message
-						code
-					}
-				}
-			}
-		`);
-
-		loginMutation
-			.mutate({ email, password })
-			.then((res) => {
-				if (res.data?.tokenCreate?.errors.length) {
-					loginError = res.data?.tokenCreate?.errors[0].message;
-					return;
-				}
-
-				loginError = null;
-				localStorage.setItem('token', res.data?.tokenCreate?.token as string);
-			})
-			.catch((err: Error) => {
-				loginError = err.message;
-			})
-			.finally(() => (loading = false));
-	}
+	const handlePasswordChange = (evt: any) => password = evt.currentTarget.value;
 </script>
 
 <svelte:head>
@@ -62,18 +28,29 @@
 </svelte:head>
 
 <div class="max-w-md m-auto rounded-md p-2">
-	{#if loginError}
+	{#if form && [HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}
 		<div class="text-xs text-red-500 bg-red-100 rounded p-2 mb-3">
-			<p>{loginError}</p>
+			<p>{form.error}</p>
 		</div>
 	{/if}
-	<form action="" method="post" on:submit|preventDefault={handleLogin}>
+	<form
+		action="?/signin"
+		method="post"
+		use:enhance={() => {
+			loading = true;
+
+			return async ({ update }) => {
+				await update();
+				loading = false;
+			};
+		}}
+	>
 		<!-- form main -->
 		<div class="mb-3">
 			<label
-				class="input input-sm flex w-full input-bordered items-center gap-2 mb-3"
+				class="input input-md flex w-full input-bordered items-center gap-2 mb-3"
 				for="email"
-				class:input-error={!!loginError}
+				class:input-error={form?.error}
 			>
 				<span class="icon-[system-uicons--mail]"></span>
 				<input
@@ -81,15 +58,17 @@
 					class="grow"
 					name="email"
 					id="email"
-					placeholder="Enter your email"
+					placeholder="Enter your email *"
 					bind:value={email}
+					required
+					disabled={loading}
 				/>
 			</label>
 
 			<label
-				class="input input-sm flex w-full input-bordered items-center gap-2 mb-4 input-error"
+				class="input input-md flex w-full input-bordered items-center gap-2 mb-4"
 				for="password"
-				class:input-error={!!loginError}
+				class:input-error={form?.error}
 			>
 				<span class="icon-[system-uicons--lock]"></span>
 				<input
@@ -97,8 +76,11 @@
 					name="password"
 					class="grow"
 					id="password"
-					placeholder="Enter your password"
-					bind:value={password}
+					placeholder="Enter your password *"
+					value={password}
+					required
+					disabled={loading}
+					on:keyup={handlePasswordChange}
 				/>
 				<button type="button" class="btn btn-xs btn-circle" on:click={togglePasswordType}>
 					<span class={passwordButtonIconsMap[passwordFieldType]}></span>
@@ -132,7 +114,7 @@
 		<!-- form other -->
 		<div>
 			<span class="text-xs text-gray-500"
-				>Don't have account yet? <a href="/signup" class="text-blue-600">Signup</a></span
+				>Don't have account yet? <a href="/vi/signup" class="text-blue-600">Signup</a></span
 			>
 		</div>
 	</form>

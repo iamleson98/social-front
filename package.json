@@ -29,7 +29,7 @@
 		"@next/env": "^14.2.2",
 		"@playwright/test": "^1.28.1",
 		"@sveltejs/adapter-auto": "^3.2.0",
-		"@sveltejs/kit": "^2.0.0",
+		"@sveltejs/kit": "^2.5.7",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"@types/eslint": "^8.56.0",
 		"@typescript-eslint/eslint-plugin": "^7.0.0",
@@ -45,7 +45,7 @@
 		"postcss": "^8.4.38",
 		"prettier": "^3.1.1",
 		"prettier-plugin-svelte": "^3.1.2",
-		"svelte": "^5.0.0-next.1",
+		"svelte": "^4.2.15",
 		"svelte-check": "^3.6.0",
 		"tailwindcss": "^3.4.3",
 		"tslib": "^2.4.1",
@@ -59,6 +59,7 @@
 		"@iconify-json/fa6-regular": "^1.1.19",
 		"@kitql/client": "^0.5.12",
 		"dotenv": "^16.4.5",
-		"graphql": "^16.8.1"
+		"graphql": "^16.8.1",
+		"sveltekit-i18n": "^2.4.2"
 	}
 }

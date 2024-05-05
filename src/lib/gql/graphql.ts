@@ -33069,10 +33069,7 @@ export type _Service = {
   sdl?: Maybe<Scalars['String']['output']>;
 };
 
-export type GetProductsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetProductsQuery = { __typename?: 'Query', products?: { __typename?: 'ProductCountableConnection', edges: Array<{ __typename?: 'ProductCountableEdge', node: { __typename: 'Product', id: string } }> } | null };
+export type UserDetailFragment = { __typename?: 'User', id: string, email: string, firstName: string, lastName: string, avatar?: { __typename?: 'Image', url: string, alt?: string | null } | null };
 
 export type TokenCreateMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -33080,7 +33077,36 @@ export type TokenCreateMutationVariables = Exact<{
 }>;
 
 
-export type TokenCreateMutation = { __typename?: 'Mutation', tokenCreate?: { __typename: 'CreateToken', token?: string | null, refreshToken?: string | null, user?: { __typename: 'User', id: string, email: string } | null } | null };
+export type TokenCreateMutation = { __typename?: 'Mutation', tokenCreate?: { __typename?: 'CreateToken', token?: string | null, user?: { __typename?: 'User', id: string, email: string, firstName: string, lastName: string, avatar?: { __typename?: 'Image', url: string, alt?: string | null } | null } | null } | null };
+
+export type AccountCreateMutationVariables = Exact<{
+  input: AccountRegisterInput;
+}>;
+
+
+export type AccountCreateMutation = { __typename?: 'Mutation', accountRegister?: { __typename?: 'AccountRegister', requiresConfirmation?: boolean | null } | null };
+
+export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CurrentUserQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: string, email: string, firstName: string, lastName: string, avatar?: { __typename?: 'Image', url: string, alt?: string | null } | null } | null };
+
+export type ProductItemFragment = { __typename?: 'Product', id: string, name: string, slug: string, pricing?: { __typename?: 'ProductPricingInfo', priceRange?: { __typename?: 'TaxedMoneyRange', start?: { __typename?: 'TaxedMoney', gross: { __typename?: 'Money', amount: number, currency: string } } | null, stop?: { __typename?: 'TaxedMoney', gross: { __typename?: 'Money', amount: number, currency: string } } | null } | null } | null, category?: { __typename?: 'Category', id: string, name: string } | null, thumbnail?: { __typename?: 'Image', url: string, alt?: string | null } | null };
+
+export type ProductListQueryVariables = Exact<{
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  channel?: InputMaybe<Scalars['String']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  sortBy?: InputMaybe<ProductOrder>;
+  filter?: InputMaybe<ProductFilterInput>;
+  where?: InputMaybe<ProductWhereInput>;
+}>;
+
+
+export type ProductListQuery = { __typename?: 'Query', products?: { __typename?: 'ProductCountableConnection', edges: Array<{ __typename?: 'ProductCountableEdge', node: { __typename?: 'Product', id: string, name: string, slug: string, pricing?: { __typename?: 'ProductPricingInfo', priceRange?: { __typename?: 'TaxedMoneyRange', start?: { __typename?: 'TaxedMoney', gross: { __typename?: 'Money', amount: number, currency: string } } | null, stop?: { __typename?: 'TaxedMoney', gross: { __typename?: 'Money', amount: number, currency: string } } | null } | null } | null, category?: { __typename?: 'Category', id: string, name: string } | null, thumbnail?: { __typename?: 'Image', url: string, alt?: string | null } | null } }> } | null };
 
 export class TypedDocumentString<TResult, TVariables>
   extends String
@@ -33096,30 +33122,135 @@ export class TypedDocumentString<TResult, TVariables>
     return this.value;
   }
 }
-
-export const GetProductsDocument = new TypedDocumentString(`
-    query GetProducts {
-  products(first: 5) {
-    edges {
-      node {
-        __typename
-        id
+export const UserDetailFragmentDoc = new TypedDocumentString(`
+    fragment UserDetail on User {
+  id
+  email
+  firstName
+  lastName
+  avatar {
+    url
+    alt
+  }
+}
+    `, {"fragmentName":"UserDetail"}) as unknown as TypedDocumentString<UserDetailFragment, unknown>;
+export const ProductItemFragmentDoc = new TypedDocumentString(`
+    fragment ProductItem on Product {
+  id
+  name
+  slug
+  pricing {
+    priceRange {
+      start {
+        gross {
+          amount
+          currency
+        }
+      }
+      stop {
+        gross {
+          amount
+          currency
+        }
       }
     }
   }
+  category {
+    id
+    name
+  }
+  thumbnail(size: 1000, format: WEBP) {
+    url
+    alt
+  }
 }
-    `) as unknown as TypedDocumentString<GetProductsQuery, GetProductsQueryVariables>;
+    `, {"fragmentName":"ProductItem"}) as unknown as TypedDocumentString<ProductItemFragment, unknown>;
 export const TokenCreateDocument = new TypedDocumentString(`
     mutation TokenCreate($email: String!, $password: String!) {
   tokenCreate(email: $email, password: $password) {
     token
-    refreshToken
-    __typename
     user {
       id
-      __typename
       email
+      firstName
+      lastName
+      avatar {
+        url
+        alt
+      }
     }
   }
 }
     `) as unknown as TypedDocumentString<TokenCreateMutation, TokenCreateMutationVariables>;
+export const AccountCreateDocument = new TypedDocumentString(`
+    mutation AccountCreate($input: AccountRegisterInput!) {
+  accountRegister(input: $input) {
+    requiresConfirmation
+  }
+}
+    `) as unknown as TypedDocumentString<AccountCreateMutation, AccountCreateMutationVariables>;
+export const CurrentUserDocument = new TypedDocumentString(`
+    query CurrentUser {
+  me {
+    ...UserDetail
+  }
+}
+    fragment UserDetail on User {
+  id
+  email
+  firstName
+  lastName
+  avatar {
+    url
+    alt
+  }
+}`) as unknown as TypedDocumentString<CurrentUserQuery, CurrentUserQueryVariables>;
+export const ProductListDocument = new TypedDocumentString(`
+    query ProductList($first: Int, $last: Int, $before: String, $after: String, $channel: String, $search: String, $sortBy: ProductOrder, $filter: ProductFilterInput, $where: ProductWhereInput) {
+  products(
+    first: $first
+    last: $last
+    before: $before
+    after: $after
+    channel: $channel
+    search: $search
+    sortBy: $sortBy
+    filter: $filter
+    where: $where
+  ) {
+    edges {
+      node {
+        ...ProductItem
+      }
+    }
+  }
+}
+    fragment ProductItem on Product {
+  id
+  name
+  slug
+  pricing {
+    priceRange {
+      start {
+        gross {
+          amount
+          currency
+        }
+      }
+      stop {
+        gross {
+          amount
+          currency
+        }
+      }
+    }
+  }
+  category {
+    id
+    name
+  }
+  thumbnail(size: 1000, format: WEBP) {
+    url
+    alt
+  }
+}`) as unknown as TypedDocumentString<ProductListQuery, ProductListQueryVariables>;

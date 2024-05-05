@@ -1,0 +1,5 @@
+mutation AccountCreate($input: AccountRegisterInput!) {
+  accountRegister(input: $input) {
+    requiresConfirmation
+  }
+}
