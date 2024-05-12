@@ -1,6 +1,9 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
+	// import { graphql } from '$houdini';
 	import { Button } from '$lib/components/ui';
+	import { signupStore } from '$lib/stores/api/auth';
+	import { AppRoute } from '$lib/utils';
+	import type { EventHandler } from 'svelte/elements';
 	// import { HTTPStatusBadRequest, HTTPStatusServerError } from '$lib/utils/types';
 	// import type { ActionData } from './$types';
 
@@ -35,22 +38,7 @@
 
 	const handlePasswordChange = (evt: any) => (password = evt.currentTarget.value);
 
-	const signupStore = graphql(`
-		mutation Signup($input: AccountRegisterInput!) {
-			accountRegister(input: $input) {
-				user {
-					id
-				}
-				errors {
-					field
-					message
-				}
-				requiresConfirmation
-			}
-		}
-	`);
-
-	const handleSignup = async (event: any) => {
+	const handleSignup: EventHandler<SubmitEvent, HTMLFormElement> = async (event: any) => {
 		loading = true; //
 
 		signupStore
@@ -213,7 +201,7 @@
 		<!-- form other -->
 		<div>
 			<span class="text-xs text-gray-500"
-				>Already have an account? <a href="/vi/signin" class="text-blue-600">Signin</a></span
+				>Already have an account? <a href={AppRoute.AUTH_SIGNIN} class="text-blue-600">Signin</a></span
 			>
 		</div>
 	</form>

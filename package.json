@@ -32,6 +32,7 @@
 		"@sveltejs/kit": "^2.5.7",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"@types/eslint": "^8.56.0",
+		"@types/node": "^20.12.11",
 		"@typescript-eslint/eslint-plugin": "^7.0.0",
 		"@typescript-eslint/parser": "^7.0.0",
 		"autoprefixer": "^10.4.19",
@@ -56,10 +57,10 @@
 	"type": "module",
 	"dependencies": {
 		"@graphql-typed-document-node/core": "^3.2.0",
-		"@iconify-json/fa6-regular": "^1.1.19",
 		"@kitql/client": "^0.5.12",
 		"dotenv": "^16.4.5",
 		"graphql": "^16.8.1",
+		"lexical": "^0.14.5",
 		"sveltekit-i18n": "^2.4.2"
 	}
 }

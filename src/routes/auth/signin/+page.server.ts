@@ -1,9 +1,12 @@
-import { graphql } from '$houdini';
+// import { graphql } from '$houdini';
+import type { User } from '$lib/gql/graphql';
+import { loginStore } from '$lib/stores/api';
 import { accessTokenKey } from '$lib/stores/auth/store.js';
-import { HTTPStatusBadRequest, HTTPStatusSuccess } from '$lib/utils/types.js';
+import { HTTPStatusBadRequest, HTTPStatusSuccess, type SocialResponse } from '$lib/utils/types.js';
+import type { Actions } from './$types';
 
 export const actions = {
-  async signin(event) {
+  signin: async (event): Promise<SocialResponse<User>> => {
     const credentials = await event.request.formData();
     const email = credentials.get('email') as string || '';
     const password = credentials.get('password') as string || '';
@@ -15,29 +18,12 @@ export const actions = {
       };
     }
 
-    const loginStore = graphql(`mutation TokenCreate($email: String!, $password: String!) {
-			tokenCreate(email: $email, password: $password) {
-				token
-				user {
-					id
-					email
-					firstName
-					lastName
-				}
-				errors {
-					code
-					message
-					field
-				}
-			}
-		}`);
-
     const result = await loginStore.mutate({ email, password }, { event });
 
     if (result.data?.tokenCreate?.errors.length) {
       return {
         status: HTTPStatusBadRequest,
-        error: result.data.tokenCreate.errors[0].message,
+        error: result.data.tokenCreate.errors[0].message as string,
       };
     }
 
@@ -50,7 +36,7 @@ export const actions = {
 
     return {
       status: HTTPStatusSuccess,
-      data: result.data?.tokenCreate?.user,
+      data: result.data?.tokenCreate?.user as User,
     };
   },
-};
+} satisfies Actions;

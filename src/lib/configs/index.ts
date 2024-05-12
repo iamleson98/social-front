@@ -1,0 +1,1 @@
+export { editorConfig } from './lexical';
