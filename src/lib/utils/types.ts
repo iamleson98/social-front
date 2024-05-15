@@ -18,5 +18,7 @@ export const
   HTTPStatusConflict = 409,
   HTTPStatusServerError = 500,
   HTTPStatusServiceUnavailable = 503,
-  HTTPStatusGatewayTimeout = 504;
+  HTTPStatusGatewayTimeout = 504,
+  HTTPStatusTemporaryRedirect = 307,
+  HTTPStatusPermanentRedirect = 308;
 
