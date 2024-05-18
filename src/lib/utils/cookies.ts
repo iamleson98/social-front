@@ -5,7 +5,7 @@
  * @returns cookie value. If cookie does not have provided key, returns empty string
  */
 export function getCookieByKey(key: string): string {
-  if (!document) {
+  if (typeof document === 'undefined') {
     return '';
   }
 

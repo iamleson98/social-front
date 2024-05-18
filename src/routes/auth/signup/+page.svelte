@@ -69,7 +69,7 @@
 	<title>Signup</title>
 </svelte:head>
 
-<div class="max-w-md m-auto rounded-md p-2">
+<div class="max-w-md rounded-md p-2">
 	<!-- {#if form && [HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}
 		<div class="text-xs text-red-500 bg-red-100 rounded p-2 mb-3">
 			<p>{form.error}</p>

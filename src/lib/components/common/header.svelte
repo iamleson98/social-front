@@ -3,9 +3,10 @@
 	import Logo from './logo.svelte';
 	import { userStore } from '$lib/stores/auth';
 	import { AppRoute } from '$lib/utils';
+	import { page } from '$app/stores';
 </script>
 
-<header class="fixed top-0 left-0 right-0 flex p-2" style="z-index: 99999;">
+<header class="fixed top-0 left-0 right-0 flex p-2 bg-white shadow-sm" style="z-index: 99999;">
 	<div class="w-1/2">
 		<Logo />
 	</div>
@@ -47,10 +48,15 @@
 					<ul class="dropdown-content menu shadow rounded-box w-52">
 						<li>
 							<a href="#">Item 1</a>
+						</li>
+						<li>
 							<a href="#">Item 2</a>
 						</li>
+						<li>
+							<span>Logout</span>
+						</li>
 					</ul>
-				{:else}
+				{:else if !$userStore && !$page.url.pathname.startsWith('auth')}
 					<a href={AppRoute.AUTH_SIGNIN}>
 						<Button variant="filled" size="sm">Signin</Button>
 					</a>

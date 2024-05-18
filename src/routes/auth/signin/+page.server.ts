@@ -1,12 +1,32 @@
-// import { graphql } from '$houdini';
 import type { User } from '$lib/gql/graphql';
-import { loginStore } from '$lib/stores/api';
+import { loginStore, queryUserStore } from '$lib/stores/api';
 import { accessTokenKey } from '$lib/stores/auth/store.js';
-import { HTTPStatusBadRequest, HTTPStatusSuccess, type SocialResponse } from '$lib/utils/types.js';
-import type { Actions } from './$types';
+import { HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess, HTTPStatusTemporaryRedirect } from '$lib/utils/types.js';
+import { error, redirect } from '@sveltejs/kit';
+import type { Actions, PageServerLoad } from './$types';
+import { AppRoute } from '$lib/utils';
+
+export const load: PageServerLoad = async (event) => {
+  const result = await queryUserStore.fetch({ event });
+
+  if (result.errors?.length) {
+    error(HTTPStatusServerError, { message: result.errors[0].message as string });
+  } else if (!result.data?.me) {
+    return {
+      status: HTTPStatusSuccess,
+    };
+  }
+
+  redirect(HTTPStatusTemporaryRedirect, AppRoute.HOME);
+
+  // return {
+  //   user: result.data?.me as User,
+  //   status: HTTPStatusSuccess,
+  // };
+};
 
 export const actions = {
-  signin: async (event): Promise<SocialResponse<User>> => {
+  signin: async (event) => {
     const credentials = await event.request.formData();
     const email = credentials.get('email') as string || '';
     const password = credentials.get('password') as string || '';
@@ -35,8 +55,7 @@ export const actions = {
     });
 
     return {
-      status: HTTPStatusSuccess,
-      data: result.data?.tokenCreate?.user as User,
-    };
+      user: result.data?.tokenCreate?.user as User,
+    }
   },
 } satisfies Actions;

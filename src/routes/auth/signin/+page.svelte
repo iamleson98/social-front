@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { enhance, deserialize, applyAction } from '$app/forms';
+	import { deserialize, applyAction } from '$app/forms';
 	import { Button } from '$lib/components/ui';
 	import { HTTPStatusBadRequest, HTTPStatusServerError } from '$lib/utils/types';
 	import { fade } from 'svelte/transition';
@@ -7,8 +7,7 @@
 	import { userStore } from '$lib/stores/auth';
 	import { AppRoute } from '$lib/utils';
 	import type { ActionResult } from '@sveltejs/kit';
-	import { invalidateAll } from '$app/navigation';
-	import type { User } from '$lib/gql/graphql';
+	import { goto, invalidateAll } from '$app/navigation';
 
 	const passwordButtonIconsMap = {
 		password: 'icon-[system-uicons--eye]',
@@ -26,8 +25,9 @@
 	 */
 	export let form: ActionData;
 
-	$: if (!form?.error && form?.data) {
-		userStore.set(form.data);
+	$: if (!form?.error && form?.user) {
+		userStore.set(form.user);
+		goto(AppRoute.HOME, { invalidateAll: true });
 	}
 
 	const togglePasswordType = () =>
@@ -59,8 +59,8 @@
 	<title>Signin</title>
 </svelte:head>
 
-<div class="max-w-md m-auto rounded-md p-2">
-	{#if form && [HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}
+<div class="max-w-md rounded-md p-2">
+	{#if form && form.status && [HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}
 		<div class="text-xs text-red-500 bg-red-100 rounded p-2 mb-3" transition:fade>
 			<p>{form.error}</p>
 		</div>

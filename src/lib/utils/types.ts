@@ -22,3 +22,4 @@ export const
   HTTPStatusTemporaryRedirect = 307,
   HTTPStatusPermanentRedirect = 308;
 
+  export type SocialVariant = 'success' | 'error' | 'warning' | 'info';
