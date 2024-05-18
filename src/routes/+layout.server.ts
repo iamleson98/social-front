@@ -12,11 +12,10 @@ import { AppRoute } from "$lib/utils";
 export const load: LayoutServerLoad<SocialResponse<User>> = async (event) => {
   // NOTE: we don't need to set Authorization header here.
   // Since server hook does that for us.
-
   const meQueryResult = await queryUserStore.fetch({ event });
 
   if (meQueryResult.errors?.length) {
-    // meaning toen expired
+    // meaning token has expired
     event.cookies.delete(accessTokenKey, { path: '/' });
     redirect(HTTPStatusTemporaryRedirect, AppRoute.AUTH_SIGNIN);
   }

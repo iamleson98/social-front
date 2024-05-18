@@ -7,22 +7,22 @@ import type { Actions, PageServerLoad } from './$types';
 import { AppRoute } from '$lib/utils';
 
 export const load: PageServerLoad = async (event) => {
-  const result = await queryUserStore.fetch({ event });
+  const accessToken = event.cookies.get(accessTokenKey);
 
-  if (result.errors?.length) {
-    error(HTTPStatusServerError, { message: result.errors[0].message as string });
-  } else if (!result.data?.me) {
-    return {
-      status: HTTPStatusSuccess,
-    };
+  if (accessToken) {
+    const result = await queryUserStore.fetch({ event });
+
+    if (result.errors?.length) {
+      // means token has expired.
+      error(HTTPStatusServerError, { message: result.errors[0].message as string });
+    } else if (!result.data?.me) {
+      return {
+        status: HTTPStatusSuccess,
+      };
+    }
   }
 
   redirect(HTTPStatusTemporaryRedirect, AppRoute.HOME);
-
-  // return {
-  //   user: result.data?.me as User,
-  //   status: HTTPStatusSuccess,
-  // };
 };
 
 export const actions = {
