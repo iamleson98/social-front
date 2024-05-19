@@ -1,5 +1,5 @@
 import type { User } from '$lib/gql/graphql';
-import { loginStore, queryUserStore } from '$lib/stores/api';
+import { USER_LOGIN_MUTATION_STORE, USER_ME_QUERY_STORE } from '$lib/stores/api';
 import { ACCESS_TOKEN_KEY, CSRF_TOKEN, REFRESH_TOKEN } from '$lib/stores/auth/store.js';
 import { HTTPStatusBadRequest, HTTPStatusSuccess, HTTPStatusTemporaryRedirect } from '$lib/utils/types.js';
 import { redirect } from '@sveltejs/kit';
@@ -10,7 +10,7 @@ export const load: PageServerLoad = async (event) => {
   const accessToken = event.cookies.get(ACCESS_TOKEN_KEY);
 
   if (accessToken) {
-    const result = await queryUserStore.fetch({ event });
+    const result = await USER_ME_QUERY_STORE.fetch({ event });
 
     if (result.errors?.length) {
       // means token has expired.
@@ -40,7 +40,7 @@ export const actions = {
       };
     }
 
-    const result = await loginStore.mutate({ email, password }, { event });
+    const result = await USER_LOGIN_MUTATION_STORE.mutate({ email, password }, { event });
 
     if (result.data?.tokenCreate?.errors.length) {
       return {

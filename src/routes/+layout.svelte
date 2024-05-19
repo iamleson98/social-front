@@ -23,6 +23,8 @@
 	<slot />
 </main>
 
-<footer></footer>
+<footer>
+	
+</footer>
 
 <Toast />

@@ -22,4 +22,13 @@ export const
   HTTPStatusTemporaryRedirect = 307,
   HTTPStatusPermanentRedirect = 308;
 
-  export type SocialVariant = 'success' | 'error' | 'warning' | 'info';
+export type SocialVariant = 'success' | 'error' | 'warning' | 'info';
+
+export const DEFAULT_CHANNEL_NAME = 'default-channel';
+
+export const SocialVariantIconsMap: Record<SocialVariant, string> = {
+  'error': 'icon-[system-uicons--warning-hex]',
+  'info': 'icon-[system-uicons--info-circle]',
+  'warning': 'icon-[system-uicons--warning-triangle]',
+  'success': 'icon-[system-uicons--check-circle]',
+};

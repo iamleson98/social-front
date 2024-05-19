@@ -1,7 +1,7 @@
 <script lang="ts">
 	// import { graphql } from '$houdini';
 	import { Button } from '$lib/components/ui';
-	import { signupStore } from '$lib/stores/api/auth';
+	import { USER_SIGNUP_MUTATION_STORE } from '$lib/stores/api/auth';
 	import { AppRoute } from '$lib/utils';
 	import type { EventHandler } from 'svelte/elements';
 	// import { HTTPStatusBadRequest, HTTPStatusServerError } from '$lib/utils/types';
@@ -41,7 +41,7 @@
 	const handleSignup: EventHandler<SubmitEvent, HTMLFormElement> = async (event: any) => {
 		loading = true; //
 
-		signupStore
+		USER_SIGNUP_MUTATION_STORE
 			.mutate({
 				input: {
 					firstName,
