@@ -1,11 +1,11 @@
 import type { ProductCountableConnection } from "$lib/gql/graphql";
-import { productListStore } from "$lib/stores/api/product";
+import { PRODUCT_LIST_QUERY_STORE } from "$lib/stores/api/product";
 import { HTTPStatusServerError, HTTPStatusSuccess } from "$lib/utils/types";
 import type { PageServerLoad } from "./auth/signin/$types";
 
 
 export const load: PageServerLoad = async (event) => {
-  const productsListResult = await productListStore.fetch({
+  const productsListResult = await PRODUCT_LIST_QUERY_STORE.fetch({
     event,
     variables: {
       channel: "default-channel",

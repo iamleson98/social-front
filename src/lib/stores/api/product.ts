@@ -1,6 +1,6 @@
 import { graphql } from "$houdini";
 
-export const productListStore = graphql(`query ProductsList(
+export const PRODUCT_LIST_QUERY_STORE = graphql(`query ProductsList(
   $filter: ProductFilterInput,
   $where: ProductWhereInput,
   $sortBy: ProductOrder,
@@ -34,9 +34,90 @@ export const productListStore = graphql(`query ProductsList(
         id
         name
         slug
+        description
         created
         updatedAt
       }
     }
   }
 }`);
+
+export const CATEGORIES_LIST_QUERY_STORE = graphql(`query Categories(
+  $filter: CategoryFilterInput,
+  $where: CategoryWhereInput,
+  $sortBy: CategorySortingInput,
+  $level: Int,
+  $first: Int,
+  $last: Int,
+  $before: String,
+  $after: String
+) {
+  categories(
+    filter: $filter,
+    where: $where,
+    sortBy: $sortBy,
+    level: $level,
+    first: $first,
+    last: $last,
+    before: $before,
+    after: $after
+  ) {
+    pageInfo {
+      startCursor
+      endCursor
+      hasPreviousPage
+      hasNextPage
+    }
+    edges {
+      cursor
+      node {
+        id
+        name
+        slug
+      }
+    }
+  }
+}`);
+
+/**
+ * @imageFormat default to WEBP
+ * @backgroundSize default to 250
+ * @firstNumOfChildren default to 10
+ * @lastNumOfChildren default to 10
+ */
+export const CATEGORY_DETAIL_QUERY_STORE = graphql(`query Category(
+  $slug: String,
+  $id: ID,
+  $backgroundSize: Int = 250,
+  $imageFormat: ThumbnailFormatEnum = WEBP,
+  $firstNumOfChildren: Int = 10,
+  $lastNumOfChildren: Int = 10,
+  $before: String,
+  $after: String,
+) {
+  category(slug: $slug, id: $id) {
+    id
+    name
+    description
+    backgroundImage(size: $backgroundSize, format: $imageFormat) {
+      url
+      alt
+    }
+    children(first: $firstNumOfChildren, last: $lastNumOfChildren, before: $before, after: $after) {
+      totalCount
+      edges {
+        node {
+          id
+          name
+          slug
+        }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasPreviousPage
+        hasNextPage
+      }
+    }
+  }
+}`)
