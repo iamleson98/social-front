@@ -2,6 +2,3 @@
 
 </script>
 
-<div>
-  
-</div>

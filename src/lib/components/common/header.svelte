@@ -4,11 +4,34 @@
 	import { userStore } from '$lib/stores/auth';
 	import { AppRoute } from '$lib/utils';
 	import { page } from '$app/stores';
+	import { CART_ITEMS_STORE } from '$lib/stores/app';
+
+	$: userAvatarStyle = $userStore?.avatar?.url
+		? `background-image: url("${$userStore.avatar.url}")`
+		: '';
+
+	let userDisplayName = '';
+	$: {
+		if ($userStore?.firstName && $userStore.lastName)
+			userDisplayName = `${$userStore.firstName[0]}${$userStore.lastName[0]}`;
+		else if ($userStore?.email) userDisplayName = $userStore.email.slice(0, 2);
+	}
 </script>
 
-<header class="fixed top-0 left-0 right-0 flex p-2 bg-white shadow-sm" style="z-index: 99999;">
-	<div class="w-1/2">
-		<Logo />
+<header class="fixed top-0 left-0 right-0 flex p-2 bg-white shadow-sm z-[99999999999] w-full">
+	<div class="w-1/2 flex items-center gap-3">
+		<!-- logo -->
+		<a href={AppRoute.HOME} class="inline">
+			<Logo />
+		</a>
+
+		<!-- search -->
+		<div>
+			<label class="input flex items-center gap-2 input-sm">
+				<input type="text" class="grow" placeholder="Enter your search" />
+				<span class="icon-[system-uicons--search]"></span>
+			</label>
+		</div>
 	</div>
 	<div class="w-1/2 flex justify-between">
 		<div class="flex gap-1">
@@ -22,29 +45,28 @@
 			</a>
 		</div>
 
-		<div class="">
+		<div class="flex items-center gap-3.5">
+			<!-- shopping cart button -->
+			<a href={AppRoute.SHOPPING_CART}>
+				<button class="btn btn-square btn-sm relative">
+					<span class="icon-[system-uicons--bag] text-xl"></span>
+					<span class="cart-quantity">
+						{$CART_ITEMS_STORE.length}
+					</span>
+				</button>
+			</a>
 			<div class="dropdown dropdown-end">
 				{#if $userStore}
-					<Button
-						variant="subtle"
-						tabIndex="0"
-						size="sm"
-						endIcon="icon-[system-uicons--chevron-down]"
-					>
+					<button tabIndex="0" class="btn btn-sm uppercase">
 						{#if $userStore.avatar && $userStore.avatar.url}
 							<span
-								class="rounded-full w-7 h-7 bg-blue-300 flex items-center justify-center font-bold social-avatar"
-								style={`background-image: url("${$userStore.avatar.url}")`}
+								class="rounded-full w-6 h-6 bg-blue-300 flex items-center justify-center font-bold bg-cover bg-center bg-no-repeat"
+								style={userAvatarStyle}
 							>
 							</span>
-						{:else if $userStore.email}
-							<span
-								class="rounded-full w-7 h-7 bg-blue-300 flex items-center justify-center font-bold"
-							>
-								{$userStore.email.slice(0, 2).toUpperCase()}
-							</span>
+							<span>{userDisplayName}</span>
 						{/if}
-					</Button>
+					</button>
 					<ul class="dropdown-content menu shadow rounded-box w-52">
 						<li>
 							<a href="#">Item 1</a>
@@ -56,24 +78,19 @@
 							<span>Logout</span>
 						</li>
 					</ul>
-				{:else if !$userStore && !$page.url.pathname.startsWith('auth')}
+				{:else if !$userStore && !$page.url.pathname.startsWith('/auth')}
 					<a href={AppRoute.AUTH_SIGNIN}>
-						<Button variant="filled" size="sm">Signin</Button>
+						<Button variant="filled" size="xs">Signin</Button>
 					</a>
 				{/if}
-				<!-- <div class="rounded px-2 py-1 flex items-center justify-between hover:bg-blue-200" role="button">
-					<div class="rounded-full bg-blue-300 flex items-center justify-center mr-2 w-7 h-7 text-white">L</div>
-					<span class="icon-[system-uicons--chevron-down]"></span>
-				</div> -->
 			</div>
 		</div>
 	</div>
 </header>
 
-<style>
-	.social-avatar {
-		background-size: cover;
-		background-position: center;
-		background-repeat: no-repeat;
+<style lang="postcss">
+	.cart-quantity {
+		@apply absolute -right-1/4 -top-1/4 z-[99999999] flex h-4 min-w-4 items-center text-xs justify-center rounded-full bg-blue-500 p-1 font-bold text-white;
+		font-size: 10px !important;
 	}
 </style>

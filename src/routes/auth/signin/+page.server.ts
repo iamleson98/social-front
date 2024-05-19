@@ -1,28 +1,30 @@
 import type { User } from '$lib/gql/graphql';
 import { loginStore, queryUserStore } from '$lib/stores/api';
-import { accessTokenKey } from '$lib/stores/auth/store.js';
-import { HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess, HTTPStatusTemporaryRedirect } from '$lib/utils/types.js';
-import { error, redirect } from '@sveltejs/kit';
+import { ACCESS_TOKEN_KEY, CSRF_TOKEN, REFRESH_TOKEN } from '$lib/stores/auth/store.js';
+import { HTTPStatusBadRequest, HTTPStatusSuccess, HTTPStatusTemporaryRedirect } from '$lib/utils/types.js';
+import { redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { AppRoute } from '$lib/utils';
 
 export const load: PageServerLoad = async (event) => {
-  const accessToken = event.cookies.get(accessTokenKey);
+  const accessToken = event.cookies.get(ACCESS_TOKEN_KEY);
 
   if (accessToken) {
     const result = await queryUserStore.fetch({ event });
 
     if (result.errors?.length) {
       // means token has expired.
-      error(HTTPStatusServerError, { message: result.errors[0].message as string });
-    } else if (!result.data?.me) {
       return {
         status: HTTPStatusSuccess,
       };
     }
+
+    redirect(HTTPStatusTemporaryRedirect, AppRoute.HOME);
   }
 
-  redirect(HTTPStatusTemporaryRedirect, AppRoute.HOME);
+  return {
+    status: HTTPStatusSuccess,
+  };
 };
 
 export const actions = {
@@ -47,12 +49,15 @@ export const actions = {
       };
     }
 
-    event.cookies.set(accessTokenKey, result.data?.tokenCreate?.token as string, {
+    const cookieOpts = {
       path: '/',
       secure: true,
       httpOnly: true,
       maxAge: 24 * 60 * 60,
-    });
+    }
+    event.cookies.set(ACCESS_TOKEN_KEY, result.data?.tokenCreate?.token as string, cookieOpts);
+    event.cookies.set(CSRF_TOKEN, result.data?.tokenCreate?.csrfToken as string, cookieOpts);
+    event.cookies.set(REFRESH_TOKEN, result.data?.tokenCreate?.refreshToken as string, cookieOpts);
 
     return {
       user: result.data?.tokenCreate?.user as User,

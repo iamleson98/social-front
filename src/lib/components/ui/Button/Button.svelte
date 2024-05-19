@@ -51,7 +51,7 @@
 		{#if loading}
 			<Spin classes="mr-2" />
 		{:else}
-			<span class={`mr-2 social-btn-icon ${startIcon}`}></span>
+			<span class={`mr-2 text-xl ${startIcon}`}></span>
 		{/if}
 	{/if}
 	<slot />
@@ -59,7 +59,7 @@
 		{#if loading}
 			<Spin classes="ml-2" />
 		{:else}
-			<span class={`ml-2 social-btn-icon ${endIcon}`}></span>
+			<span class={`ml-2 text-xl ${endIcon}`}></span>
 		{/if}
 	{/if}
 </button>
@@ -95,9 +95,5 @@
 	}
 	.social-btn-xl {
 		@apply h-[60px] py-0 px-8 text-xl;
-	}
-	.social-btn-icon {
-		font-size: inherit !important;
-		font-weight: 900;
 	}
 </style>

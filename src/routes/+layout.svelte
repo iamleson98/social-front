@@ -2,21 +2,16 @@
 	import '../app.css';
 	import { Header } from '$lib/components/common';
 	import { Toast } from '$lib/components/ui/Toast';
-	import { toastStore } from '$lib/stores/ui/toast';
+	// import { toastStore } from '$lib/stores/ui/toast';
 	import type { LayoutData } from './$types';
 	import { userStore } from '$lib/stores/auth';
 	import type { User } from '$lib/gql/graphql';
-	import { HTTPStatusServerError } from '$lib/utils/types';
+	// import { HTTPStatusServerError } from '$lib/utils/types';
 
 	export let data: LayoutData;
 
 	$: {
-		if (data.status === HTTPStatusServerError) {
-			toastStore.send({
-				message: data.message as string,
-				variant: 'error'
-			});
-		} else {
+		if (data.user) {
 			userStore.set(data.user as User);
 		}
 	}
