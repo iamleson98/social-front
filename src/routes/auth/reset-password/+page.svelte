@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { Alert } from '$lib/components/common';
 	import { Button } from '$lib/components/ui';
 	import { HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess } from '$lib/utils/types';
 	import type { ActionData } from './$types';
-	import { Alert } from '$lib/components/common';
 
 	export let form: ActionData;
 
