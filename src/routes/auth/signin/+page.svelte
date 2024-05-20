@@ -87,7 +87,7 @@
 			</label>
 
 			<label
-				class="input input-md flex w-full input-bordered items-center gap-2 mb-4"
+				class="input input-md flex w-full input-bordered items-center gap-2 mb-1"
 				for="password"
 				class:input-error={form?.error}
 			>
@@ -107,6 +107,9 @@
 					<span class={passwordButtonIconsMap[passwordFieldType]}></span>
 				</button>
 			</label>
+			<a href={AppRoute.AUTH_RESET_PASSWORD} class="text-xs text-right block text-blue-600 mb-4"
+				>Forgot password?</a
+			>
 
 			<label
 				for="remember-me"
@@ -134,10 +137,9 @@
 
 		<!-- form other -->
 		<div>
-			<span class="text-xs text-gray-500"
-				>Don't have account yet? <a href={AppRoute.AUTH_REGISTER} class="text-blue-600">Signup</a
-				></span
-			>
+			<span class="text-xs text-gray-500">
+				Don't have account yet? <a href={AppRoute.AUTH_REGISTER} class="text-blue-600">Signup</a>
+			</span>
 		</div>
 	</form>
 
