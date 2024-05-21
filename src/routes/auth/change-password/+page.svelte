@@ -8,7 +8,7 @@
 	export let form: ActionData;
 
 	let newPassword = '';
-    let conformNewPassword = '';
+	let confirmNewPassword = '';
 	let loading = false;
 </script>
 
@@ -18,20 +18,20 @@
 
 <div class="max-w-md rounded-md p-2">
 	<h1 class="p-2 mb-4">New Password</h1>
-		<Alert
-			display={form &&
-				form?.status &&
-				[HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}
-			content={form?.error}
-			variant="error"
-			classes="mb-3"
-		/>
-		<Alert
-			display={form && form?.status === HTTPStatusSuccess}
-			variant="info"
-			content={form?.data}
-			classes="mb-3"
-		/>
+	<Alert
+		display={form &&
+			form?.status &&
+			[HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}
+		content={form?.error}
+		variant="error"
+		classes="mb-3"
+	/>
+	<Alert
+		display={form && form?.status === HTTPStatusSuccess}
+		variant="info"
+		content={form?.data}
+		classes="mb-3"
+	/>
 	<form action="?/request_password_reset" method="post" use:enhance>
 		<label
 			class="input input-md flex w-full input-bordered items-center gap-2 mb-3"
@@ -50,7 +50,7 @@
 				disabled={loading}
 			/>
 		</label>
-        <label
+		<label
 			class="input input-md flex w-full input-bordered items-center gap-2 mb-3"
 			for="confirmNewPassword"
 			class:input-error={form?.error}
@@ -62,7 +62,7 @@
 				class="grow"
 				id="confirmNewPassword"
 				placeholder="Confirm New Password"
-				bind:value={conformNewPassword}
+				bind:value={confirmNewPassword}
 				required
 				disabled={loading}
 			/>
@@ -72,7 +72,7 @@
 			size="sm"
 			fullWidth
 			type="submit"
-			disabled={loading || !newPassword.trim() || !conformNewPassword.trim()}
+			disabled={loading || !newPassword.trim() || !confirmNewPassword.trim()}
 			bind:loading
 		>
 			Change Password

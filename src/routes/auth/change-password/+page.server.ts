@@ -7,21 +7,21 @@ export const actions = {
         const newPassword = formData.get('newPassword');
         const confirmNewPassword = formData.get('confirmNewPassword');
 
-        if (!newPassword || !newPassword.toString().trim()) {
+        if (!newPassword) {
             return {
                 status: HTTPStatusBadRequest,
                 error: "Please provide valid new password",
             };
         }
 
-        if (!confirmNewPassword || !confirmNewPassword.toString().trim()) {
+        if (!confirmNewPassword) {
             return {
                 status: HTTPStatusBadRequest,
                 error: "Please provide valid confirm new password",
             };
         }
 
-        if(newPassword !== confirmNewPassword){
+        if (newPassword !== confirmNewPassword) {
             return {
                 status: HTTPStatusBadRequest,
                 error: "password and confirm password not matched.",
