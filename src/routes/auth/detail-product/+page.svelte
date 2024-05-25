@@ -1,7 +1,7 @@
 <script lang="ts">
-	import SelectableItem from '$lib/components/common/SelectableItem.svelte';
-	import SlideShown from '$lib/components/common/SlideShown.svelte';
 	import { toastStore } from '$lib/stores/ui/toast';
+	import SelectableItem from '../../(app)/products/SelectableItem.svelte';
+	import SlideShown from '../../(app)/products/SlideShow.svelte';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
@@ -156,7 +156,6 @@
 
 				<button
 					class="flex items-center bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mt-10 disabled:bg-gray-300 disabled:text-gray-500 disabled:hover:bg-gray-300 disabled:hover:text-gray-500"
-					disabled={quantity === 0}
 				>
 					<svg
 						class="w-6 h-6 text-white dark:text-white disabled:text-gray-500"
