@@ -17,20 +17,13 @@
 
 <div class="max-w-md rounded-md p-2">
 	<h1 class="p-2 mb-4">Reset Password</h1>
-		<Alert
-			display={form &&
-				form?.status &&
-				[HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}
-			content={form?.error}
-			variant="error"
-			classes="mb-3"
-		/>
-		<Alert
-			display={form && form?.status === HTTPStatusSuccess}
-			variant="info"
-			content={form?.data}
-			classes="mb-3"
-		/>
+
+	{#if form && form?.status && [HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}
+		<Alert content={form?.error} variant="error" classes="mb-3" />
+	{:else if form && form?.status === HTTPStatusSuccess}
+		<Alert content={form?.data} variant="info" classes="mb-3" />
+	{/if}
+
 	<form action="?/request_password_reset" method="post" use:enhance>
 		<label
 			class="input input-md flex w-full input-bordered items-center gap-2 mb-3"

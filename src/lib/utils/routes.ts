@@ -8,6 +8,4 @@ export const AppRoute = {
   TRENDING: '/trending',
   SETTINGS: '/settings',
   SHOPPING_CART: '/shopping-cart',
-
-  PASSWORD_RESET_REDIRECT: "http://localhost:5173/"
 };

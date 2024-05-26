@@ -18,16 +18,12 @@
 		return freeStorageListener;
 	});
 
-	$: {
-		if (data.user) {
-			userStore.set(data.user as User);
-		}
-	}
+	$: userStore.set(data.user as User);
 </script>
 
 <Header />
 
-<main class="mt-12 w-screen h-screen">
+<main class="mt-12 w-full h-screen">
 	<slot />
 </main>
 

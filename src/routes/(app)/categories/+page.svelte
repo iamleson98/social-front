@@ -9,11 +9,10 @@
 	let pageInfo = {} as PageInfo;
 
 	onMount(async () => {
+		loading = true;
 		const categoriesResult = await CATEGORIES_LIST_QUERY_STORE.fetch({
 			variables: {}
 		});
-
-		loading = categoriesResult.fetching;
 
 		if (categoriesResult.errors?.length) {
 			toastStore.send({
@@ -22,6 +21,8 @@
 			});
 			return;
 		}
+
+		loading = false;
 
 		pageInfo = categoriesResult.data?.categories?.pageInfo as PageInfo;
 		categories = categoriesResult.data?.categories?.edges as CategoryCountableEdge[];
