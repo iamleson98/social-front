@@ -60,6 +60,8 @@
 </svelte:head>
 
 <div class="max-w-md rounded-md p-2">
+	<h1 class="p-2 mb-4">Sign in</h1>
+
 	{#if form && form.status && [HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}
 		<div class="text-xs text-red-500 bg-red-100 rounded p-2 mb-3" transition:fade>
 			<p>{form.error}</p>
@@ -107,7 +109,7 @@
 					<span class={passwordButtonIconsMap[passwordFieldType]}></span>
 				</button>
 			</label>
-			<a href={AppRoute.AUTH_RESET_PASSWORD} class="text-xs text-right block text-blue-600 mb-4"
+			<a href={AppRoute.AUTH_RESET_PASSWORD} class="text-[10px] text-right block text-blue-600 mb-4"
 				>Forgot password?</a
 			>
 

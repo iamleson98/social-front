@@ -3,6 +3,7 @@
 	import { Button } from '$lib/components/ui';
 	import { USER_SIGNUP_MUTATION_STORE } from '$lib/stores/api/auth';
 	import { AppRoute } from '$lib/utils';
+	import { DEFAULT_CHANNEL_NAME } from '$lib/utils/types';
 	import type { EventHandler } from 'svelte/elements';
 	// import { HTTPStatusBadRequest, HTTPStatusServerError } from '$lib/utils/types';
 	// import type { ActionData } from './$types';
@@ -21,7 +22,7 @@
 	let termAndPoliciesAgree = false;
 	let passwordFieldType: 'text' | 'password' = 'password';
 	let signupError: string | null = null;
-	let redirectUrl = 'http://localhost:8000/hello';
+	let redirectUrl = 'http://localhost:5173/';
 
 	$: passwordDontMatch = password !== confirmPassword;
 	$: signupButtonDisabled =
@@ -48,13 +49,16 @@
 					lastName,
 					email,
 					password,
-					redirectUrl
+					redirectUrl,
+					channel: DEFAULT_CHANNEL_NAME,
 				}
 			})
 			.then((result) => {
 				if (result.data?.accountRegister?.errors.length) {
 					signupError = result.data?.accountRegister?.errors[0].message;
+					return;
 				}
+				signupError = null;
 			})
 			.catch((err) => {
 				signupError = err.message;
@@ -70,15 +74,8 @@
 </svelte:head>
 
 <div class="max-w-md rounded-md p-2">
-	<!-- {#if form && [HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}
-		<div class="text-xs text-red-500 bg-red-100 rounded p-2 mb-3">
-			<p>{form.error}</p>
-		</div>
-	{:else if passwordDontMatch}
-		<div class="text-xs text-red-500 bg-red-100 rounded p-2 mb-3">
-			<p>passwords donot match</p>
-		</div>
-	{/if} -->
+	<h1 class="p-2 mb-4">Sign up</h1>
+
 	{#if signupError}
 		<div class="text-xs text-red-500 bg-red-100 rounded p-2 mb-3">
 			<p>{signupError}</p>

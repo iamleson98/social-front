@@ -16,7 +16,7 @@
 
 <style lang="postcss">
 	.notifications {
-		@apply fixed top-2 z-[99999] flex flex-col justify-start items-center pointer-events-none p-0 my-0 right-6;
+		@apply fixed top-2 z-[99999] flex flex-col justify-start pointer-events-none p-0 my-0 right-6;
 	}
 	.toast {
 		flex: 0 0 auto;

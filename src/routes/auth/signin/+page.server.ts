@@ -1,6 +1,6 @@
 import type { User } from '$lib/gql/graphql';
 import { USER_LOGIN_MUTATION_STORE, USER_ME_QUERY_STORE } from '$lib/stores/api';
-import { ACCESS_TOKEN_KEY, CSRF_TOKEN, REFRESH_TOKEN } from '$lib/stores/auth/store.js';
+import { ACCESS_TOKEN_KEY, CSRF_TOKEN_KEY, REFRESH_TOKEN_KEY } from '$lib/stores/auth/store.js';
 import { HTTPStatusBadRequest, HTTPStatusSuccess, HTTPStatusTemporaryRedirect } from '$lib/utils/types.js';
 import { redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
@@ -56,8 +56,8 @@ export const actions = {
       maxAge: 24 * 60 * 60,
     }
     event.cookies.set(ACCESS_TOKEN_KEY, result.data?.tokenCreate?.token as string, cookieOpts);
-    event.cookies.set(CSRF_TOKEN, result.data?.tokenCreate?.csrfToken as string, cookieOpts);
-    event.cookies.set(REFRESH_TOKEN, result.data?.tokenCreate?.refreshToken as string, cookieOpts);
+    event.cookies.set(CSRF_TOKEN_KEY, result.data?.tokenCreate?.csrfToken as string, cookieOpts);
+    event.cookies.set(REFRESH_TOKEN_KEY, result.data?.tokenCreate?.refreshToken as string, cookieOpts);
 
     return {
       user: result.data?.tokenCreate?.user as User,

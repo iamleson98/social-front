@@ -22,5 +22,13 @@ export const load: PageServerLoad = async (event) => {
     return {
         status: HTTPStatusSuccess,
         data: productsListResult.data?.products as ProductCountableConnection,
-    };
+=======
+import { PRODUCT_LIST_QUERY_STORE } from "$lib/stores/api/product";
+import type { PageServerLoad } from "./$types";
+
+export const load: PageServerLoad = async (event) => {
+  PRODUCT_LIST_QUERY_STORE
+  return {
+
+  };
 };

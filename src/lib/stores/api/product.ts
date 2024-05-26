@@ -50,7 +50,9 @@ export const CATEGORIES_LIST_QUERY_STORE = graphql(`query Categories(
   $first: Int,
   $last: Int,
   $before: String,
-  $after: String
+  $after: String,
+  $backgroundSize: Int,
+  $backgroundFormat: ThumbnailFormatEnum
 ) {
   categories(
     filter: $filter,
@@ -74,6 +76,10 @@ export const CATEGORIES_LIST_QUERY_STORE = graphql(`query Categories(
         id
         name
         slug
+        backgroundImage(size: $backgroundSize, format: $backgroundFormat) {
+          url
+          alt
+        }
       }
     }
   }
@@ -120,4 +126,15 @@ export const CATEGORY_DETAIL_QUERY_STORE = graphql(`query Category(
       }
     }
   }
-}`)
+}`);
+
+export const PRODUCT_DETAIL_QUERY_STORE = graphql(`query Product($slug: String!, $channel: String!) {
+  product(slug: $slug, channel: $channel) {
+    id
+    name
+    description
+    seoTitle
+    seoDescription
+    rating
+  }
+}`);

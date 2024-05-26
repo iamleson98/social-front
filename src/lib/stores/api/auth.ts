@@ -94,5 +94,4 @@ export const USER_SET_PASSWORD_MUTATION_STORE = graphql(`mutation SetPassword($t
       code
     }
   }
-}`)
-
+}`);

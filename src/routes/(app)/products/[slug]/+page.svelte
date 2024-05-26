@@ -1,16 +1,9 @@
 <script lang="ts">
 	import SelectableItem from '$lib/components/common/SelectableItem.svelte';
 	import SlideShow from '$lib/components/common/SlideShow.svelte';
-	import { toastStore } from '$lib/stores/ui/toast';
 	import type { PageData } from './$types';
 	export let data: PageData;
 
-	if (data.error) {
-		toastStore.send({
-			message: data.error,
-			variant: 'error'
-		});
-	}
 
 	// get list image from data
 	let images = [
@@ -81,13 +74,7 @@
 				<SlideShow {images} />
 			</div>
 			<div class="bg-white p-2 w-full mb-2 rounded-[5px] pl-10 pt-5 pr-10">
-				{#if data.data?.edges.length}
-					{#each data.data.edges as productEdge, idx (idx)}
-						<p class="text-xl mb-5">
-							{productEdge.node.name}
-						</p>
-					{/each}
-				{/if}
+				<p class="text-xl mb-10">butterfly from amazom</p>
 
 				<p class="text-xl text-red-500 font-bold mb-10">
 					<!-- product price -->
@@ -255,22 +242,10 @@
 			<p class="text-xl text-black-500 font-bold">Information</p>
 			<div class="flex">
 				<!-- tag product type -->
-				{#if data.data?.edges.length}
-					{#each data.data.edges as productEdge, idx (idx)}
-						<p>
-							{productEdge.node.slug}
-						</p>
-					{/each}
-				{/if}
+				
 			</div>
 			<div>
-				{#if data.data?.edges.length}
-					{#each data.data.edges as productEdge, idx (idx)}
-						<p>
-							{productEdge.node.description}
-						</p>
-					{/each}
-				{/if}
+				
 				<!-- description -->
 			</div>
 		</div>
