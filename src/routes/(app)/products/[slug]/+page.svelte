@@ -70,11 +70,11 @@
 <div class="w-full pt-10 bg-gray-100 pb-5">
 	<div class="w-4/5 ml-auto mr-10 ">
 		<div class="w-full flex flex-row">
-			<div class="bg-white p-4 pb-10 w-3/5 mr-2 mb-2 rounded-[5px]">
+			<div class="bg-white p-[20px] w-[500px] h-[595px] mr-2 mb-2 rounded-[5px]">
 				<SlideShow {images} />
 			</div>
-			<div class="bg-white p-2 w-full mb-2 rounded-[5px] pl-10 pt-5 pr-10">
-				<p class="text-xl mb-10">butterfly from amazom</p>
+			<div class="bg-white p-2 w-[560px] h-[595px] mb-2 rounded-[5px] pl-10 pt-5 pr-10">
+				<p class="text-xl mb-10">Butterfly from amazom</p>
 
 				<p class="text-xl text-red-500 font-bold mb-10">
 					<!-- product price -->
@@ -122,7 +122,7 @@
 					</div>
 				</div>
 
-				<div class="flex flex-row items-center mt-2">
+				<div class="flex flex-row items-center mt-2 mb-3">
 					<p class="text-gray-500 font-thin w-1/6">Quantity:</p>
 					<div class="item-container flex items-start gap-2 w-5/6">
 						<button
