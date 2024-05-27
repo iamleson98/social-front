@@ -12,8 +12,6 @@
 		currentImage = (currentImage - 1 + images.length) % images.length;
 	}
 
-	let interval: ReturnType<typeof setInterval>; // Sử dụng ReturnType
-
 </script>
 
 <div class="w-[460px] h-[570px] overflow-hidden bg-white">
@@ -30,15 +28,15 @@
 				<img
 					src={image}
 					alt="Thumbnail {index + 1}"
-					class="h-[85px] w-[85px] mx-1 cursor-pointer rounded-md object-cover {currentImage === index ? 'border-2 border-blue-600 opacity-100' : 'opacity-60'}"
+					class="h-[85px] w-[85px] mx-1 cursor-pointer rounded-md object-cover {currentImage === index ? 'border-[2px] border-custom-blue opacity-100' : 'opacity-60'}"
 					on:click={() => (currentImage = index)}
 				/>
 			{/each}
 		</div>
-		<button class="absolute top-1/2 left-3 w-6 h-6 transform -translate-y-1/2 bg-white text-gray-500 border-none rounded-full flex items-center justify-center cursor-pointer" on:click={prev}>
+		<button class="absolute top-1/2 left-3 w-6 h-6 transform -translate-y-1/2 bg-white text-custom-text-color border-none rounded-full flex items-center justify-center cursor-pointer" on:click={prev}>
 			<span class="icon-[system-uicons--chevron-left] w-5 h-5"></span>
 		</button>
-		<button class="absolute top-1/2 right-3 w-6 h-6 transform -translate-y-1/2 bg-white text-gray-500 border-none rounded-full flex items-center justify-center cursor-pointer" on:click={next}>
+		<button class="absolute top-1/2 right-3 w-6 h-6 transform -translate-y-1/2 bg-white text-custom-text-color border-none rounded-full flex items-center justify-center cursor-pointer" on:click={next}>
 			<span class="icon-[system-uicons--chevron-right] w-5 h-5"></span>
 		</button>
 	</div>
@@ -49,11 +47,11 @@
 		display: none;
 	}
 	.thumbnails-container {
-		-ms-overflow-style: none;  /* Internet Explorer 10+ */
-		scrollbar-width: none;  /* Firefox */
-		white-space: nowrap; /* Ensure thumbnails stay on one line */
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+		white-space: nowrap;
 	}
 	.thumbnails-container img {
-		display: inline-block; /* Ensure images stay inline and don't wrap */
+		display: inline-block;
 	}
 </style>

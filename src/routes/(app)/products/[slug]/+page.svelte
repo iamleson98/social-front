@@ -1,9 +1,9 @@
 <script lang="ts">
+	import ButtonDetailProduct from '$lib/components/common/ButtonDetailProduct.svelte';
 	import SelectableItem from '$lib/components/common/SelectableItem.svelte';
 	import SlideShow from '$lib/components/common/SlideShow.svelte';
 	import type { PageData } from './$types';
 	export let data: PageData;
-
 
 	// get list image from data
 	let images = [
@@ -68,22 +68,22 @@
 </svelte:head>
 
 <div class="w-full pt-10 bg-gray-100 pb-5">
-	<div class="w-4/5 ml-auto mr-10 ">
+	<div class="w-4/5 ml-auto mr-10">
 		<div class="w-full flex flex-row">
-			<div class="bg-white p-[20px] w-[500px] h-[595px] mr-2 mb-2 rounded-[5px]">
+			<div class="bg-white p-[20px] w-[500px] h-[595px] mr-3 mb-3 rounded-[5px]">
 				<SlideShow {images} />
 			</div>
 			<div class="bg-white p-2 w-[560px] h-[595px] mb-2 rounded-[5px] pl-10 pt-5 pr-10">
-				<p class="text-xl mb-10">Butterfly from amazom</p>
+				<p class="text-xl text-custom-black mb-10">The butterfly from amazom</p>
 
-				<p class="text-xl text-red-500 font-bold mb-10">
+				<p class="text-xl text-custom-red font-bold mb-10">
 					<!-- product price -->
 					355.000 ₫ - 500.000 ₫
 				</p>
 
 				<div class="flex flex-row items-center">
-					<p class="text-gray-500 font-thin mr-10">Deliver to:</p>
-					<p class="text-gray-500 font-bold mr-3">
+					<p class="text-custom-text-color font-thin w-1/5">Deliver to</p>
+					<p class="text-custom-text-color mr-3">
 						<!-- address -->
 						Trieu khuc, Thanh Tri
 					</p>
@@ -97,8 +97,8 @@
 				</div>
 
 				<div class="flex flex-row items-center mt-20">
-					<p class="text-gray-500 font-thin w-1/6">Material:</p>
-					<div class="item-container flex w-5/6 gap-2">
+					<p class="text-custom-text-color font-thin w-1/5">Material</p>
+					<div class="item-container flex w-4/5 gap-2">
 						{#each items as item, index}
 							<SelectableItem
 								content={item}
@@ -110,8 +110,8 @@
 				</div>
 
 				<div class="flex flex-row items-center mt-2">
-					<p class="text-gray-500 font-thin w-1/6">Size:</p>
-					<div class="item-container flex items-start gap-2 w-5/6">
+					<p class="text-custom-text-color font-thin w-1/5">Size</p>
+					<div class="item-container flex items-start gap-2 w-4/5">
 						{#each sizes as sizes, index}
 							<SelectableItem
 								content={sizes}
@@ -122,130 +122,70 @@
 					</div>
 				</div>
 
-				<div class="flex flex-row items-center mt-2 mb-3">
-					<p class="text-gray-500 font-thin w-1/6">Quantity:</p>
-					<div class="item-container flex items-start gap-2 w-5/6">
+				<div class="flex flex-row items-center mt-5 mb-3">
+					<p class="text-custom-text-color font-thin w-1/5">Quantity</p>
+					<div class="item-container flex items-start gap-2 w-4/5">
 						<button
 							on:click={decrease}
-							class="w-6 h-6 flex items-center justify-center rounded-[2px] bg-gray-100 hover:bg-red-500 hover:text-white"
+							class="w-6 h-6 flex items-center justify-center rounded-[2px] text-custom-text-color bg-custom-gray-f5f5 hover:bg-custom-red hover:text-white"
 							>-</button
 						>
-						<span class="ml-3 mr-3">{quantity}</span>
+						<span class="ml-3 mr-3 text-custom-text-color">{quantity}</span>
 						<button
 							on:click={increase}
-							class="w-6 h-6 flex items-center justify-center rounded-[2px] bg-gray-100 hover:bg-red-500 hover:text-white"
+							class="w-6 h-6 flex items-center justify-center rounded-[2px] text-custom-text-color bg-custom-gray-f5f5 hover:bg-custom-red hover:text-white"
 							>+</button
 						>
-						<p class="text-gray-500">8 items available</p>
+						<p class="text-custom-text-color">8 items available</p>
 					</div>
 				</div>
 
 				<button
-					class="flex items-center bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mt-10 disabled:bg-gray-300 disabled:text-gray-500 disabled:hover:bg-gray-300 disabled:hover:text-gray-500"
+					class="flex items-center bg-custom-red text-white px-4 py-2 rounded hover:bg-red-500 mt-10 disabled:bg-gray-300 disabled:text-gray-500 disabled:hover:bg-gray-300 disabled:hover:text-gray-500"
 				>
-				<span class="icon-[system-uicons--cart] w-6 h-6" style="color: white;"></span>
-					Add to Cart
+					<span class="icon-[system-uicons--cart] w-6 h-6 mr-1" style="color: white;"></span>
+					<p>Add to Cart</p>
 				</button>
 
 				<div class="flex gap-2 w-full mt-20 justify-center">
-					<button
-						class="flex items-center bg-gray-200 text-gray-500 px-6 py-1 rounded hover:bg-gray-300"
-					>
-						365
-						<span class="icon-[system-uicons--heart] w-6 h-6" style="color: #718096;"></span>
-					</button>
-					<button
-						class="flex items-center bg-gray-200 text-gray-500 px-6 py-1 rounded hover:bg-gray-300"
-					>
-						365
-						<span class="icon-[system-uicons--bookmark] w-6 h-6" style="color: #718096;"></span>
-					</button>
-
+					<ButtonDetailProduct text="365" icon="icon-[system-uicons--heart]" on:click={() => {}} />
+					<ButtonDetailProduct text="365" icon="icon-[system-uicons--bookmark]" on:click={() => {}} />
 					<div class="relative inline-block">
-						<div
-							class="absolute flex w-full p-2 justify-center items-center gap-2 bottom-full bg-white mb-2 rounded shadow-md"
-							class:hidden={!isVisible}
-						>
-							<button>
-								<img
-									src="https://cdn-icons-png.flaticon.com/128/733/733547.png"
-									alt=""
-									class="w-5 h-5"
-								/>
-							</button>
-							<button>
-								<img
-									src="https://cdn-icons-png.flaticon.com/128/3621/3621448.png"
-									alt=""
-									class="w-5 h-5"
-								/>
-							</button>
-							<button>
-								<img
-									src="https://cdn-icons-png.flaticon.com/128/3256/3256013.png"
-									alt=""
-									class="w-5 h-5"
-								/>
-							</button>
-						</div>
-
-						<button
-							on:click={toggleVisibility}
-							class="flex items-center bg-gray-200 text-gray-500 px-6 py-1 rounded hover:bg-gray-300"
-						>
-							365
-							<svg
-								class="w-6 h-6 text-gray-500 dark:text-white ml-1"
-								aria-hidden="true"
-								xmlns="http://www.w3.org/2000/svg"
-								width="24"
-								height="24"
-								fill="none"
-								viewBox="0 0 24 24"
-							>
-								<path
-									stroke="currentColor"
-									stroke-linecap="round"
-									stroke-width="2"
-									d="M7.926 10.898 15 7.727m-7.074 5.39L15 16.29M8 12a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Zm12 5.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Zm0-11a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Z"
-								/>
-							</svg>
-						</button>
+						<ButtonDetailProduct
+							text="365"
+							icon=""
+							isToggle={true}
+							{isVisible}
+							toggleDropdown={toggleVisibility}
+							dropdownItems={[
+								{ src: 'https://cdn-icons-png.flaticon.com/128/733/733547.png', alt: 'icon1' },
+								{ src: 'https://cdn-icons-png.flaticon.com/128/3621/3621448.png', alt: 'icon2' },
+								{ src: 'https://cdn-icons-png.flaticon.com/128/3256/3256013.png', alt: 'icon3' }
+							]}
+						/>
 					</div>
-
 					<div class="relative inline-block">
-						<div
-							class="absolute flex w-full p-2 justify-center items-center gap-2 bottom-full bg-white mb-2 rounded shadow-md"
-							class:hidden={!isVisibleMore}
-						>
-							<button>
-								<img
-									src="https://cdn-icons-png.flaticon.com/128/12135/12135637.png"
-									alt=""
-									class="w-5 h-5"
-								/>
-							</button>
-						</div>
-
-						<button
-							on:click={toggleVisibilityMore}
-							class="flex items-center bg-gray-200 px-6 py-1 rounded hover:bg-gray-300"
-						>
-							<span class="icon-[system-uicons--menu-horizontal] w-6 h-6" style="color: #718096;"></span>
-						</button>
+						<ButtonDetailProduct
+							text=""
+							icon="icon-[system-uicons--menu-horizontal]"
+							isToggle={true}
+							isVisible={isVisibleMore}
+							toggleDropdown={toggleVisibilityMore}
+							dropdownItems={[
+								{ src: 'https://cdn-icons-png.flaticon.com/128/12135/12135637.png', alt: 'icon4' }
+							]}
+						/>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<div class="bg-white w-full rounded-[5px] p-5 pl-20 pr-20 mb-20">
+		<div class="bg-white w-[1071px] rounded-[5px] p-5 pl-20 pr-20 mb-20">
 			<p class="text-xl text-black-500 font-bold">Information</p>
 			<div class="flex">
 				<!-- tag product type -->
-				
 			</div>
 			<div>
-				
 				<!-- description -->
 			</div>
 		</div>
