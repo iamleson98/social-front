@@ -74,7 +74,7 @@
 				<SlideShow {images} />
 			</div>
 			<div class="bg-white p-2 w-[560px] h-[595px] mb-2 rounded-[5px] pl-10 pt-5 pr-10">
-				<p class="text-xl text-custom-black mb-10">The butterfly from amazom</p>
+				<p class="text-3xl text-custom-black mb-10">The butterfly from amazom</p>
 
 				<p class="text-xl text-custom-red font-bold mb-10">
 					<!-- product price -->
