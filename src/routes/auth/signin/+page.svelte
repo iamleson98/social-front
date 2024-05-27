@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { deserialize, applyAction } from '$app/forms';
+	import { applyAction, deserialize } from '$app/forms';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui';
-	import { HTTPStatusBadRequest, HTTPStatusServerError } from '$lib/utils/types';
-	import { fade } from 'svelte/transition';
-	import type { ActionData } from './$types';
 	import { userStore } from '$lib/stores/auth';
 	import { AppRoute } from '$lib/utils';
+	import { HTTPStatusBadRequest, HTTPStatusServerError } from '$lib/utils/types';
 	import type { ActionResult } from '@sveltejs/kit';
-	import { goto, invalidateAll } from '$app/navigation';
+	import { fade } from 'svelte/transition';
+	import type { ActionData } from './$types';
 
 	const passwordButtonIconsMap = {
 		password: 'icon-[system-uicons--eye]',

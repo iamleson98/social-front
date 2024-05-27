@@ -1,19 +1,16 @@
 <script lang="ts">
 	import type { ProductsList$input } from '$houdini';
 	import {
-		type PageInfo,
-		type Product,
+		OrderDirection,
 		OrderDirection as OrderDirectionType,
-		type ProductCountableConnection,
+		type PageInfo,
 		type ProductCountableEdge
 	} from '$lib/gql/graphql';
 	import { PRODUCT_LIST_QUERY_STORE } from '$lib/stores/api/product';
-	import { constructPagination } from '$lib/utils/utils';
-	import { onMount } from 'svelte';
-	import { OrderDirection } from '$lib/gql/graphql';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { DEFAULT_CHANNEL_NAME } from '$lib/utils/types';
-
+	import { constructPagination } from '$lib/utils/utils';
+	import { onMount } from 'svelte';
 
 	let products: ProductCountableEdge[] = [];
 	let pageInfo: PageInfo = {
@@ -27,7 +24,7 @@
 	let last: number | undefined = undefined;
 	let orderDirection: OrderDirectionType = OrderDirection.Asc;
 	let loading = false;
-  let channel = DEFAULT_CHANNEL_NAME;
+	let channel = DEFAULT_CHANNEL_NAME;
 
 	const fetchMoreProducts = async () => {
 		//
@@ -49,7 +46,7 @@
 		);
 		const variables: ProductsList$input = {
 			...paginParams,
-      channel,
+			channel
 		};
 
 		const productFetchResult = await PRODUCT_LIST_QUERY_STORE.fetch({ variables });

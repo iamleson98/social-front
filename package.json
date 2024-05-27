@@ -61,6 +61,7 @@
 		"dotenv": "^16.4.5",
 		"graphql": "^16.8.1",
 		"lexical": "^0.14.5",
+		"svelte-carousel": "^1.0.25",
 		"sveltekit-i18n": "^2.4.2"
 	}
 }

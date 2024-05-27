@@ -6,7 +6,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        info: ''
+        info: '',
+          'custom-red': '#FF5B5B',
+          'custom-black': '#4B5563',
+          'custom-gray': '#E5E7EB',
+          'custom-gray-f5f5': '#F5F5F5',
+          'custom-text-color': '#718096',
+          'custom-border-color': '#E1E1E1',
+          'custom-blue': '#3182CE',
       }
     },
     screens: {
