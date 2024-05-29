@@ -1,0 +1,88 @@
+<script lang="ts">
+	import Interest from "$lib/components/common/Interest.svelte";
+
+	let urlBg =
+		'https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg';
+	let urlAvatar = 'https://buffer.com/library/content/images/2023/10/free-images.jpg';
+
+    let displayMode: 'grid' | 'column' = 'grid';
+
+    function toggleDisplayMode(mode: 'grid' | 'column') {
+        displayMode = mode;
+    }
+</script>
+
+<svelte:head>
+	<title>User Id</title>
+</svelte:head>
+
+<div class="w-full pt-10 bg-gray-100 pb-5">
+	<div class=" w-[989px] ml-auto mr-20">
+		<div
+			class="relative w-[989px] h-[250px] rounded-[4px] bg-cover"
+			style="background-image: url({urlBg});"
+		>
+			<div class="flex flex-row items-center translate-y-1/2 pl-20">
+				<div
+					class="relative w-[150px] h-[150px] rounded-full overflow-hidden border-[4px] border-white"
+				>
+					<img src={urlAvatar} alt="Avatar" class="w-full h-full object-cover" />
+					<div
+						class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-full h-1/2 bg-black bg-opacity-70 flex flex-col items-center justify-center text-white"
+					>
+						<span class="icon-[system-uicons--camera]" style="color: white; font-size: 24px;"
+						></span>
+						<button>Update</button>
+					</div>
+				</div>
+				<p class="text-white text-xl font-bold ml-5 mt-10">nguyen van phuc shop</p>
+			</div>
+		</div>
+
+		<div class="flex mt-5 w-[989px] justify-between">
+			<div class="bg-white rounded w-[300px] h-[423px] p-[20px]">
+                <p class="text-custom-text-color text-[18px]">About us</p>
+                <p class="text-[14px] p-[3px] mt-5 text-center w-[256px] h-[88px] ml-auto mr-auto border-[2px] border-blue-300 rounded-[5px] flex justify-center items-center">
+                    We sell product to people <br>
+                    And gain back the truth from them
+                </p>
+            
+                <button class="w-[240px] h-[40px] bg-f3f4f6 rounded block mr-auto ml-auto mt-5 mb-2 font-bold">
+                    Edit Slogan
+                </button>
+                <button class="w-[240px] h-[40px] bg-3b82f6 text-white rounded block ml-auto mr-auto mb-5 font-bold">
+                    Follow
+                </button>
+
+                <div class="flex flex-row w-[240px] ml-auto mr-auto mb-3 items-center">
+                    <span class="icon-[system-uicons--check-circle-outside] mr-2 w-[18px] h-[18px]" style="color: #718096;"></span>
+                    <p class="text-custom-text-color">verified seller</p>
+                </div>
+
+                <div class="flex flex-row w-[240px] ml-auto mr-auto mb-3 items-center">
+                    <span class="icon-[system-uicons--clock] mr-2 w-[18px] h-[18px]" style="color: #718096;"></span>
+                    <p class="text-custom-text-color">Joined July 2013</p>
+                </div>
+
+                <div class="flex flex-row w-[240px] ml-auto mr-auto mb-3 items-center">
+                    <span class="icon-[system-uicons--tag] mr-2 w-[18px] h-[18px]" style="color: #718096;"></span>
+                    <p class="text-custom-text-color">Joined July 2013</p>
+                </div>
+                
+            </div>
+			<div class="bg-white rounded w-[670px] h-[590px] pl-10 pr-1 pt-5 pb-5">
+                <div class="h-[20px] flex items-center gap-10 pl-3">
+                    <button>Interests</button>
+                    <button>Following</button>
+                    <button>Followers</button>
+                </div>
+                <div class="w-full h-[30px] flex pr-[50px] mt-1 mb-1">
+                    <span on:click={() => toggleDisplayMode('column')} class="icon-[system-uicons--document-list] ml-auto w-[20px] h-[20px]" style="color: #718096; cursor: pointer;"></span>
+                    <span on:click={() => toggleDisplayMode('grid')} class="icon-[system-uicons--calendar-split] w-[20px] h-[20px]" style="color: #718096; cursor: pointer;"></span>
+                </div>
+                
+                <Interest {displayMode}/>
+            </div>
+		</div>
+	</div>
+</div>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import ButtonDetailProduct from '$lib/components/common/ButtonDetailProduct.svelte';
+	import Interest from '$lib/components/common/Interest.svelte';
 	import SelectableItem from '$lib/components/common/SelectableItem.svelte';
 	import SlideShow from '$lib/components/common/SlideShow.svelte';
 	import type { PageData } from './$types';
@@ -187,6 +188,7 @@
 			</div>
 			<div>
 				<!-- description -->
+				<Interest/>
 			</div>
 		</div>
 	</div>
