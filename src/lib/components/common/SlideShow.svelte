@@ -14,7 +14,7 @@
 
 </script>
 
-<div class="w-[460px] h-[570px] overflow-hidden bg-white">
+<div class="w-full h-full overflow-hidden bg-white">
 	<div class="flex w-full transition-transform duration-500 ease-in-out" style="transform: translateX({-currentImage * 100}%)">
 		{#each images as image}
 			<div class="min-w-full">

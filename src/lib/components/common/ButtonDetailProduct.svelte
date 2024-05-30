@@ -11,15 +11,15 @@
 {#if isToggle}
 	<div class="relative inline-block">
 		<button
-			class="flex items-center bg-custom-gray text-custom-text-color px-6 py-1 rounded hover:bg-gray-300"
+			class="flex items-center bg-gray-200 text-gray-400 px-6 py-1 rounded hover:bg-gray-300"
 			on:click={toggleDropdown}
 		>
 			{text}
 			{#if icon}
-				<span class={icon + " w-6 h-6 ml-1 text-custom-text-color"}></span>
+				<span class={icon + " w-6 h-6 ml-1 text-gray-400"}></span>
 			{:else}
 				<svg
-					class="w-6 h-6 text-custom-text-color dark:text-white ml-1"
+					class="w-6 h-6 text-gray-400 dark:text-white ml-1"
 					aria-hidden="true"
 					xmlns="http://www.w3.org/2000/svg"
 					width="24"
@@ -48,10 +48,10 @@
 	</div>
 {:else}
 	<button
-		class="flex items-center bg-gray-200 text-custom-text-color px-6 py-1 rounded hover:bg-gray-300"
+		class="flex items-center bg-gray-200 text-gray-400 px-6 py-1 rounded hover:bg-gray-300"
 		on:click={onClick}
 	>
 		{text}
-		<span class={icon + " w-6 h-6 text-custom-text-color"}></span>
+		<span class={icon + " w-6 h-6 text-gray-400"}></span>
 	</button>
 {/if}

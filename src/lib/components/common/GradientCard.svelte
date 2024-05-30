@@ -12,7 +12,7 @@
 </script>
 
 <div
-    class="{`flex items-center p-4 rounded-lg bg-f3f4f6 cursor-pointer h-[130px] ${displayMode === 'column' ? 'w-full' : 'w-[280px]'}`}"
+    class="{`flex items-center p-4 rounded-lg bg-gray-100 cursor-pointer h-30 ${displayMode === 'column' ? 'w-full' : 'w-full'}`}"
     on:click={() => dispatch('click')}
 >
     <div
@@ -21,10 +21,10 @@
         <slot name="icon"></slot>
     </div>
     <div class="ml-4 flex-1">
-        <span class="text-[18px] font-lobster text-FF7715CC">{name}</span>
+        <span class="text-l font-lobster text-orange-400">{name}</span>
     </div>
     {#if selected}
-        <span class="icon-[system-uicons--check-circle] w-[24px] h-[24px] bg-blue-500 text-white"
+        <span class="icon-[system-uicons--check-circle] w-7 h-7 bg-blue-500 text-white"
         ></span>
     {/if}
 </div>
