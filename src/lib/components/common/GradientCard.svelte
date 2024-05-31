@@ -6,13 +6,12 @@
     export let bgFrom: string = 'from-pink-500';
     export let bgTo: string = 'to-red-500';
     export let selected: boolean = false;
-    export let displayMode: string;
 
     const dispatch = createEventDispatcher();
 </script>
 
 <div
-    class="{`flex items-center p-4 rounded-lg bg-gray-100 cursor-pointer h-30 ${displayMode === 'column' ? 'w-full' : 'w-full'}`}"
+    class="flex items-center p-4 rounded-lg bg-gray-100 cursor-pointer h-30"
     on:click={() => dispatch('click')}
 >
     <div

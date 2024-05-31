@@ -61,8 +61,6 @@
         }
     ];
 
-    export let displayMode: string = 'grid'; // Default display mode is grid
-
     function toggleSelection(id: number) {
         interests = interests.map((item) =>
             item.id === id ? { ...item, selected: !item.selected } : item
@@ -71,16 +69,22 @@
 </script>
 
 <div class="">
-    <div class="{displayMode === 'grid' ? 'grid grid-cols-2 gap-3 w-full pl-3 pr-3 mr-10 h-97 overflow-y-auto' : 'flex flex-col w-full pl-3 pr-3 gap-3 h-97 overflow-y-auto'}">
+    <div class="grid grid-cols-2 gap-3 w-full pl-3 pr-3 mr-10 h-97 overflow-y-auto">
         {#each interests as { id, name, icon, selected, bgFrom, bgTo }}
-            <GradientCard {icon} {name} {bgFrom} {bgTo} {selected} displayMode={displayMode} on:click={() => toggleSelection(id)}>
+            <GradientCard {icon} {name} {bgFrom} {bgTo} {selected} on:click={() => toggleSelection(id)}>
                 <span slot="icon" class={icon} style="color: #fff; width: 51px; height:51px"></span>
             </GradientCard>
         {/each}
     </div>
     
     <div class="flex justify-end mt-10 mr-5">
-        <button class="px-4 py-1 mr-2 font-bold bg-red-100 text-red-400 rounded">Cancel</button>
-        <button class="px-4 py-1 font-bold bg-blue-100 text-blue-400 rounded">Save</button>
+        <button class="common-button bg-red-100 text-red-400 mr-2">Cancel</button>
+        <button class="common-button bg-blue-100 text-blue-400">Save</button>
     </div>
 </div>
+
+<style>
+    .common-button {
+        @apply px-4 py-1 font-bold rounded;
+    }
+</style>

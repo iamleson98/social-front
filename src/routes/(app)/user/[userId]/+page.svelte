@@ -3,12 +3,6 @@
 
 	let urlBg = 'https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg';
 	let urlAvatar = 'https://buffer.com/library/content/images/2023/10/free-images.jpg';
-
-	let displayMode: 'grid' | 'column' = 'grid';
-
-	function toggleDisplayMode(mode: 'grid' | 'column') {
-		displayMode = mode;
-	}
 </script>
 
 <svelte:head>
@@ -68,11 +62,11 @@
 					<button>Followers</button>
 				</div>
 				<div class="w-full h-7 flex pr-5 mt-1 mb-1">
-					<span on:click={() => toggleDisplayMode('column')} class="icon-[system-uicons--document-list] ml-auto w-5 h-5" style="color: #718096; cursor: pointer;"></span>
-					<span on:click={() => toggleDisplayMode('grid')} class="icon-[system-uicons--calendar-split] w-5 h-5" style="color: #718096; cursor: pointer;"></span>
+					<span class="icon-[system-uicons--document-list] ml-auto w-5 h-5" style="color: #718096; cursor: pointer;"></span>
+					<span class="icon-[system-uicons--calendar-split] w-5 h-5" style="color: #718096; cursor: pointer;"></span>
 				</div>
 				
-				<Interest {displayMode}/>
+				<Interest/>
 			</div>
 		</div>
 	</div>
