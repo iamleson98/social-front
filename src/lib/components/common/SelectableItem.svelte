@@ -12,8 +12,10 @@
 </script>
 
 <div
-	class="border border-gray-300 text-gray-400 px-4 py-[3px] cursor-pointer rounded text-center {selected ? 'bg-red-400 text-white font-normal border-red-400' : ''}"
-	on:click={selectItem}>
+	class="border border-gray-300 text-gray-400 w-full py-[3px] cursor-pointer rounded text-center {selected
+		? 'bg-red-400 text-white font-normal border-red-400'
+		: ''}"
+	on:click={selectItem}
+>
 	{content}
 </div>
-
