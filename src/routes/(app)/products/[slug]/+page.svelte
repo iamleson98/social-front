@@ -1,5 +1,4 @@
 <script lang="ts">
-	import ButtonDetailProduct from '$lib/components/common/ButtonDetailProduct.svelte';
 	import SelectableItem from '$lib/components/common/SelectableItem.svelte';
 	import SlideShow from '$lib/components/common/SlideShow.svelte';
 	import type { PageData } from './$types';
@@ -157,40 +156,72 @@
 				</div>
 
 				<div
-					class="flex flex-row gap-2 w-4/6 ml-auto mr-auto mt-20 justify-center laptop:mt-3 laptop:text-xs"
+					class="flex flex-row gap-2 w-4/6 ml-auto mr-auto mt-20 justify-center laptop:mt-3 desktop:text-xs"
 				>
-					<ButtonDetailProduct text="365" icon="icon-[system-uicons--heart]" on:click={() => {}} />
-					<ButtonDetailProduct
-						text="365"
-						icon="icon-[system-uicons--bookmark]"
-						on:click={() => {}}
-					/>
-					<div class="relative w-full sm:w-auto">
-						<ButtonDetailProduct
-							text="365"
-							icon=""
-							isToggle={true}
-							{isVisible}
-							toggleDropdown={toggleVisibility}
-							dropdownItems={[
-								{ src: 'https://cdn-icons-png.flaticon.com/128/733/733547.png', alt: 'icon1' },
-								{ src: 'https://cdn-icons-png.flaticon.com/128/3621/3621448.png', alt: 'icon2' },
-								{ src: 'https://cdn-icons-png.flaticon.com/128/3256/3256013.png', alt: 'icon3' }
-							]}
-						/>
-					</div>
-					<div class="relative w-full sm:w-auto">
-						<ButtonDetailProduct
-							text=""
-							icon="icon-[system-uicons--menu-horizontal]"
-							isToggle={true}
-							isVisible={isVisibleMore}
-							toggleDropdown={toggleVisibilityMore}
-							dropdownItems={[
-								{ src: 'https://cdn-icons-png.flaticon.com/128/12135/12135637.png', alt: 'icon4' }
-							]}
-						/>
-					</div>
+					<button class="btn w-1/4 desktop:text-xs">
+						365
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							class="h-6 w-6 desktop:h-4 desktop:w-4"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+							><path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="1"
+								d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+							/></svg
+						>
+					</button>
+					<button class="btn w-1/4 desktop:text-xs">
+						365
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							class="h-6 w-6 desktop:h-4 desktop:w-4"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+							><path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="1"
+								d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+							/></svg
+						>
+					</button>
+					<button class="btn w-1/4 desktop:text-xs">
+						365
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							class="h-6 w-6 desktop:h-4 desktop:w-4"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+							><path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="1"
+								d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+							/></svg
+						>
+					</button>
+					<button class="btn w-1/4 desktop:text-xs">
+						365
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							class="h-6 w-6 desktop:h-4 desktop:w-4"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+							><path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="1"
+								d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+							/></svg
+						>
+					</button>
 				</div>
 			</div>
 		</div>
