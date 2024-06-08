@@ -1,16 +1,14 @@
 <script lang="ts">
-	// import { graphql } from '$houdini';
+	import { ClosedEye, Email, Lock, OpenEye } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { USER_SIGNUP_MUTATION_STORE } from '$lib/stores/api/auth';
 	import { AppRoute } from '$lib/utils';
 	import { DEFAULT_CHANNEL_NAME } from '$lib/utils/types';
 	import type { EventHandler } from 'svelte/elements';
-	// import { HTTPStatusBadRequest, HTTPStatusServerError } from '$lib/utils/types';
-	// import type { ActionData } from './$types';
 
 	const passwordButtonIconsMap = {
-		password: 'icon-[system-uicons--eye]',
-		text: 'icon-[system-uicons--eye-no]'
+		password: OpenEye,
+		text: ClosedEye
 	};
 
 	let email: string = '';
@@ -42,17 +40,16 @@
 	const handleSignup: EventHandler<SubmitEvent, HTMLFormElement> = async (event: any) => {
 		loading = true; //
 
-		USER_SIGNUP_MUTATION_STORE
-			.mutate({
-				input: {
-					firstName,
-					lastName,
-					email,
-					password,
-					redirectUrl,
-					channel: DEFAULT_CHANNEL_NAME,
-				}
-			})
+		USER_SIGNUP_MUTATION_STORE.mutate({
+			input: {
+				firstName,
+				lastName,
+				email,
+				password,
+				redirectUrl,
+				channel: DEFAULT_CHANNEL_NAME
+			}
+		})
 			.then((result) => {
 				if (result.data?.accountRegister?.errors.length) {
 					signupError = result.data?.accountRegister?.errors[0].message;
@@ -119,7 +116,9 @@
 			</div>
 
 			<label class="input input-md flex w-full input-bordered items-center gap-2 mb-3" for="email">
-				<span class="icon-[system-uicons--mail]"></span>
+				<span>
+					<Email />
+				</span>
 				<input
 					type="email"
 					class="grow"
@@ -137,7 +136,9 @@
 				for="password"
 				class:input-error={passwordDontMatch}
 			>
-				<span class="icon-[system-uicons--lock]"></span>
+				<span>
+					<Lock />
+				</span>
 				<input
 					type={passwordFieldType}
 					name="password"
@@ -150,7 +151,9 @@
 					disabled={loading}
 				/>
 				<button type="button" class="btn btn-xs btn-circle" on:click={togglePasswordType}>
-					<span class={passwordButtonIconsMap[passwordFieldType]}></span>
+					<span>
+						<svelte:component this={passwordButtonIconsMap[passwordFieldType]} />
+					</span>
 				</button>
 			</label>
 			<label
@@ -158,7 +161,9 @@
 				for="confirm_passwored"
 				class:input-error={passwordDontMatch}
 			>
-				<span class="icon-[system-uicons--lock]"></span>
+				<span>
+					<Lock />
+				</span>
 				<input
 					type="password"
 					name="confirm_passwored"
@@ -198,7 +203,8 @@
 		<!-- form other -->
 		<div>
 			<span class="text-xs text-gray-500"
-				>Already have an account? <a href={AppRoute.AUTH_SIGNIN} class="text-blue-600">Signin</a></span
+				>Already have an account? <a href={AppRoute.AUTH_SIGNIN} class="text-blue-600">Signin</a
+				></span
 			>
 		</div>
 	</form>

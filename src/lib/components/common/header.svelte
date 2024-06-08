@@ -5,6 +5,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { page } from '$app/stores';
 	import { CART_ITEMS_STORE } from '$lib/stores/app';
+	import { Flame, Home, Search, ShoppingBag } from '../icons';
 
 	$: userAvatarStyle = $userStore?.avatar?.url
 		? `background-image: url("${$userStore.avatar.url}")`
@@ -29,19 +30,25 @@
 		<div>
 			<label class="input flex items-center gap-2 input-sm">
 				<input type="text" class="grow" placeholder="Enter your search" />
-				<span class="icon-[system-uicons--search]"></span>
+				<span>
+					<Search />
+				</span>
 			</label>
 		</div>
 	</div>
 	<div class="w-1/2 flex justify-between">
 		<div class="flex gap-1">
 			<a href={AppRoute.HOME}>
-				<Button variant="subtle" size="sm" startIcon="icon-[system-uicons--home-door]">
+				<Button variant="subtle" size="sm">
+					<Home slot="startIcon" />
 					<span>Home</span>
 				</Button>
 			</a>
 			<a href={AppRoute.TRENDING}>
-				<Button variant="subtle" size="sm" startIcon="icon-[system-uicons--flame]">Trending</Button>
+				<Button variant="subtle" size="sm">
+					<Flame slot="startIcon" />
+					<span>Trending</span>
+				</Button>
 			</a>
 		</div>
 
@@ -49,7 +56,9 @@
 			<!-- shopping cart button -->
 			<a href={AppRoute.SHOPPING_CART}>
 				<button class="btn btn-square btn-sm relative">
-					<span class="icon-[system-uicons--bag] text-xl"></span>
+					<span class="text-xl">
+						<ShoppingBag />
+					</span>
 					<span class="cart-quantity">
 						{$CART_ITEMS_STORE.length}
 					</span>

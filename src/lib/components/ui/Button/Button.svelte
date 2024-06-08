@@ -2,6 +2,7 @@
 	import type { SocialColor, SocialRadius, SocialSize } from '../common';
 	import { buttonVariantColorsMap, type ButtonVariant } from './button.types';
 	import { Spin } from '$lib/components/ui';
+	import type { SvelteComponent } from 'svelte';
 
 	export let variant: ButtonVariant = 'filled';
 	export let ref: HTMLElement | null = null;
@@ -15,15 +16,15 @@
 	export let classes: string = '';
 	export let loading: boolean = false;
 	/**
-	 * @param startIcon should have format "icon-[fa6-regular--envelop]" for tailwindcss to understand.
-	 * @doc Please refer to https://icon-sets.iconify.design/fa6-regular/ for available font awesome icons.
+	 * @param startIcon MUST use icons inside lib/icons folder.
+	 * @doc If not available, please refer to https://icon-sets.iconify.design/tabler/ for available icons.
 	 */
-	export let startIcon: string | null = null;
+	export let startIcon: SvelteComponent | null = null;
 	/**
-	 * @param endIcon should have format "icon-[fa6-regular--envelop]" for tailwindcss to understand.
-	 * @doc Please refer to https://icon-sets.iconify.design/fa6-regular/ for available font awesome icons.
+	 * @param endIcon MUST use icons inside lib/icons folder.
+	 * @doc If not available, please refer to https://icon-sets.iconify.design/tabler/ for available icons.
 	 */
-	export let endIcon: string | null = null;
+	export let endIcon: SvelteComponent | null = null;
 	export let id: string | null = null;
 	export let fullWidth: boolean = false;
 
@@ -47,19 +48,19 @@
 	{id}
 	{...buttonProps}
 >
-	{#if startIcon}
-		{#if loading}
-			<Spin classes="mr-2" />
-		{:else}
-			<span class={`mr-2 text-xl ${startIcon}`}></span>
+	{#if loading}
+		<Spin />
+	{:else}
+		{#if $$slots.startIcon}
+			<span class="mr-2 text-xl">
+				<slot name="startIcon" />
+			</span>
 		{/if}
-	{/if}
-	<slot />
-	{#if endIcon}
-		{#if loading}
-			<Spin classes="ml-2" />
-		{:else}
-			<span class={`ml-2 text-xl ${endIcon}`}></span>
+		<slot />
+		{#if $$slots.endIcon}
+			<span class="ml-2 text-xl">
+				<slot name="endIcon" />
+			</span>
 		{/if}
 	{/if}
 </button>

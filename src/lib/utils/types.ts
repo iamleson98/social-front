@@ -1,3 +1,5 @@
+import { Check, ErrorIcon, InforCircle, Warn, type IconType } from "$lib/components/icons";
+
 /**
  * all server methods MUST return this type, for consistency
  */
@@ -26,9 +28,9 @@ export type SocialVariant = 'success' | 'error' | 'warning' | 'info';
 
 export const DEFAULT_CHANNEL_NAME = 'default-channel';
 
-export const SocialVariantIconsMap: Record<SocialVariant, string> = {
-  'error': 'icon-[system-uicons--warning-hex]',
-  'info': 'icon-[system-uicons--info-circle]',
-  'warning': 'icon-[system-uicons--warning-triangle]',
-  'success': 'icon-[system-uicons--check-circle]',
+export const SocialVariantIconsMap: Record<SocialVariant, IconType> = {
+  'error': ErrorIcon,
+  'info': InforCircle,
+  'warning': Warn,
+  'success': Check,
 };

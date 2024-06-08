@@ -20,8 +20,6 @@
 		"@graphql-codegen/cli": "^5.0.2",
 		"@graphql-codegen/client-preset": "4.1.0",
 		"@graphql-codegen/typescript-resolvers": "^4.1.0",
-		"@iconify-json/system-uicons": "^1.1.12",
-		"@iconify/tailwind": "^1.1.1",
 		"@kitql/graphql-codegen": "^0.5.4",
 		"@melt-ui/pp": "^0.3.2",
 		"@melt-ui/svelte": "^0.77.0",
@@ -61,7 +59,6 @@
 		"dotenv": "^16.4.5",
 		"graphql": "^16.8.1",
 		"lexical": "^0.14.5",
-		"svelte-carousel": "^1.0.25",
 		"sveltekit-i18n": "^2.4.2"
 	}
 }
