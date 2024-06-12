@@ -1,3 +1,5 @@
+import { default as ErrorIcon } from './tabler--alert-octagon.svelte';
+
 export { default as AccessPoint } from './tabler--access-point.svelte';
 export { default as Email } from './tabler--email.svelte';
 export { default as ClosedEye } from './tabler--eye-closed.svelte';
@@ -14,8 +16,8 @@ export { default as Lock } from './tabler--lock.svelte';
 export { default as InforCircle } from './tabler--info-circle.svelte';
 export { default as Check } from './tabler--check.svelte';
 export { default as Warn } from './tabler--alert-triangle.svelte';
-import { default as ErrorIcon } from './tabler--alert-octagon.svelte';
-
+export { default as Heart } from './tabler--heart.svelte';
+export { default as HeartFilled } from './tabler--heart-filled.svelte';
 export { ErrorIcon };
 
 export type IconType = typeof ErrorIcon;

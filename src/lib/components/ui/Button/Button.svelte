@@ -2,7 +2,6 @@
 	import type { SocialColor, SocialRadius, SocialSize } from '../common';
 	import { buttonVariantColorsMap, type ButtonVariant } from './button.types';
 	import { Spin } from '$lib/components/ui';
-	import type { SvelteComponent } from 'svelte';
 
 	export let variant: ButtonVariant = 'filled';
 	export let ref: HTMLElement | null = null;
@@ -15,16 +14,6 @@
 	export let radius: SocialRadius = 'rounded-md';
 	export let classes: string = '';
 	export let loading: boolean = false;
-	/**
-	 * @param startIcon MUST use icons inside lib/icons folder.
-	 * @doc If not available, please refer to https://icon-sets.iconify.design/tabler/ for available icons.
-	 */
-	export let startIcon: SvelteComponent | null = null;
-	/**
-	 * @param endIcon MUST use icons inside lib/icons folder.
-	 * @doc If not available, please refer to https://icon-sets.iconify.design/tabler/ for available icons.
-	 */
-	export let endIcon: SvelteComponent | null = null;
 	export let id: string | null = null;
 	export let fullWidth: boolean = false;
 

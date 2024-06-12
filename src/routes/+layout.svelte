@@ -1,5 +1,4 @@
 <script lang="ts">
-	import '../app.css';
 	import { Header } from '$lib/components/common';
 	import { Toast } from '$lib/components/ui/Toast';
 	import type { LayoutData } from './$types';
@@ -7,6 +6,7 @@
 	import type { User } from '$lib/gql/graphql';
 	import { onMount } from 'svelte';
 	import { INIT_LOCAL_STORAGE_LISTENERS } from '$lib/stores/app';
+	import '../app.css';
 
 	export let data: LayoutData;
 
@@ -23,7 +23,7 @@
 
 <Header />
 
-<main class="mt-12 w-full h-screen">
+<main class="pt-16 w-full h-full bg-gray-50">
 	<slot />
 </main>
 
