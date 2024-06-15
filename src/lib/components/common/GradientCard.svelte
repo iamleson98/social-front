@@ -1,0 +1,30 @@
+<script lang="ts">
+	import { createEventDispatcher } from 'svelte';
+
+	export let icon: string;
+	export let name: string;
+	export let bgFrom: string = 'from-pink-500';
+	export let bgTo: string = 'to-red-500';
+	export let selected: boolean = false;
+
+	const dispatch = createEventDispatcher();
+</script>
+
+<div
+	class="relative flex items-center p-4 rounded-lg bg-gray-100 cursor-pointer h-30"
+	on:click={() => dispatch('click')}
+>
+	<div
+		class={`flex items-center justify-center h-20 w-20 tablet:h-14 tablet:w-14 rounded-lg bg-gradient-to-br ${bgFrom} ${bgTo}`}
+	>
+		<slot name="icon"></slot>
+	</div>
+	<div class="ml-4 flex-1">
+		<span class="text-l font-lobster text-orange-400 w-full">{name}</span>
+	</div>
+	{#if selected}
+		<span
+			class="absolute top-2 right-2 icon-[system-uicons--check-circle] w-7 h-7 bg-blue-500 text-white"
+		></span>
+	{/if}
+</div>

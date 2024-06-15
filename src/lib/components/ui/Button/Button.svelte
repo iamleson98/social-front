@@ -14,16 +14,6 @@
 	export let radius: SocialRadius = 'rounded-md';
 	export let classes: string = '';
 	export let loading: boolean = false;
-	/**
-	 * @param startIcon should have format "icon-[fa6-regular--envelop]" for tailwindcss to understand.
-	 * @doc Please refer to https://icon-sets.iconify.design/fa6-regular/ for available font awesome icons.
-	 */
-	export let startIcon: string | null = null;
-	/**
-	 * @param endIcon should have format "icon-[fa6-regular--envelop]" for tailwindcss to understand.
-	 * @doc Please refer to https://icon-sets.iconify.design/fa6-regular/ for available font awesome icons.
-	 */
-	export let endIcon: string | null = null;
 	export let id: string | null = null;
 	export let fullWidth: boolean = false;
 
@@ -47,19 +37,19 @@
 	{id}
 	{...buttonProps}
 >
-	{#if startIcon}
-		{#if loading}
-			<Spin classes="mr-2" />
-		{:else}
-			<span class={`mr-2 text-xl ${startIcon}`}></span>
+	{#if loading}
+		<Spin />
+	{:else}
+		{#if $$slots.startIcon}
+			<span class="mr-2 text-xl">
+				<slot name="startIcon" />
+			</span>
 		{/if}
-	{/if}
-	<slot />
-	{#if endIcon}
-		{#if loading}
-			<Spin classes="ml-2" />
-		{:else}
-			<span class={`ml-2 text-xl ${endIcon}`}></span>
+		<slot />
+		{#if $$slots.endIcon}
+			<span class="ml-2 text-xl">
+				<slot name="endIcon" />
+			</span>
 		{/if}
 	{/if}
 </button>

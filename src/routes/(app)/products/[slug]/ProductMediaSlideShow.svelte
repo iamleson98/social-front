@@ -1,9 +1,7 @@
 <script lang="ts">
-  
+
 </script>
 
-<slot />
-
 <div>
-  products
+  <p>slide show</p>
 </div>

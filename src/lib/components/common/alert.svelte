@@ -15,7 +15,9 @@
 	class={`text-xs alert-${variant} flex gap-2 items-center rounded p-2 ${classes}`}
 	transition:fade
 >
-	<div class={`${SocialVariantIconsMap[variant]} text-2xl`}></div>
+	<span class="text-2xl">
+		<svelte:component this={SocialVariantIconsMap[variant]} />
+	</span>
 	<p>{content}</p>
 </div>
 

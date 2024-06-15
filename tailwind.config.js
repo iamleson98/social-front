@@ -1,20 +1,11 @@
-import { addDynamicIconSelectors } from '@iconify/tailwind';
+// import { addDynamicIconSelectors } from '@iconify/tailwind';
 
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{html,js,svelte,ts}'],
   theme: {
     extend: {
-      colors: {
-        info: '',
-          'custom-red': '#FF5B5B',
-          'custom-black': '#4B5563',
-          'custom-gray': '#E5E7EB',
-          'custom-gray-f5f5': '#F5F5F5',
-          'custom-text-color': '#718096',
-          'custom-border-color': '#E1E1E1',
-          'custom-blue': '#3182CE',
-      }
+      infor: ""
     },
     screens: {
       'mobile-s': { 'max': '320px' },
@@ -25,9 +16,12 @@ export default {
       'desktop': { 'max': '1440px' },
       'desktop-l': { 'max': '2560px' },
     },
+    fontFamily: {
+      'lobster': ['Lobster', 'cursive'],
+    },
   },
   plugins: [
     require('daisyui'),
-    addDynamicIconSelectors(),
+    // addDynamicIconSelectors(),
   ],
 };

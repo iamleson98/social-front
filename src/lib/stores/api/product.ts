@@ -132,9 +132,123 @@ export const PRODUCT_DETAIL_QUERY_STORE = graphql(`query Product($slug: String!,
   product(slug: $slug, channel: $channel) {
     id
     name
+    slug
     description
-    seoTitle
-    seoDescription
     rating
+    created
+    updatedAt
+    isAvailableForPurchase
+    weight {
+      unit
+      value
+    }
+    attributes {
+      attribute {
+        id
+        name
+        slug
+        type
+        unit
+        visibleInStorefront
+        type
+      }
+      values {
+        id
+        name
+        value
+        slug
+        boolean
+        date
+        dateTime
+        richText
+        plainText
+      }
+    }
+    defaultVariant {
+      id
+      name
+    }
+    variants {
+      id
+    }
+    pricing {
+      onSale
+      displayGrossPrices
+      discount {
+        tax {
+          amount
+          currency
+        }
+        net {
+          amount
+          currency
+        }
+        gross {
+          amount
+          currency
+        }
+        currency
+      }
+      priceRange {
+        start {
+          currency
+          gross {
+            amount
+            currency
+          }
+          net {
+            amount
+            currency
+          }
+        }
+        stop {
+          currency
+          gross {
+            amount
+            currency
+          }
+          net {
+            amount
+            currency
+          }
+        }
+      }
+    }
+  }
+}`);
+
+export const PRODUCT_VARIANTS_QUERY_STORE = graphql(`query ProductVariants($ids: [ID!]!, $channel: String!, $first: Int!) {
+  productVariants(channel: $channel, ids: $ids, first: $first) {
+    edges {
+      node {
+        id
+        name
+        sku
+        trackInventory
+        quantityLimitPerCustomer
+        quantityAvailable
+        margin
+        quantityOrdered
+        media {
+          url
+          alt
+          id
+        }
+        attributes(variantSelection:ALL) {
+          attribute {
+            slug
+            name
+            entityType
+          }
+          values {
+            id
+            name
+            value
+            plainText
+            boolean
+          }
+        }
+      }
+    }
   }
 }`);

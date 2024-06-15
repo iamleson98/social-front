@@ -8,10 +8,12 @@
 	import type { ActionResult } from '@sveltejs/kit';
 	import { fade } from 'svelte/transition';
 	import type { ActionData } from './$types';
+	import { ClosedEye, Email, Lock, OpenEye } from '$lib/components/icons';
+	import { Alert } from '$lib/components/common';
 
 	const passwordButtonIconsMap = {
-		password: 'icon-[system-uicons--eye]',
-		text: 'icon-[system-uicons--eye-no]'
+		password: OpenEye,
+		text: ClosedEye
 	};
 
 	let rememberCheck: boolean = false;
@@ -63,9 +65,7 @@
 	<h1 class="p-2 mb-4">Sign in</h1>
 
 	{#if form && form.status && [HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}
-		<div class="text-xs text-red-500 bg-red-100 rounded p-2 mb-3" transition:fade>
-			<p>{form.error}</p>
-		</div>
+		<Alert variant="error" content={form.error} classes="mb-3" />
 	{/if}
 	<form action="?/signin" method="post" on:submit|preventDefault={handleFormSubmit}>
 		<!-- form main -->
@@ -75,7 +75,9 @@
 				for="email"
 				class:input-error={form?.error}
 			>
-				<span class="icon-[system-uicons--mail]"></span>
+				<span>
+					<Email />
+				</span>
 				<input
 					type="email"
 					class="grow"
@@ -93,7 +95,9 @@
 				for="password"
 				class:input-error={form?.error}
 			>
-				<span class="icon-[system-uicons--lock]"></span>
+				<span>
+					<Lock />
+				</span>
 				<input
 					type={passwordFieldType}
 					name="password"
@@ -106,7 +110,9 @@
 					on:keyup={handlePasswordChange}
 				/>
 				<button type="button" class="btn btn-xs btn-circle" on:click={togglePasswordType}>
-					<span class={passwordButtonIconsMap[passwordFieldType]}></span>
+					<span>
+						<svelte:component this={passwordButtonIconsMap[passwordFieldType]} />
+					</span>
 				</button>
 			</label>
 			<a href={AppRoute.AUTH_RESET_PASSWORD} class="text-[10px] text-right block text-blue-600 mb-4"
