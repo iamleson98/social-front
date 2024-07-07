@@ -5,8 +5,7 @@ const config = {
   },
   schemaPath: "src/graphql/schema.graphql",
   watchSchema: {
-    url: (env) => env.GRAPHQL_API_END_POINT,
-    
+    url: (env) => env.VITE_GRAPHQL_API_END_POINT,
   },
 };
 

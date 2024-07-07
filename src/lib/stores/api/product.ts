@@ -234,7 +234,7 @@ export const PRODUCT_VARIANTS_QUERY_STORE = graphql(`query ProductVariants($ids:
           alt
           id
         }
-        attributes(variantSelection:ALL) {
+        attributes(variantSelection: ALL) {
           attribute {
             slug
             name

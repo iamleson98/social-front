@@ -11,6 +11,7 @@
 	import { DEFAULT_CHANNEL_NAME } from '$lib/utils/types';
 	import { constructPagination } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
+	// import { performGraphqlQuery } from '$lib/utils/api';
 
 	let products: ProductCountableEdge[] = [];
 	let pageInfo: PageInfo = {
@@ -27,7 +28,6 @@
 	let channel = DEFAULT_CHANNEL_NAME;
 
 	const fetchMoreProducts = async () => {
-		//
 		loading = true;
 
 		if (orderDirection === OrderDirectionType.Asc) {
@@ -67,7 +67,8 @@
 	};
 
 	onMount(async () => {
-		await fetchMoreProducts();
+		// await fetchMoreProducts();
+    // performGraphqlQuery(PRODUCT_LIST_QUERY_STORE, ).subscribe()
 	});
 </script>
 

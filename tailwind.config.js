@@ -1,12 +1,8 @@
-// import { addDynamicIconSelectors } from '@iconify/tailwind';
 
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{html,js,svelte,ts}'],
   theme: {
-    extend: {
-      infor: ""
-    },
     screens: {
       'mobile-s': { 'max': '320px' },
       'mobile-m': { 'max': '375px' },
@@ -22,6 +18,5 @@ export default {
   },
   plugins: [
     require('daisyui'),
-    // addDynamicIconSelectors(),
   ],
 };
