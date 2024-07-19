@@ -1,39 +1,35 @@
-import type { Product } from "$lib/gql/graphql";
+import type { Product, Query } from "$lib/gql/graphql";
 import { PRODUCT_DETAIL_QUERY_STORE } from "$lib/stores/api/product";
-import { DEFAULT_CHANNEL_NAME, HTTPStatusBadRequest, HTTPStatusNotFound, HTTPStatusServerError, HTTPStatusSuccess, type SocialResponse } from "$lib/utils/types";
+import { DEFAULT_CHANNEL_NAME, HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess, type SocialResponse } from "$lib/utils/types";
 import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
+import { graphqlClient } from "$lib/client";
+import { CHANNEL_KEY } from "$lib/stores/auth/store";
 
 
 export const load: PageServerLoad = async (event): Promise<SocialResponse<Product>> => {
 	const slug = event.params.slug.trim();
-
 	if (!slug) {
-		return {
-			status: HTTPStatusBadRequest,
-			error: "Invalid product slug",
-		};
+		return error(
+			HTTPStatusBadRequest,
+			{ message: "Invalid product slug", }
+		);
 	}
 
-	const productDetailResult = await PRODUCT_DETAIL_QUERY_STORE.fetch({
-		variables: {
-			slug,
-			channel: DEFAULT_CHANNEL_NAME,
-		},
-		event,
-	});
+	let channel = event.cookies.get(CHANNEL_KEY);
+	if (!channel) {
+		channel = DEFAULT_CHANNEL_NAME;
+	}
 
-	// internal error
-	if (productDetailResult.errors?.length) {
+	const variables = {
+		slug,
+		channel,
+	};
+
+	const productDetailResult = await graphqlClient.backendQuery<Pick<Query, 'product'>>(PRODUCT_DETAIL_QUERY_STORE, variables, event);	
+	if (productDetailResult.error) {
 		return error(HTTPStatusServerError, {
-			message: productDetailResult.errors[0].message,
-		});
-	}
-
-	// not found
-	if (!productDetailResult.data || !productDetailResult.data.product) {
-		return error(HTTPStatusNotFound, {
-			message: "Product not found",
+			message: productDetailResult.error.message,
 		});
 	}
 

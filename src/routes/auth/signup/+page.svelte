@@ -1,10 +1,13 @@
 <script lang="ts">
-	import { ClosedEye, Email, Lock, OpenEye } from '$lib/components/icons';
+	import { applyAction, deserialize } from '$app/forms';
+	import { invalidateAll } from '$app/navigation';
+	import { ClosedEye, Email, Icon, Lock, OpenEye } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import { USER_SIGNUP_MUTATION_STORE } from '$lib/stores/api/auth';
 	import { AppRoute } from '$lib/utils';
-	import { DEFAULT_CHANNEL_NAME } from '$lib/utils/types';
-	import type { EventHandler } from 'svelte/elements';
+	import { HTTPStatusBadRequest, HTTPStatusServerError } from '$lib/utils/types';
+	import type { ActionResult } from '@sveltejs/kit';
+	import type { ActionData } from './$types';
+	import Alert from '$lib/components/common/alert.svelte';
 
 	const passwordButtonIconsMap = {
 		password: OpenEye,
@@ -19,8 +22,11 @@
 	let loading = false;
 	let termAndPoliciesAgree = false;
 	let passwordFieldType: 'text' | 'password' = 'password';
-	let signupError: string | null = null;
-	let redirectUrl = 'http://localhost:5173/';
+
+	/**
+	 * holds state of form element
+	 */
+	export let form: ActionData;
 
 	$: passwordDontMatch = password !== confirmPassword;
 	$: signupButtonDisabled =
@@ -37,32 +43,23 @@
 
 	const handlePasswordChange = (evt: any) => (password = evt.currentTarget.value);
 
-	const handleSignup: EventHandler<SubmitEvent, HTMLFormElement> = async (event: any) => {
-		loading = true; //
+	const handleSignup = async (event: { currentTarget: EventTarget & HTMLFormElement }) => {
+		loading = true;
 
-		USER_SIGNUP_MUTATION_STORE.mutate({
-			input: {
-				firstName,
-				lastName,
-				email,
-				password,
-				redirectUrl,
-				channel: DEFAULT_CHANNEL_NAME
-			}
-		})
-			.then((result) => {
-				if (result.data?.accountRegister?.errors.length) {
-					signupError = result.data?.accountRegister?.errors[0].message;
-					return;
-				}
-				signupError = null;
-			})
-			.catch((err) => {
-				signupError = err.message;
-			})
-			.finally(() => {
-				loading = false;
-			});
+		const response = await fetch(event.currentTarget.action, {
+			method: event.currentTarget.method,
+			body: new FormData(event.currentTarget)
+		});
+
+		const result: ActionResult = deserialize(await response.text());
+
+		if (result.type === 'success') {
+			await invalidateAll();
+		}
+
+		applyAction(result);
+
+		loading = false;
 	};
 </script>
 
@@ -73,10 +70,8 @@
 <div class="max-w-md rounded-md p-2">
 	<h1 class="p-2 mb-4">Sign up</h1>
 
-	{#if signupError}
-		<div class="text-xs text-red-500 bg-red-100 rounded p-2 mb-3">
-			<p>{signupError}</p>
-		</div>
+	{#if form && form.status && [HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}
+		<Alert variant="error" content={form.error} classes="mb-3" />
 	{/if}
 	<form action="?/signup" method="post" on:submit|preventDefault={handleSignup}>
 		<!-- form main -->
@@ -151,14 +146,12 @@
 					disabled={loading}
 				/>
 				<button type="button" class="btn btn-xs btn-circle" on:click={togglePasswordType}>
-					<span>
-						<svelte:component this={passwordButtonIconsMap[passwordFieldType]} />
-					</span>
+					<Icon icon={passwordButtonIconsMap[passwordFieldType]} />
 				</button>
 			</label>
 			<label
 				class="input input-md flex w-full input-bordered items-center gap-2 mb-3"
-				for="confirm_passwored"
+				for="confirmPassword"
 				class:input-error={passwordDontMatch}
 			>
 				<span>
@@ -166,9 +159,9 @@
 				</span>
 				<input
 					type="password"
-					name="confirm_passwored"
+					name="confirmPassword"
 					class="grow"
-					id="confirm_passwored"
+					id="confirmPassword"
 					placeholder="Confirm your password *"
 					bind:value={confirmPassword}
 					required

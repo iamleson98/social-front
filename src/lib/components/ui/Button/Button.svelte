@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { SocialColor, SocialRadius, SocialSize } from '../common';
-	import { buttonVariantColorsMap, type ButtonVariant } from './button.types';
+	import { buttonActiveStates, buttonVariantColorsMap, type ButtonVariant } from './button.types';
 	import { Spin } from '$lib/components/ui';
 
 	export let variant: ButtonVariant = 'filled';
@@ -17,6 +17,13 @@
 	export let id: string | null = null;
 	export let fullWidth: boolean = false;
 
+	/**
+	 * if `true`, the button will be in active state
+	 */
+	export let active: boolean = false;
+
+	const activeBg = active ? buttonActiveStates[color] : '';
+
 	$: buttonProps = {
 		tabIndex,
 		...$$restProps
@@ -24,7 +31,9 @@
 </script>
 
 <button
-	class={`${buttonVariantColorsMap[variant][color]} social-btn ${upper ? 'uppercase' : ''} social-btn-${size} ${radius} ${classes} ${fullWidth ? 'w-full' : ''}`}
+	class={`${activeBg} ${buttonVariantColorsMap[variant][color]} social-btn social-btn-${size} ${radius} ${classes}`}
+	class:uppercase={upper}
+	class:w-full={fullWidth}
 	{type}
 	bind:this={ref}
 	on:click
@@ -56,7 +65,7 @@
 
 <style lang="postcss">
 	.social-btn {
-		@apply cursor-pointer relative outline-none select-none appearance-none text-center flex justify-center items-center leading-none grow-0 font-semibold active:scale-[.988];
+		@apply cursor-pointer relative outline-none select-none appearance-none text-center flex justify-center items-center leading-none grow-0 font-semibold active:scale-[.98];
 		-webkit-tap-highlight-color: transparent;
 	}
 	.social-btn:disabled,

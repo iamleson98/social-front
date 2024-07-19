@@ -1,6 +1,6 @@
-import { graphql } from "$houdini";
+import { gql } from "@urql/svelte";
 
-export const USER_LOGIN_MUTATION_STORE = graphql(`mutation TokenCreate($email: String!, $password: String!) {
+export const USER_LOGIN_MUTATION_STORE = gql`mutation TokenCreate($email: String!, $password: String!) {
   tokenCreate(email: $email, password: $password) {
     token
     csrfToken
@@ -21,24 +21,24 @@ export const USER_LOGIN_MUTATION_STORE = graphql(`mutation TokenCreate($email: S
       field
     }
   }
-}`);
+}`;
 
-export const USER_SIGNUP_MUTATION_STORE = graphql(`
-		mutation Signup($input: AccountRegisterInput!) {
-			accountRegister(input: $input) {
-				user {
-					id
-				}
-				errors {
-					field
-					message
-				}
-				requiresConfirmation
-			}
-		}
-	`);
+export const USER_SIGNUP_MUTATION_STORE = gql`
+  mutation Signup($input: AccountRegisterInput!) {
+    accountRegister(input: $input) {
+      user {
+        id
+      }
+      errors {
+        field
+        message
+      }
+      requiresConfirmation
+    }
+  }
+`;
 
-export const USER_ME_QUERY_STORE = graphql(`query Me {
+export const USER_ME_QUERY_STORE = gql`query Me {
   me {
     id
     email
@@ -48,10 +48,21 @@ export const USER_ME_QUERY_STORE = graphql(`query Me {
       url
       alt
     }
+    addresses {
+      id
+      streetAddress1
+      streetAddress2
+      city
+      postalCode
+      cityArea
+      phone
+      isDefaultShippingAddress
+      isDefaultBillingAddress
     }
-}`);
+  }
+}`;
 
-export const USER_REFRESH_TOKEN_MUTATION_STORE = graphql(`mutation TokenRefresh($csrfToken: String, $refreshToken: String) {
+export const USER_REFRESH_TOKEN_MUTATION_STORE = gql`mutation TokenRefresh($csrfToken: String, $refreshToken: String) {
   tokenRefresh(csrfToken: $csrfToken, refreshToken: $refreshToken) {
     token
     errors {
@@ -60,9 +71,9 @@ export const USER_REFRESH_TOKEN_MUTATION_STORE = graphql(`mutation TokenRefresh(
       field
     } 
   }
-}`);
+}`;
 
-export const USER_REQUEST_PASSWORD_RESET_MUTATION_STORE = graphql(`mutation RequestPasswordReset(
+export const USER_REQUEST_PASSWORD_RESET_MUTATION_STORE = gql`mutation RequestPasswordReset(
   $email: String!,
   $redirectUrl: String!
   $channel: String
@@ -74,9 +85,9 @@ export const USER_REQUEST_PASSWORD_RESET_MUTATION_STORE = graphql(`mutation Requ
       code
     }
   }
-}`);
+}`;
 
-export const USER_CHANGE_PASSWORD_MUTATION_STORE = graphql(`mutation ChangePassword($oldPassword: String!, $newPassword: String!) {
+export const USER_CHANGE_PASSWORD_MUTATION_STORE = gql`mutation ChangePassword($oldPassword: String!, $newPassword: String!) {
   passwordChange(newPassword: $newPassword, oldPassword: $oldPassword) {
     errors {
       field
@@ -84,9 +95,9 @@ export const USER_CHANGE_PASSWORD_MUTATION_STORE = graphql(`mutation ChangePassw
       code
     }
   }
-}`);
+}`;
 
-export const USER_SET_PASSWORD_MUTATION_STORE = graphql(`mutation SetPassword($token: String!, $email: String!, $password: String!) {
+export const USER_SET_PASSWORD_MUTATION_STORE = gql`mutation SetPassword($token: String!, $email: String!, $password: String!) {
   setPassword(email: $email, token: $token, password: $password) {
     errors {
       field
@@ -94,4 +105,4 @@ export const USER_SET_PASSWORD_MUTATION_STORE = graphql(`mutation SetPassword($t
       code
     }
   }
-}`);
+}`;

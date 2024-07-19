@@ -26,7 +26,14 @@ export const
 
 export type SocialVariant = 'success' | 'error' | 'warning' | 'info';
 
+/**
+ * under the hood, this channel is `en-US`
+ */
 export const DEFAULT_CHANNEL_NAME = 'default-channel';
+/**
+ * The currency for default channel `en-US`
+ */
+export const DEFAULT_CURRENCY = "USD";
 
 export const SocialVariantIconsMap: Record<SocialVariant, IconType> = {
   'error': ErrorIcon,

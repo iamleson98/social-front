@@ -5,7 +5,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { page } from '$app/stores';
 	import { CART_ITEMS_STORE } from '$lib/stores/app';
-	import { Flame, Home, Search, ShoppingBag } from '../icons';
+	import { Flame, Home, Icon, Search, ShoppingBag } from '../icons';
 
 	$: userAvatarStyle = $userStore?.avatar?.url
 		? `background-image: url("${$userStore.avatar.url}")`
@@ -39,14 +39,14 @@
 	<div class="w-1/2 flex justify-between">
 		<div class="flex gap-1">
 			<a href={AppRoute.HOME}>
-				<Button variant="subtle" size="sm">
-					<Home slot="startIcon" />
+				<Button variant="subtle" size="sm" active={$page.url.pathname === AppRoute.HOME}>
+					<Icon icon={Home} slot="startIcon" />
 					<span>Home</span>
 				</Button>
 			</a>
 			<a href={AppRoute.TRENDING}>
-				<Button variant="subtle" size="sm">
-					<Flame slot="startIcon" />
+				<Button variant="subtle" size="sm" active={$page.url.pathname === AppRoute.TRENDING}>
+					<Icon icon={Flame} slot="startIcon" />
 					<span>Trending</span>
 				</Button>
 			</a>
@@ -56,9 +56,7 @@
 			<!-- shopping cart button -->
 			<a href={AppRoute.SHOPPING_CART}>
 				<button class="btn btn-square btn-sm relative">
-					<span class="text-xl">
-						<ShoppingBag />
-					</span>
+					<Icon icon={ShoppingBag} />
 					<span class="cart-quantity">
 						{$CART_ITEMS_STORE.length}
 					</span>
@@ -78,10 +76,10 @@
 					</button>
 					<ul class="dropdown-content menu shadow rounded-box w-52">
 						<li>
-							<a href="#">Item 1</a>
+							<a href="/">Item 1</a>
 						</li>
 						<li>
-							<a href="#">Item 2</a>
+							<a href="/">Item 2</a>
 						</li>
 						<li>
 							<span>Logout</span>

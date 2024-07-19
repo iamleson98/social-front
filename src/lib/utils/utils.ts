@@ -22,9 +22,13 @@ export function constructPagination<T extends PaginationOptions>(before?: string
   return pagination;
 };
 
-export const formatMoney = (amount: number, currency: string) => {
-  return new Intl.NumberFormat('en-US', {
+export const formatMoney = (currency: string, startAmount: number, endAmount?: number) => {
+  const formatter =  new Intl.NumberFormat('en-US', {
     style: "currency",
     currency,
-  }).format(amount);
+  });
+  if (endAmount) {
+    return formatter.formatRange(startAmount, endAmount);
+  }
+  return formatter.format(startAmount);
 };

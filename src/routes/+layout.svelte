@@ -3,7 +3,6 @@
 	import { Toast } from '$lib/components/ui/Toast';
 	import type { LayoutData } from './$types';
 	import { userStore } from '$lib/stores/auth';
-	import type { User } from '$lib/gql/graphql';
 	import { onMount } from 'svelte';
 	import { INIT_LOCAL_STORAGE_LISTENERS } from '$lib/stores/app';
 	import '../app.css';
@@ -12,18 +11,15 @@
 
 	// add event listener for local storage
 	onMount(() => {
-		const freeStorageListener = INIT_LOCAL_STORAGE_LISTENERS();
-
-		// free memory
-		return freeStorageListener;
+		return INIT_LOCAL_STORAGE_LISTENERS();
 	});
 
-	$: userStore.set(data.user as User);
+	$: userStore.set(data.user);
 </script>
 
 <Header />
 
-<main class="pt-16 w-full h-full bg-gray-50">
+<main class="pt-16 w-full h-full bg-gray-50 min-h-dvh">
 	<slot />
 </main>
 

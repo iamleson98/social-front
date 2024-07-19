@@ -18,6 +18,11 @@ export { default as Check } from './tabler--check.svelte';
 export { default as Warn } from './tabler--alert-triangle.svelte';
 export { default as Heart } from './tabler--heart.svelte';
 export { default as HeartFilled } from './tabler--heart-filled.svelte';
+export { default as ChevronLeft } from './tabler--chevron-left.svelte';
+export { default as ChevronRight } from './tabler--chevron-right.svelte';
+export { default as TagFilled } from './tabler--tag-filled.svelte';
+
+export { default as Icon } from './icon.svelte';
 export { ErrorIcon };
 
 export type IconType = typeof ErrorIcon;

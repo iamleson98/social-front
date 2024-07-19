@@ -1,26 +1,16 @@
 <script lang="ts">
 	import SelectableItem from '$lib/components/common/SelectableItem.svelte';
-	// import SlideShow from '$lib/components/common/SlideShow.svelte';
 	import { Heart } from '$lib/components/icons';
 	import { formatMoney } from '$lib/utils/utils';
 	import type { PageServerData } from './$types';
-	import ProductMediaSlideShow from './ProductMediaSlideShow.svelte';
-	import ProductPricing from './ProductPricing.svelte';
+	import ProductMediaSlideShow from './ProductSlideShowPanel.svelte';
+	import ProductPricingPanel from './ProductPricingPanel.svelte';
+	import { ProductMediaType, type Product } from '$lib/gql/graphql';
+	import ProductList from '$lib/components/common/ProductList.svelte';
 
 	export let data: PageServerData;
 
-	// get list image from data
-	let images = [
-		// 'https://i.pinimg.com/originals/e7/9a/2e/e79a2e65f48f8f417c66cf5bdbd96d31.jpg',
-		// 'https://inkythuatso.com/uploads/thumbnails/800/2022/05/48379320-2106918156275163-814891755752128512-n-13-10-17-37.jpg',
-		// 'https://www.wallpapertip.com/wmimgs/182-1823855_nh-phong-cnh-p-3d.jpg',
-		// 'https://shopthietke.com/wp-content/uploads/2023/10/O1CN01P8BzyF1Qu4sWnpCCz_2212790142035.jpg',
-		// 'https://i.pinimg.com/originals/e7/9a/2e/e79a2e65f48f8f417c66cf5bdbd96d31.jpg',
-		// 'https://inkythuatso.com/uploads/thumbnails/800/2022/05/48379320-2106918156275163-814891755752128512-n-13-10-17-37.jpg',
-		// 'https://www.wallpapertip.com/wmimgs/182-1823855_nh-phong-cnh-p-3d.jpg',
-		// 'https://shopthietke.com/wp-content/uploads/2023/10/O1CN01P8BzyF1Qu4sWnpCCz_2212790142035.jpg',
-		// 'https://shopthietke.com/wp-content/uploads/2023/10/O1CN01P8BzyF1Qu4sWnpCCz_2212790142035.jpg'
-	];
+	const { media, ...productInformation } = data.data as Product;
 
 	//get list material from data
 	let items = ['Wooden', 'Steel', 'Wooden', 'Steel'];
@@ -58,16 +48,14 @@
 </svelte:head>
 
 <div class="m-auto max-w-6xl">
-	<div class="flex flex-row tablet:flex-col flex-wrap gap-1">
-		<div class="bg-white w-2/5 rounded tablet:w-full">
-			<ProductMediaSlideShow />
+	<div class="flex flex-row tablet:flex-col tablet:flex-wrap gap-1 w-full">
+		<div class="w-2/5 rounded tablet:w-full flex flex-col gap-1">
+			<ProductMediaSlideShow medias={media || []} />
 		</div>
 
-		<div class="bg-white w-3/5 rounded tablet:w-full">
-			<ProductPricing productBasicInfo={{
-				pricing
-			}} />
-		</div>		
+		<div class="bg-white w-3/5 rounded tablet:w-full p-4">
+			<ProductPricingPanel productInformation={productInformation} />
+		</div>
 	</div>
 
 	<!-- product more details -->

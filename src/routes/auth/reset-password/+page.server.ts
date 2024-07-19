@@ -4,13 +4,21 @@ import { DEFAULT_CHANNEL_NAME, HTTPStatusBadRequest, HTTPStatusPermanentRedirect
 import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { ACCESS_TOKEN_KEY } from "$lib/stores/auth/store";
+import { graphqlClient } from "$lib/client";
+import type { Mutation, Query } from "$lib/gql/graphql";
 
 export const load: PageServerLoad = async (event) => {
   const accessToken = event.cookies.get(ACCESS_TOKEN_KEY);
 
   // check if authenticated user unexpectedly landed on this page
   if (accessToken) {
-    const meResult = await USER_ME_QUERY_STORE.fetch({ event });
+    const meResult = await graphqlClient.backendQuery<Pick<Query, 'me'>>(USER_ME_QUERY_STORE, {}, event);
+    if (meResult.error) {
+      return {
+        status: HTTPStatusServerError,
+        error: meResult.error.message,
+      };
+    }
     if (meResult.data?.me) {
       redirect(HTTPStatusPermanentRedirect, AppRoute.HOME);
     }
@@ -38,12 +46,11 @@ export const actions = {
       redirectUrl: import.meta.env.VITE_LOCAL_URL + AppRoute.AUTH_CHANGE_PASSWORD,
       channel: DEFAULT_CHANNEL_NAME,
     };
-    const requestResult = await USER_REQUEST_PASSWORD_RESET_MUTATION_STORE.mutate(variables, { event });
-
-    if (requestResult.errors?.length) {
+    const requestResult = await graphqlClient.backendMutation<Pick<Mutation, 'requestPasswordReset'>>(USER_REQUEST_PASSWORD_RESET_MUTATION_STORE, variables, event);
+    if (requestResult.error) {
       return {
         status: HTTPStatusServerError,
-        error: requestResult.errors[0].message,
+        error: requestResult.error.message,
       };
     }
 

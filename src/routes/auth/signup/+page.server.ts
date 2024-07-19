@@ -1,14 +1,15 @@
 import type { Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { ACCESS_TOKEN_KEY, CSRF_TOKEN_KEY, REFRESH_TOKEN_KEY } from "$lib/stores/auth/store";
-import { HTTPStatusBadRequest, HTTPStatusSuccess } from "$lib/utils/types";
+import { ACCESS_TOKEN_KEY, CHANNEL_KEY, CSRF_TOKEN_KEY, REFRESH_TOKEN_KEY } from "$lib/stores/auth/store";
+import { DEFAULT_CHANNEL_NAME, HTTPStatusBadRequest, HTTPStatusSuccess } from "$lib/utils/types";
 import { USER_SIGNUP_MUTATION_STORE } from "$lib/stores/api";
-import type { Signup$input } from "$houdini";
+import { graphqlClient } from "$lib/client";
+import type { Mutation } from "$lib/gql/graphql";
 
 export const load: PageServerLoad = async (event) => {
   // If user is logged in but unexpectedly navigate to the signup page, 
   // We must remove the cookie
-  const accessToken = event.cookies.get(ACCESS_TOKEN_KEY)
+  const accessToken = event.cookies.get(ACCESS_TOKEN_KEY);
   if (accessToken) {
     event.cookies.delete(ACCESS_TOKEN_KEY, { path: '/' });
     event.cookies.delete(REFRESH_TOKEN_KEY, { path: '/' });
@@ -28,29 +29,52 @@ export const actions = {
     const confirmPassword = formData.get('confirmPassword')?.toString();
     const firstName = formData.get('firstName')?.toString();
     const lastName = formData.get('lastName')?.toString();
+    const redirectUrl = import.meta.env.VITE_LOCAL_URL;
+    const channel = event.cookies.get(CHANNEL_KEY) || DEFAULT_CHANNEL_NAME;
 
     if (!email || !email.toString().trim()) {
       return {
         status: HTTPStatusBadRequest,
-        message: "Please provide a valid email address",
+        error: "Please provide a valid email address",
       };
     }
 
-    if (!password || !confirmPassword || password !== confirmPassword) {
+    if ((!password || !confirmPassword) || password !== confirmPassword) {
       return {
         status: HTTPStatusBadRequest,
-        message: "Passwords do not match",
+        error: "Passwords do not match",
       };
     }
 
-    const variables: Signup$input = {
+    const variables = {
       input: {
         email,
         password,
         firstName,
         lastName,
+        redirectUrl,
+        channel,
       },
     };
-    USER_SIGNUP_MUTATION_STORE.mutate(variables, { event });
+
+    const result = await graphqlClient.backendMutation<Pick<Mutation, 'accountRegister'>>(USER_SIGNUP_MUTATION_STORE, variables, event);
+    if (result.error) {
+      return {
+        status: HTTPStatusBadRequest,
+        error: result.error.message,
+      };
+    }
+
+    if (result.data?.accountRegister?.errors.length) {
+      return {
+        status: HTTPStatusBadRequest,
+        error: result.data?.accountRegister.errors[0].message,
+      };
+    }
+
+    return {
+      status: HTTPStatusSuccess,
+      message: result.data?.accountRegister?.requiresConfirmation,
+    };
   },
 } satisfies Actions;

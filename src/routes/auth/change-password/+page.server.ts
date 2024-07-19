@@ -1,9 +1,9 @@
-import type { SetPassword$input } from "$houdini";
+import { graphqlClient } from "$lib/client";
+import type { Mutation } from "$lib/gql/graphql";
 import { USER_SET_PASSWORD_MUTATION_STORE } from "$lib/stores/api/auth";
-import { HTTPStatusBadRequest, HTTPStatusSuccess, type SocialResponse } from "$lib/utils/types";
+import { HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess, type SocialResponse } from "$lib/utils/types";
 import type { Actions } from "@sveltejs/kit";
 
-// export const csr = false;
 
 export const actions = {
 	default: async function (event): Promise<SocialResponse<unknown>> {
@@ -34,16 +34,22 @@ export const actions = {
 			};
 		}
 
-		const variables: SetPassword$input = {
+		const variables = {
 			email,
 			token,
 			password: password.toString(),
 		};
-		const resetNewPasswordResult = await USER_SET_PASSWORD_MUTATION_STORE.mutate(variables, { event });
-		if (resetNewPasswordResult.errors?.length) {
+		const resetNewPasswordResult = await graphqlClient.backendMutation<Pick<Mutation, 'setPassword'>>(USER_SET_PASSWORD_MUTATION_STORE, variables, event);
+		if (resetNewPasswordResult.error) {
+			return {
+				status: HTTPStatusServerError,
+				error: resetNewPasswordResult.error.message,
+			};
+		}
+		if (resetNewPasswordResult.data?.setPassword?.errors.length) {
 			return {
 				status: HTTPStatusBadRequest,
-				error: resetNewPasswordResult.errors[0].message,
+				error: resetNewPasswordResult.data.setPassword.errors[0].message as string,
 			};
 		}
 

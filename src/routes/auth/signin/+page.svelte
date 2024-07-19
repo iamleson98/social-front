@@ -6,9 +6,8 @@
 	import { AppRoute } from '$lib/utils';
 	import { HTTPStatusBadRequest, HTTPStatusServerError } from '$lib/utils/types';
 	import type { ActionResult } from '@sveltejs/kit';
-	import { fade } from 'svelte/transition';
 	import type { ActionData } from './$types';
-	import { ClosedEye, Email, Lock, OpenEye } from '$lib/components/icons';
+	import { ClosedEye, Email, Icon, Lock, OpenEye } from '$lib/components/icons';
 	import { Alert } from '$lib/components/common';
 
 	const passwordButtonIconsMap = {
@@ -110,9 +109,7 @@
 					on:keyup={handlePasswordChange}
 				/>
 				<button type="button" class="btn btn-xs btn-circle" on:click={togglePasswordType}>
-					<span>
-						<svelte:component this={passwordButtonIconsMap[passwordFieldType]} />
-					</span>
+					<Icon icon={passwordButtonIconsMap[passwordFieldType]} />
 				</button>
 			</label>
 			<a href={AppRoute.AUTH_RESET_PASSWORD} class="text-[10px] text-right block text-blue-600 mb-4"

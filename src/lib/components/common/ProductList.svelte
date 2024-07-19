@@ -49,21 +49,21 @@
 			channel
 		};
 
-		const productFetchResult = await PRODUCT_LIST_QUERY_STORE.fetch({ variables });
+		// const productFetchResult = await PRODUCT_LIST_QUERY_STORE.fetch({ variables });
 
-		//
-		loading = false;
+		// //
+		// loading = false;
 
-		if (productFetchResult.errors?.length) {
-			toastStore.send({
-				variant: 'error',
-				message: productFetchResult.errors[0].message
-			});
-			return;
-		}
+		// if (productFetchResult.errors?.length) {
+		// 	toastStore.send({
+		// 		variant: 'error',
+		// 		message: productFetchResult.errors[0].message
+		// 	});
+		// 	return;
+		// }
 
-		pageInfo = productFetchResult.data?.products?.pageInfo as PageInfo;
-		products = productFetchResult.data?.products?.edges as ProductCountableEdge[];
+		// pageInfo = productFetchResult.data?.products?.pageInfo as PageInfo;
+		// products = productFetchResult.data?.products?.edges as ProductCountableEdge[];
 	};
 
 	onMount(async () => {

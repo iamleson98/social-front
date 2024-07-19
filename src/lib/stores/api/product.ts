@@ -1,6 +1,7 @@
-import { graphql } from "$houdini";
+import type { ProductListQuery, ProductListQueryVariables } from "$lib/gql/graphql";
+import { gql } from "@urql/svelte";
 
-export const PRODUCT_LIST_QUERY_STORE = graphql(`query ProductsList(
+export const PRODUCT_LIST_QUERY_STORE = gql<ProductListQuery, ProductListQueryVariables>`query ProductsList(
   $filter: ProductFilterInput,
   $where: ProductWhereInput,
   $sortBy: ProductOrder,
@@ -40,9 +41,9 @@ export const PRODUCT_LIST_QUERY_STORE = graphql(`query ProductsList(
       }
     }
   }
-}`);
+}`;
 
-export const CATEGORIES_LIST_QUERY_STORE = graphql(`query Categories(
+export const CATEGORIES_LIST_QUERY_STORE = gql(`query Categories(
   $filter: CategoryFilterInput,
   $where: CategoryWhereInput,
   $sortBy: CategorySortingInput,
@@ -91,7 +92,7 @@ export const CATEGORIES_LIST_QUERY_STORE = graphql(`query Categories(
  * @firstNumOfChildren default to 10
  * @lastNumOfChildren default to 10
  */
-export const CATEGORY_DETAIL_QUERY_STORE = graphql(`query Category(
+export const CATEGORY_DETAIL_QUERY_STORE = gql(`query Category(
   $slug: String,
   $id: ID,
   $backgroundSize: Int = 250,
@@ -128,7 +129,7 @@ export const CATEGORY_DETAIL_QUERY_STORE = graphql(`query Category(
   }
 }`);
 
-export const PRODUCT_DETAIL_QUERY_STORE = graphql(`query Product($slug: String!, $channel: String!) {
+export const PRODUCT_DETAIL_QUERY_STORE = gql(`query Product($slug: String!, $channel: String!) {
   product(slug: $slug, channel: $channel) {
     id
     name
@@ -141,6 +142,13 @@ export const PRODUCT_DETAIL_QUERY_STORE = graphql(`query Product($slug: String!,
     weight {
       unit
       value
+    }
+    media {
+      url
+      alt
+      type
+      oembedData
+      id
     }
     attributes {
       attribute {
@@ -217,7 +225,7 @@ export const PRODUCT_DETAIL_QUERY_STORE = graphql(`query Product($slug: String!,
   }
 }`);
 
-export const PRODUCT_VARIANTS_QUERY_STORE = graphql(`query ProductVariants($ids: [ID!]!, $channel: String!, $first: Int!) {
+export const PRODUCT_VARIANTS_QUERY_STORE = gql(`query ProductVariants($ids: [ID!]!, $channel: String!, $first: Int!) {
   productVariants(channel: $channel, ids: $ids, first: $first) {
     edges {
       node {

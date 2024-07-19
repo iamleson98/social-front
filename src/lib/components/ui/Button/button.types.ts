@@ -2,6 +2,22 @@ import type { SocialColor } from '$lib/components/ui/common';
 
 export type ButtonVariant = 'filled' | 'light' | 'outline' | 'subtle' | 'gradient';
 
+export const buttonActiveStates: Record<SocialColor, string> = {
+  dark: 'bg-gray-100',
+  gray: 'bg-gray-100',
+  red: 'bg-red-100',
+  pink: 'bg-pink-100',
+  grape: 'bg-purple-100',
+  violet: 'bg-violet-100',
+  indigo: 'bg-indigo-100',
+  blue: 'bg-blue-100',
+  cyan: 'bg-cyan-100',
+  teal: 'bg-teal-100',
+  green: 'bg-green-100',
+  lime: 'bg-lime-100',
+  yellow: 'bg-yellow-100',
+  orange: 'bg-orange-100',
+};
 
 export const buttonVariantColorsMap: Record<ButtonVariant, Record<SocialColor, string>> = {
   filled: {
