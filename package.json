@@ -1,6 +1,10 @@
 {
 	"name": "social-front",
 	"version": "0.0.1",
+	"engines": {
+		"node": ">=20",
+		"pnnpm": ">=9.5.0"
+	},
 	"scripts": {
 		"dev": "vite",
 		"build": "vite build",

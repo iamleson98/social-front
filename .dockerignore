@@ -1,0 +1,12 @@
+node_modules
+npm-debug.log
+README.md
+.next
+.git
+.svelte-kit
+.vscode
+.env
+.env.local
+.env.development
+.env.test
+.env.production
