@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { SocialVariant } from '$lib/utils';
-	import { SocialVariantIconsMap } from '$lib/utils/types';
+	import { SocialVariantIconsMap } from '$lib/utils/consts';
 	import { fade } from 'svelte/transition';
 
 	export let content: string | unknown = '';

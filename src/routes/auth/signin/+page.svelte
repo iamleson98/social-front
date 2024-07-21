@@ -4,11 +4,21 @@
 	import { Button } from '$lib/components/ui';
 	import { userStore } from '$lib/stores/auth';
 	import { AppRoute } from '$lib/utils';
-	import { HTTPStatusBadRequest, HTTPStatusServerError } from '$lib/utils/types';
+	import { HTTPStatusBadRequest, HTTPStatusServerError } from '$lib/utils/consts';
 	import type { ActionResult } from '@sveltejs/kit';
 	import type { ActionData } from './$types';
-	import { ClosedEye, Email, Icon, Lock, OpenEye } from '$lib/components/icons';
+	import {
+		ClosedEye,
+		Email,
+		Facebook,
+		Google,
+		Icon,
+		Lock,
+		OpenEye,
+		Twitter
+	} from '$lib/components/icons';
 	import { Alert } from '$lib/components/common';
+	import { t } from '$lib/i18n';
 
 	const passwordButtonIconsMap = {
 		password: OpenEye,
@@ -27,6 +37,7 @@
 	export let form: ActionData;
 
 	$: if (!form?.error && form?.user) {
+		console.log('------------');
 		userStore.set(form.user);
 		goto(AppRoute.HOME, { invalidateAll: true });
 	}
@@ -56,12 +67,8 @@
 	};
 </script>
 
-<svelte:head>
-	<title>Signin</title>
-</svelte:head>
-
-<div class="max-w-md rounded-md p-2">
-	<h1 class="p-2 mb-4">Sign in</h1>
+<div class="max-w-md min-w-80 rounded-md p-2">
+	<h1 class="p-2 mb-4">{$t('auth.signin.title')}</h1>
 
 	{#if form && form.status && [HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}
 		<Alert variant="error" content={form.error} classes="mb-3" />
@@ -75,14 +82,14 @@
 				class:input-error={form?.error}
 			>
 				<span>
-					<Email />
+					<Icon icon={Email} />
 				</span>
 				<input
 					type="email"
 					class="grow"
 					name="email"
 					id="email"
-					placeholder="Enter your email *"
+					placeholder={$t('auth.signin.emailPlaceholder')}
 					bind:value={email}
 					required
 					disabled={loading}
@@ -102,7 +109,7 @@
 					name="password"
 					class="grow"
 					id="password"
-					placeholder="Enter your password *"
+					placeholder={$t('auth.signin.passwordPlaceholder')}
 					value={password}
 					required
 					disabled={loading}
@@ -112,15 +119,18 @@
 					<Icon icon={passwordButtonIconsMap[passwordFieldType]} />
 				</button>
 			</label>
-			<a href={AppRoute.AUTH_RESET_PASSWORD} class="text-[10px] text-right block text-blue-600 mb-4"
-				>Forgot password?</a
+			<a
+				href={AppRoute.AUTH_RESET_PASSWORD}
+				class="text-[10px] text-right block text-blue-600 mb-4"
 			>
+				{$t('auth.signin.forgotPassword')}
+			</a>
 
 			<label
 				for="remember-me"
 				class="text-xs text-gray-500 select-none mr-1 mb-5 flex items-center"
 			>
-				<span class="mr-2">remember me</span>
+				<span class="mr-2">{$t('auth.signin.rememberMe')}</span>
 				<input
 					type="checkbox"
 					class="toggle toggle-xs toggle-info"
@@ -136,27 +146,27 @@
 				size="sm"
 				fullWidth
 				bind:loading
-				disabled={loading || !email.trim() || !password}>Let me in</Button
+				disabled={loading || !email.trim() || !password}>{$t('auth.signin.signinButton')}</Button
 			>
 		</div>
 
-		<!-- form other -->
 		<div>
 			<span class="text-xs text-gray-500">
-				Don't have account yet? <a href={AppRoute.AUTH_REGISTER} class="text-blue-600">Signup</a>
+				{$t('auth.signin.noAccount')}
+				<a href={AppRoute.AUTH_REGISTER} class="text-blue-600">{$t('auth.signup.title')}</a>
 			</span>
 		</div>
 	</form>
 
 	<div class="flex flex-row justify-between items-center">
 		<Button>
-			<span class="icon-[grommet-icons--facebook-option]"></span>
+			<Icon icon={Facebook} />
 		</Button>
 		<Button>
-			<span class="icon-[grommet-icons--facebook-option]"></span>
+			<Icon icon={Google} />
 		</Button>
 		<Button>
-			<span class="icon-[grommet-icons--facebook-option]"></span>
+			<Icon icon={Twitter} />
 		</Button>
 	</div>
 </div>

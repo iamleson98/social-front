@@ -1,9 +1,19 @@
 import { graphqlClient } from "$lib/client";
 import type { Mutation } from "$lib/gql/graphql";
 import { USER_SET_PASSWORD_MUTATION_STORE } from "$lib/stores/api/auth";
-import { HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess, type SocialResponse } from "$lib/utils/types";
+import { HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess, type SocialResponse } from "$lib/utils/consts";
 import type { Actions } from "@sveltejs/kit";
 
+
+export const load = async function (event) {
+	return {
+		status: HTTPStatusSuccess,
+		meta: {
+			title: "Change Password",
+			description: "Change your password by providing your new password",
+		},
+	};
+}
 
 export const actions = {
 	default: async function (event): Promise<SocialResponse<unknown>> {

@@ -1,13 +1,12 @@
 import type { Product, Query } from "$lib/gql/graphql";
 import { PRODUCT_DETAIL_QUERY_STORE } from "$lib/stores/api/product";
-import { DEFAULT_CHANNEL_NAME, HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess, type SocialResponse } from "$lib/utils/types";
+import { CHANNEL_KEY, defaultChannel, HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess } from "$lib/utils/consts";
 import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { graphqlClient } from "$lib/client";
-import { CHANNEL_KEY } from "$lib/stores/auth/store";
 
 
-export const load: PageServerLoad = async (event): Promise<SocialResponse<Product>> => {
+export const load: PageServerLoad = async (event) => {
 	const slug = event.params.slug.trim();
 	if (!slug) {
 		return error(
@@ -18,7 +17,7 @@ export const load: PageServerLoad = async (event): Promise<SocialResponse<Produc
 
 	let channel = event.cookies.get(CHANNEL_KEY);
 	if (!channel) {
-		channel = DEFAULT_CHANNEL_NAME;
+		channel = defaultChannel.slug;
 	}
 
 	const variables = {
@@ -26,7 +25,7 @@ export const load: PageServerLoad = async (event): Promise<SocialResponse<Produc
 		channel,
 	};
 
-	const productDetailResult = await graphqlClient.backendQuery<Pick<Query, 'product'>>(PRODUCT_DETAIL_QUERY_STORE, variables, event);	
+	const productDetailResult = await graphqlClient.backendQuery<Pick<Query, 'product'>>(PRODUCT_DETAIL_QUERY_STORE, variables, event, { requestPolicy: 'network-only' });
 	if (productDetailResult.error) {
 		return error(HTTPStatusServerError, {
 			message: productDetailResult.error.message,

@@ -1,8 +1,8 @@
 import { cacheExchange, Client, fetchExchange, type AnyVariables, type ClientOptions, type DocumentInput, type OperationContext, type OperationResult, type OperationResultSource } from '@urql/svelte';
 import { getCookieByKey } from './utils';
-import { ACCESS_TOKEN_KEY } from './stores/auth/store';
 import type { RequestEvent } from '@sveltejs/kit';
 import { browser } from '$app/environment';
+import { ACCESS_TOKEN_KEY } from './utils/consts';
 
 
 type GraphqlOperation = "query" | "mutation" | "subscription";

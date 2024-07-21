@@ -1,6 +1,5 @@
 <script lang="ts">
 	import {
-		Heart,
 		Icon,
 		MapPin,
 		Minus,
@@ -9,9 +8,9 @@
 		TagFilled
 	} from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import type { Address, Product, User } from '$lib/gql/graphql';
+	import type { Product } from '$lib/gql/graphql';
 	import { userStore } from '$lib/stores/auth';
-	import { DEFAULT_CURRENCY } from '$lib/utils/types';
+	import { defaultChannel } from '$lib/utils/consts';
 	import { formatMoney } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
@@ -38,7 +37,7 @@
 		<!-- price section -->
 		<span class="block text-blue-500 font-semibold text-lg mb-1">
 			{formatMoney(
-				productInformation.pricing?.priceRange?.start?.gross.currency || DEFAULT_CURRENCY,
+				productInformation.pricing?.priceRange?.start?.gross.currency || defaultChannel.currency,
 				productInformation.pricing?.priceRange?.start?.gross.amount || 0,
 				productInformation.pricing?.priceRange?.stop?.gross.amount
 			)}

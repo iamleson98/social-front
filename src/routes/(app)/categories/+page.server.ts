@@ -1,5 +1,5 @@
 // import { CATEGORIES_LIST_QUERY_STORE } from "$lib/stores/api/product";
-import { HTTPStatusSuccess } from "$lib/utils/types";
+import { HTTPStatusSuccess } from "$lib/utils/consts";
 import type { Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 

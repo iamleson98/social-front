@@ -1,6 +1,8 @@
 <script lang="ts">
-	// import ProductList from '$lib/components/common/ProductList.svelte';
-	import { AccessPoint, Icon, Lock } from '$lib/components/icons';
+	import { AccessPoint, Icon } from '$lib/components/icons';
+	import { onMount } from 'svelte';
+
+	
 </script>
 
 <svelte:head>
@@ -8,6 +10,5 @@
 </svelte:head>
 
 <div>
-	<!-- <ProductList /> -->
 	<Icon icon={AccessPoint} />
 </div>

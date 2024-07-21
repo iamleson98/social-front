@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ProductsList$input } from '$houdini';
+	// import type { ProductsList$input } from '$houdini';
 	import {
 		OrderDirection,
 		OrderDirection as OrderDirectionType,
@@ -8,7 +8,8 @@
 	} from '$lib/gql/graphql';
 	import { PRODUCT_LIST_QUERY_STORE } from '$lib/stores/api/product';
 	import { toastStore } from '$lib/stores/ui/toast';
-	import { DEFAULT_CHANNEL_NAME } from '$lib/utils/types';
+	import { defaultChannel } from '$lib/utils/consts';
+	// import { DEFAULT_CHANNEL_NAME } from '$lib/utils/consts';
 	import { constructPagination } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	// import { performGraphqlQuery } from '$lib/utils/api';
@@ -25,7 +26,7 @@
 	let last: number | undefined = undefined;
 	let orderDirection: OrderDirectionType = OrderDirection.Asc;
 	let loading = false;
-	let channel = DEFAULT_CHANNEL_NAME;
+	let channel = defaultChannel.name;
 
 	const fetchMoreProducts = async () => {
 		loading = true;
@@ -38,13 +39,8 @@
 			first = undefined;
 		}
 
-		const paginParams = constructPagination<ProductsList$input>(
-			beforeCursor,
-			afterCursor,
-			first,
-			last
-		);
-		const variables: ProductsList$input = {
+		const paginParams = constructPagination(beforeCursor, afterCursor, first, last);
+		const variables = {
 			...paginParams,
 			channel
 		};
@@ -68,7 +64,7 @@
 
 	onMount(async () => {
 		// await fetchMoreProducts();
-    // performGraphqlQuery(PRODUCT_LIST_QUERY_STORE, ).subscribe()
+		// performGraphqlQuery(PRODUCT_LIST_QUERY_STORE, ).subscribe()
 	});
 </script>
 

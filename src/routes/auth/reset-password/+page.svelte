@@ -3,7 +3,7 @@
 	import { Alert } from '$lib/components/common';
 	import { Email } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import { HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess } from '$lib/utils/types';
+	import { HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess } from '$lib/utils/consts';
 	import type { ActionData } from './$types';
 
 	export let form: ActionData;
@@ -16,7 +16,7 @@
 	<title>Reset password</title>
 </svelte:head>
 
-<div class="max-w-md rounded-md p-2">
+<div class="max-w-md min-w-80 rounded-md p-2">
 	<h1 class="p-2 mb-4">Reset Password</h1>
 
 	{#if form && form?.status && [HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}

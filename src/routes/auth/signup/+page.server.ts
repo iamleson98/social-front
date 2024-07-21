@@ -1,7 +1,6 @@
 import type { Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { ACCESS_TOKEN_KEY, CHANNEL_KEY, CSRF_TOKEN_KEY, REFRESH_TOKEN_KEY } from "$lib/stores/auth/store";
-import { DEFAULT_CHANNEL_NAME, HTTPStatusBadRequest, HTTPStatusSuccess } from "$lib/utils/types";
+import { ACCESS_TOKEN_KEY, CHANNEL_KEY, CSRF_TOKEN_KEY, defaultChannel, HTTPStatusBadRequest, HTTPStatusSuccess, REFRESH_TOKEN_KEY } from "$lib/utils/consts";
 import { USER_SIGNUP_MUTATION_STORE } from "$lib/stores/api";
 import { graphqlClient } from "$lib/client";
 import type { Mutation } from "$lib/gql/graphql";
@@ -18,6 +17,10 @@ export const load: PageServerLoad = async (event) => {
 
   return {
     status: HTTPStatusSuccess,
+    meta: {
+      title: "Sign Up",
+      description: "Sign up to create an account on our platform",
+    },
   };
 }
 
@@ -30,7 +33,7 @@ export const actions = {
     const firstName = formData.get('firstName')?.toString();
     const lastName = formData.get('lastName')?.toString();
     const redirectUrl = import.meta.env.VITE_LOCAL_URL;
-    const channel = event.cookies.get(CHANNEL_KEY) || DEFAULT_CHANNEL_NAME;
+    const channel = event.cookies.get(CHANNEL_KEY) || defaultChannel.slug;
 
     if (!email || !email.toString().trim()) {
       return {

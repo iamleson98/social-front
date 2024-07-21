@@ -1,7 +1,6 @@
 import type { Mutation, Query } from '$lib/gql/graphql';
 import { USER_LOGIN_MUTATION_STORE, USER_ME_QUERY_STORE } from '$lib/stores/api';
-import { ACCESS_TOKEN_KEY, CSRF_TOKEN_KEY, REFRESH_TOKEN_KEY } from '$lib/stores/auth/store.js';
-import { HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess, HTTPStatusTemporaryRedirect } from '$lib/utils/types.js';
+import { ACCESS_TOKEN_KEY, CSRF_TOKEN_KEY, HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess, HTTPStatusTemporaryRedirect } from '$lib/utils/consts.js';
 import { redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { AppRoute } from '$lib/utils';
@@ -31,6 +30,9 @@ export const load: PageServerLoad = async (event) => {
 
   return {
     status: HTTPStatusSuccess,
+    meta: {
+      title: 'Sign In',
+    }
   };
 };
 
@@ -47,7 +49,9 @@ export const actions = {
       };
     }
 
-    const result = await graphqlClient.backendMutation<Pick<Mutation, 'tokenCreate'>>(USER_LOGIN_MUTATION_STORE, { email, password }, event);
+    const result = await graphqlClient.backendMutation<Pick<Mutation, 'tokenCreate'>>(USER_LOGIN_MUTATION_STORE, { email, password }, event, {
+      requestPolicy: 'network-only',
+    });
     if (result.error) {
       return {
         status: HTTPStatusServerError,
@@ -55,17 +59,10 @@ export const actions = {
       };
     }
 
-    if (result.data && result.data.tokenCreate && result.data.tokenCreate.errors.length) {
-      return {
-        status: HTTPStatusBadRequest,
-        error: result.data.tokenCreate.errors[0].message,
-      };
-    }
-
     if (result.data?.tokenCreate?.errors.length) {
       return {
         status: HTTPStatusBadRequest,
-        error: result.data.tokenCreate.errors[0].message as string,
+        error: result.data.tokenCreate.errors[0].message,
       };
     }
 
@@ -77,10 +74,9 @@ export const actions = {
     }
     event.cookies.set(ACCESS_TOKEN_KEY, result.data?.tokenCreate?.token as string, cookieOpts);
     event.cookies.set(CSRF_TOKEN_KEY, result.data?.tokenCreate?.csrfToken as string, cookieOpts);
-    event.cookies.set(REFRESH_TOKEN_KEY, result.data?.tokenCreate?.refreshToken as string, cookieOpts);
 
     return {
       user: result.data?.tokenCreate?.user,
-    }
+    };
   },
 } satisfies Actions;

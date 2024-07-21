@@ -4,7 +4,7 @@
 	import { Alert } from '$lib/components/common';
 	import { Button } from '$lib/components/ui';
 	import { AppRoute } from '$lib/utils';
-	import { HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess } from '$lib/utils/types';
+	import { HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess } from '$lib/utils/consts';
 	import type { ActionData } from './$types';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
@@ -31,7 +31,7 @@
 	<title>Change password</title>
 </svelte:head>
 
-<div class="max-w-md rounded-md p-2">
+<div class="max-w-md min-w-80 rounded-md p-2">
 	<h1 class="p-2 mb-4">Set new password</h1>
 	{#if form && form?.status && [HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}
 		<Alert content={form?.error} variant="error" classes="mb-3" />

@@ -1,9 +1,8 @@
 import { USER_ME_QUERY_STORE, USER_REQUEST_PASSWORD_RESET_MUTATION_STORE } from "$lib/stores/api/auth";
 import { AppRoute } from "$lib/utils";
-import { DEFAULT_CHANNEL_NAME, HTTPStatusBadRequest, HTTPStatusPermanentRedirect, HTTPStatusServerError, HTTPStatusSuccess, type SocialResponse } from "$lib/utils/types";
+import { ACCESS_TOKEN_KEY, defaultChannel, HTTPStatusBadRequest, HTTPStatusPermanentRedirect, HTTPStatusServerError, HTTPStatusSuccess, type SocialResponse } from "$lib/utils/consts";
 import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { ACCESS_TOKEN_KEY } from "$lib/stores/auth/store";
 import { graphqlClient } from "$lib/client";
 import type { Mutation, Query } from "$lib/gql/graphql";
 
@@ -26,6 +25,10 @@ export const load: PageServerLoad = async (event) => {
 
   return {
     status: HTTPStatusSuccess,
+    meta: {
+      title: "Reset Password",
+      description: "Reset your password by providing your email address",
+    }
   };
 };
 
@@ -44,7 +47,7 @@ export const actions = {
     const variables = {
       email: email.toString().trim(),
       redirectUrl: import.meta.env.VITE_LOCAL_URL + AppRoute.AUTH_CHANGE_PASSWORD,
-      channel: DEFAULT_CHANNEL_NAME,
+      channel: defaultChannel.slug,
     };
     const requestResult = await graphqlClient.backendMutation<Pick<Mutation, 'requestPasswordReset'>>(USER_REQUEST_PASSWORD_RESET_MUTATION_STORE, variables, event);
     if (requestResult.error) {

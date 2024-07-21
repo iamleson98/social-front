@@ -26,14 +26,32 @@ export const
 
 export type SocialVariant = 'success' | 'error' | 'warning' | 'info';
 
-/**
- * under the hood, this channel is `en-US`
- */
-export const DEFAULT_CHANNEL_NAME = 'default-channel';
-/**
- * The currency for default channel `en-US`
- */
-export const DEFAULT_CURRENCY = "USD";
+export const ACCESS_TOKEN_KEY = "sitename_token";
+export const CSRF_TOKEN_KEY = "sitename_csrf";
+export const REFRESH_TOKEN_KEY = "refreshToken";
+export const CHANNEL_KEY = "channel";
+
+export const defaultChannel = {
+  name: 'English',
+  currency: 'USD',
+  locale: 'en',
+  slug: 'default-channel',
+  code: 'en-US'
+}
+
+export const vnChannel = {
+  name: 'Tiếng Việt',
+  currency: 'VND',
+  locale: 'vi',
+  slug: 'vn',
+  code: 'vi-VN'
+}
+
+export const channels = [
+  defaultChannel,
+  vnChannel,
+]
+
 
 export const SocialVariantIconsMap: Record<SocialVariant, IconType> = {
   'error': ErrorIcon,

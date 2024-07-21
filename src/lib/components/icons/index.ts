@@ -21,6 +21,9 @@ export { default as HeartFilled } from './tabler--heart-filled.svelte';
 export { default as ChevronLeft } from './tabler--chevron-left.svelte';
 export { default as ChevronRight } from './tabler--chevron-right.svelte';
 export { default as TagFilled } from './tabler--tag-filled.svelte';
+export { default as Facebook } from './logo--facebook.svelte';
+export { default as Google } from './logo--google.svelte';
+export { default as Twitter } from './logo--twitter.svelte';
 
 export { default as Icon } from './icon.svelte';
 export { ErrorIcon };

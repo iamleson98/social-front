@@ -4,10 +4,11 @@
 	import { ClosedEye, Email, Icon, Lock, OpenEye } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { AppRoute } from '$lib/utils';
-	import { HTTPStatusBadRequest, HTTPStatusServerError } from '$lib/utils/types';
+	import { HTTPStatusBadRequest, HTTPStatusServerError } from '$lib/utils/consts';
 	import type { ActionResult } from '@sveltejs/kit';
 	import type { ActionData } from './$types';
 	import Alert from '$lib/components/common/alert.svelte';
+	import { t } from '$lib/i18n';
 
 	const passwordButtonIconsMap = {
 		password: OpenEye,
@@ -67,15 +68,13 @@
 	<title>Signup</title>
 </svelte:head>
 
-<div class="max-w-md rounded-md p-2">
-	<h1 class="p-2 mb-4">Sign up</h1>
+<div class="max-w-md min-w-80 rounded-md p-2">
+	<h1 class="p-2 mb-4">{$t('auth.signup.title')}</h1>
 
 	{#if form && form.status && [HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}
 		<Alert variant="error" content={form.error} classes="mb-3" />
 	{/if}
 	<form action="?/signup" method="post" on:submit|preventDefault={handleSignup}>
-		<!-- form main -->
-
 		<div class="mb-3">
 			<div class="flex flex-row mobile-m:flex-col justify-between items-center">
 				<label
@@ -87,7 +86,7 @@
 						class="grow"
 						name="first_name"
 						id="first_name"
-						placeholder="Enter your first name *"
+						placeholder={$t('auth.signup.firstNamePlaceholder')}
 						bind:value={firstName}
 						required
 						disabled={loading}
@@ -102,7 +101,7 @@
 						class="grow"
 						name="last_name"
 						id="last_name"
-						placeholder="Enter your last name *"
+						placeholder={$t('auth.signup.lastNamePlaceholder')}
 						bind:value={lastName}
 						required
 						disabled={loading}
@@ -112,14 +111,14 @@
 
 			<label class="input input-md flex w-full input-bordered items-center gap-2 mb-3" for="email">
 				<span>
-					<Email />
+					<Icon icon={Email} />
 				</span>
 				<input
 					type="email"
 					class="grow"
 					name="email"
 					id="email"
-					placeholder="Enter your email *"
+					placeholder={$t('auth.signup.emailPlaceholder')}
 					bind:value={email}
 					required
 					disabled={loading}
@@ -132,14 +131,14 @@
 				class:input-error={passwordDontMatch}
 			>
 				<span>
-					<Lock />
+					<Icon icon={Lock} />
 				</span>
 				<input
 					type={passwordFieldType}
 					name="password"
 					class="grow"
 					id="password"
-					placeholder="Enter your password *"
+					placeholder={$t('auth.signup.passwordPlaceholder')}
 					value={password}
 					on:keyup={handlePasswordChange}
 					required
@@ -155,14 +154,14 @@
 				class:input-error={passwordDontMatch}
 			>
 				<span>
-					<Lock />
+					<Icon icon={Lock} />
 				</span>
 				<input
 					type="password"
 					name="confirmPassword"
 					class="grow"
 					id="confirmPassword"
-					placeholder="Confirm your password *"
+					placeholder={$t('auth.signup.confirmPasswordPlaceholder')}
 					bind:value={confirmPassword}
 					required
 					disabled={loading}
@@ -173,7 +172,7 @@
 				for="term_aggree"
 				class="text-xs text-gray-500 select-none mr-1 mb-5 flex items-center"
 			>
-				<span class="mr-2">I agree to terms and policies*</span>
+				<span class="mr-2">{$t('auth.signup.agreeToTerms')}</span>
 				<input
 					type="checkbox"
 					class="toggle toggle-xs toggle-info"
@@ -189,16 +188,16 @@
 				size="sm"
 				fullWidth
 				bind:loading
-				disabled={signupButtonDisabled}>Create Account</Button
+				disabled={signupButtonDisabled}>{$t('auth.signup.signupButton')}</Button
 			>
 		</div>
 
 		<!-- form other -->
 		<div>
-			<span class="text-xs text-gray-500"
-				>Already have an account? <a href={AppRoute.AUTH_SIGNIN} class="text-blue-600">Signin</a
-				></span
-			>
+			<span class="text-xs text-gray-500">
+				{$t('auth.signup.alreadyHasAccount')}
+				<a href={AppRoute.AUTH_SIGNIN} class="text-blue-600">{$t('auth.signin.title')}</a>
+			</span>
 		</div>
 	</form>
 </div>
