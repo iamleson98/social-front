@@ -1,12 +1,5 @@
 <script lang="ts">
-	import {
-		Icon,
-		MapPin,
-		Minus,
-		Plus,
-		ShoppingBagPlus,
-		TagFilled
-	} from '$lib/components/icons';
+	import { Icon, MapPin, Minus, Plus, ShoppingBagPlus, TagFilled } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import type { Product } from '$lib/gql/graphql';
 	import { userStore } from '$lib/stores/auth';
@@ -54,9 +47,9 @@
 			} = productInformation}
 			<div class="items-center inline-flex text-xs">
 				<Icon icon={TagFilled} class="mr-1 text-red-500" />
-				<span class="text-gray-500 rounded bg-gray-200 px-1"
-					>Sale -{formatMoney(currency, amount)}</span
-				>
+				<span class="text-gray-500 rounded bg-gray-200 px-1">
+					Sale -{formatMoney(currency, amount)}
+				</span>
 			</div>
 		{/if}
 	</div>

@@ -3,8 +3,13 @@
 	import { Alert } from '$lib/components/common';
 	import { Email, Icon } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import { HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess } from '$lib/utils/consts';
+	import {
+		HTTPStatusBadRequest,
+		HTTPStatusServerError,
+		HTTPStatusSuccess
+	} from '$lib/utils/consts';
 	import type { ActionData } from './$types';
+	import { t } from '$lib/i18n';
 
 	export let form: ActionData;
 
@@ -12,12 +17,8 @@
 	let loading = false;
 </script>
 
-<svelte:head>
-	<title>Reset password</title>
-</svelte:head>
-
 <div class="max-w-md min-w-80 rounded-md p-2">
-	<h1 class="p-2 mb-4">Reset Password</h1>
+	<h1 class="p-2 mb-4">{$t('auth.resetPassword.title')}</h1>
 
 	{#if form && form?.status && [HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}
 		<Alert content={form?.error} variant="error" classes="mb-3" />
@@ -39,7 +40,7 @@
 				name="email"
 				class="grow"
 				id="email"
-				placeholder="Enter your email *"
+				placeholder={$t('auth.common.emailPlaceholder')}
 				bind:value={email}
 				required
 				disabled={loading}
@@ -53,7 +54,7 @@
 			disabled={loading || !email.trim()}
 			bind:loading
 		>
-			Send me email
+			{$t('auth.resetPassword.btnText')}
 		</Button>
 	</form>
 </div>
