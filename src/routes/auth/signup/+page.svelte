@@ -118,7 +118,7 @@
 					class="grow"
 					name="email"
 					id="email"
-					placeholder={$t('auth.signup.emailPlaceholder')}
+					placeholder={$t('auth.common.emailPlaceholder')}
 					bind:value={email}
 					required
 					disabled={loading}
@@ -138,7 +138,7 @@
 					name="password"
 					class="grow"
 					id="password"
-					placeholder={$t('auth.signup.passwordPlaceholder')}
+					placeholder={$t('auth.common.passwordPlaceholder')}
 					value={password}
 					on:keyup={handlePasswordChange}
 					required

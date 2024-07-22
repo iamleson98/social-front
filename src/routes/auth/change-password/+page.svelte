@@ -8,6 +8,7 @@
 	import type { ActionData } from './$types';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
+	import { Icon, Lock } from '$lib/components/icons';
 
 	export let form: ActionData;
 	let timeout: NodeJS.Timeout;
@@ -48,7 +49,9 @@
 			for="newPassword"
 			class:input-error={form?.error}
 		>
-			<span class="icon-[system-uicons--lock]"></span>
+			<span>
+				<Icon icon={Lock} />
+			</span>
 			<input
 				type="password"
 				name="newPassword"
@@ -65,7 +68,9 @@
 			for="confirmNewPassword"
 			class:input-error={form?.error}
 		>
-			<span class="icon-[system-uicons--lock]"></span>
+			<span>
+				<Icon icon={Lock} />
+			</span>
 			<input
 				type="password"
 				name="confirmNewPassword"

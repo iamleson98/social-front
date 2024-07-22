@@ -25,11 +25,11 @@
 		text: ClosedEye
 	};
 
-	let rememberCheck: boolean = false;
+	let rememberCheck = false;
 	let passwordFieldType: 'text' | 'password' = 'password';
-	let email: string = '';
-	let password: string = '';
-	let loading: boolean = false;
+	let email = '';
+	let password = '';
+	let loading = false;
 
 	/**
 	 * holds state of form element
@@ -37,7 +37,6 @@
 	export let form: ActionData;
 
 	$: if (!form?.error && form?.user) {
-		console.log('------------');
 		userStore.set(form.user);
 		goto(AppRoute.HOME, { invalidateAll: true });
 	}
@@ -89,7 +88,7 @@
 					class="grow"
 					name="email"
 					id="email"
-					placeholder={$t('auth.signin.emailPlaceholder')}
+					placeholder={$t('auth.common.emailPlaceholder')}
 					bind:value={email}
 					required
 					disabled={loading}
@@ -102,14 +101,14 @@
 				class:input-error={form?.error}
 			>
 				<span>
-					<Lock />
+					<Icon icon={Lock} />
 				</span>
 				<input
 					type={passwordFieldType}
 					name="password"
 					class="grow"
 					id="password"
-					placeholder={$t('auth.signin.passwordPlaceholder')}
+					placeholder={$t('auth.common.passwordPlaceholder')}
 					value={password}
 					required
 					disabled={loading}

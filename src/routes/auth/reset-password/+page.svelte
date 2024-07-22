@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { Alert } from '$lib/components/common';
-	import { Email } from '$lib/components/icons';
+	import { Email, Icon } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess } from '$lib/utils/consts';
 	import type { ActionData } from './$types';
@@ -32,7 +32,7 @@
 			class:input-error={form?.error}
 		>
 			<span>
-				<Email />
+				<Icon icon={Email} />
 			</span>
 			<input
 				type="email"

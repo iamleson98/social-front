@@ -1,12 +1,12 @@
 <script lang="ts">
-	import SelectableItem from '$lib/components/common/SelectableItem.svelte';
+	import SelectableItem from '$lib/components/common/selectable-item.svelte';
 	import { Heart } from '$lib/components/icons';
 	import { formatMoney } from '$lib/utils/utils';
 	import type { PageServerData } from './$types';
 	import ProductMediaSlideShow from './ProductSlideShowPanel.svelte';
 	import ProductPricingPanel from './ProductPricingPanel.svelte';
 	import { ProductMediaType, type Product } from '$lib/gql/graphql';
-	import ProductList from '$lib/components/common/ProductList.svelte';
+	import ProductList from '$lib/components/common/product-list.svelte';
 
 	export let data: PageServerData;
 

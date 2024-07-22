@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Interest from '$lib/components/common/Interest.svelte';
+	import Interest from '$lib/components/common/interest.svelte';
 
 	let urlBg =
 		'https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg';
