@@ -28,10 +28,6 @@
 	let loading = false;
 </script>
 
-<svelte:head>
-	<title>Change password</title>
-</svelte:head>
-
 <div class="max-w-md min-w-80 rounded-md p-2">
 	<h1 class="p-2 mb-4">Set new password</h1>
 	{#if form && form?.status && [HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}

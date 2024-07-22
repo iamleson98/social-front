@@ -64,10 +64,6 @@
 	};
 </script>
 
-<svelte:head>
-	<title>Signup</title>
-</svelte:head>
-
 <div class="max-w-md min-w-80 rounded-md p-2">
 	<h1 class="p-2 mb-4">{$t('auth.signup.title')}</h1>
 
