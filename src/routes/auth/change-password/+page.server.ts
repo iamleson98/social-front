@@ -1,37 +1,42 @@
-import { graphqlClient } from "$lib/client";
-import type { Mutation } from "$lib/gql/graphql";
-import { USER_SET_PASSWORD_MUTATION_STORE } from "$lib/stores/api/auth";
-import { HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess, type SocialResponse } from "$lib/utils/consts";
-import type { Actions } from "@sveltejs/kit";
+import { graphqlClient } from '$lib/client';
+import type { Mutation } from '$lib/gql/graphql';
+import { USER_SET_PASSWORD_MUTATION_STORE } from '$lib/stores/api/auth';
+import {
+	HTTPStatusBadRequest,
+	HTTPStatusServerError,
+	HTTPStatusSuccess,
+	type SocialResponse
+} from '$lib/utils/consts';
+import type { Actions } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
 
-
-export const load = async function (event) {
+export const load: PageServerLoad = async () => {
 	return {
 		status: HTTPStatusSuccess,
 		meta: {
-			title: "Change Password",
-			description: "Change your password by providing your new password",
-		},
+			title: 'Change Password',
+			description: 'Change your password by providing your new password'
+		}
 	};
-}
+};
 
 export const actions = {
 	default: async function (event): Promise<SocialResponse<unknown>> {
 		const formData = await event.request.formData();
-		const password = formData.get('newPassword');
-		const confirmNewPassword = formData.get('confirmNewPassword');
+		const password = formData.get('newPassword')?.toString();
+		const confirmNewPassword = formData.get('confirmNewPassword')?.toString();
 
 		if (!password || !confirmNewPassword) {
 			return {
 				status: HTTPStatusBadRequest,
-				error: "Please provide valid new passwords",
+				error: 'Please provide valid new passwords'
 			};
 		}
 
 		if (password !== confirmNewPassword) {
 			return {
 				status: HTTPStatusBadRequest,
-				error: "password and confirm password not matched.",
+				error: "password and confirm password don't match."
 			};
 		}
 
@@ -40,33 +45,34 @@ export const actions = {
 		if (!token || !email) {
 			return {
 				status: HTTPStatusBadRequest,
-				error: 'Invalid url',
+				error: 'Invalid url'
 			};
 		}
 
 		const variables = {
 			email,
 			token,
-			password: password.toString(),
+			password
 		};
-		const resetNewPasswordResult = await graphqlClient.backendMutation<Pick<Mutation, 'setPassword'>>(USER_SET_PASSWORD_MUTATION_STORE, variables, event);
+		const resetNewPasswordResult = await graphqlClient.backendMutation<
+			Pick<Mutation, 'setPassword'>
+		>(USER_SET_PASSWORD_MUTATION_STORE, variables, event);
 		if (resetNewPasswordResult.error) {
 			return {
 				status: HTTPStatusServerError,
-				error: resetNewPasswordResult.error.message,
+				error: resetNewPasswordResult.error.message
 			};
 		}
 		if (resetNewPasswordResult.data?.setPassword?.errors.length) {
 			return {
 				status: HTTPStatusBadRequest,
-				error: resetNewPasswordResult.data.setPassword.errors[0].message as string,
+				error: resetNewPasswordResult.data.setPassword.errors[0].message as string
 			};
 		}
 
 		return {
 			status: HTTPStatusSuccess,
-			data: `Password reset successfully. Redirecting to sign in page...`,
+			data: `Password reset successfully. Redirecting to sign in page...`
 		};
-	},
+	}
 } satisfies Actions;
-
