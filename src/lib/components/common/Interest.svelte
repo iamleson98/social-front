@@ -1,5 +1,5 @@
 <script lang="ts">
-	import GradientCard from './GradientCard.svelte';
+	import GradientCard from './gradient-card.svelte';
 
 	interface Interest {
 		id: number;
@@ -72,7 +72,7 @@
 	<div class="responsive-grid w-full pl-3 pr-3 mr-10 h-97 overflow-y-auto">
 		{#each interests as { id, name, icon, selected, bgFrom, bgTo }}
 			<GradientCard {icon} {name} {bgFrom} {bgTo} {selected} on:click={() => toggleSelection(id)}>
-				<span slot="icon" class={icon} style="color: #fff; width: 51px; height:51px"></span>
+				<span class={icon} style="color: #fff; width: 51px; height:51px"></span>
 			</GradientCard>
 		{/each}
 	</div>
@@ -83,7 +83,7 @@
 	</div>
 </div>
 
-<style>
+<style lang="postcss">
 	.common-button {
 		@apply px-4 py-1 font-bold rounded;
 	}

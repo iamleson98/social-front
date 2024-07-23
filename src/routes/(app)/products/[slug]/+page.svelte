@@ -3,8 +3,8 @@
 	import { Heart } from '$lib/components/icons';
 	import { formatMoney } from '$lib/utils/utils';
 	import type { PageServerData } from './$types';
-	import ProductMediaSlideShow from './ProductSlideShowPanel.svelte';
-	import ProductPricingPanel from './ProductPricingPanel.svelte';
+	import ProductMediaSlideShow from './product-slide-show-pannel.svelte';
+	import ProductPricingPanel from './product-pricing-pannel.svelte';
 	import { ProductMediaType, type Product } from '$lib/gql/graphql';
 	import ProductList from '$lib/components/common/product-list.svelte';
 
@@ -54,7 +54,7 @@
 		</div>
 
 		<div class="bg-white w-3/5 rounded tablet:w-full p-4">
-			<ProductPricingPanel productInformation={productInformation} />
+			<ProductPricingPanel {productInformation} />
 		</div>
 	</div>
 
