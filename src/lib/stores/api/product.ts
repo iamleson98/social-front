@@ -168,8 +168,7 @@ export const PRODUCT_DETAIL_QUERY_STORE = gql`
 					slug
 					type
 					unit
-					visibleInStorefront
-					type
+					inputType
 				}
 				values {
 					id

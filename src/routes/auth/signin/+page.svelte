@@ -62,8 +62,6 @@
 
 		applyAction(result);
 
-		console.log('--------------');
-
 		loading = false;
 	};
 </script>

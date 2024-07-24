@@ -1,4 +1,7 @@
 {
 	"chooseAddress": "Please choose address",
-	"delivery": "Deliver to"
+	"delivery": "Deliver to",
+	"quantity": "Quantity",
+	"variants": "Variants",
+	"addToCard": "Add to cart"
 }

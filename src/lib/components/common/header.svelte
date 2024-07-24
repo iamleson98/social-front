@@ -5,7 +5,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { page } from '$app/stores';
 	import { CART_ITEMS_STORE } from '$lib/stores/app';
-	import { Flame, Home, Icon, Search, ShoppingBag } from '../icons';
+	import { IonFlame, MingcuteHome, Icon, Search, ShoppingBag } from '$lib/components/icons';
 
 	$: userAvatarStyle = $userStore?.avatar?.url
 		? `background-image: url("${$userStore.avatar.url}")`
@@ -20,6 +20,7 @@
 </script>
 
 <header class="fixed top-0 left-0 right-0 flex p-2 bg-white shadow-sm z-[99999999999] w-full">
+	<!-- navigating -->
 	<div class="w-1/2 flex items-center gap-3">
 		<!-- logo -->
 		<a href={AppRoute.HOME} class="inline">
@@ -40,13 +41,13 @@
 		<div class="flex gap-1">
 			<a href={AppRoute.HOME}>
 				<Button variant="subtle" size="sm" active={$page.url.pathname === AppRoute.HOME}>
-					<Icon icon={Home} slot="startIcon" />
+					<Icon icon={MingcuteHome} slot="startIcon" />
 					<span>Home</span>
 				</Button>
 			</a>
 			<a href={AppRoute.TRENDING}>
 				<Button variant="subtle" size="sm" active={$page.url.pathname === AppRoute.TRENDING}>
-					<Icon icon={Flame} slot="startIcon" />
+					<Icon icon={IonFlame} slot="startIcon" />
 					<span>Trending</span>
 				</Button>
 			</a>

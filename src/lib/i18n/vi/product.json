@@ -1,3 +1,7 @@
 {
-	"chooseAddress": "Vui lòng chọn địa chỉ"
+	"chooseAddress": "Vui lòng chọn địa chỉ",
+	"delivery": "Giao tới",
+	"quantity": "Số lượng",
+	"variants": "Phân loại",
+	"addToCard": "Thêm vào giỏ"
 }

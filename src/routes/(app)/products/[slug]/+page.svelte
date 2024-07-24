@@ -1,12 +1,13 @@
 <script lang="ts">
 	import SelectableItem from '$lib/components/common/selectable-item.svelte';
-	import { Heart } from '$lib/components/icons';
+	import { Heart, Icon, MingcuteHome } from '$lib/components/icons';
 	import { formatMoney } from '$lib/utils/utils';
 	import type { PageServerData } from './$types';
 	import ProductMediaSlideShow from './product-slide-show-pannel.svelte';
 	import ProductPricingPanel from './product-pricing-pannel.svelte';
 	import { ProductMediaType, type Product } from '$lib/gql/graphql';
 	import ProductList from '$lib/components/common/product-list.svelte';
+	import ProductDetailPanel from './product-detail-pannel.svelte';
 
 	export let data: PageServerData;
 
@@ -43,29 +44,43 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Product Detail</title>
-</svelte:head>
-
 <div class="m-auto max-w-6xl">
-	<div class="flex flex-row tablet:flex-col tablet:flex-wrap gap-1 w-full">
+	<!-- breadcrumb -->
+	<div class="breadcrumbs text-sm">
+  <ul>
+    <li >
+      <a href="/" class="text-blue-600">
+				<Icon icon={MingcuteHome} class="mr-1" />
+        Home
+      </a>
+    </li>
+    <li>
+      <a href='/'>
+        Documents
+      </a>
+    </li>
+    <li>
+      <span>
+        Pillow
+      </span>
+    </li>
+  </ul>
+</div>
+
+	<div class="flex flex-row tablet:flex-col tablet:flex-wrap gap-1 w-full mb-1">
+		<!-- slide show section -->
 		<div class="w-2/5 rounded tablet:w-full flex flex-col gap-1">
 			<ProductMediaSlideShow medias={media || []} />
 		</div>
 
+		<!-- product basic prices -->
 		<div class="bg-white w-3/5 rounded tablet:w-full p-4">
 			<ProductPricingPanel {productInformation} />
 		</div>
 	</div>
 
 	<!-- product more details -->
-	<div class="bg-white w-full rounded p-5 pl-20 pr-20 mb-20">
-		<p class="text-xl text-black-500 font-bold">Information</p>
-		<div class="flex">
-			<!-- tag product type -->
-		</div>
-		<div>
-			<!-- description -->
-		</div>
+	<div class="bg-white w-full rounded p-4">
+		<ProductDetailPanel selectedAttributes={productInformation.attributes} />
 	</div>
 </div>

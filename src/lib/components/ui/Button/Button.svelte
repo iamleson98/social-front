@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { SocialColor, SocialRadius, SocialSize } from '../common';
 	import { buttonActiveStates, buttonVariantColorsMap, type ButtonVariant } from './button.types';
-	import { Spin } from '$lib/components/ui';
+	// import { Spin } from '$lib/components/ui';
 
 	export let variant: ButtonVariant = 'filled';
 	export let ref: HTMLElement | null = null;
@@ -47,7 +47,7 @@
 	{...buttonProps}
 >
 	{#if loading}
-		<Spin />
+		<span class="loading loading-dots loading-sm"></span>
 	{:else}
 		{#if $$slots.startIcon}
 			<span class="mr-2 text-xl">

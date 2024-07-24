@@ -1,3 +1,6 @@
+import { type SelectedAttribute, AttributeInputTypeEnum } from '$lib/gql/graphql';
+import { t } from '$lib/i18n';
+
 export const randomID = () => '_' + Math.random().toString(36).substring(2, 9);
 
 export type PaginationOptions = {
@@ -31,4 +34,25 @@ export const formatMoney = (currency: string, startAmount: number, endAmount?: n
     return formatter.formatRange(startAmount, endAmount);
   }
   return formatter.format(startAmount);
+};
+
+export const formatSelectedAttributeValue = (attribute: SelectedAttribute) => {
+  if (!attribute.attribute.inputType) {
+    return '';
+  }
+
+  switch (attribute.attribute.inputType) {
+    case AttributeInputTypeEnum.Dropdown:
+      return attribute.values[0].name;
+    case AttributeInputTypeEnum.Boolean:
+      return attribute.values[0].boolean ? $t('common.yesIcon') : $t('common.noIcon');
+    case AttributeInputTypeEnum.PlainText:
+      return attribute.values[0].name;
+    case AttributeInputTypeEnum.Multiselect:
+      // return attribute.values[0].boolean ? $t('common.yesIcon') : $t('common.noIcon');
+      return attribute.values.join(', ');
+
+    default:
+      return attribute.values[0].value;
+  }
 };

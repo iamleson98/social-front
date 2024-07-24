@@ -24,6 +24,10 @@ export { default as TagFilled } from './tabler--tag-filled.svelte';
 export { default as Facebook } from './logo--facebook.svelte';
 export { default as Google } from './logo--google.svelte';
 export { default as Twitter } from './logo--twitter.svelte';
+export { default as Star } from './tabler--star.svelte';
+export { default as StarFilled } from './tabler--star-filled.svelte';
+export { default as MingcuteHome } from './mingcute--home.svelte';
+export { default as IonFlame } from './ion-flame.svelte';
 
 export { default as Icon } from './icon.svelte';
 export { ErrorIcon };

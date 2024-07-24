@@ -7,6 +7,8 @@ import { graphqlClient } from "$lib/client";
 
 
 export const load: PageServerLoad = async (event) => {
+	console.log(event.url.searchParams.get('tab'));
+
 	const slug = event.params.slug.trim();
 	if (!slug) {
 		return error(
@@ -35,5 +37,8 @@ export const load: PageServerLoad = async (event) => {
 	return {
 		status: HTTPStatusSuccess,
 		data: productDetailResult.data?.product as Product,
+		meta: {
+			title: productDetailResult.data?.product?.name,
+		},
 	};
 };
