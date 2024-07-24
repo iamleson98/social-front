@@ -1,5 +1,5 @@
 <script lang="ts">
-	import GradientCard from './GradientCard.svelte';
+	import GradientCard from './gradient-card.svelte';
 
 	interface Interest {
 		id: number;
