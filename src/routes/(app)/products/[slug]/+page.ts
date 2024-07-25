@@ -2,7 +2,7 @@ import { editorJsParser } from "$lib/utils/utils";
 import type { PageLoad } from "./$types";
 import xss from 'xss';
 
-export const prerender = true;
+// export const prerender = true;
 export const ssr = true;
 
 export const load: PageLoad = async (event) => {
