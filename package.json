@@ -58,9 +58,11 @@
 		"@urql/core": "^5.0.4",
 		"@urql/svelte": "^4.2.1",
 		"dotenv": "^16.4.5",
+		"editorjs-html": "^3.4.3",
 		"graphql": "^16.9.0",
 		"lexical": "^0.16.1",
 		"sveltekit-i18n": "^2.4.2",
-		"wonka": "^6.3.4"
+		"wonka": "^6.3.4",
+		"xss": "^1.0.15"
 	}
 }

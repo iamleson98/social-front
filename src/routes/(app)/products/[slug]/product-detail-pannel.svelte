@@ -1,52 +1,43 @@
 <script lang="ts">
   import { type SelectedAttribute } from '$lib/gql/graphql';
   import { page, navigating } from '$app/stores';
-  import { type SvelteComponent, onMount } from "svelte";
-  import ProductDescriptionTab from './product-description-tab.svelte';
-  import ProductAttributeTab from './product-attribute-tab.svelte';
-  import ProductCustomerFeedbackTab from './product-customer-feedback-tab.svelte';
-  import ProductPackagingTab from './product-packaging-tab.svelte';
+  // import { type SvelteComponent, onMount } from "svelte";
+  // import ProductDescriptionTab from './product-description-tab.svelte';
+  // import ProductAttributeTab from './product-attribute-tab.svelte';
+  // import ProductCustomerFeedbackTab from './product-customer-feedback-tab.svelte';
+  // import ProductPackagingTab from './product-packaging-tab.svelte';
   import { Icon, HeadSet, SettingCheck, FileText, PackageExport } from '$lib/components/icons';
 
   export let selectedAttributes: SelectedAttribute[] = [];
 
   let pathname = $page.url.pathname;
-  let search = $page.url.search;
-
-  onMount(() => {
-    console.log(pathname, search);
-  });
+  // let search = $page.url.search;
 
   type TabType = {
     name: 'Description' | 'Attributes' | 'Customer Feedback' | 'Packaging';
-    icon: SvelteComponent;
-    queryPath: string;
-    component: SvelteComponent;
+    icon: typeof FileText;
+    path: string;
   };
 
   const tabs: TabType[] = [
     {
       name: 'Description',
       path: pathname,
-      component: ProductDescriptionTab,
       icon: FileText,
     },
     {
       name: 'Attributes',
       path: `${pathname}?tab=attributes`,
-      component: ProductAttributeTab,
       icon: SettingCheck,
     },
     {
       name: 'Customer Feedback',
       path: `${pathname}?tab=customer-feedback`,
-      component: ProductCustomerFeedbackTab,
       icon: HeadSet,
     },
     {
       name: 'Packaging',
       path: `${pathname}?tab=packaging`,
-      component: ProductPackagingTab,
       icon: PackageExport,
     },
   ];

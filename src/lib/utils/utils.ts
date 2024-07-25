@@ -1,5 +1,9 @@
 import { type SelectedAttribute, AttributeInputTypeEnum } from '$lib/gql/graphql';
 import { t } from '$lib/i18n';
+import editorJsToHtml from 'editorjs-html';
+
+
+export const editorJsParser = editorJsToHtml();
 
 export const randomID = () => '_' + Math.random().toString(36).substring(2, 9);
 

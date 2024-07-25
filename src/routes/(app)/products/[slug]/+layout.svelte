@@ -1,17 +1,49 @@
 <script lang="ts">
-	import SelectableItem from '$lib/components/common/selectable-item.svelte';
-	import { Heart, Icon, MingcuteHome } from '$lib/components/icons';
-	import { formatMoney } from '$lib/utils/utils';
 	import type { LayoutServerData } from './$types';
 	import ProductMediaSlideShow from './product-slide-show-pannel.svelte';
 	import ProductPricingPanel from './product-pricing-pannel.svelte';
-	import { ProductMediaType, type Product } from '$lib/gql/graphql';
-	import ProductList from '$lib/components/common/product-list.svelte';
-	import ProductDetailPanel from './product-detail-pannel.svelte';
+	import { type Product } from '$lib/gql/graphql';
+	import { page } from '$app/stores';
+	import {
+		Icon,
+		HeadSet,
+		SettingCheck,
+		FileText,
+		PackageExport,
+		MingcuteHome
+	} from '$lib/components/icons';
 
 	export let data: LayoutServerData;
+	const { media, slug, ...productInformation } = data.data as Product;
 
-	const { media, ...productInformation } = data.data as Product;
+	type TabType = {
+		name: 'Description' | 'Attributes' | 'Customer Feedback' | 'Packaging';
+		icon: typeof FileText;
+		path: string;
+	};
+
+	const tabs: TabType[] = [
+		{
+			name: 'Description',
+			path: `/products/${slug}`,
+			icon: FileText
+		},
+		{
+			name: 'Attributes',
+			path: `/products/${slug}/attributes`,
+			icon: SettingCheck
+		},
+		{
+			name: 'Customer Feedback',
+			path: `/products/${slug}/customer-feedbacks`,
+			icon: HeadSet
+		},
+		{
+			name: 'Packaging',
+			path: `/products/${slug}/packaging`,
+			icon: PackageExport
+		}
+	];
 </script>
 
 <div class="m-auto max-w-6xl">
@@ -25,14 +57,10 @@
 				</a>
 			</li>
 			<li>
-				<a href='/'>
-					Documents
-				</a>
+				<a href="/"> Documents </a>
 			</li>
 			<li>
-				<span>
-					Pillow
-				</span>
+				<span> Pillow </span>
 			</li>
 		</ul>
 	</div>
@@ -50,8 +78,27 @@
 	</div>
 
 	<!-- product more details -->
-	<div class="bg-white w-full rounded p-4">
-		<!-- <ProductDetailPanel selectedAttributes={productInformation.attributes} /> -->
-    <slot />
+	<div class="bg-white w-full rounded p-6">
+		<div class="text-gray-700 text-lg font-semibold mb-4">Product Information</div>
+
+		<div class="flex items-center gap-2 mb-4">
+			{#each tabs as tab (tab.name)}
+				<a role="tab" class="inline" href={tab.path}>
+					<button class="btn btn-sm border-none" class:tab-active={tab.path === $page.url.pathname}>
+						<Icon icon={tab.icon} />
+						<span>{tab.name}</span>
+					</button>
+				</a>
+			{/each}
+		</div>
+
+		<slot />
 	</div>
 </div>
+
+<style lang="postcss">
+	.tab-active {
+		@apply bg-blue-100 text-blue-600 hover:bg-blue-100;
+		outline: none !important;
+	}
+</style>

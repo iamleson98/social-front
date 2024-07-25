@@ -8,7 +8,7 @@
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 
-	export let productInformation: Omit<Product, 'media'>;
+	export let productInformation: Omit<Product, 'media' | 'slug'>;
 
 	let userDefaultShippingAddress = 'please choose address';
 	let quantitySelected = 1;
