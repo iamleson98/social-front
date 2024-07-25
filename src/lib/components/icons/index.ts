@@ -28,6 +28,10 @@ export { default as Star } from './tabler--star.svelte';
 export { default as StarFilled } from './tabler--star-filled.svelte';
 export { default as MingcuteHome } from './mingcute--home.svelte';
 export { default as IonFlame } from './ion-flame.svelte';
+export { default as FileText } from './tabler--file-text.svelte';
+export { default as HeadSet } from './tabler--headset.svelte';
+export { default as SettingCheck } from './tabler--setting-check.svelte';
+export { default as PackageExport } from './tabler--package-export.svelte';
 
 export { default as Icon } from './icon.svelte';
 export { ErrorIcon };
