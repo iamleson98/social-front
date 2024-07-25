@@ -10,7 +10,8 @@
 		SettingCheck,
 		FileText,
 		PackageExport,
-		MingcuteHome
+		MingcuteHome,
+		type IconType
 	} from '$lib/components/icons';
 
 	export let data: LayoutServerData;
@@ -18,7 +19,7 @@
 
 	type TabType = {
 		name: 'Description' | 'Attributes' | 'Customer Feedback' | 'Packaging';
-		icon: typeof FileText;
+		icon: IconType;
 		path: string;
 	};
 
@@ -82,7 +83,7 @@
 		<div class="text-gray-700 text-lg font-semibold mb-4">Product Information</div>
 
 		<div class="flex items-center gap-2 mb-4">
-			{#each tabs as tab (tab.name)}
+			{#each tabs as tab, idx (idx)}
 				<a role="tab" class="inline" href={tab.path}>
 					<button class="btn btn-sm border-none" class:tab-active={tab.path === $page.url.pathname}>
 						<Icon icon={tab.icon} />

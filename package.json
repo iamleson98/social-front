@@ -15,7 +15,6 @@
 	},
 	"devDependencies": {
 		"@fontsource/fira-mono": "^4.5.10",
-		"@sveltejs/adapter-vercel": "^5.4.1",
 		"@graphql-codegen/cli": "^5.0.2",
 		"@graphql-codegen/client-preset": "4.1.0",
 		"@graphql-codegen/typescript-resolvers": "^4.2.1",
@@ -24,6 +23,7 @@
 		"@next/env": "^14.2.5",
 		"@playwright/test": "^1.45.3",
 		"@sveltejs/adapter-auto": "^3.2.2",
+		"@sveltejs/adapter-vercel": "^5.4.1",
 		"@sveltejs/kit": "^2.5.18",
 		"@sveltejs/vite-plugin-svelte": "^3.1.1",
 		"@types/eslint": "^8.56.11",
@@ -61,6 +61,7 @@
 		"editorjs-html": "^3.4.3",
 		"graphql": "^16.9.0",
 		"lexical": "^0.16.1",
+		"svelte-persisted-store": "^0.11.0",
 		"sveltekit-i18n": "^2.4.2",
 		"wonka": "^6.3.4",
 		"xss": "^1.0.15"

@@ -21,7 +21,6 @@ export const load: LayoutServerLoad = async (event) => {
 
   return {
     status: HTTPStatusSuccess,
-    // user: meQueryResult.data?.me,
     i18n: { locale, route: event.url.pathname },
     translations: translations.get(),
   };

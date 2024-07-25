@@ -4,16 +4,10 @@
 	import type { LayoutServerData } from './$types';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { INIT_LOCAL_STORAGE_LISTENERS } from '$lib/stores/app';
 	import { userStore } from '$lib/stores/auth';
 	import '../app.css';
 
 	export let data: LayoutServerData;
-
-	// add event listener for local storage
-	onMount(() => {
-		return INIT_LOCAL_STORAGE_LISTENERS();
-	});
 
 	onMount(async () => {
 		const response = await fetch('/', {

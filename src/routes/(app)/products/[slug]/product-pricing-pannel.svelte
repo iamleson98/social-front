@@ -1,5 +1,14 @@
 <script lang="ts">
-	import { Icon, MapPin, Minus, Plus, ShoppingBagPlus, TagFilled, Star } from '$lib/components/icons';
+	import {
+		Icon,
+		MapPin,
+		Minus,
+		Plus,
+		ShoppingBagPlus,
+		TagFilled,
+		Star,
+		ArrowDownRight
+	} from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import type { Product } from '$lib/gql/graphql';
 	import { userStore } from '$lib/stores/auth';
@@ -28,36 +37,18 @@
 	<h1 class="text-gray-700 text-xl font-medium mb-3">{productInformation.name}</h1>
 
 	<div class="rating rating-sm mb-3 text-red-500">
-		<!-- <input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" />
-		<input
-			type="radio"
-			name="rating-2"
-			class="mask mask-star-2 bg-orange-400"
-			checked="checked" />
-		<input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" />
-		<input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" />
-		<input type="radio" name="rating-2" class="mask mask-star-2 bg-orange-400" /> -->
 		<Icon icon={Star} />
 		<Icon icon={Star} />
 		<Icon icon={Star} />
 		<Icon icon={Star} />
 		<Icon icon={Star} />
+		<Icon icon={ArrowDownRight} />
+
 	</div>
 
 	<div class="mb-5 bg-gray-50 rounded">
-		<!-- price section -->
-		<!-- <span class="block text-blue-500 font-semibold text-lg mb-1">
-			{formatMoney(
-				productInformation.pricing?.priceRange?.start?.gross.currency || defaultChannel.currency,
-				productInformation.pricing?.priceRange?.start?.gross.amount || 0,
-				productInformation.pricing?.priceRange?.stop?.gross.amount
-			)}
-		</span> -->
-
-		<!-- <div> -->
-			<div class="stat place-items-start">
-			<!-- <div class="stat-title">New Registers</div> -->
-			<div class="stat-value text-blue-500 font-semibold">
+		<div class="stat place-items-start">
+			<div class="stat-value text-blue-500 font-semibold text-xl">
 				{formatMoney(
 					productInformation.pricing?.priceRange?.start?.gross.currency || defaultChannel.currency,
 					productInformation.pricing?.priceRange?.start?.gross.amount || 0,
@@ -72,32 +63,14 @@
 						}
 					}
 				} = productInformation}
-				<!-- <div class="items-center inline-flex text-xs">
-					<Icon icon={TagFilled} class="mr-1 text-red-500" />
-					<span class="text-gray-500 rounded bg-gray-200 px-1">
+				<div class="stat-desc text-red-500 text-xs font-medium flex items-center">
+					<Icon icon={ArrowDownRight} />
+					<span>
 						Sale -{formatMoney(currency, amount)}
 					</span>
-				</div> -->
-				<div class="stat-desc text-red-500 font-semibold">↘︎ Sale -{formatMoney(currency, amount)}</div>
+				</div>
 			{/if}
 		</div>
-
-		<!-- discount section -->
-		<!-- {#if productInformation.pricing?.discount}
-			{@const {
-				pricing: {
-					discount: {
-						gross: { amount, currency }
-					}
-				}
-			} = productInformation}
-			<div class="items-center inline-flex text-xs">
-				<Icon icon={TagFilled} class="mr-1 text-red-500" />
-				<span class="text-gray-500 rounded bg-gray-200 px-1">
-					Sale -{formatMoney(currency, amount)}
-				</span>
-			</div>
-		{/if} -->
 	</div>
 
 	<div class="flex flex-row items-center mb-3">
@@ -112,28 +85,12 @@
 
 	<div class="flex flex-row items-center mb-3">
 		<span class="text-gray-400 w-1/5 text-xs">Material</span>
-		<div class="item-container flex w-4/5">
-			<!-- {#each items as item, index}
-            <SelectableItem
-              content={item}
-              selected={index === selectedItemIndex}
-              on:select={() => handleSelectMaterial(index)}
-            />
-          {/each} -->
-		</div>
+		<div class="item-container flex w-4/5"></div>
 	</div>
 
 	<div class="flex flex-row items-center mb-3">
 		<span class="text-gray-400 w-1/5 text-xs">Size</span>
-		<div class="flex items-start w-4/5">
-			<!-- {#each sizes as sizes, index}
-            <SelectableItem
-              content={sizes}
-              selected={index === selectedSizeIndex}
-              on:select={() => handleSelectSize(index)}
-            />
-          {/each} -->
-		</div>
+		<div class="flex items-start w-4/5"></div>
 	</div>
 
 	<div class="flex flex-row items-center mb-20">

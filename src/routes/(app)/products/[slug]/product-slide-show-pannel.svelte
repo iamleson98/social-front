@@ -45,6 +45,6 @@
 		@apply relative w-full;
 	}
 	.slide-btn {
-		@apply rounded-full w-7 h-7 absolute top-1/2 -translate-y-1/2 bg-gray-50 transform hover:bg-gray-100 flex items-center justify-center;
+		@apply rounded-full w-8 h-8 absolute top-1/2 -translate-y-1/2 bg-gray-100 transform hover:bg-gray-200 flex items-center justify-center;
 	}
 </style>

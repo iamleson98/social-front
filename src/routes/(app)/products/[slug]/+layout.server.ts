@@ -2,13 +2,11 @@ import type { Product, Query } from "$lib/gql/graphql";
 import { PRODUCT_DETAIL_QUERY_STORE } from "$lib/stores/api/product";
 import { CHANNEL_KEY, defaultChannel, HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess } from "$lib/utils/consts";
 import { error } from "@sveltejs/kit";
-import type { LayoutServerLoad } from "./$types";
 import { graphqlClient } from "$lib/client";
+import type { LayoutServerLoad } from "./$types";
 
 
 export const load: LayoutServerLoad = async (event) => {
-	// console.log(event.url.searchParams.get('tab'));
-
 	const slug = event.params.slug.trim();
 	if (!slug) {
 		return error(

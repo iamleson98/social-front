@@ -32,6 +32,7 @@ export { default as FileText } from './tabler--file-text.svelte';
 export { default as HeadSet } from './tabler--headset.svelte';
 export { default as SettingCheck } from './tabler--setting-check.svelte';
 export { default as PackageExport } from './tabler--package-export.svelte';
+export { default as ArrowDownRight } from './tabler--arrow-down-right.svelte';
 
 export { default as Icon } from './icon.svelte';
 export { ErrorIcon };
