@@ -1,0 +1,21 @@
+import { b as null_to_empty } from "./utils.js";
+import { c as create_ssr_component, e as escape, v as validate_component, m as missing_component } from "./ssr.js";
+import { S as SocialVariantIconsMap } from "./consts.js";
+/* empty css                                    */
+const css = {
+  code: ".alert-error.svelte-y1gk93{--tw-bg-opacity:1;background-color:rgb(254 226 226 / var(--tw-bg-opacity));--tw-text-opacity:1;color:rgb(239 68 68 / var(--tw-text-opacity))\n}.alert-success.svelte-y1gk93{--tw-bg-opacity:1;background-color:rgb(220 252 231 / var(--tw-bg-opacity));--tw-text-opacity:1;color:rgb(34 197 94 / var(--tw-text-opacity))\n}.alert-warning.svelte-y1gk93{--tw-bg-opacity:1;background-color:rgb(255 237 213 / var(--tw-bg-opacity));--tw-text-opacity:1;color:rgb(249 115 22 / var(--tw-text-opacity))\n}.alert-info.svelte-y1gk93{--tw-bg-opacity:1;background-color:rgb(219 234 254 / var(--tw-bg-opacity));--tw-text-opacity:1;color:rgb(59 130 246 / var(--tw-text-opacity))\n}",
+  map: '{"version":3,"file":"alert.svelte","sources":["alert.svelte"],"sourcesContent":["<script lang=\\"ts\\">import { SocialVariantIconsMap } from \\"$lib/utils/consts\\";\\nimport { fade } from \\"svelte/transition\\";\\nexport let content = \\"\\";\\nexport let variant = \\"info\\";\\nexport let classes = \\"\\";\\n<\/script>\\n\\n<div\\n\\tclass={`text-xs alert-${variant} flex gap-2 items-center rounded p-2 ${classes}`}\\n\\ttransition:fade\\n>\\n\\t<span class=\\"text-2xl\\">\\n\\t\\t<svelte:component this={SocialVariantIconsMap[variant]} />\\n\\t</span>\\n\\t<p>{content}</p>\\n</div>\\n\\n<style lang=\\"postcss\\">\\n\\t.alert-error {\\n    --tw-bg-opacity: 1;\\n    background-color: rgb(254 226 226 / var(--tw-bg-opacity));\\n    --tw-text-opacity: 1;\\n    color: rgb(239 68 68 / var(--tw-text-opacity))\\n}\\n\\t.alert-success {\\n    --tw-bg-opacity: 1;\\n    background-color: rgb(220 252 231 / var(--tw-bg-opacity));\\n    --tw-text-opacity: 1;\\n    color: rgb(34 197 94 / var(--tw-text-opacity))\\n}\\n\\t.alert-warning {\\n    --tw-bg-opacity: 1;\\n    background-color: rgb(255 237 213 / var(--tw-bg-opacity));\\n    --tw-text-opacity: 1;\\n    color: rgb(249 115 22 / var(--tw-text-opacity))\\n}\\n\\t.alert-info {\\n    --tw-bg-opacity: 1;\\n    background-color: rgb(219 234 254 / var(--tw-bg-opacity));\\n    --tw-text-opacity: 1;\\n    color: rgb(59 130 246 / var(--tw-text-opacity))\\n}\\n</style>\\n"],"names":[],"mappings":"AAkBC,0BAAa,CACV,eAAe,CAAE,CAAC,CAClB,gBAAgB,CAAE,IAAI,GAAG,CAAC,GAAG,CAAC,GAAG,CAAC,CAAC,CAAC,IAAI,eAAe,CAAC,CAAC,CACzD,iBAAiB,CAAE,CAAC,CACpB,KAAK,CAAE,IAAI,GAAG,CAAC,EAAE,CAAC,EAAE,CAAC,CAAC,CAAC,IAAI,iBAAiB,CAAC,CAAC;AAClD,CACC,4BAAe,CACZ,eAAe,CAAE,CAAC,CAClB,gBAAgB,CAAE,IAAI,GAAG,CAAC,GAAG,CAAC,GAAG,CAAC,CAAC,CAAC,IAAI,eAAe,CAAC,CAAC,CACzD,iBAAiB,CAAE,CAAC,CACpB,KAAK,CAAE,IAAI,EAAE,CAAC,GAAG,CAAC,EAAE,CAAC,CAAC,CAAC,IAAI,iBAAiB,CAAC,CAAC;AAClD,CACC,4BAAe,CACZ,eAAe,CAAE,CAAC,CAClB,gBAAgB,CAAE,IAAI,GAAG,CAAC,GAAG,CAAC,GAAG,CAAC,CAAC,CAAC,IAAI,eAAe,CAAC,CAAC,CACzD,iBAAiB,CAAE,CAAC,CACpB,KAAK,CAAE,IAAI,GAAG,CAAC,GAAG,CAAC,EAAE,CAAC,CAAC,CAAC,IAAI,iBAAiB,CAAC,CAAC;AACnD,CACC,yBAAY,CACT,eAAe,CAAE,CAAC,CAClB,gBAAgB,CAAE,IAAI,GAAG,CAAC,GAAG,CAAC,GAAG,CAAC,CAAC,CAAC,IAAI,eAAe,CAAC,CAAC,CACzD,iBAAiB,CAAE,CAAC,CACpB,KAAK,CAAE,IAAI,EAAE,CAAC,GAAG,CAAC,GAAG,CAAC,CAAC,CAAC,IAAI,iBAAiB,CAAC,CAAC;AACnD"}'
+};
+const Alert = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let { content = "" } = $$props;
+  let { variant = "info" } = $$props;
+  let { classes = "" } = $$props;
+  if ($$props.content === void 0 && $$bindings.content && content !== void 0) $$bindings.content(content);
+  if ($$props.variant === void 0 && $$bindings.variant && variant !== void 0) $$bindings.variant(variant);
+  if ($$props.classes === void 0 && $$bindings.classes && classes !== void 0) $$bindings.classes(classes);
+  $$result.css.add(css);
+  return `<div class="${escape(null_to_empty(`text-xs alert-${variant} flex gap-2 items-center rounded p-2 ${classes}`), true) + " svelte-y1gk93"}"><span class="text-2xl">${validate_component(SocialVariantIconsMap[variant] || missing_component, "svelte:component").$$render($$result, {}, {}, {})}</span> <p>${escape(content)}</p> </div>`;
+});
+export {
+  Alert as A
+};
