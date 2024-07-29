@@ -45,14 +45,14 @@
 </svelte:head>
 
 <noscript
-	class="absolute z-[1000] flex h-screen w-screen place-content-center place-items-center bg-immich-bg dark:bg-immich-dark-bg dark:text-immich-dark-fg"
+	class="absolute z-[1000] flex h-screen place-content-center place-items-center bg-immich-bg dark:bg-immich-dark-bg dark:text-immich-dark-fg"
 >
 	<p>To use Sitename, you must enable JavaScript or use a JavaScript compatible browser.</p>
 </noscript>
 
 <Header />
 
-<main class="pt-16 w-full h-full bg-gray-50 min-h-dvh">
+<main class="pt-16 h-screen bg-gray-50 min-h-screen">
 	<slot />
 </main>
 

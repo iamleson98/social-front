@@ -9,12 +9,13 @@ import {
 } from '$lib/utils/consts';
 import type { Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { tServer } from '$lib/i18n';
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async (event) => {
 	return {
 		status: HTTPStatusSuccess,
 		meta: {
-			title: 'Change Password',
+			title: tServer(event, 'changePassword.title'),
 			description: 'Change your password by providing your new password'
 		}
 	};

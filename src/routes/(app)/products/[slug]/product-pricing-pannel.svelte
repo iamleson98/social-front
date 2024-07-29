@@ -11,6 +11,7 @@
 	} from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import type { Product } from '$lib/gql/graphql';
+	import { CART_ITEMS_STORE } from '$lib/stores/app';
 	import { userStore } from '$lib/stores/auth';
 	import { defaultChannel } from '$lib/utils/consts';
 	import { formatMoney } from '$lib/utils/utils';
@@ -42,8 +43,6 @@
 		<Icon icon={Star} />
 		<Icon icon={Star} />
 		<Icon icon={Star} />
-		<Icon icon={ArrowDownRight} />
-
 	</div>
 
 	<div class="mb-5 bg-gray-50 rounded">
@@ -115,7 +114,21 @@
 	</div>
 
 	<div>
-		<Button variant="filled" color="blue">
+		<Button
+			variant="filled"
+			color="blue"
+			on:click={() => {
+				CART_ITEMS_STORE.update((items) => {
+					return items.concat({
+						previewImage: 'lol',
+						productName: 'lol',
+						quantity: 1,
+						previewImageAlt: 'lol',
+						productSlug: 'lol'
+					});
+				});
+			}}
+		>
 			<Icon icon={ShoppingBagPlus} slot="startIcon" />
 			<span> Add to Cart </span>
 		</Button>

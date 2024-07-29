@@ -5,6 +5,7 @@ import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { graphqlClient } from "$lib/client";
 import type { Mutation, Query } from "$lib/gql/graphql";
+import { tServer } from "$lib/i18n";
 
 export const load: PageServerLoad = async (event) => {
   const accessToken = event.cookies.get(ACCESS_TOKEN_KEY);
@@ -26,7 +27,7 @@ export const load: PageServerLoad = async (event) => {
   return {
     status: HTTPStatusSuccess,
     meta: {
-      title: "Reset Password",
+      title: tServer(event, 'resetPassword.title'),
       description: "Reset your password by providing your email address",
     }
   };

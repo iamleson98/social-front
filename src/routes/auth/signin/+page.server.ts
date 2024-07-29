@@ -12,12 +12,14 @@ import { redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { AppRoute } from '$lib/utils';
 import { graphqlClient } from '$lib/client';
+import { tServer } from '$lib/i18n';
+
 
 export const load: PageServerLoad = async (event) => {
 	const accessToken = event.cookies.get(ACCESS_TOKEN_KEY);
 	const response: Record<string, unknown> = {
 		meta: {
-			title: 'Sign In'
+			title: tServer(event, 'signin.title'),
 		}
 	};
 

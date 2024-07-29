@@ -1,0 +1,39 @@
+export default {
+  "signin": {
+    "title": "Đăng nhập",
+    "signinButton": "Đăng nhập",
+    "rememberMe": "Ghi nhớ đăng nhập",
+    "noAccount": "Bạn chưa có tài khoản?",
+    "forgotPassword": "Bạn quên mật khẩu?"
+  },
+  "signup": {
+    "title": "Đăng ký",
+    "signupButton": "Tạo tài khoản",
+    "firstNamePlaceholder": "Vui lòng nhập họ *",
+    "lastNamePlaceholder": "Vui lòng nhập tên *",
+    "confirmPasswordPlaceholder": "Vui lòng xác nhận mật khẩu *",
+    "agreeToTerms": "Tôi đồng ý với các điều khoản và điều kiện",
+    "alreadyHasAccount": "Bạn đã có tài khoản?"
+  },
+  "resetPassword": {
+    "title": "Yêu cầu đặt lại mật khẩu",
+    "btnText": "Gửi email cho tôi"
+  },
+  "changePassword": {
+    "title": "Change Password",
+    "btnText": "Change password"
+  },
+  "common": {
+    "emailPlaceholder": "Vui lòng điền email *",
+    "passwordPlaceholder": "Vui lòng điền mật khẩu *",
+    "yes": "có",
+    "no": "không"
+  },
+  "product": {
+    "chooseAddress": "Vui lòng chọn địa chỉ",
+    "delivery": "Giao tới",
+    "quantity": "Số lượng",
+    "variants": "Phân loại",
+    "addToCard": "Thêm vào giỏ"
+  }
+}

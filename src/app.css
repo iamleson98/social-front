@@ -6,3 +6,16 @@
   --default-font: Helvetica, Arial, sans-serif;
   --apple-font: system-ui, -apple-system, BlinkMacSystemFont, '.SFNSText-Regular', sans-serif
 }
+
+@media (prefers-reduced-motion) {
+  /* * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  } */
+}
+
+html {
+  scroll-behavior: smooth;
+}

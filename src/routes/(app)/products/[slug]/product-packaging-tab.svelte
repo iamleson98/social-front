@@ -1,4 +1,0 @@
-
-<div>
-  Product Packaging
-</div>

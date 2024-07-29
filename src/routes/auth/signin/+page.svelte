@@ -18,7 +18,7 @@
 		Twitter
 	} from '$lib/components/icons';
 	import { Alert } from '$lib/components/common';
-	import { t } from '$lib/i18n';
+	import { tClient } from '$lib/i18n';
 
 	const passwordButtonIconsMap = {
 		password: OpenEye,
@@ -67,7 +67,7 @@
 </script>
 
 <div class="max-w-md min-w-80 rounded-md p-2">
-	<h1 class="p-2 mb-4">{$t('auth.signin.title')}</h1>
+	<h1 class="p-2 mb-4">{tClient('signin.title')}</h1>
 
 	{#if form && form.status && [HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}
 		<Alert variant="error" content={form.error} classes="mb-3" />
@@ -88,7 +88,7 @@
 					class="grow"
 					name="email"
 					id="email"
-					placeholder={$t('auth.common.emailPlaceholder')}
+					placeholder={tClient('common.emailPlaceholder')}
 					bind:value={email}
 					required
 					disabled={loading}
@@ -108,7 +108,7 @@
 					name="password"
 					class="grow"
 					id="password"
-					placeholder={$t('auth.common.passwordPlaceholder')}
+					placeholder={tClient('common.passwordPlaceholder')}
 					value={password}
 					required
 					disabled={loading}
@@ -122,14 +122,14 @@
 				href={AppRoute.AUTH_RESET_PASSWORD}
 				class="text-[10px] text-right block text-blue-600 mb-4"
 			>
-				{$t('auth.signin.forgotPassword')}
+				{tClient('signin.forgotPassword')}
 			</a>
 
 			<label
 				for="remember-me"
 				class="text-xs text-gray-500 select-none mr-1 mb-5 flex items-center"
 			>
-				<span class="mr-2">{$t('auth.signin.rememberMe')}</span>
+				<span class="mr-2">{tClient('signin.rememberMe')}</span>
 				<input
 					type="checkbox"
 					class="toggle toggle-xs toggle-info"
@@ -145,14 +145,14 @@
 				size="sm"
 				fullWidth
 				bind:loading
-				disabled={loading || !email.trim() || !password}>{$t('auth.signin.signinButton')}</Button
+				disabled={loading || !email.trim() || !password}>{tClient('signin.signinButton')}</Button
 			>
 		</div>
 
 		<div>
 			<span class="text-xs text-gray-500">
-				{$t('auth.signin.noAccount')}
-				<a href={AppRoute.AUTH_REGISTER} class="text-blue-600">{$t('auth.signup.title')}</a>
+				{tClient('signin.noAccount')}
+				<a href={AppRoute.AUTH_REGISTER} class="text-blue-600">{tClient('signup.title')}</a>
 			</span>
 		</div>
 	</form>

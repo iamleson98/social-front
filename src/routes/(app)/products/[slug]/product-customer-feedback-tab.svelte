@@ -1,4 +1,0 @@
-
-<div>
-  Customer Feedback
-</div>

@@ -13,9 +13,15 @@
 		MingcuteHome,
 		type IconType
 	} from '$lib/components/icons';
+	import { afterNavigate, disableScrollHandling } from '$app/navigation';
 
 	export let data: LayoutServerData;
 	const { media, slug, ...productInformation } = data.data as Product;
+
+	// prevent the page from scrolling to the top when navigating between tabs
+	afterNavigate(() => {
+		disableScrollHandling();
+	});
 
 	type TabType = {
 		name: 'Description' | 'Attributes' | 'Customer Feedback' | 'Packaging';

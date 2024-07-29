@@ -30,6 +30,7 @@ export const ACCESS_TOKEN_KEY = "sitename_token";
 export const CSRF_TOKEN_KEY = "sitename_csrf";
 export const REFRESH_TOKEN_KEY = "refreshToken";
 export const CHANNEL_KEY = "channel";
+export const LANGUAGE_KEY = "language";
 
 export const defaultChannel = {
   name: 'English',
@@ -52,10 +53,14 @@ export const channels = [
   vnChannel,
 ]
 
-
 export const SocialVariantIconsMap: Record<SocialVariant, IconType> = {
   'error': ErrorIcon,
   'info': InforCircle,
   'warning': Warn,
   'success': Check,
 };
+
+/**
+ * Max prodyct point rating
+ */
+export const MAX_RATING = 5;

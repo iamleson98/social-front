@@ -4,6 +4,8 @@ import { ACCESS_TOKEN_KEY, CHANNEL_KEY, CSRF_TOKEN_KEY, defaultChannel, HTTPStat
 import { USER_SIGNUP_MUTATION_STORE } from "$lib/stores/api";
 import { graphqlClient } from "$lib/client";
 import type { Mutation } from "$lib/gql/graphql";
+import { tServer } from "$lib/i18n";
+
 
 export const load: PageServerLoad = async (event) => {
   // If user is logged in but unexpectedly navigate to the signup page, 
@@ -18,7 +20,7 @@ export const load: PageServerLoad = async (event) => {
   return {
     status: HTTPStatusSuccess,
     meta: {
-      title: "Sign Up",
+      title: tServer(event, 'signup.title'),
       description: "Sign up to create an account on our platform",
     },
   };

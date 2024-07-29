@@ -1,5 +1,6 @@
+import { base } from '$app/paths';
 import { type SelectedAttribute, AttributeInputTypeEnum } from '$lib/gql/graphql';
-import { t } from '$lib/i18n';
+import { tClient } from '$lib/i18n';
 import editorJsToHtml from 'editorjs-html';
 
 
@@ -30,11 +31,11 @@ export function constructPagination<T extends PaginationOptions>(before?: string
 };
 
 export const formatMoney = (currency: string, startAmount: number, endAmount?: number) => {
-  const formatter =  new Intl.NumberFormat('en-US', {
+  const formatter = new Intl.NumberFormat('en-US', {
     style: "currency",
     currency,
   });
-  if (endAmount) {
+  if (endAmount !== undefined) {
     return formatter.formatRange(startAmount, endAmount);
   }
   return formatter.format(startAmount);
@@ -49,14 +50,32 @@ export const formatSelectedAttributeValue = (attribute: SelectedAttribute) => {
     case AttributeInputTypeEnum.Dropdown:
       return attribute.values[0].name;
     case AttributeInputTypeEnum.Boolean:
-      return attribute.values[0].boolean ? $t('common.yesIcon') : $t('common.noIcon');
+      return attribute.values[0].boolean ? tClient('common.yes') : tClient('common.no');
     case AttributeInputTypeEnum.PlainText:
       return attribute.values[0].name;
     case AttributeInputTypeEnum.Multiselect:
-      // return attribute.values[0].boolean ? $t('common.yesIcon') : $t('common.noIcon');
       return attribute.values.join(', ');
 
     default:
       return attribute.values[0].value;
   }
 };
+
+export const getPrefersReducedMotion = () => {
+  return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+export const replaceLocaleInUrl = (url: URL, locale: string, full = false) => {
+  const [, , ...rest] = getPathnameWithoutBase(url).split('/')
+  const new_pathname = `/${[locale, ...rest].join('/')}`
+  if (!full) {
+    return `${new_pathname}${url.search}`
+  }
+  const newUrl = new URL(url.toString())
+  newUrl.pathname = base + new_pathname
+  return newUrl.toString()
+};
+
+const REGEX_START_WITH_BASE = new RegExp(`^${base}`)
+
+export const getPathnameWithoutBase = (url: URL) => url.pathname.replace(REGEX_START_WITH_BASE, '');

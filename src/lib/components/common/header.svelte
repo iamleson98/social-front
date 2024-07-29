@@ -6,6 +6,7 @@
 	import { page } from '$app/stores';
 	import { CART_ITEMS_STORE } from '$lib/stores/app';
 	import { IonFlame, MingcuteHome, Icon, Search, ShoppingBag } from '$lib/components/icons';
+	import { scale } from 'svelte/transition';
 
 	$: userAvatarStyle = $userStore?.avatar?.url
 		? `background-image: url("${$userStore.avatar.url}")`
@@ -58,9 +59,11 @@
 			<a href={AppRoute.SHOPPING_CART}>
 				<button class="btn btn-square btn-sm relative">
 					<Icon icon={ShoppingBag} />
-					<span class="cart-quantity">
-						{$CART_ITEMS_STORE.length}
-					</span>
+					{#key $CART_ITEMS_STORE}
+						<span class="cart-quantity" in:scale>
+							{$CART_ITEMS_STORE.length}
+						</span>
+					{/key}
 				</button>
 			</a>
 			<div class="dropdown dropdown-end">

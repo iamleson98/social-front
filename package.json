@@ -11,7 +11,8 @@
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"test:integration": "playwright test",
-		"test:unit": "vitest"
+		"test:unit": "vitest",
+		"typesafe-i18n": "typesafe-i18n"
 	},
 	"devDependencies": {
 		"@fontsource/fira-mono": "^4.5.10",
@@ -61,6 +62,7 @@
 		"editorjs-html": "^3.4.3",
 		"graphql": "^16.9.0",
 		"lexical": "^0.16.1",
+		"svelte-motion": "^0.12.2",
 		"svelte-persisted-store": "^0.11.0",
 		"sveltekit-i18n": "^2.4.2",
 		"wonka": "^6.3.4",
