@@ -20,10 +20,11 @@ export default {
     "btnText": "Gửi email cho tôi"
   },
   "changePassword": {
-    "title": "Change Password",
-    "btnText": "Change password"
+    "title": "Thay đổi mật khẩu",
+    "btnText": "Đổi mật khẩu"
   },
   "common": {
+    "home": "Trang chủ",
     "emailPlaceholder": "Vui lòng điền email *",
     "passwordPlaceholder": "Vui lòng điền mật khẩu *",
     "yes": "có",
@@ -34,6 +35,11 @@ export default {
     "delivery": "Giao tới",
     "quantity": "Số lượng",
     "variants": "Phân loại",
-    "addToCard": "Thêm vào giỏ"
+    "addToCard": "Thêm vào giỏ",
+    "prdInformation": "Thông tin sản phẩm",
+    "tabDescription": "Mô tả sản phẩm",
+    "tabFeedBack": "Ý kiến khách hàng",
+    "tabAttributes": "Thuộc tính",
+    "tabPackaging": "Đóng gói",
   }
 }

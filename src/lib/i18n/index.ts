@@ -1,14 +1,12 @@
 import { getCookieByKey } from "$lib/utils";
 import { LANGUAGE_KEY } from "$lib/utils/consts";
 import type { RequestEvent } from "@sveltejs/kit";
-// import { readable } from "svelte/store";
 import { default as eng } from './en';
 import { default as vie } from './vi';
 
 
-
 const placeholderRegex = /{{([a-zA-Z ]+)}}/g;
-
+type Locale = 'en' | 'vi';
 
 const findTemplatePlceholders = (template: string): string[] => {
   const matches = template.matchAll(placeholderRegex);
@@ -41,7 +39,6 @@ const parseTranslationObject = (obj: Record<string, unknown>, trans: Translation
   return trans;
 }
 
-type Locale = 'en' | 'vi';
 
 /**
  * Don't modify my content. I'm FROZEN
@@ -50,8 +47,6 @@ const translations: Record<Locale, Translation> = {
   en: parseTranslationObject(eng, {}),
   vi: parseTranslationObject(vie, {}),
 };
-
-
 
 /**
  * translation json should be in the format of:
@@ -126,14 +121,3 @@ export const tServer = (event: RequestEvent<Partial<Record<string, string>>, str
 
   return result;
 };
-
-// return {
-//   tClient,
-//   tServer,
-// };
-// }
-
-// const { tClient: tc, tServer: ts } = populateTranslations();
-
-// export const tClient = readable(tc);
-// export const tServer = readable(ts);

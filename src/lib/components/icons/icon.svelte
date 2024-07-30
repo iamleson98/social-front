@@ -11,10 +11,13 @@
 	export let ariaLabelledby: string | undefined = undefined;
 	export let fill = 'currentColor';
 	export let title: string | null = null;
-	let className = '';
 	export { className as class };
 	export let flipped = false;
 	export let icon: IconType;
+	/** default to "0 0 24 24" for most icons */
+	export let viewBox = '0 0 24 24';
+
+	let className = '';
 </script>
 
 <svg
@@ -25,7 +28,7 @@
 	xmlns="http://www.w3.org/2000/svg"
 	{width}
 	{height}
-	viewBox="0 0 24 24"
+	{viewBox}
 	{...$$props}
 	{fill}
 	class="{className} {flipped ? '-scale-x-100' : ''}"

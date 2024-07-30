@@ -8,4 +8,7 @@ export const AppRoute = {
   TRENDING: '/trending',
   SETTINGS: '/settings',
   SHOPPING_CART: '/shopping-cart',
+
+  PRODUCTS: '/products',
+  CATEGORIES: '/categories',
 };

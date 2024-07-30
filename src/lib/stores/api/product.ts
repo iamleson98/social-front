@@ -148,8 +148,24 @@ export const PRODUCT_DETAIL_QUERY_STORE = gql`
 			description
 			rating
 			created
-			updatedAt
 			isAvailableForPurchase
+			channel # same as $channel
+			category {
+				id
+				name
+				level
+				slug
+				ancestors(first: 10) {
+					edges {
+						node {
+							id
+							name
+							slug
+							level
+						}
+					}
+				}
+			}
 			weight {
 				unit
 				value
@@ -160,6 +176,7 @@ export const PRODUCT_DETAIL_QUERY_STORE = gql`
 				type
 				oembedData
 				id
+				sortOrder
 			}
 			attributes {
 				attribute {
@@ -186,7 +203,7 @@ export const PRODUCT_DETAIL_QUERY_STORE = gql`
 				id
 				name
 			}
-			variants {
+			variants { # will be fetched separately
 				id
 			}
 			pricing {
@@ -236,11 +253,13 @@ export const PRODUCT_DETAIL_QUERY_STORE = gql`
 	}
 `;
 
+/** query to fetch product variants */
 export const PRODUCT_VARIANTS_QUERY_STORE = gql`
 	query ProductVariants($ids: [ID!]!, $channel: String!, $first: Int!) {
 		productVariants(channel: $channel, ids: $ids, first: $first) {
 			edges {
 				node {
+					# quantityOrdered
 					id
 					name
 					sku
@@ -248,7 +267,11 @@ export const PRODUCT_VARIANTS_QUERY_STORE = gql`
 					quantityLimitPerCustomer
 					quantityAvailable
 					margin
-					quantityOrdered
+					preorder {
+						globalThreshold
+						globalSoldUnits
+						endDate
+					}
 					media {
 						url
 						alt

@@ -52,7 +52,7 @@
 
 <Header />
 
-<main class="pt-16 h-screen bg-gray-50 min-h-screen">
+<main class="pt-16 h-screen bg-gray-100 min-h-screen">
 	<slot />
 </main>
 

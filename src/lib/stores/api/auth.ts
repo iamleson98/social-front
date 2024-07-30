@@ -47,9 +47,33 @@ export const USER_ME_QUERY_STORE = gql`
 			email
 			firstName
 			lastName
+			isStaff
+			restrictedAccessToChannels
+			metadata {
+				key
+				value
+			}
+			userPermissions {
+				code
+				name
+			}
 			avatar {
 				url
 				alt
+			}
+			accessibleChannels {
+				id
+				name
+				slug
+				isActive
+				currencyCode
+				defaultCountry {
+					code
+					country
+				}
+				stockSettings {
+					allocationStrategy
+				}
 			}
 			addresses {
 				id

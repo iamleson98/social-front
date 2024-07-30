@@ -1,6 +1,8 @@
 import { base } from '$app/paths';
 import { type SelectedAttribute, AttributeInputTypeEnum } from '$lib/gql/graphql';
 import { tClient } from '$lib/i18n';
+import { toastStore } from '$lib/stores/ui/toast';
+import type { AnyVariables, OperationResult } from '@urql/core';
 import editorJsToHtml from 'editorjs-html';
 
 
@@ -79,3 +81,20 @@ export const replaceLocaleInUrl = (url: URL, locale: string, full = false) => {
 const REGEX_START_WITH_BASE = new RegExp(`^${base}`)
 
 export const getPathnameWithoutBase = (url: URL) => url.pathname.replace(REGEX_START_WITH_BASE, '');
+
+/**
+ * A shortcut to handle the result of a GraphQL query or mutation.
+ * @param result GraphQl query, operation results
+ * @returns `true` if there is an error, `false` otherwise.
+ */
+export const handleResult = <T, K extends AnyVariables>(result: OperationResult<T, K>): boolean => {
+  if (result.error) {
+    toastStore.send({
+      message: result.error.message,
+      variant: 'error',
+    });
+    return true;
+  }
+
+  return false;
+}

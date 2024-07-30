@@ -24,6 +24,7 @@ export default {
     "btnText": "Change password"
   },
   "common": {
+    "home": "Home",
     "emailPlaceholder": "Please enter your email *",
     "yes": "yes",
     "no": "no",
@@ -34,6 +35,11 @@ export default {
     "delivery": "Deliver to",
     "quantity": "Quantity",
     "variants": "Variants",
-    "addToCard": "Add to cart"
+    "addToCard": "Add to cart",
+    "prdInformation": "Product Information",
+    "tabDescription": "Description",
+    "tabFeedBack": "Customer Feedback",
+    "tabAttributes": "Attributes",
+    "tabPackaging": "Packaging",
   }
 }
