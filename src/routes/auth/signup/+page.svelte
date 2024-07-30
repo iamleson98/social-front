@@ -74,13 +74,13 @@
 		<div class="mb-3">
 			<div class="flex flex-row mobile-m:flex-col justify-between items-center">
 				<label
-					class="input input-md input-bordered w-[48%] flex mobile-m:w-full mb-3"
+					class="input input-md w-[48%] input-bordered flex mobile-m:w-full mb-3"
 					for="first_name"
 				>
 					<input
 						type="text"
-						class="grow"
 						name="first_name"
+						class="w-full"
 						id="first_name"
 						placeholder={tClient('signup.firstNamePlaceholder')}
 						bind:value={firstName}
@@ -89,13 +89,13 @@
 					/>
 				</label>
 				<label
-					class="input input-md input-bordered w-[48%] flex mobile-m:w-full mb-3"
+					class="input input-md w-[48%] input-bordered flex mobile-m:w-full mb-3"
 					for="last_name"
 				>
 					<input
 						type="text"
-						class="grow"
 						name="last_name"
+						class="w-full"
 						id="last_name"
 						placeholder={tClient('signup.lastNamePlaceholder')}
 						bind:value={lastName}
