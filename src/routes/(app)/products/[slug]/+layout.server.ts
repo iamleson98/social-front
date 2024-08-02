@@ -38,6 +38,5 @@ export const load: LayoutServerLoad = async (event) => {
 		meta: {
 			title: productDetailResult.data?.product?.name,
 		},
-		slug,
 	};
 };

@@ -10,6 +10,4 @@ export const load: PageServerLoad = async (event) => {
       message: "Invalid category slug",
     });
   }
-
-  
 };

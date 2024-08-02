@@ -3,12 +3,14 @@
 	import { SocialVariantIconsMap } from '$lib/utils/consts';
 	import { fade } from 'svelte/transition';
 
-	export let content: string | unknown = '';
-	/**
-	 * @default 'info'
-	 */
-	export let variant: SocialVariant = 'info';
-	export let classes: string = '';
+	interface Props {
+		content: string | unknown;
+		/** default 'info' */
+		variant?: SocialVariant;
+		classes?: string;
+	}
+
+	let { content, variant = 'info', classes = '' }: Props = $props();
 </script>
 
 <div

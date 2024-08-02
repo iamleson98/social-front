@@ -11,20 +11,22 @@
 	} from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import type { Product, ProductVariant } from '$lib/gql/graphql';
-	import { CART_ITEMS_STORE } from '$lib/stores/app';
 	import { userStore } from '$lib/stores/auth';
 	import { defaultChannel, MAX_RATING } from '$lib/utils/consts';
 	import { formatMoney } from '$lib/utils/utils';
-	import { onMount } from 'svelte';
 
-	export let productInformation: Omit<Product, 'media' | 'slug' | 'variants'>;
-	export let productVariants: ProductVariant[];
-	export let findingVariants: boolean;
+	type Props = {
+		productInformation: Omit<Product, 'media' | 'slug' | 'variants'>;
+		productVariants: readonly ProductVariant[];
+		findingVariants: boolean;
+	};
 
-	let userDefaultShippingAddress = tClient('product.chooseAddress');
-	let quantitySelected = 1;
+	let { productInformation, productVariants, findingVariants }: Props = $props();
 
-	onMount(() => {
+	let userDefaultShippingAddress = $state(tClient('product.chooseAddress'));
+	let quantitySelected = $state(1);
+
+	$effect(() => {
 		if ($userStore) {
 			const defaultShipAddr = $userStore.addresses.find((addr, _) => addr.isDefaultShippingAddress);
 			if (defaultShipAddr) {
@@ -34,7 +36,7 @@
 	});
 </script>
 
-<div>
+<div class="bg-white w-3/5 rounded tablet:w-full p-4">
 	<h1 class="text-gray-700 text-xl font-medium mb-2">{productInformation.name}</h1>
 
 	<div class="flex items-center text-red-500 gap-2 mb-6">
@@ -113,7 +115,7 @@
 		<div class="w-4/5 join">
 			<button
 				class="btn btn-sm join-item"
-				on:click={() => quantitySelected--}
+				onclick={() => quantitySelected--}
 				disabled={quantitySelected <= 1}
 			>
 				<Icon icon={Minus} />
@@ -123,7 +125,7 @@
 				class="w-14 text-right input input-sm join-item"
 				value={quantitySelected < 1 ? 1 : quantitySelected}
 			/>
-			<button class="btn btn-sm join-item" on:click={() => quantitySelected++}>
+			<button class="btn btn-sm join-item" onclick={() => quantitySelected++}>
 				<Icon icon={Plus} />
 			</button>
 		</div>
@@ -134,17 +136,6 @@
 		<Button
 			variant="filled"
 			color="blue"
-			on:click={() => {
-				CART_ITEMS_STORE.update((items) => {
-					return items.concat({
-						previewImage: 'lol',
-						productName: 'lol',
-						quantity: 1,
-						previewImageAlt: 'lol',
-						productSlug: 'lol'
-					});
-				});
-			}}
 		>
 			<Icon icon={ShoppingBagPlus} slot="startIcon" />
 			<span> Add to Cart </span>

@@ -1,3 +1,4 @@
+import type { CategoryCountableConnection, CategoryFilterInput, CategorySortingInput, CategoryWhereInput, ProductFilterInput, ProductOrder, ProductWhereInput, ThumbnailFormatEnum } from '$lib/gql/graphql';
 import { gql } from '@urql/svelte';
 
 export const PRODUCT_LIST_QUERY_STORE = gql`
@@ -44,7 +45,20 @@ export const PRODUCT_LIST_QUERY_STORE = gql`
 	}
 `;
 
-export const CATEGORIES_LIST_QUERY_STORE = gql`
+export interface CategoryListInput {
+	filter?: CategoryFilterInput;
+	where?: CategoryWhereInput;
+	sortBy?: CategorySortingInput;
+	level?: number;
+	first?: number;
+	last?: number;
+	before?: string;
+	after?: string;
+	backgroundSize?: number;
+	backgroundFormat?: ThumbnailFormatEnum;
+}
+
+export const CATEGORIES_LIST_QUERY_STORE = gql<CategoryCountableConnection, CategoryListInput>`
 	query Categories(
 		$filter: CategoryFilterInput
 		$where: CategoryWhereInput
@@ -88,6 +102,8 @@ export const CATEGORIES_LIST_QUERY_STORE = gql`
 		}
 	}
 `;
+
+
 
 /**
  * @imageFormat default to WEBP

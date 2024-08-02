@@ -11,10 +11,14 @@
 	import type { ActionData } from './$types';
 	import { tClient } from '$lib/i18n';
 
-	export let form: ActionData;
+	interface Props {
+		form: ActionData;
+	}
 
-	let email = '';
-	let loading = false;
+	let { form }: Props = $props();
+
+	let email = $state('');
+	let loading = $state(false);
 </script>
 
 <div class="max-w-md min-w-80 rounded-md p-2">

@@ -15,29 +15,36 @@
 		text: ClosedEye
 	};
 
-	let email: string = '';
-	let password: string = '';
-	let firstName: string = '';
-	let lastName: string = '';
-	let confirmPassword: string = '';
-	let loading = false;
-	let termAndPoliciesAgree = false;
-	let passwordFieldType: 'text' | 'password' = 'password';
+	let email: string = $state('');
+	let password: string = $state('');
+	let firstName: string = $state('');
+	let lastName: string = $state('');
+	let confirmPassword: string = $state('');
+	let loading = $state(false);
+	let termAndPoliciesAgree = $state(false);
+	let passwordFieldType: 'text' | 'password' = $state('password');
 
 	/**
 	 * holds state of form element
 	 */
-	export let form: ActionData;
+	// export let form: ActionData;
 
-	$: passwordDontMatch = password !== confirmPassword;
-	$: signupButtonDisabled =
+	interface Props {
+		form: ActionData;
+	}
+
+	let { form }: Props = $props();
+
+	let passwordDontMatch = $derived(password !== confirmPassword);
+	let signupButtonDisabled = $derived(
 		loading ||
-		!firstName.trim() ||
-		!lastName.trim() ||
-		!email.trim() ||
-		!password ||
-		!confirmPassword ||
-		!termAndPoliciesAgree;
+			!firstName.trim() ||
+			!lastName.trim() ||
+			!email.trim() ||
+			!password ||
+			!confirmPassword ||
+			!termAndPoliciesAgree
+	);
 
 	const togglePasswordType = () =>
 		(passwordFieldType = passwordFieldType === 'password' ? 'text' : 'password');
@@ -70,7 +77,7 @@
 	{#if form && form.status && [HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}
 		<Alert variant="error" content={form.error} classes="mb-3" />
 	{/if}
-	<form action="?/signup" method="post" on:submit|preventDefault={handleSignup}>
+	<form action="?/signup" method="post" onsubmitcapture={handleSignup}>
 		<div class="mb-3">
 			<div class="flex flex-row mobile-m:flex-col justify-between items-center">
 				<label
@@ -136,11 +143,11 @@
 					id="password"
 					placeholder={tClient('common.passwordPlaceholder')}
 					value={password}
-					on:keyup={handlePasswordChange}
+					onkeyup={handlePasswordChange}
 					required
 					disabled={loading}
 				/>
-				<button type="button" class="btn btn-xs btn-circle" on:click={togglePasswordType}>
+				<button type="button" class="btn btn-xs btn-circle" onclick={togglePasswordType}>
 					<Icon icon={passwordButtonIconsMap[passwordFieldType]} />
 				</button>
 			</label>

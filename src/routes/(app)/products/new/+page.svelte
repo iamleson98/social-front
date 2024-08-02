@@ -5,7 +5,7 @@
 	import { registerRichText } from '@lexical/rich-text';
 	import { mergeRegister } from '@lexical/utils';
 	import { type LexicalEditor, createEditor, $getSelection as getSelection } from 'lexical';
-	import { onMount, tick } from 'svelte';
+	import { tick } from 'svelte';
 
 	let editorRoot: HTMLDivElement;
 	let lexicalEditor: LexicalEditor | null = null;
@@ -17,7 +17,7 @@
 		console.log(selection);
 	};
 
-	onMount(() => {
+	$effect(() => {
 		lexicalEditor = createEditor(editorConfig);
 		lexicalEditor.setRootElement(editorRoot);
 		// lexicalEditor.update(handleEditorUpdate, { tag: 'history-merge' });

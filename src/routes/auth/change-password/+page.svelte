@@ -4,28 +4,37 @@
 	import { Alert } from '$lib/components/common';
 	import { Button } from '$lib/components/ui';
 	import { AppRoute } from '$lib/utils';
-	import { HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess } from '$lib/utils/consts';
+	import {
+		HTTPStatusBadRequest,
+		HTTPStatusServerError,
+		HTTPStatusSuccess
+	} from '$lib/utils/consts';
 	import type { ActionData } from './$types';
 	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
 	import { Icon, Lock } from '$lib/components/icons';
 
-	export let form: ActionData;
-	let timeout: NodeJS.Timeout;
-
-	$: if (form?.status === HTTPStatusSuccess) {
-		timeout = setTimeout(() => {
-			goto(AppRoute.AUTH_SIGNIN, { invalidateAll: true });
-		}, 3000);
+	interface Props {
+		form: ActionData;
 	}
 
-	onMount(() => {
-		return () => clearTimeout(timeout);
+	let { form }: Props = $props();
+
+	$effect(() => {
+		if (form?.status === HTTPStatusSuccess) {
+			let timeout = setTimeout(() => {
+				clearTimeout(timeout);
+				goto(AppRoute.AUTH_SIGNIN, { invalidateAll: true });
+			}, 3000);
+		}
 	});
 
-	let newPassword = '';
-	let confirmNewPassword = '';
-	let loading = false;
+	let newPassword = $state('');
+	let confirmNewPassword = $state('');
+	let loading = $state(false);
+
+	let buttonDisabled = $derived(
+		loading || !newPassword || !confirmNewPassword || newPassword !== confirmNewPassword
+	);
 </script>
 
 <div class="max-w-md min-w-80 rounded-md p-2">
@@ -78,17 +87,7 @@
 				disabled={loading}
 			/>
 		</label>
-		<Button
-			variant="filled"
-			size="sm"
-			fullWidth
-			type="submit"
-			disabled={loading ||
-				!newPassword ||
-				!confirmNewPassword ||
-				newPassword !== confirmNewPassword}
-			bind:loading
-		>
+		<Button variant="filled" size="sm" fullWidth type="submit" disabled={buttonDisabled} {loading}>
 			Change Password
 		</Button>
 	</form>

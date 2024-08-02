@@ -1,6 +1,6 @@
 import adapter from '@sveltejs/adapter-auto';
-// import adapter from "svelte-adapter-bun";
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+// import adapter from "svelte-adapter-bun";
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -16,7 +16,14 @@ const config = {
 		alias: {
 			$i18n: 'src/lib/i18n',
 		},
-	}
+		prerender: {
+			concurrency: 5,
+		},
+		// inlineStyleThreshold: Infinity
+	},
+	compilerOptions: {
+		runes: true,
+	},
 };
 
 export default config;

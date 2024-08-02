@@ -1,18 +1,14 @@
 <script lang="ts">
-	// import type { ProductsList$input } from '$houdini';
 	import {
 		OrderDirection,
 		OrderDirection as OrderDirectionType,
 		type PageInfo,
 		type ProductCountableEdge
 	} from '$lib/gql/graphql';
-	import { PRODUCT_LIST_QUERY_STORE } from '$lib/stores/api/product';
-	import { toastStore } from '$lib/stores/ui/toast';
+	// import { PRODUCT_LIST_QUERY_STORE } from '$lib/stores/api/product';
+	// import { toastStore } from '$lib/stores/ui/toast';
 	import { defaultChannel } from '$lib/utils/consts';
-	// import { DEFAULT_CHANNEL_NAME } from '$lib/utils/consts';
 	import { constructPagination } from '$lib/utils/utils';
-	import { onMount } from 'svelte';
-	// import { performGraphqlQuery } from '$lib/utils/api';
 
 	let products: ProductCountableEdge[] = [];
 	let pageInfo: PageInfo = {
@@ -62,10 +58,6 @@
 		// products = productFetchResult.data?.products?.edges as ProductCountableEdge[];
 	};
 
-	onMount(async () => {
-		// await fetchMoreProducts();
-		// performGraphqlQuery(PRODUCT_LIST_QUERY_STORE, ).subscribe()
-	});
 </script>
 
 <div>

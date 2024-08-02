@@ -1,6 +1,10 @@
 <script lang="ts">
-	export let dimension: number = 18;
-	export let classes: string = '';
+	interface Props {
+		dimension: number;
+		classes: string;
+	}
+
+	let { dimension, classes }: Props = $props();
 </script>
 
 <svg

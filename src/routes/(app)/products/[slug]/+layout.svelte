@@ -22,12 +22,17 @@
 	import { afterNavigate, disableScrollHandling } from '$app/navigation';
 	import { tClient } from '$i18n';
 	import { AppRoute } from '$lib/utils';
-	import { onMount } from 'svelte';
 	import { graphqlClient } from '$lib/client';
 	import { PRODUCT_VARIANTS_QUERY_STORE } from '$lib/stores/api';
 	import { handleResult } from '$lib/utils/utils';
+	import { onMount, type Snippet } from 'svelte';
 
-	export let data: LayoutServerData;
+	interface Props {
+		data: LayoutServerData;
+		children: Snippet;
+	}
+
+	let { data, children }: Props = $props();
 
 	// prevent the page from scrolling to the top when navigating between tabs
 	afterNavigate(() => {
@@ -43,113 +48,110 @@
 	const tabs: TabType[] = [
 		{
 			name: tClient('product.tabDescription'),
-			path: `/products/${data.slug}`,
+			path: `/products/${$page.params.slug}`,
 			icon: FileText
 		},
 		{
 			name: tClient('product.tabAttributes'),
-			path: `/products/${data.slug}/attributes`,
+			path: `/products/${$page.params.slug}/attributes`,
 			icon: SettingCheck
 		},
 		{
 			name: tClient('product.tabFeedBack'),
-			path: `/products/${data.slug}/customer-feedbacks`,
+			path: `/products/${$page.params.slug}/customer-feedbacks`,
 			icon: HeadSet
 		},
 		{
 			name: tClient('product.tabPackaging'),
-			path: `/products/${data.slug}/packaging`,
+			path: `/products/${$page.params.slug}/packaging`,
 			icon: PackageExport
 		}
 	];
 
-	const {
-		media: medias,
-		category,
-		variants,
-		channel,
-		...productInformation
-	} = data.data as Product;
+	const { media: medias, category, channel, variants, ...productInformation } = data.data;
 
 	/** wait for product variants fully fetched, then display image slideshow */
-	let findingVariants = true;
-	let allProductMedias: ProductMedia[] = medias || [];
-	let productVariants: ProductVariant[] = variants || [];
+	let findingVariants = $state(true);
+	let allProductMedias = $state.frozen(medias || []);
+	let productVariants = $state.frozen<ProductVariant[]>([]);
 
 	/** list of categories to display in breadcrum section */
-	let categories: Category[] = [];
+	let categories = $state.frozen<Category[]>([]);
 
 	if (category) {
 		const { ancestors, ...rest } = category;
 
-		categories = [rest];
-		if (ancestors) {
-			categories = [...categories, ...ancestors.edges.map((edge) => edge.node)];
-			categories.sort((a, b) => a.level - b.level);
+		let accumulateCategories = [rest];
+		if (ancestors && ancestors.edges.length) {
+			accumulateCategories = [...accumulateCategories, ...ancestors.edges.map((edge) => edge.node)];
+			accumulateCategories.sort((a, b) => a.level - b.level);
 		}
+
+		categories = accumulateCategories;
 	}
 
 	// full fetching product variants
-	onMount(async () => {
-		if (variants?.length) {
-			const variantsResult = await graphqlClient
-				.query<Pick<Query, 'productVariants'>>(PRODUCT_VARIANTS_QUERY_STORE, {
-					ids: variants.map((variant) => variant.id),
-					channel,
-					first: 20
-				})
-				.toPromise();
+	onMount(() => {
+		if (variants && variants.length) {
+			const { unsubscribe } = graphqlClient
+				.query<Pick<Query, 'productVariants'>>(
+					PRODUCT_VARIANTS_QUERY_STORE,
+					{
+						ids: variants.map((variant) => variant.id),
+						channel,
+						first: 20
+					},
+					{
+						requestPolicy: 'cache-first'
+					}
+				)
+				.subscribe((result) => {
+					if (handleResult(result)) return;
 
-			if (handleResult(variantsResult)) return;
+					let variantMedias: ProductMedia[] = [];
+					let fullVariants: ProductVariant[] = [];
 
-			let variantMedias: ProductMedia[] = [];
-			let fullVariants: ProductVariant[] = [];
+					result.data?.productVariants?.edges.forEach(({ node }) => {
+						fullVariants.push(node);
+						if (node.media) variantMedias = variantMedias.concat(node.media);
+					});
+					allProductMedias = [...allProductMedias, ...variantMedias];
+					productVariants = fullVariants;
 
-			variantsResult.data?.productVariants?.edges.forEach(({ node }) => {
-				fullVariants.push(node);
-				if (node.media) variantMedias = [...variantMedias, ...node.media];
-			});
-			allProductMedias = [...allProductMedias, ...variantMedias];
-			productVariants = fullVariants;
+					findingVariants = false;
+				});
+
+			return unsubscribe;
 		}
-
-		findingVariants = false;
 	});
 </script>
 
 <div class="m-auto max-w-6xl">
 	<!-- breadcrumb -->
-	<div class="breadcrumbs text-sm px-2">
-		<ul>
+	<div class="breadcrumbs">
+		<ul class="text-sm px-2 text-blue-600">
 			<li>
-				<a href="/" class="text-blue-600">
+				<a href="/">
 					<Icon icon={MingcuteHome} class="mr-1" />
 					{tClient('common.home')}
 				</a>
 			</li>
 			{#each categories as category, idx (idx)}
 				<li>
-					<a href={`${AppRoute.CATEGORIES}/${category.slug}`} class="text-blue-600">
+					<a href={`${AppRoute.CATEGORIES}/${category.slug}`}>
 						{category.name}
 					</a>
 				</li>
 			{/each}
-			<li>
+			<li class="text-gray-600">
 				<span>{productInformation.name}</span>
 			</li>
 		</ul>
 	</div>
 
 	<div class="flex flex-row tablet:flex-col tablet:flex-wrap gap-1 w-full mb-1">
-		<!-- slide show section -->
-		<div class="w-2/5 rounded tablet:w-full flex flex-col gap-1">
-			<ProductMediaSlideShow {allProductMedias} loading={findingVariants} />
-		</div>
-
-		<!-- product basic prices -->
-		<div class="bg-white w-3/5 rounded tablet:w-full p-4">
-			<ProductPricingPanel {productInformation} {productVariants} {findingVariants} />
-		</div>
+		<ProductMediaSlideShow {allProductMedias} loading={findingVariants} />
+		<ProductPricingPanel {productInformation} {productVariants} {findingVariants} />
 	</div>
 
 	<!-- product more details -->
@@ -167,7 +169,7 @@
 			{/each}
 		</div>
 
-		<slot />
+		{@render children()}
 	</div>
 </div>
 

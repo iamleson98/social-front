@@ -2,7 +2,11 @@
 	import Card from '$lib/components/common/card.svelte';
 	import type { PageData } from './$types';
 
-	export let data: PageData;
+	type Props = {
+		data: PageData;
+	};
+
+	let { data }: Props = $props();
 </script>
 
 <Card cardTitle="Product Description">

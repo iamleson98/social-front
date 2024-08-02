@@ -1,24 +1,31 @@
 <script lang="ts">
 	import { Header } from '$lib/components/common';
 	import { Toast } from '$lib/components/ui/Toast';
-	import type { LayoutServerData } from './$types';
-	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { userStore } from '$lib/stores/auth';
+	import type { User } from '$lib/gql/graphql';
+	import type { Snippet } from 'svelte';
 	import '../app.css';
 
-	export let data: LayoutServerData;
+	interface Props {
+		children: Snippet;
+	}
 
-	onMount(async () => {
-		const response = await fetch('/', {
-			method: 'GET',
-			headers: {
-				'content-type': 'application/json'
-			}
-		});
+	let { children }: Props = $props();
 
-		const user = await response.json();
-		userStore.set(user);
+	$effect(() => {
+		// if (!$userStore) {
+		// 	fetch('/', {
+		// 		method: 'GET',
+		// 		headers: {
+		// 			'content-type': 'application/json'
+		// 		}
+		// 	})
+		// 		.then((result) => result.json())
+		// 		.then((user: User) => {
+		// 			userStore.set(user);
+		// 		});
+		// }
 	});
 </script>
 
@@ -53,7 +60,8 @@
 <Header />
 
 <main class="pt-16 h-screen bg-gray-100 min-h-screen">
-	<slot />
+	<!-- <slot /> -->
+	{@render children()}
 </main>
 
 <footer></footer>

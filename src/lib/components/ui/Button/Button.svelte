@@ -1,37 +1,43 @@
 <script lang="ts">
 	import type { SocialColor, SocialRadius, SocialSize } from '../common';
-	import { buttonActiveStates, buttonVariantColorsMap, type ButtonVariant } from './button.types';
-	// import { Spin } from '$lib/components/ui';
+	import { buttonVariantColorsMap, type ButtonVariant } from './button.types';
 
-	export let variant: ButtonVariant = 'filled';
-	export let ref: HTMLElement | null = null;
-	export let type: 'button' | 'submit' | 'reset' = 'button';
-	export let tabIndex: string = '0';
-	export let disabled: boolean = false;
-	export let color: SocialColor = 'blue';
-	export let upper: boolean = false;
-	export let size: SocialSize = 'md';
-	export let radius: SocialRadius = 'rounded-md';
-	export let classes: string = '';
-	export let loading: boolean = false;
-	export let id: string | null = null;
-	export let fullWidth: boolean = false;
 
-	/**
-	 * if `true`, the button will be in active state
-	 */
-	export let active: boolean = false;
+	interface Props {
+		variant?: ButtonVariant;
+		ref?: HTMLElement | null;
+		type?: 'button' | 'submit' | 'reset';
+		tabindex?: number;
+		disabled?: boolean;
+		color?: SocialColor;
+		upper?: boolean;
+		size?: SocialSize;
+		radius?: SocialRadius;
+		classes?: string;
+		loading?: boolean;
+		id?: string | null;
+		fullWidth?: boolean;
+	}
 
-	const activeBg = active ? buttonActiveStates[color] : '';
-
-	$: buttonProps = {
-		tabIndex,
-		...$$restProps
-	};
+	let {
+		variant = 'filled',
+		ref = null,
+		type = 'button',
+		disabled = false,
+		color = 'blue',
+		upper = false,
+		size = 'md',
+		radius = 'rounded-md',
+		classes = '',
+		loading = false,
+		id = null,
+		fullWidth = false,
+		...restProps
+	}: Props = $props();
 </script>
 
 <button
-	class={`${activeBg} ${buttonVariantColorsMap[variant][color]} social-btn social-btn-${size} ${radius} ${classes}`}
+	class={`${buttonVariantColorsMap[variant][color]} social-btn social-btn-${size} ${radius} ${classes}`}
 	class:uppercase={upper}
 	class:w-full={fullWidth}
 	{type}
@@ -44,7 +50,7 @@
 	on:mouseleave
 	{disabled}
 	{id}
-	{...buttonProps}
+	{...restProps}
 >
 	{#if loading}
 		<span class="loading loading-dots loading-sm"></span>

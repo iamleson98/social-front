@@ -25,21 +25,24 @@
 		text: ClosedEye
 	};
 
-	let rememberCheck = false;
-	let passwordFieldType: 'text' | 'password' = 'password';
-	let email = '';
-	let password = '';
-	let loading = false;
+	let rememberCheck = $state(false);
+	let passwordFieldType: 'text' | 'password' = $state('password');
+	let email = $state('');
+	let password = $state('');
+	let loading = $state(false);
 
-	/**
-	 * holds state of form element
-	 */
-	export let form: ActionData;
-
-	$: if (!form?.error && form?.user) {
-		userStore.set(form.user);
-		goto(AppRoute.HOME, { invalidateAll: true });
+	interface Props {
+		form: ActionData;
 	}
+
+	let { form }: Props = $props();
+
+	$effect(() => {
+		if (!form?.error && form?.user) {
+			userStore.set(form.user);
+			goto(AppRoute.HOME, { invalidateAll: true });
+		}
+	});
 
 	const togglePasswordType = () =>
 		(passwordFieldType = passwordFieldType === 'password' ? 'text' : 'password');
@@ -72,7 +75,7 @@
 	{#if form && form.status && [HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}
 		<Alert variant="error" content={form.error} classes="mb-3" />
 	{/if}
-	<form action="?/signin" method="post" on:submit|preventDefault={handleFormSubmit}>
+	<form action="?/signin" method="post" onsubmitcapture={handleFormSubmit}>
 		<!-- form main -->
 		<div class="mb-3">
 			<label
@@ -112,9 +115,9 @@
 					value={password}
 					required
 					disabled={loading}
-					on:keyup={handlePasswordChange}
+					onkeyup={handlePasswordChange}
 				/>
-				<button type="button" class="btn btn-xs btn-circle" on:click={togglePasswordType}>
+				<button type="button" class="btn btn-xs btn-circle" onclick={togglePasswordType}>
 					<Icon icon={passwordButtonIconsMap[passwordFieldType]} />
 				</button>
 			</label>

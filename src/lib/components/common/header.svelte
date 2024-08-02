@@ -8,16 +8,17 @@
 	import { IonFlame, MingcuteHome, Icon, Search, ShoppingBag } from '$lib/components/icons';
 	import { scale } from 'svelte/transition';
 
-	$: userAvatarStyle = $userStore?.avatar?.url
-		? `background-image: url("${$userStore.avatar.url}")`
-		: '';
+	let userAvatarStyle = $state('');
+	let userDisplayName = $state('');
 
-	let userDisplayName = '';
-	$: {
+	$effect(() => {
+		if ($userStore?.avatar?.url) {
+			userAvatarStyle = `background-image: url("${$userStore.avatar.url}")`;
+		}
 		if ($userStore?.firstName && $userStore.lastName)
 			userDisplayName = `${$userStore.firstName[0]}${$userStore.lastName[0]}`;
 		else if ($userStore?.email) userDisplayName = $userStore.email.slice(0, 2);
-	}
+	});
 </script>
 
 <header class="fixed top-0 left-0 right-0 flex p-2 bg-white shadow-sm z-[99999999999] w-full">
@@ -41,13 +42,13 @@
 	<div class="w-1/2 flex justify-between">
 		<div class="flex gap-1">
 			<a href={AppRoute.HOME}>
-				<Button variant="subtle" size="sm" active={$page.url.pathname === AppRoute.HOME}>
+				<Button variant="subtle" size="sm">
 					<Icon icon={MingcuteHome} slot="startIcon" />
 					<span>Home</span>
 				</Button>
 			</a>
 			<a href={AppRoute.TRENDING}>
-				<Button variant="subtle" size="sm" active={$page.url.pathname === AppRoute.TRENDING}>
+				<Button variant="subtle" size="sm">
 					<Icon icon={IonFlame} slot="startIcon" />
 					<span>Trending</span>
 				</Button>

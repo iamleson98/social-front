@@ -6,7 +6,7 @@ export const load: Load = async () => {
   return {
     status: HTTPStatusSuccess,
     meta: {
-      title: 'Home',
+      title: 'Sitename',
       description: 'Sitename web interface',
     }
   };

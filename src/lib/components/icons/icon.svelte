@@ -1,23 +1,37 @@
 <script lang="ts">
-	// import type { SvelteComponent } from 'svelte';
 	import type { AriaRole } from 'svelte/elements';
 	import type { IconType } from '.';
 
-	export let width: string | number = '1em';
-	export let height: string | number = '1em';
-	export let role: AriaRole = 'img';
-	export let ariaHidden: boolean | undefined = undefined;
-	export let ariaLabel: string | undefined = undefined;
-	export let ariaLabelledby: string | undefined = undefined;
-	export let fill = 'currentColor';
-	export let title: string | null = null;
-	export { className as class };
-	export let flipped = false;
-	export let icon: IconType;
-	/** default to "0 0 24 24" for most icons */
-	export let viewBox = '0 0 24 24';
+	interface Props {
+		class?: string;
+		icon: IconType;
+		title?: string;
+		role?: AriaRole;
+		ariaHidden?: boolean;
+		ariaLabel?: string;
+		ariaLabelledby?: string;
+		width?: string | number;
+		height?: string | number;
+		viewBox?: string;
+		fill?: string;
+		flipped?: boolean;
+	}
 
-	let className = '';
+	let {
+		class: className,
+		icon,
+		title,
+		role = 'img',
+		ariaHidden,
+		ariaLabel,
+		ariaLabelledby,
+		width = '1em',
+		height = '1em',
+		viewBox = '0 0 24 24',
+		fill = 'currentColor',
+		flipped = false,
+		...restProps
+	}: Props = $props();
 </script>
 
 <svg
@@ -29,7 +43,7 @@
 	{width}
 	{height}
 	{viewBox}
-	{...$$props}
+	{...restProps}
 	{fill}
 	class="{className} {flipped ? '-scale-x-100' : ''}"
 >

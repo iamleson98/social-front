@@ -1,22 +1,12 @@
 <script lang="ts">
-	/**
-	 * default to 66
-	 */
-	export let width = 66;
-	/**
-	 * default to 25
-	 */
-	export let height = 25;
+	interface Props {
+		width?: number;
+		height?: number;
+		fillColor?: string;
+		fillOpacity?: number;
+	}
 
-  /**
-   * default to #F02F2F
-   */
-  export let fillColor = '#F02F2F';
-
-  /**
-   * default to 0.5
-   */
-  export let fillOpacity = 0.5;
+	let { width = 66, height = 25, fillColor = '#F02F2F', fillOpacity = 0.6 }: Props = $props();
 </script>
 
 <svg
