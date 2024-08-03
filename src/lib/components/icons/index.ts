@@ -36,6 +36,7 @@ export { default as ArrowDownRight } from './tabler--arrow-down-right.svelte';
 export { default as Photo } from './tabler--photo.svelte';
 export { default as BurstSale } from './foundation-burst-sale.svelte';
 export { default as ChevronSort } from './flowbite--chevron-sort.svelte';
+export { default as CloseX } from './tabler--x.svelte';
 
 export { default as Icon } from './icon.svelte';
 export { ErrorIcon };

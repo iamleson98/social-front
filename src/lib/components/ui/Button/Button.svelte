@@ -1,23 +1,30 @@
 <script lang="ts">
+	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import type { SocialColor, SocialRadius, SocialSize } from '../common';
 	import { buttonVariantColorsMap, type ButtonVariant } from './button.types';
+	import type { Snippet } from 'svelte';
+	import { Icon, type IconType } from '$lib/components/icons';
 
-
-	interface Props {
+	type Props = {
 		variant?: ButtonVariant;
-		ref?: HTMLElement | null;
+		ref?: HTMLButtonElement | null;
 		type?: 'button' | 'submit' | 'reset';
-		tabindex?: number;
-		disabled?: boolean;
 		color?: SocialColor;
 		upper?: boolean;
 		size?: SocialSize;
 		radius?: SocialRadius;
 		classes?: string;
 		loading?: boolean;
-		id?: string | null;
 		fullWidth?: boolean;
-	}
+		children: Snippet;
+		startIcon?: IconType;
+		endIcon?: IconType;
+	};
+
+	type IconProps = {
+		icon?: IconType;
+		pos: 'start' | 'end';
+	};
 
 	let {
 		variant = 'filled',
@@ -30,11 +37,21 @@
 		radius = 'rounded-md',
 		classes = '',
 		loading = false,
-		id = null,
 		fullWidth = false,
+		children,
+		startIcon,
+		endIcon,
 		...restProps
-	}: Props = $props();
+	}: Props & HTMLButtonAttributes = $props();
 </script>
+
+{#snippet buttonIcon({ icon, pos }: IconProps)}
+	{#if icon}
+		<span class={`text-xl ${pos === 'start' ? 'mr-2' : 'ml-2'}`}>
+			<Icon {icon} />
+		</span>
+	{/if}
+{/snippet}
 
 <button
 	class={`${buttonVariantColorsMap[variant][color]} social-btn social-btn-${size} ${radius} ${classes}`}
@@ -42,30 +59,14 @@
 	class:w-full={fullWidth}
 	{type}
 	bind:this={ref}
-	on:click
-	on:focus
-	on:blur
-	on:mouseover
-	on:mouseenter
-	on:mouseleave
-	{disabled}
-	{id}
 	{...restProps}
 >
 	{#if loading}
 		<span class="loading loading-dots loading-sm"></span>
 	{:else}
-		{#if $$slots.startIcon}
-			<span class="mr-2 text-xl">
-				<slot name="startIcon" />
-			</span>
-		{/if}
-		<slot />
-		{#if $$slots.endIcon}
-			<span class="ml-2 text-xl">
-				<slot name="endIcon" />
-			</span>
-		{/if}
+		{@render buttonIcon({ icon: startIcon, pos: 'start' })}
+		{@render children()}
+		{@render buttonIcon({ icon: endIcon, pos: 'end' })}
 	{/if}
 </button>
 
@@ -76,15 +77,7 @@
 	}
 	.social-btn:disabled,
 	button:disabled {
-		cursor: not-allowed !important;
-		user-select: none !important;
-		-webkit-user-select: none !important;
-		-moz-user-select: none !important;
-		-ms-user-select: none !important;
-		-khtml-user-select: none !important;
-		pointer-events: none !important;
-		-webkit-touch-callout: none !important;
-		@apply text-gray-400 bg-gray-200;
+		@apply text-gray-400 bg-gray-200 !cursor-not-allowed !select-none !pointer-events-none !touch-none;
 	}
 	.social-btn-xs {
 		@apply h-[30px] py-0 px-[14px] text-xs;

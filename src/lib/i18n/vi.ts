@@ -35,11 +35,12 @@ export default {
     "delivery": "Giao tới",
     "quantity": "Số lượng",
     "variants": "Phân loại",
-    "addToCard": "Thêm vào giỏ",
+    "addToCart": "Thêm vào giỏ",
     "prdInformation": "Thông tin sản phẩm",
     "tabDescription": "Mô tả sản phẩm",
     "tabFeedBack": "Ý kiến khách hàng",
     "tabAttributes": "Thuộc tính",
     "tabPackaging": "Đóng gói",
+    "variantAvailable": "{{quantity}} có sẵn",
   }
 }

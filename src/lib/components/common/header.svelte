@@ -42,14 +42,12 @@
 	<div class="w-1/2 flex justify-between">
 		<div class="flex gap-1">
 			<a href={AppRoute.HOME}>
-				<Button variant="subtle" size="sm">
-					<Icon icon={MingcuteHome} slot="startIcon" />
+				<Button variant="subtle" size="sm" startIcon={MingcuteHome}>
 					<span>Home</span>
 				</Button>
 			</a>
 			<a href={AppRoute.TRENDING}>
-				<Button variant="subtle" size="sm">
-					<Icon icon={IonFlame} slot="startIcon" />
+				<Button variant="subtle" size="sm" startIcon={IonFlame}>
 					<span>Trending</span>
 				</Button>
 			</a>
@@ -102,7 +100,6 @@
 
 <style lang="postcss">
 	.cart-quantity {
-		@apply absolute -right-1/4 -top-1/4 z-[99999999] flex h-4 min-w-4 items-center text-xs justify-center rounded-full bg-blue-500 p-1 font-bold text-white;
-		font-size: 10px !important;
+		@apply absolute -right-1/4 -top-1/4 z-[99999999] !text-[10px] flex h-4 min-w-4 items-center text-xs justify-center rounded-full bg-blue-500 p-1 font-bold text-white;
 	}
 </style>

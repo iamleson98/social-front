@@ -4,7 +4,6 @@
 	import ProductPricingPanel from '$lib/components/pages/products/product-pricing-pannel.svelte';
 	import {
 		type Category,
-		type Product,
 		type ProductMedia,
 		type ProductVariant,
 		type Query
@@ -129,7 +128,7 @@
 <div class="m-auto max-w-6xl">
 	<!-- breadcrumb -->
 	<div class="breadcrumbs">
-		<ul class="text-sm px-2 text-blue-600">
+		<ul class="text-sm px-2 text-blue-600 tablet:!flex-wrap">
 			<li>
 				<a href="/">
 					<Icon icon={MingcuteHome} class="mr-1" />
@@ -151,7 +150,12 @@
 
 	<div class="flex flex-row tablet:flex-col tablet:flex-wrap gap-1 w-full mb-1">
 		<ProductMediaSlideShow {allProductMedias} loading={findingVariants} />
-		<ProductPricingPanel {productInformation} {productVariants} {findingVariants} />
+		<ProductPricingPanel
+			{productInformation}
+			{productVariants}
+			loading={findingVariants}
+			numOfVariants={variants?.length || 0}
+		/>
 	</div>
 
 	<!-- product more details -->
@@ -175,8 +179,7 @@
 
 <style lang="postcss">
 	.tab-active {
-		@apply bg-blue-100 text-blue-600 hover:bg-blue-100;
-		outline: none !important;
+		@apply bg-blue-100 text-blue-600 hover:bg-blue-100 !outline-none focus:!outline-none;
 	}
 	.tab-btn {
 		@apply border-none tablet:btn-xs tablet:h-max tablet:py-1;

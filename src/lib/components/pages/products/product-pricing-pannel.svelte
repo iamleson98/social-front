@@ -14,17 +14,45 @@
 	import { userStore } from '$lib/stores/auth';
 	import { defaultChannel, MAX_RATING } from '$lib/utils/consts';
 	import { formatMoney } from '$lib/utils/utils';
+	import { onMount } from 'svelte';
+	import { fade } from 'svelte/transition';
 
 	type Props = {
 		productInformation: Omit<Product, 'media' | 'slug' | 'variants'>;
 		productVariants: readonly ProductVariant[];
-		findingVariants: boolean;
+		/** indicate the variants are being fetched */
+		loading: boolean;
+		/** we can know before hand how many variants does a product has */
+		numOfVariants: number;
 	};
 
-	let { productInformation, productVariants, findingVariants }: Props = $props();
+	let { productInformation, productVariants, loading, numOfVariants }: Props = $props();
 
 	let userDefaultShippingAddress = $state(tClient('product.chooseAddress'));
+
+	/** user selected variant quantity */
 	let quantitySelected = $state(1);
+
+	// const updateQuantity = (value: number) => {
+	// 	if (value < 1) {
+	// 		quantitySelected = 1;
+	// 	} else if (value > variantQuantityAvailable) {
+	// 		quantitySelected = variantQuantityAvailable;
+	// 	} else {
+	// 		quantitySelected = value;
+	// 	}
+	// };
+
+	const toggleSelectVariant = (idx: number) => {
+		activeVariantIdx = activeVariantIdx === idx ? null : idx;
+	};
+
+	/** track selected variant, 0 based */
+	let activeVariantIdx = $state<number | null>(null);
+
+	let variantQuantityAvailable = $derived(
+		activeVariantIdx != null ? productVariants[activeVariantIdx]?.quantityAvailable : null
+	);
 
 	$effect(() => {
 		if ($userStore) {
@@ -35,6 +63,35 @@
 		}
 	});
 </script>
+
+{#snippet variantSection()}
+	<div class="flex gap-2 flex-wrap flex-row text-blue-600 text-sm">
+		{#if loading}
+			{#each new Array(numOfVariants).fill(null) as _}
+				<div class="flex animate-pulse rounded bg-gray-100 p-2">
+					<div class="h-1 mb-1 w-4 rounded-sm bg-gray-300 mr-1"></div>
+					<div class="h-3 w-10 rounded-full bg-gray-300"></div>
+				</div>
+			{/each}
+		{:else}
+			{#each productVariants as variant, idx (idx)}
+				<button
+					class={`btn btn-sm text-blue-600 border-none font-normal shadow-none hover:bg-blue-100`}
+					class:!bg-blue-100={activeVariantIdx === idx}
+					class:bg-blue-50={activeVariantIdx !== idx}
+					class:font-semibold={activeVariantIdx === idx}
+					tabindex="0"
+					onclick={() => toggleSelectVariant(idx)}
+					disabled={!variant.quantityAvailable}
+				>
+					<span>
+						{variant.name}
+					</span>
+				</button>
+			{/each}
+		{/if}
+	</div>
+{/snippet}
 
 <div class="bg-white w-3/5 rounded tablet:w-full p-4">
 	<h1 class="text-gray-700 text-xl font-medium mb-2">{productInformation.name}</h1>
@@ -68,8 +125,14 @@
 					}
 				} = productInformation}
 				<div class="text-red-500 flex items-center">
-					<span class="mr-2 text-red-700">
-						<Icon icon={BurstSale} viewBox="0 0 100 100" class="text-red-500" />
+					<span class="text-red-700">
+						<Icon
+							icon={BurstSale}
+							viewBox="0 0 100 100"
+							class="text-red-500"
+							width="2rem"
+							height="2rem"
+						/>
 					</span>
 					<span class="text-xs font-medium flex items-center">
 						<Icon icon={Minus} />
@@ -82,8 +145,8 @@
 
 	<!-- delivery -->
 	<div class="flex flex-row items-center mb-5">
-		<span class="text-gray-400 w-1/5 text-xs">{tClient('product.delivery')}</span>
-		<div class="w-4/5">
+		<span class="text-gray-400 w-1/6 text-xs">{tClient('product.delivery')}</span>
+		<div class="w-5/6">
 			<span class="text-gray-500 text-sm mr-1">{userDefaultShippingAddress}</span>
 			<button class="btn btn-circle btn-xs bg-blue-100 hover:bg-blue-200 text-blue-500 border-none">
 				<Icon icon={MapPin} />
@@ -93,52 +156,47 @@
 
 	<!-- variant -->
 	<div class="flex flex-row items-center mb-5">
-		<span class="text-gray-400 w-1/5 text-xs">{tClient('product.variants')}</span>
-		<div class="flex items-start w-4/5">
-			<div class="flex gap-2 flex-wrap flex-row text-blue-600 text-sm">
-				{#if findingVariants}
-					<div class="rounded py-2 px-3"></div>
-				{:else}
-					{#each productVariants as variant, idx (idx)}
-						<div class="rounded py-1 px-3 bg-blue-100">
-							{variant.name}
-						</div>
-					{/each}
-				{/if}
-			</div>
+		<span class="text-gray-400 w-1/6 text-xs">{tClient('product.variants')}</span>
+		<div class="w-5/6">
+			{@render variantSection()}
 		</div>
 	</div>
 
 	<!-- quantity selection -->
 	<div class="flex flex-row items-center mb-20">
-		<span class="text-gray-400 w-1/5 text-xs">{tClient('product.quantity')}</span>
-		<div class="w-4/5 join">
-			<button
-				class="btn btn-sm join-item"
-				onclick={() => quantitySelected--}
-				disabled={quantitySelected <= 1}
-			>
-				<Icon icon={Minus} />
-			</button>
-			<input
-				type="number"
-				class="w-14 text-right input input-sm join-item"
-				value={quantitySelected < 1 ? 1 : quantitySelected}
-			/>
-			<button class="btn btn-sm join-item" onclick={() => quantitySelected++}>
-				<Icon icon={Plus} />
-			</button>
+		<span class="text-gray-400 w-1/6 text-xs">{tClient('product.quantity')}</span>
+		<div class="w-5/6 flex items-center flex-wrap flex-row">
+			<div class="join">
+				<button
+					class="btn btn-sm join-item"
+					onclick={() => quantitySelected--}
+					disabled={quantitySelected <= 1}
+				>
+					<Icon icon={Minus} />
+				</button>
+				<input
+					type="number"
+					class="w-14 text-center input input-sm join-item border p-0 focus:!outline-none border-l-0 border-r-0 border-gray-200"
+					value={quantitySelected < 1 ? 1 : quantitySelected}
+					max={variantQuantityAvailable}
+				/>
+				<button class="btn btn-sm join-item" onclick={() => quantitySelected++}>
+					<Icon icon={Plus} />
+				</button>
+			</div>
+			<!-- quantity available -->
+			{#if variantQuantityAvailable != null}
+				<span class="text-gray-500 text-xs ml-2" transition:fade={{ duration: 100 }}>
+					{tClient('product.variantAvailable', { quantity: variantQuantityAvailable })}
+				</span>
+			{/if}
 		</div>
 	</div>
 
 	<!-- purchase button -->
 	<div>
-		<Button
-			variant="filled"
-			color="blue"
-		>
-			<Icon icon={ShoppingBagPlus} slot="startIcon" />
-			<span> Add to Cart </span>
+		<Button variant="filled" color="blue" startIcon={ShoppingBagPlus}>
+			<span> {tClient('product.addToCart')} </span>
 		</Button>
 	</div>
 </div>

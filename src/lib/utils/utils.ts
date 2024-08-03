@@ -8,7 +8,8 @@ import editorJsToHtml from 'editorjs-html';
 
 export const editorJsParser = editorJsToHtml();
 
-export const randomID = () => '_' + Math.random().toString(36).substring(2, 9);
+let _count = 0;
+export const randomID = () => `id=${_count++}`;
 
 export type PaginationOptions = {
   before?: string | null | undefined;
@@ -44,7 +45,7 @@ export const formatMoney = (currency: string, startAmount: number, endAmount?: n
 };
 
 export const formatSelectedAttributeValue = (attribute: SelectedAttribute) => {
-  if (!attribute.attribute.inputType) {
+  if (!attribute.attribute.inputType || !attribute.values.length) {
     return '';
   }
 

@@ -35,11 +35,12 @@ export default {
     "delivery": "Deliver to",
     "quantity": "Quantity",
     "variants": "Variants",
-    "addToCard": "Add to cart",
+    "addToCart": "Add to cart",
     "prdInformation": "Product Information",
     "tabDescription": "Description",
     "tabFeedBack": "Customer Feedback",
     "tabAttributes": "Attributes",
     "tabPackaging": "Packaging",
+    "variantAvailable": "{{quantity}} items available",
   }
 }

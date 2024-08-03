@@ -64,3 +64,6 @@ export const SocialVariantIconsMap: Record<SocialVariant, IconType> = {
  * Max prodyct point rating
  */
 export const MAX_RATING = 5;
+
+/** used for some input fields that requires event handling after a moment instead of always  */
+export const DEBOUNCE_INPUT_TIME = 333;

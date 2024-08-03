@@ -1,4 +1,4 @@
-import type { CategoryCountableConnection, CategoryFilterInput, CategorySortingInput, CategoryWhereInput, ProductFilterInput, ProductOrder, ProductWhereInput, ThumbnailFormatEnum } from '$lib/gql/graphql';
+import type { CategoryCountableConnection, CategoryFilterInput, CategorySortingInput, CategoryWhereInput, ThumbnailFormatEnum } from '$lib/gql/graphql';
 import { gql } from '@urql/svelte';
 
 export const PRODUCT_LIST_QUERY_STORE = gql`
@@ -283,6 +283,10 @@ export const PRODUCT_VARIANTS_QUERY_STORE = gql`
 					quantityLimitPerCustomer
 					quantityAvailable
 					margin
+					weight {
+						unit
+						value
+					}
 					preorder {
 						globalThreshold
 						globalSoldUnits

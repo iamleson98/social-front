@@ -8,7 +8,7 @@ import { default as vie } from './vi';
 const placeholderRegex = /{{([a-zA-Z ]+)}}/g;
 type Locale = 'en' | 'vi';
 
-const findTemplatePlceholders = (template: string): string[] => {
+const findTemplatePlaceholders = (template: string): string[] => {
   const matches = template.matchAll(placeholderRegex);
   if (!matches) return [];
 
@@ -26,7 +26,7 @@ const parseTranslationObject = (obj: Record<string, unknown>, trans: Translation
     const prf = prefix ? `${prefix}.${key}` : key;
 
     if (typeof value === 'string') {
-      const matches = findTemplatePlceholders(value);
+      const matches = findTemplatePlaceholders(value);
       trans[prf] = {
         template: value,
         args: matches.length ? new Set(matches) : null,
@@ -66,11 +66,6 @@ type Translation = {
     args: Set<string> | null;
   };
 }
-
-
-// export const populateTranslations = () => {
-// translations.en = parseTranslationObject(eng, {});
-// translations.vi = parseTranslationObject(vie, {});
 
 /**
 * Translate a key string to the current locale. Use
