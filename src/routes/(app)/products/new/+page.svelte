@@ -1,43 +1,44 @@
 <script lang="ts">
-	import { editorConfig } from '$lib/configs';
-	import { registerDragonSupport } from '@lexical/dragon';
-	import { createEmptyHistoryState, registerHistory } from '@lexical/history';
-	import { registerRichText } from '@lexical/rich-text';
-	import { mergeRegister } from '@lexical/utils';
-	import { type LexicalEditor, createEditor, $getSelection as getSelection } from 'lexical';
-	import { tick } from 'svelte';
+	// import { editorConfig } from '$lib/configs';
+	// import { registerDragonSupport } from '@lexical/dragon';
+	// import { createEmptyHistoryState, registerHistory } from '@lexical/history';
+	// import { registerRichText } from '@lexical/rich-text';
+	// import { mergeRegister } from '@lexical/utils';
+	// import { type LexicalEditor, createEditor, $getSelection as getSelection } from 'lexical';
+	// import { tick } from 'svelte';
+	import ProductDescriptionEditor from '$lib/components/pages/products/product-description-editor.svelte';
 
-	let editorRoot: HTMLDivElement;
-	let lexicalEditor: LexicalEditor | null = null;
-	let editorState: string = '';
+	// let editorRoot: HTMLDivElement;
+	// let lexicalEditor: LexicalEditor | null = null;
+	// let editorState: string = '';
 	let now = new Date();
 
-	const handleEditorUpdate = () => {
-		const selection = getSelection();
-		console.log(selection);
-	};
+	// const handleEditorUpdate = () => {
+	// 	const selection = getSelection();
+	// 	console.log(selection);
+	// };
 
-	$effect(() => {
-		lexicalEditor = createEditor(editorConfig);
-		lexicalEditor.setRootElement(editorRoot);
-		// lexicalEditor.update(handleEditorUpdate, { tag: 'history-merge' });
+	// $effect(() => {
+	// 	lexicalEditor = createEditor(editorConfig);
+	// 	lexicalEditor.setRootElement(editorRoot);
+	// 	// lexicalEditor.update(handleEditorUpdate, { tag: 'history-merge' });
 
-		tick();
-		mergeRegister(
-			registerRichText(lexicalEditor),
-			registerDragonSupport(lexicalEditor),
-			registerHistory(lexicalEditor, createEmptyHistoryState(), 300)
-			// registerEmoji(lexicalEditor)
-		);
-	});
+	// 	tick();
+	// 	mergeRegister(
+	// 		registerRichText(lexicalEditor),
+	// 		registerDragonSupport(lexicalEditor),
+	// 		registerHistory(lexicalEditor, createEmptyHistoryState(), 300)
+	// 		// registerEmoji(lexicalEditor)
+	// 	);
+	// });
 
-	function registerEmoji(lexicalEditor: LexicalEditor): () => void {
-		throw new Error('Function not implemented.');
-	}
+	// function registerEmoji(lexicalEditor: LexicalEditor): () => void {
+	// 	throw new Error('Function not implemented.');
+	// }
 </script>
 
 <div>
-	<h1>Add new product</h1>
+	<!-- <h1>Add new product</h1> -->
 
 	<div class="m-auto rounded bg-white max-w-[800px] p-5">
 		<!-- product name -->
@@ -54,10 +55,12 @@
 		</label>
 
 		<!-- description -->
-
 		<div class="label">
 			<span class="label-text text-lg font-semibold">Product description</span>
 		</div>
-		<div bind:this={editorRoot} contenteditable></div>
+		<ProductDescriptionEditor />
+
+		<!-- variants -->
+		<div class="flex items-center"></div>
 	</div>
 </div>

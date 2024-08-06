@@ -36,7 +36,7 @@
 		size = 'md',
 		radius = 'rounded-md',
 		classes = '',
-		loading = false,
+		loading = $bindable(false),
 		fullWidth = false,
 		children,
 		startIcon,
