@@ -165,7 +165,7 @@
 		<div class="flex items-center gap-2 mb-4">
 			{#each tabs as tab, idx (idx)}
 				<a role="tab" class="inline" href={tab.path}>
-					<button class="tab-btn btn btn-sm" class:tab-active={tab.path === $page.url.pathname}>
+					<button class="tab-btn btn btn-sm tablet:btn-xs" class:tab-active={tab.path === $page.url.pathname}>
 						<Icon icon={tab.icon} />
 						{tab.name}
 					</button>
@@ -182,6 +182,6 @@
 		@apply bg-blue-100 text-blue-600 hover:bg-blue-100 !outline-none focus:!outline-none;
 	}
 	.tab-btn {
-		@apply border-none tablet:btn-xs tablet:h-max tablet:py-1;
+		@apply border-none tablet:h-max tablet:py-1;
 	}
 </style>

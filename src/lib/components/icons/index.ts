@@ -51,6 +51,7 @@ export { default as Heading2 } from './iconpark--h2.svelte';
 export { default as Heading3 } from './iconpark--h3.svelte';
 export { default as Paragraph } from './majestion--text.svelte';
 export { default as ChevronDown } from './tabler--chevron-down.svelte';
+export { default as Quote } from './tabler--quote.svelte';
 
 
 export { default as Icon } from './icon.svelte';

@@ -1,66 +1,76 @@
 <script lang="ts">
-	// import { editorConfig } from '$lib/configs';
-	// import { registerDragonSupport } from '@lexical/dragon';
-	// import { createEmptyHistoryState, registerHistory } from '@lexical/history';
-	// import { registerRichText } from '@lexical/rich-text';
-	// import { mergeRegister } from '@lexical/utils';
-	// import { type LexicalEditor, createEditor, $getSelection as getSelection } from 'lexical';
-	// import { tick } from 'svelte';
 	import ProductDescriptionEditor from '$lib/components/pages/products/product-description-editor.svelte';
 
-	// let editorRoot: HTMLDivElement;
-	// let lexicalEditor: LexicalEditor | null = null;
-	// let editorState: string = '';
 	let now = new Date();
-
-	// const handleEditorUpdate = () => {
-	// 	const selection = getSelection();
-	// 	console.log(selection);
-	// };
-
-	// $effect(() => {
-	// 	lexicalEditor = createEditor(editorConfig);
-	// 	lexicalEditor.setRootElement(editorRoot);
-	// 	// lexicalEditor.update(handleEditorUpdate, { tag: 'history-merge' });
-
-	// 	tick();
-	// 	mergeRegister(
-	// 		registerRichText(lexicalEditor),
-	// 		registerDragonSupport(lexicalEditor),
-	// 		registerHistory(lexicalEditor, createEmptyHistoryState(), 300)
-	// 		// registerEmoji(lexicalEditor)
-	// 	);
-	// });
-
-	// function registerEmoji(lexicalEditor: LexicalEditor): () => void {
-	// 	throw new Error('Function not implemented.');
-	// }
 </script>
 
-<div>
-	<!-- <h1>Add new product</h1> -->
-
-	<div class="m-auto rounded bg-white max-w-[800px] p-5">
-		<!-- product name -->
-		<label class="form-control w-full">
-			<div class="label">
-				<span class="label-text text-lg font-semibold">Product name</span>
-				<!-- <span class="label-text-alt">Top Right label</span> -->
-			</div>
-			<input type="text" placeholder="Enter the product name" class="input input-bordered w-full" />
-			<div class="label">
-				<span class="label-text-alt"></span>
-				<span class="label-text-alt">{now.toDateString()}</span>
-			</div>
-		</label>
-
-		<!-- description -->
+<div class="m-auto rounded bg-white max-w-[800px] p-5">
+	<!-- product name -->
+	<label class="form-control w-full">
 		<div class="label">
-			<span class="label-text text-lg font-semibold">Product description</span>
+			<span class="label-text text-lg font-semibold">Product name</span>
+			<!-- <span class="label-text-alt">Top Right label</span> -->
 		</div>
-		<ProductDescriptionEditor />
+		<input type="text" placeholder="Enter the product name" class="input input-bordered w-full" />
+		<div class="label">
+			<span class="label-text-alt"></span>
+			<span class="label-text-alt">{now.toDateString()}</span>
+		</div>
+	</label>
 
-		<!-- variants -->
-		<div class="flex items-center"></div>
+	<!-- description -->
+	<div class="label">
+		<span class="label-text text-lg font-semibold">Product description</span>
 	</div>
+	<ProductDescriptionEditor />
+
+	<!-- category -->
+	<ul class="menu menu-horizontal bg-base-200 rounded !flex-nowrap overflow-x-auto">
+		<li>
+			<a>Solutions lllllllllllllllllllllllllllllllll llllllllllllllllllllllllllllllll</a>
+			<ul>
+				<li><a>Design</a></li>
+				<li><a>Development</a></li>
+				<li><a>Hosting</a></li>
+				<li><a>Domain register</a></li>
+			</ul>
+		</li>
+		<li>
+			<a>Enterprise</a>
+			<ul>
+				<li><a>CRM software</a></li>
+				<li><a>Marketing management</a></li>
+				<li><a>Security</a></li>
+				<li><a>Consulting</a></li>
+			</ul>
+		</li>
+		<li>
+			<a>Products</a>
+			<ul>
+				<li><a>UI Kit</a></li>
+				<li><a>Wordpress themes</a></li>
+				<li><a>Wordpress plugins</a></li>
+				<li>
+					<a>Open source</a>
+					<ul>
+						<li><a>Auth management system</a></li>
+						<li><a>VScode theme</a></li>
+						<li><a>Color picker app</a></li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li>
+			<a>Company</a>
+			<ul>
+				<li><a>About us</a></li>
+				<li><a>Contact us</a></li>
+				<li><a>Privacy policy</a></li>
+				<li><a>Press kit</a></li>
+			</ul>
+		</li>
+	</ul>
+
+	<!-- variants -->
+	<div class="flex items-center"></div>
 </div>

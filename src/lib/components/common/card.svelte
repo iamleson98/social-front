@@ -1,9 +1,12 @@
 <script lang="ts">
+	import type { Snippet } from "svelte";
+
   interface Props {
     cardTitle: string;
+    children: Snippet;
   }
 
-  let { cardTitle }: Props = $props();
+  let { cardTitle, children }: Props = $props();
 </script>
 
 <div class="card">
@@ -12,7 +15,7 @@
       {cardTitle}
     </div>
     <div>
-      <slot />
+       {@render children()}
     </div>
   </div>
 </div>

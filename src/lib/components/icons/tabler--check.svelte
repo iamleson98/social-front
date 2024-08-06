@@ -3,6 +3,6 @@
 	stroke="currentColor"
 	stroke-linecap="round"
 	stroke-linejoin="round"
-	stroke-width="1.6"
+	stroke-width="2"
 	d="m5 12l5 5L20 7"
 />

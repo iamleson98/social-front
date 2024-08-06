@@ -1,28 +1,38 @@
 <script lang="ts">
 	import { ChevronDown, Icon } from '$lib/components/icons';
-	import { defaultBlockFormats, defaultInlineFormats } from '$lib/configs/lexical';
+	import {
+		defaultBlockFormats,
+		defaultInlineFormats,
+		type BlockType,
+		type InlineType,
+		type Styleformat
+	} from '$lib/configs/lexical';
 	import {
 		$isRangeSelection as isRangeSelection,
 		FORMAT_TEXT_COMMAND,
 		$isRootOrShadowRoot as isRootOrShadowRoot,
 		type LexicalEditor,
-		$getSelection as getSelection
+		$getSelection as getSelection,
+		$createParagraphNode as createParagraphNode
 	} from 'lexical';
 	import {
 		$getNearestNodeOfType as getNearestNodeOfType,
-		$findMatchingParent as findMatchingParent,
+		$findMatchingParent as findMatchingParent
 	} from '@lexical/utils';
 	import {
 		$isListNode as isListNode,
-		$handleListInsertParagraph as handleListInsertParagraph,
 		INSERT_CHECK_LIST_COMMAND,
 		INSERT_ORDERED_LIST_COMMAND,
 		INSERT_UNORDERED_LIST_COMMAND,
-		insertList,
-		REMOVE_LIST_COMMAND,
-		removeList,
 		ListNode
 	} from '@lexical/list';
+	import {
+		$createHeadingNode as createHeadingNode,
+		$createQuoteNode as createQuoteNode,
+		$isHeadingNode as isHeadingNode,
+		type HeadingTagType
+	} from '@lexical/rich-text';
+	import { $setBlocksType as setBlocksType } from '@lexical/selection';
 
 	type Props = {
 		/** indicates if editing mode is allowed */
@@ -35,13 +45,8 @@
 	let blockFormatState = $state.frozen({ ...defaultBlockFormats });
 	let inlineFormatState = $state.frozen({ ...defaultInlineFormats });
 
-	const blockFormatKeys = Object.keys(defaultBlockFormats) as Array<
-		keyof typeof defaultBlockFormats
-	>;
-
-	const inlineFormatKeys = Object.keys(defaultInlineFormats) as Array<
-		keyof typeof defaultInlineFormats
-	>;
+	let blockFormatType = $state<BlockType>('paragraph');
+	let selectedElementKey = $state<string | null>(null);
 
 	/** invoked every times a change is made */
 	const updateToolbarUI = async () => {
@@ -61,45 +66,31 @@
 			}
 
 			// update inline formats
-			inlineFormatState = {
-				...inlineFormatState,
-				bold: {
-					...inlineFormatState.bold,
-					active: selection.hasFormat('bold')
-				},
-				italic: {
-					...inlineFormatState.italic,
-					active: selection.hasFormat('italic')
-				},
-				underline: {
-					...inlineFormatState.underline,
-					active: selection.hasFormat('underline')
-				},
-				strikethrough: {
-					...inlineFormatState.strikethrough,
-					active: selection.hasFormat('strikethrough')
-				},
-				subscript: {
-					...inlineFormatState.subscript,
-					active: selection.hasFormat('subscript')
-				},
-				superscript: {
-					...inlineFormatState.superscript,
-					active: selection.hasFormat('superscript')
-				},
-				highlight: {
-					...inlineFormatState.highlight,
-					active: selection.hasFormat('highlight')
-				}
-			};
+			const newInlineState = {} as Record<InlineType, Styleformat>;
+			for (let key in inlineFormatState) {
+				newInlineState[key as InlineType] = {
+					icon: inlineFormatState[key as InlineType].icon,
+					tip: inlineFormatState[key as InlineType].tip,
+					active: selection.hasFormat(key as InlineType)
+				};
+			}
+
+			inlineFormatState = newInlineState;
 
 			const elementKey = element.getKey();
 			const elementDOM = editor?.getElementByKey(elementKey);
 
 			if (elementDOM !== null) {
+				selectedElementKey = elementKey;
+
 				if (isListNode(element)) {
 					const parentList = getNearestNodeOfType(anchorNode, ListNode);
-					const type = parentList ? parentList.getListType() : element.getListType();
+					blockFormatType = parentList ? parentList.getListType() : element.getListType();
+				} else {
+					const type = isHeadingNode(element) ? element.getTag() : element.getType();
+					if (type in defaultBlockFormats) {
+						blockFormatType = type as BlockType;
+					}
 				}
 			}
 		}
@@ -109,6 +100,37 @@
 		if (editor)
 			return editor.registerUpdateListener(({ editorState }) => editorState.read(updateToolbarUI));
 	});
+
+	const applyBlockFormat = (type: BlockType) => {
+		if (blockFormatType !== type && editor) {
+			switch (type) {
+				case 'bullet':
+					editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
+					return;
+				case 'check':
+					editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined);
+					return;
+				case 'number':
+					editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
+					return;
+				case 'h2':
+				case 'h3':
+				case 'quote':
+				case 'paragraph':
+					editor.update(() => {
+						const selection = getSelection();
+						setBlocksType(selection, () => {
+							if (type === 'paragraph') {
+								return createParagraphNode();
+							} else if (type === 'h2' || type === 'h3') {
+								return createHeadingNode(type as HeadingTagType);
+							}
+							return createQuoteNode();
+						});
+					});
+			}
+		}
+	};
 </script>
 
 <div class="flex items-center gap-1">
@@ -118,17 +140,23 @@
 			Click
 			<Icon icon={ChevronDown} />
 		</button>
-		<ul class="dropdown-content menu bg-base-100 rounded z-10 p-1">
-			{#each blockFormatKeys as blockKey, idx (idx)}
-				{@const blockFormat = blockFormatState[blockKey]}
-
-				<li>
-					<span class="flex items-center gap-2 px-2 py-1 justify-start">
-						<Icon icon={blockFormat.icon} class="mr-2" />
-						<span>
-							{blockKey}
-						</span>
-					</span>
+		<ul class="dropdown-content menu bg-base-100 z-10 shadow rounded w-52">
+			{#each Object.keys(blockFormatState) as blockKey, idx (idx)}
+				{@const blockFormat = blockFormatState[blockKey as BlockType]}
+				<!-- svelte-ignore a11y_no_noninteractive_element_to_interactive_role -->
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<li
+					class:!bg-blue-100={blockFormatType === blockKey}
+					class:!text-blue-600={blockFormatType === blockKey}
+					role="button"
+					tabindex="0"
+					onclick={() => applyBlockFormat(blockKey as BlockType)}
+				>
+					<!-- svelte-ignore a11y_missing_attribute -->
+					<a>
+						<Icon icon={blockFormat.icon} />
+						{blockFormat.tip}
+					</a>
 				</li>
 			{/each}
 		</ul>
@@ -136,8 +164,8 @@
 
 	<!-- inline format -->
 	<div class="flex items-center gap-1">
-		{#each inlineFormatKeys as inlineKey, idx (idx)}
-			{@const inlineFormat = inlineFormatState[inlineKey]}
+		{#each Object.keys(inlineFormatState) as inlineKey, idx (idx)}
+			{@const inlineFormat = inlineFormatState[inlineKey as InlineType]}
 
 			<button
 				class="inline-format-button btn btn-square btn-sm"
@@ -145,7 +173,7 @@
 				class:!text-blue-600={inlineFormat.active}
 				tabindex="0"
 				aria-label={inlineKey}
-				onclick={() => editor?.dispatchCommand(FORMAT_TEXT_COMMAND, inlineKey)}
+				onclick={() => editor?.dispatchCommand(FORMAT_TEXT_COMMAND, inlineKey as InlineType)}
 				{disabled}
 			>
 				<Icon icon={inlineFormat.icon} />

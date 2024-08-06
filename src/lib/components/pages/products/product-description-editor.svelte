@@ -1,20 +1,17 @@
 <script lang="ts">
-	import { editorStore } from '$lib/stores/app/editor';
-	import { get } from 'svelte/store';
 	import DescriptionEditorToolbar from './product-description-editor-toolbar.svelte';
-	import { onMount, tick } from 'svelte';
+	import { onMount } from 'svelte';
 	import { mergeRegister } from '@lexical/utils';
 	import { registerRichText } from '@lexical/rich-text';
 	import { createEmptyHistoryState, registerHistory } from '@lexical/history';
 	import {
-		COMMAND_PRIORITY_CRITICAL,
 		COMMAND_PRIORITY_LOW,
 		createEditor,
 		INSERT_PARAGRAPH_COMMAND,
-		SELECTION_CHANGE_COMMAND,
 		type LexicalEditor
 	} from 'lexical';
 	import {
+		$handleListInsertParagraph as handleListInsertParagraph,
 		INSERT_CHECK_LIST_COMMAND,
 		INSERT_ORDERED_LIST_COMMAND,
 		INSERT_UNORDERED_LIST_COMMAND,
@@ -74,57 +71,55 @@
 	onMount(() => {
 		activeEditor = createEditor(editorConfig);
 		activeEditor.setRootElement(ref);
-
-		tick();
-
-		// register all plugins
-		return mergeRegister(
-			activeEditor.registerEditableListener((editable) => (isEditable = editable)),
-			registerRichText(activeEditor),
-			registerHistory(activeEditor, createEmptyHistoryState(), 1000),
-			activeEditor.registerCommand(
-				INSERT_ORDERED_LIST_COMMAND,
-				() => {
-					insertList(activeEditor as LexicalEditor, 'number');
-					return true;
-				},
-				COMMAND_PRIORITY_LOW
-			),
-			activeEditor.registerCommand(
-				INSERT_UNORDERED_LIST_COMMAND,
-				() => {
-					insertList(activeEditor as LexicalEditor, 'bullet');
-					return true;
-				},
-				COMMAND_PRIORITY_LOW
-			),
-			activeEditor.registerCommand(
-				INSERT_CHECK_LIST_COMMAND,
-				() => {
-					insertList(activeEditor as LexicalEditor, 'check');
-					return true;
-				},
-				COMMAND_PRIORITY_LOW
-			),
-			activeEditor.registerCommand(
-				REMOVE_LIST_COMMAND,
-				() => {
-					removeList(activeEditor as LexicalEditor);
-					return true;
-				},
-				COMMAND_PRIORITY_LOW
-			),
-			activeEditor.registerCommand(
-				INSERT_PARAGRAPH_COMMAND,
-				handleListInsertParagraph,
-				COMMAND_PRIORITY_LOW
-			)
-		);
 	});
 
-	function handleListInsertParagraph(payload: void, editor: LexicalEditor): boolean {
-		throw new Error('Function not implemented.');
-	}
+	$effect(() => {
+		if (activeEditor) {
+			// register all plugins
+			return mergeRegister(
+				activeEditor.registerEditableListener((editable) => (isEditable = editable)),
+				registerRichText(activeEditor),
+				registerHistory(activeEditor, createEmptyHistoryState(), 1000),
+				activeEditor.registerCommand(
+					INSERT_ORDERED_LIST_COMMAND,
+					() => {
+						insertList(activeEditor as LexicalEditor, 'number');
+						return true;
+					},
+					COMMAND_PRIORITY_LOW
+				),
+				activeEditor.registerCommand(
+					INSERT_UNORDERED_LIST_COMMAND,
+					() => {
+						insertList(activeEditor as LexicalEditor, 'bullet');
+						return true;
+					},
+					COMMAND_PRIORITY_LOW
+				),
+				activeEditor.registerCommand(
+					INSERT_CHECK_LIST_COMMAND,
+					() => {
+						insertList(activeEditor as LexicalEditor, 'check');
+						return true;
+					},
+					COMMAND_PRIORITY_LOW
+				),
+				activeEditor.registerCommand(
+					REMOVE_LIST_COMMAND,
+					() => {
+						removeList(activeEditor as LexicalEditor);
+						return true;
+					},
+					COMMAND_PRIORITY_LOW
+				),
+				activeEditor.registerCommand(
+					INSERT_PARAGRAPH_COMMAND,
+					handleListInsertParagraph,
+					COMMAND_PRIORITY_LOW
+				)
+			);
+		}
+	});
 </script>
 
 <div>

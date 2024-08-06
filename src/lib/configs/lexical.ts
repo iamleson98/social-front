@@ -1,6 +1,6 @@
 import type { CreateEditorArgs, ElementNode, RangeSelection, TextFormatType, TextNode } from 'lexical';
 import { $isAtNodeEnd } from '@lexical/selection';
-import { Bold, BulletList, CheckList, Heading2, Heading3, Highlight, Italic, NumberList, StrikeThrough, Subscript, Superscript, Underline, type IconType } from '$lib/components/icons';
+import { Bold, BulletList, CheckList, Heading2, Heading3, Highlight, Italic, NumberList, Paragraph, Quote, StrikeThrough, Subscript, Superscript, Underline, type IconType } from '$lib/components/icons';
 import { IS_APPLE } from '@lexical/utils';
 import { ListItemNode, ListNode, type ListType } from '@lexical/list';
 import { HeadingNode, QuoteNode, type HeadingTagType } from '@lexical/rich-text';
@@ -19,7 +19,9 @@ export const editorConfig: CreateEditorArgs = {
   ],
 };
 
-export const defaultInlineFormats: Readonly<Record<Exclude<TextFormatType, 'code'>, Styleformat>> = {
+export type InlineType = Exclude<TextFormatType, 'code'>;
+
+export const defaultInlineFormats: Readonly<Record<InlineType, Styleformat>> = {
   bold: {
     icon: Bold,
     active: false,
@@ -57,10 +59,15 @@ export const defaultInlineFormats: Readonly<Record<Exclude<TextFormatType, 'code
   }
 };
 
-type BlockType = ListType | Exclude<HeadingTagType, 'h1' | 'h4' | 'h5' | 'h6'>;
+export type BlockType = ListType | Exclude<HeadingTagType, 'h1' | 'h4' | 'h5' | 'h6'> | 'quote' | 'paragraph';
 
 
 export const defaultBlockFormats: Readonly<Record<BlockType, Styleformat>> = {
+  paragraph: {
+    icon: Paragraph,
+    active: false,
+    tip: 'Normal',
+  },
   number: {
     icon: NumberList,
     active: false,
@@ -86,9 +93,15 @@ export const defaultBlockFormats: Readonly<Record<BlockType, Styleformat>> = {
     active: false,
     tip: 'Heading 3',
   },
+  quote: {
+    icon: Quote,
+    active: false,
+    tip: 'Quote',
+  },
+
 };
 
-type Styleformat = {
+export type Styleformat = {
   icon: IconType;
   active: boolean;
   tip: string;
