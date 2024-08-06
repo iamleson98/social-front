@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Editor from '$lib/components/common/lexical-editor/editor.svelte';
 	import Rating from '$lib/components/pages/products/rating.svelte';
 	import { Select } from '$lib/components/ui/select';
 </script>
@@ -25,4 +24,4 @@
 	label="Select an option"
 />
 
-<Editor />
+
