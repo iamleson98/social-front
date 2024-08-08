@@ -11,7 +11,7 @@ export type PythonBackendError = {
 /**
  * Common result type for backend python call only.
  */
-type PythonBackendResult = any & PythonBackendError;
+type PythonBackendResult = unknown & PythonBackendError;
 
 /**
  * Common result type for svelte frontend side calls only.

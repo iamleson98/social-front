@@ -30,7 +30,6 @@
 		$createHeadingNode as createHeadingNode,
 		$createQuoteNode as createQuoteNode,
 		$isHeadingNode as isHeadingNode,
-		type HeadingTagType
 	} from '@lexical/rich-text';
 	import { $setBlocksType as setBlocksType } from '@lexical/selection';
 
@@ -103,31 +102,24 @@
 
 	const applyBlockFormat = (type: BlockType) => {
 		if (blockFormatType !== type && editor) {
-			switch (type) {
-				case 'bullet':
-					editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
-					return;
-				case 'check':
-					editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined);
-					return;
-				case 'number':
-					editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
-					return;
-				case 'h2':
-				case 'h3':
-				case 'quote':
-				case 'paragraph':
-					editor.update(() => {
-						const selection = getSelection();
-						setBlocksType(selection, () => {
-							if (type === 'paragraph') {
-								return createParagraphNode();
-							} else if (type === 'h2' || type === 'h3') {
-								return createHeadingNode(type as HeadingTagType);
-							}
-							return createQuoteNode();
-						});
+			if (type === 'bullet') {
+				editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
+			} else if (type === 'check') {
+				editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined);
+			} else if (type === 'number') {
+				editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
+			} else if (['h2', 'h3', 'quote', 'paragraph'].includes(type)) {
+				editor.update(() => {
+					const selection = getSelection();
+					setBlocksType(selection, () => {
+						if (type === 'paragraph') {
+							return createParagraphNode();
+						} else if (type === 'h2' || type === 'h3') {
+							return createHeadingNode(type);
+						}
+						return createQuoteNode();
 					});
+				});
 			}
 		}
 	};

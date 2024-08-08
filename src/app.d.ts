@@ -1,15 +1,20 @@
-// See https://kit.svelte.dev/docs/types#app
-// for information about these interfaces
-import 'unplugin-icons/types/svelte'
 
-declare global {
-	namespace App {
-		// interface Error {}
-		// interface Locals {}
-		// interface PageData {}
-		// interface PageState {}
-		// interface Platform {}
+declare namespace App {
+	interface PageData {
+		meta: {
+			title: string;
+			description: string;
+			imageUrl?: string;
+		};
+	}
+
+	interface Error {
+		message: string;
+		code?: number | string;
 	}
 }
 
-export {};
+declare module '$env/static/public' {
+	export const VITE_GRAPHQL_API_END_POINT: string;
+	export const VITE_LOCAL_URL: string;
+}

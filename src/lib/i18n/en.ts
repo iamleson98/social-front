@@ -28,7 +28,13 @@ export default {
     "emailPlaceholder": "Please enter your email *",
     "yes": "yes",
     "no": "no",
-    "passwordPlaceholder": "Please enter your password *"
+    "passwordPlaceholder": "Please enter your password *",
+    "level1": "Level 1",
+    "level2": "Level 2",
+    "level3": "Level 3",
+    "level4": "Level 4",
+    "level5": "Level 5",
+    "level6": "Level 6",
   },
   "product": {
     "chooseAddress": "Please choose address",

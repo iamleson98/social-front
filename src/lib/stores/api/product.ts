@@ -58,6 +58,68 @@ export interface CategoryListInput {
 	backgroundFormat?: ThumbnailFormatEnum;
 }
 
+export type CategoryListForCreateProductInput = {
+	first?: number;
+	level?: number;
+	after?: string;
+	childrenLevelOneAfter?: string;
+	childrenLevelTwoAfter?: string;
+};
+
+export const CATEGORIES_LIST_FOR_CREATE_PRODUCT = gql`
+	query CategoriesWithChildren(
+		$first: Int
+		$level: Int
+		$after: String
+		$childrenLevelOneAfter: String
+		$childrenLevelTwoAfter: String
+	) {
+		categories(first: $first, level: $level, after: $after) {
+			edges {
+				cursor
+				node {
+					id
+					name
+					level
+					children(first: $first, after: $childrenLevelOneAfter) {
+						edges {
+							node {
+								id
+								name
+								level
+								children(first: $first, after: $childrenLevelTwoAfter) {
+									edges {
+										node {
+											id
+											name
+											level
+										}
+									}
+									pageInfo {
+										endCursor
+										hasNextPage
+									}
+								}
+							}
+						}
+						pageInfo {
+							endCursor
+							hasNextPage
+						}
+					}
+				}
+			}
+			pageInfo {
+				endCursor
+				hasNextPage
+			}
+		}
+	}
+`
+
+/**  
+ * `level` starts at 0
+ */
 export const CATEGORIES_LIST_QUERY_STORE = gql<CategoryCountableConnection, CategoryListInput>`
 	query Categories(
 		$filter: CategoryFilterInput
@@ -93,6 +155,7 @@ export const CATEGORIES_LIST_QUERY_STORE = gql<CategoryCountableConnection, Cate
 					id
 					name
 					slug
+					level
 					backgroundImage(size: $backgroundSize, format: $backgroundFormat) {
 						url
 						alt
@@ -103,13 +166,11 @@ export const CATEGORIES_LIST_QUERY_STORE = gql<CategoryCountableConnection, Cate
 	}
 `;
 
-
-
 /**
  * @imageFormat default to WEBP
  * @backgroundSize default to 250
- * @firstNumOfChildren default to 10
- * @lastNumOfChildren default to 10
+ * @first default to 10
+ * @last default to 10
  */
 export const CATEGORY_DETAIL_QUERY_STORE = gql`
 	query Category(
@@ -117,8 +178,8 @@ export const CATEGORY_DETAIL_QUERY_STORE = gql`
 		$id: ID
 		$backgroundSize: Int = 250
 		$imageFormat: ThumbnailFormatEnum = WEBP
-		$firstNumOfChildren: Int = 10
-		$lastNumOfChildren: Int = 10
+		$first: Int = 10
+		$last: Int = 10
 		$before: String
 		$after: String
 	) {
@@ -131,8 +192,8 @@ export const CATEGORY_DETAIL_QUERY_STORE = gql`
 				alt
 			}
 			children(
-				first: $firstNumOfChildren
-				last: $lastNumOfChildren
+				first: $first
+				last: $last
 				before: $before
 				after: $after
 			) {

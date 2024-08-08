@@ -62,6 +62,7 @@
 	const inputId = `combobox-${id}`;
 	const listboxId = `listbox-${id}`;
 
+	// 
 	$effect(() => {
 		const { unsubscribe } = pipe(
 			fromDomEvent(input, 'input'),
@@ -134,7 +135,7 @@
 		aria-selected={selectedIndex === idx}
 		role="option"
 		aria-disabled={disabled}
-		class={`${className} text-left w-full px-4 py-2 hover:bg-gray-100 aria-selected:bg-gray-100`}
+		class={`${className} text-left w-full px-4 py-2 hover:bg-blue-50 aria-selected:bg-blue-50 hover:text-blue-600`}
 		bind:this={optionRefs[idx]}
 		{onclick}
 	>
@@ -180,7 +181,7 @@
 			class:!pl-8={searchFocus}
 			class:!rounded-b-none={openSelect}
 			class:cursor-pointer={!searchFocus}
-			class="text-left w-full !pr-12 transition-all"
+			class="w-full !pr-12 transition-all !outline-0"
 			id={inputId}
 			onclick={activate}
 			onfocus={activate}
@@ -246,8 +247,7 @@
 		role="listbox"
 		id={listboxId}
 		transition:fly={{ duration: 250 }}
-		class="absolute text-left text-sm w-full max-h-64 overflow-y-auto bg-white border-t-0 border-gray-300 rounded-b-xl z-10"
-		class:border={openSelect}
+		class="absolute text-left text-sm w-full max-h-64 overflow-y-auto bg-white rounded-b-xl z-10 shadow-sm"
 		tabindex="-1"
 	>
 		{#if openSelect}
@@ -260,7 +260,7 @@
 					value: 'No results found'
 				})}
 			{/if}
-			{#each filteredOptions as option, idx (option.label)}
+			{#each filteredOptions as option, idx (idx)}
 				{@render selectOption({
 					idx,
 					disabled: false,

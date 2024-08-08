@@ -2,7 +2,7 @@
 	import { graphqlClient } from '$lib/client';
 	import type { Category, PageInfo } from '$lib/gql/graphql';
 	import { CATEGORIES_LIST_QUERY_STORE } from '$lib/stores/api/product';
-	import { handleResult } from '$lib/utils/utils';
+	import { preHandleGraphqlResult } from '$lib/utils/utils';
 
 	let loading = $state(true);
 	let categories = $state.frozen<Category[]>([]);
@@ -14,7 +14,7 @@
 				first: 10
 			})
 			.subscribe((result) => {
-				if (handleResult(result)) return;
+				if (preHandleGraphqlResult(result)) return;
 
 				if (result.data) {
 					categories = result.data.edges.map(({ node }) => node);

@@ -1,21 +1,23 @@
-FROM node:20-alpine AS base
+# build
+FROM node:20-alpine AS builder
+RUN corepack enable
+RUN corepack prepare pnpm@9.6.0 --activate
 
-# Install dependencies only when needed
-FROM base AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
 WORKDIR /app
-
-
-# Get PNPM version from package.json
-RUN export PNPM_VERSION=$(cat package.json | jq '.engines.pnpm' | sed -E 's/[^0-9.]//g')
-
-COPY package.json pnpm-lock.yaml ./
-RUN yarn global add pnpm@$PNPM_VERSION
-RUN pnpm i --frozen-lockfile --prefer-offline
-
-# Rebuild the source code only when needed
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+COPY package.json pnpm-lock.yaml svelte.config.js ./
+RUN pnpm install --frozen-lockfile
 COPY . .
+RUN pnpm run build
+RUN pnpm prune --production
+
+# deploy
+FROM node:20-alpine
+ENV VITE_GRAPHQL_API_END_POINT="https://sitename.saleor.cloud/graphql/"
+ENV VITE_LOCAL_URL="http://localhost:5173"
+WORKDIR /app
+COPY --from=builder /app/build build/
+COPY --from=builder /app/node_modules node_modules/
+COPY package.json .
+EXPOSE 3000
+ENV NODE_ENV=production
+CMD ["node", "build"]

@@ -4,7 +4,7 @@ export default {
     "signinButton": "Đăng nhập",
     "rememberMe": "Ghi nhớ đăng nhập",
     "noAccount": "Bạn chưa có tài khoản?",
-    "forgotPassword": "Bạn quên mật khẩu?"
+    "forgotPassword": "Bạn quên mật khẩu?",
   },
   "signup": {
     "title": "Đăng ký",
@@ -13,22 +13,28 @@ export default {
     "lastNamePlaceholder": "Vui lòng nhập tên *",
     "confirmPasswordPlaceholder": "Vui lòng xác nhận mật khẩu *",
     "agreeToTerms": "Tôi đồng ý với các điều khoản và điều kiện",
-    "alreadyHasAccount": "Bạn đã có tài khoản?"
+    "alreadyHasAccount": "Bạn đã có tài khoản?",
   },
   "resetPassword": {
     "title": "Yêu cầu đặt lại mật khẩu",
-    "btnText": "Gửi email cho tôi"
+    "btnText": "Gửi email cho tôi",
   },
   "changePassword": {
     "title": "Thay đổi mật khẩu",
-    "btnText": "Đổi mật khẩu"
+    "btnText": "Đổi mật khẩu",
   },
   "common": {
     "home": "Trang chủ",
     "emailPlaceholder": "Vui lòng điền email *",
     "passwordPlaceholder": "Vui lòng điền mật khẩu *",
     "yes": "có",
-    "no": "không"
+    "no": "không",
+    "level1": "Cấp 1",
+    "level2": "Cấp 2",
+    "level3": "Cấp 3",
+    "level4": "Cấp 4",
+    "level5": "Cấp 5",
+    "level6": "Cấp 6",
   },
   "product": {
     "chooseAddress": "Vui lòng chọn địa chỉ",

@@ -11,15 +11,21 @@ export const editorJsParser = editorJsToHtml();
 let _count = 0;
 export const randomID = () => `id=${_count++}`;
 
+/**
+ * this type represents the graphql query params that are used for pagination.
+ */
 export type PaginationOptions = {
-  before?: string | null | undefined;
-  after?: string | null | undefined;
-  first?: number | null | undefined;
-  last?: number | null | undefined;
+  before?: string;
+  after?: string;
+  first?: number;
+  last?: number;
 };
 
-export function constructPagination<T extends PaginationOptions>(before?: string, after?: string, first?: number, last?: number) {
-  const pagination: Pick<T, 'before' | 'after' | 'first' | 'last'> = {};
+/**
+  * A helper method that takes any type that have `before`, `after`, `first`, `last` fields and construct a pagination object.
+ */
+export function constructPaginationParams<T extends PaginationOptions>({ before, after, first, last }: T): PaginationOptions {
+  const pagination = {} as PaginationOptions;
   if (before) {
     pagination.before = before;
   } else if (after) {
@@ -84,11 +90,11 @@ const REGEX_START_WITH_BASE = new RegExp(`^${base}`)
 export const getPathnameWithoutBase = (url: URL) => url.pathname.replace(REGEX_START_WITH_BASE, '');
 
 /**
- * A shortcut to handle the result of a GraphQL query or mutation.
+ * If given `result` has an error, it will show a toast message with the error message.
  * @param result GraphQl query, operation results
  * @returns `true` if there is an error, `false` otherwise.
  */
-export const handleResult = <T, K extends AnyVariables>(result: OperationResult<T, K>): boolean => {
+export const preHandleGraphqlResult = <T, K extends AnyVariables>(result: OperationResult<T, K>): boolean => {
   if (result.error) {
     toastStore.send({
       message: result.error.message,
@@ -99,3 +105,22 @@ export const handleResult = <T, K extends AnyVariables>(result: OperationResult<
 
   return false;
 }
+
+export type PredicateFunc<T> = (obj: T) => boolean;
+
+export const recursiveSearch = <T extends { children?: T[] }>(arr: T[], prec: PredicateFunc<T>): T | null => {
+  if (arr.length === 0) return null;
+
+  for (const obj of arr) {
+    if (prec(obj)) return obj;
+
+    if (obj.children) {
+      const res = recursiveSearch(obj.children, prec);
+      if (res) {
+        return res;
+      }
+    }
+  }
+
+  return null;
+};

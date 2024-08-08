@@ -23,7 +23,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { graphqlClient } from '$lib/client';
 	import { PRODUCT_VARIANTS_QUERY_STORE } from '$lib/stores/api';
-	import { handleResult } from '$lib/utils/utils';
+	import { preHandleGraphqlResult } from '$lib/utils/utils';
 	import { onMount, type Snippet } from 'svelte';
 
 	interface Props {
@@ -105,7 +105,7 @@
 					}
 				)
 				.subscribe((result) => {
-					if (handleResult(result)) return;
+					if (preHandleGraphqlResult(result)) return;
 
 					let variantMedias: ProductMedia[] = [];
 					let fullVariants: ProductVariant[] = [];

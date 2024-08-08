@@ -13,10 +13,10 @@
 		bgFrom?: string;
 		bgTo?: string;
 		selected?: boolean;
-		onClick: MouseEventHandler<HTMLDivElement> | null | undefined;
+		onclick: MouseEventHandler<HTMLDivElement> | null | undefined;
 	}
 
-	let { icon, name, bgFrom, bgTo, selected, onClick }: Props = $props();
+	let { icon, name, bgFrom, bgTo, selected, onclick }: Props = $props();
 </script>
 
 <div
