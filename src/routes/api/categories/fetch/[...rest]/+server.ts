@@ -1,10 +1,10 @@
-import { json, ServerLoad } from "@sveltejs/kit";
+// import { json, ServerLoad } from "@sveltejs/kit";
 
-export const GET: ServerLoad = async (event) => {
-  // const { url } = event;
-  // console.log(url);
-  // request.url
-  // return json({ params })
+// export const GET: ServerLoad = async (event) => {
+//   // const { url } = event;
+//   // console.log(url);
+//   // request.url
+//   // return json({ params })
 
-  // url.searchParams.get
-};
+//   // url.searchParams.get
+// };
