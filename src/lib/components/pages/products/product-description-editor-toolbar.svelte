@@ -125,7 +125,7 @@
 	};
 </script>
 
-<div class="flex items-center gap-1">
+<div class="flex items-center gap-1 mb-2">
 	<!-- block format -->
 	<div class="dropdown dropdown-bottom">
 		<button class="btn btn-sm no-animation" tabindex="0" {disabled}>
@@ -143,6 +143,7 @@
 					role="button"
 					tabindex="0"
 					onclick={() => applyBlockFormat(blockKey as BlockType)}
+					class="rounded-md"
 				>
 					<!-- svelte-ignore a11y_missing_attribute -->
 					<a>

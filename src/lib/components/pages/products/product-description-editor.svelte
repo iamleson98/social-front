@@ -5,6 +5,9 @@
 	import { registerRichText } from '@lexical/rich-text';
 	import { createEmptyHistoryState, registerHistory } from '@lexical/history';
 	import {
+		$getRoot as getRoot,
+		CLEAR_EDITOR_COMMAND,
+		COMMAND_PRIORITY_EDITOR,
 		COMMAND_PRIORITY_LOW,
 		createEditor,
 		INSERT_PARAGRAPH_COMMAND,
@@ -71,6 +74,10 @@
 	onMount(() => {
 		activeEditor = createEditor(editorConfig);
 		activeEditor.setRootElement(ref);
+
+		return () => {
+			activeEditor?.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
+		};
 	});
 
 	$effect(() => {
@@ -116,6 +123,17 @@
 					INSERT_PARAGRAPH_COMMAND,
 					handleListInsertParagraph,
 					COMMAND_PRIORITY_LOW
+				),
+				activeEditor.registerCommand(
+					CLEAR_EDITOR_COMMAND,
+					() => {
+						activeEditor?.update(() => {
+							const root = getRoot();
+							root.clear();
+						});
+						return true;
+					},
+					COMMAND_PRIORITY_EDITOR
 				)
 			);
 		}
@@ -147,6 +165,6 @@
 		{tabindex}
 		{spellcheck}
 		{style}
-		class={`${className} border-0 text-sm block relative tab-size-[1] outline-0 outline-none p-2.5 min-h-36 tablet:p-2`}
+		class={`${className} border rounded text-sm block relative tab-size-[1] outline-0 outline-none p-2.5 min-h-36 tablet:p-2`}
 	/>
 </div>
