@@ -7,16 +7,25 @@
 	} from '$lib/stores/api/product';
 	import { preHandleGraphqlResult } from '$lib/utils/utils';
 	import { onMount, tick } from 'svelte';
-	import SelectorColumn from './category-selector-level-column.svelte';
+	import { tClient } from '$i18n';
+	import { scrollToEnd } from '$lib/actions/scroll-end';
 
-	let loading = $state(false);
-	let categories = $state.frozen<Record<number, CategoryCountableConnection | undefined>>({});
-	let categoryLevels = $derived.by(() => Object.keys(categories).map(Number).sort());
+	const categoryLevelsMap: Record<number, string> = {
+		0: tClient('common.level1'),
+		1: tClient('common.level2'),
+		2: tClient('common.level3'),
+		3: tClient('common.level4'),
+		4: tClient('common.level5')
+	};
 	const NUMBER_OF_CATEGORIES_PER_FETCH = 20;
 
-	const loadCategories = async (level: number) => {
-		loading = true;
+	let loading = $state(true);
+	let categories = $state.frozen<Record<number, CategoryCountableConnection | undefined>>({});
+	let categoryLevels = $derived.by(() => Object.keys(categories).map(Number).sort());
+	let activeCategoryIndices = $state.frozen<number[]>([]);
+	let categoryColumnRefs = $state<HTMLUListElement[]>([]);
 
+	const loadCategories = async (level: number) => {
 		let variables: CategoryListForCreateProductInput = {
 			level,
 			first: NUMBER_OF_CATEGORIES_PER_FETCH
@@ -43,8 +52,9 @@
 	};
 
 	const handleCategoryClick = (
-		clickLevel: number,
-		{ node: { children } }: CategoryCountableEdge
+		clickLevel: number /** 0 based */,
+		{ node: { children } }: CategoryCountableEdge,
+		selectedIndex: number
 	) => {
 		const tempCategories = {
 			...categories,
@@ -56,21 +66,57 @@
 			i++;
 		}
 		categories = tempCategories;
+		activeCategoryIndices = [...activeCategoryIndices.slice(0, clickLevel), selectedIndex];
 	};
 
-	onMount(() => {
-		// we initially load the first level of categories
-		const unsub = loadCategories(0);
-
-		return unsub;
+	onMount(async () => {
+		await loadCategories(0);
 	});
 </script>
 
-<ul class="menu menu-horizontal rounded !flex-nowrap w-full max-h-96 bg-gray-50">
-	{#each categoryLevels as level, idx (idx)}
+{#snippet loadingMoreCategories()}
+	<li>
+		<span class="flex justify-center">
+			<span class="loading loading-dots loading-xs"></span>
+		</span>
+	</li>
+{/snippet}
+
+<ul
+	class="menu menu-horizontal rounded !flex-nowrap tablet:!flex-wrap w-full max-h-96 tablet:max-h-fit bg-gray-50"
+>
+	{#each categoryLevels as level, levelIdx (levelIdx)}
 		{@const children = categories[level]}
 		{#if children}
-			<SelectorColumn {level} {children} onActivateIndex={handleCategoryClick} />
+			<li class="w-1/4 !flex-nowrap tablet:w-1/2 max-h-80">
+				<!-- svelte-ignore a11y_missing_attribute -->
+				<a class="!pointer-events-none">{categoryLevelsMap[level]}</a>
+				<ul
+					class="sitename-scrollbar overflow-y-auto overflow-x-hidden"
+					use:scrollToEnd={{
+						onScrollToEnd: console.log
+					}}
+				>
+					{#each children.edges as edge, categoryIdx (categoryIdx)}
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
+						<!-- svelte-ignore a11y_no_noninteractive_element_to_interactive_role -->
+						<li
+							role="button"
+							tabindex="0"
+							onclick={() => handleCategoryClick(level, edge, categoryIdx)}
+							class="rounded-md !outline-none"
+							class:!bg-blue-100={categoryIdx === activeCategoryIndices[levelIdx]}
+							class:!text-blue-600={categoryIdx === activeCategoryIndices[levelIdx]}
+						>
+							<span>{edge.node.name}</span>
+						</li>
+					{/each}
+					<!--  -->
+					{#if loading}
+						{@render loadingMoreCategories()}
+					{/if}
+				</ul>
+			</li>
 		{/if}
 	{/each}
 </ul>

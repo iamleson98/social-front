@@ -39,4 +39,3 @@ export function clickOutside(node: HTMLElement, options: Options = {}): ActionRe
     },
   };
 }
-

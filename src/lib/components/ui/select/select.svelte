@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { clickOutside } from '$lib/actions/click-outside';
 	import { focusOutside } from '$lib/actions/focus-outside';
+	import { debounceInput } from '$lib/actions/input-debounce';
 	import { shortcuts } from '$lib/actions/shortcut';
 	import { ChevronSort, CloseX, Icon, Search } from '$lib/components/icons';
-	import { DEBOUNCE_INPUT_TIME } from '$lib/utils/consts';
 	import { randomID } from '$lib/utils/utils';
 	import { tick } from 'svelte';
 	import { fly } from 'svelte/transition';
-	import { fromDomEvent, pipe, subscribe, debounce } from 'wonka';
 
 	type Option = {
 		value: string;
@@ -62,21 +61,12 @@
 	const inputId = `combobox-${id}`;
 	const listboxId = `listbox-${id}`;
 
-	// 
-	$effect(() => {
-		const { unsubscribe } = pipe(
-			fromDomEvent(input, 'input'),
-			debounce(() => DEBOUNCE_INPUT_TIME),
-			subscribe((_) => {
-				openDropdown();
-				searchQuery = input.value.trim();
-				selectedIndex = undefined;
-				optionRefs[0]?.scrollIntoView({ block: 'nearest' });
-			})
-		);
-
-		return unsubscribe;
-	});
+	const onInput = () => {
+		openDropdown();
+		searchQuery = input.value.trim();
+		selectedIndex = undefined;
+		optionRefs[0]?.scrollIntoView({ block: 'nearest' });
+	};
 
 	const deactivate = () => {
 		searchQuery = selectedOption?.label || '';
@@ -188,6 +178,9 @@
 			value={searchQuery}
 			type="text"
 			role="combobox"
+			use:debounceInput={{
+				onInput
+			}}
 			use:shortcuts={[
 				{
 					shortcut: { key: 'ArrowUp' },

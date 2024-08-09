@@ -29,7 +29,7 @@
 	import {
 		$createHeadingNode as createHeadingNode,
 		$createQuoteNode as createQuoteNode,
-		$isHeadingNode as isHeadingNode,
+		$isHeadingNode as isHeadingNode
 	} from '@lexical/rich-text';
 	import { $setBlocksType as setBlocksType } from '@lexical/selection';
 
@@ -159,17 +159,19 @@
 		{#each Object.keys(inlineFormatState) as inlineKey, idx (idx)}
 			{@const inlineFormat = inlineFormatState[inlineKey as InlineType]}
 
-			<button
-				class="inline-format-button btn btn-square btn-sm"
-				class:!bg-blue-100={inlineFormat.active}
-				class:!text-blue-600={inlineFormat.active}
-				tabindex="0"
-				aria-label={inlineKey}
-				onclick={() => editor?.dispatchCommand(FORMAT_TEXT_COMMAND, inlineKey as InlineType)}
-				{disabled}
-			>
-				<Icon icon={inlineFormat.icon} />
-			</button>
+			<div class="tooltip" data-tip={inlineFormat.tip}>
+				<button
+					class="inline-format-button btn btn-square btn-sm"
+					class:!bg-blue-100={inlineFormat.active}
+					class:!text-blue-600={inlineFormat.active}
+					tabindex="0"
+					aria-label={inlineKey}
+					onclick={() => editor?.dispatchCommand(FORMAT_TEXT_COMMAND, inlineKey as InlineType)}
+					{disabled}
+				>
+					<Icon icon={inlineFormat.icon} />
+				</button>
+			</div>
 		{/each}
 	</div>
 </div>
