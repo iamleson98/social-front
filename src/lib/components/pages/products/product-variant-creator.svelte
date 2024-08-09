@@ -17,7 +17,7 @@
 	};
 
 	const MAX_VARIANT_TYPES = 2;
-	const MAX_VALUES_PER_VARIANT = 5;
+	const MAX_VALUES_PER_VARIANT = 4;
 
 	let variants = $state.frozen<Variant[]>([
 		{
@@ -104,11 +104,11 @@
 		if (variants.length < MAX_VARIANT_TYPES) {
 			variants = variants.concat({
 				name: {
-					value: 'Size'
+					value: 'size'
 				},
 				values: [
 					{
-						value: 'M'
+						value: 'm'
 					}
 				]
 			});
@@ -152,7 +152,7 @@
 	};
 </script>
 
-{#snippet evalError(message?: string)}
+{#snippet variantError(message?: string)}
 	{#if message}
 		<span class="text-red-500 text-xs" transition:fly>{message}</span>
 	{/if}
@@ -183,7 +183,7 @@
 
 <!-- composer -->
 <div
-	class="flex gap-1 mb-3 mobile-l:flex-wrap flex-nowrap"
+	class="flex gap-1 mb-10 mobile-l:flex-wrap flex-nowrap"
 	class:items-center={variants.length < MAX_VARIANT_TYPES}
 >
 	{#each variants as variant, variantIdx (variantIdx)}
@@ -196,7 +196,7 @@
 			<!-- name -->
 			<div class="mb-4">
 				<label
-					class="input input-sm flex items-center gap-2"
+					class="input input-sm flex items-center gap-2 !outline-0"
 					class:input-error={!!variant.name.error}
 				>
 					<span>{tClient('product.variantName')}</span>
@@ -208,7 +208,7 @@
 						value={variant.name.value}
 					/>
 				</label>
-				{@render evalError(variant.name.error)}
+				{@render variantError(variant.name.error)}
 			</div>
 
 			<!-- values -->
@@ -216,11 +216,14 @@
 				<div class="mb-2" transition:slide>
 					<div class="flex items-center justify-between">
 						<input
-							class="input input-sm w-4/5"
+							class="input input-sm w-4/5 !outline-0"
 							class:input-error={!!value.error}
 							type="text"
 							placeholder={tClient('product.valuePlaceholder')}
-							use:debounceInput={{ onInput: handleVariantValueChange(variantIdx, valueIdx) }}
+							use:debounceInput={{
+								onInput: handleVariantValueChange(variantIdx, valueIdx),
+								debounceTime: 400
+							}}
 							value={value.value}
 						/>
 						{#if variant.values.length > 1}
@@ -233,7 +236,7 @@
 							</button>
 						{/if}
 					</div>
-					{@render evalError(value.error)}
+					{@render variantError(value.error)}
 				</div>
 			{/each}
 			<div class="flex justify-center items-center gap-1 mt-4">
@@ -264,5 +267,73 @@
 	{/if}
 </div>
 
+{#snippet variantTable(indices: number[], values: string[])}
+	<tr>
+		{#if indices.length === 1}
+			{#if !indices[0]}
+				<td rowspan={variants[0].values.length}>{values[0]}</td>
+			{/if}
+		{:else}
+			{#if !indices[1]}
+				<td rowspan={variants[1].values.length}>{values[0]}</td>
+			{/if}
+			<td>{values[1]}</td>
+		{/if}
+
+		<td>
+			<input type="text" class="input input-xs w-full !outline-0" placeholder="Enter value" />
+		</td>
+		<td>
+			<input type="text" class="input input-xs w-full !outline-0" placeholder="Enter value" />
+		</td>
+		<td>
+			<input type="text" class="input input-xs w-full !outline-0" placeholder="Enter value" />
+		</td>
+		<td>
+			<input
+				type="text"
+				class="input input-xs w-full !outline-0"
+				placeholder="Enter value"
+				value={values.join('-')}
+			/>
+		</td>
+	</tr>
+{/snippet}
+
 <!-- details -->
-<!-- <div>{variants[0].name}</div> -->
+{#if variants.length}
+	<div>
+		<table class="border">
+			<thead>
+				<tr>
+					<th>{variants[0].name.value}</th>
+					{#if variants.length === MAX_VARIANT_TYPES}
+						<th>{variants[1].name.value}</th>
+					{/if}
+					<th>price</th>
+					<th>channel</th>
+					<th>stock</th>
+					<th>classify sku</th>
+				</tr>
+			</thead>
+
+			{#each variants[0].values as value, valueIdx (valueIdx)}
+				{#if variants.length === MAX_VARIANT_TYPES}
+					{#each variants[1].values as value2, valueIdx2 (valueIdx2)}
+						{@render variantTable([valueIdx, valueIdx2], [value.value, value2.value])}
+					{/each}
+				{:else}
+					{@render variantTable([valueIdx], [value.value])}
+				{/if}
+			{/each}
+		</table>
+	</div>
+{/if}
+
+<style lang="postcss">
+	table,
+	th,
+	td {
+		@apply border;
+	}
+</style>
