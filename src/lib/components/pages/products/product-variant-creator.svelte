@@ -316,16 +316,17 @@
 					<th>classify sku</th>
 				</tr>
 			</thead>
-
-			{#each variants[0].values as value, valueIdx (valueIdx)}
-				{#if variants.length === MAX_VARIANT_TYPES}
-					{#each variants[1].values as value2, valueIdx2 (valueIdx2)}
-						{@render variantTable([valueIdx, valueIdx2], [value.value, value2.value])}
-					{/each}
-				{:else}
-					{@render variantTable([valueIdx], [value.value])}
-				{/if}
-			{/each}
+			<tbody>
+				{#each variants[0].values as value, valueIdx (valueIdx)}
+					{#if variants.length === MAX_VARIANT_TYPES}
+						{#each variants[1].values as value2, valueIdx2 (valueIdx2)}
+							{@render variantTable([valueIdx, valueIdx2], [value.value, value2.value])}
+						{/each}
+					{:else}
+						{@render variantTable([valueIdx], [value.value])}
+					{/if}
+				{/each}
+			</tbody>
 		</table>
 	</div>
 {/if}
