@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tClient } from '$i18n';
 	import { debounceInput } from '$lib/actions/input-debounce';
 	import { Icon, Plus, Trash } from '$lib/components/icons';
 	import { tick } from 'svelte';
@@ -50,10 +51,10 @@
 								return {
 									value: newValue,
 									error: valueDuplicate
-										? 'Value already exists'
+										? tClient('product.variantValueExist', { name: newValue })
 										: !newValue
-											? 'Value cannot be empty'
-											: ''
+											? tClient('product.variantValueEmpty')
+											: undefined
 								};
 							}
 
@@ -83,7 +84,11 @@
 					return {
 						name: {
 							value: name,
-							error: nameDuplicate ? 'Name already exists' : !name ? 'Name cannot be empty' : ''
+							error: nameDuplicate
+								? tClient('product.variantNameExist', { name })
+								: !name
+									? tClient('product.variantNameEmpty')
+									: undefined
 						},
 						values: variant.values
 					};
@@ -185,7 +190,8 @@
 		<div class="p-3 w-1/2 mobile-l:w-full border rounded">
 			<!-- title -->
 			<div class="mb-1 text-xs">
-				Variant {variantIdx + 1}
+				{tClient('product.variant')}
+				{variantIdx + 1}
 			</div>
 			<!-- name -->
 			<div class="mb-4">
@@ -193,11 +199,11 @@
 					class="input input-sm flex items-center gap-2"
 					class:input-error={!!variant.name.error}
 				>
-					<span>name</span>
+					<span>{tClient('product.variantName')}</span>
 					<input
 						type="text"
 						class="w-full"
-						placeholder="Enter name"
+						placeholder={tClient('product.variantPlaceholder')}
 						use:debounceInput={{ onInput: handleVariantNameChange(variantIdx) }}
 						value={variant.name.value}
 					/>
@@ -213,14 +219,14 @@
 							class="input input-sm w-4/5"
 							class:input-error={!!value.error}
 							type="text"
-							placeholder="Enter value"
+							placeholder={tClient('product.valuePlaceholder')}
 							use:debounceInput={{ onInput: handleVariantValueChange(variantIdx, valueIdx) }}
 							value={value.value}
 						/>
 						{#if variant.values.length > 1}
 							<button
 								class="btn btn-circle btn-xs !bg-red-100 text-red-600"
-								title="delete item"
+								title={tClient('product.delValue')}
 								onclick={() => handleDeleteValue(variantIdx, valueIdx)}
 							>
 								<Icon icon={Trash} />
@@ -232,19 +238,24 @@
 			{/each}
 			<div class="flex justify-center items-center gap-1 mt-4">
 				{@render variantActionButton(
-					'Add value',
+					tClient('product.delVariant'),
+					'delete',
+					variantIdx,
+					handleDeleteVariant
+				)}
+				{@render variantActionButton(
+					tClient('product.addValue'),
 					'add',
 					variantIdx,
 					handleAddVariantValue,
 					variant.values.length >= MAX_VALUES_PER_VARIANT
 				)}
-				{@render variantActionButton('Delete variant', 'delete', variantIdx, handleDeleteVariant)}
 			</div>
 		</div>
 	{/each}
 	{#if variants.length < MAX_VARIANT_TYPES}
 		<div class="flex items-center justify-center w-1/2 mobile-l:w-full">
-			<div class="tooltip" data-tip="Addvariant">
+			<div class="tooltip" data-tip={tClient('product.addVariant')}>
 				<button class="btn btn-square btn-lg text-blue-600" onclick={handleAddVariant}>
 					<Icon icon={Plus} />
 				</button>
