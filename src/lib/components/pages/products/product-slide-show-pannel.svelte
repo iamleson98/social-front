@@ -42,7 +42,6 @@
 			</div>
 		{/if}
 
-		<!-- <AnimateSharedLayout> -->
 		<div class="prd-slide">
 			{#each allProductMedias as media, idx (idx)}
 				<button class="slide-item" tabindex="0" onclick={() => (selectedMediaIdx = idx)}>
@@ -73,7 +72,6 @@
 				<Icon icon={ChevronRight} />
 			</button>
 		</div>
-		<!-- </AnimateSharedLayout> -->
 	{/if}
 </div>
 

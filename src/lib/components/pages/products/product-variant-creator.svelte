@@ -31,6 +31,9 @@
 			]
 		}
 	]);
+	/** this state is general indicator that if user input variant values still have mistake.
+	 * As long as this state is true, the user can't fill the detail pricing table, let alone submit the form
+	 */
 	let generalError = $state(false);
 
 	const handleVariantValueChange = (variantIdx: number, valueIdx: number) => (evt: Event) => {
@@ -38,7 +41,7 @@
 			const newValue = (evt.target as HTMLInputElement).value.trim().toLowerCase();
 
 			const valueDuplicate = variants[variantIdx].values.some(
-				(value, idx) => idx !== valueIdx && newValue === value.value
+				(value, idx) => idx !== valueIdx && newValue && newValue === value.value
 			);
 
 			generalError = !newValue || valueDuplicate;
@@ -75,7 +78,7 @@
 			const name = (evt.target as HTMLInputElement).value.trim().toLowerCase();
 
 			const nameDuplicate = variants.some(
-				(variant, idx) => idx !== variantIdx && name === variant.name.value
+				(variant, idx) => idx !== variantIdx && name && name === variant.name.value
 			);
 
 			generalError = nameDuplicate || !name;
@@ -115,14 +118,13 @@
 		}
 	};
 
-	const handleDeleteVariant = (variantIdx: number) => {
+	const handleDeleteVariant: variantAction = (variantIdx: number) => {
 		if (variants.length) {
 			variants = variants.filter((_, idx) => idx !== variantIdx);
-			tick(); // tick() is important here, it solves the issue of the transition not working
 		}
 	};
 
-	const handleAddVariantValue = (variantIdx: number) => {
+	const handleAddVariantValue: variantAction = (variantIdx: number) => {
 		variants = variants.map((variant, idx) => {
 			if (idx === variantIdx) {
 				if (variant.values.length >= MAX_VALUES_PER_VARIANT) {
@@ -130,14 +132,14 @@
 				}
 				return {
 					name: variant.name,
-					values: [...variant.values, { value: '' }]
+					values: variant.values.concat({ value: '' })
 				};
 			}
 			return variant;
 		});
 	};
 
-	type variantAction = (idx: number) => void;
+	type variantAction = (variantIdx: number) => void;
 
 	const handleDeleteValue = (variantIdx: number, valueIdx: number) => {
 		variants = variants.map((variant, idx) => {
@@ -183,7 +185,7 @@
 
 <!-- composer -->
 <div
-	class="flex gap-1 mb-10 mobile-l:flex-wrap flex-nowrap"
+	class="flex gap-1 mobile-l:flex-wrap flex-nowrap"
 	class:items-center={variants.length < MAX_VARIANT_TYPES}
 >
 	{#each variants as variant, variantIdx (variantIdx)}
@@ -196,7 +198,7 @@
 			<!-- name -->
 			<div class="mb-4">
 				<label
-					class="input input-sm flex items-center gap-2 !outline-0"
+					class="input input-sm flex items-center gap-2"
 					class:input-error={!!variant.name.error}
 				>
 					<span>{tClient('product.variantName')}</span>
@@ -216,17 +218,18 @@
 				<div class="mb-2" transition:slide>
 					<div class="flex items-center justify-between">
 						<input
-							class="input input-sm w-4/5 !outline-0"
+							class="input input-sm w-4/5"
 							class:input-error={!!value.error}
 							type="text"
 							placeholder={tClient('product.valuePlaceholder')}
 							use:debounceInput={{
 								onInput: handleVariantValueChange(variantIdx, valueIdx),
-								debounceTime: 400
+								debounceTime: 500 // only fire after 0.5 sec after user stop typing
 							}}
 							value={value.value}
 						/>
 						{#if variant.values.length > 1}
+							<!-- each variant MUST has at least 1 value -->
 							<button
 								class="btn btn-circle btn-xs !bg-red-100 text-red-600"
 								title={tClient('product.delValue')}
@@ -257,9 +260,12 @@
 		</div>
 	{/each}
 	{#if variants.length < MAX_VARIANT_TYPES}
-		<div class="flex items-center justify-center w-1/2 mobile-l:w-full">
-			<div class="tooltip" data-tip={tClient('product.addVariant')}>
-				<button class="btn btn-square btn-lg text-blue-600" onclick={handleAddVariant}>
+		<div class="w-1/2 mobile-l:w-full">
+			<div class="tooltip w-full h-full" data-tip={tClient('product.addVariant')}>
+				<button
+					class="btn btn-square w-full btn-lg !text-blue-600 !border-blue-400 "
+					onclick={handleAddVariant}
+				>
 					<Icon icon={Plus} />
 				</button>
 			</div>
@@ -267,7 +273,7 @@
 	{/if}
 </div>
 
-{#snippet variantTable(indices: number[], values: string[])}
+{#snippet variantTableRow(indices: number[], values: string[])}
 	<tr>
 		{#if indices.length === 1}
 			{#if !indices[0]}
@@ -279,20 +285,19 @@
 			{/if}
 			<td>{values[1]}</td>
 		{/if}
-
 		<td>
-			<input type="text" class="input input-xs w-full !outline-0" placeholder="Enter value" />
+			<input type="text" class="input input-xs w-full" placeholder="Enter value" />
 		</td>
 		<td>
-			<input type="text" class="input input-xs w-full !outline-0" placeholder="Enter value" />
+			<input type="text" class="input input-xs w-full" placeholder="Enter value" />
 		</td>
 		<td>
-			<input type="text" class="input input-xs w-full !outline-0" placeholder="Enter value" />
+			<input type="text" class="input input-xs w-full" placeholder="Enter value" />
 		</td>
 		<td>
 			<input
 				type="text"
-				class="input input-xs w-full !outline-0"
+				class="input input-xs w-full"
 				placeholder="Enter value"
 				value={values.join('-')}
 			/>
@@ -300,41 +305,73 @@
 	</tr>
 {/snippet}
 
-<!-- details -->
-{#if variants.length}
-	<div>
-		<table class="border">
-			<thead>
-				<tr>
-					<th>{variants[0].name.value}</th>
-					{#if variants.length === MAX_VARIANT_TYPES}
-						<th>{variants[1].name.value}</th>
-					{/if}
-					<th>price</th>
-					<th>channel</th>
-					<th>stock</th>
-					<th>classify sku</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each variants[0].values as value, valueIdx (valueIdx)}
-					{#if variants.length === MAX_VARIANT_TYPES}
-						{#each variants[1].values as value2, valueIdx2 (valueIdx2)}
-							{@render variantTable([valueIdx, valueIdx2], [value.value, value2.value])}
-						{/each}
-					{:else}
-						{@render variantTable([valueIdx], [value.value])}
-					{/if}
-				{/each}
-			</tbody>
-		</table>
+<!-- detail -->
+{#if variants.length && !generalError}
+	<div transition:slide class="mt-10">
+		<!-- shortcut -->
+		<div class="mb-4">
+			<div class="text-xs mb-1">Quick filling</div>
+			<div class="flex gap-x-2 items-center flex-row w-full">
+				<input
+					type="text"
+					placeholder="General price"
+					class="input input-sm w-full grow shrink"
+				/>
+				<input
+					type="text"
+					placeholder="Sell channels"
+					class="input input-sm w-full grow shrink"
+				/>
+				<input
+					type="text"
+					placeholder="Stocks"
+					class="input input-sm w-full grow shrink"
+				/>
+				<input
+					type="text"
+					placeholder="Pricing"
+					class="input input-sm w-full grow shrink"
+				/>
+				<button class="btn btn-sm grow shrink">Apply</button>
+			</div>
+		</div>
+
+		<!-- details -->
+		<div>
+			<table class="border">
+				<thead>
+					<tr>
+						<th>{variants[0].name.value}</th>
+						{#if variants.length === MAX_VARIANT_TYPES}
+							<th>{variants[1].name.value}</th>
+						{/if}
+						<th>price</th>
+						<th>channel</th>
+						<th>stock</th>
+						<th>classify sku</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each variants[0].values as value, valueIdx (valueIdx)}
+						{#if variants.length === MAX_VARIANT_TYPES}
+							{#each variants[1].values as value2, valueIdx2 (valueIdx2)}
+								{@render variantTableRow([valueIdx, valueIdx2], [value.value, value2.value])}
+							{/each}
+						{:else}
+							{@render variantTableRow([valueIdx], [value.value])}
+						{/if}
+					{/each}
+				</tbody>
+			</table>
+		</div>
 	</div>
 {/if}
 
 <style lang="postcss">
-	table,
-	th,
-	td {
-		@apply border;
+	td, th, table {
+		@apply p-1 border;
+	}
+	input, label.input {
+		@apply !border-gray-200 !outline-0;
 	}
 </style>

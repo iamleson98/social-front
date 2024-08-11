@@ -26,9 +26,7 @@
 		options: Option[];
 		/** placeholder value */
 		placeholder?: string;
-		/** default `false` */
-		hideLabel?: boolean;
-		label: string;
+		label?: string;
 		selectedOption?: Option;
 		onSelect?: (option?: Option) => void;
 		/** default `false` */
@@ -38,7 +36,6 @@
 	let {
 		options,
 		placeholder = 'Enter a value',
-		hideLabel = false,
 		label,
 		selectedOption,
 		onSelect,
@@ -133,7 +130,10 @@
 	</li>
 {/snippet}
 
-<label for={inputId} class:sr-only={hideLabel}>{label}</label>
+{#if label}
+	<label for={inputId}>{label}</label>
+{/if}
+
 <div
 	class="relative w-full text-gray-700 text-base"
 	use:clickOutside={{ onOutclick: deactivate }}
@@ -171,7 +171,7 @@
 			class:!pl-8={searchFocus}
 			class:!rounded-b-none={openSelect}
 			class:cursor-pointer={!searchFocus}
-			class="w-full !pr-12 transition-all !outline-0"
+			class="w-full !pr-12 transition-all !outline-0 input input-sm !border-gray-200"
 			id={inputId}
 			onclick={activate}
 			onfocus={activate}
@@ -236,14 +236,14 @@
 		</div>
 	</div>
 
-	<ul
-		role="listbox"
-		id={listboxId}
-		transition:fly={{ duration: 250 }}
-		class="absolute text-left text-sm w-full max-h-64 overflow-y-auto bg-white rounded-b-xl z-10 shadow-sm"
-		tabindex="-1"
-	>
-		{#if openSelect}
+	{#if openSelect}
+		<ul
+			role="listbox"
+			id={listboxId}
+			transition:fly={{ duration: 250 }}
+			class="absolute text-left text-sm w-full max-h-64 overflow-y-auto bg-white rounded-b-xl z-10 shadow-sm border border-gray-200"
+			tabindex="-1"
+		>
 			{#if filteredOptions.length === 0}
 				{@render selectOption({
 					idx: 0,
@@ -262,6 +262,6 @@
 					value: option.label
 				})}
 			{/each}
-		{/if}
-	</ul>
+		</ul>
+	{/if}
 </div>

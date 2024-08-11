@@ -14,7 +14,6 @@
 	import { userStore } from '$lib/stores/auth';
 	import { defaultChannel, MAX_RATING } from '$lib/utils/consts';
 	import { formatMoney } from '$lib/utils/utils';
-	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 
 	type Props = {
@@ -33,16 +32,6 @@
 	/** user selected variant quantity */
 	let quantitySelected = $state(1);
 
-	// const updateQuantity = (value: number) => {
-	// 	if (value < 1) {
-	// 		quantitySelected = 1;
-	// 	} else if (value > variantQuantityAvailable) {
-	// 		quantitySelected = variantQuantityAvailable;
-	// 	} else {
-	// 		quantitySelected = value;
-	// 	}
-	// };
-
 	const toggleSelectVariant = (idx: number) => {
 		activeVariantIdx = activeVariantIdx === idx ? null : idx;
 	};
@@ -55,7 +44,7 @@
 	);
 
 	$effect(() => {
-		if ($userStore) {
+		if ($userStore && $userStore.addresses) {
 			const defaultShipAddr = $userStore.addresses.find((addr, _) => addr.isDefaultShippingAddress);
 			if (defaultShipAddr) {
 				userDefaultShippingAddress = `${defaultShipAddr.streetAddress1 || defaultShipAddr.streetAddress2}, ${defaultShipAddr.cityArea}, ${defaultShipAddr.city}`;
@@ -148,7 +137,7 @@
 		<span class="text-gray-400 w-1/6 text-xs">{tClient('product.delivery')}</span>
 		<div class="w-5/6">
 			<span class="text-gray-500 text-sm mr-1">{userDefaultShippingAddress}</span>
-			<button class="btn btn-circle btn-xs bg-blue-100 hover:bg-blue-200 text-blue-500 border-none">
+			<button class="btn btn-circle btn-xs !bg-blue-100 text-blue-500 !border-0">
 				<Icon icon={MapPin} />
 			</button>
 		</div>

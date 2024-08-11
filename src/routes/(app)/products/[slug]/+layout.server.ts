@@ -1,6 +1,6 @@
 import type { Product, Query } from "$lib/gql/graphql";
 import { PRODUCT_DETAIL_QUERY_STORE } from "$lib/stores/api/product";
-import { CHANNEL_KEY, defaultChannel, HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess } from "$lib/utils/consts";
+import { CHANNEL_KEY, defaultChannel, HTTPStatusBadRequest, HTTPStatusServerError } from "$lib/utils/consts";
 import { error } from "@sveltejs/kit";
 import { graphqlClient } from "$lib/client";
 import type { LayoutServerLoad } from "./$types";
@@ -25,7 +25,11 @@ export const load: LayoutServerLoad = async (event) => {
 		channel,
 	};
 
-	const productDetailResult = await graphqlClient.backendQuery<Pick<Query, 'product'>>(PRODUCT_DETAIL_QUERY_STORE, variables, event, { requestPolicy: 'network-only' });
+	const productDetailResult = await graphqlClient.backendQuery<Pick<Query, 'product'>>(
+		PRODUCT_DETAIL_QUERY_STORE,
+		variables, event,
+		{ requestPolicy: 'network-only' },
+	);
 	if (productDetailResult.error) {
 		return error(HTTPStatusServerError, {
 			message: productDetailResult.error.message,
@@ -33,7 +37,6 @@ export const load: LayoutServerLoad = async (event) => {
 	}
 
 	return {
-		status: HTTPStatusSuccess,
 		data: productDetailResult.data?.product as Product,
 		meta: {
 			title: productDetailResult.data?.product?.name,

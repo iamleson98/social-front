@@ -4,7 +4,6 @@
 	import { Button } from '$lib/components/ui';
 	import { userStore } from '$lib/stores/auth';
 	import { AppRoute } from '$lib/utils';
-	import { HTTPStatusBadRequest, HTTPStatusServerError } from '$lib/utils/consts';
 	import type { ActionResult } from '@sveltejs/kit';
 	import type { ActionData } from './$types';
 	import {
@@ -30,6 +29,7 @@
 	let email = $state('');
 	let password = $state('');
 	let loading = $state(false);
+	let disabled = $derived(!email.trim() || !password || loading);
 
 	interface Props {
 		form: ActionData;
@@ -37,24 +37,20 @@
 
 	let { form }: Props = $props();
 
-	$effect(() => {
-		if (!form?.error && form?.user) {
-			userStore.set(form.user);
-			goto(AppRoute.HOME, { invalidateAll: true });
-		}
-	});
-
 	const togglePasswordType = () =>
 		(passwordFieldType = passwordFieldType === 'password' ? 'text' : 'password');
 
 	const handlePasswordChange = (evt: any) => (password = evt.currentTarget.value);
 
-	const handleFormSubmit = async (event: { currentTarget: EventTarget & HTMLFormElement }) => {
+	const handleFormSubmit = async (event: SubmitEvent) => {
+		event.preventDefault();
 		loading = true;
 
-		const response = await fetch(event.currentTarget.action, {
-			method: event.currentTarget.method,
-			body: new FormData(event.currentTarget)
+		const target = event.currentTarget as HTMLFormElement;
+
+		const response = await fetch(target.action, {
+			method: target.method,
+			body: new FormData(target)
 		});
 
 		const result: ActionResult = deserialize(await response.text());
@@ -72,10 +68,10 @@
 <div class="max-w-md min-w-80 rounded-md p-2">
 	<h1 class="p-2 mb-4">{tClient('signin.title')}</h1>
 
-	{#if form && form.status && [HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}
+	{#if form && form.error}
 		<Alert variant="error" content={form.error} classes="mb-3" />
 	{/if}
-	<form action="?/signin" method="post" onsubmitcapture={handleFormSubmit}>
+	<form action="?/signin" method="post" onsubmit={handleFormSubmit}>
 		<!-- form main -->
 		<div class="mb-3">
 			<label
@@ -115,7 +111,7 @@
 					value={password}
 					required
 					disabled={loading}
-					onkeyup={handlePasswordChange}
+					oninput={handlePasswordChange}
 				/>
 				<button type="button" class="btn btn-xs btn-circle" onclick={togglePasswordType}>
 					<Icon icon={passwordButtonIconsMap[passwordFieldType]} />
@@ -142,13 +138,8 @@
 				/>
 			</label>
 
-			<Button
-				variant="filled"
-				type="submit"
-				size="sm"
-				fullWidth
-				bind:loading
-				disabled={loading || !email.trim() || !password}>{tClient('signin.signinButton')}</Button
+			<Button variant="filled" type="submit" size="sm" fullWidth bind:loading {disabled}
+				>{tClient('signin.signinButton')}</Button
 			>
 		</div>
 

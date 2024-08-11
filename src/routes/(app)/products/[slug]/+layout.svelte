@@ -24,7 +24,7 @@
 	import { graphqlClient } from '$lib/client';
 	import { PRODUCT_VARIANTS_QUERY_STORE } from '$lib/stores/api';
 	import { preHandleGraphqlResult } from '$lib/utils/utils';
-	import { onMount, type Snippet } from 'svelte';
+	import { onMount, tick, type Snippet } from 'svelte';
 
 	interface Props {
 		data: LayoutServerData;
@@ -116,8 +116,8 @@
 					});
 					allProductMedias = [...allProductMedias, ...variantMedias];
 					productVariants = fullVariants;
-
 					findingVariants = false;
+					tick();
 				});
 
 			return unsubscribe;

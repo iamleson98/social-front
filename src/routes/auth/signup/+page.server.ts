@@ -1,4 +1,4 @@
-import type { Actions } from "@sveltejs/kit";
+import { type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { ACCESS_TOKEN_KEY, CHANNEL_KEY, CSRF_TOKEN_KEY, defaultChannel, HTTPStatusBadRequest, HTTPStatusSuccess, REFRESH_TOKEN_KEY } from "$lib/utils/consts";
 import { USER_SIGNUP_MUTATION_STORE } from "$lib/stores/api";
@@ -18,7 +18,6 @@ export const load: PageServerLoad = async (event) => {
   }
 
   return {
-    status: HTTPStatusSuccess,
     meta: {
       title: tServer(event, 'signup.title'),
       description: "Sign up to create an account on our platform",
@@ -73,7 +72,7 @@ export const actions = {
     if (result.data?.accountRegister?.errors.length) {
       return {
         status: HTTPStatusBadRequest,
-        error: result.data?.accountRegister.errors[0].message,
+        error: result.data?.accountRegister.errors[0].message as string,
       };
     }
 

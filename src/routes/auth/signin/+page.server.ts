@@ -4,42 +4,48 @@ import {
 	ACCESS_TOKEN_KEY,
 	CSRF_TOKEN_KEY,
 	HTTPStatusBadRequest,
+	HTTPStatusPermanentRedirect,
 	HTTPStatusServerError,
-	HTTPStatusSuccess,
-	HTTPStatusTemporaryRedirect
+	HTTPStatusTemporaryRedirect,
+	REFRESH_TOKEN_KEY
 } from '$lib/utils/consts.js';
 import { redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { AppRoute } from '$lib/utils';
-import { graphqlClient } from '$lib/client';
+import { cookieOpts, graphqlClient } from '$lib/client';
 import { tServer } from '$lib/i18n';
 
 
 export const load: PageServerLoad = async (event) => {
 	const accessToken = event.cookies.get(ACCESS_TOKEN_KEY);
-	const response: Record<string, unknown> = {
-		meta: {
-			title: tServer(event, 'signin.title'),
-		}
-	};
 
 	if (accessToken) {
 		const result = await graphqlClient.backendQuery<Pick<Query, 'me'>>(
 			USER_ME_QUERY_STORE,
 			{},
-			event
+			event,
+			{
+				requestPolicy: 'network-only',
+			},
 		);
 		if (result.error) {
-			response.status = HTTPStatusServerError;
-			response.error = result.error.message;
-			return response;
+			return {
+				status: HTTPStatusServerError,
+				error: result.error.message,
+				meta: {
+					title: tServer(event, 'signin.title'),
+				},
+			};
 		}
 
 		redirect(HTTPStatusTemporaryRedirect, AppRoute.HOME);
 	}
 
-	response.status = HTTPStatusSuccess;
-	return response;
+	return {
+		meta: {
+			title: tServer(event, 'signin.title'),
+		}
+	};
 };
 
 export const actions = {
@@ -51,7 +57,7 @@ export const actions = {
 		if (!email.trim() || !password) {
 			return {
 				status: HTTPStatusBadRequest,
-				error: 'Please, provide valid email and password'
+				error: 'Please, provide valid email and password',
 			};
 		}
 
@@ -63,6 +69,7 @@ export const actions = {
 				requestPolicy: 'network-only'
 			}
 		);
+
 		if (result.error) {
 			return {
 				status: HTTPStatusServerError,
@@ -73,21 +80,14 @@ export const actions = {
 		if (result.data?.tokenCreate?.errors.length) {
 			return {
 				status: HTTPStatusBadRequest,
-				error: result.data.tokenCreate.errors[0].message
+				error: result.data.tokenCreate.errors[0].message as string,
 			};
 		}
 
-		const cookieOpts = {
-			path: '/',
-			secure: true,
-			httpOnly: true,
-			maxAge: 24 * 60 * 60
-		};
 		event.cookies.set(ACCESS_TOKEN_KEY, result.data?.tokenCreate?.token as string, cookieOpts);
 		event.cookies.set(CSRF_TOKEN_KEY, result.data?.tokenCreate?.csrfToken as string, cookieOpts);
+		event.cookies.set(REFRESH_TOKEN_KEY, result.data?.tokenCreate?.refreshToken as string, cookieOpts);
 
-		return {
-			user: result.data?.tokenCreate?.user
-		};
+		redirect(HTTPStatusPermanentRedirect, AppRoute.HOME);
 	}
 } satisfies Actions;

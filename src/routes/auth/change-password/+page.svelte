@@ -5,8 +5,6 @@
 	import { Button } from '$lib/components/ui';
 	import { AppRoute } from '$lib/utils';
 	import {
-		HTTPStatusBadRequest,
-		HTTPStatusServerError,
 		HTTPStatusSuccess
 	} from '$lib/utils/consts';
 	import type { ActionData } from './$types';
@@ -39,10 +37,10 @@
 
 <div class="max-w-md min-w-80 rounded-md p-2">
 	<h1 class="p-2 mb-4">Set new password</h1>
-	{#if form && form?.status && [HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}
-		<Alert content={form?.error} variant="error" classes="mb-3" />
-	{:else if form && form?.status === HTTPStatusSuccess}
-		<Alert variant="info" content={form?.data} classes="mb-3" />
+	{#if form && form.error}
+		<Alert content={form.error} variant="error" classes="mb-3" />
+	{:else if form}
+		<Alert content={form.data} variant="info" classes="mb-3" />
 	{/if}
 	<form
 		action={`?email=${$page.url.searchParams.get('email')}&token=${$page.url.searchParams.get('token')}`}

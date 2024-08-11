@@ -1,5 +1,6 @@
 /**
- * @description you must call this function in client code
+ * @description you must call this function in client code.
+ * Make sure your cookie is not `httpOnly`, otherwise you won't be able to access it from client side
  * 
  * @param key name of the cookie you want to get value
  * @returns cookie value. If cookie does not have provided key, returns empty string

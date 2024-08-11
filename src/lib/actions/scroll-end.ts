@@ -9,6 +9,12 @@ type OnscrollToEndOpts = {
   debounceTime?: number;
 };
 
+/**
+ * this action listens to scroll event on the given node and calls the `onScrollToEnd` callback when the scroll reaches the end of the node.
+ * It's useful for infinite scrolling.
+ * @param node the node to listen to scroll event
+ * @param opts the options for the action
+ */
 export function scrollToEnd(node: HTMLElement, opts: OnscrollToEndOpts): ActionReturn {
   const { unsubscribe: destroy } = pipe(
     fromDomEvent(node, 'scroll'),

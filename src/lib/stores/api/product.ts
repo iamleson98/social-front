@@ -58,65 +58,6 @@ export interface CategoryListInput {
 	backgroundFormat?: ThumbnailFormatEnum;
 }
 
-export type CategoryListForCreateProductInput = {
-	first?: number;
-	level?: number;
-	after?: string;
-	childrenLevelOneAfter?: string;
-	childrenLevelTwoAfter?: string;
-};
-
-export const CATEGORIES_LIST_FOR_CREATE_PRODUCT = gql`
-	query CategoriesWithChildren(
-		$first: Int
-		$level: Int
-		$after: String
-		$childrenLevelOneAfter: String
-		$childrenLevelTwoAfter: String
-	) {
-		categories(first: $first, level: $level, after: $after) {
-			edges {
-				cursor
-				node {
-					id
-					name
-					level
-					children(first: $first, after: $childrenLevelOneAfter) {
-						edges {
-							node {
-								id
-								name
-								level
-								children(first: $first, after: $childrenLevelTwoAfter) {
-									edges {
-										node {
-											id
-											name
-											level
-										}
-									}
-									pageInfo {
-										endCursor
-										hasNextPage
-									}
-								}
-							}
-						}
-						pageInfo {
-							endCursor
-							hasNextPage
-						}
-					}
-				}
-			}
-			pageInfo {
-				endCursor
-				hasNextPage
-			}
-		}
-	}
-`
-
 /**  
  * `level` starts at 0
  */
@@ -263,6 +204,7 @@ export const PRODUCT_DETAIL_QUERY_STORE = gql`
 					type
 					unit
 					inputType
+					# valueRequired
 				}
 				values {
 					id

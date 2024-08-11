@@ -4,7 +4,6 @@
 	import { ClosedEye, Email, Icon, Lock, OpenEye } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { AppRoute } from '$lib/utils';
-	import { HTTPStatusBadRequest, HTTPStatusServerError } from '$lib/utils/consts';
 	import type { ActionResult } from '@sveltejs/kit';
 	import type { ActionData } from './$types';
 	import Alert from '$lib/components/common/alert.svelte';
@@ -74,7 +73,7 @@
 <div class="max-w-md min-w-80 rounded-md p-2">
 	<h1 class="p-2 mb-4">{tClient('signup.title')}</h1>
 
-	{#if form && form.status && [HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}
+	{#if form && form.error}
 		<Alert variant="error" content={form.error} classes="mb-3" />
 	{/if}
 	<form action="?/signup" method="post" onsubmitcapture={handleSignup}>

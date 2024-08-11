@@ -30,7 +30,6 @@
 		variant = 'filled',
 		ref = null,
 		type = 'button',
-		disabled = false,
 		color = 'blue',
 		upper = false,
 		size = 'md',

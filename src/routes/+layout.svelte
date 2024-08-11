@@ -2,10 +2,13 @@
 	import { Header } from '$lib/components/common';
 	import { Toast } from '$lib/components/ui/Toast';
 	import { page } from '$app/stores';
-	import { userStore } from '$lib/stores/auth';
-	import type { User } from '$lib/gql/graphql';
 	import type { Snippet } from 'svelte';
 	import '../app.css';
+	import { graphqlClient } from '$lib/client';
+	import { USER_ME_QUERY_STORE } from '$lib/stores/api';
+	import type { Query } from '$lib/gql/graphql';
+	import { toastStore } from '$lib/stores/ui/toast';
+	import { userStore } from '$lib/stores/auth';
 
 	interface Props {
 		children: Snippet;
@@ -13,19 +16,22 @@
 
 	let { children }: Props = $props();
 
-	$effect(() => {
-		// if (!$userStore) {
-		// 	fetch('/', {
-		// 		method: 'GET',
-		// 		headers: {
-		// 			'content-type': 'application/json'
-		// 		}
-		// 	})
-		// 		.then((result) => result.json())
-		// 		.then((user: User) => {
-		// 			userStore.set(user);
-		// 		});
-		// }
+	$effect.pre(() => {
+		const { unsubscribe } = graphqlClient
+			.query<Pick<Query, 'me'>>(USER_ME_QUERY_STORE, {})
+			.subscribe((result) => {
+				if (result.error) {
+					toastStore.send({
+						message: result.error.message,
+						variant: 'error'
+					});
+					return;
+				}
+
+				userStore.set(result.data?.me);
+			});
+
+		return unsubscribe;
 	});
 </script>
 
@@ -60,7 +66,6 @@
 <Header />
 
 <main class="pt-16 bg-gray-100 min-h-screen">
-	<!-- <slot /> -->
 	{@render children()}
 </main>
 

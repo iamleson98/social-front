@@ -71,7 +71,7 @@ type Translation = {
 * Translate a key string to the current locale. Use
 * @param key the key to the translation object
 * @param args arguments for placeholders in the key. If key has no placeholders, this can be omitted.
-* @returns trnslated string
+* @returns translated string
 */
 export const tClient = (key: string, args?: Record<string, unknown>): string => {
   const language: Locale = (getCookieByKey(LANGUAGE_KEY) || 'en') as Locale;
