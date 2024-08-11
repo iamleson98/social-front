@@ -1,7 +1,10 @@
 <script lang="ts">
 	import CategorySelector from '$lib/components/pages/products/category-selector.svelte';
+	import DiscountByQuantity from '$lib/components/pages/products/discount-by-quantity.svelte';
+	import PackagingAndDelivery from '$lib/components/pages/products/packaging-and-delivery.svelte';
 	import ProductAttributeEditor from '$lib/components/pages/products/product-attribute-editor.svelte';
 	import ProductDescriptionEditor from '$lib/components/pages/products/product-description-editor.svelte';
+	import ProductPreorderEditor from '$lib/components/pages/products/product-preorder-editor.svelte';
 	import ProductVariantCreator from '$lib/components/pages/products/product-variant-creator.svelte';
 	import type { Category } from '$lib/gql/graphql';
 
@@ -17,7 +20,7 @@
 		<input
 			type="text"
 			placeholder="Enter the product name"
-			class="input input-sm w-full bg-gray-50"
+			class="input input-md w-full !border-gray-200"
 		/>
 		<div class="text-right">
 			<span class="text-xs">{now.toDateString()}</span>
@@ -55,4 +58,30 @@
 			<ProductVariantCreator />
 		</div>
 	</div>
+
+	<!-- discount ranges -->
+	<div class="mb-3">
+		<span class="text-sm">Add discount ranges</span>
+		<div class="bg-gray-50 rounded p-2">
+			<DiscountByQuantity />
+		</div>
+	</div>
+
+	<!-- packaging and delivery -->
+	<div class="mb-3">
+		<span class="text-sm">Add discount ranges</span>
+		<div class="bg-gray-50 rounded p-2">
+			<PackagingAndDelivery />
+		</div>
+	</div>
+
+	<!-- preorder -->
+	<div class="mb-3">
+		<span class="text-sm">Preorder</span>
+		<div class="bg-gray-50 rounded p-2">
+			<ProductPreorderEditor />
+		</div>
+	</div>
+
+	<button class="btn btn-md w-full !bg-blue-500 text-white">Submit</button>
 </div>

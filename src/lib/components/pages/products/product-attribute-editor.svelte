@@ -16,6 +16,7 @@
 	import { defaultChannel } from '$lib/utils/consts';
 	import { preHandleGraphqlResult } from '$lib/utils/utils';
 	import { tick } from 'svelte';
+	import { slide } from 'svelte/transition';
 
 	type Props = {
 		productCategory: Category;
@@ -53,8 +54,8 @@
 	});
 </script>
 
-<div class="flex items-center flex-wrap rounded border p-1">
-	{#if loading}
+{#if loading}
+	<div class="flex items-center flex-wrap rounded border p-1">
 		{#each [null, null] as _}
 			<div class="w-1/2">
 				<SkeletonContainer class="w-full">
@@ -62,7 +63,9 @@
 				</SkeletonContainer>
 			</div>
 		{/each}
-	{:else if attributesOgGivenCategory}
+	</div>
+{:else if attributesOgGivenCategory}
+	<div class="flex items-center flex-wrap rounded border p-1" transition:slide>
 		{#each attributesOgGivenCategory.edges as attributeEdge, idx (idx)}
 			<div class="w-1/2 tablet:w-full p-1 shrink flex items-center mb-2">
 				<div class="w-1/4 text-xs">
@@ -87,5 +90,5 @@
 				</div>
 			</div>
 		{/each}
-	{/if}
-</div>
+	</div>
+{/if}

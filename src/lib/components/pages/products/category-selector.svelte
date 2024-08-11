@@ -108,21 +108,21 @@
 	</div>
 {/snippet}
 
-<div class="bg-gray-50 rounded p-2">
+<div class="bg-gray-50 rounded p-1">
 	{#if initialLoading}
 		{@render loadingCategorySkeleton()}
 	{:else if !categoryChoosen}
 		<ul
-			class="menu menu-horizontal rounded border !flex-nowrap tablet:!flex-wrap w-full max-h-96 tablet:max-h-fit"
+			class="menu menu-horizontal !flex-nowrap tablet:!flex-wrap w-full max-h-96 tablet:max-h-fit"
 			transition:slide
 		>
 			{#each categoryLevels as level, levelIdx (levelIdx)}
 				{@const children = categories[level]}
 				{#if children}
-					<li class="w-1/3 !flex-nowrap tablet:w-1/2 max-h-80">
+					<li class="w-1/3 !flex-nowrap tablet:w-1/2 max-h-80 border rounded">
 						<!-- svelte-ignore a11y_missing_attribute -->
 						<a class="!pointer-events-none">{categoryLevelsMap[level]}</a>
-						<ul class="sitename-scrollbar overflow-y-auto overflow-x-hidden">
+						<ul class="sitename-scrollbar overflow-y-auto overflow-x-hidden before:!hidden">
 							{#each children.edges as edge, categoryIdx (categoryIdx)}
 								<!-- svelte-ignore a11y_click_events_have_key_events -->
 								<!-- svelte-ignore a11y_no_noninteractive_element_to_interactive_role -->

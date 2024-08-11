@@ -7,6 +7,10 @@
   --apple-font: system-ui, -apple-system, BlinkMacSystemFont, '.SFNSText-Regular', sans-serif
 }
 
+.input, label.input {
+  @apply !outline-0;
+}
+
 @media (prefers-reduced-motion) {
   /* * {
     animation-duration: 0.01ms !important;
