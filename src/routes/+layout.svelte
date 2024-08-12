@@ -18,7 +18,7 @@
 
 	$effect.pre(() => {
 		const { unsubscribe } = graphqlClient
-			.query<Pick<Query, 'me'>>(USER_ME_QUERY_STORE, {})
+			.query<Pick<Query, 'me'>>(USER_ME_QUERY_STORE, {}, { requestPolicy: 'network-only' })
 			.subscribe((result) => {
 				if (result.error) {
 					toastStore.send({

@@ -27,18 +27,19 @@
 	let attributesOgGivenCategory = $state.frozen<AttributeCountableConnection | null | undefined>();
 	const MAX_FETCHING_BATCH = 30;
 
-	const fetchAttributes = () => {
+	const fetchAttributes = (categoryId: string) => {
 		const variables: AttributesVariable = {
 			first: MAX_FETCHING_BATCH,
 			choiceFirst: MAX_FETCHING_BATCH,
 			channel: defaultChannel.slug,
 			where: {
-				inCategory: productCategory.id
+				inCategory: categoryId
 			}
 		};
 		const { unsubscribe } = graphqlClient
 			.query<Pick<Query, 'attributes'>, AttributesVariable>(PRODUCT_ATTRIBUTES_QUERY, variables)
 			.subscribe((attributeRes) => {
+				console.log(attributeRes);
 				if (preHandleGraphqlResult(attributeRes)) return;
 
 				loading = false;
@@ -50,7 +51,7 @@
 	};
 
 	$effect(() => {
-		return fetchAttributes();
+		return fetchAttributes(productCategory.id);
 	});
 </script>
 

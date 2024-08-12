@@ -2,23 +2,27 @@ import {
 	cacheExchange,
 	Client,
 	CombinedError,
+	createRequest,
 	fetchExchange,
 	type AnyVariables,
 	type ClientOptions,
 	type DocumentInput,
+	type Operation,
 	type OperationContext,
 	type OperationResult,
+	type OperationResultSource,
 	type OperationType,
 } from '@urql/svelte';
 import { AppRoute, getCookieByKey } from './utils';
 import { redirect, type RequestEvent } from '@sveltejs/kit';
 import { browser } from '$app/environment';
-import { ACCESS_TOKEN_KEY, CSRF_TOKEN_KEY, HTTPStatusPermanentRedirect, REFRESH_TOKEN_KEY } from './utils/consts';
+import { ACCESS_TOKEN_KEY, CSRF_TOKEN_KEY, HTTPStatusTemporaryRedirect, REFRESH_TOKEN_KEY } from './utils/consts';
 import { authExchange } from '@urql/exchange-auth';
-import { USER_REFRESH_TOKEN_MUTATION_STORE } from './stores/api';
-import type { Mutation } from './gql/graphql';
+import { USER_ME_QUERY_STORE, USER_REFRESH_TOKEN_MUTATION_STORE } from './stores/api';
+import type { Mutation, Query, User } from './gql/graphql';
 import { userStore } from './stores/auth';
 import type { CookieSerializeOptions } from 'cookie';
+import { goto } from '$app/navigation';
 
 
 export const MAX_REFRESH_TOKEN_TRIES = 3;
@@ -137,7 +141,7 @@ class SocialGraphqlClient extends Client {
 		super(options);
 	}
 
-	private attachAuthorizationHeaderToRequestIfNedded = (
+	private attachAuthorizationHeaderToRequestIfNeeded = (
 		operation: OperationType,
 		context?: Partial<OperationContext>,
 		event?: RequestEvent<Partial<Record<string, string>>, string | null>
@@ -182,39 +186,42 @@ class SocialGraphqlClient extends Client {
 		}
 
 		// If we reach here, it means we have an authen or author error
-		event.cookies.delete(ACCESS_TOKEN_KEY, { path: '/', maxAge: 0 });
+		event.cookies.delete(ACCESS_TOKEN_KEY, { path: '/', maxAge: 0, secure: true });
 
 		const csrfToken = event.cookies.get(CSRF_TOKEN_KEY);
 		const refreshToken = event.cookies.get(REFRESH_TOKEN_KEY);
 
 		if (!csrfToken || !refreshToken) {
-			redirect(HTTPStatusPermanentRedirect, AppRoute.AUTH_SIGNIN);
-			return false;
+			redirect(HTTPStatusTemporaryRedirect, AppRoute.AUTH_SIGNIN);
 		}
 
 		const refreshResult = await this
 			.mutation<Pick<Mutation, 'tokenRefresh'>>(
 				USER_REFRESH_TOKEN_MUTATION_STORE,
-				{
-					csrfToken,
-					refreshToken,
-				},
-				{
-					requestPolicy: 'network-only'
-				}
+				{ csrfToken, refreshToken, },
+				{ requestPolicy: 'network-only' }
 			)
 			.toPromise();
 
 		if (refreshResult.error || refreshResult.data?.tokenRefresh?.errors.length) {
 			event.cookies.delete(CSRF_TOKEN_KEY, { path: '/', maxAge: 0 });
 			event.cookies.delete(REFRESH_TOKEN_KEY, { path: '/', maxAge: 0 });
-			redirect(HTTPStatusPermanentRedirect, AppRoute.AUTH_SIGNIN);
-			return false;
+			redirect(HTTPStatusTemporaryRedirect, AppRoute.AUTH_SIGNIN);
 		};
 
 		// set new access token to cookie (NO HTTPONLY)
 		event.cookies.set(ACCESS_TOKEN_KEY, refreshResult.data?.tokenRefresh?.token as string, cookieOpts);
 		return true;
+	};
+
+	pageRequiresAuthentication = async (event: RequestEvent<Partial<Record<string, string>>, string | null>) => {
+		const accessToken = event.cookies.get(ACCESS_TOKEN_KEY);
+		if (!accessToken) {
+			redirect(HTTPStatusTemporaryRedirect, AppRoute.AUTH_SIGNIN);
+		}
+
+		const meQueryResult = await this.backendQuery<Pick<Query, 'me'>>(USER_ME_QUERY_STORE, {}, event);
+		return meQueryResult.data?.me as User;
 	};
 
 	/**
@@ -226,11 +233,18 @@ class SocialGraphqlClient extends Client {
 		event: RequestEvent<Partial<Record<string, string>>, string | null>,
 		context?: Partial<OperationContext>
 	): Promise<OperationResult<Data, Variables>> => {
-		const newContext = this.attachAuthorizationHeaderToRequestIfNedded('query', context, event);
-		const result = await this.query(query, variables, newContext).toPromise();
-		const shouldRetry = await this.checkIsAuthenAuthorErrorAndRedirectIfNeeded(result, event);
-		if (!shouldRetry) return result;
-		return this.query(query, variables, newContext).toPromise();
+		const newContext = this.attachAuthorizationHeaderToRequestIfNeeded('query', context, event);
+		const request = createRequest(query, variables);
+		const operation = this.createRequestOperation('query', request, newContext);
+		const result = await this.executeRequestOperation(operation).toPromise();
+		const mustRetryOperation = await this.checkIsAuthenAuthorErrorAndRedirectIfNeeded(result, event);
+		if (!mustRetryOperation) return result;
+
+		operation.context = {
+			...operation.context,
+			...this.attachAuthorizationHeaderToRequestIfNeeded('query', context, event),
+		};
+		return this.executeRequestOperation(operation).toPromise();
 	};
 
 	/**
@@ -242,12 +256,23 @@ class SocialGraphqlClient extends Client {
 		event: RequestEvent<Partial<Record<string, string>>, string | null>,
 		context?: Partial<OperationContext>
 	): Promise<OperationResult<Data, Variables>> => {
-		const newContext = this.attachAuthorizationHeaderToRequestIfNedded('mutation', context, event);
-		const result = await this.mutation(query, variables, newContext).toPromise();
-		const shouldRetry = await this.checkIsAuthenAuthorErrorAndRedirectIfNeeded(result, event);
-		if (!shouldRetry) return result;
-		return this.mutation(query, variables, newContext).toPromise();
+		const newContext = this.attachAuthorizationHeaderToRequestIfNeeded('mutation', context, event);
+		const request = createRequest(query, variables);
+		const operation = this.createRequestOperation('mutation', request, newContext);
+		const result = await this.executeRequestOperation(operation).toPromise();
+		const mustRetryOperation = await this.checkIsAuthenAuthorErrorAndRedirectIfNeeded(result, event);
+		if (!mustRetryOperation) return result;
+
+		operation.context = {
+			...operation.context,
+			...this.attachAuthorizationHeaderToRequestIfNeeded('mutation', context, event),
+		};
+		return this.executeRequestOperation(operation).toPromise();
 	};
+
+	query<Data = unknown, Variables extends AnyVariables = AnyVariables>(query: DocumentInput<Data, Variables>, variables: Variables, context?: Partial<OperationContext>): OperationResultSource<OperationResult<Data, Variables>> {
+		return super.query(query, variables, context);
+	}
 }
 
 
@@ -257,60 +282,59 @@ class SocialGraphqlClient extends Client {
 export const graphqlClient = new SocialGraphqlClient({
 	url: import.meta.env.VITE_GRAPHQL_API_END_POINT,
 	exchanges: [
-		cacheExchange,
 		// this auth exchange can run on slient side only
 		authExchange(async (utils) => {
-			return {
-				addAuthToOperation(operation) {
-					if (browser) {
-						const accessToken = getCookieByKey(ACCESS_TOKEN_KEY);
-						if (accessToken) {
-							return utils.appendHeaders(operation, {
-								Authorization: `Bearer ${accessToken}`,
-							});
-						}
-
-						return operation;
+			const addAuthToOperation = (operation: Operation) => {
+				if (browser) {
+					const accessToken = getCookieByKey(ACCESS_TOKEN_KEY);
+					if (accessToken) {
+						return utils.appendHeaders(operation, {
+							Authorization: `Bearer ${accessToken}`,
+						});
 					}
 
 					return operation;
-				},
-				didAuthError: (error) => browser && (isAuthorError(error) || isAuthenError(error)),
-				async refreshAuth() {
-					if (browser) {
-						document.cookie = `${ACCESS_TOKEN_KEY}=; path=/; secure; max-age=0`;
+				}
 
-						const csrfToken = getCookieByKey(CSRF_TOKEN_KEY);
-						const refreshToken = getCookieByKey(REFRESH_TOKEN_KEY);
+				return operation;
+			}
 
-						if (!csrfToken || !refreshToken) {
-							redirect(HTTPStatusPermanentRedirect, AppRoute.AUTH_SIGNIN);
-						}
+			const refreshAuth = async () => {
+				if (browser) {
+					document.cookie = `${ACCESS_TOKEN_KEY}=; path=/; secure; max-age=0`;
 
-						const result = await utils
-							.mutate<Pick<Mutation, 'tokenRefresh'>>(
-								USER_REFRESH_TOKEN_MUTATION_STORE,
-								{
-									csrfToken,
-									refreshToken,
-								},
-								{
-									requestPolicy: 'network-only',
-								},
-							);
+					const csrfToken = getCookieByKey(CSRF_TOKEN_KEY);
+					const refreshToken = getCookieByKey(REFRESH_TOKEN_KEY);
 
-						if (result.error || result.data?.tokenRefresh?.errors.length) {
-							document.cookie = `${CSRF_TOKEN_KEY}=; path=/; secure; max-age=0`;
-							document.cookie = `${REFRESH_TOKEN_KEY}=; path=/; secure; max-age=0`;
-							redirect(HTTPStatusPermanentRedirect, AppRoute.AUTH_SIGNIN);
-						};
-
-						document.cookie = `${ACCESS_TOKEN_KEY}=${result.data?.tokenRefresh?.token}; path=/; secure; max-age=86400`;
-						userStore.set(result.data?.tokenRefresh?.user);
+					if (!csrfToken || !refreshToken) {
+						await goto(AppRoute.AUTH_SIGNIN, { invalidateAll: true });
 					}
-				},
+
+					const result = await utils
+						.mutate<Pick<Mutation, 'tokenRefresh'>>(
+							USER_REFRESH_TOKEN_MUTATION_STORE,
+							{ csrfToken, refreshToken },
+							{ requestPolicy: 'network-only' },
+						);
+
+					if (result.error || result.data?.tokenRefresh?.errors.length) {
+						document.cookie = `${CSRF_TOKEN_KEY}=; path=/; secure; max-age=0`;
+						document.cookie = `${REFRESH_TOKEN_KEY}=; path=/; secure; max-age=0`;
+						await goto(AppRoute.AUTH_SIGNIN, { invalidateAll: true });
+					};
+
+					document.cookie = `${ACCESS_TOKEN_KEY}=${result.data?.tokenRefresh?.token}; path=/; secure; max-age=86400`;
+					userStore.set(result.data?.tokenRefresh?.user);
+				}
+			}
+
+			return {
+				addAuthToOperation,
+				didAuthError: (error) => (isAuthorError(error) || isAuthenError(error)),
+				refreshAuth,
 			};
 		}),
+		cacheExchange,
 		fetchExchange,
 	],
 });
