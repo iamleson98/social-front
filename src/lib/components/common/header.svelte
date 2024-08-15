@@ -4,7 +4,7 @@
 	import { userStore } from '$lib/stores/auth';
 	import { AppRoute } from '$lib/utils';
 	import { page } from '$app/stores';
-	import { CART_ITEMS_STORE } from '$lib/stores/app';
+	import { cartItemStore } from '$lib/stores/app';
 	import { IonFlame, MingcuteHome, Icon, Search, ShoppingBag } from '$lib/components/icons';
 	import { scale } from 'svelte/transition';
 
@@ -58,9 +58,9 @@
 			<a href={AppRoute.SHOPPING_CART}>
 				<button class="btn btn-square btn-sm relative">
 					<Icon icon={ShoppingBag} />
-					{#key $CART_ITEMS_STORE}
+					{#key $cartItemStore}
 						<span class="cart-quantity" in:scale>
-							{$CART_ITEMS_STORE.length}
+							{$cartItemStore.length}
 						</span>
 					{/key}
 				</button>

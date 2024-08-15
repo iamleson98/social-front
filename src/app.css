@@ -2,13 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  src: url('$lib/assets/fonts/inter/inter.ttf') format('truetype-variations');
+  ascent-override: 106.25%;
+  size-adjust: 106.25%;
+}
+
+/* @font-face {
+  font-family: 'Inter Italic';
+  font-style: normal;
+  font-weight: 100 900;
+  src: url('$lib/assets/fonts/inter/inter-italic.ttf') format('truetype-variations');
+  ascent-override: 106.25%;
+  size-adjust: 106.25%;
+} */
+
 :root {
-  --default-font: Helvetica, Arial, sans-serif;
-  --apple-font: system-ui, -apple-system, BlinkMacSystemFont, '.SFNSText-Regular', sans-serif
+  --default-font: 'Inter', sans-serif;
+  --apple-font: system-ui, -apple-system, BlinkMacSystemFont, '.SFNSText-Regular', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .input, label.input {
   @apply !outline-0;
+}
+
+button.btn {
+  @apply !outline-0 !border-0;
 }
 
 @media (prefers-reduced-motion) {

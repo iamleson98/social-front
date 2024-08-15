@@ -164,6 +164,7 @@ export const PRODUCT_DETAIL_QUERY_STORE = gql`
 			name
 			slug
 			description
+			seoDescription
 			rating
 			created
 			isAvailableForPurchase
@@ -189,7 +190,7 @@ export const PRODUCT_DETAIL_QUERY_STORE = gql`
 				value
 			}
 			media {
-				url
+				url(format: WEBP, size: 500)
 				alt
 				type
 				oembedData
@@ -224,6 +225,16 @@ export const PRODUCT_DETAIL_QUERY_STORE = gql`
 			}
 			variants { # will be fetched separately
 				id
+				name
+				quantityAvailable
+				pricing {
+					price {
+						gross {
+							currency
+							amount
+						}
+					}
+				}
 			}
 			pricing {
 				onSale
@@ -296,7 +307,7 @@ export const PRODUCT_VARIANTS_QUERY_STORE = gql`
 						endDate
 					}
 					media {
-						url
+						url(format: WEBP, size: 500)
 						alt
 						id
 					}

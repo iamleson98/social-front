@@ -7,8 +7,9 @@
 	import { graphqlClient } from '$lib/client';
 	import { USER_ME_QUERY_STORE } from '$lib/stores/api';
 	import type { Query } from '$lib/gql/graphql';
-	import { toastStore } from '$lib/stores/ui/toast';
 	import { userStore } from '$lib/stores/auth';
+	import { preHandleGraphqlResult } from '$lib/utils/utils';
+	import Footer from '$lib/components/common/footer.svelte';
 
 	interface Props {
 		children: Snippet;
@@ -20,11 +21,7 @@
 		const { unsubscribe } = graphqlClient
 			.query<Pick<Query, 'me'>>(USER_ME_QUERY_STORE, {}, { requestPolicy: 'network-only' })
 			.subscribe((result) => {
-				if (result.error) {
-					toastStore.send({
-						message: result.error.message,
-						variant: 'error'
-					});
+				if (preHandleGraphqlResult(result)) {
 					return;
 				}
 
@@ -65,10 +62,10 @@
 
 <Header />
 
-<main class="pt-16 bg-gray-100 min-h-screen">
+<main class="pt-16 max-w-7xl m-auto">
 	{@render children()}
 </main>
 
-<footer></footer>
+<Footer />
 
 <Toast />

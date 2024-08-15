@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { applyAction, deserialize } from '$app/forms';
-	import { goto, invalidateAll } from '$app/navigation';
+	import { applyAction, deserialize, enhance } from '$app/forms';
+	import { invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui';
 	import { userStore } from '$lib/stores/auth';
 	import { AppRoute } from '$lib/utils';
 	import type { ActionResult } from '@sveltejs/kit';
-	import type { ActionData } from './$types';
+	import type { ActionData, PageData } from './$types';
 	import {
 		ClosedEye,
 		Email,
@@ -33,9 +33,10 @@
 
 	interface Props {
 		form: ActionData;
+		data: PageData;
 	}
 
-	let { form }: Props = $props();
+	let { form, data }: Props = $props();
 
 	const togglePasswordType = () =>
 		(passwordFieldType = passwordFieldType === 'password' ? 'text' : 'password');
@@ -71,7 +72,7 @@
 	{#if form && form.error}
 		<Alert variant="error" content={form.error} classes="mb-3" />
 	{/if}
-	<form action="?/signin" method="post" onsubmit={handleFormSubmit}>
+	<form action="?/signin" method="post" onsubmit={handleFormSubmit} use:enhance>
 		<!-- form main -->
 		<div class="mb-3">
 			<label

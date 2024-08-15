@@ -1,11 +1,12 @@
-import { writable } from 'svelte/store';
+import { persisted } from 'svelte-persisted-store';
 
 export type CartItemProps = {
   productName: string;
   quantity: number;
   productSlug: string;
+  variantId?: string;
   previewImage?: string;
   previewImageAlt: string;
 };
 
-export const CART_ITEMS_STORE = writable<CartItemProps[]>([]);
+export const cartItemStore = persisted<CartItemProps[]>('cartItems', []);

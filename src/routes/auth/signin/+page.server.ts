@@ -9,7 +9,7 @@ import {
 	HTTPStatusTemporaryRedirect,
 	REFRESH_TOKEN_KEY
 } from '$lib/utils/consts.js';
-import { redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { AppRoute } from '$lib/utils';
 import { cookieOpts, graphqlClient } from '$lib/client';
@@ -28,17 +28,9 @@ export const load: PageServerLoad = async (event) => {
 				requestPolicy: 'network-only',
 			},
 		);
-		if (result.error) {
-			return {
-				status: HTTPStatusServerError,
-				error: result.error.message,
-				meta: {
-					title: tServer(event, 'signin.title'),
-				},
-			};
+		if (!result.error) {
+			redirect(HTTPStatusTemporaryRedirect, AppRoute.HOME);
 		}
-
-		redirect(HTTPStatusTemporaryRedirect, AppRoute.HOME);
 	}
 
 	return {
@@ -55,33 +47,22 @@ export const actions = {
 		const password = (credentials.get('password') as string) || '';
 
 		if (!email.trim() || !password) {
-			return {
-				status: HTTPStatusBadRequest,
-				error: 'Please, provide valid email and password',
-			};
+			return fail(HTTPStatusBadRequest, { error: 'Please, provide valid email and password' });
 		}
 
 		const result = await graphqlClient.backendMutation<Pick<Mutation, 'tokenCreate'>>(
 			USER_LOGIN_MUTATION_STORE,
 			{ email, password },
 			event,
-			{
-				requestPolicy: 'network-only'
-			}
+			{ requestPolicy: 'network-only' }
 		);
 
 		if (result.error) {
-			return {
-				status: HTTPStatusServerError,
-				error: result.error.message
-			};
+			return fail(HTTPStatusServerError, { error: result.error.message });
 		}
 
 		if (result.data?.tokenCreate?.errors.length) {
-			return {
-				status: HTTPStatusBadRequest,
-				error: result.data.tokenCreate.errors[0].message as string,
-			};
+			return fail(HTTPStatusBadRequest, { error: result.data.tokenCreate.errors[0].message as string });
 		}
 
 		event.cookies.set(ACCESS_TOKEN_KEY, result.data?.tokenCreate?.token as string, cookieOpts);
@@ -89,5 +70,9 @@ export const actions = {
 		event.cookies.set(REFRESH_TOKEN_KEY, result.data?.tokenCreate?.refreshToken as string, cookieOpts);
 
 		redirect(HTTPStatusPermanentRedirect, AppRoute.HOME);
+		// return {
+		// 	status: HTTPStatusSuccess,
+		// 	data: result.data?.tokenCreate?.user,
+		// };
 	}
 } satisfies Actions;

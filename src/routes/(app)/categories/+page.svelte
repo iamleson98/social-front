@@ -27,10 +27,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Categories</title>
-</svelte:head>
-
 <div class="flex flex-row">
 	{#if loading}
 		{#each new Array(10) as _, idx (idx)}

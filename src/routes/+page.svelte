@@ -1,4 +1,8 @@
+<script>
+	import Sidebar from "$lib/components/common/sidebar.svelte";
 
-<div>
-	home
+</script>
+
+<div class="flex gap-1.5">
+	
 </div>

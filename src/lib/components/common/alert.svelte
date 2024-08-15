@@ -2,6 +2,7 @@
 	import type { SocialVariant } from '$lib/utils';
 	import { SocialVariantIconsMap } from '$lib/utils/consts';
 	import { fade } from 'svelte/transition';
+	import { Icon } from '$lib/components/icons';
 
 	interface Props {
 		content: string | unknown;
@@ -18,7 +19,7 @@
 	transition:fade
 >
 	<span class="text-2xl">
-		<svelte:component this={SocialVariantIconsMap[variant]} />
+		<Icon icon={SocialVariantIconsMap[variant]} />
 	</span>
 	<p>{content}</p>
 </div>

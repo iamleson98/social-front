@@ -1,7 +1,7 @@
-import { CART_ITEMS_STORE } from './cart';
+import { cartItemStore } from './cart';
 export type { CartItemProps } from './cart';
 
-export { CART_ITEMS_STORE };
+export { cartItemStore };
 
 /**
  * @description keys for local storage items

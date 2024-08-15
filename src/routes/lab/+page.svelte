@@ -1,13 +1,12 @@
 <script lang="ts">
-	import Rating from '$lib/components/pages/products/rating.svelte';
+	import Rating from '$lib/components/common/rating/rating.svelte';
 	import { Select } from '$lib/components/ui/select';
-	import { onMount } from 'svelte';
 
-	onMount(() => {
-		fetch('/api/categories/fetch?first=10&after=hello').then(res => res.json()).then(console.log);
+	let rating = $state(1.2);
+
+	$effect(() => {
+		console.log(rating);
 	});
-
-	
 </script>
 
 <h1>
@@ -15,14 +14,10 @@
 	test it.
 </h1>
 
-<div>
-	<Rating rating={3.6} />
-</div>
-
 <div></div>
 <div>
 	<Select
-	disabled
+		disabled
 		options={[
 			{ label: 'Option 1', value: 'option1' },
 			{ label: 'Option 2', value: 'option2' },
@@ -42,4 +37,18 @@
 		]}
 		label="Select an option"
 	/>
+	<div>
+		<Rating total={5} size={30} {rating} >
+			<!-- <span class="w-1 h-1 mx-1.5 bg-gray-500 rounded-full dark:bg-gray-400" ></span>
+			<a
+				href="/"
+				class="text-sm font-medium text-gray-900 underline hover:no-underline dark:text-white"
+			>
+				73 reviews
+			</a> -->
+		</Rating>
+
+		<!-- </Rating> -->
+	</div>
+	<button onclick={() => (rating += 1)}>add one</button>
 </div>

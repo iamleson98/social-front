@@ -53,6 +53,7 @@ export { default as Paragraph } from './majestion--text.svelte';
 export { default as ChevronDown } from './tabler--chevron-down.svelte';
 export { default as Quote } from './tabler--quote.svelte';
 export { default as Trash } from './tabler--trash.svelte';
+export { default as ArrowNarrowRight } from './tabler--arrow-narrow-right.svelte';
 
 export { default as Icon } from './icon.svelte';
 export { ErrorIcon };

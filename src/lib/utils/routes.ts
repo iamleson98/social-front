@@ -11,4 +11,7 @@ export const AppRoute = {
 
   PRODUCTS: '/products',
   CATEGORIES: '/categories',
+
+  CHECKOUT: '/checkout',
+  CHECKOUT_GET_OR_CREATE: '/checkout/get-or-create',
 };

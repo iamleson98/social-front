@@ -4,12 +4,13 @@ import { tClient } from '$lib/i18n';
 import { toastStore } from '$lib/stores/ui/toast';
 import type { AnyVariables, OperationResult } from '@urql/core';
 import editorJsToHtml from 'editorjs-html';
+import { AppRoute } from './routes';
 
 
 export const editorJsParser = editorJsToHtml();
 
-let _count = 0;
-export const randomID = () => `id=${_count++}`;
+let count = 0;
+export const randomID = () => (++count).toString(36);
 
 /**
  * this type represents the graphql query params that are used for pagination.
@@ -123,4 +124,14 @@ export const recursiveSearch = <T extends { children?: T[] }>(arr: T[], prec: Pr
   }
 
   return null;
+};
+
+export const getHrefForVariant = (productSlug: string, variantID: string): string => {
+  const pathName = `${AppRoute.PRODUCTS}/${encodeURIComponent(productSlug)}`;
+  if (!variantID) {
+    return pathName;
+  }
+
+  const query = new URLSearchParams({ variant: variantID });
+  return `${pathName}?${query.toString()}`;
 };

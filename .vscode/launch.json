@@ -10,15 +10,13 @@
       "remoteRoot": "/usr/src/app",
       "localRoot": "${workspaceFolder}/server"
     },
-    // {
-    //   "type": "node",
-    //   "request": "attach",
-    //   "restart": true,
-    //   "port": 9231,
-    //   "name": "Immich Microservices",
-    //   "remoteRoot": "/usr/src/app",
-    //   "localRoot": "${workspaceFolder}/server"
-    // }
+    {
+      "name": "Docker Node.js Launch",
+      "type": "docker",
+      "request": "launch",
+      "preLaunchTask": "docker-run: debug",
+      "platform": "node"
+    }
   ]
 }
 

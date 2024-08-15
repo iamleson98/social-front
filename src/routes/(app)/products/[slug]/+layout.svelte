@@ -47,27 +47,30 @@
 	const tabs: TabType[] = [
 		{
 			name: tClient('product.tabDescription'),
-			path: `/products/${$page.params.slug}`,
+			path: `${AppRoute.PRODUCTS}/${$page.params.slug}`,
 			icon: FileText
 		},
 		{
 			name: tClient('product.tabAttributes'),
-			path: `/products/${$page.params.slug}/attributes`,
+			path: `${AppRoute.PRODUCTS}/${$page.params.slug}/attributes`,
 			icon: SettingCheck
 		},
 		{
 			name: tClient('product.tabFeedBack'),
-			path: `/products/${$page.params.slug}/customer-feedbacks`,
+			path: `${AppRoute.PRODUCTS}/${$page.params.slug}/customer-feedbacks`,
 			icon: HeadSet
 		},
 		{
 			name: tClient('product.tabPackaging'),
-			path: `/products/${$page.params.slug}/packaging`,
+			path: `${AppRoute.PRODUCTS}/${$page.params.slug}/packaging`,
 			icon: PackageExport
 		}
 	];
 
-	const { media: medias, category, channel, variants, ...productInformation } = data.data;
+	const {
+		product: { media: medias, category, channel, variants, ...productInformation },
+		productJsonLd,
+	} = data;
 
 	/** wait for product variants fully fetched, then display image slideshow */
 	let findingVariants = $state(true);
@@ -125,7 +128,9 @@
 	});
 </script>
 
-<div class="m-auto max-w-6xl">
+{@html `<script type="application/ld+json">${JSON.stringify(productJsonLd)}</script>`}
+
+<div>
 	<!-- breadcrumb -->
 	<div class="breadcrumbs">
 		<ul class="text-sm px-2 text-blue-600 tablet:!flex-wrap">
@@ -165,7 +170,10 @@
 		<div class="flex items-center gap-2 mb-4">
 			{#each tabs as tab, idx (idx)}
 				<a role="tab" class="inline" href={tab.path}>
-					<button class="tab-btn btn btn-sm tablet:btn-xs" class:tab-active={tab.path === $page.url.pathname}>
+					<button
+						class="tab-btn btn btn-sm tablet:btn-xs"
+						class:tab-active={tab.path === $page.url.pathname}
+					>
 						<Icon icon={tab.icon} />
 						{tab.name}
 					</button>

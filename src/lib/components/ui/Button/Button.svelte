@@ -71,7 +71,7 @@
 
 <style lang="postcss">
 	.social-btn {
-		@apply cursor-pointer relative outline-none select-none appearance-none text-center flex justify-center items-center leading-none grow-0 font-semibold active:scale-[.98];
+		@apply cursor-pointer relative outline-none select-none appearance-none text-center flex justify-center items-center leading-none grow-0 font-semibold;
 		-webkit-tap-highlight-color: transparent;
 	}
 	.social-btn:disabled,
@@ -79,7 +79,7 @@
 		@apply text-gray-400 bg-gray-200 !cursor-not-allowed !select-none !pointer-events-none !touch-none;
 	}
 	.social-btn-xs {
-		@apply h-[30px] py-0 px-[14px] text-xs;
+		@apply px-3 py-2 text-xs;
 	}
 	.social-btn-sm {
 		@apply h-9 py-0 px-[18px] text-sm;
