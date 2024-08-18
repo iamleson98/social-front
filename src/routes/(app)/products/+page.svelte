@@ -2,7 +2,6 @@
   
 </script>
 
-<slot />
 
 <div>
   products

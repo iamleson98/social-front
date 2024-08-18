@@ -1,4 +1,4 @@
-import type { Product as ProductType, Query } from "$lib/gql/graphql";
+import type { Product as TypeProduct, Query } from "$lib/gql/graphql";
 import { PRODUCT_DETAIL_QUERY_STORE } from "$lib/stores/api/product";
 import { CHANNEL_KEY, defaultChannel, HTTPStatusBadRequest, HTTPStatusServerError } from "$lib/utils/consts";
 import { error } from "@sveltejs/kit";
@@ -69,7 +69,7 @@ export const load: LayoutServerLoad = async (event) => {
 	};
 
 	return {
-		product: product as ProductType,
+		product: product as TypeProduct,
 		productJsonLd,
 		meta: {
 			title: product?.name + '|' + product?.seoTitle,

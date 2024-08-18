@@ -1,23 +1,17 @@
 <script lang="ts">
 	import { tClient } from '$i18n';
-	import {
-		Icon,
-		MapPin,
-		Minus,
-		Plus,
-		ShoppingBagPlus,
-		Star,
-		BurstSale
-	} from '$lib/components/icons';
+	import { Icon, MapPin, Minus, Plus, ShoppingBagPlus, BurstSale } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import type { Product, ProductVariant } from '$lib/gql/graphql';
 	import { userStore } from '$lib/stores/auth';
 	import { defaultChannel, MAX_RATING } from '$lib/utils/consts';
-	import { formatMoney, preHandleGraphqlResult } from '$lib/utils/utils';
+	import { formatMoney } from '$lib/utils/utils';
 	import { fade } from 'svelte/transition';
 	import { Rating } from '$lib/components/common/rating';
 	import { cartItemStore } from '$lib/stores/app';
 	import { toastStore } from '$lib/stores/ui/toast';
+	import { IconButton } from '$lib/components/ui/Button';
+	import Input from '$lib/components/ui/Input/input.svelte';
 
 	type Props = {
 		productInformation: Omit<Product, 'variants'>;
@@ -98,9 +92,9 @@
 		></Rating>
 	</div>
 
-	<div class="mb-5 bg-gray-50 rounded">
-		<div class="stat place-items-start">
-			<div class="stat-value text-blue-700 font-semibold text-xl">
+	<div class="mb-5 bg-gray-50 rounded p-3">
+		<div class="place-items-start">
+			<div class="text-blue-700 font-semibold text-xl">
 				{formatMoney(
 					productInformation.pricing?.priceRange?.start?.gross.currency || defaultChannel.currency,
 					productInformation.pricing?.priceRange?.start?.gross.amount || 0,
@@ -137,11 +131,9 @@
 	<!-- delivery -->
 	<div class="flex flex-row items-center mb-4 text-gray-600">
 		<span class="w-1/6 text-xs">{tClient('product.delivery')}</span>
-		<div class="w-5/6 text-blue-700 font-normal">
+		<div class="w-5/6 text-blue-700 font-normal flex items-center">
 			<span class="text-sm mr-1">{userDefaultShippingAddress}</span>
-			<button class="btn btn-circle btn-xs !bg-blue-100 text-blue-700 !border-0">
-				<Icon icon={MapPin} />
-			</button>
+			<IconButton icon={MapPin} shape="circle" size="xs" variant="light" />
 		</div>
 	</div>
 
@@ -159,16 +151,16 @@
 					{/each}
 				{:else}
 					{#each productVariants as variant, idx (idx)}
-						<button
-							class={`btn btn-sm text-blue-700 border-none font-normal shadow-none bg-blue-100 hover:bg-blue-200 ${activeVariantIdx === idx ? '!bg-blue-200 font-semibold' : ''}`}
-							disabled={!variant.quantityAvailable}
-							tabindex="0"
+						<Button
+							size="xs"
+							variant="outline"
 							onclick={() => toggleSelectVariant(idx)}
+							tabindex={0}
+							disabled={!variant.quantityAvailable}
+							class={`${activeVariantIdx === idx ? '!bg-blue-100 !font-semibold' : ''}`}
 						>
-							<span>
-								{variant.name}
-							</span>
-						</button>
+							{variant.name}
+						</Button>
 					{/each}
 				{/if}
 			</div>
@@ -179,23 +171,28 @@
 	<div class="flex flex-row items-center mb-20 text-gray-600">
 		<span class="w-1/6 text-xs">{tClient('product.quantity')}</span>
 		<div class="w-5/6 flex items-center flex-wrap flex-row">
-			<div class="join">
-				<button
-					class="btn btn-sm join-item"
+			<div class="flex items-center gap-1">
+				<IconButton
+					icon={Minus}
+					color="blue"
+					variant="light"
+					size="sm"
 					onclick={() => quantitySelected--}
-					disabled={quantitySelected <= 1}
-				>
-					<Icon icon={Minus} />
-				</button>
-				<input
-					type="number"
-					class="w-14 text-center input input-sm join-item"
-					value={quantitySelected < 1 ? 1 : quantitySelected}
-					max={variantQuantityAvailable}
 				/>
-				<button class="btn btn-sm join-item" onclick={() => quantitySelected++}>
-					<Icon icon={Plus} />
-				</button>
+				<Input
+					size="sm"
+					type="number"
+					max={variantQuantityAvailable}
+					class="w-14 text-center inline-flex"
+					value={quantitySelected < 1 ? 1 : quantitySelected}
+				/>
+				<IconButton
+					icon={Plus}
+					color="blue"
+					variant="light"
+					size="sm"
+					onclick={() => quantitySelected++}
+				/>
 			</div>
 			<!-- quantity available -->
 			{#if variantQuantityAvailable != null}
@@ -214,6 +211,7 @@
 			color="blue"
 			startIcon={ShoppingBagPlus}
 			onclick={handleAddToCart}
+			loading
 		>
 			<span> {tClient('product.addToCart')} </span>
 		</Button>

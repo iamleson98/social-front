@@ -24,9 +24,7 @@ export const load: PageServerLoad = async (event) => {
 			USER_ME_QUERY_STORE,
 			{},
 			event,
-			{
-				requestPolicy: 'network-only',
-			},
+			{ requestPolicy: 'network-only' },
 		);
 		if (!result.error) {
 			redirect(HTTPStatusTemporaryRedirect, AppRoute.HOME);
@@ -45,6 +43,7 @@ export const actions = {
 		const credentials = await event.request.formData();
 		const email = (credentials.get('email') as string) || '';
 		const password = (credentials.get('password') as string) || '';
+		const _rm = credentials.get('remember-me');
 
 		if (!email.trim() || !password) {
 			return fail(HTTPStatusBadRequest, { error: 'Please, provide valid email and password' });
@@ -70,9 +69,5 @@ export const actions = {
 		event.cookies.set(REFRESH_TOKEN_KEY, result.data?.tokenCreate?.refreshToken as string, cookieOpts);
 
 		redirect(HTTPStatusPermanentRedirect, AppRoute.HOME);
-		// return {
-		// 	status: HTTPStatusSuccess,
-		// 	data: result.data?.tokenCreate?.user,
-		// };
 	}
 } satisfies Actions;

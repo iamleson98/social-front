@@ -10,7 +10,6 @@ import {
 	type Operation,
 	type OperationContext,
 	type OperationResult,
-	type OperationResultSource,
 	type OperationType,
 } from '@urql/svelte';
 import { AppRoute, getCookieByKey } from './utils';
@@ -269,10 +268,6 @@ class SocialGraphqlClient extends Client {
 		};
 		return this.executeRequestOperation(operation).toPromise();
 	};
-
-	query<Data = unknown, Variables extends AnyVariables = AnyVariables>(query: DocumentInput<Data, Variables>, variables: Variables, context?: Partial<OperationContext>): OperationResultSource<OperationResult<Data, Variables>> {
-		return super.query(query, variables, context);
-	}
 }
 
 

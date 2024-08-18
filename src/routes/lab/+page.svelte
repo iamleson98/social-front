@@ -1,5 +1,10 @@
 <script lang="ts">
 	import Rating from '$lib/components/common/rating/rating.svelte';
+	import { Email, Icon, OpenEye } from '$lib/components/icons';
+	import { Button } from '$lib/components/ui';
+	import { Alert } from '$lib/components/ui/Alert';
+	import { IconButton } from '$lib/components/ui/Button';
+	import { Input } from '$lib/components/ui/Input';
 	import { Select } from '$lib/components/ui/select';
 
 	let rating = $state(1.2);
@@ -17,7 +22,6 @@
 <div></div>
 <div>
 	<Select
-		disabled
 		options={[
 			{ label: 'Option 1', value: 'option1' },
 			{ label: 'Option 2', value: 'option2' },
@@ -38,7 +42,7 @@
 		label="Select an option"
 	/>
 	<div>
-		<Rating total={5} size={30} {rating} >
+		<Rating total={5} size={30} {rating}>
 			<!-- <span class="w-1 h-1 mx-1.5 bg-gray-500 rounded-full dark:bg-gray-400" ></span>
 			<a
 				href="/"
@@ -51,4 +55,46 @@
 		<!-- </Rating> -->
 	</div>
 	<button onclick={() => (rating += 1)}>add one</button>
+
+	<Button variant="filled" size="xs">Hello</Button>
+	<Button variant="light" size="sm">Hello</Button>
+	<Button variant="gradient" size="md">Hello</Button>
+	<Button variant="outline" size="lg">Hello</Button>
+
+	<Button variant="filled" color="dark" size="xl" startIcon={Email}>
+		<!-- <Icon icon={Email} /> -->
+		hello
+	</Button>
+	<Button variant="light" color="grape">Hello</Button>
+	<Button variant="light" color="red">Hello</Button>
+	<Button variant="gradient" color="gray">Hello</Button>
+	<Button variant="outline">Hello</Button>
 </div>
+
+<div>
+	<Input
+		placeholder="Hello world"
+		label="Enter name"
+		startIcon={Email}
+		variant="error"
+		subText="hello world"
+	/>
+	<Input
+		placeholder="Hello world"
+		label="Enter name"
+		startIcon={OpenEye}
+		variant="success"
+		subText="hello world"
+		size="sm"
+		type="number"
+		disabled
+	/>
+</div>
+
+<IconButton icon={Email} shape="circle" color="grape" variant="light" size="xs" />
+
+<Alert size="md" bordered variant='error' />
+<Alert size="sm"  />
+<Alert size="xs" bordered />
+<Alert size="lg" bordered variant='warning'/>
+<Alert size="xl" bordered variant='success' />

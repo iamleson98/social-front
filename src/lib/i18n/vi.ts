@@ -9,8 +9,8 @@ export default {
   "signup": {
     "title": "Đăng ký",
     "signupButton": "Tạo tài khoản",
-    "firstNamePlaceholder": "Vui lòng nhập họ *",
-    "lastNamePlaceholder": "Vui lòng nhập tên *",
+    "firstNamePlaceholder": "Nhập họ *",
+    "lastNamePlaceholder": "Nhập tên *",
     "confirmPasswordPlaceholder": "Vui lòng xác nhận mật khẩu *",
     "agreeToTerms": "Tôi đồng ý với các điều khoản và điều kiện",
     "alreadyHasAccount": "Bạn đã có tài khoản?",

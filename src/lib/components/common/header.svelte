@@ -42,12 +42,12 @@
 	<div class="w-1/2 flex justify-between">
 		<div class="flex gap-1">
 			<a href={AppRoute.HOME}>
-				<Button variant="subtle" size="sm" startIcon={MingcuteHome}>
+				<Button variant="light" size="sm" startIcon={MingcuteHome}>
 					<span>Home</span>
 				</Button>
 			</a>
 			<a href={AppRoute.TRENDING}>
-				<Button variant="subtle" size="sm" startIcon={IonFlame}>
+				<Button variant="light" size="sm" startIcon={IonFlame}>
 					<span>Trending</span>
 				</Button>
 			</a>

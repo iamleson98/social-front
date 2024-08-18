@@ -16,7 +16,8 @@
 		FileText,
 		PackageExport,
 		MingcuteHome,
-		type IconType
+		type IconType,
+		ChevronRight
 	} from '$lib/components/icons';
 	import { afterNavigate, disableScrollHandling } from '$app/navigation';
 	import { tClient } from '$i18n';
@@ -25,6 +26,7 @@
 	import { PRODUCT_VARIANTS_QUERY_STORE } from '$lib/stores/api';
 	import { preHandleGraphqlResult } from '$lib/utils/utils';
 	import { onMount, tick, type Snippet } from 'svelte';
+	import Button from '$lib/components/ui/Button/Button.svelte';
 
 	interface Props {
 		data: LayoutServerData;
@@ -69,7 +71,7 @@
 
 	const {
 		product: { media: medias, category, channel, variants, ...productInformation },
-		productJsonLd,
+		productJsonLd
 	} = data;
 
 	/** wait for product variants fully fetched, then display image slideshow */
@@ -132,26 +134,28 @@
 
 <div>
 	<!-- breadcrumb -->
-	<div class="breadcrumbs">
-		<ul class="text-sm px-2 text-blue-600 tablet:!flex-wrap">
+	<nav class="flex mb-2" aria-label="Breadcrumb">
+		<ol class="inline-flex items-center space-x-1 breadcrumb text-sm">
 			<li>
-				<a href="/">
+				<a href="/" class="flex items-center">
 					<Icon icon={MingcuteHome} class="mr-1" />
 					{tClient('common.home')}
 				</a>
 			</li>
 			{#each categories as category, idx (idx)}
 				<li>
+					<Icon icon={ChevronRight} />
 					<a href={`${AppRoute.CATEGORIES}/${category.slug}`}>
 						{category.name}
 					</a>
 				</li>
 			{/each}
-			<li class="text-gray-600">
+			<li class="text-gray-700">
+				<Icon icon={ChevronRight} />
 				<span>{productInformation.name}</span>
 			</li>
-		</ul>
-	</div>
+		</ol>
+	</nav>
 
 	<div class="flex flex-row tablet:flex-col tablet:flex-wrap gap-1 w-full mb-1">
 		<ProductMediaSlideShow {allProductMedias} loading={findingVariants} />
@@ -170,13 +174,15 @@
 		<div class="flex items-center gap-2 mb-4">
 			{#each tabs as tab, idx (idx)}
 				<a role="tab" class="inline" href={tab.path}>
-					<button
-						class="tab-btn btn btn-sm tablet:btn-xs"
-						class:tab-active={tab.path === $page.url.pathname}
+					<Button
+						class={`${$page.url.pathname === tab.path ? 'tab-active' : ''} tab-btn`}
+						startIcon={tab.icon}
+						size="xs"
+						variant="light"
+						color="gray"
 					>
-						<Icon icon={tab.icon} />
 						{tab.name}
-					</button>
+					</Button>
 				</a>
 			{/each}
 		</div>
@@ -187,9 +193,15 @@
 
 <style lang="postcss">
 	.tab-active {
-		@apply bg-blue-100 text-blue-600 hover:bg-blue-100 !outline-none focus:!outline-none;
+		@apply !bg-blue-100 !text-blue-600 hover:bg-blue-100;
 	}
 	.tab-btn {
-		@apply border-none tablet:h-max tablet:py-1;
+		@apply tablet:h-max tablet:py-1;
+	}
+	.breadcrumb > li:not(:last-child) {
+		@apply text-blue-700;
+	}
+	.breadcrumb > li {
+		@apply flex items-center;
 	}
 </style>

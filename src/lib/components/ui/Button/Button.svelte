@@ -13,13 +13,12 @@
 		upper?: boolean;
 		size?: SocialSize;
 		radius?: SocialRadius;
-		classes?: string;
 		loading?: boolean;
 		fullWidth?: boolean;
 		children: Snippet;
 		startIcon?: IconType;
 		endIcon?: IconType;
-	};
+	} & HTMLButtonAttributes;
 
 	type IconProps = {
 		icon?: IconType;
@@ -34,14 +33,15 @@
 		upper = false,
 		size = 'md',
 		radius = 'rounded-md',
-		classes = '',
-		loading = $bindable(false),
+		class: className = '',
+		loading = false,
+		disabled = false,
 		fullWidth = false,
 		children,
 		startIcon,
 		endIcon,
 		...restProps
-	}: Props & HTMLButtonAttributes = $props();
+	}: Props = $props();
 </script>
 
 {#snippet buttonIcon({ icon, pos }: IconProps)}
@@ -53,10 +53,11 @@
 {/snippet}
 
 <button
-	class={`${buttonVariantColorsMap[variant][color]} social-btn social-btn-${size} ${radius} ${classes}`}
+	class={`${buttonVariantColorsMap[variant][color]} btn btn-${size} ${radius} ${className}`}
 	class:uppercase={upper}
 	class:w-full={fullWidth}
 	{type}
+	{disabled}
 	bind:this={ref}
 	{...restProps}
 >
@@ -70,27 +71,27 @@
 </button>
 
 <style lang="postcss">
-	.social-btn {
-		@apply cursor-pointer relative outline-none select-none appearance-none text-center flex justify-center items-center leading-none grow-0 font-semibold;
+	.btn {
+		@apply cursor-pointer relative outline-none select-none appearance-none text-center flex justify-center items-center leading-none grow-0 font-medium focus:ring-4;
 		-webkit-tap-highlight-color: transparent;
 	}
-	.social-btn:disabled,
+	.btn:disabled,
 	button:disabled {
 		@apply text-gray-400 bg-gray-200 !cursor-not-allowed !select-none !pointer-events-none !touch-none;
 	}
-	.social-btn-xs {
+	.btn-xs {
 		@apply px-3 py-2 text-xs;
 	}
-	.social-btn-sm {
+	.btn-sm {
 		@apply h-9 py-0 px-[18px] text-sm;
 	}
-	.social-btn-md {
+	.btn-md {
 		@apply h-[42px] py-0 px-[22px] text-base;
 	}
-	.social-btn-lg {
+	.btn-lg {
 		@apply h-[50px] py-0 px-[26px] text-lg;
 	}
-	.social-btn-xl {
+	.btn-xl {
 		@apply h-[60px] py-0 px-8 text-xl;
 	}
 </style>

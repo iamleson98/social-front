@@ -1,5 +1,4 @@
-import { default as ErrorIcon } from './tabler--alert-octagon.svelte';
-
+import { default as AlertHexagonFilled } from './tabler--alert-hexagon-filled.svelte';
 export { default as AccessPoint } from './tabler--access-point.svelte';
 export { default as Email } from './tabler--email.svelte';
 export { default as ClosedEye } from './tabler--eye-closed.svelte';
@@ -53,9 +52,12 @@ export { default as Paragraph } from './majestion--text.svelte';
 export { default as ChevronDown } from './tabler--chevron-down.svelte';
 export { default as Quote } from './tabler--quote.svelte';
 export { default as Trash } from './tabler--trash.svelte';
-export { default as ArrowNarrowRight } from './tabler--arrow-narrow-right.svelte';
+export { default as CircleCheckFilled } from './tabler--circle-check-filled.svelte';
+export { default as ExclamationCircleFilled } from './tabler--exclamation-circle-filled.svelte';
+export { default as InfoTriangleFilled } from './tabler--info-triangle-filled.svelte';
+export { default as InfoCircleFilled } from './tabler--info-circle-filled.svelte';
 
 export { default as Icon } from './icon.svelte';
-export { ErrorIcon };
+export { AlertHexagonFilled };
 
-export type IconType = typeof ErrorIcon;
+export type IconType = typeof AlertHexagonFilled;

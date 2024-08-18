@@ -37,6 +37,6 @@
 
 <style lang="postcss">
 	input {
-		@apply input-xs border-gray-200 w-full;
+		@apply border-gray-200 w-full;
 	}
 </style>

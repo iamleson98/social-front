@@ -1,4 +1,4 @@
-import { Check, ErrorIcon, InforCircle, Warn, type IconType } from "$lib/components/icons";
+import { CircleCheckFilled, ExclamationCircleFilled, InfoCircleFilled, InfoTriangleFilled, type IconType } from "$lib/components/icons";
 
 /**
  * all server methods MUST return this type, for consistency
@@ -54,10 +54,10 @@ export const channels = [
 ]
 
 export const SocialVariantIconsMap: Record<SocialVariant, IconType> = {
-  'error': ErrorIcon,
-  'info': InforCircle,
-  'warning': Warn,
-  'success': Check,
+  'error': ExclamationCircleFilled,
+  'info': InfoCircleFilled,
+  'warning': InfoTriangleFilled,
+  'success': CircleCheckFilled,
 };
 
 /**

@@ -179,6 +179,6 @@
 
 <style lang="postcss">
 	.inline-format-button {
-		@apply !outline-0 !border-none no-animation hover:bg-blue-100 hover:text-blue-600 !shadow-none;
+		@apply !outline-0 !border-none hover:bg-blue-100 hover:text-blue-600 !shadow-none;
 	}
 </style>

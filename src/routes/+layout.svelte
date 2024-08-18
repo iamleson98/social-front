@@ -62,10 +62,9 @@
 
 <Header />
 
-<main class="pt-16 max-w-7xl m-auto">
+<main class="pt-16 max-w-7xl m-auto min-h-screen">
 	{@render children()}
 </main>
 
 <Footer />
-
 <Toast />

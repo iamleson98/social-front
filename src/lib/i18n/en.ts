@@ -9,9 +9,9 @@ export default {
   "signup": {
     "title": "Signup",
     "signupButton": "Create account",
-    "firstNamePlaceholder": "Please enter your first name *",
-    "lastNamePlaceholder": "Please enter your last name *",
-    "confirmPasswordPlaceholder": "Please confirm your password *",
+    "firstNamePlaceholder": "First name *",
+    "lastNamePlaceholder": "Last name *",
+    "confirmPasswordPlaceholder": "Please confirm password *",
     "agreeToTerms": "I agree to the terms and conditions",
     "alreadyHasAccount": "Already have an account?"
   },
@@ -25,10 +25,10 @@ export default {
   },
   "common": {
     "home": "Home",
-    "emailPlaceholder": "Please enter your email *",
+    "emailPlaceholder": "Please enter email *",
     "yes": "yes",
     "no": "no",
-    "passwordPlaceholder": "Please enter your password *",
+    "passwordPlaceholder": "Please enter password *",
     "level1": "Level 1",
     "level2": "Level 2",
     "level3": "Level 3",

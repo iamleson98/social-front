@@ -24,7 +24,7 @@
 			<div class="bg-gray-300 animate-pulse w-full h-full pt-[100%]"></div>
 		</div>
 		<div class="prd-slide animate-pulse">
-			{#each new Array(5).fill(null) as _, idx (idx)}
+			{#each new Array(5) as _, idx (idx)}
 				<div class="slide-item">
 					<div class="prd-thumbnail bg-gray-300"></div>
 				</div>
@@ -47,9 +47,7 @@
 				<button class="slide-item" tabindex="0" onclick={() => (selectedMediaIdx = idx)}>
 					<div class="prd-thumbnail" style="background-image: url('{media.url}');"></div>
 					{#if selectedMediaIdx === idx}
-						<!-- <Motion let:motion layoutId="slide-outline" initial={false}> -->
 						<div class="slide-outline"></div>
-						<!-- </Motion> -->
 					{/if}
 				</button>
 			{/each}
