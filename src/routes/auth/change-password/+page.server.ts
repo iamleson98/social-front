@@ -16,8 +16,8 @@ export const load: PageServerLoad = async (event) => {
 		status: HTTPStatusSuccess,
 		meta: {
 			title: tServer(event, 'changePassword.title'),
-			description: 'Change your password by providing your new password'
-		}
+			description: 'Change your password by providing your new password',
+		},
 	};
 };
 
@@ -30,14 +30,14 @@ export const actions = {
 		if (!password || !confirmNewPassword) {
 			return {
 				status: HTTPStatusBadRequest,
-				error: 'Please provide valid new passwords'
+				error: 'Please provide valid new passwords',
 			};
 		}
 
 		if (password !== confirmNewPassword) {
 			return {
 				status: HTTPStatusBadRequest,
-				error: "password and confirm password don't match."
+				error: "password and confirm password don't match.",
 			};
 		}
 
@@ -46,14 +46,14 @@ export const actions = {
 		if (!token || !email) {
 			return {
 				status: HTTPStatusBadRequest,
-				error: 'Invalid url'
+				error: 'Invalid url',
 			};
 		}
 
 		const variables = {
 			email,
 			token,
-			password
+			password,
 		};
 		const resetNewPasswordResult = await graphqlClient.backendMutation<
 			Pick<Mutation, 'setPassword'>

@@ -36,7 +36,7 @@
 	/** track selected variant, 0 based */
 	let activeVariantIdx = $state<number | null>(null);
 
-	let variantQuantityAvailable = $derived(
+	let variantQuantityAvailable = $derived.by(() =>
 		activeVariantIdx != null ? productVariants[activeVariantIdx]?.quantityAvailable : null
 	);
 
@@ -152,7 +152,7 @@
 				{:else}
 					{#each productVariants as variant, idx (idx)}
 						<Button
-							size="xs"
+							size="sm"
 							variant="outline"
 							onclick={() => toggleSelectVariant(idx)}
 							tabindex={0}
@@ -211,7 +211,6 @@
 			color="blue"
 			startIcon={ShoppingBagPlus}
 			onclick={handleAddToCart}
-			loading
 		>
 			<span> {tClient('product.addToCart')} </span>
 		</Button>

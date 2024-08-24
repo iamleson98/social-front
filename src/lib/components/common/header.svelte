@@ -5,11 +5,24 @@
 	import { AppRoute } from '$lib/utils';
 	import { page } from '$app/stores';
 	import { cartItemStore } from '$lib/stores/app';
-	import { IonFlame, MingcuteHome, Icon, Search, ShoppingBag } from '$lib/components/icons';
+	import {
+		IonFlame,
+		Logout,
+		MingcuteHome,
+		Search,
+		ShoppingBag,
+		UserCog
+	} from '$lib/components/icons';
 	import { scale } from 'svelte/transition';
+	import { Input } from '../ui/Input';
+	import { IconButton } from '../ui/Button';
+	import { DropDown } from '../ui/Dropdown';
 
 	let userAvatarStyle = $state('');
 	let userDisplayName = $state('');
+	let openUserDropdown = $state(false);
+
+	let dropdownTriggerRef = $state<HTMLButtonElement>();
 
 	$effect(() => {
 		if ($userStore?.avatar?.url) {
@@ -32,7 +45,7 @@
 		<!-- search -->
 		<div>
 			<label class="input flex items-center gap-2 input-sm">
-				<input type="text" class="grow" placeholder="Enter your search" />
+				<Input placeholder="type something" size="sm" />
 				<span>
 					<Search />
 				</span>
@@ -54,46 +67,49 @@
 		</div>
 
 		<div class="flex items-center gap-3.5">
-			<!-- shopping cart button -->
 			<a href={AppRoute.SHOPPING_CART}>
-				<button class="btn btn-square btn-sm relative">
-					<Icon icon={ShoppingBag} />
+				<IconButton size="sm" icon={ShoppingBag} variant="light" color="gray" class="relative">
 					{#key $cartItemStore}
 						<span class="cart-quantity" in:scale>
 							{$cartItemStore.length}
 						</span>
 					{/key}
-				</button>
+				</IconButton>
 			</a>
-			<div class="dropdown dropdown-end">
-				{#if $userStore}
-					<button tabIndex="0" class="btn btn-sm uppercase">
-						{#if $userStore.avatar && $userStore.avatar.url}
-							<span
-								class="rounded-full w-6 h-6 bg-blue-300 flex items-center justify-center font-bold bg-cover bg-center bg-no-repeat"
-								style={userAvatarStyle}
-							>
-							</span>
-							<span>{userDisplayName}</span>
-						{/if}
-					</button>
-					<ul class="dropdown-content menu shadow rounded-box w-52">
-						<li>
-							<a href="/">Item 1</a>
-						</li>
-						<li>
-							<a href="/">Item 2</a>
-						</li>
-						<li>
-							<span>Logout</span>
-						</li>
-					</ul>
-				{:else if !$userStore && !$page.url.pathname.startsWith('/auth')}
-					<a href={AppRoute.AUTH_SIGNIN}>
-						<Button variant="filled" size="xs">Signin</Button>
-					</a>
-				{/if}
-			</div>
+			{#if $userStore}
+				<Button
+					variant="light"
+					size="sm"
+					bind:ref={dropdownTriggerRef}
+					class="space-x-2 uppercase"
+					onclick={() => (openUserDropdown = true)}
+				>
+					{#if $userStore.avatar && $userStore.avatar.url}
+						<span
+							class="rounded-full w-6 h-6 bg-blue-300 flex items-center justify-center font-bold bg-cover bg-center bg-no-repeat"
+							style={userAvatarStyle}
+						>
+						</span>
+						<span>{userDisplayName}</span>
+					{/if}
+				</Button>
+
+				<DropDown
+					onClose={() => (openUserDropdown = false)}
+					open={openUserDropdown}
+					parentRef={dropdownTriggerRef as HTMLButtonElement}
+					header="User options"
+					items={[
+						// { text: 'Profile', startIcon: IonFlame },
+						{ text: 'Settings', startIcon: UserCog, hasDivider: true },
+						{ text: 'Logout', startIcon: Logout }
+					]}
+				/>
+			{:else if !$userStore && !$page.url.pathname.startsWith('/auth')}
+				<a href={AppRoute.AUTH_SIGNIN}>
+					<Button variant="filled" size="sm">Signin</Button>
+				</a>
+			{/if}
 		</div>
 	</div>
 </header>

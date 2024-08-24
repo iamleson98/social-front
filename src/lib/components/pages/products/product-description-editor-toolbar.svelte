@@ -32,6 +32,7 @@
 		$isHeadingNode as isHeadingNode
 	} from '@lexical/rich-text';
 	import { $setBlocksType as setBlocksType } from '@lexical/selection';
+	import { IconButton } from '$lib/components/ui/Button';
 
 	type Props = {
 		/** indicates if editing mode is allowed */
@@ -161,7 +162,7 @@
 			{@const inlineFormat = inlineFormatState[inlineKey as InlineType]}
 
 			<div class="tooltip" data-tip={inlineFormat.tip}>
-				<button
+				<!-- <button
 					class="inline-format-button btn btn-square btn-sm"
 					class:!bg-blue-100={inlineFormat.active}
 					class:!text-blue-600={inlineFormat.active}
@@ -171,7 +172,15 @@
 					{disabled}
 				>
 					<Icon icon={inlineFormat.icon} />
-				</button>
+				</button> -->
+				<IconButton
+					icon={inlineFormat.icon}
+					class={`${inlineFormat.active ? '!bg-blue-100 !text-blue-600' : ''}`}
+					aria-label={inlineKey}
+					tabindex={0}
+					{disabled}
+					onclick={() => editor?.dispatchCommand(FORMAT_TEXT_COMMAND, inlineKey as InlineType)}
+				/>
 			</div>
 		{/each}
 	</div>

@@ -57,7 +57,7 @@ export const USER_ME_QUERY_STORE = gql`
 			# 	code
 			# 	name
 			# }
-			avatar {
+			avatar(size: 100, format: WEBP) {
 				url
 				alt
 			}

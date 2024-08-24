@@ -1,8 +1,5 @@
 <script>
-	import Sidebar from "$lib/components/common/sidebar.svelte";
-
+	import ProductLayout from '$lib/components/pages/products/layout.svelte';
 </script>
 
-<div class="flex gap-1.5">
-	
-</div>
+<ProductLayout />

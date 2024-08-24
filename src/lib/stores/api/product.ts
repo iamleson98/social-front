@@ -39,6 +39,14 @@ export const PRODUCT_LIST_QUERY_STORE = gql`
 					description
 					created
 					updatedAt
+					category {
+						id
+						name
+					}
+					thumbnail(size: 450, format: WEBP) {
+						url
+						alt
+					}
 				}
 			}
 		}

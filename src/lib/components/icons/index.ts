@@ -56,6 +56,11 @@ export { default as CircleCheckFilled } from './tabler--circle-check-filled.svel
 export { default as ExclamationCircleFilled } from './tabler--exclamation-circle-filled.svelte';
 export { default as InfoTriangleFilled } from './tabler--info-triangle-filled.svelte';
 export { default as InfoCircleFilled } from './tabler--info-circle-filled.svelte';
+export { default as ArrowNarrowRight } from './tabler--arrow-narrow-right.svelte';
+export { default as Logout } from './tabler--logout.svelte';
+export { default as UserCog } from './tabler--user-cog.svelte';
+export { default as ChevronUp } from './tabler--chevron-up.svelte';
+export { default as TruckDelivery } from './tabler--truck-delivery.svelte';
 
 export { default as Icon } from './icon.svelte';
 export { AlertHexagonFilled };

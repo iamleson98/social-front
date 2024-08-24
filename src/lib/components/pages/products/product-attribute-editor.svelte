@@ -24,7 +24,7 @@
 
 	let { productCategory }: Props = $props();
 	let loading = $state(true);
-	let attributesOgGivenCategory = $state.frozen<AttributeCountableConnection | null | undefined>();
+	let attributesOfGivenCategory = $state.frozen<AttributeCountableConnection | null | undefined>();
 	const MAX_FETCHING_BATCH = 30;
 
 	const fetchAttributes = (categoryId: string) => {
@@ -39,11 +39,10 @@
 		const { unsubscribe } = graphqlClient
 			.query<Pick<Query, 'attributes'>, AttributesVariable>(PRODUCT_ATTRIBUTES_QUERY, variables)
 			.subscribe((attributeRes) => {
-				console.log(attributeRes);
 				if (preHandleGraphqlResult(attributeRes)) return;
 
 				loading = false;
-				attributesOgGivenCategory = attributeRes.data?.attributes;
+				attributesOfGivenCategory = attributeRes.data?.attributes;
 				tick();
 			});
 
@@ -65,9 +64,9 @@
 			</div>
 		{/each}
 	</div>
-{:else if attributesOgGivenCategory}
+{:else if attributesOfGivenCategory}
 	<div class="flex items-center flex-wrap rounded border p-1" transition:slide>
-		{#each attributesOgGivenCategory.edges as attributeEdge, idx (idx)}
+		{#each attributesOfGivenCategory.edges as attributeEdge, idx (idx)}
 			<div class="w-1/2 tablet:w-full p-1 shrink flex items-center mb-2">
 				<div class="w-1/4 text-xs">
 					{#if attributeEdge.node.valueRequired}

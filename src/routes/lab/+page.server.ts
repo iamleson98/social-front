@@ -1,10 +1,10 @@
 import { redirect } from "@sveltejs/kit";
-import type { PageLoad } from "./$types";
+import type { PageServerLoad } from "./$types";
 import { HTTPStatusPermanentRedirect } from "$lib/utils/consts";
 import { dev } from "$app/environment";
 
-export const load: PageLoad = async () => {
+export const load: PageServerLoad = async () => {
   if (!dev) {
-    redirect(HTTPStatusPermanentRedirect, '/');
+    return redirect(HTTPStatusPermanentRedirect, '/');
   }
 };

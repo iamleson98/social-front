@@ -1,13 +1,19 @@
 <script lang="ts">
 	import Rating from '$lib/components/common/rating/rating.svelte';
-	import { Email, Icon, OpenEye } from '$lib/components/icons';
+	import { Email, OpenEye } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
+	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
+	import { Badge } from '$lib/components/ui/badge';
 	import { IconButton } from '$lib/components/ui/Button';
+	import { DropDown } from '$lib/components/ui/Dropdown';
 	import { Input } from '$lib/components/ui/Input';
 	import { Select } from '$lib/components/ui/select';
 
 	let rating = $state(1.2);
+
+	let ref = $state<HTMLButtonElement>();
+	let openDropdown = $state(false);
 
 	$effect(() => {
 		console.log(rating);
@@ -93,8 +99,36 @@
 
 <IconButton icon={Email} shape="circle" color="grape" variant="light" size="xs" />
 
-<Alert size="md" bordered variant='error' />
-<Alert size="sm"  />
+<Alert size="md" bordered variant="error" />
+<Alert size="sm" />
 <Alert size="xs" bordered />
-<Alert size="lg" bordered variant='warning'/>
-<Alert size="xl" bordered variant='success' />
+<Alert size="lg" bordered variant="warning" />
+<Alert size="xl" bordered variant="success" />
+
+<button bind:this={ref} onclick={() => (openDropdown = !openDropdown)} class="text-red-500"
+	>toggle</button
+>
+<DropDown
+	header="Hello world"
+	items={[
+		{
+			text: 'hello',
+			startIcon: Email,
+			hasDivider: true
+		},
+		{
+			text: 'lol'
+		}
+	]}
+	parentRef={ref}
+	open={openDropdown}
+	onClose={() => (openDropdown = false)}
+/>
+
+<Accordion header="Hello world" class="bg-white">
+	<p>This is children</p>
+</Accordion>
+
+<Badge text="hello" onDismiss={console.log} color="blue" variant="outline" />
+
+<div class="h-screen">hello</div>

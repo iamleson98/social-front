@@ -1,3 +1,3 @@
 <script lang="ts"></script>
 
-<nav></nav>s
+<nav></nav>

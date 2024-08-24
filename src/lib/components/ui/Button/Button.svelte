@@ -2,12 +2,12 @@
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import type { SocialColor, SocialRadius, SocialSize } from '../common';
 	import { buttonVariantColorsMap, type ButtonVariant } from './button.types';
-	import type { Snippet } from 'svelte';
+	import { type Snippet } from 'svelte';
 	import { Icon, type IconType } from '$lib/components/icons';
 
 	type Props = {
 		variant?: ButtonVariant;
-		ref?: HTMLButtonElement | null;
+		ref?: HTMLButtonElement;
 		type?: 'button' | 'submit' | 'reset';
 		color?: SocialColor;
 		upper?: boolean;
@@ -27,7 +27,7 @@
 
 	let {
 		variant = 'filled',
-		ref = null,
+		ref = $bindable(),
 		type = 'button',
 		color = 'blue',
 		upper = false,
@@ -72,7 +72,7 @@
 
 <style lang="postcss">
 	.btn {
-		@apply cursor-pointer relative outline-none select-none appearance-none text-center flex justify-center items-center leading-none grow-0 font-medium focus:ring-4;
+		@apply cursor-pointer relative outline-none select-none appearance-none text-center inline-flex justify-center items-center leading-none grow-0 font-medium focus:ring-4;
 		-webkit-tap-highlight-color: transparent;
 	}
 	.btn:disabled,
@@ -80,18 +80,18 @@
 		@apply text-gray-400 bg-gray-200 !cursor-not-allowed !select-none !pointer-events-none !touch-none;
 	}
 	.btn-xs {
-		@apply px-3 py-2 text-xs;
+		@apply text-xs h-6 min-h-6 px-2;
 	}
 	.btn-sm {
-		@apply h-9 py-0 px-[18px] text-sm;
+		@apply h-8 min-h-8 px-3 text-sm;
 	}
 	.btn-md {
-		@apply h-[42px] py-0 px-[22px] text-base;
+		@apply text-base h-12 min-h-12 px-4;
 	}
 	.btn-lg {
-		@apply h-[50px] py-0 px-[26px] text-lg;
+		@apply h-14 min-h-14 px-6 text-lg;
 	}
 	.btn-xl {
-		@apply h-[60px] py-0 px-8 text-xl;
+		@apply px-7 text-xl h-16 min-h-16;
 	}
 </style>

@@ -3,13 +3,14 @@
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import type { SocialColor, SocialSize } from '../common';
 	import { buttonVariantColorsMap, type ButtonVariant } from './button.types';
+	import type { Snippet } from 'svelte';
 
 	type Props = {
 		size?: SocialSize;
 		color?: SocialColor;
 		variant?: ButtonVariant;
-		class?: string;
 		icon: IconType;
+		children?: Snippet;
 		ref?: HTMLButtonElement | null;
 		shape?: 'square' | 'circle';
 	} & HTMLButtonAttributes;
@@ -18,10 +19,11 @@
 		size = 'md',
 		color = 'blue',
 		variant = 'filled',
-		class: className = '',
+		class: className = $bindable(''),
 		icon,
-		ref,
+		ref = $bindable(),
 		shape = 'square',
+		children,
 		...rest
 	}: Props = $props();
 </script>
@@ -32,6 +34,9 @@
 	{...rest}
 >
 	<Icon {icon} />
+	{#if children}
+		{@render children()}
+	{/if}
 </button>
 
 <style lang="postcss">
@@ -39,18 +44,18 @@
 		@apply inline-flex items-center justify-center cursor-pointer focus:ring-4;
 	}
 	.icon-btn-xs {
-		@apply p-1 text-xs;
+		@apply text-xs h-6 w-6;
 	}
 	.icon-btn-sm {
-		@apply p-1.5 text-sm;
+		@apply text-sm h-8 w-8;
 	}
 	.icon-btn-md {
-		@apply p-3 text-base;
+		@apply text-base h-12 w-12;
 	}
 	.icon-btn-lg {
-		@apply p-4 text-lg;
+		@apply text-lg h-14 w-14;
 	}
 	.icon-btn-xl {
-		@apply p-5 text-xl;
+		@apply text-xl h-16 w-16;
 	}
 </style>

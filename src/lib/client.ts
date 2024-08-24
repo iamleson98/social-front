@@ -11,17 +11,18 @@ import {
 	type OperationContext,
 	type OperationResult,
 	type OperationType,
-} from '@urql/svelte';
+} from '@urql/core';
 import { AppRoute, getCookieByKey } from './utils';
 import { redirect, type RequestEvent } from '@sveltejs/kit';
 import { browser } from '$app/environment';
 import { ACCESS_TOKEN_KEY, CSRF_TOKEN_KEY, HTTPStatusTemporaryRedirect, REFRESH_TOKEN_KEY } from './utils/consts';
-import { authExchange } from '@urql/exchange-auth';
+import { authExchange, type AuthUtilities } from '@urql/exchange-auth';
 import { USER_ME_QUERY_STORE, USER_REFRESH_TOKEN_MUTATION_STORE } from './stores/api';
 import type { Mutation, Query, User } from './gql/graphql';
 import { userStore } from './stores/auth';
 import type { CookieSerializeOptions } from 'cookie';
 import { goto } from '$app/navigation';
+import { retryExchange } from '@urql/exchange-retry';
 
 
 export const MAX_REFRESH_TOKEN_TRIES = 3;
@@ -187,14 +188,14 @@ class SocialGraphqlClient extends Client {
 		// If we reach here, it means we have an authen or author error
 		event.cookies.delete(ACCESS_TOKEN_KEY, { path: '/', maxAge: 0, secure: true });
 
-		const csrfToken = event.cookies.get(CSRF_TOKEN_KEY);
-		const refreshToken = event.cookies.get(REFRESH_TOKEN_KEY);
+		const csrfToken = event.cookies.get(CSRF_TOKEN_KEY) || '';
+		const refreshToken = event.cookies.get(REFRESH_TOKEN_KEY) || '';
 
 		if (!csrfToken || !refreshToken) {
 			redirect(HTTPStatusTemporaryRedirect, AppRoute.AUTH_SIGNIN);
 		}
 
-		const refreshResult = await this
+		const refreshTokenResult = await this
 			.mutation<Pick<Mutation, 'tokenRefresh'>>(
 				USER_REFRESH_TOKEN_MUTATION_STORE,
 				{ csrfToken, refreshToken, },
@@ -202,14 +203,14 @@ class SocialGraphqlClient extends Client {
 			)
 			.toPromise();
 
-		if (refreshResult.error || refreshResult.data?.tokenRefresh?.errors.length) {
+		if (refreshTokenResult.error || refreshTokenResult.data?.tokenRefresh?.errors.length) {
 			event.cookies.delete(CSRF_TOKEN_KEY, { path: '/', maxAge: 0 });
 			event.cookies.delete(REFRESH_TOKEN_KEY, { path: '/', maxAge: 0 });
 			redirect(HTTPStatusTemporaryRedirect, AppRoute.AUTH_SIGNIN);
 		};
 
 		// set new access token to cookie (NO HTTPONLY)
-		event.cookies.set(ACCESS_TOKEN_KEY, refreshResult.data?.tokenRefresh?.token as string, cookieOpts);
+		event.cookies.set(ACCESS_TOKEN_KEY, refreshTokenResult.data?.tokenRefresh?.token as string, cookieOpts);
 		return true;
 	};
 
@@ -270,6 +271,57 @@ class SocialGraphqlClient extends Client {
 	};
 }
 
+const authExchangeInner = async (utils: AuthUtilities) => {
+	const addAuthToOperation = (operation: Operation) => {
+		if (browser) {
+			const accessToken = getCookieByKey(ACCESS_TOKEN_KEY);
+			if (accessToken) {
+				return utils.appendHeaders(operation, {
+					Authorization: `Bearer ${accessToken}`,
+				});
+			}
+
+			return operation;
+		}
+
+		return operation;
+	}
+
+	const refreshAuth = async () => {
+		if (browser) {
+			document.cookie = `${ACCESS_TOKEN_KEY}=; path=/; secure; max-age=0`;
+
+			const csrfToken = getCookieByKey(CSRF_TOKEN_KEY);
+			const refreshToken = getCookieByKey(REFRESH_TOKEN_KEY);
+
+			if (!csrfToken || !refreshToken) {
+				await goto(AppRoute.AUTH_SIGNIN, { invalidateAll: true });
+			}
+
+			const result = await utils
+				.mutate<Pick<Mutation, 'tokenRefresh'>>(
+					USER_REFRESH_TOKEN_MUTATION_STORE,
+					{ csrfToken, refreshToken },
+					{ requestPolicy: 'network-only' },
+				);
+
+			if (result.error || result.data?.tokenRefresh?.errors.length) {
+				document.cookie = `${CSRF_TOKEN_KEY}=; path=/; secure; max-age=0`;
+				document.cookie = `${REFRESH_TOKEN_KEY}=; path=/; secure; max-age=0`;
+				await goto(AppRoute.AUTH_SIGNIN, { invalidateAll: true });
+			};
+
+			document.cookie = `${ACCESS_TOKEN_KEY}=${result.data?.tokenRefresh?.token}; path=/; secure; max-age=86400`;
+			userStore.set(result.data?.tokenRefresh?.user);
+		}
+	}
+
+	return {
+		addAuthToOperation,
+		didAuthError: (error: CombinedError) => (isAuthorError(error) || isAuthenError(error)),
+		refreshAuth,
+	};
+}
 
 /**
  * graphqlClient is similar to 'Client' of urql but with additional methods for server-side.
@@ -278,58 +330,16 @@ export const graphqlClient = new SocialGraphqlClient({
 	url: import.meta.env.VITE_GRAPHQL_API_END_POINT,
 	exchanges: [
 		// this auth exchange can run on slient side only
-		authExchange(async (utils) => {
-			const addAuthToOperation = (operation: Operation) => {
-				if (browser) {
-					const accessToken = getCookieByKey(ACCESS_TOKEN_KEY);
-					if (accessToken) {
-						return utils.appendHeaders(operation, {
-							Authorization: `Bearer ${accessToken}`,
-						});
-					}
-
-					return operation;
-				}
-
-				return operation;
-			}
-
-			const refreshAuth = async () => {
-				if (browser) {
-					document.cookie = `${ACCESS_TOKEN_KEY}=; path=/; secure; max-age=0`;
-
-					const csrfToken = getCookieByKey(CSRF_TOKEN_KEY);
-					const refreshToken = getCookieByKey(REFRESH_TOKEN_KEY);
-
-					if (!csrfToken || !refreshToken) {
-						await goto(AppRoute.AUTH_SIGNIN, { invalidateAll: true });
-					}
-
-					const result = await utils
-						.mutate<Pick<Mutation, 'tokenRefresh'>>(
-							USER_REFRESH_TOKEN_MUTATION_STORE,
-							{ csrfToken, refreshToken },
-							{ requestPolicy: 'network-only' },
-						);
-
-					if (result.error || result.data?.tokenRefresh?.errors.length) {
-						document.cookie = `${CSRF_TOKEN_KEY}=; path=/; secure; max-age=0`;
-						document.cookie = `${REFRESH_TOKEN_KEY}=; path=/; secure; max-age=0`;
-						await goto(AppRoute.AUTH_SIGNIN, { invalidateAll: true });
-					};
-
-					document.cookie = `${ACCESS_TOKEN_KEY}=${result.data?.tokenRefresh?.token}; path=/; secure; max-age=86400`;
-					userStore.set(result.data?.tokenRefresh?.user);
-				}
-			}
-
-			return {
-				addAuthToOperation,
-				didAuthError: (error) => (isAuthorError(error) || isAuthenError(error)),
-				refreshAuth,
-			};
-		}),
+		authExchange(authExchangeInner),
 		cacheExchange,
+		retryExchange({
+			initialDelayMs: 1000,
+			maxDelayMs: 15000,
+			randomDelay: true,
+			maxNumberAttempts: 2,
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			retryIf: (error: CombinedError, _: Operation): boolean => (error && !!error.networkError || isAuthorError(error) || isAuthenError(error)),
+		}),
 		fetchExchange,
 	],
 });

@@ -62,7 +62,7 @@
 
 <Header />
 
-<main class="pt-16 max-w-7xl m-auto min-h-screen">
+<main class="pt-16 m-auto min-h-screen">
 	{@render children()}
 </main>
 
