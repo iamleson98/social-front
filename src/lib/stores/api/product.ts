@@ -1,5 +1,5 @@
 import type { CategoryCountableConnection, CategoryFilterInput, CategorySortingInput, CategoryWhereInput, ThumbnailFormatEnum } from '$lib/gql/graphql';
-import { gql } from '@urql/svelte';
+import { gql } from '@urql/core';
 
 export const PRODUCT_LIST_QUERY_STORE = gql`
 	query ProductsList(

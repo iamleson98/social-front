@@ -1,4 +1,4 @@
-import { gql } from '@urql/svelte';
+import { gql } from '@urql/core';
 
 export const USER_LOGIN_MUTATION_STORE = gql`
 	mutation TokenCreate($email: String!, $password: String!) {
