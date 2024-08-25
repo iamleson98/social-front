@@ -39,14 +39,14 @@ export const actions = {
     if (!email || !email.toString().trim()) {
       return {
         status: HTTPStatusBadRequest,
-        error: "Please provide a valid email address",
+        error: tServer(event, 'error.invalidEmail'),
       };
     }
 
     if ((!password || !confirmPassword) || password !== confirmPassword) {
       return {
         status: HTTPStatusBadRequest,
-        error: "Passwords do not match",
+        error: tServer(event, 'error.passwordsNotMatch'),
       };
     }
 

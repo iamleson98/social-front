@@ -5,6 +5,7 @@ import { error } from "@sveltejs/kit";
 import { graphqlClient } from "$lib/client";
 import type { LayoutServerLoad } from "./$types";
 import type { WithContext, Product } from 'schema-dts';
+import { tServer } from "$i18n";
 
 
 export const load: LayoutServerLoad = async (event) => {
@@ -14,15 +15,11 @@ export const load: LayoutServerLoad = async (event) => {
 	if (!slug) {
 		return error(
 			HTTPStatusBadRequest,
-			{ message: "Invalid product slug", }
+			{ message: tServer(event, 'error.invalidSlug'), }
 		);
 	}
 
-	let channel = event.cookies.get(CHANNEL_KEY);
-	if (!channel) {
-		channel = defaultChannel.slug;
-	}
-
+	const channel = event.cookies.get(CHANNEL_KEY) || defaultChannel.slug;
 	const variables = {
 		slug: decodeURIComponent(slug),
 		channel,

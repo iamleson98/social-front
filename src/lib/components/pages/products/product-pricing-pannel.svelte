@@ -53,7 +53,7 @@
 		if (activeVariantIdx == null) {
 			toastStore.send({
 				variant: 'warning',
-				message: 'Please select a variant'
+				message: tClient('error.noVariantSelected')
 			});
 			return;
 		}

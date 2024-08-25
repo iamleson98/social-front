@@ -5,6 +5,7 @@ export default {
     "rememberMe": "Ghi nhớ đăng nhập",
     "noAccount": "Bạn chưa có tài khoản?",
     "forgotPassword": "Bạn quên mật khẩu?",
+    welcomeBack: "Chào mừng bạn trở lại, {{name}}",
   },
   "signup": {
     "title": "Đăng ký",
@@ -35,6 +36,7 @@ export default {
     "level4": "Cấp 4",
     "level5": "Cấp 5",
     "level6": "Cấp 6",
+    more: "Xem thêm",
   },
   "product": {
     "chooseAddress": "Vui lòng chọn địa chỉ",
@@ -64,5 +66,12 @@ export default {
     "variantValueExist": "Giá trị '{{name}}' đã tồn tại",
     "variantPlaceholder": "Vui lòng nhập tên phân loại",
     "valuePlaceholder": "Vui lòng nhập giá trị",
-  }
+  },
+  error: {
+    invalidSlug: "Giá trị slug không hợp lệ",
+    invalidEmailAndPassword: "Vui lòng cung cấp email và mật khẩu hợp lệ",
+    invalidEmail: "Vui lòng cung cấp email hợp lệ",
+    passwordsNotMatch: "Mật khẩu không khớp",
+    noVariantSelected: "Vui lòng chọn một phân loại",
+  },
 }

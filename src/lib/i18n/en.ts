@@ -4,7 +4,8 @@ export default {
     "signinButton": "Let me in",
     "rememberMe": "Remember me",
     "noAccount": "Don't have an account?",
-    "forgotPassword": "Forgot password?"
+    "forgotPassword": "Forgot password?",
+    welcomeBack: "Welcome back, {{name}}",
   },
   "signup": {
     "title": "Signup",
@@ -35,6 +36,7 @@ export default {
     "level4": "Level 4",
     "level5": "Level 5",
     "level6": "Level 6",
+    more: "See more",
   },
   "product": {
     "chooseAddress": "Please choose address",
@@ -64,5 +66,12 @@ export default {
     "variantValueExist": "Value '{{name}}' already exists",
     "variantPlaceholder": "Please enter variant name",
     "valuePlaceholder": "Please enter value",
-  }
+  },
+  error: {
+    invalidSlug: "Invalid slug value",
+    invalidEmailAndPassword: "Please, provide valid email and password",
+    invalidEmail: "Please, provide valid email",
+    passwordsNotMatch: "Passwords do not match",
+    noVariantSelected: "Please select a variant",
+  },
 }

@@ -11,9 +11,12 @@
 	import type { PageInfo, ProductCountableEdge, Query } from '$lib/gql/graphql';
 	import { PRODUCT_LIST_QUERY_STORE } from '$lib/stores/api';
 	import { AppRoute } from '$lib/utils';
+	import { CHANNEL_KEY, defaultChannel } from '$lib/utils/consts';
+	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import { preHandleGraphqlResult } from '$lib/utils/utils';
 	import { onMount, tick } from 'svelte';
 	import { fade } from 'svelte/transition';
+	import Sidebar from './sidebar.svelte';
 
 	type ProductProps = {
 		name: string;
@@ -33,7 +36,8 @@
 	const fetchProducts = async () => {
 		const productsResult = await graphqlClient
 			.query<Pick<Query, 'products'>>(PRODUCT_LIST_QUERY_STORE, {
-				first: batch
+				first: batch,
+				channel: clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug)
 			})
 			.toPromise();
 		loading = false;
@@ -69,106 +73,6 @@
 			<Skeleton class="w-full h-7" />
 		</div>
 	</SkeletonContainer>
-{/snippet}
-
-{#snippet sidebar()}
-	<Accordion header="Categories" class="bg-white border">
-		<div
-			id="accordion-flush-body-1"
-			class="_9OKVeTXzfSwD_NYO6_G FLfl_xS1XCloWU2wRi87"
-			aria-labelledby="accordion-flush-heading-1"
-		>
-			<div>
-				<Input placeholder="Enter category" size="sm" startIcon={Search} />
-			</div>
-
-			<div class="__Iv72FadFpzwcpFl5_5">
-				<div class="kqgYncRJQ7spwKfig6It neyUwteEn7DOg9pBSJJE">
-					<input
-						id="tv-audio-video"
-						type="checkbox"
-						value=""
-						class="eVNhx7m5tjSVbfYQzDdT kbeH5ty3CtPKxXm5TXph YPSoR6AXtPgkmylUmcbT T_tFENbpK8DMDNjQRyQa _iRPzRRWy2UNkvZFG8iO text-primary-600 X3ifvK6lzvLzkZabaIQd focus:ring-primary-500 _BIVSYBXQUqEf_ltPrSk _t2wg7hRcyKsNN8CSSeU apRlbPZRJ4JWA5RVdURT dark:focus:ring-primary-600"
-					/>
-					<label
-						for="tv-audio-video"
-						class="ms-2 MxG1ClE4KPrIvlL5_Q5x _A6LflweZRUwrcL6M2Tk g3OYBOqwXUEW4dRGogkH _Rz9TooiK_4jTN_Ub8Gm"
-					>
-						TV, Audio-Video
-					</label>
-				</div>
-
-				<div class="kqgYncRJQ7spwKfig6It neyUwteEn7DOg9pBSJJE">
-					<input
-						id="desktop-pc"
-						type="checkbox"
-						value=""
-						class="eVNhx7m5tjSVbfYQzDdT kbeH5ty3CtPKxXm5TXph YPSoR6AXtPgkmylUmcbT T_tFENbpK8DMDNjQRyQa _iRPzRRWy2UNkvZFG8iO text-primary-600 X3ifvK6lzvLzkZabaIQd focus:ring-primary-500 _BIVSYBXQUqEf_ltPrSk _t2wg7hRcyKsNN8CSSeU apRlbPZRJ4JWA5RVdURT dark:focus:ring-primary-600"
-						checked=""
-					/>
-					<label
-						for="desktop-pc"
-						class="ms-2 MxG1ClE4KPrIvlL5_Q5x _A6LflweZRUwrcL6M2Tk g3OYBOqwXUEW4dRGogkH _Rz9TooiK_4jTN_Ub8Gm"
-					>
-						Desktop PC
-					</label>
-				</div>
-
-				<div class="kqgYncRJQ7spwKfig6It neyUwteEn7DOg9pBSJJE">
-					<input
-						id="gaming"
-						type="checkbox"
-						value=""
-						class="eVNhx7m5tjSVbfYQzDdT kbeH5ty3CtPKxXm5TXph YPSoR6AXtPgkmylUmcbT T_tFENbpK8DMDNjQRyQa _iRPzRRWy2UNkvZFG8iO text-primary-600 X3ifvK6lzvLzkZabaIQd focus:ring-primary-500 _BIVSYBXQUqEf_ltPrSk _t2wg7hRcyKsNN8CSSeU apRlbPZRJ4JWA5RVdURT dark:focus:ring-primary-600"
-					/>
-					<label
-						for="gaming"
-						class="ms-2 MxG1ClE4KPrIvlL5_Q5x _A6LflweZRUwrcL6M2Tk g3OYBOqwXUEW4dRGogkH _Rz9TooiK_4jTN_Ub8Gm"
-					>
-						Gaming
-					</label>
-				</div>
-
-				<div class="kqgYncRJQ7spwKfig6It neyUwteEn7DOg9pBSJJE">
-					<input
-						id="monitors"
-						type="checkbox"
-						value=""
-						class="eVNhx7m5tjSVbfYQzDdT kbeH5ty3CtPKxXm5TXph YPSoR6AXtPgkmylUmcbT T_tFENbpK8DMDNjQRyQa _iRPzRRWy2UNkvZFG8iO text-primary-600 X3ifvK6lzvLzkZabaIQd focus:ring-primary-500 _BIVSYBXQUqEf_ltPrSk _t2wg7hRcyKsNN8CSSeU apRlbPZRJ4JWA5RVdURT dark:focus:ring-primary-600"
-					/>
-					<label
-						for="monitors"
-						class="ms-2 MxG1ClE4KPrIvlL5_Q5x _A6LflweZRUwrcL6M2Tk g3OYBOqwXUEW4dRGogkH _Rz9TooiK_4jTN_Ub8Gm"
-					>
-						Monitors
-					</label>
-				</div>
-			</div>
-
-			<a
-				href="/"
-				title=""
-				class="ay0ziTPUL4Ag5d1DkSY7 neyUwteEn7DOg9pBSJJE of9ZBUyLwvTqtb1zIUGL MxG1ClE4KPrIvlL5_Q5x _A6LflweZRUwrcL6M2Tk text-primary-700 _5zvlMLkN1qETxEl3IhT dark:text-primary-500"
-			>
-				See more
-				<svg
-					class="RRXFBumaW2SHdseZaWm6 eUuXwBkW5W4__eatjSfd"
-					aria-hidden="true"
-					xmlns="http://www.w3.org/2000/svg"
-					fill="none"
-					viewBox="0 0 24 24"
-				>
-					<path
-						stroke="currentColor"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M19 12H5m14 0-4 4m4-4-4-4"
-					></path>
-				</svg>
-			</a>
-		</div>
-	</Accordion>
 {/snippet}
 
 {#snippet product({ name, categoryName, thumbnailAlt, thumbnailUrl, slug }: ProductProps)}
@@ -287,7 +191,7 @@
 <div class="flex gap-6">
 	<!-- side controller -->
 	<aside class="w-1/5">
-		{@render sidebar()}
+		<Sidebar />
 	</aside>
 
 	<!-- product - recommendation display -->

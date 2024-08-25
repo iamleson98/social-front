@@ -17,6 +17,10 @@
 	import { Input } from '../ui/Input';
 	import { IconButton } from '../ui/Button';
 	import { DropDown } from '../ui/Dropdown';
+	import { graphqlClient } from '$lib/client';
+	import { USER_ME_QUERY_STORE } from '$lib/stores/api';
+	import type { Query } from '$lib/gql/graphql';
+	import { preHandleGraphqlResult } from '$lib/utils/utils';
 
 	let userAvatarStyle = $state('');
 	let userDisplayName = $state('');
@@ -31,6 +35,21 @@
 		if ($userStore?.firstName && $userStore.lastName)
 			userDisplayName = `${$userStore.firstName[0]}${$userStore.lastName[0]}`;
 		else if ($userStore?.email) userDisplayName = $userStore.email.slice(0, 2);
+	});
+
+	// fetch current user
+	$effect.pre(() => {
+		const { unsubscribe } = graphqlClient
+			.query<Pick<Query, 'me'>>(USER_ME_QUERY_STORE, {}, { requestPolicy: 'network-only' })
+			.subscribe((result) => {
+				if (preHandleGraphqlResult(result)) {
+					return;
+				}
+
+				userStore.set(result.data?.me);
+			});
+
+		return unsubscribe;
 	});
 </script>
 

@@ -79,8 +79,8 @@ export const CATEGORIES_LIST_QUERY_STORE = gql<CategoryCountableConnection, Cate
 		$last: Int
 		$before: String
 		$after: String
-		$backgroundSize: Int
-		$backgroundFormat: ThumbnailFormatEnum
+		$backgroundSize: Int = 100
+		$backgroundFormat: ThumbnailFormatEnum = WEBP
 	) {
 		categories(
 			filter: $filter

@@ -3,33 +3,14 @@
 	import { Toast } from '$lib/components/ui/Toast';
 	import { page } from '$app/stores';
 	import type { Snippet } from 'svelte';
-	import '../app.css';
-	import { graphqlClient } from '$lib/client';
-	import { USER_ME_QUERY_STORE } from '$lib/stores/api';
-	import type { Query } from '$lib/gql/graphql';
-	import { userStore } from '$lib/stores/auth';
-	import { preHandleGraphqlResult } from '$lib/utils/utils';
 	import Footer from '$lib/components/common/footer.svelte';
+	import '../app.css';
 
 	interface Props {
 		children: Snippet;
 	}
 
 	let { children }: Props = $props();
-
-	$effect.pre(() => {
-		const { unsubscribe } = graphqlClient
-			.query<Pick<Query, 'me'>>(USER_ME_QUERY_STORE, {}, { requestPolicy: 'network-only' })
-			.subscribe((result) => {
-				if (preHandleGraphqlResult(result)) {
-					return;
-				}
-
-				userStore.set(result.data?.me);
-			});
-
-		return unsubscribe;
-	});
 </script>
 
 <svelte:head>

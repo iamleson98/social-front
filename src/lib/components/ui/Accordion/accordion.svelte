@@ -1,24 +1,18 @@
+<script lang="ts" context="module">
+	export type Props = {
+		header: string;
+		class?: string;
+		children: Snippet;
+		open?: boolean;
+	};
+</script>
+
 <script lang="ts">
 	import { ChevronDown, ChevronUp, Icon } from '$lib/components/icons';
 	import type { Snippet } from 'svelte';
 	import { slide } from 'svelte/transition';
 
-	type Props = {
-		header: string;
-		class?: string;
-		children: Snippet;
-		noAnimation?: boolean;
-		open?: boolean;
-	};
-
-	let {
-		header,
-		class: className = '',
-		children,
-		noAnimation = false,
-		open = $bindable(true)
-	}: Props = $props();
-
+	let { header, class: className = '', children, open = $bindable(true) }: Props = $props();
 </script>
 
 <div class={`${className} py-2 px-3 rounded-md text-gray-800`}>
@@ -38,14 +32,8 @@
 	</div>
 
 	{#if open}
-		{#if noAnimation}
-			<div class="mt-4">
-				{@render children()}
-			</div>
-		{:else}
-			<div transition:slide class="mt-4">
-				{@render children()}
-			</div>
-		{/if}
+		<div transition:slide class="mt-4">
+			{@render children()}
+		</div>
 	{/if}
 </div>

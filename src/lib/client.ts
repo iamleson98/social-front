@@ -23,15 +23,16 @@ import { userStore } from './stores/auth';
 import type { CookieSerializeOptions } from 'cookie';
 import { goto } from '$app/navigation';
 import { retryExchange } from '@urql/exchange-retry';
+import { clientSideSetCookie } from './utils/cookies';
 
 
 export const MAX_REFRESH_TOKEN_TRIES = 3;
-export const cookieOpts: CookieSerializeOptions & { path: string } = {
+export const cookieOpts: Readonly<CookieSerializeOptions & { path: string }> = Object.freeze({
 	path: '/',
 	secure: true,
 	maxAge: 24 * 60 * 60,
 	httpOnly: false, // TODO: find a way to make it work
-};
+});
 
 /**
  * @NOTE In Sitename, unauthorized errors usually have form like this:
@@ -273,7 +274,7 @@ class SocialGraphqlClient extends Client {
 
 const authExchangeInner = async (utils: AuthUtilities) => {
 	const addAuthToOperation = (operation: Operation) => {
-		if (browser) {
+		if (typeof window !== 'undefined') {
 			const accessToken = getCookieByKey(ACCESS_TOKEN_KEY);
 			if (accessToken) {
 				return utils.appendHeaders(operation, {
@@ -288,8 +289,8 @@ const authExchangeInner = async (utils: AuthUtilities) => {
 	}
 
 	const refreshAuth = async () => {
-		if (browser) {
-			document.cookie = `${ACCESS_TOKEN_KEY}=; path=/; secure; max-age=0`;
+		if (typeof window !== 'undefined') {
+			clientSideSetCookie(ACCESS_TOKEN_KEY, '', { path: '/', maxAge: 0, secure: true });
 
 			const csrfToken = getCookieByKey(CSRF_TOKEN_KEY);
 			const refreshToken = getCookieByKey(REFRESH_TOKEN_KEY);
@@ -306,12 +307,12 @@ const authExchangeInner = async (utils: AuthUtilities) => {
 				);
 
 			if (result.error || result.data?.tokenRefresh?.errors.length) {
-				document.cookie = `${CSRF_TOKEN_KEY}=; path=/; secure; max-age=0`;
-				document.cookie = `${REFRESH_TOKEN_KEY}=; path=/; secure; max-age=0`;
+				clientSideSetCookie(CSRF_TOKEN_KEY, '', { path: '/', maxAge: 0, secure: true });
+				clientSideSetCookie(REFRESH_TOKEN_KEY, '', { path: '/', maxAge: 0, secure: true });
 				await goto(AppRoute.AUTH_SIGNIN, { invalidateAll: true });
 			};
 
-			document.cookie = `${ACCESS_TOKEN_KEY}=${result.data?.tokenRefresh?.token}; path=/; secure; max-age=86400`;
+			clientSideSetCookie(ACCESS_TOKEN_KEY, result.data?.tokenRefresh?.token as string, { path: '/', secure: true, maxAge: 24 * 60 * 60 });
 			userStore.set(result.data?.tokenRefresh?.user);
 		}
 	}
@@ -338,7 +339,7 @@ export const graphqlClient = new SocialGraphqlClient({
 			randomDelay: true,
 			maxNumberAttempts: 2,
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			retryIf: (error: CombinedError, _: Operation): boolean => (error && !!error.networkError || isAuthorError(error) || isAuthenError(error)),
+			retryIf: (error: CombinedError, _: Operation): boolean => (typeof window !== 'undefined' && error && !!error.networkError || isAuthorError(error) || isAuthenError(error)),
 		}),
 		fetchExchange,
 	],

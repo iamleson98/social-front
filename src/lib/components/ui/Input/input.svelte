@@ -63,13 +63,13 @@
 
 <style lang="postcss">
 	.input-normal {
-		@apply text-gray-800 dark:text-white;
+		@apply !text-gray-800 dark:text-white;
 	}
 	.input-error {
-		@apply text-red-600;
+		@apply !text-red-600;
 	}
 	.input-success {
-		@apply text-green-600;
+		@apply !text-green-600;
 	}
 	.input-bg-normal {
 		@apply bg-gray-50 border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500;
