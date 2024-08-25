@@ -190,7 +190,7 @@
 
 <div class="flex gap-6">
 	<!-- side controller -->
-	<aside class="w-1/5">
+	<aside class="sticky overflow-auto top-16 h-screen w-1/5" style="scrollbar-width: none;">
 		<Sidebar />
 	</aside>
 
@@ -216,7 +216,7 @@
 		</div>
 
 		<!-- recommendation -->
-		<div class="w-1/3 tablet:hidden sticky">
+		<div class="w-1/3 tablet:hidden sticky overflow-auto top-16 h-screen" style="scrollbar-width: none;">
 			{@render recommendation()}
 		</div>
 	</div>

@@ -5,7 +5,7 @@
 
 <div class="notifications">
 	{#each $toastStore as notification (notification.id)}
-		<Alert variant={notification.variant} class="!text-lg mb-2 shadow-lg" bordered>
+		<Alert variant={notification.variant} class="mb-2 shadow-lg" bordered size="md">
 			{notification.message}
 		</Alert>
 	{/each}

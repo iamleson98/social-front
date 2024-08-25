@@ -4,7 +4,7 @@
 		xs: 1,
 		sm: 1.2,
 		md: 1.5,
-		lg: 1.7,
+		lg: 1.6,
 		xl: 2
 	};
 </script>
@@ -70,7 +70,7 @@
 		@apply p-3;
 	}
 	.alert-lg {
-		@apply p-4 text-base;
+		@apply p-4 text-lg font-medium;
 	}
 	.alert-xl {
 		@apply p-5 text-lg font-semibold;

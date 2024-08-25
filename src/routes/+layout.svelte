@@ -43,7 +43,7 @@
 
 <Header />
 
-<main class="pt-16 m-auto min-h-screen">
+<main class="mt-16 mx-auto min-h-screen">
 	{@render children()}
 </main>
 
