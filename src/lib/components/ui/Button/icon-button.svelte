@@ -12,6 +12,7 @@
 		icon: IconType;
 		children?: Snippet;
 		ref?: HTMLButtonElement | null;
+		/** default `square` */
 		shape?: 'square' | 'circle';
 	} & HTMLButtonAttributes;
 

@@ -37,5 +37,5 @@
 	items={categories}
 	partialDisplay={5}
 	child={category}
-  open
+	open
 />

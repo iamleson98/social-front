@@ -37,7 +37,7 @@
 		{label}
 	</label>
 {/if}
-<div class={`relative ${className} input-${variant}`}>
+<div class={`relative ${className} input-${variant} mt-0`}>
 	{#if startIcon}
 		<div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
 			<Icon icon={startIcon} />

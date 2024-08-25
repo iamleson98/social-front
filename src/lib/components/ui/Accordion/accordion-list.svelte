@@ -27,8 +27,7 @@
 		throw new Error('partialDisplay must be a positive number');
 	}
 
-	let displayAmount = $state(partialDisplay === 'all' ? items.length : partialDisplay);
-	let displayItems = $derived(displayAmount ? items.slice(0, displayAmount) : items);
+	let numOfItemsToShow = $state(partialDisplay === 'all' ? items.length : partialDisplay);
 	let showingMore = $state(false);
 
 	const handleShowMore = () => {
@@ -38,22 +37,21 @@
 		const timeout = setTimeout(() => {
 			clearTimeout(timeout);
 
-			displayAmount += partialDisplay;
-			showingMore = false;
-
+			numOfItemsToShow += partialDisplay;
 			tick();
+			showingMore = false;
 		}, loadingMoreTimeout);
 	};
 </script>
 
 <Accordion {...rest}>
 	<ul class="list-none text-sm">
-		{#each displayItems as item, idx (idx)}
+		{#each items.slice(0, numOfItemsToShow) as item, idx (idx)}
 			<li class="py-1" transition:slide>
 				{@render child(item)}
 			</li>
 		{/each}
-		{#if displayItems.length < items.length}
+		{#if numOfItemsToShow < items.length}
 			{#if showingMore}
 				<li class="py-1 text-xs">
 					<span class="loading loading-spinner loading-xs"></span>

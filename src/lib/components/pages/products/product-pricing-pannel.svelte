@@ -1,6 +1,14 @@
 <script lang="ts">
 	import { tClient } from '$i18n';
-	import { Icon, MapPin, Minus, Plus, ShoppingBagPlus, BurstSale } from '$lib/components/icons';
+	import {
+		Icon,
+		MapPin,
+		Minus,
+		Plus,
+		ShoppingBagPlus,
+		BurstSale,
+		Heart
+	} from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import type { Product, ProductVariant } from '$lib/gql/graphql';
 	import { userStore } from '$lib/stores/auth';
@@ -12,6 +20,7 @@
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { IconButton } from '$lib/components/ui/Button';
 	import Input from '$lib/components/ui/Input/input.svelte';
+	import { reorganizeCartItems } from '$lib/stores/app/cart';
 
 	type Props = {
 		productInformation: Omit<Product, 'variants'>;
@@ -42,7 +51,7 @@
 
 	$effect(() => {
 		if ($userStore && $userStore.addresses) {
-			const defaultShipAddr = $userStore.addresses.find((addr, _) => addr.isDefaultShippingAddress);
+			const defaultShipAddr = $userStore.addresses.find((addr) => addr.isDefaultShippingAddress);
 			if (defaultShipAddr) {
 				userDefaultShippingAddress = `${defaultShipAddr.streetAddress1 || defaultShipAddr.streetAddress2}, ${defaultShipAddr.cityArea}, ${defaultShipAddr.city}`;
 			}
@@ -50,7 +59,7 @@
 	});
 
 	const handleAddToCart = async () => {
-		if (activeVariantIdx == null) {
+		if (activeVariantIdx === null) {
 			toastStore.send({
 				variant: 'warning',
 				message: tClient('error.noVariantSelected')
@@ -58,14 +67,16 @@
 			return;
 		}
 		cartItemStore.update((items) =>
-			items.concat({
-				productName: productInformation.name,
-				quantity: quantitySelected,
-				productSlug: productInformation.slug,
-				variantId: productVariants[activeVariantIdx as number].id,
-				previewImage: productInformation.media ? productInformation.media[0]?.url : '',
-				previewImageAlt: productInformation.media ? productInformation.media[0]?.alt : ''
-			})
+			reorganizeCartItems(
+				items.concat({
+					productName: productInformation.name,
+					quantity: quantitySelected,
+					productSlug: productInformation.slug,
+					variantId: productVariants[activeVariantIdx as number].id,
+					previewImage: productInformation.thumbnail ? productInformation.thumbnail.url : '',
+					previewImageAlt: productInformation.thumbnail ? productInformation.thumbnail.alt : ''
+				})
+			)
 		);
 	};
 </script>
@@ -204,13 +215,26 @@
 	</div>
 
 	<!-- purchase button -->
-	<div class="">
+	<div class="flex gap-2 tablet:flex-wrap tablet:flex-col">
 		<Button
 			variant="filled"
 			type="submit"
 			color="blue"
 			startIcon={ShoppingBagPlus}
 			onclick={handleAddToCart}
+			fullWidth
+			size="sm"
+		>
+			<span> {tClient('product.addToCart')} </span>
+		</Button>
+		<Button
+			variant="light"
+			type="submit"
+			startIcon={Heart}
+			onclick={handleAddToCart}
+			fullWidth
+			size="sm"
+			color="gray"
 		>
 			<span> {tClient('product.addToCart')} </span>
 		</Button>

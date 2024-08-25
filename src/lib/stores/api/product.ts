@@ -177,6 +177,10 @@ export const PRODUCT_DETAIL_QUERY_STORE = gql`
 			created
 			isAvailableForPurchase
 			channel # same as $channel
+			thumbnail(size: 200, format: WEBP) {
+				url
+				alt
+			}
 			category {
 				id
 				name

@@ -1,65 +1,79 @@
 <script lang="ts">
 	import { ArrowNarrowRight, Icon, Minus, Plus, Trash } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
+	import { IconButton } from '$lib/components/ui/Button';
+	import { Input } from '$lib/components/ui/Input';
+	import { cartItemStore } from '$lib/stores/app';
 	import { AppRoute } from '$lib/utils';
+
+	const modifyCartitemValue = async (itemIdx: number, newQuantity: number) => {
+		cartItemStore.update((items) => {
+			return items.map((item, idx) => {
+				if (idx !== itemIdx) return item;
+
+				return {
+					...item,
+					quantity: newQuantity
+				};
+			});
+		});
+	};
 </script>
 
 <div>
-	<h3 class="text-lg font-semibold text-gray-800">Shopping Cart</h3>
+	<h3 class="text-md mb-4 font-semibold text-gray-800">Shopping Cart</h3>
 
-	<div class="flex flex-row tablet:flex-wrap">
+	<div class="flex flex-row justify-between tablet:flex-wrap tablet:flex-col gap-2">
 		<!-- preview area -->
-		<div class="p-2 w-3/4 tablet:w-full">
-			<!-- cart content -->
-
-			<div class="rounded bg-white p-4">
-				<div class="flex items-center flex-row tablet:flex-wrap">
-					<!-- preview picture -->
-					<div class="w-3/4 flex items-center">
+		<div>
+			{#each $cartItemStore as item, idx (idx)}
+				<div class="bg-white rounded-md p-4 w-full border mb-2">
+					<div class="flex items-center gap-2">
 						<img
-							class="h-20 w-20 block"
-							src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/apple-watch-light.svg"
-							alt="imac image"
-							aria-hidden="true"
+							src={item.previewImage}
+							alt={item.previewImageAlt}
+							class="w-16 h-16 object-cover"
 						/>
-						<div>
-							<a href="/" class="font-medium text-gray-800 hover:underline block mb-3">
-								Restored Apple Watch Series 8 (GPS) 41mm Midnight Aluminum Case with Midnight Sport
-								Band
+						<div class="flex-1">
+							<a
+								href={`${AppRoute.PRODUCTS}/${encodeURIComponent(item.productSlug)}`}
+								class="text-gray-800 text-md hover:underline"
+							>
+								{item.productName}
 							</a>
-
-							<div class="flex items-center">
-								<button type="button" class="btn btn-xs !bg-red-100 text-red-600">
-									<Icon icon={Trash} />
-									Remove
-								</button>
+							<div class="flex items-center text-gray-500 text-xs mt-2 gap-2">
+								<!-- <i class="fas fa-heart"></i>
+							<span>Add to Favorites</span> -->
+								<!-- <i class="fas fa-times text-red-500"></i>
+							<span class="text-red-500">Remove</span> -->
+								<!-- <IconButton icon={Trash} size="xs" color="red" variant="light" /> -->
 							</div>
 						</div>
-					</div>
-
-					<!-- information -->
-					<div class="flex items-center flex-row w-1/4">
-						<div class="flex items-center mr-4">
-							<button type="button" id="decrement-button-2" class="btn btn-xs btn-square">
-								<Icon icon={Minus} />
-							</button>
-							<input type="text" class="input input-xs w-10 text-center" />
-							<button type="button" id="increment-button-2" class="btn btn-xs btn-square">
-								<Icon icon={Plus} />
-							</button>
+						<div class="flex items-center gap-2">
+							<IconButton
+								icon={Minus}
+								size="sm"
+								variant="light"
+								onclick={() => modifyCartitemValue(idx, item.quantity - 1)}
+							/>
+							<Input size="sm" bind:value={item.quantity} type="number" class="w-16" />
+							<IconButton
+								icon={Plus}
+								size="sm"
+								variant="light"
+								onclick={() => modifyCartitemValue(idx, item.quantity + 1)}
+							/>
 						</div>
-						<div class="text-end md:order-4 md:w-32">
-							<p class="text-base font-bold text-blue-700">$598</p>
-						</div>
+						<span class="text-gray-800 font-bold">$1,499</span>
 					</div>
 				</div>
-			</div>
+			{/each}
 		</div>
 
 		<!-- purchase area -->
-		<div class="p-2 w-1/4 tablet:w-full">
+		<div class="w-1/4 tablet:w-full bg-white rounded-md border">
 			<!-- checkout button -->
-			<div class="space-y-4 rounded bg-white p-4 mb-4">
+			<div class="space-y-4 p-4 mb-4">
 				<p class="text-lg font-semibold tet-gray-800">Order summary</p>
 
 				<div class="space-y-4">
@@ -92,7 +106,7 @@
 				</div>
 
 				<a href={AppRoute.CHECKOUT}>
-					<Button variant="filled" fullWidth>Proceed to checkout</Button>
+					<Button variant="filled" fullWidth size="sm">Proceed to checkout</Button>
 				</a>
 
 				<div class="flex items-center justify-center gap-2">
@@ -108,20 +122,14 @@
 			</div>
 
 			<!-- coupon -->
-			<div class="space-y-4 rounded bg-white p-4">
-				<form class="space-y-4">
-					<div>
-						<label for="voucher" class="mb-2 block text-sm font-medium tet-gray-800">
-							Do you have a voucher or gift card?
-						</label>
-						<input
-							type="text"
-							class="w-full input input-sm border-gray-200"
-							placeholder="Enter your code"
-						/>
-					</div>
-					<Button variant="filled" fullWidth>Apply code</Button>
-				</form>
+			<div class="space-y-4 rounded-md bg-white p-4">
+				<Input
+					placeholder="Enter discount code"
+					size="md"
+					class="w-full"
+					label="Do you have a voucher or gift card?"
+				/>
+				<Button variant="filled" size="sm" fullWidth>Apply code</Button>
 			</div>
 		</div>
 	</div>
@@ -130,8 +138,8 @@
 	<div class="mt-6">
 		<h3 class="text-lg font-semibold tet-gray-800">People also bought</h3>
 		<div class="mt-6 grid grid-cols-3 gap-4 sm:mt-8">
-			<div class="space-y-6 overflow-hidden rounded-lg bg-white p-6">
-				<a href="/" class="overflow-hidden rounded">
+			<div class="space-y-6 overflow-hidden rounded-md-lg bg-white p-6">
+				<a href="/" class="overflow-hidden rounded-md">
 					<img
 						class="h-44 w-44 dark:hidden"
 						src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front.svg"
@@ -157,7 +165,7 @@
 					<button
 						data-tooltip-target="favourites-tooltip-1"
 						type="button"
-						class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-2.5 text-sm font-medium tet-gray-800 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100"
+						class="inline-flex items-center justify-center gap-2 rounded-md-lg border border-gray-200 bg-white p-2.5 text-sm font-medium tet-gray-800 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100"
 					>
 						<svg
 							class="h-5 w-5"
@@ -178,14 +186,14 @@
 					<div
 						id="favourites-tooltip-1"
 						role="tooltip"
-						class="tooltip invisible absolute z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300"
+						class="tooltip invisible absolute z-10 inline-block rounded-md-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300"
 					>
 						Add to favourites
 						<div class="tooltip-arrow" data-popper-arrow></div>
 					</div>
 					<button
 						type="button"
-						class="inline-flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300"
+						class="inline-flex w-full items-center justify-center rounded-md-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300"
 					>
 						<svg
 							class="-ms-2 me-2 h-5 w-5"
