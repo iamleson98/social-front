@@ -1,6 +1,5 @@
 @tailwind base;
 @tailwind components;
-@tailwind utilities;
 
 @font-face {
   font-family: 'Inter';
@@ -168,3 +167,5 @@ html::-webkit-scrollbar-thumb:hover {
     @apply w-10;
   }
 }
+
+@tailwind utilities;

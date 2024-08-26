@@ -145,7 +145,7 @@
 			{#each categories as category, idx (idx)}
 				<li>
 					<Icon icon={ChevronRight} />
-					<a href={`${AppRoute.CATEGORIES}/${category.slug}`}>
+					<a href={`${AppRoute.CATEGORIES}/${encodeURIComponent(category.slug)}`}>
 						{category.name}
 					</a>
 				</li>

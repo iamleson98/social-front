@@ -8,5 +8,5 @@
 </script>
 
 <div
-	class={`bg-gray-400 ${className} animate-pulse ${rounded ? 'rounded-full' : 'rounded-md'}`}
+	class={`bg-gray-300 ${className} animate-pulse ${rounded ? 'rounded-full' : 'rounded-md'}`}
 ></div>

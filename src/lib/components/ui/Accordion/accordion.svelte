@@ -4,6 +4,8 @@
 		class?: string;
 		children: Snippet;
 		open?: boolean;
+		/** if `true`, the `open` stays the same as passed in */
+		fixed?: boolean;
 	};
 </script>
 
@@ -12,7 +14,17 @@
 	import type { Snippet } from 'svelte';
 	import { slide } from 'svelte/transition';
 
-	let { header, class: className = '', children, open = $bindable(true) }: Props = $props();
+	let {
+		header,
+		class: className = '',
+		children,
+		open = $bindable(true),
+		fixed = false
+	}: Props = $props();
+
+	const toggle = () => {
+		if (!fixed) open = !open;
+	};
 </script>
 
 <div class={`${className} py-2 px-3 rounded-md text-gray-800`}>
@@ -21,7 +33,7 @@
 		class="flex items-center justify-between cursor-pointer select-none"
 		role="button"
 		tabindex="0"
-		onclick={() => (open = !open)}
+		onclick={toggle}
 	>
 		<div class="text-sm font-semibold">
 			{header}

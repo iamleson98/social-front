@@ -1,4 +1,4 @@
-import { CircleCheckFilled, ExclamationCircleFilled, InfoCircleFilled, InfoTriangleFilled, type IconType } from "$lib/components/icons";
+import { CircleCheckFilled, CurrencyDollar, CurrencyDong, ExclamationCircleFilled, InfoCircleFilled, InfoTriangleFilled, type IconType } from "$lib/components/icons";
 
 /**
  * all server methods MUST return this type, for consistency
@@ -32,20 +32,39 @@ export const REFRESH_TOKEN_KEY = "refreshToken";
 export const CHANNEL_KEY = "channel";
 export const LANGUAGE_KEY = "language";
 
-export const defaultChannel = {
+
+export type Channel = {
+  name: string;
+  currency: string;
+  locale: string;
+  slug: string;
+  code: string;
+  currencySymbol: Currency;
+};
+
+export type Currency = '$' | '₫';
+
+export const CurrencyIconMap: Record<Currency, IconType> = {
+  '$': CurrencyDollar,
+  '₫': CurrencyDong,
+};
+
+export const defaultChannel: Channel = {
   name: 'English',
   currency: 'USD',
   locale: 'en',
   slug: 'default-channel',
-  code: 'en-US'
+  code: 'en-US',
+  currencySymbol: '$'
 }
 
-export const vnChannel = {
+export const vnChannel: Channel = {
   name: 'Tiếng Việt',
   currency: 'VND',
   locale: 'vi',
   slug: 'vn',
-  code: 'vi-VN'
+  code: 'vi-VN',
+  currencySymbol: '₫'
 }
 
 export const channels = [

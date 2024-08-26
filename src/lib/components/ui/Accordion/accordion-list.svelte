@@ -1,17 +1,16 @@
 <script lang="ts" generics="T">
-	import { tick, type Snippet } from 'svelte';
+	import { type Snippet } from 'svelte';
 	import type { Props } from './accordion.svelte';
 	import Accordion from './accordion.svelte';
 	import { tClient } from '$i18n';
 	import { ChevronDown, Icon } from '$lib/components/icons';
-	import { slide } from 'svelte/transition';
 
 	type AccordionListProps = Omit<Props, 'children'> & {
 		child: Snippet<[T]>;
 		items: T[];
 		/** default `all` */
 		partialDisplay?: number | 'all';
-		/** default `1000` */
+		/** default `1000`. duration for loading indicator to show before showing more items */
 		loadingMoreTimeout?: number;
 	};
 
@@ -22,10 +21,6 @@
 		loadingMoreTimeout = 1000,
 		...rest
 	}: AccordionListProps = $props();
-
-	if (typeof partialDisplay === 'number' && partialDisplay < 0) {
-		throw new Error('partialDisplay must be a positive number');
-	}
 
 	let numOfItemsToShow = $state(partialDisplay === 'all' ? items.length : partialDisplay);
 	let showingMore = $state(false);
@@ -38,7 +33,6 @@
 			clearTimeout(timeout);
 
 			numOfItemsToShow += partialDisplay;
-			tick();
 			showingMore = false;
 		}, loadingMoreTimeout);
 	};
@@ -47,7 +41,7 @@
 <Accordion {...rest}>
 	<ul class="list-none text-sm">
 		{#each items.slice(0, numOfItemsToShow) as item, idx (idx)}
-			<li class="py-1" transition:slide>
+			<li class="py-1">
 				{@render child(item)}
 			</li>
 		{/each}

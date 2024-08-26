@@ -73,5 +73,7 @@ export default {
     invalidEmail: "Please, provide valid email",
     passwordsNotMatch: "Passwords do not match",
     noVariantSelected: "Please select a variant",
+    negativeNumber: "Please enter a positive number",
+    startGreaterEnd: "Start must be less than end",
   },
 }

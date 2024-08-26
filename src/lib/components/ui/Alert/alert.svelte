@@ -18,7 +18,7 @@
 
 	type Props = {
 		variant?: SocialVariant;
-		children?: Snippet;
+		children: Snippet;
 		size?: SocialSize;
 		bordered?: boolean;
 	} & HTMLAttributes<HTMLDivElement>;
@@ -43,11 +43,7 @@
 			height={`${alertIconSizeMap[size]}rem`}
 		/>
 	</span>
-	{#if children}
-		{@render children()}
-	{:else}
-		<span>{variant}</span>
-	{/if}
+	{@render children()}
 </div>
 
 <style lang="postcss">

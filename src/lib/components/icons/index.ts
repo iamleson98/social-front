@@ -61,6 +61,8 @@ export { default as Logout } from './tabler--logout.svelte';
 export { default as UserCog } from './tabler--user-cog.svelte';
 export { default as ChevronUp } from './tabler--chevron-up.svelte';
 export { default as TruckDelivery } from './tabler--truck-delivery.svelte';
+export { default as CurrencyDollar } from './tabler--currency-dollar.svelte';
+export { default as CurrencyDong } from './tabler--currency-dong.svelte';
 
 export { default as Icon } from './icon.svelte';
 export { AlertHexagonFilled };

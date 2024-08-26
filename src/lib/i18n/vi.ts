@@ -73,5 +73,7 @@ export default {
     invalidEmail: "Vui lòng cung cấp email hợp lệ",
     passwordsNotMatch: "Mật khẩu không khớp",
     noVariantSelected: "Vui lòng chọn một phân loại",
+    negativeNumber: "Vui lòng nhập số dương",
+    startGreaterEnd: "Bắt đầu phải nhỏ hơn kết thúc",
   },
 }
