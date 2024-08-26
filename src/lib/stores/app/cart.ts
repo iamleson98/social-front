@@ -42,12 +42,8 @@ export const reorganizeCartItems = (items: CartItemProps[]) => {
       if (variantMeetMap[item.variantId] !== undefined) continue;
 
       result.push({
+        ...item,
         quantity: variantQuantityMap[item.variantId],
-        productName: item.productName,
-        variantId: item.variantId,
-        previewImage: item.previewImage,
-        previewImageAlt: item.previewImageAlt,
-        productSlug: item.productSlug,
       });
       variantMeetMap[item.variantId] = true;
       continue;
@@ -57,11 +53,8 @@ export const reorganizeCartItems = (items: CartItemProps[]) => {
       if (productMeetMap[item.productName] !== undefined) continue;
 
       result.push({
+        ...item,
         quantity: productQuantityMap[item.productName],
-        productName: item.productName,
-        previewImage: item.previewImage,
-        previewImageAlt: item.previewImageAlt,
-        productSlug: item.productSlug,
       });
       productMeetMap[item.productName] = true;
     }
