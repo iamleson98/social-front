@@ -1,5 +1,5 @@
 import { base } from '$app/paths';
-import { type SelectedAttribute, AttributeInputTypeEnum } from '$lib/gql/graphql';
+import { type SelectedAttribute, AttributeInputTypeEnum, OrderDirection } from '$lib/gql/graphql';
 import { tClient } from '$lib/i18n';
 import { toastStore } from '$lib/stores/ui/toast';
 import type { AnyVariables, OperationResult } from '@urql/core';
@@ -16,11 +16,12 @@ export const randomID = () => (++count).toString(36);
  * this type represents the graphql query params that are used for pagination.
  */
 export type PaginationOptions = {
-  before?: string;
-  after?: string;
-  first?: number;
-  last?: number;
+  before: string | null | undefined;
+  after: string | null | undefined;
+  first: number | null | undefined;
+  last: number | null | undefined;
 };
+
 
 /**
   * A helper method that takes any type that have `before`, `after`, `first`, `last` fields and construct a pagination object.
