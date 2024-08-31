@@ -1,7 +1,7 @@
-import { readFileSync } from 'node:fs';
+import { read } from '$app/server';
+import schemaFile from '$lib/graphql/schema.graphql';
 
-// const dirName = process.cwd();
 
-const data = readFileSync(`src/lib/graphql/schema.graphql`);
+const file = read(schemaFile);
 
-export const typeDefs = data.toString();
+export const typeDefs = await file.text();
