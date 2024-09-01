@@ -36,7 +36,7 @@
 	class={`alert ${className} alert-${variant} alert-${size} ${bordered ? 'border' : '!border-none'}`}
 	transition:fly={{ y: 10 }}
 >
-	<span class="flex items-center mr-1.5">
+	<span class="flex items-center mr-2">
 		<Icon
 			icon={SocialVariantIconsMap[variant]}
 			width={`${alertIconSizeMap[size]}rem`}

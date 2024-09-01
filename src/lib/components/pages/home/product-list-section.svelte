@@ -2,43 +2,85 @@
 	import { graphqlClient } from '$lib/client';
 	import SkeletonContainer from '$lib/components/common/skeleton-container.svelte';
 	import Skeleton from '$lib/components/common/skeleton.svelte';
-	import type { PageInfo, ProductCountableEdge, Query } from '$lib/gql/graphql';
+	import {
+		OrderDirection,
+		ProductOrderField,
+		type ProductCountableEdge,
+		type ProductOrder,
+		type Query,
+		type QueryProductsArgs
+	} from '$lib/gql/graphql';
 	import { PRODUCT_LIST_QUERY_STORE } from '$lib/stores/api';
 	import { CHANNEL_KEY, defaultChannel } from '$lib/utils/consts';
 	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
-	import { preHandleGraphqlResult } from '$lib/utils/utils';
-	import { onMount, tick } from 'svelte';
 	import ProductCard from './product-card.svelte';
+	import { page } from '$app/stores';
+	import { queryStore, type RequestPolicy } from '@urql/svelte';
+	import { Alert } from '$lib/components/ui/Alert';
+	import { orderByField, sortKey } from './common';
+	import { onMount, tick } from 'svelte';
+	import { writable } from 'svelte/store';
 
 	const productListBatch = 10;
 
-	let products = $state<ProductCountableEdge[]>([]);
-	let pageInfo = $state<PageInfo | null>(null);
-	let loading = $state(true);
+	type ProductOrderProps = Pick<ProductOrder, 'direction' | 'field'>;
 
-	const fetchProducts = async () => {
-		const productsResult = await graphqlClient
-			.query<Pick<Query, 'products'>>(PRODUCT_LIST_QUERY_STORE, {
-				first: productListBatch,
-				channel: clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug)
-			})
+	let products = $state.frozen<ProductCountableEdge[]>([]);
+	let fetching = $state(true);
+	let productOrderState = $state.frozen<ProductOrderProps>({
+		field: ProductOrderField.Price,
+		direction: OrderDirection.Desc
+	});
+
+	const fetchProducts = async (requestPolicy: RequestPolicy) => {
+		fetching = true;
+
+		const result = await graphqlClient
+			.query<Pick<Query, 'products'>, QueryProductsArgs>(
+				PRODUCT_LIST_QUERY_STORE,
+				{
+					first: productListBatch,
+					channel: clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug),
+					sortBy: productOrderState
+				},
+				{ requestPolicy }
+			)
 			.toPromise();
 
-		loading = false;
-		await tick();
+		fetching = false;
 
-		if (preHandleGraphqlResult(productsResult)) {
-			return;
-		}
+		if (result.error) return;
 
-		if (productsResult.data?.products) {
-			products = productsResult.data.products.edges;
-			pageInfo = productsResult.data.products.pageInfo;
+		if (result.data?.products) {
+			products = result.data.products.edges;
 		}
 	};
 
 	onMount(async () => {
-		await fetchProducts();
+		await fetchProducts('cache-and-network');
+	});
+
+	$effect(() => {
+		let orderBy = $page.url.searchParams
+			.get(orderByField)
+			?.trim()
+			.toUpperCase() as ProductOrderField;
+		if (!Object.values(ProductOrderField).includes(orderBy)) orderBy = ProductOrderField.Price;
+
+		let sortDirection = $page.url.searchParams.get(sortKey)?.trim().toUpperCase() as OrderDirection;
+		if (!Object.values(OrderDirection).includes(sortDirection)) sortDirection = OrderDirection.Desc;
+
+		if (orderBy !== productOrderState.field || sortDirection !== productOrderState.direction) {
+			console.log(orderBy, sortDirection);
+
+			productOrderState = {
+				field: orderBy,
+				direction: sortDirection
+			};
+			tick();
+
+			fetchProducts('network-only');
+		}
 	});
 </script>
 
@@ -59,17 +101,22 @@
 	</SkeletonContainer>
 {/snippet}
 
-{#if loading}
+{#if fetching}
 	{@render productCardSkeleton()}
 	{@render productCardSkeleton()}
-{:else}
-	{#each products as { node }, idx (idx)}
+{:else if products.length}
+	{#each products as edge, idx (idx)}
+		{@const {
+			node: { category, thumbnail, name, slug }
+		} = edge}
 		<ProductCard
-			name={node.name}
-			categoryName={(node.category?.name || node.category?.id) as string}
-			thumbnailUrl={node.thumbnail?.url as string}
-			thumbnailAlt={node.thumbnail?.alt || node.name}
-			slug={node.slug}
+			{name}
+			categoryName={(category?.name || category?.id) as string}
+			thumbnailUrl={thumbnail?.url as string}
+			thumbnailAlt={thumbnail?.alt || name}
+			{slug}
 		/>
 	{/each}
+	<!-- {:else}
+	<Alert size="sm" variant="error">Failed to load products. Please try again later.</Alert> -->
 {/if}

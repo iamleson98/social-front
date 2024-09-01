@@ -1,3 +1,4 @@
+import { browser } from "$app/environment";
 import type { CookieSerializeOptions } from "cookie";
 
 /**
@@ -8,7 +9,7 @@ import type { CookieSerializeOptions } from "cookie";
  * @returns cookie value. If cookie does not have provided key, returns empty string
  */
 export function getCookieByKey(key: string): string {
-  if (typeof window === 'undefined') {
+  if (!browser) {
     return '';
   }
 
@@ -21,8 +22,8 @@ export function getCookieByKey(key: string): string {
 }
 
 export const clientSideGetCookieOrDefault = (key: string, defaultValue: string = '') => {
-  if (typeof document === 'undefined') {
-    throw new Error('This function must be called in client code');
+  if (!browser) {
+    return '';
   }
 
   return getCookieByKey(key) || defaultValue;
@@ -35,7 +36,7 @@ export const clientSideGetCookieOrDefault = (key: string, defaultValue: string =
  * @param opts throw if opts.httpOnly is true. if maxAge === 0 => delete cookie
  */
 export const clientSideSetCookie = (key: string, value: string, opts: CookieSerializeOptions) => {
-  if (typeof window === 'undefined') {
+  if (!browser) {
     throw new Error('This function must be called in client code');
   }
   if (opts.httpOnly) {
@@ -56,3 +57,7 @@ export const clientSideSetCookie = (key: string, value: string, opts: CookieSeri
 
   document.cookie = `${key}=${value}; ${cookieOptions.join('; ')}`;
 };
+
+export const clientSideDeleteCookie = (key: string) => {
+  clientSideSetCookie(key, '', { maxAge: 0 });
+}

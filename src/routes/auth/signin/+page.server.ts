@@ -7,7 +7,7 @@ import {
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { AppRoute } from '$lib/utils';
-import { graphqlClient } from '$lib/client';
+import { performBackendOperation } from '$lib/client';
 import { tServer } from '$lib/i18n';
 
 
@@ -15,7 +15,8 @@ export const load: PageServerLoad = async (event) => {
 	const accessToken = event.cookies.get(ACCESS_TOKEN_KEY);
 
 	if (accessToken) {
-		const result = await graphqlClient.backendQuery<Pick<Query, 'me'>>(
+		const result = await performBackendOperation<Pick<Query, 'me'>>(
+			'query',
 			USER_ME_QUERY_STORE,
 			{},
 			event,

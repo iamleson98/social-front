@@ -2,7 +2,7 @@ import { type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { ACCESS_TOKEN_KEY, CHANNEL_KEY, CSRF_TOKEN_KEY, defaultChannel, HTTPStatusBadRequest, HTTPStatusSuccess, REFRESH_TOKEN_KEY } from "$lib/utils/consts";
 import { USER_SIGNUP_MUTATION_STORE } from "$lib/stores/api";
-import { graphqlClient } from "$lib/client";
+import { performBackendOperation } from "$lib/client";
 import type { Mutation } from "$lib/gql/graphql";
 import { tServer } from "$lib/i18n";
 
@@ -61,7 +61,7 @@ export const actions = {
       },
     };
 
-    const result = await graphqlClient.backendMutation<Pick<Mutation, 'accountRegister'>>(USER_SIGNUP_MUTATION_STORE, variables, event);
+    const result = await performBackendOperation<Pick<Mutation, 'accountRegister'>>('mutation', USER_SIGNUP_MUTATION_STORE, variables, event);
     if (result.error) {
       return {
         status: HTTPStatusBadRequest,

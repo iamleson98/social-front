@@ -1,4 +1,4 @@
-import { graphqlClient } from '$lib/client';
+import {  performBackendOperation } from '$lib/client';
 import type { Mutation } from '$lib/gql/graphql';
 import { USER_SET_PASSWORD_MUTATION_STORE } from '$lib/stores/api/auth';
 import {
@@ -55,9 +55,9 @@ export const actions = {
 			token,
 			password,
 		};
-		const resetNewPasswordResult = await graphqlClient.backendMutation<
+		const resetNewPasswordResult = await performBackendOperation<
 			Pick<Mutation, 'setPassword'>
-		>(USER_SET_PASSWORD_MUTATION_STORE, variables, event);
+		>('mutation', USER_SET_PASSWORD_MUTATION_STORE, variables, event);
 		if (resetNewPasswordResult.error) {
 			return {
 				status: HTTPStatusServerError,

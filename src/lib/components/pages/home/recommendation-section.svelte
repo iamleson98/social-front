@@ -1,70 +1,71 @@
 <script lang="ts">
+	import { graphqlClient } from '$lib/client';
+	import SkeletonContainer from '$lib/components/common/skeleton-container.svelte';
+	import Skeleton from '$lib/components/common/skeleton.svelte';
+	import { Button } from '$lib/components/ui';
+	import { Alert } from '$lib/components/ui/Alert';
+	import type { Query } from '$lib/gql/graphql';
+	import { PROMOTIONS_QUERY } from '$lib/stores/app/discount';
+	import { AppRoute } from '$lib/utils';
+	import { queryStore } from '@urql/svelte';
+
+	const promotionBatch = 4;
+
+	// let fetchingPromotions = $state(true);
+	let promotionEndCursor = $state<string | null>(null);
+
+	const promotionsStore = queryStore<Pick<Query, 'promotions'>>({
+		query: PROMOTIONS_QUERY,
+		variables: {
+			first: promotionBatch,
+			after: (() => (promotionEndCursor ? promotionEndCursor : undefined))()
+		},
+		client: graphqlClient,
+		context: {
+			url: AppRoute.GRAPHQL_API
+		}
+	});
 </script>
 
-<div class="bg-white border rounded-lg p-4 max-w-md w-full">
-	<div class="flex justify-between mb-4">
-		<h2 class="font-bold text-gray-800">Products you may like</h2>
-		<span class="text-sm text-gray-500"
-			>selected by <span class="text-red-500 font-bold">Sitename</span></span
-		>
+{#snippet promotionsLoading()}
+	<div>
+		<SkeletonContainer>
+			<Skeleton class="h-3 block w-full mb-1" />
+			<Skeleton class="h-3 block w-1/2 mb-2" />
+		</SkeletonContainer>
 	</div>
-	<div class="space-y-4">
-		<!-- Product 1 -->
-		<div class="flex items-center space-x-4">
-			<img
-				src="https://via.placeholder.com/50"
-				alt="Product  of a cooking pot"
-				class="w-12 h-12 object-cover"
-			/>
-			<div class="flex-1">
-				<p class="text-gray-700 text-sm">
-					A woman from future and she is very beautiful and then...
-				</p>
-				<div class="flex text-gray-500 text-xs mt-2 space-x-4">
-					<span>15 <i class="fas fa-shopping-cart"></i></span>
-					<span>234 <i class="fas fa-heart"></i></span>
-					<span>234 <i class="fas fa-share-alt"></i></span>
-				</div>
-			</div>
-		</div>
-		<hr />
-		<!-- Product 2 -->
-		<div class="flex items-center space-x-4">
-			<img
-				src="https://via.placeholder.com/50"
-				alt="Product  of a sneaker"
-				class="w-12 h-12 object-cover"
-			/>
-			<div class="flex-1">
-				<p class="text-gray-700 text-sm">A woman from future and she is very beau...</p>
-				<div class="flex text-gray-500 text-xs mt-2 space-x-4">
-					<span>15 <i class="fas fa-shopping-cart"></i></span>
-					<span>234 <i class="fas fa-heart"></i></span>
-					<span>234 <i class="fas fa-share-alt"></i></span>
-				</div>
-			</div>
-		</div>
-		<hr />
-		<!-- Product 3 -->
-		<div class="flex items-center space-x-4">
-			<img
-				src="https://via.placeholder.com/50"
-				alt="Product  of a cap"
-				class="w-12 h-12 object-cover"
-			/>
-			<div class="flex-1">
-				<p class="text-gray-700 text-sm">A woman from future and she is very beau...</p>
-				<div class="flex text-gray-500 text-xs mt-2 space-x-4">
-					<span>15 <i class="fas fa-shopping-cart"></i></span>
-					<span>234 <i class="fas fa-heart"></i></span>
-					<span>234 <i class="fas fa-share-alt"></i></span>
-				</div>
-			</div>
-		</div>
+{/snippet}
+
+<div class="max-w-md w-full p-1">
+	<div class="flex justify-between mb-2 text-sm">
+		<span class="font-bold text-gray-800">Featured</span>
+		<span class="text-xs text-gray-500">
+			selected by <span class="text-red-500 font-bold">Sitename</span>
+		</span>
 	</div>
-	<button
-		class="block w-full bg-blue-500 text-white font-bold py-2 mt-4 rounded-lg hover:bg-blue-600"
-	>
-		VIEW ALL
-	</button>
+
+	<div class="bg-white rounded-md p-4 mb-4">
+		{#if $promotionsStore.fetching}
+			{@render promotionsLoading()}
+			{@render promotionsLoading()}
+		{:else if $promotionsStore.error}
+			<Alert variant="warning" size="xs" bordered
+				>Failed to load promotions. Please try again later.</Alert
+			>
+		{:else if $promotionsStore.data?.promotions}
+			{#each $promotionsStore.data.promotions.edges as edge, idx (idx)}
+				{@const {
+					node: { name, startDate }
+				} = edge}
+				<div>
+					<p class="text-gray-700 text-sm">{name}</p>
+					<div class="flex text-gray-500 text-xs mt-2 space-x-4">
+						<span>{startDate}</span>
+					</div>
+				</div>
+			{/each}
+		{/if}
+	</div>
+
+	<Button size="sm" fullWidth>View all</Button>
 </div>

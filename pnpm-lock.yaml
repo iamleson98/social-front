@@ -41,6 +41,9 @@ importers:
       '@urql/exchange-retry':
         specifier: ^1.3.0
         version: 1.3.0(@urql/core@5.0.6(graphql@16.9.0))
+      '@urql/svelte':
+        specifier: ^4.2.1
+        version: 4.2.1(@urql/core@5.0.6(graphql@16.9.0))(svelte@5.0.0-next.211)
       '@whatwg-node/server-plugin-cookies':
         specifier: ^1.0.3
         version: 1.0.3(@whatwg-node/server@0.9.49)
@@ -1360,6 +1363,12 @@ packages:
     resolution: {integrity: sha512-FLt+d81gP4oiHah4hWFDApimc+/xABWMU1AMYsZ1PVB0L0YPtrMCjbOp9WMM7hBzy4gbTDrG24sio0dCfSh/HQ==}
     peerDependencies:
       '@urql/core': ^5.0.0
+
+  '@urql/svelte@4.2.1':
+    resolution: {integrity: sha512-tzjt5qElu6EF4ns+AWLUFvvGFH+bDGEgLStHQTBu76puQcMCW374MrjxWM9lKA6lfA7iUyu1KXkIRhxNy09l4Q==}
+    peerDependencies:
+      '@urql/core': ^5.0.0
+      svelte: ^3.0.0 || ^4.0.0 || ^5.0.0
 
   '@vercel/nft@0.27.3':
     resolution: {integrity: sha512-oySTdDSzUAFDXpsSLk9Q943o+/Yu/+TCFxnehpFQEf/3khi2stMpTHPVNwFdvZq/Z4Ky93lE+MGHpXCRpMkSCA==}
@@ -6343,6 +6352,12 @@ snapshots:
   '@urql/exchange-retry@1.3.0(@urql/core@5.0.6(graphql@16.9.0))':
     dependencies:
       '@urql/core': 5.0.6(graphql@16.9.0)
+      wonka: 6.3.4
+
+  '@urql/svelte@4.2.1(@urql/core@5.0.6(graphql@16.9.0))(svelte@5.0.0-next.211)':
+    dependencies:
+      '@urql/core': 5.0.6(graphql@16.9.0)
+      svelte: 5.0.0-next.211
       wonka: 6.3.4
 
   '@vercel/nft@0.27.3(encoding@0.1.13)':

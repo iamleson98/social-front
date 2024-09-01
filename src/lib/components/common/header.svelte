@@ -38,18 +38,22 @@
 	});
 
 	// fetch current user
-	$effect.pre(() => {
-		const { unsubscribe } = graphqlClient
-			.query<Pick<Query, 'me'>>(USER_ME_QUERY_STORE, {}, { requestPolicy: 'network-only' })
-			.subscribe((result) => {
-				if (preHandleGraphqlResult(result)) {
-					return;
-				}
+	$effect(() => {
+		let unsubscribe: (() => void) | undefined;
 
-				userStore.set(result.data?.me);
-			});
+		if (!$userStore) {
+			unsubscribe = graphqlClient
+				.query<Pick<Query, 'me'>>(USER_ME_QUERY_STORE, {}, { requestPolicy: 'network-only' })
+				.subscribe((result) => {
+					if (preHandleGraphqlResult(result)) {
+						return;
+					}
 
-		return unsubscribe;
+					userStore.set(result.data?.me);
+				}).unsubscribe;
+		}
+
+		return () => unsubscribe?.();
 	});
 </script>
 

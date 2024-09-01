@@ -2,7 +2,7 @@ import { json } from "@sveltejs/kit";
 import type { RequestEvent } from "./$types";
 import { ACCESS_TOKEN_KEY, CSRF_TOKEN_KEY, HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess, REFRESH_TOKEN_KEY } from "$lib/utils/consts";
 import { tServer } from "$i18n";
-import { cookieOpts, graphqlClient } from "$lib/client";
+import { cookieOpts, performBackendOperation } from "$lib/client";
 import type { Mutation, User } from "$lib/gql/graphql";
 import { USER_LOGIN_MUTATION_STORE } from "$lib/stores/api";
 
@@ -22,7 +22,8 @@ export const POST = async (event: RequestEvent) => {
     return json({ error: tServer(event, 'error.invalidEmailAndPassword'), status: HTTPStatusBadRequest });
   }
 
-  const result = await graphqlClient.backendMutation<Pick<Mutation, 'tokenCreate'>>(
+  const result = await performBackendOperation<Pick<Mutation, 'tokenCreate'>>(
+    'mutation',
     USER_LOGIN_MUTATION_STORE,
     { email, password },
     event,

@@ -5,7 +5,11 @@
 </script>
 
 <div class="flex gap-6">
-	<aside class="sticky overflow-auto top-16 h-dvh w-1/5" style="scrollbar-width: none;">
+	<!-- note: 4rem === top-16 -->
+	<aside
+		class="sticky overflow-auto top-16 h-[calc(100vh-4rem)] w-1/5"
+		style="scrollbar-width: none;"
+	>
 		<Sidebar />
 	</aside>
 
@@ -14,7 +18,7 @@
 			<ProductListSection />
 		</div>
 		<div
-			class="w-1/3 tablet:hidden sticky overflow-auto top-16 h-dvh"
+			class="w-1/3 tablet:hidden sticky overflow-auto top-16 h-[calc(100vh-4rem)]"
 			style="scrollbar-width: none;"
 		>
 			<RecommendationSection />

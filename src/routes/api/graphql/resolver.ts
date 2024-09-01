@@ -1,14 +1,22 @@
+/**
+ * NOTE: This server exists to bypass some constraints like authentication of the main python API
+ * and to provide a more flexible and secure way to interact with the data.
+ * Use with caution
+ */
+
 import { createSchema, createYoga } from 'graphql-yoga'
 import type { RequestEvent } from '@sveltejs/kit'
 import { typeDefs } from './schema';
-import { useGraphQlJit } from '@envelop/graphql-jit';
+// import { useGraphQlJit } from '@envelop/graphql-jit';
 import { useCookies } from '@whatwg-node/server-plugin-cookies';
 import { resolvePromotions } from '$lib/api/graphql/resolvers/promotions';
+import { resolveVouchers } from '$lib/api/graphql/resolvers/vouchers';
 
 
 const resolvers = {
   Query: {
     promotions: resolvePromotions,
+    vouchers: resolveVouchers,
   },
 };
 
@@ -17,7 +25,7 @@ export const server = createYoga<RequestEvent>({
   graphqlEndpoint: '/api/graphql',
   fetchAPI: { Response },
   plugins: [
-    useGraphQlJit(),
+    // useGraphQlJit(),
     useCookies(),
   ],
 });

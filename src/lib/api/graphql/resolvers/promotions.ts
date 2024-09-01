@@ -24,7 +24,7 @@ export const resolvePromotions = async function (root: unknown, { first, last, s
     after,
   };
 
-  const totalCount = await queryBuilder.getCount();
+  // const totalCount = await queryBuilder.getCount();
 
   queryBuilder = addPaginOptionsToQuery(queryBuilder, sortBy.field.toString().toLowerCase(), paginOpts);
 
@@ -56,7 +56,7 @@ export const resolvePromotions = async function (root: unknown, { first, last, s
   pageInfo.endCursor = promotions.length > 0 ? encodeBase64Cursor(DiscountPromotion.name, predicate(promotions[promotions.length - 1])) : null;
 
   const result: PromotionCountableConnection = {
-    totalCount,
+    // totalCount,
     pageInfo,
     edges: promotions.map(promotion => {
       return {

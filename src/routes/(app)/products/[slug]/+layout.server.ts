@@ -2,7 +2,7 @@ import type { Product as TypeProduct, Query } from "$lib/gql/graphql";
 import { PRODUCT_DETAIL_QUERY_STORE } from "$lib/stores/api/product";
 import { CHANNEL_KEY, defaultChannel, HTTPStatusBadRequest, HTTPStatusServerError } from "$lib/utils/consts";
 import { error } from "@sveltejs/kit";
-import { graphqlClient } from "$lib/client";
+import { performBackendOperation } from "$lib/client";
 import type { LayoutServerLoad } from "./$types";
 import type { WithContext, Product } from 'schema-dts';
 import { tServer } from "$i18n";
@@ -25,7 +25,8 @@ export const load: LayoutServerLoad = async (event) => {
 		channel,
 	};
 
-	const productDetailResult = await graphqlClient.backendQuery<Pick<Query, 'product'>>(
+	const productDetailResult = await performBackendOperation<Pick<Query, 'product'>>(
+		'query',
 		PRODUCT_DETAIL_QUERY_STORE,
 		variables, event,
 		{ requestPolicy: 'network-only' },

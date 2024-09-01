@@ -1,4 +1,4 @@
-import { cookieOpts, graphqlClient } from '$lib/client.js';
+import { cookieOpts, performBackendOperation } from '$lib/client.js';
 import type { Mutation, Query } from '$lib/gql/graphql';
 import { CHECKOUT_CREATE_MUTATION, CHECKOUT_FIND_QUERY } from '$lib/stores/api/checkout.js';
 import { CHANNEL_KEY, defaultChannel } from '$lib/utils/consts.js';
@@ -11,7 +11,8 @@ export const POST = async (event) => {
   let realCheckoutID = checkoutId || event.cookies.get(`checkout-${realChannel}`);
 
   if (!realCheckoutID) {
-    const checkoutCreateResult = await graphqlClient.backendMutation<Pick<Mutation, 'checkoutCreate'>>(
+    const checkoutCreateResult = await performBackendOperation<Pick<Mutation, 'checkoutCreate'>>(
+      'mutation',
       CHECKOUT_CREATE_MUTATION,
       { channel: realChannel },
       event,
@@ -33,7 +34,8 @@ export const POST = async (event) => {
     })
   }
 
-  const checkoutQueryResult = await graphqlClient.backendQuery<Pick<Query, 'checkout'>>(
+  const checkoutQueryResult = await performBackendOperation<Pick<Query, 'checkout'>>(
+    'query',
     CHECKOUT_FIND_QUERY,
     { id: realCheckoutID, },
     event,
