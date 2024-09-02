@@ -1,4 +1,10 @@
-import type { CategoryCountableConnection, CategoryFilterInput, CategorySortingInput, CategoryWhereInput, ThumbnailFormatEnum } from '$lib/gql/graphql';
+import type {
+	CategoryCountableConnection,
+	CategoryFilterInput,
+	CategorySortingInput,
+	CategoryWhereInput,
+	ThumbnailFormatEnum
+} from '$lib/gql/graphql';
 import { gql } from '@urql/core';
 
 export const PRODUCT_LIST_QUERY_STORE = gql`
@@ -66,7 +72,7 @@ export interface CategoryListInput {
 	backgroundFormat?: ThumbnailFormatEnum;
 }
 
-/**  
+/**
  * `level` starts at 0
  */
 export const CATEGORIES_LIST_QUERY_STORE = gql<CategoryCountableConnection, CategoryListInput>`
@@ -79,7 +85,7 @@ export const CATEGORIES_LIST_QUERY_STORE = gql<CategoryCountableConnection, Cate
 		$last: Int
 		$before: String
 		$after: String
-		$backgroundSize: Int = 100
+		$backgroundSize: Int = 60
 		$backgroundFormat: ThumbnailFormatEnum = WEBP
 	) {
 		categories(
@@ -140,12 +146,7 @@ export const CATEGORY_DETAIL_QUERY_STORE = gql`
 				url
 				alt
 			}
-			children(
-				first: $first
-				last: $last
-				before: $before
-				after: $after
-			) {
+			children(first: $first, last: $last, before: $before, after: $after) {
 				totalCount
 				edges {
 					node {
@@ -235,7 +236,8 @@ export const PRODUCT_DETAIL_QUERY_STORE = gql`
 				id
 				name
 			}
-			variants { # will be fetched separately
+			variants {
+				# will be fetched separately
 				id
 				name
 				quantityAvailable

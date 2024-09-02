@@ -11,3 +11,5 @@ export {
 	CATEGORIES_LIST_QUERY_STORE,
 	CATEGORY_DETAIL_QUERY_STORE
 } from './product';
+
+export { operationStore } from './operation';

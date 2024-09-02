@@ -1,26 +1,26 @@
 <script lang="ts">
-	import { graphqlClient } from '$lib/client';
 	import SkeletonContainer from '$lib/components/common/skeleton-container.svelte';
 	import Skeleton from '$lib/components/common/skeleton.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
-	import type { Query } from '$lib/gql/graphql';
+	import type { Query, QueryPromotionArgs } from '$lib/gql/graphql';
+	import { operationStore } from '$lib/stores/api';
 	import { PROMOTIONS_QUERY } from '$lib/stores/app/discount';
 	import { AppRoute } from '$lib/utils';
-	import { queryStore } from '@urql/svelte';
+
 
 	const promotionBatch = 4;
 
 	// let fetchingPromotions = $state(true);
 	let promotionEndCursor = $state<string | null>(null);
 
-	const promotionsStore = queryStore<Pick<Query, 'promotions'>>({
+	const promotionsStore = operationStore<Pick<Query, 'promotions'>, QueryPromotionArgs>({
+		kind: 'query',
 		query: PROMOTIONS_QUERY,
 		variables: {
 			first: promotionBatch,
 			after: (() => (promotionEndCursor ? promotionEndCursor : undefined))()
 		},
-		client: graphqlClient,
 		context: {
 			url: AppRoute.GRAPHQL_API
 		}
@@ -39,7 +39,7 @@
 <div class="max-w-md w-full p-1">
 	<div class="flex justify-between mb-2 text-sm">
 		<span class="font-bold text-gray-800">Featured</span>
-		<span class="text-xs text-gray-500">
+		<span class="text-xs text-gray-500 italic">
 			selected by <span class="text-red-500 font-bold">Sitename</span>
 		</span>
 	</div>
@@ -49,9 +49,9 @@
 			{@render promotionsLoading()}
 			{@render promotionsLoading()}
 		{:else if $promotionsStore.error}
-			<Alert variant="warning" size="xs" bordered
-				>Failed to load promotions. Please try again later.</Alert
-			>
+			<Alert variant="warning" size="xs" bordered>
+				Failed to load promotions. Please try again later.
+			</Alert>
 		{:else if $promotionsStore.data?.promotions}
 			{#each $promotionsStore.data.promotions.edges as edge, idx (idx)}
 				{@const {

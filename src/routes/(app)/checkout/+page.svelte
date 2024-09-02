@@ -1,4 +1,7 @@
+<script lang="ts">
+	let name = $state('minh');
+</script>
 
 <div>
-  Checkout
+	Hello {name}
 </div>

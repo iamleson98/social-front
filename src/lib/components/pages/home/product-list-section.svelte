@@ -1,85 +1,92 @@
 <script lang="ts">
-	import { graphqlClient } from '$lib/client';
 	import SkeletonContainer from '$lib/components/common/skeleton-container.svelte';
 	import Skeleton from '$lib/components/common/skeleton.svelte';
 	import {
 		OrderDirection,
 		ProductOrderField,
-		type ProductCountableEdge,
 		type ProductOrder,
 		type Query,
 		type QueryProductsArgs
 	} from '$lib/gql/graphql';
-	import { PRODUCT_LIST_QUERY_STORE } from '$lib/stores/api';
+	import { operationStore, PRODUCT_LIST_QUERY_STORE } from '$lib/stores/api';
 	import { CHANNEL_KEY, defaultChannel } from '$lib/utils/consts';
 	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import ProductCard from './product-card.svelte';
 	import { page } from '$app/stores';
-	import { queryStore, type RequestPolicy } from '@urql/svelte';
+	import { orderByField, priceRange, sortKey } from './common';
+	import { numberRegex, parseUrlSearchParams } from '$lib/utils/utils';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { orderByField, sortKey } from './common';
-	import { onMount, tick } from 'svelte';
-	import { writable } from 'svelte/store';
+	import { tClient } from '$i18n';
 
 	const productListBatch = 10;
 
 	type ProductOrderProps = Pick<ProductOrder, 'direction' | 'field'>;
 
-	let products = $state.frozen<ProductCountableEdge[]>([]);
-	let fetching = $state(true);
 	let productOrderState = $state.frozen<ProductOrderProps>({
 		field: ProductOrderField.Price,
 		direction: OrderDirection.Desc
 	});
 
-	const fetchProducts = async (requestPolicy: RequestPolicy) => {
-		fetching = true;
+	let priceRangeInput = $state('');
 
-		const result = await graphqlClient
-			.query<Pick<Query, 'products'>, QueryProductsArgs>(
-				PRODUCT_LIST_QUERY_STORE,
-				{
-					first: productListBatch,
-					channel: clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug),
-					sortBy: productOrderState
-				},
-				{ requestPolicy }
-			)
-			.toPromise();
-
-		fetching = false;
-
-		if (result.error) return;
-
-		if (result.data?.products) {
-			products = result.data.products.edges;
+	const productFetchStore = operationStore<Pick<Query, 'products'>, QueryProductsArgs>({
+		kind: 'query',
+		query: PRODUCT_LIST_QUERY_STORE,
+		variables: {
+			first: productListBatch,
+			channel: clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug),
+			sortBy: (() => productOrderState)()
 		}
-	};
-
-	onMount(async () => {
-		await fetchProducts('cache-and-network');
 	});
 
 	$effect(() => {
-		let orderBy = $page.url.searchParams
-			.get(orderByField)
-			?.trim()
-			.toUpperCase() as ProductOrderField;
-		if (!Object.values(ProductOrderField).includes(orderBy)) orderBy = ProductOrderField.Price;
+		const searchParams = parseUrlSearchParams($page.url);
+		let sortDirection = searchParams[sortKey];
+		let sortField = searchParams[orderByField];
 
-		let sortDirection = $page.url.searchParams.get(sortKey)?.trim().toUpperCase() as OrderDirection;
-		if (!Object.values(OrderDirection).includes(sortDirection)) sortDirection = OrderDirection.Desc;
+		if (sortDirection && typeof sortDirection === 'string')
+			sortDirection = sortDirection.toUpperCase();
+		if (sortField && typeof sortField === 'string') sortField = sortField.toUpperCase();
 
-		if (orderBy !== productOrderState.field || sortDirection !== productOrderState.direction) {
-			console.log(orderBy, sortDirection);
+		if (
+			(sortDirection !== productOrderState.direction &&
+				Object.values(OrderDirection).includes(sortDirection as OrderDirection)) ||
+			(sortField !== productOrderState.field &&
+				Object.values(ProductOrderField).includes(sortField as ProductOrderField))
+		) {
+			productFetchStore.reexecute({
+				context: { requestPolicy: 'network-only' },
+				variables: { sortBy: productOrderState }
+			});
 
 			productOrderState = {
-				field: orderBy,
-				direction: sortDirection
+				field: sortField as ProductOrderField,
+				direction: sortDirection as OrderDirection
 			};
-			tick();
+		}
+	});
 
-			fetchProducts('network-only');
+	$effect(() => {
+		const priceRangeParam = $page.url.searchParams.get(priceRange)?.trim();
+		if (priceRangeParam && priceRangeParam !== priceRangeInput) {
+			const prices = priceRangeParam.split(',');
+
+			if (prices.length && prices.every((end) => numberRegex.test(end))) {
+				productFetchStore.reexecute({
+					context: { requestPolicy: 'network-only' },
+					variables: {
+						filter: {
+							price: {
+								gte: Number(prices[0]),
+								lte: prices[1] ? Number(prices[1]) : null
+							}
+						},
+						sortBy: productOrderState
+					}
+				});
+
+				priceRangeInput = priceRangeParam;
+			}
 		}
 	});
 </script>
@@ -101,22 +108,30 @@
 	</SkeletonContainer>
 {/snippet}
 
-{#if fetching}
-	{@render productCardSkeleton()}
-	{@render productCardSkeleton()}
-{:else if products.length}
-	{#each products as edge, idx (idx)}
-		{@const {
-			node: { category, thumbnail, name, slug }
-		} = edge}
-		<ProductCard
-			{name}
-			categoryName={(category?.name || category?.id) as string}
-			thumbnailUrl={thumbnail?.url as string}
-			thumbnailAlt={thumbnail?.alt || name}
-			{slug}
-		/>
-	{/each}
-	<!-- {:else}
-	<Alert size="sm" variant="error">Failed to load products. Please try again later.</Alert> -->
-{/if}
+<div class="max-w-md m-auto">
+	{#if $productFetchStore.fetching}
+		{@render productCardSkeleton()}
+		{@render productCardSkeleton()}
+	{:else if $productFetchStore.error}
+		<Alert variant="warning" size="sm" bordered>
+			{tClient('error.failedToLoad')}
+		</Alert>
+	{:else if $productFetchStore.data?.products?.edges.length}
+		{#each $productFetchStore.data?.products?.edges as edge, idx (idx)}
+			{@const {
+				node: { category, thumbnail, name, slug }
+			} = edge}
+			<ProductCard
+				{name}
+				categoryName={(category?.name || category?.id) as string}
+				thumbnailUrl={thumbnail?.url as string}
+				thumbnailAlt={thumbnail?.alt || name}
+				{slug}
+			/>
+		{/each}
+	{:else}
+		<Alert variant="info" size="sm" bordered>
+			{tClient('error.noResult')}
+		</Alert>
+	{/if}
+</div>

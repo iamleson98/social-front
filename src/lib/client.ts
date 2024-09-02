@@ -23,7 +23,7 @@ import type { CookieSerializeOptions } from 'cookie';
 import { goto } from '$app/navigation';
 import { retryExchange } from '@urql/exchange-retry';
 import { clientSideDeleteCookie, clientSideSetCookie } from './utils/cookies';
-import { get, readable, writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 
 
 export const MAX_REFRESH_TOKEN_TRIES = 3;
@@ -75,7 +75,7 @@ const isAuthorError = (err: CombinedError): boolean => {
 					return true;
 				}
 			}
-			return true;
+			return false;
 		}
 	}
 
@@ -125,7 +125,7 @@ const isAuthenError = (err: CombinedError): boolean => {
 					return true;
 				}
 			}
-			return true;
+			return false;
 		}
 	}
 
@@ -149,7 +149,7 @@ const authExchangeInner = async (utils: AuthUtilities) => {
 	const refreshAuth = async () => {
 		// prevent multiple refreshAuth calls
 		if (get(refreshTracker)) return;
-		
+
 		// mark that we are refreshing
 		refreshTracker.set(true);
 
@@ -174,8 +174,10 @@ const authExchangeInner = async (utils: AuthUtilities) => {
 			await goto(AppRoute.AUTH_SIGNIN, { invalidateAll: true });
 		};
 
-		clientSideSetCookie(ACCESS_TOKEN_KEY, result.data?.tokenRefresh?.token as string, { path: '/', secure: true, maxAge: 24 * 60 * 60 });
-		userStore.set(result.data?.tokenRefresh?.user);
+		if (!result.data?.tokenRefresh) {
+			clientSideSetCookie(ACCESS_TOKEN_KEY, result.data?.tokenRefresh?.token as string, { path: '/', secure: true, maxAge: 24 * 60 * 60 });
+			userStore.set(result.data?.tokenRefresh?.user);
+		}
 
 		// mark that we have finished refreshing
 		refreshTracker.set(false);
@@ -199,11 +201,11 @@ export const graphqlClient = new Client({
 		cacheExchange,
 		retryExchange({
 			initialDelayMs: 1000,
-			maxDelayMs: 15000,
+			maxDelayMs: 10000,
 			randomDelay: true,
-			maxNumberAttempts: 3,
+			maxNumberAttempts: 2,
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			retryIf: (error: CombinedError, _: Operation): boolean => (browser && error && !!error.networkError || isAuthenError(error) || isAuthorError(error)),
+			retryIf: (error: CombinedError, _: Operation): boolean => (browser && error && !!error.networkError),
 		}),
 		fetchExchange,
 	],

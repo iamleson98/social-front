@@ -39,7 +39,7 @@
 {/if}
 <div class={`relative ${className} input-${variant} mt-0`}>
 	{#if startIcon}
-		<div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+		<div class="absolute inset-y-0 start-0 flex items-center ps-2.5 pointer-events-none">
 			<Icon icon={startIcon} />
 		</div>
 	{/if}
@@ -48,7 +48,7 @@
 		{placeholder}
 		{id}
 		bind:value
-		class={`border text-sm rounded-lg w-full block p-2.5 input-bg-${variant} ${startIcon ? 'ps-10' : ''} input-${size}`}
+		class={`border text-sm rounded-lg w-full block p-2.5 input-bg-${variant} ${startIcon ? 'ps-8' : ''} input-${size}`}
 		{...rest}
 	/>
 	{#if action}

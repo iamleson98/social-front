@@ -17,7 +17,7 @@
 	let { name, categoryName, thumbnailUrl, thumbnailAlt, slug }: ProductProps = $props();
 </script>
 
-<div class="bg-white rounded-lg border max-w-md m-auto mb-3" transition:fade>
+<div class="bg-white rounded-lg border mb-3" transition:fade>
 	<!-- picture -->
 	<div class="product-card-picture relative">
 		<div class="p-5">

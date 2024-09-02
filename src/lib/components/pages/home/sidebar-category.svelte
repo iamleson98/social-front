@@ -1,41 +1,63 @@
 <script lang="ts">
-	import { graphqlClient } from '$lib/client';
-	import { AccordionList } from '$lib/components/ui/Accordion';
-	import { Checkbox } from '$lib/components/ui/Input';
-	import type { Category, CategoryCountableEdge, Query } from '$lib/gql/graphql';
-	import { CATEGORIES_LIST_QUERY_STORE } from '$lib/stores/api';
-	import { preHandleGraphqlResult } from '$lib/utils/utils';
-	import { onMount } from 'svelte';
+	import { tClient } from '$i18n';
+	import SkeletonContainer from '$lib/components/common/skeleton-container.svelte';
+	import Skeleton from '$lib/components/common/skeleton.svelte';
+	import { Accordion, AccordionList } from '$lib/components/ui/Accordion';
+	import { Alert } from '$lib/components/ui/Alert';
+	import type { CategoryCountableEdge, Query, QueryCategoriesArgs } from '$lib/gql/graphql';
+	import { CATEGORIES_LIST_QUERY_STORE, operationStore } from '$lib/stores/api';
+	import { AppRoute } from '$lib/utils';
 
 	const cateLevel = 0;
 	const first = 50;
 
-	let categories = $state<CategoryCountableEdge[]>([]);
-
-	onMount(async () => {
-		const categoriesResult = await graphqlClient
-			.query<Pick<Query, 'categories'>>(CATEGORIES_LIST_QUERY_STORE, {
-				level: cateLevel,
-				first
-			})
-			.toPromise();
-
-		if (preHandleGraphqlResult(categoriesResult)) return;
-
-		categories = categoriesResult.data?.categories?.edges || [];
+	const categoryStore = operationStore<Pick<Query, 'categories'>, QueryCategoriesArgs>({
+		kind: 'query',
+		query: CATEGORIES_LIST_QUERY_STORE,
+		variables: { level: cateLevel, first }
 	});
 </script>
 
 {#snippet category({ node }: CategoryCountableEdge)}
-	<span>
-		<Checkbox label={node.name} value={node.id} onchange={console.log} />
-	</span>
+	<a
+		href={`${AppRoute.CATEGORIES}/${encodeURIComponent(node.slug)}`}
+		class="block p-2 rounded-md bg-violet-100 hover:bg-violet-200 transition-colors"
+	>
+		<div class="flex items-center gap-2">
+			<img
+				src={node.backgroundImage?.url}
+				alt={node.backgroundImage?.alt || node.name}
+				class="rounded-md h-6 w-6"
+			/>
+			<span>{node.name}</span>
+		</div>
+	</a>
 {/snippet}
 
-<AccordionList
-	header="Categories"
-	items={categories}
-	partialDisplay={5}
-	child={category}
-	open
-/>
+{#snippet categorySkeleton()}
+	<SkeletonContainer class="mb-2">
+		<div class="flex items-center gap-1">
+			<Skeleton class="rounded-lg w-8 h-8"></Skeleton>
+			<Skeleton class="h-4 w-2/3"></Skeleton>
+		</div>
+	</SkeletonContainer>
+{/snippet}
+
+{#if $categoryStore.fetching}
+	<Accordion header="Categories">
+		{@render categorySkeleton()}
+		{@render categorySkeleton()}
+		{@render categorySkeleton()}
+	</Accordion>
+{:else if $categoryStore.error}
+	<Alert size="sm" bordered variant="warning">
+		{tClient('error.failedToLoad')}
+	</Alert>
+{:else if $categoryStore.data?.categories?.edges.length}
+	<AccordionList
+		header="Categories"
+		items={$categoryStore.data?.categories?.edges}
+		partialDisplay={5}
+		child={category}
+	/>
+{/if}

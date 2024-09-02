@@ -35,12 +35,9 @@
 			>
 				<Button endIcon={sortingIcons[sortDirection]} size="xs" color="violet">Price</Button>
 			</a>
-			<!-- <Button endIcon={sortingIcons[sortingDirection]} size="xs" color='violet'>Price</Button> -->
-			<!-- <Button endIcon={sortingIcons[sortingDirection]} size="xs" color='violet'>Price</Button> -->
-			<!-- <Button endIcon={sortingIcons[sortingDirection]} size="xs" color='violet'>Price</Button> -->
 		</div>
 	</div>
 	<CategoriesAccordion />
-	<SidebarRating />
 	<SidebarPriceRange onChange={console.log} currency="₫" />
+	<SidebarRating />
 </div>

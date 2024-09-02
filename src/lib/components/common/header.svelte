@@ -21,6 +21,7 @@
 	import { USER_ME_QUERY_STORE } from '$lib/stores/api';
 	import type { Query } from '$lib/gql/graphql';
 	import { preHandleGraphqlResult } from '$lib/utils/utils';
+	import { tClient } from '$i18n';
 
 	let userAvatarStyle = $state('');
 	let userDisplayName = $state('');
@@ -124,13 +125,13 @@
 					header="User options"
 					items={[
 						// { text: 'Profile', startIcon: IonFlame },
-						{ text: 'Settings', startIcon: UserCog, hasDivider: true },
-						{ text: 'Logout', startIcon: Logout }
+						{ text: tClient('common.settings'), startIcon: UserCog, hasDivider: true },
+						{ text: tClient('common.logout'), startIcon: Logout }
 					]}
 				/>
 			{:else if !$userStore && !$page.url.pathname.startsWith('/auth')}
 				<a href={AppRoute.AUTH_SIGNIN}>
-					<Button variant="filled" size="sm">Signin</Button>
+					<Button variant="filled" size="sm">{tClient('signin.title')}</Button>
 				</a>
 			{/if}
 		</div>
