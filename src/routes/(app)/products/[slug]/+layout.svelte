@@ -98,17 +98,11 @@
 	onMount(() => {
 		if (variants && variants.length) {
 			const { unsubscribe } = graphqlClient
-				.query<Pick<Query, 'productVariants'>>(
-					PRODUCT_VARIANTS_QUERY_STORE,
-					{
-						ids: variants.map((variant) => variant.id),
-						channel,
-						first: 20
-					},
-					{
-						requestPolicy: 'cache-first'
-					}
-				)
+				.query<Pick<Query, 'productVariants'>>(PRODUCT_VARIANTS_QUERY_STORE, {
+					ids: variants.map((variant) => variant.id),
+					channel,
+					first: 20
+				})
 				.subscribe((result) => {
 					if (preHandleGraphqlResult(result)) return;
 

@@ -32,7 +32,8 @@ export type OperationResultStore<
 	Variables extends AnyVariables = AnyVariables
 > = Readable<OperationResultState<Data, Variables>>;
 
-export const fromStore = <T>(store$: Readable<T>): Source<T> => make((observer) => store$.subscribe(observer.next));
+export const fromStore = <T>(store$: Readable<T>): Source<T> =>
+	make((observer) => store$.subscribe(observer.next));
 
 export const initialResult = {
 	operation: undefined,
@@ -75,12 +76,13 @@ type ReexecuteProps<Variables extends AnyVariables = AnyVariables> = {
 
 /**
  * Create a store for a GraphQL operation
- * @param args 
- * @returns 
+ * @param args
+ * @returns
  */
 export function operationStore<Data = unknown, Variables extends AnyVariables = AnyVariables>(
 	args: OperationArgs
-): OperationResultStore<Data, Variables> & Pausable & { reexecute: (args: ReexecuteProps<Variables>) => void } {
+): OperationResultStore<Data, Variables> &
+	Pausable & { reexecute: (args: ReexecuteProps<Variables>) => void } {
 	const request = createRequest<Data, Variables>(args.query, args.variables as Variables);
 
 	const context: Partial<OperationContext> = {
@@ -148,16 +150,15 @@ export function operationStore<Data = unknown, Variables extends AnyVariables = 
 	const reexecute = (args: ReexecuteProps<Variables>): void => {
 		const newContext = { ...context, ...args.context };
 		request.variables = { ...request.variables, ...args.variables };
-		const newOperation = graphqlClient.createRequestOperation(operation.kind, request, newContext)
+		const newOperation = graphqlClient.createRequestOperation(operation.kind, request, newContext);
 
 		isPaused$.set(false);
 		operation$.set(newOperation);
 	};
 
-
 	return {
 		reexecute,
 		...derived(result$, (result, set) => set(result)),
-		...createPausable(isPaused$),
+		...createPausable(isPaused$)
 	};
 }

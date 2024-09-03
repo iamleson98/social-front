@@ -150,7 +150,6 @@ export const getHrefForVariant = (productSlug: string, variantID: string): strin
 export const flipDirection = (direction: OrderDirection): OrderDirection =>
 	direction === OrderDirection.Asc ? OrderDirection.Desc : OrderDirection.Asc;
 
-
 export const numberRegex = /^-?\d+(\.\d+)?$/;
 
 export const parseUrlSearchParams = (url: URL) => {
@@ -172,3 +171,43 @@ export const parseUrlSearchParams = (url: URL) => {
 
 	return result;
 };
+
+type NestedObject = { [key: string]: unknown };
+
+export function setValueByKey(
+	obj: NestedObject,
+	key: string,
+	value: unknown,
+	override: boolean = true // Default to true for overriding
+): void {
+	const keys = key.split('.'); // Split the key by dots
+	let current = obj;
+
+	for (let i = 0; i < keys.length; i++) {
+		const k = keys[i];
+
+		// If we are at the last key, set the value
+		if (i === keys.length - 1) {
+			if (override || !(k in current)) {
+				// If the value is an object and we are not overriding, merge it
+				if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+					current[k] = {
+						...(current[k] || {}), // Preserve existing value if it is an object
+						...value // Merge with the new object
+					};
+				} else {
+					current[k] = value; // Set the value
+				}
+			}
+		} else {
+			// If the key does not exist, create an empty object
+			if (!(k in current)) {
+				current[k] = {};
+			} else if (typeof current[k] !== 'object' || current[k] === null) {
+				// If the current key is not an object, we can't go deeper
+				current[k] = {};
+			}
+			current = current[k] as NestedObject; // Move deeper into the object
+		}
+	}
+}
