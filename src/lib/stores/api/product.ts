@@ -45,6 +45,7 @@ export const PRODUCT_LIST_QUERY_STORE = gql`
 					description
 					created
 					updatedAt
+					rating
 					category {
 						id
 						name

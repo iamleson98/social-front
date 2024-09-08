@@ -2,6 +2,7 @@
 	import { tClient } from '$i18n';
 	import SkeletonContainer from '$lib/components/common/skeleton-container.svelte';
 	import Skeleton from '$lib/components/common/skeleton.svelte';
+	import { Category } from '$lib/components/icons';
 	import { Accordion, AccordionList } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import type { CategoryCountableEdge, Query, QueryCategoriesArgs } from '$lib/gql/graphql';
@@ -21,7 +22,7 @@
 {#snippet category({ node }: CategoryCountableEdge)}
 	<a
 		href={`${AppRoute.CATEGORIES}/${encodeURIComponent(node.slug)}`}
-		class="block p-2 rounded-md bg-violet-100 hover:bg-violet-200 transition-colors"
+		class="block p-2 rounded-md bg-white border"
 	>
 		<div class="flex items-center gap-2">
 			<img
@@ -44,7 +45,7 @@
 {/snippet}
 
 {#if $categoryStore.fetching}
-	<Accordion header="Categories">
+	<Accordion header="Categories" headerIcon={Category}>
 		{@render categorySkeleton()}
 		{@render categorySkeleton()}
 		{@render categorySkeleton()}
@@ -56,8 +57,10 @@
 {:else if $categoryStore.data?.categories?.edges.length}
 	<AccordionList
 		header="Categories"
+		headerIcon={Category}
 		items={$categoryStore.data?.categories?.edges}
 		partialDisplay={5}
 		child={category}
+		class="mb-2"
 	/>
 {/if}

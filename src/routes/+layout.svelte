@@ -37,7 +37,7 @@
 
 <Header />
 
-<main class="mt-16 mx-auto min-h-screen">
+<main class="pt-16 mx-auto min-h-screen max-w-6xl">
 	{@render children()}
 </main>
 

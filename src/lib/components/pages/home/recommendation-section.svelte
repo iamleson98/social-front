@@ -8,7 +8,6 @@
 	import { PROMOTIONS_QUERY } from '$lib/stores/app/discount';
 	import { AppRoute } from '$lib/utils';
 
-
 	const promotionBatch = 4;
 
 	// let fetchingPromotions = $state(true);

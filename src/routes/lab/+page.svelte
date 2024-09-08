@@ -11,6 +11,17 @@
 	import { Input } from '$lib/components/ui/Input';
 	import { Select } from '$lib/components/ui/select';
 
+
+  const people = [
+    { id: 1, name: "Durward Reynolds", unavailable: false },
+    { id: 2, name: "Kenton Towne", unavailable: false },
+    { id: 3, name: "Therese Wunsch", unavailable: false },
+    { id: 4, name: "Benedict Kessler", unavailable: true },
+    { id: 5, name: "Katelyn Rohan", unavailable: false },
+  ];
+
+  let selectedPerson = $state(people[0]);
+
 	let rating = $state(1.2);
 
 	let ref = $state<HTMLButtonElement>();
@@ -100,11 +111,11 @@
 
 <IconButton icon={Email} shape="circle" color="grape" variant="light" size="xs" />
 
-<Alert size="md" bordered variant="error" />
+<!-- <Alert size="md" bordered variant="error" />
 <Alert size="sm" />
 <Alert size="xs" bordered />
 <Alert size="lg" bordered variant="warning" />
-<Alert size="xl" bordered variant="success" />
+<Alert size="xl" bordered variant="success" /> -->
 
 <button bind:this={ref} onclick={() => (openDropdown = !openDropdown)} class="text-red-500"
 	>toggle</button

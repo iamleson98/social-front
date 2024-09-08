@@ -1,3 +1,10 @@
+<script lang="ts" context="module">
+	export type SelectOption = {
+		value: string;
+		label: string;
+	};
+</script>
+
 <script lang="ts">
 	import { clickOutside } from '$lib/actions/click-outside';
 	import { focusOutside } from '$lib/actions/focus-outside';
@@ -7,11 +14,6 @@
 	import { randomID } from '$lib/utils/utils';
 	import { tick } from 'svelte';
 	import { fly } from 'svelte/transition';
-
-	type Option = {
-		value: string;
-		label: string;
-	};
 
 	type SnippetProps = {
 		/** default `false` */
@@ -23,14 +25,16 @@
 	};
 
 	type Props = {
-		options: Option[];
+		options: SelectOption[];
 		/** placeholder value */
 		placeholder?: string;
 		label?: string;
-		selectedOption?: Option;
-		onSelect?: (option?: Option) => void;
+		selectedOption?: SelectOption;
+		onSelect?: (option?: SelectOption) => void;
 		/** default `false` */
 		disabled?: boolean;
+		size?: 'sm' | 'md' | 'lg';
+		variant?: 'normal' | 'error' | 'success';
 	};
 
 	let {
@@ -39,7 +43,9 @@
 		label,
 		selectedOption,
 		onSelect,
-		disabled = false
+		disabled = false,
+		size = 'md',
+		variant = 'normal',
 	}: Props = $props();
 
 	let searchQuery = $state(selectedOption?.label || '');
@@ -94,7 +100,7 @@
 		onSelect?.(selectedOption);
 	};
 
-	const handleSelect = (option: Option) => {
+	const handleSelect = (option: SelectOption) => {
 		selectedOption = option;
 		searchQuery = option.label;
 		onSelect?.(option);
@@ -171,11 +177,11 @@
 			class:!pl-8={searchFocus}
 			class:!rounded-b-none={openSelect}
 			class:cursor-pointer={!searchFocus}
-			class="w-full !pr-12 transition-all !outline-0 input input-sm !border-gray-200"
+			class={`border text-sm rounded-lg w-full block p-2.5 input-bg-${variant} input-${size}`}
 			id={inputId}
 			onclick={activate}
 			onfocus={activate}
-			value={searchQuery}
+			bind:value={searchQuery}
 			type="text"
 			role="combobox"
 			use:debounceInput={{
@@ -186,14 +192,14 @@
 					shortcut: { key: 'ArrowUp' },
 					onShortcut: () => {
 						openDropdown();
-						void incrementSelectedIndex(-1);
+						incrementSelectedIndex(-1);
 					}
 				},
 				{
 					shortcut: { key: 'ArrowDown' },
 					onShortcut: () => {
 						openDropdown();
-						void incrementSelectedIndex(1);
+						incrementSelectedIndex(1);
 					}
 				},
 				{
@@ -265,3 +271,36 @@
 		</ul>
 	{/if}
 </div>
+
+<style lang="postcss">
+	.input-normal {
+		@apply !text-gray-800 dark:text-white;
+	}
+	.input-error {
+		@apply !text-red-600;
+	}
+	.input-success {
+		@apply !text-green-600;
+	}
+	.input-bg-normal {
+		@apply bg-gray-50 border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500;
+	}
+	.input-bg-success {
+		@apply bg-green-50 border-green-300 text-green-700 placeholder-green-600 focus:ring-green-500 focus:border-green-500 dark:bg-green-700 dark:border-green-600 dark:placeholder-green-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500;
+	}
+	.input-bg-error {
+		@apply bg-red-50 border-red-300 text-red-700 placeholder-red-600 focus:ring-red-500 focus:border-red-500 dark:bg-red-700 dark:border-red-600 dark:placeholder-red-400 dark:text-white dark:focus:ring-red-500 dark:focus:border-red-500;
+	}
+	.input-lg {
+		@apply py-4 text-base;
+	}
+	.input-sm {
+		@apply py-1.5 text-xs;
+	}
+	.input-md {
+		@apply text-sm;
+	}
+	.input-action > * {
+		@apply max-h-full max-w-full;
+	}
+</style>

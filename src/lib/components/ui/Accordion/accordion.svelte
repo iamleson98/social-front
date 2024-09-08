@@ -1,6 +1,7 @@
 <script lang="ts" context="module">
 	export type Props = {
 		header: string;
+		headerIcon?: IconType;
 		class?: string;
 		children: Snippet;
 		open?: boolean;
@@ -10,7 +11,7 @@
 </script>
 
 <script lang="ts">
-	import { ChevronDown, ChevronUp, Icon } from '$lib/components/icons';
+	import { ChevronDown, ChevronUp, Icon, type IconType } from '$lib/components/icons';
 	import type { Snippet } from 'svelte';
 	import { slide } from 'svelte/transition';
 
@@ -19,7 +20,8 @@
 		class: className = '',
 		children,
 		open = $bindable(true),
-		fixed = false
+		fixed = false,
+		headerIcon
 	}: Props = $props();
 
 	const toggle = () => {
@@ -35,8 +37,13 @@
 		tabindex="0"
 		onclick={toggle}
 	>
-		<div class="text-sm font-semibold">
-			{header}
+		<div class="text-sm font-semibold flex items-center">
+			{#if headerIcon}
+				<Icon icon={headerIcon} class="mr-2" />
+			{/if}
+			<span>
+				{header}
+			</span>
 		</div>
 		<div>
 			<Icon icon={open ? ChevronUp : ChevronDown} />

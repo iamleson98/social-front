@@ -5,11 +5,32 @@ import { toastStore } from '$lib/stores/ui/toast';
 import type { AnyVariables, OperationResult } from '@urql/core';
 import editorJsToHtml from 'editorjs-html';
 import { AppRoute } from './routes';
+import xss from 'xss';
+
 
 export const editorJsParser = editorJsToHtml();
 
 let count = 0;
 export const randomID = () => (++count).toString(36);
+
+/**
+ * 
+ * @param description raw product description
+ */
+export const parseProductDescription = (description: string): string[] => {
+	const result: string[] = [];
+	try {
+		const jsonData = JSON.parse(description);
+		const contentBlocks = editorJsParser.parse(jsonData);
+		for (const block of contentBlocks) {
+			result.push(xss(block));
+		}
+	} catch (err) {
+		console.error(`Failed parsing product description: ${err}`);
+	}
+
+	return result;
+};
 
 /**
  * this type represents the graphql query params that are used for pagination.

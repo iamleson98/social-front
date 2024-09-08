@@ -1,27 +1,40 @@
-<script lang="ts">
-	import { Icon, type IconType } from '$lib/components/icons';
-	import { fly } from 'svelte/transition';
-	import { clickOutside } from '$lib/actions/click-outside';
-		
-	type DropdownItemProps = {
+<script lang="ts" context="module">
+	export type DropdownItemProps = {
 		startIcon?: IconType;
 		text: string;
 		subText?: string;
 		hasDivider?: boolean;
 	};
 
-	type Props = {
+	export type Props = {
 		class?: string;
 		parentRef: HTMLElement;
 		items: DropdownItemProps[];
 		open: boolean;
 		header?: string;
 		onClose: () => void;
+		onSelect?: (item: DropdownItemProps) => void;
+		placement?: 'dropdown-top' | 'dropdown-right' | 'dropdown-bottom' | 'dropdown-left';
 	};
+</script>
+
+<script lang="ts">
+	import { Icon, type IconType } from '$lib/components/icons';
+	import { fly } from 'svelte/transition';
+	import { clickOutside } from '$lib/actions/click-outside';
 
 	const idealOffset = 12;
 
-	let { parentRef, items, open, class: className = '', header, onClose }: Props = $props();
+	let {
+		parentRef,
+		items,
+		open,
+		class: className = '',
+		header,
+		onClose,
+		onSelect,
+		placement = 'dropdown-right'
+	}: Props = $props();
 	let dropdownRef = $state<HTMLDivElement>();
 
 	$effect(() => {
@@ -31,28 +44,28 @@
 			const { innerHeight, innerWidth } = window;
 			let x: number;
 			let y: number;
-			let position: string;
+			// let position: string;
 
-			// Determine the best position for the dropdown
+			// Determine the best placement for the dropdown
 			if (parentRect.top - dropDownRect.height - idealOffset >= 0) {
-				position = 'dropdown-top';
+				placement = 'dropdown-top';
 				x = parentRect.left + parentRect.width / 2 - dropDownRect.width / 2;
 				y = parentRect.top - dropDownRect.height - idealOffset;
 			} else if (parentRect.right + dropDownRect.width + idealOffset <= innerWidth) {
-				position = 'dropdown-right';
+				placement = 'dropdown-right';
 				x = parentRect.right + idealOffset;
 				y = parentRect.top + parentRect.height / 2 - dropDownRect.height / 2;
 			} else if (parentRect.bottom + dropDownRect.height + idealOffset <= innerHeight) {
-				position = 'dropdown-bottom';
+				placement = 'dropdown-bottom';
 				x = parentRect.left + parentRect.width / 2 - dropDownRect.width / 2;
 				y = parentRect.bottom + idealOffset;
 			} else {
-				position = 'dropdown-left';
+				placement = 'dropdown-left';
 				x = parentRect.left - dropDownRect.width - idealOffset;
 				y = parentRect.top + parentRect.height / 2 - dropDownRect.height / 2;
 			}
 
-			// Adjust the position to fit within the viewport
+			// Adjust the placement to fit within the viewport
 			if (x < 0) {
 				x = idealOffset;
 			} else if (x + dropDownRect.width > innerWidth) {
@@ -65,7 +78,7 @@
 				y = innerHeight - dropDownRect.height - idealOffset;
 			}
 
-			dropdownRef.className += ` ${position}`;
+			dropdownRef.className += ` ${placement}`;
 			dropdownRef.style.left = `${x}px`;
 			dropdownRef.style.top = `${y}px`;
 		}
@@ -88,8 +101,11 @@
 		{/if}
 		<ul>
 			{#each items as item, idx (idx)}
+				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<li
 					class={`cursor-pointer px-4 py-2 hover:bg-gray-100 ${item.hasDivider ? 'border-b border-gray-100' : ''}`}
+					onclick={() => onSelect?.(item)}
 				>
 					<div class="flex items-center space-x-2">
 						{#if item.startIcon}
@@ -110,7 +126,7 @@
 
 <style lang="postcss">
 	.dropdown {
-		@apply z-[999] rounded absolute transform bg-white py-2 block text-gray-800 w-56 list-none text-sm shadow divide-y divide-gray-100 dark:bg-gray-700 dark:text-white dark:divide-gray-600;
+		@apply z-[99999999] !rounded absolute transform bg-white py-2 block text-gray-800 w-56 list-none text-sm shadow divide-y divide-gray-100 dark:bg-gray-700 dark:text-white dark:divide-gray-600;
 	}
 	.dropdown-top::before {
 		@apply -bottom-1.5 left-1/2 -translate-x-1/2 border-x-[6px] border-t-[6px] border-b-0 border-t-inherit;

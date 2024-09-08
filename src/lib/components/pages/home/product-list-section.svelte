@@ -58,14 +58,16 @@
 	{:else if $productFetchStore.data?.products?.edges.length}
 		{#each $productFetchStore.data?.products?.edges as edge, idx (idx)}
 			{@const {
-				node: { category, thumbnail, name, slug }
+				node: { category, thumbnail, name, slug, rating, description }
 			} = edge}
 			<ProductCard
 				{name}
+				{slug}
+				description={(description || '') as string}
+				{rating}
 				categoryName={(category?.name || category?.id) as string}
 				thumbnailUrl={thumbnail?.url as string}
 				thumbnailAlt={thumbnail?.alt || name}
-				{slug}
 			/>
 		{/each}
 	{:else if $productFetchStore.data?.products?.edges.length === 0}

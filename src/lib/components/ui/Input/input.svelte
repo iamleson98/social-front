@@ -5,7 +5,7 @@
 		subText?: string;
 		startIcon?: IconType;
 		size?: 'sm' | 'md' | 'lg';
-		action?: Snippet; /** a component to the end of  */
+		action?: Snippet; /** a component to the end of input */
 	} & Omit<HTMLInputAttributes, 'size'>;
 </script>
 

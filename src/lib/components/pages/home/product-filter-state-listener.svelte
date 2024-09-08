@@ -23,7 +23,7 @@
 			first: productFetchBatch
 		};
 
-		// parse order by field:
+		// parse sort by field:
 		let sortDirection = queryParams[sortKey];
 		let sortField = queryParams[orderByField];
 

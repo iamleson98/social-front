@@ -66,6 +66,7 @@ export { default as CurrencyDong } from './tabler--currency-dong.svelte';
 export { default as FilterCog } from './tabler--filter-cog.svelte';
 export { default as ArrowDown } from './tabler--arrow-down.svelte';
 export { default as ArrowUp } from './tabler--arrow-up.svelte';
+export { default as Category } from './tabler--category.svelte';
 
 export { default as Icon } from './icon.svelte';
 export { AlertHexagonFilled };

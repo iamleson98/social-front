@@ -26,7 +26,7 @@
 
 <span
 	bind:this={ref}
-	class={`inline-flex items-center py-1 px-2 text-xs space-x-2 rounded-full ${className} ${buttonVariantColorsMap[variant][color]}`}
+	class={`inline-flex items-center py-1 px-2 text-xs space-x-2 rounded-full font-semibold ${className} ${buttonVariantColorsMap[variant][color]}`}
 >
 	<span>{text}</span>
 	{#if onDismiss}

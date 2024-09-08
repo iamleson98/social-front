@@ -53,7 +53,7 @@
 {/snippet}
 
 <button
-	class={`${buttonVariantColorsMap[variant][color]} btn btn-${size} ${radius} ${className}`}
+	class={`${buttonVariantColorsMap[variant][color]} button button-${size} ${radius} ${className}`}
 	class:uppercase={upper}
 	class:w-full={fullWidth}
 	{type}
@@ -71,27 +71,27 @@
 </button>
 
 <style lang="postcss">
-	.btn {
+	.button {
 		@apply cursor-pointer relative outline-none select-none appearance-none text-center inline-flex justify-center items-center leading-none grow-0 font-medium focus:ring-4;
 		-webkit-tap-highlight-color: transparent;
 	}
-	.btn:disabled,
+	.button:disabled,
 	button:disabled {
 		@apply text-gray-400 bg-gray-200 !cursor-not-allowed !select-none !pointer-events-none !touch-none;
 	}
-	.btn-xs {
+	.button-xs {
 		@apply text-xs h-6 min-h-6 px-2;
 	}
-	.btn-sm {
+	.button-sm {
 		@apply h-8 min-h-8 px-3 text-sm;
 	}
-	.btn-md {
+	.button-md {
 		@apply text-base h-12 min-h-12 px-4;
 	}
-	.btn-lg {
+	.button-lg {
 		@apply h-14 min-h-14 px-6 text-lg;
 	}
-	.btn-xl {
+	.button-xl {
 		@apply px-7 text-xl h-16 min-h-16;
 	}
 </style>

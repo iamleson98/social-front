@@ -70,7 +70,6 @@ export type OperationArgs<Data = unknown, Variables extends AnyVariables = AnyVa
 
 type ReexecuteProps<Variables extends AnyVariables = AnyVariables> = {
 	context?: Partial<OperationContext>;
-	/** NOTE: existing variables will be updated inline, you Must explicitly specify your desired variables  */
 	variables?: Partial<Variables>;
 };
 
@@ -149,7 +148,7 @@ export function operationStore<Data = unknown, Variables extends AnyVariables = 
 
 	const reexecute = (args: ReexecuteProps<Variables>): void => {
 		const newContext = { ...context, ...args.context };
-		request.variables = { ...request.variables, ...args.variables };
+		request.variables = args.variables as Variables;
 		const newOperation = graphqlClient.createRequestOperation(operation.kind, request, newContext);
 
 		isPaused$.set(false);
