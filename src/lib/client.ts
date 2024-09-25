@@ -256,7 +256,7 @@ const checkIsAuthenAuthorErrorAndRedirectIfNeeded = async <Data = never, Variabl
 };
 
 /**
- * This method is similar to `query` but is used for backend only
+ * This method is used for server-side only
  */
 export const performBackendOperation = async <Data = never, Variables extends AnyVariables = AnyVariables>(
 	type: OperationType,

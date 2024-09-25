@@ -117,7 +117,7 @@
 				name="term_aggree"
 				id="term_aggree"
 				class="mb-3"
-				bind:checked={termAndPoliciesAgree}
+				bind:checked={termAndPoliciesAgree as boolean}
 			/>
 
 			<Button

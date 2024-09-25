@@ -1,4 +1,3 @@
-import { base } from '$app/paths';
 import { type SelectedAttribute, AttributeInputTypeEnum, OrderDirection } from '$lib/gql/graphql';
 import { tClient } from '$lib/i18n';
 import { toastStore } from '$lib/stores/ui/toast';
@@ -14,7 +13,7 @@ let count = 0;
 export const randomID = () => (++count).toString(36);
 
 /**
- * 
+ * @description Parses the raw product description and returns an array of strings.
  * @param description raw product description
  */
 export const parseProductDescription = (description: string): string[] => {
@@ -102,21 +101,6 @@ export const getPrefersReducedMotion = () => {
 	);
 };
 
-export const replaceLocaleInUrl = (url: URL, locale: string, full = false) => {
-	const [, , ...rest] = getPathnameWithoutBase(url).split('/');
-	const new_pathname = `/${[locale, ...rest].join('/')}`;
-	if (!full) {
-		return `${new_pathname}${url.search}`;
-	}
-	const newUrl = new URL(url.toString());
-	newUrl.pathname = base + new_pathname;
-	return newUrl.toString();
-};
-
-const REGEX_START_WITH_BASE = new RegExp(`^${base}`);
-
-export const getPathnameWithoutBase = (url: URL) => url.pathname.replace(REGEX_START_WITH_BASE, '');
-
 /**
  * If given `result` has an error, it will show a toast message with the error message.
  * @param result GraphQl query, operation results
@@ -174,15 +158,16 @@ export const flipDirection = (direction: OrderDirection): OrderDirection =>
 export const numberRegex = /^-?\d+(\.\d+)?$/;
 
 export const parseUrlSearchParams = (url: URL) => {
-	const result: Record<string, unknown> = {};
+	const result: Record<string, number | string> = {};
 
 	for (const key of url.searchParams.keys()) {
 		const trimKey = key.trim();
 		if (!trimKey) continue;
 
 		let value = url.searchParams.get(key);
-		if (value) value = value.trim();
+		if (!value) continue;
 
+		value = value.trim();
 		if (value && numberRegex.test(value)) {
 			result[trimKey] = Number(value);
 		} else {

@@ -5,7 +5,7 @@ export default {
 		rememberMe: 'Ghi nhớ đăng nhập',
 		noAccount: 'Bạn chưa có tài khoản?',
 		forgotPassword: 'Bạn quên mật khẩu?',
-		welcomeBack: 'Chào mừng bạn trở lại, {{name}}'
+		welcomeBack: 'Chào mừng bạn trở lại, {{name}}',
 	},
 	signup: {
 		title: 'Đăng ký',
@@ -14,15 +14,15 @@ export default {
 		lastNamePlaceholder: 'Nhập tên *',
 		confirmPasswordPlaceholder: 'Vui lòng xác nhận mật khẩu *',
 		agreeToTerms: 'Tôi đồng ý với các điều khoản và điều kiện',
-		alreadyHasAccount: 'Bạn đã có tài khoản?'
+		alreadyHasAccount: 'Bạn đã có tài khoản?',
 	},
 	resetPassword: {
 		title: 'Yêu cầu đặt lại mật khẩu',
-		btnText: 'Gửi email cho tôi'
+		btnText: 'Gửi email cho tôi',
 	},
 	changePassword: {
 		title: 'Thay đổi mật khẩu',
-		btnText: 'Đổi mật khẩu'
+		btnText: 'Đổi mật khẩu',
 	},
 	common: {
 		home: 'Trang chủ',
@@ -38,7 +38,7 @@ export default {
 		level6: 'Cấp 6',
 		more: 'Xem thêm',
 		settings: 'Cài đặt',
-		logout: 'Đăng xuất'
+		logout: 'Đăng xuất',
 	},
 	product: {
 		chooseAddress: 'Vui lòng chọn địa chỉ',
@@ -67,7 +67,11 @@ export default {
 		variantNameExist: "Phân loại '{{name}}' đã tồn tại",
 		variantValueExist: "Giá trị '{{name}}' đã tồn tại",
 		variantPlaceholder: 'Vui lòng nhập tên phân loại',
-		valuePlaceholder: 'Vui lòng nhập giá trị'
+		valuePlaceholder: 'Vui lòng nhập giá trị',
+		category: 'Danh mục',
+		products: 'Các sản phẩm',
+		subCategories: 'Danh mục con',
+		detail: 'Chi tiết',
 	},
 	error: {
 		invalidSlug: 'Giá trị slug không hợp lệ',

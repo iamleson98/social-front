@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ArrowNarrowRight, Icon, Minus, Plus, Trash } from '$lib/components/icons';
+	import { ArrowNarrowRight, Icon, Minus, Plus } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
@@ -41,13 +41,7 @@
 							>
 								{item.productName}
 							</a>
-							<div class="flex items-center text-gray-500 text-xs mt-2 gap-2">
-								<!-- <i class="fas fa-heart"></i>
-							<span>Add to Favorites</span> -->
-								<!-- <i class="fas fa-times text-red-500"></i>
-							<span class="text-red-500">Remove</span> -->
-								<!-- <IconButton icon={Trash} size="xs" color="red" variant="light" /> -->
-							</div>
+							<div class="flex items-center text-gray-500 text-xs mt-2 gap-2"></div>
 						</div>
 						<div class="flex items-center gap-2">
 							<IconButton

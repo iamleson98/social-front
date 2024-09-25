@@ -67,6 +67,8 @@ export { default as FilterCog } from './tabler--filter-cog.svelte';
 export { default as ArrowDown } from './tabler--arrow-down.svelte';
 export { default as ArrowUp } from './tabler--arrow-up.svelte';
 export { default as Category } from './tabler--category.svelte';
+export { default as Box } from './tabler--box.svelte';
+export { default as CategoryPlus } from './tabler--catergory-plus.svelte';
 
 export { default as Icon } from './icon.svelte';
 export { AlertHexagonFilled };

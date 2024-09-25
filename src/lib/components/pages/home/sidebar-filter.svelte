@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { afterNavigate, goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 	import { tClient } from '$i18n';
 	import { ArrowDown, ArrowUp, FilterCog, type IconType } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
@@ -14,7 +13,9 @@
 	import { AppRoute } from '$lib/utils';
 	import { CurrencyIconMap, type Currency } from '$lib/utils/consts';
 	import { flipDirection } from '$lib/utils/utils';
+	import { onMount } from 'svelte';
 	import { orderByField, priceRange, sortKey } from './common';
+	import { productFilterParamStore } from '$lib/stores/app/product-filter';
 
 	type RangeState = {
 		from: number;
@@ -25,7 +26,7 @@
 		currency: Currency;
 	};
 
-	/** in client side, we only support sorting productsby these fields below */
+	/** in client side, we only support sorting products by these fields below */
 	const ProductSortFields: SelectOption[] = [
 		ProductOrderField.Price,
 		ProductOrderField.Rating,
@@ -53,13 +54,6 @@
 		return null;
 	});
 
-	afterNavigate(async () => {
-		const sort = $page.url.searchParams.get(sortKey)?.trim().toUpperCase() as OrderDirection;
-		if (sort !== fieldSortDirection && Object.values(OrderDirection).includes(sort)) {
-			fieldSortDirection = sort;
-		}
-	});
-
 	const applyFilter = async () => {
 		const searchParams = new URLSearchParams();
 		if (productOrderField) {
@@ -74,6 +68,15 @@
 			replaceState: true
 		});
 	};
+
+	onMount(() => {
+		const unSub = productFilterParamStore.subscribe(params => {
+			if (params.sortBy?.direction)
+				fieldSortDirection = params.sortBy.direction;
+		});
+
+		return unSub;
+	});
 </script>
 
 <Accordion header="Filter" headerIcon={FilterCog}>

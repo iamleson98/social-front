@@ -12,22 +12,22 @@
 </script>
 
 <div class="flex flex-row flex-wrap gap-2">
-	{#if category?.products}
-		{@const { products } = category}
-		{#if products.edges.length}
-			{#each products.edges as { node }, idx (idx)}
+	{#if category?.children}
+		{@const { children } = category}
+		{#if children.edges.length}
+			{#each children.edges as { node }, idx (idx)}
 				<div class="rounded-md border p-1">
 					<div class="mb-2">
 						<div
 							class="bg-contain bg-center bg-no-repeat w-36 h-36"
-							style={`background-image: url(${node.thumbnail?.url});`}
+							style={`background-image: url(${node.backgroundImage?.url || ''});`}
 						></div>
 					</div>
 
 					<div>
 						<div class="text-xs">
-              <a href={`${AppRoute.PRODUCTS}/${encodeURIComponent(node.slug)}`}>{node.name}</a>
-            </div>
+							<a href="/">{node.name}</a>
+						</div>
 					</div>
 				</div>
 			{/each}

@@ -5,7 +5,7 @@ export default {
 		rememberMe: 'Remember me',
 		noAccount: "Don't have an account?",
 		forgotPassword: 'Forgot password?',
-		welcomeBack: 'Welcome back, {{name}}'
+		welcomeBack: 'Welcome back, {{name}}',
 	},
 	signup: {
 		title: 'Signup',
@@ -14,15 +14,15 @@ export default {
 		lastNamePlaceholder: 'Last name *',
 		confirmPasswordPlaceholder: 'Please confirm password *',
 		agreeToTerms: 'I agree to the terms and conditions',
-		alreadyHasAccount: 'Already have an account?'
+		alreadyHasAccount: 'Already have an account?',
 	},
 	resetPassword: {
 		title: 'Reset Password',
-		btnText: 'Send me email'
+		btnText: 'Send me email',
 	},
 	changePassword: {
 		title: 'Change Password',
-		btnText: 'Change password'
+		btnText: 'Change password',
 	},
 	common: {
 		home: 'Home',
@@ -38,7 +38,7 @@ export default {
 		level6: 'Level 6',
 		more: 'See more',
 		settings: 'Settings',
-		logout: 'Logout'
+		logout: 'Logout',
 	},
 	product: {
 		chooseAddress: 'Please choose address',
@@ -67,7 +67,11 @@ export default {
 		variantNameExist: "Variant '{{name}}' already exists",
 		variantValueExist: "Value '{{name}}' already exists",
 		variantPlaceholder: 'Please enter variant name',
-		valuePlaceholder: 'Please enter value'
+		valuePlaceholder: 'Please enter value',
+		category: 'Category',
+		products: 'Products',
+		subCategories: 'Sub Categories',
+		detail: 'Detail',
 	},
 	error: {
 		invalidSlug: 'Invalid slug value',

@@ -122,6 +122,22 @@ export const CATEGORIES_LIST_QUERY_STORE = gql<CategoryCountableConnection, Cate
 	}
 `;
 
+export type CategoryDetailQueryArgs = {
+	slug?: string;
+	id?: string;
+	backgroundSize?: number;
+	imageFormat?: ThumbnailFormatEnum;
+	firstChildren?: number;
+	lastChildren?: number;
+	childrenBefore?: string;
+	childrenAfter?: string;
+	productFirst?: number;
+	productLast?: number;
+	productBefore?: string;
+	productAfter?: string;
+	productChannel?: string;
+};
+
 /**
  * @imageFormat default to WEBP
  * @backgroundSize default to 250
@@ -132,12 +148,18 @@ export const CATEGORY_DETAIL_QUERY_STORE = gql`
 	query Category(
 		$slug: String
 		$id: ID
-		$backgroundSize: Int = 250
+		$backgroundSize: Int = 300
 		$imageFormat: ThumbnailFormatEnum = WEBP
-		$first: Int = 10
-		$last: Int = 10
-		$before: String
-		$after: String
+		$firstChildren: Int = 10
+		$lastChildren: Int = 10
+		$childrenBefore: String
+		$childrenAfter: String
+
+		$productFirst: Int = 10
+		$productLast: Int
+		$productBefore: String
+		$productAfter: String
+		$productChannel: String
 	) {
 		category(slug: $slug, id: $id) {
 			id
@@ -147,13 +169,41 @@ export const CATEGORY_DETAIL_QUERY_STORE = gql`
 				url
 				alt
 			}
-			children(first: $first, last: $last, before: $before, after: $after) {
+			children(first: $firstChildren, last: $lastChildren, before: $childrenBefore, after: $childrenAfter) {
 				totalCount
 				edges {
 					node {
 						id
 						name
 						slug
+						backgroundImage(size: 100, format: $imageFormat) {
+							url
+							alt
+						}
+					}
+				}
+				pageInfo {
+					startCursor
+					endCursor
+					hasPreviousPage
+					hasNextPage
+				}
+			}
+			products(first: $productFirst, last: $productLast, before: $productBefore, after: $productAfter, channel: $productChannel) {
+				# totalCount
+				edges {
+					node {
+						id
+						name
+						slug
+						description
+						created
+						updatedAt
+						rating
+						thumbnail(size: 300, format: $imageFormat) {
+							url
+							alt
+						}
 					}
 				}
 				pageInfo {
