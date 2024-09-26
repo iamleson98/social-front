@@ -39,6 +39,7 @@ export default {
 		more: 'See more',
 		settings: 'Settings',
 		logout: 'Logout',
+		loadMore: 'Load more',
 	},
 	product: {
 		chooseAddress: 'Please choose address',

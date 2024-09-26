@@ -39,6 +39,7 @@ export default {
 		more: 'Xem thêm',
 		settings: 'Cài đặt',
 		logout: 'Đăng xuất',
+		loadMore: 'Xem thêm',
 	},
 	product: {
 		chooseAddress: 'Vui lòng chọn địa chỉ',

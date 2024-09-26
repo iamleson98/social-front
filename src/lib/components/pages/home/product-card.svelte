@@ -82,15 +82,9 @@
 			{:else if productDescriptionBlocks.length}
 				{@html productDescriptionBlocks[0]}
 			{/if}
-			<a href={`${AppRoute.PRODUCTS}/${encodeURI(slug)}`}>see more...</a>
+			<a href={`${AppRoute.PRODUCTS}/${encodeURIComponent(slug)}`}>see more...</a>
 		</div>
 		<Button variant="outline" startIcon={OpenEye} size="sm" fullWidth class="mb-1">Preview</Button>
 		<Button variant="filled" startIcon={ShoppingBagPlus} size="sm" fullWidth>Add to cart</Button>
-		<!-- <div class="text-xs text-gray-500 flex items-center gap-1">
-			<Icon icon={TruckDelivery} />
-			<p>
-				Estimated Delivery <span class="font-semibold text-gray-600">Jun 23 - Jun 24</span>
-			</p>
-		</div> -->
 	</div>
 </div>

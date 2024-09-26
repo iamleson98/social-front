@@ -5,7 +5,7 @@ import validator from 'validator';
 import { tServer } from "$i18n";
 import { performBackendOperation } from "$lib/client";
 import { CATEGORY_DETAIL_QUERY_STORE } from "$lib/stores/api";
-import type { Query, QueryCategoryArgs } from "$lib/gql/graphql";
+import type { Query } from "$lib/gql/graphql";
 import type { CategoryDetailQueryArgs } from "$lib/stores/api/product";
 
 

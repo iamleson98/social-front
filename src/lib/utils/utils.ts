@@ -18,6 +18,11 @@ export const randomID = () => (++count).toString(36);
  */
 export const parseProductDescription = (description: string): string[] => {
 	const result: string[] = [];
+	
+	if (!description.trim()) {
+		return result;
+	}
+
 	try {
 		const jsonData = JSON.parse(description);
 		const contentBlocks = editorJsParser.parse(jsonData);
