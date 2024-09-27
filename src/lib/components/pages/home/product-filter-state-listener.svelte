@@ -8,27 +8,27 @@
 	import { orderByField, priceRange, sortKey } from './common';
 	import { OrderDirection, ProductOrderField, type QueryProductsArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
+	import { get } from 'svelte/store';
 
 	const productFetchBatch = 10;
 
 	afterNavigate(() => {
 		if ($page.url.pathname !== AppRoute.HOME) return;
 
-		const channelSlug = clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug);
+		// const channelSlug = clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug);
 		const queryParams = parseUrlSearchParams($page.url);
 
 		let paramsChanged = false;
 		const newProductQueryArgs: QueryProductsArgs = {
-			channel: channelSlug,
-			first: productFetchBatch
+			...get(productFilterParamStore)
 		};
 
 		// parse sort by field:
 		let sortDirection = queryParams[sortKey];
 		let sortField = queryParams[orderByField];
 
-		if (sortDirection && typeof sortDirection === 'string')
-			sortDirection = sortDirection.toUpperCase();
+		if (sortDirection)
+			sortDirection = (sortDirection as string).toUpperCase();
 		if (sortField && typeof sortField === 'string') sortField = sortField.toUpperCase();
 
 		if (
@@ -46,10 +46,13 @@
 
 		// parse price range
 		const priceRangeParam = queryParams[priceRange];
-		if (priceRangeParam && typeof priceRangeParam === 'string') {
-			const priceRangeParams = priceRangeParam.trim().split(',');
+		if (priceRangeParam) {
+			const priceRangeParams = (priceRangeParam as string).trim().split(',');
 
 			if (priceRangeParams.length && priceRangeParams.every((item) => numberRegex.test(item))) {
+
+				if (priceRanges.length !== newProductQueryArgs.filter)
+
 				paramsChanged = true;
 				setValueByKey(newProductQueryArgs, 'filter.price', {
 					gte: Number(priceRangeParams[0]),
@@ -57,6 +60,8 @@
 				});
 			}
 		}
+
+		console.log(paramsChanged, newProductQueryArgs);
 
 		if (paramsChanged) productFilterParamStore.set(newProductQueryArgs);
 	});

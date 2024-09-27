@@ -6,21 +6,31 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import type { Query, QueryProductsArgs } from '$lib/gql/graphql';
 	import { operationStore, PRODUCT_LIST_QUERY_STORE } from '$lib/stores/api';
+	import { onMount } from 'svelte';
 	import ProductCard from './product-card.svelte';
 
 	type Props = {
 		isLastPage: boolean;
 		onLoadMore: (endCursor: string) => void;
 		variables: QueryProductsArgs;
+		forceReexecute: boolean;
 	};
 
-	let { isLastPage, onLoadMore, variables }: Props = $props();
+	let { isLastPage, onLoadMore, variables, forceReexecute }: Props = $props();
 
 	const productFetchStore = operationStore<Pick<Query, 'products'>, QueryProductsArgs>({
 		kind: 'query',
 		query: PRODUCT_LIST_QUERY_STORE,
 		context: { requestPolicy: 'network-only' },
 		variables
+	});
+
+	$effect(() => {
+		if (forceReexecute)
+			productFetchStore.reexecute({
+				context: { requestPolicy: 'network-only' },
+				variables
+			});
 	});
 </script>
 
