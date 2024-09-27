@@ -14,14 +14,10 @@
 
 	afterNavigate(() => {
 		if ($page.url.pathname !== AppRoute.HOME) return;
-
-		// const channelSlug = clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug);
 		const queryParams = parseUrlSearchParams($page.url);
 
 		let paramsChanged = false;
-		const newProductQueryArgs: QueryProductsArgs = {
-			...get(productFilterParamStore)
-		};
+		const newProductQueryArgs = get(productFilterParamStore);
 
 		// parse sort by field:
 		let sortDirection = queryParams[sortKey];
