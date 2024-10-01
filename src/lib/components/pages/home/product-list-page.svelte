@@ -7,6 +7,7 @@
 	import type { Query, QueryProductsArgs } from '$lib/gql/graphql';
 	import { operationStore, PRODUCT_LIST_QUERY_STORE } from '$lib/stores/api';
 	import ProductCard from './product-card.svelte';
+	import { afterNavigate } from '$app/navigation';
 
 	type Props = {
 		isLastPage: boolean;
@@ -21,6 +22,13 @@
 		query: PRODUCT_LIST_QUERY_STORE,
 		context: { requestPolicy: 'network-only' },
 		variables
+	});
+
+	afterNavigate(() => {
+		productFetchStore.reexecute({
+			context: { requestPolicy: 'network-only' },
+			variables
+		});
 	});
 </script>
 
@@ -49,19 +57,8 @@
 		{tClient('error.failedToLoad')}
 	</Alert>
 {:else if $productFetchStore.data?.products?.edges.length}
-	{#each $productFetchStore.data?.products?.edges as edge, idx (idx)}
-		{@const {
-			node: { category, thumbnail, name, slug, rating, description }
-		} = edge}
-		<ProductCard
-			{name}
-			{slug}
-			{rating}
-			description={(description || '') as string}
-			categoryName={(category?.name || category?.id) as string}
-			thumbnailUrl={thumbnail?.url as string}
-			thumbnailAlt={thumbnail?.alt || name}
-		/>
+	{#each $productFetchStore.data?.products?.edges as { node }, idx (idx)}
+		<ProductCard product={node} />
 	{/each}
 	{#if isLastPage && $productFetchStore.data?.products?.pageInfo.hasNextPage && $productFetchStore.data?.products?.pageInfo.endCursor}
 		<div class="mt-5 text-center">

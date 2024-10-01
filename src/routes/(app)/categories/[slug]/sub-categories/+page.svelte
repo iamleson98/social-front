@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { AppRoute } from '$lib/utils';
 	import type { PageData } from './$types';
 
 	type Props = {

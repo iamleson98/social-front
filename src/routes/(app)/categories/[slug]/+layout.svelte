@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { tClient } from '$i18n';
-	import { Box, Category, CategoryPlus, Home, InforCircle } from '$lib/components/icons';
+	import { Box, CategoryPlus, InforCircle } from '$lib/components/icons';
 	import { Tab, type TabItem } from '$lib/components/ui/Tab';
-	import { onMount, type Snippet } from 'svelte';
+	import { type Snippet } from 'svelte';
 	import type { LayoutServerData } from './$types';
 	import { page } from '$app/stores';
 	import { AppRoute } from '$lib/utils';

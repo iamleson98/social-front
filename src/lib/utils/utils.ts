@@ -19,7 +19,7 @@ export const randomID = () => (++count).toString(36);
 export const parseProductDescription = (description: string): string[] => {
 	const result: string[] = [];
 	
-	if (!description.trim()) {
+	if (!description) {
 		return result;
 	}
 
@@ -221,4 +221,8 @@ export function setValueByKey(
 			current = current[k] as NestedObject; // Move deeper into the object
 		}
 	}
+}
+
+export const clamp = (value: number, min: number, max: number): number => {
+	return Math.min(Math.max(value, min), max);
 }

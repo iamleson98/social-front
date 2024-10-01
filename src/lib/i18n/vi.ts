@@ -73,6 +73,7 @@ export default {
 		products: 'Các sản phẩm',
 		subCategories: 'Danh mục con',
 		detail: 'Chi tiết',
+		noVote: 'Chưa có đánh giá',
 	},
 	error: {
 		invalidSlug: 'Giá trị slug không hợp lệ',
