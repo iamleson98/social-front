@@ -13,9 +13,8 @@
 
 <div class="flex flex-row flex-wrap gap-2">
 	{#if category?.products}
-		{@const { products } = category}
-		{#if products.edges.length}
-			{#each products.edges as { node }, idx (idx)}
+		{#if category.products.edges.length}
+			{#each category.products.edges as { node }, idx (idx)}
 				<div class="rounded-md border p-1">
 					<div class="mb-2">
 						<div
