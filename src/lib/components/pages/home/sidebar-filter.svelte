@@ -9,18 +9,19 @@
 	import { Input } from '$lib/components/ui/Input';
 	import { Progress } from '$lib/components/ui/Progress';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
-	import { OrderDirection, ProductOrderField } from '$lib/gql/graphql';
+	import {
+		OrderDirection,
+		ProductOrderField,
+		type PriceRangeInput,
+		type ProductFilterInput,
+		type ProductOrder
+	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { CurrencyIconMap, type Currency } from '$lib/utils/consts';
 	import { flipDirection } from '$lib/utils/utils';
-	import { onMount } from 'svelte';
-	import { orderByField, priceRange, sortKey } from './common';
+	import { ORDER_BY_FIELD, PRICE_RANGE, SORT_KEY } from './common';
 	import { productFilterParamStore } from '$lib/stores/app/product-filter';
-
-	type RangeState = {
-		from: number;
-		to: number;
-	};
+	import { get, readonly } from 'svelte/store';
 
 	type Props = {
 		currency: Currency;
@@ -43,25 +44,33 @@
 
 	let { currency }: Props = $props();
 
-	let priceRangeValues = $state<RangeState>({ from: 0, to: 1 });
-	let productOrderField = $state(ProductOrderField.Price);
-	let fieldSortDirection = $state(OrderDirection.Desc);
+	let priceRange = $state($productFilterParamStore.filter?.price || { gte: 0, lte: 1 });
 
 	let priceRangeError = $derived.by(() => {
-		if (priceRangeValues.from < 0 || priceRangeValues.to < 0)
-			return tClient('error.negativeNumber');
-		if (priceRangeValues.from >= priceRangeValues.to) return tClient('error.startGreaterEnd');
+		const { gte, lte } = priceRange;
+		if ((gte as number) < 0 || (lte as number) < 0) return tClient('error.negativeNumber');
+		if ((gte as number) >= (lte as number)) return tClient('error.startGreaterEnd');
+
 		return null;
 	});
 
+	$effect(() => {
+		if ($effect.tracking()) console.log('priceRangeError', $state.snapshot(priceRange));
+	});
+
 	const applyFilter = async () => {
+		const filterState = get(productFilterParamStore);
 		const searchParams = new URLSearchParams();
-		if (productOrderField) {
-			searchParams.set(orderByField, productOrderField);
-			searchParams.set(sortKey, fieldSortDirection);
+
+		if (filterState.sortBy?.field) {
+			searchParams.set(ORDER_BY_FIELD, filterState.sortBy.field);
+			searchParams.set(SORT_KEY, filterState.sortBy.direction);
 		}
 		if (!priceRangeError)
-			searchParams.set(priceRange, `${priceRangeValues.from},${priceRangeValues.to}`);
+			searchParams.set(
+				PRICE_RANGE,
+				`${filterState.filter?.price?.gte},${filterState.filter?.price?.lte}`
+			);
 
 		await goto(`${AppRoute.HOME}?${searchParams.toString()}`, {
 			invalidateAll: false,
@@ -69,48 +78,52 @@
 		});
 	};
 
-	onMount(() => {
-		const unSub = productFilterParamStore.subscribe(params => {
-			if (params.sortBy?.direction)
-				fieldSortDirection = params.sortBy.direction;
-		});
+	const handleSelectChange = async (opt?: SelectOption) => {
+		if (!opt) return;
 
-		return unSub;
-	});
+		productFilterParamStore.update((state) => ({
+			...state,
+			sortBy: { ...state.sortBy, field: opt.value } as ProductOrder
+		}));
+	};
+
+	const handleOrderingButtonClick = async () => {
+		productFilterParamStore.update((state) => ({
+			...state,
+			sortBy: {
+				field: state.sortBy?.field,
+				direction: flipDirection(state.sortBy?.direction as OrderDirection)
+			}
+		}));
+	};
 </script>
 
 <Accordion header="Filter" headerIcon={FilterCog}>
 	<!-- price order -->
 	<div class="mb-4">
-		<div class="text-xs mb-2">Order by</div>
+		<div class="text-xs mb-2">{tClient('common.ordering')}</div>
 		<div class="mb-1 flex items-center gap-1">
-			<Select
-				options={ProductSortFields}
-				size="sm"
-				onSelect={(opt) => {
-					if (opt) productOrderField = opt.value as ProductOrderField;
-				}}
-			/>
+			<Select options={ProductSortFields} size="sm" onSelect={handleSelectChange} />
 
 			<IconButton
-				icon={sortingIcons[fieldSortDirection]}
+				icon={sortingIcons[$productFilterParamStore.sortBy?.direction as OrderDirection]}
 				size="xs"
 				color="gray"
-				onclick={() => (fieldSortDirection = flipDirection(fieldSortDirection))}
+				onclick={handleOrderingButtonClick}
 			/>
 		</div>
 	</div>
 
 	<!-- price range filter -->
 	<div class="mb-4">
-		<div class="text-xs mb-2">Price range</div>
+		<div class="text-xs mb-2">{tClient('common.priceRange')}</div>
 		<div class="flex items-center gap-2 justify-between mb-1">
 			<Input
 				placeholder="from"
 				type="number"
 				min={0}
 				size="sm"
-				bind:value={priceRangeValues.from}
+				bind:value={priceRange.gte}
 				startIcon={CurrencyIconMap[currency]}
 				variant={priceRangeError ? 'error' : 'normal'}
 			/>
@@ -121,7 +134,7 @@
 				size="sm"
 				startIcon={CurrencyIconMap[currency]}
 				variant={priceRangeError ? 'error' : 'normal'}
-				bind:value={priceRangeValues.to}
+				bind:value={priceRange.lte}
 			/>
 		</div>
 		{#if priceRangeError}
@@ -133,10 +146,12 @@
 
 	<!-- rating filter -->
 	<div class="mb-4">
-		<div class="text-xs mb-2">Score rating</div>
+		<div class="text-xs mb-2">{tClient('common.score')}</div>
 		{#each ratings as rating, idx (idx)}
 			<div class="flex items-center space-x-2 mb-1.5">
-				<span class="text-xs font-semibold text-blue-600 w-1/4">{rating} Star</span>
+				<span class="text-xs font-semibold text-blue-600 w-1/4"
+					>{rating} {tClient('common.star')}</span
+				>
 				<div class="w-3/4">
 					<Progress percent={rating * 20} />
 				</div>
@@ -144,5 +159,7 @@
 		{/each}
 	</div>
 
-	<Button size="xs" fullWidth color="orange" onclick={applyFilter}>Filter</Button>
+	<Button size="xs" fullWidth color="orange" onclick={applyFilter}
+		>{tClient('common.filter')}</Button
+	>
 </Accordion>

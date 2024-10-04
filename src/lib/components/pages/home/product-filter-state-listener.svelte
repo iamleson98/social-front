@@ -3,7 +3,7 @@
 	import { productFilterParamStore } from '$lib/stores/app/product-filter';
 	import { page } from '$app/stores';
 	import { numberRegex, parseUrlSearchParams } from '$lib/utils/utils';
-	import { orderByField, priceRange, sortKey } from './common';
+	import { ORDER_BY_FIELD, PRICE_RANGE, SORT_KEY } from './common';
 	import { OrderDirection, ProductOrderField } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { get } from 'svelte/store';
@@ -16,8 +16,8 @@
 		const newProductQueryArgs = get(productFilterParamStore);
 
 		// parse sort by field:
-		let sortDirection = queryParams[sortKey];
-		let sortField = queryParams[orderByField];
+		let sortDirection = queryParams[SORT_KEY];
+		let sortField = queryParams[ORDER_BY_FIELD];
 
 		if (sortDirection) sortDirection = (sortDirection as string).toUpperCase();
 		if (sortField) sortField = (sortField as string).toUpperCase();
@@ -37,7 +37,7 @@
 		}
 
 		// parse price range
-		const priceRangeParam = queryParams[priceRange];
+		const priceRangeParam = queryParams[PRICE_RANGE];
 		if (priceRangeParam) {
 			const cleanPriceRangeString = (priceRangeParam as string).replace(/\s/g, '');
 			if (

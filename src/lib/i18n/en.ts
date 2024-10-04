@@ -40,6 +40,13 @@ export default {
 		settings: 'Settings',
 		logout: 'Logout',
 		loadMore: 'Load more',
+		categories: 'Categories',
+		ordering: 'Order by',
+		priceRange: 'Price range',
+		score: 'Score rating',
+		filter: 'Filter',
+		star: 'Star',
+		cart: 'Shopping Cart',
 	},
 	product: {
 		chooseAddress: 'Please choose address',

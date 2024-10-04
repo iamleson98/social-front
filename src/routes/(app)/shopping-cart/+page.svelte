@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tClient } from '$i18n';
 	import { ArrowNarrowRight, Icon, Minus, Plus } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { IconButton } from '$lib/components/ui/Button';
@@ -21,7 +22,7 @@
 </script>
 
 <div>
-	<h3 class="text-md mb-4 font-semibold text-gray-800">Shopping Cart</h3>
+	<h3 class="text-md mb-4 font-semibold text-gray-800">{tClient('common.cart')}</h3>
 
 	<div class="flex flex-row justify-between tablet:flex-wrap tablet:flex-col gap-2">
 		<!-- preview area -->

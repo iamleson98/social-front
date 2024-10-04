@@ -36,16 +36,16 @@
 {/snippet}
 
 {#snippet categorySkeleton()}
-	<SkeletonContainer class="mb-2">
-		<div class="flex items-center gap-1">
-			<Skeleton class="rounded-lg w-8 h-8"></Skeleton>
+	<div class="rounded-md border bg-white mb-2">
+		<SkeletonContainer class="flex items-center gap-1">
+			<Skeleton class="w-7 h-7 rounded-full"></Skeleton>
 			<Skeleton class="h-4 w-2/3"></Skeleton>
-		</div>
-	</SkeletonContainer>
+		</SkeletonContainer>
+	</div>
 {/snippet}
 
 {#if $categoryStore.fetching}
-	<Accordion header="Categories" headerIcon={Category}>
+	<Accordion header={tClient('common.categories')} headerIcon={Category}>
 		{@render categorySkeleton()}
 		{@render categorySkeleton()}
 		{@render categorySkeleton()}
@@ -56,7 +56,7 @@
 	</Alert>
 {:else if $categoryStore.data?.categories?.edges.length}
 	<AccordionList
-		header="Categories"
+		header={tClient('common.categories')}
 		headerIcon={Category}
 		items={$categoryStore.data?.categories?.edges}
 		partialDisplay={5}

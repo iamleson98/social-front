@@ -40,6 +40,13 @@ export default {
 		settings: 'Cài đặt',
 		logout: 'Đăng xuất',
 		loadMore: 'Xem thêm',
+		categories: 'Danh mục',
+		ordering: 'Sắp xếp',
+		priceRange: 'Khoảng giá',
+		score: 'Đánh giá',
+		filter: 'Lọc',
+		star: 'Sao',
+		cart: 'Giỏ hàng',
 	},
 	product: {
 		chooseAddress: 'Vui lòng chọn địa chỉ',

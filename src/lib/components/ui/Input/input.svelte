@@ -5,7 +5,7 @@
 		subText?: string;
 		startIcon?: IconType;
 		size?: 'sm' | 'md' | 'lg';
-		action?: Snippet; /** a component to the end of input */
+		action?: Snippet /** a component to the end of input */;
 	} & Omit<HTMLInputAttributes, 'size'>;
 </script>
 
@@ -27,7 +27,7 @@
 		type = 'text',
 		size = 'md',
 		action,
-		value = $bindable(),
+		value = $bindable<string | number>(),
 		...rest
 	}: Props = $props();
 </script>
@@ -90,6 +90,6 @@
 		@apply text-sm;
 	}
 	.input-action > * {
-		@apply max-h-full max-w-full
+		@apply max-h-full max-w-full;
 	}
 </style>
