@@ -71,7 +71,7 @@
 			<p class="font-bold text-blue-700 text-xl underline">
 				{formatMoney(
 					pricing?.priceRange?.start?.gross.currency || defaultChannel.currency,
-					pricing?.priceRange?.start?.gross.amount as number
+					pricing?.priceRange?.start?.gross.amount || 0
 				)}
 			</p>
 		</div>

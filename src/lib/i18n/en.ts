@@ -48,6 +48,9 @@ export default {
 		star: 'Star',
 		cart: 'Shopping Cart',
 		startAt: 'Start at',
+		discountRange: 'Discount range',
+		packaging: 'Packaging',
+		preorder: 'Preorder',
 	},
 	product: {
 		chooseAddress: 'Please choose address',
@@ -93,5 +96,8 @@ export default {
 		startGreaterEnd: 'Start must be less than end',
 		noResult: 'No result found. Please try again',
 		failedToLoad: 'Failed to load data. Please try again later',
+	},
+	placeholders: {
+		enterPrdName: 'Enter product name',
 	}
 };

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tClient } from '$i18n';
 	import CategorySelector from '$lib/components/pages/products/category-selector.svelte';
 	import DiscountByQuantity from '$lib/components/pages/products/discount-by-quantity.svelte';
 	import PackagingAndDelivery from '$lib/components/pages/products/packaging-and-delivery.svelte';
@@ -6,6 +7,7 @@
 	import ProductDescriptionEditor from '$lib/components/pages/products/product-description-editor.svelte';
 	import ProductPreorderEditor from '$lib/components/pages/products/product-preorder-editor.svelte';
 	import ProductVariantCreator from '$lib/components/pages/products/product-variant-creator.svelte';
+	import { Input } from '$lib/components/ui/Input';
 	import type { Category } from '$lib/gql/graphql';
 
 	let now = new Date();
@@ -16,12 +18,8 @@
 <div class="m-auto rounded bg-white max-w-[800px] p-5 text-gray-600">
 	<!-- product name -->
 	<div class="mb-3">
-		<span class="text-sm">Product name</span>
-		<input
-			type="text"
-			placeholder="Enter the product name"
-			class="input input-md w-full !border-gray-200"
-		/>
+		<span class="text-sm">{tClient('product.prdName')}</span>
+		<Input placeholder={tClient('placeholders.enterPrdName')} size="md" />
 		<div class="text-right">
 			<span class="text-xs">{now.toDateString()}</span>
 		</div>
@@ -29,13 +27,13 @@
 
 	<!-- category -->
 	<div class="mb-3">
-		<span class="text-sm">Choose category</span>
+		<span class="text-sm">{tClient('product.prdCategory')}</span>
 		<CategorySelector onCategorySelected={(cate) => (productCategory = cate)} />
 	</div>
 
 	<!-- description -->
 	<div class="mb-3">
-		<span class="text-sm">Product description</span>
+		<span class="text-sm">{tClient('product.prdDescription')}</span>
 		<div class="bg-gray-50 rounded p-2">
 			<ProductDescriptionEditor />
 		</div>
@@ -44,7 +42,7 @@
 	<!-- attributes -->
 	{#if productCategory}
 		<div class="mb-3">
-			<span class="text-sm">Product attributes</span>
+			<span class="text-sm">{tClient('product.tabAttributes')}</span>
 			<div class="bg-gray-50 rounded p-2">
 				<ProductAttributeEditor {productCategory} />
 			</div>
@@ -53,7 +51,7 @@
 
 	<!-- variants -->
 	<div class="mb-3">
-		<span class="text-sm">Add product variants</span>
+		<span class="text-sm">{tClient('product.variants')}</span>
 		<div class="bg-gray-50 rounded p-2">
 			<ProductVariantCreator />
 		</div>
@@ -61,7 +59,7 @@
 
 	<!-- discount ranges -->
 	<div class="mb-3">
-		<span class="text-sm">Add discount ranges</span>
+		<span class="text-sm">{tClient('common.discountRange')}</span>
 		<div class="bg-gray-50 rounded p-2">
 			<DiscountByQuantity />
 		</div>
@@ -69,7 +67,7 @@
 
 	<!-- packaging and delivery -->
 	<div class="mb-3">
-		<span class="text-sm">Add discount ranges</span>
+		<span class="text-sm">{tClient('common.packaging')}</span>
 		<div class="bg-gray-50 rounded p-2">
 			<PackagingAndDelivery />
 		</div>
@@ -77,7 +75,7 @@
 
 	<!-- preorder -->
 	<div class="mb-3">
-		<span class="text-sm">Preorder</span>
+		<span class="text-sm">{tClient('common.preorder')}</span>
 		<div class="bg-gray-50 rounded p-2">
 			<ProductPreorderEditor />
 		</div>

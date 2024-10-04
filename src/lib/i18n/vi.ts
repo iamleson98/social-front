@@ -48,6 +48,9 @@ export default {
 		star: 'Sao',
 		cart: 'Giỏ hàng',
 		startAt: 'Từ',
+		discountRange: 'Khoảng giảm giá',
+		packaging: 'Đóng gói',
+		preorder: 'Đặt trước',
 	},
 	product: {
 		chooseAddress: 'Vui lòng chọn địa chỉ',
@@ -93,5 +96,8 @@ export default {
 		startGreaterEnd: 'Bắt đầu phải nhỏ hơn kết thúc',
 		noResult: 'Không tìm thấy kết quả. Vui lòng thử lại',
 		failedToLoad: 'Không thể tải dữ liệu. Vui lòng thử lại sau',
+	},
+	placeholders: {
+		enterPrdName: 'Nhập tên sản phẩm',
 	}
 };
