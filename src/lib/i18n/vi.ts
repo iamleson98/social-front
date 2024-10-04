@@ -47,6 +47,7 @@ export default {
 		filter: 'Lọc',
 		star: 'Sao',
 		cart: 'Giỏ hàng',
+		startAt: 'Từ',
 	},
 	product: {
 		chooseAddress: 'Vui lòng chọn địa chỉ',

@@ -47,6 +47,7 @@ export default {
 		filter: 'Filter',
 		star: 'Star',
 		cart: 'Shopping Cart',
+		startAt: 'Start at',
 	},
 	product: {
 		chooseAddress: 'Please choose address',

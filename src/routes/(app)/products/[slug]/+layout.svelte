@@ -151,7 +151,7 @@
 		</ol>
 	</nav>
 
-	<div class="flex flex-row tablet:flex-col tablet:flex-wrap gap-1 w-full mb-1">
+	<div class="flex flex-row tablet:flex-col tablet:flex-wrap gap-2 w-full mb-2">
 		<ProductMediaSlideShow {allProductMedias} loading={findingVariants} />
 		<ProductPricingPanel
 			{productInformation}

@@ -42,7 +42,6 @@ export const PRODUCT_LIST_QUERY_STORE = gql`
 					id
 					name
 					slug
-					description
 					created
 					updatedAt
 					rating
@@ -53,6 +52,26 @@ export const PRODUCT_LIST_QUERY_STORE = gql`
 					thumbnail(size: 450, format: WEBP) {
 						url
 						alt
+					}
+					pricing {
+						onSale
+						priceRange {
+							start {
+								currency
+								gross {
+									amount
+									currency
+								}
+							}
+							stop {
+								currency
+								gross {
+									amount
+									currency
+								}
+					
+							}
+						}
 					}
 				}
 			}

@@ -69,6 +69,7 @@ export { default as ArrowUp } from './tabler--arrow-up.svelte';
 export { default as Category } from './tabler--category.svelte';
 export { default as Box } from './tabler--box.svelte';
 export { default as CategoryPlus } from './tabler--catergory-plus.svelte';
+export { default as RosetteDiscount } from './tabler--rosette-discount.svelte';
 
 export { default as Icon } from './icon.svelte';
 export { AlertHexagonFilled };

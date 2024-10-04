@@ -21,6 +21,7 @@
 	import { IconButton } from '$lib/components/ui/Button';
 	import Input from '$lib/components/ui/Input/input.svelte';
 	import { reorganizeCartItems } from '$lib/stores/app/cart';
+	import { Badge } from '$lib/components/ui/badge';
 
 	type Props = {
 		productInformation: Omit<Product, 'variants'>;
@@ -82,7 +83,7 @@
 </script>
 
 {#snippet slotText()}
-	<p slot="text" class="text-sm ml-1 text-gray-700">
+	<p slot="text" class="text-sm font-medium underline ml-1 text-gray-700">
 		{#if typeof productInformation.rating === 'number'}
 			{productInformation.rating} out of {MAX_RATING}
 		{:else}
@@ -91,7 +92,7 @@
 	</p>
 {/snippet}
 
-<div class="bg-white w-3/5 rounded tablet:w-full p-4">
+<div class="bg-white w-3/5 rounded-md border tablet:w-full p-4">
 	<h1 class="text-gray-700 text-xl font-semibold mb-1">{productInformation.name}</h1>
 	<div class="flex items-center text-red-500 gap-2 mb-4">
 		<Rating
@@ -104,14 +105,8 @@
 	</div>
 
 	<div class="mb-5 bg-gray-50 rounded p-3">
-		<div class="place-items-start">
-			<div class="text-blue-700 font-semibold text-xl">
-				{formatMoney(
-					productInformation.pricing?.priceRange?.start?.gross.currency || defaultChannel.currency,
-					productInformation.pricing?.priceRange?.start?.gross.amount || 0,
-					productInformation.pricing?.priceRange?.stop?.gross.amount
-				)}
-			</div>
+		<!-- price -->
+		<div class="flex items-center gap-2">
 			{#if productInformation.pricing?.discount}
 				{@const {
 					pricing: {
@@ -120,22 +115,22 @@
 						}
 					}
 				} = productInformation}
-				<div class="text-red-500 flex items-center">
-					<span class="text-red-700">
-						<Icon
-							icon={BurstSale}
-							viewBox="0 0 100 100"
-							class="text-red-500"
-							width="2rem"
-							height="2rem"
-						/>
-					</span>
-					<span class="text-xs font-medium flex items-center">
-						<Icon icon={Minus} />
-						{formatMoney(currency, amount)}
-					</span>
-				</div>
+
+				<Badge
+					color="red"
+					variant="filled"
+					startIcon={BurstSale}
+					text={formatMoney(currency, amount)}
+				/>
 			{/if}
+
+			<div class="text-blue-700 font-semibold text-xl mb-1">
+				{formatMoney(
+					productInformation.pricing?.priceRange?.start?.gross.currency || defaultChannel.currency,
+					productInformation.pricing?.priceRange?.start?.gross.amount || 0,
+					productInformation.pricing?.priceRange?.stop?.gross.amount
+				)}
+			</div>
 		</div>
 	</div>
 

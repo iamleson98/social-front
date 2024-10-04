@@ -18,9 +18,9 @@
 	};
 </script>
 
-<div class="w-2/5 rounded tablet:w-full flex flex-col gap-1">
+<div class="w-2/5 tablet:w-full flex flex-col gap-2">
 	{#if loading}
-		<div class="p-1 h-full rounded w-full bg-white">
+		<div class="p-1 h-full rounded-md w-full bg-white">
 			<div class="bg-gray-300 animate-pulse w-full h-full pt-[100%]"></div>
 		</div>
 		<div class="prd-slide animate-pulse">
@@ -82,15 +82,15 @@
 		-webkit-tap-highlight-color: transparent;
 	}
 	.prd-display-main {
-		@apply bg-no-repeat relative bg-contain bg-center bg-white justify-center pt-[100%] rounded w-full flex items-center;
+		@apply bg-no-repeat relative bg-contain bg-center bg-white justify-center pt-[100%] rounded-md border w-full flex items-center;
 	}
 	.prd-thumbnail {
 		@apply rounded bg-contain bg-no-repeat bg-center pt-[100%];
 	}
 	.prd-slide {
-		@apply relative w-full bg-white flex items-center;
+		@apply relative w-full bg-white flex items-center rounded-md border min-h-20;
 	}
 	.slide-btn {
-		@apply rounded-full w-7 h-7 absolute top-1/2 -translate-y-1/2 bg-gray-100 transform hover:bg-gray-200 flex items-center justify-center;
+		@apply rounded-full w-7 h-7 absolute top-1/2 -translate-y-1/2 bg-gray-100 transform hover:bg-gray-200 flex items-center justify-center cursor-pointer;
 	}
 </style>
