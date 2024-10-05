@@ -10,7 +10,6 @@
 		/** a component to the end of input */
 		action?: Snippet;
 		ref?: HTMLInputElement | HTMLTextAreaElement;
-		element?: 'input' | 'textarea';
 
 		/** indicate if this component is being used in as <Select /> component */
 		selectShortcutOptions?: ShortcutOptions<HTMLInputElement | HTMLTextAreaElement>[];
@@ -38,7 +37,6 @@
 		type = 'text',
 		size = 'md',
 		action,
-		element = 'input',
 		ref = $bindable<HTMLInputElement>(),
 		inputDebounceOption,
 		selectShortcutOptions = [],
@@ -58,19 +56,17 @@
 			<Icon icon={startIcon} />
 		</div>
 	{/if}
-	<svelte:element
-		this={element}
+	<input
 		bind:this={ref}
 		{type}
 		{id}
 		{placeholder}
-		{value}
+		bind:value
 		use:shortcuts={selectShortcutOptions}
 		use:debounceInput={inputDebounceOption}
 		class={`${className} border text-sm rounded-lg w-full block p-2.5 input-bg-${variant} ${startIcon ? 'ps-8' : ''} input-${size}`}
 		{...rest}
-	>
-	</svelte:element>
+	/>
 
 	{#if action}
 		<div class="absolute end-2 top-1/2 transform -translate-y-1/2 input-action">

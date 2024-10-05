@@ -46,10 +46,6 @@
 		DESC: ArrowDown
 	};
 
-	$effect(() => {
-		if ($effect.tracking()) console.log(selectedRating);
-	});
-
 	let { currency }: Props = $props();
 
 	let priceRangeError = $derived.by(() => {
@@ -81,27 +77,12 @@
 			invalidateAll: false,
 			replaceState: false
 		});
-
-		$productFilterParamStore.reload = true;
-	};
-
-	const handleSelectChange = async (opt?: SelectOption) => {
-		if (!opt) return;
-
-		productFilterParamStore.update((state) => ({
-			...state,
-			sortBy: { ...state.sortBy, field: opt.value } as ProductOrder
-		}));
 	};
 
 	const handleOrderingButtonClick = async () => {
-		productFilterParamStore.update((state) => ({
-			...state,
-			sortBy: {
-				field: state.sortBy?.field,
-				direction: flipDirection(state.sortBy?.direction as OrderDirection)
-			}
-		}));
+		($productFilterParamStore.sortBy as ProductOrder).direction = flipDirection(
+			$productFilterParamStore.sortBy?.direction as OrderDirection
+		);
 	};
 </script>
 
@@ -110,7 +91,11 @@
 	<div class="mb-4">
 		<div class="text-xs mb-2">{tClient('common.ordering')}</div>
 		<div class="flex items-center gap-1">
-			<Select options={ProductSortFields} size="sm" onSelect={handleSelectChange} />
+			<Select
+				options={ProductSortFields}
+				size="sm"
+				bind:value={($productFilterParamStore.sortBy as ProductOrder).field as ProductOrderField}
+			/>
 
 			<IconButton
 				icon={sortingIcons[$productFilterParamStore.sortBy?.direction as OrderDirection]}

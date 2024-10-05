@@ -9,17 +9,17 @@
 	import { clickOutside } from '$lib/actions/click-outside';
 	import { focusOutside } from '$lib/actions/focus-outside';
 	import { shortcuts } from '$lib/actions/shortcut';
-	import { ChevronSort, CloseX, Icon, Search } from '$lib/components/icons';
+	import { ChevronSort, CloseX, Icon } from '$lib/components/icons';
 	import { classNames, randomID } from '$lib/utils/utils';
-	import { tick } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import { Input } from '../Input';
+	import { tClient } from '$i18n';
 
 	type SnippetProps = {
 		/** default `false` */
 		disabled: boolean;
 		idx: number;
-		value: string;
+		option: SelectOption;
 		className: string;
 		onclick?: () => void;
 	};
@@ -28,29 +28,29 @@
 		options: SelectOption[];
 		placeholder?: string;
 		label?: string;
-		selectedOption?: SelectOption;
-		onSelect?: (option?: SelectOption) => void;
 		/** default `false` */
 		disabled?: boolean;
 		size?: 'sm' | 'md' | 'lg';
 		variant?: 'normal' | 'error' | 'success';
+		value: string | number | undefined;
 	};
 
 	let {
 		options,
-		placeholder = 'Enter a value',
+		placeholder = tClient('product.valuePlaceholder'),
 		label,
-		selectedOption,
-		onSelect,
 		disabled = false,
 		size = 'md',
-		variant = 'normal'
+		variant = 'normal',
+		value = $bindable<string | number | undefined>('')
 	}: Props = $props();
 
-	let searchQuery = $state(selectedOption?.label || '');
+	let searchQuery = $state('');
 	let searchFocus = $state(false);
 	let openSelect = $state(false);
-	let selectedIndex = $state<number | undefined>(undefined);
+	let selectedOption = $derived.by(() =>
+		value ? options.find((opt) => opt.value === value) : undefined
+	);
 	let input: HTMLInputElement;
 	let optionRefs: HTMLElement[] = [];
 	const id = randomID();
@@ -66,12 +66,11 @@
 	const onInput = () => {
 		openDropdown();
 		searchQuery = input.value.trim();
-		selectedIndex = undefined;
 		optionRefs[0]?.scrollIntoView({ block: 'nearest' });
 	};
 
 	const deactivate = () => {
-		searchQuery = selectedOption?.label || '';
+		searchQuery = '';
 		searchFocus = false;
 		closeDropdown();
 	};
@@ -88,50 +87,40 @@
 
 	const closeDropdown = () => {
 		openSelect = false;
-		selectedIndex = undefined;
 	};
 
 	const onClear = () => {
 		input?.focus();
-		selectedIndex = undefined;
-		selectedOption = undefined;
+		value = undefined;
 		searchQuery = '';
-		onSelect?.(selectedOption);
 	};
 
 	const handleSelect = (option: SelectOption) => {
-		selectedOption = option;
-		searchQuery = option.label;
-		onSelect?.(option);
+		value = option.value;
 		closeDropdown();
-	};
-
-	const incrementSelectedIndex = async (delta: number) => {
-		if (!filteredOptions.length) {
-			selectedIndex = 0;
-		} else if (selectedIndex === undefined) {
-			selectedIndex = delta === 1 ? 0 : filteredOptions.length - 1;
-		} else {
-			selectedIndex = (selectedIndex + delta + filteredOptions.length) % filteredOptions.length;
-		}
-		await tick();
-		optionRefs[selectedIndex]?.scrollIntoView({ block: 'nearest' });
 	};
 </script>
 
 <!-- this common snippet is used for rendering select options -->
-{#snippet selectOption({ idx, disabled, className, onclick, value }: SnippetProps)}
+{#snippet selectOption({ idx, disabled, className, onclick, option }: SnippetProps)}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<li
 		id={`${listboxId}-${idx}`}
-		aria-selected={selectedIndex === idx}
+		aria-selected={option.value === value}
 		role="option"
 		aria-disabled={disabled}
-		class={`${className} text-left w-full px-4 py-1 hover:bg-blue-50 aria-selected:bg-blue-50 hover:text-blue-600`}
+		class={`${className} select-option ${option.value === value ? 'active-select-option' : ''}`}
 		bind:this={optionRefs[idx]}
 		{onclick}
+		tabindex="0"
+		use:shortcuts={[
+			{
+				shortcut: { key: 'Enter' },
+				onShortcut: () => onclick?.()
+			}
+		]}
 	>
-		{value}
+		{option.label}
 	</li>
 {/snippet}
 
@@ -154,87 +143,33 @@
 	]}
 >
 	<div>
-		<!-- {#if searchFocus}
-			<div class="absolute inset-y-0 left-0 flex items-center pl-3">
-				<div class="text-gray-500">
-					<Icon icon={Search} aria-hidden={true} />
-				</div>
-			</div>
-		{/if} -->
-
 		<Input
 			{placeholder}
 			{disabled}
 			{variant}
 			{size}
-			aria-activedescendant={selectedIndex || selectedIndex === 0
-				? `${listboxId}-${selectedIndex}`
-				: ''}
 			aria-controls={listboxId}
 			aria-expanded={openSelect}
 			bind:ref={input}
 			aria-autocomplete="list"
 			autocomplete="off"
 			class={classNames({
-				// '!pl-8': searchFocus,
 				'!rounded-b-none': openSelect,
-				'cursor-pointer': !searchFocus,
+				'cursor-pointer': !searchFocus
 			})}
 			id={inputId}
 			onclick={activate}
 			onfocus={activate}
-			value={searchQuery}
+			value={selectedOption?.label}
 			type="text"
 			role="combobox"
 			inputDebounceOption={{
 				onInput
 			}}
-			selectShortcutOptions={[
-				{
-					shortcut: { key: 'ArrowUp' },
-					onShortcut: () => {
-						openDropdown();
-						incrementSelectedIndex(-1);
-					}
-				},
-				{
-					shortcut: { key: 'ArrowDown' },
-					onShortcut: () => {
-						openDropdown();
-						incrementSelectedIndex(1);
-					}
-				},
-				{
-					shortcut: { key: 'ArrowDown', alt: true },
-					onShortcut: () => {
-						openDropdown();
-					}
-				},
-				{
-					shortcut: { key: 'Enter' },
-					onShortcut: () => {
-						if (selectedIndex !== undefined && filteredOptions.length > 0) {
-							handleSelect(filteredOptions[selectedIndex]);
-						}
-						closeDropdown();
-					}
-				},
-				{
-					shortcut: { key: 'Escape' },
-					onShortcut: (event) => {
-						event.stopPropagation();
-						closeDropdown();
-					}
-				}
-			]}
 		/>
 
-		<div
-			class="absolute right-0 top-0 h-full flex px-4 justify-center content-between items-center"
-			class:pr-2={selectedOption}
-			class:pointer-events-none={!selectedOption}
-		>
-			{#if selectedOption}
+		<div class="select-action" class:pr-2={!!value} class:pointer-events-none={!value}>
+			{#if !!value}
 				<button class="btn btn-circle btn-xs" onclick={onClear} title="Clear value">
 					<Icon icon={CloseX} />
 				</button>
@@ -249,16 +184,16 @@
 			role="listbox"
 			id={listboxId}
 			transition:fly={{ duration: 250 }}
-			class="absolute text-left mt-0.5 text-sm w-full max-h-64 overflow-y-auto bg-white rounded-b-xl z-10 shadow-sm border border-gray-200"
+			class="select-menu"
 			tabindex="-1"
 		>
-			{#if filteredOptions.length === 0}
+			{#if !filteredOptions.length}
 				{@render selectOption({
 					idx: 0,
 					disabled: true,
 					className: 'cursor-default',
 					onclick: closeDropdown,
-					value: 'No results found'
+					option: { value: 'No results found', label: 'No results found' }
 				})}
 			{/if}
 			{#each filteredOptions as option, idx (idx)}
@@ -267,9 +202,24 @@
 					disabled: false,
 					className: 'cursor-pointer transition-all',
 					onclick: () => handleSelect(option),
-					value: option.label
+					option
 				})}
 			{/each}
 		</ul>
 	{/if}
 </div>
+
+<style lang="postcss">
+	.select-menu {
+		@apply absolute text-left mt-0.5 text-sm w-full max-h-64 overflow-y-auto bg-white rounded-b-xl z-10 shadow-sm border border-gray-200;
+	}
+	.select-action {
+		@apply absolute right-0 top-0 h-full flex px-4 justify-center content-between items-center;
+	}
+	.select-option {
+		@apply text-left w-full px-4 py-1 hover:bg-blue-50 aria-selected:bg-blue-50 hover:text-blue-600;
+	}
+	.active-select-option {
+		@apply bg-blue-50 text-blue-600;
+	}
+</style>

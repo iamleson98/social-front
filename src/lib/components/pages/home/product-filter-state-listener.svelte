@@ -3,36 +3,32 @@
 	import { productFilterParamStore } from '$lib/stores/app/product-filter';
 	import { page } from '$app/stores';
 	import { numberRegex, parseUrlSearchParams } from '$lib/utils/utils';
-	import { initialHomePageLoadCounter, ORDER_BY_FIELD, PRICE_RANGE, SORT_KEY } from './common';
+	import { ORDER_BY_FIELD, PRICE_RANGE, SORT_KEY } from './common';
 	import { OrderDirection, ProductOrderField, type ProductOrder } from '$lib/gql/graphql';
-	import { AppRoute } from '$lib/utils';
 	import { get } from 'svelte/store';
 
 	afterNavigate(() => {
-		if ($page.url.pathname !== AppRoute.HOME) return;
-
-		// we only care about the initial page load.
-		// since the store is 2 ways binding
-		if (!get(initialHomePageLoadCounter)) return;
-
-		initialHomePageLoadCounter.set(false);
-
 		const queryParams = parseUrlSearchParams($page.url);
 		const newProductQueryArgs = get(productFilterParamStore);
-		// let paramsChanged = false;
 
 		// parse sort by field:
-		let sortDirection = queryParams[SORT_KEY];
-		let sortField = queryParams[ORDER_BY_FIELD];
+		let sortDirection = queryParams[SORT_KEY]
+			? (queryParams[SORT_KEY] as string).toUpperCase()
+			: OrderDirection.Asc;
+		let sortField = queryParams[ORDER_BY_FIELD]
+			? (queryParams[ORDER_BY_FIELD] as string).toUpperCase()
+			: ProductOrderField.Price;
 
-		if (sortDirection) sortDirection = (sortDirection as string).toUpperCase();
-		if (sortField) sortField = (sortField as string).toUpperCase();
-
-		if (Object.values(OrderDirection).includes(sortDirection as OrderDirection))
-			(newProductQueryArgs.sortBy as ProductOrder).direction = sortDirection as OrderDirection;
-
-		if (Object.values(ProductOrderField).includes(sortField as ProductOrderField))
-			(newProductQueryArgs.sortBy as ProductOrder).field = sortField as ProductOrderField;
+		(newProductQueryArgs.sortBy as ProductOrder).direction = Object.values(OrderDirection).includes(
+			sortDirection as OrderDirection
+		)
+			? (sortDirection as OrderDirection)
+			: OrderDirection.Asc;
+		(newProductQueryArgs.sortBy as ProductOrder).field = Object.values(ProductOrderField).includes(
+			sortField as ProductOrderField
+		)
+			? (sortField as ProductOrderField)
+			: ProductOrderField.Price;
 
 		// parse price range
 		const priceRangeParam = queryParams[PRICE_RANGE];
