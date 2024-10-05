@@ -8,12 +8,12 @@
 <script lang="ts">
 	import { clickOutside } from '$lib/actions/click-outside';
 	import { focusOutside } from '$lib/actions/focus-outside';
-	import { debounceInput } from '$lib/actions/input-debounce';
 	import { shortcuts } from '$lib/actions/shortcut';
 	import { ChevronSort, CloseX, Icon, Search } from '$lib/components/icons';
-	import { randomID } from '$lib/utils/utils';
+	import { classNames, randomID } from '$lib/utils/utils';
 	import { tick } from 'svelte';
 	import { fly } from 'svelte/transition';
+	import { Input } from '../Input';
 
 	type SnippetProps = {
 		/** default `false` */
@@ -26,7 +26,6 @@
 
 	type Props = {
 		options: SelectOption[];
-		/** placeholder value */
 		placeholder?: string;
 		label?: string;
 		selectedOption?: SelectOption;
@@ -45,7 +44,7 @@
 		onSelect,
 		disabled = false,
 		size = 'md',
-		variant = 'normal',
+		variant = 'normal'
 	}: Props = $props();
 
 	let searchQuery = $state(selectedOption?.label || '');
@@ -128,7 +127,7 @@
 		aria-selected={selectedIndex === idx}
 		role="option"
 		aria-disabled={disabled}
-		class={`${className} text-left w-full px-4 py-2 hover:bg-blue-50 aria-selected:bg-blue-50 hover:text-blue-600`}
+		class={`${className} text-left w-full px-4 py-1 hover:bg-blue-50 aria-selected:bg-blue-50 hover:text-blue-600`}
 		bind:this={optionRefs[idx]}
 		{onclick}
 	>
@@ -155,39 +154,42 @@
 	]}
 >
 	<div>
-		{#if searchFocus}
+		<!-- {#if searchFocus}
 			<div class="absolute inset-y-0 left-0 flex items-center pl-3">
 				<div class="text-gray-500">
 					<Icon icon={Search} aria-hidden={true} />
 				</div>
 			</div>
-		{/if}
+		{/if} -->
 
-		<input
+		<Input
 			{placeholder}
 			{disabled}
+			{variant}
+			{size}
 			aria-activedescendant={selectedIndex || selectedIndex === 0
 				? `${listboxId}-${selectedIndex}`
 				: ''}
 			aria-controls={listboxId}
 			aria-expanded={openSelect}
-			bind:this={input}
+			bind:ref={input}
 			aria-autocomplete="list"
 			autocomplete="off"
-			class:!pl-8={searchFocus}
-			class:!rounded-b-none={openSelect}
-			class:cursor-pointer={!searchFocus}
-			class={`border text-sm rounded-lg w-full block p-2.5 input-bg-${variant} input-${size}`}
+			class={classNames({
+				// '!pl-8': searchFocus,
+				'!rounded-b-none': openSelect,
+				'cursor-pointer': !searchFocus,
+			})}
 			id={inputId}
 			onclick={activate}
 			onfocus={activate}
-			bind:value={searchQuery}
+			value={searchQuery}
 			type="text"
 			role="combobox"
-			use:debounceInput={{
+			inputDebounceOption={{
 				onInput
 			}}
-			use:shortcuts={[
+			selectShortcutOptions={[
 				{
 					shortcut: { key: 'ArrowUp' },
 					onShortcut: () => {
@@ -247,7 +249,7 @@
 			role="listbox"
 			id={listboxId}
 			transition:fly={{ duration: 250 }}
-			class="absolute text-left text-sm w-full max-h-64 overflow-y-auto bg-white rounded-b-xl z-10 shadow-sm border border-gray-200"
+			class="absolute text-left mt-0.5 text-sm w-full max-h-64 overflow-y-auto bg-white rounded-b-xl z-10 shadow-sm border border-gray-200"
 			tabindex="-1"
 		>
 			{#if filteredOptions.length === 0}
@@ -271,36 +273,3 @@
 		</ul>
 	{/if}
 </div>
-
-<style lang="postcss">
-	.input-normal {
-		@apply !text-gray-800 dark:text-white;
-	}
-	.input-error {
-		@apply !text-red-600;
-	}
-	.input-success {
-		@apply !text-green-600;
-	}
-	.input-bg-normal {
-		@apply bg-gray-50 border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500;
-	}
-	.input-bg-success {
-		@apply bg-green-50 border-green-300 text-green-700 placeholder-green-600 focus:ring-green-500 focus:border-green-500 dark:bg-green-700 dark:border-green-600 dark:placeholder-green-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500;
-	}
-	.input-bg-error {
-		@apply bg-red-50 border-red-300 text-red-700 placeholder-red-600 focus:ring-red-500 focus:border-red-500 dark:bg-red-700 dark:border-red-600 dark:placeholder-red-400 dark:text-white dark:focus:ring-red-500 dark:focus:border-red-500;
-	}
-	.input-lg {
-		@apply py-4 text-base;
-	}
-	.input-sm {
-		@apply py-1.5 text-xs;
-	}
-	.input-md {
-		@apply text-sm;
-	}
-	.input-action > * {
-		@apply max-h-full max-w-full;
-	}
-</style>

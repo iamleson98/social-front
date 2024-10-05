@@ -1,11 +1,13 @@
 <script lang="ts">
-	let count = $state(1);
+	import { Select, type SelectOption } from '$lib/components/ui/select';
 
-	$effect(() => {
-		if ($effect.tracking()) console.log('count changed', count);
-	});
+	const options: SelectOption[] = [
+		{ value: '1', label: 'Option 1' },
+		{ value: '2', label: 'Option 2' },
+		{ value: '3', label: 'Option 3' },
+		{ value: '4', label: 'Option 4' },
+		{ value: '5', label: 'Option 5' }
+	];
 </script>
 
-<div>{count}</div>
-
-<button onclick={() => count++}>click</button>
+<Select {options} size="sm" />

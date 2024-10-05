@@ -6,6 +6,7 @@
 	import { page } from '$app/stores';
 	import { cartItemStore } from '$lib/stores/app';
 	import {
+		Icon,
 		IonFlame,
 		Logout,
 		MingcuteHome,
@@ -71,7 +72,7 @@
 			<label class="input flex items-center gap-2 input-sm">
 				<Input placeholder="type something" size="sm" />
 				<span>
-					<Search />
+					<Icon icon={Search} />
 				</span>
 			</label>
 		</div>

@@ -22,6 +22,7 @@
 	import { ORDER_BY_FIELD, PRICE_RANGE, SORT_KEY } from './common';
 	import { productFilterParamStore } from '$lib/stores/app/product-filter';
 	import { get } from 'svelte/store';
+	import { RadioBtn } from '$lib/components/ui/radio';
 
 	type Props = {
 		currency: Currency;
@@ -37,10 +38,17 @@
 	].map((value) => ({ value, label: value.toLowerCase().replace('_', ' ') }));
 
 	const ratings = [5, 4, 3, 2, 1];
+
+	let selectedRating = $state(ratings[0]);
+
 	const sortingIcons: Record<OrderDirection, IconType> = {
 		ASC: ArrowUp,
 		DESC: ArrowDown
 	};
+
+	$effect(() => {
+		if ($effect.tracking()) console.log(selectedRating);
+	});
 
 	let { currency }: Props = $props();
 
@@ -101,7 +109,7 @@
 	<!-- price order -->
 	<div class="mb-4">
 		<div class="text-xs mb-2">{tClient('common.ordering')}</div>
-		<div class="mb-1 flex items-center gap-1">
+		<div class="flex items-center gap-1">
 			<Select options={ProductSortFields} size="sm" onSelect={handleSelectChange} />
 
 			<IconButton
@@ -151,13 +159,17 @@
 	<div class="mb-4">
 		<div class="text-xs mb-2">{tClient('common.score')}</div>
 		{#each ratings as rating, idx (idx)}
-			<div class="flex items-center space-x-2 mb-1.5">
+			<div class="flex items-center gap-1 mb-1.5">
 				<span class="text-xs font-semibold text-blue-600 w-1/4">
 					{rating}
 					{tClient('common.star')}
 				</span>
 				<div class="w-3/4">
 					<Progress percent={rating * 20} />
+				</div>
+
+				<div class="ml-1">
+					<RadioBtn value={rating} bind:group={selectedRating} name="rating" />
 				</div>
 			</div>
 		{/each}

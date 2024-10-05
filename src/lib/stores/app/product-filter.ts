@@ -19,6 +19,7 @@ export const productFilterParamStore = writable<ProductFilterParams>({
   },
   filter: {
     price: {},
+    giftCard: false,
   },
   reload: false,
 });

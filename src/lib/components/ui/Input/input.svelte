@@ -1,15 +1,26 @@
 <script lang="ts" context="module">
+	import { debounceInput, type InputDebounceOpts } from '$lib/actions/input-debounce';
+
 	export type Props = {
 		label?: string;
 		variant?: 'normal' | 'error' | 'success';
 		subText?: string;
 		startIcon?: IconType;
 		size?: 'sm' | 'md' | 'lg';
-		action?: Snippet /** a component to the end of input */;
+		/** a component to the end of input */
+		action?: Snippet;
+		ref?: HTMLInputElement | HTMLTextAreaElement;
+		element?: 'input' | 'textarea';
+
+		/** indicate if this component is being used in as <Select /> component */
+		selectShortcutOptions?: ShortcutOptions<HTMLInputElement | HTMLTextAreaElement>[];
+		inputDebounceOption?: InputDebounceOpts;
 	} & Omit<HTMLInputAttributes, 'size'>;
 </script>
 
 <script lang="ts">
+	import { shortcuts, type ShortcutOptions } from '$lib/actions/shortcut';
+
 	import type { IconType } from '$lib/components/icons';
 	import Icon from '$lib/components/icons/icon.svelte';
 	import { randomID } from '$lib/utils/utils';
@@ -27,6 +38,10 @@
 		type = 'text',
 		size = 'md',
 		action,
+		element = 'input',
+		ref = $bindable<HTMLInputElement>(),
+		inputDebounceOption,
+		selectShortcutOptions = [],
 		value = $bindable<string | number>(),
 		...rest
 	}: Props = $props();
@@ -37,20 +52,26 @@
 		{label}
 	</label>
 {/if}
-<div class={`relative ${className} input-${variant} mt-0`}>
+<div class={`relative input-${variant} mt-0`}>
 	{#if startIcon}
 		<div class="absolute inset-y-0 start-0 flex items-center ps-2.5 pointer-events-none">
 			<Icon icon={startIcon} />
 		</div>
 	{/if}
-	<input
+	<svelte:element
+		this={element}
+		bind:this={ref}
 		{type}
-		{placeholder}
 		{id}
-		bind:value
-		class={`border text-sm rounded-lg w-full block p-2.5 input-bg-${variant} ${startIcon ? 'ps-8' : ''} input-${size}`}
+		{placeholder}
+		{value}
+		use:shortcuts={selectShortcutOptions}
+		use:debounceInput={inputDebounceOption}
+		class={`${className} border text-sm rounded-lg w-full block p-2.5 input-bg-${variant} ${startIcon ? 'ps-8' : ''} input-${size}`}
 		{...rest}
-	/>
+	>
+	</svelte:element>
+
 	{#if action}
 		<div class="absolute end-2 top-1/2 transform -translate-y-1/2 input-action">
 			{@render action()}
