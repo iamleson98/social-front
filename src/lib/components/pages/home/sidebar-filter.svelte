@@ -67,7 +67,7 @@
 			searchParams.set(ORDER_BY_FIELD, filterState.sortBy.field);
 			searchParams.set(SORT_KEY, filterState.sortBy.direction);
 		}
-		if (!priceRangeError)
+		if (!priceRangeError && filterState.filter?.price?.gte && filterState.filter?.price?.lte)
 			searchParams.set(
 				PRICE_RANGE,
 				`${filterState.filter?.price?.gte},${filterState.filter?.price?.lte}`
