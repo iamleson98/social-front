@@ -7,12 +7,12 @@
 	import type { Query, QueryProductsArgs } from '$lib/gql/graphql';
 	import { operationStore, PRODUCT_LIST_QUERY_STORE } from '$lib/stores/api';
 	import ProductCard from './product-card.svelte';
-	import { afterNavigate } from '$app/navigation';
+	import type { ProductFilterParams } from '$lib/stores/app/product-filter';
 
 	type Props = {
 		isLastPage: boolean;
 		onLoadMore: (endCursor: string) => void;
-		variables: QueryProductsArgs;
+		variables: ProductFilterParams;
 	};
 
 	let { isLastPage, onLoadMore, variables }: Props = $props();
@@ -22,13 +22,6 @@
 		query: PRODUCT_LIST_QUERY_STORE,
 		context: { requestPolicy: 'network-only' },
 		variables
-	});
-
-	afterNavigate(() => {
-		productFetchStore.reexecute({
-			context: { requestPolicy: 'network-only' },
-			variables
-		});
 	});
 </script>
 

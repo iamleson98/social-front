@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { tClient } from '$i18n';
-	import { Heart, Icon, OpenEye, RosetteDiscount, ShoppingBagPlus } from '$lib/components/icons';
+	import { Heart, OpenEye, ShoppingBagPlus } from '$lib/components/icons';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { Progress } from '$lib/components/ui/Progress';
@@ -32,9 +32,6 @@
 		</div>
 
 		{#if pricing?.onSale}
-			<!-- <div class="text-red-700 absolute top-3 left-3 p-2"> -->
-			<!-- <Icon icon={RosetteDiscount} /> -->
-			<!-- </div> -->
 			<Badge
 				color="red"
 				variant="filled"

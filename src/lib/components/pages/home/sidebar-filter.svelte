@@ -21,7 +21,7 @@
 	import { flipDirection } from '$lib/utils/utils';
 	import { ORDER_BY_FIELD, PRICE_RANGE, SORT_KEY } from './common';
 	import { productFilterParamStore } from '$lib/stores/app/product-filter';
-	import { get, readonly } from 'svelte/store';
+	import { get } from 'svelte/store';
 
 	type Props = {
 		currency: Currency;
@@ -44,18 +44,15 @@
 
 	let { currency }: Props = $props();
 
-	let priceRange = $state($productFilterParamStore.filter?.price || { gte: 0, lte: 1 });
-
 	let priceRangeError = $derived.by(() => {
-		const { gte, lte } = priceRange;
-		if ((gte as number) < 0 || (lte as number) < 0) return tClient('error.negativeNumber');
-		if ((gte as number) >= (lte as number)) return tClient('error.startGreaterEnd');
+		const { gte, lte } = ($productFilterParamStore.filter as ProductFilterInput)
+			.price as PriceRangeInput;
+		if (typeof gte !== 'number' || typeof lte !== 'number') return null;
+
+		if (gte < 0 || (lte as number) < 0) return tClient('error.negativeNumber');
+		if (gte >= (lte as number)) return tClient('error.startGreaterEnd');
 
 		return null;
-	});
-
-	$effect(() => {
-		if ($effect.tracking()) console.log('priceRangeError', $state.snapshot(priceRange));
 	});
 
 	const applyFilter = async () => {
@@ -74,8 +71,10 @@
 
 		await goto(`${AppRoute.HOME}?${searchParams.toString()}`, {
 			invalidateAll: false,
-			replaceState: true
+			replaceState: false
 		});
+
+		$productFilterParamStore.reload = true;
 	};
 
 	const handleSelectChange = async (opt?: SelectOption) => {
@@ -123,7 +122,9 @@
 				type="number"
 				min={0}
 				size="sm"
-				bind:value={priceRange.gte}
+				bind:value={(
+					($productFilterParamStore.filter as ProductFilterInput).price as PriceRangeInput
+				).gte}
 				startIcon={CurrencyIconMap[currency]}
 				variant={priceRangeError ? 'error' : 'normal'}
 			/>
@@ -134,7 +135,9 @@
 				size="sm"
 				startIcon={CurrencyIconMap[currency]}
 				variant={priceRangeError ? 'error' : 'normal'}
-				bind:value={priceRange.lte}
+				bind:value={(
+					($productFilterParamStore.filter as ProductFilterInput).price as PriceRangeInput
+				).lte}
 			/>
 		</div>
 		{#if priceRangeError}
@@ -149,9 +152,10 @@
 		<div class="text-xs mb-2">{tClient('common.score')}</div>
 		{#each ratings as rating, idx (idx)}
 			<div class="flex items-center space-x-2 mb-1.5">
-				<span class="text-xs font-semibold text-blue-600 w-1/4"
-					>{rating} {tClient('common.star')}</span
-				>
+				<span class="text-xs font-semibold text-blue-600 w-1/4">
+					{rating}
+					{tClient('common.star')}
+				</span>
 				<div class="w-3/4">
 					<Progress percent={rating * 20} />
 				</div>
@@ -159,7 +163,7 @@
 		{/each}
 	</div>
 
-	<Button size="xs" fullWidth color="orange" onclick={applyFilter}
-		>{tClient('common.filter')}</Button
-	>
+	<Button size="xs" fullWidth color="orange" onclick={applyFilter}>
+		{tClient('common.filter')}
+	</Button>
 </Accordion>

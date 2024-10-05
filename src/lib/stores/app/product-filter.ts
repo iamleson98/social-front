@@ -4,7 +4,10 @@ import { CHANNEL_KEY, defaultChannel } from '$lib/utils/consts';
 import { writable } from 'svelte/store';
 
 
-export type ProductFilterParams = QueryProductsArgs & { refetch: boolean };
+export type ProductFilterParams = QueryProductsArgs & {
+  /** indicate that the product list section must reload */
+  reload: boolean
+};
 
 /** this store keeps track of products filter options  */
 export const productFilterParamStore = writable<ProductFilterParams>({
@@ -15,10 +18,8 @@ export const productFilterParamStore = writable<ProductFilterParams>({
     direction: OrderDirection.Asc,
   },
   filter: {
-    price: {
-      // gte: 0,
-      // lte: 1,
-    },
+    price: {},
   },
-  refetch: false,
+  reload: false,
 });
+

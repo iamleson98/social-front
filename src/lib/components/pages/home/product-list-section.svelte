@@ -1,17 +1,25 @@
 <script lang="ts">
-	import { type QueryProductsArgs } from '$lib/gql/graphql';
 	import ProductFilterStateListener from './product-filter-state-listener.svelte';
-	import { productFilterParamStore } from '$lib/stores/app/product-filter';
+	import {
+		productFilterParamStore,
+		type ProductFilterParams
+	} from '$lib/stores/app/product-filter';
 	import ProductListPage from './product-list-page.svelte';
-	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
+	import { onMount, tick } from 'svelte';
 
-	let pageVariables = $state.frozen<QueryProductsArgs[]>([get(productFilterParamStore)]);
+	let pageVariables = $state.frozen<ProductFilterParams[]>([get(productFilterParamStore)]);
 
 	onMount(() => {
 		const unsub = productFilterParamStore.subscribe((state) => {
-			console.log('productFilterParamStore', state);
-			pageVariables = [state];
+			if (state.reload) {
+				pageVariables = [];
+
+				tick().then(() => {
+					productFilterParamStore.update((state) => ({ ...state, reload: false }));
+					pageVariables = [get(productFilterParamStore)];
+				});
+			}
 		});
 
 		return unsub;
@@ -25,7 +33,7 @@
 	};
 </script>
 
-<!-- plugin -->
+<!-- url search params listener -->
 <ProductFilterStateListener />
 
 <div class="max-w-md m-auto">
