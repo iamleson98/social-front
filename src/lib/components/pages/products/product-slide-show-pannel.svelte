@@ -38,12 +38,18 @@
 						role="button"
 					>
 						<div class="relative w-full pb-[100%]">
-							<img
-								src={picture.url}
-								alt={picture.alt}
-								loading="lazy"
-								class="absolute h-full left-0 object-contain object-center right-0 w-full"
-							/>
+							<picture class="contents">
+								<source
+									src={picture.url}
+									type="image/webp"
+									class="absolute h-full left-0 object-contain object-center right-0 w-full"
+								/>
+								<img
+									src={picture.url}
+									alt={picture.alt}
+									class="absolute h-full left-0 object-contain object-center right-0 w-full"
+								/>
+							</picture>
 						</div>
 
 						<div

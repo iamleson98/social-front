@@ -92,7 +92,7 @@
 
 		slideShowManager.setMedias(allProductMedias);
 
-		return slideShowManager.reset;
+		return () => slideShowManager.reset();
 	});
 </script>
 
