@@ -11,7 +11,7 @@
 
 	const MAX_DISCOUNT_RANGES = 4;
 
-	let discountRanges = $state.frozen<DiscountRange[]>([]);
+	let discountRanges = $state.raw<DiscountRange[]>([]);
 
 	const addDiscountRange = () => {
 		if (discountRanges.length < MAX_DISCOUNT_RANGES) {

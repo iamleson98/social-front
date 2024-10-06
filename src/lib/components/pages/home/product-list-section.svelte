@@ -8,7 +8,7 @@
 	import { get } from 'svelte/store';
 	import { onMount, tick } from 'svelte';
 
-	let pageVariables = $state.frozen<ProductFilterParams[]>([get(productFilterParamStore)]);
+	let pageVariables = $state.raw<ProductFilterParams[]>([get(productFilterParamStore)]);
 
 	onMount(() => {
 		const unsub = productFilterParamStore.subscribe((state) => {

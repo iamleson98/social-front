@@ -54,7 +54,7 @@
 		// Other pictures...
 	];
 
-	let slicing = $state.frozen([0, Math.min(5, allPictures.length)]);
+	let slicing = $state.raw([0, Math.min(5, allPictures.length)]);
 	let activeIndex = $state(0);
 
 	const [send, receive] = crossfade({

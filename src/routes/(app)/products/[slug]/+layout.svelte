@@ -78,8 +78,8 @@
 	} = data;
 
 	/** wait for product variants fully fetched, then display image slideshow */
-	let allProductMedias = $state.frozen(medias || []);
-	let productVariants = $state.frozen<ProductVariant[]>([]);
+	let allProductMedias = $state.raw(medias || []);
+	let productVariants = $state.raw<ProductVariant[]>([]);
 	/** list of categories to display in breadcrum section */
 	let categories = $derived.by(() => {
 		if (!category) return [];

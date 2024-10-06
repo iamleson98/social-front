@@ -9,12 +9,12 @@
 		qualityPercent?: number; // if new, then this is not needed
 	};
 
-	let preorderData = $state.frozen<Preorder>({
+	let preorderData = $state.raw<Preorder>({
 		isPreorder: false,
 		daysToShip: 0
 	});
 
-	let productCondition = $state.frozen<ProductCondition>({
+	let productCondition = $state.raw<ProductCondition>({
 		isNew: true
 	});
 </script>

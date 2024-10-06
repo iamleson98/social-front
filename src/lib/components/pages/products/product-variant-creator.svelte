@@ -19,7 +19,7 @@
 	const MAX_VARIANT_TYPES = 2;
 	const MAX_VALUES_PER_VARIANT = 4;
 
-	let variants = $state.frozen<Variant[]>([
+	let variants = $state.raw<Variant[]>([
 		{
 			name: {
 				value: 'color'

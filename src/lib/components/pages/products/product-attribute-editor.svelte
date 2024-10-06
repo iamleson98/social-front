@@ -24,7 +24,7 @@
 
 	let { productCategory }: Props = $props();
 	let loading = $state(true);
-	let attributesOfGivenCategory = $state.frozen<AttributeCountableConnection | null | undefined>();
+	let attributesOfGivenCategory = $state.raw<AttributeCountableConnection | null | undefined>();
 	const MAX_FETCHING_BATCH = 30;
 
 	const fetchAttributes = (categoryId: string) => {

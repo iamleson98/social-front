@@ -42,8 +42,8 @@
 
 	let { disabled, editor }: Props = $props();
 
-	let blockFormatState = $state.frozen({ ...defaultBlockFormats });
-	let inlineFormatState = $state.frozen({ ...defaultInlineFormats });
+	let blockFormatState = $state.raw({ ...defaultBlockFormats });
+	let inlineFormatState = $state.raw({ ...defaultInlineFormats });
 
 	let blockFormatType = $state<BlockType>('paragraph');
 	let selectedElementKey = $state<string | null>(null);

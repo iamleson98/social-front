@@ -15,7 +15,7 @@
 
 	let { data, children }: Props = $props();
 
-	let tabs = $state.frozen<TabItem[]>([
+	let tabs = $state.raw<TabItem[]>([
 		{
 			title: `${tClient('product.products')}`,
 			icon: Box,

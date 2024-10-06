@@ -33,10 +33,10 @@
 	const NUMBER_OF_CATEGORIES_PER_FETCH = 30;
 
 	let initialLoading = $state(true);
-	let categories = $state.frozen<Record<number, CategoryCountableConnection | undefined>>({});
+	let categories = $state.raw<Record<number, CategoryCountableConnection | undefined>>({});
 	let categoryLevels = $derived.by(() => Object.keys(categories).map(Number).sort());
 	/** selected category indices for each level */
-	let activeCategoryIndices = $state.frozen<number[]>([]);
+	let activeCategoryIndices = $state.raw<number[]>([]);
 	let categoryChoosen = $state<Category | null>(null);
 
 	const loadCategories = async (level: number) => {
