@@ -1,13 +1,6 @@
 <script lang="ts">
 	import { tClient } from '$i18n';
-	import {
-		MapPin,
-		Minus,
-		Plus,
-		ShoppingBagPlus,
-		BurstSale,
-		Heart
-	} from '$lib/components/icons';
+	import { MapPin, Minus, Plus, ShoppingBagPlus, BurstSale, Heart } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import type { Product, ProductVariant } from '$lib/gql/graphql';
 	import { userStore } from '$lib/stores/auth';
@@ -24,14 +17,10 @@
 
 	type Props = {
 		productInformation: Omit<Product, 'variants'>;
-		productVariants: readonly ProductVariant[];
-		/** indicate the variants are being fetched */
-		loading: boolean;
-		/** we can know before hand how many variants does a product has */
-		numOfVariants: number;
+		productVariants: ProductVariant[];
 	};
 
-	let { productInformation, productVariants, loading, numOfVariants }: Props = $props();
+	let { productInformation, productVariants }: Props = $props();
 
 	let userDefaultShippingAddress = $state(tClient('product.chooseAddress'));
 
@@ -138,7 +127,7 @@
 		<span class="w-1/6 text-xs">{tClient('product.delivery')}</span>
 		<div class="w-5/6 text-blue-700 font-normal flex items-center">
 			<span class="text-sm mr-1">{userDefaultShippingAddress}</span>
-			<IconButton icon={MapPin} shape="circle" size="xs" variant="light" />
+			<IconButton icon={MapPin} rounded size="xs" variant="light" />
 		</div>
 	</div>
 
@@ -147,27 +136,18 @@
 		<span class="w-1/6 text-xs">{tClient('product.variants')}</span>
 		<div class="w-5/6">
 			<div class="flex gap-2 flex-wrap flex-row text-blue-600 text-sm">
-				{#if loading}
-					{#each new Array(numOfVariants) as _}
-						<div class="flex animate-pulse rounded bg-gray-100 p-2">
-							<div class="h-1 mb-1 w-4 rounded-sm bg-gray-300 mr-1"></div>
-							<div class="h-3 w-10 rounded-full bg-gray-300"></div>
-						</div>
-					{/each}
-				{:else}
-					{#each productVariants as variant, idx (idx)}
-						<Button
-							size="sm"
-							variant="outline"
-							onclick={() => toggleSelectVariant(idx)}
-							tabindex={0}
-							disabled={!variant.quantityAvailable}
-							class={`${activeVariantIdx === idx ? '!bg-blue-100 !font-semibold' : ''}`}
-						>
-							{variant.name}
-						</Button>
-					{/each}
-				{/if}
+				{#each productVariants as variant, idx (idx)}
+					<Button
+						size="sm"
+						variant="outline"
+						onclick={() => toggleSelectVariant(idx)}
+						tabindex={0}
+						disabled={!variant.quantityAvailable}
+						class={`${activeVariantIdx === idx ? '!bg-blue-100 !font-semibold' : ''}`}
+					>
+						{variant.name}
+					</Button>
+				{/each}
 			</div>
 		</div>
 	</div>

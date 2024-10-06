@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import type { SocialSize } from '../common';
 	const alertIconSizeMap: Record<SocialSize, number> = {
 		xs: 1,

@@ -1,76 +1,76 @@
 <script lang="ts">
-	import { ChevronLeft, ChevronRight, Icon, Photo } from '$lib/components/icons';
-	import type { ProductMedia } from '$lib/gql/graphql';
+	import { ChevronLeft, ChevronRight } from '$lib/components/icons';
+	import { IconButton } from '$lib/components/ui/Button';
+	import { slideShowManager } from '$lib/stores/ui/slidehow';
 
-	let {
-		allProductMedias,
-		loading
-	}: { allProductMedias: readonly ProductMedia[]; loading: boolean } = $props();
+	let displayMedias = $derived.by(() => {
+		return $slideShowManager.medias.slice(...$slideShowManager.slicing);
+	});
 
-	let selectedMediaIdx = $state(allProductMedias.length ? 0 : null);
+	const handleKeydown = (id: string) => (e: KeyboardEvent) => {
+		if (id !== 'slideShow') return;
 
-	/**
-	 * @param dir - +1 for next, -1 for previous
-	 */
-	const handleSlide = (dir: -1 | 1) => () => {
-		if (selectedMediaIdx === null) return;
-		selectedMediaIdx = (selectedMediaIdx + dir + allProductMedias.length) % allProductMedias.length;
+		if (e.key === 'ArrowLeft') {
+			slideShowManager.handleNavigate(-1);
+		} else if (e.key === 'ArrowRight') {
+			slideShowManager.handleNavigate(1);
+		}
 	};
 </script>
 
+<svelte:window onkeydown={handleKeydown('slideShow')} />
+
 <div class="w-2/5 tablet:w-full flex flex-col gap-2">
-	{#if loading}
-		<div class="p-1 h-full rounded-md w-full bg-white">
-			<div class="bg-gray-300 animate-pulse w-full h-full pt-[100%]"></div>
-		</div>
-		<div class="prd-slide animate-pulse">
-			{#each new Array(5) as _, idx (idx)}
-				<div class="slide-item">
-					<div class="prd-thumbnail bg-gray-300"></div>
+	<div
+		class="prd-display-main"
+		style="background-image: url('{displayMedias[$slideShowManager.activeIndex].url}');"
+	></div>
+
+	<div class="w-full bg-white relative">
+		<div class="w-full bg-gray-100 overflow-hidden">
+			{#each displayMedias as picture, idx (idx)}
+				<div class="w-1/5 p-1 inline-block box-border">
+					<div
+						class="relative bg-white rounded-md overflow-hidden cursor-pointer outline-none"
+						onmouseover={() => slideShowManager.handleFocus(idx)}
+						onfocus={() => slideShowManager.handleFocus(idx)}
+						tabindex="0"
+						role="button"
+					>
+						<div class="relative w-full pb-[100%]">
+							<img
+								src={picture.url}
+								alt={picture.alt}
+								loading="lazy"
+								class="absolute h-full left-0 object-contain object-center right-0 w-full"
+							/>
+						</div>
+
+						<div
+							class={`absolute left-0 top-0 bottom-0 right-0 rounded-md ${idx === $slideShowManager.activeIndex ? 'border-blue-500 border-2' : ''}`}
+						></div>
+					</div>
 				</div>
 			{/each}
 		</div>
-	{:else}
-		{#if selectedMediaIdx !== null}
-			<div
-				class="prd-display-main"
-				style="background-image: url('{allProductMedias[selectedMediaIdx].url}');"
-			></div>
-		{:else}
-			<div class="prd-display-main">
-				<Icon icon={Photo} />
-			</div>
-		{/if}
 
-		<div class="prd-slide">
-			{#each allProductMedias as media, idx (idx)}
-				<button class="slide-item" tabindex="0" onclick={() => (selectedMediaIdx = idx)}>
-					<div class="prd-thumbnail" style="background-image: url('{media.url}');"></div>
-					{#if selectedMediaIdx === idx}
-						<div class="slide-outline"></div>
-					{/if}
-				</button>
-			{/each}
-
-			<button
-				class="left-2 slide-btn"
-				tabindex="0"
-				disabled={selectedMediaIdx === null}
-				onclick={handleSlide(-1)}
-			>
-				<Icon icon={ChevronLeft} />
-			</button>
-
-			<button
-				class="right-2 slide-btn"
-				tabindex="0"
-				disabled={selectedMediaIdx === null}
-				onclick={handleSlide(+1)}
-			>
-				<Icon icon={ChevronRight} />
-			</button>
-		</div>
-	{/if}
+		<IconButton
+			icon={ChevronLeft}
+			size="xs"
+			variant="light"
+			class="absolute left-1.5 top-1/2 -translate-y-1/2 z-10"
+			rounded
+			onclick={() => slideShowManager.handleNavigate(-1)}
+		/>
+		<IconButton
+			icon={ChevronRight}
+			size="xs"
+			variant="light"
+			class="absolute right-1.5 top-1/2 -translate-y-1/2 z-10"
+			rounded
+			onclick={() => slideShowManager.handleNavigate(1)}
+		/>
+	</div>
 </div>
 
 <style lang="postcss">

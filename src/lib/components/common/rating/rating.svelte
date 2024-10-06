@@ -10,7 +10,7 @@
 		total?: number;
 		rating?: number;
 		partialId?: string;
-		icon?: Component;
+		icon?: Component<{ fillPercent: number; id?: string; size: number }>;
 		count?: boolean;
 		children?: Snippet;
 		slotText?: Snippet;
@@ -23,7 +23,7 @@
 		total = 5,
 		rating = 0,
 		partialId = 'partialStar' + randomID(),
-		icon = Star,
+		icon: Icon = Star,
 		children,
 		slotText
 	}: Props = $props();
@@ -44,36 +44,23 @@
 
 <div class={`flex items-center ${className}`}>
 	{#if count}
-		<svelte:component this={icon} fillPercent={100} {size} />
+		<Icon fillPercent={100} {size} />
 		<p class="ms-2 text-sm font-bold text-gray-800 dark:text-white">{rating}</p>
 		{#if children}
 			{@render children()}
 		{/if}
 	{:else}
 		{#each Array(fullStars) as _}
-			<svelte:component this={icon} {size} fillPercent={100} id={fullStarID} />
+			<Icon fillPercent={100} {size} id={fullStarID} />
 		{/each}
 		{#if percentRating}
-			<svelte:component this={icon} {size} fillPercent={percentRating} id={partialId} />
+			<Icon fillPercent={percentRating} {size} id={partialId} />
 		{/if}
 		{#each Array(grayStars) as _}
-			<svelte:component this={icon} {size} fillPercent={0} id={grayStarID} />
+			<Icon fillPercent={0} {size} id={grayStarID} />
 		{/each}
 		{#if slotText}
 			{@render slotText()}
 		{/if}
 	{/if}
 </div>
-
-<!--
-@component
-## Props
-@prop export let class: string = 'flex items-center';
-@prop export let size: number = 24;
-@prop export let total: number = 5;
-@prop export let rating: number = 4;
-@prop export let partialId: string = 'partialStar' + randomID();
-@prop export let children: Snippet = Star;
-@prop export let slotText?: Snippet;
-@prop export let count: boolean = false;
--->

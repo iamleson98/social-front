@@ -1,8 +1,4 @@
 <script lang="ts">
-	import { flip } from 'svelte/animate';
-	import { cubicInOut } from 'svelte/easing';
-	import { crossfade } from 'svelte/transition';
-
 	type Picture = {
 		src: string;
 		alt: string;
@@ -57,23 +53,7 @@
 	let slicing = $state.raw([0, Math.min(5, allPictures.length)]);
 	let activeIndex = $state(0);
 
-	const [send, receive] = crossfade({
-		fallback(node, params) {
-			const style = getComputedStyle(node);
-			const transform = style.transform === 'none' ? '' : style.transform;
-
-			return {
-				duration: 300, // Shortened duration for smoother animation
-				easing: cubicInOut,
-				css: (t) => {
-					return `transform: ${transform} scale(${t});
-					opacity: ${t}`;
-				}
-			};
-		}
-	});
-
-	const handleNavigateClick = (dir: 1 | -1) => () => {
+	const handleNavigateClick = (dir: 1 | -1) => async () => {
 		const nextIndex = activeIndex + dir;
 		if (nextIndex < 0) {
 			if (slicing[0] === 0) return;
@@ -85,7 +65,6 @@
 			slicing = slicing.map((item) => item + 1);
 			return;
 		}
-
 		activeIndex = nextIndex;
 	};
 
@@ -106,12 +85,7 @@
 <div class="max-w-lg mt-16">
 	<div class="w-full bg-gray-100 overflow-hidden">
 		{#each allPictures.slice(...slicing) as picture, idx (picture.id)}
-			<div
-				class="w-1/5 p-1 inline-block box-border"
-				in:receive={{ key: picture.id }}
-				out:send={{ key: picture.id }}
-				animate:flip
-			>
+			<div class="w-1/5 p-1 inline-block box-border">
 				<div
 					class="relative bg-white rounded-md overflow-hidden cursor-pointer outline-none"
 					onmouseover={() => handleMouseOver(idx)}

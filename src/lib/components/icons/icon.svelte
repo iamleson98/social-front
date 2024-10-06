@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { SVGAttributes } from 'svelte/elements';
-	import type { IconType } from '.';
+	import type { Component } from 'svelte';
 
 	interface Props {
-		icon: IconType;
+		icon: Component;
 		title?: string;
 		flipped?: boolean;
 		class?: string;
@@ -11,7 +11,7 @@
 
 	let {
 		class: className,
-		icon,
+		icon: Icon,
 		title,
 		width = '1rem',
 		height = '1rem',
@@ -33,5 +33,5 @@
 	{#if title}
 		<title>{title}</title>
 	{/if}
-	<svelte:component this={icon} />
+	<Icon />
 </svg>

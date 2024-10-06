@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import { debounceInput, type InputDebounceOpts } from '$lib/actions/input-debounce';
 
 	export type Props = {

@@ -257,7 +257,7 @@ export const PRODUCT_DETAIL_QUERY_STORE = gql`
 				name
 				level
 				slug
-				ancestors(first: 10) {
+				ancestors(first: 20) {
 					edges {
 						node {
 							id
@@ -307,10 +307,26 @@ export const PRODUCT_DETAIL_QUERY_STORE = gql`
 				name
 			}
 			variants {
-				# will be fetched separately
 				id
 				name
+				sku
 				quantityAvailable
+				quantityLimitPerCustomer
+				margin
+				weight {
+					unit
+					value
+				}
+				preorder {
+					globalThreshold
+					globalSoldUnits
+					endDate
+				}
+				media {
+					url(format: WEBP, size: 500)
+					alt
+					id
+				}
 				pricing {
 					price {
 						gross {

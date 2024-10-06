@@ -13,7 +13,7 @@
 		children?: Snippet;
 		ref?: HTMLButtonElement | null;
 		/** default `square` */
-		shape?: 'square' | 'circle';
+		rounded?: boolean;
 	} & HTMLButtonAttributes;
 
 	let {
@@ -23,14 +23,14 @@
 		class: className = $bindable(''),
 		icon,
 		ref = $bindable(),
-		shape = 'square',
+		rounded = false,
 		children,
 		...rest
 	}: Props = $props();
 </script>
 
 <button
-	class={`icon-btn icon-btn-${size} ${buttonVariantColorsMap[variant][color]} ${className} ${shape === 'square' ? 'rounded-md' : 'rounded-full'}`}
+	class={`icon-btn icon-btn-${size} ${buttonVariantColorsMap[variant][color]} ${className} ${rounded ? 'rounded-full' : 'rounded-md'}`}
 	bind:this={ref}
 	{...rest}
 >

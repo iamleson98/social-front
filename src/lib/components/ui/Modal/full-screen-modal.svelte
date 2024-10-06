@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	const modalWidthmap: Record<SocialSize, string> = {
 		xs: 'w-[48rem]',
 		sm: 'w-[]',

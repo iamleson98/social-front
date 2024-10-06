@@ -2,13 +2,7 @@
 	import type { LayoutServerData } from './$types';
 	import ProductMediaSlideShow from '$lib/components/pages/products/product-slide-show-pannel.svelte';
 	import ProductPricingPanel from '$lib/components/pages/products/product-pricing-pannel.svelte';
-	import {
-		type Category,
-		type ProductMedia,
-		type ProductVariant,
-		type Query,
-		type QueryProductVariantsArgs
-	} from '$lib/gql/graphql';
+	import { type ProductMedia } from '$lib/gql/graphql';
 	import { page } from '$app/stores';
 	import {
 		Icon,
@@ -22,14 +16,10 @@
 	} from '$lib/components/icons';
 	import { afterNavigate, disableScrollHandling } from '$app/navigation';
 	import { tClient } from '$i18n';
-	import { AppRoute, getCookieByKey } from '$lib/utils';
-	import { graphqlClient } from '$lib/client';
-	import { operationStore, PRODUCT_VARIANTS_QUERY_STORE } from '$lib/stores/api';
-	import { preHandleGraphqlResult } from '$lib/utils/utils';
-	import { onMount, tick, type Snippet } from 'svelte';
+	import { AppRoute } from '$lib/utils';
+	import { onMount, type Snippet } from 'svelte';
 	import Button from '$lib/components/ui/Button/Button.svelte';
-	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
-	import { CHANNEL_KEY, defaultChannel } from '$lib/utils/consts';
+	import { slideShowManager } from '$lib/stores/ui/slidehow';
 
 	interface Props {
 		data: LayoutServerData;
@@ -73,65 +63,36 @@
 	];
 
 	const {
-		product: { media: medias, category, channel, variants, ...productInformation },
+		product: { media, category, channel, variants, ...productInformation },
 		productJsonLd
 	} = data;
 
-	/** wait for product variants fully fetched, then display image slideshow */
-	let allProductMedias = $state.raw(medias || []);
-	let productVariants = $state.raw<ProductVariant[]>([]);
-	/** list of categories to display in breadcrum section */
 	let categories = $derived.by(() => {
 		if (!category) return [];
 
 		const { ancestors, ...rest } = category;
+		if (!ancestors) return [rest];
 
 		let accumulateCategories = [rest];
-		if (ancestors && ancestors.edges.length) {
-			accumulateCategories = accumulateCategories.concat(ancestors.edges.map((edge) => edge.node));
-
-			accumulateCategories.sort((a, b) => a.level - b.level);
-		}
-
-		return accumulateCategories;
-	});
-
-	const variantsStore = operationStore<Pick<Query, 'productVariants'>, QueryProductVariantsArgs>({
-		kind: 'query',
-		query: PRODUCT_VARIANTS_QUERY_STORE,
-		context: { requestPolicy: 'network-only' },
-		variables: {
-			first: 20,
-			channel: clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug),
-			ids: variants?.map((variant) => variant.id) || []
-		},
-		pause: !variants || !variants.length
+		return accumulateCategories
+			.concat(ancestors.edges.map((edge) => edge.node))
+			.sort((a, b) => a.level - b.level);
 	});
 
 	onMount(() => {
-		if (!variants?.length) return;
+		let allProductMedias: ProductMedia[] = [];
 
-		variantsStore.resume();
-
-		const unsub = variantsStore.subscribe((result) => {
-			if (result.data) {
-				if (preHandleGraphqlResult(result)) return;
-
-				if (result.data.productVariants?.edges) {
-					let variantMedias: ProductMedia[] = [];
-					let fullVariants: ProductVariant[] = [];
-
-					result.data.productVariants.edges.forEach(({ node }) => {
-						fullVariants.push(node);
-						if (node.media) variantMedias = variantMedias.concat(node.media);
-					});
-					allProductMedias = [...allProductMedias, ...variantMedias];
-					productVariants = fullVariants;
-				}
+		if (media) allProductMedias = allProductMedias.concat(media);
+		if (variants?.length) {
+			for (const variant of variants) {
+				const variantMedias = variant.media;
+				if (variantMedias) allProductMedias = allProductMedias.concat(variantMedias);
 			}
-		});
+		}
 
-		return () => unsub?.();
+		slideShowManager.setMedias(allProductMedias);
+
+		return slideShowManager.reset;
 	});
 </script>
 
@@ -163,13 +124,8 @@
 	</nav>
 
 	<div class="flex flex-row tablet:flex-col tablet:flex-wrap gap-2 w-full mb-2">
-		<ProductMediaSlideShow {allProductMedias} loading={$variantsStore.fetching} />
-		<ProductPricingPanel
-			{productInformation}
-			{productVariants}
-			loading={$variantsStore.fetching}
-			numOfVariants={variants?.length || 0}
-		/>
+		<ProductMediaSlideShow />
+		<ProductPricingPanel {productInformation} productVariants={variants || []} />
 	</div>
 
 	<!-- product more details -->

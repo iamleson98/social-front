@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	export enum RenderStrategy {
 		Unmount,
 		Hidden
@@ -66,8 +66,6 @@
 			{@render children()}
 		</svelte:element>
 	{:else}
-		<!-- <svelte:component this={as} bind:el {use}> -->
-			{@render children()}
-		<!-- </svelte:component> -->
+		{@render children()}
 	{/if}
 {/if}
