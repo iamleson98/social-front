@@ -6,7 +6,8 @@
 		type Category,
 		type ProductMedia,
 		type ProductVariant,
-		type Query
+		type Query,
+		type QueryProductVariantsArgs
 	} from '$lib/gql/graphql';
 	import { page } from '$app/stores';
 	import {
@@ -21,12 +22,14 @@
 	} from '$lib/components/icons';
 	import { afterNavigate, disableScrollHandling } from '$app/navigation';
 	import { tClient } from '$i18n';
-	import { AppRoute } from '$lib/utils';
+	import { AppRoute, getCookieByKey } from '$lib/utils';
 	import { graphqlClient } from '$lib/client';
-	import { PRODUCT_VARIANTS_QUERY_STORE } from '$lib/stores/api';
+	import { operationStore, PRODUCT_VARIANTS_QUERY_STORE } from '$lib/stores/api';
 	import { preHandleGraphqlResult } from '$lib/utils/utils';
 	import { onMount, tick, type Snippet } from 'svelte';
 	import Button from '$lib/components/ui/Button/Button.svelte';
+	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
+	import { CHANNEL_KEY, defaultChannel } from '$lib/utils/consts';
 
 	interface Props {
 		data: LayoutServerData;
@@ -75,52 +78,60 @@
 	} = data;
 
 	/** wait for product variants fully fetched, then display image slideshow */
-	let findingVariants = $state(true);
 	let allProductMedias = $state.frozen(medias || []);
 	let productVariants = $state.frozen<ProductVariant[]>([]);
-
 	/** list of categories to display in breadcrum section */
-	let categories = $state.frozen<Category[]>([]);
+	let categories = $derived.by(() => {
+		if (!category) return [];
 
-	if (category) {
 		const { ancestors, ...rest } = category;
 
 		let accumulateCategories = [rest];
 		if (ancestors && ancestors.edges.length) {
-			accumulateCategories = [...accumulateCategories, ...ancestors.edges.map((edge) => edge.node)];
+			accumulateCategories = accumulateCategories.concat(ancestors.edges.map((edge) => edge.node));
+
 			accumulateCategories.sort((a, b) => a.level - b.level);
 		}
 
-		categories = accumulateCategories;
-	}
+		return accumulateCategories;
+	});
 
-	// full fetching product variants
+	const variantsStore = operationStore<Pick<Query, 'productVariants'>, QueryProductVariantsArgs>({
+		kind: 'query',
+		query: PRODUCT_VARIANTS_QUERY_STORE,
+		context: { requestPolicy: 'network-only' },
+		variables: {
+			first: 20,
+			channel: clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug),
+			ids: variants?.map((variant) => variant.id) || []
+		},
+		pause: !variants || !variants.length
+	});
+
 	onMount(() => {
-		if (variants && variants.length) {
-			const { unsubscribe } = graphqlClient
-				.query<Pick<Query, 'productVariants'>>(PRODUCT_VARIANTS_QUERY_STORE, {
-					ids: variants.map((variant) => variant.id),
-					channel,
-					first: 20
-				})
-				.subscribe((result) => {
-					if (preHandleGraphqlResult(result)) return;
+		if (!variants?.length) return;
 
+		variantsStore.resume();
+
+		const unsub = variantsStore.subscribe((result) => {
+			if (result.data) {
+				if (preHandleGraphqlResult(result)) return;
+
+				if (result.data.productVariants?.edges) {
 					let variantMedias: ProductMedia[] = [];
 					let fullVariants: ProductVariant[] = [];
 
-					result.data?.productVariants?.edges.forEach(({ node }) => {
+					result.data.productVariants.edges.forEach(({ node }) => {
 						fullVariants.push(node);
 						if (node.media) variantMedias = variantMedias.concat(node.media);
 					});
 					allProductMedias = [...allProductMedias, ...variantMedias];
 					productVariants = fullVariants;
-					findingVariants = false;
-					tick();
-				});
+				}
+			}
+		});
 
-			return unsubscribe;
-		}
+		return () => unsub?.();
 	});
 </script>
 
@@ -152,11 +163,11 @@
 	</nav>
 
 	<div class="flex flex-row tablet:flex-col tablet:flex-wrap gap-2 w-full mb-2">
-		<ProductMediaSlideShow {allProductMedias} loading={findingVariants} />
+		<ProductMediaSlideShow {allProductMedias} loading={$variantsStore.fetching} />
 		<ProductPricingPanel
 			{productInformation}
 			{productVariants}
-			loading={findingVariants}
+			loading={$variantsStore.fetching}
 			numOfVariants={variants?.length || 0}
 		/>
 	</div>

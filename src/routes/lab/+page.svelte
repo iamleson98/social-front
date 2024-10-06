@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { Select, type SelectOption } from '$lib/components/ui/select';
+	import SlideShow from '$lib/components/pages/lab/slide-show.svelte';
+import { Select, type SelectOption } from '$lib/components/ui/select';
 
 	const options: SelectOption[] = [
 		{ value: '1', label: 'Option 1' },
@@ -10,4 +11,4 @@
 	];
 </script>
 
-<Select {options} size="sm" />
+<SlideShow />

@@ -1,7 +1,8 @@
 import type { ActionReturn } from 'svelte/action';
 
 export type Shortcut = {
-  key: string;
+  /** for more, please add to this type  */
+  key: 'ArrowLeft' | 'ArrowRight' | 'ArrowUp' | 'ArrowDown';
   alt?: boolean;
   ctrl?: boolean;
   shift?: boolean;

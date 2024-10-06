@@ -88,7 +88,7 @@
 		@apply rounded bg-contain bg-no-repeat bg-center pt-[100%];
 	}
 	.prd-slide {
-		@apply relative w-full bg-white flex items-center rounded-md border min-h-20;
+		@apply relative w-full bg-white overflow-x-hidden rounded-md border min-h-20;
 	}
 	.slide-btn {
 		@apply rounded-full w-7 h-7 absolute top-1/2 -translate-y-1/2 bg-gray-100 transform hover:bg-gray-200 flex items-center justify-center cursor-pointer;

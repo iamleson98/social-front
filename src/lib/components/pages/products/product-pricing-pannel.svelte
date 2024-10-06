@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { tClient } from '$i18n';
 	import {
-		Icon,
 		MapPin,
 		Minus,
 		Plus,
