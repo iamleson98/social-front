@@ -64,7 +64,7 @@
 		bind:value
 		use:shortcuts={selectShortcutOptions}
 		use:debounceInput={inputDebounceOption}
-		class={`${className} border text-sm rounded-lg w-full block p-2.5 input-bg-${variant} ${startIcon ? 'ps-8' : ''} input-${size}`}
+		class={`${className} border text-sm rounded-lg block p-2.5 input-bg-${variant} ${startIcon ? 'ps-8' : ''} input-${size}`}
 		{...rest}
 	/>
 

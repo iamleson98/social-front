@@ -25,7 +25,7 @@
 	let { productCategory }: Props = $props();
 	let loading = $state(true);
 	let attributesOfGivenCategory = $state.raw<AttributeCountableConnection | null | undefined>();
-	const MAX_FETCHING_BATCH = 30;
+	const MAX_FETCHING_BATCH = 50;
 
 	const fetchAttributes = (categoryId: string) => {
 		const variables: AttributesVariable = {
@@ -75,16 +75,14 @@
 					<span>{attributeEdge.node.name}</span>
 				</div>
 				<div class="w-3/4">
-					{#if attributeEdge.node.inputType === AttributeInputTypeEnum.Dropdown}
+					{#if attributeEdge.node.inputType === AttributeInputTypeEnum.Dropdown && attributeEdge.node.choices}
 						{@const optionChoices = attributeEdge.node.choices}
 						<Select
-							options={optionChoices
-								? optionChoices.edges.map((edge) => ({
-										value: edge.node.id,
-										label: edge.node.name || edge.node.id
-									}))
-								: []}
-							onSelect={console.log}
+							options={attributeEdge.node.choices.edges.map((edge) => ({
+								value: edge.node.id,
+								label: edge.node.name || edge.node.id
+							}))}
+							value={undefined}
 						/>
 					{/if}
 				</div>

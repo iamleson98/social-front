@@ -63,10 +63,28 @@ const productSlideShowStoreManager = () => {
     if (index !== state.activeIndex) store.set({ ...state, activeIndex: index });
   };
 
+  const setActiveUrl = async (url: string) => {
+    // const state = get(store);
+    // const index = state.medias.findIndex(media => media.url === url);
+    // if (index < 0) return;
+
+    // if (index >= state.slicing[0] && index < state.slicing[1])
+    //   store.set({ ...state, activeIndex: index });
+    // else if (index < state.slicing[0]) {
+    //   const delta = state.slicing[0] - index;
+    //   store.set({ ...state, slicing: [index, state.slicing[1] - delta], activeIndex: index });
+    // } else {
+    //   const delta = index - state.slicing[1] + 1;
+    //   const newSlicing = [state.slicing[0] + delta, index + 1];
+    //   store.set({ ...state, activeIndex: newSlicing[1] - newSlicing[0] - 1, slicing: newSlicing });
+    // }
+  };
+
   return {
     setMedias,
     handleNavigate,
     handleFocus,
+    setActiveUrl,
     subscribe: store.subscribe,
     reset: () => store.set(defaultState),
   };

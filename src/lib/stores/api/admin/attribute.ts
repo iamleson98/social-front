@@ -5,7 +5,9 @@ export type AttributesVariable = {
   first: number;
   channel: string;
   where?: AttributeWhereInput;
+  /** number of choices to query for given attribute  */
   choiceFirst: number;
+  /** cursor to query choices after */
   choiceAfter?: string;
 };
 

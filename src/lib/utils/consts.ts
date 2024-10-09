@@ -1,4 +1,5 @@
 import { CircleCheckFilled, CurrencyDollar, CurrencyDong, ExclamationCircleFilled, InfoCircleFilled, InfoTriangleFilled, type IconType } from "$lib/components/icons";
+import { CountryCode } from "$lib/gql/graphql";
 
 /**
  * all server methods MUST return this type, for consistency
@@ -31,6 +32,7 @@ export const CSRF_TOKEN_KEY = "sitename_csrf";
 export const REFRESH_TOKEN_KEY = "refreshToken";
 export const CHANNEL_KEY = "channel";
 export const LANGUAGE_KEY = "language";
+export const COUNTRY_CODE_KEY = "country";
 
 
 export type Channel = {
@@ -40,6 +42,7 @@ export type Channel = {
   slug: string;
   code: string;
   currencySymbol: Currency;
+  countryCode: CountryCode;
 };
 
 export type Currency = '$' | '₫';
@@ -55,7 +58,8 @@ export const defaultChannel: Channel = {
   locale: 'en',
   slug: 'default-channel',
   code: 'en-US',
-  currencySymbol: '$'
+  currencySymbol: '$',
+  countryCode: CountryCode.Us,
 }
 
 export const vnChannel: Channel = {
@@ -64,7 +68,8 @@ export const vnChannel: Channel = {
   locale: 'vi',
   slug: 'vn',
   code: 'vi-VN',
-  currencySymbol: '₫'
+  currencySymbol: '₫',
+  countryCode: CountryCode.Vn,
 }
 
 export const channels = [

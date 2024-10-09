@@ -1,6 +1,6 @@
-import type { Product as TypeProduct, Query } from "$lib/gql/graphql";
+import { type Product as TypeProduct, type Query } from "$lib/gql/graphql";
 import { PRODUCT_DETAIL_QUERY_STORE } from "$lib/stores/api/product";
-import { CHANNEL_KEY, defaultChannel, HTTPStatusBadRequest, HTTPStatusServerError } from "$lib/utils/consts";
+import { CHANNEL_KEY, COUNTRY_CODE_KEY, defaultChannel, HTTPStatusBadRequest, HTTPStatusServerError, vnChannel } from "$lib/utils/consts";
 import { error } from "@sveltejs/kit";
 import { performBackendOperation } from "$lib/client";
 import type { LayoutServerLoad } from "./$types";
@@ -23,12 +23,14 @@ export const load: LayoutServerLoad = async (event) => {
 	const variables = {
 		slug: decodeURIComponent(slug),
 		channel,
+		countryCode: event.cookies.get(COUNTRY_CODE_KEY) || vnChannel.countryCode,
 	};
 
 	const productDetailResult = await performBackendOperation<Pick<Query, 'product'>>(
 		'query',
 		PRODUCT_DETAIL_QUERY_STORE,
-		variables, event,
+		variables,
+		event,
 		{ requestPolicy: 'network-only' },
 	);
 	if (productDetailResult.error) {

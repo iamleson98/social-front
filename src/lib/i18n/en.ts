@@ -85,6 +85,7 @@ export default {
 		subCategories: 'Sub Categories',
 		detail: 'Detail',
 		noVote: 'No vote yet',
+		noDescription: 'No description yet',
 	},
 	error: {
 		invalidSlug: 'Invalid slug value',

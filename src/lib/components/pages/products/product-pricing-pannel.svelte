@@ -6,7 +6,7 @@
 	import { userStore } from '$lib/stores/auth';
 	import { defaultChannel, MAX_RATING } from '$lib/utils/consts';
 	import { formatMoney } from '$lib/utils/utils';
-	import { fade } from 'svelte/transition';
+	import { fade, fly } from 'svelte/transition';
 	import { Rating } from '$lib/components/common/rating';
 	import { cartItemStore } from '$lib/stores/app';
 	import { toastStore } from '$lib/stores/ui/toast';
@@ -26,17 +26,29 @@
 
 	/** user selected variant quantity */
 	let quantitySelected = $state(1);
+	let selectedVariant = $state<ProductVariant>();
 
-	const toggleSelectVariant = (idx: number) => {
-		activeVariantIdx = activeVariantIdx === idx ? null : idx;
+	let displayPrice = $derived.by(() => {
+		if (!selectedVariant)
+			return formatMoney(
+				productInformation.pricing?.priceRange?.start?.gross.currency || defaultChannel.currency,
+				productInformation.pricing?.priceRange?.start?.gross.amount || 0,
+				productInformation.pricing?.priceRange?.stop?.gross.amount
+			);
+
+		return formatMoney(
+			selectedVariant.pricing?.price?.gross.currency || defaultChannel.currency,
+			selectedVariant.pricing?.price?.gross.amount || 0
+		);
+	});
+
+	const toggleSelectVariant = (variant: ProductVariant) => {
+		if (!selectedVariant) {
+			selectedVariant = variant;
+		} else {
+			selectedVariant = selectedVariant.id === variant.id ? undefined : variant;
+		}
 	};
-
-	/** track selected variant, 0 based */
-	let activeVariantIdx = $state<number | null>(null);
-
-	let variantQuantityAvailable = $derived.by(() =>
-		activeVariantIdx != null ? productVariants[activeVariantIdx]?.quantityAvailable : null
-	);
 
 	$effect(() => {
 		if ($userStore && $userStore.addresses) {
@@ -48,7 +60,7 @@
 	});
 
 	const handleAddToCart = async () => {
-		if (activeVariantIdx === null) {
+		if (!selectedVariant) {
 			toastStore.send({
 				variant: 'warning',
 				message: tClient('error.noVariantSelected')
@@ -61,7 +73,7 @@
 					productName: productInformation.name,
 					quantity: quantitySelected,
 					productSlug: productInformation.slug,
-					variantId: productVariants[activeVariantIdx as number].id,
+					variantId: selectedVariant!.id,
 					previewImage: productInformation.thumbnail ? productInformation.thumbnail.url : '',
 					previewImageAlt: productInformation.thumbnail ? productInformation.thumbnail.alt : ''
 				})
@@ -92,9 +104,12 @@
 		></Rating>
 	</div>
 
-	<div class="mb-5 bg-gray-50 rounded p-3">
+	<div class="mb-5 bg-gray-50 rounded px-5 py-2">
 		<!-- price -->
-		<div class="flex items-center gap-2">
+		<div class="">
+			<div class="text-blue-700 font-semibold text-xl mb-1">
+				{displayPrice}
+			</div>
 			{#if productInformation.pricing?.discount}
 				{@const {
 					pricing: {
@@ -111,14 +126,6 @@
 					text={formatMoney(currency, amount)}
 				/>
 			{/if}
-
-			<div class="text-blue-700 font-semibold text-xl mb-1">
-				{formatMoney(
-					productInformation.pricing?.priceRange?.start?.gross.currency || defaultChannel.currency,
-					productInformation.pricing?.priceRange?.start?.gross.amount || 0,
-					productInformation.pricing?.priceRange?.stop?.gross.amount
-				)}
-			</div>
 		</div>
 	</div>
 
@@ -140,10 +147,11 @@
 					<Button
 						size="sm"
 						variant="outline"
-						onclick={() => toggleSelectVariant(idx)}
+						onclick={() => toggleSelectVariant(variant)}
 						tabindex={0}
 						disabled={!variant.quantityAvailable}
-						class={`${activeVariantIdx === idx ? '!bg-blue-100 !font-semibold' : ''}`}
+						class={`${selectedVariant?.id === variant.id ? '!bg-blue-100 !font-semibold' : ''}`}
+						color="indigo"
 					>
 						{variant.name}
 					</Button>
@@ -159,30 +167,32 @@
 			<div class="flex items-center gap-1">
 				<IconButton
 					icon={Minus}
-					color="blue"
+					color="red"
 					variant="light"
 					size="sm"
 					onclick={() => quantitySelected--}
+					disabled
 				/>
 				<Input
 					size="sm"
 					type="number"
-					max={variantQuantityAvailable}
-					class="w-14 text-center inline-flex"
+					min={1}
+					max={selectedVariant?.quantityAvailable}
+					class="text-center inline-flex w-20"
 					value={quantitySelected < 1 ? 1 : quantitySelected}
 				/>
 				<IconButton
 					icon={Plus}
-					color="blue"
+					color="indigo"
 					variant="light"
 					size="sm"
 					onclick={() => quantitySelected++}
 				/>
 			</div>
 			<!-- quantity available -->
-			{#if variantQuantityAvailable != null}
+			{#if selectedVariant}
 				<span class="text-gray-600 text-xs ml-2" transition:fade={{ duration: 100 }}>
-					{tClient('product.variantAvailable', { quantity: variantQuantityAvailable })}
+					{tClient('product.variantAvailable', { quantity: selectedVariant.quantityAvailable })}
 				</span>
 			{/if}
 		</div>
@@ -193,11 +203,11 @@
 		<Button
 			variant="filled"
 			type="submit"
-			color="blue"
+			color="indigo"
 			startIcon={ShoppingBagPlus}
 			onclick={handleAddToCart}
 			fullWidth
-			size="sm"
+			size="md"
 		>
 			<span> {tClient('product.addToCart')} </span>
 		</Button>
@@ -207,7 +217,7 @@
 			startIcon={Heart}
 			onclick={handleAddToCart}
 			fullWidth
-			size="sm"
+			size="md"
 			color="gray"
 		>
 			<span> {tClient('product.addToCart')} </span>

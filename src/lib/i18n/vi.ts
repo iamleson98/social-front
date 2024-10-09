@@ -85,6 +85,7 @@ export default {
 		subCategories: 'Danh mục con',
 		detail: 'Chi tiết',
 		noVote: 'Chưa có đánh giá',
+		noDescription: 'Chưa có mô tả',
 	},
 	error: {
 		invalidSlug: 'Giá trị slug không hợp lệ',

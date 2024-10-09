@@ -237,7 +237,7 @@ export const CATEGORY_DETAIL_QUERY_STORE = gql`
 `;
 
 export const PRODUCT_DETAIL_QUERY_STORE = gql`
-	query Product($slug: String!, $channel: String!) {
+	query Product($slug: String!, $channel: String!, $countryCode: CountryCode) {
 		product(slug: $slug, channel: $channel) {
 			id
 			name
@@ -247,6 +247,7 @@ export const PRODUCT_DETAIL_QUERY_STORE = gql`
 			rating
 			created
 			isAvailableForPurchase
+			availableForPurchaseAt
 			channel # same as $channel
 			thumbnail(size: 200, format: WEBP) {
 				url
@@ -310,8 +311,9 @@ export const PRODUCT_DETAIL_QUERY_STORE = gql`
 				id
 				name
 				sku
-				quantityAvailable
+				quantityAvailable(countryCode: $countryCode)
 				quantityLimitPerCustomer
+				# quantityOrdered
 				margin
 				weight {
 					unit
@@ -328,7 +330,14 @@ export const PRODUCT_DETAIL_QUERY_STORE = gql`
 					id
 				}
 				pricing {
+					onSale
 					price {
+						gross {
+							currency
+							amount
+						}
+					}
+					priceUndiscounted {
 						gross {
 							currency
 							amount
