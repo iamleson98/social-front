@@ -51,6 +51,9 @@ export default {
 		discountRange: 'Khoảng giảm giá',
 		packaging: 'Đóng gói',
 		preorder: 'Đặt trước',
+		ok: 'Đồng ý',
+		cancel: 'Hủy',
+		confirmRemoveProduct: 'Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?',
 	},
 	product: {
 		chooseAddress: 'Vui lòng chọn địa chỉ',

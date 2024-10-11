@@ -1,11 +1,5 @@
-<script lang="ts">
-	import type { HTMLButtonAttributes } from 'svelte/elements';
-	import type { SocialColor, SocialRadius, SocialSize } from '../common';
-	import { buttonVariantColorsMap, type ButtonVariant } from './button.types';
-	import { type Snippet } from 'svelte';
-	import { Icon, type IconType } from '$lib/components/icons';
-
-	type Props = {
+<script lang="ts" module>
+	export type Props = {
 		variant?: ButtonVariant;
 		ref?: HTMLButtonElement;
 		type?: 'button' | 'submit' | 'reset';
@@ -15,14 +9,21 @@
 		radius?: SocialRadius;
 		loading?: boolean;
 		fullWidth?: boolean;
-		children: Snippet;
+		children?: Snippet;
 		startIcon?: IconType;
 		endIcon?: IconType;
 	} & HTMLButtonAttributes;
+</script>
+
+<script lang="ts">
+	import type { HTMLButtonAttributes } from 'svelte/elements';
+	import type { SocialColor, SocialRadius, SocialSize } from '../common';
+	import { buttonVariantColorsMap, type ButtonVariant } from './button.types';
+	import { type Snippet } from 'svelte';
+	import { Icon, type IconType } from '$lib/components/icons';
 
 	type IconProps = {
 		icon?: IconType;
-		pos: 'start' | 'end';
 	};
 
 	let {
@@ -35,18 +36,21 @@
 		radius = 'rounded-md',
 		class: className = '',
 		loading = false,
-		disabled = false,
 		fullWidth = false,
-		children,
+		children = fakeChildren,
 		startIcon,
 		endIcon,
 		...restProps
 	}: Props = $props();
 </script>
 
-{#snippet buttonIcon({ icon, pos }: IconProps)}
+{#snippet fakeChildren()}
+	<div></div>
+{/snippet}
+
+{#snippet buttonIcon({ icon }: IconProps)}
 	{#if icon}
-		<span class={`text-xl ${pos === 'start' ? 'mr-2' : 'ml-2'}`}>
+		<span class={`text-xl`}>
 			<Icon {icon} />
 		</span>
 	{/if}
@@ -57,27 +61,25 @@
 	class:uppercase={upper}
 	class:w-full={fullWidth}
 	{type}
-	{disabled}
 	bind:this={ref}
 	{...restProps}
 >
 	{#if loading}
 		<span class="loading loading-dots loading-sm"></span>
 	{:else}
-		{@render buttonIcon({ icon: startIcon, pos: 'start' })}
+		{@render buttonIcon({ icon: startIcon })}
 		{@render children()}
-		{@render buttonIcon({ icon: endIcon, pos: 'end' })}
+		{@render buttonIcon({ icon: endIcon })}
 	{/if}
 </button>
 
 <style lang="postcss">
 	.button {
-		@apply cursor-pointer relative outline-none select-none appearance-none text-center inline-flex justify-center items-center leading-none grow-0 font-medium focus:ring-4;
+		@apply cursor-pointer !outline-none !select-none gap-1.5 appearance-none text-center inline-flex justify-center items-center leading-none grow-0 font-medium focus:ring-4;
 		-webkit-tap-highlight-color: transparent;
 	}
-	.button:disabled,
-	button:disabled {
-		@apply text-gray-400 bg-gray-200 !cursor-not-allowed !select-none !pointer-events-none !touch-none;
+	.button[disabled] {
+		@apply !text-gray-500 !bg-gray-200 !cursor-not-allowed !pointer-events-none !touch-none !border-none;
 	}
 	.button-xs {
 		@apply text-xs h-6 min-h-6 px-2;

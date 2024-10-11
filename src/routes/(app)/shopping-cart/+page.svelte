@@ -4,17 +4,20 @@
 	import { Button } from '$lib/components/ui';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
+	import { AlertModal } from '$lib/components/ui/Modal';
 	import { cartItemStore } from '$lib/stores/app';
 	import { AppRoute } from '$lib/utils';
 
-	const modifyCartitemValue = async (itemIdx: number, newQuantity: number) => {
+	let openModal = $state(false);
+
+	const modifyCartitemValue = async (itemIdx: number, delta: -1 | 1) => {
 		cartItemStore.update((items) => {
 			return items.map((item, idx) => {
 				if (idx !== itemIdx) return item;
 
 				return {
 					...item,
-					quantity: newQuantity
+					quantity: item.quantity + delta
 				};
 			});
 		});
@@ -48,15 +51,16 @@
 							<IconButton
 								icon={Minus}
 								size="sm"
+								color="red"
 								variant="light"
-								onclick={() => modifyCartitemValue(idx, item.quantity - 1)}
+								onclick={() => modifyCartitemValue(idx, -1)}
 							/>
-							<Input size="sm" bind:value={item.quantity} type="number" class="w-16" />
+							<Input size="sm" bind:value={item.quantity} min={0} type="number" class="!w-16" />
 							<IconButton
 								icon={Plus}
 								size="sm"
 								variant="light"
-								onclick={() => modifyCartitemValue(idx, item.quantity + 1)}
+								onclick={() => modifyCartitemValue(idx, 1)}
 							/>
 						</div>
 						<span class="text-gray-800 font-bold">$1,499</span>
@@ -130,7 +134,7 @@
 	</div>
 
 	<!-- recommend section -->
-	<div class="mt-6">
+	<!-- <div class="mt-6">
 		<h3 class="text-lg font-semibold tet-gray-800">People also bought</h3>
 		<div class="mt-6 grid grid-cols-3 gap-4 sm:mt-8">
 			<div class="space-y-6 overflow-hidden rounded-md-lg bg-white p-6">
@@ -212,5 +216,16 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	</div> -->
 </div>
+
+<AlertModal
+	open={openModal}
+	onCancel={() => (openModal = false)}
+	cancelText={tClient('common.no')}
+	okText={tClient('common.yes')}
+>
+	<div>
+		{tClient('common.confirmRemoveProduct')}
+	</div>
+</AlertModal>

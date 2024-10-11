@@ -231,7 +231,7 @@ export const clamp = (value: number, min: number, max: number): number => {
 	return Math.min(Math.max(value, min), max);
 }
 
-export const classNames = (classes: Record<string, boolean>): string => {	
+export const classNames = (classes: Record<string, boolean>): string => {
 	let result = '';
 
 	for (const key in classes) {
@@ -242,3 +242,5 @@ export const classNames = (classes: Record<string, boolean>): string => {
 
 	return result.trim();
 }
+
+export const noop = () => { };

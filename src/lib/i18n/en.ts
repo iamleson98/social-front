@@ -51,6 +51,9 @@ export default {
 		discountRange: 'Discount range',
 		packaging: 'Packaging',
 		preorder: 'Preorder',
+		ok: 'OK',
+		cancel: 'Cancel',
+		confirmRemoveProduct: 'Are you sure you want to remove this product from cart?',
 	},
 	product: {
 		chooseAddress: 'Please choose address',

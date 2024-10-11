@@ -6,7 +6,7 @@
 	import { userStore } from '$lib/stores/auth';
 	import { defaultChannel, MAX_RATING } from '$lib/utils/consts';
 	import { formatMoney } from '$lib/utils/utils';
-	import { fade, fly } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
 	import { Rating } from '$lib/components/common/rating';
 	import { cartItemStore } from '$lib/stores/app';
 	import { toastStore } from '$lib/stores/ui/toast';
@@ -21,8 +21,6 @@
 	};
 
 	let { productInformation, productVariants }: Props = $props();
-
-	let userDefaultShippingAddress = $state(tClient('product.chooseAddress'));
 
 	/** user selected variant quantity */
 	let quantitySelected = $state(1);
@@ -50,15 +48,6 @@
 		}
 	};
 
-	$effect(() => {
-		if ($userStore && $userStore.addresses) {
-			const defaultShipAddr = $userStore.addresses.find((addr) => addr.isDefaultShippingAddress);
-			if (defaultShipAddr) {
-				userDefaultShippingAddress = `${defaultShipAddr.streetAddress1 || defaultShipAddr.streetAddress2}, ${defaultShipAddr.cityArea}, ${defaultShipAddr.city}`;
-			}
-		}
-	});
-
 	const handleAddToCart = async () => {
 		if (!selectedVariant) {
 			toastStore.send({
@@ -80,6 +69,15 @@
 			)
 		);
 	};
+
+	let userShippingAddress = $derived.by(() => {
+		if (!$userStore || !$userStore.addresses.length) return tClient('product.chooseAddress');
+
+		const defaulShippingAddress =
+			$userStore.addresses.find((addr) => addr.isDefaultShippingAddress) || $userStore.addresses[0];
+
+		return `${defaulShippingAddress.streetAddress1 || defaulShippingAddress.streetAddress2}, ${defaulShippingAddress.cityArea}, ${defaulShippingAddress.city}`;
+	});
 </script>
 
 {#snippet slotText()}
@@ -133,7 +131,9 @@
 	<div class="flex flex-row items-center mb-4 text-gray-600">
 		<span class="w-1/6 text-xs">{tClient('product.delivery')}</span>
 		<div class="w-5/6 text-blue-700 font-normal flex items-center">
-			<span class="text-sm mr-1">{userDefaultShippingAddress}</span>
+			<span class="text-sm mr-1">
+				{userShippingAddress}
+			</span>
 			<IconButton icon={MapPin} rounded size="xs" variant="light" />
 		</div>
 	</div>
@@ -171,13 +171,13 @@
 					variant="light"
 					size="sm"
 					onclick={() => quantitySelected--}
-					disabled
+					disabled={quantitySelected < 2}
 				/>
 				<Input
 					size="sm"
 					type="number"
 					min={1}
-					max={selectedVariant?.quantityAvailable}
+					max={selectedVariant?.quantityAvailable || selectedVariant?.quantityLimitPerCustomer}
 					class="text-center inline-flex w-20"
 					value={quantitySelected < 1 ? 1 : quantitySelected}
 				/>
@@ -187,6 +187,9 @@
 					variant="light"
 					size="sm"
 					onclick={() => quantitySelected++}
+					disabled={quantitySelected >=
+						((selectedVariant?.quantityAvailable ||
+							selectedVariant?.quantityLimitPerCustomer) as number)}
 				/>
 			</div>
 			<!-- quantity available -->
