@@ -19,7 +19,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { onMount, type Snippet } from 'svelte';
 	import Button from '$lib/components/ui/Button/Button.svelte';
-	import { slideShowManager } from '$lib/stores/ui/slidehow';
+	import { slideShowManager } from '$lib/stores/ui/slideshow';
 
 	interface Props {
 		data: LayoutServerData;

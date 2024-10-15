@@ -54,6 +54,7 @@ export default {
 		ok: 'Đồng ý',
 		cancel: 'Hủy',
 		confirmRemoveProduct: 'Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?',
+		emptyCart: 'Bạn chưa có sản phẩm nào trong giỏ hàng',
 	},
 	product: {
 		chooseAddress: 'Vui lòng chọn địa chỉ',
@@ -103,5 +104,8 @@ export default {
 	},
 	placeholders: {
 		enterPrdName: 'Nhập tên sản phẩm',
-	}
+	},
+	pages: {
+		cart: 'Giỏ hàng',
+	},
 };

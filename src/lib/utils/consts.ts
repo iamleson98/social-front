@@ -1,5 +1,5 @@
 import { CircleCheckFilled, CurrencyDollar, CurrencyDong, ExclamationCircleFilled, InfoCircleFilled, InfoTriangleFilled, type IconType } from "$lib/components/icons";
-import { CountryCode } from "$lib/gql/graphql";
+import { CountryCode, LanguageCodeEnum } from "$lib/gql/graphql";
 
 /**
  * all server methods MUST return this type, for consistency
@@ -38,7 +38,7 @@ export const COUNTRY_CODE_KEY = "country";
 export type Channel = {
   name: string;
   currency: string;
-  locale: string;
+  locale: LanguageCodeEnum;
   slug: string;
   code: string;
   currencySymbol: Currency;
@@ -55,7 +55,7 @@ export const CurrencyIconMap: Record<Currency, IconType> = {
 export const defaultChannel: Channel = {
   name: 'English',
   currency: 'USD',
-  locale: 'en',
+  locale: LanguageCodeEnum.En,
   slug: 'default-channel',
   code: 'en-US',
   currencySymbol: '$',
@@ -65,7 +65,7 @@ export const defaultChannel: Channel = {
 export const vnChannel: Channel = {
   name: 'Tiếng Việt',
   currency: 'VND',
-  locale: 'vi',
+  locale: LanguageCodeEnum.Vi,
   slug: 'vn',
   code: 'vi-VN',
   currencySymbol: '₫',

@@ -13,12 +13,12 @@ export function getCookieByKey(key: string): string {
     return '';
   }
 
-  const index = document.cookie.indexOf(`${key}=`);
-  if (index < 0) {
+  const cookieSplit = document.cookie.split(';');
+  const matchCookie = cookieSplit.find((cookie) => cookie.trim().startsWith(`${key}=`));
+  if (!matchCookie)
     return '';
-  }
 
-  return document.cookie.slice(index + key.length + 1).split(';')[0];
+  return matchCookie.split('=')[1];
 }
 
 export const clientSideGetCookieOrDefault = (key: string, defaultValue: string = '') => {
@@ -59,5 +59,5 @@ export const clientSideSetCookie = (key: string, value: string, opts: CookieSeri
 };
 
 export const clientSideDeleteCookie = (key: string) => {
-  clientSideSetCookie(key, '', { maxAge: 0 });
+  document.cookie = `${key}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`;
 }

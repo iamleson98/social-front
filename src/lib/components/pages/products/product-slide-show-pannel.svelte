@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { ChevronLeft, ChevronRight } from '$lib/components/icons';
 	import { IconButton } from '$lib/components/ui/Button';
-	import { slideShowManager } from '$lib/stores/ui/slidehow';
+	import { slideShowManager } from '$lib/stores/ui/slideshow';
 
 	let displayMedias = $derived.by(() => {
 		return $slideShowManager.medias.slice(...$slideShowManager.slicing);

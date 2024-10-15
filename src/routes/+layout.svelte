@@ -5,6 +5,7 @@
 	import type { Snippet } from 'svelte';
 	import Footer from '$lib/components/common/footer.svelte';
 	import '../app.css';
+	import { AlertListener } from '$lib/components/ui/Modal';
 
 	interface Props {
 		children: Snippet;
@@ -43,3 +44,4 @@
 
 <Footer />
 <Toast />
+<AlertListener />

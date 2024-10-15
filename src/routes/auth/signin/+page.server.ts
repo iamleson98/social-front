@@ -2,7 +2,7 @@ import type { Query } from '$lib/gql/graphql';
 import { USER_ME_QUERY_STORE } from '$lib/stores/api';
 import {
 	ACCESS_TOKEN_KEY,
-	HTTPStatusTemporaryRedirect,
+	HTTPStatusPermanentRedirect,
 } from '$lib/utils/consts.js';
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
@@ -14,7 +14,7 @@ import { tServer } from '$lib/i18n';
 export const load: PageServerLoad = async (event) => {
 	const accessToken = event.cookies.get(ACCESS_TOKEN_KEY);
 
-	if (accessToken) {
+	if (accessToken && accessToken !== 'undefined') {
 		const result = await performBackendOperation<Pick<Query, 'me'>>(
 			'query',
 			USER_ME_QUERY_STORE,
@@ -23,7 +23,8 @@ export const load: PageServerLoad = async (event) => {
 			{ requestPolicy: 'network-only' },
 		);
 		if (!result.error) {
-			redirect(HTTPStatusTemporaryRedirect, AppRoute.HOME);
+			const next = event.url.searchParams.get('next');
+			throw redirect(HTTPStatusPermanentRedirect, next ? decodeURIComponent(next) : AppRoute.HOME);
 		}
 	}
 

@@ -7,7 +7,7 @@ type SlidehowState = {
   slicing: number[];
 }
 
-const defaultState = {
+export const defaultState: SlidehowState = {
   medias: [
     {
       url: '/sitename-500.jpg',
@@ -21,7 +21,7 @@ const defaultState = {
   ],
   activeIndex: 0,
   slicing: [0, 5],
-}
+};
 
 const productSlideShowStoreManager = () => {
   const store = writable<SlidehowState>(defaultState);

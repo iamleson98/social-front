@@ -54,6 +54,7 @@ export default {
 		ok: 'OK',
 		cancel: 'Cancel',
 		confirmRemoveProduct: 'Are you sure you want to remove this product from cart?',
+		emptyCart: 'You have 0 products in cart',
 	},
 	product: {
 		chooseAddress: 'Please choose address',
@@ -103,5 +104,8 @@ export default {
 	},
 	placeholders: {
 		enterPrdName: 'Enter product name',
-	}
+	},
+	pages: {
+		cart: 'Shopping Cart',
+	},
 };

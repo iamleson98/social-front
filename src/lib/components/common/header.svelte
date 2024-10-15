@@ -21,7 +21,7 @@
 	import { graphqlClient } from '$lib/client';
 	import { USER_ME_QUERY_STORE } from '$lib/stores/api';
 	import type { Query } from '$lib/gql/graphql';
-	import { preHandleGraphqlResult } from '$lib/utils/utils';
+	import { noop, preHandleGraphqlResult } from '$lib/utils/utils';
 	import { tClient } from '$i18n';
 
 	let userAvatarStyle = $state('');
@@ -41,7 +41,7 @@
 
 	// fetch current user
 	$effect(() => {
-		let unsubscribe: (() => void) | undefined;
+		let unsubscribe = noop;
 
 		if (!$userStore) {
 			unsubscribe = graphqlClient
@@ -55,7 +55,7 @@
 				}).unsubscribe;
 		}
 
-		return () => unsubscribe?.();
+		return unsubscribe;
 	});
 </script>
 

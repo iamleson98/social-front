@@ -9,6 +9,7 @@
 	import { Checkbox, Input, PasswordInput } from '$lib/components/ui/Input';
 	import { HTTPStatusSuccess } from '$lib/utils/consts';
 	import { toastStore } from '$lib/stores/ui/toast';
+	import { page } from '$app/stores';
 
 	let rememberCheck = $state(false);
 	let email = $state('');
@@ -43,7 +44,9 @@
 			}),
 			variant: 'success'
 		});
-		goto(AppRoute.HOME, { invalidateAll: true });
+
+		const next = $page.url.searchParams.get('next');
+		await goto(next ? decodeURIComponent(next) : AppRoute.HOME, { invalidateAll: true });
 	};
 </script>
 

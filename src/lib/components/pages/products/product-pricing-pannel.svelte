@@ -64,7 +64,10 @@
 					productSlug: productInformation.slug,
 					variantId: selectedVariant!.id,
 					previewImage: productInformation.thumbnail ? productInformation.thumbnail.url : '',
-					previewImageAlt: productInformation.thumbnail ? productInformation.thumbnail.alt : ''
+					previewImageAlt: productInformation.thumbnail ? productInformation.thumbnail.alt : '',
+					quantityAvailable:
+						selectedVariant?.quantityAvailable || selectedVariant?.quantityLimitPerCustomer,
+					grossPrice: selectedVariant?.pricing?.price?.gross
 				})
 			)
 		);

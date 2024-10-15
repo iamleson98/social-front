@@ -174,10 +174,8 @@ const authExchangeInner = async (utils: AuthUtilities) => {
 			await goto(AppRoute.AUTH_SIGNIN, { invalidateAll: true });
 		};
 
-		if (!result.data?.tokenRefresh) {
-			clientSideSetCookie(ACCESS_TOKEN_KEY, result.data?.tokenRefresh?.token as string, { path: '/', secure: true, maxAge: 24 * 60 * 60 });
-			userStore.set(result.data?.tokenRefresh?.user);
-		}
+		clientSideSetCookie(ACCESS_TOKEN_KEY, result.data?.tokenRefresh?.token as string, { path: '/', secure: true, maxAge: 24 * 60 * 60 });
+		userStore.set(result.data?.tokenRefresh?.user);
 
 		// mark that we have finished refreshing
 		refreshTracker.set(false);
@@ -204,7 +202,6 @@ export const graphqlClient = new Client({
 			maxDelayMs: 10000,
 			randomDelay: true,
 			maxNumberAttempts: 2,
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			retryIf: (error: CombinedError, _: Operation): boolean => (browser && error && !!error.networkError),
 		}),
 		fetchExchange,
@@ -227,7 +224,7 @@ const checkIsAuthenAuthorErrorAndRedirectIfNeeded = async <Data = never, Variabl
 	}
 
 	// If we reach here, it means we have an authen or author error
-	event.cookies.delete(ACCESS_TOKEN_KEY, { path: '/', maxAge: 0, secure: true });
+	event.cookies.delete(ACCESS_TOKEN_KEY, { path: '/', secure: true });
 
 	const csrfToken = event.cookies.get(CSRF_TOKEN_KEY) || '';
 	const refreshToken = event.cookies.get(REFRESH_TOKEN_KEY) || '';
@@ -245,8 +242,8 @@ const checkIsAuthenAuthorErrorAndRedirectIfNeeded = async <Data = never, Variabl
 		.toPromise();
 
 	if (refreshTokenResult.error || refreshTokenResult.data?.tokenRefresh?.errors.length) {
-		event.cookies.delete(CSRF_TOKEN_KEY, { path: '/', maxAge: 0 });
-		event.cookies.delete(REFRESH_TOKEN_KEY, { path: '/', maxAge: 0 });
+		event.cookies.delete(CSRF_TOKEN_KEY, { path: '/' });
+		event.cookies.delete(REFRESH_TOKEN_KEY, { path: '/' });
 		redirect(HTTPStatusTemporaryRedirect, AppRoute.AUTH_SIGNIN);
 	};
 
@@ -311,5 +308,3 @@ const attachAuthorizationHeaderToRequestIfNeeded = (
 
 	return newContext;
 };
-
-

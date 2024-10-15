@@ -1,3 +1,4 @@
+import type { Money } from '$lib/gql/graphql';
 import { persisted } from 'svelte-persisted-store';
 
 export type CartItemProps = {
@@ -7,6 +8,8 @@ export type CartItemProps = {
   variantId?: string;
   previewImage: string;
   previewImageAlt?: string | null;
+  quantityAvailable?: number | null;
+  grossPrice?: Money,
 };
 
 /** this util function helps organize cart items before persisting to local storage  */
@@ -34,7 +37,8 @@ export const reorganizeCartItems = (items: CartItemProps[]) => {
     }
   }
 
-  return [...Object.values(variantItemsMap), ...Object.values(productItemsMap)];
+  return Object.values(variantItemsMap)
+    .concat(Object.values(productItemsMap));
 };
 
 /**

@@ -29,7 +29,7 @@
 		<Button variant="filled" size="sm" color="red" onclick={onOk}>
 			{okText}
 		</Button>
-		<Button variant="light" size="sm" color="blue" onclick={onCancel}>
+		<Button variant="light" size="sm" color="green" onclick={onCancel}>
 			{cancelText}
 		</Button>
 	</div>
