@@ -1,6 +1,7 @@
 import { gql } from "@urql/core";
 
-export const CHANNEL_QUERY_STORE = gql`query Channels {
+export const CHANNELS_QUERY_STORE = gql`
+query Channels {
   channels {
     id
     name
@@ -16,3 +17,13 @@ export const CHANNEL_QUERY_STORE = gql`query Channels {
     }
   }
 }`;
+
+export const CHANNEL_DETAILS_QUERY_STORE = gql`
+query Channel($slug: String!) {
+  channel(slug: $slug) {
+    countries {
+      code
+    }
+  }
+}
+`;

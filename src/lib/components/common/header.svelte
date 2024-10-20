@@ -4,7 +4,7 @@
 	import { userStore } from '$lib/stores/auth';
 	import { AppRoute } from '$lib/utils';
 	import { page } from '$app/stores';
-	import { cartItemStore } from '$lib/stores/app';
+	import { checkoutStore } from '$lib/stores/app';
 	import {
 		Icon,
 		IonFlame,
@@ -94,9 +94,9 @@
 		<div class="flex items-center gap-3.5">
 			<a href={AppRoute.SHOPPING_CART}>
 				<IconButton size="sm" icon={ShoppingBag} variant="light" color="gray" class="relative">
-					{#key $cartItemStore}
+					{#key $checkoutStore}
 						<span class="cart-quantity" in:scale>
-							{$cartItemStore.length}
+							{$checkoutStore?.lines.length || 0}
 						</span>
 					{/key}
 				</IconButton>

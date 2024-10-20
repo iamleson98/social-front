@@ -2,16 +2,33 @@
 	import { Header } from '$lib/components/common';
 	import { Toast } from '$lib/components/ui/Toast';
 	import { page } from '$app/stores';
-	import type { Snippet } from 'svelte';
+	import { onMount, type Snippet } from 'svelte';
 	import Footer from '$lib/components/common/footer.svelte';
-	import '../app.css';
 	import { AlertListener } from '$lib/components/ui/Modal';
+	import { checkoutStore } from '$lib/stores/app';
+	import { AppRoute } from '$lib/utils';
+	import { toastStore } from '$lib/stores/ui/toast';
+	import '../app.css';
 
 	interface Props {
 		children: Snippet;
 	}
 
 	let { children }: Props = $props();
+
+	onMount(async () => {
+		const fetchCheckoutResult = await fetch(`${AppRoute.CHECKOUT}/get-or-create`, {
+			method: 'POST',
+			body: '{}'
+		});
+		const result = await fetchCheckoutResult.json();
+
+		if (result.error) {
+			toastStore.send({ variant: 'error', message: result.error });
+			return;
+		}
+		checkoutStore.set(result.checkout);
+	});
 </script>
 
 <svelte:head>

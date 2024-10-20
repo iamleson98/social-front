@@ -2,18 +2,27 @@
 	import { tClient } from '$i18n';
 	import { MapPin, Minus, Plus, ShoppingBagPlus, BurstSale, Heart } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import type { Product, ProductVariant } from '$lib/gql/graphql';
+	import type {
+		Checkout,
+		Mutation,
+		MutationCheckoutLinesAddArgs,
+		Product,
+		ProductVariant
+	} from '$lib/gql/graphql';
 	import { userStore } from '$lib/stores/auth';
-	import { defaultChannel, MAX_RATING } from '$lib/utils/consts';
-	import { formatMoney } from '$lib/utils/utils';
+	import { CHANNEL_KEY, defaultChannel, MAX_RATING } from '$lib/utils/consts';
+	import { formatMoney, preHandleGraphqlResult } from '$lib/utils/utils';
 	import { fade } from 'svelte/transition';
 	import { Rating } from '$lib/components/common/rating';
-	import { cartItemStore } from '$lib/stores/app';
+	import { checkoutStore } from '$lib/stores/app';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { IconButton } from '$lib/components/ui/Button';
 	import Input from '$lib/components/ui/Input/input.svelte';
-	import { reorganizeCartItems } from '$lib/stores/app/cart';
 	import { Badge } from '$lib/components/ui/badge';
+	import { graphqlClient } from '$lib/client';
+	import { CHECKOUT_ADD_LINE_MUTATION } from '$lib/stores/api/checkout';
+	import { clientSideGetCookieOrDefault, getCookieByKey } from '$lib/utils/cookies';
+	import { AppRoute } from '$lib/utils';
 
 	type Props = {
 		productInformation: Omit<Product, 'variants'>;
@@ -56,21 +65,49 @@
 			});
 			return;
 		}
-		cartItemStore.update((items) =>
-			reorganizeCartItems(
-				items.concat({
-					productName: productInformation.name,
-					quantity: quantitySelected,
-					productSlug: productInformation.slug,
-					variantId: selectedVariant!.id,
-					previewImage: productInformation.thumbnail ? productInformation.thumbnail.url : '',
-					previewImageAlt: productInformation.thumbnail ? productInformation.thumbnail.alt : '',
-					quantityAvailable:
-						selectedVariant?.quantityAvailable || selectedVariant?.quantityLimitPerCustomer,
-					grossPrice: selectedVariant?.pricing?.price?.gross
-				})
-			)
+
+		// we check if a checkout is already created.
+		// If +layout.svelte failed to initialize checkout store, we create a new one.
+		// Then we add new lines to the checkout.
+		let checkouIdCookie = getCookieByKey(
+			`checkout-${clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug)}`
 		);
+		if (!checkouIdCookie) {
+			const fetchResult = await fetch(`${AppRoute.CHECKOUT}/get-or-create`, {
+				method: 'POST',
+				body: '{}'
+			});
+			const parseResult = await fetchResult.json();
+			if (parseResult.error) {
+				toastStore.send({
+					variant: 'error',
+					message: parseResult.error
+				});
+				return;
+			}
+			checkouIdCookie = parseResult.checkout.id;
+		}
+
+		const addLineResult = await graphqlClient
+			.mutation<Pick<Mutation, 'checkoutLinesAdd'>, MutationCheckoutLinesAddArgs>(
+				CHECKOUT_ADD_LINE_MUTATION,
+				{
+					id: checkouIdCookie,
+					lines: [{ variantId: selectedVariant.id, quantity: quantitySelected }]
+				}
+			)
+			.toPromise();
+
+		if (preHandleGraphqlResult(addLineResult)) return;
+		if (addLineResult.data?.checkoutLinesAdd?.errors.length) {
+			toastStore.send({
+				variant: 'error',
+				message: addLineResult.data.checkoutLinesAdd.errors[0].message as string
+			});
+			return;
+		}
+
+		checkoutStore.set(addLineResult.data?.checkoutLinesAdd?.checkout as Checkout);
 	};
 
 	let userShippingAddress = $derived.by(() => {
@@ -181,7 +218,7 @@
 					type="number"
 					min={1}
 					max={selectedVariant?.quantityAvailable || selectedVariant?.quantityLimitPerCustomer}
-					class="text-center inline-flex w-20"
+				class="text-center inline-flex w-20"
 					value={quantitySelected < 1 ? 1 : quantitySelected}
 				/>
 				<IconButton
@@ -225,7 +262,7 @@
 			fullWidth
 			size="md"
 			color="gray"
-		>
+		>``
 			<span> {tClient('product.addToCart')} </span>
 		</Button>
 	</div>

@@ -1,5 +1,6 @@
 
 import type { HTMLActionArray } from "$lib/actions/use-actions";
+import type { LanguageCodeEnum, QueryCheckoutArgs } from "$lib/gql/graphql";
 import type { SupportedAs, SupportedElement } from ".";
 // import type { SupportedAs, SupportedElement } from "./internal/elements";
 
@@ -75,4 +76,6 @@ export type TRenderProps<
 };
 
 export type TInternalProps = "name" | "slotProps" | "el" | "visible" | "features";
+
+export type CustomQueryCheckoutArgs = { languageCode: LanguageCodeEnum } & QueryCheckoutArgs;
 

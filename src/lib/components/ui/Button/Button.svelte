@@ -12,6 +12,7 @@
 		children?: Snippet;
 		startIcon?: IconType;
 		endIcon?: IconType;
+		clickDebounceOptions?: ClickDebounceOpts;
 	} & HTMLButtonAttributes;
 </script>
 
@@ -21,6 +22,7 @@
 	import { buttonVariantColorsMap, type ButtonVariant } from './button.types';
 	import { type Snippet } from 'svelte';
 	import { Icon, type IconType } from '$lib/components/icons';
+	import { debounceClick, type ClickDebounceOpts } from '$lib/actions/input-debounce';
 
 	type IconProps = {
 		icon?: IconType;
@@ -40,12 +42,14 @@
 		children = fakeChildren,
 		startIcon,
 		endIcon,
+		disabled,
+		clickDebounceOptions,
 		...restProps
 	}: Props = $props();
 </script>
 
 {#snippet fakeChildren()}
-	<div></div>
+	<span></span>
 {/snippet}
 
 {#snippet buttonIcon({ icon }: IconProps)}
@@ -61,7 +65,9 @@
 	class:uppercase={upper}
 	class:w-full={fullWidth}
 	{type}
+	disabled={loading || disabled}
 	bind:this={ref}
+	use:debounceClick={clickDebounceOptions}
 	{...restProps}
 >
 	{#if loading}

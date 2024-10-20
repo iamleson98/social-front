@@ -1,7 +1,10 @@
 <script lang="ts">
+	import { debounceClick } from '$lib/actions/input-debounce';
 	import SlideShow from '$lib/components/pages/lab/slide-show.svelte';
+	import { Button } from '$lib/components/ui';
 	import { AlertModal, Modal } from '$lib/components/ui/Modal';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
+	import { TimeLine } from '$lib/components/ui/timeline';
 
 	const options: SelectOption[] = [
 		{ value: '1', label: 'Option 1' },
@@ -26,3 +29,25 @@
 >
 	<div>This is the content</div>
 </AlertModal>
+
+<button
+	use:debounceClick={{
+		onInput: console.log
+	}}>click</button
+>
+
+<Button
+	clickDebounceOptions={{
+		onInput: console.log
+	}}>Click</Button
+>
+
+<TimeLine
+	items={[
+		{ done: true, title: 'Step 1' },
+		{ done: true, title: 'Step 2' },
+		{ done: false, title: 'Step 3' },
+		{ done: false, title: 'Step 4' }
+	]}
+	
+/>

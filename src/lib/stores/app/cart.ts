@@ -1,5 +1,5 @@
-import type { Money } from '$lib/gql/graphql';
-import { persisted } from 'svelte-persisted-store';
+import type { Checkout, Money } from '$lib/gql/graphql';
+import { writable } from 'svelte/store';
 
 export type CartItemProps = {
   productName: string;
@@ -37,15 +37,12 @@ export const reorganizeCartItems = (items: CartItemProps[]) => {
     }
   }
 
-  return Object.values(variantItemsMap)
+  return Object
+    .values(variantItemsMap)
     .concat(Object.values(productItemsMap));
 };
 
 /**
- * @NOTE before writing/update to cartItemStore, make sure to call `{@ref reorganizeCartItems}`
+ * @NOTE before writing/update to checkoutStore, make sure to call `{@ref reorganizeCartItems}`
  */
-export const cartItemStore = persisted<CartItemProps[]>(
-  'cartItems',
-  [],
-  { storage: 'local' }
-);
+export const checkoutStore = writable<Checkout | null>(null);

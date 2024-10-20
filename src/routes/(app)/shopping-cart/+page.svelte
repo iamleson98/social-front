@@ -1,75 +1,18 @@
 <script lang="ts">
 	import { afterNavigate, goto } from '$app/navigation';
 	import { tClient } from '$i18n';
-	import { graphqlClient } from '$lib/client';
-	import { ArrowNarrowRight, EmptyDrawer, Icon, Minus, Plus } from '$lib/components/icons';
+	import { ArrowNarrowRight, EmptyDrawer, Icon } from '$lib/components/icons';
+	import CheckoutLine from '$lib/components/pages/cart/checkout-line.svelte';
 	import { Button } from '$lib/components/ui';
-	import { IconButton } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
-	import type { CheckoutLineInput, Money, Query, QueryProductVariantsArgs } from '$lib/gql/graphql';
-	import { operationStore, PRODUCT_VARIANTS_BY_IDS } from '$lib/stores/api';
-	import { cartItemStore } from '$lib/stores/app';
-	import { alertStore } from '$lib/stores/ui/alert-modal';
-	import { toastStore } from '$lib/stores/ui/toast';
+	import { TimeLine } from '$lib/components/ui/timeline';
+	import type { Query } from '$lib/gql/graphql';
+	import { operationStore } from '$lib/stores/api';
+	import { CHECKOUT_PREVIEW_QUERY } from '$lib/stores/api/checkout';
 	import { AppRoute } from '$lib/utils';
-	import { ACCESS_TOKEN_KEY, CHANNEL_KEY, defaultChannel } from '$lib/utils/consts';
+	import { CHANNEL_KEY, defaultChannel, findChannelBySlug } from '$lib/utils/consts';
 	import { clientSideGetCookieOrDefault, getCookieByKey } from '$lib/utils/cookies';
-	import { formatMoney, noop, preHandleGraphqlResult } from '$lib/utils/utils';
-	import { onMount } from 'svelte';
-	import { get } from 'svelte/store';
-
-	const handleItemQuantityInput = (idx: number, e: any) => {
-		const { value } = e.target as HTMLInputElement;
-		const valueNumber = Math.round(Number(value));
-
-		const items = get(cartItemStore);
-
-		if (valueNumber <= 0)
-			alertStore.openAlertModal({
-				content: tClient('common.confirmRemoveProduct'),
-				onOk: () => cartItemStore.set(items.filter((_, index) => index !== idx)),
-				onCancel: () =>
-					cartItemStore.set(
-						items.map((item, index) => (index === idx ? { ...item, quantity: 1 } : item))
-					)
-			});
-		else
-			cartItemStore.set(
-				items.map((item, index) => (index === idx ? { ...item, quantity: valueNumber } : item))
-			);
-	};
-
-	const modifyCartItemQuantity = async (itemIdx: number, delta: -1 | 1) => {
-		const items = get(cartItemStore);
-		const item = items[itemIdx];
-
-		if (
-			delta === 1 &&
-			typeof item.quantityAvailable === 'number' &&
-			item.quantity >= item.quantityAvailable
-		)
-			return;
-
-		cartItemStore.set(
-			items.map((item, idx) => {
-				if (idx !== itemIdx) return item;
-
-				if (delta === -1 && item.quantity + delta <= 0) {
-					alertStore.openAlertModal({
-						content: tClient('common.confirmRemoveProduct'),
-						onOk: () => cartItemStore.set(items.filter((_, index) => index !== idx)),
-						onCancel: noop
-					});
-					return item;
-				}
-
-				return {
-					...item,
-					quantity: item.quantity + delta
-				};
-			})
-		);
-	};
+	import type { CustomQueryCheckoutArgs } from '$lib/utils/types';
 
 	afterNavigate(() => {
 		window.scrollTo({
@@ -78,71 +21,43 @@
 		});
 	});
 
-	onMount(async () => {
-		const items = get(cartItemStore);
-		if (!items.length) return;
-
-		const result = await graphqlClient
-			.query<Pick<Query, 'productVariants'>, QueryProductVariantsArgs>(PRODUCT_VARIANTS_BY_IDS, {
-				channel: clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug),
-				ids: items.map((item) => item.variantId as string),
-				first: items.length
-			})
-			.toPromise();
-
-		if (preHandleGraphqlResult(result) || !result.data?.productVariants?.edges) return;
-
-		const variantPriceMap: Record<string, Money> = {};
-		for (const {
-			node: { pricing, id }
-		} of result.data?.productVariants?.edges) {
-			variantPriceMap[id] = pricing?.price?.gross as Money;
-		}
-
-		cartItemStore.set(
-			items.map((item) =>
-				!item.variantId ? item : { ...item, grossPrice: variantPriceMap[item.variantId] }
-			)
-		);
-	});
-
 	const handleProceedToCheckout = async () => {
-		const cartItems = get(cartItemStore);
-		if (!cartItems.length) return;
-
-		const headers: HeadersInit = {};
-		const token = getCookieByKey(ACCESS_TOKEN_KEY);
-
-		if (token.length) headers.Authorization = `Bearer ${token}`;
-
-		const result = await fetch(`${AppRoute.CHECKOUT}/get-or-create`, {
-			method: 'POST',
-			headers,
-			body: JSON.stringify({
-				lines: cartItems.map<CheckoutLineInput>((item) => ({
-					variantId: item.variantId as string,
-					quantity: item.quantity
-				}))
-			})
-		});
-
-		const jsonResult = await result.json();
-		if (jsonResult.error) {
-			toastStore.send({
-				message: jsonResult.error,
-				variant: 'error'
-			});
-			return;
-		}
-
-		await goto(`${AppRoute.CHECKOUT}/${jsonResult.id}`, { invalidateAll: true });
+		const checkoutID = getCookieByKey(
+			`checkout-${clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug)}`
+		);
+		await goto(`${AppRoute.CHECKOUT}/${checkoutID}`, { invalidateAll: true });
 	};
+
+	const cartPreviewResultStore = operationStore<Pick<Query, 'checkout'>, CustomQueryCheckoutArgs>({
+		kind: 'query',
+		query: CHECKOUT_PREVIEW_QUERY,
+		variables: {
+			id: getCookieByKey(
+				`checkout-${clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug)}`
+			),
+			languageCode: findChannelBySlug(
+				clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug)
+			).locale
+		}
+	});
 </script>
 
 <div>
-	<h3 class="text-md mb-4 font-semibold text-gray-800">{tClient('common.cart')}</h3>
+	<TimeLine
+		items={[
+			{ title: 'Shopping cart', done: true },
+			{ title: 'Checkout', done: false },
+			{ title: 'Payment', done: false },
+			{ title: 'Order confirmation', done: false }
+		]}
+		class="py-4 my-1"
+	/>
 
-	{#if !$cartItemStore.length}
+	{#if $cartPreviewResultStore.fetching}
+		<div>Loading...</div>
+	{:else if $cartPreviewResultStore.error}
+		<div>{$cartPreviewResultStore.error.message}</div>
+	{:else if !$cartPreviewResultStore.data?.checkout?.lines.length}
 		<div class="h-full w-full flex items-center justify-center">
 			<div class="text-center">
 				<div class="text-blue-400 text-center">
@@ -158,56 +73,8 @@
 		<div class="flex flex-row justify-between tablet:flex-wrap tablet:flex-col gap-2">
 			<!-- preview area -->
 			<div class="w-3/4 tablet:w-full">
-				{#each $cartItemStore as item, idx (idx)}
-					<div class="bg-white rounded-md p-4 w-full border mb-2">
-						<div class="flex items-center gap-2">
-							<img
-								src={item.previewImage}
-								alt={item.previewImageAlt}
-								class="w-16 h-16 object-cover"
-							/>
-							<div class="flex-1">
-								<a
-									href={`${AppRoute.PRODUCTS}/${encodeURIComponent(item.productSlug)}`}
-									class="text-gray-800 text-md hover:underline"
-								>
-									{item.productName}
-								</a>
-								<div class="flex items-center text-gray-500 text-xs mt-2 gap-2"></div>
-							</div>
-							<div class="flex items-center gap-2">
-								<IconButton
-									icon={Minus}
-									size="sm"
-									color="red"
-									variant="light"
-									onclick={() => modifyCartItemQuantity(idx, -1)}
-								/>
-								<Input
-									size="sm"
-									bind:value={item.quantity}
-									min={0}
-									oninput={(e) => handleItemQuantityInput(idx, e)}
-									type="number"
-									class="!w-16"
-								/>
-								<IconButton
-									icon={Plus}
-									size="sm"
-									variant="light"
-									onclick={() => modifyCartItemQuantity(idx, 1)}
-									disabled={typeof item.quantityAvailable === 'number' &&
-										item.quantityAvailable <= item.quantity}
-								/>
-							</div>
-							<span class="text-gray-800 font-bold">
-								{formatMoney(
-									item.grossPrice?.currency as string,
-									(item.grossPrice?.amount as number) * item.quantity
-								)}
-							</span>
-						</div>
-					</div>
+				{#each $cartPreviewResultStore.data.checkout.lines as line, idx (idx)}
+					<CheckoutLine {line} checkoutId={$cartPreviewResultStore.data.checkout.id} />
 				{/each}
 			</div>
 

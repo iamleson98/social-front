@@ -14,7 +14,7 @@
 </script>
 
 <div class="w-1/2 tablet:w-full p-2">
-	<div>Account</div>
+	<div class="text-sm">Account</div>
 
 	{#if $userStore}
 		<div>{$userStore.email}</div>
@@ -35,4 +35,12 @@
 			</div>
 		</div>
 	{/if}
+
+	<!-- shipping / billing -->
+	 {#if checkout.isShippingRequired}
+	 <!-- shipping -->
+		{#if $userStore}
+		
+		{/if}
+	 {/if}
 </div>

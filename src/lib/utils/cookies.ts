@@ -35,7 +35,7 @@ export const clientSideGetCookieOrDefault = (key: string, defaultValue: string =
  * @param value cookie value
  * @param opts throw if opts.httpOnly is true. if maxAge === 0 => delete cookie
  */
-export const clientSideSetCookie = (key: string, value: string, opts: CookieSerializeOptions) => {
+export const clientSideSetCookie = async (key: string, value: string, opts: CookieSerializeOptions) => {
   if (!browser) {
     throw new Error('This function must be called in client code');
   }

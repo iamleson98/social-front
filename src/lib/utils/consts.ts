@@ -40,7 +40,6 @@ export type Channel = {
   currency: string;
   locale: LanguageCodeEnum;
   slug: string;
-  code: string;
   currencySymbol: Currency;
   countryCode: CountryCode;
 };
@@ -55,27 +54,27 @@ export const CurrencyIconMap: Record<Currency, IconType> = {
 export const defaultChannel: Channel = {
   name: 'English',
   currency: 'USD',
-  locale: LanguageCodeEnum.En,
+  locale: LanguageCodeEnum.EsUs,
   slug: 'default-channel',
-  code: 'en-US',
   currencySymbol: '$',
   countryCode: CountryCode.Us,
-}
+};
 
 export const vnChannel: Channel = {
   name: 'Tiếng Việt',
   currency: 'VND',
   locale: LanguageCodeEnum.Vi,
   slug: 'vn',
-  code: 'vi-VN',
   currencySymbol: '₫',
   countryCode: CountryCode.Vn,
-}
+};
 
 export const channels = [
   defaultChannel,
   vnChannel,
-]
+];
+
+export const findChannelBySlug = (slug: string) => channels.find(channel => channel.slug === slug) || defaultChannel;
 
 export const SocialVariantIconsMap: Record<SocialVariant, IconType> = {
   'error': ExclamationCircleFilled,
