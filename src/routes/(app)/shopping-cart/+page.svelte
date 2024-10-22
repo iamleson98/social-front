@@ -2,7 +2,7 @@
 	import { afterNavigate, goto } from '$app/navigation';
 	import { tClient } from '$i18n';
 	import { ArrowNarrowRight, EmptyDrawer, Icon } from '$lib/components/icons';
-	import CheckoutLine from '$lib/components/pages/cart/checkout-line.svelte';
+	import CartItemLine from '$lib/components/pages/cart/cart-item-line.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Input } from '$lib/components/ui/Input';
 	import { TimeLine } from '$lib/components/ui/timeline';
@@ -10,9 +10,10 @@
 	import { operationStore } from '$lib/stores/api';
 	import { CHECKOUT_PREVIEW_QUERY } from '$lib/stores/api/checkout';
 	import { AppRoute } from '$lib/utils';
-	import { CHANNEL_KEY, defaultChannel, findChannelBySlug } from '$lib/utils/consts';
+	import { CHANNEL_KEY, defaultChannel } from '$lib/utils/consts';
 	import { clientSideGetCookieOrDefault, getCookieByKey } from '$lib/utils/cookies';
 	import type { CustomQueryCheckoutArgs } from '$lib/utils/types';
+	import { formatMoney } from '$lib/utils/utils';
 
 	afterNavigate(() => {
 		window.scrollTo({
@@ -34,25 +35,36 @@
 		variables: {
 			id: getCookieByKey(
 				`checkout-${clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug)}`
-			),
-			languageCode: findChannelBySlug(
-				clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug)
-			).locale
+			)
 		}
 	});
+
+	type MoneyColor = 'red' | 'green' | 'gray';
+
+	const moneyColorMap: Record<MoneyColor, string> = {
+		red: 'text-red-600',
+		green: 'text-green-600',
+		gray: 'text-gray-500 line-through'
+	};
 </script>
 
-<div>
-	<TimeLine
-		items={[
-			{ title: 'Shopping cart', done: true },
-			{ title: 'Checkout', done: false },
-			{ title: 'Payment', done: false },
-			{ title: 'Order confirmation', done: false }
-		]}
-		class="py-4 my-1"
-	/>
+{#snippet MoneyField(
+	currency: string,
+	amount: number,
+	title: string,
+	color: MoneyColor,
+	negative: boolean = false
+)}
+	{@const negate = negative ? '-' : ''}
+	<dl class="flex items-center justify-between gap-4 mb-1.5" aria-label={title}>
+		<dt class="text-sm font-normal text-gray-500">{title}</dt>
+		<dd class={`text-base font-semibold ${moneyColorMap[color]}`}>
+			{negate}{formatMoney(currency, amount)}
+		</dd>
+	</dl>
+{/snippet}
 
+<div>
 	{#if $cartPreviewResultStore.fetching}
 		<div>Loading...</div>
 	{:else if $cartPreviewResultStore.error}
@@ -70,52 +82,62 @@
 			</div>
 		</div>
 	{:else}
+		{@const { lines, id, subtotalPrice } = $cartPreviewResultStore.data.checkout}
+		{@const originalTotalPrice = lines
+			.map((line) => line.undiscountedTotalPrice.amount)
+			.reduce((a, b) => a + b, 0)}
+		<TimeLine
+			items={[
+				{ title: 'Shopping cart', done: true },
+				{ title: 'Checkout', done: false },
+				{ title: 'Payment', done: false },
+				{ title: 'Order confirmation', done: false }
+			]}
+			class="py-4 my-1"
+		/>
+
 		<div class="flex flex-row justify-between tablet:flex-wrap tablet:flex-col gap-2">
 			<!-- preview area -->
 			<div class="w-3/4 tablet:w-full">
-				{#each $cartPreviewResultStore.data.checkout.lines as line, idx (idx)}
-					<CheckoutLine {line} checkoutId={$cartPreviewResultStore.data.checkout.id} />
+				{#each lines as line, idx (idx)}
+					<CartItemLine {line} checkoutId={id} />
 				{/each}
 			</div>
 
 			<!-- purchase area -->
-			<div class="w-1/4 tablet:w-full bg-white rounded-md border">
-				<!-- checkout button -->
-				<div class="space-y-4 p-4 mb-4">
-					<p class="text-lg font-semibold tet-gray-800">Order summary</p>
+			<div class="w-1/4 tablet:w-full">
+				<div class="p-4 mb-2 bg-white rounded-lg border">
+					<p class="text-lg font-semibold tet-gray-800 mb-4">{tClient('common.cartSummary')}</p>
 
-					<div class="space-y-4">
-						<div class="space-y-2">
-							<dl class="flex items-center justify-between gap-4">
-								<dt class="text-sm font-normal text-gray-500">Original price</dt>
-								<dd class="text-base font-medium tet-gray-800">$7,592.00</dd>
-							</dl>
+					<div class="mb-4">
+						{@render MoneyField(
+							subtotalPrice.gross.currency,
+							originalTotalPrice,
+							tClient('common.oldTotalPrice'),
+							'gray'
+						)}
 
-							<dl class="flex items-center justify-between gap-4">
-								<dt class="text-sm font-normal text-gray-500">Savings</dt>
-								<dd class="text-base font-medium text-green-600">-$299.00</dd>
-							</dl>
+						{@render MoneyField(
+							subtotalPrice.gross.currency,
+							originalTotalPrice - subtotalPrice.gross.amount,
+							tClient('common.savings'),
+							'green',
+							true
+						)}
 
-							<dl class="flex items-center justify-between gap-4">
-								<dt class="text-sm font-normal text-gray-500">Store Pickup</dt>
-								<dd class="text-base font-medium tet-gray-800">$99</dd>
-							</dl>
+						<div class="border-t mb-2"></div>
 
-							<dl class="flex items-center justify-between gap-4">
-								<dt class="text-sm font-normal text-gray-500">Tax</dt>
-								<dd class="text-base font-medium tet-gray-800">$799</dd>
-							</dl>
-						</div>
-
-						<dl class="flex items-center justify-between gap-4 border-t border-gray-200 pt-2">
-							<dt class="text-base font-bold tet-gray-800">Total</dt>
-							<dd class="text-base font-bold tet-gray-800">$8,191.00</dd>
-						</dl>
+						{@render MoneyField(
+							subtotalPrice.gross.currency,
+							subtotalPrice.gross.amount,
+							tClient('common.tempoTotalPrice'),
+							'red'
+						)}
 					</div>
 
-					<Button variant="filled" fullWidth size="sm" onclick={handleProceedToCheckout}
-						>Proceed to checkout</Button
-					>
+					<Button variant="filled" fullWidth size="sm" onclick={handleProceedToCheckout}>
+						Proceed to checkout
+					</Button>
 
 					<div class="flex items-center justify-center gap-2">
 						<span class="text-sm font-normal text-gray-500"> or </span>
@@ -130,7 +152,7 @@
 				</div>
 
 				<!-- coupon -->
-				<div class="space-y-4 rounded-md bg-white p-4">
+				<div class="rounded-lg bg-white p-4 border">
 					<Input
 						placeholder="Enter discount code"
 						size="md"

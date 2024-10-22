@@ -88,18 +88,18 @@
 		@apply !text-gray-500 !bg-gray-200 !cursor-not-allowed !pointer-events-none !touch-none !border-none;
 	}
 	.button-xs {
-		@apply text-xs h-6 min-h-6 px-2;
+		@apply text-xs px-3 py-1.5;
 	}
 	.button-sm {
-		@apply h-8 min-h-8 px-3 text-sm;
+		@apply px-3 py-2 text-sm;
 	}
 	.button-md {
-		@apply text-base h-12 min-h-12 px-4;
+		@apply text-base px-5 py-2.5;
 	}
 	.button-lg {
-		@apply h-14 min-h-14 px-6 text-lg;
+		@apply px-5 py-3 text-lg;
 	}
 	.button-xl {
-		@apply px-7 text-xl h-16 min-h-16;
+		@apply px-6 py-3.5 text-xl;
 	}
 </style>

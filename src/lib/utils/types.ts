@@ -77,5 +77,5 @@ export type TRenderProps<
 
 export type TInternalProps = "name" | "slotProps" | "el" | "visible" | "features";
 
-export type CustomQueryCheckoutArgs = { languageCode: LanguageCodeEnum } & QueryCheckoutArgs;
+export type CustomQueryCheckoutArgs = { languageCode?: LanguageCodeEnum } & QueryCheckoutArgs;
 

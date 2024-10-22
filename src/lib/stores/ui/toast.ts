@@ -17,13 +17,12 @@ export type ToastProps = {
 function createNotificationStore() {
   const _notifications = writable<ToastProps[]>([]);
 
-  function send({ message, variant, timeout = 3000 }: Omit<ToastProps, 'id'>) {
+  function send({ timeout = 3000, ...rest }: Omit<ToastProps, 'id'>) {
     _notifications.update((toasts) => {
       return toasts.concat({
         id: randomID(),
-        message,
-        variant,
         timeout,
+        ...rest,
       });
     });
   }

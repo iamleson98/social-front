@@ -54,7 +54,7 @@ export const CurrencyIconMap: Record<Currency, IconType> = {
 export const defaultChannel: Channel = {
   name: 'English',
   currency: 'USD',
-  locale: LanguageCodeEnum.EsUs,
+  locale: LanguageCodeEnum.EnUs,
   slug: 'default-channel',
   currencySymbol: '$',
   countryCode: CountryCode.Us,

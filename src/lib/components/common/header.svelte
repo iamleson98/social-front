@@ -2,7 +2,7 @@
 	import { Button } from '$lib/components/ui';
 	import Logo from './logo.svelte';
 	import { userStore } from '$lib/stores/auth';
-	import { AppRoute } from '$lib/utils';
+	import { AppRoute, getCookieByKey } from '$lib/utils';
 	import { page } from '$app/stores';
 	import { checkoutStore } from '$lib/stores/app';
 	import {
@@ -21,41 +21,38 @@
 	import { graphqlClient } from '$lib/client';
 	import { USER_ME_QUERY_STORE } from '$lib/stores/api';
 	import type { Query } from '$lib/gql/graphql';
-	import { noop, preHandleGraphqlResult } from '$lib/utils/utils';
+	import { preHandleGraphqlResult } from '$lib/utils/utils';
 	import { tClient } from '$i18n';
+	import { onMount } from 'svelte';
+	import { ACCESS_TOKEN_KEY } from '$lib/utils/consts';
 
-	let userAvatarStyle = $state('');
-	let userDisplayName = $state('');
 	let openUserDropdown = $state(false);
 
 	let dropdownTriggerRef = $state<HTMLButtonElement>();
 
-	$effect(() => {
+	const { userAvatarStyle, userDisplayName } = $derived.by(() => {
+		let userAvatarStyle, userDisplayName;
+
 		if ($userStore?.avatar?.url) {
 			userAvatarStyle = `background-image: url("${$userStore.avatar.url}")`;
 		}
 		if ($userStore?.firstName && $userStore.lastName)
 			userDisplayName = `${$userStore.firstName[0]}${$userStore.lastName[0]}`;
 		else if ($userStore?.email) userDisplayName = $userStore.email.slice(0, 2);
+
+		return { userAvatarStyle, userDisplayName };
 	});
 
-	// fetch current user
-	$effect(() => {
-		let unsubscribe = noop;
+	onMount(async () => {
+		const token = getCookieByKey(ACCESS_TOKEN_KEY);
+		if (!token) return;
 
-		if (!$userStore) {
-			unsubscribe = graphqlClient
-				.query<Pick<Query, 'me'>>(USER_ME_QUERY_STORE, {}, { requestPolicy: 'network-only' })
-				.subscribe((result) => {
-					if (preHandleGraphqlResult(result)) {
-						return;
-					}
+		const userResult = await graphqlClient
+			.query<Pick<Query, 'me'>>(USER_ME_QUERY_STORE, {}, { requestPolicy: 'network-only' })
+			.toPromise();
 
-					userStore.set(result.data?.me);
-				}).unsubscribe;
-		}
-
-		return unsubscribe;
+		if (preHandleGraphqlResult(userResult)) return;
+		userStore.set(userResult.data?.me);
 	});
 </script>
 

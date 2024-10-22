@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { tClient } from '$i18n';
 	import { graphqlClient } from '$lib/client';
+	import SkeletonContainer from '$lib/components/common/skeleton-container.svelte';
+	import Skeleton from '$lib/components/common/skeleton.svelte';
 	import { Minus, Plus } from '$lib/components/icons';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
@@ -21,7 +23,6 @@
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { AppRoute } from '$lib/utils';
 	import { formatMoney, preHandleGraphqlResult } from '$lib/utils/utils';
-	import { tick } from 'svelte';
 
 	type Props = {
 		line: CheckoutLine;
@@ -31,10 +32,11 @@
 	let { line, checkoutId }: Props = $props();
 
 	const { quantityAvailable, quantityLimitPerCustomer } = line.variant;
-	const QUANTITY_LIMIT = quantityLimitPerCustomer || quantityAvailable;
+	const QUANTITY_LIMIT = quantityLimitPerCustomer || quantityAvailable || 0;
 	const DEBOUNCE_TIME = 888;
 
 	let quantity = $state(line.quantity);
+	let loading = $state(false);
 
 	const mediaUrl = $derived.by(() => {
 		if (line.variant.media?.length) return line.variant.media[0].url;
@@ -49,6 +51,8 @@
 	});
 
 	const handleDeleteCheckoutLine = async () => {
+		loading = true; //
+
 		const deleteResult = await graphqlClient
 			.mutation<Pick<Mutation, 'checkoutLinesDelete'>, MutationCheckoutLinesDeleteArgs>(
 				CHECKOUT_LINES_DELETE_MUTATION,
@@ -58,6 +62,8 @@
 				}
 			)
 			.toPromise();
+
+		loading = false; //
 
 		if (preHandleGraphqlResult(deleteResult)) return;
 		if (deleteResult.data?.checkoutLinesDelete?.errors.length) {
@@ -72,13 +78,18 @@
 	};
 
 	/** returns `true` means it's ok to set new quantity, `false` otherwise */
-	const validateQuantity = (newQuantity: number) => {
-		return newQuantity > 0 && (!QUANTITY_LIMIT || newQuantity <= QUANTITY_LIMIT);
+	const validateQuantity = (newQuantity: unknown) => {
+		return (
+			typeof newQuantity === 'number' &&
+			newQuantity > 0 &&
+			(!QUANTITY_LIMIT || newQuantity <= QUANTITY_LIMIT)
+		);
 	};
 
 	const handleUpdateCheckoutLine = async () => {
-		await tick();
 		if (!validateQuantity(quantity)) return;
+
+		loading = true; //
 
 		const updateResult = await graphqlClient
 			.mutation<Pick<Mutation, 'checkoutLinesUpdate'>, MutationCheckoutLinesUpdateArgs>(
@@ -89,6 +100,8 @@
 				}
 			)
 			.toPromise();
+
+		loading = false; //
 
 		if (preHandleGraphqlResult(updateResult)) return;
 		if (updateResult.data?.checkoutLinesUpdate?.errors.length) {
@@ -102,26 +115,50 @@
 		checkoutStore.set(updateResult.data?.checkoutLinesUpdate?.checkout as Checkout);
 	};
 
-	const handleItemQuantityInput = (evt: Event) => {
-		const { value } = evt.target as HTMLInputElement;
-		const newQuantity = Math.round(Number(value));
-		if (validateQuantity(newQuantity)) {
+	const handleItemQuantityInput = () => {
+		let timeout: any;
+
+		return (evt: Event) => {
+			const { value } = evt.target as HTMLInputElement;
+			const newQuantity = Math.round(Number(value));
+
+			clearTimeout(timeout);
+			if (!validateQuantity(newQuantity)) return;
+
 			quantity = newQuantity;
-		}
+			timeout = setTimeout(handleUpdateCheckoutLine, DEBOUNCE_TIME);
+		};
+	};
+
+	const handleQuantityBtnClick = (delta: -1 | 1) => {
+		let timeout: any;
+
+		return () => {
+			quantity += delta;
+
+			clearTimeout(timeout);
+			if (!validateQuantity(quantity)) return;
+
+			timeout = setTimeout(handleUpdateCheckoutLine, DEBOUNCE_TIME);
+		};
 	};
 
 	$effect(() => {
+		// in case user want to remove the item
 		if (quantity <= 0) {
 			alertStore.openAlertModal({
 				content: tClient('common.confirmRemoveProduct'),
 				onOk: handleDeleteCheckoutLine,
-				onCancel: () => (quantity = 1)
+				onCancel: () => {
+					quantity = 1;
+					handleUpdateCheckoutLine();
+				}
 			});
 		}
 	});
 </script>
 
-<div class="bg-white rounded-md p-4 w-full border mb-2">
+<div class="bg-white rounded-lg p-4 w-full border mb-2">
 	<div class="flex items-center gap-2">
 		<img src={mediaUrl} alt={mediaAlt} class="w-16 h-16 object-cover rounded overflow-hidden" />
 		<div class="flex-1">
@@ -139,35 +176,34 @@
 				size="sm"
 				color="red"
 				variant="light"
-				onclick={() => quantity--}
-				disabled={quantity <= 0}
-				clickDebounceOptions={{
-					onInput: handleUpdateCheckoutLine,
-					debounceTime: DEBOUNCE_TIME
-				}}
+				onclick={handleQuantityBtnClick(-1)}
+				disabled={quantity <= 0 || loading}
 			/>
 			<Input
 				size="sm"
 				bind:value={quantity}
 				min={0}
-				oninput={handleItemQuantityInput}
+				oninput={handleItemQuantityInput()}
 				type="number"
 				class="!w-16"
+				disabled={loading}
 			/>
 			<IconButton
 				icon={Plus}
 				size="sm"
 				variant="light"
-				clickDebounceOptions={{
-					onInput: handleUpdateCheckoutLine,
-					debounceTime: DEBOUNCE_TIME
-				}}
-				onclick={() => quantity++}
-				disabled={typeof QUANTITY_LIMIT === 'number' && QUANTITY_LIMIT <= quantity}
+				onclick={handleQuantityBtnClick(1)}
+				disabled={(typeof QUANTITY_LIMIT === 'number' && QUANTITY_LIMIT <= quantity) || loading}
 			/>
 		</div>
-		<span class="text-gray-800 font-bold">
-			{formatMoney(line.totalPrice.gross.currency, line.totalPrice.gross.amount)}
-		</span>
+		{#if loading}
+			<SkeletonContainer>
+				<Skeleton class="w-14 h-3" />
+			</SkeletonContainer>
+		{:else}
+			<span class="text-blue-700 font-semibold">
+				{formatMoney(line.totalPrice.gross.currency, line.totalPrice.gross.amount)}
+			</span>
+		{/if}
 	</div>
 </div>

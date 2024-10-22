@@ -1,5 +1,6 @@
 <script lang="ts">
 	type Props = {
+		/** tailwind classes. E.g `w-5 h-5` */
 		class: string;
 		rounded?: boolean;
 	};

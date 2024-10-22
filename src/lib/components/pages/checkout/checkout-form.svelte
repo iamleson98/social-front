@@ -5,6 +5,7 @@
 	import type { Checkout } from '$lib/gql/graphql';
 	import { userStore } from '$lib/stores/auth';
 	import { AppRoute } from '$lib/utils';
+	import UserShippingAddress from './user-shipping-address.svelte';
 
 	type Props = {
 		checkout: Checkout;
@@ -14,7 +15,7 @@
 </script>
 
 <div class="w-1/2 tablet:w-full p-2">
-	<div class="text-sm">Account</div>
+	<div class="text-sm font-semibold">Account</div>
 
 	{#if $userStore}
 		<div>{$userStore.email}</div>
@@ -24,7 +25,7 @@
 				<Input placeholder="Enter your email" size="md" startIcon={Email} />
 			</div>
 
-			<div class="text-right text-sm">
+			<div class="text-right text-xs">
 				Already have account ?
 				<a
 					class="inline underline text-blue-700"
@@ -40,7 +41,7 @@
 	 {#if checkout.isShippingRequired}
 	 <!-- shipping -->
 		{#if $userStore}
-		
+			<UserShippingAddress {checkout} />
 		{/if}
 	 {/if}
 </div>

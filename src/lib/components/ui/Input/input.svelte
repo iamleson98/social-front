@@ -6,7 +6,7 @@
 		variant?: 'normal' | 'error' | 'success';
 		subText?: string;
 		startIcon?: IconType;
-		size?: 'sm' | 'md' | 'lg';
+		size?: SocialSize;
 		/** a component to the end of input */
 		action?: Snippet;
 		ref?: HTMLInputElement | HTMLTextAreaElement;
@@ -25,6 +25,7 @@
 	import { randomID } from '$lib/utils/utils';
 	import type { Snippet } from 'svelte';
 	import type { HTMLInputAttributes } from 'svelte/elements';
+	import type { SocialSize } from '../common';
 
 	let {
 		label,
@@ -64,7 +65,7 @@
 		bind:value
 		use:shortcuts={selectShortcutOptions}
 		use:debounceInput={inputDebounceOption}
-		class={`${className} border w-full text-sm rounded-lg block p-2.5 input-bg-${variant} ${startIcon ? 'ps-8' : ''} input-${size}`}
+		class={`${className} border w-full text-sm rounded-lg block px-2.5 input-bg-${variant} ${startIcon ? 'ps-8' : ''} input-${size}`}
 		{...rest}
 	/>
 
@@ -98,14 +99,21 @@
 		@apply bg-red-50 border-red-300 text-red-700 placeholder-red-600 focus:ring-red-500 focus:border-red-500 dark:bg-red-700 dark:border-red-600 dark:placeholder-red-400 dark:text-white dark:focus:ring-red-500 dark:focus:border-red-500;
 	}
 	.input-lg {
-		@apply py-4 text-base;
+		@apply py-3 text-base;
 	}
 	.input-sm {
-		@apply py-1.5 text-xs;
+		@apply py-2 text-xs;
 	}
 	.input-md {
-		@apply text-sm;
+		@apply text-sm py-2.5;
 	}
+	.input-xs {
+		@apply py-2 text-xs;
+	}
+	.input-xl {
+		@apply py-3.5 text-lg;
+	}
+
 	.input-action > * {
 		@apply max-h-full max-w-full;
 	}

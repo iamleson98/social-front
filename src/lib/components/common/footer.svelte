@@ -1,4 +1,4 @@
-<footer class="p-6 m-auto">
+<footer class="p-6 max-w-6xl mx-auto">
 	<div class="mx-auto max-w-screen-xl">
 		<div class="md:flex md:justify-between">
 			<div class="mb-6 md:mb-0">
@@ -8,7 +8,7 @@
 						class="mr-3 h-8"
 						alt="FlowBite Logo"
 					/>
-					<span class="self-center text-2xl font-semibold whitespace-nowrap">Flowbite</span>
+					<span class="self-center text-2xl font-semibold whitespace-nowrap">Sitename</span>
 				</a>
 			</div>
 			<div class="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">
@@ -16,7 +16,7 @@
 					<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">Resources</h2>
 					<ul class="text-gray-600">
 						<li class="mb-4">
-							<a href="https://flowbite.com" class="hover:underline">Flowbite</a>
+							<a href="https://flowbite.com" class="hover:underline">Sitename</a>
 						</li>
 						<li>
 							<a href="https://tailwindcss.com/" class="hover:underline">Tailwind CSS</a>
@@ -50,7 +50,7 @@
 		<hr class="my-6 border-gray-200 sm:mx-auto lg:my-8" />
 		<div class="sm:flex sm:items-center sm:justify-between">
 			<span class="text-sm text-gray-500 text-right"
-				>© 2022 <a href="https://flowbite.com" class="hover:underline">Flowbite™</a>. All Rights
+				>© 2024 <a href="https://flowbite.com" class="hover:underline">Sitename™</a>. All Rights
 				Reserved.
 			</span>
 			<div class="flex mt-4 space-x-6 sm:justify-center sm:mt-0">

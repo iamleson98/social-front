@@ -38,7 +38,7 @@
 		"dotenv-cli": "^7.4.2",
 		"eslint": "^8.57.1",
 		"eslint-config-prettier": "^9.1.0",
-		"eslint-plugin-svelte": "^2.45.1",
+		"eslint-plugin-svelte": "^2.46.0",
 		"graphql-codegen": "^0.4.0",
 		"npm-run-all": "^4.1.5",
 		"postcss": "^8.4.47",
@@ -76,12 +76,14 @@
 		"graphql": "^16.9.0",
 		"graphql-yoga": "^5.7.0",
 		"lexical": "^0.17.1",
+		"libphonenumber-js": "^1.11.12",
 		"pg": "^8.13.0",
 		"svelte-persisted-store": "^0.11.0",
 		"sveltekit-i18n": "^2.4.2",
 		"typeorm": "^0.3.20",
 		"validator": "^13.12.0",
 		"wonka": "^6.3.4",
-		"xss": "^1.0.15"
+		"xss": "^1.0.15",
+		"yup": "^1.4.0"
 	}
 }

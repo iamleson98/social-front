@@ -55,6 +55,10 @@ export default {
 		cancel: 'Hủy',
 		confirmRemoveProduct: 'Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?',
 		emptyCart: 'Bạn chưa có sản phẩm nào trong giỏ hàng',
+		cartSummary: 'Thông tin giỏ hàng',
+		tempoTotalPrice: 'Tạm tính',
+		oldTotalPrice: 'Tổng cộng',
+		savings: 'Tiết kiệm',
 	},
 	product: {
 		chooseAddress: 'Vui lòng chọn địa chỉ',

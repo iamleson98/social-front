@@ -6,9 +6,9 @@
 	import Footer from '$lib/components/common/footer.svelte';
 	import { AlertListener } from '$lib/components/ui/Modal';
 	import { checkoutStore } from '$lib/stores/app';
-	import { AppRoute } from '$lib/utils';
-	import { toastStore } from '$lib/stores/ui/toast';
+	import { getOrInitCheckout } from '$lib/utils/utils';
 	import '../app.css';
+	import { AppRoute } from '$lib/utils';
 
 	interface Props {
 		children: Snippet;
@@ -17,17 +17,15 @@
 	let { children }: Props = $props();
 
 	onMount(async () => {
-		const fetchCheckoutResult = await fetch(`${AppRoute.CHECKOUT}/get-or-create`, {
-			method: 'POST',
-			body: '{}'
-		});
-		const result = await fetchCheckoutResult.json();
-
-		if (result.error) {
-			toastStore.send({ variant: 'error', message: result.error });
+		// does not fetch if the page is either checkout or shopping cart
+		if (
+			$page.route.id &&
+			[AppRoute.SHOPPING_CART, `${AppRoute.CHECKOUT}/[id]`].includes($page.route.id)
+		)
 			return;
-		}
-		checkoutStore.set(result.checkout);
+
+		const checkout = await getOrInitCheckout();
+		if (checkout) checkoutStore.set(checkout);
 	});
 </script>
 

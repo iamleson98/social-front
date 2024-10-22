@@ -55,6 +55,10 @@ export default {
 		cancel: 'Cancel',
 		confirmRemoveProduct: 'Are you sure you want to remove this product from cart?',
 		emptyCart: 'You have 0 products in cart',
+		cartSummary: 'Cart Summary',
+		tempoTotalPrice: 'Temporary total price',
+		oldTotalPrice: 'Original total price',
+		savings: 'Savings',
 	},
 	product: {
 		chooseAddress: 'Please choose address',
@@ -104,8 +108,5 @@ export default {
 	},
 	placeholders: {
 		enterPrdName: 'Enter product name',
-	},
-	pages: {
-		cart: 'Shopping Cart',
 	},
 };

@@ -17,11 +17,11 @@
 	}: Props = $props();
 
 	const sizeClass = {
-		xs: 'w-6',
-		sm: 'w-8',
-		md: 'w-12',
-		lg: 'w-14',
-		xl: 'w-16'
+		xs: '!p-1.5',
+		sm: '!p-2',
+		md: 'p-2.5',
+		lg: '!p-3',
+		xl: '!p-3.5',
 	}[size];
 </script>
 
@@ -29,7 +29,6 @@
 	{...rest}
 	{size}
 	class={`${sizeClass} ${className} ${rounded ? '!rounded-full' : ''}`}
-	style="padding-left: unset !important; padding-right: unset !important;"
 >
 	<Icon {icon} />
 	{#if children}

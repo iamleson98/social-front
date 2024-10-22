@@ -22,7 +22,6 @@
 	import { graphqlClient } from '$lib/client';
 	import { CHECKOUT_ADD_LINE_MUTATION } from '$lib/stores/api/checkout';
 	import { clientSideGetCookieOrDefault, getCookieByKey } from '$lib/utils/cookies';
-	import { AppRoute } from '$lib/utils';
 
 	type Props = {
 		productInformation: Omit<Product, 'variants'>;
@@ -72,21 +71,6 @@
 		let checkouIdCookie = getCookieByKey(
 			`checkout-${clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug)}`
 		);
-		if (!checkouIdCookie) {
-			const fetchResult = await fetch(`${AppRoute.CHECKOUT}/get-or-create`, {
-				method: 'POST',
-				body: '{}'
-			});
-			const parseResult = await fetchResult.json();
-			if (parseResult.error) {
-				toastStore.send({
-					variant: 'error',
-					message: parseResult.error
-				});
-				return;
-			}
-			checkouIdCookie = parseResult.checkout.id;
-		}
 
 		const addLineResult = await graphqlClient
 			.mutation<Pick<Mutation, 'checkoutLinesAdd'>, MutationCheckoutLinesAddArgs>(
@@ -218,7 +202,7 @@
 					type="number"
 					min={1}
 					max={selectedVariant?.quantityAvailable || selectedVariant?.quantityLimitPerCustomer}
-				class="text-center inline-flex w-20"
+					class="text-center inline-flex w-20"
 					value={quantitySelected < 1 ? 1 : quantitySelected}
 				/>
 				<IconButton
@@ -262,7 +246,7 @@
 			fullWidth
 			size="md"
 			color="gray"
-		>``
+			>``
 			<span> {tClient('product.addToCart')} </span>
 		</Button>
 	</div>

@@ -19,9 +19,12 @@ export const CHECKOUT_CREATE_MUTATION = gql`
 `;
 
 
-/** this query should be used by shopping-cart page, when we only need  */
+/** this query should be used by shopping-cart page */
 export const CHECKOUT_PREVIEW_QUERY = gql`
-query CheckoutPreview($id: ID!, $languageCode: LanguageCodeEnum!) {
+query CheckoutPreview(
+  $id: ID!, 
+  # $languageCode: LanguageCodeEnum!
+) {
   checkout(id: $id) {
     id
     isShippingRequired
@@ -31,12 +34,6 @@ query CheckoutPreview($id: ID!, $languageCode: LanguageCodeEnum!) {
         amount
       }
       tax {
-        currency
-        amount
-      }
-    }
-    shippingPrice {
-      gross {
         currency
         amount
       }
@@ -56,6 +53,10 @@ query CheckoutPreview($id: ID!, $languageCode: LanguageCodeEnum!) {
           amount
         }
       }
+      undiscountedTotalPrice {
+        currency
+        amount
+      }
       unitPrice {
         gross {
           currency
@@ -71,29 +72,29 @@ query CheckoutPreview($id: ID!, $languageCode: LanguageCodeEnum!) {
         name
         quantityAvailable
         quantityLimitPerCustomer
-        translation(languageCode: $languageCode) {
-          name
-        }
+        # translation(languageCode: $languageCode) {
+        #   name
+        # }
         attributes(variantSelection: ALL) {
           values {
             name
             dateTime
             boolean
-            translation(languageCode: $languageCode) {
-              name
-            }
+            # translation(languageCode: $languageCode) {
+            #   name
+            # }
           }
         }
         product {
           name
           slug
-          translation(languageCode: $languageCode) {
-            language {
-              code
-            }
-            id
-            name
-          }
+          # translation(languageCode: $languageCode) {
+          #   language {
+          #     code
+          #   }
+          #   id
+          #   name
+          # }
           media {
             alt
             type
@@ -112,7 +113,10 @@ query CheckoutPreview($id: ID!, $languageCode: LanguageCodeEnum!) {
 
 /** should be used in checkout detail page  */
 export const CHECKOUT_DETAILS_QUERY = gql`
-query CheckoutDetails($id: ID!, $languageCode: LanguageCodeEnum!) {
+query CheckoutDetails(
+  $id: ID!, 
+  # $languageCode: LanguageCodeEnum!
+) {
   checkout(id: $id) {
     id
     email
@@ -242,28 +246,28 @@ query CheckoutDetails($id: ID!, $languageCode: LanguageCodeEnum!) {
       variant {
         id
         name
-        translation(languageCode: $languageCode) {
-          name
-        }
+        # translation(languageCode: $languageCode) {
+        #   name
+        # }
         attributes(variantSelection: ALL) {
           values {
             name
             dateTime
             boolean
-            translation(languageCode: $languageCode) {
-              name
-            }
+            # translation(languageCode: $languageCode) {
+            #   name
+            # }
           }
         }
         product {
           name
-          translation(languageCode: $languageCode) {
-            language {
-              code
-            }
-            id
-            name
-          }
+          # translation(languageCode: $languageCode) {
+          #   language {
+          #     code
+          #   }
+          #   id
+          #   name
+          # }
           media {
             alt
             type
@@ -302,7 +306,7 @@ mutation CheckoutRemovePromoCode(
   $checkoutId: ID
   $promoCode: String
   $promoCodeId: ID
-  $languageCode: LanguageCodeEnum!
+  # $languageCode: LanguageCodeEnum!
 ) {
   checkoutRemovePromoCode(checkoutId: $checkoutId, promoCode: $promoCode, promoCodeId: $promoCodeId) {
     errors {
@@ -441,29 +445,29 @@ mutation CheckoutRemovePromoCode(
           name
           quantityLimitPerCustomer
           quantityAvailable
-          translation(languageCode: $languageCode) {
-            name
-          }
+          # translation(languageCode: $languageCode) {
+          #   name
+          # }
           attributes(variantSelection: ALL) {
             values {
               name
               dateTime
               boolean
-              translation(languageCode: $languageCode) {
-                name
-              }
+              # translation(languageCode: $languageCode) {
+              #   name
+              # }
             }
           }
           product {
             name
             slug
-            translation(languageCode: $languageCode) {
-              language {
-                code
-              }
-              id
-              name
-            }
+            # translation(languageCode: $languageCode) {
+            #   language {
+            #     code
+            #   }
+            #   id
+            #   name
+            # }
             media {
               alt
               type
@@ -518,6 +522,10 @@ mutation CheckoutLinesUpdate($lines: [CheckoutLineUpdateInput!]!, $id: ID!) {
             currency
             amount
           }
+        }
+        undiscountedTotalPrice {
+          currency
+          amount
         }
         unitPrice {
           gross {
@@ -618,6 +626,10 @@ mutation CheckoutLineDelete($linesIds: [ID!]!, $id: ID!) {
             currency
             amount
           }
+        }
+        undiscountedTotalPrice {
+          currency
+          amount
         }
         unitPrice {
           gross {

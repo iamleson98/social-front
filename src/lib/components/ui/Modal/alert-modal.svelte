@@ -4,7 +4,7 @@
 	import { Button } from '../Button';
 	import Modal, { type Props as ModalProps } from './modal.svelte';
 
-	type Props = Omit<ModalProps, 'hideHeader' | 'hideFooter' | 'header' | 'size'>;
+	type Props = Omit<ModalProps, 'hideHeader' | 'hideFooter' | 'header' | 'size' | 'onClose'>;
 
 	let {
 		children,
@@ -12,11 +12,11 @@
 		onCancel,
 		okText = tClient('common.ok'),
 		cancelText = tClient('common.cancel'),
-		...rest
+		open
 	}: Props = $props();
 </script>
 
-<Modal header="" size="xs" hideFooter hideHeader {...rest}>
+<Modal header="" size="xs" hideFooter hideHeader {open}>
 	<div class="text-yellow-300 flex justify-center py-2">
 		<Icon icon={AlertCircle} width="3rem" height="3rem" />
 	</div>

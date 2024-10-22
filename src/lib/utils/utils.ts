@@ -1,4 +1,4 @@
-import { type SelectedAttribute, AttributeInputTypeEnum, OrderDirection } from '$lib/gql/graphql';
+import { type Checkout, type CheckoutCreateInput, type Mutation, type Query, type SelectedAttribute, AttributeInputTypeEnum, OrderDirection } from '$lib/gql/graphql';
 import { tClient } from '$lib/i18n';
 import { toastStore } from '$lib/stores/ui/toast';
 import type { AnyVariables, OperationResult } from '@urql/core';
@@ -7,6 +7,11 @@ import { AppRoute } from './routes';
 import xss from 'xss';
 import { counter } from '$lib/stores/ui/counter';
 import { get } from 'svelte/store';
+import { clientSideGetCookieOrDefault, clientSideSetCookie, getCookieByKey } from './cookies';
+import { CHANNEL_KEY, defaultChannel } from './consts';
+import { cookieOpts, graphqlClient } from '$lib/client';
+import { CHECKOUT_CREATE_MUTATION, CHECKOUT_PREVIEW_QUERY } from '$lib/stores/api/checkout';
+import type { CustomQueryCheckoutArgs } from './types';
 
 
 export const editorJsParser = editorJsToHtml();
@@ -244,3 +249,36 @@ export const classNames = (classes: Record<string, boolean>): string => {
 }
 
 export const noop = () => { };
+
+export const getOrInitCheckout = async () => {
+	const channelSlug = clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug);
+	const checkoutId = getCookieByKey(`checkout-${channelSlug}`);
+
+	if (checkoutId) {
+		const checkoutResult = await graphqlClient
+			.query<Pick<Query, 'checkout'>, CustomQueryCheckoutArgs>(CHECKOUT_PREVIEW_QUERY, { id: checkoutId }, { requestPolicy: 'network-only' })
+			.toPromise();
+		if (preHandleGraphqlResult(checkoutResult)) return;
+		return checkoutResult.data?.checkout as Checkout;
+	}
+
+	const checkoutCreateResult = await graphqlClient
+		.mutation<Pick<Mutation, 'checkoutCreate'>, CheckoutCreateInput>(
+			CHECKOUT_CREATE_MUTATION,
+			{ channel: channelSlug, lines: [] },
+			{ requestPolicy: 'network-only' },
+		)
+		.toPromise();
+
+	if (preHandleGraphqlResult(checkoutCreateResult)) return;
+	if (checkoutCreateResult.data?.checkoutCreate?.errors.length) {
+		toastStore.send({
+			message: checkoutCreateResult.data.checkoutCreate.errors[0].message as string,
+			variant: 'error'
+		});
+		return;
+	}
+
+	clientSideSetCookie(`checkout-${channelSlug}`, checkoutCreateResult.data?.checkoutCreate?.checkout?.id as string, cookieOpts);
+	return checkoutCreateResult.data?.checkoutCreate?.checkout as Checkout;
+};

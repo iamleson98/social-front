@@ -18,7 +18,7 @@
 		editable?: boolean;
 	};
 
-	let { checkout, editable = true }: Props = $props();
+	let { checkout, editable = false }: Props = $props();
 
 	let discountCode = $state('');
 </script>
@@ -64,7 +64,7 @@
 	<div class="flex flex-col items-end gap-1.5">
 		<p class="text-xs">quantity*</p>
 		<Input
-			size="sm"
+			size="xs"
 			class="text-center max-w-20 !bg-white"
 			type="number"
 			bind:value={line.quantity}
@@ -75,7 +75,7 @@
 
 {#snippet checkoutLine(line: CheckoutLine | OrderLine)}
 	<div class="flex flex-col items-end">
-		<p>Qty: {line.quantity}</p>
+		<p>quantity: <span class="font-bold">{line.quantity}</span></p>
 		{@render SummaryMoneyInfo(line)}
 	</div>
 {/snippet}
@@ -90,7 +90,7 @@
 					currency: line.undiscountedUnitPrice.currency,
 					amount: (line.undiscountedUnitPrice as Money).amount * line.quantity
 				}}
-				class="line-through"
+				class="line-through text-gray-500"
 			/>
 		{/if}
 		<MoneyComponent
@@ -109,7 +109,7 @@
 
 	<!-- discount code -->
 	{#if editable}
-		<div class="flex items-center gap-2 justify-end border-t py-2">
+		<div class="flex items-center gap-2 justify-end border-t py-4">
 			<Input
 				size="sm"
 				class="!bg-white"

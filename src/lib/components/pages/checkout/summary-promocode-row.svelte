@@ -11,8 +11,6 @@
 	import { Trash } from '$lib/components/icons';
 	import { graphqlClient } from '$lib/client';
 	import { CHECKOUT_REMOVE_PROMO_CODE_MUTATION } from '$lib/stores/api/checkout';
-	import { CHANNEL_KEY, findChannelBySlug } from '$lib/utils/consts';
-	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import { preHandleGraphqlResult } from '$lib/utils/utils';
 	import { toastStore } from '$lib/stores/ui/toast';
 
@@ -42,7 +40,6 @@
 			? { promoCode }
 			: { promoCodeId };
 		variables.checkoutId = checkoutId;
-		variables.languageCode = findChannelBySlug(clientSideGetCookieOrDefault(CHANNEL_KEY)).locale;
 
 		const removeResult = await graphqlClient
 			.mutation<
