@@ -2,16 +2,10 @@
 	import type { Checkout, CountryCode, Query, QueryChannelArgs } from '$lib/gql/graphql';
 	import { operationStore } from '$lib/stores/api';
 	import { CHANNEL_DETAILS_QUERY_STORE } from '$lib/stores/api/channels';
-	import { onMount } from 'svelte';
 	import AddressCreateForm from './address-create-form.svelte';
 	import AddressEditForm from './address-edit-form.svelte';
 	import AddressList from './address-list.svelte';
-	import { graphqlClient } from '$lib/client';
-	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
-	import { CHANNEL_KEY, defaultChannel } from '$lib/utils/consts';
-	import { preHandleGraphqlResult } from '$lib/utils/utils';
-	import { channel } from 'diagnostics_channel';
-	// import UserAddressSectionContainer from './user-address-section-container.svelte';
+
 
 	type Props = {
 		checkout: Checkout;
@@ -23,19 +17,6 @@
 	let editedAddressId = $state<string>();
 	let displayAddressEdit = $derived(!!editedAddressId);
 	let displayAddressList = $derived.by(() => !displayAddressCreate && !displayAddressEdit);
-
-	// onMount(async () => {
-	// 	if (!checkout.channel.slug) return;
-
-	// 	const channelResult = await graphqlClient
-	// 		.query<Pick<Query, 'channel'>, QueryChannelArgs>(CHANNEL_DETAILS_QUERY_STORE, {
-	// 			slug: checkout.channel.slug
-	// 		})
-	// 		.toPromise();
-
-	// 	if (preHandleGraphqlResult(channelResult)) return;
-
-	// });
 
 	const channelStore = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
 		kind: 'query',
@@ -55,14 +36,13 @@
 	{@const availableCountries =
 		$channelStore.data?.channel?.countries?.map(({ code }) => code as CountryCode) || []}
 	{#if displayAddressCreate}
-		<AddressCreateForm {availableCountries} />
-	{/if}
-
-	{#if displayAddressEdit}
+		<AddressCreateForm {availableCountries} onHide={() => (displayAddressCreate = false)} />
+	{:else if displayAddressEdit}
 		<AddressEditForm />
-	{/if}
-
-	{#if displayAddressList}
-		<AddressList />
+	{:else if displayAddressList}
+		<AddressList
+			onEditChange={(addrId) => (editedAddressId = addrId)}
+			onAddAddressClick={() => (displayAddressCreate = true)}
+		/>
 	{/if}
 {/if}

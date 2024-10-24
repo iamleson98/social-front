@@ -32,7 +32,7 @@
 		disabled?: boolean;
 		size?: 'sm' | 'md' | 'lg';
 		variant?: 'normal' | 'error' | 'success';
-		value: string | number | undefined;
+		value?: string | number;
 	};
 
 	let {
@@ -42,7 +42,7 @@
 		disabled = false,
 		size = 'md',
 		variant = 'normal',
-		value = $bindable<string | number | undefined>('')
+		value = $bindable<string | number>('')
 	}: Props = $props();
 
 	let searchQuery = $state('');
@@ -51,7 +51,7 @@
 	let selectedOption = $derived.by(() =>
 		value ? options.find((opt) => opt.value === value) : undefined
 	);
-	let input: HTMLInputElement;
+	let input = $state<HTMLInputElement>();
 	let optionRefs: HTMLElement[] = [];
 	const id = randomID();
 
@@ -65,7 +65,7 @@
 
 	const onInput = () => {
 		openDropdown();
-		searchQuery = input.value.trim();
+		searchQuery = input?.value.trim() ?? '';
 		optionRefs[0]?.scrollIntoView({ block: 'nearest' });
 	};
 
@@ -91,7 +91,7 @@
 
 	const onClear = () => {
 		input?.focus();
-		value = undefined;
+		value = '';
 		searchQuery = '';
 	};
 

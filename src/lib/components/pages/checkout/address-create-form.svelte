@@ -1,12 +1,17 @@
 <script lang="ts">
 	import type { CountryCode } from '$lib/gql/graphql';
+	import AddressForm from './address-form.svelte';
 
 	type Props = {
 		availableCountries: CountryCode[];
-		title: string;
+		onHide: () => void;
 	};
 
-	let { title, availableCountries }: Props = $props();
+	let { availableCountries, onHide }: Props = $props();
 </script>
 
-<div></div>
+<div>
+	<p>Create address</p>
+
+	<AddressForm {availableCountries} />
+</div>

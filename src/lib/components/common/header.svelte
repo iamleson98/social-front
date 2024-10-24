@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui';
-	import Logo from './logo.svelte';
 	import { userStore } from '$lib/stores/auth';
 	import { AppRoute, getCookieByKey } from '$lib/utils';
 	import { page } from '$app/stores';
@@ -60,8 +59,8 @@
 	<!-- navigating -->
 	<div class="w-1/2 flex items-center gap-3">
 		<!-- logo -->
-		<a href={AppRoute.HOME} class="inline">
-			<Logo />
+		<a href={AppRoute.HOME} class="inline !select-none">
+			<img src="/logo.png" alt="logo" class="!select-none w-16 h-auto" />
 		</a>
 
 		<!-- search -->

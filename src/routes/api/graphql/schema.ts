@@ -1,8 +1,19 @@
-import { read } from '$app/server';
-// @ts-expect-error - This is a valid import
-import schemaFile from '$lib/graphql/schema.graphql'; 
+// import { read } from '$app/server';
 
 
-const file = read(schemaFile);
+import { readFile } from 'fs/promises';
 
-export const typeDefs = await file.text();
+const schemaFile = 'src/lib/graphql/schema.graphql'; 
+
+let typeDefs: string;
+
+if (typeof Bun !== 'undefined') {
+  const file = Bun.file(schemaFile);
+  typeDefs = await file.text();
+} else {
+  typeDefs = await readFile(schemaFile, 'utf-8');
+}
+
+// export const typeDefs = await file.text();
+
+export {typeDefs};
