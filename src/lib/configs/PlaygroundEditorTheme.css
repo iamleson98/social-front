@@ -196,7 +196,7 @@
   cursor: pointer;
 }
 .PlaygroundEditorTheme__tableAddRows:after {
-  background-image: url(../images/icons/plus.svg);
+  background-image: url(./plus.svg);
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;

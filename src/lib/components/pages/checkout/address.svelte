@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Checkout, Query, QueryChannelArgs } from '$lib/gql/graphql';
-	import { operationStore } from '$lib/stores/api';
+	import { operationStore } from '$lib/stores/api/operation';
 	import { CHANNEL_DETAILS_QUERY_STORE } from '$lib/stores/api/channels';
 	import { userStore } from '$lib/stores/auth';
 	import { CHANNEL_KEY, defaultChannel } from '$lib/utils/consts';

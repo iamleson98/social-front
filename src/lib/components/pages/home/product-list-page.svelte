@@ -5,9 +5,10 @@
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
 	import type { Query, QueryProductsArgs } from '$lib/gql/graphql';
-	import { operationStore, PRODUCT_LIST_QUERY_STORE } from '$lib/stores/api';
+	import { PRODUCT_LIST_QUERY_STORE } from '$lib/stores/api';
 	import ProductCard from './product-card.svelte';
 	import type { ProductFilterParams } from '$lib/stores/app/product-filter';
+	import { operationStore } from '$lib/stores/api/operation';
 
 	type Props = {
 		isLastPage: boolean;

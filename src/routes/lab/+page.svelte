@@ -19,6 +19,8 @@
 
 <SlideShow />
 
+<h1>Lab page</h1>
+
 <button onclick={() => (open = true)}>open</button>
 
 <AlertModal

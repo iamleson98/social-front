@@ -7,7 +7,7 @@
 	import { Input } from '$lib/components/ui/Input';
 	import { TimeLine } from '$lib/components/ui/timeline';
 	import type { Query } from '$lib/gql/graphql';
-	import { operationStore } from '$lib/stores/api';
+	import { operationStore } from '$lib/stores/api/operation';
 	import { CHECKOUT_PREVIEW_QUERY } from '$lib/stores/api/checkout';
 	import { AppRoute } from '$lib/utils';
 	import { CHANNEL_KEY, defaultChannel } from '$lib/utils/consts';

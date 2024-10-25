@@ -16,7 +16,6 @@
 <div
 	class="relative flex items-center p-4 rounded-lg bg-gray-100 cursor-pointer h-30"
 	role="button"
-	tabindex="0"
 	{onclick}
 >
 	<div

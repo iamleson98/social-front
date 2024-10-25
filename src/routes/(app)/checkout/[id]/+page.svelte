@@ -3,7 +3,7 @@
 	import { CheckoutLayout } from '$lib/components/pages/checkout';
 	import { TimeLine } from '$lib/components/ui/timeline';
 	import type { Checkout, Query } from '$lib/gql/graphql';
-	import { operationStore } from '$lib/stores/api';
+	import { operationStore } from '$lib/stores/api/operation';
 	import { CHECKOUT_DETAILS_QUERY } from '$lib/stores/api/checkout';
 	import { type CustomQueryCheckoutArgs } from '$lib/utils/types';
 

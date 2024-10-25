@@ -5,7 +5,7 @@
 	type Props = {
 		label?: string;
 		group?: unknown;
-	} & Omit<HTMLInputAttributes, 'size'>;
+	} & Omit<HTMLInputAttributes, 'size' | 'hidden'>;
 
 	let {
 		label,
@@ -15,7 +15,7 @@
 	}: Props = $props();
 </script>
 
-<div class="radio-btn-container">
+<div class="radio-btn-container dark:border-gray-700">
 	<input
 		{id}
 		type="radio"
@@ -24,7 +24,7 @@
 		{...rest}
 	/>
 	{#if label}
-		<label for={id} class="radio-label">
+		<label for={id} class="radio-label dark:text-gray-300">
 			{label}
 		</label>
 	{/if}
@@ -32,12 +32,9 @@
 
 <style lang="postcss">
 	.radio-btn-container {
-		@apply flex items-center gap-1.5 dark:border-gray-700 cursor-pointer;
-	}
-	.radio-btn-input {
-		@apply w-4 h-4 text-blue-600;
+		@apply flex items-center gap-1.5 cursor-pointer;
 	}
 	.radio-label {
-		@apply w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300;
+		@apply w-full py-4 ms-2 text-sm font-medium text-gray-900;
 	}
 </style>

@@ -42,7 +42,7 @@
 		disabled = false,
 		size = 'md',
 		variant = 'normal',
-		value = $bindable<string | number>('')
+		value = $bindable<string | number>(''),
 	}: Props = $props();
 
 	let searchQuery = $state('');
