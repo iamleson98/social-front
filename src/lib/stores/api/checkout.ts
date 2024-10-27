@@ -176,10 +176,10 @@ query CheckoutDetails(
     authorizeStatus
     chargeStatus
     isShippingRequired
-    user {
-      id
-      email
-    }
+    # user {
+    #   id
+    #   email
+    # }
     availablePaymentGateways {
       id
       name
@@ -373,10 +373,10 @@ mutation CheckoutRemovePromoCode(
       authorizeStatus
       chargeStatus
       isShippingRequired
-      user {
-        id
-        email
-      }
+      # user {
+      #   id
+      #   email
+      # }
       availablePaymentGateways {
         id
         name

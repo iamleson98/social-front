@@ -6,6 +6,7 @@
 	import { operationStore } from '$lib/stores/api/operation';
 	import { CHECKOUT_DETAILS_QUERY } from '$lib/stores/api/checkout';
 	import { type CustomQueryCheckoutArgs } from '$lib/utils/types';
+	import { afterNavigate } from '$app/navigation';
 
 	const checkoutStore = operationStore<Pick<Query, 'checkout'>, CustomQueryCheckoutArgs>({
 		kind: 'query',
@@ -13,7 +14,11 @@
 		variables: {
 			id: $page.params.id
 		},
-		// requestPolicy: 'network-only'
+		context: { requestPolicy: 'network-only' }
+	});
+
+	afterNavigate(() => {
+		window.scrollTo({ top: 0, behavior: 'smooth' });
 	});
 </script>
 
@@ -30,7 +35,7 @@
 				{ title: 'Payment', done: false },
 				{ title: 'Order confirmation', done: false }
 			]}
-			class="py-4 my-1"
+			class="py-3 px-2"
 		/>
 		<CheckoutLayout checkout={$checkoutStore.data?.checkout as Checkout} />
 	{/if}

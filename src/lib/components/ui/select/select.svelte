@@ -12,8 +12,7 @@
 	import { ChevronSort, CloseX, Icon } from '$lib/components/icons';
 	import { classNames, randomID } from '$lib/utils/utils';
 	import { fly } from 'svelte/transition';
-	import { Input } from '../Input';
-	import { tClient } from '$i18n';
+	import { Input, type InputProps } from '../Input';
 
 	type SnippetProps = {
 		/** default `false` */
@@ -26,23 +25,12 @@
 
 	type Props = {
 		options: SelectOption[];
-		placeholder?: string;
-		label?: string;
-		/** default `false` */
-		disabled?: boolean;
-		size?: 'sm' | 'md' | 'lg';
-		variant?: 'normal' | 'error' | 'success';
-		value?: string | number;
-	};
+	} & InputProps;
 
 	let {
 		options,
-		placeholder = tClient('product.valuePlaceholder'),
-		label,
-		disabled = false,
-		size = 'md',
-		variant = 'normal',
-		value = $bindable<string | number>(''),
+		value = $bindable<string | number | undefined>(),
+			...rest
 	}: Props = $props();
 
 	let searchQuery = $state('');
@@ -56,8 +44,10 @@
 	const id = randomID();
 
 	/** list of options that match search query */
-	let filteredOptions = $derived(
-		options.filter((option) => option.label.toLowerCase().includes(searchQuery.toLowerCase()))
+	let filteredOptions = $derived.by(() =>
+		searchQuery
+			? options.filter((option) => option.label.toLowerCase().includes(searchQuery.toLowerCase()))
+			: options
 	);
 
 	const inputId = `combobox-${id}`;
@@ -124,10 +114,6 @@
 	</li>
 {/snippet}
 
-{#if label}
-	<label for={inputId}>{label}</label>
-{/if}
-
 <div
 	class="relative w-full text-gray-700 text-base"
 	use:clickOutside={{ onOutclick: deactivate }}
@@ -144,10 +130,7 @@
 >
 	<div>
 		<Input
-			{placeholder}
-			{disabled}
-			{variant}
-			{size}
+			{...rest}
 			aria-controls={listboxId}
 			aria-expanded={openSelect}
 			bind:ref={input}
@@ -166,17 +149,24 @@
 			inputDebounceOption={{
 				onInput
 			}}
+			{action}
 		/>
 
-		<div class="select-action" class:pr-2={!!value} class:pointer-events-none={!value}>
+		{#snippet action()}
 			{#if !!value}
-				<button class="btn btn-circle btn-xs" onclick={onClear} title="Clear value">
+				<span
+					onclick={onClear}
+					role="button"
+					tabindex="0"
+					onkeydown={(evt) => evt.key === 'Enter' && onClear()}
+					class="cursor-pointer"
+				>
 					<Icon icon={CloseX} />
-				</button>
+				</span>
 			{:else if !openSelect}
-				<Icon icon={ChevronSort} aria-hidden={true} />
+				<Icon icon={ChevronSort} />
 			{/if}
-		</div>
+		{/snippet}
 	</div>
 
 	{#if openSelect}
@@ -212,9 +202,6 @@
 <style lang="postcss">
 	.select-menu {
 		@apply absolute text-left mt-0.5 text-sm w-full max-h-64 overflow-y-auto bg-white rounded-b-xl z-10 shadow-sm border border-gray-200;
-	}
-	.select-action {
-		@apply absolute right-0 top-0 h-full flex px-4 justify-center content-between items-center;
 	}
 	.select-option {
 		@apply text-left w-full px-4 py-1 hover:bg-blue-50 aria-selected:bg-blue-50 hover:text-blue-600;

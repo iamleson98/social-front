@@ -16,15 +16,11 @@ import { redirect, type RequestEvent } from '@sveltejs/kit';
 import { browser } from '$app/environment';
 import { ACCESS_TOKEN_KEY, CSRF_TOKEN_KEY, HTTPStatusTemporaryRedirect, REFRESH_TOKEN_KEY } from './utils/consts';
 import { authExchange, type AuthUtilities } from '@urql/exchange-auth';
-import { USER_ME_QUERY_STORE, USER_REFRESH_TOKEN_MUTATION_STORE } from './stores/api';
-import type { Mutation, Query, User } from './gql/graphql';
+import { USER_ME_QUERY_STORE } from './stores/api';
+import type { Query, User } from './gql/graphql';
 import { userStore } from './stores/auth';
 import type { CookieSerializeOptions } from 'cookie';
-import { goto } from '$app/navigation';
 import { retryExchange } from '@urql/exchange-retry';
-import { clientSideDeleteCookie, clientSideSetCookie } from './utils/cookies';
-import { get, writable } from 'svelte/store';
-
 
 export const MAX_REFRESH_TOKEN_TRIES = 3;
 export const cookieOpts: Readonly<CookieSerializeOptions & { path: string }> = Object.freeze({
@@ -132,9 +128,9 @@ const isAuthenError = (err: CombinedError): boolean => {
 	return false;
 }
 
-const authExchangeInner = async (utils: AuthUtilities) => {
-	const refreshTracker = writable(false);
+let refreshAuthTracker = false
 
+const authExchangeInner = async (utils: AuthUtilities) => {
 	const addAuthToOperation = (operation: Operation) => {
 		const accessToken = getCookieByKey(ACCESS_TOKEN_KEY);
 		if (accessToken) {
@@ -147,38 +143,24 @@ const authExchangeInner = async (utils: AuthUtilities) => {
 	}
 
 	const refreshAuth = async () => {
-		// prevent multiple refreshAuth calls
-		if (get(refreshTracker)) return;
+		if (refreshAuthTracker || !browser) return;
+		refreshAuthTracker = true
 
-		// mark that we are refreshing
-		refreshTracker.set(true);
+		const refreshResult = await fetch(
+			`${AppRoute.AUTH_REFRESH_TOKEN}`,
+			{
+				method: 'POST',
+				body: JSON.stringify({
+					refreshToken: getCookieByKey(REFRESH_TOKEN_KEY),
+					csrfToken: getCookieByKey(CSRF_TOKEN_KEY),
+				}),
+			}
+		);
 
-		clientSideDeleteCookie(ACCESS_TOKEN_KEY);
-		const csrfToken = getCookieByKey(CSRF_TOKEN_KEY);
-		const refreshToken = getCookieByKey(REFRESH_TOKEN_KEY);
+		const result: Record<string, unknown> = await refreshResult.json();
+		userStore.set(result.user as User);
 
-		if (!csrfToken || !refreshToken) {
-			await goto(AppRoute.AUTH_SIGNIN, { invalidateAll: true });
-		}
-
-		const result = await utils
-			.mutate<Pick<Mutation, 'tokenRefresh'>>(
-				USER_REFRESH_TOKEN_MUTATION_STORE,
-				{ csrfToken, refreshToken },
-				{ requestPolicy: 'network-only' },
-			);
-
-		if (result.error || result.data?.tokenRefresh?.errors.length) {
-			clientSideDeleteCookie(CSRF_TOKEN_KEY);
-			clientSideDeleteCookie(REFRESH_TOKEN_KEY);
-			await goto(AppRoute.AUTH_SIGNIN, { invalidateAll: true });
-		};
-
-		clientSideSetCookie(ACCESS_TOKEN_KEY, result.data?.tokenRefresh?.token as string, { path: '/', secure: true, maxAge: 24 * 60 * 60 });
-		userStore.set(result.data?.tokenRefresh?.user);
-
-		// mark that we have finished refreshing
-		refreshTracker.set(false);
+		refreshAuthTracker = false;
 	}
 
 	return {
@@ -202,17 +184,17 @@ export const graphqlClient = new Client({
 			maxDelayMs: 10000,
 			randomDelay: true,
 			maxNumberAttempts: 2,
-			retryIf: (error: CombinedError, _: Operation): boolean => (browser && error && !!error.networkError),
+			retryIf: (error, _): boolean => (browser && error && !!error.networkError),
 		}),
 		fetchExchange,
 	],
 });
 
 /**
-	 * @param result 
-	 * @param event 
-	 * @returns `true` means callers MUST run the operation again, `false` otherwise.
-	 */
+ * @param result 
+ * @param event 
+ * @returns `true` means callers MUST run the operation again, `false` otherwise.
+*/
 const checkIsAuthenAuthorErrorAndRedirectIfNeeded = async <Data = never, Variables extends AnyVariables = AnyVariables>(
 	result: OperationResult<Data, Variables>,
 	event: RequestEvent<Partial<Record<string, string>>, string | null>,
@@ -223,33 +205,36 @@ const checkIsAuthenAuthorErrorAndRedirectIfNeeded = async <Data = never, Variabl
 		return false;
 	}
 
-	// If we reach here, it means we have an authen or author error
-	event.cookies.delete(ACCESS_TOKEN_KEY, { path: '/', secure: true });
+	await event.fetch(
+		`${AppRoute.AUTH_REFRESH_TOKEN}`,
+		{
+			method: 'POST',
+			body: JSON.stringify({
+				refreshToken: event.cookies.get(REFRESH_TOKEN_KEY),
+				csrfToken: event.cookies.get(CSRF_TOKEN_KEY),
+			}),
+		}
+	);
 
-	const csrfToken = event.cookies.get(CSRF_TOKEN_KEY) || '';
-	const refreshToken = event.cookies.get(REFRESH_TOKEN_KEY) || '';
+	return true;
+};
 
-	if (!csrfToken || !refreshToken) {
-		redirect(HTTPStatusTemporaryRedirect, AppRoute.AUTH_SIGNIN);
+const attachAuthorizationHeaderToRequestIfNeeded = (
+	event: RequestEvent<Partial<Record<string, string>>, string | null>,
+	context?: Partial<OperationContext>,
+) => {
+	const newContext = context || {};
+	const accessToken = event.cookies.get(ACCESS_TOKEN_KEY) || '';
+
+	if (accessToken) {
+		newContext.fetchOptions = {
+			headers: {
+				Authorization: `Bearer ${accessToken}`
+			}
+		};
 	}
 
-	const refreshTokenResult = await graphqlClient
-		.mutation<Pick<Mutation, 'tokenRefresh'>>(
-			USER_REFRESH_TOKEN_MUTATION_STORE,
-			{ csrfToken, refreshToken, },
-			{ requestPolicy: 'network-only' }
-		)
-		.toPromise();
-
-	if (refreshTokenResult.error || refreshTokenResult.data?.tokenRefresh?.errors.length) {
-		event.cookies.delete(CSRF_TOKEN_KEY, { path: '/' });
-		event.cookies.delete(REFRESH_TOKEN_KEY, { path: '/' });
-		redirect(HTTPStatusTemporaryRedirect, AppRoute.AUTH_SIGNIN);
-	};
-
-	// set new access token to cookie (NO HTTPONLY)
-	event.cookies.set(ACCESS_TOKEN_KEY, refreshTokenResult.data?.tokenRefresh?.token as string, cookieOpts);
-	return true;
+	return newContext;
 };
 
 /**
@@ -289,22 +274,4 @@ export const pageRequiresAuthentication = async (event: RequestEvent<Partial<Rec
 
 	const meQueryResult = await performBackendOperation<Pick<Query, 'me'>>('query', USER_ME_QUERY_STORE, {}, event);
 	return meQueryResult.data?.me as User;
-};
-
-const attachAuthorizationHeaderToRequestIfNeeded = (
-	event: RequestEvent<Partial<Record<string, string>>, string | null>,
-	context?: Partial<OperationContext>,
-) => {
-	const newContext = context || {};
-	const accessToken = event.cookies.get(ACCESS_TOKEN_KEY) || '';
-
-	if (accessToken) {
-		newContext.fetchOptions = {
-			headers: {
-				Authorization: `Bearer ${accessToken}`
-			}
-		};
-	}
-
-	return newContext;
 };

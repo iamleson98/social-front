@@ -1,5 +1,9 @@
-import type { AddressValidationData, Maybe } from "$lib/gql/graphql";
+import { tClient } from "$i18n";
+import { CountryCode, type AddressValidationData, type Maybe } from "$lib/gql/graphql";
+import { uniq } from "lodash-es";
 import camelCase from 'lodash-es/camelCase';
+import { numberRegex } from "./utils";
+import { parsePhoneNumberWithError } from "libphonenumber-js/max";
 
 export type LocalizedAddressFieldLabel =
   | "province"
@@ -33,6 +37,11 @@ export type AddressField =
   | "streetAddress2"
   | "phone";
 
+type AddressFieldObj = {
+  value: string | number;
+  error: string | null;
+};
+
 export const addressFieldsOrder: AddressField[] = [
   "firstName",
   "lastName",
@@ -47,21 +56,149 @@ export const addressFieldsOrder: AddressField[] = [
   "phone",
 ];
 
+export const defaultAddressFieldObj: Record<AddressField, AddressFieldObj> = addressFieldsOrder
+  .reduce((prev, acc) => ({ ...prev, [acc]: { value: "", error: null } }), {} as Record<AddressField, AddressFieldObj>);
+
+export type AddressFormData = Omit<Record<AddressField, string>, "country" | "countryCode"> & {
+  countryCode: CountryCode;
+};
+
+export type AddressFieldValidator = (required: boolean, value?: string | number) => string | null;
+
+export const addressFieldValidators: Record<AddressField, AddressFieldValidator> = {
+  city: (required: boolean, value?: string | number) => {
+    if (!required) {
+      if (!value) return null;
+      if (typeof value !== 'string' || numberRegex.test(value)) return "Invalid city";
+      return null;
+    }
+
+    if (!value || numberRegex.test(value as string)) return "City is required";
+
+    return null;
+  },
+  firstName: (required: boolean, value?: string | number) => {
+    if (!required) {
+      if (!value) return null;
+      if (typeof value !== 'string') return "Invalid first name";
+      return null;
+    }
+
+    if (!value) return "First name is required";
+    return null;
+  },
+  lastName: (required: boolean, value?: string | number) => {
+    if (!required) {
+      if (!value) return null;
+      if (typeof value !== 'string') return "Invalid last name";
+      return null;
+    }
+
+    if (!value) return "Last name is required";
+    return null;
+  },
+  countryArea: (required: boolean, value?: string | number) => {
+    if (!required) {
+      if (!value) return null;
+      if (typeof value !== 'string' || numberRegex.test(value)) return "Invalid country area";
+      return null;
+    }
+
+    if (!value) return "Country area is required";
+    return null;
+  },
+  cityArea: (required: boolean, value?: string | number) => {
+    if (!required) {
+      if (!value) return null;
+      if (typeof value !== 'string') return "Invalid city area";
+      return null;
+    }
+
+    if (!value) return "City area is required";
+    return null;
+  },
+  postalCode: (required: boolean, value?: string | number) => {
+    if (!required) {
+      if (!value) return null;
+      if (typeof value !== 'string') return "Invalid postal code";
+      return null;
+    }
+
+    if (!value) return "Postal code is required";
+    return null;
+  },
+  countryCode: (required: boolean, value?: string | number) => {
+    if (!required) {
+      if (!value) return null;
+      if (typeof value !== 'string') return "Invalid country code";
+      return null;
+    }
+
+    if (!value || typeof value === 'number' || numberRegex.test(value) || !(value.toUpperCase() in CountryCode)) return "Country code is required";
+    return null;
+  },
+  companyName: (required: boolean, value?: string | number) => {
+    if (!required) {
+      if (!value) return null;
+      if (typeof value !== 'string') return "Invalid company name";
+      return null;
+    }
+
+    if (!value) return "Company name is required";
+    return null;
+  },
+  streetAddress1: (required: boolean, value?: string | number) => {
+    if (!required) {
+      if (!value) return null;
+      if (typeof value !== 'string') return "Invalid street address";
+      return null;
+    }
+
+    if (!value) return "Street address is required";
+    return null;
+  },
+  streetAddress2: (required: boolean, value?: string | number) => {
+    if (!required) {
+      if (!value) return null;
+      if (typeof value !== 'string') return "Invalid street address 2";
+      return null;
+    }
+
+    if (!value) return "Street address 2 is required";
+    return null;
+  },
+  phone: (required: boolean, value?: string | number) => {
+    if (!required) {
+      if (!value) return null;
+      if (typeof value !== 'string') return "Invalid phone number";
+    }
+
+    if (!value || typeof value !== 'string') return "Phone number is required";
+    try {
+      const result = parsePhoneNumberWithError(value);
+      if (!result.isValid()) return "Invalid phone number";
+      return null;
+    } catch {
+      return "Invalid phone number";
+    }
+  }
+};
+
 export type AddressFieldLabel = Exclude<AddressField, "countryCode"> | "country";
 
-
+/** NOTE: this code must be use by client side since it contains client translation */
 export const addressFieldMessages: Record<AddressFieldLabel, string> = {
-  city: "City",
-  firstName: "First name",
-  countryArea: "Country area",
-  lastName: "Last name",
-  country: "Country",
-  cityArea: "City area",
-  postalCode: "Postal code",
-  companyName: "Company",
-  streetAddress1: "Street address",
-  streetAddress2: "Street address (continue)",
-  phone: "Phone number",
+  city: tClient('common.city'),
+  firstName: tClient('common.firstName'),
+  countryArea: tClient('common.countryArea'),
+  lastName: tClient('common.lastName'),
+  country: tClient('common.country'),
+  cityArea: tClient('common.cityArea'),
+  postalCode: tClient('common.postalCode'),
+  companyName: tClient('common.companyName'),
+  streetAddress1: tClient('common.streetAddress1'),
+  streetAddress2: tClient('common.streetAddress2'),
+  phone: tClient('common.phone'),
 };
 
 export type ApiAddressField = AddressField | "name";
@@ -70,6 +207,7 @@ export const getRequiredAddressFields = (requiredFields: AddressField[] = []): A
   ...requiredFields,
   "firstName",
   "lastName",
+  "phone",
 ];
 
 type LocalizedObj = {
@@ -78,34 +216,36 @@ type LocalizedObj = {
   postalCode: string,
 }
 
-export const getFilteredAddressFields = (fields: ApiAddressField[]) => {
-  const meetMap: Record<string, boolean> = {};
-  for (const field of fields.concat(['firstName', 'lastName', 'phone'])) {
-    if (field === 'name') continue;
+export const typeTags: Partial<Record<AddressField, string>> = {
+  phone: "tel",
+};
 
-    meetMap[field] = true;
-  }
+export const getFilteredAddressFields = (addressFields: ApiAddressField[]) => {
+  const filteredAddressFields = addressFields.filter(
+    (addressField: ApiAddressField) => addressField !== "name",
+  ) as AddressField[];
 
-  return Object.keys(meetMap) as AddressField[];
+  return uniq([...filteredAddressFields, "firstName", "lastName", "phone"]);
 };
 
 export const getOrderedAddressFields = (addressFields: AddressField[]) => {
   const filteredAddressFields = getFilteredAddressFields(addressFields);
-  return addressFieldsOrder.filter(field => filteredAddressFields.includes(field));
+  const result = addressFieldsOrder.filter(field => filteredAddressFields.includes(field));
+
+  return result;
 };
 
 const getLocalizedFieldLabel = (field: AddressField, localizedField?: string) => {
   try {
-    const translatedLabel =
-      localizedAddressFieldMessages[camelCase(localizedField) as LocalizedAddressFieldLabel];
+    const translatedLabel = localizedAddressFieldMessages[camelCase(localizedField) as LocalizedAddressFieldLabel];
     return translatedLabel;
-  } catch (e) {
+  } catch {
     console.warn(`Missing translation: ${localizedField}`);
     return addressFieldMessages[camelCase(field) as AddressFieldLabel];
   }
 };
 
-const isRequiredField = (field: AddressField, validationRules: AddressValidationData) => {
+export const isRequiredField = (field: AddressField, validationRules: AddressValidationData) => {
   if (!validationRules.requiredFields) return false;
 
   return getRequiredAddressFields(validationRules.requiredFields as AddressField[]).includes(field)

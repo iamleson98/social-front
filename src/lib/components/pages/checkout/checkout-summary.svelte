@@ -104,64 +104,66 @@
 	</div>
 {/snippet}
 
-<div class="w-1/2 tablet:w-full">
-	<AccordionList header="Summary" items={checkout.lines} child={lineSummary} />
+<div class="w-1/2 tablet:w-full p-2">
+	<div class="bg-white rounded-lg border p-4">
+		<AccordionList header="Summary" items={checkout.lines} child={lineSummary} />
 
-	<!-- discount code -->
-	{#if editable}
-		<div class="flex items-center gap-2 justify-end border-t py-4">
-			<Input
-				size="sm"
-				class="!bg-white"
-				placeholder="Add giftcard or discount code"
-				bind:value={discountCode}
+		<!-- discount code -->
+		{#if editable}
+			<div class="flex items-center gap-2 justify-end border-t py-4">
+				<Input
+					size="sm"
+					class="!bg-white"
+					placeholder="Add giftcard or discount code"
+					bind:value={discountCode}
+				/>
+				<Button size="sm" variant="filled" disabled={!discountCode.trim()}>Apply</Button>
+			</div>
+		{/if}
+
+		<!-- price -->
+		<div class="flex items-center justify-between">
+			<div>Subtotal</div>
+			<MoneyComponent ariaLabel="subtotal price" money={checkout.subtotalPrice.gross} />
+		</div>
+
+		{#if checkout.voucherCode}
+			<SummaryPromocodeRow
+				{editable}
+				promoCode={checkout.voucherCode}
+				money={checkout.discount}
+				negative
+				ariaLabel="Voucher"
+				label={`Voucher code: ${checkout.voucherCode}`}
+				checkoutId={checkout.id}
 			/>
-			<Button size="sm" variant="filled" disabled={!discountCode.trim()}>Apply</Button>
+		{/if}
+
+		{#each checkout.giftCards as gc, idx (idx)}
+			<SummaryPromocodeRow
+				{editable}
+				promoCodeId={gc.id}
+				ariaLabel="Gift card"
+				label={`Gift Card: •••• •••• ${gc.displayCode}`}
+				money={gc.currentBalance}
+				negative
+				checkoutId={checkout.id}
+			/>
+		{/each}
+
+		<div class="flex items-center justify-between">
+			<div>Shipping cost</div>
+			<MoneyComponent ariaLabel="shipping cost" money={checkout.shippingPrice.gross} />
 		</div>
-	{/if}
 
-	<!-- price -->
-	<div class="flex items-center justify-between">
-		<div>Subtotal</div>
-		<MoneyComponent ariaLabel="subtotal price" money={checkout.subtotalPrice.gross} />
-	</div>
-
-	{#if checkout.voucherCode}
-		<SummaryPromocodeRow
-			{editable}
-			promoCode={checkout.voucherCode}
-			money={checkout.discount}
-			negative
-			ariaLabel="Voucher"
-			label={`Voucher code: ${checkout.voucherCode}`}
-			checkoutId={checkout.id}
-		/>
-	{/if}
-
-	{#each checkout.giftCards as gc, idx (idx)}
-		<SummaryPromocodeRow
-			{editable}
-			promoCodeId={gc.id}
-			ariaLabel="Gift card"
-			label={`Gift Card: •••• •••• ${gc.displayCode}`}
-			money={gc.currentBalance}
-			negative
-			checkoutId={checkout.id}
-		/>
-	{/each}
-
-	<div class="flex items-center justify-between">
-		<div>Shipping cost</div>
-		<MoneyComponent ariaLabel="shipping cost" money={checkout.shippingPrice.gross} />
-	</div>
-
-	<div class="flex flex-row items-baseline justify-between pb-4">
-		<div class="flex flex-row items-baseline">
-			<p class="font-bold">Total price</p>
-			<p class="ml-2 font-black">
-				includes {formatMoney(checkout.totalPrice.tax.currency, checkout.totalPrice.tax.amount)} tax
-			</p>
+		<div class="flex flex-row items-baseline justify-between pb-4">
+			<div class="flex flex-row items-baseline">
+				<p class="font-bold">Total price</p>
+				<p class="ml-2 font-black">
+					includes {formatMoney(checkout.totalPrice.tax.currency, checkout.totalPrice.tax.amount)} tax
+				</p>
+			</div>
+			<MoneyComponent ariaLabel="total price" money={checkout.totalPrice.gross} />
 		</div>
-		<MoneyComponent ariaLabel="total price" money={checkout.totalPrice.gross} />
 	</div>
 </div>

@@ -74,7 +74,7 @@
 				<Input
 					type="text"
 					name="first_name"
-					placeholder={tClient('signup.firstNamePlaceholder')}
+					placeholder={tClient('common.firstName')}
 					required
 					disabled={loading}
 					bind:value={firstName}
@@ -82,7 +82,7 @@
 				<Input
 					type="text"
 					name="last_name"
-					placeholder={tClient('signup.lastNamePlaceholder')}
+					placeholder={tClient('common.lastName')}
 					required
 					disabled={loading}
 					bind:value={lastName}
@@ -102,14 +102,16 @@
 				placeholder={tClient('common.passwordPlaceholder')}
 				bind:value={password}
 				class="mb-2"
-				variant={passwordDontMatch ? 'error' : 'normal'}
+				variant={passwordDontMatch ? 'error' : 'info'}
+				required
 			/>
 			<PasswordInput
 				placeholder={tClient('signup.confirmPasswordPlaceholder')}
 				bind:value={confirmPassword}
 				class="mb-3"
 				showAction={false}
-				variant={passwordDontMatch ? 'error' : 'normal'}
+				variant={passwordDontMatch ? 'error' : 'info'}
+				required
 			/>
 
 			<Checkbox
@@ -118,6 +120,7 @@
 				id="term_aggree"
 				class="mb-3"
 				bind:checked={termAndPoliciesAgree as boolean}
+				required
 			/>
 
 			<Button

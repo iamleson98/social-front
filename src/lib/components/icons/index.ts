@@ -72,6 +72,8 @@ export { default as CategoryPlus } from './tabler--catergory-plus.svelte';
 export { default as RosetteDiscount } from './tabler--rosette-discount.svelte';
 export { default as AlertCircle } from './tabler--alert-circle.svelte';
 export { default as EmptyDrawer } from './icomoon--drawer.svelte';
+export { default as Phone } from './tabler--phone.svelte';
+export { default as Building } from './tabler--building.svelte';
 
 export { default as Icon } from './icon.svelte';
 export { AlertHexagonFilled };

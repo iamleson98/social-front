@@ -21,7 +21,7 @@
 	const productFetchStore = operationStore<Pick<Query, 'products'>, QueryProductsArgs>({
 		kind: 'query',
 		query: PRODUCT_LIST_QUERY_STORE,
-		// context: { requestPolicy: 'network-only' },
+		context: { requestPolicy: 'network-only' },
 		variables
 	});
 </script>

@@ -6,9 +6,10 @@
 	import Footer from '$lib/components/common/footer.svelte';
 	import { AlertListener } from '$lib/components/ui/Modal';
 	import { checkoutStore } from '$lib/stores/app';
-	import { getOrInitCheckout } from '$lib/utils/utils';
-	import '../app.css';
 	import { AppRoute } from '$lib/utils';
+	import { HTTPStatusSuccess } from '$lib/utils/consts';
+	import { toastStore } from '$lib/stores/ui/toast';
+	import '../app.css';
 
 	interface Props {
 		children: Snippet;
@@ -24,13 +25,23 @@
 		)
 			return;
 
-		const checkout = await getOrInitCheckout();
-		if (checkout) checkoutStore.set(checkout);
+		const fetchResult = await fetch(AppRoute.CHECKOUT_GET_OR_CREATE, { method: 'POST' });
+		const parsedResult = await fetchResult.json();
+
+		if (parsedResult.status !== HTTPStatusSuccess) {
+			toastStore.send({
+				variant: 'error',
+				message: parsedResult.message
+			});
+			return;
+		}
+
+		checkoutStore.set(parsedResult.checkout);
 	});
 </script>
 
 <svelte:head>
-	<title>{$page.data.meta?.title || 'Web'} - Sitename</title>
+	<title>{$page.data?.meta?.title || 'Web'} - Sitename</title>
 	<!-- <link rel="manifest" href="/manifest.json" /> -->
 	<meta name="theme-color" content="currentColor" />
 

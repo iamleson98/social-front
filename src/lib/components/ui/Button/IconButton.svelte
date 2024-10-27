@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Icon, type IconType } from '$lib/components/icons';
+	import { ICON_BTN_SIZE_MAP } from '$lib/utils/consts';
 	import Button, { type Props as ButtonProps } from './Button.svelte';
 
 	type Props = { icon: IconType; rounded?: boolean } & Omit<
@@ -15,21 +16,14 @@
 		size = 'md',
 		...rest
 	}: Props = $props();
-
-	const sizeClass = {
-		xs: '!p-1.5',
-		sm: '!p-2',
-		md: 'p-2.5',
-		lg: '!p-3',
-		xl: '!p-3.5',
-	}[size];
 </script>
 
 <Button
 	{...rest}
 	{size}
-	class={`${sizeClass} ${className} ${rounded ? '!rounded-full' : ''}`}
->
+	class={`${className} ${ICON_BTN_SIZE_MAP[size]} ${rounded ? '!rounded-full' : ''}`}
+	style="padding: unset !important;"
+	>
 	<Icon {icon} />
 	{#if children}
 		{@render children()}

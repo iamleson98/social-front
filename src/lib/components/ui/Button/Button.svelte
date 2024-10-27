@@ -23,6 +23,7 @@
 	import { type Snippet } from 'svelte';
 	import { Icon, type IconType } from '$lib/components/icons';
 	import { debounceClick, type ClickDebounceOpts } from '$lib/actions/input-debounce';
+	import { SIZE_MAP } from '$lib/utils/consts';
 
 	type IconProps = {
 		icon?: IconType;
@@ -61,7 +62,7 @@
 {/snippet}
 
 <button
-	class={`${buttonVariantColorsMap[variant][color]} button button-${size} ${radius} ${className}`}
+	class={`${buttonVariantColorsMap[variant][color]} button button-${size} ${SIZE_MAP[size]} ${radius} ${className}`}
 	class:uppercase={upper}
 	class:w-full={fullWidth}
 	{type}
@@ -88,18 +89,18 @@
 		@apply !text-gray-500 !bg-gray-200 !cursor-not-allowed !pointer-events-none !touch-none !border-none;
 	}
 	.button-xs {
-		@apply text-xs px-3 py-1.5;
+		@apply px-3;
 	}
 	.button-sm {
-		@apply px-3 py-2 text-sm;
+		@apply px-3;
 	}
 	.button-md {
-		@apply text-base px-5 py-2.5;
+		@apply px-5;
 	}
 	.button-lg {
-		@apply px-5 py-3 text-lg;
+		@apply px-5;
 	}
 	.button-xl {
-		@apply px-6 py-3.5 text-xl;
+		@apply px-6;
 	}
 </style>

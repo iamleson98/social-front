@@ -1,3 +1,3 @@
-import { writable } from "svelte/store";
+// import { writable } from "svelte/store";
 
-export const counter = writable(0);
+// export const counter = writable(0);

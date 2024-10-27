@@ -9,17 +9,20 @@
 	let {
 		label,
 		checked = $bindable(),
-		name,
 		id = randomID(),
 		class: className = '',
+		required,
 		...rest
 	}: Props = $props();
 </script>
 
 <div class={`flex items-center ${className}`}>
-	<input {...rest} bind:checked type="checkbox" {name} {id} class="input-checkbox" />
+	<input {...rest} {required} bind:checked type="checkbox" {id} class="input-checkbox" />
 	{#if label}
-		<label for={id} class="checkbox-label">{label}</label>
+		<label for={id} class="checkbox-label"
+			>{label}
+			{#if required}<strong class="font-bold !text-red-600">*</strong>{/if}</label
+		>
 	{/if}
 </div>
 

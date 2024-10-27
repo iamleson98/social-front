@@ -99,7 +99,7 @@
 
 			<IconButton
 				icon={sortingIcons[$productFilterParamStore.sortBy?.direction as OrderDirection]}
-				size="xs"
+				size="sm"
 				color="gray"
 				onclick={handleOrderingButtonClick}
 			/>
@@ -119,7 +119,7 @@
 					($productFilterParamStore.filter as ProductFilterInput).price as PriceRangeInput
 				).gte}
 				startIcon={CurrencyIconMap[currency]}
-				variant={priceRangeError ? 'error' : 'normal'}
+				variant={priceRangeError ? 'error' : 'info'}
 			/>
 			<Input
 				placeholder="to"
@@ -127,7 +127,7 @@
 				min={0}
 				size="sm"
 				startIcon={CurrencyIconMap[currency]}
-				variant={priceRangeError ? 'error' : 'normal'}
+				variant={priceRangeError ? 'error' : 'info'}
 				bind:value={(
 					($productFilterParamStore.filter as ProductFilterInput).price as PriceRangeInput
 				).lte}

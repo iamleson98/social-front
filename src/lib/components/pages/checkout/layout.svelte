@@ -10,7 +10,7 @@
 	let { checkout }: Props = $props();
 </script>
 
-<div class="flex flex-row flex-nowrap gap-2 tablet:flex-col tablet:flex-wrap">
+<div class="flex flex-row flex-nowrap tablet:flex-col tablet:flex-wrap">
 	<CheckoutForm {checkout} />
 	<CheckoutSummary {checkout} />
 </div>

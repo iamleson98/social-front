@@ -83,7 +83,7 @@ mutation CreateUserAddress($address: AddressInput!, $type: AddressTypeEnum) {
 }`;
 
 export const ADDRESS_VALIDATION_RULES_QUERY = gql`
-mutation AddressValidationRules($countryCode: CountryCode!) {
+query AddressValidationRules($countryCode: CountryCode!) {
   addressValidationRules(countryCode: $countryCode) {
     addressFormat
 		allowedFields
