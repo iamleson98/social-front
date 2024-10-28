@@ -119,4 +119,10 @@ export default {
 	placeholders: {
 		enterPrdName: 'Enter product name',
 	},
+	pages: {
+		cart: 'Shopping Cart',
+		checkout: 'Checkout',
+		payment: 'Payment',
+		orderConfirm: 'Order Confirmation',
+	},
 };

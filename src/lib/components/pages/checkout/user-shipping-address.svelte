@@ -1,16 +1,11 @@
 <script lang="ts">
-	import type { Checkout, CountryCode, Query, QueryChannelArgs } from '$lib/gql/graphql';
+	import type { CountryCode, Query, QueryChannelArgs } from '$lib/gql/graphql';
 	import { operationStore } from '$lib/stores/api/operation';
 	import { CHANNEL_DETAILS_QUERY_STORE } from '$lib/stores/api/channels';
 	import AddressCreateForm from './address-create-form.svelte';
 	import AddressEditForm from './address-edit-form.svelte';
 	import AddressList from './address-list.svelte';
-
-	type Props = {
-		checkout: Checkout;
-	};
-
-	let { checkout }: Props = $props();
+	import { checkoutStore } from '$lib/stores/app';
 
 	let displayAddressCreate = $state(false);
 	let editedAddressId = $state<string>();
@@ -21,9 +16,9 @@
 		kind: 'query',
 		query: CHANNEL_DETAILS_QUERY_STORE,
 		variables: {
-			slug: checkout.channel.slug
+			slug: $checkoutStore?.channel.slug
 		},
-		pause: !checkout.channel.slug
+		pause: !$checkoutStore?.channel.slug
 	});
 </script>
 

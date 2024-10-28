@@ -5,7 +5,6 @@
 	import CartItemLine from '$lib/components/pages/cart/cart-item-line.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Input } from '$lib/components/ui/Input';
-	import { TimeLine } from '$lib/components/ui/timeline';
 	import type { Query } from '$lib/gql/graphql';
 	import { operationStore } from '$lib/stores/api/operation';
 	import { CHECKOUT_PREVIEW_QUERY } from '$lib/stores/api/checkout';
@@ -14,6 +13,7 @@
 	import { clientSideGetCookieOrDefault, getCookieByKey } from '$lib/utils/cookies';
 	import type { CustomQueryCheckoutArgs } from '$lib/utils/types';
 	import { formatMoney } from '$lib/utils/utils';
+	import { CommonTimeLine } from '$lib/components/common/timeline';
 
 	afterNavigate(() => {
 		window.scrollTo({
@@ -86,15 +86,7 @@
 		{@const originalTotalPrice = lines
 			.map((line) => line.undiscountedTotalPrice.amount)
 			.reduce((a, b) => a + b, 0)}
-		<TimeLine
-			items={[
-				{ title: 'Shopping cart', done: true },
-				{ title: 'Checkout', done: false },
-				{ title: 'Payment', done: false },
-				{ title: 'Order confirmation', done: false }
-			]}
-			class="py-4 my-1"
-		/>
+		<CommonTimeLine numberOfItemToEnable={1} />
 
 		<div class="flex flex-row justify-between tablet:flex-wrap tablet:flex-col gap-2">
 			<!-- preview area -->

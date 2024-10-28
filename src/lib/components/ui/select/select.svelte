@@ -25,12 +25,14 @@
 
 	type Props = {
 		options: SelectOption[];
+		class?: string;
 	} & InputProps;
 
 	let {
 		options,
 		value = $bindable<string | number | undefined>(),
-			...rest
+		class: className = '',
+		...rest
 	}: Props = $props();
 
 	let searchQuery = $state('');
@@ -137,6 +139,7 @@
 			aria-autocomplete="list"
 			autocomplete="off"
 			class={classNames({
+				[className]: true,
 				'!rounded-b-none': openSelect,
 				'cursor-pointer': !searchFocus
 			})}

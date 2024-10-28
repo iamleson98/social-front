@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { Select, type SelectOption } from '$lib/components/ui/select';
-	import type { CountryCode, Query, QueryAddressValidationRulesArgs } from '$lib/gql/graphql';
+	import type {
+		Address,
+		AddressInput,
+		CountryCode,
+		Query,
+		QueryAddressValidationRulesArgs
+	} from '$lib/gql/graphql';
 	import { operationStore } from '$lib/stores/api/operation';
 	import { ADDRESS_VALIDATION_RULES_QUERY } from '$lib/stores/api/account';
 	import {
@@ -10,7 +16,8 @@
 		isRequiredField,
 		typeTags,
 		addressFieldValidators,
-		defaultAddressFieldObj
+		defaultAddressFormValues,
+		addressToFieldValues
 	} from '$lib/utils/address';
 	import { Input } from '$lib/components/ui/Input';
 	import { uniqBy } from 'lodash-es';
@@ -19,13 +26,18 @@
 
 	type Props = {
 		countrySelectOptions: SelectOption[];
-		onSubmit: (address: Partial<Record<AddressField, string | number>>) => void;
+		onSubmit: (address: AddressInput) => void;
+		onCancel: () => void;
+		updatingCHeckoutAddresses: boolean;
+		defaultValue?: Address;
 	};
 
-	let { countrySelectOptions, onSubmit }: Props = $props();
+	let { countrySelectOptions, onSubmit, updatingCHeckoutAddresses, defaultValue, onCancel }: Props =
+		$props();
 
-	let selectedCountry = $state<CountryCode>();
-	let formValues = $state(defaultAddressFieldObj);
+	let formValues = $state(
+		defaultValue ? addressToFieldValues(defaultValue) : defaultAddressFormValues
+	);
 	let requiredFields: Partial<Record<AddressField, boolean>> = {};
 
 	const validationStore = operationStore<
@@ -39,10 +51,10 @@
 	});
 
 	$effect(() => {
-		if (!selectedCountry) return;
+		if (!formValues.countryCode.value) return;
 
 		validationStore.reexecute({
-			variables: { countryCode: selectedCountry }
+			variables: { countryCode: formValues.countryCode.value as CountryCode }
 		});
 	});
 
@@ -50,8 +62,7 @@
 		if (!$validationStore.data?.addressValidationRules) return false;
 
 		const required = isRequiredField(field, $validationStore.data.addressValidationRules);
-		requiredFields[field] = required;
-		return required;
+		return (requiredFields[field] = required); //
 	};
 
 	const handleSubmit = () => {
@@ -67,21 +78,22 @@
 
 		for (const key of Object.keys(formValues) as AddressField[]) {
 			const obj = formValues[key];
-			const error = addressFieldValidators[key](!!requiredFields[key], obj.value);
+			const error = addressFieldValidators[key](
+				!!requiredFields[key],
+				obj.value,
+				formValues.countryCode.value as CountryCode
+			);
 			if (error) isFormInvalid = true;
 			formValues[key].error = error;
 		}
 
 		if (!isFormInvalid) {
-			onSubmit(
-				(Object.keys(formValues) as AddressField[]).reduce(
-					(acc, key) => {
-						acc[key] = formValues[key].value;
-						return acc;
-					},
-					{} as Partial<Record<AddressField, string | number>>
-				)
+			const addressInput: AddressInput = Object.fromEntries(
+				Object.entries(formValues).map(([key, obj]) => [key, obj.value])
 			);
+			addressInput.country = formValues.countryCode.value as CountryCode;
+			delete addressInput['countryCode' as never];
+			onSubmit(addressInput);
 		}
 	};
 </script>
@@ -89,10 +101,9 @@
 <div>
 	<Select
 		disabled={$validationStore.fetching}
-		bind:value={selectedCountry}
+		bind:value={formValues.countryCode.value}
 		size="sm"
 		options={countrySelectOptions}
-		class="mb-3"
 		label="Choose your country"
 	/>
 
@@ -126,10 +137,10 @@
 					{label}
 					size="sm"
 					{required}
-					class="mb-2"
 					bind:value={formValues[field].value}
 					variant={formValues[field].error ? 'error' : 'info'}
 					subText={formValues[field].error || ''}
+					disabled={updatingCHeckoutAddresses}
 				/>
 			{:else if label}
 				<Input
@@ -142,10 +153,24 @@
 					bind:value={formValues[field].value}
 					variant={formValues[field].error ? 'error' : 'info'}
 					subText={formValues[field].error || ''}
+					disabled={updatingCHeckoutAddresses}
 				/>
 			{/if}
 		{/each}
 
-		<Button size="xs" variant="light" onclick={handleSubmit}>Use this address</Button>
+		<div class="flex gap-2 justify-end items-center">
+			<Button
+				size="xs"
+				variant="light"
+				onclick={handleSubmit}
+				disabled={updatingCHeckoutAddresses}
+				loading={updatingCHeckoutAddresses}
+			>
+				Use this address
+			</Button>
+			<Button size="xs" onclick={onCancel} disabled={updatingCHeckoutAddresses} color="red">
+				Cancel
+			</Button>
+		</div>
 	{/if}
 </div>

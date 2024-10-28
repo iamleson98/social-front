@@ -1,9 +1,9 @@
 import { tClient } from "$i18n";
-import { CountryCode, type AddressValidationData, type Maybe } from "$lib/gql/graphql";
+import { CountryCode, type Address, type AddressValidationData, type Maybe } from "$lib/gql/graphql";
 import { uniq } from "lodash-es";
 import camelCase from 'lodash-es/camelCase';
 import { numberRegex } from "./utils";
-import { parsePhoneNumberWithError } from "libphonenumber-js/max";
+import { parsePhoneNumberWithError, type CountryCode as PhoneCountryCode } from "libphonenumber-js/max";
 
 export type LocalizedAddressFieldLabel =
   | "province"
@@ -56,14 +56,29 @@ export const addressFieldsOrder: AddressField[] = [
   "phone",
 ];
 
-export const defaultAddressFieldObj: Record<AddressField, AddressFieldObj> = addressFieldsOrder
+export const addressToFieldValues = (addr: Address): Record<AddressField, AddressFieldObj> => {
+  const result: Record<AddressField, AddressFieldObj> = defaultAddressFormValues;
+  for (const key in addr) {
+    if (key === "country") {
+      result.countryCode.value = addr.country.code;
+      continue;
+    }
+    if (key in result) {
+      result[key as AddressField].value = addr[key as keyof Address] as string | number;
+    }
+  }
+
+  return result;
+};
+
+export const defaultAddressFormValues: Record<AddressField, AddressFieldObj> = addressFieldsOrder
   .reduce((prev, acc) => ({ ...prev, [acc]: { value: "", error: null } }), {} as Record<AddressField, AddressFieldObj>);
 
 export type AddressFormData = Omit<Record<AddressField, string>, "country" | "countryCode"> & {
   countryCode: CountryCode;
 };
 
-export type AddressFieldValidator = (required: boolean, value?: string | number) => string | null;
+export type AddressFieldValidator = (required: boolean, value?: string | number, countryCode?: CountryCode) => string | null;
 
 export const addressFieldValidators: Record<AddressField, AddressFieldValidator> = {
   city: (required: boolean, value?: string | number) => {
@@ -74,7 +89,6 @@ export const addressFieldValidators: Record<AddressField, AddressFieldValidator>
     }
 
     if (!value || numberRegex.test(value as string)) return "City is required";
-
     return null;
   },
   firstName: (required: boolean, value?: string | number) => {
@@ -167,7 +181,7 @@ export const addressFieldValidators: Record<AddressField, AddressFieldValidator>
     if (!value) return "Street address 2 is required";
     return null;
   },
-  phone: (required: boolean, value?: string | number) => {
+  phone: (required: boolean, value?: string | number, countryCode?: CountryCode) => {
     if (!required) {
       if (!value) return null;
       if (typeof value !== 'string') return "Invalid phone number";
@@ -175,7 +189,7 @@ export const addressFieldValidators: Record<AddressField, AddressFieldValidator>
 
     if (!value || typeof value !== 'string') return "Phone number is required";
     try {
-      const result = parsePhoneNumberWithError(value);
+      const result = parsePhoneNumberWithError(value, countryCode as PhoneCountryCode);
       if (!result.isValid()) return "Invalid phone number";
       return null;
     } catch {

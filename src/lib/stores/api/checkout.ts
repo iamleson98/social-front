@@ -23,7 +23,6 @@ export const CHECKOUT_CREATE_MUTATION = gql`
 export const CHECKOUT_PREVIEW_QUERY = gql`
 query CheckoutPreview(
   $id: ID!, 
-  # $languageCode: LanguageCodeEnum!
 ) {
   checkout(id: $id) {
     id
@@ -72,29 +71,16 @@ query CheckoutPreview(
         name
         quantityAvailable
         quantityLimitPerCustomer
-        # translation(languageCode: $languageCode) {
-        #   name
-        # }
         attributes(variantSelection: ALL) {
           values {
             name
             dateTime
             boolean
-            # translation(languageCode: $languageCode) {
-            #   name
-            # }
           }
         }
         product {
           name
           slug
-          # translation(languageCode: $languageCode) {
-          #   language {
-          #     code
-          #   }
-          #   id
-          #   name
-          # }
           media {
             alt
             type
@@ -115,7 +101,6 @@ query CheckoutPreview(
 export const CHECKOUT_DETAILS_QUERY = gql`
 query CheckoutDetails(
   $id: ID!, 
-  # $languageCode: LanguageCodeEnum!
 ) {
   checkout(id: $id) {
     id
@@ -176,10 +161,6 @@ query CheckoutDetails(
     authorizeStatus
     chargeStatus
     isShippingRequired
-    # user {
-    #   id
-    #   email
-    # }
     availablePaymentGateways {
       id
       name
@@ -246,28 +227,15 @@ query CheckoutDetails(
       variant {
         id
         name
-        # translation(languageCode: $languageCode) {
-        #   name
-        # }
         attributes(variantSelection: ALL) {
           values {
             name
             dateTime
             boolean
-            # translation(languageCode: $languageCode) {
-            #   name
-            # }
           }
         }
         product {
           name
-          # translation(languageCode: $languageCode) {
-          #   language {
-          #     code
-          #   }
-          #   id
-          #   name
-          # }
           media {
             alt
             type
@@ -306,7 +274,6 @@ mutation CheckoutRemovePromoCode(
   $checkoutId: ID
   $promoCode: String
   $promoCodeId: ID
-  # $languageCode: LanguageCodeEnum!
 ) {
   checkoutRemovePromoCode(checkoutId: $checkoutId, promoCode: $promoCode, promoCodeId: $promoCodeId) {
     errors {
@@ -373,10 +340,6 @@ mutation CheckoutRemovePromoCode(
       authorizeStatus
       chargeStatus
       isShippingRequired
-      # user {
-      #   id
-      #   email
-      # }
       availablePaymentGateways {
         id
         name
@@ -445,29 +408,16 @@ mutation CheckoutRemovePromoCode(
           name
           quantityLimitPerCustomer
           quantityAvailable
-          # translation(languageCode: $languageCode) {
-          #   name
-          # }
           attributes(variantSelection: ALL) {
             values {
               name
               dateTime
               boolean
-              # translation(languageCode: $languageCode) {
-              #   name
-              # }
             }
           }
           product {
             name
             slug
-            # translation(languageCode: $languageCode) {
-            #   language {
-            #     code
-            #   }
-            #   id
-            #   name
-            # }
             media {
               alt
               type
@@ -542,29 +492,16 @@ mutation CheckoutLinesUpdate($lines: [CheckoutLineUpdateInput!]!, $id: ID!) {
           name
           quantityAvailable
           quantityLimitPerCustomer
-          # translation(languageCode: $languageCode) {
-          #   name
-          # }
           attributes(variantSelection: ALL) {
             values {
               name
               dateTime
               boolean
-              # translation(languageCode: $languageCode) {
-              #   name
-              # }
             }
           }
           product {
             name
             slug
-            # translation(languageCode: $languageCode) {
-            #   language {
-            #     code
-            #   }
-            #   id
-            #   name
-            # }
             media {
               alt
               type
@@ -646,29 +583,16 @@ mutation CheckoutLineDelete($linesIds: [ID!]!, $id: ID!) {
           name
           quantityAvailable
           quantityLimitPerCustomer
-          # translation(languageCode: $languageCode) {
-          #   name
-          # }
           attributes(variantSelection: ALL) {
             values {
               name
               dateTime
               boolean
-              # translation(languageCode: $languageCode) {
-              #   name
-              # }
             }
           }
           product {
             name
             slug
-            # translation(languageCode: $languageCode) {
-            #   language {
-            #     code
-            #   }
-            #   id
-            #   name
-            # }
             media {
               alt
               type
@@ -682,6 +606,304 @@ mutation CheckoutLineDelete($linesIds: [ID!]!, $id: ID!) {
           }
         }
       }
+    }
+  }
+}`;
+
+export const CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION = gql`
+mutation CheckoutShippingAddressUpdate(
+  $id: ID!
+	$shippingAddress: AddressInput!
+	$validationRules: CheckoutAddressValidationRules
+) {
+  checkoutShippingAddressUpdate(
+    id: $id
+		shippingAddress: $shippingAddress
+		validationRules: $validationRules
+  ) {
+    checkout {
+      id
+      email
+      discount {
+        amount
+        currency
+      }
+      voucherCode
+      discountName
+      translatedDiscountName
+      giftCards {
+        displayCode
+        id
+        currentBalance {
+          currency
+          amount
+        }
+      }
+      channel {
+        id
+        slug
+      }
+      shippingAddress {
+        id
+        firstName
+        lastName
+        city
+        phone
+        postalCode
+        companyName
+        cityArea
+        streetAddress1
+        streetAddress2
+        countryArea
+        country {
+          country
+          code
+        }
+      }
+      authorizeStatus
+      chargeStatus
+      isShippingRequired
+      availablePaymentGateways {
+        id
+        name
+        currencies
+        config {
+          field
+          value
+        }
+      }
+      deliveryMethod {
+        __typename
+      }
+      shippingMethods {
+        id
+        name
+        price {
+          amount
+          currency
+        }
+        maximumDeliveryDays
+        minimumDeliveryDays
+      }
+      totalPrice {
+        gross {
+          currency
+          amount
+        }
+        tax {
+          currency
+          amount
+        }
+      }
+      shippingPrice {
+        gross {
+          currency
+          amount
+        }
+      }
+      subtotalPrice {
+        gross {
+          currency
+          amount
+        }
+      }
+      lines {
+        id
+        quantity
+        totalPrice {
+          gross {
+            currency
+            amount
+          }
+        }
+        unitPrice {
+          gross {
+            currency
+            amount
+          }
+        }
+        undiscountedUnitPrice {
+          currency
+          amount
+        }
+        variant {
+          id
+          name
+          attributes(variantSelection: ALL) {
+            values {
+              name
+              dateTime
+              boolean
+            }
+          }
+          product {
+            name
+            media {
+              alt
+              type
+              url(size: 100, format: WEBP)
+            }
+          }
+          media {
+            alt
+            type
+            url(size: 100, format: WEBP)
+          }
+        }
+      }
+    }
+    errors {
+      field
+      code
+    }
+  }
+}`;
+
+export const CHECKOUT_BILLING_ADDRESS_UPDATE_MUTATION = gql`
+mutation CheckoutBillingAddressUpdate(
+  $id: ID!
+	$billingAddress: AddressInput!
+	$validationRules: CheckoutAddressValidationRules
+) {
+  checkoutBillingAddressUpdate(
+    id: $id
+		billingAddress: $billingAddress
+		validationRules: $validationRules
+  ) {
+    checkout {
+      id
+      email
+      discount {
+        amount
+        currency
+      }
+      voucherCode
+      discountName
+      translatedDiscountName
+      giftCards {
+        displayCode
+        id
+        currentBalance {
+          currency
+          amount
+        }
+      }
+      channel {
+        id
+        slug
+      }
+      billingAddress {
+        id
+        firstName
+        lastName
+        city
+        phone
+        postalCode
+        companyName
+        cityArea
+        streetAddress1
+        streetAddress2
+        countryArea
+        country {
+          country
+          code
+        }
+      }
+      authorizeStatus
+      chargeStatus
+      isShippingRequired
+      availablePaymentGateways {
+        id
+        name
+        currencies
+        config {
+          field
+          value
+        }
+      }
+      deliveryMethod {
+        __typename
+      }
+      shippingMethods {
+        id
+        name
+        price {
+          amount
+          currency
+        }
+        maximumDeliveryDays
+        minimumDeliveryDays
+      }
+      totalPrice {
+        gross {
+          currency
+          amount
+        }
+        tax {
+          currency
+          amount
+        }
+      }
+      shippingPrice {
+        gross {
+          currency
+          amount
+        }
+      }
+      subtotalPrice {
+        gross {
+          currency
+          amount
+        }
+      }
+      lines {
+        id
+        quantity
+        totalPrice {
+          gross {
+            currency
+            amount
+          }
+        }
+        unitPrice {
+          gross {
+            currency
+            amount
+          }
+        }
+        undiscountedUnitPrice {
+          currency
+          amount
+        }
+        variant {
+          id
+          name
+          attributes(variantSelection: ALL) {
+            values {
+              name
+              dateTime
+              boolean
+            }
+          }
+          product {
+            name
+            media {
+              alt
+              type
+              url(size: 100, format: WEBP)
+            }
+          }
+          media {
+            alt
+            type
+            url(size: 100, format: WEBP)
+          }
+        }
+      }
+    }
+    errors {
+      field
+      code
     }
   }
 }`;

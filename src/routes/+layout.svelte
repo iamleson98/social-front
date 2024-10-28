@@ -21,7 +21,10 @@
 		// does not fetch if the page is either checkout or shopping cart
 		if (
 			$page.route.id &&
-			[AppRoute.SHOPPING_CART, `${AppRoute.CHECKOUT}/[id]`].includes($page.route.id)
+			[
+				`${AppRoute.APP_ROUTE_PREFIX}${AppRoute.SHOPPING_CART}`, 
+				`${AppRoute.APP_ROUTE_PREFIX}${AppRoute.CHECKOUT}/[id]`,
+			].includes($page.route.id)
 		)
 			return;
 

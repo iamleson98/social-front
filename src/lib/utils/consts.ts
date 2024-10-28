@@ -104,7 +104,7 @@ export const SIZE_MAP: Record<SocialSize, string> = {
 };
 
 export const ICON_BTN_SIZE_MAP: Record<SocialSize, string> = {
-  xs: '!w-8',
+  xs: '!w-7',
   sm: '!w-9',
   md: '!w-10',
   lg: '!w-12',

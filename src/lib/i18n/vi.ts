@@ -121,5 +121,8 @@ export default {
 	},
 	pages: {
 		cart: 'Giỏ hàng',
+		checkout: 'Kiểm tra',
+		payment: 'Thanh toán',
+		orderConfirm: 'Xác nhận đơn hàng',
 	},
 };

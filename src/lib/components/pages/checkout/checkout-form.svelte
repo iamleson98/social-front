@@ -2,16 +2,11 @@
 	import Signin from '$lib/components/forms/signin.svelte';
 	import { Email } from '$lib/components/icons';
 	import { Input } from '$lib/components/ui/Input';
-	import type { Checkout } from '$lib/gql/graphql';
+	import { checkoutStore } from '$lib/stores/app';
 	import { userStore } from '$lib/stores/auth';
+	import DeliveryMethodForm from './delivery-method-form.svelte';
 	import GuestShippingAddress from './guest-shipping-address.svelte';
 	import UserShippingAddress from './user-shipping-address.svelte';
-
-	type Props = {
-		checkout: Checkout;
-	};
-
-	let { checkout }: Props = $props();
 
 	let showLoginForm = $state(false);
 
@@ -20,7 +15,7 @@
 	};
 </script>
 
-<div class="w-1/2 tablet:w-full p-2">
+<div class="w-1/2 tablet:w-full">
 	<div class="bg-white rounded-lg p-4 border">
 		<div class="text-sm font-semibold mb-2 text-gray-800">Account</div>
 		{#if $userStore}
@@ -48,15 +43,17 @@
 		{/if}
 	</div>
 
-	<div class="mt-2 bg-white p-4 rounded-lg">
+	<div class="mt-2 bg-white p-4 rounded-lg border">
 		<div class="text-sm font-semibold mb-2 text-gray-800">Delivery address</div>
 
-		{#if checkout.isShippingRequired}
+		{#if $checkoutStore?.isShippingRequired}
 			{#if $userStore}
-				<UserShippingAddress {checkout} />
+				<UserShippingAddress />
 			{:else}
-				<GuestShippingAddress {checkout} />
+				<GuestShippingAddress />
 			{/if}
 		{/if}
 	</div>
+
+	<DeliveryMethodForm />
 </div>

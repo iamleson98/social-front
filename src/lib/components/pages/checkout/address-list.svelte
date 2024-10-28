@@ -1,8 +1,6 @@
 <script lang="ts">
 	import UserAddress from '$lib/components/common/user-address/user-address.svelte';
-	import { Plus } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import { IconButton } from '$lib/components/ui/Button';
 	import { userStore } from '$lib/stores/auth';
 
 	type Props = {

@@ -2,7 +2,8 @@
 	import { Button } from '$lib/components/ui';
 	import { AccordionList } from '$lib/components/ui/Accordion';
 	import { Input } from '$lib/components/ui/Input';
-	import type { Checkout, CheckoutLine, Money, OrderLine } from '$lib/gql/graphql';
+	import type { CheckoutLine, Money, OrderLine } from '$lib/gql/graphql';
+	import { checkoutStore } from '$lib/stores/app';
 	import { defaultSlideShowState } from '$lib/stores/ui/slideshow';
 	import { classNames, formatMoney } from '$lib/utils/utils';
 	import MoneyComponent from './money.svelte';
@@ -14,11 +15,10 @@
 	} from './utils';
 
 	type Props = {
-		checkout: Checkout;
 		editable?: boolean;
 	};
 
-	let { checkout, editable = false }: Props = $props();
+	let { editable = false }: Props = $props();
 
 	let discountCode = $state('');
 </script>
@@ -104,9 +104,9 @@
 	</div>
 {/snippet}
 
-<div class="w-1/2 tablet:w-full p-2">
+<div class="w-1/2 tablet:w-full">
 	<div class="bg-white rounded-lg border p-4">
-		<AccordionList header="Summary" items={checkout.lines} child={lineSummary} />
+		<AccordionList header="Summary" items={$checkoutStore?.lines || []} child={lineSummary} />
 
 		<!-- discount code -->
 		{#if editable}
@@ -124,46 +124,49 @@
 		<!-- price -->
 		<div class="flex items-center justify-between">
 			<div>Subtotal</div>
-			<MoneyComponent ariaLabel="subtotal price" money={checkout.subtotalPrice.gross} />
+			<MoneyComponent ariaLabel="subtotal price" money={$checkoutStore?.subtotalPrice.gross} />
 		</div>
 
-		{#if checkout.voucherCode}
+		{#if $checkoutStore?.voucherCode}
 			<SummaryPromocodeRow
 				{editable}
-				promoCode={checkout.voucherCode}
-				money={checkout.discount}
+				promoCode={$checkoutStore?.voucherCode}
+				money={$checkoutStore?.discount}
 				negative
 				ariaLabel="Voucher"
-				label={`Voucher code: ${checkout.voucherCode}`}
-				checkoutId={checkout.id}
+				label={`Voucher code: ${$checkoutStore?.voucherCode}`}
+				checkoutId={$checkoutStore?.id}
 			/>
 		{/if}
 
-		{#each checkout.giftCards as gc, idx (idx)}
+		{#each $checkoutStore?.giftCards || [] as giftcard, idx (idx)}
 			<SummaryPromocodeRow
 				{editable}
-				promoCodeId={gc.id}
+				promoCodeId={giftcard.id}
 				ariaLabel="Gift card"
-				label={`Gift Card: •••• •••• ${gc.displayCode}`}
-				money={gc.currentBalance}
+				label={`Gift Card: •••• •••• ${giftcard.displayCode}`}
+				money={giftcard.currentBalance}
 				negative
-				checkoutId={checkout.id}
+				checkoutId={$checkoutStore?.id as string}
 			/>
 		{/each}
 
 		<div class="flex items-center justify-between">
 			<div>Shipping cost</div>
-			<MoneyComponent ariaLabel="shipping cost" money={checkout.shippingPrice.gross} />
+			<MoneyComponent ariaLabel="shipping cost" money={$checkoutStore?.shippingPrice.gross} />
 		</div>
 
 		<div class="flex flex-row items-baseline justify-between pb-4">
 			<div class="flex flex-row items-baseline">
 				<p class="font-bold">Total price</p>
 				<p class="ml-2 font-black">
-					includes {formatMoney(checkout.totalPrice.tax.currency, checkout.totalPrice.tax.amount)} tax
+					includes {formatMoney(
+						$checkoutStore?.totalPrice.tax.currency as string,
+						$checkoutStore?.totalPrice.tax.amount as number
+					)} tax
 				</p>
 			</div>
-			<MoneyComponent ariaLabel="total price" money={checkout.totalPrice.gross} />
+			<MoneyComponent ariaLabel="total price" money={$checkoutStore?.totalPrice.gross} />
 		</div>
 	</div>
 </div>
