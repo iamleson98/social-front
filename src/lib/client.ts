@@ -66,8 +66,8 @@ const isAuthorError = (err: CombinedError): boolean => {
 		if (Object.prototype.hasOwnProperty.call(gqlErr.extensions, 'exception')) {
 			const exception = gqlErr.extensions.exception as Record<string, unknown>;
 			if (Object.prototype.hasOwnProperty.call(exception, 'code')) {
-				const code = exception.code;
-				if (typeof code === 'string' && code.toLowerCase() === 'permissiondenied') {
+				const code = exception.code as string;
+				if (code.toLowerCase() === 'permissiondenied') {
 					return true;
 				}
 			}
@@ -116,8 +116,8 @@ const isAuthenError = (err: CombinedError): boolean => {
 		if (Object.prototype.hasOwnProperty.call(gqlErr.extensions, 'exception')) {
 			const exception = gqlErr.extensions.exception as Record<string, unknown>;
 			if (Object.prototype.hasOwnProperty.call(exception, 'code')) {
-				const code = exception.code;
-				if (typeof code === 'string' && code.toLowerCase() === 'expiredsignatureerror') {
+				const code = exception.code as string;
+				if (['expiredsignatureerror', 'invalidsignatureerror'].includes(code.toLowerCase())) {
 					return true;
 				}
 			}

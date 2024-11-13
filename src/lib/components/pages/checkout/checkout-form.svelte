@@ -6,6 +6,7 @@
 	import { userStore } from '$lib/stores/auth';
 	import DeliveryMethodForm from './delivery-method-form.svelte';
 	import GuestShippingAddress from './guest-shipping-address.svelte';
+	import PaymentForm from './payment-form.svelte';
 	import UserShippingAddress from './user-shipping-address.svelte';
 
 	let showLoginForm = $state(false);
@@ -56,4 +57,5 @@
 	</div>
 
 	<DeliveryMethodForm />
+	<PaymentForm />
 </div>

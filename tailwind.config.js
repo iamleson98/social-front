@@ -18,8 +18,8 @@ export default {
   plugins: [
     require('flowbite/plugin'),
   ],
-  daisyui: {
-    themes: ["light", "dark"],
-  },
+  // daisyui: {
+  //   themes: ["light", "dark"],
+  // },
   darkMode: 'selector', // add class="dark" to <html> tag
 };

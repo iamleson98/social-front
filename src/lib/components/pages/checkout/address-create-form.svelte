@@ -21,6 +21,6 @@
 </script>
 
 <div>
-	<AddressForm {countrySelectOptions} onSubmit={console.log} />
+	<AddressForm {countrySelectOptions} onSubmit={console.log} onCancel={onCancel} />
 	<Button size="xs" color="red" variant="light" class="mt-2" onclick={onCancel}>cancel</Button>
 </div>

@@ -907,3 +907,36 @@ mutation CheckoutBillingAddressUpdate(
     }
   }
 }`;
+
+export const PAYMENT_GATEWAYS_INITIALIZE_MUTATION = gql`
+mutation PaymentGatewaysInitialize($id: ID!, $paymentGateways: [PaymentGatewayToInitialize!], $amount: PositiveDecimal) {
+  paymentGatewayInitialize(id: $id, paymentGateways: $paymentGateways, amount: $amount) {
+    errors {
+      field
+      message
+      code
+    }
+    gatewayConfigs {
+      id
+      data
+      errors {
+        field
+        message
+        code
+      }
+    }
+  }
+}`;
+
+export const CHECKOUT_COMPLETE_MUTATION = gql`
+mutation CheckoutComplete($id: ID!) {
+  checkoutComplete(id: $id) {
+    order {
+      id
+    }
+    errors {
+      field
+      message
+    }
+  }
+}`;

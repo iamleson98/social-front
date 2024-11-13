@@ -1,9 +1,6 @@
-// import { read } from '$app/server';
-
-
 import { readFile } from 'fs/promises';
 
-const schemaFile = 'src/lib/graphql/schema.graphql'; 
+const schemaFile = 'src/lib/graphql/schema.graphql';
 
 let typeDefs: string;
 
@@ -14,6 +11,4 @@ if (typeof Bun !== 'undefined') {
   typeDefs = await readFile(schemaFile, 'utf-8');
 }
 
-// export const typeDefs = await file.text();
-
-export {typeDefs};
+export { typeDefs };

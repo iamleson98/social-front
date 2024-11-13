@@ -1,21 +1,22 @@
 import { DataSource } from 'typeorm';
-// import { config } from 'dotenv';
-// import { dev } from '$app/environment';
 import { entities } from './entities';
-
-// config({
-//   path: dev ? '.env.local' : '.env',
-// });
+import {
+  DB_NAME,
+  DB_USER,
+  DB_PASSWORD,
+  DB_HOST,
+  DB_PORT,
+} from '$env/static/private';
 
 class DataBaseManager {
   private source: DataSource | undefined;
   private sourceConfig = new DataSource({
     type: 'postgres',
-    database: import.meta.env.VITE_DB_NAME,
-    username: import.meta.env.VITE_DB_USER,
-    password: import.meta.env.VITE_DB_PASSWORD,
-    host: import.meta.env.VITE_DB_HOST,
-    port: Number(import.meta.env.VITE_DB_PORT),
+    database: DB_NAME,
+    username: DB_USER,
+    password: DB_PASSWORD,
+    host: DB_HOST,
+    port: Number(DB_PORT),
     entities: entities,
   });
 
