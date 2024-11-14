@@ -33,6 +33,7 @@
 	/** user selected variant quantity */
 	let quantitySelected = $state(1);
 	let selectedVariant = $state<ProductVariant>();
+	let isAddingItemToCart = $state(false);
 
 	let displayPrice = $derived.by(() => {
 		if (!selectedVariant)
@@ -64,6 +65,7 @@
 			});
 			return;
 		}
+		isAddingItemToCart = true;
 
 		// we check if a checkout is already created.
 		// If +layout.svelte failed to initialize checkout store, we create a new one.
@@ -81,6 +83,7 @@
 				}
 			)
 			.toPromise();
+		isAddingItemToCart = false;
 
 		if (preHandleGraphqlResult(addLineResult)) return;
 		if (addLineResult.data?.checkoutLinesAdd?.errors.length) {
@@ -158,7 +161,7 @@
 			<span class="text-sm mr-1">
 				{userShippingAddress}
 			</span>
-			<IconButton icon={MapPin} rounded size="xs" variant="light" />
+			<IconButton icon={MapPin} rounded size="xs" variant="light" disabled={isAddingItemToCart} />
 		</div>
 	</div>
 
@@ -173,7 +176,7 @@
 						variant="outline"
 						onclick={() => toggleSelectVariant(variant)}
 						tabindex={0}
-						disabled={!variant.quantityAvailable}
+						disabled={!variant.quantityAvailable || isAddingItemToCart}
 						class={`${selectedVariant?.id === variant.id ? '!bg-blue-100 !font-semibold' : ''}`}
 						color="indigo"
 					>
@@ -195,7 +198,7 @@
 					variant="light"
 					size="sm"
 					onclick={() => quantitySelected--}
-					disabled={quantitySelected < 2}
+					disabled={quantitySelected < 2 || isAddingItemToCart}
 				/>
 				<Input
 					size="sm"
@@ -204,6 +207,7 @@
 					max={selectedVariant?.quantityAvailable || selectedVariant?.quantityLimitPerCustomer}
 					class="text-center inline-flex w-20"
 					value={quantitySelected < 1 ? 1 : quantitySelected}
+					disabled={isAddingItemToCart}
 				/>
 				<IconButton
 					icon={Plus}
@@ -213,7 +217,7 @@
 					onclick={() => quantitySelected++}
 					disabled={quantitySelected >=
 						((selectedVariant?.quantityAvailable ||
-							selectedVariant?.quantityLimitPerCustomer) as number)}
+							selectedVariant?.quantityLimitPerCustomer) as number) || isAddingItemToCart}
 				/>
 			</div>
 			<!-- quantity available -->
@@ -235,8 +239,10 @@
 			onclick={handleAddToCart}
 			fullWidth
 			size="md"
+			disabled={isAddingItemToCart}
+			loading
 		>
-			<span> {tClient('product.addToCart')} </span>
+			<span>{tClient('product.addToCart')}</span>
 		</Button>
 		<Button
 			variant="light"
