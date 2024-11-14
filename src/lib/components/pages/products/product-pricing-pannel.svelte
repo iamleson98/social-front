@@ -33,7 +33,7 @@
 	/** user selected variant quantity */
 	let quantitySelected = $state(1);
 	let selectedVariant = $state<ProductVariant>();
-	let isLoadingStore = $state(false);
+	let isAddingItemToCart = $state(false);
 
 	let displayPrice = $derived.by(() => {
 		if (!selectedVariant)
@@ -65,7 +65,7 @@
 			});
 			return;
 		}
-		isLoadingStore = true;
+		isAddingItemToCart = true;
 
 		// we check if a checkout is already created.
 		// If +layout.svelte failed to initialize checkout store, we create a new one.
@@ -83,6 +83,7 @@
 				}
 			)
 			.toPromise();
+		isAddingItemToCart = false;
 
 		if (preHandleGraphqlResult(addLineResult)) return;
 		if (addLineResult.data?.checkoutLinesAdd?.errors.length) {
@@ -94,7 +95,6 @@
 		}
 
 		checkoutStore.set(addLineResult.data?.checkoutLinesAdd?.checkout as Checkout);
-		isLoadingStore = false;
 	};
 
 	let userShippingAddress = $derived.by(() => {
@@ -161,7 +161,7 @@
 			<span class="text-sm mr-1">
 				{userShippingAddress}
 			</span>
-			<IconButton icon={MapPin} rounded size="xs" variant="light" disabled={isLoadingStore} />
+			<IconButton icon={MapPin} rounded size="xs" variant="light" disabled={isAddingItemToCart} />
 		</div>
 	</div>
 
@@ -176,7 +176,7 @@
 						variant="outline"
 						onclick={() => toggleSelectVariant(variant)}
 						tabindex={0}
-						disabled={!variant.quantityAvailable || isLoadingStore}
+						disabled={!variant.quantityAvailable || isAddingItemToCart}
 						class={`${selectedVariant?.id === variant.id ? '!bg-blue-100 !font-semibold' : ''}`}
 						color="indigo"
 					>
@@ -198,7 +198,7 @@
 					variant="light"
 					size="sm"
 					onclick={() => quantitySelected--}
-					disabled={quantitySelected < 2 || isLoadingStore}
+					disabled={quantitySelected < 2 || isAddingItemToCart}
 				/>
 				<Input
 					size="sm"
@@ -207,7 +207,7 @@
 					max={selectedVariant?.quantityAvailable || selectedVariant?.quantityLimitPerCustomer}
 					class="text-center inline-flex w-20"
 					value={quantitySelected < 1 ? 1 : quantitySelected}
-					disabled={isLoadingStore}
+					disabled={isAddingItemToCart}
 				/>
 				<IconButton
 					icon={Plus}
@@ -217,7 +217,7 @@
 					onclick={() => quantitySelected++}
 					disabled={quantitySelected >=
 						((selectedVariant?.quantityAvailable ||
-							selectedVariant?.quantityLimitPerCustomer) as number) || isLoadingStore}
+							selectedVariant?.quantityLimitPerCustomer) as number) || isAddingItemToCart}
 				/>
 			</div>
 			<!-- quantity available -->
@@ -239,9 +239,10 @@
 			onclick={handleAddToCart}
 			fullWidth
 			size="md"
-			disabled={isLoadingStore}
+			disabled={isAddingItemToCart}
+			loading
 		>
-			<span>{isLoadingStore ? 'Add to Cart ...' : tClient('product.addToCart')}</span>
+			<span>{tClient('product.addToCart')}</span>
 		</Button>
 		<Button
 			variant="light"
