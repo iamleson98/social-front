@@ -240,7 +240,7 @@
 			fullWidth
 			size="md"
 			disabled={isAddingItemToCart}
-			loading
+			loading={isAddingItemToCart}
 		>
 			<span>{tClient('product.addToCart')}</span>
 		</Button>
