@@ -1,25 +1,25 @@
 <script lang="ts">
-	import { afterNavigate, disableScrollHandling } from '$app/navigation';
-	import { page } from '$app/stores';
-	import { tClient } from '$i18n';
-	import {
-		ChevronRight,
-		FileText,
-		HeadSet,
-		Icon,
-		MingcuteHome,
-		PackageExport,
-		SettingCheck,
-		type IconType
-	} from '$lib/components/icons';
-	import ProductPricingPanel from '$lib/components/pages/products/product-pricing-pannel.svelte';
+	import type { LayoutServerData } from './$types';
 	import ProductMediaSlideShow from '$lib/components/pages/products/product-slide-show-pannel.svelte';
-	import Button from '$lib/components/ui/Button/Button.svelte';
+	import ProductPricingPanel from '$lib/components/pages/products/product-pricing-pannel.svelte';
 	import { type ProductMedia } from '$lib/gql/graphql';
-	import { slideShowManager } from '$lib/stores/ui/slideshow';
+	import { page } from '$app/stores';
+	import {
+		Icon,
+		HeadSet,
+		SettingCheck,
+		FileText,
+		PackageExport,
+		MingcuteHome,
+		type IconType,
+		ChevronRight
+	} from '$lib/components/icons';
+	import { afterNavigate, disableScrollHandling } from '$app/navigation';
+	import { tClient } from '$i18n';
 	import { AppRoute } from '$lib/utils';
 	import { onMount, type Snippet } from 'svelte';
-	import type { LayoutServerData } from './$types';
+	import Button from '$lib/components/ui/Button/Button.svelte';
+	import { slideShowManager } from '$lib/stores/ui/slideshow';
 
 	interface Props {
 		data: LayoutServerData;
