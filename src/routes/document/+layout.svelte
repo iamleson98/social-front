@@ -9,14 +9,5 @@
 </script>
 
 <div>
-	<a href="/project-structure">project structure</a>
-	<a href="/project-structure">project structure</a>
-	<a href="/project-structure">project structure</a>
-	<a href="/project-structure">project structure</a>
-	<a href="/project-structure">project structure</a>
-	<a href="/break-point">break point</a>
-</div>
-
-<div>
 	{@render children()}
 </div>
