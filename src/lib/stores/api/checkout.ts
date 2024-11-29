@@ -940,3 +940,25 @@ mutation CheckoutComplete($id: ID!) {
     }
   }
 }`;
+
+export const CHECKOUT_UPDATE_DELIVERY_METHOD_MUTATION = gql`
+mutation CheckoutDeliveryMethodUpdate($id: ID!, $deliveryMethodId: ID!) {
+  checkoutDeliveryMethodUpdate(id: $id, deliveryMethodId: $deliveryMethodId) {
+    errors {
+      message
+      field
+      code
+    }
+    checkout {
+      id
+      deliveryMethod {
+        ... on ShippingMethod {
+          id
+        }
+        ... on Warehouse {
+          id
+        }
+      }
+    }
+  }
+}`;

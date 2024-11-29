@@ -6,10 +6,6 @@
 	let urlAvatar = 'https://buffer.com/library/content/images/2023/10/free-images.jpg';
 </script>
 
-<svelte:head>
-	<title>User Id</title>
-</svelte:head>
-
 <div class="w-full pt-10 bg-gray-100 pb-5">
 	<div class="w-full max-w-6xl mx-auto">
 		<div class="relative w-full h-64 rounded bg-cover" style="background-image: url({urlBg});">

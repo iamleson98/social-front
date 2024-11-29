@@ -6,7 +6,7 @@
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { IconButton } from '$lib/components/ui/Button';
-	import { Input } from '$lib/components/ui/Input';
+	import { Input, RadioButton } from '$lib/components/ui/Input';
 	import { Progress } from '$lib/components/ui/Progress';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import {
@@ -22,7 +22,6 @@
 	import { ORDER_BY_FIELD, PRICE_RANGE, SORT_KEY } from './common';
 	import { productFilterParamStore } from '$lib/stores/app/product-filter';
 	import { get } from 'svelte/store';
-	import { RadioBtn } from '$lib/components/ui/radio';
 
 	type Props = {
 		currency: Currency;
@@ -154,7 +153,7 @@
 				</div>
 
 				<div class="ml-1">
-					<RadioBtn value={rating} bind:group={selectedRating} name="rating" />
+					<RadioButton value={rating} bind:group={selectedRating} name="rating" />
 				</div>
 			</div>
 		{/each}

@@ -147,7 +147,7 @@ const authExchangeInner = async (utils: AuthUtilities) => {
 		refreshAuthTracker = true
 
 		const refreshResult = await fetch(
-			`${AppRoute.AUTH_REFRESH_TOKEN}`,
+			AppRoute.AUTH_REFRESH_TOKEN,
 			{
 				method: 'POST',
 				body: JSON.stringify({
