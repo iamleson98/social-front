@@ -3,8 +3,10 @@
 	import Content from '$lib/components/pages/document/Content.svelte';
 	import { selectedId } from './data_content';
 
+	let idDoc = $state('project-structure');
 	function handleSelect(event: CustomEvent) {
 		selectedId.set(event.detail);
+		idDoc = event.detail;
 	}
 </script>
 
@@ -19,7 +21,7 @@
 		class="flex-grow overflow-y-auto p-5 scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-gray-200"
 		style="background-color: #1e1e1e;"
 	>
-		<Content />
+		<Content {idDoc} />
 	</div>
 </div>
 

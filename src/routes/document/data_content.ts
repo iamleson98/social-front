@@ -1,22 +1,23 @@
 import { writable } from 'svelte/store';
 
 export const menuItems = [
-  { id: 'table-of-contents', title: "Table of contents" },
-  { id: 'project-structure', title: 'Project Structure' },
-  { id: 'coding-conventions', title: 'Coding conventions' },
-  { id: 'dependencies-management', title: 'Dependencies Management' },
-  { id: 'how-to-use-common-libraries', title: 'How to use common libraries' },
-  { id: 'bugs-and-feature-requests', title: 'Bugs and feature requests' },
-  { id: 'contributing', title: 'Contributing' },
-  { id: 'creators', title: 'Creators' },
+	{ id: 'table-of-contents', title: 'Table of contents' },
+	{ id: 'project-structure', title: 'Project Structure' },
+	{ id: 'coding-conventions', title: 'Coding conventions' },
+	{ id: 'dependencies-management', title: 'Dependencies Management' },
+	{ id: 'how-to-use-common-libraries', title: 'How to use common libraries' },
+	{ id: 'bugs-and-feature-requests', title: 'Bugs and feature requests' },
+	{ id: 'contributing', title: 'Contributing' },
+	{ id: 'creators', title: 'Creators' },
+	{ id: 'jyjyj', title: 'jkkj' }
 ];
 
 function highlightText(content: string) {
-  content = `<p class="text-white">${content}</p>`;
-  content = content.replace(/\[([^\]]+)\]/g, '<span class="text-amber-700">[$1]</span>');
-  content = content.replace(/<code>(.*?)<\/code>/g, '<code class="text-amber-700">$1</code>');
+	content = `<p class="text-white">${content}</p>`;
+	content = content.replace(/\[([^\]]+)\]/g, '<span class="text-amber-700">[$1]</span>');
+	content = content.replace(/<code>(.*?)<\/code>/g, '<code class="text-amber-700">$1</code>');
 
-  return content;
+	return content;
 }
 
 let contentTableContent = `
@@ -39,14 +40,14 @@ let contentProjectStructure = `
 `;
 
 export const contentData: { [key: string]: any } = {
-  'table-of-contents': highlightText(contentTableContent),
-  'project-structure': highlightText(contentProjectStructure),
-  'coding-conventions': 'Content for Coding conventions',
-  'dependencies-management': 'Content for Dependencies Management',
-  'how-to-use-common-libraries': 'Content for How to use common libraries',
-  'bugs-and-feature-requests': 'Content for Bugs and feature requests',
-  'contributing': 'Content for Contributing',
-  'creators': 'Content for Creators',
+	'table-of-contents': highlightText(contentTableContent),
+	'project-structure': highlightText(contentProjectStructure),
+	'coding-conventions': 'Content for Coding conventions',
+	'dependencies-management': 'Content for Dependencies Management',
+	'how-to-use-common-libraries': 'Content for How to use common libraries',
+	'bugs-and-feature-requests': 'Content for Bugs and feature requests',
+	contributing: 'Content for Contributing',
+	creators: 'Content for Creators'
 };
 
 export const selectedId = writable<string>('table-of-contents');
