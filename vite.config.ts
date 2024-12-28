@@ -9,7 +9,7 @@ export default defineConfig({
 		include: ['src/**/*.{test,spec}.{js,ts}']
 	},
 	assetsInclude: ["**/*.graphql"],
-	optimizeDeps: {
-		exclude: ['@urql/svelte'],
-	},
+	// optimizeDeps: {
+	// 	exclude: ['@urql/svelte'],
+	// },
 });

@@ -117,6 +117,8 @@
 				});
 		}
 	});
+
+	console.log('availablePaymentGateways', $state.snapshot(availablePaymentGateways));
 </script>
 
 <div class="rounded-lg bg-white p-3 border">

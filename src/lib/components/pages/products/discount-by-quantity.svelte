@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { Icon, Plus, Trash } from '$lib/components/icons';
+	import { Plus, Trash } from '$lib/components/icons';
+	import { Button, IconButton } from '$lib/components/ui/Button';
+	import { Input } from '$lib/components/ui/Input';
 	import { slide } from 'svelte/transition';
 
 	type DiscountRange = {
@@ -23,7 +25,7 @@
 			};
 			if (discountRanges.length) {
 				newRange.fromProduct = discountRanges[discountRanges.length - 1].toProduct + 1;
-        newRange.toProduct = newRange.fromProduct + 1;
+				newRange.toProduct = newRange.fromProduct + 1;
 			}
 			discountRanges = discountRanges.concat(newRange);
 		}
@@ -34,62 +36,43 @@
 	};
 </script>
 
-{#each discountRanges as range, idx (idx)}
-	<div transition:slide class="flex items-end gap-1 mb-2">
-		<div># {idx + 1}</div>
-		<label for="" class="form-control text-xs">
-			<div>channel</div>
-			<input
-				type="text"
-				placeholder="channel"
-				class="input input-xs w-full"
-				value={range.channelSlug}
-			/>
-		</label>
-		<label for="" class="form-control text-xs">
-			<div>from product</div>
-			<input
-				type="number"
-				placeholder="from"
-				class="input input-xs w-full"
-				value={range.fromProduct}
-			/>
-		</label>
-		<label for="" class="form-control text-xs">
-			<div>to product</div>
-			<input type="number" placeholder="to" class="input input-xs w-full" value={range.toProduct} />
-		</label>
-		<label for="" class="form-control text-xs">
-			<div>price</div>
-			<input
-				type="number"
-				placeholder="price"
-				class="input input-xs w-full"
-				value={range.discount}
-			/>
-		</label>
-		<button
-			class="btn btn-xs !text-red-500 !bg-red-100 btn-circle"
-			onclick={() => removeDiscountRange(idx)}
-		>
-			<Icon icon={Trash} />
-		</button>
+<div class="border rounded-lg bg-gray-50 border-gray-200 p-3">
+	<div class="flex items-center gap-2 mb-2 text-sm">
+		<div class="w-1/12">No.</div>
+		<div>channel</div>
+		<div>from product</div>
+		<div>to product</div>
+		<div>price</div>
+		<div class="w-1/12"></div>
 	</div>
-{/each}
-<div class="tooltip w-full" data-tip="Add discount range">
-	<button
-		class="btn w-full btn-sm !text-blue-600 !border-blue-600 !bg-white"
-		disabled={discountRanges.length >= MAX_DISCOUNT_RANGES}
-		onclick={addDiscountRange}
-	>
-		Add range
-		<Icon icon={Plus} />
-		({discountRanges.length} / {MAX_DISCOUNT_RANGES})
-	</button>
-</div>
 
-<style lang="postcss">
-	input.input {
-		@apply border-gray-200;
-	}
-</style>
+	{#each discountRanges as range, idx (idx)}
+		<div transition:slide class="flex items-end gap-2 mb-2">
+			<div class="w-1/12">{idx + 1}</div>
+			<Input size="sm" type="text" placeholder="channel" value={range.channelSlug} />
+			<Input size="sm" type="number" placeholder="from" value={range.fromProduct} />
+			<Input size="sm" type="number" placeholder="to" value={range.toProduct} />
+			<Input size="sm" type="number" placeholder="price" value={range.discount} />
+			<div class="w-1/12">
+				<IconButton
+					icon={Trash}
+					onclick={() => removeDiscountRange(idx)}
+					size="xs"
+					rounded
+					variant="light"
+					color="red"
+				/>
+			</div>
+		</div>
+	{/each}
+	<div class="tooltip w-full" data-tip="Add discount range">
+		<Button
+			disabled={discountRanges.length >= MAX_DISCOUNT_RANGES}
+			onclick={addDiscountRange}
+			startIcon={Plus}
+			fullWidth
+		>
+			Add range ({discountRanges.length}/{MAX_DISCOUNT_RANGES})
+		</Button>
+	</div>
+</div>

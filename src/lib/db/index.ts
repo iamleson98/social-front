@@ -18,6 +18,7 @@ class DataBaseManager {
     host: DB_HOST,
     port: Number(DB_PORT),
     entities: entities,
+    connectTimeoutMS: 60000,
   });
 
   async initSource() {

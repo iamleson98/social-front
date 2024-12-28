@@ -2,6 +2,8 @@
 	import { tClient } from '$i18n';
 	import { debounceInput } from '$lib/actions/input-debounce';
 	import { Icon, Plus, Trash } from '$lib/components/icons';
+	import { Button, IconButton } from '$lib/components/ui/Button';
+	import { Input } from '$lib/components/ui/Input';
 	import { tick } from 'svelte';
 	import { fly, slide } from 'svelte/transition';
 
@@ -168,10 +170,13 @@
 	disabled: boolean = false
 )}
 	<div class="tooltip grow shrink" data-tip={tip}>
-		<button
+		<Button
 			{disabled}
-			class={`btn btn-sm w-full ${action === 'delete' ? '!text-red-600  !border-red-500' : '!text-blue-600  !border-blue-500'}  !bg-white`}
 			onclick={() => onclick(variantIdx)}
+			variant={action === 'delete' ? 'light' : 'outline'}
+			color={action === 'delete' ? 'red' : 'blue'}
+			fullWidth
+			size="sm"
 		>
 			{#if action === 'add'}
 				{variants[variantIdx].values.length} / {MAX_VALUES_PER_VARIANT}
@@ -179,17 +184,17 @@
 			{:else}
 				<Icon icon={Trash} />
 			{/if}
-		</button>
+		</Button>
 	</div>
 {/snippet}
 
 <!-- composer -->
 <div
-	class="flex gap-1 mobile-l:flex-wrap flex-nowrap"
+	class="flex gap-2 mobile-l:flex-wrap flex-nowrap bg-gray-50 rounded-lg border border-gray-200 p-3"
 	class:items-center={variants.length < MAX_VARIANT_TYPES}
 >
 	{#each variants as variant, variantIdx (variantIdx)}
-		<div class="p-3 w-1/2 mobile-l:w-full border rounded">
+		<div class="p-3 w-1/2 mobile-l:w-full border rounded-lg">
 			<!-- title -->
 			<div class="mb-1 text-xs">
 				{tClient('product.variant')}
@@ -202,12 +207,16 @@
 					class:input-error={!!variant.name.error}
 				>
 					<span>{tClient('product.variantName')}</span>
-					<input
+					<Input
 						type="text"
 						class="w-full"
 						placeholder={tClient('product.variantPlaceholder')}
-						use:debounceInput={{ onInput: handleVariantNameChange(variantIdx) }}
+						inputDebounceOption={{
+							onInput: handleVariantNameChange(variantIdx) as (result: unknown) => void
+						}}
 						value={variant.name.value}
+						size="md"
+						variant={variant.name.error ? 'error' : 'info'}
 					/>
 				</label>
 				{@render variantError(variant.name.error)}
@@ -217,32 +226,36 @@
 			{#each variant.values as value, valueIdx (valueIdx)}
 				<div class="mb-2" transition:slide>
 					<div class="flex items-center justify-between">
-						<input
-							class="input input-sm w-4/5"
-							class:input-error={!!value.error}
+						<Input
+							variant={value.error ? 'error' : 'info'}
 							type="text"
+							class="w-4/5"
+							size="sm"
 							placeholder={tClient('product.valuePlaceholder')}
-							use:debounceInput={{
-								onInput: handleVariantValueChange(variantIdx, valueIdx),
+							inputDebounceOption={{
+								onInput: handleVariantValueChange(variantIdx, valueIdx) as (
+									result: unknown
+								) => void,
 								debounceTime: 500 // only fire after 0.5 sec after user stop typing
 							}}
 							value={value.value}
 						/>
 						{#if variant.values.length > 1}
-							<!-- each variant MUST has at least 1 value -->
-							<button
-								class="btn btn-circle btn-xs !bg-red-100 text-red-600"
-								title={tClient('product.delValue')}
+							<IconButton
+								icon={Trash}
+								size="xs"
+								variant="light"
+								rounded
+								color="red"
 								onclick={() => handleDeleteValue(variantIdx, valueIdx)}
-							>
-								<Icon icon={Trash} />
-							</button>
+								title={tClient('product.delValue')}
+							/>
 						{/if}
 					</div>
 					{@render variantError(value.error)}
 				</div>
 			{/each}
-			<div class="flex justify-center items-center gap-1 mt-4">
+			<div class="flex justify-center items-center gap-1.5 mt-4">
 				{@render variantActionButton(
 					tClient('product.delVariant'),
 					'delete',
@@ -261,43 +274,44 @@
 	{/each}
 	{#if variants.length < MAX_VARIANT_TYPES}
 		<div class="w-1/2 mobile-l:w-full">
-			<div class="tooltip w-full h-full" data-tip={tClient('product.addVariant')}>
-				<button
-					class="btn btn-square w-full btn-lg !text-blue-600 !border-blue-400 "
+			<div class="tooltip w-full h-full flex items-center justify-center" data-tip={tClient('product.addVariant')}>
+				<IconButton
 					onclick={handleAddVariant}
-				>
-					<Icon icon={Plus} />
-				</button>
+					icon={Plus}
+					size="xl"
+					variant="outline"
+					color="blue"
+				/>
 			</div>
 		</div>
 	{/if}
 </div>
 
 {#snippet variantTableRow(indices: number[], values: string[])}
-	<tr>
+	<tr class="">
 		{#if indices.length === 1}
 			{#if !indices[0]}
-				<td rowspan={variants[0].values.length}>{values[0]}</td>
+				<td rowspan={variants[0].values.length} class="bg-green-100 text-green-700 font-medium text-center border-b border-green-200">{values[0]}</td>
 			{/if}
 		{:else}
 			{#if !indices[1]}
-				<td rowspan={variants[1].values.length}>{values[0]}</td>
+				<td rowspan={variants[1].values.length} class="bg-green-100 text-green-700 font-medium text-center border-b border-green-200">{values[0]}</td>
 			{/if}
-			<td>{values[1]}</td>
+			<td class="bg-blue-100 text-blue-700 font-medium text-center border-b border-blue-200">{values[1]}</td>
 		{/if}
 		<td>
-			<input type="text" class="input input-xs w-full" placeholder="Enter value" />
+			<Input type="text" size="sm" placeholder="Enter value" />
 		</td>
 		<td>
-			<input type="text" class="input input-xs w-full" placeholder="Enter value" />
+			<Input type="text" size="sm" placeholder="Enter value" />
 		</td>
 		<td>
-			<input type="text" class="input input-xs w-full" placeholder="Enter value" />
+			<Input type="text" size="sm" placeholder="Enter value" />
 		</td>
 		<td>
-			<input
+			<Input
 				type="text"
-				class="input input-xs w-full"
+				size="sm"
 				placeholder="Enter value"
 				value={values.join('-')}
 			/>
@@ -312,34 +326,18 @@
 		<div class="mb-4">
 			<div class="text-xs mb-1">Quick filling</div>
 			<div class="flex gap-x-2 items-center flex-row w-full">
-				<input
-					type="text"
-					placeholder="General price"
-					class="input input-sm w-full grow shrink"
-				/>
-				<input
-					type="text"
-					placeholder="Sell channels"
-					class="input input-sm w-full grow shrink"
-				/>
-				<input
-					type="text"
-					placeholder="Stocks"
-					class="input input-sm w-full grow shrink"
-				/>
-				<input
-					type="text"
-					placeholder="Pricing"
-					class="input input-sm w-full grow shrink"
-				/>
-				<button class="btn btn-sm grow shrink">Apply</button>
+				<Input type="text" placeholder="General price" size="sm" />
+				<Input type="text" placeholder="Sell channels" size="sm" />
+				<Input type="text" placeholder="Stocks" size="sm" />
+				<Input type="text" placeholder="Pricing" size="sm" />
+				<Button class="btn btn-sm grow shrink" size="sm">Apply</Button>
 			</div>
 		</div>
 
 		<!-- details -->
-		<div>
-			<table class="border">
-				<thead>
+		<div class="relative overflow-x-auto rounded-lg p-3 border border-gray-200 bg-gray-50">
+			<table class="w-full text-sm text-left rtl:text-right text-gray-700 dark:text-gray-500">
+				<thead class="text-xs text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-500">
 					<tr>
 						<th>{variants[0].name.value}</th>
 						{#if variants.length === MAX_VARIANT_TYPES}
@@ -368,10 +366,11 @@
 {/if}
 
 <style lang="postcss">
-	td, th, table {
-		@apply p-1 border;
+	td {
+		@apply p-1;
 	}
-	input, label.input {
-		@apply !border-gray-200 !outline-0;
+
+	th {
+		@apply px-1 py-3;
 	}
 </style>

@@ -16,7 +16,10 @@ const resolvers = {
 	Query: {
 		promotions: resolvePromotions,
 		vouchers: resolveVouchers
-	}
+	},
+	// Mutation: {
+		
+	// },
 };
 
 export const server = createYoga<RequestEvent>({

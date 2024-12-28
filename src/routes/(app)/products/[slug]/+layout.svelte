@@ -3,7 +3,7 @@
 	import ProductMediaSlideShow from '$lib/components/pages/products/product-slide-show-pannel.svelte';
 	import ProductPricingPanel from '$lib/components/pages/products/product-pricing-pannel.svelte';
 	import { type ProductMedia } from '$lib/gql/graphql';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import {
 		Icon,
 		HeadSet,
@@ -42,22 +42,22 @@
 	const tabs: TabType[] = [
 		{
 			name: tClient('product.tabDescription'),
-			path: `${AppRoute.PRODUCTS}/${$page.params.slug}`,
+			path: `${AppRoute.PRODUCTS}/${page.params.slug}`,
 			icon: FileText
 		},
 		{
 			name: tClient('product.tabAttributes'),
-			path: `${AppRoute.PRODUCTS}/${$page.params.slug}/attributes`,
+			path: `${AppRoute.PRODUCTS}/${page.params.slug}/attributes`,
 			icon: SettingCheck
 		},
 		{
 			name: tClient('product.tabFeedBack'),
-			path: `${AppRoute.PRODUCTS}/${$page.params.slug}/customer-feedbacks`,
+			path: `${AppRoute.PRODUCTS}/${page.params.slug}/customer-feedbacks`,
 			icon: HeadSet
 		},
 		{
 			name: tClient('product.tabPackaging'),
-			path: `${AppRoute.PRODUCTS}/${$page.params.slug}/packaging`,
+			path: `${AppRoute.PRODUCTS}/${page.params.slug}/packaging`,
 			icon: PackageExport
 		}
 	];
@@ -136,7 +136,7 @@
 			{#each tabs as tab, idx (idx)}
 				<a role="tab" class="inline" href={tab.path}>
 					<Button
-						class={`${$page.url.pathname === tab.path ? 'tab-active' : ''} tab-btn`}
+						class={`${page.url.pathname === tab.path ? 'tab-active' : ''} tab-btn`}
 						startIcon={tab.icon}
 						size="xs"
 						variant="light"

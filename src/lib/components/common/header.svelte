@@ -2,7 +2,7 @@
 	import { Button } from '$lib/components/ui';
 	import { userStore } from '$lib/stores/auth';
 	import { AppRoute, getCookieByKey } from '$lib/utils';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { checkoutStore } from '$lib/stores/app';
 	import {
 		Icon,
@@ -43,6 +43,7 @@
 		return { userAvatarStyle, userDisplayName };
 	});
 
+	// load current user when oage load
 	onMount(async () => {
 		const token = getCookieByKey(ACCESS_TOKEN_KEY);
 		if (!token) return;
@@ -70,6 +71,22 @@
 		userStore.set(null);
 		await invalidateAll();
 	};
+
+	// load checkout when page load
+	onMount(async () => {
+		const fetchResult = await fetch(AppRoute.CHECKOUT_GET_OR_CREATE, { method: 'POST' });
+		const parsedResult = await fetchResult.json();
+
+		if (parsedResult.status !== HTTPStatusSuccess) {
+			toastStore.send({
+				variant: 'error',
+				message: parsedResult.message
+			});
+			return;
+		}
+
+		checkoutStore.set(parsedResult.checkout);
+	});
 </script>
 
 <header class="fixed top-0 left-0 right-0 flex p-2 bg-white shadow-sm z-[40] w-full">
@@ -146,7 +163,7 @@
 						}
 					]}
 				/>
-			{:else if !$userStore && !$page.url.pathname.startsWith('/auth')}
+			{:else if !$userStore && !page.url.pathname.startsWith('/auth')}
 				<a href={AppRoute.AUTH_SIGNIN}>
 					<Button variant="filled" size="sm">{tClient('signin.title')}</Button>
 				</a>

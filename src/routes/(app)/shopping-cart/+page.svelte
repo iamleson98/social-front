@@ -14,6 +14,7 @@
 	import type { CustomQueryCheckoutArgs } from '$lib/utils/types';
 	import { formatMoney } from '$lib/utils/utils';
 	import { CommonTimeLine } from '$lib/components/common/timeline';
+	import CartPageSkeleton from '$lib/components/pages/cart/cart-page-skeleton.svelte';
 
 	afterNavigate(() => {
 		window.scrollTo({
@@ -66,7 +67,7 @@
 
 <div>
 	{#if $cartPreviewResultStore.fetching}
-		<div>Loading...</div>
+		<CartPageSkeleton />
 	{:else if $cartPreviewResultStore.error}
 		<div>{$cartPreviewResultStore.error.message}</div>
 	{:else if !$cartPreviewResultStore.data?.checkout?.lines.length}
@@ -131,13 +132,10 @@
 						Proceed to checkout
 					</Button>
 
-					<div class="flex items-center justify-center gap-2">
+					<div class="flex items-center justify-center gap-1 mt-2">
 						<span class="text-sm font-normal text-gray-500"> or </span>
-						<a
-							href="/"
-							class="inline-flex items-center gap-2 text-sm font-medium text-primary-700 underline hover:no-underline"
-						>
-							Continue Shopping
+						<a href="/" class="flex items-center gap-1 text-xs font-medium text-gray-700 underline">
+							<span>Continue Shopping</span>
 							<Icon icon={ArrowNarrowRight} />
 						</a>
 					</div>
@@ -148,7 +146,7 @@
 					<Input
 						placeholder="Enter discount code"
 						size="md"
-						class="w-full"
+						class="w-full mb-2"
 						label="Do you have a voucher or gift card?"
 					/>
 					<Button variant="filled" size="sm" fullWidth>Apply code</Button>

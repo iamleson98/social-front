@@ -1,28 +1,7 @@
-<script lang="ts" module>
-	export type Props = {
-		variant?: ButtonVariant;
-		ref?: HTMLButtonElement;
-		type?: 'button' | 'submit' | 'reset';
-		color?: SocialColor;
-		upper?: boolean;
-		size?: SocialSize;
-		radius?: SocialRadius;
-		loading?: boolean;
-		fullWidth?: boolean;
-		children?: Snippet;
-		startIcon?: IconType;
-		endIcon?: IconType;
-		clickDebounceOptions?: ClickDebounceOpts;
-	} & HTMLButtonAttributes;
-</script>
-
 <script lang="ts">
-	import type { HTMLButtonAttributes } from 'svelte/elements';
-	import type { SocialColor, SocialRadius, SocialSize } from '../common';
-	import { buttonVariantColorsMap, type ButtonVariant } from './button.types';
-	import { type Snippet } from 'svelte';
+	import { buttonVariantColorsMap, type ButtonProps } from './button.types';
 	import { Icon, type IconType } from '$lib/components/icons';
-	import { debounceClick, type ClickDebounceOpts } from '$lib/actions/input-debounce';
+	import { debounceClick } from '$lib/actions/input-debounce';
 	import { SIZE_MAP } from '$lib/utils/consts';
 
 	type IconProps = {
@@ -40,16 +19,16 @@
 		class: className = '',
 		loading = false,
 		fullWidth = false,
-		children = fakeChildren,
+		children,
 		startIcon,
 		endIcon,
 		disabled,
 		clickDebounceOptions,
 		...restProps
-	}: Props = $props();
+	}: ButtonProps = $props();
 </script>
 
-{#snippet fakeChildren()}
+{#snippet noopChildren()}
 	<span></span>
 {/snippet}
 
@@ -75,7 +54,11 @@
 		<span class="loading loading-dots loading-sm"></span>
 	{:else}
 		{@render buttonIcon({ icon: startIcon })}
-		{@render children()}
+		{#if children}
+			{@render children()}
+		{:else}
+			{@render noopChildren()}
+		{/if}
 		{@render buttonIcon({ icon: endIcon })}
 	{/if}
 </button>

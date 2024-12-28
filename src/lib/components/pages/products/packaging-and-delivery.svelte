@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { Input } from "$lib/components/ui/Input";
+
 	type PackageAndDelivery = {
 		weight: number;
 		length: number;
@@ -17,26 +19,21 @@
 <div class="flex items-center text-xs gap-1">
 	<label for="" class="form-control">
 		<div>Weight</div>
-		<input type="number" placeholder="weight" value={packageAndDeliveryData.weight} class="input" />
+		<Input type="number" placeholder="weight" value={packageAndDeliveryData.weight} />
 	</label>
 	<div class="flex items-center gap-1">
 		<label for="" class="form-control">
 			<div>Length</div>
-			<input type="number" placeholder="length" value={packageAndDeliveryData.length} class="input" />
+			<Input type="number" placeholder="length" value={packageAndDeliveryData.length} />
 		</label>
 		<label for="" class="form-control">
 			<div>Width</div>
-			<input type="number" placeholder="width" value={packageAndDeliveryData.width} class="input" />
+			<Input type="number" placeholder="width" value={packageAndDeliveryData.width} />
 		</label>
 		<label for="" class="form-control">
 			<div>Height</div>
-			<input type="number" placeholder="height" value={packageAndDeliveryData.height} class="input" />
+			<Input type="number" placeholder="height" value={packageAndDeliveryData.height} />
 		</label>
 	</div>
 </div>
 
-<style lang="postcss">
-	input {
-		@apply border-gray-200 w-full;
-	}
-</style>

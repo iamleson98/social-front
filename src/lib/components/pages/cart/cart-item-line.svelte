@@ -158,10 +158,15 @@
 	});
 </script>
 
-<div class="bg-white rounded-lg p-4 w-full border mb-2">
+<div class="bg-white rounded-lg p-4 w-full border mb-2 overflow-hidden">
 	<div class="flex items-center gap-2">
-		<img src={mediaUrl} alt={mediaAlt} class="w-16 h-16 object-cover rounded overflow-hidden" />
-		<div class="flex-1">
+		<!-- picture area -->
+		<div class="w-1/12">
+			<img src={mediaUrl} alt={mediaAlt} class="w-16 h-16 object-cover rounded overflow-hidden" />
+		</div>
+
+		<!-- name section -->
+		<div class="w-1/2">
 			<a
 				href={`${AppRoute.PRODUCTS}/${encodeURIComponent(line.variant.product.slug)}`}
 				class="text-gray-800 text-md hover:underline"
@@ -170,40 +175,46 @@
 			</a>
 			<div class="flex items-center text-gray-500 text-xs mt-2 gap-2"></div>
 		</div>
-		<div class="flex items-center gap-2">
-			<IconButton
-				icon={Minus}
-				size="sm"
-				color="red"
-				variant="light"
-				onclick={handleQuantityBtnClick(-1)}
-				disabled={quantity <= 0 || loading}
-			/>
-			<Input
-				size="sm"
-				bind:value={quantity}
-				min={0}
-				oninput={handleItemQuantityInput()}
-				type="number"
-				class="!w-16"
-				disabled={loading}
-			/>
-			<IconButton
-				icon={Plus}
-				size="sm"
-				variant="light"
-				onclick={handleQuantityBtnClick(1)}
-				disabled={(typeof QUANTITY_LIMIT === 'number' && QUANTITY_LIMIT <= quantity) || loading}
-			/>
+
+		<div class="flex items-center gap-2 w-1/3">
+			<!-- quantity update -->
+			<div class="flex items-center gap-2">
+				<IconButton
+					icon={Minus}
+					size="sm"
+					color="red"
+					variant="light"
+					onclick={handleQuantityBtnClick(-1)}
+					disabled={quantity <= 0 || loading}
+				/>
+				<Input
+					size="sm"
+					bind:value={quantity}
+					min={0}
+					oninput={handleItemQuantityInput()}
+					type="number"
+					class="!w-16"
+					disabled={loading}
+				/>
+				<IconButton
+					icon={Plus}
+					size="sm"
+					variant="light"
+					onclick={handleQuantityBtnClick(1)}
+					disabled={(typeof QUANTITY_LIMIT === 'number' && QUANTITY_LIMIT <= quantity) || loading}
+				/>
+			</div>
+
+			<!-- total price of line -->
+			{#if loading}
+				<SkeletonContainer>
+					<Skeleton class="w-12 h-3" />
+				</SkeletonContainer>
+			{:else}
+				<span class="text-blue-700 font-semibold">
+					{formatMoney(line.totalPrice.gross.currency, line.totalPrice.gross.amount)}
+				</span>
+			{/if}
 		</div>
-		{#if loading}
-			<SkeletonContainer>
-				<Skeleton class="w-14 h-3" />
-			</SkeletonContainer>
-		{:else}
-			<span class="text-blue-700 font-semibold">
-				{formatMoney(line.totalPrice.gross.currency, line.totalPrice.gross.amount)}
-			</span>
-		{/if}
 	</div>
 </div>

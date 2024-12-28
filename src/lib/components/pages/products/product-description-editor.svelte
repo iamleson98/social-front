@@ -35,7 +35,7 @@
 		ariaMultiline?: boolean;
 		ariaOwns?: string;
 		ariaRequired?: boolean;
-		autoCapitalize?: string;
+		autoCapitalize?: "none" | "characters" | "off" | "on" | "sentences" | "words" | null | undefined;
 		class?: string;
 		id?: string;
 		role?: string;
@@ -140,7 +140,7 @@
 	});
 </script>
 
-<div>
+<div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
 	<DescriptionEditorToolbar disabled={!isEditable || !activeEditor} editor={activeEditor} />
 	<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 	<!-- svelte-ignore element_invalid_self_closing_tag -->

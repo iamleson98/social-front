@@ -1,6 +1,27 @@
-import type { SocialColor } from '$lib/components/ui/common';
+import type { ClickDebounceOpts } from '$lib/actions/input-debounce';
+import type { IconType } from '$lib/components/icons';
+import type { SocialColor, SocialRadius, SocialSize } from '$lib/components/ui/common';
+import { type Snippet } from 'svelte';
+import type { HTMLButtonAttributes } from 'svelte/elements';
 
 export type ButtonVariant = 'filled' | 'light' | 'outline' | 'gradient';
+
+export type ButtonProps = {
+  variant?: ButtonVariant;
+  ref?: HTMLButtonElement;
+  type?: 'button' | 'submit' | 'reset';
+  color?: SocialColor;
+  /** weather to display text in uppercase */
+  upper?: boolean;
+  size?: SocialSize;
+  radius?: SocialRadius;
+  loading?: boolean;
+  fullWidth?: boolean;
+  children?: Snippet;
+  startIcon?: IconType;
+  endIcon?: IconType;
+  clickDebounceOptions?: ClickDebounceOpts;
+} & HTMLButtonAttributes;
 
 export const buttonVariantColorsMap: Record<ButtonVariant, Record<SocialColor, string>> = {
   filled: {

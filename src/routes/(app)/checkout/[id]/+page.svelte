@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { CheckoutLayout } from '$lib/components/pages/checkout';
 	import type { Checkout, Query } from '$lib/gql/graphql';
 	import { CHECKOUT_DETAILS_QUERY } from '$lib/stores/api/checkout';
@@ -22,7 +22,7 @@
 			.query<Pick<Query, 'checkout'>, CustomQueryCheckoutArgs>(
 				CHECKOUT_DETAILS_QUERY,
 				{
-					id: $page.params.id
+					id: page.params.id
 				},
 				{ requestPolicy: 'network-only' }
 			)
