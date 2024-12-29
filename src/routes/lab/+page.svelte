@@ -2,7 +2,7 @@
 	import MegaMenu from '$lib/components/common/level-selector/mega-menu.svelte';
 	import SlideShow from '$lib/components/pages/lab/slide-show.svelte';
 	import { Button } from '$lib/components/ui';
-	import {Menu} from '$lib/components/ui/Menu';
+	import { Menu } from '$lib/components/ui/Menu';
 	import { type SelectOption } from '$lib/components/ui/select';
 
 	const options: SelectOption[] = [
@@ -22,11 +22,7 @@
 	<Button>Open</Button>
 {/snippet}
 
-<Menu
-  trigger={openBtn}
->
-	MenuItem
-</Menu>
+<Menu trigger={openBtn}>MenuItem</Menu>
 
 <MegaMenu
 	items={[
