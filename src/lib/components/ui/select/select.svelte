@@ -73,6 +73,15 @@
 		openDropdown();
 	};
 
+	const handleFocus = (
+		evt: FocusEvent & {
+			currentTarget: EventTarget & HTMLInputElement;
+		}
+	) => {
+		if (rest.onfocus) rest.onfocus(evt);
+		activate();
+	};
+
 	const openDropdown = () => {
 		openSelect = true;
 	};
@@ -145,7 +154,7 @@
 			})}
 			id={inputId}
 			onclick={activate}
-			onfocus={activate}
+			onfocus={handleFocus}
 			value={selectedOption?.label}
 			type="text"
 			role="combobox"
