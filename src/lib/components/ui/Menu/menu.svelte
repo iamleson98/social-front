@@ -22,7 +22,6 @@
 
 <div>
 	{@render trigger({ onclick: handleClick })}
-
 	{#if openMenu}
 		{@render children()}
 	{/if}
