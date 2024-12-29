@@ -1,17 +1,17 @@
 <script lang="ts" module>
 	export type Props = {
 		avatar?: string;
-		customerName?: String;
-		feedBack?: String;
+		customerName?: string;
+		feedBack?: string;
 		rating?: number;
-		image?: String[];
-		video?: String[];
-		createAt?: String;
+		image?: string[];
+		video?: string[];
+		createAt?: string;
 	};
 </script>
 
 <script lang="ts">
-	import Rating from '../../ui/rating/Rating.svelte';
+	import Rating from '$lib/components/ui/rating/Rating.svelte';
 
 	let {
 		avatar = 'https://cly.1cdn.vn/2022/05/10/anh-nen-avatar-dep_021652403.jpg',

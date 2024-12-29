@@ -2,7 +2,7 @@
 	export type Props = {
 		onClick?: () => void;
 		children?: any;
-		style?: String;
+		style?: string;
 	};
 </script>
 
@@ -11,5 +11,7 @@
 </script>
 
 <button class="{style} py-2 px-4 cursor-pointer rounded-md" onclick={onClick}>
-	{@render children()}
+	{#if children}
+		{@render children()}
+	{/if}
 </button>

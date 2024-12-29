@@ -9,5 +9,7 @@
 </script>
 
 <div class="relative inline-block">
-	{@render children()}
+	{#if children}
+		{@render children()}
+	{/if}
 </div>

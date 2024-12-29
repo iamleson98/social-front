@@ -13,7 +13,9 @@
 	<div
 		class="menu absolute top-full left-0 mt-1 pt-1 pb-1 bg-white shadow-md z-10 min-w-max rounded-md"
 	>
-		{@render children()}
+		{#if children}
+			{@render children()}
+		{/if}
 	</div>
 {/if}
 

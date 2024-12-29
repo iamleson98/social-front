@@ -10,7 +10,9 @@
 </script>
 
 <div class="menu-item py-1.5 px-4 cursor-pointer text-gray-700" onclick={onClick}>
-	{@render children()}
+	{#if children}
+		{@render children()}
+	{/if}
 </div>
 
 <style>
