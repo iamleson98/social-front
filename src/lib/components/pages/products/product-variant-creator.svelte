@@ -6,14 +6,14 @@
 	import { type SocialColor } from '$lib/components/ui/common';
 	import { Input } from '$lib/components/ui/Input';
 	import { Select } from '$lib/components/ui/select';
-	import type { Query, QueryChannelArgs } from '$lib/gql/graphql';
+	import type { Query } from '$lib/gql/graphql';
 	import { CHANNELS_QUERY_STORE } from '$lib/stores/api/channels';
 	import { operationStore } from '$lib/stores/api/operation';
 	import { preHandleGraphqlResult } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 
-	type Variant = {
+	type VariantManifestProps = {
 		name: {
 			value: string;
 			error?: string;
@@ -24,11 +24,14 @@
 		}[];
 	};
 	type variantAction = (variantIdx: number) => void;
+	type QuickFillHighlight = 'td-channel-hl' | 'td-price-hl' | 'td-stock-hl' | 'td-sku-hl';
 
 	const MAX_VARIANT_TYPES = 2;
 	const MAX_VALUES_PER_VARIANT = 4;
 
-	let variants = $state.raw<Variant[]>([
+	let quickFilling = $state<QuickFillHighlight>();
+
+	let variants = $state.raw<VariantManifestProps[]>([
 		{
 			name: {
 				value: 'color'
@@ -44,6 +47,10 @@
 	 * As long as this state is true, the user can't fill the detail pricing table, let alone submit the form
 	 */
 	let generalError = $state(false);
+
+	const handleFocusQuickFilling = (highlight?: QuickFillHighlight) => {
+		quickFilling = highlight;
+	};
 
 	const handleVariantValueChange = (variantIdx: number, valueIdx: number) => (evt: Event) => {
 		if (!evt.target) return;
@@ -289,7 +296,7 @@
 </div>
 
 {#snippet variantTableRow(indices: number[], values: string[])}
-	<tr>
+	<tr class={`variant-table-row ${quickFilling || ''}`}>
 		{#if indices.length === 1}
 			{#if !indices[0]}
 				<td
@@ -302,12 +309,13 @@
 				<td
 					rowspan={variants[1].values.length}
 					class="font-medium text-center border-b border-gray-200"
-					>{values[0]}
+				>
+					{values[0]}
 				</td>
 			{/if}
 			<td class="font-medium text-center border-b border-gray-200">{values[1]}</td>
 		{/if}
-		<td>
+		<td class="channel-td">
 			<!-- <Input type="text" size="sm" placeholder="Enter channel" /> -->
 			<Select
 				size="xs"
@@ -319,14 +327,14 @@
 				disabled={$channelsQueryStore.fetching || !!$channelsQueryStore.error}
 			/>
 		</td>
-		<td>
-			<Input type="text" size="xs" placeholder="Enter value" />
+		<td class="price-td">
+			<Input type="text" size="xs" placeholder="price" />
 		</td>
-		<td>
-			<Input type="text" size="xs" placeholder="Enter value" />
+		<td class="stock-td">
+			<Input type="text" size="xs" placeholder="stock" />
 		</td>
-		<td>
-			<Input type="text" size="xs" placeholder="Enter value" value={values.join('-')} />
+		<td class="sku-td">
+			<Input type="text" size="xs" placeholder="SKU" value={values.join('-')} />
 		</td>
 	</tr>
 {/snippet}
@@ -345,10 +353,30 @@
 						value: channel.slug,
 						label: channel.name
 					})) || []}
+					onfocus={() => handleFocusQuickFilling('td-channel-hl')}
+					onblur={() => handleFocusQuickFilling()}
 				/>
-				<Input type="text" placeholder="General price" size="sm" />
-				<Input type="text" placeholder="Stocks" size="sm" />
-				<Input type="text" placeholder="Pricing" size="sm" />
+				<Input
+					type="text"
+					placeholder="price"
+					size="sm"
+					onfocus={() => handleFocusQuickFilling('td-price-hl')}
+					onblur={() => handleFocusQuickFilling()}
+				/>
+				<Input
+					type="text"
+					placeholder="stock"
+					size="sm"
+					onfocus={() => handleFocusQuickFilling('td-stock-hl')}
+					onblur={() => handleFocusQuickFilling()}
+				/>
+				<Input
+					type="text"
+					placeholder="SKU"
+					size="sm"
+					onfocus={() => handleFocusQuickFilling('td-sku-hl')}
+					onblur={() => handleFocusQuickFilling()}
+				/>
 				<Button class="btn btn-sm grow shrink" size="sm">Apply</Button>
 			</div>
 		</div>
@@ -398,8 +426,50 @@
 	td {
 		@apply p-1;
 	}
-
 	th {
 		@apply px-1 py-3;
+	}
+	/* highlight price */
+	.variant-table-row.td-price-hl .price-td {
+		@apply border-l-2 border-r-2 border-blue-400;
+	}
+	.variant-table-row.td-price-hl:first-child > .price-td {
+		@apply border-t-2 border-blue-400;
+	}
+	.variant-table-row.td-price-hl:last-child > .price-td {
+		@apply border-b-2 border-blue-400;
+	}
+
+	/* highlight channel */
+	.variant-table-row.td-channel-hl .channel-td {
+		@apply border-l-2 border-r-2 border-blue-400;
+	}
+	.variant-table-row.td-channel-hl:first-child > .channel-td {
+		@apply border-t-2 border-blue-400;
+	}
+	.variant-table-row.td-channel-hl:last-child > .channel-td {
+		@apply border-b-2 border-blue-400;
+	}
+
+	/* highlight stock */
+	.variant-table-row.td-stock-hl .stock-td {
+		@apply border-l-2 border-r-2 border-blue-400;
+	}
+	.variant-table-row.td-stock-hl:first-child > .stock-td {
+		@apply border-t-2 border-blue-400;
+	}
+	.variant-table-row.td-stock-hl:last-child > .stock-td {
+		@apply border-b-2 border-blue-400;
+	}
+
+	/* highlight sku */
+	.variant-table-row.td-sku-hl .sku-td {
+		@apply border-l-2 border-r-2 border-blue-400;
+	}
+	.variant-table-row.td-sku-hl:first-child > .sku-td {
+		@apply border-t-2 border-blue-400;
+	}
+	.variant-table-row.td-sku-hl:last-child > .sku-td {
+		@apply border-b-2 border-blue-400;
 	}
 </style>
