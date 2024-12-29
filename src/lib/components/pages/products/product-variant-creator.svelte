@@ -1,11 +1,17 @@
 <script lang="ts">
 	import { tClient } from '$i18n';
-	import { debounceInput } from '$lib/actions/input-debounce';
 	import { Icon, Plus, Trash } from '$lib/components/icons';
+	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
+	import { type SocialColor } from '$lib/components/ui/common';
 	import { Input } from '$lib/components/ui/Input';
-	import { tick } from 'svelte';
-	import { fly, slide } from 'svelte/transition';
+	import { Select } from '$lib/components/ui/select';
+	import type { Query, QueryChannelArgs } from '$lib/gql/graphql';
+	import { CHANNELS_QUERY_STORE } from '$lib/stores/api/channels';
+	import { operationStore } from '$lib/stores/api/operation';
+	import { preHandleGraphqlResult } from '$lib/utils/utils';
+	import { onMount } from 'svelte';
+	import { slide } from 'svelte/transition';
 
 	type Variant = {
 		name: {
@@ -17,6 +23,7 @@
 			error?: string;
 		}[];
 	};
+	type variantAction = (variantIdx: number) => void;
 
 	const MAX_VARIANT_TYPES = 2;
 	const MAX_VALUES_PER_VARIANT = 4;
@@ -39,70 +46,60 @@
 	let generalError = $state(false);
 
 	const handleVariantValueChange = (variantIdx: number, valueIdx: number) => (evt: Event) => {
-		if (evt.target) {
-			const newValue = (evt.target as HTMLInputElement).value.trim().toLowerCase();
+		if (!evt.target) return;
+		const newValue = (evt.target as HTMLInputElement).value;
 
-			const valueDuplicate = variants[variantIdx].values.some(
-				(value, idx) => idx !== valueIdx && newValue && newValue === value.value
-			);
+		const valueDuplicate = variants[variantIdx].values.some(
+			(value, idx) => idx !== valueIdx && newValue && newValue === value.value
+		);
 
-			generalError = !newValue || valueDuplicate;
-			variants = variants.map((variant, idx) => {
-				if (idx === variantIdx) {
+		generalError = !newValue || valueDuplicate;
+		variants = variants.map((variant, idx) => {
+			if (idx !== variantIdx) return variant;
+
+			return {
+				name: variant.name,
+				values: variant.values.map((value, idx) => {
+					if (idx !== valueIdx) return value;
+
 					return {
-						name: variant.name,
-						values: variant.values.map((value, idx) => {
-							if (idx === valueIdx) {
-								return {
-									value: newValue,
-									error: valueDuplicate
-										? tClient('product.variantValueExist', { name: newValue })
-										: !newValue
-											? tClient('product.variantValueEmpty')
-											: undefined
-								};
-							}
-
-							return value;
-						})
+						value: newValue,
+						error: valueDuplicate
+							? tClient('product.variantValueExist', { name: newValue })
+							: !newValue
+								? tClient('product.variantValueEmpty')
+								: undefined
 					};
-				}
-
-				return variant;
-			});
-
-			tick();
-		}
+				})
+			};
+		});
 	};
 
 	const handleVariantNameChange = (variantIdx: number) => (evt: Event) => {
-		if (evt.target) {
-			const name = (evt.target as HTMLInputElement).value.trim().toLowerCase();
+		if (!evt.target) return;
 
-			const nameDuplicate = variants.some(
-				(variant, idx) => idx !== variantIdx && name && name === variant.name.value
-			);
+		const name = (evt.target as HTMLInputElement).value;
 
-			generalError = nameDuplicate || !name;
-			variants = variants.map((variant, idx) => {
-				if (idx === variantIdx) {
-					return {
-						name: {
-							value: name,
-							error: nameDuplicate
-								? tClient('product.variantNameExist', { name })
-								: !name
-									? tClient('product.variantNameEmpty')
-									: undefined
-						},
-						values: variant.values
-					};
-				}
-				return variant;
-			});
+		const nameDuplicate = variants.some(
+			(variant, idx) => idx !== variantIdx && name && name === variant.name.value
+		);
 
-			tick();
-		}
+		generalError = nameDuplicate || !name;
+		variants = variants.map((variant, idx) => {
+			if (idx !== variantIdx) return variant;
+
+			return {
+				name: {
+					value: name,
+					error: nameDuplicate
+						? tClient('product.variantNameExist', { name })
+						: !name
+							? tClient('product.variantNameEmpty')
+							: undefined
+				},
+				values: variant.values
+			};
+		});
 	};
 
 	const handleAddVariant = () => {
@@ -128,58 +125,56 @@
 
 	const handleAddVariantValue: variantAction = (variantIdx: number) => {
 		variants = variants.map((variant, idx) => {
-			if (idx === variantIdx) {
-				if (variant.values.length >= MAX_VALUES_PER_VARIANT) {
-					return variant;
-				}
-				return {
-					name: variant.name,
-					values: variant.values.concat({ value: '' })
-				};
-			}
-			return variant;
+			if (idx !== variantIdx || variant.values.length >= MAX_VALUES_PER_VARIANT) return variant;
+
+			return {
+				name: variant.name,
+				values: variant.values.concat({ value: '' })
+			};
 		});
 	};
-
-	type variantAction = (variantIdx: number) => void;
 
 	const handleDeleteValue = (variantIdx: number, valueIdx: number) => {
 		variants = variants.map((variant, idx) => {
-			if (idx === variantIdx) {
-				return {
-					name: variant.name,
-					values: variant.values.filter((_, idx) => idx !== valueIdx)
-				};
-			}
-			return variant;
+			if (idx !== variantIdx) return variant;
+
+			return {
+				name: variant.name,
+				values: variant.values.filter((_, idx) => idx !== valueIdx)
+			};
 		});
 	};
-</script>
 
-{#snippet variantError(message?: string)}
-	{#if message}
-		<span class="text-red-500 text-xs" transition:fly>{message}</span>
-	{/if}
-{/snippet}
+	const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
+		kind: 'query',
+		query: CHANNELS_QUERY_STORE,
+		context: { requestPolicy: 'cache-and-network' }
+	});
+
+	onMount(() => {
+		return channelsQueryStore.subscribe(preHandleGraphqlResult);
+	});
+</script>
 
 {#snippet variantActionButton(
 	tip: string,
 	action: 'add' | 'delete',
 	variantIdx: number,
 	onclick: variantAction,
-	disabled: boolean = false
+	disabled: boolean,
+	color: SocialColor
 )}
 	<div class="tooltip grow shrink" data-tip={tip}>
 		<Button
 			{disabled}
 			onclick={() => onclick(variantIdx)}
-			variant={action === 'delete' ? 'light' : 'outline'}
-			color={action === 'delete' ? 'red' : 'blue'}
+			variant="light"
+			{color}
 			fullWidth
 			size="sm"
 		>
 			{#if action === 'add'}
-				{variants[variantIdx].values.length} / {MAX_VALUES_PER_VARIANT}
+				{variants[variantIdx].values.length}/{MAX_VALUES_PER_VARIANT}
 				<Icon icon={Plus} />
 			{:else}
 				<Icon icon={Trash} />
@@ -194,7 +189,7 @@
 	class:items-center={variants.length < MAX_VARIANT_TYPES}
 >
 	{#each variants as variant, variantIdx (variantIdx)}
-		<div class="p-3 w-1/2 mobile-l:w-full border rounded-lg">
+		<div class="p-3 w-1/2 mobile-l:w-full border rounded-lg bg-white">
 			<!-- title -->
 			<div class="mb-1 text-xs">
 				{tClient('product.variant')}
@@ -217,9 +212,9 @@
 						value={variant.name.value}
 						size="md"
 						variant={variant.name.error ? 'error' : 'info'}
+						subText={variant.name.error}
 					/>
 				</label>
-				{@render variantError(variant.name.error)}
 			</div>
 
 			<!-- values -->
@@ -239,6 +234,7 @@
 								debounceTime: 500 // only fire after 0.5 sec after user stop typing
 							}}
 							value={value.value}
+							subText={value.error}
 						/>
 						{#if variant.values.length > 1}
 							<IconButton
@@ -252,7 +248,6 @@
 							/>
 						{/if}
 					</div>
-					{@render variantError(value.error)}
 				</div>
 			{/each}
 			<div class="flex justify-center items-center gap-1.5 mt-4">
@@ -260,21 +255,27 @@
 					tClient('product.delVariant'),
 					'delete',
 					variantIdx,
-					handleDeleteVariant
+					handleDeleteVariant,
+					false,
+					'red'
 				)}
 				{@render variantActionButton(
 					tClient('product.addValue'),
 					'add',
 					variantIdx,
 					handleAddVariantValue,
-					variant.values.length >= MAX_VALUES_PER_VARIANT
+					variant.values.length >= MAX_VALUES_PER_VARIANT,
+					'blue'
 				)}
 			</div>
 		</div>
 	{/each}
 	{#if variants.length < MAX_VARIANT_TYPES}
 		<div class="w-1/2 mobile-l:w-full">
-			<div class="tooltip w-full h-full flex items-center justify-center" data-tip={tClient('product.addVariant')}>
+			<div
+				class="tooltip w-full h-full flex items-center justify-center"
+				data-tip={tClient('product.addVariant')}
+			>
 				<IconButton
 					onclick={handleAddVariant}
 					icon={Plus}
@@ -288,46 +289,64 @@
 </div>
 
 {#snippet variantTableRow(indices: number[], values: string[])}
-	<tr class="">
+	<tr>
 		{#if indices.length === 1}
 			{#if !indices[0]}
-				<td rowspan={variants[0].values.length} class="bg-green-100 text-green-700 font-medium text-center border-b border-green-200">{values[0]}</td>
+				<td
+					rowspan={variants[0].values.length}
+					class="font-medium text-center border-b border-gray-200">{values[0]}</td
+				>
 			{/if}
 		{:else}
 			{#if !indices[1]}
-				<td rowspan={variants[1].values.length} class="bg-green-100 text-green-700 font-medium text-center border-b border-green-200">{values[0]}</td>
+				<td
+					rowspan={variants[1].values.length}
+					class="font-medium text-center border-b border-gray-200"
+					>{values[0]}
+				</td>
 			{/if}
-			<td class="bg-blue-100 text-blue-700 font-medium text-center border-b border-blue-200">{values[1]}</td>
+			<td class="font-medium text-center border-b border-gray-200">{values[1]}</td>
 		{/if}
 		<td>
-			<Input type="text" size="sm" placeholder="Enter value" />
-		</td>
-		<td>
-			<Input type="text" size="sm" placeholder="Enter value" />
-		</td>
-		<td>
-			<Input type="text" size="sm" placeholder="Enter value" />
-		</td>
-		<td>
-			<Input
-				type="text"
-				size="sm"
-				placeholder="Enter value"
-				value={values.join('-')}
+			<!-- <Input type="text" size="sm" placeholder="Enter channel" /> -->
+			<Select
+				size="xs"
+				options={$channelsQueryStore.data?.channels?.map((channel) => ({
+					value: channel.slug,
+					label: channel.name
+				})) || []}
+				placeholder="Select channel"
+				disabled={$channelsQueryStore.fetching || !!$channelsQueryStore.error}
 			/>
+		</td>
+		<td>
+			<Input type="text" size="xs" placeholder="Enter value" />
+		</td>
+		<td>
+			<Input type="text" size="xs" placeholder="Enter value" />
+		</td>
+		<td>
+			<Input type="text" size="xs" placeholder="Enter value" value={values.join('-')} />
 		</td>
 	</tr>
 {/snippet}
 
 <!-- detail -->
 {#if variants.length && !generalError}
-	<div transition:slide class="mt-10">
+	<div class="mt-10">
 		<!-- shortcut -->
 		<div class="mb-4">
 			<div class="text-xs mb-1">Quick filling</div>
 			<div class="flex gap-x-2 items-center flex-row w-full">
+				<Select
+					disabled={$channelsQueryStore.fetching || !!$channelsQueryStore.error}
+					size="sm"
+					options={$channelsQueryStore.data?.channels?.map((channel) => ({
+						value: channel.slug,
+						label: channel.name
+					})) || []}
+				/>
 				<Input type="text" placeholder="General price" size="sm" />
-				<Input type="text" placeholder="Sell channels" size="sm" />
 				<Input type="text" placeholder="Stocks" size="sm" />
 				<Input type="text" placeholder="Pricing" size="sm" />
 				<Button class="btn btn-sm grow shrink" size="sm">Apply</Button>
@@ -336,20 +355,20 @@
 
 		<!-- details -->
 		<div class="relative overflow-x-auto rounded-lg p-3 border border-gray-200 bg-gray-50">
-			<table class="w-full text-sm text-left rtl:text-right text-gray-700 dark:text-gray-500">
+			<table class="w-full text-sm text-left rtl:text-right text-gray-600 dark:text-gray-500 mb-4">
 				<thead class="text-xs text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-500">
 					<tr>
 						<th>{variants[0].name.value}</th>
 						{#if variants.length === MAX_VARIANT_TYPES}
 							<th>{variants[1].name.value}</th>
 						{/if}
-						<th>price</th>
 						<th>channel</th>
+						<th>price</th>
 						<th>stock</th>
 						<th>classify sku</th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody class="overflow-y-visible">
 					{#each variants[0].values as value, valueIdx (valueIdx)}
 						{#if variants.length === MAX_VARIANT_TYPES}
 							{#each variants[1].values as value2, valueIdx2 (valueIdx2)}
@@ -361,6 +380,16 @@
 					{/each}
 				</tbody>
 			</table>
+
+			<!-- document -->
+			<Alert variant="info" size="sm" bordered>
+				<div class="text-xs">
+					<p>- Choose a channel you would like to sell this product.</p>
+					<p>- Provide pricing information for product variants</p>
+					<p>- Provide stock information for product variants</p>
+					<p>- Fill the classify sku for each product variant.</p>
+				</div>
+			</Alert>
 		</div>
 	</div>
 {/if}

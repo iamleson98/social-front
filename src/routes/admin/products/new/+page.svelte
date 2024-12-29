@@ -8,6 +8,7 @@
 	import ProductDescription from '$lib/components/pages/products/product-description.svelte';
 	import ProductPreorderEditor from '$lib/components/pages/products/product-preorder-editor.svelte';
 	import ProductVariantCreator from '$lib/components/pages/products/product-variant-creator.svelte';
+	import { Button } from '$lib/components/ui';
 	import { Input } from '$lib/components/ui/Input';
 	import type { Category } from '$lib/gql/graphql';
 
@@ -61,18 +62,15 @@
 	<!-- packaging and delivery -->
 	<div class="mb-3">
 		<span class="text-sm">{tClient('common.packaging')}</span>
-		<div class="bg-gray-50 rounded p-2">
-			<PackagingAndDelivery />
-		</div>
+		<PackagingAndDelivery />
 	</div>
 
 	<!-- preorder -->
 	<div class="mb-3">
 		<span class="text-sm">{tClient('common.preorder')}</span>
-		<div class="bg-gray-50 rounded p-2">
-			<ProductPreorderEditor />
-		</div>
+		<ProductPreorderEditor />
 	</div>
 
-	<button class="btn btn-md w-full !bg-blue-500 text-white">Submit</button>
+	<!-- <button class="btn btn-md w-full !bg-blue-500 text-white">Submit</button> -->
+	<Button size="md" variant="filled" fullWidth>Submit</Button>
 </div>

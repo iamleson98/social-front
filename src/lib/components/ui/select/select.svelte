@@ -95,7 +95,6 @@
 
 <!-- this common snippet is used for rendering select options -->
 {#snippet selectOption({ idx, disabled, className, onclick, option }: SnippetProps)}
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<li
 		id={`${listboxId}-${idx}`}
 		aria-selected={option.value === value}
@@ -104,6 +103,7 @@
 		class={`${className} select-option ${option.value === value ? 'active-select-option' : ''}`}
 		bind:this={optionRefs[idx]}
 		{onclick}
+		onkeydown={(e) => e.key === 'Enter' && onclick?.()}
 		tabindex="0"
 		use:shortcuts={[
 			{
@@ -178,7 +178,7 @@
 			id={listboxId}
 			transition:fly={{ duration: 250 }}
 			class="select-menu"
-			tabindex="-1"
+			tabindex="0"
 		>
 			{#if !filteredOptions.length}
 				{@render selectOption({
@@ -204,7 +204,7 @@
 
 <style lang="postcss">
 	.select-menu {
-		@apply absolute text-left mt-0.5 text-sm w-full max-h-64 overflow-y-auto bg-white rounded-b-xl z-10 shadow-sm border border-gray-200;
+		@apply absolute text-left mt-0.5 text-sm w-full max-h-64 overflow-y-auto bg-white rounded-b-xl z-[100000000000000000] shadow-sm border border-gray-200;
 	}
 	.select-option {
 		@apply text-left w-full px-4 py-1 hover:bg-blue-50 aria-selected:bg-blue-50 hover:text-blue-600;

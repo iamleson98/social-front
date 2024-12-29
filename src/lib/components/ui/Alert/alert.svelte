@@ -24,10 +24,10 @@
 </script>
 
 <div
-	class={`flex items-center rounded-lg ${className} ${ALERT_VARIANT_STYLE_MAP[variant]} ${ALERT_SIZE_STYLE_MAP[size].container} ${bordered ? 'border' : '!border-none'}`}
+	class={`flex items-start gap-3 rounded-lg ${className} ${ALERT_VARIANT_STYLE_MAP[variant]} ${ALERT_SIZE_STYLE_MAP[size].container} ${bordered ? 'border' : '!border-none'}`}
 	transition:fly={{ y: 10 }}
 >
-	<span class="flex items-center mr-2">
+	<span class="flex items-center">
 		<Icon
 			icon={SocialVariantIconsMap[variant]}
 			class={`${ALERT_SIZE_STYLE_MAP[size].icon}`}

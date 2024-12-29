@@ -37,22 +37,26 @@
 </script>
 
 <div class="border rounded-lg bg-gray-50 border-gray-200 p-3">
-	<div class="flex items-center gap-2 mb-2 text-sm">
+	<div class="flex items-center flex-row gap-2 mb-2 text-xs text-gray-700 font-semibold">
 		<div class="w-1/12">No.</div>
-		<div>channel</div>
-		<div>from product</div>
-		<div>to product</div>
-		<div>price</div>
+		<div class="w-10/12 flex items-center gap-1">
+			<div class="w-3/12">channel</div>
+			<div class="w-3/12">from product</div>
+			<div class="w-3/12">to product</div>
+			<div class="w-3/12">price</div>
+		</div>
 		<div class="w-1/12"></div>
 	</div>
 
 	{#each discountRanges as range, idx (idx)}
-		<div transition:slide class="flex items-end gap-2 mb-2">
+		<div transition:slide class="flex items-center flex-row gap-2 mb-2">
 			<div class="w-1/12">{idx + 1}</div>
-			<Input size="sm" type="text" placeholder="channel" value={range.channelSlug} />
-			<Input size="sm" type="number" placeholder="from" value={range.fromProduct} />
-			<Input size="sm" type="number" placeholder="to" value={range.toProduct} />
-			<Input size="sm" type="number" placeholder="price" value={range.discount} />
+			<div class="w-10/12 flex items-center gap-1">
+				<Input size="sm" type="text" placeholder="channel" value={range.channelSlug} />
+				<Input size="sm" type="number" placeholder="from" value={range.fromProduct} />
+				<Input size="sm" type="number" placeholder="to" value={range.toProduct} />
+				<Input size="sm" type="number" placeholder="price" value={range.discount} />
+			</div>
 			<div class="w-1/12">
 				<IconButton
 					icon={Trash}
@@ -71,6 +75,7 @@
 			onclick={addDiscountRange}
 			startIcon={Plus}
 			fullWidth
+			size="sm"
 		>
 			Add range ({discountRanges.length}/{MAX_DISCOUNT_RANGES})
 		</Button>

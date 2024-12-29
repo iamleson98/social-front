@@ -24,7 +24,7 @@
 		{...rest}
 	/>
 	{#if label}
-		<label for={id} class="w-full py-4 ms-2 text-sm font-medium text-gray-800 dark:text-gray-300">
+		<label for={id} class="w-full py-4 ms-2 text-sm font-medium text-gray-800 dark:text-gray-300 select-none">
 			{label}
 		</label>
 	{/if}
