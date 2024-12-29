@@ -121,7 +121,7 @@ export function operationStore<Data = unknown, Variables extends AnyVariables = 
 								graphqlClient.executeRequestOperation(operation),
 								map(({ stale, data, error, extensions, operation }) => ({
 									fetching: false,
-									stale: !!stale,
+									stale,
 									data,
 									error,
 									operation,

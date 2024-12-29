@@ -4,6 +4,7 @@
 		text: string;
 		subText?: string;
 		hasDivider?: boolean;
+		onSelect?: () => void;
 	};
 
 	export type Props = {
@@ -13,7 +14,6 @@
 		open: boolean;
 		header?: string;
 		onClose: () => void;
-		onSelect?: (item: DropdownItemProps) => void;
 		placement?: 'dropdown-top' | 'dropdown-right' | 'dropdown-bottom' | 'dropdown-left';
 	};
 </script>
@@ -32,7 +32,6 @@
 		class: className = '',
 		header,
 		onClose,
-		onSelect,
 		placement = 'dropdown-right'
 	}: Props = $props();
 	let dropdownRef = $state<HTMLDivElement>();
@@ -102,10 +101,12 @@
 		<ul>
 			{#each items as item, idx (idx)}
 				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 				<li
 					class={`cursor-pointer px-4 py-2 hover:bg-gray-100 ${item.hasDivider ? 'border-b border-gray-100' : ''}`}
-					onclick={() => onSelect?.(item)}
+					onclick={item.onSelect}
+					onkeydown={(e) => e.key === 'Enter' && item.onSelect?.()}
+					tabindex="0"
 				>
 					<div class="flex items-center space-x-2">
 						{#if item.startIcon}

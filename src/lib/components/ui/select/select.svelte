@@ -12,8 +12,7 @@
 	import { ChevronSort, CloseX, Icon } from '$lib/components/icons';
 	import { classNames, randomID } from '$lib/utils/utils';
 	import { fly } from 'svelte/transition';
-	import { Input } from '../Input';
-	import { tClient } from '$i18n';
+	import { Input, type InputProps } from '../Input';
 
 	type SnippetProps = {
 		/** default `false` */
@@ -26,23 +25,14 @@
 
 	type Props = {
 		options: SelectOption[];
-		placeholder?: string;
-		label?: string;
-		/** default `false` */
-		disabled?: boolean;
-		size?: 'sm' | 'md' | 'lg';
-		variant?: 'normal' | 'error' | 'success';
-		value: string | number | undefined;
-	};
+		class?: string;
+	} & InputProps;
 
 	let {
 		options,
-		placeholder = tClient('product.valuePlaceholder'),
-		label,
-		disabled = false,
-		size = 'md',
-		variant = 'normal',
-		value = $bindable<string | number | undefined>('')
+		value = $bindable<string | number | undefined>(),
+		class: className = '',
+		...rest
 	}: Props = $props();
 
 	let searchQuery = $state('');
@@ -51,13 +41,15 @@
 	let selectedOption = $derived.by(() =>
 		value ? options.find((opt) => opt.value === value) : undefined
 	);
-	let input: HTMLInputElement;
+	let input = $state<HTMLInputElement>();
 	let optionRefs: HTMLElement[] = [];
 	const id = randomID();
 
 	/** list of options that match search query */
-	let filteredOptions = $derived(
-		options.filter((option) => option.label.toLowerCase().includes(searchQuery.toLowerCase()))
+	let filteredOptions = $derived.by(() =>
+		searchQuery
+			? options.filter((option) => option.label.toLowerCase().includes(searchQuery.toLowerCase()))
+			: options
 	);
 
 	const inputId = `combobox-${id}`;
@@ -65,7 +57,7 @@
 
 	const onInput = () => {
 		openDropdown();
-		searchQuery = input.value.trim();
+		searchQuery = input?.value.trim() ?? '';
 		optionRefs[0]?.scrollIntoView({ block: 'nearest' });
 	};
 
@@ -91,7 +83,7 @@
 
 	const onClear = () => {
 		input?.focus();
-		value = undefined;
+		value = '';
 		searchQuery = '';
 	};
 
@@ -103,7 +95,6 @@
 
 <!-- this common snippet is used for rendering select options -->
 {#snippet selectOption({ idx, disabled, className, onclick, option }: SnippetProps)}
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<li
 		id={`${listboxId}-${idx}`}
 		aria-selected={option.value === value}
@@ -112,6 +103,7 @@
 		class={`${className} select-option ${option.value === value ? 'active-select-option' : ''}`}
 		bind:this={optionRefs[idx]}
 		{onclick}
+		onkeydown={(e) => e.key === 'Enter' && onclick?.()}
 		tabindex="0"
 		use:shortcuts={[
 			{
@@ -123,10 +115,6 @@
 		{option.label}
 	</li>
 {/snippet}
-
-{#if label}
-	<label for={inputId}>{label}</label>
-{/if}
 
 <div
 	class="relative w-full text-gray-700 text-base"
@@ -144,16 +132,14 @@
 >
 	<div>
 		<Input
-			{placeholder}
-			{disabled}
-			{variant}
-			{size}
+			{...rest}
 			aria-controls={listboxId}
 			aria-expanded={openSelect}
 			bind:ref={input}
 			aria-autocomplete="list"
 			autocomplete="off"
 			class={classNames({
+				[className]: true,
 				'!rounded-b-none': openSelect,
 				'cursor-pointer': !searchFocus
 			})}
@@ -166,17 +152,24 @@
 			inputDebounceOption={{
 				onInput
 			}}
+			{action}
 		/>
 
-		<div class="select-action" class:pr-2={!!value} class:pointer-events-none={!value}>
+		{#snippet action()}
 			{#if !!value}
-				<button class="btn btn-circle btn-xs" onclick={onClear} title="Clear value">
+				<span
+					onclick={onClear}
+					role="button"
+					tabindex="0"
+					onkeydown={(evt) => evt.key === 'Enter' && onClear()}
+					class="cursor-pointer"
+				>
 					<Icon icon={CloseX} />
-				</button>
+				</span>
 			{:else if !openSelect}
-				<Icon icon={ChevronSort} aria-hidden={true} />
+				<Icon icon={ChevronSort} />
 			{/if}
-		</div>
+		{/snippet}
 	</div>
 
 	{#if openSelect}
@@ -185,7 +178,7 @@
 			id={listboxId}
 			transition:fly={{ duration: 250 }}
 			class="select-menu"
-			tabindex="-1"
+			tabindex="0"
 		>
 			{#if !filteredOptions.length}
 				{@render selectOption({
@@ -211,10 +204,7 @@
 
 <style lang="postcss">
 	.select-menu {
-		@apply absolute text-left mt-0.5 text-sm w-full max-h-64 overflow-y-auto bg-white rounded-b-xl z-10 shadow-sm border border-gray-200;
-	}
-	.select-action {
-		@apply absolute right-0 top-0 h-full flex px-4 justify-center content-between items-center;
+		@apply absolute text-left mt-0.5 text-sm w-full max-h-64 overflow-y-auto bg-white rounded-b-xl z-[100000000000000000] shadow-sm border border-gray-200;
 	}
 	.select-option {
 		@apply text-left w-full px-4 py-1 hover:bg-blue-50 aria-selected:bg-blue-50 hover:text-blue-600;

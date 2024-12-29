@@ -1,45 +1,42 @@
 <script lang="ts">
 	import { ClosedEye, Icon, Lock, OpenEye } from '$lib/components/icons';
-	import Input, { type Props } from './input.svelte';
+	import Input from './input.svelte';
+	import type { InputProps } from './input.types';
+	import { type Snippet } from 'svelte';
 
 	let {
 		size,
 		placeholder,
 		value = $bindable(),
-		showAction = true,
+		showAction,
 		...rest
-	}: Omit<Props, 'action'> & { showAction?: boolean } = $props();
+	}: Omit<InputProps, 'action'> & { showAction?: boolean } = $props();
 
 	type passwordDisplay = 'password' | 'text';
 
 	let passwordFieldType: passwordDisplay = $state('password');
-	let passwordDisplayIcon = $derived.by(() =>
-		passwordFieldType === 'password' ? OpenEye : ClosedEye
-	);
 
 	const togglePasswordType = () =>
 		(passwordFieldType = passwordFieldType === 'password' ? 'text' : 'password');
 </script>
 
 {#snippet passwordAction()}
-	{#if showAction}
-		<!-- svelte-ignore a11y_interactive_supports_focus -->
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<span
-			class={`rounded-full ${size === 'sm' ? 'w-6 h-6' : 'w-7 h-7'} bg-gray-100 hover:bg-gray-200 flex items-center justify-center cursor-pointer select-none`}
-			role="button"
-			onclick={togglePasswordType}
-		>
-			<Icon icon={passwordDisplayIcon} />
-		</span>
-	{/if}
+	<span
+		class={`rounded-full ${size === 'sm' ? 'w-6 h-6' : 'w-7 h-7'} bg-gray-100 hover:bg-gray-200 flex items-center justify-center cursor-pointer select-none`}
+		role="button"
+		onclick={togglePasswordType}
+		tabindex="0"
+		onkeydown={(e) => e.key === 'Enter' && togglePasswordType()}
+	>
+		<Icon icon={passwordFieldType === 'password' ? OpenEye : ClosedEye} />
+	</span>
 {/snippet}
 
 <Input
-	placeholder={placeholder || 'Enter password'}
+	{placeholder}
 	bind:value
 	startIcon={Lock}
-	action={passwordAction}
+	action={showAction ? (passwordAction as Snippet<[]>) : undefined}
 	type={passwordFieldType}
 	{size}
 	{...rest}

@@ -496,7 +496,6 @@ export type AccountUpdate = {
 /** Represents user address data. */
 export type Address = Node &
 	ObjectWithMetadata & {
-		__typename?: 'Address';
 		/** The city of the address. */
 		city: Scalars['String']['output'];
 		/** The district of the address. */

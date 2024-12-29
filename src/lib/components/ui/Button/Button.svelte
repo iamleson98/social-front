@@ -1,26 +1,8 @@
-<script lang="ts" module>
-	export type Props = {
-		variant?: ButtonVariant;
-		ref?: HTMLButtonElement;
-		type?: 'button' | 'submit' | 'reset';
-		color?: SocialColor;
-		upper?: boolean;
-		size?: SocialSize;
-		radius?: SocialRadius;
-		loading?: boolean;
-		fullWidth?: boolean;
-		children?: Snippet;
-		startIcon?: IconType;
-		endIcon?: IconType;
-	} & HTMLButtonAttributes;
-</script>
-
 <script lang="ts">
-	import type { HTMLButtonAttributes } from 'svelte/elements';
-	import type { SocialColor, SocialRadius, SocialSize } from '../common';
-	import { buttonVariantColorsMap, type ButtonVariant } from './button.types';
-	import { type Snippet } from 'svelte';
+	import { buttonVariantColorsMap, type ButtonProps } from './button.types';
 	import { Icon, type IconType } from '$lib/components/icons';
+	import { debounceClick } from '$lib/actions/input-debounce';
+	import { SIZE_MAP } from '$lib/utils/consts';
 
 	type IconProps = {
 		icon?: IconType;
@@ -37,15 +19,17 @@
 		class: className = '',
 		loading = false,
 		fullWidth = false,
-		children = fakeChildren,
+		children,
 		startIcon,
 		endIcon,
+		disabled,
+		clickDebounceOptions,
 		...restProps
-	}: Props = $props();
+	}: ButtonProps = $props();
 </script>
 
-{#snippet fakeChildren()}
-	<div></div>
+{#snippet noopChildren()}
+	<span></span>
 {/snippet}
 
 {#snippet buttonIcon({ icon }: IconProps)}
@@ -57,18 +41,24 @@
 {/snippet}
 
 <button
-	class={`${buttonVariantColorsMap[variant][color]} button button-${size} ${radius} ${className}`}
+	class={`${buttonVariantColorsMap[variant][color]} button button-${size} ${SIZE_MAP[size]} ${radius} ${className}`}
 	class:uppercase={upper}
 	class:w-full={fullWidth}
 	{type}
+	disabled={loading || disabled}
 	bind:this={ref}
+	use:debounceClick={clickDebounceOptions}
 	{...restProps}
 >
 	{#if loading}
 		<span class="loading loading-dots loading-sm"></span>
 	{:else}
 		{@render buttonIcon({ icon: startIcon })}
-		{@render children()}
+		{#if children}
+			{@render children()}
+		{:else}
+			{@render noopChildren()}
+		{/if}
 		{@render buttonIcon({ icon: endIcon })}
 	{/if}
 </button>
@@ -82,18 +72,18 @@
 		@apply !text-gray-500 !bg-gray-200 !cursor-not-allowed !pointer-events-none !touch-none !border-none;
 	}
 	.button-xs {
-		@apply text-xs h-6 min-h-6 px-2;
+		@apply px-3;
 	}
 	.button-sm {
-		@apply h-8 min-h-8 px-3 text-sm;
+		@apply px-3;
 	}
 	.button-md {
-		@apply text-base h-12 min-h-12 px-4;
+		@apply px-5;
 	}
 	.button-lg {
-		@apply h-14 min-h-14 px-6 text-lg;
+		@apply px-5;
 	}
 	.button-xl {
-		@apply px-7 text-xl h-16 min-h-16;
+		@apply px-6;
 	}
 </style>

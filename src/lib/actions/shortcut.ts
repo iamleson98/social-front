@@ -26,7 +26,7 @@ export const shouldIgnoreShortcut = (event: KeyboardEvent): boolean => {
 
 export const matchesShortcut = (event: KeyboardEvent, shortcut: Shortcut) => {
   return (
-    shortcut.key.toLowerCase() === event.key.toLowerCase() &&
+    shortcut.key.toLowerCase() === event.key?.toLowerCase() &&
     Boolean(shortcut.alt) === event.altKey &&
     Boolean(shortcut.ctrl) === event.ctrlKey &&
     Boolean(shortcut.shift) === event.shiftKey &&

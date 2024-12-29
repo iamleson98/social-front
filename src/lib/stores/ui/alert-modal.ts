@@ -4,7 +4,7 @@ import { writable } from 'svelte/store';
 export type AlertActionFlowState = {
 	content: Snippet | string;
 	onOk: () => void;
-	onCancel: () => void;
+	onCancel?: () => void;
 };
 
 export const newAlertModalStore = () => {
@@ -18,7 +18,7 @@ export const newAlertModalStore = () => {
 				_store.set(null);
 			},
 			onCancel: () => {
-				onCancel();
+				onCancel?.();
 				_store.set(null);
 			}
 		};

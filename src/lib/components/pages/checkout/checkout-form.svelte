@@ -1,38 +1,61 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import Signin from '$lib/components/forms/signin.svelte';
 	import { Email } from '$lib/components/icons';
 	import { Input } from '$lib/components/ui/Input';
-	import type { Checkout } from '$lib/gql/graphql';
+	import { checkoutStore } from '$lib/stores/app';
 	import { userStore } from '$lib/stores/auth';
-	import { AppRoute } from '$lib/utils';
+	import DeliveryMethodForm from './delivery-method-form.svelte';
+	import GuestShippingAddress from './guest-shipping-address.svelte';
+	import PaymentForm from './payment-form.svelte';
+	import UserShippingAddress from './user-shipping-address.svelte';
 
-	type Props = {
-		checkout: Checkout;
+	let showLoginForm = $state(false);
+
+	const toggleLogin = () => {
+		showLoginForm = !showLoginForm;
 	};
-
-	let { checkout }: Props = $props();
 </script>
 
-<div class="w-1/2 tablet:w-full p-2">
-	<div>Account</div>
-
-	{#if $userStore}
-		<div>{$userStore.email}</div>
-	{:else}
-		<div>
+<div class="w-1/2 tablet:w-full">
+	<div class="bg-white rounded-lg p-4 border">
+		<div class="text-sm font-semibold mb-2 text-gray-800">Account</div>
+		{#if $userStore}
+			<div>{$userStore.email}</div>
+		{:else}
 			<div>
-				<Input placeholder="Enter your email" size="md" startIcon={Email} />
+				{#if showLoginForm}
+					<Signin onSuccess={toggleLogin} hideSocial />
+				{:else}
+					<div>
+						<Input placeholder="Enter your email" startIcon={Email} />
+					</div>
+					<div class="text-right text-xs">
+						Already have account ?
+						<span
+							tabindex="0"
+							role="button"
+							onkeydown={(evt) => evt.key === 'Enter' && toggleLogin()}
+							class="text-blue-600 font-semibold hover:underline cursor-pointer"
+							onclick={toggleLogin}>signin</span
+						>
+					</div>
+				{/if}
 			</div>
+		{/if}
+	</div>
 
-			<div class="text-right text-sm">
-				Already have account ?
-				<a
-					class="inline underline text-blue-700"
-					href={`${AppRoute.AUTH_SIGNIN}?next=${encodeURIComponent($page.url.href)}`}
-				>
-					Signin
-				</a>
-			</div>
-		</div>
-	{/if}
+	<div class="mt-2 bg-white p-4 rounded-lg border">
+		<div class="text-sm font-semibold mb-2 text-gray-800">Delivery address</div>
+
+		{#if $checkoutStore?.isShippingRequired}
+			{#if $userStore}
+				<UserShippingAddress />
+			{:else}
+				<GuestShippingAddress />
+			{/if}
+		{/if}
+	</div>
+
+	<DeliveryMethodForm />
+	<PaymentForm />
 </div>

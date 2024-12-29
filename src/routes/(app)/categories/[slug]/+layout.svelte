@@ -4,7 +4,7 @@
 	import { Tab, type TabItem } from '$lib/components/ui/Tab';
 	import { type Snippet } from 'svelte';
 	import type { LayoutServerData } from './$types';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { AppRoute } from '$lib/utils';
 	import { afterNavigate } from '$app/navigation';
 
@@ -19,25 +19,25 @@
 		{
 			title: `${tClient('product.products')}`,
 			icon: Box,
-			href: `${AppRoute.CATEGORIES}/${$page.params.slug}`,
+			href: `${AppRoute.CATEGORIES}/${page.params.slug}`,
 			active: false
 		},
 		{
 			title: `${tClient('product.subCategories')} (${data.category?.children?.totalCount || ''})`,
 			icon: CategoryPlus,
-			href: `${AppRoute.CATEGORIES}/${$page.params.slug}/sub-categories`,
+			href: `${AppRoute.CATEGORIES}/${page.params.slug}/sub-categories`,
 			active: false
 		},
 		{
 			title: tClient('product.detail'),
 			icon: InforCircle,
-			href: `${AppRoute.CATEGORIES}/${$page.params.slug}/info`,
+			href: `${AppRoute.CATEGORIES}/${page.params.slug}/info`,
 			active: false
 		}
 	]);
 
 	afterNavigate(() => {
-		tabs = tabs.map((tab) => ({ ...tab, active: $page.url.pathname === tab.href }));
+		tabs = tabs.map((tab) => ({ ...tab, active: page.url.pathname === tab.href }));
 	});
 </script>
 

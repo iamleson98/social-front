@@ -16,10 +16,10 @@ export default {
     },
   },
   plugins: [
-    require('flowbite/plugin'),
+    // require('daisyui'),
   ],
-  daisyui: {
-    themes: ["light", "dark"],
-  },
-  darkMode: ['selector', '[data-theme="dark"]'],
+  // daisyui: {
+  //   themes: ["light", "dark"],
+  // },
+  darkMode: 'selector', // add class="dark" to <html> tag
 };

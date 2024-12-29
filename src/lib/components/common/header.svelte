@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui';
-	import Logo from './logo.svelte';
 	import { userStore } from '$lib/stores/auth';
-	import { AppRoute } from '$lib/utils';
-	import { page } from '$app/stores';
-	import { cartItemStore } from '$lib/stores/app';
+	import { AppRoute, getCookieByKey } from '$lib/utils';
+	import { page } from '$app/state';
+	import { checkoutStore } from '$lib/stores/app';
 	import {
 		Icon,
 		IonFlame,
@@ -21,41 +20,72 @@
 	import { graphqlClient } from '$lib/client';
 	import { USER_ME_QUERY_STORE } from '$lib/stores/api';
 	import type { Query } from '$lib/gql/graphql';
-	import { noop, preHandleGraphqlResult } from '$lib/utils/utils';
+	import { preHandleGraphqlResult } from '$lib/utils/utils';
 	import { tClient } from '$i18n';
+	import { onMount } from 'svelte';
+	import { ACCESS_TOKEN_KEY, HTTPStatusSuccess } from '$lib/utils/consts';
+	import { toastStore } from '$lib/stores/ui/toast';
+	import { invalidateAll } from '$app/navigation';
 
-	let userAvatarStyle = $state('');
-	let userDisplayName = $state('');
 	let openUserDropdown = $state(false);
-
 	let dropdownTriggerRef = $state<HTMLButtonElement>();
 
-	$effect(() => {
+	const { userAvatarStyle, userDisplayName } = $derived.by(() => {
+		let userAvatarStyle, userDisplayName;
+
 		if ($userStore?.avatar?.url) {
 			userAvatarStyle = `background-image: url("${$userStore.avatar.url}")`;
 		}
 		if ($userStore?.firstName && $userStore.lastName)
 			userDisplayName = `${$userStore.firstName[0]}${$userStore.lastName[0]}`;
 		else if ($userStore?.email) userDisplayName = $userStore.email.slice(0, 2);
+
+		return { userAvatarStyle, userDisplayName };
 	});
 
-	// fetch current user
-	$effect(() => {
-		let unsubscribe = noop;
+	// load current user when oage load
+	onMount(async () => {
+		const token = getCookieByKey(ACCESS_TOKEN_KEY);
+		if (!token) return;
 
-		if (!$userStore) {
-			unsubscribe = graphqlClient
-				.query<Pick<Query, 'me'>>(USER_ME_QUERY_STORE, {}, { requestPolicy: 'network-only' })
-				.subscribe((result) => {
-					if (preHandleGraphqlResult(result)) {
-						return;
-					}
+		const userResult = await graphqlClient
+			.query<Pick<Query, 'me'>>(USER_ME_QUERY_STORE, {}, { requestPolicy: 'network-only' })
+			.toPromise();
 
-					userStore.set(result.data?.me);
-				}).unsubscribe;
+		if (preHandleGraphqlResult(userResult)) return;
+		userStore.set(userResult.data?.me);
+	});
+
+	const handleLogout = async () => {
+		const result = await fetch(AppRoute.AUTH_SIGNOUT, { method: 'POST' });
+		const parsedResult = await result.json();
+
+		if (parsedResult.status !== HTTPStatusSuccess) {
+			toastStore.send({
+				variant: 'error',
+				message: tClient('error.failedToSignout')
+			});
+			return;
 		}
 
-		return unsubscribe;
+		userStore.set(null);
+		await invalidateAll();
+	};
+
+	// load checkout when page load
+	onMount(async () => {
+		const fetchResult = await fetch(AppRoute.CHECKOUT_GET_OR_CREATE, { method: 'POST' });
+		const parsedResult = await fetchResult.json();
+
+		if (parsedResult.status !== HTTPStatusSuccess) {
+			toastStore.send({
+				variant: 'error',
+				message: parsedResult.message
+			});
+			return;
+		}
+
+		checkoutStore.set(parsedResult.checkout);
 	});
 </script>
 
@@ -63,8 +93,8 @@
 	<!-- navigating -->
 	<div class="w-1/2 flex items-center gap-3">
 		<!-- logo -->
-		<a href={AppRoute.HOME} class="inline">
-			<Logo />
+		<a href={AppRoute.HOME} class="inline !select-none">
+			<img src="/logo.png" alt="logo" class="!select-none w-16 h-auto" />
 		</a>
 
 		<!-- search -->
@@ -94,9 +124,9 @@
 		<div class="flex items-center gap-3.5">
 			<a href={AppRoute.SHOPPING_CART}>
 				<IconButton size="sm" icon={ShoppingBag} variant="light" color="gray" class="relative">
-					{#key $cartItemStore}
+					{#key $checkoutStore}
 						<span class="cart-quantity" in:scale>
-							{$cartItemStore.length}
+							{$checkoutStore?.lines.length || 0}
 						</span>
 					{/key}
 				</IconButton>
@@ -109,14 +139,14 @@
 					class="space-x-2 uppercase"
 					onclick={() => (openUserDropdown = true)}
 				>
-					{#if $userStore.avatar && $userStore.avatar.url}
+					{#if $userStore.avatar}
 						<span
-							class="rounded-full w-6 h-6 bg-blue-300 flex items-center justify-center font-bold bg-cover bg-center bg-no-repeat"
+							class="rounded-full w-5 h-5 bg-blue-300 flex items-center justify-center font-bold bg-cover bg-center bg-no-repeat"
 							style={userAvatarStyle}
 						>
 						</span>
-						<span>{userDisplayName}</span>
 					{/if}
+					<span>{userDisplayName}</span>
 				</Button>
 
 				<DropDown
@@ -125,12 +155,15 @@
 					parentRef={dropdownTriggerRef as HTMLButtonElement}
 					header="User options"
 					items={[
-						// { text: 'Profile', startIcon: IonFlame },
 						{ text: tClient('common.settings'), startIcon: UserCog, hasDivider: true },
-						{ text: tClient('common.logout'), startIcon: Logout }
+						{
+							text: tClient('common.logout'),
+							startIcon: Logout,
+							onSelect: handleLogout
+						}
 					]}
 				/>
-			{:else if !$userStore && !$page.url.pathname.startsWith('/auth')}
+			{:else if !$userStore && !page.url.pathname.startsWith('/auth')}
 				<a href={AppRoute.AUTH_SIGNIN}>
 					<Button variant="filled" size="sm">{tClient('signin.title')}</Button>
 				</a>

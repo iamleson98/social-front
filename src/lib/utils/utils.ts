@@ -5,15 +5,14 @@ import type { AnyVariables, OperationResult } from '@urql/core';
 import editorJsToHtml from 'editorjs-html';
 import { AppRoute } from './routes';
 import xss from 'xss';
-import { counter } from '$lib/stores/ui/counter';
-import { get } from 'svelte/store';
 
 
 export const editorJsParser = editorJsToHtml();
 
+let _counter = 0;
 export const randomID = () => {
-	counter.update((c) => c + 1);
-	return get(counter).toString(36);
+	_counter++;
+	return _counter.toString(36);
 };
 
 /**

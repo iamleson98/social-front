@@ -6,7 +6,8 @@
 	import { Accordion, AccordionList } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import type { CategoryCountableEdge, Query, QueryCategoriesArgs } from '$lib/gql/graphql';
-	import { CATEGORIES_LIST_QUERY_STORE, operationStore } from '$lib/stores/api';
+	import { CATEGORIES_LIST_QUERY_STORE } from '$lib/stores/api';
+	import { operationStore } from '$lib/stores/api/operation';
 	import { AppRoute } from '$lib/utils';
 
 	const cateLevel = 0;

@@ -162,17 +162,6 @@
 			{@const inlineFormat = inlineFormatState[inlineKey as InlineType]}
 
 			<div class="tooltip" data-tip={inlineFormat.tip}>
-				<!-- <button
-					class="inline-format-button btn btn-square btn-sm"
-					class:!bg-blue-100={inlineFormat.active}
-					class:!text-blue-600={inlineFormat.active}
-					tabindex="0"
-					aria-label={inlineKey}
-					onclick={() => editor?.dispatchCommand(FORMAT_TEXT_COMMAND, inlineKey as InlineType)}
-					{disabled}
-				>
-					<Icon icon={inlineFormat.icon} />
-				</button> -->
 				<IconButton
 					icon={inlineFormat.icon}
 					class={`${inlineFormat.active ? '!bg-blue-100 !text-blue-600' : ''}`}
@@ -185,9 +174,3 @@
 		{/each}
 	</div>
 </div>
-
-<style lang="postcss">
-	.inline-format-button {
-		@apply !outline-0 !border-none hover:bg-blue-100 hover:text-blue-600 !shadow-none;
-	}
-</style>

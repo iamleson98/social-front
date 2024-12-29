@@ -2,18 +2,26 @@
 	import { tClient } from '$i18n';
 	import { MapPin, Minus, Plus, ShoppingBagPlus, BurstSale, Heart } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import type { Product, ProductVariant } from '$lib/gql/graphql';
+	import type {
+		Checkout,
+		Mutation,
+		MutationCheckoutLinesAddArgs,
+		Product,
+		ProductVariant
+	} from '$lib/gql/graphql';
 	import { userStore } from '$lib/stores/auth';
-	import { defaultChannel, MAX_RATING } from '$lib/utils/consts';
-	import { formatMoney } from '$lib/utils/utils';
+	import { CHANNEL_KEY, defaultChannel, MAX_RATING } from '$lib/utils/consts';
+	import { formatMoney, preHandleGraphqlResult } from '$lib/utils/utils';
 	import { fade } from 'svelte/transition';
 	import { Rating } from '$lib/components/common/rating';
-	import { cartItemStore } from '$lib/stores/app';
+	import { checkoutStore } from '$lib/stores/app';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { IconButton } from '$lib/components/ui/Button';
 	import Input from '$lib/components/ui/Input/input.svelte';
-	import { reorganizeCartItems } from '$lib/stores/app/cart';
 	import { Badge } from '$lib/components/ui/badge';
+	import { graphqlClient } from '$lib/client';
+	import { CHECKOUT_ADD_LINE_MUTATION } from '$lib/stores/api/checkout';
+	import { clientSideGetCookieOrDefault, getCookieByKey } from '$lib/utils/cookies';
 
 	type Props = {
 		productInformation: Omit<Product, 'variants'>;
@@ -25,6 +33,7 @@
 	/** user selected variant quantity */
 	let quantitySelected = $state(1);
 	let selectedVariant = $state<ProductVariant>();
+	let isAddingItemToCart = $state(false);
 
 	let displayPrice = $derived.by(() => {
 		if (!selectedVariant)
@@ -56,21 +65,36 @@
 			});
 			return;
 		}
-		cartItemStore.update((items) =>
-			reorganizeCartItems(
-				items.concat({
-					productName: productInformation.name,
-					quantity: quantitySelected,
-					productSlug: productInformation.slug,
-					variantId: selectedVariant!.id,
-					previewImage: productInformation.thumbnail ? productInformation.thumbnail.url : '',
-					previewImageAlt: productInformation.thumbnail ? productInformation.thumbnail.alt : '',
-					quantityAvailable:
-						selectedVariant?.quantityAvailable || selectedVariant?.quantityLimitPerCustomer,
-					grossPrice: selectedVariant?.pricing?.price?.gross
-				})
-			)
+		isAddingItemToCart = true;
+
+		// we check if a checkout is already created.
+		// If +layout.svelte failed to initialize checkout store, we create a new one.
+		// Then we add new lines to the checkout.
+		let checkouIdCookie = getCookieByKey(
+			`checkout-${clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug)}`
 		);
+
+		const addLineResult = await graphqlClient
+			.mutation<Pick<Mutation, 'checkoutLinesAdd'>, MutationCheckoutLinesAddArgs>(
+				CHECKOUT_ADD_LINE_MUTATION,
+				{
+					id: checkouIdCookie,
+					lines: [{ variantId: selectedVariant.id, quantity: quantitySelected }]
+				}
+			)
+			.toPromise();
+		isAddingItemToCart = false;
+
+		if (preHandleGraphqlResult(addLineResult)) return;
+		if (addLineResult.data?.checkoutLinesAdd?.errors.length) {
+			toastStore.send({
+				variant: 'error',
+				message: addLineResult.data.checkoutLinesAdd.errors[0].message as string
+			});
+			return;
+		}
+
+		checkoutStore.set(addLineResult.data?.checkoutLinesAdd?.checkout as Checkout);
 	};
 
 	let userShippingAddress = $derived.by(() => {
@@ -137,7 +161,7 @@
 			<span class="text-sm mr-1">
 				{userShippingAddress}
 			</span>
-			<IconButton icon={MapPin} rounded size="xs" variant="light" />
+			<IconButton icon={MapPin} rounded size="xs" variant="light" disabled={isAddingItemToCart} />
 		</div>
 	</div>
 
@@ -152,7 +176,7 @@
 						variant="outline"
 						onclick={() => toggleSelectVariant(variant)}
 						tabindex={0}
-						disabled={!variant.quantityAvailable}
+						disabled={!variant.quantityAvailable || isAddingItemToCart}
 						class={`${selectedVariant?.id === variant.id ? '!bg-blue-100 !font-semibold' : ''}`}
 						color="indigo"
 					>
@@ -174,7 +198,7 @@
 					variant="light"
 					size="sm"
 					onclick={() => quantitySelected--}
-					disabled={quantitySelected < 2}
+					disabled={quantitySelected < 2 || isAddingItemToCart}
 				/>
 				<Input
 					size="sm"
@@ -183,6 +207,7 @@
 					max={selectedVariant?.quantityAvailable || selectedVariant?.quantityLimitPerCustomer}
 					class="text-center inline-flex w-20"
 					value={quantitySelected < 1 ? 1 : quantitySelected}
+					disabled={isAddingItemToCart}
 				/>
 				<IconButton
 					icon={Plus}
@@ -192,7 +217,7 @@
 					onclick={() => quantitySelected++}
 					disabled={quantitySelected >=
 						((selectedVariant?.quantityAvailable ||
-							selectedVariant?.quantityLimitPerCustomer) as number)}
+							selectedVariant?.quantityLimitPerCustomer) as number) || isAddingItemToCart}
 				/>
 			</div>
 			<!-- quantity available -->
@@ -214,8 +239,10 @@
 			onclick={handleAddToCart}
 			fullWidth
 			size="md"
+			disabled={isAddingItemToCart}
+			loading={isAddingItemToCart}
 		>
-			<span> {tClient('product.addToCart')} </span>
+			<span>{tClient('product.addToCart')}</span>
 		</Button>
 		<Button
 			variant="light"
@@ -225,7 +252,7 @@
 			fullWidth
 			size="md"
 			color="gray"
-		>
+			>``
 			<span> {tClient('product.addToCart')} </span>
 		</Button>
 	</div>

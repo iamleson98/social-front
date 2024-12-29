@@ -1,5 +1,9 @@
 import { CircleCheckFilled, CurrencyDollar, CurrencyDong, ExclamationCircleFilled, InfoCircleFilled, InfoTriangleFilled, type IconType } from "$lib/components/icons";
-import { CountryCode, LanguageCodeEnum } from "$lib/gql/graphql";
+import type { SocialSize } from "$lib/components/ui/common";
+import { CountryCode, LanguageCodeEnum, type PaymentGatewayConfig } from "$lib/gql/graphql";
+import { type PaymentMethodsResponse } from "@adyen/adyen-web";
+import { AdyenCheckout } from "@adyen/adyen-web";
+
 
 /**
  * all server methods MUST return this type, for consistency
@@ -40,7 +44,6 @@ export type Channel = {
   currency: string;
   locale: LanguageCodeEnum;
   slug: string;
-  code: string;
   currencySymbol: Currency;
   countryCode: CountryCode;
 };
@@ -55,27 +58,27 @@ export const CurrencyIconMap: Record<Currency, IconType> = {
 export const defaultChannel: Channel = {
   name: 'English',
   currency: 'USD',
-  locale: LanguageCodeEnum.En,
+  locale: LanguageCodeEnum.EnUs,
   slug: 'default-channel',
-  code: 'en-US',
   currencySymbol: '$',
   countryCode: CountryCode.Us,
-}
+};
 
 export const vnChannel: Channel = {
   name: 'Tiếng Việt',
   currency: 'VND',
   locale: LanguageCodeEnum.Vi,
   slug: 'vn',
-  code: 'vi-VN',
   currencySymbol: '₫',
   countryCode: CountryCode.Vn,
-}
+};
 
 export const channels = [
   defaultChannel,
   vnChannel,
-]
+];
+
+export const findChannelBySlug = (slug: string) => channels.find(channel => channel.slug === slug) || defaultChannel;
 
 export const SocialVariantIconsMap: Record<SocialVariant, IconType> = {
   'error': ExclamationCircleFilled,
@@ -94,3 +97,50 @@ export const MIN_RATING = 0;
 
 /** used for some input fields that requires event handling after a moment instead of always  */
 export const DEBOUNCE_INPUT_TIME = 333;
+
+export const SIZE_MAP: Record<SocialSize, string> = {
+  xs: 'h-7 text-xs',
+  sm: 'h-9 text-sm',
+  md: 'h-10 text-base',
+  lg: 'h-12 text-lg',
+  xl: 'h-14 text-xl',
+};
+
+export const ICON_BTN_SIZE_MAP: Record<SocialSize, string> = {
+  xs: '!w-7',
+  sm: '!w-9',
+  md: '!w-10',
+  lg: '!w-12',
+  xl: '!w-14',
+};
+
+export type PaymentStatus = "paidInFull" | "overpaid" | "none" | "authorized";
+
+export const adyenGatewayId = "app.saleor.adyen";
+export const stripeGatewayId = "app.saleor.stripe";
+// export const adyenGatewayId = "mirumee.payments.adyen";
+
+export type StripeGatewayId = typeof stripeGatewayId;
+export type AdyenGatewayId = typeof adyenGatewayId;
+
+export const supportedPaymentGateways = [adyenGatewayId, stripeGatewayId];
+export const paidStatuses: PaymentStatus[] = ["overpaid", "paidInFull", "authorized"];
+
+export interface AdyenGatewayInitializePayload extends Record<string, unknown> {
+  paymentMethodsResponse: PaymentMethodsResponse;
+  clientKey: string;
+  environment: string;
+}
+
+export type ParsedAdyenGateway = ParsedPaymentGateway<AdyenGatewayId, AdyenGatewayInitializePayload>;
+export type ParsedStripeGateway = ParsedPaymentGateway<StripeGatewayId, Record<string, unknown>>;
+
+export type ParsedPaymentGateways = ReadonlyArray<ParsedAdyenGateway | ParsedStripeGateway>;
+
+export interface ParsedPaymentGateway<ID extends string, TData extends Record<string, unknown>>
+  extends Omit<PaymentGatewayConfig, "data" | "id"> {
+  data: TData;
+  id: ID;
+};
+
+export type AdyenCheckoutInstance = Awaited<ReturnType<typeof AdyenCheckout>>;

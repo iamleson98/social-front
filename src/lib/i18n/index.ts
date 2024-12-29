@@ -85,7 +85,8 @@ const commonTranslation = (language: LanguageCodeEnum, key: string, args?: Recor
 };
 
 /**
-* Translate a key string to the current locale. Use
+* Translate a key string to the current locale.
+* @NOTE you MUST use this function inside template
 * @param key the key to the translation object
 * @param args arguments for placeholders in the key. If key has no placeholders, this can be omitted.
 * @returns translated string
@@ -96,6 +97,7 @@ export const tClient = (key: string, args?: Record<string, unknown>): string => 
 };
 
 /**
+ * @NOTE you MUST use this function inside server side code
  * @param event svelte server load event
  * @param key translation key
  * @param args arguments for placeholders in the key. If key has no placeholders, this can be omitted.

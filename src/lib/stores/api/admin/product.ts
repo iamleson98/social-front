@@ -4,20 +4,20 @@ import { gql } from "@urql/core";
 export type CategoryListForCreateProductInput = {
   first?: number;
   level?: number;
-  after?: string;
-  childrenLevelOneAfter?: string;
-  childrenLevelTwoAfter?: string;
+  // after?: string;
+  // childrenLevelOneAfter?: string;
+  // childrenLevelTwoAfter?: string;
 };
 
 export const CATEGORIES_LIST_FOR_CREATE_PRODUCT = gql`
 	query CategoriesWithChildren(
 		$first: Int
 		$level: Int
-		$after: String
-		$childrenLevelOneAfter: String
-		$childrenLevelTwoAfter: String
+		# $after: String
+		# $childrenLevelOneAfter: String
+		# $childrenLevelTwoAfter: String
 	) {
-		categories(first: $first, level: $level, after: $after) {
+		categories(first: $first, level: $level) {
 			edges {
 				cursor
 				node {
@@ -25,20 +25,34 @@ export const CATEGORIES_LIST_FOR_CREATE_PRODUCT = gql`
 					name
 					level
 					slug
-					children(first: $first, after: $childrenLevelOneAfter) {
+					children(first: $first) {
 						edges {
 							node {
 								id
 								name
 								level
 								slug
-								children(first: $first, after: $childrenLevelTwoAfter) {
+								children(first: $first) {
 									edges {
 										node {
 											id
 											name
 											level
 											slug
+											# children(first: $first) {
+											# 	edges {
+											# 		node {
+											# 			id
+											# 			name
+											# 			level
+											# 			slug
+											# 		}
+											# 	}
+											# 	pageInfo {
+											# 		endCursor
+											# 		hasNextPage
+											# 	}
+											# }
 										}
 									}
 									pageInfo {

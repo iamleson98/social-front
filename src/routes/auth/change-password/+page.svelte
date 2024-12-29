@@ -6,7 +6,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { HTTPStatusSuccess } from '$lib/utils/consts';
 	import type { ActionData } from './$types';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { PasswordInput } from '$lib/components/ui/Input';
 
 	interface Props {
@@ -48,7 +48,7 @@
 		{/if}
 	{/if}
 	<form
-		action={`?email=${$page.url.searchParams.get('email')}&token=${$page.url.searchParams.get('token')}`}
+		action={`?email=${page.url.searchParams.get('email')}&token=${page.url.searchParams.get('token')}`}
 		method="post"
 		use:enhance
 	>

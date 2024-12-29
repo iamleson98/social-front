@@ -3,6 +3,9 @@ export const AppRoute = {
 	AUTH_REGISTER: '/auth/signup',
 	AUTH_CHANGE_PASSWORD: '/auth/change-password',
 	AUTH_RESET_PASSWORD: '/auth/reset-password',
+	AUTH_REFRESH_TOKEN: '/auth/refresh-token',
+	AUTH_SIGNOUT: '/auth/signout',
+	APP_ROUTE_PREFIX: '/(app)',
 
 	HOME: '/',
 	TRENDING: '/trending',

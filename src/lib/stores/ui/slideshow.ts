@@ -7,7 +7,7 @@ type SlidehowState = {
   slicing: number[];
 }
 
-export const defaultState: SlidehowState = {
+export const defaultSlideShowState: SlidehowState = Object.freeze({
   medias: [
     {
       url: '/sitename-500.jpg',
@@ -21,10 +21,10 @@ export const defaultState: SlidehowState = {
   ],
   activeIndex: 0,
   slicing: [0, 5],
-};
+});
 
 const productSlideShowStoreManager = () => {
-  const store = writable<SlidehowState>(defaultState);
+  const store = writable<SlidehowState>(defaultSlideShowState);
 
   const setMedias = async (medias: ProductMedia[]) => {
     const newState: SlidehowState = {
@@ -68,7 +68,7 @@ const productSlideShowStoreManager = () => {
     handleNavigate,
     handleFocus,
     subscribe: store.subscribe,
-    reset: () => store.set(defaultState),
+    reset: () => store.set(defaultSlideShowState),
   };
 };
 

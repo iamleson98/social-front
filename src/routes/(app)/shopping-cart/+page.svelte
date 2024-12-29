@@ -1,75 +1,20 @@
 <script lang="ts">
 	import { afterNavigate, goto } from '$app/navigation';
 	import { tClient } from '$i18n';
-	import { graphqlClient } from '$lib/client';
-	import { ArrowNarrowRight, EmptyDrawer, Icon, Minus, Plus } from '$lib/components/icons';
+	import { ArrowNarrowRight, EmptyDrawer, Icon } from '$lib/components/icons';
+	import CartItemLine from '$lib/components/pages/cart/cart-item-line.svelte';
 	import { Button } from '$lib/components/ui';
-	import { IconButton } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
-	import type { CheckoutLineInput, Money, Query, QueryProductVariantsArgs } from '$lib/gql/graphql';
-	import { operationStore, PRODUCT_VARIANTS_BY_IDS } from '$lib/stores/api';
-	import { cartItemStore } from '$lib/stores/app';
-	import { alertStore } from '$lib/stores/ui/alert-modal';
-	import { toastStore } from '$lib/stores/ui/toast';
+	import type { Query } from '$lib/gql/graphql';
+	import { operationStore } from '$lib/stores/api/operation';
+	import { CHECKOUT_PREVIEW_QUERY } from '$lib/stores/api/checkout';
 	import { AppRoute } from '$lib/utils';
-	import { ACCESS_TOKEN_KEY, CHANNEL_KEY, defaultChannel } from '$lib/utils/consts';
+	import { CHANNEL_KEY, defaultChannel } from '$lib/utils/consts';
 	import { clientSideGetCookieOrDefault, getCookieByKey } from '$lib/utils/cookies';
-	import { formatMoney, noop, preHandleGraphqlResult } from '$lib/utils/utils';
-	import { onMount } from 'svelte';
-	import { get } from 'svelte/store';
-
-	const handleItemQuantityInput = (idx: number, e: any) => {
-		const { value } = e.target as HTMLInputElement;
-		const valueNumber = Math.round(Number(value));
-
-		const items = get(cartItemStore);
-
-		if (valueNumber <= 0)
-			alertStore.openAlertModal({
-				content: tClient('common.confirmRemoveProduct'),
-				onOk: () => cartItemStore.set(items.filter((_, index) => index !== idx)),
-				onCancel: () =>
-					cartItemStore.set(
-						items.map((item, index) => (index === idx ? { ...item, quantity: 1 } : item))
-					)
-			});
-		else
-			cartItemStore.set(
-				items.map((item, index) => (index === idx ? { ...item, quantity: valueNumber } : item))
-			);
-	};
-
-	const modifyCartItemQuantity = async (itemIdx: number, delta: -1 | 1) => {
-		const items = get(cartItemStore);
-		const item = items[itemIdx];
-
-		if (
-			delta === 1 &&
-			typeof item.quantityAvailable === 'number' &&
-			item.quantity >= item.quantityAvailable
-		)
-			return;
-
-		cartItemStore.set(
-			items.map((item, idx) => {
-				if (idx !== itemIdx) return item;
-
-				if (delta === -1 && item.quantity + delta <= 0) {
-					alertStore.openAlertModal({
-						content: tClient('common.confirmRemoveProduct'),
-						onOk: () => cartItemStore.set(items.filter((_, index) => index !== idx)),
-						onCancel: noop
-					});
-					return item;
-				}
-
-				return {
-					...item,
-					quantity: item.quantity + delta
-				};
-			})
-		);
-	};
+	import type { CustomQueryCheckoutArgs } from '$lib/utils/types';
+	import { formatMoney } from '$lib/utils/utils';
+	import { CommonTimeLine } from '$lib/components/common/timeline';
+	import CartPageSkeleton from '$lib/components/pages/cart/cart-page-skeleton.svelte';
 
 	afterNavigate(() => {
 		window.scrollTo({
@@ -78,71 +23,54 @@
 		});
 	});
 
-	onMount(async () => {
-		const items = get(cartItemStore);
-		if (!items.length) return;
-
-		const result = await graphqlClient
-			.query<Pick<Query, 'productVariants'>, QueryProductVariantsArgs>(PRODUCT_VARIANTS_BY_IDS, {
-				channel: clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug),
-				ids: items.map((item) => item.variantId as string),
-				first: items.length
-			})
-			.toPromise();
-
-		if (preHandleGraphqlResult(result) || !result.data?.productVariants?.edges) return;
-
-		const variantPriceMap: Record<string, Money> = {};
-		for (const {
-			node: { pricing, id }
-		} of result.data?.productVariants?.edges) {
-			variantPriceMap[id] = pricing?.price?.gross as Money;
-		}
-
-		cartItemStore.set(
-			items.map((item) =>
-				!item.variantId ? item : { ...item, grossPrice: variantPriceMap[item.variantId] }
-			)
+	const handleProceedToCheckout = async () => {
+		const checkoutID = getCookieByKey(
+			`checkout-${clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug)}`
 		);
+		await goto(`${AppRoute.CHECKOUT}/${checkoutID}`, { invalidateAll: true });
+	};
+
+	const cartPreviewResultStore = operationStore<Pick<Query, 'checkout'>, CustomQueryCheckoutArgs>({
+		kind: 'query',
+		query: CHECKOUT_PREVIEW_QUERY,
+		variables: {
+			id: getCookieByKey(
+				`checkout-${clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug)}`
+			)
+		}
 	});
 
-	const handleProceedToCheckout = async () => {
-		const cartItems = get(cartItemStore);
-		if (!cartItems.length) return;
+	type MoneyColor = 'red' | 'green' | 'gray';
 
-		const headers: HeadersInit = {};
-		const token = getCookieByKey(ACCESS_TOKEN_KEY);
-
-		if (token.length) headers.Authorization = `Bearer ${token}`;
-
-		const result = await fetch(`${AppRoute.CHECKOUT}/get-or-create`, {
-			method: 'POST',
-			headers,
-			body: JSON.stringify({
-				lines: cartItems.map<CheckoutLineInput>((item) => ({
-					variantId: item.variantId as string,
-					quantity: item.quantity
-				}))
-			})
-		});
-
-		const jsonResult = await result.json();
-		if (jsonResult.error) {
-			toastStore.send({
-				message: jsonResult.error,
-				variant: 'error'
-			});
-			return;
-		}
-
-		await goto(`${AppRoute.CHECKOUT}/${jsonResult.id}`, { invalidateAll: true });
+	const moneyColorMap: Record<MoneyColor, string> = {
+		red: 'text-red-600',
+		green: 'text-green-600',
+		gray: 'text-gray-500 line-through'
 	};
 </script>
 
-<div>
-	<h3 class="text-md mb-4 font-semibold text-gray-800">{tClient('common.cart')}</h3>
+{#snippet MoneyField(
+	currency: string,
+	amount: number,
+	title: string,
+	color: MoneyColor,
+	negative: boolean = false
+)}
+	{@const negate = negative ? '-' : ''}
+	<dl class="flex items-center justify-between gap-4 mb-1.5" aria-label={title}>
+		<dt class="text-sm font-normal text-gray-500">{title}</dt>
+		<dd class={`text-base font-semibold ${moneyColorMap[color]}`}>
+			{negate}{formatMoney(currency, amount)}
+		</dd>
+	</dl>
+{/snippet}
 
-	{#if !$cartItemStore.length}
+<div>
+	{#if $cartPreviewResultStore.fetching}
+		<CartPageSkeleton />
+	{:else if $cartPreviewResultStore.error}
+		<div>{$cartPreviewResultStore.error.message}</div>
+	{:else if !$cartPreviewResultStore.data?.checkout?.lines.length}
 		<div class="h-full w-full flex items-center justify-center">
 			<div class="text-center">
 				<div class="text-blue-400 text-center">
@@ -155,119 +83,70 @@
 			</div>
 		</div>
 	{:else}
+		{@const { lines, id, subtotalPrice } = $cartPreviewResultStore.data.checkout}
+		{@const originalTotalPrice = lines
+			.map((line) => line.undiscountedTotalPrice.amount)
+			.reduce((a, b) => a + b, 0)}
+		<CommonTimeLine numberOfItemToEnable={1} />
+
 		<div class="flex flex-row justify-between tablet:flex-wrap tablet:flex-col gap-2">
 			<!-- preview area -->
 			<div class="w-3/4 tablet:w-full">
-				{#each $cartItemStore as item, idx (idx)}
-					<div class="bg-white rounded-md p-4 w-full border mb-2">
-						<div class="flex items-center gap-2">
-							<img
-								src={item.previewImage}
-								alt={item.previewImageAlt}
-								class="w-16 h-16 object-cover"
-							/>
-							<div class="flex-1">
-								<a
-									href={`${AppRoute.PRODUCTS}/${encodeURIComponent(item.productSlug)}`}
-									class="text-gray-800 text-md hover:underline"
-								>
-									{item.productName}
-								</a>
-								<div class="flex items-center text-gray-500 text-xs mt-2 gap-2"></div>
-							</div>
-							<div class="flex items-center gap-2">
-								<IconButton
-									icon={Minus}
-									size="sm"
-									color="red"
-									variant="light"
-									onclick={() => modifyCartItemQuantity(idx, -1)}
-								/>
-								<Input
-									size="sm"
-									bind:value={item.quantity}
-									min={0}
-									oninput={(e) => handleItemQuantityInput(idx, e)}
-									type="number"
-									class="!w-16"
-								/>
-								<IconButton
-									icon={Plus}
-									size="sm"
-									variant="light"
-									onclick={() => modifyCartItemQuantity(idx, 1)}
-									disabled={typeof item.quantityAvailable === 'number' &&
-										item.quantityAvailable <= item.quantity}
-								/>
-							</div>
-							<span class="text-gray-800 font-bold">
-								{formatMoney(
-									item.grossPrice?.currency as string,
-									(item.grossPrice?.amount as number) * item.quantity
-								)}
-							</span>
-						</div>
-					</div>
+				{#each lines as line, idx (idx)}
+					<CartItemLine {line} checkoutId={id} />
 				{/each}
 			</div>
 
 			<!-- purchase area -->
-			<div class="w-1/4 tablet:w-full bg-white rounded-md border">
-				<!-- checkout button -->
-				<div class="space-y-4 p-4 mb-4">
-					<p class="text-lg font-semibold tet-gray-800">Order summary</p>
+			<div class="w-1/4 tablet:w-full">
+				<div class="p-4 mb-2 bg-white rounded-lg border">
+					<p class="text-lg font-semibold tet-gray-800 mb-4">{tClient('common.cartSummary')}</p>
 
-					<div class="space-y-4">
-						<div class="space-y-2">
-							<dl class="flex items-center justify-between gap-4">
-								<dt class="text-sm font-normal text-gray-500">Original price</dt>
-								<dd class="text-base font-medium tet-gray-800">$7,592.00</dd>
-							</dl>
+					<div class="mb-4">
+						{@render MoneyField(
+							subtotalPrice.gross.currency,
+							originalTotalPrice,
+							tClient('common.oldTotalPrice'),
+							'gray'
+						)}
 
-							<dl class="flex items-center justify-between gap-4">
-								<dt class="text-sm font-normal text-gray-500">Savings</dt>
-								<dd class="text-base font-medium text-green-600">-$299.00</dd>
-							</dl>
+						{@render MoneyField(
+							subtotalPrice.gross.currency,
+							originalTotalPrice - subtotalPrice.gross.amount,
+							tClient('common.savings'),
+							'green',
+							true
+						)}
 
-							<dl class="flex items-center justify-between gap-4">
-								<dt class="text-sm font-normal text-gray-500">Store Pickup</dt>
-								<dd class="text-base font-medium tet-gray-800">$99</dd>
-							</dl>
+						<div class="border-t mb-2"></div>
 
-							<dl class="flex items-center justify-between gap-4">
-								<dt class="text-sm font-normal text-gray-500">Tax</dt>
-								<dd class="text-base font-medium tet-gray-800">$799</dd>
-							</dl>
-						</div>
-
-						<dl class="flex items-center justify-between gap-4 border-t border-gray-200 pt-2">
-							<dt class="text-base font-bold tet-gray-800">Total</dt>
-							<dd class="text-base font-bold tet-gray-800">$8,191.00</dd>
-						</dl>
+						{@render MoneyField(
+							subtotalPrice.gross.currency,
+							subtotalPrice.gross.amount,
+							tClient('common.tempoTotalPrice'),
+							'red'
+						)}
 					</div>
 
-					<Button variant="filled" fullWidth size="sm" onclick={handleProceedToCheckout}
-						>Proceed to checkout</Button
-					>
+					<Button variant="filled" fullWidth size="sm" onclick={handleProceedToCheckout}>
+						Proceed to checkout
+					</Button>
 
-					<div class="flex items-center justify-center gap-2">
+					<div class="flex items-center justify-center gap-1 mt-2">
 						<span class="text-sm font-normal text-gray-500"> or </span>
-						<a
-							href="/"
-							class="inline-flex items-center gap-2 text-sm font-medium text-primary-700 underline hover:no-underline"
-						>
-							Continue Shopping
+						<a href="/" class="flex items-center gap-1 text-xs font-medium text-gray-700 underline">
+							<span>Continue Shopping</span>
 							<Icon icon={ArrowNarrowRight} />
 						</a>
 					</div>
 				</div>
 
 				<!-- coupon -->
-				<div class="space-y-4 rounded-md bg-white p-4">
+				<div class="rounded-lg bg-white p-4 border">
 					<Input
 						placeholder="Enter discount code"
 						size="md"
-						class="w-full"
+						class="w-full mb-2"
 						label="Do you have a voucher or gift card?"
 					/>
 					<Button variant="filled" size="sm" fullWidth>Apply code</Button>

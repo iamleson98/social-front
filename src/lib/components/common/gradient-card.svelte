@@ -1,12 +1,6 @@
 <script lang="ts">
 	import type { MouseEventHandler } from 'svelte/elements';
 
-	// export let icon: string;
-	// export let name: string;
-	// export let bgFrom: string = 'from-pink-500';
-	// export let bgTo: string = 'to-red-500';
-	// export let selected: boolean = false;
-
 	interface Props {
 		icon: string;
 		name: string;

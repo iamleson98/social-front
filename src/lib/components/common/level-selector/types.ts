@@ -1,5 +1,11 @@
-export type SelectItem<T extends string | number> = {
-  label: string;
-  value: T;
-  children?: SelectItem<T>[];
+
+export type SelectItemProps = {
+  title: string;
+  value: string | number;
+  children?: SelectItemProps[];
+};
+
+export type MenuProps = {
+  items: SelectItemProps[];
+  onSelect: (item: SelectItemProps) => void;
 };
