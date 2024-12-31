@@ -22,7 +22,10 @@
 
 <div>
 	{@render trigger({ onclick: handleClick })}
+
 	{#if openMenu}
-		{@render children()}
+		<div class="absolute mt-1">
+			{@render children()}
+		</div>
 	{/if}
 </div>

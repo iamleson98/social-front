@@ -3,7 +3,10 @@
 	import SlideShow from '$lib/components/pages/lab/slide-show.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Menu } from '$lib/components/ui/Menu';
+	import MenuItem from '$lib/components/ui/Menu/menuItem.svelte';
+	import MenuItems from '$lib/components/ui/Menu/menuItems.svelte';
 	import { type SelectOption } from '$lib/components/ui/select';
+	import type { EventHandler } from 'svelte/elements';
 
 	const options: SelectOption[] = [
 		{ value: '1', label: 'Option 1' },
@@ -18,13 +21,19 @@
 
 <h1>Lab page</h1>
 
-{#snippet openBtn()}
-	<Button>Open</Button>
+{#snippet openBtn({ onclick }: { onclick: EventHandler })}
+	<Button {onclick}>Open</Button>
 {/snippet}
 
-<Menu trigger={openBtn}>MenuItem</Menu>
+<Menu trigger={openBtn}>
+	<MenuItems>
+		<MenuItem onClick={() => {}}>item 1 hihihihi</MenuItem>
+		<MenuItem onClick={() => {}}>item 1</MenuItem>
+		<MenuItem onClick={() => {}}>item 1</MenuItem>
+	</MenuItems>
+</Menu>
 
-<MegaMenu
+<!-- <MegaMenu
 	items={[
 		{
 			title: 'Level 1',
@@ -117,4 +126,4 @@
 		}
 	]}
 	onSelect={console.log}
-/>
+/> -->
