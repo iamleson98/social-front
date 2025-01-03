@@ -79,6 +79,7 @@
 			class="mb-1"
 			variant={error ? 'error' : 'info'}
 			required
+			showAction
 		/>
 		<a href={AppRoute.AUTH_RESET_PASSWORD} class="text-xs text-right block text-blue-600 mb-4">
 			{tClient('signin.forgotPassword')}

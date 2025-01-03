@@ -64,7 +64,7 @@
 	<h1 class="p-2 mb-4">{tClient('signup.title')}</h1>
 
 	{#if form && form.error}
-		<Alert variant="error" class="mb-3">
+		<Alert variant="error" class="mb-3" bordered>
 			{form.error}
 		</Alert>
 	{/if}
@@ -104,6 +104,7 @@
 				class="mb-2"
 				variant={passwordDontMatch ? 'error' : 'info'}
 				required
+				showAction
 			/>
 			<PasswordInput
 				placeholder={tClient('signup.confirmPasswordPlaceholder')}

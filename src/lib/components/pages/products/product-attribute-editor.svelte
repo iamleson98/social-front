@@ -20,7 +20,7 @@
 	const MAX_FETCHING_BATCH = 50;
 
 	const attributeQueryStore = operationStore<Pick<Query, 'attributes'>, AttributesVariable>({
-		kind: 'mutation',
+		kind: 'query',
 		query: PRODUCT_ATTRIBUTES_QUERY,
 		context: {
 			requestPolicy: 'network-only'
