@@ -1,24 +1,6 @@
 <script lang="ts">
-<<<<<<< HEAD
-=======
-	import type { LayoutServerData } from './$types';
-	import ProductMediaSlideShow from '$lib/components/pages/products/product-slide-show-pannel.svelte';
-	import ProductPricingPanel from '$lib/components/pages/products/product-pricing-pannel.svelte';
-	import { type ProductMedia } from '$lib/gql/graphql';
-	import { page } from '$app/state';
-	import {
-		Icon,
-		HeadSet,
-		SettingCheck,
-		FileText,
-		PackageExport,
-		MingcuteHome,
-		type IconType,
-		ChevronRight
-	} from '$lib/components/icons';
->>>>>>> 33b210c9f922e781bba9bfc901efecdc8d985714
 	import { afterNavigate, disableScrollHandling } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { tClient } from '$i18n';
 	import {
 		ChevronRight,

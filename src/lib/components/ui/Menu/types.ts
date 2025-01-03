@@ -1,5 +1,23 @@
-import type { Component } from "svelte";
+import type { IconType } from "$lib/components/icons";
+import type { Component, Snippet } from "svelte";
+import type { EventHandler } from "svelte/elements";
 
+export type DropDownMenuItemProps = {
+  label: string;
+  value: string | number
+  startIcon?: IconType
+};
+
+type DropMenuTriggerInterface = {
+  onclick: EventHandler;
+};
+
+export type DropDownMenuProps = {
+  trigger: Snippet<[DropMenuTriggerInterface]>;
+  // children: Snippet;
+  selectItems: Array<DropDownMenuItemProps>
+  onSelect: (item: DropDownMenuItemProps) => void
+};
 
 export type MenuState = 'open' | 'closed';
 

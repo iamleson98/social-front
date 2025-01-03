@@ -1,15 +1,17 @@
 <script lang="ts">
-	import MegaMenu from '$lib/components/common/level-selector/mega-menu.svelte';
+	// import MegaMenu from '$lib/components/common/level-selector/mega-menu.svelte';
+	import { Home } from '$lib/components/icons';
 	import SlideShow from '$lib/components/pages/lab/slide-show.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Menu } from '$lib/components/ui/Menu';
-	import MenuItem from '$lib/components/ui/Menu/menuItem.svelte';
-	import MenuItems from '$lib/components/ui/Menu/menuItems.svelte';
-	import { type SelectOption } from '$lib/components/ui/select';
+	// import MenuItem from '$lib/components/ui/Menu/menuItem.svelte';
+	// import MenuItems from '$lib/components/ui/Menu/menuItems.svelte';
+	import type { DropDownMenuItemProps } from '$lib/components/ui/Menu/types';
+	// import { type SelectOption } from '$lib/components/ui/select';
 	import type { EventHandler } from 'svelte/elements';
 
-	const options: SelectOption[] = [
-		{ value: '1', label: 'Option 1' },
+	const options: DropDownMenuItemProps[] = [
+		{ value: '1', label: 'Option 1', startIcon: Home },
 		{ value: '2', label: 'Option 2' },
 		{ value: '3', label: 'Option 3' },
 		{ value: '4', label: 'Option 4' },
@@ -20,17 +22,24 @@
 <SlideShow />
 
 <h1>Lab page</h1>
-
+<h1>Lab page</h1>
+<h1>Lab page</h1>
+<h1>Lab page</h1>
+<h1>Lab page</h1>
+<h1>Lab page</h1>
+<h1>Lab page</h1>
+<h1>Lab page</h1>
 {#snippet openBtn({ onclick }: { onclick: EventHandler })}
 	<Button {onclick}>Open</Button>
 {/snippet}
 
-<Menu trigger={openBtn}>
-	<MenuItems>
+<Menu trigger={openBtn} selectItems={options} onSelect={console.log}>
+	<!-- <MenuItems>
 		<MenuItem onClick={() => {}}>item 1 hihihihi</MenuItem>
+		<Button></Button>
 		<MenuItem onClick={() => {}}>item 1</MenuItem>
 		<MenuItem onClick={() => {}}>item 1</MenuItem>
-	</MenuItems>
+	</MenuItems> -->
 </Menu>
 
 <!-- <MegaMenu

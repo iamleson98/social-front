@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { tClient } from '$i18n';
-	import { Icon, Plus, Trash } from '$lib/components/icons';
+	import { Plus, Trash, type IconType } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { type SocialColor } from '$lib/components/ui/common';
 	import { Input } from '$lib/components/ui/Input';
 	import { Select } from '$lib/components/ui/select';
-	import type { Query } from '$lib/gql/graphql';
+	import type { ProductVariantBulkCreateInput, Query } from '$lib/gql/graphql';
 	import { CHANNELS_QUERY_STORE } from '$lib/stores/api/channels';
 	import { operationStore } from '$lib/stores/api/operation';
 	import { preHandleGraphqlResult } from '$lib/utils/utils';
@@ -43,6 +43,9 @@
 			]
 		}
 	]);
+
+	// let variantDetails = $state<ProductVariantBulkCreateInput>([]);
+
 	/** this state is general indicator that if user input variant values still have mistake.
 	 * As long as this state is true, the user can't fill the detail pricing table, let alone submit the form
 	 */
@@ -86,12 +89,16 @@
 		if (!evt.target) return;
 
 		const name = (evt.target as HTMLInputElement).value;
+		const nameTrimLower = name.trim().toLowerCase();
 
 		const nameDuplicate = variants.some(
-			(variant, idx) => idx !== variantIdx && name && name === variant.name.value
+			(variant, idx) =>
+				idx !== variantIdx &&
+				nameTrimLower &&
+				nameTrimLower === variant.name.value.trim().toLocaleLowerCase()
 		);
 
-		generalError = nameDuplicate || !name;
+		generalError = nameDuplicate || !nameTrimLower;
 		variants = variants.map((variant, idx) => {
 			if (idx !== variantIdx) return variant;
 
@@ -165,11 +172,12 @@
 
 {#snippet variantActionButton(
 	tip: string,
-	action: 'add' | 'delete',
 	variantIdx: number,
 	onclick: variantAction,
 	disabled: boolean,
-	color: SocialColor
+	color: SocialColor,
+	text: string,
+	endIcon: IconType
 )}
 	<div class="tooltip grow shrink" data-tip={tip}>
 		<Button
@@ -179,13 +187,9 @@
 			{color}
 			fullWidth
 			size="sm"
+			{endIcon}
 		>
-			{#if action === 'add'}
-				{variants[variantIdx].values.length}/{MAX_VALUES_PER_VARIANT}
-				<Icon icon={Plus} />
-			{:else}
-				<Icon icon={Trash} />
-			{/if}
+			{text}
 		</Button>
 	</div>
 {/snippet}
@@ -196,7 +200,7 @@
 	class:items-center={variants.length < MAX_VARIANT_TYPES}
 >
 	{#each variants as variant, variantIdx (variantIdx)}
-		<div class="p-3 w-1/2 mobile-l:w-full border rounded-lg bg-white">
+		<div class="p-3 w-1/2 mobile-l:w-full border rounded-lg bg-white h-fit">
 			<!-- title -->
 			<div class="mb-1 text-xs">
 				{tClient('product.variant')}
@@ -260,19 +264,21 @@
 			<div class="flex justify-center items-center gap-1.5 mt-4">
 				{@render variantActionButton(
 					tClient('product.delVariant'),
-					'delete',
 					variantIdx,
 					handleDeleteVariant,
 					false,
-					'red'
+					'red',
+					'',
+					Trash
 				)}
 				{@render variantActionButton(
 					tClient('product.addValue'),
-					'add',
 					variantIdx,
 					handleAddVariantValue,
 					variant.values.length >= MAX_VALUES_PER_VARIANT,
-					'blue'
+					'blue',
+					`${variants[variantIdx].values.length}/${MAX_VALUES_PER_VARIANT}`,
+					Plus
 				)}
 			</div>
 		</div>
@@ -301,8 +307,10 @@
 			{#if !indices[0]}
 				<td
 					rowspan={variants[0].values.length}
-					class="font-medium text-center border-b border-gray-200">{values[0]}</td
+					class="font-medium text-center border-b border-gray-200"
 				>
+					{values[0]}
+				</td>
 			{/if}
 		{:else}
 			{#if !indices[1]}
@@ -316,7 +324,6 @@
 			<td class="font-medium text-center border-b border-gray-200">{values[1]}</td>
 		{/if}
 		<td class="channel-td">
-			<!-- <Input type="text" size="sm" placeholder="Enter channel" /> -->
 			<Select
 				size="xs"
 				options={$channelsQueryStore.data?.channels?.map((channel) => ({
@@ -342,7 +349,7 @@
 <!-- detail -->
 {#if variants.length && !generalError}
 	<div class="mt-10">
-		<!-- shortcut -->
+		<!-- quick filling -->
 		<div class="mb-4">
 			<div class="text-xs mb-1">Quick filling</div>
 			<div class="flex gap-x-2 items-center flex-row w-full">
@@ -431,45 +438,45 @@
 	}
 	/* highlight price */
 	.variant-table-row.td-price-hl .price-td {
-		@apply border-l-2 border-r-2 border-blue-400;
+		@apply border-l border-r border-blue-500;
 	}
 	.variant-table-row.td-price-hl:first-child > .price-td {
-		@apply border-t-2 border-blue-400;
+		@apply border-t border-blue-500;
 	}
 	.variant-table-row.td-price-hl:last-child > .price-td {
-		@apply border-b-2 border-blue-400;
+		@apply border-b border-blue-500;
 	}
 
 	/* highlight channel */
 	.variant-table-row.td-channel-hl .channel-td {
-		@apply border-l-2 border-r-2 border-blue-400;
+		@apply border-l border-r border-blue-500;
 	}
 	.variant-table-row.td-channel-hl:first-child > .channel-td {
-		@apply border-t-2 border-blue-400;
+		@apply border-t border-blue-500;
 	}
 	.variant-table-row.td-channel-hl:last-child > .channel-td {
-		@apply border-b-2 border-blue-400;
+		@apply border-b border-blue-500;
 	}
 
 	/* highlight stock */
 	.variant-table-row.td-stock-hl .stock-td {
-		@apply border-l-2 border-r-2 border-blue-400;
+		@apply border-l border-r border-blue-500;
 	}
 	.variant-table-row.td-stock-hl:first-child > .stock-td {
-		@apply border-t-2 border-blue-400;
+		@apply border-t border-blue-500;
 	}
 	.variant-table-row.td-stock-hl:last-child > .stock-td {
-		@apply border-b-2 border-blue-400;
+		@apply border-b border-blue-500;
 	}
 
 	/* highlight sku */
 	.variant-table-row.td-sku-hl .sku-td {
-		@apply border-l-2 border-r-2 border-blue-400;
+		@apply border-l border-r border-blue-500;
 	}
 	.variant-table-row.td-sku-hl:first-child > .sku-td {
-		@apply border-t-2 border-blue-400;
+		@apply border-t border-blue-500;
 	}
 	.variant-table-row.td-sku-hl:last-child > .sku-td {
-		@apply border-b-2 border-blue-400;
+		@apply border-b border-blue-500;
 	}
 </style>

@@ -13,6 +13,9 @@
 <div
 	class="py-1.5 px-3 cursor-pointer text-gray-700 hover:text-black hover:bg-slate-200"
 	onclick={onClick}
+	tabindex="0"
+	onkeyup={(e) => e.key === 'Enter' && onClick?.()}
+	role="button"
 >
 	{#if children}
 		{@render children()}
