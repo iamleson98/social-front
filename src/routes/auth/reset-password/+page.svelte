@@ -49,17 +49,6 @@
 
 <div class="max-w-md min-w-80 rounded-md p-2">
 	<h1 class="p-2 mb-4">{tClient('resetPassword.title')}</h1>
-
-	<!-- {#if form && form?.status && [HTTPStatusBadRequest, HTTPStatusServerError].includes(form.status)}
-		<Alert variant="error" class="mb-3" bordered>
-			{form.error}
-		</Alert>
-	{:else if form && form?.status === HTTPStatusSuccess}
-		<Alert variant="success" class="mb-3">
-			{form.data}
-		</Alert>
-	{/if} -->
-
 	<Input
 		type="email"
 		placeholder={tClient('common.emailPlaceholder')}
