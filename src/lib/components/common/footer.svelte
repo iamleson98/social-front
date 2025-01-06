@@ -3,7 +3,7 @@
 </script>
 
 <footer class="p-6 max-w-6xl mx-auto">
-	<div class="mx-auto max-w-screen-xl">
+	<div class="mx-auto max-w-[theme(screens.xl)]">
 		<div class="md:flex md:justify-between">
 			<div class="mb-6 md:mb-0">
 				<a href={AppRoute.HOME} class="flex items-center">

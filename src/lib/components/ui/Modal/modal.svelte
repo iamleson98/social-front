@@ -40,10 +40,10 @@
 </script>
 
 {#if open}
-	<div class="modal-bg">
+	<div class="fixed bg-black/50 z-50 top-0 left-0 bottom-0 right-0 overflow-x-hidden overflow-y-auto flex items-center justify-center">
 		<div class={`relative w-full max-h-full ${modalSizeMap[size]}`}>
 			<!-- content -->
-			<div class="bg-white rounded-lg shadow dark:bg-gray-700" transition:fly={{ y: 20 }}>
+			<div class="bg-white rounded-lg shadow-sm dark:bg-gray-700" transition:fly={{ y: 20 }}>
 				<!-- header -->
 				{#if !hideHeader}
 					<div
@@ -81,9 +81,3 @@
 		</div>
 	</div>
 {/if}
-
-<style lang="postcss">
-	.modal-bg {
-		@apply fixed bg-black bg-opacity-50 z-50 top-0 left-0 bottom-0 right-0 overflow-x-hidden overflow-y-auto flex items-center justify-center;
-	}
-</style>

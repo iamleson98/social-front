@@ -63,9 +63,10 @@
 	{/if}
 </button>
 
-<style lang="postcss">
+<style>
+	@import "tailwindcss/theme";
 	.button {
-		@apply cursor-pointer !outline-none !select-none gap-1.5 appearance-none text-center inline-flex justify-center items-center leading-none grow-0 font-medium focus:ring-4;
+		@apply cursor-pointer outline-hidden! !select-none gap-1.5 appearance-none text-center inline-flex justify-center items-center leading-none grow-0 font-medium focus:ring-4;
 		-webkit-tap-highlight-color: transparent;
 	}
 	.button[disabled] {

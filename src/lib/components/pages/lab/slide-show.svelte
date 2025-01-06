@@ -87,7 +87,7 @@
 		{#each allPictures.slice(...slicing) as picture, idx (picture.id)}
 			<div class="w-1/5 p-1 inline-block box-border">
 				<div
-					class="relative bg-white rounded-md overflow-hidden cursor-pointer outline-none"
+					class="relative bg-white rounded-md overflow-hidden cursor-pointer outline-hidden"
 					onmouseover={() => handleMouseOver(idx)}
 					tabindex="0"
 					onfocus={() => handleMouseOver(idx)}

@@ -186,7 +186,7 @@
 					<button
 						data-tooltip-target="favourites-tooltip-1"
 						type="button"
-						class="inline-flex items-center justify-center gap-2 rounded-md-lg border border-gray-200 bg-white p-2.5 text-sm font-medium tet-gray-800 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100"
+						class="inline-flex items-center justify-center gap-2 rounded-md-lg border border-gray-200 bg-white p-2.5 text-sm font-medium tet-gray-800 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-hidden focus:ring-4 focus:ring-gray-100"
 					>
 						<svg
 							class="h-5 w-5"
@@ -207,14 +207,14 @@
 					<div
 						id="favourites-tooltip-1"
 						role="tooltip"
-						class="tooltip invisible absolute z-10 inline-block rounded-md-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300"
+						class="tooltip invisible absolute z-10 inline-block rounded-md-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-xs transition-opacity duration-300"
 					>
 						Add to favourites
 						<div class="tooltip-arrow" data-popper-arrow></div>
 					</div>
 					<button
 						type="button"
-						class="inline-flex w-full items-center justify-center rounded-md-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300"
+						class="inline-flex w-full items-center justify-center rounded-md-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-hidden focus:ring-4 focus:ring-primary-300"
 					>
 						<svg
 							class="-ms-2 me-2 h-5 w-5"

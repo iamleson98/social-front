@@ -165,6 +165,6 @@
 		{tabindex}
 		{spellcheck}
 		{style}
-		class={`${className} border rounded text-sm block relative tab-size-[1] outline-0 outline-none p-2.5 min-h-36 tablet:p-2 bg-white`}
+		class={`${className} border rounded-sm text-sm block relative tab-size-[1] outline-0 outline-hidden p-2.5 min-h-36 tablet:p-2 bg-white`}
 	/>
 </div>

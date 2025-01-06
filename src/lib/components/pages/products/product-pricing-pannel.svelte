@@ -129,7 +129,7 @@
 		></Rating>
 	</div>
 
-	<div class="mb-5 bg-gray-50 rounded px-5 py-2">
+	<div class="mb-5 bg-gray-50 rounded-sm px-5 py-2">
 		<!-- price -->
 		<div class="">
 			<div class="text-blue-700 font-semibold text-xl mb-1">
@@ -177,7 +177,7 @@
 						onclick={() => toggleSelectVariant(variant)}
 						tabindex={0}
 						disabled={!variant.quantityAvailable || isAddingItemToCart}
-						class={`${selectedVariant?.id === variant.id ? '!bg-blue-100 !font-semibold' : ''}`}
+						class={`${selectedVariant?.id === variant.id ? 'bg-blue-100! font-semibold!' : ''}`}
 						color="indigo"
 					>
 						{variant.name}

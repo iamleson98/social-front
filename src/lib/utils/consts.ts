@@ -107,11 +107,11 @@ export const SIZE_MAP: Record<SocialSize, string> = {
 };
 
 export const ICON_BTN_SIZE_MAP: Record<SocialSize, string> = {
-  xs: '!w-7',
-  sm: '!w-9',
-  md: '!w-10',
-  lg: '!w-12',
-  xl: '!w-14',
+  xs: 'w-7!',
+  sm: 'w-9!',
+  md: 'w-10!',
+  lg: 'w-12!',
+  xl: 'w-14!',
 };
 
 export type PaymentStatus = "paidInFull" | "overpaid" | "none" | "authorized";

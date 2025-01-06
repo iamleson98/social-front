@@ -133,7 +133,7 @@
 			Click
 			<Icon icon={ChevronDown} />
 		</button>
-		<ul class="dropdown-content menu bg-base-100 z-10 shadow rounded w-52">
+		<ul class="dropdown-content menu bg-base-100 z-10 shadow-sm rounded-sm w-52">
 			{#each Object.keys(blockFormatState) as blockKey, idx (idx)}
 				{@const blockFormat = blockFormatState[blockKey as BlockType]}
 				<!-- svelte-ignore a11y_no_noninteractive_element_to_interactive_role -->
@@ -164,7 +164,7 @@
 			<div class="tooltip" data-tip={inlineFormat.tip}>
 				<IconButton
 					icon={inlineFormat.icon}
-					class={`${inlineFormat.active ? '!bg-blue-100 !text-blue-600' : ''}`}
+					class={`${inlineFormat.active ? 'bg-blue-100! text-blue-600!' : ''}`}
 					aria-label={inlineKey}
 					tabindex={0}
 					{disabled}

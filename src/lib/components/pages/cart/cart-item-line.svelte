@@ -162,7 +162,7 @@
 	<div class="flex items-center gap-2">
 		<!-- picture area -->
 		<div class="w-1/12">
-			<img src={mediaUrl} alt={mediaAlt} class="w-16 h-16 object-cover rounded overflow-hidden" />
+			<img src={mediaUrl} alt={mediaAlt} class="w-16 h-16 object-cover rounded-sm overflow-hidden" />
 		</div>
 
 		<!-- name section -->
@@ -193,7 +193,7 @@
 					min={0}
 					oninput={handleItemQuantityInput()}
 					type="number"
-					class="!w-16"
+					class="w-16!"
 					disabled={loading}
 				/>
 				<IconButton

@@ -32,7 +32,7 @@
 		rounded = false,
 	}: Props = $props();
 
-	const roundClass = rounded ? '!rounded-full' : 'rounded';
+	const roundClass = rounded ? 'rounded-full!' : 'rounded-sm';
 </script>
 
 <span

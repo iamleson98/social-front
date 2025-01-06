@@ -31,7 +31,7 @@
 			{#each displayMedias as picture, idx (idx)}
 				<div class="w-1/5 p-1 inline-block box-border">
 					<div
-						class="relative bg-white rounded-md overflow-hidden cursor-pointer outline-none"
+						class="relative bg-white rounded-md overflow-hidden cursor-pointer outline-hidden"
 						onmouseover={() => slideShowManager.handleFocus(idx)}
 						onfocus={() => slideShowManager.handleFocus(idx)}
 						tabindex="0"
@@ -79,7 +79,9 @@
 	</div>
 </div>
 
-<style lang="postcss">
+<style>
+	@import "tailwindcss/theme";
+
 	.slide-outline {
 		@apply absolute border-2 z-10 border-blue-400 w-full h-full rounded top-0 left-0;
 	}

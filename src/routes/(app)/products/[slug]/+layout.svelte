@@ -129,7 +129,7 @@
 	</div>
 
 	<!-- product more details -->
-	<div class="bg-white w-full rounded p-6">
+	<div class="bg-white w-full rounded-sm p-6">
 		<div class="text-gray-700 text-lg font-semibold mb-4">{tClient('product.prdInformation')}</div>
 
 		<div class="flex items-center gap-2 mb-4">
@@ -152,12 +152,14 @@
 	</div>
 </div>
 
-<style lang="postcss">
+<style>
+	@import "tailwindcss/theme";
+
 	.tab-active {
 		@apply !bg-blue-100 !text-blue-600 hover:bg-blue-100;
 	}
 	.tab-btn {
-		@apply tablet:h-max tablet:py-1;
+		@apply tablet:h-full tablet:py-1;
 	}
 	.breadcrumb > li:not(:last-child) {
 		@apply text-blue-700;

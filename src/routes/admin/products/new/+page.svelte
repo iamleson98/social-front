@@ -17,7 +17,7 @@
 	let productCategory = $state<Category | null>(null);
 </script>
 
-<div class="m-auto rounded bg-white max-w-[800px] p-5 text-gray-600">
+<div class="m-auto rounded-sm bg-white max-w-[800px] p-5 text-gray-600">
 	<!-- product name -->
 	<div class="mb-3">
 		<span class="text-sm">{tClient('product.prdName')}</span>
@@ -71,6 +71,6 @@
 		<ProductPreorderEditor />
 	</div>
 
-	<!-- <button class="btn btn-md w-full !bg-blue-500 text-white">Submit</button> -->
+	<!-- <button class="btn btn-md w-full bg-blue-500! text-white">Submit</button> -->
 	<Button size="md" variant="filled" fullWidth>Submit</Button>
 </div>

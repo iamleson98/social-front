@@ -38,7 +38,7 @@
 
 <div class="bg-gray-50 rounded-lg border border-gray-200 p-2">
 	{#if $attributeQueryStore.fetching}
-		<div class="flex items-center flex-wrap rounded border p-1">
+		<div class="flex items-center flex-wrap rounded-sm border p-1">
 			{#each [null, null] as _}
 				<div class="w-1/2">
 					<SkeletonContainer class="w-full">
@@ -52,7 +52,7 @@
 			{$attributeQueryStore.error.message}
 		</Alert>
 	{:else if $attributeQueryStore.data?.attributes?.edges}
-		<div class="flex items-center flex-wrap rounded border p-1" transition:slide>
+		<div class="flex items-center flex-wrap rounded-sm border p-1" transition:slide>
 			{#each $attributeQueryStore.data?.attributes?.edges as attributeEdge, idx (idx)}
 				<div class="w-1/2 tablet:w-full p-1 shrink flex items-center mb-2">
 					<div class="w-1/4 text-xs">

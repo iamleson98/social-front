@@ -89,12 +89,12 @@
 	});
 </script>
 
-<header class="fixed top-0 left-0 right-0 flex p-2 bg-white shadow-sm z-[40] w-full">
+<header class="fixed top-0 left-0 right-0 flex p-2 bg-white shadow-xs z-40 w-full">
 	<!-- navigating -->
 	<div class="w-1/2 flex items-center gap-3">
 		<!-- logo -->
-		<a href={AppRoute.HOME} class="inline !select-none">
-			<img src="/logo.png" alt="logo" class="!select-none w-16 h-auto" />
+		<a href={AppRoute.HOME} class="inline select-none!">
+			<img src="/logo.png" alt="logo" class="select-none! w-16 h-auto" />
 		</a>
 
 		<!-- search -->
@@ -171,9 +171,10 @@
 		</div>
 	</div>
 </header>
+<style >
+	@import "tailwindcss/theme";
 
-<style lang="postcss">
 	.cart-quantity {
-		@apply absolute -right-1/4 -top-1/4 z-[99999999] !text-[10px] flex h-4 min-w-4 items-center text-xs justify-center rounded-full bg-blue-500 p-1 font-bold text-white;
+		@apply absolute -right-1/4 -top-1/4 z-99999999 !text-[10px] flex h-4 min-w-4 items-center text-xs justify-center rounded-full bg-blue-500 p-1 font-bold text-white;
 	}
 </style>

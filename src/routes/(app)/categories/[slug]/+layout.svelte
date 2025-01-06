@@ -45,7 +45,7 @@
 	<!-- sidebar -->
 	<div class="bg-white rounded-md p-3 w-1/4 tablet:w-full">
 		<div
-			class="h-64 mb-4 w-64 rounded bg-cover bg-center bg-no-repeat"
+			class="h-64 mb-4 w-64 rounded-sm bg-cover bg-center bg-no-repeat"
 			style={`background-image: url(${data.category?.backgroundImage?.url});`}
 		></div>
 

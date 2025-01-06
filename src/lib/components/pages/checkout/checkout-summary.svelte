@@ -29,7 +29,7 @@
 	{@const { productImage, productName } = getSummaryLineProps(line)}
 	<div class="flex border-b py-1 last:border-none">
 		<div
-			class="aspect-square h-24 tablet:w-16 w-24 tablet:h-16 rounded border overflow-hidden bg-white"
+			class="aspect-square h-24 tablet:w-16 w-24 tablet:h-16 rounded-sm border overflow-hidden bg-white"
 		>
 			{#if productImage}
 				<img
@@ -65,7 +65,7 @@
 		<p class="text-xs">quantity*</p>
 		<Input
 			size="xs"
-			class="text-center max-w-20 !bg-white"
+			class="text-center max-w-20 bg-white!"
 			type="number"
 			bind:value={line.quantity}
 		/>
@@ -99,7 +99,7 @@
 				currency: line.unitPrice.gross.currency,
 				amount: line.unitPrice.gross.amount * line.quantity
 			}}
-			class={classNames({ '!text-red-600': onSale })}
+			class={classNames({ 'text-red-600!': onSale })}
 		/>
 	</div>
 {/snippet}
@@ -113,7 +113,7 @@
 			<div class="flex items-center gap-2 justify-end border-t py-4">
 				<Input
 					size="sm"
-					class="!bg-white"
+					class="bg-white!"
 					placeholder="Add giftcard or discount code"
 					bind:value={discountCode}
 				/>

@@ -23,7 +23,7 @@
 {#snippet category({ node }: CategoryCountableEdge)}
 	<a
 		href={`${AppRoute.CATEGORIES}/${encodeURIComponent(node.slug)}`}
-		class="block p-2 rounded-md bg-white border"
+		class="block p-2 rounded-md bg-white border border-gray-200"
 	>
 		<div class="flex items-center gap-2">
 			<img
@@ -37,7 +37,7 @@
 {/snippet}
 
 {#snippet categorySkeleton()}
-	<div class="rounded-md border bg-white mb-2">
+	<div class="rounded-md border border-gray-200 bg-white mb-2">
 		<SkeletonContainer class="flex items-center gap-1">
 			<Skeleton class="w-7 h-7 rounded-full"></Skeleton>
 			<Skeleton class="h-4 w-2/3"></Skeleton>

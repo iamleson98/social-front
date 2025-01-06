@@ -125,9 +125,11 @@
 	</div>
 {/if}
 
-<style lang="postcss">
+<style>
+	@import "tailwindcss/theme";
+
 	.dropdown {
-		@apply z-[99999999] !rounded absolute transform bg-white py-2 block text-gray-800 w-56 list-none text-sm shadow divide-y divide-gray-100 dark:bg-gray-700 dark:text-white dark:divide-gray-600;
+		@apply z-99999999 !rounded absolute transform bg-white py-2 block text-gray-800 w-56 list-none text-sm shadow divide-y divide-gray-100 dark:bg-gray-700 dark:text-white dark:divide-gray-600;
 	}
 	.dropdown-top::before {
 		@apply -bottom-1.5 left-1/2 -translate-x-1/2 border-x-[6px] border-t-[6px] border-b-0 border-t-inherit;

@@ -53,4 +53,4 @@
 	});
 </script>
 
-<div class="!hidden"></div>
+<div class="hidden!"></div>

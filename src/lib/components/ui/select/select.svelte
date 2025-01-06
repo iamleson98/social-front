@@ -149,7 +149,7 @@
 			autocomplete="off"
 			class={classNames({
 				[className]: true,
-				'!rounded-b-none': openSelect,
+				'rounded-b-none!': openSelect,
 				'cursor-pointer': !searchFocus
 			})}
 			id={inputId}
@@ -211,9 +211,11 @@
 	{/if}
 </div>
 
-<style lang="postcss">
+<style>
+	@import "tailwindcss/theme";
+
 	.select-menu {
-		@apply absolute text-left mt-0.5 text-sm w-full max-h-64 overflow-y-auto bg-white rounded-b-xl z-[100000000000000000] shadow-sm border border-gray-200;
+		@apply absolute text-left mt-0.5 text-sm w-full max-h-64 overflow-y-auto bg-white rounded-b-xl z-100000000000000000 shadow-sm border border-gray-200;
 	}
 	.select-option {
 		@apply text-left w-full px-4 py-1 hover:bg-blue-50 aria-selected:bg-blue-50 hover:text-blue-600;

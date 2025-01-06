@@ -22,7 +22,7 @@
 <Button
 	{...rest}
 	{size}
-	class={`${className} ${ICON_BTN_SIZE_MAP[size]} ${rounded ? '!rounded-full' : ''}`}
+	class={`${className} ${ICON_BTN_SIZE_MAP[size]} ${rounded ? 'rounded-full!' : ''}`}
 	style="padding: unset !important;"
 	>
 	<Icon {icon} />

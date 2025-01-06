@@ -41,7 +41,9 @@
 	</ul>
 </div>
 
-<style lang="postcss">
+<style>
+	@import "tailwindcss/theme";
+
 	.tab-container {
 		@apply border-b border-gray-200 dark:border-gray-700;
 	}

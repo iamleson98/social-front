@@ -29,7 +29,7 @@
 {#if label}
 	<label for={id} class={`block mb-1.5 ${INPUT_LABEL_SIZE_STYLE_MAP[size]} font-medium ${INPUT_TYPES[variant].fg}`}>
 		{label}
-		{#if required}<strong class="font-bold !text-red-600">*</strong>{/if}
+		{#if required}<strong class="font-bold text-red-600!">*</strong>{/if}
 	</label>
 {/if}
 <div class={`${className} ${INPUT_TYPES[variant].fg}`}>
@@ -58,11 +58,13 @@
 		{/if}
 	</div>
 	{#if subText}
-		<p class={`text-[10px] mt-0.5 !text-right`}>{subText}</p>
+		<p class={`text-[10px] mt-0.5 text-right!`}>{subText}</p>
 	{/if}
 </div>
 
-<style lang="postcss">
+<style>
+	@import "tailwindcss/theme";
+
 	.input-action > * {
 		@apply max-h-full max-w-full;
 	}

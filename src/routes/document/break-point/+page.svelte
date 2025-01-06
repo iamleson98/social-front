@@ -36,7 +36,7 @@
 	<div class="common w-[1024px] mb-2">
 		<p class="font-bold text-lg">laptop - 1024px</p>
 	</div>
-	<div class="tablet:!bg-red-200 mb-2 common">
+	<div class="tablet:bg-red-200! mb-2 common">
 		<p class="font-bold text-lg">desktop - 1440px</p>
 	</div>
 	<div class="common w-[2560px] mb-2 desktop:bg-red-200">
@@ -44,7 +44,9 @@
 	</div>
 </div>
 
-<style lang="postcss">
+<style>
+	@import "tailwindcss/theme";
+
 	.common {
 		@apply rounded-lg border border-blue-400 bg-blue-200 p-2 mb-2;
 	}

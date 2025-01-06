@@ -545,7 +545,9 @@
 	</div>
 {/if}
 
-<style lang="postcss">
+<style>
+	@import "tailwindcss/theme";
+
 	td {
 		@apply p-1;
 	}
