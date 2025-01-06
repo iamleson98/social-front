@@ -2,8 +2,9 @@
 	import MegaMenu from '$lib/components/common/level-selector/mega-menu.svelte';
 	import SlideShow from '$lib/components/pages/lab/slide-show.svelte';
 	import { Button } from '$lib/components/ui';
+	import { Badge } from '$lib/components/ui/badge';
 	import {Menu} from '$lib/components/ui/Menu';
-	import { type SelectOption } from '$lib/components/ui/select';
+	import { Select, type SelectOption } from '$lib/components/ui/select';
 
 	const options: SelectOption[] = [
 		{ value: '1', label: 'Option 1' },
@@ -121,4 +122,27 @@
 		}
 	]}
 	onSelect={console.log}
+/>
+
+
+<Badge text="lol" variant="outline" rounded size='xs' onDismiss={console.log} />
+<Badge text="lol" variant="outline" size='sm' onDismiss={console.log} />
+<Badge text="lol" variant="outline" size='md' onDismiss={console.log} />
+<Badge text="lol" variant="outline" size='lg' onDismiss={console.log} />
+<Badge text="lol" variant="outline" size='xl' onDismiss={console.log} />
+
+
+<Select
+	options={[
+		{
+			value: '1',
+			label: 'Option 1'
+		},
+		{
+			value: '2',
+			label: 'Option 2'
+		}
+	]}
+	multiple
+	value={[]}
 />

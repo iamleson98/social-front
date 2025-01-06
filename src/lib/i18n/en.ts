@@ -17,6 +17,7 @@ export default {
 	resetPassword: {
 		title: 'Reset Password',
 		btnText: 'Send me email',
+		emailSent: 'An email has been sent to you. Please check your inbox.',
 	},
 	changePassword: {
 		title: 'Change Password',

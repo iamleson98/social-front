@@ -1,19 +1,22 @@
 <script lang="ts">
 	import { CloseX, Icon, type IconType } from '$lib/components/icons';
 	import { buttonVariantColorsMap, type ButtonVariant } from '../Button/button.types';
-	import type { SocialColor } from '../common';
+	import type { SocialColor, SocialSize } from '../common';
+	import { BADGE_SIZE_VARIANTS } from './types';
 
 	type BadgeVariant = ButtonVariant;
 
 	type Props = {
 		color?: SocialColor;
-		text: string;
+		text: string | number;
 		onDismiss?: () => void;
 		class?: string;
 		variant?: BadgeVariant;
 		ref?: HTMLSpanElement;
 		startIcon?: IconType;
 		endIcon?: IconType;
+		size?: SocialSize;
+		rounded?: boolean;
 	};
 
 	let {
@@ -24,13 +27,17 @@
 		color = 'blue',
 		ref = $bindable(),
 		startIcon,
-		endIcon
+		endIcon,
+		size = 'sm',
+		rounded = false,
 	}: Props = $props();
+
+	const roundClass = rounded ? '!rounded-full' : 'rounded';
 </script>
 
 <span
 	bind:this={ref}
-	class={`inline-flex items-center py-1 px-2 text-xs gap-1.5 rounded-full font-medium ${className} ${buttonVariantColorsMap[variant][color]}`}
+	class={`inline-flex items-center gap-2 ${roundClass} ${BADGE_SIZE_VARIANTS[size].badge} font-medium badge-${size} ${className} ${buttonVariantColorsMap[variant][color]}`}
 >
 	{#if startIcon}
 		<Icon icon={startIcon} />
@@ -40,8 +47,8 @@
 		<Icon icon={endIcon} />
 	{/if}
 	{#if onDismiss}
-		<button class="text-inherit p-1 rounded-full bg-inherit" tabindex="0" onclick={onDismiss}>
-			<Icon icon={CloseX} width="0.7rem" height="0.7rem" />
+		<button class={`text-inherit ${roundClass} ${BADGE_SIZE_VARIANTS[size].btn} bg-inherit`} onclick={onDismiss}>
+			<Icon icon={CloseX} width="0.8rem" height="0.8rem" />
 		</button>
 	{/if}
 </span>

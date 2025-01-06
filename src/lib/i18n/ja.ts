@@ -17,6 +17,7 @@ export default {
 	resetPassword: {
 		title: 'パスワードをリセット',
 		btnText: 'メールを送信',
+		emailSent: 'メールを送信しました',
 	},
 	changePassword: {
 		title: 'パスワードを変更',

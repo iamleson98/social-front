@@ -3,4 +3,3 @@ export type SocialColor = 'dark' | 'gray' | 'red' | 'pink' | 'grape' | 'violet' 
 export type SocialRadius = 'rounded-sm' | 'rounded-md' | 'rounded-lg' | 'rounded-xl';
 
 export type SocialSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-

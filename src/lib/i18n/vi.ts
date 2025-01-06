@@ -17,6 +17,7 @@ export default {
 	resetPassword: {
 		title: 'Yêu cầu đặt lại mật khẩu',
 		btnText: 'Gửi email cho tôi',
+		emailSent: 'Một email được gửi đến tôi. Vui lòng kiểm tra hòm thư',
 	},
 	changePassword: {
 		title: 'Thay đổi mật khẩu',

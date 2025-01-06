@@ -17,6 +17,7 @@ export default {
 	resetPassword: {
 		title: '비밀번호 재설정',
 		btnText: '이메일 보내기',
+		emailSent: '이메일을 보내려습니다. 홈보드에서 확인해주세요',
 	},
 	changePassword: {
 		title: '비밀번호 변경',
