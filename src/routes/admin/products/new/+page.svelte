@@ -36,7 +36,7 @@
 	<!-- description -->
 	<div class="mb-3">
 		<span class="text-sm">{tClient('product.prdDescription')}</span>
-		<ProductDescription />
+		<ProductDescriptionEditor />
 	</div>
 
 	<!-- attributes -->

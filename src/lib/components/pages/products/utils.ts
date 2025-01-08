@@ -1,4 +1,4 @@
-import type { SelectItemProps } from "$lib/components/common/level-selector/types";
+import type { SelectItemProps } from "$lib/components/ui/level-selector/types";
 import type { CategoryCountableConnection } from "$lib/gql/graphql";
 
 

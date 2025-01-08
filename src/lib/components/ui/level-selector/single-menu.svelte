@@ -18,7 +18,7 @@
 	{#each items as item, idx (idx)}
 		{@const active = activeItemIndex === idx}
 		<div
-			class={`flex items-center select-none justify-between overflow-hidden rounded-lg mb-2 font-medium p-2 ${active ? 'text-blue-700 bg-blue-50 ring-2 ring-blue-600' : 'ring-gray-200 ring-1 text-gray-700'}`}
+			class={`flex items-center select-none cursor-pointer justify-between overflow-hidden rounded-lg mb-2 font-medium p-2 ${active ? 'text-blue-700 bg-blue-50 ring-2 ring-blue-600' : 'ring-gray-200 ring-1 text-gray-700'}`}
 			role="button"
 			tabindex="0"
 			onclick={() => handleItemSelect(idx)}

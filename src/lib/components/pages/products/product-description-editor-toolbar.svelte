@@ -137,20 +137,17 @@
 			{#each Object.keys(blockFormatState) as blockKey, idx (idx)}
 				{@const blockFormat = blockFormatState[blockKey as BlockType]}
 				<!-- svelte-ignore a11y_no_noninteractive_element_to_interactive_role -->
-				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<li
-					class:!bg-blue-100={blockFormatType === blockKey}
-					class:!text-blue-600={blockFormatType === blockKey}
-					role="button"
-					tabindex="0"
 					onclick={() => applyBlockFormat(blockKey as BlockType)}
-					class="rounded-md"
+					class={`rounded-md ${blockFormatType === blockKey ? 'bg-blue-100! text-blue-600!' : ''}`}
+					onkeyup={(e) => e.key === 'Enter' && applyBlockFormat(blockKey as BlockType)}
+					tabindex="0"
+					role="button"
 				>
-					<!-- svelte-ignore a11y_missing_attribute -->
-					<a>
+					<span>
 						<Icon icon={blockFormat.icon} />
 						{blockFormat.tip}
-					</a>
+					</span>
 				</li>
 			{/each}
 		</ul>

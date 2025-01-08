@@ -12,7 +12,7 @@
 	import Skeleton from '$lib/components/common/skeleton.svelte';
 	import { operationStore } from '$lib/stores/api/operation';
 	import { Alert } from '$lib/components/ui/Alert';
-	import {MegaMenu} from '$lib/components/common/level-selector';
+	import {MegaMenu} from '$lib/components/ui/level-selector';
 	import { convertCategoryEdgesToMenuSelect } from './utils';
 
 	type Props = {

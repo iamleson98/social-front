@@ -1,38 +1,63 @@
 .PlaygroundEditorTheme__ltr {
-  @apply text-left
+  /* @apply text-left */
+  text-align: left
 }
 .PlaygroundEditorTheme__rtl {
-  @apply text-right
+  /* @apply text-right */
+  text-align: right
 }
 .PlaygroundEditorTheme__paragraph {
-  @apply relative m-0
+  /* @apply relative m-0 */
+  margin: 0;
+  position: relative;
 }
 .PlaygroundEditorTheme__quote {
-  @apply ml-5 mb-2.5 text-sm text-gray-500 border-l-gray-200 border-l-4 border-solid pl-4;
+  /* @apply ml-5 mb-2.5 text-sm text-gray-500 border-l-gray-200 border-l-4 border-solid pl-4; */
+  margin-left: 20px;
+  margin-bottom: 10px;
+  padding-left: 16px;
+  border-left: 4px solid #e5e7eb;
+  color: gray;
 }
 .PlaygroundEditorTheme__h1 {
-  @apply m-0 font-normal text-gray-700 text-2xl
+  /* @apply m-0 font-normal text-gray-700 text-2xl */
+  margin: 0px;
+  font-weight: normal;
+  color: rgb(55, 65, 81);
+  font-size: 1.5rem;
 }
 .PlaygroundEditorTheme__h2 {
-  @apply uppercase font-bold m-0 text-gray-500 text-sm
+  /* @apply uppercase font-bold m-0 text-gray-500 text-sm */
+  margin: 0px;
+  font-weight: bold;
+  color: rgb(75, 85, 99);
+  font-size: 0.875rem;
+  text-transform: uppercase;
 }
 .PlaygroundEditorTheme__h3 {
-  @apply uppercase m-0 text-xs;
+  /* @apply uppercase m-0 text-xs; */
+  margin: 0px;
+  font-size: 12px;
+  text-transform: uppercase;
 }
 .PlaygroundEditorTheme__indent {
   --lexical-indent-base-value: 40px;
 }
 .PlaygroundEditorTheme__textBold {
-  @apply font-bold
+  /* @apply font-bold */
+  font-weight: bold
 }
 .PlaygroundEditorTheme__textItalic {
-  @apply italic
+  /* @apply italic */
+  font-style: italic
 }
 .PlaygroundEditorTheme__textUnderline {
-  @apply underline
+  /* @apply underline */
+  text-decoration: underline
 }
 .PlaygroundEditorTheme__textStrikethrough {
-  @apply line-through
+  /* @apply line-through */
+  text-decoration: line-through
 }
 .PlaygroundEditorTheme__textUnderlineStrikethrough {
   text-decoration: underline line-through;
@@ -249,10 +274,10 @@
 .PlaygroundEditorTheme__tableCellActionButton:hover {
   background-color: #ddd;
 }
-.PlaygroundEditorTheme__characterLimit {
+/* .PlaygroundEditorTheme__characterLimit {
   display: inline;
   background-color: #ffbbbb !important;
-}
+} */
 .PlaygroundEditorTheme__ol1 {
   padding: 0;
   margin: 0;

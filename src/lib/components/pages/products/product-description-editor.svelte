@@ -29,7 +29,6 @@
 		ariaAutoComplete?: 'list' | 'none' | 'inline' | 'both' | null;
 		ariaDescribedBy?: string;
 		ariaControls?: string;
-		ariaExpanded?: boolean;
 		ariaLabel?: string;
 		ariaLabelledBy?: string;
 		ariaMultiline?: boolean;
@@ -38,10 +37,7 @@
 		autoCapitalize?: "none" | "characters" | "off" | "on" | "sentences" | "words" | null | undefined;
 		class?: string;
 		id?: string;
-		role?: string;
-		spellcheck?: boolean;
 		style?: string;
-		tabindex?: number;
 		testid?: string;
 	};
 
@@ -50,8 +46,6 @@
 		ariaAutoComplete = null,
 		ariaControls,
 		ariaDescribedBy,
-		role = 'textbox',
-		ariaExpanded,
 		ariaLabel,
 		ariaLabelledBy,
 		ariaOwns,
@@ -60,9 +54,7 @@
 		autoCapitalize,
 		testid,
 		id,
-		tabindex = -1,
 		class: className = '',
-		spellcheck,
 		style
 	}: Props = $props();
 
@@ -142,15 +134,12 @@
 
 <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
 	<DescriptionEditorToolbar disabled={!isEditable || !activeEditor} editor={activeEditor} />
-	<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-	<!-- svelte-ignore element_invalid_self_closing_tag -->
 	<div
 		bind:this={ref}
 		aria-activedescendant={!isEditable ? undefined : ariaActiveDescendantID}
 		aria-autocomplete={!isEditable ? 'none' : ariaAutoComplete}
 		aria-controls={!isEditable ? undefined : ariaControls}
 		aria-describedby={ariaDescribedBy}
-		aria-expanded={!isEditable ? undefined : role === 'combobox' ? !!ariaExpanded : undefined}
 		aria-label={ariaLabel}
 		aria-labelledby={ariaLabelledBy}
 		aria-multiline={ariaMultiline}
@@ -161,10 +150,10 @@
 		contenteditable={isEditable}
 		data-testid={testid}
 		{id}
-		{role}
-		{tabindex}
-		{spellcheck}
+		role="textbox"
+		tabindex="0"
+		spellcheck="true"
 		{style}
 		class={`${className} border rounded-sm text-sm block relative tab-size-[1] outline-0 outline-hidden p-2.5 min-h-36 tablet:p-2 bg-white`}
-	/>
+	></div>
 </div>

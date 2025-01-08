@@ -1,5 +1,8 @@
 @import 'tailwindcss';
-@plugin "daisyui";
+@plugin "daisyui" {
+  include: dropdown, menu;
+  themes: light --default, dark --prefersdark;
+}
 
 @config '../tailwind.config.js';
 

@@ -136,7 +136,7 @@
 			{#each tabs as tab, idx (idx)}
 				<a role="tab" class="inline" href={tab.path}>
 					<Button
-						class={`${page.url.pathname === tab.path ? 'tab-active' : ''} tab-btn`}
+						class={`${page.url.pathname === tab.path ? 'tab-active' : ''} tablet:h-full tablet:py-1`}
 						startIcon={tab.icon}
 						size="xs"
 						variant="light"
@@ -158,9 +158,9 @@
 	.tab-active {
 		@apply !bg-blue-100 !text-blue-600 hover:bg-blue-100;
 	}
-	.tab-btn {
+	/* .tab-btn {
 		@apply tablet:h-full tablet:py-1;
-	}
+	} */
 	.breadcrumb > li:not(:last-child) {
 		@apply text-blue-700;
 	}

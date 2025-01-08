@@ -1,9 +1,10 @@
 
+import type { EditorThemeClasses } from 'lexical';
 import './PlaygroundEditorTheme.css';
 
-export const productDescriptionEditorTheme = {
+export const productDescriptionEditorTheme: EditorThemeClasses = {
   blockCursor: 'PlaygroundEditorTheme__blockCursor',
-  characterLimit: 'PlaygroundEditorTheme__characterLimit',
+  characterLimit: 'inline bg-red-200!',
   code: 'PlaygroundEditorTheme__code',
   codeHighlight: {
     atrule: 'PlaygroundEditorTheme__tokenAttr',

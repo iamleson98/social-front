@@ -16,7 +16,6 @@
 	import { scale } from 'svelte/transition';
 	import { Input } from '../ui/Input';
 	import { IconButton } from '../ui/Button';
-	import { DropDown } from '../ui/Dropdown';
 	import { graphqlClient } from '$lib/client';
 	import { USER_ME_QUERY_STORE } from '$lib/stores/api';
 	import type { Query } from '$lib/gql/graphql';
@@ -27,20 +26,14 @@
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { invalidateAll } from '$app/navigation';
 
-	let openUserDropdown = $state(false);
-	let dropdownTriggerRef = $state<HTMLButtonElement>();
+	const { userDisplayName } = $derived.by(() => {
+		let userDisplayName;
 
-	const { userAvatarStyle, userDisplayName } = $derived.by(() => {
-		let userAvatarStyle, userDisplayName;
-
-		if ($userStore?.avatar?.url) {
-			userAvatarStyle = `background-image: url("${$userStore.avatar.url}")`;
-		}
 		if ($userStore?.firstName && $userStore.lastName)
 			userDisplayName = `${$userStore.firstName[0]}${$userStore.lastName[0]}`;
 		else if ($userStore?.email) userDisplayName = $userStore.email.slice(0, 2);
 
-		return { userAvatarStyle, userDisplayName };
+		return { userDisplayName };
 	});
 
 	// load current user when oage load
@@ -132,37 +125,45 @@
 				</IconButton>
 			</a>
 			{#if $userStore}
-				<Button
-					variant="light"
-					size="sm"
-					bind:ref={dropdownTriggerRef}
-					class="space-x-2 uppercase"
-					onclick={() => (openUserDropdown = true)}
-				>
-					{#if $userStore.avatar}
-						<span
-							class="rounded-full w-5 h-5 bg-blue-300 flex items-center justify-center font-bold bg-cover bg-center bg-no-repeat"
-							style={userAvatarStyle}
-						>
-						</span>
-					{/if}
-					<span>{userDisplayName}</span>
-				</Button>
+				<div class="dropdown dropdown-end">
+					<Button variant="light" size="sm" class="space-x-2 uppercase">
+						{#if $userStore.avatar}
+							<span
+								class="rounded-full w-5 h-5 bg-blue-300 flex items-center justify-center font-bold bg-cover bg-center bg-no-repeat"
+								style="background-image: url({$userStore.avatar.url});"
+							>
+							</span>
+						{/if}
+						<span>{userDisplayName}</span>
+					</Button>
 
-				<DropDown
-					onClose={() => (openUserDropdown = false)}
-					open={openUserDropdown}
-					parentRef={dropdownTriggerRef as HTMLButtonElement}
-					header="User options"
-					items={[
-						{ text: tClient('common.settings'), startIcon: UserCog, hasDivider: true },
-						{
-							text: tClient('common.logout'),
-							startIcon: Logout,
-							onSelect: handleLogout
-						}
-					]}
-				/>
+					<ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-48 p-1 mt-1 shadow-sm">
+						<li>
+							<span
+								tabindex="0"
+								onclick={console.log}
+								onkeyup={(e) => e.key === 'Enter' && console.log('')}
+								class="flex items-center gap-2"
+								role="button"
+							>
+								<Icon icon={UserCog} />
+								<span>{tClient('common.settings')}</span>
+							</span>
+						</li>
+						<li>
+							<span
+								onclick={handleLogout}
+								tabindex="0"
+								onkeyup={(e) => e.key === 'Enter' && handleLogout()}
+								class="flex items-center gap-2"
+								role="button"
+							>
+								<Icon icon={Logout} />
+								<span>{tClient('common.logout')}</span>
+							</span>
+						</li>
+					</ul>
+				</div>
 			{:else if !$userStore && !page.url.pathname.startsWith('/auth')}
 				<a href={AppRoute.AUTH_SIGNIN}>
 					<Button variant="filled" size="sm">{tClient('signin.title')}</Button>
@@ -171,8 +172,9 @@
 		</div>
 	</div>
 </header>
-<style >
-	@import "tailwindcss/theme";
+
+<style>
+	@import 'tailwindcss/theme';
 
 	.cart-quantity {
 		@apply absolute -right-1/4 -top-1/4 z-99999999 !text-[10px] flex h-4 min-w-4 items-center text-xs justify-center rounded-full bg-blue-500 p-1 font-bold text-white;
