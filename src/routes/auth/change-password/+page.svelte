@@ -58,6 +58,7 @@
 			bind:value={newPassword}
 			required
 			disabled={loading}
+			showAction
 		/>
 		<PasswordInput
 			name="confirmNewPassword"

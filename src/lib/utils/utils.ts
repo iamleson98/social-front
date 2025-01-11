@@ -15,6 +15,16 @@ export const randomID = () => {
 	return _counter.toString(36);
 };
 
+export function randomString(length = 10) {
+	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	let result = '';
+	for (let i = 0; i < length; i++) {
+			const randomIndex = Math.floor(Math.random() * characters.length);
+			result += characters[randomIndex];
+	}
+	return result;
+}
+
 /**
  * @description Parses the raw product description and returns an array of strings.
  * @param description raw product description

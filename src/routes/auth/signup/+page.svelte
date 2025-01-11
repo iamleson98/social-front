@@ -40,7 +40,11 @@
 			!termAndPoliciesAgree
 	);
 
-	const handleSignup = async (event: { currentTarget: EventTarget & HTMLFormElement }) => {
+	const handleSignup = async (event: {
+		preventDefault: any;
+		currentTarget: EventTarget & HTMLFormElement;
+	}) => {
+		event.preventDefault();
 		loading = true;
 
 		const response = await fetch(event.currentTarget.action, {
@@ -64,7 +68,7 @@
 	<h1 class="p-2 mb-4">{tClient('signup.title')}</h1>
 
 	{#if form && form.error}
-		<Alert variant="error" class="mb-3">
+		<Alert variant="error" class="mb-3" bordered>
 			{form.error}
 		</Alert>
 	{/if}
@@ -99,13 +103,16 @@
 				startIcon={Email}
 			/>
 			<PasswordInput
+				name="password"
 				placeholder={tClient('common.passwordPlaceholder')}
 				bind:value={password}
 				class="mb-2"
 				variant={passwordDontMatch ? 'error' : 'info'}
 				required
+				showAction
 			/>
 			<PasswordInput
+				name="confirmPassword"
 				placeholder={tClient('signup.confirmPasswordPlaceholder')}
 				bind:value={confirmPassword}
 				class="mb-3"
