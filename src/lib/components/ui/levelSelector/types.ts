@@ -8,4 +8,5 @@ export type SelectItemProps = {
 export type MenuProps = {
   items: SelectItemProps[];
   onSelect: (item: SelectItemProps) => void;
+  disabled?: boolean;
 };

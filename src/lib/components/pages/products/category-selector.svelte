@@ -1,9 +1,5 @@
 <script lang="ts">
-	import type {
-		Category,
-		CategoryCountableConnection,
-		Query
-	} from '$lib/gql/graphql';
+	import type { Category, CategoryCountableConnection, Query } from '$lib/gql/graphql';
 	import {
 		CATEGORIES_LIST_FOR_CREATE_PRODUCT,
 		type CategoryListForCreateProductInput
@@ -12,27 +8,30 @@
 	import Skeleton from '$lib/components/common/skeleton.svelte';
 	import { operationStore } from '$lib/stores/api/operation';
 	import { Alert } from '$lib/components/ui/Alert';
-	import {MegaMenu} from '$lib/components/ui/level-selector';
+	import { MegaMenu } from '$lib/components/ui/levelSelector';
 	import { convertCategoryEdgesToMenuSelect } from './utils';
 
 	type Props = {
-		onCategorySelected: (category: Category | null) => void;
+		onCategorySelected: (categoryID: string) => void;
 	};
 
 	let { onCategorySelected }: Props = $props();
 
 	const NUMBER_OF_CATEGORIES_PER_FETCH = 35;
 
-	const categoriesStore = operationStore<Pick<Query, 'categories'>, CategoryListForCreateProductInput>({
+	const categoriesStore = operationStore<
+		Pick<Query, 'categories'>,
+		CategoryListForCreateProductInput
+	>({
 		kind: 'query',
 		query: CATEGORIES_LIST_FOR_CREATE_PRODUCT,
 		context: {
-			requestPolicy: 'network-only',
+			requestPolicy: 'network-only'
 		},
 		variables: {
 			level: 0,
 			first: NUMBER_OF_CATEGORIES_PER_FETCH
-		},
+		}
 	});
 </script>
 
@@ -54,7 +53,9 @@
 			{$categoriesStore.error.message}
 		</Alert>
 	{:else}
-		{@const items = convertCategoryEdgesToMenuSelect($categoriesStore.data?.categories || {} as CategoryCountableConnection)}
-		<MegaMenu {items} onSelect={console.log} />
+		{@const items = convertCategoryEdgesToMenuSelect(
+			$categoriesStore.data?.categories || ({} as CategoryCountableConnection)
+		)}
+		<MegaMenu {items} onSelect={(item) => onCategorySelected(item.value as string)} />
 	{/if}
 </div>

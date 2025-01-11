@@ -12,7 +12,7 @@
 	import { preHandleGraphqlResult, randomString } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
-	import { chunk, flatten, valuesIn } from 'lodash-es';
+	import { chunk, flatten } from 'lodash-es';
 
 	type VariantManifestProps = {
 		name: {

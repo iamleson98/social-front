@@ -3,11 +3,13 @@
 	import SingleMenu from './single-menu.svelte';
 	import { BreadCrumb } from '$lib/components/ui/Breadcrumb';
 	import { tick } from 'svelte';
+	import { Checkbox } from '../Input';
 
 	let { items, onSelect }: MenuProps = $props();
 
 	let menuSectionsData = $state.raw<SelectItemProps[][]>([items]);
 	let selectedItems = $state.raw<SelectItemProps[]>([]);
+	let checked = $state(false);
 
 	const handleItemSelect = (level: number, item: SelectItemProps) => {
 		menuSectionsData = menuSectionsData.slice(0, level + 1);
@@ -18,19 +20,30 @@
 		}
 
 		selectedItems = [...selectedItems.slice(0, level), item];
-		onSelect(item);
 	};
+
+	$effect(() => {
+		if (checked) {
+			onSelect(selectedItems[selectedItems.length - 1]);
+		}
+	});
 </script>
 
 <div>
 	<div class="flex gap-2 flex-row w-full overflow-x-auto">
 		{#each menuSectionsData as items, idx (idx)}
-			<SingleMenu {items} onSelect={(item) => handleItemSelect(idx, item)} />
+			<SingleMenu {items} onSelect={(item) => handleItemSelect(idx, item)} disabled={checked} />
 		{/each}
 	</div>
 
-	<BreadCrumb
-		items={selectedItems.map((item) => ({ value: item.title }))}
-		class="text-blue-600 p-2"
-	/>
+	<div class="flex items-center gap-2 p-2">
+		<BreadCrumb
+			items={selectedItems.map((item) => ({ value: item.title }))}
+			class="text-blue-600"
+		/>
+
+		{#if selectedItems.length && !selectedItems[selectedItems.length - 1].children?.length}
+			<Checkbox bind:checked title="Select this item" />
+		{/if}
+	</div>
 </div>

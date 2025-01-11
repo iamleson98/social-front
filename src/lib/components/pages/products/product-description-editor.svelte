@@ -34,7 +34,15 @@
 		ariaMultiline?: boolean;
 		ariaOwns?: string;
 		ariaRequired?: boolean;
-		autoCapitalize?: "none" | "characters" | "off" | "on" | "sentences" | "words" | null | undefined;
+		autoCapitalize?:
+			| 'none'
+			| 'characters'
+			| 'off'
+			| 'on'
+			| 'sentences'
+			| 'words'
+			| null
+			| undefined;
 		class?: string;
 		id?: string;
 		style?: string;
@@ -73,62 +81,61 @@
 	});
 
 	$effect(() => {
-		if (activeEditor) {
-			// register all plugins
-			return mergeRegister(
-				activeEditor.registerEditableListener((editable) => (isEditable = editable)),
-				registerRichText(activeEditor),
-				registerHistory(activeEditor, createEmptyHistoryState(), 1000),
-				activeEditor.registerCommand(
-					INSERT_ORDERED_LIST_COMMAND,
-					() => {
-						insertList(activeEditor as LexicalEditor, 'number');
-						return true;
-					},
-					COMMAND_PRIORITY_LOW
-				),
-				activeEditor.registerCommand(
-					INSERT_UNORDERED_LIST_COMMAND,
-					() => {
-						insertList(activeEditor as LexicalEditor, 'bullet');
-						return true;
-					},
-					COMMAND_PRIORITY_LOW
-				),
-				activeEditor.registerCommand(
-					INSERT_CHECK_LIST_COMMAND,
-					() => {
-						insertList(activeEditor as LexicalEditor, 'check');
-						return true;
-					},
-					COMMAND_PRIORITY_LOW
-				),
-				activeEditor.registerCommand(
-					REMOVE_LIST_COMMAND,
-					() => {
-						removeList(activeEditor as LexicalEditor);
-						return true;
-					},
-					COMMAND_PRIORITY_LOW
-				),
-				activeEditor.registerCommand(
-					INSERT_PARAGRAPH_COMMAND,
-					handleListInsertParagraph,
-					COMMAND_PRIORITY_LOW
-				),
-				activeEditor.registerCommand(
-					CLEAR_EDITOR_COMMAND,
-					() => {
-						activeEditor?.update(() => {
-							const root = getRoot();
-							root.clear();
-						});
-						return true;
-					},
-					COMMAND_PRIORITY_EDITOR
-				)
-			);
-		}
+		if (!activeEditor) return;
+
+		return mergeRegister(
+			activeEditor.registerEditableListener((editable) => (isEditable = editable)),
+			registerRichText(activeEditor),
+			registerHistory(activeEditor, createEmptyHistoryState(), 1000),
+			activeEditor.registerCommand(
+				INSERT_ORDERED_LIST_COMMAND,
+				() => {
+					insertList(activeEditor as LexicalEditor, 'number');
+					return true;
+				},
+				COMMAND_PRIORITY_LOW
+			),
+			activeEditor.registerCommand(
+				INSERT_UNORDERED_LIST_COMMAND,
+				() => {
+					insertList(activeEditor as LexicalEditor, 'bullet');
+					return true;
+				},
+				COMMAND_PRIORITY_LOW
+			),
+			activeEditor.registerCommand(
+				INSERT_CHECK_LIST_COMMAND,
+				() => {
+					insertList(activeEditor as LexicalEditor, 'check');
+					return true;
+				},
+				COMMAND_PRIORITY_LOW
+			),
+			activeEditor.registerCommand(
+				REMOVE_LIST_COMMAND,
+				() => {
+					removeList(activeEditor as LexicalEditor);
+					return true;
+				},
+				COMMAND_PRIORITY_LOW
+			),
+			activeEditor.registerCommand(
+				INSERT_PARAGRAPH_COMMAND,
+				handleListInsertParagraph,
+				COMMAND_PRIORITY_LOW
+			),
+			activeEditor.registerCommand(
+				CLEAR_EDITOR_COMMAND,
+				() => {
+					activeEditor?.update(() => {
+						const root = getRoot();
+						root.clear();
+					});
+					return true;
+				},
+				COMMAND_PRIORITY_EDITOR
+			)
+		);
 	});
 </script>
 

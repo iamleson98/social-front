@@ -4,11 +4,13 @@
 	import { ChevronRight } from '$lib/components/icons';
 	import Icon from '$lib/components/icons/icon.svelte';
 
-	let { items, onSelect }: MenuProps = $props();
+	let { items, onSelect, disabled }: MenuProps = $props();
 
 	let activeItemIndex = $state(-1);
 
 	const handleItemSelect = (index: number) => {
+		if (disabled) return;
+
 		activeItemIndex = index;
 		onSelect(items[index]);
 	};
@@ -16,16 +18,18 @@
 
 <div class="rounded-lg overflow-y-auto max-h-60 w-1/3 p-2">
 	{#each items as item, idx (idx)}
-		{@const active = activeItemIndex === idx}
+		{@const colorClasses = activeItemIndex === idx ? 'bg-blue-50 ring-2 ring-blue-600' : 'ring-gray-200 ring-1 text-gray-700 bg-white'}
+		{@const cursorClass = disabled ? 'cursor-not-allowed!' : 'cursor-pointer'}
 		<div
-			class={`flex items-center select-none cursor-pointer justify-between overflow-hidden rounded-lg mb-2 font-medium p-2 ${active ? 'text-blue-700 bg-blue-50 ring-2 ring-blue-600' : 'ring-gray-200 ring-1 text-gray-700'}`}
+			class={`flex items-center select-none justify-between overflow-hidden rounded-lg mb-2 font-medium p-2 ${cursorClass} ${colorClasses}`}
 			role="button"
 			tabindex="0"
 			onclick={() => handleItemSelect(idx)}
 			onkeydown={(evt) => evt.key === 'Enter' && handleItemSelect(idx)}
+			aria-disabled={disabled}
 		>
 			<span>{item.title}</span>
-			{#if active}
+			{#if activeItemIndex === idx}
 				<span in:fly={{ x: -10 }}>
 					<Icon icon={ChevronRight} />
 				</span>

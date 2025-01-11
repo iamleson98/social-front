@@ -32,7 +32,7 @@
 		$isHeadingNode as isHeadingNode
 	} from '@lexical/rich-text';
 	import { $setBlocksType as setBlocksType } from '@lexical/selection';
-	import { IconButton } from '$lib/components/ui/Button';
+	import { Button, IconButton } from '$lib/components/ui/Button';
 
 	type Props = {
 		/** indicates if editing mode is allowed */
@@ -129,25 +129,21 @@
 <div class="flex items-center gap-1 mb-2">
 	<!-- block format -->
 	<div class="dropdown dropdown-bottom">
-		<button class="btn btn-sm no-animation" tabindex="0" {disabled}>
-			Click
-			<Icon icon={ChevronDown} />
-		</button>
-		<ul class="dropdown-content menu bg-base-100 z-10 shadow-sm rounded-sm w-52">
+		<Button endIcon={ChevronDown} size="sm" {disabled} variant="light">click</Button>
+		<ul class="dropdown-content menu bg-base-100 z-10 shadow-sm rounded-sm w-52 mt-2">
 			{#each Object.keys(blockFormatState) as blockKey, idx (idx)}
 				{@const blockFormat = blockFormatState[blockKey as BlockType]}
-				<!-- svelte-ignore a11y_no_noninteractive_element_to_interactive_role -->
-				<li
-					onclick={() => applyBlockFormat(blockKey as BlockType)}
-					class={`rounded-md ${blockFormatType === blockKey ? 'bg-blue-100! text-blue-600!' : ''}`}
-					onkeyup={(e) => e.key === 'Enter' && applyBlockFormat(blockKey as BlockType)}
-					tabindex="0"
-					role="button"
-				>
-					<span>
+				<li>
+					<div
+						onclick={() => applyBlockFormat(blockKey as BlockType)}
+						class={`rounded-md ${blockFormatType === blockKey ? 'bg-blue-100! text-blue-600!' : ''}`}
+						onkeyup={(e) => e.key === 'Enter' && applyBlockFormat(blockKey as BlockType)}
+						tabindex="0"
+						role="button"
+					>
 						<Icon icon={blockFormat.icon} />
 						{blockFormat.tip}
-					</span>
+					</div>
 				</li>
 			{/each}
 		</ul>
@@ -161,11 +157,12 @@
 			<div class="tooltip" data-tip={inlineFormat.tip}>
 				<IconButton
 					icon={inlineFormat.icon}
-					class={`${inlineFormat.active ? 'bg-blue-100! text-blue-600!' : ''}`}
 					aria-label={inlineKey}
 					tabindex={0}
 					{disabled}
 					onclick={() => editor?.dispatchCommand(FORMAT_TEXT_COMMAND, inlineKey as InlineType)}
+					variant="light"
+					color={inlineFormat.active ? 'blue' : 'gray'}
 				/>
 			</div>
 		{/each}

@@ -14,7 +14,7 @@
 
 	let now = new Date();
 
-	let productCategory = $state<Category | null>(null);
+	let productCategoryID = $state<string>();
 </script>
 
 <div class="m-auto rounded-sm bg-white max-w-[800px] p-5 text-gray-600">
@@ -30,22 +30,22 @@
 	<!-- category -->
 	<div class="mb-3">
 		<span class="text-sm">{tClient('product.prdCategory')}</span>
-		<CategorySelector onCategorySelected={(cate) => (productCategory = cate)} />
+		<CategorySelector onCategorySelected={(cate) => (productCategoryID = cate)} />
 	</div>
+
+	<!-- attributes -->
+	{#if productCategoryID}
+		<div class="mb-3">
+			<span class="text-sm">{tClient('product.tabAttributes')}</span>
+			<ProductAttributeEditor {productCategoryID} />
+		</div>
+	{/if}
 
 	<!-- description -->
 	<div class="mb-3">
 		<span class="text-sm">{tClient('product.prdDescription')}</span>
 		<ProductDescriptionEditor />
 	</div>
-
-	<!-- attributes -->
-	{#if productCategory}
-		<div class="mb-3">
-			<span class="text-sm">{tClient('product.tabAttributes')}</span>
-			<ProductAttributeEditor {productCategory} />
-		</div>
-	{/if}
 
 	<!-- variants -->
 	<div class="mb-3">

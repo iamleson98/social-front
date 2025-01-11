@@ -1,9 +1,9 @@
 <script lang="ts">
-	import MegaMenu from '$lib/components/ui/level-selector/mega-menu.svelte';
+	import { MegaMenu } from '$lib/components/ui/levelSelector';
 	import SlideShow from '$lib/components/pages/lab/slide-show.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/badge';
-	import {Menu} from '$lib/components/ui/Menu';
+	import { Menu } from '$lib/components/ui/Menu';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 
 	const options: SelectOption[] = [
@@ -23,11 +23,7 @@
 	<Button>Open</Button>
 {/snippet}
 
-<Menu
-  trigger={openBtn}
->
-	MenuItem
-</Menu>
+<Menu trigger={openBtn}>MenuItem</Menu>
 
 <MegaMenu
 	items={[
@@ -124,13 +120,11 @@
 	onSelect={console.log}
 />
 
-
-<Badge text="lol" variant="outline" rounded size='xs' onDismiss={console.log} />
-<Badge text="lol" variant="outline" size='sm' onDismiss={console.log} />
-<Badge text="lol" variant="outline" size='md' onDismiss={console.log} />
-<Badge text="lol" variant="outline" size='lg' onDismiss={console.log} />
-<Badge text="lol" variant="outline" size='xl' onDismiss={console.log} />
-
+<Badge text="lol" variant="outline" rounded size="xs" onDismiss={console.log} />
+<Badge text="lol" variant="outline" size="sm" onDismiss={console.log} />
+<Badge text="lol" variant="outline" size="md" onDismiss={console.log} />
+<Badge text="lol" variant="outline" size="lg" onDismiss={console.log} />
+<Badge text="lol" variant="outline" size="xl" onDismiss={console.log} />
 
 <Select
 	options={[
