@@ -15,6 +15,7 @@ export type InputProps = {
   /** a component to the end of input */
   action?: Snippet;
   ref?: HTMLInputElement | HTMLTextAreaElement;
+  inputClass?: string;
 
   /** indicate if this component is being used in as <Select /> component */
   selectShortcutOptions?: ShortcutOptions<HTMLInputElement | HTMLTextAreaElement>[];

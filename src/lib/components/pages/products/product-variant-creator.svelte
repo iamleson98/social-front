@@ -5,7 +5,7 @@
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { type SocialColor } from '$lib/components/ui/common';
 	import { Input } from '$lib/components/ui/Input';
-	import { Select } from '$lib/components/ui/select';
+	import { MultiSelect, Select, type SelectOption } from '$lib/components/ui/select';
 	import type { ProductVariantBulkCreateInput, Query } from '$lib/gql/graphql';
 	import { CHANNELS_QUERY_STORE } from '$lib/stores/api/channels';
 	import { operationStore } from '$lib/stores/api/operation';
@@ -43,7 +43,7 @@
 		}
 	];
 
-	let quickFilling = $state<QuickFillHighlight>();
+	let quickFillingHighlight = $state<QuickFillHighlight>();
 	let variantManifests = $state.raw<VariantManifestProps[]>(DEFAULT_VARIANTS);
 	/** details of product variants, before sending to backend */
 	let variantDetails = $state<ProductVariantBulkCreateInput[]>([
@@ -57,8 +57,15 @@
 	/** indicates if there is error in any of the variant values, names */
 	let generalError = $state(false);
 
+	const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
+		kind: 'query',
+		query: CHANNELS_QUERY_STORE,
+		context: { requestPolicy: 'cache-and-network' }
+	});
+	onMount(() => channelsQueryStore.subscribe(preHandleGraphqlResult));
+
 	const handleFocusQuickFilling = (highlight?: QuickFillHighlight) => {
-		quickFilling = highlight;
+		quickFillingHighlight = highlight;
 	};
 
 	const handleVariantValueChange = (variantIdx: number, valueIdx: number) => (evt: Event) => {
@@ -301,16 +308,6 @@
 
 		variantManifests = newVariantManifests;
 	};
-
-	const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
-		kind: 'query',
-		query: CHANNELS_QUERY_STORE,
-		context: { requestPolicy: 'cache-and-network' }
-	});
-
-	onMount(() => {
-		return channelsQueryStore.subscribe(preHandleGraphqlResult);
-	});
 </script>
 
 {#snippet variantActionButton(
@@ -450,7 +447,7 @@
 		<div class="mb-4">
 			<div class="text-xs mb-1">Quick filling</div>
 			<div class="flex gap-x-2 items-center flex-row w-full">
-				<Select
+				<!-- <Select
 					disabled={$channelsQueryStore.fetching || !!$channelsQueryStore.error}
 					size="sm"
 					options={$channelsQueryStore.data?.channels?.map((channel) => ({
@@ -459,6 +456,17 @@
 					})) || []}
 					onfocus={() => handleFocusQuickFilling('td-channel-hl')}
 					onblur={() => handleFocusQuickFilling()}
+				/> -->
+				<MultiSelect
+					disabled={$channelsQueryStore.fetching || !!$channelsQueryStore.error}
+					size="sm"
+					options={$channelsQueryStore.data?.channels?.map((channel) => ({
+						value: channel.slug,
+						label: channel.name
+					})) || []}
+					onfocus={() => handleFocusQuickFilling('td-channel-hl')}
+					onblur={() => handleFocusQuickFilling()}
+					value={[]}
 				/>
 				<Input
 					type="text"
@@ -502,13 +510,13 @@
 				</thead>
 				<tbody class="overflow-y-visible">
 					{#each variantDetails as detail, detailIdx (detailIdx)}
-						<tr>
+						<tr class={`variant-table-row ${quickFillingHighlight}`}>
 							<td class="text-center">{detail.name?.split('-')[0]}</td>
 							{#if variantManifests.length === MAX_VARIANT_TYPES}
 								<td class="text-center">{detail.name?.split('-')[1]}</td>
 							{/if}
 							<td class="channel-td">
-								<Select
+								<MultiSelect
 									size="xs"
 									options={$channelsQueryStore.data?.channels?.map((channel) => ({
 										value: channel.slug,
@@ -516,6 +524,7 @@
 									})) || []}
 									placeholder="Select channel"
 									disabled={$channelsQueryStore.fetching || !!$channelsQueryStore.error}
+									value={[]}
 								/>
 							</td>
 							<td class="price-td">
@@ -546,7 +555,7 @@
 {/if}
 
 <style>
-	@import "tailwindcss/theme";
+	@import 'tailwindcss/theme';
 
 	td {
 		@apply p-1;

@@ -14,7 +14,6 @@
 		variant?: BadgeVariant;
 		ref?: HTMLSpanElement;
 		startIcon?: IconType;
-		endIcon?: IconType;
 		size?: SocialSize;
 		rounded?: boolean;
 	};
@@ -27,7 +26,6 @@
 		color = 'blue',
 		ref = $bindable(),
 		startIcon,
-		endIcon,
 		size = 'sm',
 		rounded = false,
 	}: Props = $props();
@@ -42,13 +40,10 @@
 	{#if startIcon}
 		<Icon icon={startIcon} />
 	{/if}
-	<span>{text}</span>
-	{#if endIcon}
-		<Icon icon={endIcon} />
-	{/if}
+	<span class="px-0.5">{text}</span>
 	{#if onDismiss}
-		<button class={`text-inherit ${roundClass} ${BADGE_SIZE_VARIANTS[size].btn} bg-inherit`} onclick={onDismiss}>
-			<Icon icon={CloseX} width="0.8rem" height="0.8rem" />
+		<button class={`text-inherit ${roundClass} cursor-pointer ${BADGE_SIZE_VARIANTS[size].btn} bg-inherit`} onclick={onDismiss}>
+			<Icon icon={CloseX} width="0.7rem" height="0.7rem" />
 		</button>
 	{/if}
 </span>

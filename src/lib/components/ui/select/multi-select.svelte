@@ -10,15 +10,16 @@
 		SELECT_CLASSES,
 		type SelectItemprops,
 		type SelectOption,
-		type SelectProps
+		type MultiSelectProps
 	} from './types';
+	import { Badge } from '../badge';
+	import type { FocusEventHandler } from 'svelte/elements';
 
 	let {
-		options,
-		value = $bindable<string | number | undefined>(),
+		value = $bindable<Array<SelectOption>>([]),
 		class: className = '',
 		...rest
-	}: SelectProps = $props();
+	}: MultiSelectProps = $props();
 
 	const ID = randomID();
 	const INPUT_ID = `combobox-${ID}`;
@@ -26,17 +27,19 @@
 
 	let searchQuery = $state('');
 	let openSelect = $state(false);
-	let selectedOption = $derived.by(() =>
-		value ? options.find((opt) => opt.value === value) : undefined
-	);
 	let input = $state<HTMLInputElement>();
 	let optionRefs: HTMLElement[] = [];
 
+	/** hide away selected options */
+	let displayOptions = $state.raw(rest.options);
+
 	/** list of options that match search query */
-	let filteredOptions = $derived.by(() =>
+	let searchFilteredOptions = $derived.by(() =>
 		searchQuery
-			? options.filter((option) => option.label.toLowerCase().includes(searchQuery.toLowerCase()))
-			: options
+			? displayOptions.filter((option) =>
+					option.label.toLowerCase().includes(searchQuery.toLowerCase())
+				)
+			: displayOptions
 	);
 
 	const onInput = () => {
@@ -45,36 +48,38 @@
 		optionRefs[0]?.scrollIntoView({ block: 'nearest' });
 	};
 
-	const deactivate = () => {
+	const interactOutsideHandler = () => {
 		searchQuery = '';
 		toggleDropdown(false);
 	};
 
-	const activate = () => {
+	const handleClick = () => {
 		searchQuery = '';
 		toggleDropdown(true);
 	};
 
-	const handleFocus = (
-		evt: FocusEvent & {
-			currentTarget: EventTarget & HTMLInputElement;
-		}
-	) => {
+	const handleFocus: FocusEventHandler<HTMLInputElement> = (evt) => {
 		if (rest.onfocus) rest.onfocus(evt);
-		activate();
+		handleClick();
 	};
 
 	const toggleDropdown = (open: boolean) => (openSelect = open);
 
 	const onClear = () => {
 		input?.focus();
-		value = undefined;
 		searchQuery = '';
 	};
 
 	const handleSelect = (option: SelectOption) => {
-		value = option.value;
+		value = [...value, option];
+		displayOptions = displayOptions.filter((opt) => opt.value !== option.value);
 		toggleDropdown(false);
+    searchQuery = '';
+	};
+
+	const handleDeselectOption = (option: SelectOption) => {
+		value = value.filter((opt) => opt.value !== option.value);
+		displayOptions = [...displayOptions, option];
 	};
 </script>
 
@@ -82,10 +87,10 @@
 {#snippet selectOption({ idx, disabled, optionClassName, onclick, option }: SelectItemprops)}
 	<li
 		id={`${LISTBOX_ID}-${idx}`}
-		aria-selected={option.value === value}
+		aria-selected={false}
 		role="option"
 		aria-disabled={disabled}
-		class={`${optionClassName} ${SELECT_CLASSES.selectOption} ${option.value === value ? SELECT_CLASSES.activeSelectOption : ''}`}
+		class={`${optionClassName} ${SELECT_CLASSES.selectOption}`}
 		bind:this={optionRefs[idx]}
 		{onclick}
 		onkeydown={(e) => e.key === 'Enter' && onclick?.()}
@@ -102,7 +107,7 @@
 {/snippet}
 
 {#snippet action()}
-	{#if !!value}
+	{#if !!searchQuery}
 		<span
 			onclick={onClear}
 			role="button"
@@ -118,9 +123,9 @@
 {/snippet}
 
 <div
-	class="relative w-full text-gray-700 text-base"
-	use:clickOutside={{ onOutclick: deactivate }}
-	use:focusOutside={{ onFocusOut: deactivate }}
+	class="relative text-gray-700 text-base bg-white rounded-lg w-fit py-1 px-1.5 ring-1 ring-gray-200"
+	use:clickOutside={{ onOutclick: interactOutsideHandler }}
+	use:focusOutside={{ onFocusOut: interactOutsideHandler }}
 	use:shortcuts={[
 		{
 			shortcut: { key: 'Escape' },
@@ -131,7 +136,15 @@
 		}
 	]}
 >
-	<div>
+	<div class="flex flex-wrap items-center gap-1">
+		{#each value as option, idx (idx)}
+			<Badge
+				text={`${option.label}`}
+				variant="light"
+				size="sm"
+				onDismiss={() => handleDeselectOption(option)}
+			/>
+		{/each}
 		<Input
 			{...rest}
 			aria-controls={LISTBOX_ID}
@@ -139,11 +152,13 @@
 			bind:ref={input}
 			aria-autocomplete="list"
 			autocomplete="off"
-			class={className}
+			class={`${className} grow shrink basis-[min-content]`}
+      inputClass="ring-0!"
 			id={INPUT_ID}
-			onclick={activate}
+			size="xs"
+			onclick={handleClick}
 			onfocus={handleFocus}
-			value={selectedOption?.label}
+			value={searchQuery}
 			type="text"
 			role="combobox"
 			inputDebounceOption={{
@@ -161,7 +176,7 @@
 			class={SELECT_CLASSES.selectMenu}
 			tabindex="0"
 		>
-			{#if !filteredOptions.length}
+			{#if !searchFilteredOptions.length}
 				{@render selectOption({
 					idx: 0,
 					disabled: true,
@@ -170,7 +185,7 @@
 					option: { value: 'No data', label: 'No data' }
 				})}
 			{/if}
-			{#each filteredOptions as option, idx (idx)}
+			{#each searchFilteredOptions as option, idx (idx)}
 				{@render selectOption({
 					idx,
 					disabled: false,

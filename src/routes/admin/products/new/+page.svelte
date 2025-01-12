@@ -5,16 +5,12 @@
 	import PackagingAndDelivery from '$lib/components/pages/products/packaging-and-delivery.svelte';
 	import ProductAttributeEditor from '$lib/components/pages/products/product-attribute-editor.svelte';
 	import ProductDescriptionEditor from '$lib/components/pages/products/product-description-editor.svelte';
-	import ProductDescription from '$lib/components/pages/products/product-description.svelte';
 	import ProductPreorderEditor from '$lib/components/pages/products/product-preorder-editor.svelte';
 	import ProductVariantCreator from '$lib/components/pages/products/product-variant-creator.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Input } from '$lib/components/ui/Input';
-	import type { Category } from '$lib/gql/graphql';
 
 	let now = new Date();
-
-	let productCategoryID = $state<string>();
 </script>
 
 <div class="m-auto rounded-sm bg-white max-w-[800px] p-5 text-gray-600">
@@ -30,16 +26,14 @@
 	<!-- category -->
 	<div class="mb-3">
 		<span class="text-sm">{tClient('product.prdCategory')}</span>
-		<CategorySelector onCategorySelected={(cate) => (productCategoryID = cate)} />
+		<CategorySelector />
 	</div>
 
 	<!-- attributes -->
-	{#if productCategoryID}
-		<div class="mb-3">
-			<span class="text-sm">{tClient('product.tabAttributes')}</span>
-			<ProductAttributeEditor {productCategoryID} />
-		</div>
-	{/if}
+	<div class="mb-3">
+		<span class="text-sm">{tClient('product.tabAttributes')}</span>
+		<ProductAttributeEditor />
+	</div>
 
 	<!-- description -->
 	<div class="mb-3">

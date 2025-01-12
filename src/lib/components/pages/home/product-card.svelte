@@ -73,7 +73,7 @@
 			</p>
 		</div>
 
-		<Button variant="outline" startIcon={OpenEye} size="sm" fullWidth class="mb-1">Preview</Button>
+		<!-- <Button variant="outline" startIcon={OpenEye} size="sm" fullWidth class="mb-1">Preview</Button> -->
 		<Button variant="filled" startIcon={ShoppingBagPlus} size="sm" fullWidth>Add to cart</Button>
 	</div>
 </div>

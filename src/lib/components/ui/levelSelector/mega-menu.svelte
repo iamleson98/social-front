@@ -5,7 +5,7 @@
 	import { tick } from 'svelte';
 	import { Checkbox } from '../Input';
 
-	let { items, onSelect }: MenuProps = $props();
+	let { items, onSelect, onDeselect }: MenuProps = $props();
 
 	let menuSectionsData = $state.raw<SelectItemProps[][]>([items]);
 	let selectedItems = $state.raw<SelectItemProps[]>([]);
@@ -25,6 +25,8 @@
 	$effect(() => {
 		if (checked) {
 			onSelect(selectedItems[selectedItems.length - 1]);
+		} else {
+			onDeselect?.();
 		}
 	});
 </script>

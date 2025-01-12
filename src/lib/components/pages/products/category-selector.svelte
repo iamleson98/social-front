@@ -9,13 +9,7 @@
 	import { operationStore } from '$lib/stores/api/operation';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { MegaMenu } from '$lib/components/ui/levelSelector';
-	import { convertCategoryEdgesToMenuSelect } from './utils';
-
-	type Props = {
-		onCategorySelected: (categoryID: string) => void;
-	};
-
-	let { onCategorySelected }: Props = $props();
+	import { categoryIdStore, convertCategoryEdgesToMenuSelect } from './utils';
 
 	const NUMBER_OF_CATEGORIES_PER_FETCH = 35;
 
@@ -56,6 +50,10 @@
 		{@const items = convertCategoryEdgesToMenuSelect(
 			$categoriesStore.data?.categories || ({} as CategoryCountableConnection)
 		)}
-		<MegaMenu {items} onSelect={(item) => onCategorySelected(item.value as string)} />
+		<MegaMenu
+			{items}
+			onSelect={(item) => categoryIdStore.set(item.value as string)}
+			onDeselect={() => categoryIdStore.set(null)}
+		/>
 	{/if}
 </div>

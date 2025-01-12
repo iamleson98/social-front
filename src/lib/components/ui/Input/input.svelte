@@ -22,6 +22,7 @@
 		selectShortcutOptions = [],
 		value = $bindable<string | number>(),
 		required,
+		inputClass = '',
 		...rest
 	}: InputProps = $props();
 </script>
@@ -32,7 +33,7 @@
 		{#if required}<strong class="font-bold text-red-600!">*</strong>{/if}
 	</label>
 {/if}
-<div class={`${className} ${INPUT_TYPES[variant].fg}`}>
+<div class={`${INPUT_TYPES[variant].fg} ${className}`}>
 	<div class={`relative mt-0`}>
 		{#if startIcon}
 			<div class="absolute inset-y-0 start-0 flex items-center ps-2.5 pointer-events-none">
@@ -47,7 +48,7 @@
 			bind:value
 			use:shortcuts={selectShortcutOptions}
 			use:debounceInput={inputDebounceOption}
-			class={`w-full text-sm rounded-lg ring-1 focus:ring-2 block px-2.5 ${INPUT_TYPES[variant].bg} ${startIcon ? 'ps-8' : ''} ${SIZE_MAP[size]}`}
+			class={`w-full text-sm rounded-lg ring-1 focus:ring-2 inline-block px-2.5 ${inputClass} ${INPUT_TYPES[variant].bg} ${startIcon ? 'ps-8' : ''} ${SIZE_MAP[size]}`}
 			{...rest}
 		/>
 
