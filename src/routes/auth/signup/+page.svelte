@@ -40,7 +40,11 @@
 			!termAndPoliciesAgree
 	);
 
-	const handleSignup = async (event: { currentTarget: EventTarget & HTMLFormElement }) => {
+	const handleSignup = async (event: {
+		preventDefault: any;
+		currentTarget: EventTarget & HTMLFormElement;
+	}) => {
+		event.preventDefault();
 		loading = true;
 
 		const response = await fetch(event.currentTarget.action, {
@@ -99,6 +103,7 @@
 				startIcon={Email}
 			/>
 			<PasswordInput
+				name="password"
 				placeholder={tClient('common.passwordPlaceholder')}
 				bind:value={password}
 				class="mb-2"
@@ -107,6 +112,7 @@
 				showAction
 			/>
 			<PasswordInput
+				name="confirmPassword"
 				placeholder={tClient('signup.confirmPasswordPlaceholder')}
 				bind:value={confirmPassword}
 				class="mb-3"
