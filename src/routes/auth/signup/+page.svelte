@@ -17,11 +17,7 @@
 	let confirmPassword: string = $state('');
 	let loading = $state(false);
 	let termAndPoliciesAgree = $state(false);
-
-	/**
-	 * holds state of form element
-	 */
-	// export let form: ActionData;
+	let showSuccessMessage = $state(false);
 
 	interface Props {
 		form: ActionData;
@@ -55,6 +51,7 @@
 		const result: ActionResult = deserialize(await response.text());
 
 		if (result.type === 'success') {
+			showSuccessMessage = true;
 			await invalidateAll();
 		}
 
@@ -72,6 +69,11 @@
 			{form.error}
 		</Alert>
 	{/if}
+
+	{#if showSuccessMessage}
+		<Alert variant="success" class="mb-3" bordered>Successful account registration</Alert>
+	{/if}
+
 	<form action="?/signup" method="post" onsubmitcapture={handleSignup}>
 		<div class="mb-4">
 			<div class="flex flex-row mobile-m:flex-col justify-between items-center gap-2 mb-2">
@@ -140,7 +142,6 @@
 			>
 		</div>
 
-		<!-- form other -->
 		<div>
 			<span class="text-xs text-gray-500">
 				{tClient('signup.alreadyHasAccount')}

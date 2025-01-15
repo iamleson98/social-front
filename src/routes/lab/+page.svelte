@@ -5,6 +5,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Menu } from '$lib/components/ui/Menu';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
+	import type { EventHandler } from 'svelte/elements';
 
 	const options: SelectOption[] = [
 		{ value: '1', label: 'Option 1' },
@@ -19,11 +20,13 @@
 
 <h1>Lab page</h1>
 
-{#snippet openBtn()}
-	<Button>Open</Button>
+{#snippet openBtn({ onclick }: { onclick: EventHandler })}
+	<Button {onclick}>Open</Button>
 {/snippet}
 
-<Menu trigger={openBtn}>MenuItem</Menu>
+<Menu trigger={openBtn} placementOption="bottom-start">
+	<div class="w-[100px] h-[300px] bg-amber-500">hihi</div>
+</Menu>
 
 <MegaMenu
 	items={[
