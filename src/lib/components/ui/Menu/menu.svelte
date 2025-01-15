@@ -23,7 +23,7 @@
 		if (triggerRef && menuRef) {
 			const { x, y } = await computePosition(triggerRef, menuRef, {
 				placement: placementOption,
-				middleware: [offset(8), flip(), shift(8)]
+				middleware: [offset(8), flip(), shift()]
 			});
 			Object.assign(menuRef.style, {
 				left: `${x}px`,
@@ -46,12 +46,10 @@
 </script>
 
 <div>
-	<!-- Trigger nút mở menu -->
 	<div bind:this={triggerRef}>
 		{@render trigger({ onclick: handleClick })}
 	</div>
 
-	<!-- Menu hiển thị khi mở -->
 	{#if openMenu}
 		<div bind:this={menuRef} style="position: absolute; z-index: 1000; mt-2">
 			{@render children()}
