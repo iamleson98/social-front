@@ -69,6 +69,8 @@ export default {
 		streetAddress1: 'Địa chỉ',
 		streetAddress2: 'Địa chỉ 2',
 		phone: 'Số điện thoại',
+		prdPolicy: 'Chính sách bán hàng',
+		prdPolicyDetail: 'Sitename luôn lỗ lực để mang tới cho khách hàng sản phẩm với chất lượng tốt nhất. Sitename hoàn tiền 100% nếu sản phẩm không đạt chất lượng tiêu chuẩn.'
 	},
 	product: {
 		chooseAddress: 'Vui lòng chọn địa chỉ',

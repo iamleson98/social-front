@@ -27,7 +27,7 @@ export const cookieOpts: Readonly<CookieSerializeOptions & { path: string }> = O
 	path: '/',
 	secure: true,
 	maxAge: 24 * 60 * 60,
-	httpOnly: false, // TODO: find a way to make it work
+	httpOnly: false,
 });
 
 /**
@@ -269,7 +269,7 @@ export const performBackendOperation = async <Data = never, Variables extends An
 export const pageRequiresAuthentication = async (event: RequestEvent<Partial<Record<string, string>>, string | null>) => {
 	const accessToken = event.cookies.get(ACCESS_TOKEN_KEY);
 	if (!accessToken) {
-		redirect(HTTPStatusTemporaryRedirect, AppRoute.AUTH_SIGNIN);
+		redirect(HTTPStatusTemporaryRedirect, `${AppRoute.AUTH_SIGNIN}?next=${event.url.pathname}`);
 	}
 
 	const meQueryResult = await performBackendOperation<Pick<Query, 'me'>>('query', USER_ME_QUERY_STORE, {}, event);

@@ -1,6 +1,14 @@
 <script lang="ts">
 	import { tClient } from '$i18n';
-	import { MapPin, Minus, Plus, ShoppingBagPlus, BurstSale, Heart } from '$lib/components/icons';
+	import {
+		MapPin,
+		Minus,
+		Plus,
+		ShoppingBagPlus,
+		BurstSale,
+		Icon,
+		Check
+	} from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import type {
 		Checkout,
@@ -22,6 +30,7 @@
 	import { graphqlClient } from '$lib/client';
 	import { CHECKOUT_ADD_LINE_MUTATION } from '$lib/stores/api/checkout';
 	import { clientSideGetCookieOrDefault, getCookieByKey } from '$lib/utils/cookies';
+	import { Alert } from '$lib/components/ui/Alert';
 
 	type Props = {
 		productInformation: Omit<Product, 'variants'>;
@@ -34,6 +43,7 @@
 	let quantitySelected = $state(1);
 	let selectedVariant = $state<ProductVariant>();
 	let isAddingItemToCart = $state(false);
+	let showAlertSelectVariant = $state(false);
 
 	let displayPrice = $derived.by(() => {
 		if (!selectedVariant)
@@ -59,14 +69,12 @@
 
 	const handleAddToCart = async () => {
 		if (!selectedVariant) {
-			toastStore.send({
-				variant: 'warning',
-				message: tClient('error.noVariantSelected')
-			});
+			showAlertSelectVariant = true;
 			return;
 		}
-		isAddingItemToCart = true;
 
+		showAlertSelectVariant = false;
+		isAddingItemToCart = true;
 		// we check if a checkout is already created.
 		// If +layout.svelte failed to initialize checkout store, we create a new one.
 		// Then we add new lines to the checkout.
@@ -129,7 +137,7 @@
 		></Rating>
 	</div>
 
-	<div class="mb-5 bg-gray-50 rounded-sm px-5 py-2">
+	<div class="mb-5 bg-gray-100 rounded-sm px-5 py-2">
 		<!-- price -->
 		<div class="">
 			<div class="text-blue-700 font-semibold text-xl mb-1">
@@ -171,24 +179,35 @@
 		<div class="w-5/6">
 			<div class="flex gap-2 flex-wrap flex-row text-blue-600 text-sm">
 				{#each productVariants as variant, idx (idx)}
+					{@const isVariantActive = selectedVariant?.id === variant.id}
 					<Button
 						size="sm"
 						variant="outline"
 						onclick={() => toggleSelectVariant(variant)}
 						tabindex={0}
 						disabled={!variant.quantityAvailable || isAddingItemToCart}
-						class={`${selectedVariant?.id === variant.id ? 'bg-blue-100! font-semibold!' : ''}`}
-						color="indigo"
+						class={`${isVariantActive ? 'bg-blue-50!' : ''} relative`}
 					>
 						{variant.name}
+						{#if isVariantActive}
+							<span class="absolute top-0 right-0">
+								<Icon icon={Check} />
+							</span>
+						{/if}
 					</Button>
 				{/each}
 			</div>
+
+			{#if showAlertSelectVariant}
+				<div class="w-1/2 mt-2">
+					<Alert size="xs" bordered variant="warning">{tClient('error.noVariantSelected')}</Alert>
+				</div>
+			{/if}
 		</div>
 	</div>
 
 	<!-- quantity selection -->
-	<div class="flex flex-row items-center mb-20 text-gray-600">
+	<div class="flex flex-row items-center mb-4 text-gray-600">
 		<span class="w-1/6 text-xs">{tClient('product.quantity')}</span>
 		<div class="w-5/6 flex items-center flex-wrap flex-row">
 			<div class="flex items-center gap-1">
@@ -205,7 +224,7 @@
 					type="number"
 					min={1}
 					max={selectedVariant?.quantityAvailable || selectedVariant?.quantityLimitPerCustomer}
-					class="text-center inline-flex w-20"
+					class="text-center w-24!"
 					value={quantitySelected < 1 ? 1 : quantitySelected}
 					disabled={isAddingItemToCart}
 				/>
@@ -229,31 +248,34 @@
 		</div>
 	</div>
 
+	<!-- customer policy -->
+	<div class="flex flex-row items-center mb-6 text-gray-600">
+		<span class="w-1/6 text-xs">{tClient('product.prdPolicy')}</span>
+		<div class="w-5/6 flex items-center flex-wrap flex-row">
+			<!-- <div class="flex items-center gap-1">
+				Return product
+			</div> -->
+			<div class="w-2/3">
+				<Alert variant="info" size="xs">{tClient('product.prdPolicyDetail')}</Alert>
+			</div>
+		</div>
+	</div>
+
 	<!-- purchase button -->
-	<div class="flex gap-2 tablet:flex-wrap tablet:flex-col">
-		<Button
-			variant="filled"
-			type="submit"
-			color="indigo"
-			startIcon={ShoppingBagPlus}
-			onclick={handleAddToCart}
-			fullWidth
-			size="md"
-			disabled={isAddingItemToCart}
-			loading={isAddingItemToCart}
-		>
-			<span>{tClient('product.addToCart')}</span>
-		</Button>
-		<Button
-			variant="light"
-			type="submit"
-			startIcon={Heart}
-			onclick={handleAddToCart}
-			fullWidth
-			size="md"
-			color="gray"
-			>``
-			<span> {tClient('product.addToCart')} </span>
-		</Button>
+	<div class="flex flex-row items-center">
+		<span class="w-1/6"></span>
+		<div class="w-5/6">
+			<Button
+				variant="filled"
+				type="submit"
+				startIcon={ShoppingBagPlus}
+				onclick={handleAddToCart}
+				size="lg"
+				disabled={isAddingItemToCart}
+				loading={isAddingItemToCart}
+			>
+				<span>{tClient('product.addToCart')}</span>
+			</Button>
+		</div>
 	</div>
 </div>

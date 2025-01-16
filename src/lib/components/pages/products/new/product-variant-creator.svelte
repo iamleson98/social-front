@@ -5,7 +5,7 @@
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { type SocialColor } from '$lib/components/ui/common';
 	import { Input } from '$lib/components/ui/Input';
-	import { MultiSelect, Select, type SelectOption } from '$lib/components/ui/select';
+	import { MultiSelect } from '$lib/components/ui/select';
 	import type { ProductVariantBulkCreateInput, Query } from '$lib/gql/graphql';
 	import { CHANNELS_QUERY_STORE } from '$lib/stores/api/channels';
 	import { operationStore } from '$lib/stores/api/operation';
@@ -62,7 +62,7 @@
 		query: CHANNELS_QUERY_STORE,
 		context: { requestPolicy: 'cache-and-network' }
 	});
-	onMount(() => channelsQueryStore.subscribe(preHandleGraphqlResult));
+	// onMount(() => channelsQueryStore.subscribe(preHandleGraphqlResult))
 
 	const handleFocusQuickFilling = (highlight?: QuickFillHighlight) => {
 		quickFillingHighlight = highlight;
@@ -447,16 +447,6 @@
 		<div class="mb-4">
 			<div class="text-xs mb-1">Quick filling</div>
 			<div class="flex gap-x-2 items-center flex-row w-full">
-				<!-- <Select
-					disabled={$channelsQueryStore.fetching || !!$channelsQueryStore.error}
-					size="sm"
-					options={$channelsQueryStore.data?.channels?.map((channel) => ({
-						value: channel.slug,
-						label: channel.name
-					})) || []}
-					onfocus={() => handleFocusQuickFilling('td-channel-hl')}
-					onblur={() => handleFocusQuickFilling()}
-				/> -->
 				<MultiSelect
 					disabled={$channelsQueryStore.fetching || !!$channelsQueryStore.error}
 					size="sm"
@@ -468,13 +458,13 @@
 					onblur={() => handleFocusQuickFilling()}
 					value={[]}
 				/>
-				<Input
+				<!-- <Input
 					type="text"
 					placeholder="price"
 					size="sm"
 					onfocus={() => handleFocusQuickFilling('td-price-hl')}
 					onblur={() => handleFocusQuickFilling()}
-				/>
+				/> -->
 				<Input
 					type="text"
 					placeholder="stock"

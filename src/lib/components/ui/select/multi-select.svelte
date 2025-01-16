@@ -136,7 +136,7 @@
 		}
 	]}
 >
-	<div class="flex flex-wrap items-center gap-1">
+	<div class="flex flex-wrap items-center gap-1 flex-1">
 		{#each value as option, idx (idx)}
 			<Badge
 				text={`${option.label}`}

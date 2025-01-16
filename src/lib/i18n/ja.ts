@@ -104,6 +104,8 @@ export default {
 		detail: '詳細',
 		noVote: 'まだ投票がありません',
 		noDescription: 'まだ説明がありません',
+		prdPolicy: '製品ポリシー',
+		prdPolicyDetail: 'Sitename guarantees provide high quality product to our customers. Sitename refunds 100% if the product does not meet quality standard.'
 	},
 	error: {
 		invalidSlug: '無効なスラッグ値',

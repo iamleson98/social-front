@@ -11,7 +11,7 @@ export const ALERT_VARIANT_STYLE_MAP: Record<SocialVariant, string> = {
 export const ALERT_SIZE_STYLE_MAP: Record<SocialSize, Record<'icon' | 'container', string>> = {
   xs: {
     icon: 'w-[1rem] h-[1rem]',
-    container: 'p-1 text-xs',
+    container: 'p-1.5 text-xs',
   },
   sm: {
     icon: 'w-[1.2rem] h-[1.2rem]',

@@ -19,7 +19,6 @@ export const POST = async (event: RequestEvent) => {
 
   if (!refreshToken || !csrfToken) {
     redirect(HTTPStatusPermanentRedirect, AppRoute.AUTH_SIGNIN);
-    return;
   }
 
   const result = await graphqlClient
@@ -38,7 +37,6 @@ export const POST = async (event: RequestEvent) => {
     event.cookies.delete(CSRF_TOKEN_KEY, cookieOpts);
 
     redirect(HTTPStatusPermanentRedirect, AppRoute.AUTH_SIGNIN);
-    return;
   }
 
   event.cookies.set(ACCESS_TOKEN_KEY, result.data?.tokenRefresh?.token as string, cookieOpts);

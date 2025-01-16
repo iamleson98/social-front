@@ -67,7 +67,7 @@
 
 	// load checkout when page load
 	onMount(async () => {
-		const fetchResult = await fetch(AppRoute.CHECKOUT_GET_OR_CREATE, { method: 'POST' });
+		const fetchResult = await fetch(AppRoute.CHECKOUT_GET_OR_CREATE);
 		const parsedResult = await fetchResult.json();
 
 		if (parsedResult.status !== HTTPStatusSuccess) {

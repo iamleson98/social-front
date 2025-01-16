@@ -104,6 +104,8 @@ export default {
 		detail: 'Detail',
 		noVote: 'No vote yet',
 		noDescription: 'No description yet',
+		prdPolicy: 'Product Policy',
+		prdPolicyDetail: `Sitename tries our best to provide best quality product to our customers.\n Sitename refunds 100% if the product does not meet quality standard.`
 	},
 	error: {
 		invalidSlug: 'Invalid slug value',

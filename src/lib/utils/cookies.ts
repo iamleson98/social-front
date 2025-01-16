@@ -8,22 +8,16 @@ import { browser } from "$app/environment";
  * @returns cookie value. If cookie does not have provided key, returns empty string
  */
 export function getCookieByKey(key: string): string {
-  if (!browser) {
-    return '';
-  }
+  if (!browser) return '';
 
   const cookieSplit = document.cookie.split(';');
   const matchCookie = cookieSplit.find((cookie) => cookie.trim().startsWith(`${key}=`));
-  if (!matchCookie)
-    return '';
+  if (!matchCookie) return '';
 
   return matchCookie.split('=')[1];
 }
 
 export const clientSideGetCookieOrDefault = (key: string, defaultValue: string = '') => {
-  if (!browser) {
-    return '';
-  }
-
+  if (!browser) return '';
   return getCookieByKey(key) || defaultValue;
 };

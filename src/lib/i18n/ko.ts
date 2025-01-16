@@ -104,6 +104,8 @@ export default {
 		detail: '세부사항',
 		noVote: '아직 투표가 없습니다',
 		noDescription: '아직 설명이 없습니다',
+		prdPolicy: '제품 정책',
+		prdPolicyDetail: 'Sitename guarantees provide high quality product to our customers. Sitename refunds 100% if the product does not meet quality standard.'
 	},
 	error: {
 		invalidSlug: '잘못된 슬러그 값',

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { LayoutServerData } from './$types';
-	import ProductMediaSlideShow from '$lib/components/pages/products/product-slide-show-pannel.svelte';
-	import ProductPricingPanel from '$lib/components/pages/products/product-pricing-pannel.svelte';
+	import ProductMediaSlideShow from '$lib/components/pages/products/detail/product-slide-show-pannel.svelte';
+	import ProductPricingPanel from '$lib/components/pages/products/detail/product-pricing-pannel.svelte';
 	import { type ProductMedia } from '$lib/gql/graphql';
 	import { page } from '$app/state';
 	import {
@@ -136,7 +136,7 @@
 			{#each tabs as tab, idx (idx)}
 				<a role="tab" class="inline" href={tab.path}>
 					<Button
-						class={`${page.url.pathname === tab.path ? 'tab-active' : ''} tablet:h-full tablet:py-1`}
+						class={`${page.url.pathname === tab.path ? '!bg-blue-100 !text-blue-600 hover:bg-blue-100' : ''} tablet:h-full tablet:py-1`}
 						startIcon={tab.icon}
 						size="xs"
 						variant="light"
@@ -155,12 +155,6 @@
 <style>
 	@import "tailwindcss/theme";
 
-	.tab-active {
-		@apply !bg-blue-100 !text-blue-600 hover:bg-blue-100;
-	}
-	/* .tab-btn {
-		@apply tablet:h-full tablet:py-1;
-	} */
 	.breadcrumb > li:not(:last-child) {
 		@apply text-blue-700;
 	}

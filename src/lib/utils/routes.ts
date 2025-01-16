@@ -17,6 +17,7 @@ export const AppRoute = {
 
 	CHECKOUT: '/checkout',
 	CHECKOUT_GET_OR_CREATE: '/checkout/get-or-create',
+	CHECKOUT_ADD_LINES_TO_CART: '/checkout/add-lines-to-cart',
 
 	/** API endpoint for custom graphql server */
 	GRAPHQL_API: '/api/graphql'

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Category, CategoryCountableConnection, Query } from '$lib/gql/graphql';
+	import type { CategoryCountableConnection, Query } from '$lib/gql/graphql';
 	import {
 		CATEGORIES_LIST_FOR_CREATE_PRODUCT,
 		type CategoryListForCreateProductInput

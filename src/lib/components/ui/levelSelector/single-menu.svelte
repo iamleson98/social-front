@@ -18,7 +18,7 @@
 
 <div class="rounded-lg overflow-y-auto max-h-60 w-1/3 p-2">
 	{#each items as item, idx (idx)}
-		{@const colorClasses = activeItemIndex === idx ? 'bg-blue-50 ring-2 ring-blue-600' : 'ring-gray-200 ring-1 text-gray-700 bg-white'}
+		{@const colorClasses = activeItemIndex === idx ? 'bg-blue-50 ring-2 text-blue-600 ring-blue-500' : 'ring-gray-200 ring-1 text-gray-700 bg-white'}
 		<div
 			class={`flex items-center select-none justify-between overflow-hidden rounded-lg mb-2 font-medium p-2 ${itemCursorClass} ${colorClasses}`}
 			role="button"

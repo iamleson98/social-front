@@ -5,16 +5,14 @@
 	import CartItemLine from '$lib/components/pages/cart/cart-item-line.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Input } from '$lib/components/ui/Input';
-	import type { Query } from '$lib/gql/graphql';
-	import { operationStore } from '$lib/stores/api/operation';
-	import { CHECKOUT_PREVIEW_QUERY } from '$lib/stores/api/checkout';
 	import { AppRoute } from '$lib/utils';
-	import { CHANNEL_KEY, defaultChannel } from '$lib/utils/consts';
-	import { clientSideGetCookieOrDefault, getCookieByKey } from '$lib/utils/cookies';
-	import type { CustomQueryCheckoutArgs } from '$lib/utils/types';
 	import { formatMoney } from '$lib/utils/utils';
 	import { CommonTimeLine } from '$lib/components/common/timeline';
 	import CartPageSkeleton from '$lib/components/pages/cart/cart-page-skeleton.svelte';
+	import { onMount } from 'svelte';
+	import { checkoutStore } from '$lib/stores/app';
+	import { HTTPStatusSuccess } from '$lib/utils/consts';
+	import { toastStore } from '$lib/stores/ui/toast';
 
 	afterNavigate(() => {
 		window.scrollTo({
@@ -23,21 +21,29 @@
 		});
 	});
 
-	const handleProceedToCheckout = async () => {
-		const checkoutID = getCookieByKey(
-			`checkout-${clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug)}`
-		);
-		await goto(`${AppRoute.CHECKOUT}/${checkoutID}`, { invalidateAll: true });
-	};
+	let loading = $state(true);
 
-	const cartPreviewResultStore = operationStore<Pick<Query, 'checkout'>, CustomQueryCheckoutArgs>({
-		kind: 'query',
-		query: CHECKOUT_PREVIEW_QUERY,
-		variables: {
-			id: getCookieByKey(
-				`checkout-${clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug)}`
-			)
+	const handleProceedToCheckout = async () => await goto(AppRoute.CHECKOUT);
+
+	onMount(async () => {
+		if ($checkoutStore) {
+			loading = false;
+			return;
 		}
+
+		const fetchResult = await fetch(AppRoute.CHECKOUT_GET_OR_CREATE);
+		const checkoutData = await fetchResult.json();
+		loading = false;
+
+		if (checkoutData.status !== HTTPStatusSuccess) {
+			toastStore.send({
+				variant: 'error',
+				message: checkoutData.message,
+			});
+			return;
+		}
+
+		checkoutStore.set(checkoutData.checkout);
 	});
 
 	type MoneyColor = 'red' | 'green' | 'gray';
@@ -66,11 +72,9 @@
 {/snippet}
 
 <div>
-	{#if $cartPreviewResultStore.fetching}
+	{#if loading}
 		<CartPageSkeleton />
-	{:else if $cartPreviewResultStore.error}
-		<div>{$cartPreviewResultStore.error.message}</div>
-	{:else if !$cartPreviewResultStore.data?.checkout?.lines.length}
+	{:else if !$checkoutStore?.lines.length}
 		<div class="h-full w-full flex items-center justify-center">
 			<div class="text-center">
 				<div class="text-blue-400 text-center">
@@ -83,7 +87,7 @@
 			</div>
 		</div>
 	{:else}
-		{@const { lines, id, subtotalPrice } = $cartPreviewResultStore.data.checkout}
+		{@const { lines, id, subtotalPrice } = $checkoutStore}
 		{@const originalTotalPrice = lines
 			.map((line) => line.undiscountedTotalPrice.amount)
 			.reduce((a, b) => a + b, 0)}
