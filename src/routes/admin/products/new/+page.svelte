@@ -13,7 +13,7 @@
 	let now = new Date();
 </script>
 
-<div class="m-auto rounded-sm bg-white max-w-[800px] p-5 text-gray-600">
+<div class="m-auto rounded-sm bg-white max-w-[900px] p-5 text-gray-600">
 	<!-- product name -->
 	<div class="mb-3">
 		<span class="text-sm">{tClient('product.prdName')}</span>

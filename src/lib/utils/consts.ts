@@ -1,4 +1,4 @@
-import { CircleCheckFilled, CurrencyDollar, CurrencyDong, ExclamationCircleFilled, InfoCircleFilled, InfoTriangleFilled, type IconType } from "$lib/components/icons";
+import { CircleCheckFilled, CurrencyDollar, CurrencyDong, CurrencyEuror, ExclamationCircleFilled, InfoCircleFilled, InfoTriangleFilled, type IconType } from "$lib/components/icons";
 import type { SocialSize } from "$lib/components/ui/common";
 import { CountryCode, LanguageCodeEnum, type PaymentGatewayConfig } from "$lib/gql/graphql";
 import { type PaymentMethodsResponse } from "@adyen/adyen-web";
@@ -39,20 +39,28 @@ export const LANGUAGE_KEY = "language";
 export const COUNTRY_CODE_KEY = "country";
 
 
+type CurrencyCode = "USD" | "VND" | "PLN";
+type CurrencySymbol = "$" | "₫" | "€";
+
 export type Channel = {
   name: string;
-  currency: string;
+  currency: CurrencyCode;
   locale: LanguageCodeEnum;
   slug: string;
-  currencySymbol: Currency;
+  currencySymbol: CurrencySymbol;
   countryCode: CountryCode;
 };
 
-export type Currency = '$' | '₫';
+export const CurrencyIconMap: Record<CurrencyCode | string, IconType> = {
+  'USD': CurrencyDollar,
+  'VND': CurrencyDong,
+  'PLN': CurrencyEuror,
+};
 
-export const CurrencyIconMap: Record<Currency, IconType> = {
-  '$': CurrencyDollar,
-  '₫': CurrencyDong,
+export const CurrencyCodeSumbolMap: Record<CurrencyCode, CurrencySymbol> = {
+  USD: '$',
+  VND: '₫',
+  PLN: '€',
 };
 
 export const defaultChannel: Channel = {

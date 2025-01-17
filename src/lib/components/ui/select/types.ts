@@ -20,9 +20,11 @@ export type SelectProps = {
   value?: string | number;
 } & Omit<InputProps, 'value'>;
 
+export type SelectOptionExtends = SelectOption & Record<string, unknown>;
+
 export type MultiSelectProps = {
-  options: SelectOption[];
-  value: Array<SelectOption>;
+  options: SelectOptionExtends[];
+  value: SelectOptionExtends[];
   size: Exclude<SocialSize, 'xs'>
   /** number of items to fully display, the rest will be summaried as "+n". if <= 0, throw Error  */
   maxDisplay?: number;

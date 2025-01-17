@@ -11,13 +11,14 @@
 		type SelectItemprops,
 		type SelectOption,
 		type MultiSelectProps,
-		SIZE_REDUCE_MAP
+		SIZE_REDUCE_MAP,
+		type SelectOptionExtends
 	} from './types';
 	import { Badge } from '../badge';
 	import type { FocusEventHandler } from 'svelte/elements';
 
 	let {
-		value = $bindable<Array<SelectOption>>([]),
+		value = $bindable<Array<SelectOptionExtends>>([]),
 		class: className = '',
 		maxDisplay,
 		size,
@@ -34,10 +35,17 @@
 	let openSelect = $state(false);
 	let input = $state<HTMLInputElement>();
 	let optionRefs: HTMLElement[] = [];
-	let selectMapper = $state.raw<Record<string, boolean>>({});
+	let selectMapper: Record<string | number, boolean> = {};
 
 	/** list of options that match search query */
 	let searchFilteredOptions = $derived.by(() => {
+		if (value.length) {
+			const valueMap: Record<string, boolean> = {};
+			for (const item of value) {
+				valueMap[item.value] = true;
+			}
+			selectMapper = { ...selectMapper, ...valueMap };
+		}
 		const notSelectedOptions = rest.options.filter((opt) => !selectMapper[opt.value]);
 		if (!searchQuery) return notSelectedOptions;
 
@@ -77,7 +85,6 @@
 	const handleSelect = (option: SelectOption) => {
 		value = value.concat(option);
 		selectMapper = { ...selectMapper, [option.value]: true };
-		// toggleDropdown(false);
 		searchQuery = '';
 	};
 
