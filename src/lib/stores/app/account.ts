@@ -3,7 +3,7 @@
 // import { defaultChannel } from "$lib/utils/consts";
 // import { get, writable } from "svelte/store";
 // import { ADDRESS_VALIDATION_RULES_QUERY } from "../api/account";
-// import { preHandleGraphqlResult } from "$lib/utils/utils";
+// import { preHandleErrorOnGraphqlResult } from "$lib/utils/utils";
 
 
 // const createAddressValidationRulesManager = () => {
@@ -21,7 +21,7 @@
 // 			)
 // 			.toPromise();
 
-// 		if (preHandleGraphqlResult(result)) return;
+// 		if (preHandleErrorOnGraphqlResult(result)) return;
 
 // 		_store.set(result.data?.addressValidationRules as AddressValidationData);
 // 	};

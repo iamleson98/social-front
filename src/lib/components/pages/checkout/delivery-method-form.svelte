@@ -6,7 +6,7 @@
 	import { checkoutStore } from '$lib/stores/app';
 	import { userStore } from '$lib/stores/auth';
 	import { toastStore } from '$lib/stores/ui/toast';
-	import { formatMoney, preHandleGraphqlResult } from '$lib/utils/utils';
+	import { formatMoney, preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 
 	const getDeliveryMethodSubTitle = (
 		minDays: Maybe<number> | undefined,
@@ -37,7 +37,7 @@
 			)
 			.toPromise()
 			.then((result) => {
-				if (preHandleGraphqlResult(result)) return;
+				if (preHandleErrorOnGraphqlResult(result)) return;
 				if (result.data?.checkoutDeliveryMethodUpdate?.errors.length) {
 					toastStore.send({
 						message: result.data.checkoutDeliveryMethodUpdate.errors[0].message as string,

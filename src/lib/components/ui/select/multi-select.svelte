@@ -59,7 +59,7 @@
 	};
 
 	const handleFocus: FocusEventHandler<HTMLInputElement> = (evt) => {
-		if (rest.onfocus) rest.onfocus(evt);
+		rest.onfocus?.(evt);
 		handleClick();
 	};
 
@@ -71,7 +71,7 @@
 	};
 
 	const handleSelect = (option: SelectOption) => {
-		value = [...value, option];
+		value = value.concat(option);
 		displayOptions = displayOptions.filter((opt) => opt.value !== option.value);
 		toggleDropdown(false);
     searchQuery = '';
@@ -79,7 +79,7 @@
 
 	const handleDeselectOption = (option: SelectOption) => {
 		value = value.filter((opt) => opt.value !== option.value);
-		displayOptions = [...displayOptions, option];
+		displayOptions = displayOptions.concat(option);
 	};
 </script>
 

@@ -19,8 +19,8 @@ export function randomString(length = 10) {
 	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 	let result = '';
 	for (let i = 0; i < length; i++) {
-			const randomIndex = Math.floor(Math.random() * characters.length);
-			result += characters[randomIndex];
+		const randomIndex = Math.floor(Math.random() * characters.length);
+		result += characters[randomIndex];
 	}
 	return result;
 }
@@ -124,18 +124,16 @@ export const getPrefersReducedMotion = () => {
  * @param result GraphQl query, operation results
  * @returns `true` if there is an error, `false` otherwise.
  */
-export const preHandleGraphqlResult = <T, K extends AnyVariables>(
+export const preHandleErrorOnGraphqlResult = <T, K extends AnyVariables>(
 	result: OperationResult<T, K>
 ): boolean => {
-	if (result.error) {
-		toastStore.send({
-			message: result.error.message,
-			variant: 'error'
-		});
-		return true;
-	}
+	if (!result.error) return false;
 
-	return false;
+	toastStore.send({
+		message: result.error.message,
+		variant: 'error'
+	});
+	return true;
 };
 
 export type PredicateFunc<T> = (obj: T) => boolean;

@@ -102,7 +102,7 @@ export function operationStore<Data = unknown, Variables extends AnyVariables = 
 		operation
 	};
 
-	const isPaused$ = writable(!!args.pause);
+	const isPaused$ = writable(args.pause);
 
 	const result$ = writable(initialState, () => {
 		return pipe(

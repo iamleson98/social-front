@@ -21,7 +21,7 @@
 		type ParsedPaymentGateways,
 		type PaymentStatus
 	} from '$lib/utils/consts';
-	import { preHandleGraphqlResult } from '$lib/utils/utils';
+	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import AdyenComponent from './adyen-component.svelte';
 
 	let availablePaymentGateways = $state<ParsedPaymentGateways>([]);
@@ -68,7 +68,7 @@
 				)
 				.toPromise()
 				.then((result) => {
-					if (preHandleGraphqlResult(result)) return;
+					if (preHandleErrorOnGraphqlResult(result)) return;
 					if (result.data?.paymentGatewayInitialize?.errors?.length) {
 						toastStore.send({
 							message: result.data.paymentGatewayInitialize.errors[0].message as string,
@@ -101,7 +101,7 @@
 				)
 				.toPromise()
 				.then((result) => {
-					if (preHandleGraphqlResult(result)) return;
+					if (preHandleErrorOnGraphqlResult(result)) return;
 					if (result.data?.checkoutComplete?.errors?.length) {
 						toastStore.send({
 							message: result.data.checkoutComplete.errors[0].message as string,

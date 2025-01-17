@@ -5,14 +5,16 @@
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { type SocialColor } from '$lib/components/ui/common';
 	import { Input } from '$lib/components/ui/Input';
-	import { MultiSelect } from '$lib/components/ui/select';
+	import { MultiSelect, type SelectOption } from '$lib/components/ui/select';
 	import type { ProductVariantBulkCreateInput, Query } from '$lib/gql/graphql';
 	import { CHANNELS_QUERY_STORE } from '$lib/stores/api/channels';
 	import { operationStore } from '$lib/stores/api/operation';
-	import { preHandleGraphqlResult, randomString } from '$lib/utils/utils';
-	import { onMount } from 'svelte';
+	import { preHandleErrorOnGraphqlResult, randomString } from '$lib/utils/utils';
 	import { slide } from 'svelte/transition';
 	import { chunk, flatten } from 'lodash-es';
+	import { onMount } from 'svelte';
+	import SkeletonContainer from '$lib/components/common/skeleton-container.svelte';
+	import Skeleton from '$lib/components/common/skeleton.svelte';
 
 	type VariantManifestProps = {
 		name: {
@@ -60,9 +62,9 @@
 	const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
 		query: CHANNELS_QUERY_STORE,
-		context: { requestPolicy: 'cache-and-network' }
+		context: { requestPolicy: 'network-only' }
 	});
-	// onMount(() => channelsQueryStore.subscribe(preHandleGraphqlResult))
+	onMount(() => channelsQueryStore.subscribe(preHandleErrorOnGraphqlResult));
 
 	const handleFocusQuickFilling = (highlight?: QuickFillHighlight) => {
 		quickFillingHighlight = highlight;
@@ -447,39 +449,45 @@
 		<div class="mb-4">
 			<div class="text-xs mb-1">Quick filling</div>
 			<div class="flex gap-x-2 items-center flex-row w-full">
-				<MultiSelect
-					disabled={$channelsQueryStore.fetching || !!$channelsQueryStore.error}
-					size="sm"
-					options={$channelsQueryStore.data?.channels?.map((channel) => ({
-						value: channel.slug,
-						label: channel.name
-					})) || []}
-					onfocus={() => handleFocusQuickFilling('td-channel-hl')}
-					onblur={() => handleFocusQuickFilling()}
-					value={[]}
-				/>
-				<!-- <Input
-					type="text"
-					placeholder="price"
-					size="sm"
-					onfocus={() => handleFocusQuickFilling('td-price-hl')}
-					onblur={() => handleFocusQuickFilling()}
-				/> -->
-				<Input
-					type="text"
-					placeholder="stock"
-					size="sm"
-					onfocus={() => handleFocusQuickFilling('td-stock-hl')}
-					onblur={() => handleFocusQuickFilling()}
-				/>
-				<Input
-					type="text"
-					placeholder="SKU"
-					size="sm"
-					onfocus={() => handleFocusQuickFilling('td-sku-hl')}
-					onblur={() => handleFocusQuickFilling()}
-				/>
-				<Button class="btn btn-sm grow shrink" size="sm">Apply</Button>
+				<div class="w-1/4">
+					{#if $channelsQueryStore.fetching}
+					<SkeletonContainer class="w-full">
+						<Skeleton rounded={false} class="h-5 w-full" />
+					</SkeletonContainer>
+					{:else}
+						<MultiSelect
+							size="sm"
+							options={$channelsQueryStore.data?.channels?.map((channel) => ({
+								value: channel.slug,
+								label: channel.name
+							})) || []}
+							onfocus={() => handleFocusQuickFilling('td-channel-hl')}
+							onblur={() => handleFocusQuickFilling()}
+							value={[]}
+						/>
+					{/if}
+				</div>
+				<div class="w-1/4">
+					<Input
+						type="text"
+						placeholder="stock"
+						size="sm"
+						onfocus={() => handleFocusQuickFilling('td-stock-hl')}
+						onblur={() => handleFocusQuickFilling()}
+					/>
+				</div>
+				<div class="w-1/4">
+					<Input
+						type="text"
+						placeholder="SKU"
+						size="sm"
+						onfocus={() => handleFocusQuickFilling('td-sku-hl')}
+						onblur={() => handleFocusQuickFilling()}
+					/>
+				</div>
+				<div class="w-1/4">
+					<Button class="btn btn-sm grow shrink" size="sm" fullWidth>Apply</Button>
+				</div>
 			</div>
 		</div>
 
@@ -513,7 +521,6 @@
 										label: channel.name
 									})) || []}
 									placeholder="Select channel"
-									disabled={$channelsQueryStore.fetching || !!$channelsQueryStore.error}
 									value={[]}
 								/>
 							</td>

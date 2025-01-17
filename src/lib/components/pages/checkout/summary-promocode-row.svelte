@@ -11,7 +11,7 @@
 	import { Trash } from '$lib/components/icons';
 	import { graphqlClient } from '$lib/client';
 	import { CHECKOUT_REMOVE_PROMO_CODE_MUTATION } from '$lib/stores/api/checkout';
-	import { preHandleGraphqlResult } from '$lib/utils/utils';
+	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { toastStore } from '$lib/stores/ui/toast';
 
 	type Props = {
@@ -50,7 +50,7 @@
 
 		loading = false;
 
-		if (preHandleGraphqlResult(removeResult)) return;
+		if (preHandleErrorOnGraphqlResult(removeResult)) return;
 
 		toastStore.send({
 			message: 'Promo code removed',

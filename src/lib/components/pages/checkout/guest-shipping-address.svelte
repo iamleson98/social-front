@@ -24,7 +24,7 @@
 	import { checkoutStore } from '$lib/stores/app';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { getCountryName } from '$lib/utils/address';
-	import { preHandleGraphqlResult } from '$lib/utils/utils';
+	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import AddressForm from './address-form.svelte';
 
 	let updatingCHeckoutAddresses = $state(false);
@@ -78,7 +78,7 @@
 		]);
 		updatingCHeckoutAddresses = false; //
 
-		if (preHandleGraphqlResult(updateResult[0]) || preHandleGraphqlResult(updateResult[1])) return;
+		if (preHandleErrorOnGraphqlResult(updateResult[0]) || preHandleErrorOnGraphqlResult(updateResult[1])) return;
 
 		const shippingAddressData = updateResult[0].data?.checkoutShippingAddressUpdate;
 		const billingAddressData = updateResult[1].data?.checkoutBillingAddressUpdate;

@@ -19,7 +19,7 @@
 	} from '$lib/gql/graphql';
 	import { userStore } from '$lib/stores/auth';
 	import { CHANNEL_KEY, defaultChannel, MAX_RATING } from '$lib/utils/consts';
-	import { formatMoney, preHandleGraphqlResult } from '$lib/utils/utils';
+	import { formatMoney, preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { fade } from 'svelte/transition';
 	import { Rating } from '$lib/components/common/rating';
 	import { checkoutStore } from '$lib/stores/app';
@@ -93,7 +93,7 @@
 			.toPromise();
 		isAddingItemToCart = false;
 
-		if (preHandleGraphqlResult(addLineResult)) return;
+		if (preHandleErrorOnGraphqlResult(addLineResult)) return;
 		if (addLineResult.data?.checkoutLinesAdd?.errors.length) {
 			toastStore.send({
 				variant: 'error',

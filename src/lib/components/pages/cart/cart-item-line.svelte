@@ -22,7 +22,7 @@
 	import { defaultSlideShowState } from '$lib/stores/ui/slideshow';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { AppRoute } from '$lib/utils';
-	import { formatMoney, preHandleGraphqlResult } from '$lib/utils/utils';
+	import { formatMoney, preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 
 	type Props = {
 		line: CheckoutLine;
@@ -65,7 +65,7 @@
 
 		loading = false; //
 
-		if (preHandleGraphqlResult(deleteResult)) return;
+		if (preHandleErrorOnGraphqlResult(deleteResult)) return;
 		if (deleteResult.data?.checkoutLinesDelete?.errors.length) {
 			toastStore.send({
 				variant: 'error',
@@ -103,7 +103,7 @@
 
 		loading = false; //
 
-		if (preHandleGraphqlResult(updateResult)) return;
+		if (preHandleErrorOnGraphqlResult(updateResult)) return;
 		if (updateResult.data?.checkoutLinesUpdate?.errors.length) {
 			toastStore.send({
 				variant: 'error',

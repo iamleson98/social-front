@@ -19,7 +19,7 @@
 	import { graphqlClient } from '$lib/client';
 	import { USER_ME_QUERY_STORE } from '$lib/stores/api';
 	import type { Query } from '$lib/gql/graphql';
-	import { preHandleGraphqlResult } from '$lib/utils/utils';
+	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { tClient } from '$i18n';
 	import { onMount } from 'svelte';
 	import { ACCESS_TOKEN_KEY, HTTPStatusSuccess } from '$lib/utils/consts';
@@ -45,7 +45,7 @@
 			.query<Pick<Query, 'me'>>(USER_ME_QUERY_STORE, {}, { requestPolicy: 'network-only' })
 			.toPromise();
 
-		if (preHandleGraphqlResult(userResult)) return;
+		if (preHandleErrorOnGraphqlResult(userResult)) return;
 		userStore.set(userResult.data?.me);
 	});
 
