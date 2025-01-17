@@ -1,6 +1,5 @@
 <script lang="ts">
-	// import SkeletonContainer from '$lib/components/common/skeleton-container.svelte';
-	import Skeleton from '$lib/components/common/skeleton.svelte';
+	import { Skeleton } from '$lib/components/ui/Skeleton';
 </script>
 
 {#snippet cartLineSkeleton()}
@@ -24,9 +23,9 @@
 
 <div class="flex flex-row justify-between tablet:flex-wrap tablet:flex-col gap-2">
 	<div class="w-3/4 tablet:h-full">
-    {@render cartLineSkeleton()}
-    {@render cartLineSkeleton()}
-  </div>
+		{@render cartLineSkeleton()}
+		{@render cartLineSkeleton()}
+	</div>
 
-  <div class="w-1/4 tablet:w-full"></div>
+	<div class="w-1/4 tablet:w-full"></div>
 </div>

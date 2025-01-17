@@ -57,7 +57,8 @@
 			name: DEFAULT_VARIANTS[0].values[0].value,
 			attributes: [],
 			sku: `${randomString()}-${DEFAULT_VARIANTS[0].values[0].value}`,
-			trackInventory: true
+			trackInventory: true,
+			channelListings: []
 		}
 	]);
 	/** indicates if there is error in any of the variant values, names */
@@ -516,7 +517,7 @@
 				</div>
 			</div>
 
-			<!-- details -->
+			<!-- DETAILS -->
 			<div class="relative overflow-x-auto rounded-lg p-3 border border-gray-200 bg-gray-50">
 				<table
 					class="w-full text-sm text-left rtl:text-right text-gray-600 dark:text-gray-500 mb-4"
@@ -563,7 +564,7 @@
 					</tbody>
 				</table>
 
-				<!-- document -->
+				<!-- DOCUMENT -->
 				<Alert variant="info" size="sm" bordered>
 					<div class="text-xs">
 						<p>- Choose a channel you would like to sell this product.</p>
