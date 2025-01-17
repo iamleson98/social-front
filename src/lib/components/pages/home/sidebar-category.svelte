@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { tClient } from '$i18n';
-	import SkeletonContainer from '$lib/components/common/skeleton-container.svelte';
-	import Skeleton from '$lib/components/common/skeleton.svelte';
+	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 	import { Category } from '$lib/components/icons';
 	import { Accordion, AccordionList } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';

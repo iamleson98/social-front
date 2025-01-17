@@ -23,48 +23,13 @@
 		</div>
 	</div>
 
-	<!-- category -->
-	<div class="mb-3">
-		<span class="text-sm">{tClient('product.prdCategory')}</span>
-		<CategorySelector />
-	</div>
+	<CategorySelector />
+	<ProductAttributeEditor />
+	<ProductDescriptionEditor />
+	<ProductVariantCreator />
+	<DiscountByQuantity />
+	<PackagingAndDelivery />
+	<ProductPreorderEditor />
 
-	<!-- attributes -->
-	<div class="mb-3">
-		<span class="text-sm">{tClient('product.tabAttributes')}</span>
-		<ProductAttributeEditor />
-	</div>
-
-	<!-- description -->
-	<div class="mb-3">
-		<span class="text-sm">{tClient('product.prdDescription')}</span>
-		<ProductDescriptionEditor />
-	</div>
-
-	<!-- variants -->
-	<div class="mb-3">
-		<span class="text-sm">{tClient('product.variants')}</span>
-		<ProductVariantCreator />
-	</div>
-
-	<!-- discount ranges -->
-	<div class="mb-3">
-		<span class="text-sm">{tClient('common.discountRange')}</span>
-		<DiscountByQuantity />
-	</div>
-
-	<!-- packaging and delivery -->
-	<div class="mb-3">
-		<span class="text-sm">{tClient('common.packaging')}</span>
-		<PackagingAndDelivery />
-	</div>
-
-	<!-- preorder -->
-	<div class="mb-3">
-		<span class="text-sm">{tClient('common.preorder')}</span>
-		<ProductPreorderEditor />
-	</div>
-
-	<!-- <button class="btn btn-md w-full bg-blue-500! text-white">Submit</button> -->
 	<Button size="md" variant="filled" fullWidth>Submit</Button>
 </div>

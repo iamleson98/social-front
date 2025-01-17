@@ -12,9 +12,7 @@
 	import { preHandleErrorOnGraphqlResult, randomString } from '$lib/utils/utils';
 	import { slide } from 'svelte/transition';
 	import { chunk, flatten } from 'lodash-es';
-	import { onMount } from 'svelte';
-	import SkeletonContainer from '$lib/components/common/skeleton-container.svelte';
-	import Skeleton from '$lib/components/common/skeleton.svelte';
+	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 
 	type VariantManifestProps = {
 		name: {
@@ -28,6 +26,12 @@
 	};
 	type variantAction = (variantIdx: number) => void;
 	type QuickFillHighlight = 'td-channel-hl' | 'td-price-hl' | 'td-stock-hl' | 'td-sku-hl';
+
+	type QuickFillingProps = {
+		channels: SelectOption[];
+		stock?: number;
+		sku?: string;
+	};
 
 	const MAX_VARIANT_TYPES = 2;
 	const MAX_VALUES_PER_VARIANT = 4;
@@ -58,13 +62,27 @@
 	]);
 	/** indicates if there is error in any of the variant values, names */
 	let generalError = $state(false);
+	let quickFillingValues = $state<QuickFillingProps>({ channels: [] });
 
 	const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
 		query: CHANNELS_QUERY_STORE,
 		context: { requestPolicy: 'network-only' }
 	});
-	onMount(() => channelsQueryStore.subscribe(preHandleErrorOnGraphqlResult));
+
+	const channelOptions = $derived.by(() => {
+		if (
+			$channelsQueryStore.fetching ||
+			preHandleErrorOnGraphqlResult($channelsQueryStore) ||
+			!$channelsQueryStore.data
+		)
+			return [];
+
+		return $channelsQueryStore.data.channels?.map((channel) => ({
+			value: channel.slug,
+			label: channel.name
+		}));
+	});
 
 	const handleFocusQuickFilling = (highlight?: QuickFillHighlight) => {
 		quickFillingHighlight = highlight;
@@ -336,220 +354,228 @@
 	</div>
 {/snippet}
 
-<!-- composer -->
-<div
-	class="flex gap-2 mobile-l:flex-wrap flex-nowrap bg-gray-50 rounded-lg border border-gray-200 p-3"
-	class:items-center={variantManifests.length < MAX_VARIANT_TYPES}
->
-	{#each variantManifests as variant, variantIdx (variantIdx)}
-		<div class="p-3 w-1/2 mobile-l:w-full border rounded-lg bg-white h-fit">
-			<!-- title -->
-			<div class="mb-1 text-xs">
-				{tClient('product.variant')}
-				{variantIdx + 1}
-			</div>
-			<!-- name -->
-			<div class="mb-4">
-				<label
-					class="input input-sm flex items-center gap-2"
-					class:input-error={!!variant.name.error}
-				>
-					<span>{tClient('product.variantName')}</span>
-					<Input
-						type="text"
-						class="w-full"
-						placeholder={tClient('product.variantPlaceholder')}
-						inputDebounceOption={{
-							onInput: handleVariantNameChange(variantIdx) as (result: unknown) => void
-						}}
-						value={variant.name.value}
-						size="md"
-						variant={variant.name.error ? 'error' : 'info'}
-						subText={variant.name.error}
-					/>
-				</label>
-			</div>
-
-			<!-- values -->
-			{#each variant.values as value, valueIdx (valueIdx)}
-				<div class="mb-2" transition:slide>
-					<div class="flex items-center justify-between">
+<div class="mb-3">
+	<span class="text-sm">{tClient('product.variants')}</span>
+	<!-- composer -->
+	<div
+		class="flex gap-2 mobile-l:flex-wrap flex-nowrap bg-gray-50 rounded-lg border border-gray-200 p-3"
+		class:items-center={variantManifests.length < MAX_VARIANT_TYPES}
+	>
+		{#each variantManifests as variant, variantIdx (variantIdx)}
+			<div class="p-3 w-1/2 mobile-l:w-full border rounded-lg bg-white h-fit">
+				<!-- title -->
+				<div class="mb-1 text-xs">
+					{tClient('product.variant')}
+					{variantIdx + 1}
+				</div>
+				<!-- name -->
+				<div class="mb-4">
+					<label
+						class="input input-sm flex items-center gap-2"
+						class:input-error={!!variant.name.error}
+					>
+						<span>{tClient('product.variantName')}</span>
 						<Input
-							variant={value.error ? 'error' : 'info'}
 							type="text"
-							class="w-4/5"
-							size="sm"
-							placeholder={tClient('product.valuePlaceholder')}
+							class="w-full"
+							placeholder={tClient('product.variantPlaceholder')}
 							inputDebounceOption={{
-								onInput: handleVariantValueChange(variantIdx, valueIdx) as (
-									result: unknown
-								) => void,
-								debounceTime: 500 // only fire after 0.5 sec after user stop typing
+								onInput: handleVariantNameChange(variantIdx) as (result: unknown) => void
 							}}
-							value={value.value}
-							subText={value.error}
+							value={variant.name.value}
+							size="md"
+							variant={variant.name.error ? 'error' : 'info'}
+							subText={variant.name.error}
 						/>
-						{#if variant.values.length > 1}
-							<IconButton
-								icon={Trash}
-								size="xs"
-								variant="light"
-								rounded
-								color="red"
-								onclick={() => handleDeleteValue(variantIdx, valueIdx)}
-								title={tClient('product.delValue')}
+					</label>
+				</div>
+
+				<!-- values -->
+				{#each variant.values as value, valueIdx (valueIdx)}
+					<div class="mb-2" transition:slide>
+						<div class="flex items-center justify-between">
+							<Input
+								variant={value.error ? 'error' : 'info'}
+								type="text"
+								class="w-4/5"
+								size="sm"
+								placeholder={tClient('product.valuePlaceholder')}
+								inputDebounceOption={{
+									onInput: handleVariantValueChange(variantIdx, valueIdx) as (
+										result: unknown
+									) => void,
+									debounceTime: 500 // only fire after 0.5 sec after user stop typing
+								}}
+								value={value.value}
+								subText={value.error}
+							/>
+							{#if variant.values.length > 1}
+								<IconButton
+									icon={Trash}
+									size="xs"
+									variant="light"
+									rounded
+									color="red"
+									onclick={() => handleDeleteValue(variantIdx, valueIdx)}
+									title={tClient('product.delValue')}
+								/>
+							{/if}
+						</div>
+					</div>
+				{/each}
+				<div class="flex justify-center items-center gap-1.5 mt-4">
+					{@render variantActionButton(
+						tClient('product.delVariant'),
+						variantIdx,
+						handleDeleteVariant,
+						false,
+						'red',
+						'',
+						Trash
+					)}
+					{@render variantActionButton(
+						tClient('product.addValue'),
+						variantIdx,
+						handleAddVariantValue,
+						variant.values.length >= MAX_VALUES_PER_VARIANT,
+						'blue',
+						`${variantManifests[variantIdx].values.length}/${MAX_VALUES_PER_VARIANT}`,
+						Plus
+					)}
+				</div>
+			</div>
+		{/each}
+		{#if variantManifests.length < MAX_VARIANT_TYPES}
+			<div class="w-1/2 mobile-l:w-full">
+				<div
+					class="tooltip w-full h-full flex items-center justify-center"
+					data-tip={tClient('product.addVariant')}
+				>
+					<IconButton
+						onclick={handleAddVariant}
+						icon={Plus}
+						size="xl"
+						variant="outline"
+						color="blue"
+					/>
+				</div>
+			</div>
+		{/if}
+	</div>
+
+	{#if variantManifests.length && !generalError}
+		<div class="mt-10">
+			<!-- QUICK FILLING -->
+			<div class="mb-4">
+				<div class="text-xs mb-1">Quick filling</div>
+				<div class="flex gap-x-2 items-start flex-row w-full">
+					<div class="w-1/4">
+						{#if !channelOptions?.length}
+							<SkeletonContainer>
+								<Skeleton class="w-full h-4" rounded={false} />
+							</SkeletonContainer>
+						{:else}
+							<MultiSelect
+								size="sm"
+								options={channelOptions as SelectOption[]}
+								onfocus={() => handleFocusQuickFilling('td-channel-hl')}
+								onblur={() => handleFocusQuickFilling()}
+								bind:value={quickFillingValues.channels}
 							/>
 						{/if}
 					</div>
+					<div class="w-1/4">
+						<Input
+							type="number"
+							placeholder="stock"
+							size="sm"
+							onfocus={() => handleFocusQuickFilling('td-stock-hl')}
+							onblur={() => handleFocusQuickFilling()}
+							bind:value={quickFillingValues.stock}
+							variant={typeof quickFillingValues.stock === 'number' && quickFillingValues.stock < 0
+								? 'error'
+								: 'info'}
+							subText={typeof quickFillingValues.stock === 'number' && quickFillingValues.stock < 0
+								? tClient('error.negativeNumber')
+								: ''}
+						/>
+					</div>
+					<div class="w-1/4">
+						<Input
+							type="text"
+							placeholder="SKU"
+							size="sm"
+							onfocus={() => handleFocusQuickFilling('td-sku-hl')}
+							onblur={() => handleFocusQuickFilling()}
+							bind:value={quickFillingValues.sku}
+						/>
+					</div>
+					<div class="w-1/4">
+						<Button class="btn btn-sm grow shrink" size="sm" fullWidth>Apply</Button>
+					</div>
 				</div>
-			{/each}
-			<div class="flex justify-center items-center gap-1.5 mt-4">
-				{@render variantActionButton(
-					tClient('product.delVariant'),
-					variantIdx,
-					handleDeleteVariant,
-					false,
-					'red',
-					'',
-					Trash
-				)}
-				{@render variantActionButton(
-					tClient('product.addValue'),
-					variantIdx,
-					handleAddVariantValue,
-					variant.values.length >= MAX_VALUES_PER_VARIANT,
-					'blue',
-					`${variantManifests[variantIdx].values.length}/${MAX_VALUES_PER_VARIANT}`,
-					Plus
-				)}
 			</div>
-		</div>
-	{/each}
-	{#if variantManifests.length < MAX_VARIANT_TYPES}
-		<div class="w-1/2 mobile-l:w-full">
-			<div
-				class="tooltip w-full h-full flex items-center justify-center"
-				data-tip={tClient('product.addVariant')}
-			>
-				<IconButton
-					onclick={handleAddVariant}
-					icon={Plus}
-					size="xl"
-					variant="outline"
-					color="blue"
-				/>
+
+			<!-- details -->
+			<div class="relative overflow-x-auto rounded-lg p-3 border border-gray-200 bg-gray-50">
+				<table
+					class="w-full text-sm text-left rtl:text-right text-gray-600 dark:text-gray-500 mb-4"
+				>
+					<thead class="text-xs text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-500">
+						<tr>
+							<th>{variantManifests[0].name.value}</th>
+							{#if variantManifests.length === MAX_VARIANT_TYPES}
+								<th>{variantManifests[1].name.value}</th>
+							{/if}
+							<th>channel</th>
+							<th>price</th>
+							<th>stock</th>
+							<th>classify sku</th>
+						</tr>
+					</thead>
+					<tbody class="overflow-y-visible">
+						{#each variantDetails as detail, detailIdx (detailIdx)}
+							<tr class={`variant-table-row ${quickFillingHighlight}`}>
+								<td class="text-center">{detail.name?.split('-')[0]}</td>
+								{#if variantManifests.length === MAX_VARIANT_TYPES}
+									<td class="text-center">{detail.name?.split('-')[1]}</td>
+								{/if}
+								<td class="channel-td max-w-3xs min-w-28">
+									{#if !channelOptions?.length}
+										<SkeletonContainer>
+											<Skeleton class="w-full h-4" rounded={false} />
+										</SkeletonContainer>
+									{:else}
+										<MultiSelect size="sm" options={channelOptions as SelectOption[]} value={[]} />
+									{/if}
+								</td>
+								<td class="price-td">
+									<Input type="text" size="sm" placeholder="price" />
+								</td>
+								<td class="stock-td">
+									<Input type="text" size="sm" placeholder="stock" />
+								</td>
+								<td class="sku-td">
+									<Input type="text" size="sm" placeholder="SKU" value={detail.sku} />
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+
+				<!-- document -->
+				<Alert variant="info" size="sm" bordered>
+					<div class="text-xs">
+						<p>- Choose a channel you would like to sell this product.</p>
+						<p>- Provide pricing information for product variants</p>
+						<p>- Provide stock information for product variants</p>
+						<p>- Fill the classify sku for each product variant.</p>
+					</div>
+				</Alert>
 			</div>
 		</div>
 	{/if}
 </div>
-
-{#if variantManifests.length && !generalError}
-	<div class="mt-10">
-		<!-- quick filling -->
-		<div class="mb-4">
-			<div class="text-xs mb-1">Quick filling</div>
-			<div class="flex gap-x-2 items-center flex-row w-full">
-				<div class="w-1/4">
-					{#if $channelsQueryStore.fetching}
-					<SkeletonContainer class="w-full">
-						<Skeleton rounded={false} class="h-5 w-full" />
-					</SkeletonContainer>
-					{:else}
-						<MultiSelect
-							size="sm"
-							options={$channelsQueryStore.data?.channels?.map((channel) => ({
-								value: channel.slug,
-								label: channel.name
-							})) || []}
-							onfocus={() => handleFocusQuickFilling('td-channel-hl')}
-							onblur={() => handleFocusQuickFilling()}
-							value={[]}
-						/>
-					{/if}
-				</div>
-				<div class="w-1/4">
-					<Input
-						type="text"
-						placeholder="stock"
-						size="sm"
-						onfocus={() => handleFocusQuickFilling('td-stock-hl')}
-						onblur={() => handleFocusQuickFilling()}
-					/>
-				</div>
-				<div class="w-1/4">
-					<Input
-						type="text"
-						placeholder="SKU"
-						size="sm"
-						onfocus={() => handleFocusQuickFilling('td-sku-hl')}
-						onblur={() => handleFocusQuickFilling()}
-					/>
-				</div>
-				<div class="w-1/4">
-					<Button class="btn btn-sm grow shrink" size="sm" fullWidth>Apply</Button>
-				</div>
-			</div>
-		</div>
-
-		<!-- details -->
-		<div class="relative overflow-x-auto rounded-lg p-3 border border-gray-200 bg-gray-50">
-			<table class="w-full text-sm text-left rtl:text-right text-gray-600 dark:text-gray-500 mb-4">
-				<thead class="text-xs text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-500">
-					<tr>
-						<th>{variantManifests[0].name.value}</th>
-						{#if variantManifests.length === MAX_VARIANT_TYPES}
-							<th>{variantManifests[1].name.value}</th>
-						{/if}
-						<th>channel</th>
-						<th>price</th>
-						<th>stock</th>
-						<th>classify sku</th>
-					</tr>
-				</thead>
-				<tbody class="overflow-y-visible">
-					{#each variantDetails as detail, detailIdx (detailIdx)}
-						<tr class={`variant-table-row ${quickFillingHighlight}`}>
-							<td class="text-center">{detail.name?.split('-')[0]}</td>
-							{#if variantManifests.length === MAX_VARIANT_TYPES}
-								<td class="text-center">{detail.name?.split('-')[1]}</td>
-							{/if}
-							<td class="channel-td">
-								<MultiSelect
-									size="xs"
-									options={$channelsQueryStore.data?.channels?.map((channel) => ({
-										value: channel.slug,
-										label: channel.name
-									})) || []}
-									placeholder="Select channel"
-									value={[]}
-								/>
-							</td>
-							<td class="price-td">
-								<Input type="text" size="xs" placeholder="price" />
-							</td>
-							<td class="stock-td">
-								<Input type="text" size="xs" placeholder="stock" />
-							</td>
-							<td class="sku-td">
-								<Input type="text" size="xs" placeholder="SKU" value={detail.sku} />
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-
-			<!-- document -->
-			<Alert variant="info" size="sm" bordered>
-				<div class="text-xs">
-					<p>- Choose a channel you would like to sell this product.</p>
-					<p>- Provide pricing information for product variants</p>
-					<p>- Provide stock information for product variants</p>
-					<p>- Fill the classify sku for each product variant.</p>
-				</div>
-			</Alert>
-		</div>
-	</div>
-{/if}
 
 <style>
 	@import 'tailwindcss/theme';

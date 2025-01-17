@@ -13,7 +13,15 @@
 		{ value: '4', label: 'Option 4' },
 		{ value: '5', label: 'Option 5' }
 	];
+
+	let option = $state(1);
+
+	const add = () => option += 1;
+
+	console.log(option);
 </script>
+
+<Button onclick={add}>add</Button>
 
 <SlideShow />
 

@@ -10,7 +10,8 @@
 		SELECT_CLASSES,
 		type SelectItemprops,
 		type SelectOption,
-		type MultiSelectProps
+		type MultiSelectProps,
+		SIZE_REDUCE_MAP
 	} from './types';
 	import { Badge } from '../badge';
 	import type { FocusEventHandler } from 'svelte/elements';
@@ -18,8 +19,12 @@
 	let {
 		value = $bindable<Array<SelectOption>>([]),
 		class: className = '',
+		maxDisplay,
+		size,
 		...rest
 	}: MultiSelectProps = $props();
+
+	if (typeof maxDisplay === 'number' && maxDisplay <= 0) throw new Error('maxDisplay must be > 0');
 
 	const ID = randomID();
 	const INPUT_ID = `combobox-${ID}`;
@@ -29,18 +34,17 @@
 	let openSelect = $state(false);
 	let input = $state<HTMLInputElement>();
 	let optionRefs: HTMLElement[] = [];
-
-	/** hide away selected options */
-	let displayOptions = $state.raw(rest.options);
+	let selectMapper = $state.raw<Record<string, boolean>>({});
 
 	/** list of options that match search query */
-	let searchFilteredOptions = $derived.by(() =>
-		searchQuery
-			? displayOptions.filter((option) =>
-					option.label.toLowerCase().includes(searchQuery.toLowerCase())
-				)
-			: displayOptions
-	);
+	let searchFilteredOptions = $derived.by(() => {
+		const notSelectedOptions = rest.options.filter((opt) => !selectMapper[opt.value]);
+		if (!searchQuery) return notSelectedOptions;
+
+		return notSelectedOptions.filter((opt) =>
+			opt.label.toLowerCase().includes(searchQuery.toLowerCase())
+		);
+	});
 
 	const onInput = () => {
 		toggleDropdown(true);
@@ -72,14 +76,14 @@
 
 	const handleSelect = (option: SelectOption) => {
 		value = value.concat(option);
-		displayOptions = displayOptions.filter((opt) => opt.value !== option.value);
-		toggleDropdown(false);
-    searchQuery = '';
+		selectMapper = { ...selectMapper, [option.value]: true };
+		// toggleDropdown(false);
+		searchQuery = '';
 	};
 
 	const handleDeselectOption = (option: SelectOption) => {
 		value = value.filter((opt) => opt.value !== option.value);
-		displayOptions = displayOptions.concat(option);
+		selectMapper = { ...selectMapper, [option.value]: false };
 	};
 </script>
 
@@ -137,14 +141,17 @@
 	]}
 >
 	<div class="flex flex-wrap items-center gap-1 flex-1">
-		{#each value as option, idx (idx)}
+		{#each value.slice(0, maxDisplay || value.length) as option, idx (idx)}
 			<Badge
 				text={`${option.label}`}
 				variant="light"
-				size="sm"
+				size={SIZE_REDUCE_MAP[size]}
 				onDismiss={() => handleDeselectOption(option)}
 			/>
 		{/each}
+		{#if maxDisplay && value.length > maxDisplay}
+			<Badge text={`+${value.length - maxDisplay}`} variant="light" size={SIZE_REDUCE_MAP[size]} />
+		{/if}
 		<Input
 			{...rest}
 			aria-controls={LISTBOX_ID}
@@ -153,9 +160,9 @@
 			aria-autocomplete="list"
 			autocomplete="off"
 			class={`${className} grow shrink basis-[min-content]`}
-      inputClass="ring-0!"
+			inputClass="ring-0!"
 			id={INPUT_ID}
-			size="xs"
+			size={SIZE_REDUCE_MAP[size]}
 			onclick={handleClick}
 			onfocus={handleFocus}
 			value={searchQuery}

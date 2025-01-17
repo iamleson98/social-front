@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { tClient } from '$i18n';
-	import SkeletonContainer from '$lib/components/common/skeleton-container.svelte';
-	import Skeleton from '$lib/components/common/skeleton.svelte';
+	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
 	import type { Query, QueryProductsArgs } from '$lib/gql/graphql';

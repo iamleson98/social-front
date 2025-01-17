@@ -4,12 +4,12 @@
 		CATEGORIES_LIST_FOR_CREATE_PRODUCT,
 		type CategoryListForCreateProductInput
 	} from '$lib/stores/api/admin/product';
-	import SkeletonContainer from '$lib/components/common/skeleton-container.svelte';
-	import Skeleton from '$lib/components/common/skeleton.svelte';
+	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 	import { operationStore } from '$lib/stores/api/operation';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { MegaMenu } from '$lib/components/ui/levelSelector';
 	import { categoryIdStore, convertCategoryEdgesToMenuSelect } from './utils';
+	import { tClient } from '$i18n';
 
 	const NUMBER_OF_CATEGORIES_PER_FETCH = 35;
 
@@ -39,21 +39,24 @@
 	</div>
 {/snippet}
 
-<div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
-	{#if $categoriesStore.fetching}
-		{@render loadingCategorySkeleton()}
-	{:else if $categoriesStore.error}
-		<Alert variant="error" bordered size="sm">
-			{$categoriesStore.error.message}
-		</Alert>
-	{:else}
-		{@const items = convertCategoryEdgesToMenuSelect(
-			$categoriesStore.data?.categories || ({} as CategoryCountableConnection)
-		)}
-		<MegaMenu
-			{items}
-			onSelect={(item) => categoryIdStore.set(item.value as string)}
-			onDeselect={() => categoryIdStore.set(null)}
-		/>
-	{/if}
+<div class="mb-3">
+	<span class="text-sm">{tClient('product.prdCategory')}</span>
+	<div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+		{#if $categoriesStore.fetching}
+			{@render loadingCategorySkeleton()}
+		{:else if $categoriesStore.error}
+			<Alert variant="error" bordered size="sm">
+				{$categoriesStore.error.message}
+			</Alert>
+		{:else}
+			{@const items = convertCategoryEdgesToMenuSelect(
+				$categoriesStore.data?.categories || ({} as CategoryCountableConnection)
+			)}
+			<MegaMenu
+				{items}
+				onSelect={(item) => categoryIdStore.set(item.value as string)}
+				onDeselect={() => categoryIdStore.set(null)}
+			/>
+		{/if}
+	</div>
 </div>

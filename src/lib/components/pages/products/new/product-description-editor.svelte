@@ -23,6 +23,7 @@
 		removeList
 	} from '@lexical/list';
 	import { editorConfig } from '$lib/configs';
+	import { tClient } from '$i18n';
 
 	type Props = {
 		ariaActiveDescendantID?: string;
@@ -139,28 +140,31 @@
 	});
 </script>
 
-<div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
-	<DescriptionEditorToolbar disabled={!isEditable || !activeEditor} editor={activeEditor} />
-	<div
-		bind:this={ref}
-		aria-activedescendant={!isEditable ? undefined : ariaActiveDescendantID}
-		aria-autocomplete={!isEditable ? 'none' : ariaAutoComplete}
-		aria-controls={!isEditable ? undefined : ariaControls}
-		aria-describedby={ariaDescribedBy}
-		aria-label={ariaLabel}
-		aria-labelledby={ariaLabelledBy}
-		aria-multiline={ariaMultiline}
-		aria-owns={!isEditable ? null : ariaOwns}
-		aria-readonly={!isEditable ? true : undefined}
-		aria-required={ariaRequired}
-		autocapitalize={autoCapitalize}
-		contenteditable={isEditable}
-		data-testid={testid}
-		{id}
-		role="textbox"
-		tabindex="0"
-		spellcheck="true"
-		{style}
-		class={`${className} border rounded-sm text-sm block relative tab-size-[1] outline-0 outline-hidden p-2.5 min-h-36 tablet:p-2 bg-white`}
-	></div>
+<div class="mb-3">
+	<span class="text-sm">{tClient('product.prdDescription')}</span>
+	<div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+		<DescriptionEditorToolbar disabled={!isEditable || !activeEditor} editor={activeEditor} />
+		<div
+			bind:this={ref}
+			aria-activedescendant={!isEditable ? undefined : ariaActiveDescendantID}
+			aria-autocomplete={!isEditable ? 'none' : ariaAutoComplete}
+			aria-controls={!isEditable ? undefined : ariaControls}
+			aria-describedby={ariaDescribedBy}
+			aria-label={ariaLabel}
+			aria-labelledby={ariaLabelledBy}
+			aria-multiline={ariaMultiline}
+			aria-owns={!isEditable ? null : ariaOwns}
+			aria-readonly={!isEditable ? true : undefined}
+			aria-required={ariaRequired}
+			autocapitalize={autoCapitalize}
+			contenteditable={isEditable}
+			data-testid={testid}
+			{id}
+			role="textbox"
+			tabindex="0"
+			spellcheck="true"
+			{style}
+			class={`${className} border rounded-sm text-sm block relative tab-size-[1] outline-0 outline-hidden p-2.5 min-h-36 tablet:p-2 bg-white`}
+		></div>
+	</div>
 </div>
