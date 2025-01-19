@@ -4,4 +4,4 @@
 </script>
 
 <CategoriesAccordion />
-<SidebarFilter currency="₫" />
+<SidebarFilter currency="VND" />

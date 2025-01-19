@@ -100,6 +100,7 @@
 				size="sm"
 				color="gray"
 				onclick={handleOrderingButtonClick}
+				aria-label="order by"
 			/>
 		</div>
 	</div>
@@ -152,7 +153,14 @@
 				</div>
 
 				<div class="ml-1">
-					<RadioButton value={rating} bind:group={selectedRating} name="rating" />
+					<!-- <RadioButton value={rating} bind:group={selectedRating} name="rating" /> -->
+					<input
+						type="radio"
+						name="rating"
+						class="radio radio-sm"
+						bind:group={selectedRating}
+						value={rating}
+					/>
 				</div>
 			</div>
 		{/each}
