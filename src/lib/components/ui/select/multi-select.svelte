@@ -134,7 +134,7 @@
 {/snippet}
 
 <div
-	class="relative text-gray-700 text-base bg-white rounded-lg w-fit py-1 px-1.5 ring-1 ring-gray-200"
+	class={`relative text-gray-700 text-base bg-white rounded-lg w-fit py-1 px-1.5 ring-1 ring-gray-200 ${className}`}
 	use:clickOutside={{ onOutclick: interactOutsideHandler }}
 	use:focusOutside={{ onFocusOut: interactOutsideHandler }}
 	use:shortcuts={[
@@ -166,7 +166,7 @@
 			bind:ref={input}
 			aria-autocomplete="list"
 			autocomplete="off"
-			class={`${className} grow shrink basis-[min-content]`}
+			class={`grow shrink basis-[min-content]`}
 			inputClass="ring-0!"
 			id={INPUT_ID}
 			size={SIZE_REDUCE_MAP[size]}

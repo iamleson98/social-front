@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { tClient } from '$i18n';
 	import { Plus, Trash } from '$lib/components/icons';
-	import { Button, IconButton } from '$lib/components/ui/Button';
+	import { IconButton } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
 	import { slide } from 'svelte/transition';
 
@@ -17,19 +17,18 @@
 	let discountRanges = $state.raw<DiscountRange[]>([]);
 
 	const addDiscountRange = () => {
-		if (discountRanges.length < MAX_DISCOUNT_RANGES) {
-			const newRange: DiscountRange = {
-				channelSlug: '',
-				fromProduct: 0,
-				toProduct: 0,
-				discount: 0
-			};
-			if (discountRanges.length) {
-				newRange.fromProduct = discountRanges[discountRanges.length - 1].toProduct + 1;
-				newRange.toProduct = newRange.fromProduct + 1;
-			}
-			discountRanges = discountRanges.concat(newRange);
+		if (discountRanges.length === MAX_DISCOUNT_RANGES) return;
+		const newRange: DiscountRange = {
+			channelSlug: '',
+			fromProduct: 0,
+			toProduct: 0,
+			discount: 0
+		};
+		if (discountRanges.length) {
+			newRange.fromProduct = discountRanges[discountRanges.length - 1].toProduct + 1;
+			newRange.toProduct = newRange.fromProduct + 1;
 		}
+		discountRanges = discountRanges.concat(newRange);
 	};
 
 	const removeDiscountRange = (rangeIdx: number) => {
@@ -43,12 +42,22 @@
 		<div class="flex items-center flex-row gap-2 mb-2 text-xs text-gray-700 font-semibold">
 			<div class="w-1/12">No.</div>
 			<div class="w-10/12 flex items-center gap-1">
-				<div class="w-3/12">channel</div>
-				<div class="w-3/12">from product</div>
-				<div class="w-3/12">to product</div>
-				<div class="w-3/12">price</div>
+				<div class="w-3/12">{tClient('product.channel')}</div>
+				<div class="w-3/12">{tClient('product.fromPrd')}</div>
+				<div class="w-3/12">{tClient('product.toPrd')}</div>
+				<div class="w-3/12">{tClient('product.price')}</div>
 			</div>
-			<div class="w-1/12"></div>
+			<div class="w-1/12">
+				<div class="tooltip" data-tip={tClient('product.addDiscountRange')}>
+					<IconButton
+						icon={Plus}
+						size="xs"
+						onclick={addDiscountRange}
+						variant="light"
+						disabled={discountRanges.length >= MAX_DISCOUNT_RANGES}
+					/>
+				</div>
+			</div>
 		</div>
 
 		{#each discountRanges as range, idx (idx)}
@@ -72,16 +81,5 @@
 				</div>
 			</div>
 		{/each}
-		<div class="tooltip w-full" data-tip="Add discount range">
-			<Button
-				disabled={discountRanges.length >= MAX_DISCOUNT_RANGES}
-				onclick={addDiscountRange}
-				startIcon={Plus}
-				fullWidth
-				size="sm"
-			>
-				Add range ({discountRanges.length}/{MAX_DISCOUNT_RANGES})
-			</Button>
-		</div>
 	</div>
 </div>

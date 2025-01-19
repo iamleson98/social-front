@@ -69,6 +69,7 @@ export default {
 		streetAddress1: 'Street Address 1',
 		streetAddress2: 'Street Address 2',
 		phone: 'Phone Number',
+		action: 'action',
 	},
 	product: {
 		chooseAddress: 'Please choose address',
@@ -112,6 +113,9 @@ export default {
 		channel: 'channel',
 		stock: 'stock',
 		sku: 'sku',
+		fromPrd: 'from product',
+		toPrd: 'to product',
+		addDiscountRange: 'Add discount range',
 	},
 	error: {
 		invalidSlug: 'Invalid slug value',

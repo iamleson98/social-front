@@ -101,8 +101,6 @@
 	let generalError = $state(false);
 	let quickFillingValues = $state<QuickFillingProps>({ channels: [], stocks: [] });
 	let channelSelectOptions = $state.raw<SelectOptionExtends[]>([]);
-	// const warehousesByChannels: Record<string, string[]> = {};
-	// const warehouses = [];
 
 	const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
@@ -135,13 +133,6 @@
 							quantity: 0,
 							useWarehouse: false
 						});
-
-						// cache channels by warehouses
-						// if (!warehousesByChannels[warehouse.id]) {
-						// 	warehousesByChannels[channel.id] = [warehouse.id];
-						// } else {
-						// 	warehousesByChannels[channel.id].push(warehouse.id);
-						// }
 					}
 				}
 			});
@@ -404,13 +395,14 @@
 	};
 
 	const handleQuickFillingClick = () => {
-		let newVariantInputDetails = null;
+		const canQuickFillingStocks = quickFillingValues.stocks.some((stock) => stock.useWarehouse);
+		const canQuickFillingChannels = quickFillingValues.channels.length > 0;
 
-		if (quickFillingValues.channels.length) {
-			newVariantInputDetails = variantsInputDetails.map((variantDetail) => {
-				return {
-					...variantDetail,
-					channelListings: quickFillingValues.channels.map((option) => ({
+		if (canQuickFillingChannels || canQuickFillingStocks) {
+			variantsInputDetails = variantsInputDetails.map((variantDetail) => {
+				const result = { ...variantDetail };
+				if (canQuickFillingChannels) {
+					result.channelListings = quickFillingValues.channels.map((option) => ({
 						channelId: option.value as string,
 						price: option.price,
 						costPrice: option.costPrice,
@@ -419,13 +411,20 @@
 						label: option.label,
 						value: option.value,
 						currency: option.currency
-					}))
-				};
-			});
-		}
+					}));
+				}
+				if (canQuickFillingStocks) {
+					result.stocks = quickFillingValues.stocks
+						.filter((stock) => stock.useWarehouse)
+						.map((stock) => ({
+							warehouse: stock.warehouse,
+							quantity: stock.quantity,
+							warehouseName: stock.warehouseName // this field is needed for displaying
+						}));
+				}
 
-		if (newVariantInputDetails) {
-			variantsInputDetails = newVariantInputDetails;
+				return result;
+			});
 		}
 	};
 </script>
@@ -571,7 +570,7 @@
 				<div class="flex gap-x-2 items-start flex-row w-full">
 					<!-- CHANNELS -->
 					<div class="w-2/7">
-						<div class="text-[10px]">channels</div>
+						<div class="text-xs">{tClient('product.channel')}</div>
 						{#if !channelSelectOptions?.length}
 							<SkeletonContainer>
 								<Skeleton class="w-full h-4" rounded={false} />
@@ -583,48 +582,53 @@
 								onfocus={() => handleFocusHighlightQuickFilling('td-channel-hl')}
 								onblur={() => handleFocusHighlightQuickFilling()}
 								bind:value={quickFillingValues.channels}
+								class="w-full"
 							/>
 						{/if}
 					</div>
 					<!-- PRICING -->
-					<div class="w-2/7">
-						<div class="flex flex-row text-[10px]">
-							<span class="w-1/2">{tClient('product.price')}</span>
-							<span class="w-1/2">{tClient('product.costPrice')}</span>
-						</div>
-						{#each quickFillingValues.channels as channel, idx (idx)}
-							{@const iconType = CurrencyIconMap[channel.currency as CurrencyCode]}
-							<div class="flex gap-1 mt-1">
-								<Input
-									startIcon={iconType}
-									type="number"
-									placeholder="price"
-									size="xs"
-									class="w-1/2"
-									bind:value={channel.price}
-									variant={channel.price < 0 ? 'error' : 'info'}
-									subText={channel.price < 0 ? tClient('error.negativeNumber') : ''}
-									onfocus={() => handleFocusHighlightQuickFilling('td-price-hl')}
-									onblur={() => handleFocusHighlightQuickFilling()}
-								/>
-								<Input
-									startIcon={iconType}
-									type="number"
-									placeholder="cost price"
-									size="xs"
-									class="w-1/2"
-									bind:value={channel.costPrice}
-									variant={channel.costPrice < 0 ? 'error' : 'info'}
-									subText={channel.costPrice < 0 ? tClient('error.negativeNumber') : ''}
-									onfocus={() => handleFocusHighlightQuickFilling('td-cost-price-hl')}
-									onblur={() => handleFocusHighlightQuickFilling()}
-								/>
+					{#if quickFillingValues.channels.length}
+						<div class="w-2/7">
+							<div class="flex flex-row text-xs">
+								<span class="w-1/2">{tClient('product.price')}</span>
+								<span class="w-1/2">{tClient('product.costPrice')}</span>
 							</div>
-						{/each}
-					</div>
+							<div class="max-h-20 overflow-y-auto border border-gray-200 p-2 rounded-lg">
+								{#each quickFillingValues.channels as channel, idx (idx)}
+									{@const iconType = CurrencyIconMap[channel.currency as CurrencyCode]}
+									<div class="flex gap-1 mt-1">
+										<Input
+											startIcon={iconType}
+											type="number"
+											placeholder={channel.currency}
+											size="xs"
+											class="w-1/2"
+											bind:value={channel.price}
+											variant={channel.price < 0 ? 'error' : 'info'}
+											subText={channel.price < 0 ? tClient('error.negativeNumber') : ''}
+											onfocus={() => handleFocusHighlightQuickFilling('td-price-hl')}
+											onblur={() => handleFocusHighlightQuickFilling()}
+										/>
+										<Input
+											startIcon={iconType}
+											type="number"
+											placeholder={channel.currency}
+											size="xs"
+											class="w-1/2"
+											bind:value={channel.costPrice}
+											variant={channel.costPrice < 0 ? 'error' : 'info'}
+											subText={channel.costPrice < 0 ? tClient('error.negativeNumber') : ''}
+											onfocus={() => handleFocusHighlightQuickFilling('td-cost-price-hl')}
+											onblur={() => handleFocusHighlightQuickFilling()}
+										/>
+									</div>
+								{/each}
+							</div>
+						</div>
+					{/if}
 					<!-- STOCK -->
 					<div class="w-2/7">
-						<div class="text-[10px]">stocks</div>
+						<div class="text-xs">{tClient('product.stock')}</div>
 						{#if !quickFillingValues.stocks.length}
 							<SkeletonContainer>
 								<Skeleton class="w-full h-4" rounded={false} />
@@ -669,7 +673,7 @@
 					</div> -->
 					<!-- APPLY BUTTON -->
 					<div class="w-1/7">
-						<div class="text-[10px]">action</div>
+						<div class="text-xs">{tClient('common.action')}</div>
 						<Button
 							class="btn btn-sm grow shrink"
 							size="sm"
@@ -775,7 +779,27 @@
 								</td>
 								<!-- STOCK -->
 								<td class="stock-td">
-									<Input type="text" size="sm" placeholder="stock" />
+									<!-- <Input type="text" size="sm" placeholder="stock" /> -->
+									<div class="flex flex-col gap-1">
+										{#each variantInputDetail.stocks || [] as stock, idx (idx)}
+											<div class="flex items-start gap-2">
+												<Checkbox
+													size="sm"
+													label={stock['warehouseName' as keyof StockInput] as string}
+												/>
+												<Input
+													size="xs"
+													placeholder={tClient('product.stock')}
+													bind:value={stock.quantity}
+													type="number"
+													variant={stock.quantity < 0 ? 'error' : 'info'}
+													subText={typeof stock.quantity === 'number' && stock.quantity < 0
+														? tClient('error.negativeNumber')
+														: ''}
+												/>
+											</div>
+										{/each}
+									</div>
 								</td>
 								<!-- SKU -->
 								<td class="sku-td">
