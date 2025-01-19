@@ -5,14 +5,15 @@
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { type SocialColor } from '$lib/components/ui/common';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
-	import { MultiSelect, type SelectOption } from '$lib/components/ui/select';
 	import {
-		OrderDirection,
-		WarehouseSortField,
+		MultiSelect,
+		type SelectOption,
+		type SelectOptionExtends
+	} from '$lib/components/ui/select';
+	import {
 		type ProductVariantBulkCreateInput,
 		type ProductVariantChannelListingAddInput,
 		type Query,
-		type QueryWarehousesArgs,
 		type StockInput
 	} from '$lib/gql/graphql';
 	import { CHANNELS_QUERY_STORE } from '$lib/stores/api/channels';
@@ -21,9 +22,7 @@
 	import { slide } from 'svelte/transition';
 	import { chunk, flatten } from 'lodash-es';
 	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
-	import { type SelectOptionExtends } from '$lib/components/ui/select/types';
-	import { CurrencyIconMap } from '$lib/utils/consts';
-	import { QUERY_WAREHOUSES } from '$lib/stores/api/admin/warehouse';
+	import { CurrencyIconMap, type CurrencyCode } from '$lib/utils/consts';
 	import { onMount } from 'svelte';
 
 	type VariantManifestProps = {
@@ -37,11 +36,24 @@
 		}[];
 	};
 	type CustomStockInput = StockInput & { warehouseName: string; useWarehouse: boolean };
+	type ChannelSelectOptionProps = SelectOption & {
+		currency: string;
+		price: number;
+		costPrice: number;
+	};
 	type variantAction = (variantIdx: number) => void;
-	type QuickFillHighlight = 'td-channel-hl' | 'td-price-hl' | 'td-stock-hl' | 'td-sku-hl';
+	type QuickFillHighlight =
+		| 'td-channel-hl'
+		| 'td-price-hl'
+		| 'td-stock-hl'
+		| 'td-sku-hl'
+		| 'td-cost-price-hl';
 
 	type QuickFillingProps = {
-		channels: SelectOptionExtends[];
+		channels: ChannelSelectOptionProps[];
+		/**
+		 * Since channels have associated warehouses, so when channels are updated, we need to update the warehouses
+		 */
 		stocks: CustomStockInput[];
 		sku?: string;
 	};
@@ -89,6 +101,8 @@
 	let generalError = $state(false);
 	let quickFillingValues = $state<QuickFillingProps>({ channels: [], stocks: [] });
 	let channelSelectOptions = $state.raw<SelectOptionExtends[]>([]);
+	// const warehousesByChannels: Record<string, string[]> = {};
+	// const warehouses = [];
 
 	const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
@@ -102,7 +116,7 @@
 
 			const newChannelSelectOptions: SelectOptionExtends[] = [];
 			const warehousesOfChannels: CustomStockInput[] = [];
-			const channelsMeetmap: Record<string, boolean> = {};
+			const warehouseMeetMap: Record<string, boolean> = {};
 
 			channelsResult.data.channels?.forEach((channel) => {
 				newChannelSelectOptions.push({
@@ -112,8 +126,8 @@
 				});
 
 				for (const warehouse of channel.warehouses) {
-					if (!channelsMeetmap[warehouse.id]) {
-						channelsMeetmap[warehouse.id] = true;
+					if (!warehouseMeetMap[warehouse.id]) {
+						warehouseMeetMap[warehouse.id] = true;
 
 						warehousesOfChannels.push({
 							warehouse: warehouse.id,
@@ -121,6 +135,13 @@
 							quantity: 0,
 							useWarehouse: false
 						});
+
+						// cache channels by warehouses
+						// if (!warehousesByChannels[warehouse.id]) {
+						// 	warehousesByChannels[channel.id] = [warehouse.id];
+						// } else {
+						// 	warehousesByChannels[channel.id].push(warehouse.id);
+						// }
 					}
 				}
 			});
@@ -135,9 +156,8 @@
 		return unsub;
 	});
 
-	const handleFocusHighlightQuickFilling = (highlight?: QuickFillHighlight) => {
-		quickFillingHighlight = highlight;
-	};
+	const handleFocusHighlightQuickFilling = (highlight?: QuickFillHighlight) =>
+		(quickFillingHighlight = highlight);
 
 	const handleVariantValueChange = (variantIdx: number, valueIdx: number) => (evt: Event) => {
 		if (!evt.target) return;
@@ -384,14 +404,16 @@
 	};
 
 	const handleQuickFillingClick = () => {
+		let newVariantInputDetails = null;
+
 		if (quickFillingValues.channels.length) {
-			variantsInputDetails = variantsInputDetails.map((variantDetail) => {
+			newVariantInputDetails = variantsInputDetails.map((variantDetail) => {
 				return {
 					...variantDetail,
 					channelListings: quickFillingValues.channels.map((option) => ({
 						channelId: option.value as string,
-						price: 0,
-						costPrice: 0,
+						price: option.price,
+						costPrice: option.costPrice,
 
 						// we need those 2 fields for multiselect binding
 						label: option.label,
@@ -400,6 +422,10 @@
 					}))
 				};
 			});
+		}
+
+		if (newVariantInputDetails) {
+			variantsInputDetails = newVariantInputDetails;
 		}
 	};
 </script>
@@ -430,19 +456,19 @@
 
 <div class="mb-3">
 	<span class="text-sm">{tClient('product.variants')}</span>
-	<!-- composer -->
+	<!-- COMPOSER -->
 	<div
 		class="flex gap-2 mobile-l:flex-wrap flex-nowrap bg-gray-50 rounded-lg border border-gray-200 p-3"
 		class:items-center={variantManifests.length < MAX_VARIANT_TYPES}
 	>
 		{#each variantManifests as variant, variantIdx (variantIdx)}
 			<div class="p-3 w-1/2 mobile-l:w-full border rounded-lg bg-white h-fit">
-				<!-- title -->
+				<!-- TITLE -->
 				<div class="mb-1 text-xs">
 					{tClient('product.variant')}
 					{variantIdx + 1}
 				</div>
-				<!-- name -->
+				<!-- NAME -->
 				<div class="mb-4">
 					<label
 						class="input input-sm flex items-center gap-2"
@@ -544,7 +570,8 @@
 				<div class="text-xs mb-1">{tClient('product.quickFilling')}</div>
 				<div class="flex gap-x-2 items-start flex-row w-full">
 					<!-- CHANNELS -->
-					<div class="w-1/4">
+					<div class="w-2/7">
+						<div class="text-[10px]">channels</div>
 						{#if !channelSelectOptions?.length}
 							<SkeletonContainer>
 								<Skeleton class="w-full h-4" rounded={false} />
@@ -559,8 +586,45 @@
 							/>
 						{/if}
 					</div>
+					<!-- PRICING -->
+					<div class="w-2/7">
+						<div class="flex flex-row text-[10px]">
+							<span class="w-1/2">{tClient('product.price')}</span>
+							<span class="w-1/2">{tClient('product.costPrice')}</span>
+						</div>
+						{#each quickFillingValues.channels as channel, idx (idx)}
+							{@const iconType = CurrencyIconMap[channel.currency as CurrencyCode]}
+							<div class="flex gap-1 mt-1">
+								<Input
+									startIcon={iconType}
+									type="number"
+									placeholder="price"
+									size="xs"
+									class="w-1/2"
+									bind:value={channel.price}
+									variant={channel.price < 0 ? 'error' : 'info'}
+									subText={channel.price < 0 ? tClient('error.negativeNumber') : ''}
+									onfocus={() => handleFocusHighlightQuickFilling('td-price-hl')}
+									onblur={() => handleFocusHighlightQuickFilling()}
+								/>
+								<Input
+									startIcon={iconType}
+									type="number"
+									placeholder="cost price"
+									size="xs"
+									class="w-1/2"
+									bind:value={channel.costPrice}
+									variant={channel.costPrice < 0 ? 'error' : 'info'}
+									subText={channel.costPrice < 0 ? tClient('error.negativeNumber') : ''}
+									onfocus={() => handleFocusHighlightQuickFilling('td-cost-price-hl')}
+									onblur={() => handleFocusHighlightQuickFilling()}
+								/>
+							</div>
+						{/each}
+					</div>
 					<!-- STOCK -->
-					<div class="w-1/4">
+					<div class="w-2/7">
+						<div class="text-[10px]">stocks</div>
 						{#if !quickFillingValues.stocks.length}
 							<SkeletonContainer>
 								<Skeleton class="w-full h-4" rounded={false} />
@@ -593,7 +657,7 @@
 						{/if}
 					</div>
 					<!-- SKU -->
-					<div class="w-1/4">
+					<!-- <div class="w-1/5">
 						<Input
 							type="text"
 							placeholder="SKU"
@@ -602,9 +666,10 @@
 							onblur={() => handleFocusHighlightQuickFilling()}
 							bind:value={quickFillingValues.sku}
 						/>
-					</div>
+					</div> -->
 					<!-- APPLY BUTTON -->
-					<div class="w-1/4">
+					<div class="w-1/7">
+						<div class="text-[10px]">action</div>
 						<Button
 							class="btn btn-sm grow shrink"
 							size="sm"
@@ -636,10 +701,13 @@
 					<tbody class="overflow-y-visible">
 						{#each variantsInputDetails as variantInputDetail, detailIdx (detailIdx)}
 							<tr class={`variant-table-row ${quickFillingHighlight} border-b border-gray-200`}>
+								<!-- NAME 1 -->
 								<td class="text-center">{variantInputDetail.name?.split('-')[0]}</td>
 								{#if variantManifests.length === MAX_VARIANT_TYPES}
+									<!-- NAME 2 -->
 									<td class="text-center">{variantInputDetail.name?.split('-')[1]}</td>
 								{/if}
+								<!-- CHANNELS -->
 								<td class="channel-td max-w-3xs min-w-28">
 									{#if !channelSelectOptions?.length}
 										<SkeletonContainer>
@@ -655,7 +723,7 @@
 										/>
 									{/if}
 								</td>
-
+								<!-- PRICE -->
 								<td class="price-td">
 									<div class="flex flex-col gap-1">
 										{#each variantInputDetail.channelListings || [] as channelListing, idx (idx)}
@@ -680,7 +748,8 @@
 										{/each}
 									</div>
 								</td>
-								<td class="price-td">
+								<!-- COST PRICE -->
+								<td class="cost-price-td">
 									<div class="flex flex-col gap-1">
 										{#each variantInputDetail.channelListings || [] as channelListing, idx (idx)}
 											{@const iconType =
@@ -704,9 +773,11 @@
 										{/each}
 									</div>
 								</td>
+								<!-- STOCK -->
 								<td class="stock-td">
 									<Input type="text" size="sm" placeholder="stock" />
 								</td>
+								<!-- SKU -->
 								<td class="sku-td">
 									<Input type="text" size="sm" placeholder="SKU" value={variantInputDetail.sku} />
 								</td>
@@ -746,6 +817,17 @@
 		@apply border-t border-blue-500;
 	}
 	.variant-table-row.td-price-hl:last-child > .price-td {
+		@apply border-b border-blue-500;
+	}
+
+	/* highlight cost price */
+	.variant-table-row.td-cost-price-hl .cost-price-td {
+		@apply border-l border-r border-blue-500;
+	}
+	.variant-table-row.td-cost-price-hl:first-child > .cost-price-td {
+		@apply border-t border-blue-500;
+	}
+	.variant-table-row.td-cost-price-hl:last-child > .cost-price-td {
 		@apply border-b border-blue-500;
 	}
 

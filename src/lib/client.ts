@@ -184,7 +184,7 @@ export const graphqlClient = new Client({
 			maxDelayMs: 10000,
 			randomDelay: true,
 			maxNumberAttempts: 2,
-			retryIf: (error, _): boolean => (browser && error && !!error.networkError),
+			retryIf: (error): boolean => (browser && error && !!error.networkError),
 		}),
 		fetchExchange,
 	],
