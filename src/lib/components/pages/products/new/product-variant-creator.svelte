@@ -543,6 +543,7 @@
 			<div class="mb-4">
 				<div class="text-xs mb-1">{tClient('product.quickFilling')}</div>
 				<div class="flex gap-x-2 items-start flex-row w-full">
+					<!-- CHANNELS -->
 					<div class="w-1/4">
 						{#if !channelSelectOptions?.length}
 							<SkeletonContainer>
@@ -558,6 +559,7 @@
 							/>
 						{/if}
 					</div>
+					<!-- STOCK -->
 					<div class="w-1/4">
 						{#if !quickFillingValues.stocks.length}
 							<SkeletonContainer>
@@ -590,6 +592,7 @@
 							</div>
 						{/if}
 					</div>
+					<!-- SKU -->
 					<div class="w-1/4">
 						<Input
 							type="text"
@@ -600,6 +603,7 @@
 							bind:value={quickFillingValues.sku}
 						/>
 					</div>
+					<!-- APPLY BUTTON -->
 					<div class="w-1/4">
 						<Button
 							class="btn btn-sm grow shrink"
