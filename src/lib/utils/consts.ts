@@ -39,7 +39,7 @@ export const LANGUAGE_KEY = "language";
 export const COUNTRY_CODE_KEY = "country";
 
 
-type CurrencyCode = "USD" | "VND" | "PLN";
+export type CurrencyCode = "USD" | "VND" | "PLN";
 type CurrencySymbol = "$" | "₫" | "€";
 
 export type Channel = {
@@ -57,7 +57,7 @@ export const CurrencyIconMap: Record<CurrencyCode | string, IconType> = {
   'PLN': CurrencyEuror,
 };
 
-export const CurrencyCodeSumbolMap: Record<CurrencyCode, CurrencySymbol> = {
+export const CurrencyCodeSymbolMap: Record<CurrencyCode, CurrencySymbol> = {
   USD: '$',
   VND: '₫',
   PLN: '€',

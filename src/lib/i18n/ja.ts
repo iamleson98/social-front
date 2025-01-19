@@ -105,7 +105,13 @@ export default {
 		noVote: 'まだ投票がありません',
 		noDescription: 'まだ説明がありません',
 		prdPolicy: '製品ポリシー',
-		prdPolicyDetail: 'Sitename guarantees provide high quality product to our customers. Sitename refunds 100% if the product does not meet quality standard.'
+		prdPolicyDetail: 'Sitename guarantees provide high quality product to our customers. Sitename refunds 100% if the product does not meet quality standard.',
+		quickFilling: 'クイックフィリング',
+		price: 'price',
+		costPrice: 'cost price',
+		channel: 'channel',
+		stock: 'stock',
+		sku: 'sku',
 	},
 	error: {
 		invalidSlug: '無効なスラッグ値',
@@ -127,5 +133,8 @@ export default {
 		checkout: 'チェックアウト',
 		payment: '支払い',
 		orderConfirm: '注文確認',
+	},
+	btn: {
+		apply: '適用',
 	}
 };

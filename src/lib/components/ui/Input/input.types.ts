@@ -44,3 +44,11 @@ export const INPUT_LABEL_SIZE_STYLE_MAP: Record<SocialSize, string> = {
   lg: 'text-base',
   xl: 'text-lg'
 };
+
+export const CHECKBOX_SIZES: Record<SocialSize, string> = {
+  xs: 'checkbox-xs',
+  sm: 'checkbox-sm',
+  md: 'checkbox-md',
+  lg: 'checkbox-lg',
+  xl: 'checkbox-xl',
+};

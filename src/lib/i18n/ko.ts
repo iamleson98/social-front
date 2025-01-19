@@ -105,7 +105,13 @@ export default {
 		noVote: '아직 투표가 없습니다',
 		noDescription: '아직 설명이 없습니다',
 		prdPolicy: '제품 정책',
-		prdPolicyDetail: 'Sitename guarantees provide high quality product to our customers. Sitename refunds 100% if the product does not meet quality standard.'
+		prdPolicyDetail: 'Sitename guarantees provide high quality product to our customers. Sitename refunds 100% if the product does not meet quality standard.',
+		quickFilling: '쓰기',
+		price: 'price',
+		costPrice: 'cost price',
+		channel: 'channel',
+		stock: 'stock',
+		sku: 'sku',
 	},
 	error: {
 		invalidSlug: '잘못된 슬러그 값',
@@ -127,5 +133,8 @@ export default {
 		checkout: '결제',
 		payment: '지불',
 		orderConfirm: '주문 확인',
+	},
+	btn: {
+		apply: '조회',
 	}
 };

@@ -1,5 +1,7 @@
 import { gql } from "@urql/core";
 
+
+/** only authenticated users can call this query */
 export const CHANNELS_QUERY_STORE = gql`
 query Channels {
   channels {
@@ -14,6 +16,10 @@ query Channels {
     }
     stockSettings {
       allocationStrategy
+    }
+    warehouses {
+      id
+      name
     }
   }
 }`;

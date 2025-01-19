@@ -4,12 +4,16 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { type SocialColor } from '$lib/components/ui/common';
-	import { Input } from '$lib/components/ui/Input';
+	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { MultiSelect, type SelectOption } from '$lib/components/ui/select';
-	import type {
-		ProductVariantBulkCreateInput,
-		ProductVariantChannelListingAddInput,
-		Query
+	import {
+		OrderDirection,
+		WarehouseSortField,
+		type ProductVariantBulkCreateInput,
+		type ProductVariantChannelListingAddInput,
+		type Query,
+		type QueryWarehousesArgs,
+		type StockInput
 	} from '$lib/gql/graphql';
 	import { CHANNELS_QUERY_STORE } from '$lib/stores/api/channels';
 	import { operationStore } from '$lib/stores/api/operation';
@@ -19,6 +23,8 @@
 	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 	import { type SelectOptionExtends } from '$lib/components/ui/select/types';
 	import { CurrencyIconMap } from '$lib/utils/consts';
+	import { QUERY_WAREHOUSES } from '$lib/stores/api/admin/warehouse';
+	import { onMount } from 'svelte';
 
 	type VariantManifestProps = {
 		name: {
@@ -30,12 +36,13 @@
 			error?: string;
 		}[];
 	};
+	type CustomStockInput = StockInput & { warehouseName: string; useWarehouse: boolean };
 	type variantAction = (variantIdx: number) => void;
 	type QuickFillHighlight = 'td-channel-hl' | 'td-price-hl' | 'td-stock-hl' | 'td-sku-hl';
 
 	type QuickFillingProps = {
 		channels: SelectOptionExtends[];
-		stock?: number;
+		stocks: CustomStockInput[];
 		sku?: string;
 	};
 
@@ -55,6 +62,17 @@
 		}
 	];
 
+	const SECOND_SAMPLE_VARIANT = {
+		name: {
+			value: 'size'
+		},
+		values: [
+			{
+				value: 'm'
+			}
+		]
+	};
+
 	let quickFillingHighlight = $state<QuickFillHighlight>();
 	let variantManifests = $state.raw<VariantManifestProps[]>(DEFAULT_VARIANTS);
 	/** details of product variants, before sending to backend */
@@ -69,7 +87,8 @@
 	]);
 	/** indicates if there is error in any of the variant values, names */
 	let generalError = $state(false);
-	let quickFillingValues = $state<QuickFillingProps>({ channels: [] });
+	let quickFillingValues = $state<QuickFillingProps>({ channels: [], stocks: [] });
+	let channelSelectOptions = $state.raw<SelectOptionExtends[]>([]);
 
 	const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
@@ -77,19 +96,43 @@
 		context: { requestPolicy: 'network-only' }
 	});
 
-	const channelOptions = $derived.by(() => {
-		if (
-			$channelsQueryStore.fetching ||
-			preHandleErrorOnGraphqlResult($channelsQueryStore) ||
-			!$channelsQueryStore.data
-		)
-			return [];
+	onMount(() => {
+		const unsub = channelsQueryStore.subscribe((channelsResult) => {
+			if (preHandleErrorOnGraphqlResult(channelsResult) || !channelsResult.data) return;
 
-		return $channelsQueryStore.data.channels?.map((channel) => ({
-			value: channel.id,
-			label: channel.name,
-			currency: channel.currencyCode.toUpperCase()
-		}));
+			const newChannelSelectOptions: SelectOptionExtends[] = [];
+			const warehousesOfChannels: CustomStockInput[] = [];
+			const channelsMeetmap: Record<string, boolean> = {};
+
+			channelsResult.data.channels?.forEach((channel) => {
+				newChannelSelectOptions.push({
+					value: channel.id,
+					label: channel.name,
+					currency: channel.currencyCode.toUpperCase()
+				});
+
+				for (const warehouse of channel.warehouses) {
+					if (!channelsMeetmap[warehouse.id]) {
+						channelsMeetmap[warehouse.id] = true;
+
+						warehousesOfChannels.push({
+							warehouse: warehouse.id,
+							warehouseName: warehouse.name,
+							quantity: 0,
+							useWarehouse: false
+						});
+					}
+				}
+			});
+
+			channelSelectOptions = newChannelSelectOptions;
+			quickFillingValues = {
+				...quickFillingValues,
+				stocks: warehousesOfChannels
+			};
+		});
+
+		return unsub;
 	});
 
 	const handleFocusHighlightQuickFilling = (highlight?: QuickFillHighlight) => {
@@ -106,6 +149,7 @@
 		);
 
 		generalError = !valueTrimLower || valueDuplicate;
+
 		variantManifests = variantManifests.map((variant, idx) => {
 			if (idx !== variantIdx) return variant;
 
@@ -125,7 +169,6 @@
 				})
 			};
 		});
-
 		if (generalError) return;
 
 		if (variantManifests.length === 1) {
@@ -227,16 +270,7 @@
 			return;
 		}
 
-		const newVariants = variantManifests.concat({
-			name: {
-				value: 'size'
-			},
-			values: [
-				{
-					value: 'm'
-				}
-			]
-		});
+		const newVariants = variantManifests.concat(SECOND_SAMPLE_VARIANT);
 
 		const newVariantDetails = [];
 		for (const variant1 of newVariants[0].values) {
@@ -289,7 +323,8 @@
 				name: '-',
 				sku: `${randomString()}-`,
 				trackInventory: true,
-				channelListings: []
+				channelListings: [],
+				trackInventory: true
 			});
 		} else {
 			if (variantIdx === 1) {
@@ -356,6 +391,7 @@
 					channelListings: quickFillingValues.channels.map((option) => ({
 						channelId: option.value as string,
 						price: 0,
+						costPrice: 0,
 
 						// we need those 2 fields for multiselect binding
 						label: option.label,
@@ -431,7 +467,7 @@
 				<!-- values -->
 				{#each variant.values as value, valueIdx (valueIdx)}
 					<div class="mb-2" transition:slide>
-						<div class="flex items-center justify-between">
+						<div class="flex items-center justify-between w-full">
 							<Input
 								variant={value.error ? 'error' : 'info'}
 								type="text"
@@ -505,17 +541,17 @@
 		<div class="mt-10">
 			<!-- QUICK FILLING -->
 			<div class="mb-4">
-				<div class="text-xs mb-1">Quick filling</div>
+				<div class="text-xs mb-1">{tClient('product.quickFilling')}</div>
 				<div class="flex gap-x-2 items-start flex-row w-full">
 					<div class="w-1/4">
-						{#if !channelOptions?.length}
+						{#if !channelSelectOptions?.length}
 							<SkeletonContainer>
 								<Skeleton class="w-full h-4" rounded={false} />
 							</SkeletonContainer>
 						{:else}
 							<MultiSelect
 								size="sm"
-								options={channelOptions as SelectOption[]}
+								options={channelSelectOptions}
 								onfocus={() => handleFocusHighlightQuickFilling('td-channel-hl')}
 								onblur={() => handleFocusHighlightQuickFilling()}
 								bind:value={quickFillingValues.channels}
@@ -523,20 +559,36 @@
 						{/if}
 					</div>
 					<div class="w-1/4">
-						<Input
-							type="number"
-							placeholder="stock"
-							size="sm"
-							onfocus={() => handleFocusHighlightQuickFilling('td-stock-hl')}
-							onblur={() => handleFocusHighlightQuickFilling()}
-							bind:value={quickFillingValues.stock}
-							variant={typeof quickFillingValues.stock === 'number' && quickFillingValues.stock < 0
-								? 'error'
-								: 'info'}
-							subText={typeof quickFillingValues.stock === 'number' && quickFillingValues.stock < 0
-								? tClient('error.negativeNumber')
-								: ''}
-						/>
+						{#if !quickFillingValues.stocks.length}
+							<SkeletonContainer>
+								<Skeleton class="w-full h-4" rounded={false} />
+							</SkeletonContainer>
+						{:else}
+							<div class="max-h-20 overflow-y-auto border border-gray-200 p-2 rounded-lg">
+								{#each quickFillingValues.stocks as stockInput, idx (idx)}
+									<div class="flex items-start flex-row gap-1.5 mt-1">
+										<Checkbox
+											bind:checked={stockInput.useWarehouse}
+											label={stockInput.warehouseName}
+											class="w-1/2"
+											size="sm"
+										/>
+										<Input
+											type="number"
+											placeholder="quantity"
+											class="w-1/2"
+											size="xs"
+											onfocus={() => handleFocusHighlightQuickFilling('td-stock-hl')}
+											onblur={() => handleFocusHighlightQuickFilling()}
+											bind:value={stockInput.quantity}
+											variant={stockInput.quantity < 0 ? 'error' : 'info'}
+											subText={stockInput.quantity < 0 ? tClient('error.negativeNumber') : ''}
+											disabled={!stockInput.useWarehouse}
+										/>
+									</div>
+								{/each}
+							</div>
+						{/if}
 					</div>
 					<div class="w-1/4">
 						<Input
@@ -553,7 +605,7 @@
 							class="btn btn-sm grow shrink"
 							size="sm"
 							fullWidth
-							onclick={handleQuickFillingClick}>Apply</Button
+							onclick={handleQuickFillingClick}>{tClient('btn.apply')}</Button
 						>
 					</div>
 				</div>
@@ -570,44 +622,83 @@
 							{#if variantManifests.length === MAX_VARIANT_TYPES}
 								<th>{variantManifests[1].name.value}</th>
 							{/if}
-							<th>channel</th>
-							<th>price</th>
-							<th>stock</th>
-							<th>classify sku</th>
+							<th>{tClient('product.channel')}</th>
+							<th>{tClient('product.price')}</th>
+							<th>{tClient('product.costPrice')}</th>
+							<th>{tClient('product.stock')}</th>
+							<th>{tClient('product.sku')}</th>
 						</tr>
 					</thead>
 					<tbody class="overflow-y-visible">
 						{#each variantsInputDetails as variantInputDetail, detailIdx (detailIdx)}
-							<tr class={`variant-table-row ${quickFillingHighlight}`}>
+							<tr class={`variant-table-row ${quickFillingHighlight} border-b border-gray-200`}>
 								<td class="text-center">{variantInputDetail.name?.split('-')[0]}</td>
 								{#if variantManifests.length === MAX_VARIANT_TYPES}
 									<td class="text-center">{variantInputDetail.name?.split('-')[1]}</td>
 								{/if}
 								<td class="channel-td max-w-3xs min-w-28">
-									{#if !channelOptions?.length}
+									{#if !channelSelectOptions?.length}
 										<SkeletonContainer>
 											<Skeleton class="w-full h-4" rounded={false} />
 										</SkeletonContainer>
 									{:else}
-										{@const options =
-											variantInputDetail.channelListings?.map((item) => ({
-												value: item.channelId,
-												label: item.channelId
-											})) || ([] as SelectOption[])}
 										<MultiSelect
 											size="sm"
-											options={channelOptions as SelectOption[]}
+											options={channelSelectOptions}
 											bind:value={
 												variantInputDetail.channelListings as unknown as SelectOptionExtends[]
 											}
 										/>
 									{/if}
 								</td>
-								<td class="price-td flex flex-col gap-1.5">
-									{#each variantInputDetail.channelListings || [] as channelListing, idx (idx)}
-										{@const iconType = CurrencyIconMap[channelListing['currency' as keyof ProductVariantChannelListingAddInput]]}
-										<Input startIcon={iconType} type="number" size="xs" placeholder="price" />
-									{/each}
+
+								<td class="price-td">
+									<div class="flex flex-col gap-1">
+										{#each variantInputDetail.channelListings || [] as channelListing, idx (idx)}
+											{@const iconType =
+												CurrencyIconMap[
+													channelListing['currency' as keyof ProductVariantChannelListingAddInput]
+												]}
+											<Input
+												startIcon={iconType}
+												type="number"
+												size="xs"
+												placeholder={channelListing[
+													'currency' as keyof ProductVariantChannelListingAddInput
+												]}
+												bind:value={channelListing.price}
+												variant={channelListing.price < 0 ? 'error' : 'info'}
+												subText={typeof channelListing.price === 'number' &&
+												channelListing.price < 0
+													? tClient('error.negativeNumber')
+													: ''}
+											/>
+										{/each}
+									</div>
+								</td>
+								<td class="price-td">
+									<div class="flex flex-col gap-1">
+										{#each variantInputDetail.channelListings || [] as channelListing, idx (idx)}
+											{@const iconType =
+												CurrencyIconMap[
+													channelListing['currency' as keyof ProductVariantChannelListingAddInput]
+												]}
+											<Input
+												startIcon={iconType}
+												type="number"
+												size="xs"
+												placeholder={channelListing[
+													'currency' as keyof ProductVariantChannelListingAddInput
+												]}
+												bind:value={channelListing.costPrice}
+												variant={channelListing.costPrice < 0 ? 'error' : 'info'}
+												subText={typeof channelListing.costPrice === 'number' &&
+												channelListing.costPrice < 0
+													? tClient('error.negativeNumber')
+													: ''}
+											/>
+										{/each}
+									</div>
 								</td>
 								<td class="stock-td">
 									<Input type="text" size="sm" placeholder="stock" />

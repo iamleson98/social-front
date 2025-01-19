@@ -105,7 +105,13 @@ export default {
 		noVote: 'No vote yet',
 		noDescription: 'No description yet',
 		prdPolicy: 'Product Policy',
-		prdPolicyDetail: `Sitename tries our best to provide best quality product to our customers.\n Sitename refunds 100% if the product does not meet quality standard.`
+		prdPolicyDetail: `Sitename tries our best to provide best quality product to our customers.\n Sitename refunds 100% if the product does not meet quality standard.`,
+		quickFilling: 'Quick Filling',
+		price: 'price',
+		costPrice: 'cost price',
+		channel: 'channel',
+		stock: 'stock',
+		sku: 'sku',
 	},
 	error: {
 		invalidSlug: 'Invalid slug value',
@@ -128,4 +134,7 @@ export default {
 		payment: 'Payment',
 		orderConfirm: 'Order Confirmation',
 	},
+	btn: {
+		apply: 'Apply',
+	}
 };

@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { randomID } from '$lib/utils/utils';
 	import type { HTMLInputAttributes } from 'svelte/elements';
+	import type { SocialSize } from '../common';
+	import { CHECKBOX_SIZES, INPUT_LABEL_SIZE_STYLE_MAP } from './input.types';
 
 	type Props = {
 		label?: string;
-	} & HTMLInputAttributes;
+		size?: SocialSize;
+	} & Omit<HTMLInputAttributes, 'size'>;
 
 	let {
 		label,
@@ -12,6 +15,7 @@
 		id = randomID(),
 		class: className = '',
 		required,
+		size = 'md',
 		...rest
 	}: Props = $props();
 </script>
@@ -23,10 +27,10 @@
 		bind:checked
 		type="checkbox"
 		{id}
-		class="checkbox"
+		class={`checkbox ${CHECKBOX_SIZES[size]}`}
 	/>
 	{#if label}
-		<label for={id} class="ms-2 text-sm text-gray-900 dark:text-gray-300 select-none">
+		<label for={id} class={`ms-2 text-gray-900 dark:text-gray-300 select-none ${INPUT_LABEL_SIZE_STYLE_MAP[size]}`}>
 			{label}
 			{#if required}<strong class="font-bold text-red-600!">*</strong>{/if}
 		</label>

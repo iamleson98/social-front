@@ -11,13 +11,15 @@
 	import { Input } from '$lib/components/ui/Input';
 
 	let now = new Date();
+
+	let productName = $state();
 </script>
 
-<div class="m-auto rounded-sm bg-white max-w-[900px] p-5 text-gray-600">
+<div class="m-auto rounded-lg bg-white max-w-5xl p-5 text-gray-600">
 	<!-- product name -->
 	<div class="mb-3">
 		<span class="text-sm">{tClient('product.prdName')}</span>
-		<Input placeholder={tClient('placeholders.enterPrdName')} size="md" />
+		<Input placeholder={tClient('placeholders.enterPrdName')} size="md" bind:value={productName} />
 		<div class="text-right">
 			<span class="text-xs">{now.toDateString()}</span>
 		</div>

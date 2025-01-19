@@ -17,14 +17,14 @@
 		type ProductOrder
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { CurrencyIconMap, type Currency } from '$lib/utils/consts';
+	import { CurrencyIconMap, type CurrencyCode } from '$lib/utils/consts';
 	import { flipDirection } from '$lib/utils/utils';
 	import { ORDER_BY_FIELD, PRICE_RANGE, SORT_KEY } from './common';
 	import { productFilterParamStore } from '$lib/stores/app/product-filter';
 	import { get } from 'svelte/store';
 
 	type Props = {
-		currency: Currency;
+		currency: CurrencyCode;
 	};
 
 	/** in client side, we only support sorting products by these fields below */
@@ -48,8 +48,7 @@
 	let { currency }: Props = $props();
 
 	let priceRangeError = $derived.by(() => {
-		const { gte, lte } = ($productFilterParamStore.filter as ProductFilterInput)
-			.price as PriceRangeInput;
+		const { gte, lte } = $productFilterParamStore.filter?.price as PriceRangeInput;
 		if (typeof gte !== 'number' || typeof lte !== 'number') return null;
 
 		if (gte < 0 || (lte as number) < 0) return tClient('error.negativeNumber');

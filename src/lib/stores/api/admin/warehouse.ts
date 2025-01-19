@@ -1,20 +1,20 @@
 import { gql } from "@urql/core";
 
-export const WarehousesQuery = gql`
-query Warehouses($first: Int, $after: Int, $before: String, $after: String, $filter: WarehouseFilterInput, $sort: WarehouseSortingInput) {
-  warehouses(first: $first, after: $after, before: $before, filter: $filter, sort: $sort) {
+export const QUERY_WAREHOUSES = gql`
+query Warehouses($first: Int, $before: String, $after: String, $last: Int, $filter: WarehouseFilterInput, $sortBy: WarehouseSortingInput) {
+  warehouses(first: $first, after: $after, before: $before, filter: $filter, sortBy: $sortBy) {
     edges {
       node {
         id
         name
-        shippingZones {
-          edgs {
-            node {
-              id
-              name
-            }
-          }
-        }
+        # shippingZones {
+        #   edgs {
+        #     node {
+        #       id
+        #       name
+        #     }
+        #   }
+        # }
       }
     }
   }

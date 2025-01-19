@@ -70,7 +70,13 @@ export default {
 		streetAddress2: 'Địa chỉ 2',
 		phone: 'Số điện thoại',
 		prdPolicy: 'Chính sách bán hàng',
-		prdPolicyDetail: 'Sitename luôn lỗ lực để mang tới cho khách hàng sản phẩm với chất lượng tốt nhất. Sitename hoàn tiền 100% nếu sản phẩm không đạt chất lượng tiêu chuẩn.'
+		prdPolicyDetail: 'Sitename luôn lỗ lực để mang tới cho khách hàng sản phẩm với chất lượng tốt nhất. Sitename hoàn tiền 100% nếu sản phẩm không đạt chất lượng tiêu chuẩn.',
+		quickFilling: 'Nhập nhanh',
+		price: 'giá',
+		costPrice: 'giá nhập',
+		channel: 'kênh',
+		stock: 'Số lượng',
+		sku: 'sku',
 	},
 	product: {
 		chooseAddress: 'Vui lòng chọn địa chỉ',
@@ -128,4 +134,7 @@ export default {
 		payment: 'Thanh toán',
 		orderConfirm: 'Xác nhận đơn hàng',
 	},
+	btn: {
+		apply: 'Áp dụng',
+	}
 };
