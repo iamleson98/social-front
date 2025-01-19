@@ -7,6 +7,7 @@
 	import { page } from '$app/state';
 	import { AppRoute } from '$lib/utils';
 	import { afterNavigate } from '$app/navigation';
+	import Icon from '$lib/components/icons/icon.svelte';
 
 	interface Props {
 		data: LayoutServerData;
@@ -55,7 +56,18 @@
 	<!-- tabs -->
 	<div class="bg-white rounded-md p-3 w-3/4 tablet:w-full">
 		<div class="mb-4">
-			<Tab items={tabs} />
+			<div class="tabs tabs-border" role="tablist">
+				{#each tabs as item, idx (idx)}
+					{@const elem = item.href ? 'a' : 'div'}
+					{@const attrs = item.href ? { href: item.href } : {}}
+					<svelte:element this={elem} class="tab" class:tab-active={item.active} {...attrs}>
+						{#if item.icon}
+							<Icon icon={item.icon} class="mr-1.5" />
+						{/if}
+						<span>{item.title}</span>
+					</svelte:element>
+				{/each}
+			</div>
 		</div>
 
 		<div>

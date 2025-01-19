@@ -12,24 +12,22 @@
 </script>
 
 <div class="flex flex-row flex-wrap gap-2">
-	{#if category?.products}
-		{#if category.products.edges.length}
-			{#each category.products.edges as { node }, idx (idx)}
-				<div class="rounded-md border p-1">
-					<div class="mb-2">
-						<div
-							class="bg-contain bg-center bg-no-repeat w-36 h-36"
-							style={`background-image: url(${node.thumbnail?.url});`}
-						></div>
-					</div>
-
-					<div>
-						<div class="text-xs">
-              <a href={`${AppRoute.PRODUCTS}/${encodeURIComponent(node.slug)}`}>{node.name}</a>
-            </div>
-					</div>
+	{#if category?.products?.edges.length}
+		{#each category.products.edges as { node }, idx (idx)}
+			<div class="rounded-md border p-1 w-1/5">
+				<div class="mb-2">
+					<div
+						class="bg-contain bg-center bg-no-repeat w-36 h-36"
+						style={`background-image: url(${node.thumbnail?.url});`}
+					></div>
 				</div>
-			{/each}
-		{/if}
+
+				<div class="text-xs">
+					<a class="w-full text-wrap" href={`${AppRoute.PRODUCTS}/${encodeURIComponent(node.slug)}`}
+						>{node.name}</a
+					>
+				</div>
+			</div>
+		{/each}
 	{/if}
 </div>
