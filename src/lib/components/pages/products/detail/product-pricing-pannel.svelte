@@ -25,12 +25,15 @@
 	import { checkoutStore } from '$lib/stores/app';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { IconButton } from '$lib/components/ui/Button';
-	import Input from '$lib/components/ui/Input/input.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { graphqlClient } from '$lib/client';
 	import { CHECKOUT_ADD_LINE_MUTATION } from '$lib/stores/api/checkout';
 	import { clientSideGetCookieOrDefault, getCookieByKey } from '$lib/utils/cookies';
 	import { Alert } from '$lib/components/ui/Alert';
+	import { Input } from '$lib/components/ui/Input';
+	import { Modal } from '$lib/components/ui/Modal';
+	import { MegaMenu } from '$lib/components/ui/levelSelector';
+	import { VIETNAM_COUNTRY_UNITS } from '$lib/utils/countries';
 
 	type Props = {
 		productInformation: Omit<Product, 'variants'>;
@@ -44,6 +47,7 @@
 	let selectedVariant = $state<ProductVariant>();
 	let isAddingItemToCart = $state(false);
 	let showAlertSelectVariant = $state(false);
+	let openDeliveryModal = $state(false);
 
 	let displayPrice = $derived.by(() => {
 		if (!selectedVariant)
@@ -113,6 +117,8 @@
 
 		return `${defaulShippingAddress.streetAddress1 || defaulShippingAddress.streetAddress2}, ${defaulShippingAddress.cityArea}, ${defaulShippingAddress.city}`;
 	});
+
+	const handleOpenDeliveryModal = () => (openDeliveryModal = true);
 </script>
 
 {#snippet slotText()}
@@ -169,7 +175,14 @@
 			<span class="text-sm mr-1">
 				{userShippingAddress}
 			</span>
-			<IconButton icon={MapPin} rounded size="xs" variant="light" disabled={isAddingItemToCart} />
+			<IconButton
+				icon={MapPin}
+				rounded
+				size="xs"
+				variant="light"
+				disabled={isAddingItemToCart}
+				onclick={handleOpenDeliveryModal}
+			/>
 		</div>
 	</div>
 
@@ -279,3 +292,14 @@
 		</div>
 	</div>
 </div>
+
+<Modal
+	open={openDeliveryModal}
+	header={tClient('helpText.chooseDeliveryAddress')}
+	closeOnEscape
+	closeOnOutsideClick
+	onClose={() => (openDeliveryModal = false)}
+	onCancel={() => (openDeliveryModal = false)}
+>
+	<MegaMenu items={VIETNAM_COUNTRY_UNITS} onSelect={console.log} onDeselect={console.log} />
+</Modal>

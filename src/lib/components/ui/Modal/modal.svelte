@@ -1,28 +1,12 @@
-<script module lang="ts">
-	export type Props = {
-		size: SocialSize;
-		open: boolean;
-		header: string;
-		children: Snippet;
-		okText?: string;
-		cancelText?: string;
-		onOk?: () => void;
-		onCancel?: () => void;
-		onClose?: () => void;
-		hideHeader?: boolean;
-		hideFooter?: boolean;
-	};
-</script>
-
 <script lang="ts">
 	import { CloseX } from '$lib/components/icons';
-	import type { Snippet } from 'svelte';
 	import { Button, IconButton } from '../Button';
-	import type { SocialSize } from '../common';
-	import { modalSizeMap } from './types';
+	import { modalSizeMap, type ModalProps } from './types';
 	import { fly } from 'svelte/transition';
 	import { tClient } from '$i18n';
 	import { noop } from '$lib/utils/utils';
+	import { clickOutside } from '$lib/actions/click-outside';
+	import { focusOutside } from '$lib/actions/focus-outside';
 
 	let {
 		size = 'md',
@@ -35,13 +19,26 @@
 		onCancel = noop,
 		onClose = noop,
 		hideHeader = false,
-		hideFooter = false
-	}: Props = $props();
+		hideFooter = false,
+		closeOnOutsideClick,
+		closeOnEscape
+	}: ModalProps = $props();
 </script>
 
 {#if open}
-	<div class="fixed bg-black/50 z-50 top-0 left-0 bottom-0 right-0 overflow-x-hidden overflow-y-auto flex items-center justify-center">
-		<div class={`relative w-full max-h-full ${modalSizeMap[size]}`}>
+	<div
+		class="fixed bg-black/50 z-50 top-0 left-0 bottom-0 right-0 overflow-x-hidden overflow-y-auto flex items-center justify-center"
+	>
+		<div
+			class={`relative w-full max-h-full ${modalSizeMap[size]}`}
+			use:clickOutside={{
+				onOutclick: () => closeOnOutsideClick && onClose(),
+				onEscape: () => closeOnEscape && onClose
+			}}
+			use:focusOutside={{
+				onFocusOut: () => closeOnOutsideClick && onClose()
+			}}
+		>
 			<!-- content -->
 			<div class="bg-white rounded-lg shadow-sm dark:bg-gray-700" transition:fly={{ y: 20 }}>
 				<!-- header -->

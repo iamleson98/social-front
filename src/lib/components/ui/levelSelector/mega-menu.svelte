@@ -22,11 +22,10 @@
 		selectedItems = [...selectedItems.slice(0, level), item];
 	};
 
-	$effect(() => {
-		if (checked) {
-			onSelect(selectedItems[selectedItems.length - 1]);
-		} else {
-			onDeselect?.();
+	$inspect(checked).with((type, value) => {
+		if (type === 'update') {
+			if (value) onSelect(selectedItems[selectedItems.length - 1]);
+			else onDeselect?.();
 		}
 	});
 </script>
@@ -41,11 +40,11 @@
 	<div class="flex items-center gap-2 p-2">
 		<BreadCrumb
 			items={selectedItems.map((item) => ({ value: item.title }))}
-			class="text-blue-600"
+			class="text-blue-600 text-sm"
 		/>
 
 		{#if selectedItems.length && !selectedItems[selectedItems.length - 1].children?.length}
-			<Checkbox bind:checked title="Select this item" />
+			<Checkbox bind:checked title="Select this item" size="sm" />
 		{/if}
 	</div>
 </div>

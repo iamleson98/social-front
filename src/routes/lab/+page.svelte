@@ -17,8 +17,6 @@
 	let option = $state(1);
 
 	const add = () => option += 1;
-
-	console.log(option);
 </script>
 
 <Button onclick={add}>add</Button>

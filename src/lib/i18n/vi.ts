@@ -140,5 +140,8 @@ export default {
 	},
 	btn: {
 		apply: 'Áp dụng',
+	},
+	helpText: {
+		chooseDeliveryAddress: 'Vui lòng chọn điểm giao hàng',
 	}
 };

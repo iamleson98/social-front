@@ -140,5 +140,8 @@ export default {
 	},
 	btn: {
 		apply: '조회',
+	},
+	helpText: {
+		chooseDeliveryAddress: '배송지를 선택해주세요',
 	}
 };

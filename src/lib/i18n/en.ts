@@ -140,5 +140,8 @@ export default {
 	},
 	btn: {
 		apply: 'Apply',
+	},
+	helpText: {
+		chooseDeliveryAddress: 'Please choose delivery address',
 	}
 };

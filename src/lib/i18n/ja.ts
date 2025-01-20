@@ -140,5 +140,8 @@ export default {
 	},
 	btn: {
 		apply: '適用',
+	},
+	helpText: {
+		chooseDeliveryAddress: '配送先を選択してください',
 	}
 };
