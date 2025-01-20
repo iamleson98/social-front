@@ -1,4 +1,4 @@
-import type { SelectItemProps } from "$lib/components/ui/levelSelector/types";
+import type { SelectItemProps } from "$lib/components/ui/MegaMenu/types";
 import type { CategoryCountableConnection } from "$lib/gql/graphql";
 import { writable } from "svelte/store";
 

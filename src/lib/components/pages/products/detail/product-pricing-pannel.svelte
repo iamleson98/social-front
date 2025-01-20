@@ -32,7 +32,7 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
-	import { MegaMenu } from '$lib/components/ui/levelSelector';
+	import { MegaMenu } from '$lib/components/ui/MegaMenu';
 	import { VIETNAM_COUNTRY_UNITS } from '$lib/utils/countries';
 
 	type Props = {

@@ -12,10 +12,7 @@
 		percent = 50
 	}: Props = $props();
 
-	$effect(() => {
-		if (percent < 0) percent = 0;
-		if (percent > 100) percent = 100;
-	});
+	if (percent < 0 || percent > 100) throw new Error('percent must be between 0 and 100');
 </script>
 
 <div class={`${bgColorClass} rounded-full h-3 min-w-28`}>

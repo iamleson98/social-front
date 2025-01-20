@@ -1,4 +1,4 @@
-import type { SelectItemProps } from '$lib/components/ui/levelSelector/types';
+import type { SelectItemProps } from '$lib/components/ui/MegaMenu/types';
 import vietnam from './vietnam.json';
 
 type AdministrationUnitType = 'province' | 'district' | 'ward';

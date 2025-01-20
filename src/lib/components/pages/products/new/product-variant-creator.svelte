@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { tClient } from '$i18n';
-	import { Plus, Trash, type IconType } from '$lib/components/icons';
+	import { Plus, Trash } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
-	import { type SocialColor } from '$lib/components/ui/common';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import {
 		MultiSelect,
@@ -24,6 +23,7 @@
 	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 	import { CurrencyIconMap, type CurrencyCode } from '$lib/utils/consts';
 	import { onMount } from 'svelte';
+	import { type ButtonProps } from '$lib/components/ui/Button/button.types';
 
 	type VariantManifestProps = {
 		name: {
@@ -41,7 +41,6 @@
 		price: number;
 		costPrice: number;
 	};
-	type variantAction = (variantIdx: number) => void;
 	type QuickFillHighlight =
 		| 'td-channel-hl'
 		| 'td-price-hl'
@@ -300,7 +299,7 @@
 		variantsInputDetails = newVariantDetails;
 	};
 
-	const handleDeleteVariant: variantAction = (variantIdx: number) => {
+	const handleDeleteVariant = (variantIdx: number) => {
 		const newVariantManifests = variantManifests.filter((_, idx) => idx !== variantIdx);
 		if (!newVariantManifests.length) {
 			variantManifests = [];
@@ -318,7 +317,7 @@
 		}));
 	};
 
-	const handleAddVariantValue: variantAction = (variantIdx: number) => {
+	const handleAddVariantValue = (variantIdx: number) => {
 		const newVariantManifests = variantManifests.map((variant, idx) => {
 			if (idx !== variantIdx || variant.values.length >= MAX_VALUES_PER_VARIANT) return variant;
 
@@ -429,25 +428,9 @@
 	};
 </script>
 
-{#snippet variantActionButton(
-	tip: string,
-	variantIdx: number,
-	onclick: variantAction,
-	disabled: boolean,
-	color: SocialColor,
-	text: string,
-	endIcon: IconType
-)}
-	<div class="tooltip grow shrink" data-tip={tip}>
-		<Button
-			{disabled}
-			onclick={() => onclick(variantIdx)}
-			variant="light"
-			{color}
-			fullWidth
-			size="sm"
-			{endIcon}
-		>
+{#snippet variantActionButton({ title, text = '', ...rest }: ButtonProps & { text?: string })}
+	<div class="tooltip grow shrink" data-tip={title}>
+		<Button {...rest}>
 			{text}
 		</Button>
 	</div>
@@ -523,24 +506,26 @@
 					</div>
 				{/each}
 				<div class="flex justify-center items-center gap-1.5 mt-4">
-					{@render variantActionButton(
-						tClient('product.delVariant'),
-						variantIdx,
-						handleDeleteVariant,
-						false,
-						'red',
-						'',
-						Trash
-					)}
-					{@render variantActionButton(
-						tClient('product.addValue'),
-						variantIdx,
-						handleAddVariantValue,
-						variant.values.length >= MAX_VALUES_PER_VARIANT,
-						'blue',
-						`${variantManifests[variantIdx].values.length}/${MAX_VALUES_PER_VARIANT}`,
-						Plus
-					)}
+					{@render variantActionButton({
+						title: tClient('product.delVariant'),
+						onclick: () => handleDeleteVariant(variantIdx),
+						color: 'red',
+						endIcon: Trash,
+						variant: 'light',
+						size: 'sm',
+						fullWidth: true
+					})}
+					{@render variantActionButton({
+						title: tClient('product.addValue'),
+						onclick: () => handleAddVariantValue(variantIdx),
+						color: 'blue',
+						endIcon: Plus,
+						variant: 'light',
+						disabled: variant.values.length >= MAX_VALUES_PER_VARIANT,
+						text: `${variantManifests[variantIdx].values.length}/${MAX_VALUES_PER_VARIANT}`,
+						size: 'sm',
+						fullWidth: true
+					})}
 				</div>
 			</div>
 		{/each}

@@ -51,7 +51,7 @@
 							icon={CloseX}
 							size="xs"
 							variant="light"
-							color="red"
+							color="gray"
 							onclick={onClose}
 							rounded
 						/>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { MegaMenu } from '$lib/components/ui/levelSelector';
+	import { MegaMenu } from '$lib/components/ui/MegaMenu';
 	import SlideShow from '$lib/components/pages/lab/slide-show.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/badge';

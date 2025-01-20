@@ -22,11 +22,9 @@
 		selectedItems = [...selectedItems.slice(0, level), item];
 	};
 
-	$inspect(checked).with((type, value) => {
-		if (type === 'update') {
-			if (value) onSelect(selectedItems[selectedItems.length - 1]);
-			else onDeselect?.();
-		}
+	$effect(() => {
+		if (checked) onSelect(selectedItems[selectedItems.length - 1]);
+		else onDeselect?.();
 	});
 </script>
 

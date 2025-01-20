@@ -7,7 +7,7 @@
 	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 	import { operationStore } from '$lib/stores/api/operation';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { MegaMenu } from '$lib/components/ui/levelSelector';
+	import { MegaMenu } from '$lib/components/ui/MegaMenu';
 	import { categoryIdStore, convertCategoryEdgesToMenuSelect } from './utils';
 	import { tClient } from '$i18n';
 

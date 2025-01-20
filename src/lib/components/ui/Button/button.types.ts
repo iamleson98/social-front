@@ -17,7 +17,7 @@ export type ButtonProps = {
   radius?: SocialRadius;
   loading?: boolean;
   fullWidth?: boolean;
-  children?: Snippet;
+  children?: string | number | Snippet;
   startIcon?: IconType;
   endIcon?: IconType;
   clickDebounceOptions?: ClickDebounceOpts;
