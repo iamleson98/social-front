@@ -1,0 +1,62 @@
+{
+  "서울특별시": {
+    "engName": "Seoul",
+    "도봉구": {
+      "engName": "Dobong-gu"
+    },
+    "동대문구": {
+      "engName": "Dongdaemun-gu"
+    },
+    "동작구": {
+      "engName": "Dongjak-gu"
+    }
+  },
+  "부산광역시": {
+    "engName": "Busan"
+  },
+  "대구광역시": {
+    "engName": "Daegu"
+  },
+  "인천광역시": {
+    "engName": "Incheon"
+  },
+  "광주광역시": {
+    "engName": "Gwangju"
+  },
+  "대전광역시": {
+    "engName": "Daejeon"
+  },
+  "울산광역시": {
+    "engName": "Ulsan"
+  },
+  "세종특별자치시": {
+    "engName": "Sejong"
+  },
+  "경기도": {
+    "engName": "Gyeonggi-do"
+  },
+  "강원특별자치도": {
+    "engName": "Gangwon-do"
+  },
+  "충청북도": {
+    "engName": "Chungcheongbuk-do"
+  },
+  "충청남도": {
+    "engName": "Chungcheongnam-do"
+  },
+  "전북특별자치도": {
+    "engName": "Jeonbuk-do"
+  },
+  "전라남도": {
+    "engName": "Jeonnam-do"
+  },
+  "경상북도": {
+    "engName": "Gyeongsangbuk-do"
+  },
+  "경상남도": {
+    "engName": "Gyeongsangnam-do"
+  },
+  "제주특별자치도": {
+    "engName": "Jeju-do"
+  }
+}

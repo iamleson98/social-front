@@ -1,18 +1,8 @@
 <script lang="ts" generics="T">
-	import { type Snippet } from 'svelte';
-	import type { Props } from './accordion.svelte';
 	import Accordion from './accordion.svelte';
 	import { tClient } from '$i18n';
 	import { ChevronDown, Icon } from '$lib/components/icons';
-
-	type AccordionListProps = Omit<Props, 'children'> & {
-		child: Snippet<[T]>;
-		items: T[];
-		/** default `all` */
-		partialDisplay?: number | 'all';
-		/** default `1000`. duration for loading indicator to show before showing more items */
-		loadingMoreTimeout?: number;
-	};
+	import type { AccordionListProps } from './types';
 
 	const {
 		items,
@@ -20,7 +10,7 @@
 		child,
 		loadingMoreTimeout = 1000,
 		...rest
-	}: AccordionListProps = $props();
+	}: AccordionListProps<T> = $props();
 
 	let numOfItemsToShow = $state(partialDisplay === 'all' ? items.length : partialDisplay);
 	let showingMore = $state(false);

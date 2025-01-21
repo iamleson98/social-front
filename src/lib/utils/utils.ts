@@ -140,15 +140,15 @@ export type PredicateFunc<T> = (obj: T) => boolean;
 
 export const recursiveSearch = <T extends { children?: T[] }>(
 	arr: T[],
-	prec: PredicateFunc<T>
+	predicate: PredicateFunc<T>
 ): T | null => {
 	if (arr.length === 0) return null;
 
 	for (const obj of arr) {
-		if (prec(obj)) return obj;
+		if (predicate(obj)) return obj;
 
 		if (obj.children) {
-			const res = recursiveSearch(obj.children, prec);
+			const res = recursiveSearch(obj.children, predicate);
 			if (res) {
 				return res;
 			}

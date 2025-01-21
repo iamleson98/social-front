@@ -21,7 +21,7 @@ export const editorConfig: CreateEditorArgs = {
 
 export type InlineType = Exclude<TextFormatType, 'code'>;
 
-export const defaultInlineFormats: Readonly<Record<InlineType, Styleformat>> = {
+export const DEFAULT_INLINE_FORMATS: Readonly<Record<InlineType, Styleformat>> = {
   bold: {
     icon: Bold,
     active: false,
@@ -98,7 +98,6 @@ export const defaultBlockFormats: Readonly<Record<BlockType, Styleformat>> = {
     active: false,
     tip: 'Quote',
   },
-
 };
 
 export type Styleformat = {

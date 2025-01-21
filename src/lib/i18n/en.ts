@@ -116,6 +116,10 @@ export default {
 		fromPrd: 'from product',
 		toPrd: 'to product',
 		addDiscountRange: 'Add discount range',
+		weight: 'Weight',
+		length: 'Length',
+		width: 'Width',
+		height: 'Height',
 	},
 	error: {
 		invalidSlug: 'Invalid slug value',

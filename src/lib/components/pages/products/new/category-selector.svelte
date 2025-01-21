@@ -29,21 +29,17 @@
 	});
 </script>
 
-{#snippet loadingCategorySkeleton()}
-	<div class="flex items-center gap-1">
-		{#each [null, null] as _, idx (idx)}
-			<SkeletonContainer class="w-1/3">
-				<Skeleton class="w-3/4 h-2" />
-			</SkeletonContainer>
-		{/each}
-	</div>
-{/snippet}
-
 <div class="mb-3">
 	<span class="text-sm">{tClient('product.prdCategory')}</span>
 	<div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
 		{#if $categoriesStore.fetching}
-			{@render loadingCategorySkeleton()}
+			<div class="flex items-center gap-1">
+				{#each [null, null] as _, idx (idx)}
+					<SkeletonContainer class="w-1/3">
+						<Skeleton class="w-3/4 h-2" />
+					</SkeletonContainer>
+				{/each}
+			</div>
 		{:else if $categoriesStore.error}
 			<Alert variant="error" bordered size="sm">
 				{$categoriesStore.error.message}

@@ -146,6 +146,8 @@
 		<DescriptionEditorToolbar disabled={!isEditable || !activeEditor} editor={activeEditor} />
 		<div
 			bind:this={ref}
+			{id}
+			{style}
 			aria-activedescendant={!isEditable ? undefined : ariaActiveDescendantID}
 			aria-autocomplete={!isEditable ? 'none' : ariaAutoComplete}
 			aria-controls={!isEditable ? undefined : ariaControls}
@@ -159,12 +161,10 @@
 			autocapitalize={autoCapitalize}
 			contenteditable={isEditable}
 			data-testid={testid}
-			{id}
 			role="textbox"
 			tabindex="0"
 			spellcheck="true"
-			{style}
-			class={`${className} border rounded-sm text-sm block relative tab-size-[1] outline-0 outline-hidden p-2.5 min-h-36 tablet:p-2 bg-white`}
+			class={`${className} ring ring-gray-200 rounded focus:ring-2 focus:ring-blue-500 text-sm block relative tab-size-[1] outline-0 outline-hidden p-2.5 min-h-36 tablet:p-2 bg-white`}
 		></div>
 	</div>
 </div>

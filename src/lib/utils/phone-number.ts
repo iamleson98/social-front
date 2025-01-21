@@ -9,7 +9,7 @@ export const getPhoneNumberInstance = (phone: string, countryCode: CountryCode |
 	try {
 		const phoneNumber = parsePhoneNumberWithError(phone, countryCode as PhoneNumberLibCountryCode);
 		return phoneNumber;
-	} catch (error) {
+	} catch {
 		return null;
 	}
 };

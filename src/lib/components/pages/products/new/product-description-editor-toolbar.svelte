@@ -2,7 +2,7 @@
 	import { ChevronDown, Icon } from '$lib/components/icons';
 	import {
 		defaultBlockFormats,
-		defaultInlineFormats,
+		DEFAULT_INLINE_FORMATS,
 		type BlockType,
 		type InlineType,
 		type Styleformat
@@ -43,7 +43,7 @@
 	let { disabled, editor }: Props = $props();
 
 	let blockFormatState = $state.raw({ ...defaultBlockFormats });
-	let inlineFormatState = $state.raw({ ...defaultInlineFormats });
+	let inlineFormatState = $state.raw({ ...DEFAULT_INLINE_FORMATS });
 
 	let blockFormatType = $state<BlockType>('paragraph');
 	let selectedElementKey = $state<string | null>(null);
@@ -128,13 +128,14 @@
 
 <div class="flex items-center gap-1 mb-2">
 	<!-- block format -->
-	<div class="dropdown dropdown-bottom">
+	<div class="dropdown">
 		<Button endIcon={ChevronDown} size="sm" {disabled} variant="light">click</Button>
-		<ul class="dropdown-content menu bg-base-100 z-10 shadow-sm rounded-sm w-52 mt-2">
+		<ul role="menu" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
 			{#each Object.keys(blockFormatState) as blockKey, idx (idx)}
 				{@const blockFormat = blockFormatState[blockKey as BlockType]}
 				<li>
-					<div
+					<!-- svelte-ignore a11y_missing_attribute -->
+					<a
 						onclick={() => applyBlockFormat(blockKey as BlockType)}
 						class={`rounded-md ${blockFormatType === blockKey ? 'bg-blue-100! text-blue-600!' : ''}`}
 						onkeyup={(e) => e.key === 'Enter' && applyBlockFormat(blockKey as BlockType)}
@@ -143,7 +144,7 @@
 					>
 						<Icon icon={blockFormat.icon} />
 						{blockFormat.tip}
-					</div>
+					</a>
 				</li>
 			{/each}
 		</ul>

@@ -116,6 +116,10 @@ export default {
 		fromPrd: 'từ sản phẩm',
 		toPrd: 'tới sản phẩm',
 		addDiscountRange: 'thêm khoảng giảm giá',
+		weight: 'Cân nặng',
+		length: 'Chiều dài',
+		width: 'Chiều rộng',
+		height: 'Chiều cao',
 	},
 	error: {
 		invalidSlug: 'Giá trị slug không hợp lệ',

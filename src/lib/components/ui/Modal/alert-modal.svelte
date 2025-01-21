@@ -2,7 +2,8 @@
 	import { tClient } from '$i18n';
 	import { AlertCircle, Icon } from '$lib/components/icons';
 	import { Button } from '../Button';
-	import Modal, { type Props as ModalProps } from './modal.svelte';
+	import Modal from './modal.svelte';
+	import { type ModalProps } from './types';
 
 	type Props = Omit<ModalProps, 'hideHeader' | 'hideFooter' | 'header' | 'size' | 'onClose'>;
 

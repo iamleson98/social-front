@@ -116,6 +116,10 @@ export default {
 		fromPrd: 'từ sản phẩm',
 		toPrd: 'tới sản phẩm',
 		addDiscountRange: 'thêm khoảng giảm giá',
+		weight: 'Weight',
+		length: 'Length',
+		width: 'Width',
+		height: 'Height',
 	},
 	error: {
 		invalidSlug: '잘못된 슬러그 값',

@@ -1,19 +1,7 @@
-<script lang="ts" module>
-	export type Props = {
-		header: string;
-		headerIcon?: IconType;
-		class?: string;
-		children: Snippet;
-		open?: boolean;
-		/** if `true`, the `open` stays the same as passed in */
-		fixed?: boolean;
-	};
-</script>
-
 <script lang="ts">
-	import { ChevronDown, ChevronUp, Icon, type IconType } from '$lib/components/icons';
-	import type { Snippet } from 'svelte';
+	import { ChevronDown, ChevronUp, Icon } from '$lib/components/icons';
 	import { slide } from 'svelte/transition';
+	import type { AccordionProps } from './types';
 
 	let {
 		header,
@@ -22,7 +10,7 @@
 		open = $bindable(true),
 		fixed = false,
 		headerIcon
-	}: Props = $props();
+	}: AccordionProps = $props();
 
 	const toggle = () => {
 		if (!fixed) open = !open;
@@ -30,12 +18,12 @@
 </script>
 
 <div class={`${className} py-2 px-3 rounded-md text-gray-800`}>
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<div
 		class="flex items-center justify-between cursor-pointer select-none"
 		role="button"
 		tabindex="0"
 		onclick={toggle}
+		onkeydown={(evt) => evt.key === 'Enter' && toggle()}
 	>
 		<div class="text-sm font-semibold flex items-center">
 			{#if headerIcon}

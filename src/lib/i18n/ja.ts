@@ -116,6 +116,10 @@ export default {
 		fromPrd: 'từ sản phẩm',
 		toPrd: 'tới sản phẩm',
 		addDiscountRange: '割引範囲を追加',
+		weight: 'Weight',
+		length: 'Length',
+		width: 'Width',
+		height: 'Height',
 	},
 	error: {
 		invalidSlug: '無効なスラッグ値',
