@@ -35,7 +35,7 @@
 			error?: string;
 		}[];
 	};
-	type CustomStockInput = StockInput & { warehouseName: string; useWarehouse: boolean };
+	type CustomStockInput = StockInput & { warehouseName: string };
 	type ChannelSelectOptionProps = SelectOption & {
 		currency: string;
 		price: number;
@@ -129,8 +129,7 @@
 						warehousesOfChannels.push({
 							warehouse: warehouse.id,
 							warehouseName: warehouse.name,
-							quantity: 0,
-							useWarehouse: false
+							quantity: 0
 						});
 					}
 				}
@@ -394,7 +393,7 @@
 	};
 
 	const handleQuickFillingClick = () => {
-		const canQuickFillingStocks = quickFillingValues.stocks.some((stock) => stock.useWarehouse);
+		const canQuickFillingStocks = quickFillingValues.stocks.some((stock) => !!stock.quantity);
 		const canQuickFillingChannels = quickFillingValues.channels.length > 0;
 
 		if (canQuickFillingChannels || canQuickFillingStocks) {
@@ -413,13 +412,11 @@
 					}));
 				}
 				if (canQuickFillingStocks) {
-					result.stocks = quickFillingValues.stocks
-						.filter((stock) => stock.useWarehouse)
-						.map((stock) => ({
-							warehouse: stock.warehouse,
-							quantity: stock.quantity,
-							warehouseName: stock.warehouseName // this field is needed for displaying
-						}));
+					result.stocks = quickFillingValues.stocks.map((stock) => ({
+						warehouse: stock.warehouse,
+						quantity: stock.quantity,
+						warehouseName: stock.warehouseName // this field is needed for displaying
+					}));
 				}
 
 				return result;
@@ -572,8 +569,8 @@
 						{/if}
 					</div>
 					<!-- PRICING -->
-					{#if quickFillingValues.channels.length}
-						<div class="w-2/7">
+					<div class="w-2/7">
+						{#if quickFillingValues.channels.length}
 							<div class="flex flex-row text-xs">
 								<span class="w-1/2">{tClient('product.price')}</span>
 								<span class="w-1/2">{tClient('product.costPrice')}</span>
@@ -609,8 +606,8 @@
 									</div>
 								{/each}
 							</div>
-						</div>
-					{/if}
+						{/if}
+					</div>
 					<!-- STOCK -->
 					<div class="w-2/7">
 						<div class="text-xs">{tClient('product.stock')}</div>
@@ -622,23 +619,19 @@
 							<div class="max-h-20 overflow-y-auto border border-gray-200 p-2 rounded-lg">
 								{#each quickFillingValues.stocks as stockInput, idx (idx)}
 									<div class="flex items-start flex-row gap-1.5 mt-1">
-										<Checkbox
-											bind:checked={stockInput.useWarehouse}
-											label={stockInput.warehouseName}
-											class="w-1/2"
-											size="sm"
-										/>
+										<span class="w-1/3 text-sm">
+											{stockInput.warehouseName}
+										</span>
 										<Input
 											type="number"
 											placeholder="quantity"
-											class="w-1/2"
+											class="w-2/3"
 											size="xs"
 											onfocus={() => handleFocusHighlightQuickFilling('td-stock-hl')}
 											onblur={() => handleFocusHighlightQuickFilling()}
 											bind:value={stockInput.quantity}
 											variant={stockInput.quantity < 0 ? 'error' : 'info'}
 											subText={stockInput.quantity < 0 ? tClient('error.negativeNumber') : ''}
-											disabled={!stockInput.useWarehouse}
 										/>
 									</div>
 								{/each}
@@ -764,17 +757,16 @@
 								</td>
 								<!-- STOCK -->
 								<td class="stock-td">
-									<!-- <Input type="text" size="sm" placeholder="stock" /> -->
-									<div class="flex flex-col gap-1">
+									<div class="flex flex-col gap-1 max-h-28 overflow-y-auto">
 										{#each variantInputDetail.stocks || [] as stock, idx (idx)}
 											<div class="flex items-start gap-2">
-												<Checkbox
-													size="sm"
-													label={stock['warehouseName' as keyof StockInput] as string}
-												/>
+												<span class="text-xs w-1/3">
+													{stock['warehouseName' as keyof StockInput]}
+												</span>
 												<Input
 													size="xs"
 													placeholder={tClient('product.stock')}
+													class="w-2/3"
 													bind:value={stock.quantity}
 													type="number"
 													variant={stock.quantity < 0 ? 'error' : 'info'}
