@@ -13,6 +13,7 @@ export default {
 		confirmPasswordPlaceholder: 'Vui lòng xác nhận mật khẩu',
 		agreeToTerms: 'Tôi đồng ý với các điều khoản và điều kiện',
 		alreadyHasAccount: 'Bạn đã có tài khoản?',
+		signupSuccess: 'Đăng ký thành công!',
 	},
 	resetPassword: {
 		title: 'Yêu cầu đặt lại mật khẩu',
@@ -116,6 +117,7 @@ export default {
 		noResult: 'Không tìm thấy kết quả. Vui lòng thử lại',
 		failedToLoad: 'Không thể tải dữ liệu. Vui lòng thử lại sau',
 		failedToSignout: 'Không thể đăng xuất. Vui lòng thử lại sau',
+		exceptionError: 'Đã xảy ra lỗi. Vui lòng thử lại sau',
 	},
 	placeholders: {
 		enterPrdName: 'Nhập tên sản phẩm',

@@ -13,6 +13,7 @@ export default {
 		confirmPasswordPlaceholder: 'Please confirm password',
 		agreeToTerms: 'I agree to the terms and conditions',
 		alreadyHasAccount: 'Already have an account?',
+		signupSuccess: 'Signup successful!',
 	},
 	resetPassword: {
 		title: 'Reset Password',
@@ -116,6 +117,7 @@ export default {
 		noResult: 'No result found. Please try again',
 		failedToLoad: 'Failed to load data. Please try again later',
 		failedToSignout: 'Failed to sign out. Please try again later',
+		exceptionError: 'An exception occurred. Please try again later',
 	},
 	placeholders: {
 		enterPrdName: 'Enter product name',

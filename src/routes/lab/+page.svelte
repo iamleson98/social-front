@@ -24,7 +24,9 @@
 	<Button {onclick}>Open</Button>
 {/snippet}
 
-<Menu trigger={openBtn}>MenuItem</Menu>
+<Menu trigger={openBtn} placementOption="bottom-start">
+	MenuItem
+</Menu>
 
 <MegaMenu
 	items={[
