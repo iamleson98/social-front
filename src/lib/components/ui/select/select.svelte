@@ -16,6 +16,7 @@
 	let {
 		options,
 		value = $bindable<string | number | undefined>(),
+		onchange,
 		class: className = '',
 		...rest
 	}: SelectProps = $props();
@@ -75,6 +76,7 @@
 	const handleSelect = (option: SelectOption) => {
 		value = option.value;
 		toggleDropdown(false);
+		onchange?.(value);
 	};
 </script>
 

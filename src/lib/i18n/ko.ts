@@ -120,6 +120,7 @@ export default {
 		length: 'Length',
 		width: 'Width',
 		height: 'Height',
+		noAttributes: 'No attributes found',
 	},
 	error: {
 		invalidSlug: '잘못된 슬러그 값',
@@ -147,5 +148,6 @@ export default {
 	},
 	helpText: {
 		chooseDeliveryAddress: '배송지를 선택해주세요',
+		selectDate: 'Select date',
 	}
 };

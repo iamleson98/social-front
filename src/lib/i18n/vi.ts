@@ -120,6 +120,7 @@ export default {
 		length: 'Chiều dài',
 		width: 'Chiều rộng',
 		height: 'Chiều cao',
+		noAttributes: 'Không có thuộc tính nào',
 	},
 	error: {
 		invalidSlug: 'Giá trị slug không hợp lệ',
@@ -147,5 +148,6 @@ export default {
 	},
 	helpText: {
 		chooseDeliveryAddress: 'Vui lòng chọn điểm giao hàng',
+		selectDate: 'Chọn ngày',
 	}
 };

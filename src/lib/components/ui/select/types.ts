@@ -18,7 +18,8 @@ export type SelectItemprops = {
 export type SelectProps = {
   options: SelectOption[];
   value?: string | number;
-} & Omit<InputProps, 'value'>;
+  onchange?: (value: string | number) => void;
+} & Omit<InputProps, 'value' | 'onchange'>;
 
 export type SelectOptionExtends = SelectOption & Record<string, unknown>;
 

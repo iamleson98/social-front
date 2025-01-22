@@ -1,6 +1,5 @@
 import type { SelectItemProps } from "$lib/components/ui/MegaMenu/types";
 import type { CategoryCountableConnection } from "$lib/gql/graphql";
-import { writable } from "svelte/store";
 
 
 export const convertCategoryEdgesToMenuSelect = (connection: CategoryCountableConnection): SelectItemProps[] => {
@@ -19,5 +18,3 @@ export const convertCategoryEdgesToMenuSelect = (connection: CategoryCountableCo
 
   return items;
 }
-
-export const categoryIdStore = writable<string | null>(null);

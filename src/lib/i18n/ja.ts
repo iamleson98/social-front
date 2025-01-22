@@ -120,6 +120,7 @@ export default {
 		length: 'Length',
 		width: 'Width',
 		height: 'Height',
+		noAttributes: 'No attributes found',
 	},
 	error: {
 		invalidSlug: '無効なスラッグ値',
@@ -147,5 +148,6 @@ export default {
 	},
 	helpText: {
 		chooseDeliveryAddress: '配送先を選択してください',
+		selectDate: 'Select date',
 	}
 };

@@ -1,15 +1,12 @@
-import type { AttributeWhereInput } from '$lib/gql/graphql';
+import type { QueryAttributesArgs } from '$lib/gql/graphql';
 import { gql } from '@urql/core';
 
-export type AttributesVariable = {
-  first: number;
-  channel: string;
-  where?: AttributeWhereInput;
+export type CustomAttributesQueryArgs = {
   /** number of choices to query for given attribute  */
   choiceFirst: number;
   /** cursor to query choices after */
   choiceAfter?: string;
-};
+} & QueryAttributesArgs;
 
 export const PRODUCT_ATTRIBUTES_QUERY = gql`
 query Attributes(

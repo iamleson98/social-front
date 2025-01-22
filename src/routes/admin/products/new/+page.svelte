@@ -9,10 +9,18 @@
 	import ProductVariantCreator from '$lib/components/pages/products/new/product-variant-creator.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Input } from '$lib/components/ui/Input';
+	import type { ProductCreateInput } from '$lib/gql/graphql';
 
 	let now = new Date();
 
 	let productName = $state();
+
+	let productCreateInput = $state<ProductCreateInput>({
+		productType: '',
+		attributes: []
+	});
+
+	const handlePrint = () => console.log(productCreateInput.category);
 </script>
 
 <div class="m-auto rounded-lg bg-white max-w-5xl p-5 text-gray-600">
@@ -25,13 +33,16 @@
 		</div>
 	</div>
 
-	<CategorySelector />
-	<ProductAttributeEditor />
+	<CategorySelector bind:categoryID={productCreateInput.category} />
+	<ProductAttributeEditor
+		categoryID={productCreateInput.category}
+		bind:attributes={productCreateInput.attributes!}
+	/>
 	<ProductDescriptionEditor />
 	<ProductVariantCreator />
 	<DiscountByQuantity />
 	<PackagingAndDelivery />
 	<ProductPreorderEditor />
 
-	<Button size="md" variant="filled" fullWidth>Submit</Button>
+	<Button size="md" variant="filled" fullWidth onclick={handlePrint}>Submit</Button>
 </div>

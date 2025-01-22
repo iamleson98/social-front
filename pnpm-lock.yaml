@@ -56,6 +56,9 @@ importers:
       '@whatwg-node/server-plugin-cookies':
         specifier: ^1.0.3
         version: 1.0.3(@whatwg-node/server@0.9.65)
+      cally:
+        specifier: ^0.7.2
+        version: 0.7.2
       cookie:
         specifier: ^0.6.0
         version: 0.6.0
@@ -2120,6 +2123,9 @@ packages:
     resolution: {integrity: sha512-+q/t7Ekv1EDY2l6Gda6LLiX14rU9TV20Wa3ofeQmwPFZbOMo9DXrLbOjFaaclkXKWidIaopwAObQDqwWtGUjqg==}
     engines: {node: '>= 4.0.0'}
 
+  atomico@1.79.2:
+    resolution: {integrity: sha512-mshhLRMeIltNYbnQnqgnrvJ/uDa8XDfTQcjw3ymOygQqwHIQ4Sp0LcNYMCbACkV3DtV+eDXb9szwU4qMUuGwYQ==}
+
   auto-bind@4.0.0:
     resolution: {integrity: sha512-Hdw8qdNiqdJ8LqT0iK0sVzkFbzg6fhnQqqfWhBDxcHZvU75+B+ayzTy8x+k5Ix0Y92XOhOUlx74ps+bA6BeYMQ==}
     engines: {node: '>=8'}
@@ -2220,6 +2226,9 @@ packages:
   callsites@3.1.0:
     resolution: {integrity: sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==}
     engines: {node: '>=6'}
+
+  cally@0.7.2:
+    resolution: {integrity: sha512-ej7AfqMe3ACjAzqvkiH0ZHRSQzRRsoJlQwpvm6oevkEbMrgFmlxkBXdkxnGj4AvG743KGV/3sw2Ya85cbWqWew==}
 
   camel-case@4.1.2:
     resolution: {integrity: sha512-gxGWBrTT1JuMx6R+o5PTXMmUnhnVzLQ9SNutD4YqKtI6ap897t3tKECYla6gCWEkplXnlNybEkZg9GEGxKFCgw==}
@@ -7622,6 +7631,8 @@ snapshots:
 
   at-least-node@1.0.0: {}
 
+  atomico@1.79.2: {}
+
   auto-bind@4.0.0: {}
 
   available-typed-arrays@1.0.7:
@@ -7777,6 +7788,10 @@ snapshots:
       get-intrinsic: 1.2.7
 
   callsites@3.1.0: {}
+
+  cally@0.7.2:
+    dependencies:
+      atomico: 1.79.2
 
   camel-case@4.1.2:
     dependencies:

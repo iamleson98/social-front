@@ -393,7 +393,7 @@
 	};
 
 	const handleQuickFillingClick = () => {
-		const canQuickFillingStocks = quickFillingValues.stocks.some((stock) => !!stock.quantity);
+		const canQuickFillingStocks = true // quickFillingValues.stocks.some((stock) => !!stock.quantity);
 		const canQuickFillingChannels = quickFillingValues.channels.length > 0;
 
 		if (canQuickFillingChannels || canQuickFillingStocks) {
@@ -638,17 +638,6 @@
 							</div>
 						{/if}
 					</div>
-					<!-- SKU -->
-					<!-- <div class="w-1/5">
-						<Input
-							type="text"
-							placeholder="SKU"
-							size="sm"
-							onfocus={() => handleFocusHighlightQuickFilling('td-sku-hl')}
-							onblur={() => handleFocusHighlightQuickFilling()}
-							bind:value={quickFillingValues.sku}
-						/>
-					</div> -->
 					<!-- APPLY BUTTON -->
 					<div class="w-1/7">
 						<div class="text-xs">{tClient('common.action')}</div>

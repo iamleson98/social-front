@@ -120,6 +120,7 @@ export default {
 		length: 'Length',
 		width: 'Width',
 		height: 'Height',
+		noAttributes: 'No attributes found',
 	},
 	error: {
 		invalidSlug: 'Invalid slug value',
@@ -147,5 +148,6 @@ export default {
 	},
 	helpText: {
 		chooseDeliveryAddress: 'Please choose delivery address',
+		selectDate: 'Select date',
 	}
 };

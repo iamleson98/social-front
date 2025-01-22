@@ -8,8 +8,14 @@
 	import { operationStore } from '$lib/stores/api/operation';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { MegaMenu } from '$lib/components/ui/MegaMenu';
-	import { categoryIdStore, convertCategoryEdgesToMenuSelect } from './utils';
+	import { convertCategoryEdgesToMenuSelect } from './utils';
 	import { tClient } from '$i18n';
+
+	type Props = {
+		categoryID?: string | null;
+	};
+
+	let { categoryID = $bindable<string | null | undefined>() }: Props = $props();
 
 	const NUMBER_OF_CATEGORIES_PER_FETCH = 35;
 
@@ -50,8 +56,8 @@
 			)}
 			<MegaMenu
 				{items}
-				onSelect={(item) => categoryIdStore.set(item.value as string)}
-				onDeselect={() => categoryIdStore.set(null)}
+				onSelect={(item) => (categoryID = item.value as string)}
+				onDeselect={() => (categoryID = null)}
 			/>
 		{/if}
 	</div>
