@@ -1,4 +1,5 @@
 <script lang="ts">
+	import 'cally'; // for datetime component
 	import { tClient } from '$i18n';
 	import CategorySelector from '$lib/components/pages/products/new/category-selector.svelte';
 	import DiscountByQuantity from '$lib/components/pages/products/new/discount-by-quantity.svelte';

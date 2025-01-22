@@ -5,7 +5,6 @@
 	import { type Snippet } from 'svelte';
 	import Footer from '$lib/components/common/footer.svelte';
 	import { AlertListener } from '$lib/components/ui/Modal';
-	import 'cally'; // for datetime component
 	import '../app.css';
 
 	interface Props {
