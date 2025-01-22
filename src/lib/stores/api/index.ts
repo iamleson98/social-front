@@ -12,5 +12,3 @@ export {
 	CATEGORY_DETAIL_QUERY_STORE,
 	PRODUCT_VARIANTS_BY_IDS,
 } from './product';
-
-// export { operationStore } from './operation';

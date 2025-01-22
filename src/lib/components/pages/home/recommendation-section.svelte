@@ -7,16 +7,15 @@
 	import { PROMOTIONS_QUERY } from '$lib/stores/app/discount';
 	import { AppRoute } from '$lib/utils';
 
-	const promotionBatch = 4;
+	const PROMOTION_FIRST = 4;
 
-	// let fetchingPromotions = $state(true);
 	let promotionEndCursor = $state<string | null>(null);
 
 	const promotionsStore = operationStore<Pick<Query, 'promotions'>, QueryPromotionArgs>({
 		kind: 'query',
 		query: PROMOTIONS_QUERY,
 		variables: {
-			first: promotionBatch,
+			first: PROMOTION_FIRST,
 			after: (() => (promotionEndCursor ? promotionEndCursor : undefined))()
 		},
 		context: {

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { tClient } from '$i18n';
 	import { Box, CategoryPlus, InforCircle } from '$lib/components/icons';
-	import { Tab, type TabItem } from '$lib/components/ui/Tab';
+	import { type TabItem } from '$lib/components/ui/Tab';
 	import { type Snippet } from 'svelte';
 	import type { LayoutServerData } from './$types';
 	import { page } from '$app/state';

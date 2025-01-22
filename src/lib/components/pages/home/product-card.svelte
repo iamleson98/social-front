@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { tClient } from '$i18n';
-	import { Heart, OpenEye, ShoppingBagPlus } from '$lib/components/icons';
+	import { Heart, ShoppingBagPlus } from '$lib/components/icons';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button, IconButton } from '$lib/components/ui/Button';
-	import { Progress } from '$lib/components/ui/Progress';
 	import { AppRoute } from '$lib/utils';
 	import { defaultChannel, MAX_RATING, MIN_RATING } from '$lib/utils/consts';
 	import { clamp, formatMoney } from '$lib/utils/utils';
@@ -58,7 +57,11 @@
 				{:else}
 					<div>{tClient('product.noVote')}</div>
 				{/if}
-				<Progress percent={((rating as number) / MAX_RATING) * 100} />
+				<progress
+					class="progress progress-warning min-w-28"
+					max="100"
+					value={((rating as number) / MAX_RATING) * 100}
+				></progress>
 			</div>
 		</div>
 
@@ -73,7 +76,6 @@
 			</p>
 		</div>
 
-		<!-- <Button variant="outline" startIcon={OpenEye} size="sm" fullWidth class="mb-1">Preview</Button> -->
 		<Button variant="filled" startIcon={ShoppingBagPlus} size="sm" fullWidth>Add to cart</Button>
 	</div>
 </div>

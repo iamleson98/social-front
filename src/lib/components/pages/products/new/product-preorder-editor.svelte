@@ -1,25 +1,16 @@
 <script lang="ts">
 	import { tClient } from '$i18n';
-	import { Checkbox, Input, RadioButton } from '$lib/components/ui/Input';
+	import { Checkbox, Input } from '$lib/components/ui/Input';
 
 	type Preorder = {
 		isPreorder: boolean;
 		daysToShip: number;
 	};
 
-	type ProductCondition = {
-		isNew: boolean;
-		qualityPercent?: number; // if new, then this is not needed
-	};
-
 	let preorderData = $state<Preorder>({
 		isPreorder: false,
 		daysToShip: 0
 	});
-
-	// let productCondition = $state.raw<ProductCondition>({
-	// 	isNew: true
-	// });
 </script>
 
 <div class="mb-3">

@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 @plugin "daisyui" {
-  include: dropdown, menu, checkbox, tooltip, tab, radio;
+  include: dropdown, menu, checkbox, tooltip, tab, radio, progress;
   themes: light --default, dark --prefersdark;
 }
 

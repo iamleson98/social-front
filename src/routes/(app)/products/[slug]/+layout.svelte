@@ -20,8 +20,9 @@
 	import { onMount, type Snippet } from 'svelte';
 	import Button from '$lib/components/ui/Button/Button.svelte';
 	import { slideShowManager } from '$lib/stores/ui/slideshow';
+	import type { TabItem } from '$lib/components/ui/Tab';
 
-	interface Props {
+	type Props = {
 		data: LayoutServerData;
 		children: Snippet;
 	}
@@ -33,32 +34,30 @@
 		disableScrollHandling();
 	});
 
-	type TabType = {
-		name: string;
-		icon: IconType;
-		path: string;
-	};
-
-	const tabs: TabType[] = [
+	const tabs: TabItem[] = [
 		{
-			name: tClient('product.tabDescription'),
-			path: `${AppRoute.PRODUCTS}/${page.params.slug}`,
-			icon: FileText
+			title: tClient('product.tabDescription'),
+			href: `${AppRoute.PRODUCTS}/${page.params.slug}`,
+			icon: FileText,
+			active: false
 		},
 		{
-			name: tClient('product.tabAttributes'),
-			path: `${AppRoute.PRODUCTS}/${page.params.slug}/attributes`,
-			icon: SettingCheck
+			title: tClient('product.tabAttributes'),
+			href: `${AppRoute.PRODUCTS}/${page.params.slug}/attributes`,
+			icon: SettingCheck,
+			active: false
 		},
 		{
-			name: tClient('product.tabFeedBack'),
-			path: `${AppRoute.PRODUCTS}/${page.params.slug}/customer-feedbacks`,
-			icon: HeadSet
+			title: tClient('product.tabFeedBack'),
+			href: `${AppRoute.PRODUCTS}/${page.params.slug}/customer-feedbacks`,
+			icon: HeadSet,
+			active: false
 		},
 		{
-			name: tClient('product.tabPackaging'),
-			path: `${AppRoute.PRODUCTS}/${page.params.slug}/packaging`,
-			icon: PackageExport
+			title: tClient('product.tabPackaging'),
+			href: `${AppRoute.PRODUCTS}/${page.params.slug}/packaging`,
+			icon: PackageExport,
+			active: false
 		}
 	];
 
@@ -134,15 +133,15 @@
 
 		<div class="flex items-center gap-2 mb-4">
 			{#each tabs as tab, idx (idx)}
-				<a role="tab" class="inline" href={tab.path}>
+				<a role="tab" class="inline" href={tab.href}>
 					<Button
-						class={`${page.url.pathname === tab.path ? '!bg-blue-100 !text-blue-600 hover:bg-blue-100' : ''} tablet:h-full tablet:py-1`}
+						class={`${page.url.pathname === tab.href ? '!bg-blue-100 !text-blue-600 hover:bg-blue-100' : ''} tablet:h-full tablet:py-1`}
 						startIcon={tab.icon}
 						size="xs"
 						variant="light"
 						color="gray"
 					>
-						{tab.name}
+						{tab.title}
 					</Button>
 				</a>
 			{/each}
@@ -153,7 +152,7 @@
 </div>
 
 <style>
-	@import "tailwindcss/theme";
+	@import 'tailwindcss/theme';
 
 	.breadcrumb > li:not(:last-child) {
 		@apply text-blue-700;

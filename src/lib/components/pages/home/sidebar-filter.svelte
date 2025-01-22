@@ -6,8 +6,7 @@
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { IconButton } from '$lib/components/ui/Button';
-	import { Input, RadioButton } from '$lib/components/ui/Input';
-	import { Progress } from '$lib/components/ui/Progress';
+	import { Input } from '$lib/components/ui/Input';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import {
 		OrderDirection,
@@ -36,9 +35,9 @@
 		ProductOrderField.MinimalPrice
 	].map((value) => ({ value, label: value.toLowerCase().replace('_', ' ') }));
 
-	const ratings = [5, 4, 3, 2, 1];
+	const RATINGS = [5, 4, 3, 2, 1];
 
-	let selectedRating = $state(ratings[0]);
+	let selectedRating = $state(RATINGS[0]);
 
 	const sortingIcons: Record<OrderDirection, IconType> = {
 		ASC: ArrowUp,
@@ -114,9 +113,9 @@
 				type="number"
 				min={0}
 				size="sm"
-				bind:value={(
-					($productFilterParamStore.filter as ProductFilterInput).price as PriceRangeInput
-				).gte}
+				bind:value={
+					(($productFilterParamStore.filter as ProductFilterInput).price as PriceRangeInput).gte
+				}
 				startIcon={CurrencyIconMap[currency]}
 				variant={priceRangeError ? 'error' : 'info'}
 			/>
@@ -127,9 +126,9 @@
 				size="sm"
 				startIcon={CurrencyIconMap[currency]}
 				variant={priceRangeError ? 'error' : 'info'}
-				bind:value={(
-					($productFilterParamStore.filter as ProductFilterInput).price as PriceRangeInput
-				).lte}
+				bind:value={
+					(($productFilterParamStore.filter as ProductFilterInput).price as PriceRangeInput).lte
+				}
 			/>
 		</div>
 		{#if priceRangeError}
@@ -142,18 +141,17 @@
 	<!-- rating filter -->
 	<div class="mb-4">
 		<div class="text-xs mb-2">{tClient('common.score')}</div>
-		{#each ratings as rating, idx (idx)}
-			<div class="flex items-center gap-1 mb-1.5">
+		{#each RATINGS as rating, idx (idx)}
+			<div class="flex items-center gap-1 mb-1">
 				<span class="text-xs font-semibold text-blue-600 w-1/4">
 					{rating}
 					{tClient('common.star')}
 				</span>
 				<div class="w-3/4">
-					<Progress percent={rating * 20} />
+					<progress class="progress progress-warning min-w-28" max="100" value={rating * 20}></progress>
 				</div>
 
 				<div class="ml-1">
-					<!-- <RadioButton value={rating} bind:group={selectedRating} name="rating" /> -->
 					<input
 						type="radio"
 						name="rating"

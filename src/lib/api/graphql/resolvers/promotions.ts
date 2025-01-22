@@ -44,7 +44,6 @@ export const resolvePromotions = async function (root: unknown, { first, last, s
       predicate = pm => pm.name;
   }
 
-
   const pageInfo = createGraphqlPageInfo(paginOpts, promotions);
 
   const queryLimit = getLimit(paginOpts);

@@ -3,7 +3,7 @@
 	import { Plus, Trash } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
-	import { Checkbox, Input } from '$lib/components/ui/Input';
+	import { Input } from '$lib/components/ui/Input';
 	import {
 		MultiSelect,
 		type SelectOption,
