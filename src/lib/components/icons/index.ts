@@ -76,6 +76,7 @@ export { default as Phone } from './tabler--phone.svelte';
 export { default as Building } from './tabler--building.svelte';
 export { default as Edit } from './tabler--edit.svelte';
 export { default as CurrencyEuror } from './tabler--currency-euror.svelte'
+export { default as MdiWeightKg } from './mdi--weight-kg.svelte';
 
 export { default as Icon } from './icon.svelte';
 export { AlertHexagonFilled };

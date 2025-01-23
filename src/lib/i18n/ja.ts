@@ -121,6 +121,10 @@ export default {
 		width: 'Width',
 		height: 'Height',
 		noAttributes: 'No attributes found',
+		prdSlug: 'Product Slug',
+		seo: 'Product SEO',
+		seoTitle: 'product SEO title',
+		seoDescription: 'product SEO description',
 	},
 	error: {
 		invalidSlug: '無効なスラッグ値',

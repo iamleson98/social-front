@@ -25,7 +25,7 @@
 	type Props = {
 		data: LayoutServerData;
 		children: Snippet;
-	}
+	};
 
 	let { data, children }: Props = $props();
 
@@ -154,10 +154,7 @@
 <style>
 	@import 'tailwindcss/theme';
 
-	.breadcrumb > li:not(:last-child) {
-		@apply text-blue-700;
-	}
 	.breadcrumb > li {
-		@apply flex items-center;
+		@apply flex items-center not-last:text-blue-700;
 	}
 </style>

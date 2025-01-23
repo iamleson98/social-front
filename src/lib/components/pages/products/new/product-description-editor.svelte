@@ -48,6 +48,7 @@
 		id?: string;
 		style?: string;
 		testid?: string;
+		description?: unknown;
 	};
 
 	let {
@@ -64,7 +65,8 @@
 		testid,
 		id,
 		class: className = '',
-		style
+		style,
+		description = $bindable()
 	}: Props = $props();
 
 	let activeEditor = $state<LexicalEditor | undefined>(undefined);

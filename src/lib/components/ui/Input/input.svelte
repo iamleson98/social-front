@@ -4,7 +4,7 @@
 	import { randomID } from '$lib/utils/utils';
 	import { debounceInput } from '$lib/actions/input-debounce';
 	import { tClient } from '$i18n';
-	import { SIZE_MAP } from '$lib/utils/consts';
+	import { INPUT_BUTTON_SIZE_MAP, TEXT_AREA_SIZE_MAP } from '$lib/utils/consts';
 	import { INPUT_LABEL_SIZE_STYLE_MAP, INPUT_TYPES, type InputProps } from './input.types';
 
 	let {
@@ -17,12 +17,13 @@
 		class: className = '',
 		size = 'md',
 		action,
-		ref = $bindable<HTMLInputElement>(),
+		ref = $bindable<HTMLInputElement | HTMLTextAreaElement>(),
 		inputDebounceOption,
 		selectShortcutOptions = [],
 		value = $bindable<string | number>(),
 		required,
 		inputClass = '',
+		component = 'input',
 		...rest
 	}: InputProps = $props();
 </script>
@@ -44,17 +45,31 @@
 					<Icon icon={startIcon} />
 				</div>
 			{/if}
-			<input
-				bind:this={ref}
-				{id}
-				{placeholder}
-				{required}
-				bind:value
-				use:shortcuts={selectShortcutOptions}
-				use:debounceInput={inputDebounceOption}
-				class={`w-full text-sm rounded-lg ring-1 focus:ring-2 inline-block px-2.5 ${inputClass} ${INPUT_TYPES[variant].bg} ${startIcon ? 'ps-8' : ''} ${SIZE_MAP[size]}`}
-				{...rest}
-			/>
+			{#if component === 'input'}
+				<input
+					bind:this={ref}
+					{id}
+					{placeholder}
+					{required}
+					bind:value
+					use:shortcuts={selectShortcutOptions}
+					use:debounceInput={inputDebounceOption}
+					class={`w-full text-sm rounded-lg ring-1 focus:ring-2 inline-block px-2.5 ${inputClass} ${INPUT_TYPES[variant].bg} ${startIcon ? 'ps-8' : ''} ${INPUT_BUTTON_SIZE_MAP[size]}`}
+					{...rest}
+				/>
+			{:else}
+				<textarea
+					bind:this={ref}
+					{id}
+					{placeholder}
+					{required}
+					bind:value
+					use:shortcuts={selectShortcutOptions}
+					use:debounceInput={inputDebounceOption}
+					class={`w-full text-sm rounded-lg ring-1 focus:ring-2 outline-none! field-sizing-content inline-block px-2.5 py-1 ${inputClass} ${INPUT_TYPES[variant].bg} ${startIcon ? 'ps-8' : ''} ${TEXT_AREA_SIZE_MAP[size]}`}
+					{...rest}
+				></textarea>
+			{/if}
 
 			{#if action}
 				<div class="absolute end-2 top-1/2 transform -translate-y-1/2 input-action">

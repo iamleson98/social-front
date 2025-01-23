@@ -2,7 +2,7 @@
 	import { buttonVariantColorsMap, type ButtonProps } from './button.types';
 	import { Icon, type IconType } from '$lib/components/icons';
 	import { debounceClick } from '$lib/actions/input-debounce';
-	import { SIZE_MAP } from '$lib/utils/consts';
+	import { INPUT_BUTTON_SIZE_MAP } from '$lib/utils/consts';
 
 	type IconProps = {
 		icon?: IconType;
@@ -41,7 +41,7 @@
 {/snippet}
 
 <button
-	class={`${buttonVariantColorsMap[variant][color]} button button-${size} ${SIZE_MAP[size]} ${radius} ${className}`}
+	class={`${buttonVariantColorsMap[variant][color]} button button-${size} ${INPUT_BUTTON_SIZE_MAP[size]} ${radius} ${className}`}
 	class:uppercase={upper}
 	class:w-full={fullWidth}
 	{type}

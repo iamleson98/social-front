@@ -2,11 +2,7 @@
 	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { MultiSelect, Select, type SelectOption } from '$lib/components/ui/select';
-	import {
-		AttributeInputTypeEnum,
-		type AttributeValueInput,
-		type Query
-	} from '$lib/gql/graphql';
+	import { AttributeInputTypeEnum, type AttributeValueInput, type Query } from '$lib/gql/graphql';
 	import {
 		PRODUCT_ATTRIBUTES_QUERY,
 		type CustomAttributesQueryArgs
@@ -15,8 +11,8 @@
 	import { defaultChannel } from '$lib/utils/consts';
 	import { slide } from 'svelte/transition';
 	import { tClient } from '$i18n';
-	import { Button } from '$lib/components/ui';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
+	import { onMount } from 'svelte';
 
 	type Props = {
 		categoryID?: string | null;
@@ -44,6 +40,38 @@
 			}
 		},
 		pause: !categoryID
+	});
+
+	onMount(() => {
+		const unsub = attributeQueryStore.subscribe((result) => {
+			if (result.data?.attributes?.edges.length) {
+				attributes = result.data.attributes.edges.map<AttributeValueInput>(({ node }) => {
+					switch (node.inputType) {
+						case AttributeInputTypeEnum.Dropdown:
+							return {
+								dropdown: {}
+							};
+						case AttributeInputTypeEnum.Multiselect:
+							return {
+								multiselect: []
+							};
+						case AttributeInputTypeEnum.Swatch:
+							return {
+								swatch: {}
+							};
+						case AttributeInputTypeEnum.Reference:
+							return {
+								references: []
+							};
+
+						default:
+							return {};
+					}
+				});
+			}
+		});
+
+		return unsub;
 	});
 
 	// listener when category id changes
@@ -98,20 +126,16 @@
 										value: id,
 										label: name || id
 									})) as SelectOption[]}
-									<Select {options} size="sm" />
+									<Select
+										{options}
+										size="sm"
+										onchange={(opt) =>
+											(attributes[idx].dropdown = { id: `${opt.value}`, value: opt.label })}
+									/>
 								{:else if node.inputType === AttributeInputTypeEnum.Boolean}
 									<Checkbox size="sm" bind:checked={attributes[idx].boolean} />
 								{:else if node.inputType === AttributeInputTypeEnum.Date}
-									<div class="dropdown w-full">
-										<Button size="sm" variant="light" fullWidth color="gray">
-											{tClient('helpText.selectDate')}
-										</Button>
-										<div class="menu dropdown-content dropdown-bottom dropdown-start">
-											<calendar-date class="cally bg-base-100 border border-gray-200 rounded-box">
-												<calendar-month></calendar-month>
-											</calendar-date>
-										</div>
-									</div>
+									<div>date</div>
 								{:else if node.inputType === AttributeInputTypeEnum.File}
 									<div>file</div>
 								{:else if node.inputType === AttributeInputTypeEnum.Numeric}

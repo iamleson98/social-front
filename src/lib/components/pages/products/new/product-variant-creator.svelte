@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { tClient } from '$i18n';
-	import { Plus, Trash } from '$lib/components/icons';
+	import { Plus, Trash, MdiWeightKg } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
@@ -83,6 +83,12 @@
 			}
 		]
 	};
+
+	type Props = {
+		variants: ProductVariantBulkCreateInput[];
+	};
+
+	let { variants = $bindable() }: Props = $props();
 
 	let quickFillingHighlight = $state<QuickFillHighlight>();
 	let variantManifests = $state.raw<VariantManifestProps[]>(DEFAULT_VARIANTS);
@@ -393,7 +399,7 @@
 	};
 
 	const handleQuickFillingClick = () => {
-		const canQuickFillingStocks = true // quickFillingValues.stocks.some((stock) => !!stock.quantity);
+		const canQuickFillingStocks = true; // quickFillingValues.stocks.some((stock) => !!stock.quantity);
 		const canQuickFillingChannels = quickFillingValues.channels.length > 0;
 
 		if (canQuickFillingChannels || canQuickFillingStocks) {
@@ -666,6 +672,7 @@
 							<th>{tClient('product.price')}</th>
 							<th>{tClient('product.costPrice')}</th>
 							<th>{tClient('product.stock')}</th>
+							<th>{tClient('product.weight')}</th>
 							<th>{tClient('product.sku')}</th>
 						</tr>
 					</thead>
@@ -696,76 +703,86 @@
 								</td>
 								<!-- PRICE -->
 								<td class="price-td">
-									<div class="flex flex-col gap-1">
-										{#each variantInputDetail.channelListings || [] as channelListing, idx (idx)}
-											{@const iconType =
-												CurrencyIconMap[
-													channelListing['currency' as keyof ProductVariantChannelListingAddInput]
-												]}
-											<Input
-												startIcon={iconType}
-												type="number"
-												size="xs"
-												placeholder={channelListing[
-													'currency' as keyof ProductVariantChannelListingAddInput
-												]}
-												bind:value={channelListing.price}
-												variant={channelListing.price < 0 ? 'error' : 'info'}
-												subText={typeof channelListing.price === 'number' &&
-												channelListing.price < 0
-													? tClient('error.negativeNumber')
-													: ''}
-											/>
-										{/each}
+									<div class="max-h-28 overflow-y-auto p-1">
+										<div class="flex flex-col gap-1">
+											{#each variantInputDetail.channelListings || [] as channelListing, idx (idx)}
+												{@const iconType =
+													CurrencyIconMap[
+														channelListing['currency' as keyof ProductVariantChannelListingAddInput]
+													]}
+												<Input
+													startIcon={iconType}
+													type="number"
+													size="xs"
+													placeholder={channelListing[
+														'currency' as keyof ProductVariantChannelListingAddInput
+													]}
+													bind:value={channelListing.price}
+													variant={channelListing.price < 0 ? 'error' : 'info'}
+													subText={typeof channelListing.price === 'number' &&
+													channelListing.price < 0
+														? tClient('error.negativeNumber')
+														: ''}
+												/>
+											{/each}
+										</div>
 									</div>
 								</td>
 								<!-- COST PRICE -->
 								<td class="cost-price-td">
-									<div class="flex flex-col gap-1">
-										{#each variantInputDetail.channelListings || [] as channelListing, idx (idx)}
-											{@const iconType =
-												CurrencyIconMap[
-													channelListing['currency' as keyof ProductVariantChannelListingAddInput]
-												]}
-											<Input
-												startIcon={iconType}
-												type="number"
-												size="xs"
-												placeholder={channelListing[
-													'currency' as keyof ProductVariantChannelListingAddInput
-												]}
-												bind:value={channelListing.costPrice}
-												variant={channelListing.costPrice < 0 ? 'error' : 'info'}
-												subText={typeof channelListing.costPrice === 'number' &&
-												channelListing.costPrice < 0
-													? tClient('error.negativeNumber')
-													: ''}
-											/>
-										{/each}
+									<div class="max-h-28 overflow-y-auto p-1">
+										<div class="flex flex-col gap-1">
+											{#each variantInputDetail.channelListings || [] as channelListing, idx (idx)}
+												{@const iconType =
+													CurrencyIconMap[
+														channelListing['currency' as keyof ProductVariantChannelListingAddInput]
+													]}
+												<Input
+													startIcon={iconType}
+													type="number"
+													size="xs"
+													placeholder={channelListing[
+														'currency' as keyof ProductVariantChannelListingAddInput
+													]}
+													bind:value={channelListing.costPrice}
+													variant={channelListing.costPrice < 0 ? 'error' : 'info'}
+													subText={typeof channelListing.costPrice === 'number' &&
+													channelListing.costPrice < 0
+														? tClient('error.negativeNumber')
+														: ''}
+												/>
+											{/each}
+										</div>
 									</div>
 								</td>
 								<!-- STOCK -->
 								<td class="stock-td">
-									<div class="flex flex-col gap-1 max-h-28 overflow-y-auto">
-										{#each variantInputDetail.stocks || [] as stock, idx (idx)}
-											<div class="flex items-start gap-2">
-												<span class="text-xs w-1/3">
-													{stock['warehouseName' as keyof StockInput]}
-												</span>
-												<Input
-													size="xs"
-													placeholder={tClient('product.stock')}
-													class="w-2/3"
-													bind:value={stock.quantity}
-													type="number"
-													variant={stock.quantity < 0 ? 'error' : 'info'}
-													subText={typeof stock.quantity === 'number' && stock.quantity < 0
-														? tClient('error.negativeNumber')
-														: ''}
-												/>
-											</div>
-										{/each}
+									<div class="max-h-28 overflow-y-auto p-1">
+										<div class="flex flex-col gap-1">
+											{#each variantInputDetail.stocks || [] as stock, idx (idx)}
+												<div class="flex items-start gap-2">
+													<span class="text-xs w-1/3">
+														{stock['warehouseName' as keyof StockInput]}
+													</span>
+													<Input
+														size="xs"
+														placeholder={tClient('product.stock')}
+														class="w-2/3"
+														bind:value={stock.quantity}
+														type="number"
+														variant={stock.quantity < 0 ? 'error' : 'info'}
+														subText={typeof stock.quantity === 'number' && stock.quantity < 0
+															? tClient('error.negativeNumber')
+															: ''}
+													/>
+												</div>
+											{/each}
+										</div>
 									</div>
+								</td>
+								<!-- WEIGHT -->
+								<td class="weight-td">
+									<Input type="number" size="sm" placeholder="kg" startIcon={MdiWeightKg} />
 								</td>
 								<!-- SKU -->
 								<td class="sku-td">

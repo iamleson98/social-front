@@ -76,7 +76,7 @@
 	const handleSelect = (option: SelectOption) => {
 		value = option.value;
 		toggleDropdown(false);
-		onchange?.(value);
+		onchange?.(option);
 	};
 </script>
 

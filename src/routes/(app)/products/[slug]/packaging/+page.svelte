@@ -1,9 +1,5 @@
 <script>
-	import Card from "$lib/components/common/card.svelte";
-
+	import Card from '$lib/components/common/card.svelte';
 </script>
 
-
-<Card cardTitle="Packaging">
-  hello
-</Card>
+<Card cardTitle="Packaging">hello</Card>

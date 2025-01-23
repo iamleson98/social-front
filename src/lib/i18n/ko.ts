@@ -121,6 +121,10 @@ export default {
 		width: 'Width',
 		height: 'Height',
 		noAttributes: 'No attributes found',
+		prdSlug: 'product slug',
+		seo: 'product SEO',
+		seoTitle: 'product SEO title',
+		seoDescription: 'product SEO description',
 	},
 	error: {
 		invalidSlug: '잘못된 슬러그 값',

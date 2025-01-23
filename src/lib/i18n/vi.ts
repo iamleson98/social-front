@@ -121,6 +121,10 @@ export default {
 		width: 'Chiều rộng',
 		height: 'Chiều cao',
 		noAttributes: 'Không có thuộc tính nào',
+		prdSlug: 'product slug',
+		seo: 'product SEO',
+		seoTitle: 'product SEO title',
+		seoDescription: 'product SEO description',
 	},
 	error: {
 		invalidSlug: 'Giá trị slug không hợp lệ',

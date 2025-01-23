@@ -4,7 +4,7 @@ import { type Snippet } from "svelte";
 import type { SocialSize } from "../common";
 import type { ShortcutOptions } from "$lib/actions/shortcut";
 import type { InputDebounceOpts } from "$lib/actions/input-debounce";
-import type { HTMLInputAttributes } from "svelte/elements";
+import type { HTMLInputAttributes, HTMLTextareaAttributes } from "svelte/elements";
 
 export type InputProps = {
   label?: string;
@@ -16,11 +16,17 @@ export type InputProps = {
   action?: Snippet;
   ref?: HTMLInputElement | HTMLTextAreaElement;
   inputClass?: string;
+  /** default is 'input'  */
+  component?: 'input' | 'textarea';
 
   /** indicate if this component is being used in as <Select /> component */
   selectShortcutOptions?: ShortcutOptions<HTMLInputElement | HTMLTextAreaElement>[];
   inputDebounceOption?: InputDebounceOpts;
-} & Omit<HTMLInputAttributes, 'size'>;
+} & CustomHTMLInputAttributes & CustomHTMLTextareaAttributes;
+
+type CustomHTMLInputAttributes = Pick<HTMLInputAttributes, 'onchange' | 'onfocus' | 'onblur' | 'oninput' | 'placeholder' | 'value' | 'class' | 'type' | 'id' | 'required' | 'disabled'>;
+type CustomHTMLTextareaAttributes = Pick<HTMLTextareaAttributes, 'onchange' | 'onfocus' | 'onblur' | 'oninput' | 'placeholder' | 'value' | 'class' | 'id' | 'required' | 'disabled'>;
+
 
 export const INPUT_TYPES: Record<Exclude<SocialVariant, 'warning'>, Record<'bg' | 'fg', string>> = {
   info: {

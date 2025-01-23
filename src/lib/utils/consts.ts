@@ -51,6 +51,8 @@ export type Channel = {
   countryCode: CountryCode;
 };
 
+export type WeightUnit = 'kg' | 'lb' | 'g' | 'oz';
+
 export const CurrencyIconMap: Record<CurrencyCode | string, IconType> = {
   'USD': CurrencyDollar,
   'VND': CurrencyDong,
@@ -106,12 +108,20 @@ export const MIN_RATING = 0;
 /** used for some input fields that requires event handling after a moment instead of always  */
 export const DEBOUNCE_INPUT_TIME = 333;
 
-export const SIZE_MAP: Record<SocialSize, string> = {
+export const INPUT_BUTTON_SIZE_MAP: Record<SocialSize, string> = {
   xs: 'h-7 text-xs',
   sm: 'h-9 text-sm',
   md: 'h-10 text-base',
   lg: 'h-12 text-lg',
   xl: 'h-14 text-xl',
+};
+
+export const TEXT_AREA_SIZE_MAP: Record<SocialSize, string> = {
+  xs: 'text-xs',
+  sm: 'text-sm',
+  md: 'text-base',
+  lg: 'text-lg',
+  xl: 'text-xl',
 };
 
 export const ICON_BTN_SIZE_MAP: Record<SocialSize, string> = {
