@@ -92,16 +92,6 @@
 
 	let quickFillingHighlight = $state<QuickFillHighlight>();
 	let variantManifests = $state.raw<VariantManifestProps[]>([]);
-	/** details of product variants, before sending to backend */
-	// let variantsInputDetails = $state<ProductVariantBulkCreateInput[]>([
-	// 	{
-	// 		name: DEFAULT_VARIANTS[0].values[0].value,
-	// 		attributes: [],
-	// 		sku: `${randomString()}-${DEFAULT_VARIANTS[0].values[0].value}`,
-	// 		trackInventory: true,
-	// 		channelListings: []
-	// 	}
-	// ]);
 	/** indicates if there is error in any of the variant values, names */
 	let generalError = $state(false);
 	let quickFillingValues = $state<QuickFillingProps>({ channels: [], stocks: [] });
