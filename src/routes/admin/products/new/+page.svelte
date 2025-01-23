@@ -9,10 +9,7 @@
 	import ProductSeo from '$lib/components/pages/products/new/product-seo.svelte';
 	import ProductVariantCreator from '$lib/components/pages/products/new/product-variant-creator.svelte';
 	import { Button } from '$lib/components/ui';
-	import type {
-		ProductCreateInput,
-		ProductVariantBulkCreateInput,
-	} from '$lib/gql/graphql';
+	import type { ProductCreateInput, ProductVariantBulkCreateInput } from '$lib/gql/graphql';
 
 	let productCreateInput = $state<ProductCreateInput>({
 		productType: '',
@@ -27,9 +24,16 @@
 		}
 	});
 
-	let variantsInput = $state<ProductVariantBulkCreateInput[]>([]);
+	let variantsInputDetails = $state<ProductVariantBulkCreateInput[]>([
+		{
+			channelListings: [],
+			attributes: [],
+			stocks: [],
+			weight: 0
+		}
+	]);
 
-	const handlePrint = () => console.log(productCreateInput);
+	const handlePrint = () => console.log(productCreateInput, variantsInputDetails);
 </script>
 
 <div class="m-auto rounded-lg bg-white max-w-5xl p-5 text-gray-600">
@@ -40,7 +44,7 @@
 		bind:attributes={productCreateInput.attributes!}
 	/>
 	<ProductDescriptionEditor bind:description={productCreateInput.description} />
-	<ProductVariantCreator bind:variants={variantsInput} />
+	<ProductVariantCreator bind:variantsInputDetails />
 	<ProductSeo
 		productName={productCreateInput.name as string}
 		bind:seoTitle={productCreateInput.seo!.title as string}

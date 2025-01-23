@@ -35,7 +35,7 @@
 
 <span
 	bind:this={ref}
-	class={`inline-flex items-center gap-2 ${roundClass} ${BADGE_SIZE_VARIANTS[size].badge} font-medium badge-${size} ${className} ${buttonVariantColorsMap[variant][color]}`}
+	class={`inline-flex items-center select-none! gap-2 ${roundClass} ${BADGE_SIZE_VARIANTS[size].badge} font-medium badge-${size} ${className} ${buttonVariantColorsMap[variant][color]}`}
 >
 	{#if startIcon}
 		<Icon icon={startIcon} />

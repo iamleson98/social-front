@@ -85,7 +85,7 @@
 			{tClient('signin.forgotPassword')}
 		</a>
 
-		<Checkbox label={tClient('signin.rememberMe')} class="mb-3" bind:checked={rememberCheck} />
+		<Checkbox label={tClient('signin.rememberMe')} size="sm" class="mb-3" bind:checked={rememberCheck} />
 
 		<Button variant="filled" onclick={handleLogin} size="sm" fullWidth {loading} {disabled}>
 			{tClient('signin.signinButton')}

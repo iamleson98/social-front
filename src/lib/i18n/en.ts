@@ -153,5 +153,6 @@ export default {
 	helpText: {
 		chooseDeliveryAddress: 'Please choose delivery address',
 		selectDate: 'Select date',
+		fieldRequired: 'This field is required',
 	}
 };

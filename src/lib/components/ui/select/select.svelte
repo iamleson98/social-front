@@ -110,7 +110,7 @@
 			role="button"
 			tabindex="0"
 			onkeydown={(evt) => evt.key === 'Enter' && onClear()}
-			class="cursor-pointer"
+			class="cursor-pointer select-none!"
 		>
 			<Icon icon={CloseX} />
 		</span>

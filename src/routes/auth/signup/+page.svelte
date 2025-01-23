@@ -1,151 +1,149 @@
 <script lang="ts">
-	import { applyAction, deserialize } from '$app/forms';
-	import { invalidateAll } from '$app/navigation';
 	import { Email } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { AppRoute } from '$lib/utils';
-	import type { ActionResult } from '@sveltejs/kit';
-	import type { ActionData } from './$types';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { tClient } from '$lib/i18n';
 	import { Checkbox, Input, PasswordInput } from '$lib/components/ui/Input';
+	import { z } from 'zod';
+	import { operationStore, type OperationResultStore } from '$lib/stores/api/operation';
+	import type { Mutation, MutationAccountRegisterArgs } from '$lib/gql/graphql';
+	import { USER_SIGNUP_MUTATION_STORE } from '$lib/stores/api';
 
-	let email: string = $state('');
-	let password: string = $state('');
-	let firstName: string = $state('');
-	let lastName: string = $state('');
-	let confirmPassword: string = $state('');
-	let loading = $state(false);
-	let termAndPoliciesAgree = $state(false);
+	const SignupZodSchema = z
+		.object({
+			email: z
+				.string()
+				.email({ message: 'invalid email' })
+				.nonempty({ message: 'email is required' }),
+			password: z.string().nonempty({ message: 'password is required' }),
+			firstName: z.string().nonempty({ message: 'first name is required' }),
+			lastName: z.string().nonempty({ message: 'last name is required' }),
+			confirmPassword: z.string().nonempty({ message: 'confirm password is required' }),
+			termAndPoliciesAgree: z.boolean({ coerce: true }).default(false)
+		})
+		.refine((data) => data.password === data.confirmPassword, {
+			message: 'passwords do not match',
+			path: ['confirmPassword']
+		})
+		.innerType();
 
-	/**
-	 * holds state of form element
-	 */
-	// export let form: ActionData;
+	type SignupProps = z.infer<typeof SignupZodSchema>;
 
-	interface Props {
-		form: ActionData;
-	}
+	let signupInfo = $state<Partial<SignupProps>>({});
+	let signupErrors = $state.raw<Partial<Record<keyof SignupProps, string>>>({});
 
-	let { form }: Props = $props();
+	let signupQueryStore: OperationResultStore<unknown>;
 
-	let passwordDontMatch = $derived(password !== confirmPassword);
-	let signupButtonDisabled = $derived(
-		loading ||
-			!firstName.trim() ||
-			!lastName.trim() ||
-			!email.trim() ||
-			!password ||
-			!confirmPassword ||
-			!termAndPoliciesAgree
-	);
+	const handleSignup = async () => {
+		const parseResult = SignupZodSchema.safeParse(signupInfo);
 
-	const handleSignup = async (event: {
-		preventDefault: any;
-		currentTarget: EventTarget & HTMLFormElement;
-	}) => {
-		event.preventDefault();
-		loading = true;
-
-		const response = await fetch(event.currentTarget.action, {
-			method: event.currentTarget.method,
-			body: new FormData(event.currentTarget)
-		});
-
-		const result: ActionResult = deserialize(await response.text());
-
-		if (result.type === 'success') {
-			await invalidateAll();
+		if (!parseResult.success) {
+			console.log(parseResult.error?.formErrors);
+			// signupErrors = parseResult.error?.formErrors;
+			return;
 		}
 
-		applyAction(result);
-
-		loading = false;
+		signupQueryStore = operationStore<
+			Pick<Mutation, 'accountRegister'>,
+			MutationAccountRegisterArgs
+		>({
+			kind: 'mutation',
+			query: USER_SIGNUP_MUTATION_STORE,
+			variables: {}
+		});
 	};
+
+	let passwordDontMatch = $derived(signupInfo.password !== signupInfo.confirmPassword);
+	let signupButtonDisabled = $derived(
+		$signupQueryStore?.fetching ||
+			!signupInfo.firstName?.trim() ||
+			!signupInfo.lastName?.trim() ||
+			!signupInfo.email?.trim() ||
+			!signupInfo.password ||
+			!signupInfo.confirmPassword ||
+			!signupInfo.termAndPoliciesAgree
+	);
 </script>
 
 <div class="max-w-md min-w-80 rounded-md p-2">
 	<h1 class="p-2 mb-4">{tClient('signup.title')}</h1>
 
-	{#if form && form.error}
+	{#if $signupQueryStore?.error}
 		<Alert variant="error" class="mb-3" bordered>
-			{form.error}
+			{$signupQueryStore.error.message}
 		</Alert>
 	{/if}
-	<form action="?/signup" method="post" onsubmitcapture={handleSignup}>
-		<div class="mb-4">
-			<div class="flex flex-row mobile-m:flex-col justify-between items-center gap-2 mb-2">
-				<Input
-					type="text"
-					name="first_name"
-					placeholder={tClient('common.firstName')}
-					required
-					disabled={loading}
-					bind:value={firstName}
-				/>
-				<Input
-					type="text"
-					name="last_name"
-					placeholder={tClient('common.lastName')}
-					required
-					disabled={loading}
-					bind:value={lastName}
-				/>
-			</div>
+	<div class="mb-4">
+		<div class="flex flex-row mobile-m:flex-col justify-between items-center gap-2 mb-2">
 			<Input
-				type="email"
-				name="email"
-				placeholder={tClient('common.emailPlaceholder')}
-				class="mb-2"
+				type="text"
+				placeholder={tClient('common.firstName')}
 				required
-				disabled={loading}
-				bind:value={email}
-				startIcon={Email}
+				disabled={$signupQueryStore?.fetching}
+				bind:value={signupInfo.firstName}
 			/>
-			<PasswordInput
-				name="password"
-				placeholder={tClient('common.passwordPlaceholder')}
-				bind:value={password}
-				class="mb-2"
-				variant={passwordDontMatch ? 'error' : 'info'}
+			<Input
+				type="text"
+				placeholder={tClient('common.lastName')}
 				required
-				showAction
+				disabled={$signupQueryStore?.fetching}
+				bind:value={signupInfo.lastName}
 			/>
-			<PasswordInput
-				name="confirmPassword"
-				placeholder={tClient('signup.confirmPasswordPlaceholder')}
-				bind:value={confirmPassword}
-				class="mb-3"
-				showAction={false}
-				variant={passwordDontMatch ? 'error' : 'info'}
-				required
-			/>
-
-			<Checkbox
-				label={tClient('signup.agreeToTerms')}
-				name="term_aggree"
-				id="term_aggree"
-				class="mb-3"
-				bind:checked={termAndPoliciesAgree as boolean}
-				required
-			/>
-
-			<Button
-				variant="filled"
-				type="submit"
-				size="sm"
-				fullWidth
-				{loading}
-				disabled={signupButtonDisabled}>{tClient('signup.signupButton')}</Button
-			>
 		</div>
+		<Input
+			type="text"
+			placeholder={tClient('common.emailPlaceholder')}
+			class="mb-2"
+			required
+			disabled={$signupQueryStore?.fetching}
+			bind:value={signupInfo.email}
+			startIcon={Email}
+		/>
+		<PasswordInput
+			placeholder={tClient('common.passwordPlaceholder')}
+			bind:value={signupInfo.password}
+			disabled={$signupQueryStore?.fetching}
+			class="mb-2"
+			variant={passwordDontMatch ? 'error' : 'info'}
+			required
+			showAction
+		/>
+		<PasswordInput
+			placeholder={tClient('signup.confirmPasswordPlaceholder')}
+			bind:value={signupInfo.confirmPassword}
+			disabled={$signupQueryStore?.fetching}
+			class="mb-3"
+			showAction={false}
+			variant={passwordDontMatch ? 'error' : 'info'}
+			required
+		/>
 
-		<!-- form other -->
-		<div>
-			<span class="text-xs text-gray-500">
-				{tClient('signup.alreadyHasAccount')}
-				<a href={AppRoute.AUTH_SIGNIN} class="text-blue-600">{tClient('signin.title')}</a>
-			</span>
-		</div>
-	</form>
+		<Checkbox
+			label={tClient('signup.agreeToTerms')}
+			class="mb-3"
+			bind:checked={signupInfo.termAndPoliciesAgree}
+			required
+			disabled={$signupQueryStore?.fetching}
+			size="sm"
+		/>
+
+		<Button
+			variant="filled"
+			type="submit"
+			size="sm"
+			fullWidth
+			disabled={signupButtonDisabled}
+			onclick={handleSignup}
+		>
+			{tClient('signup.signupButton')}
+		</Button>
+	</div>
+
+	<div>
+		<span class="text-xs text-gray-500">
+			{tClient('signup.alreadyHasAccount')}
+			<a href={AppRoute.AUTH_SIGNIN} class="text-blue-600">{tClient('signin.title')}</a>
+		</span>
+	</div>
 </div>

@@ -85,23 +85,23 @@
 	};
 
 	type Props = {
-		variants: ProductVariantBulkCreateInput[];
+		variantsInputDetails: ProductVariantBulkCreateInput[];
 	};
 
-	let { variants = $bindable() }: Props = $props();
+	let { variantsInputDetails = $bindable([]) }: Props = $props();
 
 	let quickFillingHighlight = $state<QuickFillHighlight>();
-	let variantManifests = $state.raw<VariantManifestProps[]>(DEFAULT_VARIANTS);
+	let variantManifests = $state.raw<VariantManifestProps[]>([]);
 	/** details of product variants, before sending to backend */
-	let variantsInputDetails = $state<ProductVariantBulkCreateInput[]>([
-		{
-			name: DEFAULT_VARIANTS[0].values[0].value,
-			attributes: [],
-			sku: `${randomString()}-${DEFAULT_VARIANTS[0].values[0].value}`,
-			trackInventory: true,
-			channelListings: []
-		}
-	]);
+	// let variantsInputDetails = $state<ProductVariantBulkCreateInput[]>([
+	// 	{
+	// 		name: DEFAULT_VARIANTS[0].values[0].value,
+	// 		attributes: [],
+	// 		sku: `${randomString()}-${DEFAULT_VARIANTS[0].values[0].value}`,
+	// 		trackInventory: true,
+	// 		channelListings: []
+	// 	}
+	// ]);
 	/** indicates if there is error in any of the variant values, names */
 	let generalError = $state(false);
 	let quickFillingValues = $state<QuickFillingProps>({ channels: [], stocks: [] });
@@ -533,11 +533,8 @@
 			</div>
 		{/each}
 		{#if variantManifests.length < MAX_VARIANT_TYPES}
-			<div class="w-1/2 mobile-l:w-full">
-				<div
-					class="tooltip w-full h-full flex items-center justify-center"
-					data-tip={tClient('product.addVariant')}
-				>
+			<div class="w-1/2 mobile-l:w-full flex items-center justify-center">
+				<div class="tooltip" data-tip={tClient('product.addVariant')}>
 					<IconButton
 						onclick={handleAddVariant}
 						icon={Plus}
@@ -696,7 +693,8 @@
 											size="sm"
 											options={channelSelectOptions}
 											bind:value={
-												variantInputDetail.channelListings as unknown as SelectOptionExtends[]
+												variantsInputDetails[detailIdx]
+													.channelListings as unknown as SelectOptionExtends[]
 											}
 										/>
 									{/if}
@@ -705,7 +703,7 @@
 								<td class="price-td">
 									<div class="max-h-28 overflow-y-auto p-1">
 										<div class="flex flex-col gap-1">
-											{#each variantInputDetail.channelListings || [] as channelListing, idx (idx)}
+											{#each variantInputDetail.channelListings! as channelListing, idx (idx)}
 												{@const iconType =
 													CurrencyIconMap[
 														channelListing['currency' as keyof ProductVariantChannelListingAddInput]
@@ -717,7 +715,7 @@
 													placeholder={channelListing[
 														'currency' as keyof ProductVariantChannelListingAddInput
 													]}
-													bind:value={channelListing.price}
+													bind:value={variantsInputDetails[detailIdx].channelListings![idx].price}
 													variant={channelListing.price < 0 ? 'error' : 'info'}
 													subText={typeof channelListing.price === 'number' &&
 													channelListing.price < 0
@@ -732,7 +730,7 @@
 								<td class="cost-price-td">
 									<div class="max-h-28 overflow-y-auto p-1">
 										<div class="flex flex-col gap-1">
-											{#each variantInputDetail.channelListings || [] as channelListing, idx (idx)}
+											{#each variantInputDetail.channelListings! as channelListing, idx (idx)}
 												{@const iconType =
 													CurrencyIconMap[
 														channelListing['currency' as keyof ProductVariantChannelListingAddInput]
@@ -744,7 +742,9 @@
 													placeholder={channelListing[
 														'currency' as keyof ProductVariantChannelListingAddInput
 													]}
-													bind:value={channelListing.costPrice}
+													bind:value={
+														variantsInputDetails[detailIdx].channelListings![idx].costPrice
+													}
 													variant={channelListing.costPrice < 0 ? 'error' : 'info'}
 													subText={typeof channelListing.costPrice === 'number' &&
 													channelListing.costPrice < 0
@@ -768,7 +768,7 @@
 														size="xs"
 														placeholder={tClient('product.stock')}
 														class="w-2/3"
-														bind:value={stock.quantity}
+														bind:value={variantsInputDetails[detailIdx].stocks![idx].quantity}
 														type="number"
 														variant={stock.quantity < 0 ? 'error' : 'info'}
 														subText={typeof stock.quantity === 'number' && stock.quantity < 0
@@ -782,11 +782,28 @@
 								</td>
 								<!-- WEIGHT -->
 								<td class="weight-td">
-									<Input type="number" size="sm" placeholder="kg" startIcon={MdiWeightKg} />
+									<Input
+										type="number"
+										size="sm"
+										placeholder="kg"
+										startIcon={MdiWeightKg}
+										bind:value={variantsInputDetails[detailIdx].weight}
+										variant={variantInputDetail.weight >= 0 ? 'info' : 'error'}
+										subText={variantInputDetail.weight >= 0 ? '' : tClient('error.negativeNumber')}
+									/>
 								</td>
 								<!-- SKU -->
 								<td class="sku-td">
-									<Input type="text" size="sm" placeholder="SKU" value={variantInputDetail.sku} />
+									<Input
+										type="text"
+										size="sm"
+										placeholder="SKU"
+										bind:value={variantsInputDetails[detailIdx].sku}
+										variant={variantInputDetail.sku?.trim() ? 'info' : 'error'}
+										subText={variantInputDetail.sku?.trim()
+											? ''
+											: tClient('helpText.fieldRequired')}
+									/>
 								</td>
 							</tr>
 						{/each}

@@ -153,5 +153,6 @@ export default {
 	helpText: {
 		chooseDeliveryAddress: '배송지를 선택해주세요',
 		selectDate: 'Select date',
+		fieldRequired: 'This field is required',
 	}
 };

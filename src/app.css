@@ -45,10 +45,10 @@
   }
 
   /* handle on hover */
-  &::-webkit-scrollbar-thumb:hover {
+  /* &::-webkit-scrollbar-thumb:hover {
     background: #4250afad;
     border-radius: 16px;
-  }
+  } */
 }
 
 @utility scrollbar-hidden {

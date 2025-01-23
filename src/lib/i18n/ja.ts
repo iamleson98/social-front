@@ -153,5 +153,6 @@ export default {
 	helpText: {
 		chooseDeliveryAddress: '配送先を選択してください',
 		selectDate: 'Select date',
+		fieldRequired: 'This field is required',
 	}
 };

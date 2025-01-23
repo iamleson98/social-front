@@ -118,7 +118,7 @@
 			<a href={AppRoute.SHOPPING_CART}>
 				<IconButton size="sm" icon={ShoppingBag} variant="light" color="gray" class="relative">
 					{#key $checkoutStore}
-						<span class="cart-quantity" in:scale>
+						<span class="absolute -right-1/4 -top-1/4 z-99999999 !text-[10px] flex h-4 min-w-4 items-center text-xs justify-center rounded-full bg-blue-500 p-1 font-bold text-white" in:scale>
 							{$checkoutStore?.lines.length || 0}
 						</span>
 					{/key}
@@ -172,11 +172,3 @@
 		</div>
 	</div>
 </header>
-
-<style>
-	@import 'tailwindcss/theme';
-
-	.cart-quantity {
-		@apply absolute -right-1/4 -top-1/4 z-99999999 !text-[10px] flex h-4 min-w-4 items-center text-xs justify-center rounded-full bg-blue-500 p-1 font-bold text-white;
-	}
-</style>

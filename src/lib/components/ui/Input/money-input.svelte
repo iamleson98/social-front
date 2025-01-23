@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { CurrencyIconMap, type Currency } from '$lib/utils/consts';
+	import { CurrencyIconMap, type CurrencyCode } from '$lib/utils/consts';
 	import Input from './input.svelte';
 	import type { InputProps } from './input.types';
 
 	type Props = Omit<InputProps, 'startIcon' | 'action'> & {
-		currency: Currency;
+		currency: CurrencyCode;
 	};
 
 	let { currency, placeholder, value = $bindable(), ...rest }: Props = $props();

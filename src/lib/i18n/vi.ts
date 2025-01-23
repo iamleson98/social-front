@@ -153,5 +153,6 @@ export default {
 	helpText: {
 		chooseDeliveryAddress: 'Vui lòng chọn điểm giao hàng',
 		selectDate: 'Chọn ngày',
+		fieldRequired: 'This field is required',
 	}
 };
