@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { tClient } from '$i18n';
 	import { Input } from '$lib/components/ui/Input';
-	import type { SeoInput } from '$lib/gql/graphql';
+	import type { ProductCreateInput, SeoInput } from '$lib/gql/graphql';
 	import slugify from 'slugify';
 
 	type Props = {
-		seoTitle: string;
-		seoDescription: string;
+		seoTitle: SeoInput['title'];
+		seoDescription: SeoInput['description'];
 		/** reference for creating default seo */
-		productName?: string;
-		slug: string;
+		productName: ProductCreateInput['name'];
+		slug: ProductCreateInput['slug'];
 	};
 
 	const SEO_DESCRIPTION_MAX_LENGTH = 300;

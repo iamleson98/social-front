@@ -35,6 +35,11 @@
 			error?: string;
 		}[];
 	};
+
+	type Props = {
+		productVariantsInput: ProductVariantBulkCreateInput[];
+	};
+
 	type CustomStockInput = StockInput & { warehouseName: string };
 	type ChannelSelectOptionProps = SelectOption & {
 		currency: string;
@@ -84,16 +89,11 @@
 		]
 	};
 
-	type Props = {
-		variantsInputDetails: ProductVariantBulkCreateInput[];
-	};
-
-	let { variantsInputDetails = $bindable([]) }: Props = $props();
-
-	let quickFillingHighlight = $state<QuickFillHighlight>();
+	let { productVariantsInput = $bindable([]) }: Props = $props();
+	let variantsInputDetails = $state<ProductVariantBulkCreateInput[]>([]);
+	let quickFillingHighlightClass = $state<QuickFillHighlight>();
 	let variantManifests = $state.raw<VariantManifestProps[]>([]);
-	/** indicates if there is error in any of the variant values, names */
-	let generalError = $state(false);
+	let variantManifestError = $state(false);
 	let quickFillingValues = $state<QuickFillingProps>({ channels: [], stocks: [] });
 	let channelSelectOptions = $state.raw<SelectOptionExtends[]>([]);
 
@@ -101,6 +101,17 @@
 		kind: 'query',
 		query: CHANNELS_QUERY_STORE,
 		context: { requestPolicy: 'network-only' }
+	});
+
+	// let parent know about the changes
+	$effect(() => {
+		productVariantsInput = variantsInputDetails;
+	});
+
+	let hasGeneralError = $derived.by(() => {
+		if (variantManifestError) return true;
+
+		return false;
 	});
 
 	onMount(() => {
@@ -142,7 +153,7 @@
 	});
 
 	const handleFocusHighlightQuickFilling = (highlight?: QuickFillHighlight) =>
-		(quickFillingHighlight = highlight);
+		(quickFillingHighlightClass = highlight);
 
 	const handleVariantValueChange = (variantIdx: number, valueIdx: number) => (evt: Event) => {
 		if (!evt.target) return;
@@ -153,7 +164,7 @@
 			(value, idx) => idx !== valueIdx && valueTrimLower && valueTrimLower === value.value
 		);
 
-		generalError = !valueTrimLower || valueDuplicate;
+		variantManifestError = !valueTrimLower || valueDuplicate;
 
 		variantManifests = variantManifests.map((variant, idx) => {
 			if (idx !== variantIdx) return variant;
@@ -174,7 +185,7 @@
 				})
 			};
 		});
-		if (generalError) return;
+		if (variantManifestError) return;
 
 		if (variantManifests.length === 1) {
 			variantsInputDetails = variantsInputDetails.map((detail, idx) => {
@@ -240,7 +251,7 @@
 				nameTrimLower === variant.name.value.trim().toLocaleLowerCase()
 		);
 
-		generalError = nameDuplicate || !nameTrimLower;
+		variantManifestError = nameDuplicate || !nameTrimLower;
 		const newVariants = variantManifests.map((variant, idx) => {
 			if (idx !== variantIdx) return variant;
 
@@ -270,7 +281,8 @@
 				attributes: [],
 				sku: `${randomString()}-${variant.values[0].value}`,
 				trackInventory: true,
-				channelListings: []
+				channelListings: [],
+				weight: 0
 			}));
 			return;
 		}
@@ -285,7 +297,8 @@
 					attributes: [],
 					sku: `${randomString()}-${variant1.value}-${variant2.value}`,
 					trackInventory: true,
-					channelListings: []
+					channelListings: [],
+					weight: 0
 				});
 			}
 		}
@@ -295,20 +308,19 @@
 	};
 
 	const handleDeleteVariant = (variantIdx: number) => {
-		const newVariantManifests = variantManifests.filter((_, idx) => idx !== variantIdx);
-		if (!newVariantManifests.length) {
-			variantManifests = [];
+		variantManifests = variantManifests.filter((_, idx) => idx !== variantIdx);
+		if (!variantManifests.length) {
 			variantsInputDetails = [];
 			return;
 		}
 
-		variantManifests = newVariantManifests;
-		variantsInputDetails = newVariantManifests[0].values.map((value) => ({
+		variantsInputDetails = variantManifests[0].values.map((value) => ({
 			name: `${value.value}`,
 			attributes: [],
 			sku: `${randomString()}-${value.value}`,
 			trackInventory: true,
-			channelListings: []
+			channelListings: [],
+			weight: 0
 		}));
 	};
 
@@ -329,7 +341,8 @@
 				sku: `${randomString()}-`,
 				trackInventory: true,
 				channelListings: [],
-				trackInventory: true
+				trackInventory: true,
+				weight: 0
 			});
 		} else {
 			if (variantIdx === 1) {
@@ -344,7 +357,8 @@
 						name: `${siblingSplitName[0]}-`,
 						sku: `${randomString()}-${siblingSplitName[0]}-`,
 						trackInventory: true,
-						channelListings: []
+						channelListings: [],
+						weight: 0
 					});
 				}
 				variantsInputDetails = flatten(chunks);
@@ -354,7 +368,8 @@
 					name: `-${value.value}`,
 					sku: `${randomString()}--${value.value}`,
 					trackInventory: true,
-					channelListings: []
+					channelListings: [],
+					weight: 0
 				}));
 				variantsInputDetails = variantsInputDetails.concat(addingVariants);
 			}
@@ -429,11 +444,14 @@
 	</div>
 {/snippet}
 
-<div class="mb-3">
-	<span class="text-sm">{tClient('product.variants')}</span>
+<span class="text-sm">{tClient('product.variants')}</span>
+
+<div
+	class={`mb-3 rounded-lg border p-3 ${hasGeneralError ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}`}
+>
 	<!-- COMPOSER -->
 	<div
-		class="flex gap-2 mobile-l:flex-wrap flex-nowrap bg-gray-50 rounded-lg border border-gray-200 p-3"
+		class="flex gap-2 mobile-l:flex-wrap flex-nowrap"
 		class:items-center={variantManifests.length < MAX_VARIANT_TYPES}
 	>
 		{#each variantManifests as variant, variantIdx (variantIdx)}
@@ -515,7 +533,7 @@
 						endIcon: Plus,
 						variant: 'light',
 						disabled: variant.values.length >= MAX_VALUES_PER_VARIANT,
-						text: `${variantManifests[variantIdx].values.length}/${MAX_VALUES_PER_VARIANT}`,
+						text: `${variant.values.length}/${MAX_VALUES_PER_VARIANT}`,
 						size: 'sm',
 						fullWidth: true
 					})}
@@ -537,7 +555,7 @@
 		{/if}
 	</div>
 
-	{#if variantManifests.length && !generalError}
+	{#if variantManifests.length}
 		<div class="mt-10">
 			<!-- QUICK FILLING -->
 			<div class="mb-4">
@@ -568,7 +586,7 @@
 								<span class="w-1/2">{tClient('product.price')}</span>
 								<span class="w-1/2">{tClient('product.costPrice')}</span>
 							</div>
-							<div class="max-h-20 overflow-y-auto border border-gray-200 p-2 rounded-lg">
+							<div class="max-h-20 overflow-y-auto border border-gray-200 bg-white p-2 rounded-lg">
 								{#each quickFillingValues.channels as channel, idx (idx)}
 									{@const iconType = CurrencyIconMap[channel.currency as CurrencyCode]}
 									<div class="flex gap-1 mt-1">
@@ -609,7 +627,7 @@
 								<Skeleton class="w-full h-4" rounded={false} />
 							</SkeletonContainer>
 						{:else}
-							<div class="max-h-20 overflow-y-auto border border-gray-200 p-2 rounded-lg">
+							<div class="max-h-20 overflow-y-auto border border-gray-200 bg-white p-2 rounded-lg">
 								{#each quickFillingValues.stocks as stockInput, idx (idx)}
 									<div class="flex items-start flex-row gap-1.5 mt-1">
 										<span class="w-1/3 text-sm">
@@ -645,7 +663,7 @@
 			</div>
 
 			<!-- DETAILS -->
-			<div class="relative overflow-x-auto rounded-lg p-3 border border-gray-200 bg-gray-50">
+			<div class="relative overflow-x-auto rounded-lg p-3 border border-gray-200 bg-white">
 				<table
 					class="w-full text-sm text-left rtl:text-right text-gray-600 dark:text-gray-500 mb-4"
 				>
@@ -665,7 +683,9 @@
 					</thead>
 					<tbody class="overflow-y-visible">
 						{#each variantsInputDetails as variantInputDetail, detailIdx (detailIdx)}
-							<tr class={`variant-table-row ${quickFillingHighlight} border-b border-gray-200`}>
+							<tr
+								class={`variant-table-row ${quickFillingHighlightClass} border-b border-gray-200`}
+							>
 								<!-- NAME 1 -->
 								<td class="text-center">{variantInputDetail.name?.split('-')[0]}</td>
 								{#if variantManifests.length === MAX_VARIANT_TYPES}
@@ -683,8 +703,7 @@
 											size="sm"
 											options={channelSelectOptions}
 											bind:value={
-												variantsInputDetails[detailIdx]
-													.channelListings as unknown as SelectOptionExtends[]
+												variantInputDetail.channelListings as unknown as SelectOptionExtends[]
 											}
 										/>
 									{/if}
@@ -693,7 +712,7 @@
 								<td class="price-td">
 									<div class="max-h-28 overflow-y-auto p-1">
 										<div class="flex flex-col gap-1">
-											{#each variantInputDetail.channelListings! as channelListing, idx (idx)}
+											{#each variantInputDetail.channelListings || [] as channelListing, idx (idx)}
 												{@const iconType =
 													CurrencyIconMap[
 														channelListing['currency' as keyof ProductVariantChannelListingAddInput]
@@ -705,7 +724,7 @@
 													placeholder={channelListing[
 														'currency' as keyof ProductVariantChannelListingAddInput
 													]}
-													bind:value={variantsInputDetails[detailIdx].channelListings![idx].price}
+													bind:value={variantInputDetail.channelListings![idx].price}
 													variant={channelListing.price < 0 ? 'error' : 'info'}
 													subText={typeof channelListing.price === 'number' &&
 													channelListing.price < 0
@@ -720,7 +739,7 @@
 								<td class="cost-price-td">
 									<div class="max-h-28 overflow-y-auto p-1">
 										<div class="flex flex-col gap-1">
-											{#each variantInputDetail.channelListings! as channelListing, idx (idx)}
+											{#each variantInputDetail.channelListings || [] as channelListing, idx (idx)}
 												{@const iconType =
 													CurrencyIconMap[
 														channelListing['currency' as keyof ProductVariantChannelListingAddInput]
@@ -732,9 +751,7 @@
 													placeholder={channelListing[
 														'currency' as keyof ProductVariantChannelListingAddInput
 													]}
-													bind:value={
-														variantsInputDetails[detailIdx].channelListings![idx].costPrice
-													}
+													bind:value={variantInputDetail.channelListings![idx].costPrice}
 													variant={channelListing.costPrice < 0 ? 'error' : 'info'}
 													subText={typeof channelListing.costPrice === 'number' &&
 													channelListing.costPrice < 0
@@ -758,7 +775,7 @@
 														size="xs"
 														placeholder={tClient('product.stock')}
 														class="w-2/3"
-														bind:value={variantsInputDetails[detailIdx].stocks![idx].quantity}
+														bind:value={variantInputDetail.stocks![idx].quantity}
 														type="number"
 														variant={stock.quantity < 0 ? 'error' : 'info'}
 														subText={typeof stock.quantity === 'number' && stock.quantity < 0
@@ -777,7 +794,7 @@
 										size="sm"
 										placeholder="kg"
 										startIcon={MdiWeightKg}
-										bind:value={variantsInputDetails[detailIdx].weight}
+										bind:value={variantInputDetail.weight}
 										variant={variantInputDetail.weight >= 0 ? 'info' : 'error'}
 										subText={variantInputDetail.weight >= 0 ? '' : tClient('error.negativeNumber')}
 									/>
@@ -788,7 +805,7 @@
 										type="text"
 										size="sm"
 										placeholder="SKU"
-										bind:value={variantsInputDetails[detailIdx].sku}
+										bind:value={variantInputDetail.sku}
 										variant={variantInputDetail.sku?.trim() ? 'info' : 'error'}
 										subText={variantInputDetail.sku?.trim()
 											? ''
@@ -811,6 +828,12 @@
 				</Alert>
 			</div>
 		</div>
+	{/if}
+
+	{#if hasGeneralError}
+		<Alert variant="error" size="md" class="mt-3" bordered>
+			There are errors on your product variants form. Please fix them first to proceed
+		</Alert>
 	{/if}
 </div>
 

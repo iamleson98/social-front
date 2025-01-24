@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { tClient } from '$i18n';
 	import { Input } from '$lib/components/ui/Input';
+	import type { ProductCreateInput } from '$lib/gql/graphql';
 
 	type Props = {
-		name: string;
+		name: ProductCreateInput['name'];
 	};
 
 	let { name = $bindable() }: Props = $props();

@@ -41,6 +41,6 @@ export const SIZE_REDUCE_MAP: Record<Exclude<SocialSize, 'xs'>, SocialSize> = {
 
 export const SELECT_CLASSES = {
   selectMenu: 'absolute left-0 text-left mt-1 text-sm w-full max-h-64 overflow-y-auto bg-white rounded-md z-10000 shadow-sm border border-gray-200',
-  selectOption: 'text-left w-full px-4 py-1 hover:bg-blue-50 aria-selected:bg-blue-50 hover:text-blue-600',
+  selectOption: 'text-left w-full px-4 py-1 hover:bg-blue-50 aria-selected:bg-blue-50 hover:text-blue-600 select-none!',
   activeSelectOption: 'bg-blue-50 text-blue-600',
 };

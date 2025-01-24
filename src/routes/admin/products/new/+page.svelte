@@ -10,46 +10,48 @@
 	import ProductVariantCreator from '$lib/components/pages/products/new/product-variant-creator.svelte';
 	import { Button } from '$lib/components/ui';
 	import type { ProductCreateInput, ProductVariantBulkCreateInput } from '$lib/gql/graphql';
+	import { array, boolean, object, string } from 'zod';
+
+	const ProductAttributeSchema = object({
+		boolean: boolean()
+	});
+
+	const ProductInputSchema = object({
+		productType: string().nonempty(),
+		attributes: array(ProductAttributeSchema)
+	});
 
 	let productCreateInput = $state<ProductCreateInput>({
 		productType: '',
 		attributes: [],
-		name: '',
-		slug: '',
-		rating: 5,
+		rating: 5, // default to 5 as max
 		chargeTaxes: true,
+		slug: '',
 		seo: {
 			description: '',
 			title: ''
 		}
 	});
 
-	let variantsInputDetails = $state<ProductVariantBulkCreateInput[]>([
-		{
-			channelListings: [],
-			attributes: [],
-			stocks: [],
-			weight: 0
-		}
-	]);
+	let productVariantsInput = $state.raw<ProductVariantBulkCreateInput[]>([]);
 
-	const handlePrint = () => console.log(productCreateInput, variantsInputDetails);
+	const handlePrint = () => console.log($state.snapshot(productCreateInput));
 </script>
 
 <div class="m-auto rounded-lg bg-white max-w-5xl p-5 text-gray-600">
-	<ProductName bind:name={productCreateInput.name as string} />
+	<ProductName bind:name={productCreateInput.name} />
 	<CategorySelector bind:categoryID={productCreateInput.category} />
 	<ProductAttributeEditor
 		categoryID={productCreateInput.category}
 		bind:attributes={productCreateInput.attributes!}
 	/>
 	<ProductDescriptionEditor bind:description={productCreateInput.description} />
-	<ProductVariantCreator bind:variantsInputDetails />
+	<ProductVariantCreator bind:productVariantsInput />
 	<ProductSeo
-		productName={productCreateInput.name as string}
-		bind:seoTitle={productCreateInput.seo!.title as string}
-		bind:seoDescription={productCreateInput.seo!.description as string}
-		bind:slug={productCreateInput.slug as string}
+		productName={productCreateInput.name}
+		bind:seoTitle={productCreateInput.seo!.title}
+		bind:seoDescription={productCreateInput.seo!.description}
+		bind:slug={productCreateInput.slug}
 	/>
 	<DiscountByQuantity />
 	<PackagingAndDelivery />
