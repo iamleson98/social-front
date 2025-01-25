@@ -34,6 +34,7 @@ export function getLocaleDefaults(): InnerLocale {
     weekStartsOn: 1,
   }
 }
+
 export function getInnerLocale(locale: Locale): InnerLocale {
   const innerLocale = getLocaleDefaults()
   if (typeof locale.weekStartsOn === 'number') {
@@ -57,6 +58,7 @@ type DateFnsLocale = {
     day: (i: Day, options?: { width?: LocaleWidth }) => string
   }
 }
+
 /** Create a Locale from a date-fns locale */
 export function localeFromDateFnsLocale(dateFnsLocale: DateFnsLocale): InnerLocale {
   const locale = getLocaleDefaults()

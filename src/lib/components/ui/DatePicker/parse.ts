@@ -16,7 +16,7 @@ type ParseResult = {
 }
 
 /** Parse a string according to the supplied format tokens. Returns a date if successful, and the missing punctuation if there is any that should be after the string */
-export function parse(str: string, tokens: FormatToken[], baseDate: Date | null): ParseResult {
+export function parse(str: string, tokens: FormatToken[], baseDate?: Date): ParseResult {
   let missingPunctuation = ''
   let valid = true
 

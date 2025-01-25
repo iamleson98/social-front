@@ -11,14 +11,13 @@
 		type SelectItemprops,
 		type SelectOption,
 		type MultiSelectProps,
-		SIZE_REDUCE_MAP,
-		type SelectOptionExtends
+		SIZE_REDUCE_MAP
 	} from './types';
 	import { Badge } from '../badge';
 	import type { FocusEventHandler } from 'svelte/elements';
 
 	let {
-		value = $bindable<Array<SelectOptionExtends>>([]),
+		value = $bindable<SelectOption[]>([]),
 		class: className = '',
 		maxDisplay,
 		size,
@@ -83,6 +82,8 @@
 	};
 
 	const handleSelect = (option: SelectOption) => {
+		if (option.disabled) return; // disabled options cant be selected
+
 		value = value.concat(option);
 		selectMapper = { ...selectMapper, [option.value]: true };
 		searchQuery = '';
@@ -95,7 +96,7 @@
 </script>
 
 <!-- this common snippet is used for rendering select options -->
-{#snippet selectOption({ idx, disabled, optionClassName, onclick, option }: SelectItemprops)}
+{#snippet selectOption({ idx, disabled, optionClassName, onclick, label }: SelectItemprops)}
 	<li
 		id={`${LISTBOX_ID}-${idx}`}
 		aria-selected={false}
@@ -113,7 +114,7 @@
 			}
 		]}
 	>
-		{option.label}
+		{label}
 	</li>
 {/snippet}
 
@@ -159,6 +160,7 @@
 		{#if maxDisplay && value.length > maxDisplay}
 			<Badge text={`+${value.length - maxDisplay}`} variant="light" size={SIZE_REDUCE_MAP[size]} />
 		{/if}
+		<!-- please dont worry about 'onfocus' error warning, it still works -->
 		<Input
 			{...rest}
 			aria-controls={LISTBOX_ID}
@@ -196,16 +198,16 @@
 					disabled: true,
 					optionClassName: 'cursor-default',
 					onclick: () => toggleDropdown(false),
-					option: { value: 'No data', label: 'No data' }
+					label: 'No data',
+					value: ''
 				})}
 			{/if}
 			{#each searchFilteredOptions as option, idx (idx)}
 				{@render selectOption({
 					idx,
-					disabled: false,
-					optionClassName: 'cursor-pointer transition-all',
+					optionClassName: `${option.disabled ? 'cursor-not-allowed! text-gray-400!' : ''}`,
 					onclick: () => handleSelect(option),
-					option
+					...option
 				})}
 			{/each}
 		</ul>

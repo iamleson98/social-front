@@ -5,7 +5,6 @@
 </script>
 
 <div class="flex gap-6">
-	<!-- note: 4rem === top-16 -->
 	<aside
 		class="sticky overflow-auto top-16 h-[calc(100vh-4rem)] w-1/5"
 		style="scrollbar-width: none;"

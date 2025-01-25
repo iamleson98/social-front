@@ -3,13 +3,14 @@ import type { FormatToken } from "./types"
 export function isLeapYear(year: number): boolean {
   return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0
 }
+
 export function getMonthLength(year: number, month: number): number {
   const feb = isLeapYear(year) ? 29 : 28
   const monthLengths = [31, feb, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
   return monthLengths[month]
 }
 
-export function toText(date: Date | null, formatTokens: FormatToken[]): string {
+export function toText(date: Date | undefined, formatTokens: FormatToken[]): string {
   let text = ''
   if (date) {
     for (const token of formatTokens) {
@@ -28,6 +29,7 @@ export type CalendarDay = {
   month: number
   number: number
 }
+
 export function getMonthDays(year: number, month: number): CalendarDay[] {
   const monthLength = getMonthLength(year, month)
   const days: CalendarDay[] = []
@@ -40,6 +42,7 @@ export function getMonthDays(year: number, month: number): CalendarDay[] {
   }
   return days
 }
+
 export function getCalendarDays(value: Date, weekStartsOn: number): CalendarDay[] {
   const year = value.getFullYear()
   const month = value.getMonth()

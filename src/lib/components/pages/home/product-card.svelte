@@ -58,7 +58,7 @@
 					<div>{tClient('product.noVote')}</div>
 				{/if}
 				<progress
-					class="progress progress-warning min-w-28"
+					class="progress progress-warning min-w-24"
 					max="100"
 					value={((rating as number) / MAX_RATING) * 100}
 				></progress>

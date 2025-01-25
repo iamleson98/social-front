@@ -9,13 +9,13 @@
 	import { operationStore } from '$lib/stores/api/operation';
 	import { AppRoute } from '$lib/utils';
 
-	const cateLevel = 0;
+	const CATEGORY_LEVEL = 0;
 	const first = 50;
 
 	const categoryStore = operationStore<Pick<Query, 'categories'>, QueryCategoriesArgs>({
 		kind: 'query',
 		query: CATEGORIES_LIST_QUERY_STORE,
-		variables: { level: cateLevel, first }
+		variables: { level: CATEGORY_LEVEL, first }
 	});
 </script>
 

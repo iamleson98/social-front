@@ -1,34 +1,25 @@
 <script lang="ts">
 	import ProductFilterStateListener from './product-filter-state-listener.svelte';
-	import {
-		productFilterParamStore,
-		type ProductFilterParams
-	} from '$lib/stores/app/product-filter';
+	import { productFilterParamStore } from '$lib/stores/app/product-filter';
 	import ProductListPage from './product-list-page.svelte';
-	import { get } from 'svelte/store';
-	import { onMount, tick } from 'svelte';
+	import { tick } from 'svelte';
 
-	let pageVariables = $state.raw<ProductFilterParams[]>([get(productFilterParamStore)]);
+	let productLoadPageVariables = $state.raw([$productFilterParamStore]);
 
-	onMount(() => {
-		const unsub = productFilterParamStore.subscribe((state) => {
-			if (state.reload) {
-				pageVariables = [];
+	$effect(() => {
+		if (!$productFilterParamStore.reload) return;
 
-				tick().then(() => {
-					productFilterParamStore.update((state) => ({ ...state, reload: false }));
-					pageVariables = [get(productFilterParamStore)];
-				});
-			}
+		productLoadPageVariables = [];
+		tick().then(() => {
+			productFilterParamStore.set({ ...$productFilterParamStore, reload: false });
+			productLoadPageVariables = [$productFilterParamStore];
 		});
-
-		return unsub;
 	});
 
-	const handleLoadMore = (cursor: string) => {
-		pageVariables = pageVariables.concat({
-			...get(productFilterParamStore),
-			after: cursor
+	const handleLoadMore = (afterCursor: string) => {
+		productLoadPageVariables = productLoadPageVariables.concat({
+			...$productFilterParamStore,
+			after: afterCursor
 		});
 	};
 </script>
@@ -37,10 +28,10 @@
 <ProductFilterStateListener />
 
 <div class="max-w-md m-auto">
-	{#each pageVariables as variables, idx (idx)}
+	{#each productLoadPageVariables as variables, idx (idx)}
 		<ProductListPage
 			{variables}
-			isLastPage={idx === pageVariables.length - 1}
+			isLastPage={idx === productLoadPageVariables.length - 1}
 			onLoadMore={handleLoadMore}
 		/>
 	{/each}

@@ -15,7 +15,7 @@
 
 	let {
 		options,
-		value = $bindable<string | number | undefined>(),
+		value = $bindable<SelectOption['value'] | undefined>(),
 		onchange,
 		class: className = '',
 		...rest
@@ -74,6 +74,8 @@
 	};
 
 	const handleSelect = (option: SelectOption) => {
+		if (option.disabled) return; // disabled options cant be selected.
+
 		value = option.value;
 		toggleDropdown(false);
 		onchange?.(option);
@@ -81,13 +83,13 @@
 </script>
 
 <!-- this common snippet is used for rendering select options -->
-{#snippet selectOption({ idx, disabled, optionClassName, onclick, option }: SelectItemprops)}
+{#snippet selectOption({ idx, disabled, optionClassName, onclick, value: _value, label }: SelectItemprops)}
 	<li
 		id={`${LISTBOX_ID}-${idx}`}
-		aria-selected={option.value === value}
+		aria-selected={_value === value}
 		role="option"
 		aria-disabled={disabled}
-		class={`${optionClassName} ${SELECT_CLASSES.selectOption} ${option.value === value ? SELECT_CLASSES.activeSelectOption : ''}`}
+		class={`${optionClassName} ${SELECT_CLASSES.selectOption} ${_value === value ? SELECT_CLASSES.activeSelectOption : ''}`}
 		bind:this={optionRefs[idx]}
 		{onclick}
 		onkeydown={(e) => e.key === 'Enter' && onclick?.()}
@@ -99,7 +101,7 @@
 			}
 		]}
 	>
-		{option.label}
+		{label}
 	</li>
 {/snippet}
 
@@ -133,27 +135,26 @@
 		}
 	]}
 >
-	<div>
-		<Input
-			{...rest}
-			aria-controls={LISTBOX_ID}
-			aria-expanded={openSelect}
-			bind:ref={input}
-			aria-autocomplete="list"
-			autocomplete="off"
-			class={className}
-			id={INPUT_ID}
-			onclick={activate}
-			onfocus={handleFocus}
-			value={selectedOption?.label}
-			type="text"
-			role="combobox"
-			inputDebounceOption={{
-				onInput
-			}}
-			{action}
-		/>
-	</div>
+	<!-- please dont worry about 'onfocus' error warning, it still works -->
+	<Input
+		{...rest}
+		aria-controls={LISTBOX_ID}
+		aria-expanded={openSelect}
+		bind:ref={input}
+		aria-autocomplete="list"
+		autocomplete="off"
+		class={className}
+		id={INPUT_ID}
+		onclick={activate}
+		onfocus={handleFocus}
+		value={selectedOption?.label}
+		type="text"
+		role="combobox"
+		inputDebounceOption={{
+			onInput
+		}}
+		{action}
+	/>
 
 	{#if openSelect}
 		<ul
@@ -169,16 +170,16 @@
 					disabled: true,
 					optionClassName: 'cursor-default',
 					onclick: () => toggleDropdown(false),
-					option: { value: 'No data', label: 'No data' }
+					value: '',
+					label: 'No data'
 				})}
 			{/if}
 			{#each filteredOptions as option, idx (idx)}
 				{@render selectOption({
 					idx,
-					disabled: false,
-					optionClassName: 'cursor-pointer transition-all',
+					optionClassName: `${option.disabled ? 'cursor-not-allowed! text-gray-400!' : ''}`,
 					onclick: () => handleSelect(option),
-					option
+					...option
 				})}
 			{/each}
 		</ul>

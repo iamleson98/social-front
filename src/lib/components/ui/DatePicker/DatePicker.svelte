@@ -1,7 +1,13 @@
 <script lang="ts">
+	import type { FocusEventHandler } from 'svelte/elements';
 	import { cloneDate, getCalendarDays, getMonthLength, type CalendarDay } from './date-utils';
 	import { getInnerLocale } from './locale';
 	import type { Locale } from './types';
+	import { IconButton } from '../Button';
+	import { ChevronLeft, ChevronRight } from '$lib/components/icons';
+	import { Select, type SelectOption } from '../select';
+	import type { Snippet } from 'svelte';
+	import TimePicker from './TimePicker.svelte';
 
 	type Props = {
 		value?: Date;
@@ -11,6 +17,8 @@
 		locale?: Locale;
 		onSelect: (v: Date) => void;
 		browseWithoutSelecting?: boolean;
+		onfocusout?: FocusEventHandler<HTMLDivElement>;
+		children?: Snippet;
 	};
 
 	/** Default Date to use */
@@ -18,29 +26,45 @@
 	const todayDate = defaultDate;
 
 	let {
-		value,
+		value = $bindable(),
 		timePrecision,
-		min = new Date(defaultDate.getFullYear() - 20, 0, 1),
+		min = new Date(defaultDate.getFullYear() - 10, 0, 1),
 		max = new Date(defaultDate.getFullYear(), 11, 31, 23, 59, 59, 999),
 		locale = {},
 		browseWithoutSelecting = false,
-		onSelect
+		onfocusout,
+		onSelect,
+		children
 	}: Props = $props();
 
-	function getYears(min: Date, max: Date) {
-		let years = [];
-		for (let i = min.getFullYear(); i <= max.getFullYear(); i++) {
-			years.push(i);
+	function getYearSelectOptions(min: Date, max: Date): SelectOption[] {
+		let years: SelectOption[] = [];
+		const minFullYear = min.getFullYear();
+		const maxFullYear = max.getFullYear();
+		for (let i = minFullYear; i <= maxFullYear; i++) {
+			years.push({
+				value: i,
+				label: `${i}`
+			});
 		}
 		return years;
 	}
 
 	let browseDate = $state(value ? cloneDate(value) : cloneDate(clampDate(defaultDate, min, max)));
-	let years = $state.raw(getYears(min, max));
+	let yearSelectOptions = $derived(getYearSelectOptions(min, max));
 	let browseYear = $derived(browseDate.getFullYear());
 	let iLocale = $derived(getInnerLocale(locale));
 	let browseMonth = $derived(browseDate.getMonth());
 	let calendarDays = $derived(getCalendarDays(browseDate, iLocale.weekStartsOn));
+	let dropdownMonthOptions = $derived<SelectOption[]>(
+		iLocale.months.map((m, idx) => ({
+			disabled:
+				new Date(browseYear, idx, getMonthLength(browseYear, idx), 23, 59, 59, 999) < min ||
+				new Date(browseYear, idx) > max,
+			value: idx,
+			label: m
+		}))
+	);
 
 	$effect(() => {
 		if (value && value > max) {
@@ -48,6 +72,10 @@
 		} else if (value && value < min) {
 			setValue(min);
 		}
+	});
+
+	$effect(() => {
+		setBrowseDate(value);
 	});
 
 	function setMonth(newMonth: number) {
@@ -81,10 +109,6 @@
 		}
 	}
 
-	$effect(() => {
-		setBrowseDate(value);
-	});
-
 	function setValue(d: Date) {
 		if (d.getTime() !== value?.getTime()) {
 			browseDate = clamp(d, min, max);
@@ -116,6 +140,7 @@
 			return cloneDate(d);
 		}
 	}
+
 	function clampDate(d: Date, min: Date, max: Date) {
 		const limit = clamp(d, min, max);
 		if (limit.getTime() !== d.getTime()) {
@@ -150,12 +175,14 @@
 			onSelect(cloneDate(browseDate));
 		}
 	}
+
 	function dayIsInRange(calendarDay: CalendarDay, min: Date, max: Date) {
 		const date = new Date(calendarDay.year, calendarDay.month, calendarDay.number);
 		const minDate = new Date(min.getFullYear(), min.getMonth(), min.getDate());
 		const maxDate = new Date(max.getFullYear(), max.getMonth(), max.getDate());
 		return date >= minDate && date <= maxDate;
 	}
+
 	function shiftKeydown(e: KeyboardEvent) {
 		if (e.shiftKey && e.key === 'ArrowUp') {
 			setYear(browseDate.getFullYear() - 1);
@@ -170,6 +197,14 @@
 		}
 		e.preventDefault();
 		return true;
+	}
+
+	function setTime(d: Date) {
+		browseDate = clamp(d, min, max);
+		if (value) {
+			setValue(browseDate);
+		}
+		return browseDate;
 	}
 
 	function yearKeydown(e: KeyboardEvent) {
@@ -191,6 +226,7 @@
 		}
 		e.preventDefault();
 	}
+
 	function monthKeydown(e: KeyboardEvent) {
 		let shift = e.shiftKey || e.altKey;
 		if (shift) {
@@ -206,6 +242,7 @@
 		}
 		e.preventDefault();
 	}
+
 	function keydown(e: KeyboardEvent) {
 		let shift = e.shiftKey || e.altKey;
 		if (
@@ -245,36 +282,116 @@
 <div
 	tabindex="0"
 	onkeydown={keydown}
-	class="inline-block text-gray-700 bg-white select-none p-2 cursor-default text-sm border border-gray-300 rounded-sm shadow-md outline-none outline-0 transition-all delay-80 ease-in-out focus:border-gray-300 focus:shadow-md"
+	{onfocusout}
+	class="inline-block text-gray-700 bg-white select-none p-2 cursor-default text-sm border border-gray-200 rounded-lg outline-none"
 >
 	<div class="outline-none" tabindex="-1">
+		<!-- navigation -->
 		<div class="flex justify-center items-center pb-2">
-			<button
-				type="button"
+			<!-- prev month -->
+			<IconButton
 				aria-label="Previous month"
-				class="page-button"
-				tabindex="-1"
+				icon={ChevronLeft}
 				onclick={() => setMonth(browseDate.getMonth() - 1)}
-			>
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-					><path
-						d="M5 3l3.057-3 11.943 12-11.943 12-3.057-3 9-9z"
-						transform="rotate(180, 12, 12)"
-					/></svg
-				>
-			</button>
+				size="xs"
+				variant="light"
+				color="gray"
+			/>
+			<!-- dropdown month -->
+			<div class="date-dropdown mx-1 relative flex grow">
+				<Select
+					options={dropdownMonthOptions}
+					placeholder="Month"
+					value={browseMonth}
+					oninput={(e) => setMonth(parseInt(e.currentTarget.value))}
+					onkeydown={monthKeydown}
+					size="xs"
+					class="w-26"
+				/>
+			</div>
+			<!-- dropdown year -->
+			<div class="date-dropdown mx-1 relative flex grow">
+				<Select
+					options={yearSelectOptions}
+					value={browseYear}
+					oninput={(e) => setYear(parseInt(e.currentTarget.value))}
+					onkeydown={yearKeydown}
+					placeholder="Year"
+					size="xs"
+					class="w-18"
+				/>
+			</div>
+			<!-- next month -->
+			<IconButton
+				aria-label="Next month"
+				icon={ChevronRight}
+				onclick={() => setMonth(browseDate.getMonth() + 1)}
+				size="xs"
+				variant="light"
+				color="gray"
+			/>
 		</div>
+
+		<!-- header -->
+		<div class="flex font-semibold text-xs pb-0.5">
+			{#each Array(7) as _, idx (idx)}
+				<div class="w-8 text-center grow">
+					{iLocale.weekdays[iLocale.weekStartsOn + idx - (idx + iLocale.weekStartsOn < 7 ? 0 : 7)]}
+				</div>
+			{/each}
+		</div>
+
+		{#each Array(6) as _, idx}
+			<div class="flex flex-wrap">
+				{#each calendarDays.slice(idx * 7, idx * 7 + 7) as calendarDay}
+					{@const cellSelected =
+						value &&
+						calendarDay.year === value.getFullYear() &&
+						calendarDay.month === value.getMonth() &&
+						calendarDay.number === value.getDate()}
+					{@const isToday =
+						calendarDay.year === todayDate.getFullYear() &&
+						calendarDay.month === todayDate.getMonth() &&
+						calendarDay.number === todayDate.getDate()}
+					<div class="p-px w-1/7 flex items-center justify-center">
+						<div
+							class="cell"
+							tabindex="0"
+							class:other-month={calendarDay.month !== browseMonth}
+							class:selected-cell={cellSelected}
+							class:today-cell={isToday}
+							onclick={() => selectDay(calendarDay)}
+							onkeyup={(e) => e.key === 'Enter' && selectDay(calendarDay)}
+						>
+							{calendarDay.number}
+						</div>
+					</div>
+				{/each}
+			</div>
+		{/each}
+
+		<TimePicker {timePrecision} bind:browseDate {setTime} />
+
+		{@render children?.()}
 	</div>
 </div>
 
 <style>
-  @import 'tailwindcss/theme';
+	@import 'tailwindcss/theme';
 
-  .page-btn {
-    @apply bg-transparent w-8 h-8 flex shrink rounded-sm border border-transparent items-center justify-center hover:bg-gray-200 hover:border-gray-200;
-  }
+	.other-month {
+		@apply text-gray-300!;
+	}
 
-  .page-btn svg {
-    @apply w-3 h-3;
-  }
+	.cell {
+		@apply w-6 h-6 text-xs cursor-pointer rounded-lg focus:bg-blue-100 flex items-center justify-center text-blue-500;
+	}
+
+	.selected-cell {
+		@apply font-semibold bg-blue-50! ring-2 ring-blue-300;
+	}
+
+	.today-cell {
+		@apply text-red-500;
+	}
 </style>

@@ -1,20 +1,10 @@
 @import 'tailwindcss';
 @plugin "daisyui" {
-  include: dropdown, menu, checkbox, tooltip, tab, radio, progress, calendar;
+  include: dropdown, menu, checkbox, tooltip, tab, radio, progress, calendar, loading;
   themes: light --default, dark --prefersdark;
 }
 
 @config '../tailwind.config.js';
-
-/* @theme {
-  --breakpoint-mobie-s: 320px;
-  --breakpoint-mobie-m: 375px;
-  --breakpoint-mobie-l: 425px;
-  --breakpoint-tablet: 768px;
-  --breakpoint-laptop: 1024px;
-  --breakpoint-desktop: 1440px;
-  --breakpoint-desktop-l: 2560px;
-} */
 
 @layer base {
   *,
@@ -24,100 +14,6 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
   }
-}
-
-@utility sitename-scrollbar {
-  /* width */
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  /* track */
-  &::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 16px;
-  }
-
-  /* handle */
-  &::-webkit-scrollbar-thumb {
-    background: #55565768;
-    border-radius: 16px;
-  }
-
-  /* handle on hover */
-  /* &::-webkit-scrollbar-thumb:hover {
-    background: #4250afad;
-    border-radius: 16px;
-  } */
-}
-
-@utility scrollbar-hidden {
-  /* Hidden scrollbar */
-  /* width */
-  &::-webkit-scrollbar {
-    display: none;
-    scrollbar-width: none;
-  }
-}
-
-@utility scrollbar-stable {
-  scrollbar-gutter: stable both-edges;
-}
-
-@utility loading {
-  @apply pointer-events-none inline-block aspect-square w-6 bg-current;
-  mask-size: 100%;
-  -webkit-mask-size: 100%;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  mask-position: center;
-  -webkit-mask-position: center;
-}
-
-@utility loading-dots {
-  mask-image: var(--loading-dots-img);
-  -webkit-mask-image: var(--loading-dots-img);
-}
-
-@utility loading-spinner {
-  mask-image: var(--loading-spinner-img);
-  -webkit-mask-image: var(--loading-spinner-img);
-}
-
-@utility loading-ring {
-  mask-image: var(--loading-ring-img);
-  -webkit-mask-image: var(--loading-ring-img);
-}
-
-@utility loading-ball {
-  mask-image: var(--loading-ball-img);
-  -webkit-mask-image: var(--loading-ball-img);
-}
-
-@utility loading-bars {
-  mask-image: var(--loading-bars-img);
-  -webkit-mask-image: var(--loading-bars-img);
-}
-
-@utility loading-infinity {
-  mask-image: var(--loading-infinity-img);
-  -webkit-mask-image: var(--loading-infinity-img);
-}
-
-@utility loading-xs {
-  @apply w-4;
-}
-
-@utility loading-sm {
-  @apply w-5;
-}
-
-@utility loading-md {
-  @apply w-6;
-}
-
-@utility loading-lg {
-  @apply w-10;
 }
 
 @layer components {
@@ -150,6 +46,8 @@
   }
 
   input,
+  select,
+  textarea,
   button {
     outline: none !important;
   }
@@ -174,12 +72,6 @@
   /* Handle */
   html::-webkit-scrollbar-thumb {
     background: rgba(85, 86, 87, 0.408);
-    border-radius: 16px;
-  }
-
-  /* Handle on hover */
-  html::-webkit-scrollbar-thumb:hover {
-    background: #6b6f85ad;
     border-radius: 16px;
   }
 }

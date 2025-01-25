@@ -24,9 +24,8 @@ export type InputProps = {
   inputDebounceOption?: InputDebounceOpts;
 } & CustomHTMLInputAttributes & CustomHTMLTextareaAttributes;
 
-type CustomHTMLInputAttributes = Pick<HTMLInputAttributes, 'onchange' | 'onfocus' | 'onblur' | 'oninput' | 'placeholder' | 'value' | 'class' | 'type' | 'id' | 'required' | 'disabled'>;
-type CustomHTMLTextareaAttributes = Pick<HTMLTextareaAttributes, 'onchange' | 'onfocus' | 'onblur' | 'oninput' | 'placeholder' | 'value' | 'class' | 'id' | 'required' | 'disabled'>;
-
+type CustomHTMLInputAttributes = Pick<HTMLInputAttributes, 'onchange' | 'onfocus' | 'onblur' | 'oninput' | 'placeholder' | 'value' | 'class' | 'type' | 'id' | 'required' | 'disabled' | 'min' | 'max' | 'autocomplete' | 'onmousedown'>;
+type CustomHTMLTextareaAttributes = Pick<HTMLTextareaAttributes, 'onchange' | 'onfocus' | 'onblur' | 'oninput' | 'placeholder' | 'value' | 'class' | 'id' | 'required' | 'disabled' | 'autocomplete' | 'onmousedown'>;
 
 export const INPUT_TYPES: Record<Exclude<SocialVariant, 'warning'>, Record<'bg' | 'fg', string>> = {
   info: {

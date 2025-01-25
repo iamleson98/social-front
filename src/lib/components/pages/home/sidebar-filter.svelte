@@ -12,7 +12,6 @@
 		OrderDirection,
 		ProductOrderField,
 		type PriceRangeInput,
-		type ProductFilterInput,
 		type ProductOrder
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
@@ -27,7 +26,7 @@
 	};
 
 	/** in client side, we only support sorting products by these fields below */
-	const ProductSortFields: SelectOption[] = [
+	const PRODUCT_SORT_FIELDS: SelectOption[] = [
 		ProductOrderField.Price,
 		ProductOrderField.Rating,
 		ProductOrderField.Name,
@@ -89,9 +88,9 @@
 		<div class="text-xs mb-2">{tClient('common.ordering')}</div>
 		<div class="flex items-center gap-1">
 			<Select
-				options={ProductSortFields}
+				options={PRODUCT_SORT_FIELDS}
 				size="sm"
-				bind:value={($productFilterParamStore.sortBy as ProductOrder).field as ProductOrderField}
+				bind:value={$productFilterParamStore.sortBy!.field as ProductOrderField}
 			/>
 
 			<IconButton
@@ -113,9 +112,7 @@
 				type="number"
 				min={0}
 				size="sm"
-				bind:value={
-					(($productFilterParamStore.filter as ProductFilterInput).price as PriceRangeInput).gte
-				}
+				bind:value={$productFilterParamStore.filter!.price!.gte}
 				startIcon={CurrencyIconMap[currency]}
 				variant={priceRangeError ? 'error' : 'info'}
 			/>
@@ -126,9 +123,7 @@
 				size="sm"
 				startIcon={CurrencyIconMap[currency]}
 				variant={priceRangeError ? 'error' : 'info'}
-				bind:value={
-					(($productFilterParamStore.filter as ProductFilterInput).price as PriceRangeInput).lte
-				}
+				bind:value={$productFilterParamStore.filter!.price!.lte}
 			/>
 		</div>
 		{#if priceRangeError}
@@ -148,7 +143,8 @@
 					{tClient('common.star')}
 				</span>
 				<div class="w-3/4">
-					<progress class="progress progress-warning min-w-28" max="100" value={rating * 20}></progress>
+					<progress class="progress progress-warning min-w-28" max="100" value={rating * 20}
+					></progress>
 				</div>
 
 				<div class="ml-1">

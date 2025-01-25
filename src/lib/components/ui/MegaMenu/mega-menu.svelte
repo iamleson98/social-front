@@ -29,7 +29,7 @@
 </script>
 
 <div>
-	<div class="flex gap-2 flex-row w-full overflow-x-auto sitename-scrollbar scrollbar-stable">
+	<div class="flex gap-2 flex-row w-full overflow-x-auto">
 		{#each menuSectionsData as items, idx (idx)}
 			<SingleMenu {items} onSelect={(item) => handleItemSelect(idx, item)} disabled={checked} />
 		{/each}

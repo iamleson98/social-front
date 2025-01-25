@@ -7,9 +7,13 @@
 
 	type SpanEvent = { currentTarget: EventTarget & HTMLSpanElement };
 
-	let { browseDate, timePrecision, setTime }: Props = $props();
+	let { browseDate = $bindable(), timePrecision, setTime }: Props = $props();
 
 	let fields: (HTMLSpanElement | undefined | null)[] = [];
+
+	$effect(() => {
+		setText(browseDate);
+	});
 
 	function select(node: Node) {
 		const selection = window.getSelection();
@@ -21,9 +25,9 @@
 
 	function keydown(e: KeyboardEvent & SpanEvent) {
 		if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-			const value = get_value(e.currentTarget);
+			const value = getValue(e.currentTarget);
 			const delta = e.key === 'ArrowUp' ? 1 : -1;
-			set_value(e.currentTarget, value + delta, true);
+			setValue(e.currentTarget, value + delta, true);
 			e.preventDefault();
 			select(e.currentTarget);
 		} else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || ':;-,.'.includes(e.key)) {
@@ -38,8 +42,8 @@
 		}
 	}
 
-	function get_value(node: HTMLElement) {
-		const label = get_field(node).label;
+	function getValue(node: HTMLElement) {
+		const label = getField(node).label;
 		if (label === 'Hours') {
 			return browseDate.getHours();
 		} else if (label === 'Minutes') {
@@ -61,7 +65,7 @@
 		}
 	}
 
-	function get_field(element: HTMLElement) {
+	function getField(element: HTMLElement) {
 		const label = element.getAttribute('aria-label');
 		if (label === 'Hours') {
 			return { label, len: 2, max: 23 } as const;
@@ -95,12 +99,8 @@
 		}
 	}
 
-	$effect(() => {
-		if (browseDate) setText(browseDate);
-	});
-
-	function set_value(node: HTMLElement, value: number, loop_around = false) {
-		const field = get_field(node);
+	function setValue(node: HTMLElement, value: number, loop_around = false) {
+		const field = getField(node);
 		value = clamp(value, field.max, loop_around);
 		if (field.label === 'Hours') {
 			browseDate.setHours(value);
@@ -123,11 +123,11 @@
 	function input(e_unknown: unknown) {
 		const e = e_unknown as InputEvent & SpanEvent; // type error workaround
 
-		const field = get_field(e.currentTarget);
+		const field = getField(e.currentTarget);
 		let new_value: number;
 
 		if (e.inputType === 'insertText') {
-			const original_text = '000' + get_value(e.currentTarget);
+			const original_text = '000' + getValue(e.currentTarget);
 			new_value = parse(original_text + e.currentTarget.innerText, field.len);
 			if (new_value > field.max && e.data) {
 				new_value = parse(e.data, field.len);
@@ -136,7 +136,7 @@
 			new_value = parse('000' + e.currentTarget.innerText, field.len);
 		}
 
-		set_value(e.currentTarget, new_value);
+		setValue(e.currentTarget, new_value);
 		select(e.currentTarget);
 	}
 

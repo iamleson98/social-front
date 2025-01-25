@@ -58,8 +58,7 @@
 			<Button
 				onclick={() => onLoadMore($productFetchStore.data?.products?.pageInfo.endCursor as string)}
 				variant="outline"
-				size="sm"
-				color="indigo"
+				size="xs"
 			>
 				{tClient('common.loadMore')}
 			</Button>

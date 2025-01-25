@@ -7,7 +7,6 @@
 	import {
 		MultiSelect,
 		type SelectOption,
-		type SelectOptionExtends
 	} from '$lib/components/ui/select';
 	import {
 		type ProductVariantBulkCreateInput,
@@ -89,13 +88,22 @@
 		]
 	};
 
+	const VARIANT_ATTRIBUTE_HINTS = [
+		tClient('product.channelHint'),
+		tClient('product.priceHint'),
+		tClient('product.costPriceHint'),
+		tClient('product.stockHint'),
+		tClient('product.weightHint'),
+		tClient('product.skuHint')
+	];
+
 	let { productVariantsInput = $bindable([]) }: Props = $props();
 	let variantsInputDetails = $state<ProductVariantBulkCreateInput[]>([]);
 	let quickFillingHighlightClass = $state<QuickFillHighlight>();
 	let variantManifests = $state.raw<VariantManifestProps[]>([]);
 	let variantManifestError = $state(false);
 	let quickFillingValues = $state<QuickFillingProps>({ channels: [], stocks: [] });
-	let channelSelectOptions = $state.raw<SelectOptionExtends[]>([]);
+	let channelSelectOptions = $state.raw<SelectOption[]>([]);
 
 	const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
@@ -118,7 +126,7 @@
 		const unsub = channelsQueryStore.subscribe((channelsResult) => {
 			if (preHandleErrorOnGraphqlResult(channelsResult) || !channelsResult.data) return;
 
-			const newChannelSelectOptions: SelectOptionExtends[] = [];
+			const newChannelSelectOptions: (SelectOption & { currency: string })[] = [];
 			const warehousesOfChannels: CustomStockInput[] = [];
 			const warehouseMeetMap: Record<string, boolean> = {};
 
@@ -703,7 +711,7 @@
 											size="sm"
 											options={channelSelectOptions}
 											bind:value={
-												variantInputDetail.channelListings as unknown as SelectOptionExtends[]
+												variantInputDetail.channelListings as unknown as SelectOption[]
 											}
 										/>
 									{/if}
@@ -819,12 +827,11 @@
 
 				<!-- DOCUMENT -->
 				<Alert variant="info" size="sm" bordered>
-					<div class="text-xs">
-						<p>- Choose a channel you would like to sell this product.</p>
-						<p>- Provide pricing information for product variants</p>
-						<p>- Provide stock information for product variants</p>
-						<p>- Fill the classify sku for each product variant.</p>
-					</div>
+					<ol class="text-xs">
+						{#each VARIANT_ATTRIBUTE_HINTS as hint, idx (idx)}
+							<li>{idx + 1}. {hint}</li>
+						{/each}
+					</ol>
 				</Alert>
 			</div>
 		</div>
@@ -832,7 +839,7 @@
 
 	{#if hasGeneralError}
 		<Alert variant="error" size="md" class="mt-3" bordered>
-			There are errors on your product variants form. Please fix them first to proceed
+			{tClient('error.variantError')}
 		</Alert>
 	{/if}
 </div>

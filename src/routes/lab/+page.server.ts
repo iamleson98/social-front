@@ -7,4 +7,10 @@ export const load: PageServerLoad = async () => {
   if (!dev) {
     return redirect(HTTPStatusPermanentRedirect, '/');
   }
+
+  return {
+    meta: {
+      title: 'Lab page - where developers showcase their experiments'
+    }
+  }
 };

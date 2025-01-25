@@ -4,7 +4,7 @@
 	import { page } from '$app/state';
 	import { numberRegex, parseUrlSearchParams } from '$lib/utils/utils';
 	import { ORDER_BY_FIELD, PRICE_RANGE, SORT_KEY } from './common';
-	import { OrderDirection, ProductOrderField, type ProductOrder } from '$lib/gql/graphql';
+	import { OrderDirection, ProductOrderField } from '$lib/gql/graphql';
 	import { get } from 'svelte/store';
 
 	afterNavigate(() => {
@@ -19,12 +19,12 @@
 			? (queryParams[ORDER_BY_FIELD] as string).toUpperCase()
 			: ProductOrderField.Price;
 
-		(newProductQueryArgs.sortBy as ProductOrder).direction = Object.values(OrderDirection).includes(
+		newProductQueryArgs.sortBy!.direction = Object.values(OrderDirection).includes(
 			sortDirection as OrderDirection
 		)
 			? (sortDirection as OrderDirection)
 			: OrderDirection.Asc;
-		(newProductQueryArgs.sortBy as ProductOrder).field = Object.values(ProductOrderField).includes(
+		newProductQueryArgs.sortBy!.field = Object.values(ProductOrderField).includes(
 			sortField as ProductOrderField
 		)
 			? (sortField as ProductOrderField)
