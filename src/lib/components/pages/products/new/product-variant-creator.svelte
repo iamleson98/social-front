@@ -114,7 +114,7 @@
 	let quickFillingHighlightClass = $state<QuickFillHighlight>();
 	let variantManifests = $state.raw<VariantManifestProps[]>([]);
 	let variantManifestError = $state(false);
-	let quickFillingValues = $state<QuickFillingProps>({ channels: [], stocks: [], preOrder: {} });
+	let quickFillingValues = $state<QuickFillingProps>({ channels: [], stocks: [], preOrder: {}, weight: 0 });
 	let channelSelectOptions = $state.raw<SelectOption[]>([]);
 	let QuickFillingPreorderEndDateRef = $state<HTMLElement>();
 	let datePicker = $state<easepick.Core>();
@@ -475,6 +475,9 @@
 					}));
 				}
 
+				result.preorder = { ...quickFillingValues.preOrder };
+				result.weight = quickFillingValues.weight;
+
 				return result;
 			});
 		}
@@ -491,6 +494,10 @@
 			} catch (err) {}
 		}
 		datePicker.show();
+
+		// datePicker.on('select', (evt: CustomEvent) => {
+		// 	target.value = DAYJS(evt.detail.date).format('YYYY-MM-DD');
+		// });
 	};
 </script>
 
@@ -731,6 +738,7 @@
 									label={tClient('product.preOrderEndDate')}
 									size="xs"
 									bind:value={quickFillingValues.preOrder.endDate}
+									onchange={(evt) => console.log(evt.currentTarget.value)}
 									onfocus={(evt) => {
 										showDatePicker(
 											evt.currentTarget as HTMLInputElement,
@@ -921,7 +929,8 @@
 											label={tClient('product.preOrderEndDate')}
 											size="xs"
 											class="mb-2"
-											bind:value={quickFillingValues.preOrder.endDate}
+											type="text"
+											bind:value={variantInputDetail.preorder!.endDate}
 											onfocus={(evt) => {
 												showDatePicker(
 													evt.currentTarget as HTMLInputElement,

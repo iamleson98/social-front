@@ -34,17 +34,16 @@
 	let openSelect = $state(false);
 	let input = $state<HTMLInputElement>();
 	let optionRefs: HTMLElement[] = [];
-	let selectMapper: Record<string | number, boolean> = {};
+	let selectMapper = $derived.by(() => {
+		const result: Record<string | number, boolean> = {};
+		for (const vl of value) {
+			result[vl.value] = true
+		}
+		return result;
+	});
 
 	/** list of options that match search query */
 	let searchFilteredOptions = $derived.by(() => {
-		if (value.length) {
-			const valueMap: Record<string, boolean> = {};
-			for (const item of value) {
-				valueMap[item.value] = true;
-			}
-			selectMapper = { ...selectMapper, ...valueMap };
-		}
 		const notSelectedOptions = rest.options.filter((opt) => !selectMapper[opt.value]);
 		if (!searchQuery) return notSelectedOptions;
 
@@ -85,13 +84,11 @@
 		if (option.disabled) return; // disabled options cant be selected
 
 		value = value.concat(option);
-		selectMapper = { ...selectMapper, [option.value]: true };
 		searchQuery = '';
 	};
 
 	const handleDeselectOption = (option: SelectOption) => {
 		value = value.filter((opt) => opt.value !== option.value);
-		selectMapper = { ...selectMapper, [option.value]: false };
 	};
 </script>
 
