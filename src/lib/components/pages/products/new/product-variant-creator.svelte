@@ -2,13 +2,11 @@
 	import { tClient } from '$i18n';
 	import { Plus, Trash, MdiWeightKg } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { Button, IconButton } from '$lib/components/ui/Button';
+	import { Button, IconButton, type ButtonProps } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
+	import { MultiSelect, type SelectOption } from '$lib/components/ui/select';
 	import {
-		MultiSelect,
-		type SelectOption,
-	} from '$lib/components/ui/select';
-	import {
+		type PreorderSettingsInput,
 		type ProductVariantBulkCreateInput,
 		type ProductVariantChannelListingAddInput,
 		type Query,
@@ -20,9 +18,17 @@
 	import { slide } from 'svelte/transition';
 	import { chunk, flatten } from 'lodash-es';
 	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
-	import { CurrencyIconMap, type CurrencyCode } from '$lib/utils/consts';
+	import {
+		CurrencyIconMap,
+		EASEPICK_CORE_STYLE_v1_2_1,
+		EASEPICK_LOCK_STYLE_v1_2_1,
+		type CurrencyCode
+	} from '$lib/utils/consts';
 	import { onMount } from 'svelte';
-	import { type ButtonProps } from '$lib/components/ui/Button/button.types';
+	import * as easepick from '@easepick/core';
+	import * as easeLock from '@easepick/lock-plugin';
+	import type { IPickerConfig } from '@easepick/core/dist/types';
+	import DAYJS from 'dayjs';
 
 	type VariantManifestProps = {
 		name: {
@@ -50,7 +56,9 @@
 		| 'td-price-hl'
 		| 'td-stock-hl'
 		| 'td-sku-hl'
-		| 'td-cost-price-hl';
+		| 'td-cost-price-hl'
+		| 'td-weight-hl'
+		| 'td-preorder-hl';
 
 	type QuickFillingProps = {
 		channels: ChannelSelectOptionProps[];
@@ -59,10 +67,14 @@
 		 */
 		stocks: CustomStockInput[];
 		sku?: string;
+		weight?: number;
+		preOrder: PreorderSettingsInput;
 	};
 
 	const MAX_VARIANT_TYPES = 2;
 	const MAX_VALUES_PER_VARIANT = 4;
+	const MIN_DAYS_FOR_PREORDER = 5;
+	const MAX_DAYS_FOR_PREORDER = 15;
 
 	const DEFAULT_VARIANTS: VariantManifestProps[] = [
 		{
@@ -102,8 +114,12 @@
 	let quickFillingHighlightClass = $state<QuickFillHighlight>();
 	let variantManifests = $state.raw<VariantManifestProps[]>([]);
 	let variantManifestError = $state(false);
-	let quickFillingValues = $state<QuickFillingProps>({ channels: [], stocks: [] });
+	let quickFillingValues = $state<QuickFillingProps>({ channels: [], stocks: [], preOrder: {} });
 	let channelSelectOptions = $state.raw<SelectOption[]>([]);
+	let QuickFillingPreorderEndDateRef = $state<HTMLElement>();
+	let datePicker = $state<easepick.Core>();
+
+	const DAYJS_NOW = DAYJS();
 
 	const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
@@ -158,6 +174,21 @@
 		});
 
 		return unsub;
+	});
+
+	onMount(() => {
+		datePicker = new easepick.create({
+			element: QuickFillingPreorderEndDateRef!,
+			css: EASEPICK_CORE_STYLE_v1_2_1.concat(EASEPICK_LOCK_STYLE_v1_2_1),
+			zIndex: 100000000,
+			plugins: [easeLock.LockPlugin],
+			['LockPlugin' as keyof IPickerConfig]: {
+				minDate: DAYJS_NOW.add(MIN_DAYS_FOR_PREORDER, 'day').toDate(),
+				maxDate: DAYJS_NOW.add(MAX_DAYS_FOR_PREORDER, 'day').toDate()
+			}
+		});
+
+		return () => datePicker?.destroy();
 	});
 
 	const handleFocusHighlightQuickFilling = (highlight?: QuickFillHighlight) =>
@@ -290,14 +321,15 @@
 				sku: `${randomString()}-${variant.values[0].value}`,
 				trackInventory: true,
 				channelListings: [],
-				weight: 0
+				weight: 0,
+				preorder: {}
 			}));
 			return;
 		}
 
 		const newVariants = variantManifests.concat(SECOND_SAMPLE_VARIANT);
 
-		const newVariantDetails = [];
+		const newVariantDetails: ProductVariantBulkCreateInput[] = [];
 		for (const variant1 of newVariants[0].values) {
 			for (const variant2 of newVariants[1].values) {
 				newVariantDetails.push({
@@ -306,7 +338,8 @@
 					sku: `${randomString()}-${variant1.value}-${variant2.value}`,
 					trackInventory: true,
 					channelListings: [],
-					weight: 0
+					weight: 0,
+					preorder: {}
 				});
 			}
 		}
@@ -328,7 +361,8 @@
 			sku: `${randomString()}-${value.value}`,
 			trackInventory: true,
 			channelListings: [],
-			weight: 0
+			weight: 0,
+			preorder: {}
 		}));
 	};
 
@@ -350,7 +384,8 @@
 				trackInventory: true,
 				channelListings: [],
 				trackInventory: true,
-				weight: 0
+				weight: 0,
+				preorder: {}
 			});
 		} else {
 			if (variantIdx === 1) {
@@ -366,7 +401,8 @@
 						sku: `${randomString()}-${siblingSplitName[0]}-`,
 						trackInventory: true,
 						channelListings: [],
-						weight: 0
+						weight: 0,
+						preorder: {}
 					});
 				}
 				variantsInputDetails = flatten(chunks);
@@ -377,7 +413,8 @@
 					sku: `${randomString()}--${value.value}`,
 					trackInventory: true,
 					channelListings: [],
-					weight: 0
+					weight: 0,
+					preorder: {}
 				}));
 				variantsInputDetails = variantsInputDetails.concat(addingVariants);
 			}
@@ -442,7 +479,22 @@
 			});
 		}
 	};
+
+	const showDatePicker = (target: HTMLInputElement, defaultValue?: Date | string) => {
+		if (!datePicker) return;
+
+		datePicker.options.element = target;
+		if (defaultValue) {
+			try {
+				const date = new Date(defaultValue);
+				datePicker.setDate(date);
+			} catch (err) {}
+		}
+		datePicker.show();
+	};
 </script>
+
+<div class="hidden!" bind:this={QuickFillingPreorderEndDateRef}></div>
 
 {#snippet variantActionButton({ title, text = '', ...rest }: ButtonProps & { text?: string })}
 	<div class="tooltip grow shrink" data-tip={title}>
@@ -569,96 +621,162 @@
 			<div class="mb-4">
 				<div class="text-xs mb-1">{tClient('product.quickFilling')}</div>
 				<div class="flex gap-x-2 items-start flex-row w-full">
-					<!-- CHANNELS -->
-					<div class="w-2/7">
-						<div class="text-xs">{tClient('product.channel')}</div>
-						{#if !channelSelectOptions?.length}
-							<SkeletonContainer>
-								<Skeleton class="w-full h-4" rounded={false} />
-							</SkeletonContainer>
-						{:else}
-							<MultiSelect
+					<div class="w-11/12 flex gap-1 items-start flex-row">
+						<!-- CHANNELS -->
+						<div class="w-1/5">
+							<div class="text-xs">{tClient('product.channel')}</div>
+							{#if !channelSelectOptions?.length}
+								<SkeletonContainer>
+									<Skeleton class="w-full h-4" rounded={false} />
+								</SkeletonContainer>
+							{:else}
+								<MultiSelect
+									size="sm"
+									options={channelSelectOptions}
+									onfocus={() => handleFocusHighlightQuickFilling('td-channel-hl')}
+									onblur={() => handleFocusHighlightQuickFilling()}
+									bind:value={quickFillingValues.channels}
+									class="w-full"
+								/>
+							{/if}
+						</div>
+						<!-- PRICING -->
+						<div class="w-1/5">
+							{#if quickFillingValues.channels.length}
+								<div class="flex flex-row text-xs">
+									<span class="w-1/2">{tClient('product.price')}</span>
+									<span class="w-1/2">{tClient('product.costPrice')}</span>
+								</div>
+								<div
+									class="max-h-20 overflow-y-auto border border-gray-200 bg-white p-2 rounded-lg"
+								>
+									{#each quickFillingValues.channels as channel, idx (idx)}
+										{@const iconType = CurrencyIconMap[channel.currency as CurrencyCode]}
+										<div class="flex gap-1 mt-1">
+											<Input
+												startIcon={iconType}
+												type="number"
+												placeholder={channel.currency}
+												size="xs"
+												class="w-1/2"
+												bind:value={channel.price}
+												variant={channel.price < 0 ? 'error' : 'info'}
+												subText={channel.price < 0 ? tClient('error.negativeNumber') : ''}
+												onfocus={() => handleFocusHighlightQuickFilling('td-price-hl')}
+												onblur={() => handleFocusHighlightQuickFilling()}
+											/>
+											<Input
+												startIcon={iconType}
+												type="number"
+												placeholder={channel.currency}
+												size="xs"
+												class="w-1/2"
+												bind:value={channel.costPrice}
+												variant={channel.costPrice < 0 ? 'error' : 'info'}
+												subText={channel.costPrice < 0 ? tClient('error.negativeNumber') : ''}
+												onfocus={() => handleFocusHighlightQuickFilling('td-cost-price-hl')}
+												onblur={() => handleFocusHighlightQuickFilling()}
+											/>
+										</div>
+									{/each}
+								</div>
+							{/if}
+						</div>
+						<!-- WEIGHT -->
+						<div class="w-1/5">
+							<div class="text-xs">{tClient('product.weight')}</div>
+							<Input
 								size="sm"
-								options={channelSelectOptions}
-								onfocus={() => handleFocusHighlightQuickFilling('td-channel-hl')}
+								type="number"
+								bind:value={quickFillingValues.weight}
+								startIcon={MdiWeightKg}
+								onfocus={() => handleFocusHighlightQuickFilling('td-weight-hl')}
 								onblur={() => handleFocusHighlightQuickFilling()}
-								bind:value={quickFillingValues.channels}
-								class="w-full"
+								variant={typeof quickFillingValues.weight === 'number' &&
+								quickFillingValues.weight < 0
+									? 'error'
+									: 'info'}
+								subText={typeof quickFillingValues.weight === 'number' &&
+								quickFillingValues.weight < 0
+									? tClient('error.negativeNumber')
+									: undefined}
 							/>
-						{/if}
-					</div>
-					<!-- PRICING -->
-					<div class="w-2/7">
-						{#if quickFillingValues.channels.length}
-							<div class="flex flex-row text-xs">
-								<span class="w-1/2">{tClient('product.price')}</span>
-								<span class="w-1/2">{tClient('product.costPrice')}</span>
-							</div>
+						</div>
+						<!-- PRE-ORDER -->
+						<div class="w-1/5">
+							<div class="text-xs">{tClient('common.preorder')}</div>
 							<div class="max-h-20 overflow-y-auto border border-gray-200 bg-white p-2 rounded-lg">
-								{#each quickFillingValues.channels as channel, idx (idx)}
-									{@const iconType = CurrencyIconMap[channel.currency as CurrencyCode]}
-									<div class="flex gap-1 mt-1">
-										<Input
-											startIcon={iconType}
-											type="number"
-											placeholder={channel.currency}
-											size="xs"
-											class="w-1/2"
-											bind:value={channel.price}
-											variant={channel.price < 0 ? 'error' : 'info'}
-											subText={channel.price < 0 ? tClient('error.negativeNumber') : ''}
-											onfocus={() => handleFocusHighlightQuickFilling('td-price-hl')}
-											onblur={() => handleFocusHighlightQuickFilling()}
-										/>
-										<Input
-											startIcon={iconType}
-											type="number"
-											placeholder={channel.currency}
-											size="xs"
-											class="w-1/2"
-											bind:value={channel.costPrice}
-											variant={channel.costPrice < 0 ? 'error' : 'info'}
-											subText={channel.costPrice < 0 ? tClient('error.negativeNumber') : ''}
-											onfocus={() => handleFocusHighlightQuickFilling('td-cost-price-hl')}
-											onblur={() => handleFocusHighlightQuickFilling()}
-										/>
-									</div>
-								{/each}
+								<Input
+									type="number"
+									label={tClient('product.qtyLimit')}
+									size="xs"
+									class="mb-2"
+									bind:value={quickFillingValues.preOrder.globalThreshold}
+									variant={typeof quickFillingValues.preOrder.globalThreshold === 'number' &&
+									quickFillingValues.preOrder.globalThreshold < 0
+										? 'error'
+										: 'info'}
+									subText={typeof quickFillingValues.preOrder.globalThreshold === 'number' &&
+									quickFillingValues.preOrder.globalThreshold < 0
+										? tClient('error.negativeNumber')
+										: undefined}
+									onfocus={() => {
+										handleFocusHighlightQuickFilling('td-preorder-hl');
+									}}
+									onblur={() => {
+										handleFocusHighlightQuickFilling();
+									}}
+								/>
+								<Input
+									label={tClient('product.preOrderEndDate')}
+									size="xs"
+									bind:value={quickFillingValues.preOrder.endDate}
+									onfocus={(evt) => {
+										showDatePicker(
+											evt.currentTarget as HTMLInputElement,
+											evt.currentTarget.value.trim()
+										);
+										handleFocusHighlightQuickFilling('td-preorder-hl');
+									}}
+									onblur={() => handleFocusHighlightQuickFilling()}
+								/>
 							</div>
-						{/if}
-					</div>
-					<!-- STOCK -->
-					<div class="w-2/7">
-						<div class="text-xs">{tClient('product.stock')}</div>
-						{#if !quickFillingValues.stocks.length}
-							<SkeletonContainer>
-								<Skeleton class="w-full h-4" rounded={false} />
-							</SkeletonContainer>
-						{:else}
-							<div class="max-h-20 overflow-y-auto border border-gray-200 bg-white p-2 rounded-lg">
-								{#each quickFillingValues.stocks as stockInput, idx (idx)}
-									<div class="flex items-start flex-row gap-1.5 mt-1">
-										<span class="w-1/3 text-sm">
-											{stockInput.warehouseName}
-										</span>
-										<Input
-											type="number"
-											placeholder="quantity"
-											class="w-2/3"
-											size="xs"
-											onfocus={() => handleFocusHighlightQuickFilling('td-stock-hl')}
-											onblur={() => handleFocusHighlightQuickFilling()}
-											bind:value={stockInput.quantity}
-											variant={stockInput.quantity < 0 ? 'error' : 'info'}
-											subText={stockInput.quantity < 0 ? tClient('error.negativeNumber') : ''}
-										/>
-									</div>
-								{/each}
-							</div>
-						{/if}
+						</div>
+						<!-- STOCK -->
+						<div class="w-1/5">
+							<div class="text-xs">{tClient('product.stock')}</div>
+							{#if !quickFillingValues.stocks.length}
+								<SkeletonContainer>
+									<Skeleton class="w-full h-4" rounded={false} />
+								</SkeletonContainer>
+							{:else}
+								<div
+									class="max-h-20 overflow-y-auto border border-gray-200 bg-white p-2 rounded-lg"
+								>
+									{#each quickFillingValues.stocks as stockInput, idx (idx)}
+										<div class="flex items-start flex-row gap-1.5 mt-1">
+											<span class="w-1/3 text-sm">
+												{stockInput.warehouseName}
+											</span>
+											<Input
+												type="number"
+												placeholder="quantity"
+												class="w-2/3"
+												size="xs"
+												onfocus={() => handleFocusHighlightQuickFilling('td-stock-hl')}
+												onblur={() => handleFocusHighlightQuickFilling()}
+												bind:value={stockInput.quantity}
+												variant={stockInput.quantity < 0 ? 'error' : 'info'}
+												subText={stockInput.quantity < 0 ? tClient('error.negativeNumber') : ''}
+											/>
+										</div>
+									{/each}
+								</div>
+							{/if}
+						</div>
 					</div>
 					<!-- APPLY BUTTON -->
-					<div class="w-1/7">
+					<div class="w-1/12">
 						<div class="text-xs">{tClient('common.action')}</div>
 						<Button
 							class="btn btn-sm grow shrink"
@@ -684,8 +802,9 @@
 							<th>{tClient('product.channel')}</th>
 							<th>{tClient('product.price')}</th>
 							<th>{tClient('product.costPrice')}</th>
-							<th>{tClient('product.stock')}</th>
 							<th>{tClient('product.weight')}</th>
+							<th>{tClient('common.preorder')}</th>
+							<th>{tClient('product.stock')}</th>
 							<th>{tClient('product.sku')}</th>
 						</tr>
 					</thead>
@@ -710,9 +829,7 @@
 										<MultiSelect
 											size="sm"
 											options={channelSelectOptions}
-											bind:value={
-												variantInputDetail.channelListings as unknown as SelectOption[]
-											}
+											bind:value={variantInputDetail.channelListings as unknown as SelectOption[]}
 										/>
 									{/if}
 								</td>
@@ -770,6 +887,50 @@
 										</div>
 									</div>
 								</td>
+								<!-- WEIGHT -->
+								<td class="weight-td">
+									<Input
+										type="number"
+										size="sm"
+										placeholder="kg"
+										startIcon={MdiWeightKg}
+										bind:value={variantInputDetail.weight}
+										variant={variantInputDetail.weight >= 0 ? 'info' : 'error'}
+										subText={variantInputDetail.weight >= 0 ? '' : tClient('error.negativeNumber')}
+									/>
+								</td>
+								<!-- PREORDER -->
+								<td class="preorder-td">
+									<div class="max-h-28 overflow-y-auto p-1">
+										<Input
+											type="number"
+											label={tClient('product.qtyLimit')}
+											size="xs"
+											class="mb-2"
+											bind:value={variantInputDetail.preorder!.globalThreshold}
+											variant={typeof variantInputDetail.preorder?.globalThreshold === 'number' &&
+											variantInputDetail.preorder.globalThreshold < 0
+												? 'error'
+												: 'info'}
+											subText={typeof variantInputDetail.preorder?.globalThreshold === 'number' &&
+											variantInputDetail.preorder.globalThreshold < 0
+												? tClient('error.negativeNumber')
+												: undefined}
+										/>
+										<Input
+											label={tClient('product.preOrderEndDate')}
+											size="xs"
+											class="mb-2"
+											bind:value={quickFillingValues.preOrder.endDate}
+											onfocus={(evt) => {
+												showDatePicker(
+													evt.currentTarget as HTMLInputElement,
+													evt.currentTarget.value.trim()
+												);
+											}}
+										/>
+									</div>
+								</td>
 								<!-- STOCK -->
 								<td class="stock-td">
 									<div class="max-h-28 overflow-y-auto p-1">
@@ -794,18 +955,6 @@
 											{/each}
 										</div>
 									</div>
-								</td>
-								<!-- WEIGHT -->
-								<td class="weight-td">
-									<Input
-										type="number"
-										size="sm"
-										placeholder="kg"
-										startIcon={MdiWeightKg}
-										bind:value={variantInputDetail.weight}
-										variant={variantInputDetail.weight >= 0 ? 'info' : 'error'}
-										subText={variantInputDetail.weight >= 0 ? '' : tClient('error.negativeNumber')}
-									/>
 								</td>
 								<!-- SKU -->
 								<td class="sku-td">
@@ -905,6 +1054,28 @@
 		@apply border-t border-blue-500;
 	}
 	.variant-table-row.td-sku-hl:last-child > .sku-td {
+		@apply border-b border-blue-500;
+	}
+
+	/* highlight weight */
+	.variant-table-row.td-weight-hl .weight-td {
+		@apply border-l border-r border-blue-500;
+	}
+	.variant-table-row.td-weight-hl:first-child > .weight-td {
+		@apply border-t border-blue-500;
+	}
+	.variant-table-row.td-weight-hl:last-child > .weight-td {
+		@apply border-b border-blue-500;
+	}
+
+	/* highlight preorder */
+	.variant-table-row.td-preorder-hl .preorder-td {
+		@apply border-l border-r border-blue-500;
+	}
+	.variant-table-row.td-preorder-hl:first-child > .preorder-td {
+		@apply border-t border-blue-500;
+	}
+	.variant-table-row.td-preorder-hl:last-child > .preorder-td {
 		@apply border-b border-blue-500;
 	}
 </style>

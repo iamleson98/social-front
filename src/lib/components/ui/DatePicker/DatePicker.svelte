@@ -75,7 +75,7 @@
 	});
 
 	$effect(() => {
-		setBrowseDate(value);
+		if (value) setBrowseDate(value);
 	});
 
 	function setMonth(newMonth: number) {

@@ -14,6 +14,15 @@ importers:
       '@auth/sveltekit':
         specifier: ^1.7.4
         version: 1.7.4(@sveltejs/kit@2.16.1(@sveltejs/vite-plugin-svelte@4.0.0-next.6(svelte@5.15.0)(vite@5.4.14(@types/node@20.17.15)(lightningcss@1.29.1)))(svelte@5.15.0)(vite@5.4.14(@types/node@20.17.15)(lightningcss@1.29.1)))(svelte@5.15.0)
+      '@easepick/amp-plugin':
+        specifier: ^1.2.1
+        version: 1.2.1
+      '@easepick/core':
+        specifier: ^1.2.1
+        version: 1.2.1
+      '@easepick/lock-plugin':
+        specifier: ^1.2.1
+        version: 1.2.1
       '@lexical/dragon':
         specifier: ^0.17.1
         version: 0.17.1
@@ -53,6 +62,9 @@ importers:
       cookie:
         specifier: ^0.6.0
         version: 0.6.0
+      dayjs:
+        specifier: ^1.11.13
+        version: 1.11.13
       dotenv:
         specifier: ^16.4.7
         version: 16.4.7
@@ -597,6 +609,21 @@ packages:
   '@babel/types@7.26.5':
     resolution: {integrity: sha512-L6mZmwFDK6Cjh1nRCLXpa6no13ZIioJDz7mdkzHv399pThrTa/k0nUlNaenOeh2kWu/iaOQYElEpKPUswUa9Vg==}
     engines: {node: '>=6.9.0'}
+
+  '@easepick/amp-plugin@1.2.1':
+    resolution: {integrity: sha512-LbGd7RU+fiucxTqJnBpT5SwACX1BoEK4yi1joLqN50O57jpN0jQMMvDO/vp/F4Zr8MO6kwaamRmOXhqo/Vb4aw==}
+
+  '@easepick/base-plugin@1.2.1':
+    resolution: {integrity: sha512-aonBQaRyZwNH/gmPzSzZDVjQjgy/rxWd+TXnM0E3Nxkeu4yMbXV+GnWVQbBwTvJx74M7iSCHJowdmZ5T46B7Vg==}
+
+  '@easepick/core@1.2.1':
+    resolution: {integrity: sha512-V/blEia/ykAq+0mnQ9djOU5wvMZ+iffL5iuQrKLObpMOw38kL/qo4inH4pCbB3wm7sDjrJTuDKf+6+FrgdFGsw==}
+
+  '@easepick/datetime@1.2.1':
+    resolution: {integrity: sha512-KIUvWo/kEipwBqPTazjfUf6R7dKb2ztPizPoB/0ZMYz3HrWJptsLSZQma3R1nM/zkaexnk/e4L4nX+vDjwBtYA==}
+
+  '@easepick/lock-plugin@1.2.1':
+    resolution: {integrity: sha512-6sJCdliMpnQtzL9dwznS9vYaQUy66VRKPZ+jFdVR1ohiNUVM6C7dSGdG3dPntVTywTy2Z9uU+yJOeWcVFDT61A==}
 
   '@envelop/core@5.0.3':
     resolution: {integrity: sha512-SE3JxL7odst8igN6x77QWyPpXKXz/Hs5o5Y27r+9Br6WHIhkW90lYYVITWIJQ/qYgn5PkpbaVgeFY9rgqQaZ/A==}
@@ -5751,6 +5778,24 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
+
+  '@easepick/amp-plugin@1.2.1':
+    dependencies:
+      '@easepick/base-plugin': 1.2.1
+
+  '@easepick/base-plugin@1.2.1':
+    dependencies:
+      '@easepick/core': 1.2.1
+
+  '@easepick/core@1.2.1':
+    dependencies:
+      '@easepick/datetime': 1.2.1
+
+  '@easepick/datetime@1.2.1': {}
+
+  '@easepick/lock-plugin@1.2.1':
+    dependencies:
+      '@easepick/base-plugin': 1.2.1
 
   '@envelop/core@5.0.3':
     dependencies:

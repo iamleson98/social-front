@@ -17,6 +17,7 @@
 		size?: SocialSize;
 		children?: Snippet;
 		onSelect: (d: Date) => void;
+		closeOnSelection?: boolean;
 		text?: string;
 		format?: string;
 		locale?: Locale;
@@ -24,8 +25,8 @@
 		valid?: boolean;
 		min?: Date;
 		max?: Date;
-    browseWithoutSelecting?: boolean;
-    timePrecision?: 'minute' | 'second' | 'millisecond';
+		browseWithoutSelecting?: boolean;
+		timePrecision?: 'minute' | 'second' | 'millisecond';
 	};
 
 	const defaultDate = new Date();
@@ -45,8 +46,9 @@
 		valid = $bindable(true),
 		min = new Date(defaultDate.getFullYear() - 20, 0, 1),
 		max = new Date(defaultDate.getFullYear(), 11, 31, 23, 59, 59, 999),
-    browseWithoutSelecting = false,
-    timePrecision,
+		browseWithoutSelecting = false,
+		timePrecision,
+		closeOnSelection = false
 	}: Props = $props();
 
 	let showAbove = $state(false);
@@ -56,20 +58,18 @@
 	let formatTokens = $derived(createFormat(format, locale));
 	let innerStore = $state<Date>();
 
-	onMount(() => {
+	$effect(() => {
 		text = toText(innerStore, formatTokens);
 	});
 
 	$effect(() => {
 		if (value === undefined) {
 			innerStore = undefined;
+      value = value;
 		} else if (innerStore && value.getTime() !== innerStore.getTime()) {
 			innerStore = cloneDate(value);
+      value = value;
 		}
-	});
-
-	$effect(() => {
-		text = toText(innerStore, formatTokens);
 	});
 
 	$effect(() => {
@@ -160,6 +160,11 @@
 			y: showAbove ? 5 : -5
 		});
 	}
+
+	const handleSelect = (evt: Date) => {
+		onSelect?.(evt);
+		if (closeOnSelection) visible = false;
+	};
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -198,14 +203,14 @@
 		>
 			<DatePicker
 				{children}
-				{onSelect}
+				onSelect={handleSelect}
 				{onfocusout}
 				bind:value={innerStore}
 				{min}
 				{max}
 				{locale}
 				{browseWithoutSelecting}
-        {timePrecision}
+				{timePrecision}
 			/>
 		</div>
 	{/if}

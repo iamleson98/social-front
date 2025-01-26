@@ -5,6 +5,10 @@ import { type PaymentMethodsResponse } from "@adyen/adyen-web";
 import { AdyenCheckout } from "@adyen/adyen-web";
 
 
+export const EASEPICK_CORE_STYLE_v1_2_1 = ['/css/easepick-core/1.2.1.css'];
+export const EASEPICK_AMP_STYLE_v1_2_1 = ['/css/easepick-amp/1.2.1.css'];
+export const EASEPICK_LOCK_STYLE_v1_2_1 = ['/css/easepick-lock/1.2.1.css'];
+
 /**
  * all server methods MUST return this type, for consistency
  */

@@ -4,20 +4,29 @@
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Menu } from '$lib/components/ui/Menu';
-	import { MultiSelect, Select, type SelectOption } from '$lib/components/ui/select';
-	import { DateInput, DatePicker } from '$lib/components/ui/DatePicker';
-
-	const options: SelectOption[] = [
-		{ value: '1', label: 'Option 1' },
-		{ value: '2', label: 'Option 2' },
-		{ value: '3', label: 'Option 3' },
-		{ value: '4', label: 'Option 4' },
-		{ value: '5', label: 'Option 5' }
-	];
+	import { MultiSelect, Select } from '$lib/components/ui/select';
+	import { Input } from '$lib/components/ui/Input';
+	import { onMount } from 'svelte';
+	import * as easepick from '@easepick/core';
+	import { EASEPIC_CORE_STYLE_v1_2_1 } from '$lib/utils/consts';
 
 	let option = $state(1);
+	let datePicker = $state<easepick.Core>();
 
 	const add = () => (option += 1);
+
+	let inputElem = $state<HTMLInputElement>();
+
+	onMount(() => {
+		datePicker = new easepick.create({
+			element: inputElem!,
+			css: EASEPIC_CORE_STYLE_v1_2_1
+		});
+
+		console.log(datePicker?.options.element);
+
+		return () => datePicker?.destroy();
+	});
 </script>
 
 <Button onclick={add}>add</Button>
@@ -209,6 +218,4 @@
 	]}
 />
 
-<!-- <DatePicker onSelect={console.log} /> -->
-
-<DateInput onSelect={console.log} />
+<Input size="sm" bind:ref={inputElem} onfocus={() => datePicker?.show()} />

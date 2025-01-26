@@ -35,10 +35,10 @@
 
 	let productVariantsInput = $state.raw<ProductVariantBulkCreateInput[]>([]);
 
-	const handlePrint = () => console.log($state.snapshot(productCreateInput));
+	const handlePrint = () => console.log($state.snapshot(productVariantsInput));
 </script>
 
-<div class="m-auto rounded-lg bg-white max-w-5xl p-5 text-gray-600">
+<div class="m-auto rounded-lg bg-white max-w-6xl p-5 text-gray-600">
 	<ProductName bind:name={productCreateInput.name} />
 	<CategorySelector bind:categoryID={productCreateInput.category} />
 	<ProductAttributeEditor
@@ -55,7 +55,7 @@
 	/>
 	<DiscountByQuantity />
 	<PackagingAndDelivery />
-	<ProductPreorderEditor />
+	<!-- <ProductPreorderEditor /> -->
 
 	<Button size="md" variant="filled" fullWidth onclick={handlePrint}>Submit</Button>
 </div>

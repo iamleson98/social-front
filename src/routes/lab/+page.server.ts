@@ -1,9 +1,9 @@
 import { redirect } from "@sveltejs/kit";
-import type { PageServerLoad } from "./$types";
 import { HTTPStatusPermanentRedirect } from "$lib/utils/consts";
 import { dev } from "$app/environment";
 
-export const load: PageServerLoad = async () => {
+
+export const load = async () => {
   if (!dev) {
     return redirect(HTTPStatusPermanentRedirect, '/');
   }
