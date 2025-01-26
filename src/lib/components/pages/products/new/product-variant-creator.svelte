@@ -997,85 +997,45 @@
 	@import 'tailwindcss/theme';
 
 	td {
-		@apply p-1;
+		@apply p-1 border-transparent border-l border-r;
 	}
 	th {
 		@apply px-1 py-3;
 	}
-	/* highlight price */
-	.variant-table-row.td-price-hl .price-td {
-		@apply border-l border-r border-blue-500;
+
+	.variant-table-row:last-child > td {
+		@apply border-b;
 	}
-	.variant-table-row.td-price-hl:first-child > .price-td {
-		@apply border-t border-blue-500;
-	}
-	.variant-table-row.td-price-hl:last-child > .price-td {
-		@apply border-b border-blue-500;
+	.variant-table-row:first-child > td {
+		@apply border-t;
 	}
 
-	/* highlight cost price */
-	.variant-table-row.td-cost-price-hl .cost-price-td {
-		@apply border-l border-r border-blue-500;
+	/** price highlight */
+	.variant-table-row.td-price-hl > .price-td {
+		@apply border-blue-500!;
 	}
-	.variant-table-row.td-cost-price-hl:first-child > .cost-price-td {
-		@apply border-t border-blue-500;
+	.variant-table-row.td-channel-hl > .channel-td {
+		@apply border-blue-500!;
 	}
-	.variant-table-row.td-cost-price-hl:last-child > .cost-price-td {
-		@apply border-b border-blue-500;
+	.variant-table-row.td-stock-hl > .stock-td {
+		@apply border-blue-500!;
 	}
-
-	/* highlight channel */
-	.variant-table-row.td-channel-hl .channel-td {
-		@apply border-l border-r border-blue-500;
+	.variant-table-row.td-sku-hl > .sku-td {
+		@apply border-blue-500!;
 	}
-	.variant-table-row.td-channel-hl:first-child > .channel-td {
-		@apply border-t border-blue-500;
+	.variant-table-row.td-cost-price-hl > .cost-price-td {
+		@apply border-blue-500!;
 	}
-	.variant-table-row.td-channel-hl:last-child > .channel-td {
-		@apply border-b border-blue-500;
+	.variant-table-row.td-weight-hl > .weight-td {
+		@apply border-blue-500!;
 	}
-
-	/* highlight stock */
-	.variant-table-row.td-stock-hl .stock-td {
-		@apply border-l border-r border-blue-500;
-	}
-	.variant-table-row.td-stock-hl:first-child > .stock-td {
-		@apply border-t border-blue-500;
-	}
-	.variant-table-row.td-stock-hl:last-child > .stock-td {
-		@apply border-b border-blue-500;
+	.variant-table-row.td-preorder-hl > .preorder-td {
+		@apply border-blue-500!;
 	}
 
-	/* highlight sku */
-	.variant-table-row.td-sku-hl .sku-td {
-		@apply border-l border-r border-blue-500;
-	}
-	.variant-table-row.td-sku-hl:first-child > .sku-td {
-		@apply border-t border-blue-500;
-	}
-	.variant-table-row.td-sku-hl:last-child > .sku-td {
-		@apply border-b border-blue-500;
-	}
-
-	/* highlight weight */
-	.variant-table-row.td-weight-hl .weight-td {
-		@apply border-l border-r border-blue-500;
-	}
-	.variant-table-row.td-weight-hl:first-child > .weight-td {
-		@apply border-t border-blue-500;
-	}
-	.variant-table-row.td-weight-hl:last-child > .weight-td {
-		@apply border-b border-blue-500;
-	}
-
-	/* highlight preorder */
-	.variant-table-row.td-preorder-hl .preorder-td {
-		@apply border-l border-r border-blue-500;
-	}
-	.variant-table-row.td-preorder-hl:first-child > .preorder-td {
-		@apply border-t border-blue-500;
-	}
-	.variant-table-row.td-preorder-hl:last-child > .preorder-td {
-		@apply border-b border-blue-500;
+	table,
+	tr,
+	td {
+		border-collapse: initial !important;
 	}
 </style>
