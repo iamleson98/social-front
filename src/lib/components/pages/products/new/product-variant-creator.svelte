@@ -73,31 +73,18 @@
 
 	const MAX_VARIANT_TYPES = 2;
 	const MAX_VALUES_PER_VARIANT = 4;
+	// on some platforms, pre-order product will be available in 5-15 days
 	const MIN_DAYS_FOR_PREORDER = 5;
 	const MAX_DAYS_FOR_PREORDER = 15;
+	const DAYJS_NOW = DAYJS();
 
 	const DEFAULT_VARIANTS: VariantManifestProps[] = [
-		{
-			name: {
-				value: 'color'
-			},
-			values: [
-				{
-					value: 'red'
-				}
-			]
-		}
+		{ name: { value: 'color' }, values: [{ value: 'red' }] }
 	];
 
 	const SECOND_SAMPLE_VARIANT = {
-		name: {
-			value: 'size'
-		},
-		values: [
-			{
-				value: 'm'
-			}
-		]
+		name: { value: 'size' },
+		values: [{ value: 'm' }]
 	};
 
 	const VARIANT_ATTRIBUTE_HINTS = [
@@ -114,12 +101,83 @@
 	let quickFillingHighlightClass = $state<QuickFillHighlight>();
 	let variantManifests = $state.raw<VariantManifestProps[]>([]);
 	let variantManifestError = $state(false);
-	let quickFillingValues = $state<QuickFillingProps>({ channels: [], stocks: [], preOrder: {}, weight: 0 });
+	let quickFillingValues = $state<QuickFillingProps>({
+		channels: [],
+		stocks: [],
+		preOrder: {},
+		weight: 0
+	});
 	let channelSelectOptions = $state.raw<SelectOption[]>([]);
 	let QuickFillingPreorderEndDateRef = $state<HTMLElement>();
 	let datePicker = $state<easepick.Core>();
 
-	const DAYJS_NOW = DAYJS();
+	/** check if quick filling form has any error */
+	let quickFillingError = $derived.by(() => {
+		if (typeof quickFillingValues.weight !== 'number' || quickFillingValues.weight < 0) return true;
+
+		if (quickFillingValues.stocks.some((stock) => stock.quantity < 0 || stock.quantity % 1 !== 0))
+			return true;
+
+		if (quickFillingValues.channels.some((chan) => chan.price < 0 || chan.costPrice < 0))
+			return true;
+
+		const { globalThreshold, endDate } = quickFillingValues.preOrder;
+		if (typeof globalThreshold === 'number' && (globalThreshold < 0 || globalThreshold % 1 !== 0))
+			return true;
+
+		if (endDate) {
+			try {
+				new Date(endDate);
+			} catch {
+				return true;
+			}
+		}
+
+		return false;
+	});
+
+	let variantInputDetailError = $derived.by(() => {
+		for (const inputItem of variantsInputDetails) {
+			if (
+				inputItem.channelListings?.some(
+					(chan) =>
+						chan.price < 0 ||
+						chan.costPrice < 0 ||
+						(typeof chan.preorderThreshold === 'number' && chan.preorderThreshold < 0)
+				)
+			)
+				return true;
+
+			if (!inputItem.name?.trim()) return true;
+
+			if (inputItem.preorder) {
+				const { globalThreshold, endDate } = inputItem.preorder;
+				if (typeof globalThreshold === 'number' && (globalThreshold < 0 || globalThreshold % 1 !== 0))
+					return true;
+
+				if (endDate) {
+					try {
+						new Date(endDate);
+					} catch {
+						return true;
+					}
+				}
+			}
+
+			if (inputItem.stocks?.some((stock) => stock.quantity < 0 || stock.quantity % 1 !== 0))
+				return true;
+			if (typeof inputItem.weight !== 'number' || inputItem.weight < 0) return true;
+		}
+
+		return false;
+	});
+
+	$inspect(variantManifestError, quickFillingError, variantInputDetailError);
+
+	/** hold errors of variant manifest form, quick filling form, detail form, if there is any error, display red border for user to know  */
+	let hasGeneralError = $derived(
+		variantManifestError || quickFillingError || variantInputDetailError
+	);
 
 	const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
@@ -130,12 +188,6 @@
 	// let parent know about the changes
 	$effect(() => {
 		productVariantsInput = variantsInputDetails;
-	});
-
-	let hasGeneralError = $derived.by(() => {
-		if (variantManifestError) return true;
-
-		return false;
 	});
 
 	onMount(() => {
@@ -494,10 +546,6 @@
 			} catch (err) {}
 		}
 		datePicker.show();
-
-		// datePicker.on('select', (evt: CustomEvent) => {
-		// 	target.value = DAYJS(evt.detail.date).format('YYYY-MM-DD');
-		// });
 	};
 </script>
 
@@ -759,11 +807,12 @@
 								</SkeletonContainer>
 							{:else}
 								<div
-									class="max-h-20 overflow-y-auto border border-gray-200 bg-white p-2 rounded-lg"
+									class="max-h-20 overflow-y-auto border border-gray-200 bg-white p-1 rounded-lg"
 								>
 									{#each quickFillingValues.stocks as stockInput, idx (idx)}
-										<div class="flex items-start flex-row gap-1.5 mt-1">
-											<span class="w-1/3 text-sm">
+										{@const isError = stockInput.quantity < 0 || stockInput.quantity % 1 !== 0}
+										<div class="flex items-start flex-row gap-1.5 mt-1 odd:bg-gray-100 p-1">
+											<span class="w-1/3 text-xs">
 												{stockInput.warehouseName}
 											</span>
 											<Input
@@ -774,8 +823,8 @@
 												onfocus={() => handleFocusHighlightQuickFilling('td-stock-hl')}
 												onblur={() => handleFocusHighlightQuickFilling()}
 												bind:value={stockInput.quantity}
-												variant={stockInput.quantity < 0 ? 'error' : 'info'}
-												subText={stockInput.quantity < 0 ? tClient('error.negativeNumber') : ''}
+												variant={isError ? 'error' : 'info'}
+												subText={isError ? tClient('error.negativeNumber') : ''}
 											/>
 										</div>
 									{/each}

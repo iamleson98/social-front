@@ -11,7 +11,6 @@
 		FileText,
 		PackageExport,
 		MingcuteHome,
-		type IconType,
 		ChevronRight
 	} from '$lib/components/icons';
 	import { afterNavigate, disableScrollHandling } from '$app/navigation';
