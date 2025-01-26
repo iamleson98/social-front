@@ -8,7 +8,7 @@
 	import { Input } from '$lib/components/ui/Input';
 	import { onMount } from 'svelte';
 	import * as easepick from '@easepick/core';
-	import { EASEPIC_CORE_STYLE_v1_2_1 } from '$lib/utils/consts';
+	import { EASEPICK_CORE_STYLE_v1_2_1 } from '$lib/utils/consts';
 
 	let option = $state(1);
 	let datePicker = $state<easepick.Core>();
@@ -20,7 +20,7 @@
 	onMount(() => {
 		datePicker = new easepick.create({
 			element: inputElem!,
-			css: EASEPIC_CORE_STYLE_v1_2_1
+			css: EASEPICK_CORE_STYLE_v1_2_1
 		});
 
 		console.log(datePicker?.options.element);
