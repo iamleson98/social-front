@@ -1,10 +1,10 @@
-import { getCookieByKey } from "$lib/utils";
 import { LANGUAGE_KEY } from "$lib/utils/consts";
 import type { RequestEvent } from "@sveltejs/kit";
-import { default as eng } from './en';
-import { default as vie } from './vi';
-import { LanguageCodeEnum } from "$lib/gql/graphql";
-
+import { default as english } from './en';
+import { default as vietnamese } from './vi';
+import { default as korean } from './ko';
+import { default as japanese } from './ja';
+import { clientSideGetCookieOrDefault, getCookieByKey } from "$lib/utils/cookies";
 
 const placeholderRegex = /{{([a-zA-Z ]+)}}/g;
 
@@ -39,13 +39,18 @@ const parseTranslationObject = (obj: Record<string, unknown>, trans: Translation
   return trans;
 }
 
+type LanguageCode = 'vi' | 'en' | 'ko' | 'ja' | 'vi-VN' | 'en-US';
 
-/**
- * Don't modify my content. I'm FROZEN
- */
-const translations: Partial<Record<LanguageCodeEnum, Translation>> = {
-  [LanguageCodeEnum.En]: parseTranslationObject(eng, {}),
-  [LanguageCodeEnum.Vi]: parseTranslationObject(vie, {}),
+const englishTran = parseTranslationObject(english, {})
+const vietnameseTran = parseTranslationObject(vietnamese, {})
+
+const translations: Record<LanguageCode, Translation> = {
+  ['en']: englishTran,
+  ['vi']: vietnameseTran,
+  ['ko']: parseTranslationObject(korean, {}),
+  ['ja']: parseTranslationObject(japanese, {}),
+  ['vi-VN']: vietnameseTran,
+  ['en-US']: englishTran,
 };
 
 /**
@@ -67,8 +72,8 @@ type Translation = {
   };
 }
 
-const commonTranslation = (language: LanguageCodeEnum, key: string, args?: Record<string, unknown>) => {
-  const tranObject = translations[language]![key];
+const commonTranslation = (language: LanguageCode, key: string, args?: Record<string, unknown>) => {
+  const tranObject = translations[language][key];
   if (tranObject === undefined) {
     throw new Error(`Translation key ${key} not found in ${language} translations`);
   }
@@ -92,7 +97,7 @@ const commonTranslation = (language: LanguageCodeEnum, key: string, args?: Recor
 * @returns translated string
 */
 export const tClient = (key: string, args?: Record<string, unknown>): string => {
-  const language: LanguageCodeEnum = (getCookieByKey(LANGUAGE_KEY) || LanguageCodeEnum.En) as LanguageCodeEnum;
+  const language = (getCookieByKey(LANGUAGE_KEY) || 'en') as LanguageCode;
   return commonTranslation(language, key, args);
 };
 
@@ -104,6 +109,6 @@ export const tClient = (key: string, args?: Record<string, unknown>): string => 
  * @returns 
  */
 export const tServer = (event: RequestEvent<Partial<Record<string, string>>, string | null>, key: string, args?: Record<string, unknown>): string => {
-  const language = (event.cookies.get(LANGUAGE_KEY) || LanguageCodeEnum.En) as LanguageCodeEnum;
+  const language = (event.cookies.get(LANGUAGE_KEY) || 'en') as LanguageCode;
   return commonTranslation(language, key, args);
 };

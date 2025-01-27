@@ -3,7 +3,6 @@
 	import { MdiWeightKg } from '$lib/components/icons';
 	import { Input } from '$lib/components/ui/Input';
 	import type { ProductInput } from '$lib/gql/graphql';
-	import CentimeterIcon from './centimeter-icon.svelte';
 
 	type Props = {
 		metadata: ProductInput['metadata'];
