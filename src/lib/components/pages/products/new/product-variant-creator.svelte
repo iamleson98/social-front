@@ -18,17 +18,10 @@
 	import { slide } from 'svelte/transition';
 	import { chunk, flatten } from 'lodash-es';
 	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
-	import {
-		CurrencyIconMap,
-		EASEPICK_CORE_STYLE_v1_2_1,
-		EASEPICK_LOCK_STYLE_v1_2_1,
-		type CurrencyCode
-	} from '$lib/utils/consts';
+	import { CurrencyIconMap, type CurrencyCode } from '$lib/utils/consts';
 	import { onMount } from 'svelte';
-	import * as easepick from '@easepick/core';
-	import * as easeLock from '@easepick/lock-plugin';
-	import type { IPickerConfig } from '@easepick/core/dist/types';
 	import DAYJS from 'dayjs';
+	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 
 	type VariantManifestProps = {
 		name: {
@@ -108,8 +101,6 @@
 		weight: 0
 	});
 	let channelSelectOptions = $state.raw<SelectOption[]>([]);
-	let QuickFillingPreorderEndDateRef = $state<HTMLElement>();
-	let datePicker = $state<easepick.Core>();
 
 	/** check if quick filling form has any error */
 	let quickFillingError = $derived.by(() => {
@@ -152,7 +143,10 @@
 
 			if (inputItem.preorder) {
 				const { globalThreshold, endDate } = inputItem.preorder;
-				if (typeof globalThreshold === 'number' && (globalThreshold < 0 || globalThreshold % 1 !== 0))
+				if (
+					typeof globalThreshold === 'number' &&
+					(globalThreshold < 0 || globalThreshold % 1 !== 0)
+				)
 					return true;
 
 				if (endDate) {
@@ -224,21 +218,6 @@
 		});
 
 		return unsub;
-	});
-
-	onMount(() => {
-		datePicker = new easepick.create({
-			element: QuickFillingPreorderEndDateRef!,
-			css: [EASEPICK_CORE_STYLE_v1_2_1, EASEPICK_LOCK_STYLE_v1_2_1],
-			zIndex: 100000000,
-			plugins: [easeLock.LockPlugin],
-			['LockPlugin' as keyof IPickerConfig]: {
-				minDate: DAYJS_NOW.add(MIN_DAYS_FOR_PREORDER, 'day').toDate(),
-				maxDate: DAYJS_NOW.add(MAX_DAYS_FOR_PREORDER, 'day').toDate()
-			}
-		});
-
-		return () => datePicker?.destroy();
 	});
 
 	const handleFocusHighlightQuickFilling = (highlight?: QuickFillHighlight) =>
@@ -525,29 +504,15 @@
 					}));
 				}
 
-				result.preorder = { ...quickFillingValues.preOrder };
+				const { endDate, globalThreshold } = quickFillingValues.preOrder;
+				result.preorder = { endDate, globalThreshold };
 				result.weight = quickFillingValues.weight;
 
 				return result;
 			});
 		}
 	};
-
-	const showDatePicker = (target: HTMLInputElement, defaultValue?: Date | string) => {
-		if (!datePicker) return;
-
-		datePicker.options.element = target;
-		if (defaultValue) {
-			try {
-				const date = new Date(defaultValue);
-				datePicker.setDate(date);
-			} catch (err) {}
-		}
-		datePicker.show();
-	};
 </script>
-
-<div class="hidden!" bind:this={QuickFillingPreorderEndDateRef}></div>
 
 {#snippet variantActionButton({ title, text = '', ...rest }: ButtonProps & { text?: string })}
 	<div class="tooltip grow shrink" data-tip={title}>
@@ -762,6 +727,7 @@
 						<div class="w-1/5">
 							<div class="text-xs">{tClient('common.preorder')}</div>
 							<div class="max-h-20 overflow-y-auto border border-gray-200 bg-white p-2 rounded-lg">
+								<!-- QUANTITY LIMIT -->
 								<Input
 									type="number"
 									label={tClient('product.qtyLimit')}
@@ -784,19 +750,23 @@
 										handleFocusHighlightQuickFilling();
 									}}
 								/>
-								<Input
-									label={tClient('product.preOrderEndDate')}
+								<!-- AVAILABLE DATE -->
+								<EaseDatePicker
 									size="xs"
-									bind:value={quickFillingValues.preOrder.endDate}
-									onchange={(evt) => console.log(evt.currentTarget.value)}
-									onfocus={(evt) => {
-										showDatePicker(
-											evt.currentTarget as HTMLInputElement,
-											evt.currentTarget.value.trim()
-										);
-										handleFocusHighlightQuickFilling('td-preorder-hl');
-									}}
+									onchange={(date) => (quickFillingValues.preOrder.endDate = date.date)}
+									value={quickFillingValues.preOrder.endDate}
+									onfocus={() => handleFocusHighlightQuickFilling('td-preorder-hl')}
 									onblur={() => handleFocusHighlightQuickFilling()}
+									label={tClient('product.preOrderEndDate')}
+									allowSelectMonthYears={{
+										showMonths: true,
+										showYears: { min: 2020, max: DAYJS_NOW.year() + 1 }
+									}}
+									timeConfig={false}
+									timeLock={{
+										minDate: DAYJS_NOW.add(MIN_DAYS_FOR_PREORDER, 'day').toDate(),
+										maxDate: DAYJS_NOW.add(MAX_DAYS_FOR_PREORDER, 'day').toDate()
+									}}
 								/>
 							</div>
 						</div>
@@ -981,17 +951,20 @@
 												? tClient('error.negativeNumber')
 												: undefined}
 										/>
-										<Input
-											label={tClient('product.preOrderEndDate')}
+										<EaseDatePicker
 											size="xs"
+											label={tClient('product.preOrderEndDate')}
+											allowSelectMonthYears={{
+												showMonths: true,
+												showYears: { min: 2020, max: DAYJS_NOW.year() + 1 }
+											}}
+											timeConfig={false}
+											onchange={(date) => (variantInputDetail.preorder!.endDate = date.date)}
+											value={variantInputDetail.preorder!.endDate}
 											class="mb-2"
-											type="text"
-											bind:value={variantInputDetail.preorder!.endDate}
-											onfocus={(evt) => {
-												showDatePicker(
-													evt.currentTarget as HTMLInputElement,
-													evt.currentTarget.value.trim()
-												);
+											timeLock={{
+												minDate: DAYJS_NOW.add(MIN_DAYS_FOR_PREORDER, 'day').toDate(),
+												maxDate: DAYJS_NOW.add(MAX_DAYS_FOR_PREORDER, 'day').toDate()
 											}}
 										/>
 									</div>

@@ -193,8 +193,8 @@
 
 		if (value) {
 			try {
-				const date = new Date(value);
-				datePicker.setDate(date);
+				const date = dayjs(value);
+				datePicker.setDate(date.toDate());
 			} catch {
 				datePicker.setDate(NOW);
 			}
@@ -216,6 +216,5 @@
 	value={inputReprValue}
 	class={`${!datePicker ? 'hidden! opacity-0!' : ''}`}
 	readonly
-	onchange={console.log}
   placeholder={rest.placeholder || timeFormat}
 />
