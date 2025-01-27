@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { tClient } from '$i18n';
-	import { Input } from '$lib/components/ui/Input';
+	import { Input, TextArea } from '$lib/components/ui/Input';
 	import type { ProductCreateInput, SeoInput } from '$lib/gql/graphql';
 	import slugify from 'slugify';
 
@@ -50,12 +50,11 @@
 
 	<!-- description -->
 	<span class="text-[10px]">{tClient('product.seoDescription')}</span>
-	<Input
+	<TextArea
 		bind:value={seoDescription}
 		placeholder={tClient('product.seoDescription')}
 		type="text"
 		inputClass="min-h-20"
-		component="textarea"
 		variant={seoDescription!.length > SEO_DESCRIPTION_MAX_LENGTH ? 'error' : 'info'}
 		subText={`${seoDescription!.length} / ${SEO_DESCRIPTION_MAX_LENGTH}`}
 	/>

@@ -68,6 +68,8 @@
 		"@easepick/amp-plugin": "^1.2.1",
 		"@easepick/core": "^1.2.1",
 		"@easepick/lock-plugin": "^1.2.1",
+		"@easepick/range-plugin": "^1.2.1",
+		"@easepick/time-plugin": "^1.2.1",
 		"@lexical/dragon": "^0.17.1",
 		"@lexical/history": "^0.17.1",
 		"@lexical/link": "^0.17.1",

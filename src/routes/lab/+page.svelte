@@ -5,28 +5,15 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Menu } from '$lib/components/ui/Menu';
 	import { MultiSelect, Select } from '$lib/components/ui/select';
-	import { Input } from '$lib/components/ui/Input';
-	import { onMount } from 'svelte';
-	import * as easepick from '@easepick/core';
-	import { EASEPICK_CORE_STYLE_v1_2_1 } from '$lib/utils/consts';
+	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 
 	let option = $state(1);
-	let datePicker = $state<easepick.Core>();
 
 	const add = () => (option += 1);
 
-	let inputElem = $state<HTMLInputElement>();
+	let date = $state({});
 
-	onMount(() => {
-		datePicker = new easepick.create({
-			element: inputElem!,
-			css: EASEPICK_CORE_STYLE_v1_2_1
-		});
-
-		console.log(datePicker?.options.element);
-
-		return () => datePicker?.destroy();
-	});
+	// $inspect(date);
 </script>
 
 <Button onclick={add}>add</Button>
@@ -218,4 +205,4 @@
 	]}
 />
 
-<Input size="sm" bind:ref={inputElem} onfocus={() => datePicker?.show()} />
+<EaseDatePicker bind:value={date} allowSelectRange />

@@ -23,6 +23,12 @@ importers:
       '@easepick/lock-plugin':
         specifier: ^1.2.1
         version: 1.2.1
+      '@easepick/range-plugin':
+        specifier: ^1.2.1
+        version: 1.2.1
+      '@easepick/time-plugin':
+        specifier: ^1.2.1
+        version: 1.2.1
       '@lexical/dragon':
         specifier: ^0.17.1
         version: 0.17.1
@@ -624,6 +630,12 @@ packages:
 
   '@easepick/lock-plugin@1.2.1':
     resolution: {integrity: sha512-6sJCdliMpnQtzL9dwznS9vYaQUy66VRKPZ+jFdVR1ohiNUVM6C7dSGdG3dPntVTywTy2Z9uU+yJOeWcVFDT61A==}
+
+  '@easepick/range-plugin@1.2.1':
+    resolution: {integrity: sha512-yEHLUq32Kj0exLz4txxchALQVJUbwyXvnovfN7yxTrCJLpi6uMmPXcW4lyYig2P9+xM9JqF6JsNqOsi0+5GlHQ==}
+
+  '@easepick/time-plugin@1.2.1':
+    resolution: {integrity: sha512-mjynAAppLxlqiDSdHdkBEqi4A67CH17FqO3UH2n6mfAIKPZLQA7R8Y6jEkp+Fpl5tj0/HFqdrk82ceiYYnLFYw==}
 
   '@envelop/core@5.0.3':
     resolution: {integrity: sha512-SE3JxL7odst8igN6x77QWyPpXKXz/Hs5o5Y27r+9Br6WHIhkW90lYYVITWIJQ/qYgn5PkpbaVgeFY9rgqQaZ/A==}
@@ -5794,6 +5806,14 @@ snapshots:
   '@easepick/datetime@1.2.1': {}
 
   '@easepick/lock-plugin@1.2.1':
+    dependencies:
+      '@easepick/base-plugin': 1.2.1
+
+  '@easepick/range-plugin@1.2.1':
+    dependencies:
+      '@easepick/base-plugin': 1.2.1
+
+  '@easepick/time-plugin@1.2.1':
     dependencies:
       '@easepick/base-plugin': 1.2.1
 

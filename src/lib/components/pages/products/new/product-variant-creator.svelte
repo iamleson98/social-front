@@ -172,8 +172,6 @@
 		return false;
 	});
 
-	$inspect(variantManifestError, quickFillingError, variantInputDetailError);
-
 	/** hold errors of variant manifest form, quick filling form, detail form, if there is any error, display red border for user to know  */
 	let hasGeneralError = $derived(
 		variantManifestError || quickFillingError || variantInputDetailError
@@ -231,7 +229,7 @@
 	onMount(() => {
 		datePicker = new easepick.create({
 			element: QuickFillingPreorderEndDateRef!,
-			css: EASEPICK_CORE_STYLE_v1_2_1.concat(EASEPICK_LOCK_STYLE_v1_2_1),
+			css: [EASEPICK_CORE_STYLE_v1_2_1, EASEPICK_LOCK_STYLE_v1_2_1],
 			zIndex: 100000000,
 			plugins: [easeLock.LockPlugin],
 			['LockPlugin' as keyof IPickerConfig]: {
@@ -711,6 +709,7 @@
 											<Input
 												startIcon={iconType}
 												type="number"
+												min={0}
 												placeholder={channel.currency}
 												size="xs"
 												class="w-1/2"
@@ -723,6 +722,7 @@
 											<Input
 												startIcon={iconType}
 												type="number"
+												min={0}
 												placeholder={channel.currency}
 												size="xs"
 												class="w-1/2"
@@ -744,6 +744,7 @@
 								size="sm"
 								type="number"
 								bind:value={quickFillingValues.weight}
+								min={0}
 								startIcon={MdiWeightKg}
 								onfocus={() => handleFocusHighlightQuickFilling('td-weight-hl')}
 								onblur={() => handleFocusHighlightQuickFilling()}
@@ -764,6 +765,7 @@
 								<Input
 									type="number"
 									label={tClient('product.qtyLimit')}
+									min={0}
 									size="xs"
 									class="mb-2"
 									bind:value={quickFillingValues.preOrder.globalThreshold}
@@ -818,6 +820,7 @@
 											<Input
 												type="number"
 												placeholder="quantity"
+												min={0}
 												class="w-2/3"
 												size="xs"
 												onfocus={() => handleFocusHighlightQuickFilling('td-stock-hl')}
@@ -902,6 +905,7 @@
 												<Input
 													startIcon={iconType}
 													type="number"
+													min={0}
 													size="xs"
 													placeholder={channelListing[
 														'currency' as keyof ProductVariantChannelListingAddInput
@@ -929,6 +933,7 @@
 												<Input
 													startIcon={iconType}
 													type="number"
+													min={0}
 													size="xs"
 													placeholder={channelListing[
 														'currency' as keyof ProductVariantChannelListingAddInput
@@ -949,6 +954,7 @@
 									<Input
 										type="number"
 										size="sm"
+										min={0}
 										placeholder="kg"
 										startIcon={MdiWeightKg}
 										bind:value={variantInputDetail.weight}
@@ -961,6 +967,7 @@
 									<div class="max-h-28 overflow-y-auto p-1">
 										<Input
 											type="number"
+											min={0}
 											label={tClient('product.qtyLimit')}
 											size="xs"
 											class="mb-2"
@@ -1004,6 +1011,7 @@
 														class="w-2/3"
 														bind:value={variantInputDetail.stocks![idx].quantity}
 														type="number"
+														min={0}
 														variant={stock.quantity < 0 ? 'error' : 'info'}
 														subText={typeof stock.quantity === 'number' && stock.quantity < 0
 															? tClient('error.negativeNumber')

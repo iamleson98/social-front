@@ -13,17 +13,17 @@
 	import { tClient } from '$i18n';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { onMount } from 'svelte';
+	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 
 	type Props = {
 		categoryID?: string | null;
 		attributes: AttributeValueInput[];
 	};
 
+	const MAX_FETCHING_BATCH = 50;
 	let { categoryID, attributes = $bindable([]) }: Props = $props();
 
 	let prevCategoryID = $state(categoryID);
-
-	const MAX_FETCHING_BATCH = 50;
 
 	const attributeQueryStore = operationStore<Pick<Query, 'attributes'>, CustomAttributesQueryArgs>({
 		kind: 'query',
@@ -90,6 +90,8 @@
 	});
 </script>
 
+<div class="hidden!"></div>
+
 {#if categoryID}
 	<div class="mb-3">
 		<span class="text-sm">{tClient('product.tabAttributes')}</span>
@@ -135,7 +137,12 @@
 								{:else if node.inputType === AttributeInputTypeEnum.Boolean}
 									<Checkbox size="sm" bind:checked={attributes[idx].boolean} />
 								{:else if node.inputType === AttributeInputTypeEnum.Date}
-									<div>date</div>
+									<EaseDatePicker
+										size="sm"
+										onchange={(value) => (attributes[idx].date = value.date)}
+										timeConfig={false}
+										allowSelectMonthYears={{ showMonths: true, showYears: { min: 2020 } }}
+									/>
 								{:else if node.inputType === AttributeInputTypeEnum.File}
 									<div>file</div>
 								{:else if node.inputType === AttributeInputTypeEnum.Numeric}
@@ -146,7 +153,12 @@
 										bind:value={attributes[idx].numeric}
 									/>
 								{:else if node.inputType === AttributeInputTypeEnum.DateTime}
-									<div>datetime</div>
+									<EaseDatePicker
+										size="sm"
+										onchange={(value) => (attributes[idx].dateTime = value.date)}
+										autoApply={false}
+										allowSelectMonthYears={{ showMonths: true, showYears: { min: 2020 } }}
+									/>
 								{:else if node.inputType === AttributeInputTypeEnum.Reference}
 									<div>ref</div>
 								{:else if node.inputType === AttributeInputTypeEnum.RichText}

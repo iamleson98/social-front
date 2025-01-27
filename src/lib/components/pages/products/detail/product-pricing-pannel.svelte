@@ -21,7 +21,7 @@
 	import { CHANNEL_KEY, defaultChannel, MAX_RATING } from '$lib/utils/consts';
 	import { formatMoney, preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { fade } from 'svelte/transition';
-	import { Rating } from '$lib/components/common/rating';
+	import { Rating } from '$lib/components/ui/rating';
 	import { checkoutStore } from '$lib/stores/app';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { IconButton } from '$lib/components/ui/Button';

@@ -4,9 +4,9 @@
 	import { randomID } from '$lib/utils/utils';
 	import { debounceInput } from '$lib/actions/input-debounce';
 	import { tClient } from '$i18n';
-	import { INPUT_BUTTON_SIZE_MAP } from '$lib/utils/consts';
+	import { TEXT_AREA_SIZE_MAP } from '$lib/utils/consts';
 	import { INPUT_LABEL_SIZE_STYLE_MAP, INPUT_TYPES, type InputProps } from './input.types';
-	import type { HTMLInputAttributes } from 'svelte/elements';
+	import type { HTMLTextareaAttributes } from 'svelte/elements';
 
 	let {
 		label,
@@ -25,7 +25,7 @@
 		required,
 		inputClass = '',
 		...rest
-	}: InputProps & Omit<HTMLInputAttributes, 'size'> = $props();
+	}: InputProps & HTMLTextareaAttributes = $props();
 </script>
 
 <div class={`${className} ${rest.disabled ? 'text-gray-300! cursor-not-allowed!' : ''}`}>
@@ -45,7 +45,8 @@
 					<Icon icon={startIcon} />
 				</div>
 			{/if}
-			<input
+
+			<textarea
 				bind:this={ref}
 				{id}
 				{placeholder}
@@ -53,9 +54,9 @@
 				bind:value
 				use:shortcuts={selectShortcutOptions}
 				use:debounceInput={inputDebounceOption}
-				class={`w-full text-sm rounded-lg ring-1 focus:ring-2 inline-block px-2.5 ${inputClass} ${INPUT_TYPES[variant].bg} ${startIcon ? 'ps-8' : ''} ${INPUT_BUTTON_SIZE_MAP[size]}`}
+				class={`w-full text-sm rounded-lg ring-1 focus:ring-2 outline-none! field-sizing-content inline-block px-2.5 py-1 ${inputClass} ${INPUT_TYPES[variant].bg} ${startIcon ? 'ps-8' : ''} ${TEXT_AREA_SIZE_MAP[size]}`}
 				{...rest}
-			/>
+			></textarea>
 
 			{#if action}
 				<div class="absolute end-2 top-1/2 transform -translate-y-1/2 input-action">

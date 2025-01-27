@@ -19,7 +19,7 @@ export type SelectProps<T extends SelectOption = SelectOption> = {
   options: T[];
   value?: SelectOption['value'];
   onchange?: (opt: T) => void;
-} & Omit<InputProps, 'value' | 'onchange'> & Omit<HTMLSelectAttributes, 'size'>;
+} & Omit<InputProps, 'value' | 'onchange'> & Omit<HTMLSelectAttributes, 'size' | 'onchange'>;
 
 export type MultiSelectProps<T extends SelectOption = SelectOption> = {
   options: T[];
