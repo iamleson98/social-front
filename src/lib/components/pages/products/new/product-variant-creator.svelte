@@ -726,7 +726,7 @@
 						<!-- PRE-ORDER -->
 						<div class="w-1/5">
 							<div class="text-xs">{tClient('common.preorder')}</div>
-							<div class="max-h-20 overflow-y-auto border border-gray-200 bg-white p-2 rounded-lg">
+							<div class="border border-gray-200 bg-white p-2 rounded-lg">
 								<!-- QUANTITY LIMIT -->
 								<Input
 									type="number"
@@ -819,9 +819,9 @@
 			</div>
 
 			<!-- DETAILS -->
-			<div class="relative overflow-x-auto rounded-lg p-3 border border-gray-200 bg-white">
+			<div class="relative h-fit w-fit rounded-lg p-3 border border-gray-200 bg-white">
 				<table
-					class="w-full text-sm text-left rtl:text-right text-gray-600 dark:text-gray-500 mb-4"
+					class="w-full text-sm h-fit text-left rtl:text-right text-gray-600 dark:text-gray-500 mb-4"
 				>
 					<thead class="text-xs text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-500">
 						<tr>
@@ -838,7 +838,7 @@
 							<th>{tClient('product.sku')}</th>
 						</tr>
 					</thead>
-					<tbody class="overflow-y-visible">
+					<tbody>
 						{#each variantsInputDetails as variantInputDetail, detailIdx (detailIdx)}
 							<tr
 								class={`variant-table-row ${quickFillingHighlightClass} border-b border-gray-200`}
@@ -934,7 +934,7 @@
 								</td>
 								<!-- PREORDER -->
 								<td class="preorder-td">
-									<div class="max-h-28 overflow-y-auto p-1">
+									<div class="p-1">
 										<Input
 											type="number"
 											min={0}
