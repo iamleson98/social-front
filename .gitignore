@@ -12,3 +12,6 @@ vite.config.ts.timestamp-*
 $houdini
 
 /study
+
+# Sentry Config File
+.env.sentry-build-plugin
