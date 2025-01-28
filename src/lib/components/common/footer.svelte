@@ -4,10 +4,8 @@
 	import { JapanFlag, KoreaFlag, UsaFlag, VietnamFlag } from '../icons';
 	import { Button } from '../ui';
 	import { LanguageCodeEnum } from '$lib/gql/graphql';
-	import { page } from '$app/state';
 	import { LANGUAGE_KEY } from '$lib/utils/consts';
 	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
-	import { goto } from '$app/navigation';
 	import { setTranslation, type LanguageCode } from '$i18n';
 
 	type LanguageProps = {
@@ -32,8 +30,6 @@
 			activeLanguage = language;
 		}
 	});
-
-	$inspect(activeLanguage);
 
 	const handleSwitchLanguageCode = async (language: LanguageProps) => {
 		document.cookie = `${LANGUAGE_KEY}=${language.code}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure; SameSite=Lax`;

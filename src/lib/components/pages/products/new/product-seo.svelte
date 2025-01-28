@@ -30,7 +30,7 @@
 	<div class="text-sm">{$tranFunc('product.seo')}</div>
 
 	<!-- slug -->
-	<span class="text-[10px]">{$tranFunc('product.prdSlug')}</span>
+	<span class="text-xs">{$tranFunc('product.prdSlug')}</span>
 	<Input
 		placeholder={$tranFunc('placeholders.enterPrdName')}
 		size="sm"
@@ -39,7 +39,7 @@
 	/>
 
 	<!-- title -->
-	<span class="text-[10px]">{$tranFunc('product.seoTitle')}</span>
+	<span class="text-xs">{$tranFunc('product.seoTitle')}</span>
 	<Input
 		bind:value={seoTitle}
 		placeholder={$tranFunc('product.seoTitle')}
@@ -49,7 +49,7 @@
 	/>
 
 	<!-- description -->
-	<span class="text-[10px]">{$tranFunc('product.seoDescription')}</span>
+	<span class="text-xs">{$tranFunc('product.seoDescription')}</span>
 	<TextArea
 		bind:value={seoDescription}
 		placeholder={$tranFunc('product.seoDescription')}

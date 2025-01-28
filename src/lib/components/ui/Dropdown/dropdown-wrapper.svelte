@@ -12,5 +12,3 @@
 </script>
 
 {@render host({ ref: parentRef })}
-
-<!-- <Dropdown {...rest} {parentRef} /> -->

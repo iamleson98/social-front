@@ -10,10 +10,6 @@
 	};
 
 	let { metadata = $bindable([]), weight = $bindable() }: Props = $props();
-
-	const length = $tranFunc('product.length');
-	const width = $tranFunc('product.width');
-	const height = $tranFunc('product.height');
 </script>
 
 {#snippet cm()}
@@ -27,37 +23,37 @@
 			<div>{$tranFunc('product.weight')}</div>
 			<Input
 				type="number"
-				placeholder="weight"
+				placeholder={$tranFunc('product.weight')}
 				bind:value={weight}
 				startIcon={MdiWeightKg}
 				size="sm"
 			/>
 		</div>
 		<div class="w-1/3">
-			<div>{length}</div>
+			<div>{$tranFunc('product.length')}</div>
 			<Input
 				type="number"
-				placeholder={length}
+				placeholder={$tranFunc('product.length')}
 				bind:value={metadata![0].value}
 				size="sm"
 				action={cm}
 			/>
 		</div>
 		<div class="w-1/3">
-			<div>{width}</div>
+			<div>{$tranFunc('product.width')}</div>
 			<Input
 				type="number"
-				placeholder={width}
+				placeholder={$tranFunc('product.width')}
 				bind:value={metadata![1].value}
 				size="sm"
 				action={cm}
 			/>
 		</div>
 		<div class="w-1/3">
-			<div>{height}</div>
+			<div>{$tranFunc('product.height')}</div>
 			<Input
 				type="number"
-				placeholder={height}
+				placeholder={$tranFunc('product.height')}
 				bind:value={metadata![2].value}
 				size="sm"
 				action={cm}

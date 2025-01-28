@@ -3,7 +3,7 @@
 	import { Plus, Trash, MdiWeightKg } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton, type ButtonProps } from '$lib/components/ui/Button';
-	import { Input } from '$lib/components/ui/Input';
+	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { MultiSelect, type SelectOption } from '$lib/components/ui/select';
 	import {
 		type PreorderSettingsInput,
@@ -39,11 +39,8 @@
 	};
 
 	type CustomStockInput = StockInput & { warehouseName: string };
-	type ChannelSelectOptionProps = SelectOption & {
-		currency: string;
-		price: number;
-		costPrice: number;
-	};
+	type ChannelSelectOptionProps = SelectOption &
+		ProductVariantChannelListingAddInput & { currency: string };
 	type QuickFillHighlight =
 		| 'td-channel-hl'
 		| 'td-price-hl'
@@ -62,6 +59,8 @@
 		sku?: string;
 		weight?: number;
 		preOrder: PreorderSettingsInput;
+		trackInventory: boolean;
+		quantityLimitPerCustomer?: number;
 	};
 
 	const MAX_VARIANT_TYPES = 2;
@@ -98,23 +97,18 @@
 		channels: [],
 		stocks: [],
 		preOrder: {},
-		weight: 0
+		weight: 0,
+		trackInventory: true
 	});
-	let channelSelectOptions = $state.raw<SelectOption[]>([]);
+	let channelSelectOptions = $state.raw<ChannelSelectOptionProps[]>([]);
+	let showQuickFillingAdvancedSettings = $state(false);
 
 	/** check if quick filling form has any error */
 	let quickFillingError = $derived.by(() => {
-		if (typeof quickFillingValues.weight !== 'number' || quickFillingValues.weight < 0) return true;
-
-		if (quickFillingValues.stocks.some((stock) => stock.quantity < 0 || stock.quantity % 1 !== 0))
-			return true;
-
-		if (quickFillingValues.channels.some((chan) => chan.price < 0 || chan.costPrice < 0))
-			return true;
+		if (quickFillingValues.stocks.some((stock) => stock.quantity % 1 !== 0)) return true;
 
 		const { globalThreshold, endDate } = quickFillingValues.preOrder;
-		if (typeof globalThreshold === 'number' && (globalThreshold < 0 || globalThreshold % 1 !== 0))
-			return true;
+		if (typeof globalThreshold === 'number' && globalThreshold % 1 !== 0) return true;
 
 		if (endDate) {
 			try {
@@ -131,10 +125,7 @@
 		for (const inputItem of variantsInputDetails) {
 			if (
 				inputItem.channelListings?.some(
-					(chan) =>
-						chan.price < 0 ||
-						chan.costPrice < 0 ||
-						(typeof chan.preorderThreshold === 'number' && chan.preorderThreshold < 0)
+					(chan) => typeof chan.preorderThreshold === 'number' && chan.preorderThreshold % 1 !== 0
 				)
 			)
 				return true;
@@ -143,11 +134,7 @@
 
 			if (inputItem.preorder) {
 				const { globalThreshold, endDate } = inputItem.preorder;
-				if (
-					typeof globalThreshold === 'number' &&
-					(globalThreshold < 0 || globalThreshold % 1 !== 0)
-				)
-					return true;
+				if (typeof globalThreshold === 'number' && globalThreshold % 1 !== 0) return true;
 
 				if (endDate) {
 					try {
@@ -158,9 +145,7 @@
 				}
 			}
 
-			if (inputItem.stocks?.some((stock) => stock.quantity < 0 || stock.quantity % 1 !== 0))
-				return true;
-			if (typeof inputItem.weight !== 'number' || inputItem.weight < 0) return true;
+			if (inputItem.stocks?.some((stock) => stock.quantity % 1 !== 0)) return true;
 		}
 
 		return false;
@@ -186,7 +171,7 @@
 		const unsub = channelsQueryStore.subscribe((channelsResult) => {
 			if (preHandleErrorOnGraphqlResult(channelsResult) || !channelsResult.data) return;
 
-			const newChannelSelectOptions: (SelectOption & { currency: string })[] = [];
+			const newChannelSelectOptions: ChannelSelectOptionProps[] = [];
 			const warehousesOfChannels: CustomStockInput[] = [];
 			const warehouseMeetMap: Record<string, boolean> = {};
 
@@ -194,7 +179,9 @@
 				newChannelSelectOptions.push({
 					value: channel.id,
 					label: channel.name,
-					currency: channel.currencyCode.toUpperCase()
+					currency: channel.currencyCode.toUpperCase(),
+					channelId: channel.id,
+					price: undefined
 				});
 
 				for (const warehouse of channel.warehouses) {
@@ -483,21 +470,20 @@
 
 		if (canQuickFillingChannels || canQuickFillingStocks) {
 			variantsInputDetails = variantsInputDetails.map((variantDetail) => {
-				const result = { ...variantDetail };
 				if (canQuickFillingChannels) {
-					result.channelListings = quickFillingValues.channels.map((option) => ({
-						channelId: option.value as string,
-						price: option.price,
-						costPrice: option.costPrice,
-
-						// we need those 2 fields for multiselect binding
-						label: option.label,
-						value: option.value,
-						currency: option.currency
-					}));
+					variantDetail.channelListings = quickFillingValues.channels.map(
+						({ channelId, price, costPrice, label, value, currency }) => ({
+							channelId,
+							price,
+							costPrice,
+							label,
+							value,
+							currency
+						})
+					);
 				}
 				if (canQuickFillingStocks) {
-					result.stocks = quickFillingValues.stocks.map((stock) => ({
+					variantDetail.stocks = quickFillingValues.stocks.map((stock) => ({
 						warehouse: stock.warehouse,
 						quantity: stock.quantity,
 						warehouseName: stock.warehouseName // this field is needed for displaying
@@ -505,10 +491,10 @@
 				}
 
 				const { endDate, globalThreshold } = quickFillingValues.preOrder;
-				result.preorder = { endDate, globalThreshold };
-				result.weight = quickFillingValues.weight;
+				variantDetail.preorder = { endDate, globalThreshold };
+				variantDetail.weight = quickFillingValues.weight;
 
-				return result;
+				return variantDetail;
 			});
 		}
 	};
@@ -816,6 +802,35 @@
 						>
 					</div>
 				</div>
+
+				<!-- QUICK FILLING ADVANCED OPTIONS -->
+				<div
+					class="text-blue-600 cursor-pointer text-xs mt-2"
+					role="button"
+					tabindex="0"
+					onclick={() => (showQuickFillingAdvancedSettings = true)}
+					onkeyup={(e) => e.key === 'Enter' && (showQuickFillingAdvancedSettings = true)}
+				>
+					advanced...
+				</div>
+				{#if showQuickFillingAdvancedSettings}
+					<div class="mt-2 flex gap-2 items-start" transition:slide>
+						<div>
+							<div class="text-xs">track inventory</div>
+							<Checkbox bind:checked={quickFillingValues.trackInventory} size="sm" />
+						</div>
+
+						<div>
+							<span class="text-xs">quantity limit</span>
+							<Input
+								type="number"
+								bind:value={quickFillingValues.quantityLimitPerCustomer}
+								size="sm"
+								min="0"
+							/>
+						</div>
+					</div>
+				{/if}
 			</div>
 
 			<!-- DETAILS -->
@@ -929,7 +944,9 @@
 										startIcon={MdiWeightKg}
 										bind:value={variantInputDetail.weight}
 										variant={variantInputDetail.weight >= 0 ? 'info' : 'error'}
-										subText={variantInputDetail.weight >= 0 ? '' : $tranFunc('error.negativeNumber')}
+										subText={variantInputDetail.weight >= 0
+											? ''
+											: $tranFunc('error.negativeNumber')}
 									/>
 								</td>
 								<!-- PREORDER -->
@@ -960,7 +977,7 @@
 											}}
 											timeConfig={false}
 											onchange={(date) => (variantInputDetail.preorder!.endDate = date.date)}
-											value={variantInputDetail.preorder!.endDate}
+											value={{ date: variantInputDetail.preorder!.endDate }}
 											class="mb-2"
 											timeLock={{
 												minDate: DAYJS_NOW.add(MIN_DAYS_FOR_PREORDER, 'day').toDate(),
