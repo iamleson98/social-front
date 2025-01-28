@@ -8,6 +8,7 @@
 	import { LANGUAGE_KEY } from '$lib/utils/consts';
 	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import { goto } from '$app/navigation';
+	import { setTranslation, type LanguageCode } from '$i18n';
 
 	type LanguageProps = {
 		icon: Component;
@@ -38,7 +39,7 @@
 		document.cookie = `${LANGUAGE_KEY}=${language.code}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure; SameSite=Lax`;
 		activeLanguage = language;
 
-		// await goto(page.url, { replaceState: true, invalidateAll: true });
+		setTranslation(language.code as LanguageCode);
 	};
 </script>
 
@@ -92,37 +93,18 @@
 				</div>
 				<div>
 					<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">Language</h2>
-					<div class="dropdown dropdown-top dropdown-end">
-						<Button size="xs" variant="outline">
+					<Button size="xs" variant="outline">
+						<!-- svelte-ignore svelte_component_deprecated -->
+						<svelte:component this={activeLanguage.icon} />
+						<span>{activeLanguage.label}</span>
+					</Button>
+					{#each langages as language, idx (idx)}
+						<Button onclick={() => handleSwitchLanguageCode(language)} size="xs" variant="light">
 							<!-- svelte-ignore svelte_component_deprecated -->
-							<svelte:component this={activeLanguage.icon} />
-							<span>{activeLanguage.label}</span>
+							<svelte:component this={language.icon} />
+							<span>{language.label}</span>
 						</Button>
-						<ul class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-							{#each langages as language, idx (idx)}
-								<li
-									onclick={console.log}
-									onkeyup={(e) => e.key === 'Enter' && handleSwitchLanguageCode(language)}
-									tabindex="0"
-								>
-									<!-- svelte-ignore a11y_missing_attribute -->
-									<a>
-										<!-- svelte-ignore a11y_no_static_element_interactions -->
-										<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-										<!-- <div
-											onclick={console.log}
-											onkeyup={(e) => e.key === 'Enter' && handleSwitchLanguageCode(language)}
-											class="flex items-center gap-2"
-										> -->
-										<!-- svelte-ignore svelte_component_deprecated -->
-										<svelte:component this={language.icon} />
-										<span>{language.label}</span>
-										<!-- </div> -->
-									</a>
-								</li>
-							{/each}
-						</ul>
-					</div>
+					{/each}
 				</div>
 			</div>
 		</div>
