@@ -1,5 +1,45 @@
-<script>
+<script lang="ts">
 	import { AppRoute } from '$lib/utils';
+	import { onMount, type Component } from 'svelte';
+	import { JapanFlag, KoreaFlag, UsaFlag, VietnamFlag } from '../icons';
+	import { Button } from '../ui';
+	import { LanguageCodeEnum } from '$lib/gql/graphql';
+	import { page } from '$app/state';
+	import { LANGUAGE_KEY } from '$lib/utils/consts';
+	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
+	import { goto } from '$app/navigation';
+
+	type LanguageProps = {
+		icon: Component;
+		label: string;
+		code: LanguageCodeEnum;
+	};
+
+	const langages: LanguageProps[] = [
+		{ icon: UsaFlag, label: 'English', code: LanguageCodeEnum.En },
+		{ icon: VietnamFlag, label: 'Tiếng Việt', code: LanguageCodeEnum.Vi },
+		{ icon: KoreaFlag, label: '한국어', code: LanguageCodeEnum.Ko },
+		{ icon: JapanFlag, label: '日本語', code: LanguageCodeEnum.Ja }
+	];
+
+	let activeLanguage = $state(langages[0]);
+
+	onMount(async () => {
+		const cookieLanguage = clientSideGetCookieOrDefault(LANGUAGE_KEY, LanguageCodeEnum.En);
+		const language = langages.find((lang) => lang.code === cookieLanguage);
+		if (language) {
+			activeLanguage = language;
+		}
+	});
+
+	$inspect(activeLanguage);
+
+	const handleSwitchLanguageCode = async (language: LanguageProps) => {
+		document.cookie = `${LANGUAGE_KEY}=${language.code}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure; SameSite=Lax`;
+		activeLanguage = language;
+
+		// await goto(page.url, { replaceState: true, invalidateAll: true });
+	};
 </script>
 
 <footer class="p-6 max-w-6xl mx-auto">
@@ -10,7 +50,8 @@
 					<img src="/logo.png" class="mr-3 h-8" alt="FlowBite Logo" />
 				</a>
 			</div>
-			<div class="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">
+			<div class="grid grid-cols-4 gap-4 tablet:grid-cols-2">
+				<!-- resources -->
 				<div>
 					<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">Resources</h2>
 					<ul class="text-gray-600">
@@ -22,14 +63,19 @@
 						</li>
 					</ul>
 				</div>
+				<!-- social media -->
 				<div>
 					<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">Follow us</h2>
 					<ul class="text-gray-600">
 						<li class="mb-4">
-							<a href="https://github.com/themesberg/flowbite" class="hover:underline">Github</a>
+							<a
+								href="https://www.facebook.com/profile.php?id=61572273849445"
+								target="_blank"
+								class="hover:underline">Facebook</a
+							>
 						</li>
 						<li>
-							<a href="https://discord.gg/4eeurUVvTy" class="hover:underline">Discord</a>
+							<a href="https://discord.gg/4eeurUVvTy" class="hover:underline">Youtube</a>
 						</li>
 					</ul>
 				</div>
@@ -44,16 +90,54 @@
 						</li>
 					</ul>
 				</div>
+				<div>
+					<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">Language</h2>
+					<div class="dropdown dropdown-top dropdown-end">
+						<Button size="xs" variant="outline">
+							<!-- svelte-ignore svelte_component_deprecated -->
+							<svelte:component this={activeLanguage.icon} />
+							<span>{activeLanguage.label}</span>
+						</Button>
+						<ul class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+							{#each langages as language, idx (idx)}
+								<li
+									onclick={console.log}
+									onkeyup={(e) => e.key === 'Enter' && handleSwitchLanguageCode(language)}
+									tabindex="0"
+								>
+									<!-- svelte-ignore a11y_missing_attribute -->
+									<a>
+										<!-- svelte-ignore a11y_no_static_element_interactions -->
+										<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+										<!-- <div
+											onclick={console.log}
+											onkeyup={(e) => e.key === 'Enter' && handleSwitchLanguageCode(language)}
+											class="flex items-center gap-2"
+										> -->
+										<!-- svelte-ignore svelte_component_deprecated -->
+										<svelte:component this={language.icon} />
+										<span>{language.label}</span>
+										<!-- </div> -->
+									</a>
+								</li>
+							{/each}
+						</ul>
+					</div>
+				</div>
 			</div>
 		</div>
 		<hr class="my-6 border-gray-200 sm:mx-auto lg:my-8" />
 		<div class="sm:flex sm:items-center sm:justify-between">
 			<span class="text-sm text-gray-500 text-right"
-				>© 2024 <a href="/" class="hover:underline">Sitename™</a>. All Rights
-				Reserved.
+				>© 2024 - now <a href="/" class="hover:underline">Sitename™</a>. All Rights Reserved.
 			</span>
 			<div class="flex mt-4 space-x-6 sm:justify-center sm:mt-0">
-				<a href="/" aria-label="Facebook" class="text-gray-500 hover:text-gray-900">
+				<a
+					href="https://www.facebook.com/profile.php?id=61572273849445"
+					target="_blank"
+					aria-label="Facebook"
+					class="text-gray-500 hover:text-gray-900"
+				>
 					<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"
 						><path
 							fill-rule="evenodd"

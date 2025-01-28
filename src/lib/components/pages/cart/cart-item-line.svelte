@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tClient } from '$i18n';
+	import { tranFunc } from '$i18n';
 	import { graphqlClient } from '$lib/client';
 	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 	import { Minus, Plus } from '$lib/components/icons';
@@ -146,7 +146,7 @@
 		// in case user want to remove the item
 		if (quantity <= 0) {
 			alertStore.openAlertModal({
-				content: tClient('common.confirmRemoveProduct'),
+				content: $tranFunc('common.confirmRemoveProduct'),
 				onOk: handleDeleteCheckoutLine,
 				onCancel: () => {
 					quantity = 1;

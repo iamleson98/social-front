@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tClient } from '$i18n';
+	import { tranFunc } from '$i18n';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 
 	type Preorder = {
@@ -14,7 +14,7 @@
 </script>
 
 <div class="mb-3">
-	<span class="text-sm">{tClient('common.preorder')}</span>
+	<span class="text-sm">{$tranFunc('common.preorder')}</span>
 	<div class="rounded-lg bg-gray-50 border border-gray-200 p-3">
 		<!-- Preorder -->
 		<div class="flex items-center gap-2">

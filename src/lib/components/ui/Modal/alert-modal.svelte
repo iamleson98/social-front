@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tClient } from '$i18n';
+	import { tranFunc } from '$i18n';
 	import { AlertCircle, Icon } from '$lib/components/icons';
 	import { Button } from '../Button';
 	import Modal from './modal.svelte';
@@ -11,8 +11,8 @@
 		children,
 		onOk,
 		onCancel,
-		okText = tClient('common.ok'),
-		cancelText = tClient('common.cancel'),
+		okText = $tranFunc('common.ok'),
+		cancelText = $tranFunc('common.cancel'),
 		open
 	}: Props = $props();
 </script>

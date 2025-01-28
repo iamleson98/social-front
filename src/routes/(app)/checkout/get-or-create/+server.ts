@@ -1,4 +1,4 @@
-import { cookieOpts, performBackendOperation } from "$lib/client";
+import { cookieOpts, performServerSideGraphqlRequest } from "$lib/client";
 import type { Checkout, CheckoutCreateInput, Mutation, Query } from "$lib/gql/graphql";
 import { CHECKOUT_CREATE_MUTATION, CHECKOUT_PREVIEW_QUERY } from "$lib/stores/api/checkout";
 import { CHANNEL_KEY, defaultChannel, HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess } from "$lib/utils/consts";
@@ -12,7 +12,7 @@ export const GET = async (event: RequestEvent) => {
   const checkoutId = event.cookies.get(`checkout-${channelSlug}`);
 
   if (checkoutId) {
-    const checkoutResult = await performBackendOperation<Pick<Query, 'checkout'>, CustomQueryCheckoutArgs>(
+    const checkoutResult = await performServerSideGraphqlRequest<Pick<Query, 'checkout'>, CustomQueryCheckoutArgs>(
       'query',
       CHECKOUT_PREVIEW_QUERY,
       { id: checkoutId },
@@ -31,7 +31,7 @@ export const GET = async (event: RequestEvent) => {
     event.cookies.delete(`checkout-${channelSlug}`, { ...cookieOpts, httpOnly: true });
   }
 
-  const checkoutCreateResult = await performBackendOperation<Pick<Mutation, 'checkoutCreate'>, CheckoutCreateInput>(
+  const checkoutCreateResult = await performServerSideGraphqlRequest<Pick<Mutation, 'checkoutCreate'>, CheckoutCreateInput>(
     'mutation',
     CHECKOUT_CREATE_MUTATION,
     { channel: channelSlug, lines: [] },

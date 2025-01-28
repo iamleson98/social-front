@@ -2,20 +2,20 @@ import { type Product as TypeProduct, type Query } from "$lib/gql/graphql";
 import { PRODUCT_DETAIL_QUERY_STORE } from "$lib/stores/api/product";
 import { CHANNEL_KEY, COUNTRY_CODE_KEY, defaultChannel, HTTPStatusBadRequest, HTTPStatusServerError, vnChannel } from "$lib/utils/consts";
 import { error } from "@sveltejs/kit";
-import { performBackendOperation } from "$lib/client";
-import type { LayoutServerLoad } from "./$types";
+import { performServerSideGraphqlRequest } from "$lib/client";
 import type { WithContext, Product } from 'schema-dts';
-import { tServer } from "$i18n";
+import { tranFunc } from "$i18n";
+import { get } from "svelte/store";
 
 
-export const load: LayoutServerLoad = async (event) => {
+export const load = async (event) => {
 	const slug = event.params.slug.trim();
 	const variantID = event.url.searchParams.get('variant')?.trim();
 
 	if (!slug) {
 		return error(
 			HTTPStatusBadRequest,
-			{ message: tServer(event, 'error.invalidSlug'), }
+			{ message: get(tranFunc)('error.invalidSlug'), }
 		);
 	}
 
@@ -26,7 +26,7 @@ export const load: LayoutServerLoad = async (event) => {
 		countryCode: event.cookies.get(COUNTRY_CODE_KEY) || vnChannel.countryCode,
 	};
 
-	const productDetailResult = await performBackendOperation<Pick<Query, 'product'>>(
+	const productDetailResult = await performServerSideGraphqlRequest<Pick<Query, 'product'>>(
 		'query',
 		PRODUCT_DETAIL_QUERY_STORE,
 		variables,

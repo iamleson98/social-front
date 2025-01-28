@@ -2,7 +2,7 @@
 	import { Email } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { defaultChannel } from '$lib/utils/consts';
-	import { tClient } from '$lib/i18n';
+	import { tranFunc } from '$lib/i18n';
 	import { Input } from '$lib/components/ui/Input';
 	import { USER_REQUEST_PASSWORD_RESET_MUTATION_STORE } from '$lib/stores/api/auth';
 	import type { Mutation, MutationRequestPasswordResetArgs } from '$lib/gql/graphql';
@@ -31,7 +31,7 @@
 </script>
 
 <div class="max-w-md min-w-80 rounded-md p-2">
-	<h1 class="p-2 mb-4">{tClient('resetPassword.title')}</h1>
+	<h1 class="p-2 mb-4">{$tranFunc('resetPassword.title')}</h1>
 	{#if $resetPasswordStore?.error}
 		<Alert variant="error" class="mb-3" bordered>
 			{$resetPasswordStore.error.message}
@@ -41,11 +41,11 @@
 			{$resetPasswordStore.data.requestPasswordReset.errors[0].message}
 		</Alert>
 	{:else}
-		<Alert variant="success" class="mb-3" bordered>{tClient('resetPassword.emailSent')}</Alert>
+		<Alert variant="success" class="mb-3" bordered>{$tranFunc('resetPassword.emailSent')}</Alert>
 	{/if}
 	<Input
 		type="email"
-		placeholder={tClient('common.emailPlaceholder')}
+		placeholder={$tranFunc('common.emailPlaceholder')}
 		bind:value={email}
 		required
 		disabled={$resetPasswordStore?.fetching}
@@ -60,6 +60,6 @@
 		loading={$resetPasswordStore?.fetching}
 		onclick={handleRequestResetPassword}
 	>
-		{tClient('resetPassword.btnText')}
+		{$tranFunc('resetPassword.btnText')}
 	</Button>
 </div>

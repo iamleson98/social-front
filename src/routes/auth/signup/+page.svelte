@@ -3,7 +3,7 @@
 	import { Button } from '$lib/components/ui';
 	import { AppRoute } from '$lib/utils';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { tClient } from '$lib/i18n';
+	import { tranFunc } from '$lib/i18n';
 	import { Checkbox, Input, PasswordInput } from '$lib/components/ui/Input';
 	import { z } from 'zod';
 	import { operationStore, type OperationResultStore } from '$lib/stores/api/operation';
@@ -67,7 +67,7 @@
 </script>
 
 <div class="max-w-md min-w-80 rounded-md p-2">
-	<h1 class="p-2 mb-4">{tClient('signup.title')}</h1>
+	<h1 class="p-2 mb-4">{$tranFunc('signup.title')}</h1>
 
 	{#if $signupQueryStore?.error}
 		<Alert variant="error" class="mb-3" bordered>
@@ -78,14 +78,14 @@
 		<div class="flex flex-row mobile-m:flex-col justify-between items-center gap-2 mb-2">
 			<Input
 				type="text"
-				placeholder={tClient('common.firstName')}
+				placeholder={$tranFunc('common.firstName')}
 				required
 				disabled={$signupQueryStore?.fetching}
 				bind:value={signupInfo.firstName}
 			/>
 			<Input
 				type="text"
-				placeholder={tClient('common.lastName')}
+				placeholder={$tranFunc('common.lastName')}
 				required
 				disabled={$signupQueryStore?.fetching}
 				bind:value={signupInfo.lastName}
@@ -93,7 +93,7 @@
 		</div>
 		<Input
 			type="text"
-			placeholder={tClient('common.emailPlaceholder')}
+			placeholder={$tranFunc('common.emailPlaceholder')}
 			class="mb-2"
 			required
 			disabled={$signupQueryStore?.fetching}
@@ -101,7 +101,7 @@
 			startIcon={Email}
 		/>
 		<PasswordInput
-			placeholder={tClient('common.passwordPlaceholder')}
+			placeholder={$tranFunc('common.passwordPlaceholder')}
 			bind:value={signupInfo.password}
 			disabled={$signupQueryStore?.fetching}
 			class="mb-2"
@@ -110,7 +110,7 @@
 			showAction
 		/>
 		<PasswordInput
-			placeholder={tClient('signup.confirmPasswordPlaceholder')}
+			placeholder={$tranFunc('signup.confirmPasswordPlaceholder')}
 			bind:value={signupInfo.confirmPassword}
 			disabled={$signupQueryStore?.fetching}
 			class="mb-3"
@@ -120,7 +120,7 @@
 		/>
 
 		<Checkbox
-			label={tClient('signup.agreeToTerms')}
+			label={$tranFunc('signup.agreeToTerms')}
 			class="mb-3"
 			bind:checked={signupInfo.termAndPoliciesAgree}
 			required
@@ -136,14 +136,14 @@
 			disabled={signupButtonDisabled}
 			onclick={handleSignup}
 		>
-			{tClient('signup.signupButton')}
+			{$tranFunc('signup.signupButton')}
 		</Button>
 	</div>
 
 	<div>
 		<span class="text-xs text-gray-500">
-			{tClient('signup.alreadyHasAccount')}
-			<a href={AppRoute.AUTH_SIGNIN} class="text-blue-600">{tClient('signin.title')}</a>
+			{$tranFunc('signup.alreadyHasAccount')}
+			<a href={AppRoute.AUTH_SIGNIN} class="text-blue-600">{$tranFunc('signin.title')}</a>
 		</span>
 	</div>
 </div>

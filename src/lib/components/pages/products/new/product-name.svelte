@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tClient } from '$i18n';
+	import { tranFunc } from '$i18n';
 	import { Input } from '$lib/components/ui/Input';
 	import type { ProductCreateInput } from '$lib/gql/graphql';
 
@@ -14,8 +14,8 @@
 
 <!-- product name -->
 <div class="mb-2">
-	<span class="text-sm">{tClient('product.prdName')}</span>
-	<Input placeholder={tClient('placeholders.enterPrdName')} size="md" bind:value={name} />
+	<span class="text-sm">{$tranFunc('product.prdName')}</span>
+	<Input placeholder={$tranFunc('placeholders.enterPrdName')} size="md" bind:value={name} />
 	<div class="text-right">
 		<span class="text-xs">{now.toDateString()}</span>
 	</div>

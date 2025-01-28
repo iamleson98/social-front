@@ -3,7 +3,7 @@
 	import Icon from '$lib/components/icons/icon.svelte';
 	import { randomID } from '$lib/utils/utils';
 	import { debounceInput } from '$lib/actions/input-debounce';
-	import { tClient } from '$i18n';
+	import { tranFunc } from '$i18n';
 	import { INPUT_BUTTON_SIZE_MAP } from '$lib/utils/consts';
 	import { INPUT_LABEL_SIZE_STYLE_MAP, INPUT_TYPES, type InputProps } from './input.types';
 	import type { HTMLInputAttributes } from 'svelte/elements';
@@ -11,7 +11,7 @@
 	let {
 		label,
 		id = randomID(),
-		placeholder = tClient('product.valuePlaceholder'),
+		placeholder = $tranFunc('product.valuePlaceholder'),
 		variant = 'info',
 		subText,
 		startIcon,

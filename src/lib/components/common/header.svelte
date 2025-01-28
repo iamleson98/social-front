@@ -20,7 +20,7 @@
 	import { USER_ME_QUERY_STORE } from '$lib/stores/api';
 	import type { Query } from '$lib/gql/graphql';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
-	import { tClient } from '$i18n';
+	import { tranFunc } from '$i18n';
 	import { onMount } from 'svelte';
 	import { ACCESS_TOKEN_KEY, HTTPStatusSuccess } from '$lib/utils/consts';
 	import { toastStore } from '$lib/stores/ui/toast';
@@ -56,7 +56,7 @@
 		if (parsedResult.status !== HTTPStatusSuccess) {
 			toastStore.send({
 				variant: 'error',
-				message: tClient('error.failedToSignout')
+				message: $tranFunc('error.failedToSignout')
 			});
 			return;
 		}
@@ -118,7 +118,10 @@
 			<a href={AppRoute.SHOPPING_CART}>
 				<IconButton size="sm" icon={ShoppingBag} variant="light" color="gray" class="relative">
 					{#key $checkoutStore}
-						<span class="absolute -right-1/4 -top-1/4 z-99999999 !text-[10px] flex h-4 min-w-4 items-center text-xs justify-center rounded-full bg-blue-500 p-1 font-bold text-white" in:scale>
+						<span
+							class="absolute -right-1/4 -top-1/4 z-99999999 !text-[10px] flex h-4 min-w-4 items-center text-xs justify-center rounded-full bg-blue-500 p-1 font-bold text-white"
+							in:scale
+						>
 							{$checkoutStore?.lines.length || 0}
 						</span>
 					{/key}
@@ -138,35 +141,38 @@
 					</Button>
 
 					<ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-48 p-1 mt-1 shadow-sm">
-						<li>
-							<span
-								tabindex="0"
-								onclick={console.log}
-								onkeyup={(e) => e.key === 'Enter' && console.log('')}
-								class="flex items-center gap-2"
-								role="button"
-							>
+						<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+						<!-- svelte-ignore a11y_no_noninteractive_element_to_interactive_role -->
+						<li
+							onclick={console.log}
+							onkeyup={(e) => e.key === 'Enter' && console.log('')}
+							role="button"
+						>
+							<!-- svelte-ignore a11y_missing_attribute -->
+							<a>
 								<Icon icon={UserCog} />
-								<span>{tClient('common.settings')}</span>
-							</span>
+								<span>{$tranFunc('common.settings')}</span>
+							</a>
 						</li>
-						<li>
-							<span
-								onclick={handleLogout}
-								tabindex="0"
-								onkeyup={(e) => e.key === 'Enter' && handleLogout()}
-								class="flex items-center gap-2"
-								role="button"
-							>
+						<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+						<!-- svelte-ignore a11y_no_noninteractive_element_to_interactive_role -->
+						<li
+							onclick={handleLogout}
+							onkeyup={(e) => e.key === 'Enter' && handleLogout()}
+							role="button"
+							tabindex="0"
+						>
+							<!-- svelte-ignore a11y_missing_attribute -->
+							<a>
 								<Icon icon={Logout} />
-								<span>{tClient('common.logout')}</span>
-							</span>
+								<span>{$tranFunc('common.logout')}</span>
+							</a>
 						</li>
 					</ul>
 				</div>
 			{:else if !$userStore && !page.url.pathname.startsWith('/auth')}
 				<a href={AppRoute.AUTH_SIGNIN}>
-					<Button variant="filled" size="sm">{tClient('signin.title')}</Button>
+					<Button variant="filled" size="sm">{$tranFunc('signin.title')}</Button>
 				</a>
 			{/if}
 		</div>

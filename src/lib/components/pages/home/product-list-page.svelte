@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tClient } from '$i18n';
+	import { tranFunc } from '$i18n';
 	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
@@ -47,7 +47,7 @@
 	{@render productCardSkeleton()}
 {:else if $productFetchStore.error}
 	<Alert variant="warning" size="sm" bordered>
-		{tClient('error.failedToLoad')}
+		{$tranFunc('error.failedToLoad')}
 	</Alert>
 {:else if $productFetchStore.data?.products?.edges.length}
 	{#each $productFetchStore.data?.products?.edges as { node }, idx (idx)}
@@ -60,12 +60,12 @@
 				variant="outline"
 				size="xs"
 			>
-				{tClient('common.loadMore')}
+				{$tranFunc('common.loadMore')}
 			</Button>
 		</div>
 	{/if}
 {:else if $productFetchStore.data?.products?.edges.length === 0}
 	<Alert variant="info" size="sm" bordered>
-		{tClient('error.noResult')}
+		{$tranFunc('error.noResult')}
 	</Alert>
 {/if}

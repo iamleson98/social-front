@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tClient } from '$i18n';
+	import { tranFunc } from '$i18n';
 	import { Box, CategoryPlus, InforCircle } from '$lib/components/icons';
 	import { type TabItem } from '$lib/components/ui/Tab';
 	import { type Snippet } from 'svelte';
@@ -18,19 +18,19 @@
 
 	let tabs = $state.raw<TabItem[]>([
 		{
-			title: `${tClient('product.products')}`,
+			title: `${$tranFunc('product.products')}`,
 			icon: Box,
 			href: `${AppRoute.CATEGORIES}/${page.params.slug}`,
 			active: false
 		},
 		{
-			title: `${tClient('product.subCategories')} (${data.category?.children?.totalCount || ''})`,
+			title: `${$tranFunc('product.subCategories')} (${data.category?.children?.totalCount || ''})`,
 			icon: CategoryPlus,
 			href: `${AppRoute.CATEGORIES}/${page.params.slug}/sub-categories`,
 			active: false
 		},
 		{
-			title: tClient('product.detail'),
+			title: $tranFunc('product.detail'),
 			icon: InforCircle,
 			href: `${AppRoute.CATEGORIES}/${page.params.slug}/info`,
 			active: false

@@ -1,6 +1,6 @@
 <script lang="ts" generics="T">
 	import Accordion from './accordion.svelte';
-	import { tClient } from '$i18n';
+	import { tranFunc } from '$i18n';
 	import { ChevronDown, Icon } from '$lib/components/icons';
 	import type { AccordionListProps } from './types';
 
@@ -49,7 +49,7 @@
 					tabindex="0"
 					onclick={handleShowMore}
 				>
-					<span>{tClient('common.more')}</span>
+					<span>{$tranFunc('common.more')}</span>
 					<Icon icon={ChevronDown} />
 				</li>
 			{/if}

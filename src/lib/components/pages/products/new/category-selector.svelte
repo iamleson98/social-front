@@ -9,7 +9,7 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { MegaMenu } from '$lib/components/ui/MegaMenu';
 	import { convertCategoryEdgesToMenuSelect } from './utils';
-	import { tClient } from '$i18n';
+	import { tranFunc } from '$i18n';
 
 	type Props = {
 		categoryID?: string | null;
@@ -36,7 +36,7 @@
 </script>
 
 <div class="mb-3">
-	<span class="text-sm">{tClient('product.prdCategory')}</span>
+	<span class="text-sm">{$tranFunc('product.prdCategory')}</span>
 	<div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
 		{#if $categoriesStore.fetching}
 			<div class="flex items-center gap-1">

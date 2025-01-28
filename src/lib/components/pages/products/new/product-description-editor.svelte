@@ -23,7 +23,7 @@
 		removeList
 	} from '@lexical/list';
 	import { editorConfig } from '$lib/configs';
-	import { tClient } from '$i18n';
+	import { tranFunc } from '$i18n';
 
 	type Props = {
 		ariaActiveDescendantID?: string;
@@ -143,7 +143,7 @@
 </script>
 
 <div class="mb-3">
-	<span class="text-sm">{tClient('product.prdDescription')}</span>
+	<span class="text-sm">{$tranFunc('product.prdDescription')}</span>
 	<div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
 		<DescriptionEditorToolbar disabled={!isEditable || !activeEditor} editor={activeEditor} />
 		<div

@@ -2,16 +2,28 @@
 	import { Header } from '$lib/components/common';
 	import { Toast } from '$lib/components/ui/Toast';
 	import { page } from '$app/state';
-	import { type Snippet } from 'svelte';
+	import { onMount, type Snippet } from 'svelte';
 	import Footer from '$lib/components/common/footer.svelte';
 	import { AlertListener } from '$lib/components/ui/Modal';
 	import '../app.css';
+	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
+	import { LANGUAGE_KEY } from '$lib/utils/consts';
+	import { LanguageCodeEnum } from '$lib/gql/graphql';
+	import { setTranslation, type LanguageCode } from '$i18n';
 
 	interface Props {
 		children: Snippet;
 	}
 
 	let { children }: Props = $props();
+
+	onMount(async () => {
+		const languageCode = clientSideGetCookieOrDefault(
+			LANGUAGE_KEY,
+			LanguageCodeEnum.En
+		) as LanguageCode;
+		setTranslation(languageCode);
+	});
 </script>
 
 <svelte:head>

@@ -14,7 +14,7 @@
 		ChevronRight
 	} from '$lib/components/icons';
 	import { afterNavigate, disableScrollHandling } from '$app/navigation';
-	import { tClient } from '$i18n';
+	import { tranFunc } from '$i18n';
 	import { AppRoute } from '$lib/utils';
 	import { onMount, type Snippet } from 'svelte';
 	import Button from '$lib/components/ui/Button/Button.svelte';
@@ -35,25 +35,25 @@
 
 	const tabs: TabItem[] = [
 		{
-			title: tClient('product.tabDescription'),
+			title: $tranFunc('product.tabDescription'),
 			href: `${AppRoute.PRODUCTS}/${page.params.slug}`,
 			icon: FileText,
 			active: false
 		},
 		{
-			title: tClient('product.tabAttributes'),
+			title: $tranFunc('product.tabAttributes'),
 			href: `${AppRoute.PRODUCTS}/${page.params.slug}/attributes`,
 			icon: SettingCheck,
 			active: false
 		},
 		{
-			title: tClient('product.tabFeedBack'),
+			title: $tranFunc('product.tabFeedBack'),
 			href: `${AppRoute.PRODUCTS}/${page.params.slug}/customer-feedbacks`,
 			icon: HeadSet,
 			active: false
 		},
 		{
-			title: tClient('product.tabPackaging'),
+			title: $tranFunc('product.tabPackaging'),
 			href: `${AppRoute.PRODUCTS}/${page.params.slug}/packaging`,
 			icon: PackageExport,
 			active: false
@@ -103,7 +103,7 @@
 			<li>
 				<a href="/" class="flex items-center">
 					<Icon icon={MingcuteHome} class="mr-1" />
-					{tClient('common.home')}
+					{$tranFunc('common.home')}
 				</a>
 			</li>
 			{#each categories as category, idx (idx)}
@@ -128,7 +128,7 @@
 
 	<!-- product more details -->
 	<div class="bg-white w-full rounded-sm p-6">
-		<div class="text-gray-700 text-lg font-semibold mb-4">{tClient('product.prdInformation')}</div>
+		<div class="text-gray-700 text-lg font-semibold mb-4">{$tranFunc('product.prdInformation')}</div>
 
 		<div class="flex items-center gap-2 mb-4">
 			{#each tabs as tab, idx (idx)}

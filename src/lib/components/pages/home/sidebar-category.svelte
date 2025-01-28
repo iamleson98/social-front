@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tClient } from '$i18n';
+	import { tranFunc } from '$i18n';
 	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 	import { Category } from '$lib/components/icons';
 	import { Accordion, AccordionList } from '$lib/components/ui/Accordion';
@@ -45,18 +45,18 @@
 {/snippet}
 
 {#if $categoryStore.fetching}
-	<Accordion header={tClient('common.categories')} headerIcon={Category}>
+	<Accordion header={$tranFunc('common.categories')} headerIcon={Category}>
 		{@render categorySkeleton()}
 		{@render categorySkeleton()}
 		{@render categorySkeleton()}
 	</Accordion>
 {:else if $categoryStore.error}
 	<Alert size="sm" bordered variant="warning">
-		{tClient('error.failedToLoad')}
+		{$tranFunc('error.failedToLoad')}
 	</Alert>
 {:else if $categoryStore.data?.categories?.edges.length}
 	<AccordionList
-		header={tClient('common.categories')}
+		header={$tranFunc('common.categories')}
 		headerIcon={Category}
 		items={$categoryStore.data?.categories?.edges}
 		partialDisplay={5}

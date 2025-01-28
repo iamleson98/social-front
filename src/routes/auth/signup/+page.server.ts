@@ -1,13 +1,13 @@
 import { type Actions } from "@sveltejs/kit";
-import type { PageServerLoad } from "./$types";
 import { ACCESS_TOKEN_KEY, CHANNEL_KEY, CSRF_TOKEN_KEY, defaultChannel, HTTPStatusBadRequest, HTTPStatusSuccess, REFRESH_TOKEN_KEY } from "$lib/utils/consts";
 import { USER_SIGNUP_MUTATION_STORE } from "$lib/stores/api";
-import { performBackendOperation } from "$lib/client";
+import { performServerSideGraphqlRequest } from "$lib/client";
 import type { Mutation } from "$lib/gql/graphql";
-import { tServer } from "$lib/i18n";
+import { tranFunc } from "$lib/i18n";
+import { get } from "svelte/store";
 
 
-export const load: PageServerLoad = async (event) => {
+export const load = async (event) => {
   // If user is logged in but unexpectedly navigate to the signup page, 
   // We must remove the cookie
   const accessToken = event.cookies.get(ACCESS_TOKEN_KEY);
@@ -19,7 +19,7 @@ export const load: PageServerLoad = async (event) => {
 
   return {
     meta: {
-      title: tServer(event, 'signup.title'),
+      title: get(tranFunc)('signup.title'),
       description: "Sign up to create an account on our platform",
     },
   };
@@ -39,14 +39,14 @@ export const actions = {
     if (!email || !email.toString().trim()) {
       return {
         status: HTTPStatusBadRequest,
-        error: tServer(event, 'error.invalidEmail'),
+        error: get(tranFunc)('error.invalidEmail'),
       };
     }
 
     if ((!password || !confirmPassword) || password !== confirmPassword) {
       return {
         status: HTTPStatusBadRequest,
-        error: tServer(event, 'error.passwordsNotMatch'),
+        error: get(tranFunc)('error.passwordsNotMatch'),
       };
     }
 
@@ -61,7 +61,7 @@ export const actions = {
       },
     };
 
-    const result = await performBackendOperation<Pick<Mutation, 'accountRegister'>>('mutation', USER_SIGNUP_MUTATION_STORE, variables, event);
+    const result = await performServerSideGraphqlRequest<Pick<Mutation, 'accountRegister'>>('mutation', USER_SIGNUP_MUTATION_STORE, variables, event);
     if (result.error) {
       return {
         status: HTTPStatusBadRequest,

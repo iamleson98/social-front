@@ -1,10 +1,11 @@
 import { type SelectedAttribute, AttributeInputTypeEnum, OrderDirection } from '$lib/gql/graphql';
-import { tClient } from '$lib/i18n';
+import { tranFunc } from '$lib/i18n';
 import { toastStore } from '$lib/stores/ui/toast';
 import type { AnyVariables, OperationResult } from '@urql/core';
 import editorJsToHtml from 'editorjs-html';
 import { AppRoute } from './routes';
 import xss from 'xss';
+import { get } from 'svelte/store';
 
 
 export const editorJsParser = editorJsToHtml();
@@ -102,7 +103,7 @@ export const formatSelectedAttributeValue = (attribute: SelectedAttribute) => {
 		case AttributeInputTypeEnum.Dropdown:
 			return attribute.values[0].name;
 		case AttributeInputTypeEnum.Boolean:
-			return attribute.values[0].boolean ? tClient('common.yes') : tClient('common.no');
+			return attribute.values[0].boolean ? get(tranFunc)('common.yes') : get(tranFunc)('common.no');
 		case AttributeInputTypeEnum.PlainText:
 			return attribute.values[0].name;
 		case AttributeInputTypeEnum.Multiselect:

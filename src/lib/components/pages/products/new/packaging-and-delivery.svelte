@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tClient } from '$i18n';
+	import { tranFunc } from '$i18n';
 	import { MdiWeightKg } from '$lib/components/icons';
 	import { Input } from '$lib/components/ui/Input';
 	import type { ProductInput } from '$lib/gql/graphql';
@@ -11,9 +11,9 @@
 
 	let { metadata = $bindable([]), weight = $bindable() }: Props = $props();
 
-	const length = tClient('product.length');
-	const width = tClient('product.width');
-	const height = tClient('product.height');
+	const length = $tranFunc('product.length');
+	const width = $tranFunc('product.width');
+	const height = $tranFunc('product.height');
 </script>
 
 {#snippet cm()}
@@ -21,10 +21,10 @@
 {/snippet}
 
 <div class="mb-3">
-	<span class="text-sm">{tClient('common.packaging')}</span>
+	<span class="text-sm">{$tranFunc('common.packaging')}</span>
 	<div class="flex items-center text-xs gap-2 rounded-lg bg-gray-50 border border-gray-200 p-3">
 		<div class="w-3/12">
-			<div>{tClient('product.weight')}</div>
+			<div>{$tranFunc('product.weight')}</div>
 			<Input
 				type="number"
 				placeholder="weight"

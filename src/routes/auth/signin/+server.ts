@@ -1,10 +1,10 @@
 import { json } from "@sveltejs/kit";
-import type { RequestEvent } from "./$types";
 import { ACCESS_TOKEN_KEY, CSRF_TOKEN_KEY, HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess, REFRESH_TOKEN_KEY } from "$lib/utils/consts";
-import { tServer } from "$i18n";
-import { cookieOpts, performBackendOperation } from "$lib/client";
+import { tranFunc } from "$i18n";
+import { cookieOpts, performServerSideGraphqlRequest } from "$lib/client";
 import type { Mutation, User } from "$lib/gql/graphql";
 import { USER_LOGIN_MUTATION_STORE } from "$lib/stores/api";
+import { get } from "svelte/store";
 
 type Props = {
   email: string;
@@ -12,17 +12,17 @@ type Props = {
   rememberMe: boolean;
 };
 
-export const POST = async (event: RequestEvent) => {
+export const POST = async (event) => {
   const credentials: Props = await event.request.json();
   const email = credentials.email || '';
   const password = credentials.password || '';
   const rememberMe = credentials.rememberMe || false;
 
   if (!email.trim() || !password) {
-    return json({ error: tServer(event, 'error.invalidEmailAndPassword'), status: HTTPStatusBadRequest });
+    return json({ error: get(tranFunc)('error.invalidEmailAndPassword'), status: HTTPStatusBadRequest });
   }
 
-  const result = await performBackendOperation<Pick<Mutation, 'tokenCreate'>>(
+  const result = await performServerSideGraphqlRequest<Pick<Mutation, 'tokenCreate'>>(
     'mutation',
     USER_LOGIN_MUTATION_STORE,
     { email, password },

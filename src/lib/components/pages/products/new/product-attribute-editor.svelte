@@ -10,7 +10,7 @@
 	import { operationStore } from '$lib/stores/api/operation';
 	import { defaultChannel } from '$lib/utils/consts';
 	import { slide } from 'svelte/transition';
-	import { tClient } from '$i18n';
+	import { tranFunc } from '$i18n';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { onMount } from 'svelte';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
@@ -94,7 +94,7 @@
 
 {#if categoryID}
 	<div class="mb-3">
-		<span class="text-sm">{tClient('product.tabAttributes')}</span>
+		<span class="text-sm">{$tranFunc('product.tabAttributes')}</span>
 		<div class="bg-gray-50 rounded-lg border border-gray-200 p-3" transition:slide>
 			{#if $attributeQueryStore.fetching}
 				<div class="flex items-center flex-wrap">
@@ -111,7 +111,7 @@
 					{$attributeQueryStore.error.message}
 				</Alert>
 			{:else if !$attributeQueryStore.data?.attributes?.edges.length}
-				<Alert variant="info" size="sm" bordered>{tClient('product.noAttributes')}</Alert>
+				<Alert variant="info" size="sm" bordered>{$tranFunc('product.noAttributes')}</Alert>
 			{:else if $attributeQueryStore.data?.attributes?.edges}
 				<div class="flex items-center flex-wrap">
 					{#each $attributeQueryStore.data?.attributes?.edges as { node }, idx (idx)}
@@ -144,10 +144,10 @@
 										allowSelectMonthYears={{ showMonths: true, showYears: { min: 2020 } }}
 									/>
 								{:else if node.inputType === AttributeInputTypeEnum.File}
-									<div>file</div>
+									 <input type="file" class="file-input file-input-md" />
 								{:else if node.inputType === AttributeInputTypeEnum.Numeric}
 									<Input
-										placeholder={tClient('product.valuePlaceholder')}
+										placeholder={$tranFunc('product.valuePlaceholder')}
 										size="sm"
 										type="number"
 										bind:value={attributes[idx].numeric}

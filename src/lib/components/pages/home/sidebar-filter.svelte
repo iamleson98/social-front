@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { tClient } from '$i18n';
+	import { tranFunc } from '$i18n';
 	import { ArrowDown, ArrowUp, FilterCog, type IconType } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { Accordion } from '$lib/components/ui/Accordion';
@@ -49,8 +49,8 @@
 		const { gte, lte } = $productFilterParamStore.filter?.price as PriceRangeInput;
 		if (typeof gte !== 'number' || typeof lte !== 'number') return null;
 
-		if (gte < 0 || (lte as number) < 0) return tClient('error.negativeNumber');
-		if (gte >= (lte as number)) return tClient('error.startGreaterEnd');
+		if (gte < 0 || (lte as number) < 0) return $tranFunc('error.negativeNumber');
+		if (gte >= (lte as number)) return $tranFunc('error.startGreaterEnd');
 
 		return null;
 	});
@@ -82,10 +82,10 @@
 	};
 </script>
 
-<Accordion header="Filter" headerIcon={FilterCog}>
+<Accordion header={$tranFunc('common.filter')} headerIcon={FilterCog}>
 	<!-- price order -->
 	<div class="mb-4">
-		<div class="text-xs mb-2">{tClient('common.ordering')}</div>
+		<div class="text-xs mb-2">{$tranFunc('common.ordering')}</div>
 		<div class="flex items-center gap-1">
 			<Select
 				options={PRODUCT_SORT_FIELDS}
@@ -105,7 +105,7 @@
 
 	<!-- price range filter -->
 	<div class="mb-4">
-		<div class="text-xs mb-2">{tClient('common.priceRange')}</div>
+		<div class="text-xs mb-2">{$tranFunc('common.priceRange')}</div>
 		<div class="flex items-center gap-2 justify-between mb-1">
 			<Input
 				placeholder="from"
@@ -135,19 +135,19 @@
 
 	<!-- rating filter -->
 	<div class="mb-4">
-		<div class="text-xs mb-2">{tClient('common.score')}</div>
+		<div class="text-xs mb-2">{$tranFunc('common.score')}</div>
 		{#each RATINGS as rating, idx (idx)}
 			<div class="flex items-center gap-1 mb-1">
-				<span class="text-xs font-semibold text-blue-600 w-1/4">
+				<span class="text-xs font-bold text-blue-600 w-1/4 text-nowrap">
 					{rating}
-					{tClient('common.star')}
+					{$tranFunc('common.star')}
 				</span>
 				<div class="w-3/4">
-					<progress class="progress progress-warning min-w-28" max="100" value={rating * 20}
+					<progress class="progress progress-warning" max="100" value={rating * 20}
 					></progress>
 				</div>
 
-				<div class="ml-1">
+				<div>
 					<input
 						type="radio"
 						name="rating"
@@ -161,6 +161,6 @@
 	</div>
 
 	<Button size="xs" fullWidth color="orange" onclick={applyFilter}>
-		{tClient('common.filter')}
+		{$tranFunc('common.filter')}
 	</Button>
 </Accordion>

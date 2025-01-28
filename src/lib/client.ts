@@ -21,6 +21,7 @@ import type { Query, User } from './gql/graphql';
 import { userStore } from './stores/auth';
 import type { CookieSerializeOptions } from 'cookie';
 import { retryExchange } from '@urql/exchange-retry';
+import { PUBLIC_GRAPHQL_API_END_POINT } from '$env/static/public';
 
 export const MAX_REFRESH_TOKEN_TRIES = 3;
 export const cookieOpts: Readonly<CookieSerializeOptions & { path: string }> = Object.freeze({
@@ -128,13 +129,14 @@ const isAuthenError = (err: CombinedError): boolean => {
 	return false;
 }
 
-let refreshAuthTracker = false
+/** Guarding condition that designates if token refreshing is in progress, prevent request spam  */
+let isTokenRefreshingInProgress = false
 
 const authExchangeInner = async (utils: AuthUtilities) => {
 	const addAuthToOperation = (operation: Operation) => {
 		const accessToken = getCookieByKey(ACCESS_TOKEN_KEY);
 		if (accessToken) {
-			return utils.appendHeaders(operation, {
+			operation = utils.appendHeaders(operation, {
 				Authorization: `Bearer ${accessToken}`,
 			});
 		}
@@ -143,8 +145,8 @@ const authExchangeInner = async (utils: AuthUtilities) => {
 	}
 
 	const refreshAuth = async () => {
-		if (refreshAuthTracker || !browser) return;
-		refreshAuthTracker = true
+		if (isTokenRefreshingInProgress || !browser) return; // this code executes on client-side only
+		isTokenRefreshingInProgress = true
 
 		const refreshResult = await fetch(
 			AppRoute.AUTH_REFRESH_TOKEN,
@@ -160,7 +162,7 @@ const authExchangeInner = async (utils: AuthUtilities) => {
 		const result: Record<string, unknown> = await refreshResult.json();
 		userStore.set(result.user as User);
 
-		refreshAuthTracker = false;
+		isTokenRefreshingInProgress = false;
 	}
 
 	return {
@@ -174,7 +176,7 @@ const authExchangeInner = async (utils: AuthUtilities) => {
  * graphqlClient is similar to 'Client' of urql but with additional methods for server-side.
  */
 export const graphqlClient = new Client({
-	url: import.meta.env.VITE_GRAPHQL_API_END_POINT,
+	url: PUBLIC_GRAPHQL_API_END_POINT,
 	exchanges: [
 		// this auth exchange can run on slient side only
 		authExchange(authExchangeInner),
@@ -184,7 +186,7 @@ export const graphqlClient = new Client({
 			maxDelayMs: 10000,
 			randomDelay: true,
 			maxNumberAttempts: 2,
-			retryIf: (error): boolean => (browser && error && !!error.networkError),
+			retryIf: (error): boolean => (error && !!error.networkError),
 		}),
 		fetchExchange,
 	],
@@ -238,9 +240,9 @@ const attachAuthorizationHeaderToRequestIfNeeded = (
 };
 
 /**
- * This method is used for server-side only
+ * NOTE: This method is used for server-side only
  */
-export const performBackendOperation = async <Data = never, Variables extends AnyVariables = AnyVariables>(
+export const performServerSideGraphqlRequest = async <Data = never, Variables extends AnyVariables = AnyVariables>(
 	type: OperationType,
 	query: DocumentInput<Data, Variables>,
 	variables: Variables,
@@ -272,6 +274,6 @@ export const pageRequiresAuthentication = async (event: RequestEvent<Partial<Rec
 		redirect(HTTPStatusTemporaryRedirect, `${AppRoute.AUTH_SIGNIN}?next=${event.url.pathname}`);
 	}
 
-	const meQueryResult = await performBackendOperation<Pick<Query, 'me'>>('query', USER_ME_QUERY_STORE, {}, event);
+	const meQueryResult = await performServerSideGraphqlRequest<Pick<Query, 'me'>>('query', USER_ME_QUERY_STORE, {}, event);
 	return meQueryResult.data?.me as User;
 };

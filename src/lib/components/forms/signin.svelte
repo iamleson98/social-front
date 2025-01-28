@@ -4,7 +4,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { Email, Facebook, Google, Icon, Twitter } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { tClient } from '$lib/i18n';
+	import { tranFunc } from '$lib/i18n';
 	import { Checkbox, Input, PasswordInput } from '$lib/components/ui/Input';
 	import { HTTPStatusSuccess } from '$lib/utils/consts';
 	import { toastStore } from '$lib/stores/ui/toast';
@@ -44,7 +44,7 @@
 
 		userStore.set(loginResult.data);
 		toastStore.send({
-			message: tClient('signin.welcomeBack', {
+			message: $tranFunc('signin.welcomeBack', {
 				name: loginResult.data.firstName + ' ' + loginResult.data.lastName
 			}),
 			variant: 'success'
@@ -55,7 +55,7 @@
 </script>
 
 <div>
-	<h1 class="p-2 mb-4">{tClient('signin.title')}</h1>
+	<h1 class="p-2 mb-4">{$tranFunc('signin.title')}</h1>
 
 	{#if error}
 		<Alert variant="error" class="mb-3" size="sm" bordered>
@@ -65,7 +65,7 @@
 	<div class="mb-3">
 		<Input
 			type="email"
-			placeholder={tClient('common.emailPlaceholder')}
+			placeholder={$tranFunc('common.emailPlaceholder')}
 			class="mb-2"
 			bind:value={email}
 			required
@@ -74,7 +74,7 @@
 			variant={error ? 'error' : 'info'}
 		/>
 		<PasswordInput
-			placeholder={tClient('common.passwordPlaceholder')}
+			placeholder={$tranFunc('common.passwordPlaceholder')}
 			bind:value={password}
 			class="mb-1"
 			variant={error ? 'error' : 'info'}
@@ -82,20 +82,20 @@
 			showAction
 		/>
 		<a href={AppRoute.AUTH_RESET_PASSWORD} class="text-xs text-right block text-blue-600 mb-4">
-			{tClient('signin.forgotPassword')}
+			{$tranFunc('signin.forgotPassword')}
 		</a>
 
-		<Checkbox label={tClient('signin.rememberMe')} size="sm" class="mb-3" bind:checked={rememberCheck} />
+		<Checkbox label={$tranFunc('signin.rememberMe')} size="sm" class="mb-3" bind:checked={rememberCheck} />
 
 		<Button variant="filled" onclick={handleLogin} size="sm" fullWidth {loading} {disabled}>
-			{tClient('signin.signinButton')}
+			{$tranFunc('signin.signinButton')}
 		</Button>
 	</div>
 
 	<div class="mb-4">
 		<span class="text-xs text-gray-500">
-			{tClient('signin.noAccount')}
-			<a href={AppRoute.AUTH_REGISTER} class="text-blue-600">{tClient('signup.title')}</a>
+			{$tranFunc('signin.noAccount')}
+			<a href={AppRoute.AUTH_REGISTER} class="text-blue-600">{$tranFunc('signup.title')}</a>
 		</span>
 	</div>
 

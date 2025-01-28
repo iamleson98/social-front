@@ -1,10 +1,9 @@
-import { LANGUAGE_KEY } from "$lib/utils/consts";
-import type { RequestEvent } from "@sveltejs/kit";
 import { default as english } from './en';
 import { default as vietnamese } from './vi';
 import { default as korean } from './ko';
 import { default as japanese } from './ja';
-import { clientSideGetCookieOrDefault, getCookieByKey } from "$lib/utils/cookies";
+import { LanguageCodeEnum } from "$lib/gql/graphql";
+import { derived, writable } from "svelte/store";
 
 const placeholderRegex = /{{([a-zA-Z ]+)}}/g;
 
@@ -39,19 +38,49 @@ const parseTranslationObject = (obj: Record<string, unknown>, trans: Translation
   return trans;
 }
 
-type LanguageCode = 'vi' | 'en' | 'ko' | 'ja' | 'vi-VN' | 'en-US';
+export type LanguageCode = LanguageCodeEnum.Vi | LanguageCodeEnum.Ja | LanguageCodeEnum.Ko | LanguageCodeEnum.En | 'vi-VN' | 'en-US';
 
 const englishTran = parseTranslationObject(english, {})
-const vietnameseTran = parseTranslationObject(vietnamese, {})
 
-const translations: Record<LanguageCode, Translation> = {
-  ['en']: englishTran,
-  ['vi']: vietnameseTran,
-  ['ko']: parseTranslationObject(korean, {}),
-  ['ja']: parseTranslationObject(japanese, {}),
-  ['vi-VN']: vietnameseTran,
-  ['en-US']: englishTran,
-};
+export const setTranslation = (language: LanguageCode) => {
+  switch (language) {
+    case LanguageCodeEnum.En:
+    case 'en-US':
+      innerStore.set(englishTran);
+      break;
+    case LanguageCodeEnum.Vi:
+    case 'vi-VN':
+      innerStore.set(parseTranslationObject(vietnamese, {}));
+      break;
+    case LanguageCodeEnum.Ko:
+      innerStore.set(parseTranslationObject(korean, {}));
+      break;
+    case LanguageCodeEnum.Ja:
+      innerStore.set(parseTranslationObject(japanese, {}));
+      break;
+  }
+}
+
+const innerStore = writable(englishTran);
+
+export const tranFunc = derived(innerStore, ($trans) => {
+  return (key: string, args?: Record<string, unknown>) => {
+    const tranObject = $trans[key];
+    if (tranObject === undefined) {
+      throw new Error(`Translation key ${key} not found in translations`);
+    }
+    if (args && Object.keys(args).some(arg => !tranObject.args?.has(arg))) {
+      throw new Error(`Translation key ${key} has no placeholders for ${Object.keys(args).join(', ')}`);
+    }
+
+    let result = tranObject.template;
+    for (const key in args) {
+      result = result.replace(`{{${key}}}`, args[key] as string);
+    }
+
+    return result;
+  };
+});
 
 /**
  * translation json should be in the format of:
@@ -72,22 +101,22 @@ type Translation = {
   };
 }
 
-const commonTranslation = (language: LanguageCode, key: string, args?: Record<string, unknown>) => {
-  const tranObject = translations[language][key];
-  if (tranObject === undefined) {
-    throw new Error(`Translation key ${key} not found in ${language} translations`);
-  }
-  if (args && Object.keys(args).some(arg => !tranObject.args?.has(arg))) {
-    throw new Error(`Translation key ${key} has no placeholders for ${Object.keys(args).join(', ')}`);
-  }
+// const commonTranslation = (language: LanguageCode, key: string, args?: Record<string, unknown>) => {
+//   const tranObject = translations[language][key];
+//   if (tranObject === undefined) {
+//     throw new Error(`Translation key ${key} not found in ${language} translations`);
+//   }
+//   if (args && Object.keys(args).some(arg => !tranObject.args?.has(arg))) {
+//     throw new Error(`Translation key ${key} has no placeholders for ${Object.keys(args).join(', ')}`);
+//   }
 
-  let result = tranObject.template;
-  for (const key in args) {
-    result = result.replace(`{{${key}}}`, args[key] as string);
-  }
+//   let result = tranObject.template;
+//   for (const key in args) {
+//     result = result.replace(`{{${key}}}`, args[key] as string);
+//   }
 
-  return result;
-};
+//   return result;
+// };
 
 /**
 * Translate a key string to the current locale.
@@ -96,10 +125,12 @@ const commonTranslation = (language: LanguageCode, key: string, args?: Record<st
 * @param args arguments for placeholders in the key. If key has no placeholders, this can be omitted.
 * @returns translated string
 */
-export const tClient = (key: string, args?: Record<string, unknown>): string => {
-  const language = (getCookieByKey(LANGUAGE_KEY) || 'en') as LanguageCode;
-  return commonTranslation(language, key, args);
-};
+// export const tranFunc = (key: string, args?: Record<string, unknown>): string => {
+//   const language = (getCookieByKey(LANGUAGE_KEY) || LanguageCodeEnum.En) as LanguageCode;
+//   return commonTranslation(language, key, args);
+// };
+
+// export const tranFunc = readonly(tranFunc);
 
 /**
  * @NOTE you MUST use this function inside server side code
@@ -108,7 +139,7 @@ export const tClient = (key: string, args?: Record<string, unknown>): string => 
  * @param args arguments for placeholders in the key. If key has no placeholders, this can be omitted.
  * @returns 
  */
-export const tServer = (event: RequestEvent<Partial<Record<string, string>>, string | null>, key: string, args?: Record<string, unknown>): string => {
-  const language = (event.cookies.get(LANGUAGE_KEY) || 'en') as LanguageCode;
-  return commonTranslation(language, key, args);
-};
+// export const tranFunc = (event: RequestEvent<Partial<Record<string, string>>, string | null>, key: string, args?: Record<string, unknown>): string => {
+//   const language = (event.cookies.get(LANGUAGE_KEY) || LanguageCodeEnum.En) as LanguageCode;
+//   return commonTranslation(language, key, args);
+// };

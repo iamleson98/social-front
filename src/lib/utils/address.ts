@@ -1,9 +1,10 @@
-import { tClient } from "$i18n";
+import { tranFunc } from "$i18n";
 import { CountryCode, type Address, type AddressValidationData, type Maybe } from "$lib/gql/graphql";
 import { uniq } from "lodash-es";
 import camelCase from 'lodash-es/camelCase';
 import { numberRegex } from "./utils";
 import { parsePhoneNumberWithError, type CountryCode as PhoneCountryCode } from "libphonenumber-js/max";
+import { get } from "svelte/store";
 
 export type LocalizedAddressFieldLabel =
   | "province"
@@ -202,17 +203,17 @@ export type AddressFieldLabel = Exclude<AddressField, "countryCode"> | "country"
 
 /** NOTE: this code must be use by client side since it contains client translation */
 export const addressFieldMessages: Record<AddressFieldLabel, string> = {
-  city: tClient('common.city'),
-  firstName: tClient('common.firstName'),
-  countryArea: tClient('common.countryArea'),
-  lastName: tClient('common.lastName'),
-  country: tClient('common.country'),
-  cityArea: tClient('common.cityArea'),
-  postalCode: tClient('common.postalCode'),
-  companyName: tClient('common.companyName'),
-  streetAddress1: tClient('common.streetAddress1'),
-  streetAddress2: tClient('common.streetAddress2'),
-  phone: tClient('common.phone'),
+  city: get(tranFunc)('common.city'),
+  firstName: get(tranFunc)('common.firstName'),
+  countryArea: get(tranFunc)('common.countryArea'),
+  lastName: get(tranFunc)('common.lastName'),
+  country: get(tranFunc)('common.country'),
+  cityArea: get(tranFunc)('common.cityArea'),
+  postalCode: get(tranFunc)('common.postalCode'),
+  companyName: get(tranFunc)('common.companyName'),
+  streetAddress1: get(tranFunc)('common.streetAddress1'),
+  streetAddress2: get(tranFunc)('common.streetAddress2'),
+  phone: get(tranFunc)('common.phone'),
 };
 
 export type ApiAddressField = AddressField | "name";

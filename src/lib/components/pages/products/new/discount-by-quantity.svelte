@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tClient } from '$i18n';
+	import { tranFunc } from '$i18n';
 	import { Plus, Trash } from '$lib/components/icons';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
@@ -37,18 +37,18 @@
 </script>
 
 <div class="mb-3">
-	<span class="text-sm">{tClient('common.discountRange')}</span>
+	<span class="text-sm">{$tranFunc('common.discountRange')}</span>
 	<div class="border rounded-lg bg-gray-50 border-gray-200 p-3">
 		<div class="flex items-center flex-row gap-2 mb-2 text-xs text-gray-700 font-semibold">
 			<div class="w-1/12">No.</div>
 			<div class="w-10/12 flex items-center gap-1">
-				<div class="w-3/12">{tClient('product.channel')}</div>
-				<div class="w-3/12">{tClient('product.fromPrd')}</div>
-				<div class="w-3/12">{tClient('product.toPrd')}</div>
-				<div class="w-3/12">{tClient('product.price')}</div>
+				<div class="w-3/12">{$tranFunc('product.channel')}</div>
+				<div class="w-3/12">{$tranFunc('product.fromPrd')}</div>
+				<div class="w-3/12">{$tranFunc('product.toPrd')}</div>
+				<div class="w-3/12">{$tranFunc('product.price')}</div>
 			</div>
 			<div class="w-1/12">
-				<div class="tooltip" data-tip={tClient('product.addDiscountRange')}>
+				<div class="tooltip" data-tip={$tranFunc('product.addDiscountRange')}>
 					<IconButton
 						icon={Plus}
 						size="xs"

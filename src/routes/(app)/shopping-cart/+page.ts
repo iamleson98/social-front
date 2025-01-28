@@ -1,9 +1,10 @@
-import { tClient } from "$i18n";
+import { tranFunc } from "$i18n";
+import { get } from "svelte/store";
 
 export const load = async () => {
   return {
     meta: {
-      title: tClient("common.cart"),
+      title: get(tranFunc)("common.cart"),
     },
   };
 };

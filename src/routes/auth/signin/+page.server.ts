@@ -5,17 +5,17 @@ import {
 	HTTPStatusPermanentRedirect,
 } from '$lib/utils/consts.js';
 import { redirect } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
 import { AppRoute } from '$lib/utils';
-import { performBackendOperation } from '$lib/client';
-import { tServer } from '$lib/i18n';
+import { performServerSideGraphqlRequest } from '$lib/client';
+import { tranFunc } from '$lib/i18n';
+import { get } from 'svelte/store';
 
 
-export const load: PageServerLoad = async (event) => {
+export const load = async (event) => {
 	const accessToken = event.cookies.get(ACCESS_TOKEN_KEY);
 
 	if (accessToken && accessToken !== 'undefined') {
-		const result = await performBackendOperation<Pick<Query, 'me'>>(
+		const result = await performServerSideGraphqlRequest<Pick<Query, 'me'>>(
 			'query',
 			USER_ME_QUERY_STORE,
 			{},
@@ -30,7 +30,7 @@ export const load: PageServerLoad = async (event) => {
 
 	return {
 		meta: {
-			title: tServer(event, 'signin.title'),
+			title: get(tranFunc)('signin.title'),
 		},
 	};
 };

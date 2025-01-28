@@ -3,7 +3,7 @@
 	import { Button, IconButton } from '../Button';
 	import { modalSizeMap, type ModalProps } from './types';
 	import { fly } from 'svelte/transition';
-	import { tClient } from '$i18n';
+	import { tranFunc } from '$i18n';
 	import { noop } from '$lib/utils/utils';
 	import { clickOutside } from '$lib/actions/click-outside';
 	import { focusOutside } from '$lib/actions/focus-outside';
@@ -13,8 +13,8 @@
 		open,
 		header,
 		children,
-		okText = tClient('common.ok'),
-		cancelText = tClient('common.cancel'),
+		okText = $tranFunc('common.ok'),
+		cancelText = $tranFunc('common.cancel'),
 		onOk = noop,
 		onCancel = noop,
 		onClose = noop,

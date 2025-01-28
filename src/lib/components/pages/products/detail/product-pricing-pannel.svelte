@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tClient } from '$i18n';
+	import { tranFunc } from '$i18n';
 	import {
 		MapPin,
 		Minus,
@@ -110,7 +110,7 @@
 	};
 
 	let userShippingAddress = $derived.by(() => {
-		if (!$userStore || !$userStore.addresses.length) return tClient('product.chooseAddress');
+		if (!$userStore || !$userStore.addresses.length) return $tranFunc('product.chooseAddress');
 
 		const defaulShippingAddress =
 			$userStore.addresses.find((addr) => addr.isDefaultShippingAddress) || $userStore.addresses[0];
@@ -170,7 +170,7 @@
 
 	<!-- delivery -->
 	<div class="flex flex-row items-center mb-4 text-gray-600">
-		<span class="w-1/6 text-xs">{tClient('product.delivery')}</span>
+		<span class="w-1/6 text-xs">{$tranFunc('product.delivery')}</span>
 		<div class="w-5/6 text-blue-700 font-normal flex items-center">
 			<span class="text-sm mr-1">
 				{userShippingAddress}
@@ -188,7 +188,7 @@
 
 	<!-- variant -->
 	<div class="flex flex-row items-center mb-4 text-gray-600">
-		<span class="w-1/6 text-xs">{tClient('product.variants')}</span>
+		<span class="w-1/6 text-xs">{$tranFunc('product.variants')}</span>
 		<div class="w-5/6">
 			<div class="flex gap-2 flex-wrap flex-row text-blue-600 text-sm">
 				{#each productVariants as variant, idx (idx)}
@@ -213,7 +213,7 @@
 
 			{#if showAlertSelectVariant}
 				<div class="w-1/2 mt-2">
-					<Alert size="xs" bordered variant="warning">{tClient('error.noVariantSelected')}</Alert>
+					<Alert size="xs" bordered variant="warning">{$tranFunc('error.noVariantSelected')}</Alert>
 				</div>
 			{/if}
 		</div>
@@ -221,7 +221,7 @@
 
 	<!-- quantity selection -->
 	<div class="flex flex-row items-center mb-4 text-gray-600">
-		<span class="w-1/6 text-xs">{tClient('product.quantity')}</span>
+		<span class="w-1/6 text-xs">{$tranFunc('product.quantity')}</span>
 		<div class="w-5/6 flex items-center flex-wrap flex-row">
 			<div class="flex items-center gap-1">
 				<IconButton
@@ -255,7 +255,7 @@
 			<!-- quantity available -->
 			{#if selectedVariant}
 				<span class="text-gray-600 text-xs ml-2" transition:fade={{ duration: 100 }}>
-					{tClient('product.variantAvailable', { quantity: selectedVariant.quantityAvailable })}
+					{$tranFunc('product.variantAvailable', { quantity: selectedVariant.quantityAvailable })}
 				</span>
 			{/if}
 		</div>
@@ -263,13 +263,13 @@
 
 	<!-- customer policy -->
 	<div class="flex flex-row items-center mb-6 text-gray-600">
-		<span class="w-1/6 text-xs">{tClient('product.prdPolicy')}</span>
+		<span class="w-1/6 text-xs">{$tranFunc('product.prdPolicy')}</span>
 		<div class="w-5/6 flex items-center flex-wrap flex-row">
 			<!-- <div class="flex items-center gap-1">
 				Return product
 			</div> -->
 			<div class="w-2/3">
-				<Alert variant="info" size="xs">{tClient('product.prdPolicyDetail')}</Alert>
+				<Alert variant="info" size="xs">{$tranFunc('product.prdPolicyDetail')}</Alert>
 			</div>
 		</div>
 	</div>
@@ -287,7 +287,7 @@
 				disabled={isAddingItemToCart}
 				loading={isAddingItemToCart}
 			>
-				<span>{tClient('product.addToCart')}</span>
+				<span>{$tranFunc('product.addToCart')}</span>
 			</Button>
 		</div>
 	</div>
@@ -295,7 +295,7 @@
 
 <Modal
 	open={openDeliveryModal}
-	header={tClient('helpText.chooseDeliveryAddress')}
+	header={$tranFunc('helpText.chooseDeliveryAddress')}
 	closeOnEscape
 	closeOnOutsideClick
 	onClose={() => (openDeliveryModal = false)}

@@ -1,4 +1,4 @@
-import {  performBackendOperation } from '$lib/client';
+import {  performServerSideGraphqlRequest } from '$lib/client';
 import type { Mutation } from '$lib/gql/graphql';
 import { USER_SET_PASSWORD_MUTATION_STORE } from '$lib/stores/api/auth';
 import {
@@ -8,14 +8,14 @@ import {
 	type SocialResponse
 } from '$lib/utils/consts';
 import type { Actions } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
-import { tServer } from '$lib/i18n';
+import { tranFunc } from '$lib/i18n';
+import { get } from 'svelte/store';
 
-export const load: PageServerLoad = async (event) => {
+export const load = async () => {
 	return {
 		status: HTTPStatusSuccess,
 		meta: {
-			title: tServer(event, 'changePassword.title'),
+			title: get(tranFunc)('changePassword.title'),
 			description: 'Change your password by providing your new password',
 		},
 	};
@@ -55,7 +55,7 @@ export const actions = {
 			token,
 			password,
 		};
-		const resetNewPasswordResult = await performBackendOperation<
+		const resetNewPasswordResult = await performServerSideGraphqlRequest<
 			Pick<Mutation, 'setPassword'>
 		>('mutation', USER_SET_PASSWORD_MUTATION_STORE, variables, event);
 		if (resetNewPasswordResult.error) {

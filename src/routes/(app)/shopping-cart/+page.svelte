@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { afterNavigate, goto } from '$app/navigation';
-	import { tClient } from '$i18n';
+	import { tranFunc } from '$i18n';
 	import { ArrowNarrowRight, EmptyDrawer, Icon } from '$lib/components/icons';
 	import CartItemLine from '$lib/components/pages/cart/cart-item-line.svelte';
 	import { Button } from '$lib/components/ui';
@@ -82,7 +82,7 @@
 				</div>
 
 				<div>
-					{tClient('common.emptyCart')}
+					{$tranFunc('common.emptyCart')}
 				</div>
 			</div>
 		</div>
@@ -104,20 +104,20 @@
 			<!-- purchase area -->
 			<div class="w-1/4 tablet:w-full">
 				<div class="p-4 mb-2 bg-white rounded-lg border">
-					<p class="text-lg font-semibold tet-gray-800 mb-4">{tClient('common.cartSummary')}</p>
+					<p class="text-lg font-semibold tet-gray-800 mb-4">{$tranFunc('common.cartSummary')}</p>
 
 					<div class="mb-4">
 						{@render MoneyField(
 							subtotalPrice.gross.currency,
 							originalTotalPrice,
-							tClient('common.oldTotalPrice'),
+							$tranFunc('common.oldTotalPrice'),
 							'gray'
 						)}
 
 						{@render MoneyField(
 							subtotalPrice.gross.currency,
 							originalTotalPrice - subtotalPrice.gross.amount,
-							tClient('common.savings'),
+							$tranFunc('common.savings'),
 							'green',
 							true
 						)}
@@ -127,7 +127,7 @@
 						{@render MoneyField(
 							subtotalPrice.gross.currency,
 							subtotalPrice.gross.amount,
-							tClient('common.tempoTotalPrice'),
+							$tranFunc('common.tempoTotalPrice'),
 							'red'
 						)}
 					</div>

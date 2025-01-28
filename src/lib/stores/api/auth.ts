@@ -49,6 +49,7 @@ export const USER_ME_QUERY_STORE = gql`
 			lastName
 			isStaff
 			restrictedAccessToChannels
+			languageCode
 			metadata {
 				key
 				value
@@ -94,6 +95,16 @@ export const USER_REFRESH_TOKEN_MUTATION_STORE = gql`
 	mutation TokenRefresh($csrfToken: String, $refreshToken: String) {
 		tokenRefresh(csrfToken: $csrfToken, refreshToken: $refreshToken) {
 			token
+			user {
+				id
+				email
+				firstName
+				lastName
+				avatar {
+					url
+					alt
+				}
+			}
 			errors {
 				code
 				message

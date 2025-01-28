@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tClient } from '$i18n';
+	import { tranFunc } from '$i18n';
 	import { Heart, ShoppingBagPlus } from '$lib/components/icons';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button, IconButton } from '$lib/components/ui/Button';
@@ -52,11 +52,11 @@
 		<div class="mb-3 flex items-center justify-between">
 			<Badge color="violet" variant="filled" text={(category?.name || category?.id) as string} />
 			<div class="text-xs flex items-center text-red-600 gap-1 font-semibold">
-				{#if rating}
-					<div>{clamp(rating, MIN_RATING, MAX_RATING)} / {MAX_RATING}</div>
-				{:else}
-					<div>{tClient('product.noVote')}</div>
-				{/if}
+				<div class="text-nowrap">
+					{rating
+						? `${clamp(rating, MIN_RATING, MAX_RATING)} / ${MAX_RATING}`
+						: $tranFunc('product.noVote')}
+				</div>
 				<progress
 					class="progress progress-warning min-w-24"
 					max="100"
@@ -67,7 +67,7 @@
 
 		<!-- price -->
 		<div class="flex items-end flex-row gap-2 mb-2">
-			<p class="text-xs font-normal text-gray-500">{tClient('common.startAt')}</p>
+			<p class="text-xs font-normal text-gray-500">{$tranFunc('common.startAt')}</p>
 			<p class="font-bold text-blue-700 text-xl underline">
 				{formatMoney(
 					pricing?.priceRange?.start?.gross.currency || defaultChannel.currency,

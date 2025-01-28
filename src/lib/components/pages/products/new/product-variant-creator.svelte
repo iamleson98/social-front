@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tClient } from '$i18n';
+	import { tranFunc } from '$i18n';
 	import { Plus, Trash, MdiWeightKg } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton, type ButtonProps } from '$lib/components/ui/Button';
@@ -81,12 +81,12 @@
 	};
 
 	const VARIANT_ATTRIBUTE_HINTS = [
-		tClient('product.channelHint'),
-		tClient('product.priceHint'),
-		tClient('product.costPriceHint'),
-		tClient('product.stockHint'),
-		tClient('product.weightHint'),
-		tClient('product.skuHint')
+		$tranFunc('product.channelHint'),
+		$tranFunc('product.priceHint'),
+		$tranFunc('product.costPriceHint'),
+		$tranFunc('product.stockHint'),
+		$tranFunc('product.weightHint'),
+		$tranFunc('product.skuHint')
 	];
 
 	let { productVariantsInput = $bindable([]) }: Props = $props();
@@ -245,9 +245,9 @@
 					return {
 						value: valueTrimLower,
 						error: valueDuplicate
-							? tClient('product.variantValueExist', { name: valueTrimLower })
+							? $tranFunc('product.variantValueExist', { name: valueTrimLower })
 							: !newValue
-								? tClient('product.variantValueEmpty')
+								? $tranFunc('product.variantValueEmpty')
 								: undefined
 					};
 				})
@@ -327,9 +327,9 @@
 				name: {
 					value: nameTrimLower,
 					error: nameDuplicate
-						? tClient('product.variantNameExist', { name: nameTrimLower })
+						? $tranFunc('product.variantNameExist', { name: nameTrimLower })
 						: !name
-							? tClient('product.variantNameEmpty')
+							? $tranFunc('product.variantNameEmpty')
 							: undefined
 				},
 				values: variant.values
@@ -522,7 +522,7 @@
 	</div>
 {/snippet}
 
-<span class="text-sm">{tClient('product.variants')}</span>
+<span class="text-sm">{$tranFunc('product.variants')}</span>
 
 <div
 	class={`mb-3 rounded-lg border p-3 ${hasGeneralError ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}`}
@@ -536,7 +536,7 @@
 			<div class="p-3 w-1/2 mobile-l:w-full border rounded-lg bg-white h-fit">
 				<!-- TITLE -->
 				<div class="mb-1 text-xs">
-					{tClient('product.variant')}
+					{$tranFunc('product.variant')}
 					{variantIdx + 1}
 				</div>
 				<!-- NAME -->
@@ -545,11 +545,11 @@
 						class="input input-sm flex items-center gap-2"
 						class:input-error={!!variant.name.error}
 					>
-						<span>{tClient('product.variantName')}</span>
+						<span>{$tranFunc('product.variantName')}</span>
 						<Input
 							type="text"
 							class="w-full"
-							placeholder={tClient('product.variantPlaceholder')}
+							placeholder={$tranFunc('product.variantPlaceholder')}
 							inputDebounceOption={{
 								onInput: handleVariantNameChange(variantIdx) as (result: unknown) => void
 							}}
@@ -570,7 +570,7 @@
 								type="text"
 								class="w-4/5"
 								size="sm"
-								placeholder={tClient('product.valuePlaceholder')}
+								placeholder={$tranFunc('product.valuePlaceholder')}
 								inputDebounceOption={{
 									onInput: handleVariantValueChange(variantIdx, valueIdx) as (
 										result: unknown
@@ -588,7 +588,7 @@
 									rounded
 									color="red"
 									onclick={() => handleDeleteValue(variantIdx, valueIdx)}
-									title={tClient('product.delValue')}
+									title={$tranFunc('product.delValue')}
 								/>
 							{/if}
 						</div>
@@ -596,7 +596,7 @@
 				{/each}
 				<div class="flex justify-center items-center gap-1.5 mt-4">
 					{@render variantActionButton({
-						title: tClient('product.delVariant'),
+						title: $tranFunc('product.delVariant'),
 						onclick: () => handleDeleteVariant(variantIdx),
 						color: 'red',
 						endIcon: Trash,
@@ -605,7 +605,7 @@
 						fullWidth: true
 					})}
 					{@render variantActionButton({
-						title: tClient('product.addValue'),
+						title: $tranFunc('product.addValue'),
 						onclick: () => handleAddVariantValue(variantIdx),
 						color: 'blue',
 						endIcon: Plus,
@@ -620,7 +620,7 @@
 		{/each}
 		{#if variantManifests.length < MAX_VARIANT_TYPES}
 			<div class="w-1/2 mobile-l:w-full flex items-center justify-center">
-				<div class="tooltip" data-tip={tClient('product.addVariant')}>
+				<div class="tooltip" data-tip={$tranFunc('product.addVariant')}>
 					<IconButton
 						onclick={handleAddVariant}
 						icon={Plus}
@@ -634,15 +634,15 @@
 	</div>
 
 	{#if variantManifests.length}
-		<div class="mt-10">
+		<div class="mt-4">
 			<!-- QUICK FILLING -->
 			<div class="mb-4">
-				<div class="text-xs mb-1">{tClient('product.quickFilling')}</div>
+				<div class="text-xs mb-1">{$tranFunc('product.quickFilling')}</div>
 				<div class="flex gap-x-2 items-start flex-row w-full">
 					<div class="w-11/12 flex gap-1 items-start flex-row">
 						<!-- CHANNELS -->
 						<div class="w-1/5">
-							<div class="text-xs">{tClient('product.channel')}</div>
+							<div class="text-xs">{$tranFunc('product.channel')}</div>
 							{#if !channelSelectOptions?.length}
 								<SkeletonContainer>
 									<Skeleton class="w-full h-4" rounded={false} />
@@ -662,8 +662,8 @@
 						<div class="w-1/5">
 							{#if quickFillingValues.channels.length}
 								<div class="flex flex-row text-xs">
-									<span class="w-1/2">{tClient('product.price')}</span>
-									<span class="w-1/2">{tClient('product.costPrice')}</span>
+									<span class="w-1/2">{$tranFunc('product.price')}</span>
+									<span class="w-1/2">{$tranFunc('product.costPrice')}</span>
 								</div>
 								<div
 									class="max-h-20 overflow-y-auto border border-gray-200 bg-white p-2 rounded-lg"
@@ -680,7 +680,7 @@
 												class="w-1/2"
 												bind:value={channel.price}
 												variant={channel.price < 0 ? 'error' : 'info'}
-												subText={channel.price < 0 ? tClient('error.negativeNumber') : ''}
+												subText={channel.price < 0 ? $tranFunc('error.negativeNumber') : ''}
 												onfocus={() => handleFocusHighlightQuickFilling('td-price-hl')}
 												onblur={() => handleFocusHighlightQuickFilling()}
 											/>
@@ -693,7 +693,7 @@
 												class="w-1/2"
 												bind:value={channel.costPrice}
 												variant={channel.costPrice < 0 ? 'error' : 'info'}
-												subText={channel.costPrice < 0 ? tClient('error.negativeNumber') : ''}
+												subText={channel.costPrice < 0 ? $tranFunc('error.negativeNumber') : ''}
 												onfocus={() => handleFocusHighlightQuickFilling('td-cost-price-hl')}
 												onblur={() => handleFocusHighlightQuickFilling()}
 											/>
@@ -704,7 +704,7 @@
 						</div>
 						<!-- WEIGHT -->
 						<div class="w-1/5">
-							<div class="text-xs">{tClient('product.weight')}</div>
+							<div class="text-xs">{$tranFunc('product.weight')}</div>
 							<Input
 								size="sm"
 								type="number"
@@ -719,18 +719,18 @@
 									: 'info'}
 								subText={typeof quickFillingValues.weight === 'number' &&
 								quickFillingValues.weight < 0
-									? tClient('error.negativeNumber')
+									? $tranFunc('error.negativeNumber')
 									: undefined}
 							/>
 						</div>
 						<!-- PRE-ORDER -->
 						<div class="w-1/5">
-							<div class="text-xs">{tClient('common.preorder')}</div>
+							<div class="text-xs">{$tranFunc('common.preorder')}</div>
 							<div class="border border-gray-200 bg-white p-2 rounded-lg">
 								<!-- QUANTITY LIMIT -->
 								<Input
 									type="number"
-									label={tClient('product.qtyLimit')}
+									label={$tranFunc('product.qtyLimit')}
 									min={0}
 									size="xs"
 									class="mb-2"
@@ -741,7 +741,7 @@
 										: 'info'}
 									subText={typeof quickFillingValues.preOrder.globalThreshold === 'number' &&
 									quickFillingValues.preOrder.globalThreshold < 0
-										? tClient('error.negativeNumber')
+										? $tranFunc('error.negativeNumber')
 										: undefined}
 									onfocus={() => {
 										handleFocusHighlightQuickFilling('td-preorder-hl');
@@ -757,7 +757,7 @@
 									value={quickFillingValues.preOrder.endDate}
 									onfocus={() => handleFocusHighlightQuickFilling('td-preorder-hl')}
 									onblur={() => handleFocusHighlightQuickFilling()}
-									label={tClient('product.preOrderEndDate')}
+									label={$tranFunc('product.preOrderEndDate')}
 									allowSelectMonthYears={{
 										showMonths: true,
 										showYears: { min: 2020, max: DAYJS_NOW.year() + 1 }
@@ -772,7 +772,7 @@
 						</div>
 						<!-- STOCK -->
 						<div class="w-1/5">
-							<div class="text-xs">{tClient('product.stock')}</div>
+							<div class="text-xs">{$tranFunc('product.stock')}</div>
 							{#if !quickFillingValues.stocks.length}
 								<SkeletonContainer>
 									<Skeleton class="w-full h-4" rounded={false} />
@@ -797,7 +797,7 @@
 												onblur={() => handleFocusHighlightQuickFilling()}
 												bind:value={stockInput.quantity}
 												variant={isError ? 'error' : 'info'}
-												subText={isError ? tClient('error.negativeNumber') : ''}
+												subText={isError ? $tranFunc('error.negativeNumber') : ''}
 											/>
 										</div>
 									{/each}
@@ -807,12 +807,12 @@
 					</div>
 					<!-- APPLY BUTTON -->
 					<div class="w-1/12">
-						<div class="text-xs">{tClient('common.action')}</div>
+						<div class="text-xs">{$tranFunc('common.action')}</div>
 						<Button
 							class="btn btn-sm grow shrink"
 							size="sm"
 							fullWidth
-							onclick={handleQuickFillingClick}>{tClient('btn.apply')}</Button
+							onclick={handleQuickFillingClick}>{$tranFunc('btn.apply')}</Button
 						>
 					</div>
 				</div>
@@ -829,13 +829,13 @@
 							{#if variantManifests.length === MAX_VARIANT_TYPES}
 								<th>{variantManifests[1].name.value}</th>
 							{/if}
-							<th>{tClient('product.channel')}</th>
-							<th>{tClient('product.price')}</th>
-							<th>{tClient('product.costPrice')}</th>
-							<th>{tClient('product.weight')}</th>
-							<th>{tClient('common.preorder')}</th>
-							<th>{tClient('product.stock')}</th>
-							<th>{tClient('product.sku')}</th>
+							<th>{$tranFunc('product.channel')}</th>
+							<th>{$tranFunc('product.price')}</th>
+							<th>{$tranFunc('product.costPrice')}</th>
+							<th>{$tranFunc('product.weight')}</th>
+							<th>{$tranFunc('common.preorder')}</th>
+							<th>{$tranFunc('product.stock')}</th>
+							<th>{$tranFunc('product.sku')}</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -884,7 +884,7 @@
 													variant={channelListing.price < 0 ? 'error' : 'info'}
 													subText={typeof channelListing.price === 'number' &&
 													channelListing.price < 0
-														? tClient('error.negativeNumber')
+														? $tranFunc('error.negativeNumber')
 														: ''}
 												/>
 											{/each}
@@ -912,7 +912,7 @@
 													variant={channelListing.costPrice < 0 ? 'error' : 'info'}
 													subText={typeof channelListing.costPrice === 'number' &&
 													channelListing.costPrice < 0
-														? tClient('error.negativeNumber')
+														? $tranFunc('error.negativeNumber')
 														: ''}
 												/>
 											{/each}
@@ -929,7 +929,7 @@
 										startIcon={MdiWeightKg}
 										bind:value={variantInputDetail.weight}
 										variant={variantInputDetail.weight >= 0 ? 'info' : 'error'}
-										subText={variantInputDetail.weight >= 0 ? '' : tClient('error.negativeNumber')}
+										subText={variantInputDetail.weight >= 0 ? '' : $tranFunc('error.negativeNumber')}
 									/>
 								</td>
 								<!-- PREORDER -->
@@ -938,7 +938,7 @@
 										<Input
 											type="number"
 											min={0}
-											label={tClient('product.qtyLimit')}
+											label={$tranFunc('product.qtyLimit')}
 											size="xs"
 											class="mb-2"
 											bind:value={variantInputDetail.preorder!.globalThreshold}
@@ -948,12 +948,12 @@
 												: 'info'}
 											subText={typeof variantInputDetail.preorder?.globalThreshold === 'number' &&
 											variantInputDetail.preorder.globalThreshold < 0
-												? tClient('error.negativeNumber')
+												? $tranFunc('error.negativeNumber')
 												: undefined}
 										/>
 										<EaseDatePicker
 											size="xs"
-											label={tClient('product.preOrderEndDate')}
+											label={$tranFunc('product.preOrderEndDate')}
 											allowSelectMonthYears={{
 												showMonths: true,
 												showYears: { min: 2020, max: DAYJS_NOW.year() + 1 }
@@ -980,14 +980,14 @@
 													</span>
 													<Input
 														size="xs"
-														placeholder={tClient('product.stock')}
+														placeholder={$tranFunc('product.stock')}
 														class="w-2/3"
 														bind:value={variantInputDetail.stocks![idx].quantity}
 														type="number"
 														min={0}
 														variant={stock.quantity < 0 ? 'error' : 'info'}
 														subText={typeof stock.quantity === 'number' && stock.quantity < 0
-															? tClient('error.negativeNumber')
+															? $tranFunc('error.negativeNumber')
 															: ''}
 													/>
 												</div>
@@ -1005,7 +1005,7 @@
 										variant={variantInputDetail.sku?.trim() ? 'info' : 'error'}
 										subText={variantInputDetail.sku?.trim()
 											? ''
-											: tClient('helpText.fieldRequired')}
+											: $tranFunc('helpText.fieldRequired')}
 									/>
 								</td>
 							</tr>
@@ -1027,7 +1027,7 @@
 
 	{#if hasGeneralError}
 		<Alert variant="error" size="md" class="mt-3" bordered>
-			{tClient('error.variantError')}
+			{$tranFunc('error.variantError')}
 		</Alert>
 	{/if}
 </div>
