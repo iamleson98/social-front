@@ -163,5 +163,13 @@ export default {
 		chooseDeliveryAddress: '配送先を選択してください',
 		selectDate: 'Select date',
 		fieldRequired: 'This field is required',
-	}
+	},
+	footer: {
+		socialMedia: 'Mạng xã hội',
+		legal: 'Pháp lý',
+		aboutUs: 'Về chúng tôi',
+		language: 'Ngôn ngữ',
+		policy: 'Điều khoản & chính sách',
+		blog: 'Blog',
+	},
 };

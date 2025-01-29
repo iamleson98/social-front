@@ -163,5 +163,13 @@ export default {
 		chooseDeliveryAddress: 'Please choose delivery address',
 		selectDate: 'Select date',
 		fieldRequired: 'This field is required',
-	}
+	},
+	footer: {
+		socialMedia: 'Social Media',
+		legal: 'Legal',
+		aboutUs: 'About us',
+		language: 'Language',
+		policy: 'Privacy Policy & Terms',
+		blog: 'Blog',
+	},
 };

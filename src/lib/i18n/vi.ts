@@ -163,5 +163,13 @@ export default {
 		chooseDeliveryAddress: 'Vui lòng chọn điểm giao hàng',
 		selectDate: 'Chọn ngày',
 		fieldRequired: 'Vui lòng nhập thông tin',
-	}
+	},
+	footer: {
+		socialMedia: 'Mạng xã hội',
+		legal: 'Pháp lý',
+		aboutUs: 'Về chúng tôi',
+		language: 'Ngôn ngữ',
+		policy: 'Điều khoản & chính sách',
+		blog: 'Blog',
+	},
 };
