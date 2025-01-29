@@ -80,12 +80,12 @@
 	};
 
 	const VARIANT_ATTRIBUTE_HINTS = [
-		$tranFunc('product.channelHint'),
-		$tranFunc('product.priceHint'),
-		$tranFunc('product.costPriceHint'),
-		$tranFunc('product.stockHint'),
-		$tranFunc('product.weightHint'),
-		$tranFunc('product.skuHint')
+		'product.channelHint',
+		'product.priceHint',
+		'product.costPriceHint',
+		'product.stockHint',
+		'product.weightHint',
+		'product.skuHint'
 	];
 
 	let { productVariantsInput = $bindable([]) }: Props = $props();
@@ -1034,7 +1034,7 @@
 				<Alert variant="info" size="sm" bordered>
 					<ol class="text-xs">
 						{#each VARIANT_ATTRIBUTE_HINTS as hint, idx (idx)}
-							<li>{idx + 1}. {hint}</li>
+							<li>{idx + 1}. {$tranFunc(hint)}</li>
 						{/each}
 					</ol>
 				</Alert>

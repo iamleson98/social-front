@@ -70,6 +70,7 @@
 		"@easepick/lock-plugin": "^1.2.1",
 		"@easepick/range-plugin": "^1.2.1",
 		"@easepick/time-plugin": "^1.2.1",
+		"@floating-ui/dom": "^1.6.13",
 		"@lexical/dragon": "^0.17.1",
 		"@lexical/history": "^0.17.1",
 		"@lexical/link": "^0.17.1",

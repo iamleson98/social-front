@@ -1,41 +1,38 @@
 <script lang="ts">
 	import { AppRoute } from '$lib/utils';
 	import { onMount, type Component } from 'svelte';
-	import { JapanFlag, KoreaFlag, UsaFlag, VietnamFlag } from '../icons';
-	import { Button } from '../ui';
+	import { JapanFlag, KoreaFlag, UsaFlag, VietnamFlag } from '../icons/SvgOuterIcon';
 	import { LanguageCodeEnum } from '$lib/gql/graphql';
 	import { LANGUAGE_KEY } from '$lib/utils/consts';
 	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import { setTranslation, type LanguageCode } from '$i18n';
+	import { DropDown, MenuItem, type DropdownTriggerInterface } from '../ui/Dropdown';
+	import { Button } from '../ui';
 
-	type LanguageProps = {
-		icon: Component;
-		label: string;
-		code: LanguageCodeEnum;
-	};
+	type LanguageProps = { code: LanguageCodeEnum; name: string; icon: Component };
 
-	const langages: LanguageProps[] = [
-		{ icon: UsaFlag, label: 'English', code: LanguageCodeEnum.En },
-		{ icon: VietnamFlag, label: 'Tiếng Việt', code: LanguageCodeEnum.Vi },
-		{ icon: KoreaFlag, label: '한국어', code: LanguageCodeEnum.Ko },
-		{ icon: JapanFlag, label: '日本語', code: LanguageCodeEnum.Ja }
+	const languageOptions: LanguageProps[] = [
+		{ icon: UsaFlag, name: 'English', code: LanguageCodeEnum.En },
+		{ icon: VietnamFlag, name: 'Tiếng Việt', code: LanguageCodeEnum.Vi },
+		{ icon: KoreaFlag, name: '한국어', code: LanguageCodeEnum.Ko },
+		{ icon: JapanFlag, name: '日本語', code: LanguageCodeEnum.Ja }
 	];
 
-	let activeLanguage = $state(langages[0]);
+	let activeLanguage = $state(languageOptions[0]);
 
 	onMount(async () => {
 		const cookieLanguage = clientSideGetCookieOrDefault(LANGUAGE_KEY, LanguageCodeEnum.En);
-		const language = langages.find((lang) => lang.code === cookieLanguage);
+		const language = languageOptions.find((lang) => lang.code === cookieLanguage);
 		if (language) {
 			activeLanguage = language;
 		}
 	});
 
-	const handleSwitchLanguageCode = async (language: LanguageProps) => {
-		document.cookie = `${LANGUAGE_KEY}=${language.code}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure; SameSite=Lax`;
-		activeLanguage = language;
+	const handleSwitchLanguageCode = async (index: number) => {
+		document.cookie = `${LANGUAGE_KEY}=${languageOptions[index].code}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure; SameSite=Lax`;
+		activeLanguage = languageOptions[index];
 
-		setTranslation(language.code as LanguageCode);
+		setTranslation(languageOptions[index].code as LanguageCode);
 	};
 </script>
 
@@ -89,18 +86,22 @@
 				</div>
 				<div>
 					<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">Language</h2>
-					<Button size="xs" variant="outline">
-						<!-- svelte-ignore svelte_component_deprecated -->
-						<svelte:component this={activeLanguage.icon} />
-						<span>{activeLanguage.label}</span>
-					</Button>
-					{#each langages as language, idx (idx)}
-						<Button onclick={() => handleSwitchLanguageCode(language)} size="xs" variant="light">
-							<!-- svelte-ignore svelte_component_deprecated -->
-							<svelte:component this={language.icon} />
-							<span>{language.label}</span>
+					{#snippet trigger({ onclick, onfocus }: DropdownTriggerInterface)}
+						<Button {onclick} {onfocus} size="xs" variant="outline">
+							<activeLanguage.icon />
+							{activeLanguage.name}
 						</Button>
-					{/each}
+					{/snippet}
+					<DropDown {trigger}>
+						{#each languageOptions as language, idx (idx)}
+							<MenuItem onclick={() => handleSwitchLanguageCode(idx)}>
+								<div class="flex items-center gap-2">
+									<language.icon />
+									<span class="text-nowrap">{language.name}</span>
+								</div>
+							</MenuItem>
+						{/each}
+					</DropDown>
 				</div>
 			</div>
 		</div>

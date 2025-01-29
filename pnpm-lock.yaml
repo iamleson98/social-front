@@ -29,6 +29,9 @@ importers:
       '@easepick/time-plugin':
         specifier: ^1.2.1
         version: 1.2.1
+      '@floating-ui/dom':
+        specifier: ^1.6.13
+        version: 1.6.13
       '@lexical/dragon':
         specifier: ^0.17.1
         version: 0.17.1
@@ -957,6 +960,15 @@ packages:
   '@eslint/js@9.19.0':
     resolution: {integrity: sha512-rbq9/g38qjfqFLOVPvwjIvFFdNziEC5S65jmjPw5r6A//QH+W91akh9irMwjDN8zKUTak6W9EsAv4m/7Wnw0UQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@floating-ui/core@1.6.9':
+    resolution: {integrity: sha512-uMXCuQ3BItDUbAMhIXw7UPXRfAlOAvZzdK9BWpE60MCn+Svt3aLn9jsPTi/WNGlRUu2uI0v5S7JiIUsbsvh3fw==}
+
+  '@floating-ui/dom@1.6.13':
+    resolution: {integrity: sha512-umqzocjDgNRGTuO7Q8CU32dkHkECqI8ZdMZ5Swb6QAM0t5rnlrN3lGo1hdpscRd3WS8T6DKYK4ephgIH9iRh3w==}
+
+  '@floating-ui/utils@0.2.9':
+    resolution: {integrity: sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg==}
 
   '@fontsource/fira-mono@4.5.10':
     resolution: {integrity: sha512-bxUnRP8xptGRo8YXeY073DSpfK74XpSb0ZyRNpHV9WvLnJ7TwPOjZll8hTMin7zLC6iOp59pDZ8EQDj1gzgAQQ==}
@@ -6410,6 +6422,17 @@ snapshots:
   '@eslint/js@8.57.1': {}
 
   '@eslint/js@9.19.0': {}
+
+  '@floating-ui/core@1.6.9':
+    dependencies:
+      '@floating-ui/utils': 0.2.9
+
+  '@floating-ui/dom@1.6.13':
+    dependencies:
+      '@floating-ui/core': 1.6.9
+      '@floating-ui/utils': 0.2.9
+
+  '@floating-ui/utils@0.2.9': {}
 
   '@fontsource/fira-mono@4.5.10': {}
 

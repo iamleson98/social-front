@@ -6,6 +6,8 @@
 	import { Menu } from '$lib/components/ui/Menu';
 	import { MultiSelect, Select } from '$lib/components/ui/select';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
+	import { DropDown, type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
+	import { UserCog } from '$lib/components/icons';
 
 	let option = $state(1);
 
@@ -206,3 +208,9 @@
 />
 
 <EaseDatePicker bind:value={date} allowSelectRange />
+
+{#snippet trigger({ onclick, onfocus }: DropdownTriggerInterface)}
+	<Button {onclick} {onfocus}>Open</Button>
+{/snippet}
+
+<DropDown {trigger} options={[{ children: 'test' }, { children: 'another', startIcon: UserCog }]} />
