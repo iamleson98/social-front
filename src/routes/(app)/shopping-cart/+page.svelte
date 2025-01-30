@@ -1,18 +1,19 @@
 <script lang="ts">
 	import { afterNavigate, goto } from '$app/navigation';
 	import { tranFunc } from '$i18n';
-	import { ArrowNarrowRight, EmptyDrawer, Icon } from '$lib/components/icons';
+	import { ArrowNarrowRight, ChevronLeft, EmptyDrawer, Icon } from '$lib/components/icons';
 	import CartItemLine from '$lib/components/pages/cart/cart-item-line.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Input } from '$lib/components/ui/Input';
 	import { AppRoute } from '$lib/utils';
 	import { formatMoney } from '$lib/utils/utils';
-	import { CommonTimeLine } from '$lib/components/common/timeline';
+	import { CheckoutSteps } from '$lib/components/common/checkout-steps';
 	import CartPageSkeleton from '$lib/components/pages/cart/cart-page-skeleton.svelte';
 	import { onMount } from 'svelte';
 	import { checkoutStore } from '$lib/stores/app';
 	import { HTTPStatusSuccess } from '$lib/utils/consts';
 	import { toastStore } from '$lib/stores/ui/toast';
+	import { EmptyCart } from '$lib/components/icons/SvgOuterIcon';
 
 	afterNavigate(() => {
 		window.scrollTo({
@@ -38,7 +39,7 @@
 		if (checkoutData.status !== HTTPStatusSuccess) {
 			toastStore.send({
 				variant: 'error',
-				message: checkoutData.message,
+				message: checkoutData.message
 			});
 			return;
 		}
@@ -50,7 +51,7 @@
 
 	const moneyColorMap: Record<MoneyColor, string> = {
 		red: 'text-red-600',
-		green: 'text-green-600',
+		green: 'text-green-700',
 		gray: 'text-gray-500 line-through'
 	};
 </script>
@@ -75,14 +76,25 @@
 	{#if loading}
 		<CartPageSkeleton />
 	{:else if !$checkoutStore?.lines.length}
+	<!-- MARK: EMPTY -->
 		<div class="h-full w-full flex items-center justify-center">
 			<div class="text-center">
-				<div class="text-blue-400 text-center">
-					<Icon icon={EmptyDrawer} width="10rem" height="10rem" class="text-center" />
+				<div class="flex justify-center mt-36">
+					<EmptyCart dimension={100} />
 				</div>
 
-				<div>
-					{$tranFunc('common.emptyCart')}
+				<div class="mt-2">
+					{$tranFunc('cart.emptyCart')}
+				</div>
+				<div class="mt-3">
+					<Button
+						size="sm"
+						onclick={() => goto(AppRoute.HOME)}
+						variant="outline"
+						startIcon={ChevronLeft}
+					>
+						{$tranFunc('cart.continueShopping')}
+					</Button>
 				</div>
 			</div>
 		</div>
@@ -91,33 +103,33 @@
 		{@const originalTotalPrice = lines
 			.map((line) => line.undiscountedTotalPrice.amount)
 			.reduce((a, b) => a + b, 0)}
-		<CommonTimeLine numberOfItemToEnable={1} />
+		<CheckoutSteps numberOfItemToEnable={1} />
 
 		<div class="flex flex-row justify-between tablet:flex-wrap tablet:flex-col gap-2">
-			<!-- preview area -->
+			<!-- MARK: PREVIEW AREA -->
 			<div class="w-3/4 tablet:w-full">
 				{#each lines as line, idx (idx)}
 					<CartItemLine {line} checkoutId={id} />
 				{/each}
 			</div>
 
-			<!-- purchase area -->
+			<!-- MARK: SUMMARY -->
 			<div class="w-1/4 tablet:w-full">
 				<div class="p-4 mb-2 bg-white rounded-lg border">
-					<p class="text-lg font-semibold tet-gray-800 mb-4">{$tranFunc('common.cartSummary')}</p>
+					<p class="text-lg font-semibold tet-gray-800 mb-4">{$tranFunc('cart.cartSummary')}</p>
 
 					<div class="mb-4">
 						{@render MoneyField(
 							subtotalPrice.gross.currency,
 							originalTotalPrice,
-							$tranFunc('common.oldTotalPrice'),
+							$tranFunc('cart.oldTotalPrice'),
 							'gray'
 						)}
 
 						{@render MoneyField(
 							subtotalPrice.gross.currency,
 							originalTotalPrice - subtotalPrice.gross.amount,
-							$tranFunc('common.savings'),
+							$tranFunc('cart.savings'),
 							'green',
 							true
 						)}
@@ -127,19 +139,19 @@
 						{@render MoneyField(
 							subtotalPrice.gross.currency,
 							subtotalPrice.gross.amount,
-							$tranFunc('common.tempoTotalPrice'),
+							$tranFunc('cart.tempoTotalPrice'),
 							'red'
 						)}
 					</div>
 
 					<Button variant="filled" fullWidth size="sm" onclick={handleProceedToCheckout}>
-						Proceed to checkout
+						{$tranFunc('cart.proceedCheckout')}
 					</Button>
 
 					<div class="flex items-center justify-center gap-1 mt-2">
 						<span class="text-sm font-normal text-gray-500"> or </span>
 						<a href="/" class="flex items-center gap-1 text-xs font-medium text-gray-700 underline">
-							<span>Continue Shopping</span>
+							<span>{$tranFunc('cart.continueShopping')}</span>
 							<Icon icon={ArrowNarrowRight} />
 						</a>
 					</div>
@@ -153,7 +165,7 @@
 						class="w-full mb-2"
 						label="Do you have a voucher or gift card?"
 					/>
-					<Button variant="filled" size="sm" fullWidth>Apply code</Button>
+					<Button variant="filled" size="sm" fullWidth>{$tranFunc('cart.applyCode')}</Button>
 				</div>
 			</div>
 		</div>

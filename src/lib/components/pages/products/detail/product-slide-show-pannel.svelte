@@ -21,7 +21,7 @@
 
 <div class="w-2/5 tablet:w-full flex flex-col gap-2">
 	<div
-		class="bg-no-repeat relative bg-contain bg-center bg-white justify-center pt-[100%] rounded-md border w-full flex items-center"
+		class="bg-no-repeat relative bg-contain bg-center bg-white justify-center pt-[100%] rounded-lg border w-full flex items-center"
 		style="background-image: url('{displayMedias[$slideShowManager.activeIndex].url}');"
 	></div>
 

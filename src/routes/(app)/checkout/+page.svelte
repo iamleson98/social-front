@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { CheckoutLayout } from '$lib/components/pages/checkout';
 	import { afterNavigate } from '$app/navigation';
-	import { CommonTimeLine } from '$lib/components/common/timeline';
+	import { CheckoutSteps } from '$lib/components/common/checkout-steps';
 	import { onMount } from 'svelte';
 	import { checkoutStore } from '$lib/stores/app';
 	import { AppRoute } from '$lib/utils';
@@ -30,7 +30,7 @@
 	{#if loading || !$checkoutStore}
 		<div>Loading...</div>
 	{:else}
-		<CommonTimeLine numberOfItemToEnable={2} />
+		<CheckoutSteps numberOfItemToEnable={2} />
 		<CheckoutLayout />
 	{/if}
 </div>

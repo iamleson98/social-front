@@ -127,8 +127,8 @@
 	</div>
 
 	<!-- product more details -->
-	<div class="bg-white w-full rounded-sm p-6">
-		<div class="text-gray-700 text-lg font-semibold mb-4">{$tranFunc('product.prdInformation')}</div>
+	<div class="bg-white border border-gray-200 rounded-lg p-6">
+		<!-- <div class="text-gray-700 text-lg font-semibold mb-4">{$tranFunc('product.prdInformation')}</div> -->
 
 		<div class="flex items-center gap-2 mb-4">
 			{#each tabs as tab, idx (idx)}

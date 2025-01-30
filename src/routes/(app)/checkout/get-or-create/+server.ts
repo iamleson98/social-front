@@ -4,10 +4,9 @@ import { CHECKOUT_CREATE_MUTATION, CHECKOUT_PREVIEW_QUERY } from "$lib/stores/ap
 import { CHANNEL_KEY, defaultChannel, HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess } from "$lib/utils/consts";
 import type { CustomQueryCheckoutArgs } from "$lib/utils/types";
 import { json } from "@sveltejs/kit";
-import type { RequestEvent } from "./$types";
 
 
-export const GET = async (event: RequestEvent) => {
+export const GET = async (event) => {
   const channelSlug = event.cookies.get(CHANNEL_KEY) || defaultChannel.slug;
   const checkoutId = event.cookies.get(`checkout-${channelSlug}`);
 

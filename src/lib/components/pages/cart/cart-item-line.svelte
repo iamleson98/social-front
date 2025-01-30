@@ -159,7 +159,7 @@
 
 <div class="bg-white rounded-lg p-4 w-full border mb-2 overflow-hidden">
 	<div class="flex items-center gap-2">
-		<!-- picture area -->
+		<!-- MARK: IMAGE -->
 		<div class="w-1/12">
 			<img
 				src={mediaUrl}
@@ -168,19 +168,19 @@
 			/>
 		</div>
 
-		<!-- name section -->
-		<div class="w-1/2">
+		<!-- MARK: NAME -->
+		<div class="w-8/12">
 			<a
 				href={`${AppRoute.PRODUCTS}/${encodeURIComponent(line.variant.product.slug)}`}
 				class="text-gray-800 text-md hover:underline"
 			>
 				{line.variant.product.name}
 			</a>
-			<div class="flex items-center text-gray-500 text-xs mt-2 gap-2"></div>
+			<!-- <div class="flex items-center text-gray-500 text-xs mt-2 gap-2"></div> -->
 		</div>
 
-		<div class="flex items-center gap-2 w-1/3">
-			<!-- quantity update -->
+		<!-- MARK: QUANTITY -->
+		<div class="flex items-center gap-2 w-4/12">
 			<div class="flex items-center gap-2">
 				<IconButton
 					icon={Minus}

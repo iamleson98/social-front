@@ -9,3 +9,5 @@ export { default as Twitter } from './logo--twitter.svelte';
 export { default as Tiktok } from './logo--tiktok.svelte';
 export { default as Youtube } from './logo--youtube.svelte';
 export { default as Instagram } from './logo--instagram.svelte';
+export { default as EmptyCart } from './emojione--cart.svelte';
+

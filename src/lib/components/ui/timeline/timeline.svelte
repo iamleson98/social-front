@@ -21,7 +21,7 @@
 <div class={`${className} flex tl-${dir} select-none!`}>
 	{#each items as item, idx (idx)}
 		<div
-			class={`text-sm ${item.done ? 'text-green-600!' : 'text-gray-400'}`}
+			class={`text-sm ${item.done ? 'text-green-700!' : 'text-gray-400'}`}
 			class:tl-item-horizontal={dir === 'horizontal'}
 		>
 			<div class="inline-flex items-center gap-1.5">
@@ -29,7 +29,7 @@
 				<span class="font-semibold">{item.title}</span>
 			</div>
 			{#if idx !== items.length - 1}
-				<div class={`rounded-sm ${item.done ? 'bg-green-600!' : 'bg-gray-400'} tl-line-${dir}`}></div>
+				<div class={`rounded-sm ${item.done ? 'bg-green-700!' : 'bg-gray-400'} tl-line-${dir}`}></div>
 			{/if}
 		</div>
 	{/each}

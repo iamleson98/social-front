@@ -1,7 +1,5 @@
-import type { PageLoad } from './$types';
-
 export const ssr = false;
 
-export const load: PageLoad = async (evt) => {
+export const load = async (evt) => {
   return await evt.parent();
 };

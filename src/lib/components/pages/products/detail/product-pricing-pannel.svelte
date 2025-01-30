@@ -18,7 +18,7 @@
 		ProductVariant
 	} from '$lib/gql/graphql';
 	import { userStore } from '$lib/stores/auth';
-	import { CHANNEL_KEY, defaultChannel, MAX_RATING } from '$lib/utils/consts';
+	import { CHANNEL_KEY, defaultChannel, HTTPStatusSuccess, MAX_RATING } from '$lib/utils/consts';
 	import { formatMoney, preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { fade } from 'svelte/transition';
 	import { Rating } from '$lib/components/ui/rating';
@@ -34,6 +34,8 @@
 	import { Modal } from '$lib/components/ui/Modal';
 	import { MegaMenu } from '$lib/components/ui/MegaMenu';
 	import { VIETNAM_COUNTRY_UNITS } from '$lib/utils/countries';
+	import { AppRoute } from '$lib/utils';
+	import { operationStore, type OperationResultStore } from '$lib/stores/api/operation';
 
 	type Props = {
 		productInformation: Omit<Product, 'variants'>;
@@ -45,7 +47,7 @@
 	/** user selected variant quantity */
 	let quantitySelected = $state(1);
 	let selectedVariant = $state<ProductVariant>();
-	let isAddingItemToCart = $state(false);
+	// let isAddingItemToCart = $state(false);
 	let showAlertSelectVariant = $state(false);
 	let openDeliveryModal = $state(false);
 
@@ -63,6 +65,15 @@
 		);
 	});
 
+	let userShippingAddress = $derived.by(() => {
+		if (!$userStore || !$userStore?.addresses?.length) return $tranFunc('product.chooseAddress');
+
+		const defaulShippingAddress =
+			$userStore.addresses.find((addr) => addr.isDefaultShippingAddress) || $userStore.addresses[0];
+
+		return `${defaulShippingAddress.streetAddress1 || defaulShippingAddress.streetAddress2}, ${defaulShippingAddress.cityArea}, ${defaulShippingAddress.city}`;
+	});
+
 	const toggleSelectVariant = (variant: ProductVariant) => {
 		if (!selectedVariant) {
 			selectedVariant = variant;
@@ -71,67 +82,77 @@
 		}
 	};
 
-	const handleAddToCart = async () => {
+	let checkoutAddLineStore =
+		$state<
+			OperationResultStore<Pick<Mutation, 'checkoutLinesAdd'>, MutationCheckoutLinesAddArgs>
+		>();
+
+	$effect(() => {
+		if (!checkoutAddLineStore) return;
+
+		const unsub = checkoutAddLineStore.subscribe((result) => {
+			if (preHandleErrorOnGraphqlResult(result)) return;
+
+			if (result.data?.checkoutLinesAdd?.errors?.length) {
+				toastStore.send({
+					message: result.data.checkoutLinesAdd.errors[0].message as string,
+					variant: 'error'
+				});
+				return;
+			}
+
+			checkoutStore.set(result.data?.checkoutLinesAdd?.checkout as Checkout);
+		});
+
+		return () => unsub();
+	});
+
+	const handleAddVariantToCart = async () => {
+		// user must select a variant before he can add it to the cart
 		if (!selectedVariant) {
 			showAlertSelectVariant = true;
 			return;
 		}
 
 		showAlertSelectVariant = false;
-		isAddingItemToCart = true;
-		// we check if a checkout is already created.
-		// If +layout.svelte failed to initialize checkout store, we create a new one.
-		// Then we add new lines to the checkout.
-		let checkouIdCookie = getCookieByKey(
-			`checkout-${clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug)}`
-		);
 
-		const addLineResult = await graphqlClient
-			.mutation<Pick<Mutation, 'checkoutLinesAdd'>, MutationCheckoutLinesAddArgs>(
-				CHECKOUT_ADD_LINE_MUTATION,
-				{
-					id: checkouIdCookie,
-					lines: [{ variantId: selectedVariant.id, quantity: quantitySelected }]
-				}
-			)
-			.toPromise();
-		isAddingItemToCart = false;
+		if (!$checkoutStore) {
+			const fetchResult = await fetch(AppRoute.CHECKOUT_GET_OR_CREATE);
+			const fetchResultParsed = await fetchResult.json();
 
-		if (preHandleErrorOnGraphqlResult(addLineResult)) return;
-		if (addLineResult.data?.checkoutLinesAdd?.errors.length) {
-			toastStore.send({
-				variant: 'error',
-				message: addLineResult.data.checkoutLinesAdd.errors[0].message as string
-			});
-			return;
+			if (fetchResultParsed.status !== HTTPStatusSuccess) {
+				toastStore.send({
+					variant: 'error',
+					message: fetchResultParsed.message
+				});
+			}
+
+			checkoutStore.set(fetchResultParsed.checkout);
 		}
 
-		checkoutStore.set(addLineResult.data?.checkoutLinesAdd?.checkout as Checkout);
+		checkoutAddLineStore = operationStore({
+			kind: 'mutation',
+			query: CHECKOUT_ADD_LINE_MUTATION,
+			variables: {
+				id: $checkoutStore?.id,
+				lines: [
+					{
+						variantId: selectedVariant.id,
+						quantity: quantitySelected
+					}
+				]
+			}
+		});
 	};
-
-	let userShippingAddress = $derived.by(() => {
-		if (!$userStore || !$userStore.addresses.length) return $tranFunc('product.chooseAddress');
-
-		const defaulShippingAddress =
-			$userStore.addresses.find((addr) => addr.isDefaultShippingAddress) || $userStore.addresses[0];
-
-		return `${defaulShippingAddress.streetAddress1 || defaulShippingAddress.streetAddress2}, ${defaulShippingAddress.cityArea}, ${defaulShippingAddress.city}`;
-	});
-
-	const handleOpenDeliveryModal = () => (openDeliveryModal = true);
 </script>
 
 {#snippet slotText()}
 	<p slot="text" class="text-sm font-medium underline ml-1 text-gray-700">
-		{#if typeof productInformation.rating === 'number'}
-			{productInformation.rating} out of {MAX_RATING}
-		{:else}
-			{MAX_RATING} out of {MAX_RATING}
-		{/if}
+		{typeof productInformation.rating === 'number' ? productInformation.rating : MAX_RATING} / {MAX_RATING}
 	</p>
 {/snippet}
 
-<div class="bg-white w-3/5 rounded-md border tablet:w-full p-4">
+<div class="bg-white w-3/5 rounded-lg border tablet:w-full p-4">
 	<h1 class="text-gray-700 text-xl font-semibold mb-1">{productInformation.name}</h1>
 	<div class="flex items-center text-red-500 gap-2 mb-4">
 		<Rating
@@ -180,8 +201,8 @@
 				rounded
 				size="xs"
 				variant="light"
-				disabled={isAddingItemToCart}
-				onclick={handleOpenDeliveryModal}
+				disabled={$checkoutAddLineStore?.fetching}
+				onclick={() => (openDeliveryModal = true)}
 			/>
 		</div>
 	</div>
@@ -198,7 +219,7 @@
 						variant="outline"
 						onclick={() => toggleSelectVariant(variant)}
 						tabindex={0}
-						disabled={!variant.quantityAvailable || isAddingItemToCart}
+						disabled={!variant.quantityAvailable || $checkoutAddLineStore?.fetching}
 						class={`${isVariantActive ? 'bg-blue-50!' : ''} relative`}
 					>
 						{variant.name}
@@ -230,7 +251,7 @@
 					variant="light"
 					size="sm"
 					onclick={() => quantitySelected--}
-					disabled={quantitySelected < 2 || isAddingItemToCart}
+					disabled={quantitySelected < 2 || $checkoutAddLineStore?.fetching}
 				/>
 				<Input
 					size="sm"
@@ -239,7 +260,7 @@
 					max={selectedVariant?.quantityAvailable || selectedVariant?.quantityLimitPerCustomer}
 					class="text-center w-24!"
 					value={quantitySelected < 1 ? 1 : quantitySelected}
-					disabled={isAddingItemToCart}
+					disabled={$checkoutAddLineStore?.fetching}
 				/>
 				<IconButton
 					icon={Plus}
@@ -249,7 +270,8 @@
 					onclick={() => quantitySelected++}
 					disabled={quantitySelected >=
 						((selectedVariant?.quantityAvailable ||
-							selectedVariant?.quantityLimitPerCustomer) as number) || isAddingItemToCart}
+							selectedVariant?.quantityLimitPerCustomer) as number) ||
+						$checkoutAddLineStore?.fetching}
 				/>
 			</div>
 			<!-- quantity available -->
@@ -265,9 +287,6 @@
 	<div class="flex flex-row items-center mb-6 text-gray-600">
 		<span class="w-1/6 text-xs">{$tranFunc('product.prdPolicy')}</span>
 		<div class="w-5/6 flex items-center flex-wrap flex-row">
-			<!-- <div class="flex items-center gap-1">
-				Return product
-			</div> -->
 			<div class="w-2/3">
 				<Alert variant="info" size="xs">{$tranFunc('product.prdPolicyDetail')}</Alert>
 			</div>
@@ -282,10 +301,9 @@
 				variant="filled"
 				type="submit"
 				startIcon={ShoppingBagPlus}
-				onclick={handleAddToCart}
+				onclick={handleAddVariantToCart}
 				size="lg"
-				disabled={isAddingItemToCart}
-				loading={isAddingItemToCart}
+				disabled={$checkoutAddLineStore?.fetching}
 			>
 				<span>{$tranFunc('product.addToCart')}</span>
 			</Button>
