@@ -9,8 +9,14 @@
 	import { AppRoute } from '$lib/utils';
 	import { operationStore, type OperationResultStore } from '$lib/stores/api/operation';
 	import { Alert } from '$lib/components/ui/Alert';
+	import { PUBLIC_LOCAL_URL } from '$env/static/public';
+	import { string } from 'zod';
 
 	let email = $state('');
+	let emailError = $state<string>();
+
+	const emailHint = $tranFunc('error.invalidEmail');
+	const emailSchema = string().email({ message: emailHint }).nonempty({ message: emailHint });
 
 	let resetPasswordStore =
 		$state.raw<
@@ -18,30 +24,41 @@
 		>();
 
 	const handleRequestResetPassword = async () => {
+		emailError = undefined;
+		const parseResult = emailSchema.safeParse(email);
+
+		if (!parseResult.success) {
+			emailError = parseResult.error.formErrors.formErrors[0];
+			return;
+		}
+
 		resetPasswordStore = operationStore({
 			kind: 'mutation',
 			query: USER_REQUEST_PASSWORD_RESET_MUTATION_STORE,
 			variables: {
 				email,
-				redirectUrl: import.meta.env.VITE_LOCAL_URL + AppRoute.AUTH_CHANGE_PASSWORD,
+				redirectUrl: PUBLIC_LOCAL_URL + AppRoute.AUTH_CHANGE_PASSWORD,
 				channel: defaultChannel.slug
 			}
 		});
 	};
 </script>
 
-<div class="max-w-md min-w-80 rounded-md p-2">
+<div class="w-md">
 	<h1 class="p-2 mb-4">{$tranFunc('resetPassword.title')}</h1>
-	{#if $resetPasswordStore?.error}
-		<Alert variant="error" class="mb-3" bordered>
-			{$resetPasswordStore.error.message}
-		</Alert>
-	{:else if $resetPasswordStore?.data?.requestPasswordReset?.errors.length}
-		<Alert variant="error" class="mb-3" bordered>
-			{$resetPasswordStore.data.requestPasswordReset.errors[0].message}
-		</Alert>
-	{:else}
-		<Alert variant="success" class="mb-3" bordered>{$tranFunc('resetPassword.emailSent')}</Alert>
+	{#if $resetPasswordStore}
+		{@const { error, data, fetching } = $resetPasswordStore}
+		{#if error}
+			<Alert variant="error" class="mb-3" bordered>
+				{error.message}
+			</Alert>
+		{:else if data?.requestPasswordReset?.errors.length}
+			<Alert variant="error" class="mb-3" bordered>
+				{data.requestPasswordReset.errors[0].message}
+			</Alert>
+		{:else if !fetching && !data?.requestPasswordReset?.errors.length}
+			<Alert variant="success" class="mb-3" bordered>{$tranFunc('resetPassword.emailSent')}</Alert>
+		{/if}
 	{/if}
 	<Input
 		type="email"
@@ -51,6 +68,8 @@
 		disabled={$resetPasswordStore?.fetching}
 		startIcon={Email}
 		class="mb-2"
+		variant={emailError ? 'error' : 'info'}
+		subText={emailError}
 	/>
 	<Button
 		variant="filled"

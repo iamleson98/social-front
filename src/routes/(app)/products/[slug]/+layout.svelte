@@ -19,7 +19,6 @@
 	import { onMount, type Snippet } from 'svelte';
 	import Button from '$lib/components/ui/Button/Button.svelte';
 	import { slideShowManager } from '$lib/stores/ui/slideshow';
-	import type { TabItem } from '$lib/components/ui/Tab';
 
 	type Props = {
 		data: LayoutServerData;
@@ -33,32 +32,28 @@
 		disableScrollHandling();
 	});
 
-	const tabs: TabItem[] = [
+	let tabs = $derived([
 		{
 			title: $tranFunc('product.tabDescription'),
 			href: `${AppRoute.PRODUCTS}/${page.params.slug}`,
 			icon: FileText,
-			active: false
 		},
 		{
 			title: $tranFunc('product.tabAttributes'),
 			href: `${AppRoute.PRODUCTS}/${page.params.slug}/attributes`,
 			icon: SettingCheck,
-			active: false
 		},
 		{
 			title: $tranFunc('product.tabFeedBack'),
 			href: `${AppRoute.PRODUCTS}/${page.params.slug}/customer-feedbacks`,
 			icon: HeadSet,
-			active: false
 		},
 		{
 			title: $tranFunc('product.tabPackaging'),
 			href: `${AppRoute.PRODUCTS}/${page.params.slug}/packaging`,
 			icon: PackageExport,
-			active: false
 		}
-	];
+	]);
 
 	const {
 		product: { media, category, channel, variants, ...productInformation },

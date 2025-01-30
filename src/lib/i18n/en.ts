@@ -20,7 +20,7 @@ export default {
 		emailSent: 'An email has been sent to you. Please check your inbox.',
 	},
 	changePassword: {
-		title: 'Change Password',
+		title: 'Set new password',
 		btnText: 'Change password',
 	},
 	common: {
@@ -150,6 +150,8 @@ export default {
 		checkout: 'Checkout',
 		payment: 'Payment',
 		orderConfirm: 'Order Confirmation',
+		home: 'Home',
+		trending: 'Trending',
 	},
 	btn: {
 		apply: 'Apply',

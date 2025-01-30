@@ -22,16 +22,16 @@ const findTemplatePlaceholders = (template: string): string[] => {
 const parseTranslationObject = (obj: Record<string, unknown>, trans: Translation, prefix: string = ""): Translation => {
   for (const key in obj) {
     const value = obj[key];
-    const prf = prefix ? `${prefix}.${key}` : key;
+    const newPrefix = prefix ? `${prefix}.${key}` : key;
 
     if (typeof value === 'string') {
       const matches = findTemplatePlaceholders(value);
-      trans[prf] = {
+      trans[newPrefix] = {
         template: value,
         args: matches.length ? new Set(matches) : null,
       }
     } else if (typeof value === 'object') {
-      parseTranslationObject(value as Record<string, unknown>, trans, prf);
+      parseTranslationObject(value as Record<string, unknown>, trans, newPrefix);
     }
   }
 

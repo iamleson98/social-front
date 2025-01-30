@@ -18,7 +18,7 @@
 		ProductVariant
 	} from '$lib/gql/graphql';
 	import { userStore } from '$lib/stores/auth';
-	import { CHANNEL_KEY, defaultChannel, HTTPStatusSuccess, MAX_RATING } from '$lib/utils/consts';
+	import { defaultChannel, HTTPStatusSuccess, MAX_RATING } from '$lib/utils/consts';
 	import { formatMoney, preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { fade } from 'svelte/transition';
 	import { Rating } from '$lib/components/ui/rating';
@@ -26,9 +26,7 @@
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Badge } from '$lib/components/ui/badge';
-	import { graphqlClient } from '$lib/client';
 	import { CHECKOUT_ADD_LINE_MUTATION } from '$lib/stores/api/checkout';
-	import { clientSideGetCookieOrDefault, getCookieByKey } from '$lib/utils/cookies';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
@@ -47,7 +45,6 @@
 	/** user selected variant quantity */
 	let quantitySelected = $state(1);
 	let selectedVariant = $state<ProductVariant>();
-	// let isAddingItemToCart = $state(false);
 	let showAlertSelectVariant = $state(false);
 	let openDeliveryModal = $state(false);
 

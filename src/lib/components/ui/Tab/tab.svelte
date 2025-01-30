@@ -4,7 +4,7 @@
 		icon?: IconType;
 		/** if provided, each tab will be a link */
 		href?: string;
-		active: boolean;
+		active?: boolean;
 	};
 </script>
 

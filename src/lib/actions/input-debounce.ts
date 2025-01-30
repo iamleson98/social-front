@@ -40,19 +40,19 @@ export function debounceInput(node: HTMLInputElement | HTMLTextAreaElement | HTM
 
 type WindowEventType = 'resize' | 'scroll';
 
-type CommonDebounceOpts = {
+type commonEventDebounceOpts = {
   events: WindowEventType[];
-  time: number;
-  onDone: () => void
+  time?: number;
+  onFire: () => void
 };
 
-export const commonDebounce = (node: HTMLElement, opts: CommonDebounceOpts): ActionReturn => {
+export const commonEventDebounce = (node: HTMLElement, { events, time = DEBOUNCE_INPUT_TIME, onFire }: commonEventDebounceOpts): ActionReturn => {
   const { unsubscribe } = pipe(
     merge(
-      opts.events.map(event => fromDomEvent(node, event))
+      events.map(event => fromDomEvent(node, event))
     ),
-    debounce(() => opts.time || DEBOUNCE_INPUT_TIME),
-    subscribe(opts.onDone)
+    debounce(() => time || DEBOUNCE_INPUT_TIME),
+    subscribe(onFire)
   )
   return {
     destroy: unsubscribe,

@@ -7,6 +7,8 @@ export const AppRoute = {
 	AUTH_SIGNOUT: '/auth/signout',
 	APP_ROUTE_PREFIX: '/(app)',
 
+	ME: '/me',
+
 	HOME: '/',
 	TRENDING: '/trending',
 	SETTINGS: '/settings',

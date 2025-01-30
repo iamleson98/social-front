@@ -8,6 +8,7 @@
 	import type { ActionData } from './$types';
 	import { page } from '$app/state';
 	import { PasswordInput } from '$lib/components/ui/Input';
+	import { tranFunc } from '$i18n';
 
 	interface Props {
 		form: ActionData;
@@ -33,8 +34,8 @@
 	);
 </script>
 
-<div class="max-w-md min-w-80 rounded-md p-2">
-	<h1 class="p-2 mb-4">Set new password</h1>
+<div class="w-md rounded-md p-2">
+	<h1 class="p-2 mb-4">{$tranFunc('changePassword.title')}</h1>
 
 	{#if form}
 		{#if form.error}
@@ -68,7 +69,7 @@
 			showAction={false}
 		/>
 		<Button variant="filled" size="sm" fullWidth type="submit" disabled={buttonDisabled} {loading}>
-			Change Password
+			{$tranFunc('changePassword.btnText')}
 		</Button>
 	</form>
 </div>

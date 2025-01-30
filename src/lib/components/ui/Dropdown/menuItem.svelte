@@ -2,17 +2,25 @@
 	import { Icon } from '$lib/components/icons';
 	import type { MenuItemProps } from './types';
 
-	let { children, startIcon, disabled, onclick }: MenuItemProps = $props();
+	let { children, startIcon, disabled, onclick, ...rest }: MenuItemProps = $props();
+
+	if (onclick && rest.href) throw new Error('Cannot use both onclick and href');
+
+	const handleItemClick = () => {
+		!disabled && onclick?.();
+	};
 </script>
 
-<div
-	class="flex items-center gap-2 py-1 px-2 text-sm {disabled
+<svelte:element
+	this={rest.href ? 'a' : 'div'}
+	{...rest}
+	class="flex items-center gap-2 py-1 px-2 text-sm select-none! {disabled
 		? 'cursor-not-allowed'
 		: 'cursor-pointer hover:bg-gray-100'}"
-	{onclick}
+	onclick={handleItemClick}
 	tabindex="0"
 	role="button"
-	onkeyup={(e) => e.key === 'Enter' && onclick?.()}
+	onkeyup={(e: KeyboardEvent) => e.key === 'Enter' && handleItemClick()}
 >
 	{#if startIcon}
 		<Icon icon={startIcon} />
@@ -26,4 +34,4 @@
 			{/if}
 		{/if}
 	</span>
-</div>
+</svelte:element>

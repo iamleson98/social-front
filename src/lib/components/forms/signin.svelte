@@ -2,12 +2,13 @@
 	import { Button } from '$lib/components/ui';
 	import { userStore } from '$lib/stores/auth';
 	import { AppRoute } from '$lib/utils';
-	import { Email, Facebook, Google, Icon, Twitter } from '$lib/components/icons';
+	import { Email, Icon } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { tranFunc } from '$lib/i18n';
 	import { Checkbox, Input, PasswordInput } from '$lib/components/ui/Input';
 	import { HTTPStatusSuccess } from '$lib/utils/consts';
 	import { toastStore } from '$lib/stores/ui/toast';
+	import { Facebook, Twitter, Google } from '$lib/components/icons/SvgOuterIcon';
 
 	type Props = {
 		onSuccess: () => void;
@@ -52,6 +53,12 @@
 
 		onSuccess();
 	};
+
+	let socialIons = [
+		{ text: 'Facebook', icon: Facebook },
+		{ text: 'Twitter', icon: Twitter },
+		{ text: 'Google', icon: Google }
+	];
 </script>
 
 <div>
@@ -85,7 +92,12 @@
 			{$tranFunc('signin.forgotPassword')}
 		</a>
 
-		<Checkbox label={$tranFunc('signin.rememberMe')} size="sm" class="mb-3" bind:checked={rememberCheck} />
+		<Checkbox
+			label={$tranFunc('signin.rememberMe')}
+			size="sm"
+			class="mb-3"
+			bind:checked={rememberCheck}
+		/>
 
 		<Button variant="filled" onclick={handleLogin} size="sm" fullWidth {loading} {disabled}>
 			{$tranFunc('signin.signinButton')}
@@ -101,15 +113,12 @@
 
 	{#if !hideSocial}
 		<div class="flex flex-row justify-between items-center">
-			<Button>
-				<Icon icon={Facebook} />
-			</Button>
-			<Button>
-				<Icon icon={Google} />
-			</Button>
-			<Button>
-				<Icon icon={Twitter} />
-			</Button>
+			{#each socialIons as item, idx (idx)}
+				<Button variant="outline" size="sm">
+					<item.icon />
+					{item.text}
+				</Button>
+			{/each}
 		</div>
 	{/if}
 </div>

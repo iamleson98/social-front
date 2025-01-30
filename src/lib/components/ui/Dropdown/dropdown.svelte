@@ -4,7 +4,7 @@
 	import { computePosition, offset, shift, flip, type Placement } from '@floating-ui/dom';
 	import { clickOutside } from '$lib/actions/click-outside';
 	import { fly } from 'svelte/transition';
-	import { commonDebounce } from '$lib/actions/input-debounce';
+	import { commonEventDebounce } from '$lib/actions/input-debounce';
 	import MenuItem from './menuItem.svelte';
 
 	type Props = {
@@ -29,7 +29,7 @@
 
 		const { x, y } = await computePosition(triggerRef, menuElemRef, {
 			placement,
-			middleware: [offset(4), flip(), shift()]
+			middleware: [offset(6), flip(), shift()]
 		});
 
 		Object.assign(menuElemRef.style, {
@@ -38,14 +38,14 @@
 		});
 	};
 
-	const handleTriggerClick = () => {
+	const handleTriggerClick = async () => {
+		await computeStyle();
 		openMenu = true;
-		computeStyle();
 	};
 </script>
 
 <svelte:window
-	use:commonDebounce={{ events: ['scroll', 'resize'], time: 300, onDone: computeStyle }}
+	use:commonEventDebounce={{ events: ['scroll', 'resize'], onFire: computeStyle }}
 />
 
 <div bind:this={triggerRef} class="relative inline-block">

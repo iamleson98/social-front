@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { afterNavigate, goto } from '$app/navigation';
 	import { tranFunc } from '$i18n';
-	import { ArrowNarrowRight, ChevronLeft, EmptyDrawer, Icon } from '$lib/components/icons';
+	import { ArrowNarrowRight, ChevronLeft, Icon } from '$lib/components/icons';
 	import CartItemLine from '$lib/components/pages/cart/cart-item-line.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Input } from '$lib/components/ui/Input';
@@ -24,14 +24,7 @@
 
 	let loading = $state(true);
 
-	const handleProceedToCheckout = async () => await goto(AppRoute.CHECKOUT);
-
 	onMount(async () => {
-		if ($checkoutStore) {
-			loading = false;
-			return;
-		}
-
 		const fetchResult = await fetch(AppRoute.CHECKOUT_GET_OR_CREATE);
 		const checkoutData = await fetchResult.json();
 		loading = false;
@@ -76,7 +69,7 @@
 	{#if loading}
 		<CartPageSkeleton />
 	{:else if !$checkoutStore?.lines.length}
-	<!-- MARK: EMPTY -->
+		<!-- MARK: EMPTY -->
 		<div class="h-full w-full flex items-center justify-center">
 			<div class="text-center">
 				<div class="flex justify-center mt-36">
@@ -144,7 +137,7 @@
 						)}
 					</div>
 
-					<Button variant="filled" fullWidth size="sm" onclick={handleProceedToCheckout}>
+					<Button variant="filled" fullWidth size="sm" onclick={() => goto(`${AppRoute.CHECKOUT}/${$checkoutStore.id}`)}>
 						{$tranFunc('cart.proceedCheckout')}
 					</Button>
 

@@ -214,6 +214,10 @@ query CheckoutDetails(
           amount
         }
       }
+      undiscountedTotalPrice {
+        currency
+        amount
+      }
       unitPrice {
         gross {
           currency

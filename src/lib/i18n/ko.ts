@@ -150,6 +150,8 @@ export default {
 		checkout: '결제',
 		payment: '지불',
 		orderConfirm: '주문 확인',
+		home: '홈',
+		trending: 'Trending',
 	},
 	btn: {
 		apply: '조회',

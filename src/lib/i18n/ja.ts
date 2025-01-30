@@ -150,6 +150,8 @@ export default {
 		checkout: 'チェックアウト',
 		payment: '支払い',
 		orderConfirm: '注文確認',
+		home: 'Home',
+		trending: 'Trending',
 	},
 	btn: {
 		apply: '適用',

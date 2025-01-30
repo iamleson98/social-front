@@ -10,6 +10,6 @@
 	};
 </script>
 
-<div class="max-w-md min-w-80 rounded-md p-2">
+<div class="w-md rounded-md p-2">
 	<Signin {onSuccess} />
 </div>

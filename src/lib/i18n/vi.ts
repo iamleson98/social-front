@@ -150,6 +150,8 @@ export default {
 		checkout: 'Kiểm tra',
 		payment: 'Thanh toán',
 		orderConfirm: 'Xác nhận đơn hàng',
+		home: 'Trang chủ',
+		trending: 'Thịnh hành',
 	},
 	btn: {
 		apply: 'Áp dụng',

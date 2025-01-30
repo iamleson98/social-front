@@ -66,7 +66,7 @@
 	);
 </script>
 
-<div class="max-w-md min-w-80 rounded-md p-2">
+<div class="w-md rounded-md p-2">
 	<h1 class="p-2 mb-4">{$tranFunc('signup.title')}</h1>
 
 	{#if $signupQueryStore?.error}

@@ -5,6 +5,7 @@ import { performServerSideGraphqlRequest } from "$lib/client";
 import type { Mutation } from "$lib/gql/graphql";
 import { tranFunc } from "$lib/i18n";
 import { get } from "svelte/store";
+import { PUBLIC_LOCAL_URL } from "$env/static/public";
 
 
 export const load = async (event) => {
@@ -33,7 +34,7 @@ export const actions = {
     const confirmPassword = formData.get('confirmPassword')?.toString();
     const firstName = formData.get('firstName')?.toString();
     const lastName = formData.get('lastName')?.toString();
-    const redirectUrl = import.meta.env.VITE_LOCAL_URL;
+    const redirectUrl = PUBLIC_LOCAL_URL;
     const channel = event.cookies.get(CHANNEL_KEY) || defaultChannel.slug;
 
     if (!email || !email.toString().trim()) {

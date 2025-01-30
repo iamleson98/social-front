@@ -25,6 +25,8 @@
 	import { ACCESS_TOKEN_KEY, HTTPStatusSuccess } from '$lib/utils/consts';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { invalidateAll } from '$app/navigation';
+	import { DropDown, type DropdownTriggerInterface } from '../ui/Dropdown';
+	import { noop } from 'lodash-es';
 
 	const { userDisplayName } = $derived.by(() => {
 		let userDisplayName;
@@ -104,12 +106,12 @@
 		<div class="flex gap-1">
 			<a href={AppRoute.HOME}>
 				<Button variant="light" size="sm" startIcon={MingcuteHome}>
-					<span>Home</span>
+					<span>{$tranFunc('pages.home')}</span>
 				</Button>
 			</a>
 			<a href={AppRoute.TRENDING}>
 				<Button variant="light" size="sm" startIcon={IonFlame}>
-					<span>Trending</span>
+					<span>{$tranFunc('pages.trending')}</span>
 				</Button>
 			</a>
 		</div>
@@ -128,8 +130,8 @@
 				</IconButton>
 			</a>
 			{#if $userStore}
-				<div class="dropdown dropdown-end">
-					<Button variant="light" size="sm" class="space-x-2 uppercase">
+				{#snippet trigger({ onclick, onfocus }: DropdownTriggerInterface)}
+					<Button variant="light" size="sm" class="space-x-2 uppercase" {onclick} {onfocus}>
 						{#if $userStore.avatar}
 							<span
 								class="rounded-full w-5 h-5 bg-blue-300 flex items-center justify-center font-bold bg-cover bg-center bg-no-repeat"
@@ -139,37 +141,16 @@
 						{/if}
 						<span>{userDisplayName}</span>
 					</Button>
+				{/snippet}
 
-					<ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-48 p-1 mt-1 shadow-sm">
-						<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-						<!-- svelte-ignore a11y_no_noninteractive_element_to_interactive_role -->
-						<li
-							onclick={console.log}
-							onkeyup={(e) => e.key === 'Enter' && console.log('')}
-							role="button"
-						>
-							<!-- svelte-ignore a11y_missing_attribute -->
-							<a>
-								<Icon icon={UserCog} />
-								<span>{$tranFunc('common.settings')}</span>
-							</a>
-						</li>
-						<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-						<!-- svelte-ignore a11y_no_noninteractive_element_to_interactive_role -->
-						<li
-							onclick={handleLogout}
-							onkeyup={(e) => e.key === 'Enter' && handleLogout()}
-							role="button"
-							tabindex="0"
-						>
-							<!-- svelte-ignore a11y_missing_attribute -->
-							<a>
-								<Icon icon={Logout} />
-								<span>{$tranFunc('common.logout')}</span>
-							</a>
-						</li>
-					</ul>
-				</div>
+				<DropDown
+					{trigger}
+					placement="bottom-end"
+					options={[
+						{ children: $tranFunc('common.settings'), href: AppRoute.ME, startIcon: UserCog },
+						{ children: $tranFunc('common.logout'), onclick: handleLogout, startIcon: Logout }
+					]}
+				/>
 			{:else if !$userStore && !page.url.pathname.startsWith('/auth')}
 				<a href={AppRoute.AUTH_SIGNIN}>
 					<Button variant="filled" size="sm">{$tranFunc('signin.title')}</Button>

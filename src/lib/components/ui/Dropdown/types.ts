@@ -9,6 +9,8 @@ export type DropdownTriggerInterface = {
 
 export type MenuItemProps = {
   children?: Snippet | string;
+  /** if provided, display item as a link  */
+  href?: string;
   startIcon?: IconType;
   disabled?: boolean;
   onclick?: () => void;
