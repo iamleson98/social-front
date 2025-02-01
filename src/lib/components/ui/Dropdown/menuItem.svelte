@@ -6,8 +6,13 @@
 
 	if (onclick && rest.href) throw new Error('Cannot use both onclick and href');
 
-	const handleItemClick = () => {
-		!disabled && onclick?.();
+	const handleClick = (evt: MouseEvent) => {
+		if (disabled) {
+			if (rest.href) evt.preventDefault();
+			return;
+		}
+
+		onclick?.();
 	};
 </script>
 
@@ -15,12 +20,11 @@
 	this={rest.href ? 'a' : 'div'}
 	{...rest}
 	class="flex items-center gap-2 py-1 px-2 text-sm select-none! {disabled
-		? 'cursor-not-allowed'
+		? 'cursor-not-allowed! text-gray-400'
 		: 'cursor-pointer hover:bg-gray-100'}"
-	onclick={handleItemClick}
+	onclick={handleClick}
 	tabindex="0"
 	role="button"
-	onkeyup={(e: KeyboardEvent) => e.key === 'Enter' && handleItemClick()}
 >
 	{#if startIcon}
 		<Icon icon={startIcon} />

@@ -26,7 +26,6 @@
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { invalidateAll } from '$app/navigation';
 	import { DropDown, type DropdownTriggerInterface } from '../ui/Dropdown';
-	import { noop } from 'lodash-es';
 
 	const { userDisplayName } = $derived.by(() => {
 		let userDisplayName;
@@ -38,7 +37,7 @@
 		return { userDisplayName };
 	});
 
-	// load current user when oage load
+	// load current user when page load
 	onMount(async () => {
 		const token = getCookieByKey(ACCESS_TOKEN_KEY);
 		if (!token) return;
@@ -147,7 +146,12 @@
 					{trigger}
 					placement="bottom-end"
 					options={[
-						{ children: $tranFunc('common.settings'), href: AppRoute.ME, startIcon: UserCog },
+						{
+							children: $tranFunc('common.settings'),
+							href: AppRoute.ME,
+							startIcon: UserCog,
+							disabled: true
+						},
 						{ children: $tranFunc('common.logout'), onclick: handleLogout, startIcon: Logout }
 					]}
 				/>

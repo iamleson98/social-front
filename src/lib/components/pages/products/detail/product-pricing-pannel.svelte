@@ -48,6 +48,12 @@
 	let showAlertSelectVariant = $state(false);
 	let openDeliveryModal = $state(false);
 
+	let quantitySelectedErr = $derived.by(() => {
+		if (quantitySelected < 1 || quantitySelected % 1 !== 0)
+			return $tranFunc('error.positiveInteger');
+		return undefined;
+	});
+
 	let displayPrice = $derived.by(() => {
 		if (!selectedVariant)
 			return formatMoney(
@@ -241,7 +247,7 @@
 	<div class="flex flex-row items-center mb-4 text-gray-600">
 		<span class="w-1/6 text-xs">{$tranFunc('product.quantity')}</span>
 		<div class="w-5/6 flex items-center flex-wrap flex-row">
-			<div class="flex items-center gap-1">
+			<div class="flex items-start gap-1">
 				<IconButton
 					icon={Minus}
 					color="red"
@@ -256,8 +262,10 @@
 					min={1}
 					max={selectedVariant?.quantityAvailable || selectedVariant?.quantityLimitPerCustomer}
 					class="text-center w-24!"
-					value={quantitySelected < 1 ? 1 : quantitySelected}
+					bind:value={quantitySelected}
 					disabled={$checkoutAddLineStore?.fetching}
+					variant={quantitySelectedErr ? 'error' : 'info'}
+					subText={quantitySelectedErr}
 				/>
 				<IconButton
 					icon={Plus}

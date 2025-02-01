@@ -25,7 +25,7 @@
 	let triggerRef = $state<HTMLElement>();
 
 	const computeStyle = async () => {
-		if (!triggerRef || !menuElemRef) return;
+		if (!triggerRef || !menuElemRef || !openMenu) return;
 
 		const { x, y } = await computePosition(triggerRef, menuElemRef, {
 			placement,

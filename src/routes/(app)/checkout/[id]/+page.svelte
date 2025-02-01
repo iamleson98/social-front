@@ -36,7 +36,7 @@
 <div>
 	{#if $checkoutQueryStore.fetching}
 		<div>Loading...</div>
-	{:else if !$checkoutQueryStore.data?.checkout}
+	{:else if $checkoutQueryStore.data?.checkout}
 		<CheckoutSteps numberOfItemToEnable={2} />
 		<CheckoutLayout />
 	{/if}

@@ -141,6 +141,7 @@ export default {
 		failedToLoad: 'Failed to load data. Please try again later',
 		failedToSignout: 'Failed to sign out. Please try again later',
 		variantError: 'There are errors in your product variants form. Please fix them first to proceed.',
+		positiveInteger: 'Please enter positive integer.',
 	},
 	placeholders: {
 		enterPrdName: 'Enter product name',

@@ -1,5 +1,5 @@
 import type { IconType } from "$lib/components/icons";
-import type { Snippet } from "svelte";
+import { type Snippet } from "svelte";
 import type { EventHandler } from "svelte/elements"
 
 export type DropdownTriggerInterface = {

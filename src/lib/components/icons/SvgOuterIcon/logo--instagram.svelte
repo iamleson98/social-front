@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 256 256"
+<svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 256 256"
 	><g fill="none"
 		><rect width="256" height="256" fill="url(#skillIconsInstagram0)" rx="60" /><rect
 			width="256"

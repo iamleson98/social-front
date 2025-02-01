@@ -141,6 +141,7 @@ export default {
 		failedToLoad: 'Không thể tải dữ liệu. Vui lòng thử lại sau',
 		failedToSignout: 'Không thể đăng xuất. Vui lòng thử lại sau',
 		variantError: 'Có lỗi xảy ra ở form phân loại hàng. Vui lòng sửa lại giá trị.',
+		positiveInteger: 'Vui lòng nhập số nguyên dương.',
 	},
 	placeholders: {
 		enterPrdName: 'Nhập tên sản phẩm',

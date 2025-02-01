@@ -141,6 +141,7 @@ export default {
 		failedToLoad: 'データの読み込みに失敗しました。後でもう一度お試しください',
 		failedToSignout: 'サインアウトに失敗しました。後でもう一度お試しください',
 		variantError: 'There are errors in your product variants form. Please fix them first to proceed.',
+		positiveInteger: 'Vui lòng nhập số nguyên dương',
 	},
 	placeholders: {
 		enterPrdName: '製品名を入力してください',
