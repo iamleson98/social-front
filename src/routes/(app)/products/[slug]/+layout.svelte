@@ -28,9 +28,7 @@
 	let { data, children }: Props = $props();
 
 	// prevent the page from scrolling to the top when navigating between tabs
-	afterNavigate(() => {
-		disableScrollHandling();
-	});
+	afterNavigate(disableScrollHandling);
 
 	let tabs = $derived([
 		{

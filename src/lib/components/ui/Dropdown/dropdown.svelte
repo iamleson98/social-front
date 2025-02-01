@@ -1,10 +1,9 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
-	import { type DropdownTriggerInterface, type MenuItemProps } from './types';
+	import { onMount, type Snippet } from 'svelte';
+	import { dropdownResizeDebounce, type DropdownTriggerInterface, type MenuItemProps } from './types';
 	import { computePosition, offset, shift, flip, type Placement } from '@floating-ui/dom';
 	import { clickOutside } from '$lib/actions/click-outside';
 	import { fly } from 'svelte/transition';
-	import { commonEventDebounce } from '$lib/actions/input-debounce';
 	import MenuItem from './menuItem.svelte';
 
 	type Props = {
@@ -12,9 +11,17 @@
 		trigger: Snippet<[DropdownTriggerInterface]>;
 		placement?: Placement;
 		children?: Snippet;
+		/** if `true`, will not recalculate position on window resize nor scroll */
+		noReCalculateOnWindowResize?: boolean;
 	};
 
-	let { trigger, options, placement = 'bottom', children }: Props = $props();
+	let {
+		trigger,
+		options,
+		placement = 'bottom',
+		children,
+		noReCalculateOnWindowResize = false
+	}: Props = $props();
 
 	if ((options?.length && children) || (!options?.length && !children)) {
 		throw new Error('Dropdown must have either options or children, not both');
@@ -39,14 +46,15 @@
 	};
 
 	const handleTriggerClick = async () => {
-		await computeStyle();
 		openMenu = true;
+		computeStyle();
 	};
-</script>
 
-<svelte:window
-	use:commonEventDebounce={{ events: ['scroll', 'resize'], onFire: computeStyle }}
-/>
+	onMount(() => {
+		if (noReCalculateOnWindowResize) return;
+		return dropdownResizeDebounce(window, { onFire: computeStyle });
+	});
+</script>
 
 <div bind:this={triggerRef} class="relative inline-block">
 	{@render trigger({ onclick: handleTriggerClick, onfocus: handleTriggerClick })}

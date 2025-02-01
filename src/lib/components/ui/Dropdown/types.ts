@@ -1,6 +1,8 @@
 import type { IconType } from "$lib/components/icons";
+import { DEBOUNCE_INPUT_TIME } from "$lib/utils/consts";
 import { type Snippet } from "svelte";
 import type { EventHandler } from "svelte/elements"
+import { debounce, fromDomEvent, merge, pipe, subscribe } from "wonka";
 
 export type DropdownTriggerInterface = {
   onclick?: EventHandler<MouseEvent>;
@@ -14,4 +16,40 @@ export type MenuItemProps = {
   startIcon?: IconType;
   disabled?: boolean;
   onclick?: () => void;
+};
+
+
+type commonEventDebounceOpts = {
+  onFire: () => void
+};
+
+const resizeSubscribers = new Set<() => void>();
+let unsub: () => void;
+
+export const dropdownResizeDebounce = (
+  node: HTMLElement | Window,
+  { onFire }: commonEventDebounceOpts
+) => {
+  resizeSubscribers.add(onFire);
+
+  if (unsub !== undefined) {
+    return () => {
+      resizeSubscribers.delete(onFire);
+      if (!resizeSubscribers.size) unsub();
+    }
+  }
+
+  const eventListeners = ['resize', 'scroll'].map(evt => fromDomEvent(node as HTMLElement, evt));
+
+  const { unsubscribe } = pipe(
+    merge(eventListeners),
+    debounce(() => DEBOUNCE_INPUT_TIME),
+    subscribe(() => {
+      for (const _onFire of resizeSubscribers) {
+        _onFire();
+      }
+    }),
+  );
+
+  unsub = unsubscribe;
 };

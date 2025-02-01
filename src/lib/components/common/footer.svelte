@@ -112,7 +112,7 @@
 							{activeLanguage.name}
 						</Button>
 					{/snippet}
-					<DropDown {trigger}>
+					<DropDown {trigger} placement='bottom-end'>
 						{#each languageOptions as language, idx (idx)}
 							<MenuItem onclick={() => handleSwitchLanguageCode(idx)}>
 								<div class="flex items-center gap-2">

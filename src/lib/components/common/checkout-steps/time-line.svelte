@@ -3,7 +3,7 @@
 	import { TimeLine } from '$lib/components/ui/timeline';
 
 	type Props = {
-		/** >= 1 and <= 4*/
+		/** must be in range [1, 4] */
 		numberOfItemToEnable: number;
 	};
 

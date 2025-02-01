@@ -68,6 +68,8 @@
 
 	// load checkout when page load
 	onMount(async () => {
+		if ($checkoutStore) return;
+
 		const fetchResult = await fetch(AppRoute.CHECKOUT_GET_OR_CREATE);
 		const parsedResult = await fetchResult.json();
 
@@ -145,6 +147,7 @@
 				<DropDown
 					{trigger}
 					placement="bottom-end"
+					noReCalculateOnWindowResize
 					options={[
 						{
 							children: $tranFunc('common.settings'),

@@ -1,7 +1,7 @@
 import { DEBOUNCE_INPUT_TIME } from "$lib/utils/consts";
 import { noop } from "$lib/utils/utils";
 import type { ActionReturn } from "svelte/action";
-import { debounce, fromDomEvent, merge, pipe, scan, subscribe } from "wonka";
+import { debounce, fromDomEvent, pipe, scan, subscribe } from "wonka";
 
 
 export type InputDebounceOpts = {
@@ -35,27 +35,6 @@ export function debounceInput(node: HTMLInputElement | HTMLTextAreaElement | HTM
 
   return {
     destroy,
-  };
-};
-
-type WindowEventType = 'resize' | 'scroll';
-
-type commonEventDebounceOpts = {
-  events: WindowEventType[];
-  time?: number;
-  onFire: () => void
-};
-
-export const commonEventDebounce = (node: HTMLElement, { events, time = DEBOUNCE_INPUT_TIME, onFire }: commonEventDebounceOpts): ActionReturn => {
-  const { unsubscribe } = pipe(
-    merge(
-      events.map(event => fromDomEvent(node, event))
-    ),
-    debounce(() => time || DEBOUNCE_INPUT_TIME),
-    subscribe(onFire)
-  )
-  return {
-    destroy: unsubscribe,
   };
 };
 
