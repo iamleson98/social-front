@@ -72,11 +72,11 @@
 	let activeEditor = $state<LexicalEditor | undefined>(undefined);
 	let isEditable = $state(true);
 
-	let ref: HTMLDivElement;
+	let editorRef: HTMLDivElement;
 
 	onMount(() => {
 		activeEditor = createEditor(editorConfig);
-		activeEditor.setRootElement(ref);
+		activeEditor.setRootElement(editorRef);
 
 		return () => {
 			activeEditor?.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
@@ -147,7 +147,7 @@
 	<div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
 		<DescriptionEditorToolbar disabled={!isEditable || !activeEditor} editor={activeEditor} />
 		<div
-			bind:this={ref}
+			bind:this={editorRef}
 			{id}
 			{style}
 			aria-activedescendant={!isEditable ? undefined : ariaActiveDescendantID}

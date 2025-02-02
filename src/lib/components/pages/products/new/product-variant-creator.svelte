@@ -991,7 +991,7 @@
 									<div class="max-h-28 overflow-y-auto p-1">
 										<div class="flex flex-col gap-1">
 											{#each variantInputDetail.stocks || [] as stock, idx (idx)}
-												<div class="flex items-start gap-2">
+												<div class="flex items-start gap-2 odd:bg-gray-100 p-1">
 													<span class="text-xs w-1/3">
 														{stock['warehouseName' as keyof StockInput]}
 													</span>
