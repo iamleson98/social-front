@@ -7,7 +7,7 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
-	import { Select, type SelectOption } from '$lib/components/ui/select';
+	import { Select } from '$lib/components/ui/select';
 	import {
 		OrderDirection,
 		ProductOrderField,

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
+	import { RequiredAt } from '$lib/components/ui';
 	import { Input, TextArea } from '$lib/components/ui/Input';
 	import type { ProductCreateInput, SeoInput } from '$lib/gql/graphql';
 	import slugify from 'slugify';
@@ -26,9 +27,8 @@
 	});
 </script>
 
-<div class="mb-3">
-	<div class="text-sm">{$tranFunc('product.seo')}</div>
-
+<RequiredAt class="text-sm" label={$tranFunc('product.seo')} required />
+<div class="mb-3 rounded-lg bg-gray-50 border border-gray-200 p-3">
 	<!-- slug -->
 	<span class="text-xs">{$tranFunc('product.prdSlug')}</span>
 	<Input

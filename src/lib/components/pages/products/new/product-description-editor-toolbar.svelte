@@ -99,8 +99,7 @@
 	};
 
 	$effect(() => {
-		if (editor)
-			return editor.registerUpdateListener(({ editorState }) => editorState.read(updateToolbarUI));
+		return editor?.registerUpdateListener(({ editorState }) => editorState.read(updateToolbarUI));
 	});
 
 	const applyBlockFormat = (type: BlockType) => {

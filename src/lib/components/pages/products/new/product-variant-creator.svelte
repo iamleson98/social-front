@@ -22,6 +22,8 @@
 	import { onMount } from 'svelte';
 	import DAYJS from 'dayjs';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
+	import { Accordion } from '$lib/components/ui/Accordion';
+	import { RequiredAt } from '$lib/components/ui';
 
 	type VariantManifestProps = {
 		name: {
@@ -107,8 +109,13 @@
 	let quickFillingError = $derived.by(() => {
 		if (quickFillingValues.stocks.some((stock) => stock.quantity % 1 !== 0)) return true;
 
-		const { globalThreshold, endDate } = quickFillingValues.preOrder;
+		const {
+			preOrder: { globalThreshold, endDate },
+			quantityLimitPerCustomer
+		} = quickFillingValues;
 		if (typeof globalThreshold === 'number' && globalThreshold % 1 !== 0) return true;
+		if (typeof quantityLimitPerCustomer === 'number' && quantityLimitPerCustomer % 1 !== 0)
+			return true;
 
 		if (endDate) {
 			try {
@@ -508,12 +515,12 @@
 	</div>
 {/snippet}
 
-<span class="text-sm">{$tranFunc('product.variants')}</span>
+<RequiredAt class="text-sm" label={$tranFunc('product.variants')} required />
 
 <div
-	class={`mb-3 rounded-lg border p-3 ${hasGeneralError ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}`}
+	class={`mb-3 rounded-lg w-full border p-3 ${hasGeneralError ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}`}
 >
-	<!-- COMPOSER -->
+	<!-- MARK: Menifest -->
 	<div
 		class="flex gap-2 mobile-l:flex-wrap flex-nowrap"
 		class:items-center={variantManifests.length < MAX_VARIANT_TYPES}
@@ -622,7 +629,7 @@
 	{#if variantManifests.length}
 		<div class="mt-4">
 			<!-- MARK: QUICK FILLING -->
-			<div class="mb-4">
+			<div class="mb-4 rounded-lg bg-white p-3 border border-gray-200">
 				<div class="text-xs mb-1">{$tranFunc('product.quickFilling')}</div>
 				<div class="flex gap-x-2 items-start flex-row w-full">
 					<div class="w-11/12 flex gap-1 items-start flex-row">
@@ -638,7 +645,6 @@
 									size="sm"
 									options={channelSelectOptions}
 									onfocus={() => handleFocusHighlightQuickFilling('td-channel-hl')}
-									onblur={() => handleFocusHighlightQuickFilling()}
 									bind:value={quickFillingValues.channels}
 									class="w-full"
 								/>
@@ -668,7 +674,6 @@
 												variant={channel.price < 0 ? 'error' : 'info'}
 												subText={channel.price < 0 ? $tranFunc('error.negativeNumber') : ''}
 												onfocus={() => handleFocusHighlightQuickFilling('td-price-hl')}
-												onblur={() => handleFocusHighlightQuickFilling()}
 											/>
 											<Input
 												startIcon={iconType}
@@ -681,7 +686,6 @@
 												variant={channel.costPrice < 0 ? 'error' : 'info'}
 												subText={channel.costPrice < 0 ? $tranFunc('error.negativeNumber') : ''}
 												onfocus={() => handleFocusHighlightQuickFilling('td-cost-price-hl')}
-												onblur={() => handleFocusHighlightQuickFilling()}
 											/>
 										</div>
 									{/each}
@@ -698,7 +702,6 @@
 								min={0}
 								startIcon={MdiWeightKg}
 								onfocus={() => handleFocusHighlightQuickFilling('td-weight-hl')}
-								onblur={() => handleFocusHighlightQuickFilling()}
 								variant={typeof quickFillingValues.weight === 'number' &&
 								quickFillingValues.weight < 0
 									? 'error'
@@ -729,12 +732,7 @@
 									quickFillingValues.preOrder.globalThreshold < 0
 										? $tranFunc('error.negativeNumber')
 										: undefined}
-									onfocus={() => {
-										handleFocusHighlightQuickFilling('td-preorder-hl');
-									}}
-									onblur={() => {
-										handleFocusHighlightQuickFilling();
-									}}
+									onfocus={() => handleFocusHighlightQuickFilling('td-preorder-hl')}
 								/>
 								<!-- AVAILABLE DATE -->
 								<EaseDatePicker
@@ -742,7 +740,6 @@
 									onchange={(date) => (quickFillingValues.preOrder.endDate = date.date)}
 									value={quickFillingValues.preOrder.endDate}
 									onfocus={() => handleFocusHighlightQuickFilling('td-preorder-hl')}
-									onblur={() => handleFocusHighlightQuickFilling()}
 									label={$tranFunc('product.preOrderEndDate')}
 									allowSelectMonthYears={{
 										showMonths: true,
@@ -780,7 +777,6 @@
 												class="w-2/3"
 												size="xs"
 												onfocus={() => handleFocusHighlightQuickFilling('td-stock-hl')}
-												onblur={() => handleFocusHighlightQuickFilling()}
 												bind:value={stockInput.quantity}
 												variant={isError ? 'error' : 'info'}
 												subText={isError ? $tranFunc('error.negativeNumber') : ''}
@@ -804,37 +800,43 @@
 				</div>
 
 				<!-- QUICK FILLING ADVANCED OPTIONS -->
-				<div
-					class="text-blue-600 cursor-pointer text-xs mt-2"
-					role="button"
-					tabindex="0"
-					onclick={() => (showQuickFillingAdvancedSettings = true)}
-					onkeyup={(e) => e.key === 'Enter' && (showQuickFillingAdvancedSettings = true)}
-				>
-					advanced...
-				</div>
-				{#if showQuickFillingAdvancedSettings}
+				<Accordion open={showQuickFillingAdvancedSettings} header={$tranFunc('common.advanced')}>
 					<div class="mt-2 flex gap-2 items-start" transition:slide>
 						<div>
-							<div class="text-xs">track inventory</div>
-							<Checkbox bind:checked={quickFillingValues.trackInventory} size="sm" />
+							<div class="text-xs">{$tranFunc('product.trackInventory')}</div>
+							<Checkbox
+								bind:checked={quickFillingValues.trackInventory}
+								size="md"
+								label={quickFillingValues.trackInventory
+									? $tranFunc('common.yes')
+									: $tranFunc('common.no')}
+							/>
 						</div>
 
 						<div>
-							<span class="text-xs">quantity limit</span>
+							<div class="text-xs">{$tranFunc('product.qtyLimit')}</div>
 							<Input
 								type="number"
 								bind:value={quickFillingValues.quantityLimitPerCustomer}
 								size="sm"
 								min="0"
+								placeholder={$tranFunc('product.valuePlaceholder')}
+								variant={typeof quickFillingValues.quantityLimitPerCustomer === 'number' &&
+								quickFillingValues.quantityLimitPerCustomer % 1 !== 0
+									? 'error'
+									: 'info'}
+								subText={typeof quickFillingValues.quantityLimitPerCustomer === 'number' &&
+								quickFillingValues.quantityLimitPerCustomer % 1 !== 0
+									? $tranFunc('error.positiveInteger')
+									: ''}
 							/>
 						</div>
 					</div>
-				{/if}
+				</Accordion>
 			</div>
 
-			<!-- DETAILS -->
-			<div class="relative h-fit w-fit rounded-lg p-3 border border-gray-200 bg-white">
+			<!-- MARK: DETAILS -->
+			<div class="relative h-fit w-full rounded-lg p-3 border border-gray-200 bg-white">
 				<table
 					class="w-full text-sm h-fit text-left rtl:text-right text-gray-600 dark:text-gray-500 mb-4"
 				>

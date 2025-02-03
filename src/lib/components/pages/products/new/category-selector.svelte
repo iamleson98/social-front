@@ -10,6 +10,7 @@
 	import { MegaMenu } from '$lib/components/ui/MegaMenu';
 	import { convertCategoryEdgesToMenuSelect } from './utils';
 	import { tranFunc } from '$i18n';
+	import { RequiredAt } from '$lib/components/ui';
 
 	type Props = {
 		categoryID?: string | null;
@@ -36,7 +37,7 @@
 </script>
 
 <div class="mb-3">
-	<span class="text-sm">{$tranFunc('product.prdCategory')}</span>
+	<RequiredAt class="text-sm" label={$tranFunc('product.prdCategory')} required />
 	<div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
 		{#if $categoriesStore.fetching}
 			<div class="flex items-center gap-1">

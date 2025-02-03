@@ -11,7 +11,8 @@
 		COMMAND_PRIORITY_LOW,
 		createEditor,
 		INSERT_PARAGRAPH_COMMAND,
-		type LexicalEditor
+		type LexicalEditor,
+		BLUR_COMMAND
 	} from 'lexical';
 	import {
 		$handleListInsertParagraph as handleListInsertParagraph,
@@ -24,6 +25,7 @@
 	import { editorConfig } from '$lib/configs';
 	import { tranFunc } from '$i18n';
 	import CheckList from '$lib/components/common/lexical-editor/plugins/check-list.svelte';
+	import { RequiredAt } from '$lib/components/ui';
 
 	type Props = {
 		ariaActiveDescendantID?: string;
@@ -83,6 +85,15 @@
 		};
 	});
 
+	const handleBlur = () => {
+		if (!activeEditor) return true;
+
+		const state = activeEditor.getEditorState();
+		const empty = state.toJSON();
+		console.log(empty);
+		return true;
+	};
+
 	$effect(() => {
 		if (!activeEditor) return;
 
@@ -129,7 +140,8 @@
 					return true;
 				},
 				COMMAND_PRIORITY_EDITOR
-			)
+			),
+			activeEditor.registerCommand(BLUR_COMMAND, handleBlur, COMMAND_PRIORITY_EDITOR)
 		);
 	});
 </script>
@@ -137,7 +149,8 @@
 <CheckList editor={activeEditor} />
 
 <div class="mb-3">
-	<span class="text-sm">{$tranFunc('product.prdDescription')}</span>
+	<RequiredAt class="text-sm" label={$tranFunc('product.prdDescription')} required />
+
 	<div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
 		<DescriptionEditorToolbar disabled={!isEditable || !activeEditor} editor={activeEditor} />
 		<div

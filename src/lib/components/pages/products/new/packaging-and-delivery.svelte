@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import { MdiWeightKg } from '$lib/components/icons';
+	import { RequiredAt } from '$lib/components/ui';
 	import { Input } from '$lib/components/ui/Input';
 	import type { ProductInput } from '$lib/gql/graphql';
 
@@ -17,7 +18,8 @@
 {/snippet}
 
 <div class="mb-3">
-	<span class="text-sm">{$tranFunc('common.packaging')}</span>
+	<RequiredAt class="text-sm" label={$tranFunc('common.packaging')} required />
+	
 	<div class="flex items-center text-xs gap-2 rounded-lg bg-gray-50 border border-gray-200 p-3">
 		<div class="w-3/12">
 			<div>{$tranFunc('product.weight')}</div>

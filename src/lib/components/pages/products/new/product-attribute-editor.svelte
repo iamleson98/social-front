@@ -14,6 +14,7 @@
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { onMount } from 'svelte';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
+	import { RequiredAt } from '$lib/components/ui';
 
 	type Props = {
 		categoryID?: string | null;
@@ -94,7 +95,8 @@
 
 {#if categoryID}
 	<div class="mb-3">
-		<span class="text-sm">{$tranFunc('product.tabAttributes')}</span>
+		<RequiredAt class="text-sm" label={$tranFunc('product.tabAttributes')} required />
+
 		<div class="bg-gray-50 rounded-lg border border-gray-200 p-3" transition:slide>
 			{#if $attributeQueryStore.fetching}
 				<div class="flex items-center flex-wrap">
@@ -117,10 +119,12 @@
 					{#each $attributeQueryStore.data?.attributes?.edges as { node }, idx (idx)}
 						<div class="w-1/2 tablet:w-full p-1 shrink flex items-center mb-2">
 							<div class="w-1/4 text-xs">
-								{#if node.valueRequired}
-									<strong class="mr-1 text-red-500">*</strong>
-								{/if}
-								<span>{node.name}</span>
+								<RequiredAt
+									class="mr-1"
+									required={node.valueRequired}
+									pos="start"
+									label={node.name || ''}
+								/>
 							</div>
 							<div class="w-3/4">
 								{#if node.inputType === AttributeInputTypeEnum.Dropdown && node.choices}
@@ -144,7 +148,7 @@
 										allowSelectMonthYears={{ showMonths: true, showYears: { min: 2020 } }}
 									/>
 								{:else if node.inputType === AttributeInputTypeEnum.File}
-									 <input type="file" class="file-input file-input-md" />
+									<input type="file" class="file-input file-input-md" />
 								{:else if node.inputType === AttributeInputTypeEnum.Numeric}
 									<Input
 										placeholder={$tranFunc('product.valuePlaceholder')}

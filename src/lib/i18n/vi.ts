@@ -70,6 +70,7 @@ export default {
 		publication_date: 'ngày đăng bán',
 		minimal_price: 'giá tối thiểu',
 		price: 'giá',
+		advanced: 'nâng cao',
 	},
 	product: {
 		chooseAddress: 'Vui lòng chọn địa chỉ',
@@ -133,6 +134,7 @@ export default {
 		skuHint: 'SKU giá giá trị để việc quản lý từng phân loại hàng của bạn dễ dàng hơn.',
 		qtyLimit: 'hạn mức',
 		preOrderEndDate: 'hạn giao hàng',
+		trackInventory: 'tự động quản lý hàng tồn',
 	},
 	error: {
 		invalidSlug: 'Giá trị slug không hợp lệ',
@@ -147,6 +149,7 @@ export default {
 		failedToSignout: 'Không thể đăng xuất. Vui lòng thử lại sau',
 		variantError: 'Có lỗi xảy ra ở form phân loại hàng. Vui lòng sửa lại giá trị.',
 		positiveInteger: 'Vui lòng nhập số nguyên dương.',
+		lengthInvalid: '{{name}} phải có độ dài từ {{min}} tới {{max}} ký tự.',
 	},
 	placeholders: {
 		enterPrdName: 'Nhập tên sản phẩm',
