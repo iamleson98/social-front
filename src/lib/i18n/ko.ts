@@ -65,6 +65,11 @@ export default {
 		streetAddress2: '주소 2',
 		phone: '전화 번호',
 		action: '작동',
+		rating: '평점',
+		name: '이름',
+		publication_date: '출판일',
+		minimal_price: '최소 가격',
+		price: '가격',
 	},
 	product: {
 		chooseAddress: '주소를 선택해주세요',

@@ -54,7 +54,7 @@ export const DEFAULT_INLINE_FORMATS: Readonly<Record<InlineType, Styleformat>> =
 
 export type BlockType = ListType | Exclude<HeadingTagType, 'h1' | 'h4' | 'h5' | 'h6'> | 'quote' | 'paragraph';
 
-export const defaultBlockFormats: Readonly<Record<BlockType, Styleformat>> = {
+export const LEXICAL_DEFAULT_BLOCK_FORMATS: Readonly<Record<BlockType, Styleformat>> = {
   paragraph: {
     icon: Paragraph,
     tip: 'Normal',
@@ -90,19 +90,6 @@ export type Styleformat = {
   active?: boolean;
   tip: string;
 }
-
-export const blockTypeToBlockName: Readonly<Record<string, string>> = {
-  bullet: 'Bulleted List',
-  check: 'Check List',
-  h2: 'Heading 2',
-  h3: 'Heading 3',
-  h4: 'Heading 4',
-  h5: 'Heading 5',
-  h6: 'Heading 6',
-  number: 'Numbered List',
-  paragraph: 'Normal',
-  quote: 'Quote',
-};
 
 export const getSelectedNode = (selection: RangeSelection): TextNode | ElementNode => {
   const anchor = selection.anchor;

@@ -65,6 +65,11 @@ export default {
 		streetAddress2: '住所 2',
 		phone: '電話番号',
 		action: 'アクション',
+		rating: '評価',
+		name: '名前',
+		publication_date: '出版日',
+		minimal_price: '最小価格',
+		price: '価格',
 	},
 	product: {
 		chooseAddress: '住所を選択してください',

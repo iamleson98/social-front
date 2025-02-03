@@ -65,6 +65,11 @@ export default {
 		streetAddress2: 'Street Address 2',
 		phone: 'Phone Number',
 		action: 'action',
+		rating: 'rating',
+		name: 'name',
+		publication_date: 'publication date',
+		minimal_price: 'minimal price',
+		price: 'price',
 	},
 	product: {
 		chooseAddress: 'Please choose address',

@@ -43,7 +43,7 @@
 	const handlePrint = () => console.log($state.snapshot(productVariantsInput));
 </script>
 
-<div class="m-auto rounded-lg bg-white max-w-6xl p-5 text-gray-600">
+<div class="m-auto rounded-lg bg-white  p-5 text-gray-600">
 	<ProductName bind:name={productCreateInput.name} />
 	<CategorySelector bind:categoryID={productCreateInput.category} />
 	<ProductAttributeEditor

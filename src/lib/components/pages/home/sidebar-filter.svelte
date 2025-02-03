@@ -26,13 +26,15 @@
 	};
 
 	/** in client side, we only support sorting products by these fields below */
-	const PRODUCT_SORT_FIELDS: SelectOption[] = [
-		ProductOrderField.Price,
-		ProductOrderField.Rating,
-		ProductOrderField.Name,
-		ProductOrderField.PublicationDate,
-		ProductOrderField.MinimalPrice
-	].map((value) => ({ value, label: value.toLowerCase().replace('_', ' ') }));
+	let PRODUCT_SORT_FIELDS = $derived.by(() =>
+		[
+			ProductOrderField.Price,
+			ProductOrderField.Rating,
+			ProductOrderField.Name,
+			ProductOrderField.PublicationDate,
+			ProductOrderField.MinimalPrice
+		].map((value) => ({ value, label: $tranFunc(`common.${value.toLowerCase()}`) }))
+	);
 
 	const RATINGS = [5, 4, 3, 2, 1];
 
@@ -143,8 +145,7 @@
 					{$tranFunc('common.star')}
 				</span>
 				<div class="w-3/4">
-					<progress class="progress progress-warning" max="100" value={rating * 20}
-					></progress>
+					<progress class="progress progress-warning" max="100" value={rating * 20}></progress>
 				</div>
 
 				<div>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { ChevronDown } from '$lib/components/icons';
 	import {
-		defaultBlockFormats,
+		LEXICAL_DEFAULT_BLOCK_FORMATS,
 		DEFAULT_INLINE_FORMATS,
 		type BlockType,
 		type InlineType,
@@ -43,7 +43,7 @@
 
 	let { disabled, editor }: Props = $props();
 
-	let blockFormatState = $state.raw({ ...defaultBlockFormats });
+	let blockFormatState = $state.raw({ ...LEXICAL_DEFAULT_BLOCK_FORMATS });
 	let inlineFormatState = $state.raw({ ...DEFAULT_INLINE_FORMATS });
 
 	let blockFormatType = $state<BlockType>('paragraph');
@@ -90,7 +90,7 @@
 					blockFormatType = parentList ? parentList.getListType() : element.getListType();
 				} else {
 					const type = isHeadingNode(element) ? element.getTag() : element.getType();
-					if (type in defaultBlockFormats) {
+					if (type in LEXICAL_DEFAULT_BLOCK_FORMATS) {
 						blockFormatType = type as BlockType;
 					}
 				}
@@ -136,7 +136,7 @@
 	<!-- block format -->
 	{#snippet trigger({ onclick, onfocus }: DropdownTriggerInterface)}
 		<Button endIcon={ChevronDown} {onclick} {onfocus} size="sm" {disabled} variant="light">
-			click
+			{LEXICAL_DEFAULT_BLOCK_FORMATS[blockFormatType].tip}
 		</Button>
 	{/snippet}
 	<DropDown {trigger} placement="bottom-start" bind:open={__openBlockFormatDropdown}>
