@@ -307,10 +307,17 @@
   list-style-type: lower-roman;
   list-style-position: outside;
 }
+.PlaygroundEditorTheme__ol1 > li, .PlaygroundEditorTheme__ol2 > li, .PlaygroundEditorTheme__ol3 > li, .PlaygroundEditorTheme__ol4 > li, .PlaygroundEditorTheme__ol5 > li {
+  list-style-type: decimal !important;
+} 
+
 .PlaygroundEditorTheme__ul {
   padding: 0;
   margin: 0;
   list-style-position: outside;
+}
+.PlaygroundEditorTheme__ul > li:not([role='checkbox']) {
+  list-style-type: disc !important;
 }
 .PlaygroundEditorTheme__listItem {
   margin: 0 32px;

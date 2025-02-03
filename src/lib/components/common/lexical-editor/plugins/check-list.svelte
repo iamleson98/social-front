@@ -3,11 +3,9 @@
 		$isListItemNode as isListItemNode,
 		INSERT_CHECK_LIST_COMMAND,
 		insertList,
-		$isListNode as isListNode,
-		ListItemNode
+		$isListNode as isListNode
 	} from '@lexical/list';
 	import {
-		calculateZoomLevel,
 		$findMatchingParent as findMatchingParent,
 		mergeRegister
 	} from '@lexical/utils';
@@ -22,18 +20,19 @@
 		KEY_ARROW_LEFT_COMMAND,
 		$isRangeSelection as isRangeSelection,
 		$isElementNode as isElementNode,
-		$getSelection as getSelection,
-		isHTMLElement,
-		getNearestEditorFromDOMNode
+		$getSelection as getSelection
 	} from 'lexical';
+	import { getActiveCheckListItem, handleArrownUpOrDown, handleCheckListItemClick, handleChecklistItemPointerDown } from './consts';
 
 	type Props = {
-		editor: LexicalEditor;
+		editor?: LexicalEditor;
 	};
 
 	let { editor }: Props = $props();
 
 	$effect(() => {
+		if (!editor) return;
+
 		return mergeRegister(
 			editor.registerCommand(
 				INSERT_CHECK_LIST_COMMAND,
@@ -139,150 +138,15 @@
 			),
 			editor.registerRootListener((rootElement, prevElement) => {
 				if (rootElement !== null) {
-					rootElement.addEventListener('click', handleClick);
-					rootElement.addEventListener('pointerdown', handlePointerDown);
+					rootElement.addEventListener('click', handleCheckListItemClick);
+					rootElement.addEventListener('pointerdown', handleChecklistItemPointerDown);
 				}
 
 				if (prevElement !== null) {
-					prevElement.removeEventListener('click', handleClick);
-					prevElement.removeEventListener('pointerdown', handlePointerDown);
+					prevElement.removeEventListener('click', handleCheckListItemClick);
+					prevElement.removeEventListener('pointerdown', handleChecklistItemPointerDown);
 				}
 			})
 		);
 	});
-
-	function handleCheckItemEvent(event: PointerEvent, callback: () => void) {
-		const target = event.target as HTMLElement;
-
-		if (!isHTMLElement(target)) {
-			return;
-		}
-
-		// Ignore clicks on LI that have nested lists
-		const firstChild = target.firstChild;
-
-		if (
-			firstChild &&
-			isHTMLElement(firstChild) &&
-			(firstChild.tagName === 'UL' || firstChild.tagName === 'OL')
-		) {
-			return;
-		}
-
-		const parentNode = target.parentNode;
-
-		// @ts-ignore internal field
-		if (!parentNode || parentNode.__lexicalListType !== 'check') {
-			return;
-		}
-
-		const rect = target.getBoundingClientRect();
-		const pageX = event.pageX / calculateZoomLevel(target);
-		if (
-			target.dir === 'rtl'
-				? pageX < rect.right && pageX > rect.right - 20
-				: pageX > rect.left && pageX < rect.left + 20
-		) {
-			callback();
-		}
-	}
-
-	function handleClick(event: Event) {
-		handleCheckItemEvent(event as PointerEvent, () => {
-			if (isHTMLElement(event.target as HTMLElement)) {
-				const domNode = event.target as HTMLElement;
-				const editor = getNearestEditorFromDOMNode(domNode);
-
-				if (editor != null && editor.isEditable()) {
-					editor.update(() => {
-						const node = getNearestNodeFromDOMNode(domNode);
-
-						if (isListItemNode(node)) {
-							domNode.focus();
-							node.toggleChecked();
-						}
-					});
-				}
-			}
-		});
-	}
-
-	function handlePointerDown(event: PointerEvent) {
-		handleCheckItemEvent(event, () => {
-			// Prevents caret moving when clicking on check mark
-			event.preventDefault();
-		});
-	}
-
-	function findCheckListItemSibling(node: ListItemNode, backward: boolean): ListItemNode | null {
-		let sibling = backward ? node.getPreviousSibling() : node.getNextSibling();
-		let parent: ListItemNode | null = node;
-
-		// Going up in a tree to get non-null sibling
-		while (sibling == null && isListItemNode(parent)) {
-			// Get li -> parent ul/ol -> parent li
-			parent = parent.getParentOrThrow().getParent();
-
-			if (parent != null) {
-				sibling = backward ? parent.getPreviousSibling() : parent.getNextSibling();
-			}
-		}
-
-		// Going down in a tree to get first non-nested list item
-		while (isListItemNode(sibling)) {
-			const firstChild = backward ? sibling.getLastChild() : sibling.getFirstChild();
-
-			if (!isListNode(firstChild)) {
-				return sibling;
-			}
-
-			sibling = backward ? firstChild.getLastChild() : firstChild.getFirstChild();
-		}
-
-		return null;
-	}
-
-	function handleArrownUpOrDown(event: KeyboardEvent, editor: LexicalEditor, backward: boolean) {
-		const activeItem = getActiveCheckListItem();
-
-		if (activeItem != null) {
-			editor.update(() => {
-				const listItem = getNearestNodeFromDOMNode(activeItem);
-
-				if (!isListItemNode(listItem)) {
-					return;
-				}
-
-				const nextListItem = findCheckListItemSibling(listItem, backward);
-
-				if (nextListItem != null) {
-					nextListItem.selectStart();
-					const dom = editor.getElementByKey(nextListItem.__key);
-
-					if (dom != null) {
-						event.preventDefault();
-						setTimeout(() => {
-							dom.focus();
-						}, 0);
-					}
-				}
-			});
-		}
-
-		return false;
-	}
-
-	function getActiveCheckListItem(): HTMLElement | null {
-		const activeElement = document.activeElement as Element;
-
-		return isHTMLElement(activeElement) &&
-			activeElement.tagName === 'LI' &&
-			activeElement.parentNode != null &&
-			// @ts-ignore internal field
-			activeElement.parentNode.__lexicalListType === 'check'
-			? activeElement
-			: null;
-	}
 </script>
-
-<div class="hidden!"></div>

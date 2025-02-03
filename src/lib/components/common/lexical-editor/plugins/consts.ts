@@ -1,10 +1,22 @@
-import { $applyNodeReplacement, $createRangeSelection, $createTextNode, $getSelection, $isElementNode, $isLineBreakNode, $isNodeSelection, $isRangeSelection, $isTextNode, $setSelection, createCommand, createEditor, DecoratorNode, ElementNode, getDOMSelectionFromTarget, isHTMLElement, TextNode, type DOMConversionMap, type DOMConversionOutput, type DOMExportOutput, type EditorConfig, type LexicalCommand, type LexicalEditor, type LexicalNode, type LexicalUpdateJSON, type NodeKey, type SerializedEditor, type SerializedLexicalNode, type Spread } from "lexical";
+import { $applyNodeReplacement, $createRangeSelection, $createTextNode, $getSelection, $isElementNode, $isLineBreakNode, $isNodeSelection, $isRangeSelection, $isTextNode, $setSelection, createCommand, createEditor, DecoratorNode, ElementNode, getDOMSelectionFromTarget, getNearestEditorFromDOMNode, isHTMLElement, TextNode, type DOMConversionMap, type DOMConversionOutput, type DOMExportOutput, type EditorConfig, type LexicalCommand, type LexicalEditor, type LexicalNode, type LexicalUpdateJSON, type NodeKey, type SerializedEditor, type SerializedLexicalNode, type Spread } from "lexical";
 import {
   $createAutoLinkNode,
   $isAutoLinkNode,
   AutoLinkNode,
 } from '@lexical/link';
 import type { AutoLinkAttributes } from '@lexical/link';
+import {
+  $isListItemNode as isListItemNode,
+  $isListNode as isListNode,
+  ListItemNode,
+} from '@lexical/list';
+import {
+  $getNearestNodeFromDOMNode as getNearestNodeFromDOMNode,
+} from 'lexical';
+
+import {
+  calculateZoomLevel,
+} from '@lexical/utils';
 
 export interface ImagePayload {
   altText: string;
@@ -457,13 +469,12 @@ export function handleLinkEdit(
   }
 }
 
-
-const TRANSPARENT_IMAGE =
-  'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-const img = document.createElement('img');
-img.src = TRANSPARENT_IMAGE;
-
 export function $onDragStart(event: DragEvent): boolean {
+  const TRANSPARENT_IMAGE =
+    'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+  const img = document.createElement('img');
+  img.src = TRANSPARENT_IMAGE;
+
   const node = $getImageNodeInSelection();
   if (!node) {
     return false;
@@ -650,6 +661,7 @@ export class ImageNode extends DecoratorNode<Element> {
 
   static importDOM(): DOMConversionMap | null {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       img: (node: Node) => ({
         conversion: $convertImageElement,
         priority: 0,
@@ -863,3 +875,138 @@ export function findMatchingDOM<T extends Node>(
 
 export const INSERT_HORIZONTAL_RULE_COMMAND: LexicalCommand<void> =
   createCommand('INSERT_HORIZONTAL_RULE_COMMAND');
+
+
+
+function handleCheckItemEvent(event: PointerEvent, callback: () => void) {
+  const target = event.target as HTMLElement;
+
+  if (!isHTMLElement(target)) {
+    return;
+  }
+
+  // Ignore clicks on LI that have nested lists
+  const firstChild = target.firstChild;
+
+  if (
+    firstChild &&
+    isHTMLElement(firstChild) &&
+    (firstChild.tagName === 'UL' || firstChild.tagName === 'OL')
+  ) {
+    return;
+  }
+
+  const parentNode = target.parentNode;
+
+  // @ts-expect-error internal field
+  if (!parentNode || parentNode.__lexicalListType !== 'check') {
+    return;
+  }
+
+  const rect = target.getBoundingClientRect();
+  const pageX = event.pageX / calculateZoomLevel(target);
+  if (
+    target.dir === 'rtl'
+      ? pageX < rect.right && pageX > rect.right - 20
+      : pageX > rect.left && pageX < rect.left + 20
+  ) {
+    callback();
+  }
+}
+
+export function handleCheckListItemClick(event: Event) {
+  handleCheckItemEvent(event as PointerEvent, () => {
+    if (isHTMLElement(event.target as HTMLElement)) {
+      const domNode = event.target as HTMLElement;
+      const editor = getNearestEditorFromDOMNode(domNode);
+
+      if (editor != null && editor.isEditable()) {
+        editor.update(() => {
+          const node = getNearestNodeFromDOMNode(domNode);
+
+          if (isListItemNode(node)) {
+            domNode.focus();
+            node.toggleChecked();
+          }
+        });
+      }
+    }
+  });
+}
+
+export function handleChecklistItemPointerDown(event: PointerEvent) {
+  handleCheckItemEvent(event, () => {
+    // Prevents caret moving when clicking on check mark
+    event.preventDefault();
+  });
+}
+
+function findCheckListItemSibling(node: ListItemNode, backward: boolean): ListItemNode | null {
+  let sibling = backward ? node.getPreviousSibling() : node.getNextSibling();
+  let parent: ListItemNode | null = node;
+
+  // Going up in a tree to get non-null sibling
+  while (sibling == null && isListItemNode(parent)) {
+    // Get li -> parent ul/ol -> parent li
+    parent = parent.getParentOrThrow().getParent();
+
+    if (parent != null) {
+      sibling = backward ? parent.getPreviousSibling() : parent.getNextSibling();
+    }
+  }
+
+  // Going down in a tree to get first non-nested list item
+  while (isListItemNode(sibling)) {
+    const firstChild = backward ? sibling.getLastChild() : sibling.getFirstChild();
+
+    if (!isListNode(firstChild)) {
+      return sibling;
+    }
+
+    sibling = backward ? firstChild.getLastChild() : firstChild.getFirstChild();
+  }
+
+  return null;
+}
+
+export function handleArrownUpOrDown(event: KeyboardEvent, editor: LexicalEditor, backward: boolean) {
+  const activeItem = getActiveCheckListItem();
+
+  if (activeItem != null) {
+    editor.update(() => {
+      const listItem = getNearestNodeFromDOMNode(activeItem);
+
+      if (!isListItemNode(listItem)) {
+        return;
+      }
+
+      const nextListItem = findCheckListItemSibling(listItem, backward);
+
+      if (nextListItem != null) {
+        nextListItem.selectStart();
+        const dom = editor.getElementByKey(nextListItem.__key);
+
+        if (dom != null) {
+          event.preventDefault();
+          setTimeout(() => {
+            dom.focus();
+          }, 0);
+        }
+      }
+    });
+  }
+
+  return false;
+}
+
+export function getActiveCheckListItem(): HTMLElement | null {
+  const activeElement = document.activeElement as Element;
+
+  return isHTMLElement(activeElement) &&
+    activeElement.tagName === 'LI' &&
+    activeElement.parentNode != null &&
+    // @ts-expect-error internal field
+    activeElement.parentNode.__lexicalListType === 'check'
+    ? activeElement
+    : null;
+}

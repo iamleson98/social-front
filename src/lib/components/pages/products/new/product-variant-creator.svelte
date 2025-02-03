@@ -621,13 +621,13 @@
 
 	{#if variantManifests.length}
 		<div class="mt-4">
-			<!-- QUICK FILLING -->
+			<!-- MARK: QUICK FILLING -->
 			<div class="mb-4">
 				<div class="text-xs mb-1">{$tranFunc('product.quickFilling')}</div>
 				<div class="flex gap-x-2 items-start flex-row w-full">
 					<div class="w-11/12 flex gap-1 items-start flex-row">
 						<!-- CHANNELS -->
-						<div class="w-1/5">
+						<div class="w-1/6">
 							<div class="text-xs">{$tranFunc('product.channel')}</div>
 							{#if !channelSelectOptions?.length}
 								<SkeletonContainer>
@@ -645,14 +645,14 @@
 							{/if}
 						</div>
 						<!-- PRICING -->
-						<div class="w-1/5">
+						<div class="w-2/6">
 							{#if quickFillingValues.channels.length}
 								<div class="flex flex-row text-xs">
 									<span class="w-1/2">{$tranFunc('product.price')}</span>
 									<span class="w-1/2">{$tranFunc('product.costPrice')}</span>
 								</div>
 								<div
-									class="max-h-20 overflow-y-auto border border-gray-200 bg-white p-2 rounded-lg"
+									class="max-h-32 overflow-y-auto border border-gray-200 bg-white p-2 rounded-lg"
 								>
 									{#each quickFillingValues.channels as channel, idx (idx)}
 										{@const iconType = CurrencyIconMap[channel.currency as CurrencyCode]}
@@ -689,7 +689,7 @@
 							{/if}
 						</div>
 						<!-- WEIGHT -->
-						<div class="w-1/5">
+						<div class="w-1/6">
 							<div class="text-xs">{$tranFunc('product.weight')}</div>
 							<Input
 								size="sm"
@@ -710,7 +710,7 @@
 							/>
 						</div>
 						<!-- PRE-ORDER -->
-						<div class="w-1/5">
+						<div class="w-1/6">
 							<div class="text-xs">{$tranFunc('common.preorder')}</div>
 							<div class="border border-gray-200 bg-white p-2 rounded-lg">
 								<!-- QUANTITY LIMIT -->
@@ -757,7 +757,7 @@
 							</div>
 						</div>
 						<!-- STOCK -->
-						<div class="w-1/5">
+						<div class="w-1/6">
 							<div class="text-xs">{$tranFunc('product.stock')}</div>
 							{#if !quickFillingValues.stocks.length}
 								<SkeletonContainer>
@@ -765,7 +765,7 @@
 								</SkeletonContainer>
 							{:else}
 								<div
-									class="max-h-20 overflow-y-auto border border-gray-200 bg-white p-1 rounded-lg"
+									class="max-h-32 overflow-y-auto border border-gray-200 bg-white p-1 rounded-lg"
 								>
 									{#each quickFillingValues.stocks as stockInput, idx (idx)}
 										{@const isError = stockInput.quantity < 0 || stockInput.quantity % 1 !== 0}

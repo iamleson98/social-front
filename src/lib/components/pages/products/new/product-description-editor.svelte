@@ -15,7 +15,6 @@
 	} from 'lexical';
 	import {
 		$handleListInsertParagraph as handleListInsertParagraph,
-		INSERT_CHECK_LIST_COMMAND,
 		INSERT_ORDERED_LIST_COMMAND,
 		INSERT_UNORDERED_LIST_COMMAND,
 		insertList,
@@ -24,6 +23,7 @@
 	} from '@lexical/list';
 	import { editorConfig } from '$lib/configs';
 	import { tranFunc } from '$i18n';
+	import CheckList from '$lib/components/common/lexical-editor/plugins/check-list.svelte';
 
 	type Props = {
 		ariaActiveDescendantID?: string;
@@ -107,14 +107,6 @@
 				COMMAND_PRIORITY_LOW
 			),
 			activeEditor.registerCommand(
-				INSERT_CHECK_LIST_COMMAND,
-				() => {
-					insertList(activeEditor as LexicalEditor, 'check');
-					return true;
-				},
-				COMMAND_PRIORITY_LOW
-			),
-			activeEditor.registerCommand(
 				REMOVE_LIST_COMMAND,
 				() => {
 					removeList(activeEditor as LexicalEditor);
@@ -142,6 +134,8 @@
 	});
 </script>
 
+<CheckList editor={activeEditor} />
+
 <div class="mb-3">
 	<span class="text-sm">{$tranFunc('product.prdDescription')}</span>
 	<div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
@@ -166,7 +160,7 @@
 			role="textbox"
 			tabindex="0"
 			spellcheck="true"
-			class={`${className} ring ring-gray-200 rounded focus:ring-2 focus:ring-blue-500 text-sm block relative tab-size-[1] outline-0 outline-hidden p-2.5 min-h-36 tablet:p-2 bg-white`}
+			class={`${className} ring ring-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm block relative tab-size-[1] outline-0 outline-hidden p-2.5 min-h-36 tablet:p-2 bg-white`}
 		></div>
 	</div>
 </div>

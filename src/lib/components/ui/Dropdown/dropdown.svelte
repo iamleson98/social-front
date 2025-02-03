@@ -13,6 +13,7 @@
 		children?: Snippet;
 		/** if `true`, will not recalculate position on window resize nor scroll */
 		noReCalculateOnWindowResize?: boolean;
+		open?: boolean;
 	};
 
 	let {
@@ -20,19 +21,19 @@
 		options,
 		placement = 'bottom',
 		children,
-		noReCalculateOnWindowResize = false
+		noReCalculateOnWindowResize = false,
+		open = $bindable(false),
 	}: Props = $props();
 
 	if ((options?.length && children) || (!options?.length && !children)) {
 		throw new Error('Dropdown must have either options or children, not both');
 	}
 
-	let openMenu = $state(false);
 	let menuElemRef = $state<HTMLElement>();
 	let triggerRef = $state<HTMLElement>();
 
 	const computeStyle = async () => {
-		if (!triggerRef || !menuElemRef || !openMenu) return;
+		if (!triggerRef || !menuElemRef || !open) return;
 
 		const { x, y } = await computePosition(triggerRef, menuElemRef, {
 			placement,
@@ -46,7 +47,7 @@
 	};
 
 	const handleTriggerClick = async () => {
-		openMenu = true;
+		open = true;
 		computeStyle();
 	};
 
@@ -59,12 +60,12 @@
 <div bind:this={triggerRef} class="relative inline-block">
 	{@render trigger({ onclick: handleTriggerClick, onfocus: handleTriggerClick })}
 
-	{#if openMenu}
+	{#if open}
 		<div
-			use:clickOutside={{ onOutclick: () => (openMenu = false) }}
+			use:clickOutside={{ onOutclick: () => (open = false) }}
 			transition:fly={{ y: 10 }}
 			bind:this={menuElemRef}
-			class="absolute z-500 py-2 rounded-lg border border-gray-200 bg-white min-w-full shadow-xs"
+			class="absolute z-100 py-2 rounded-lg border border-gray-200 bg-white min-w-full shadow-xs"
 		>
 			{#if options?.length}
 				{#each options as option, idx (idx)}

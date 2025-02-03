@@ -19,90 +19,75 @@ export const editorConfig: CreateEditorArgs = {
   ],
 };
 
-export type InlineType = Exclude<TextFormatType, 'code'>;
+export type InlineType = Exclude<TextFormatType, 'code' | 'lowercase' | 'uppercase' | 'capitalize'>;
 
 export const DEFAULT_INLINE_FORMATS: Readonly<Record<InlineType, Styleformat>> = {
   bold: {
     icon: Bold,
-    active: false,
     tip: `Bold (${IS_APPLE ? '⌘' : 'Ctrl'}+B)`,
   },
   italic: {
     icon: Italic,
-    active: false,
     tip: `Italic (${IS_APPLE ? '⌘' : 'Ctrl'}+I)`,
   },
   underline: {
     icon: Underline,
-    active: false,
     tip: `Underline (${IS_APPLE ? '⌘' : 'Ctrl'}+U)`,
   },
   strikethrough: {
     icon: StrikeThrough,
-    active: false,
     tip: `Strikethrough`,
   },
   subscript: {
     icon: Subscript,
-    active: false,
     tip: `Subscript`,
   },
   superscript: {
     icon: Superscript,
-    active: false,
     tip: `Superscript`,
   },
   highlight: {
     icon: Highlight,
-    active: false,
     tip: `Highlight`,
-  }
+  },
 };
 
 export type BlockType = ListType | Exclude<HeadingTagType, 'h1' | 'h4' | 'h5' | 'h6'> | 'quote' | 'paragraph';
 
-
 export const defaultBlockFormats: Readonly<Record<BlockType, Styleformat>> = {
   paragraph: {
     icon: Paragraph,
-    active: false,
     tip: 'Normal',
   },
   number: {
     icon: NumberList,
-    active: false,
     tip: 'Numbered List',
   },
   bullet: {
     icon: BulletList,
-    active: false,
     tip: 'Bulleted List',
   },
   check: {
     icon: CheckList,
-    active: false,
     tip: 'Check List',
   },
   h2: {
     icon: Heading2,
-    active: false,
     tip: 'Heading 2',
   },
   h3: {
     icon: Heading3,
-    active: false,
     tip: 'Heading 3',
   },
   quote: {
     icon: Quote,
-    active: false,
     tip: 'Quote',
   },
 };
 
 export type Styleformat = {
   icon: IconType;
-  active: boolean;
+  active?: boolean;
   tip: string;
 }
 

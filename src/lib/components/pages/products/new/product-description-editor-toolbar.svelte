@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ChevronDown, Icon } from '$lib/components/icons';
+	import { ChevronDown } from '$lib/components/icons';
 	import {
 		defaultBlockFormats,
 		DEFAULT_INLINE_FORMATS,
@@ -33,6 +33,7 @@
 	} from '@lexical/rich-text';
 	import { $setBlocksType as setBlocksType } from '@lexical/selection';
 	import { Button, IconButton } from '$lib/components/ui/Button';
+	import { DropDown, MenuItem, type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
 
 	type Props = {
 		/** indicates if editing mode is allowed */
@@ -47,6 +48,7 @@
 
 	let blockFormatType = $state<BlockType>('paragraph');
 	let selectedElementKey = $state<string | null>(null);
+	let __openBlockFormatDropdown = $state(false);
 
 	/** invoked every times a change is made */
 	const updateToolbarUI = async () => {
@@ -102,6 +104,8 @@
 	});
 
 	const applyBlockFormat = (type: BlockType) => {
+		__openBlockFormatDropdown = false;
+
 		if (blockFormatType !== type && editor) {
 			if (type === 'bullet') {
 				editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
@@ -126,36 +130,34 @@
 	};
 </script>
 
-<div class="flex items-center gap-1 mb-2">
+<div
+	class="inline-flex items-center gap-2 mb-2 sticky top-13 z-199 bg-white p-1.5 rounded-lg border border-gray-200"
+>
 	<!-- block format -->
-	<div class="dropdown">
-		<Button endIcon={ChevronDown} size="sm" {disabled} variant="light">click</Button>
-		<ul role="menu" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-			{#each Object.keys(blockFormatState) as blockKey, idx (idx)}
-				{@const blockFormat = blockFormatState[blockKey as BlockType]}
-				<li>
-					<!-- svelte-ignore a11y_missing_attribute -->
-					<a
-						onclick={() => applyBlockFormat(blockKey as BlockType)}
-						class={`rounded-md ${blockFormatType === blockKey ? 'bg-blue-100! text-blue-600!' : ''}`}
-						onkeyup={(e) => e.key === 'Enter' && applyBlockFormat(blockKey as BlockType)}
-						tabindex="0"
-						role="button"
-					>
-						<Icon icon={blockFormat.icon} />
-						{blockFormat.tip}
-					</a>
-				</li>
-			{/each}
-		</ul>
-	</div>
+	{#snippet trigger({ onclick, onfocus }: DropdownTriggerInterface)}
+		<Button endIcon={ChevronDown} {onclick} {onfocus} size="sm" {disabled} variant="light">
+			click
+		</Button>
+	{/snippet}
+	<DropDown {trigger} placement="bottom-start" bind:open={__openBlockFormatDropdown}>
+		{#each Object.keys(blockFormatState) as blockKey, idx (idx)}
+			{@const blockFormat = blockFormatState[blockKey as BlockType]}
+			<MenuItem
+				startIcon={blockFormat.icon}
+				onclick={() => applyBlockFormat(blockKey as BlockType)}
+				class={`${blockFormatType === blockKey ? 'bg-blue-100! text-blue-600!' : ''}`}
+			>
+				{blockFormat.tip}
+			</MenuItem>
+		{/each}
+	</DropDown>
 
 	<!-- inline format -->
-	<div class="flex items-center gap-1">
+	<div class="flex items-center gap-1.5">
 		{#each Object.keys(inlineFormatState) as inlineKey, idx (idx)}
 			{@const inlineFormat = inlineFormatState[inlineKey as InlineType]}
 
-			<div class="tooltip" data-tip={inlineFormat.tip}>
+			<div class="tooltip tooltip-bottom" data-tip={inlineFormat.tip}>
 				<IconButton
 					icon={inlineFormat.icon}
 					aria-label={inlineKey}
@@ -164,6 +166,7 @@
 					onclick={() => editor?.dispatchCommand(FORMAT_TEXT_COMMAND, inlineKey as InlineType)}
 					variant="light"
 					color={inlineFormat.active ? 'blue' : 'gray'}
+					size="sm"
 				/>
 			</div>
 		{/each}

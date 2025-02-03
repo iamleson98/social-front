@@ -2,7 +2,14 @@
 	import { Icon } from '$lib/components/icons';
 	import type { MenuItemProps } from './types';
 
-	let { children, startIcon, disabled, onclick, ...rest }: MenuItemProps = $props();
+	let {
+		children,
+		startIcon,
+		disabled,
+		onclick,
+		class: className = '',
+		...rest
+	}: MenuItemProps = $props();
 
 	if (onclick && rest.href) throw new Error('Cannot use both onclick and href');
 
@@ -21,7 +28,7 @@
 	{...rest}
 	class="flex items-center gap-2 py-1 px-2 text-sm select-none! {disabled
 		? 'cursor-not-allowed! text-gray-400'
-		: 'cursor-pointer hover:bg-gray-100'}"
+		: 'cursor-pointer hover:bg-gray-100'} {className}"
 	onclick={handleClick}
 	tabindex="0"
 	role="button"

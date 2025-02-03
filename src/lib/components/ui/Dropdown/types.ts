@@ -16,6 +16,7 @@ export type MenuItemProps = {
   startIcon?: IconType;
   disabled?: boolean;
   onclick?: () => void;
+  class?: string;
 };
 
 
@@ -24,7 +25,7 @@ type commonEventDebounceOpts = {
 };
 
 const resizeSubscribers = new Set<() => void>();
-let unsub: () => void;
+let unsub: (() => void) | null = null;
 
 export const dropdownResizeDebounce = (
   node: HTMLElement | Window,
@@ -32,10 +33,13 @@ export const dropdownResizeDebounce = (
 ) => {
   resizeSubscribers.add(onFire);
 
-  if (unsub !== undefined) {
+  if (unsub) {
     return () => {
       resizeSubscribers.delete(onFire);
-      if (!resizeSubscribers.size) unsub();
+      if (!resizeSubscribers.size) {
+        unsub?.();
+        unsub = null;
+      }
     }
   }
 
