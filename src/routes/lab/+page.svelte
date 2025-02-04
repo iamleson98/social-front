@@ -8,6 +8,7 @@
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { DropDown, type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
 	import { UserCog } from '$lib/components/icons';
+	import { EditorJSComponent } from '$lib/components/common/editorjs';
 
 	let option = $state(1);
 
@@ -219,4 +220,21 @@
 	options={[{ value: '1', label: 'Option 1' }]}
 	variant="error"
 	subText="Something went wrong"
+/>
+
+<EditorJSComponent
+	header={{ placeholder: 'Heading 2', levels: [2, 3, 4], defaultLevel: 2 }}
+	simpleImage
+	list={{
+		defaultStyle: 'unordered',
+		maxLevel: 3,
+		inlineToolbar: true
+	}}
+	embed={{
+		services: {
+			youtube: true
+		}
+	}}
+	quote={{ inlineToolbar: true }}
+	onchange={console.log}
 />

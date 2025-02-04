@@ -150,6 +150,7 @@ export default {
 		variantError: 'Có lỗi xảy ra ở form phân loại hàng. Vui lòng sửa lại giá trị.',
 		positiveInteger: 'Vui lòng nhập số nguyên dương.',
 		lengthInvalid: '{{name}} phải có độ dài từ {{min}} tới {{max}} ký tự.',
+		initEditorErr: 'Lỗi khởi chạy trình soạn thảo văn bản. Vui lòng thử lại sau.',
 	},
 	placeholders: {
 		enterPrdName: 'Nhập tên sản phẩm',

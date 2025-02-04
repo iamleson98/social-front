@@ -24,6 +24,7 @@
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { RequiredAt } from '$lib/components/ui';
+	import ErrorMsg from './error-msg.svelte';
 
 	type VariantManifestProps = {
 		name: {
@@ -1044,11 +1045,7 @@
 		</div>
 	{/if}
 
-	{#if hasGeneralError}
-		<Alert variant="error" size="md" class="mt-3" bordered>
-			{$tranFunc('error.variantError')}
-		</Alert>
-	{/if}
+	<ErrorMsg error={hasGeneralError ? $tranFunc('error.variantError') : undefined} />
 </div>
 
 <style>

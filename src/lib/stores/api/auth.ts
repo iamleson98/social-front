@@ -54,10 +54,10 @@ export const USER_ME_QUERY_STORE = gql`
 				key
 				value
 			}
-			# userPermissions {
-			# 	code
-			# 	name
-			# }
+			userPermissions {
+				code
+				name
+			}
 			avatar(size: 100, format: WEBP) {
 				url
 				alt

@@ -150,6 +150,7 @@ export default {
 		variantError: 'There are errors in your product variants form. Please fix them first to proceed.',
 		positiveInteger: 'Vui lòng nhập số nguyên dương',
 		lengthInvalid: '{{name}} must have from {{min}} to {{max}} characters.',
+		initEditorErr: 'Failed to initialize editor. Please try again later',
 	},
 	placeholders: {
 		enterPrdName: '製品名を入力してください',

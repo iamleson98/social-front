@@ -3,7 +3,7 @@
 	import CategorySelector from '$lib/components/pages/products/new/category-selector.svelte';
 	import PackagingAndDelivery from '$lib/components/pages/products/new/packaging-and-delivery.svelte';
 	import ProductAttributeEditor from '$lib/components/pages/products/new/product-attribute-editor.svelte';
-	import ProductDescriptionEditor from '$lib/components/pages/products/new/product-description-editor.svelte';
+	import ProductDescriptionEditorjsComponent from '$lib/components/pages/products/new/product-description-editorjs-component.svelte';
 	import ProductName from '$lib/components/pages/products/new/product-name.svelte';
 	import ProductSeo from '$lib/components/pages/products/new/product-seo.svelte';
 	import ProductVariantCreator from '$lib/components/pages/products/new/product-variant-creator.svelte';
@@ -46,8 +46,11 @@
 	/** asynchronously calculate product input errors */
 	let productInputErrors = $derived.by(() => {
 		const errors: ProductInputErrors = {};
-		if (!productCreateInput.category) errors.category = $tranFunc('helpText.fieldRequired');
-		if (!productCreateInput.description) errors.description = $tranFunc('helpText.fieldRequired');
+		const fieldRequiredMsg = $tranFunc('helpText.fieldRequired');
+
+		if (!productCreateInput.category) errors.category = fieldRequiredMsg;
+		if (!productCreateInput.description) errors.description = fieldRequiredMsg;
+		if (!productCreateInput.description?.blocks?.length) errors.description = fieldRequiredMsg;
 
 		return errors;
 	});
@@ -56,6 +59,8 @@
 
 	const handleSubmit = () => {
 		promptInputError = true;
+
+		console.log(productCreateInput);
 	};
 </script>
 
@@ -69,7 +74,10 @@
 		categoryID={productCreateInput.category}
 		bind:attributes={productCreateInput.attributes!}
 	/>
-	<ProductDescriptionEditor bind:description={productCreateInput.description} />
+	<ProductDescriptionEditorjsComponent
+		bind:description={productCreateInput.description}
+		error={promptInputError ? productInputErrors.description : undefined}
+	/>
 	<ProductVariantCreator bind:productVariantsInput />
 	<ProductSeo
 		productName={productCreateInput.name}

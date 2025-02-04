@@ -123,7 +123,7 @@ export default {
 		height: 'height',
 		noAttributes: 'No attributes found',
 		prdSlug: 'product slug',
-		seo: 'product SEO',
+		seo: 'Product SEO',
 		seoTitle: 'product SEO title',
 		seoDescription: 'product SEO description',
 		channelHint: 'Channels are where your products will be published.',
@@ -150,6 +150,7 @@ export default {
 		variantError: 'There are errors in your product variants form. Please fix them first to proceed.',
 		positiveInteger: 'Please enter positive integer.',
 		lengthInvalid: '{{name}} must have from {{min}} to {{max}} characters.',
+		initEditorErr: 'Failed to initialize editor. Please try again later',
 	},
 	placeholders: {
 		enterPrdName: 'Enter product name',
