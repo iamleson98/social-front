@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
 	import CategorySelector from '$lib/components/pages/products/new/category-selector.svelte';
 	import PackagingAndDelivery from '$lib/components/pages/products/new/packaging-and-delivery.svelte';
 	import ProductAttributeEditor from '$lib/components/pages/products/new/product-attribute-editor.svelte';
@@ -9,18 +8,6 @@
 	import ProductVariantCreator from '$lib/components/pages/products/new/product-variant-creator.svelte';
 	import { Button } from '$lib/components/ui';
 	import type { ProductCreateInput, ProductVariantBulkCreateInput } from '$lib/gql/graphql';
-	import { array, boolean, object, string } from 'zod';
-
-	const ProductAttributeSchema = object({
-		boolean: boolean()
-	});
-
-	const ProductInputSchema = object({
-		productType: string().nonempty(),
-		attributes: array(ProductAttributeSchema)
-	});
-
-	type ProductInputErrors = Partial<Record<keyof ProductCreateInput, string | undefined>>;
 
 	let productCreateInput = $state<ProductCreateInput>({
 		productType: '',
@@ -28,10 +15,7 @@
 		rating: 5, // default to 5 as max
 		chargeTaxes: true,
 		slug: '',
-		seo: {
-			description: '',
-			title: ''
-		},
+		seo: {},
 		name: '',
 		metadata: [
 			// NOTE: the order must be 'length', 'width', 'height', because child item binds values based on order
@@ -41,19 +25,26 @@
 		]
 	});
 
-	let promptInputError = $state(false);
-
-	/** asynchronously calculate product input errors */
-	let productInputErrors = $derived.by(() => {
-		const errors: ProductInputErrors = {};
-		const fieldRequiredMsg = $tranFunc('helpText.fieldRequired');
-
-		if (!productCreateInput.category) errors.category = fieldRequiredMsg;
-		if (!productCreateInput.description) errors.description = fieldRequiredMsg;
-		if (!productCreateInput.description?.blocks?.length) errors.description = fieldRequiredMsg;
-
-		return errors;
+	let productInputError = $state<Record<keyof ProductCreateInput, boolean>>({
+		attributes: false,
+		category: false,
+		chargeTaxes: false,
+		collections: false,
+		description: false,
+		externalReference: false,
+		metadata: false,
+		name: false,
+		privateMetadata: false,
+		productType: false,
+		rating: false,
+		seo: false,
+		slug: false,
+		taxClass: false,
+		taxCode: false,
+		weight: false
 	});
+
+	let promptInputError = $state(false);
 
 	let productVariantsInput = $state.raw<ProductVariantBulkCreateInput[]>([]);
 
@@ -65,25 +56,26 @@
 </script>
 
 <div class="m-auto rounded-lg bg-white w-full p-5 text-gray-600">
-	<ProductName bind:name={productCreateInput.name} />
+	<ProductName bind:name={productCreateInput.name} bind:ok={productInputError.name} />
 	<CategorySelector
 		bind:categoryID={productCreateInput.category}
-		error={promptInputError ? productInputErrors.category : undefined}
+		bind:ok={productInputError.category}
 	/>
 	<ProductAttributeEditor
 		categoryID={productCreateInput.category}
 		bind:attributes={productCreateInput.attributes!}
+		bind:ok={productInputError.attributes}
 	/>
 	<ProductDescriptionEditorjsComponent
 		bind:description={productCreateInput.description}
-		error={promptInputError ? productInputErrors.description : undefined}
+		bind:ok={productInputError.description}
 	/>
 	<ProductVariantCreator bind:productVariantsInput />
 	<ProductSeo
 		productName={productCreateInput.name}
-		bind:seoTitle={productCreateInput.seo!.title}
-		bind:seoDescription={productCreateInput.seo!.description}
+		bind:seo={productCreateInput.seo}
 		bind:slug={productCreateInput.slug}
+		bind:ok={productInputError.seo}
 	/>
 	<!-- <DiscountByQuantity /> -->
 	<PackagingAndDelivery

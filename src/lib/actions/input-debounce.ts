@@ -5,7 +5,7 @@ import { debounce, fromDomEvent, pipe, scan, subscribe } from "wonka";
 
 
 export type InputDebounceOpts = {
-  onInput: (result: unknown) => void;
+  onInput: (result: Event | number | string) => void;
   /** skip checking events until specific duration is up. Default to `333`  */
   debounceTime?: number;
 };

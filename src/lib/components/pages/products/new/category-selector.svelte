@@ -15,12 +15,13 @@
 
 	type Props = {
 		categoryID?: string | null;
-		error?: string;
+		ok: boolean;
 	};
 
-	let { categoryID = $bindable<string | null | undefined>(), error }: Props = $props();
-
 	const NUMBER_OF_CATEGORIES_PER_FETCH = 35;
+
+	let { categoryID = $bindable<string | null | undefined>(), ok = $bindable() }: Props = $props();
+	let categoryError = $state<string>();
 
 	const categoriesStore = operationStore<
 		Pick<Query, 'categories'>,
@@ -36,12 +37,22 @@
 			first: NUMBER_OF_CATEGORIES_PER_FETCH
 		}
 	});
+
+	const handleCategorySelection = (newCateId: string | null) => {
+		console.log('ol')
+		categoryError = newCateId ? undefined : $tranFunc('helpText.fieldRequired');
+		categoryID = newCateId;
+	};
+
+	$effect(() => {
+		ok = !categoryError;
+	});
 </script>
 
 <div class="mb-3">
 	<RequiredAt class="text-sm" label={$tranFunc('product.prdCategory')} required />
 	<div
-		class="border rounded-lg p-3 {error
+		class="border rounded-lg p-3 {categoryError
 			? 'border-red-200 bg-red-50'
 			: 'border-gray-200 bg-gray-50'}"
 	>
@@ -63,11 +74,11 @@
 			)}
 			<MegaMenu
 				{items}
-				onSelect={(item) => (categoryID = item.value as string)}
-				onDeselect={() => (categoryID = null)}
+				onSelect={(item) => handleCategorySelection(item.value as string)}
+				onDeselect={() => handleCategorySelection(null)}
 			/>
 		{/if}
 	</div>
 
-	<ErrorMsg {error} />
+	<ErrorMsg error={categoryError} />
 </div>

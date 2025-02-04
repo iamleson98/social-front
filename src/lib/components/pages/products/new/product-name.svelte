@@ -4,28 +4,32 @@
 	import { Input } from '$lib/components/ui/Input';
 	import type { ProductCreateInput } from '$lib/gql/graphql';
 	import { string } from 'zod';
+	import { PRODUCT_NAME_MAX_LENGTH } from './utils';
 
-	const MAX_LENGTH = 250; // saleor reference
-	const now = new Date();
+	const NOW = new Date();
 
 	type Props = {
 		name: ProductCreateInput['name'];
+		ok: boolean;
 	};
 
-	let { name = $bindable() }: Props = $props();
+	let { name = $bindable(), ok = $bindable() }: Props = $props();
 	let nameError = $state('');
-	let nameCharCount = $derived(`${name?.trim().length}/${MAX_LENGTH}`);
-	let NAME_REQUIRED_MSG = $tranFunc('helpText.fieldRequired');
-	let NAME_FIELD = $tranFunc('common.name');
-	let NAME_LENGTH_INVALID_MSG = $tranFunc('error.lengthInvalid', {
-		min: 1,
-		max: MAX_LENGTH,
-		name: NAME_FIELD
+	let nameCharCount = $derived(`${name?.trim().length || 0}/${PRODUCT_NAME_MAX_LENGTH}`);
+
+	$effect(() => {
+		ok = !nameError;
 	});
 
-	const nameSchema = string().min(1, { message: NAME_REQUIRED_MSG }).max(MAX_LENGTH, {
-		message: NAME_LENGTH_INVALID_MSG
-	});
+	const nameSchema = string()
+		.min(1, { message: $tranFunc('helpText.fieldRequired') })
+		.max(PRODUCT_NAME_MAX_LENGTH, {
+			message: $tranFunc('error.lengthInvalid', {
+				min: 1,
+				max: PRODUCT_NAME_MAX_LENGTH,
+				name: $tranFunc('common.name')
+			})
+		});
 
 	const handleNameChange = () => {
 		const result = nameSchema.safeParse(name);
@@ -50,6 +54,6 @@
 		subText={nameError || nameCharCount}
 	/>
 	<div class="text-right">
-		<span class="text-xs">{now.toDateString()}</span>
+		<span class="text-xs">{NOW.toDateString()}</span>
 	</div>
 </div>

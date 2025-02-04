@@ -15,6 +15,7 @@
 	import { onMount } from 'svelte';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { RequiredAt } from '$lib/components/ui';
+	import ErrorMsg from './error-msg.svelte';
 
 	type CustomAttributeInput = AttributeValueInput & {
 		required: boolean;
@@ -24,11 +25,11 @@
 	type Props = {
 		categoryID?: string | null;
 		attributes: AttributeValueInput[];
-		error?: string;
+		ok: boolean;
 	};
 
 	const MAX_FETCHING_BATCH = 50;
-	let { categoryID, attributes = $bindable([]), error }: Props = $props();
+	let { categoryID, attributes = $bindable([]), ok = $bindable() }: Props = $props();
 
 	let prevCategoryID = $state(categoryID);
 	let blurTriggers = $state<boolean[]>([]);
@@ -102,6 +103,10 @@
 		}
 
 		return result;
+	});
+
+	$effect(() => {
+		ok = !attributeErrors.some(Boolean);
 	});
 
 	const attributeQueryStore = operationStore<Pick<Query, 'attributes'>, CustomAttributesQueryArgs>({
@@ -324,5 +329,9 @@
 				</div>
 			{/if}
 		</div>
+
+		<ErrorMsg
+			error={blurTriggers.some(Boolean) && !ok ? $tranFunc('error.thereIsError') : undefined}
+		/>
 	</div>
 {/if}

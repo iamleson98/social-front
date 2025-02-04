@@ -147,10 +147,10 @@ export default {
 		noResult: '결과를 찾을 수 없습니다. 다시 시도해주세요',
 		failedToLoad: '데이터를 불러오지 못했습니다. 나중에 다시 시도해주세요',
 		failedToSignout: '로그아웃에 실패했습니다. 나중에 다시 시도해주세요',
-		variantError: 'There are errors in your product variants form. Please fix them first to proceed.',
 		positiveInteger: 'Vui lòng nhập số nguyên dương',
 		lengthInvalid: '{{name}} must have from {{min}} to {{max}} characters.',
 		initEditorErr: 'Failed to initialize editor. Please try again later',
+		thereIsError: 'There are some error(s). Please fix them to proceed.'
 	},
 	placeholders: {
 		enterPrdName: '제품 이름을 입력해주세요',

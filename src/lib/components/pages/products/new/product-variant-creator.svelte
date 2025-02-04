@@ -1045,7 +1045,7 @@
 		</div>
 	{/if}
 
-	<ErrorMsg error={hasGeneralError ? $tranFunc('error.variantError') : undefined} />
+	<ErrorMsg error={hasGeneralError ? $tranFunc('error.thereIsError') : undefined} />
 </div>
 
 <style>

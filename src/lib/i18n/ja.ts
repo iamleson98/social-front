@@ -147,10 +147,10 @@ export default {
 		noResult: '結果が見つかりませんでした。もう一度お試しください',
 		failedToLoad: 'データの読み込みに失敗しました。後でもう一度お試しください',
 		failedToSignout: 'サインアウトに失敗しました。後でもう一度お試しください',
-		variantError: 'There are errors in your product variants form. Please fix them first to proceed.',
 		positiveInteger: 'Vui lòng nhập số nguyên dương',
 		lengthInvalid: '{{name}} must have from {{min}} to {{max}} characters.',
 		initEditorErr: 'Failed to initialize editor. Please try again later',
+		thereIsError: 'There are some error(s). Please fix them to proceed.'
 	},
 	placeholders: {
 		enterPrdName: '製品名を入力してください',

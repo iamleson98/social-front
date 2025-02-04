@@ -147,10 +147,10 @@ export default {
 		noResult: 'Không tìm thấy kết quả. Vui lòng thử lại',
 		failedToLoad: 'Không thể tải dữ liệu. Vui lòng thử lại sau',
 		failedToSignout: 'Không thể đăng xuất. Vui lòng thử lại sau',
-		variantError: 'Có lỗi xảy ra ở form phân loại hàng. Vui lòng sửa lại giá trị.',
 		positiveInteger: 'Vui lòng nhập số nguyên dương.',
 		lengthInvalid: '{{name}} phải có độ dài từ {{min}} tới {{max}} ký tự.',
 		initEditorErr: 'Lỗi khởi chạy trình soạn thảo văn bản. Vui lòng thử lại sau.',
+		thereIsError: 'Có lỗi xảy ra. Bạn vui lòng sửa chúng.'
 	},
 	placeholders: {
 		enterPrdName: 'Nhập tên sản phẩm',

@@ -147,16 +147,16 @@ export default {
 		noResult: 'No result found. Please try again',
 		failedToLoad: 'Failed to load data. Please try again later',
 		failedToSignout: 'Failed to sign out. Please try again later',
-		variantError: 'There are errors in your product variants form. Please fix them first to proceed.',
 		positiveInteger: 'Please enter positive integer.',
 		lengthInvalid: '{{name}} must have from {{min}} to {{max}} characters.',
 		initEditorErr: 'Failed to initialize editor. Please try again later',
+		thereIsError: 'There are some error(s). Please fix them to proceed.'
 	},
 	placeholders: {
 		enterPrdName: 'Enter product name',
 	},
 	pages: {
-		cart: 'Shopping Cart',
+		cart: 'Shopping Cart'	,
 		checkout: 'Checkout',
 		payment: 'Payment',
 		orderConfirm: 'Order Confirmation',

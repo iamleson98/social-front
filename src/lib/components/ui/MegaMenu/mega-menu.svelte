@@ -9,7 +9,7 @@
 
 	let menuSectionsData = $state.raw<SelectItemProps[][]>([items]);
 	let selectedItems = $state.raw<SelectItemProps[]>([]);
-	let checked = $state(false);
+	let checked = $state<boolean>();
 
 	const handleItemSelect = (level: number, item: SelectItemProps) => {
 		menuSectionsData = menuSectionsData.slice(0, level + 1);
@@ -24,7 +24,7 @@
 
 	$effect(() => {
 		if (checked) onSelect(selectedItems[selectedItems.length - 1]);
-		else onDeselect?.();
+		else if (checked === false) onDeselect?.();
 	});
 </script>
 
