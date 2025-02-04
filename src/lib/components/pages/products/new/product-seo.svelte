@@ -23,7 +23,8 @@
 	}: Props = $props();
 
 	$effect(() => {
-		if (productName?.trim()) slug = slugify(productName, { lower: true, strict: true });
+		if (productName) slug = slugify(productName, { lower: true, strict: true });
+		else slug = '';
 	});
 </script>
 

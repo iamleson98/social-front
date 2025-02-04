@@ -71,6 +71,7 @@
 		input?.focus();
 		value = undefined;
 		searchQuery = '';
+		onchange?.(undefined);
 	};
 
 	const handleSelect = (option: SelectOption) => {

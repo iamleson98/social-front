@@ -18,7 +18,7 @@ export type SelectItemprops<T extends SelectOption = SelectOption> = {
 export type SelectProps<T extends SelectOption = SelectOption> = {
   options: T[];
   value?: SelectOption['value'];
-  onchange?: (opt: T) => void;
+  onchange?: (opt?: T) => void;
 } & Omit<InputProps, 'value' | 'onchange'> & Omit<HTMLSelectAttributes, 'size' | 'onchange'>;
 
 export type MultiSelectProps<T extends SelectOption = SelectOption> = {

@@ -6,6 +6,7 @@
 	import { string } from 'zod';
 
 	const MAX_LENGTH = 250; // saleor reference
+	const now = new Date();
 
 	type Props = {
 		name: ProductCreateInput['name'];
@@ -14,18 +15,17 @@
 	let { name = $bindable() }: Props = $props();
 	let nameError = $state('');
 	let nameCharCount = $derived(`${name?.trim().length}/${MAX_LENGTH}`);
+	let NAME_REQUIRED_MSG = $tranFunc('helpText.fieldRequired');
+	let NAME_FIELD = $tranFunc('common.name');
+	let NAME_LENGTH_INVALID_MSG = $tranFunc('error.lengthInvalid', {
+		min: 1,
+		max: MAX_LENGTH,
+		name: NAME_FIELD
+	});
 
-	const nameSchema = string()
-		.min(1, { message: $tranFunc('helpText.fieldRequired') })
-		.max(MAX_LENGTH, {
-			message: $tranFunc('error.lengthInvalid', {
-				min: 1,
-				max: MAX_LENGTH,
-				name: $tranFunc('common.name')
-			})
-		});
-
-	const now = new Date();
+	const nameSchema = string().min(1, { message: NAME_REQUIRED_MSG }).max(MAX_LENGTH, {
+		message: NAME_LENGTH_INVALID_MSG
+	});
 
 	const handleNameChange = () => {
 		const result = nameSchema.safeParse(name);

@@ -1,6 +1,6 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import CategorySelector from '$lib/components/pages/products/new/category-selector.svelte';
-	import DiscountByQuantity from '$lib/components/pages/products/new/discount-by-quantity.svelte';
 	import PackagingAndDelivery from '$lib/components/pages/products/new/packaging-and-delivery.svelte';
 	import ProductAttributeEditor from '$lib/components/pages/products/new/product-attribute-editor.svelte';
 	import ProductDescriptionEditor from '$lib/components/pages/products/new/product-description-editor.svelte';
@@ -20,6 +20,8 @@
 		attributes: array(ProductAttributeSchema)
 	});
 
+	type ProductInputErrors = Partial<Record<keyof ProductCreateInput, string | undefined>>;
+
 	let productCreateInput = $state<ProductCreateInput>({
 		productType: '',
 		attributes: [],
@@ -30,6 +32,7 @@
 			description: '',
 			title: ''
 		},
+		name: '',
 		metadata: [
 			// NOTE: the order must be 'length', 'width', 'height', because child item binds values based on order
 			{ key: 'length', value: '' },
@@ -38,14 +41,30 @@
 		]
 	});
 
+	let promptInputError = $state(false);
+
+	/** asynchronously calculate product input errors */
+	let productInputErrors = $derived.by(() => {
+		const errors: ProductInputErrors = {};
+		if (!productCreateInput.category) errors.category = $tranFunc('helpText.fieldRequired');
+		if (!productCreateInput.description) errors.description = $tranFunc('helpText.fieldRequired');
+
+		return errors;
+	});
+
 	let productVariantsInput = $state.raw<ProductVariantBulkCreateInput[]>([]);
 
-	const handlePrint = () => console.log($state.snapshot(productVariantsInput));
+	const handleSubmit = () => {
+		promptInputError = true;
+	};
 </script>
 
 <div class="m-auto rounded-lg bg-white w-full p-5 text-gray-600">
 	<ProductName bind:name={productCreateInput.name} />
-	<CategorySelector bind:categoryID={productCreateInput.category} />
+	<CategorySelector
+		bind:categoryID={productCreateInput.category}
+		error={promptInputError ? productInputErrors.category : undefined}
+	/>
 	<ProductAttributeEditor
 		categoryID={productCreateInput.category}
 		bind:attributes={productCreateInput.attributes!}
@@ -65,5 +84,5 @@
 	/>
 	<!-- <ProductPreorderEditor /> -->
 
-	<Button size="md" variant="filled" fullWidth onclick={handlePrint}>Submit</Button>
+	<Button size="md" variant="filled" fullWidth onclick={handleSubmit}>Submit</Button>
 </div>

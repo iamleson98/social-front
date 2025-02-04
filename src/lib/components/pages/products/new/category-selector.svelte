@@ -11,12 +11,14 @@
 	import { convertCategoryEdgesToMenuSelect } from './utils';
 	import { tranFunc } from '$i18n';
 	import { RequiredAt } from '$lib/components/ui';
+	import ErrorMsg from './error-msg.svelte';
 
 	type Props = {
 		categoryID?: string | null;
+		error?: string;
 	};
 
-	let { categoryID = $bindable<string | null | undefined>() }: Props = $props();
+	let { categoryID = $bindable<string | null | undefined>(), error }: Props = $props();
 
 	const NUMBER_OF_CATEGORIES_PER_FETCH = 35;
 
@@ -38,7 +40,11 @@
 
 <div class="mb-3">
 	<RequiredAt class="text-sm" label={$tranFunc('product.prdCategory')} required />
-	<div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+	<div
+		class="border rounded-lg p-3 {error
+			? 'border-red-200 bg-red-50'
+			: 'border-gray-200 bg-gray-50'}"
+	>
 		{#if $categoriesStore.fetching}
 			<div class="flex items-center gap-1">
 				{#each [null, null] as _, idx (idx)}
@@ -62,4 +68,6 @@
 			/>
 		{/if}
 	</div>
+
+	<ErrorMsg {error} />
 </div>

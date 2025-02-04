@@ -214,3 +214,9 @@
 {/snippet}
 
 <DropDown {trigger} options={[{ children: 'test' }, { children: 'another', startIcon: UserCog }]} />
+
+<Select
+	options={[{ value: '1', label: 'Option 1' }]}
+	variant="error"
+	subText="Something went wrong"
+/>
