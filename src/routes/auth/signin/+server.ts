@@ -3,8 +3,8 @@ import { ACCESS_TOKEN_KEY, CSRF_TOKEN_KEY, HTTPStatusBadRequest, HTTPStatusServe
 import { tranFunc } from "$i18n";
 import { cookieOpts, performServerSideGraphqlRequest } from "$lib/api/client";
 import type { Mutation, User } from "$lib/gql/graphql";
-import { USER_LOGIN_MUTATION_STORE } from "$lib/stores/api";
 import { get } from "svelte/store";
+import { USER_LOGIN_MUTATION_STORE } from "$lib/api";
 
 type Props = {
   email: string;

@@ -5,22 +5,20 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { tranFunc } from '$lib/i18n';
 	import { Checkbox, Input, PasswordInput } from '$lib/components/ui/Input';
-	import { z } from 'zod';
+	import { boolean, object, string, z } from 'zod';
 	import { operationStore, type OperationResultStore } from '$lib/api/operation';
 	import type { Mutation, MutationAccountRegisterArgs } from '$lib/gql/graphql';
 	import { USER_SIGNUP_MUTATION_STORE } from '$lib/api';
 
-	const SignupZodSchema = z
-		.object({
-			email: z
-				.string()
+	const SignupZodSchema = object({
+			email: string()
 				.email({ message: 'invalid email' })
 				.nonempty({ message: 'email is required' }),
-			password: z.string().nonempty({ message: 'password is required' }),
-			firstName: z.string().nonempty({ message: 'first name is required' }),
-			lastName: z.string().nonempty({ message: 'last name is required' }),
-			confirmPassword: z.string().nonempty({ message: 'confirm password is required' }),
-			termAndPoliciesAgree: z.boolean({ coerce: true }).default(false)
+			password: string().nonempty({ message: 'password is required' }),
+			firstName: string().nonempty({ message: 'first name is required' }),
+			lastName: string().nonempty({ message: 'last name is required' }),
+			confirmPassword: string().nonempty({ message: 'confirm password is required' }),
+			termAndPoliciesAgree: boolean({ coerce: true }).default(false)
 		})
 		.refine((data) => data.password === data.confirmPassword, {
 			message: 'passwords do not match',

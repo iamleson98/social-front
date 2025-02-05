@@ -1,5 +1,4 @@
 import type { Query } from '$lib/gql/graphql';
-import { USER_ME_QUERY_STORE } from '$lib/stores/api';
 import {
 	ACCESS_TOKEN_KEY,
 	HTTPStatusPermanentRedirect,
@@ -9,6 +8,7 @@ import { AppRoute } from '$lib/utils';
 import { performServerSideGraphqlRequest } from '$lib/api/client';
 import { tranFunc } from '$lib/i18n';
 import { get } from 'svelte/store';
+import { USER_ME_QUERY_STORE } from '$lib/api';
 
 
 export const load = async (event) => {

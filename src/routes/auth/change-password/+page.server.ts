@@ -1,6 +1,5 @@
 import {  performServerSideGraphqlRequest } from '$lib/api/client';
 import type { Mutation } from '$lib/gql/graphql';
-import { USER_SET_PASSWORD_MUTATION_STORE } from '$lib/stores/api/auth';
 import {
 	HTTPStatusBadRequest,
 	HTTPStatusServerError,
@@ -10,6 +9,7 @@ import {
 import type { Actions } from '@sveltejs/kit';
 import { tranFunc } from '$lib/i18n';
 import { get } from 'svelte/store';
+import { USER_SET_PASSWORD_MUTATION_STORE } from '$lib/api/auth';
 
 export const load = async () => {
 	return {
