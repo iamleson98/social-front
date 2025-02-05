@@ -23,6 +23,7 @@ export default {
 	changePassword: {
 		title: 'Thay đổi mật khẩu',
 		btnText: 'Đổi mật khẩu',
+		invalidUrl: 'Vui lòng sủe dụng địa chỉ URL có trong hòm thư của bạn.',
 	},
 	common: {
 		home: 'Trang chủ',

@@ -11,9 +11,10 @@
 	import { USER_SIGNUP_MUTATION_STORE } from '$lib/api';
 	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import { CHANNEL_KEY, defaultChannel } from '$lib/utils/consts';
-	import { PUBLIC_LOCAL_URL } from '$env/static/public';
+	import { PUBLIC_LOCAL_URL, PUBLIC_STORE_FRONT_URL } from '$env/static/public';
 	import { omit } from 'lodash-es';
 	import { slide } from 'svelte/transition';
+	import { dev } from '$app/environment';
 
 	const CHANNEL_SLUG = clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug);
 
@@ -48,7 +49,7 @@
 	type SignupProps = z.infer<typeof SignupZodSchema>;
 
 	let signupInfo = $state<SignupProps>({
-		redirectUrl: PUBLIC_LOCAL_URL,
+		redirectUrl: dev ? PUBLIC_LOCAL_URL : PUBLIC_STORE_FRONT_URL,
 		channel: CHANNEL_SLUG,
 		email: '',
 		password: '',
@@ -66,7 +67,6 @@
 
 		if (!parseResult.success) {
 			signupFormErrors = parseResult.error.formErrors.fieldErrors;
-			console.log(parseResult.error.format());
 			return false;
 		}
 

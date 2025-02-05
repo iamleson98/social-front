@@ -23,6 +23,7 @@ export default {
 	changePassword: {
 		title: 'パスワードを変更',
 		btnText: 'パスワードを変更する',
+		invalidUrl: 'URLを確認してください',
 	},
 	common: {
 		home: 'ホーム',
