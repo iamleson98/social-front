@@ -26,7 +26,9 @@ export const defaultSlideShowState: SlidehowState = Object.freeze({
 const productSlideShowStoreManager = () => {
   const store = writable<SlidehowState>(defaultSlideShowState);
 
-  const setMedias = async (medias: ProductMedia[]) => {
+  const setMedias = (medias: ProductMedia[]) => {
+    if (!medias.length) return;
+
     const newState: SlidehowState = {
       medias,
       activeIndex: 0,
@@ -36,7 +38,7 @@ const productSlideShowStoreManager = () => {
     store.set(newState);
   };
 
-  const handleNavigate = async (dir: 1 | -1) => {
+  const handleNavigate = (dir: 1 | -1) => {
     const newState = get(store);
 
     const nextIndex = newState.activeIndex + dir;
@@ -58,7 +60,7 @@ const productSlideShowStoreManager = () => {
     store.set(newState);
   };
 
-  const handleFocus = async (index: number) => {
+  const handleFocus = (index: number) => {
     const state = get(store);
     if (index !== state.activeIndex) store.set({ ...state, activeIndex: index });
   };

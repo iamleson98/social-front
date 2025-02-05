@@ -20,7 +20,7 @@
 		value = $bindable<SelectOption[]>([]),
 		class: className = '',
 		maxDisplay,
-		size,
+		size = 'md',
 		...rest
 	}: MultiSelectProps = $props();
 

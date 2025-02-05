@@ -7,7 +7,7 @@
 		$slideShowManager.medias.slice(...$slideShowManager.slicing)
 	);
 
-	const handleKeydown = (id: string) => (e: KeyboardEvent) => {
+	const handleKeydown = (e: KeyboardEvent) => {
 		switch (e.key) {
 			case 'ArrowLeft':
 				slideShowManager.handleNavigate(-1);
@@ -17,7 +17,7 @@
 	};
 </script>
 
-<svelte:window onkeydown={handleKeydown('slideShow')} />
+<svelte:window onkeydown={handleKeydown} />
 
 <div class="w-2/5 tablet:w-full flex flex-col gap-2">
 	<div

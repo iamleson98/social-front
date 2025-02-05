@@ -1,5 +1,6 @@
 <script lang="ts">
 	import CategorySelector from '$lib/components/pages/products/new/category-selector.svelte';
+	import CollectionAndTax from '$lib/components/pages/products/new/collections-and-tax.svelte';
 	import PackagingAndDelivery from '$lib/components/pages/products/new/packaging-and-delivery.svelte';
 	import ProductAttributeEditor from '$lib/components/pages/products/new/product-attribute-editor.svelte';
 	import ProductDescriptionEditorjsComponent from '$lib/components/pages/products/new/product-description-editorjs-component.svelte';
@@ -22,14 +23,15 @@
 			{ key: 'length', value: '0' },
 			{ key: 'width', value: '0' },
 			{ key: 'height', value: '0' }
-		]
+		],
+		collections: []
 	});
 
 	let productInputError = $state<Record<keyof ProductCreateInput, boolean>>({
 		attributes: false,
 		category: false,
 		chargeTaxes: true, // not supported yet
-		collections: true, // not supported yet
+		collections: true, // this field is optional
 		description: false,
 		externalReference: false,
 		metadata: true, // not supported yet
@@ -39,7 +41,7 @@
 		rating: true, // default set to 5 (highest)
 		seo: false,
 		slug: false,
-		taxClass: true, // not supported yet
+		taxClass: true, // optional
 		taxCode: true, // not supported yet
 		weight: false
 	});
@@ -73,7 +75,10 @@
 		bind:slug={productCreateInput.slug}
 		bind:ok={productInputError.seo}
 	/>
-	<!-- <DiscountByQuantity /> -->
+	<CollectionAndTax
+		bind:collections={productCreateInput.collections}
+		bind:taxClassID={productCreateInput.taxClass}
+	/>
 	<PackagingAndDelivery
 		bind:metadata={productCreateInput.metadata}
 		bind:weight={productCreateInput.weight}

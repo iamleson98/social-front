@@ -24,7 +24,7 @@ export type SelectProps<T extends SelectOption = SelectOption> = {
 export type MultiSelectProps<T extends SelectOption = SelectOption> = {
   options: T[];
   value: T[];
-  size: Exclude<SocialSize, 'xs'>
+  size?: Exclude<SocialSize, 'xs'>
   /** number of items to fully display, the rest will be summaried as "+n". if <= 0, throw Error  */
   maxDisplay?: number;
 } & Omit<InputProps, "value" | "size">;

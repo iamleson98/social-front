@@ -11,6 +11,7 @@ export type CustomInputProps = {
   variant?: Exclude<SocialVariant, 'warning'>;
   subText?: string;
   startIcon?: IconType;
+  /** size of the input, default = `md` */
   size?: SocialSize;
   /** a component to the end of input */
   action?: Snippet;
