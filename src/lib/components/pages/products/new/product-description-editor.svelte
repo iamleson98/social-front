@@ -90,7 +90,6 @@
 
 		const state = activeEditor.getEditorState();
 		const empty = state.toJSON();
-		console.log(empty);
 		return true;
 	};
 
