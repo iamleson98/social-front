@@ -152,8 +152,7 @@
 						{
 							children: $tranFunc('common.settings'),
 							href: AppRoute.ME,
-							startIcon: UserCog,
-							disabled: true
+							startIcon: UserCog
 						},
 						{ children: $tranFunc('common.logout'), onclick: handleLogout, startIcon: Logout }
 					]}
