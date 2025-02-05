@@ -28,22 +28,23 @@
 	});
 
 	let productInputError = $state<Record<keyof ProductCreateInput, boolean>>({
-		attributes: false,
-		category: false,
-		chargeTaxes: true, // not supported yet
-		collections: true, // this field is optional
-		description: false,
-		externalReference: false,
-		metadata: true, // not supported yet
-		name: false,
+		externalReference: true, // not supported yet
 		privateMetadata: true, // not supported yet
-		productType: false,
-		rating: true, // default set to 5 (highest)
-		seo: false,
-		slug: false,
+		collections: true, // this field is optional
+		chargeTaxes: true, // not supported yet
+		metadata: true, // not supported yet
 		taxClass: true, // optional
 		taxCode: true, // not supported yet
-		weight: false
+		rating: true, // default set to 5 (highest)
+		productType: true,
+		weight: true,
+		slug: true,
+
+		description: false,
+		attributes: false,
+		category: false,
+		name: false,
+		seo: false
 	});
 
 	let productVariantsInput = $state.raw<ProductVariantBulkCreateInput[]>([]);
