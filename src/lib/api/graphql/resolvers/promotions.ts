@@ -6,6 +6,7 @@ import { addPaginOptionsToQuery, createGraphqlPageInfo, dateToRFC3339, encodeBas
 import type { PaginationOptions } from "$lib/utils/utils";
 
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const resolvePromotions = async function (root: unknown, { first, last, sortBy, before, after }: QueryPromotionsArgs, context: YogaInitialContext): Promise<PromotionCountableConnection> {
   const db = await dbManager.getDatabaseConnection();
   let queryBuilder = db.getRepository(DiscountPromotion).createQueryBuilder();

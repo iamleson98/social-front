@@ -1,10 +1,10 @@
-import { cookieOpts, graphqlClient } from "$lib/client";
+import { cookieOpts, graphqlClient } from "$lib/api/client";
 import type { Mutation, MutationTokenRefreshArgs } from "$lib/gql/graphql";
-import { USER_REFRESH_TOKEN_MUTATION_STORE } from "$lib/stores/api";
 import { ACCESS_TOKEN_KEY, CSRF_TOKEN_KEY, HTTPStatusPermanentRedirect, REFRESH_TOKEN_KEY } from "$lib/utils/consts";
 import { json, redirect } from "@sveltejs/kit";
 import type { RequestEvent } from "./$types";
 import { AppRoute } from "$lib/utils";
+import { USER_REFRESH_TOKEN_MUTATION_STORE } from "$lib/api";
 
 
 type Props = {

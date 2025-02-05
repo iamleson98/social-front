@@ -90,7 +90,7 @@
 			: 'bg-gray-50 border-gray-200'}"
 	>
 		<!-- slug -->
-		<span class="text-xs">{$tranFunc('product.prdSlug')}</span>
+		 <RequiredAt class="text-xs" label={$tranFunc('product.prdSlug')} required />
 		<Input
 			placeholder={$tranFunc('product.prdSlug')}
 			size="sm"
@@ -103,7 +103,7 @@
 		/>
 
 		<!-- title -->
-		<span class="text-xs">{$tranFunc('product.seoTitle')}</span>
+		 <RequiredAt class="text-xs" label={$tranFunc('product.seoTitle')} required />
 		<Input
 			bind:value={innerSeo.title}
 			placeholder={$tranFunc('product.seoTitle')}
@@ -117,7 +117,7 @@
 		/>
 
 		<!-- description -->
-		<span class="text-xs">{$tranFunc('product.seoDescription')}</span>
+		 <RequiredAt class="text-xs" label={$tranFunc('product.seoDescription')} required />
 		<TextArea
 			bind:value={innerSeo.description}
 			placeholder={$tranFunc('product.seoDescription')}

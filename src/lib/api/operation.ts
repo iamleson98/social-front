@@ -1,4 +1,4 @@
-import { graphqlClient } from '$lib/client';
+import { graphqlClient } from '$lib/api/client';
 import {
 	createRequest,
 	type AnyVariables,

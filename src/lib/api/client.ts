@@ -11,17 +11,17 @@ import {
 	type OperationResult,
 	type OperationType,
 } from '@urql/core';
-import { AppRoute, getCookieByKey } from './utils';
+import { AppRoute, getCookieByKey } from '../utils';
 import { redirect, type RequestEvent } from '@sveltejs/kit';
 import { browser } from '$app/environment';
-import { ACCESS_TOKEN_KEY, CSRF_TOKEN_KEY, HTTPStatusTemporaryRedirect, REFRESH_TOKEN_KEY } from './utils/consts';
+import { ACCESS_TOKEN_KEY, CSRF_TOKEN_KEY, HTTPStatusTemporaryRedirect, REFRESH_TOKEN_KEY } from '../utils/consts';
 import { authExchange, type AuthUtilities } from '@urql/exchange-auth';
-import { USER_ME_QUERY_STORE } from './stores/api';
-import type { Query, User } from './gql/graphql';
-import { userStore } from './stores/auth';
+import type { Query, User } from '../gql/graphql';
+import { userStore } from '../stores/auth';
 import type { CookieSerializeOptions } from 'cookie';
 import { retryExchange } from '@urql/exchange-retry';
 import { PUBLIC_GRAPHQL_API_END_POINT } from '$env/static/public';
+import { USER_ME_QUERY_STORE } from '.';
 
 export const MAX_REFRESH_TOKEN_TRIES = 3;
 export const cookieOpts: Readonly<CookieSerializeOptions & { path: string }> = Object.freeze({

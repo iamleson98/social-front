@@ -1,4 +1,4 @@
-import { cookieOpts } from "$lib/client";
+import { cookieOpts } from "$lib/api/client";
 import { ACCESS_TOKEN_KEY, CSRF_TOKEN_KEY, HTTPStatusBadRequest, HTTPStatusSuccess, REFRESH_TOKEN_KEY } from "$lib/utils/consts";
 import { json } from "@sveltejs/kit";
 import type { RequestEvent } from "./$types";

@@ -1,7 +1,7 @@
 import { type Actions } from "@sveltejs/kit";
 import { ACCESS_TOKEN_KEY, CHANNEL_KEY, CSRF_TOKEN_KEY, defaultChannel, HTTPStatusBadRequest, HTTPStatusSuccess, REFRESH_TOKEN_KEY } from "$lib/utils/consts";
 import { USER_SIGNUP_MUTATION_STORE } from "$lib/stores/api";
-import { performServerSideGraphqlRequest } from "$lib/client";
+import { performServerSideGraphqlRequest } from "$lib/api/client";
 import type { Mutation } from "$lib/gql/graphql";
 import { tranFunc } from "$lib/i18n";
 import { get } from "svelte/store";

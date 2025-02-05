@@ -19,38 +19,34 @@
 		name: '',
 		metadata: [
 			// NOTE: the order must be 'length', 'width', 'height', because child item binds values based on order
-			{ key: 'length', value: '' },
-			{ key: 'width', value: '' },
-			{ key: 'height', value: '' }
+			{ key: 'length', value: '0' },
+			{ key: 'width', value: '0' },
+			{ key: 'height', value: '0' }
 		]
 	});
 
 	let productInputError = $state<Record<keyof ProductCreateInput, boolean>>({
 		attributes: false,
 		category: false,
-		chargeTaxes: false,
-		collections: false,
+		chargeTaxes: true, // not supported yet
+		collections: true, // not supported yet
 		description: false,
 		externalReference: false,
-		metadata: false,
+		metadata: true, // not supported yet
 		name: false,
-		privateMetadata: false,
+		privateMetadata: true, // not supported yet
 		productType: false,
-		rating: false,
+		rating: true, // default set to 5 (highest)
 		seo: false,
 		slug: false,
-		taxClass: false,
-		taxCode: false,
+		taxClass: true, // not supported yet
+		taxCode: true, // not supported yet
 		weight: false
 	});
-
-	let promptInputError = $state(false);
 
 	let productVariantsInput = $state.raw<ProductVariantBulkCreateInput[]>([]);
 
 	const handleSubmit = () => {
-		promptInputError = true;
-
 		console.log(productCreateInput);
 	};
 </script>
@@ -82,7 +78,12 @@
 		bind:metadata={productCreateInput.metadata}
 		bind:weight={productCreateInput.weight}
 	/>
-	<!-- <ProductPreorderEditor /> -->
 
-	<Button size="md" variant="filled" fullWidth onclick={handleSubmit}>Submit</Button>
+	<Button
+		size="md"
+		variant="filled"
+		fullWidth
+		onclick={handleSubmit}
+		disabled={!Object.values(productInputError).every(Boolean)}>Submit</Button
+	>
 </div>

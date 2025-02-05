@@ -3,9 +3,9 @@
 	import {
 		CATEGORIES_LIST_FOR_CREATE_PRODUCT,
 		type CategoryListForCreateProductInput
-	} from '$lib/stores/api/admin/product';
+	} from '$lib/api/admin/product';
 	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
-	import { operationStore } from '$lib/stores/api/operation';
+	import { operationStore } from '$lib/api/operation';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { MegaMenu } from '$lib/components/ui/MegaMenu';
 	import { convertCategoryEdgesToMenuSelect } from './utils';

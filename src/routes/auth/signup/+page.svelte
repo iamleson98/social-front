@@ -6,9 +6,9 @@
 	import { tranFunc } from '$lib/i18n';
 	import { Checkbox, Input, PasswordInput } from '$lib/components/ui/Input';
 	import { z } from 'zod';
-	import { operationStore, type OperationResultStore } from '$lib/stores/api/operation';
+	import { operationStore, type OperationResultStore } from '$lib/api/operation';
 	import type { Mutation, MutationAccountRegisterArgs } from '$lib/gql/graphql';
-	import { USER_SIGNUP_MUTATION_STORE } from '$lib/stores/api';
+	import { USER_SIGNUP_MUTATION_STORE } from '$lib/api';
 
 	const SignupZodSchema = z
 		.object({

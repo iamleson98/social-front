@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { graphqlClient } from '$lib/client';
+	import { graphqlClient } from '$lib/api/client';
 	import UserAddress from '$lib/components/common/user-address/user-address.svelte';
 	import { Edit } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
@@ -15,12 +15,12 @@
 		Query,
 		QueryChannelArgs
 	} from '$lib/gql/graphql';
-	import { CHANNEL_DETAILS_QUERY_STORE } from '$lib/stores/api/channels';
+	import { CHANNEL_DETAILS_QUERY_STORE } from '$lib/api/channels';
 	import {
 		CHECKOUT_BILLING_ADDRESS_UPDATE_MUTATION,
 		CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION
-	} from '$lib/stores/api/checkout';
-	import { operationStore } from '$lib/stores/api/operation';
+	} from '$lib/api/checkout';
+	import { operationStore } from '$lib/api/operation';
 	import { checkoutStore } from '$lib/stores/app';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { getCountryName } from '$lib/utils/address';

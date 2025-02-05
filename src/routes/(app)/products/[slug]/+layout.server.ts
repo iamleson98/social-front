@@ -1,11 +1,11 @@
 import { type Product as TypeProduct, type Query } from "$lib/gql/graphql";
-import { PRODUCT_DETAIL_QUERY_STORE } from "$lib/stores/api/product";
 import { CHANNEL_KEY, COUNTRY_CODE_KEY, defaultChannel, HTTPStatusBadRequest, HTTPStatusServerError, vnChannel } from "$lib/utils/consts";
 import { error } from "@sveltejs/kit";
-import { performServerSideGraphqlRequest } from "$lib/client";
+import { performServerSideGraphqlRequest } from "$lib/api/client";
 import type { WithContext, Product } from 'schema-dts';
 import { tranFunc } from "$i18n";
 import { get } from "svelte/store";
+import { PRODUCT_DETAIL_QUERY_STORE } from "$lib/api";
 
 
 export const load = async (event) => {

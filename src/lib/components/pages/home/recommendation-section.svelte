@@ -3,8 +3,8 @@
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
 	import type { Query, QueryPromotionArgs } from '$lib/gql/graphql';
-	import { operationStore } from '$lib/stores/api/operation';
-	import { PROMOTIONS_QUERY } from '$lib/stores/app/discount';
+	import { operationStore } from '$lib/api/operation';
+	import { PROMOTIONS_QUERY } from '$lib/api/discount';
 	import { AppRoute } from '$lib/utils';
 
 	const PROMOTION_FIRST = 4;

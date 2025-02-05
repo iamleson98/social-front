@@ -6,8 +6,8 @@
 	import {
 		PRODUCT_ATTRIBUTES_QUERY,
 		type CustomAttributesQueryArgs
-	} from '$lib/stores/api/admin/attribute';
-	import { operationStore } from '$lib/stores/api/operation';
+	} from '$lib/api/admin/attribute';
+	import { operationStore } from '$lib/api/operation';
 	import { defaultChannel } from '$lib/utils/consts';
 	import { slide } from 'svelte/transition';
 	import { tranFunc } from '$i18n';
@@ -175,7 +175,7 @@
 	<div class="mb-3">
 		<RequiredAt class="text-sm" label={$tranFunc('product.tabAttributes')} required />
 
-		<div class="bg-gray-50 rounded-lg border border-gray-200 p-3" transition:slide>
+		<div class="rounded-lg border p-3 {blurTriggers.some(Boolean) && !ok ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}" transition:slide>
 			{#if $attributeQueryStore.fetching}
 				<div class="flex items-center flex-wrap">
 					{#each [null, null] as _}

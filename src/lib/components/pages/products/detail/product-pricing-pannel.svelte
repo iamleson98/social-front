@@ -26,14 +26,14 @@
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Badge } from '$lib/components/ui/badge';
-	import { CHECKOUT_ADD_LINE_MUTATION } from '$lib/stores/api/checkout';
+	import { CHECKOUT_ADD_LINE_MUTATION } from '$lib/api/checkout';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
 	import { MegaMenu } from '$lib/components/ui/MegaMenu';
 	import { VIETNAM_COUNTRY_UNITS } from '$lib/utils/countries';
 	import { AppRoute } from '$lib/utils';
-	import { operationStore, type OperationResultStore } from '$lib/stores/api/operation';
+	import { operationStore, type OperationResultStore } from '$lib/api/operation';
 
 	type Props = {
 		productInformation: Omit<Product, 'variants'>;

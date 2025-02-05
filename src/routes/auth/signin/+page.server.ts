@@ -6,7 +6,7 @@ import {
 } from '$lib/utils/consts.js';
 import { redirect } from '@sveltejs/kit';
 import { AppRoute } from '$lib/utils';
-import { performServerSideGraphqlRequest } from '$lib/client';
+import { performServerSideGraphqlRequest } from '$lib/api/client';
 import { tranFunc } from '$lib/i18n';
 import { get } from 'svelte/store';
 

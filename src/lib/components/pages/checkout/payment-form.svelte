@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { graphqlClient } from '$lib/client';
+	import { graphqlClient } from '$lib/api/client';
 	import {
 		CheckoutAuthorizeStatusEnum,
 		CheckoutChargeStatusEnum,
@@ -11,7 +11,7 @@
 	import {
 		CHECKOUT_COMPLETE_MUTATION,
 		PAYMENT_GATEWAYS_INITIALIZE_MUTATION
-	} from '$lib/stores/api/checkout';
+	} from '$lib/api/checkout';
 	import { checkoutStore } from '$lib/stores/app';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import {
@@ -42,7 +42,7 @@
 	});
 
 	$effect(() => {
-		if ($checkoutStore && $checkoutStore.availablePaymentGateways.length) {
+		if ($checkoutStore && $checkoutStore?.availablePaymentGateways?.length) {
 			const paymentGateways = $checkoutStore.availablePaymentGateways.reduce<
 				PaymentGatewayToInitialize[]
 			>(

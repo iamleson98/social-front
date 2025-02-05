@@ -1,4 +1,4 @@
-import { pageRequiresAuthentication } from "$lib/client";
+import { pageRequiresAuthentication } from "$lib/api/client";
 
 export const load = async (event) => {
 	await pageRequiresAuthentication(event);

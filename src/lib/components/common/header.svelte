@@ -16,8 +16,8 @@
 	import { scale } from 'svelte/transition';
 	import { Input } from '../ui/Input';
 	import { IconButton } from '../ui/Button';
-	import { graphqlClient } from '$lib/client';
-	import { USER_ME_QUERY_STORE } from '$lib/stores/api';
+	import { graphqlClient } from '$lib/api/client';
+	import { USER_ME_QUERY_STORE } from '$lib/api';
 	import type { Query } from '$lib/gql/graphql';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { tranFunc } from '$i18n';

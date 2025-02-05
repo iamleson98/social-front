@@ -1,4 +1,4 @@
-import {  performServerSideGraphqlRequest } from '$lib/client';
+import {  performServerSideGraphqlRequest } from '$lib/api/client';
 import type { Mutation } from '$lib/gql/graphql';
 import { USER_SET_PASSWORD_MUTATION_STORE } from '$lib/stores/api/auth';
 import {

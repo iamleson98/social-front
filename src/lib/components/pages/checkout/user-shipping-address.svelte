@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { CountryCode, Query, QueryChannelArgs } from '$lib/gql/graphql';
-	import { operationStore } from '$lib/stores/api/operation';
-	import { CHANNEL_DETAILS_QUERY_STORE } from '$lib/stores/api/channels';
+	import { operationStore } from '$lib/api/operation';
+	import { CHANNEL_DETAILS_QUERY_STORE } from '$lib/api/channels';
 	import AddressCreateForm from './address-create-form.svelte';
 	import AddressEditForm from './address-edit-form.svelte';
 	import AddressList from './address-list.svelte';

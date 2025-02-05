@@ -4,10 +4,10 @@
 	import { defaultChannel } from '$lib/utils/consts';
 	import { tranFunc } from '$lib/i18n';
 	import { Input } from '$lib/components/ui/Input';
-	import { USER_REQUEST_PASSWORD_RESET_MUTATION_STORE } from '$lib/stores/api/auth';
+	import { USER_REQUEST_PASSWORD_RESET_MUTATION_STORE } from '$lib/api/auth';
 	import type { Mutation, MutationRequestPasswordResetArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { operationStore, type OperationResultStore } from '$lib/stores/api/operation';
+	import { operationStore, type OperationResultStore } from '$lib/api/operation';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { PUBLIC_LOCAL_URL } from '$env/static/public';
 	import { string } from 'zod';

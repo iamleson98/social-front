@@ -7,8 +7,8 @@
 		Query,
 		QueryAddressValidationRulesArgs
 	} from '$lib/gql/graphql';
-	import { operationStore } from '$lib/stores/api/operation';
-	import { ADDRESS_VALIDATION_RULES_QUERY } from '$lib/stores/api/account';
+	import { operationStore } from '$lib/api/operation';
+	import { ADDRESS_VALIDATION_RULES_QUERY } from '$lib/api/account';
 	import {
 		getOrderedAddressFields,
 		type AddressField,

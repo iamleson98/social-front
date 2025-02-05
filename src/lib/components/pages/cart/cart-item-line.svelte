@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { graphqlClient } from '$lib/client';
+	import { graphqlClient } from '$lib/api/client';
 	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 	import { Minus, Plus } from '$lib/components/icons';
 	import { IconButton } from '$lib/components/ui/Button';
@@ -15,7 +15,7 @@
 	import {
 		CHECKOUT_LINES_DELETE_MUTATION,
 		CHECKOUT_LINES_UPDATE_MUTATION
-	} from '$lib/stores/api/checkout';
+	} from '$lib/api/checkout';
 	import { checkoutStore } from '$lib/stores/app';
 	import { alertStore } from '$lib/stores/ui/alert-modal';
 	import { defaultSlideShowState } from '$lib/stores/ui/slideshow';

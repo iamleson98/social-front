@@ -5,8 +5,8 @@
 	import { onMount } from 'svelte';
 	import { checkoutStore } from '$lib/stores/app';
 	import { page } from '$app/state';
-	import { operationStore } from '$lib/stores/api/operation';
-	import { CHECKOUT_DETAILS_QUERY } from '$lib/stores/api/checkout';
+	import { operationStore } from '$lib/api/operation';
+	import { CHECKOUT_DETAILS_QUERY } from '$lib/api/checkout';
 	import type { Checkout, Query, QueryCheckoutArgs } from '$lib/gql/graphql';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 

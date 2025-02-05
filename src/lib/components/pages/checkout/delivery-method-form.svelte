@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { graphqlClient } from '$lib/client';
+	import { graphqlClient } from '$lib/api/client';
 	import { RadioButton } from '$lib/components/ui/Input';
 	import type { Maybe, Mutation, MutationCheckoutDeliveryMethodUpdateArgs } from '$lib/gql/graphql';
-	import { CHECKOUT_UPDATE_DELIVERY_METHOD_MUTATION } from '$lib/stores/api/checkout';
+	import { CHECKOUT_UPDATE_DELIVERY_METHOD_MUTATION } from '$lib/api/checkout';
 	import { checkoutStore } from '$lib/stores/app';
 	import { userStore } from '$lib/stores/auth';
 	import { toastStore } from '$lib/stores/ui/toast';

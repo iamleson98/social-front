@@ -54,7 +54,7 @@
 				bind:value
 				use:shortcuts={selectShortcutOptions}
 				use:debounceInput={inputDebounceOption}
-				class={`w-full text-sm rounded-lg ring-1 focus:ring-2 outline-none! field-sizing-content inline-block px-2.5 py-1 ${inputClass} ${INPUT_TYPES[variant].bg} ${startIcon ? 'ps-8' : ''} ${TEXT_AREA_SIZE_MAP[size]}`}
+				class={`w-full text-sm placeholder:opacity-55 rounded-lg ring-1 focus:ring-2 outline-none! field-sizing-content inline-block px-2.5 py-1 ${inputClass} ${INPUT_TYPES[variant].bg} ${startIcon ? 'ps-8' : ''} ${TEXT_AREA_SIZE_MAP[size]}`}
 				{...rest}
 			></textarea>
 

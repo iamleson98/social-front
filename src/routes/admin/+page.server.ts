@@ -1,4 +1,4 @@
-import { pageRequiresAuthentication } from "$lib/client";
+import { pageRequiresAuthentication } from "$lib/api/client";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async (event) => {

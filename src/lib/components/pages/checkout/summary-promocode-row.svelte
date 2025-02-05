@@ -9,8 +9,8 @@
 	import Money from './money.svelte';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Trash } from '$lib/components/icons';
-	import { graphqlClient } from '$lib/client';
-	import { CHECKOUT_REMOVE_PROMO_CODE_MUTATION } from '$lib/stores/api/checkout';
+	import { graphqlClient } from '$lib/api/client';
+	import { CHECKOUT_REMOVE_PROMO_CODE_MUTATION } from '$lib/api/checkout';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { toastStore } from '$lib/stores/ui/toast';
 
