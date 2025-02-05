@@ -13,6 +13,7 @@ export default {
 		confirmPasswordPlaceholder: 'Please confirm password',
 		agreeToTerms: 'I agree to the terms and conditions',
 		alreadyHasAccount: 'Already have an account?',
+		signupSuccess: 'Welcome to Sitename. An email is sent to your email address. Please check your inbox.',
 	},
 	resetPassword: {
 		title: 'Reset Password',
@@ -148,17 +149,18 @@ export default {
 		startGreaterEnd: 'Start must be less than end',
 		noResult: 'No result found. Please try again',
 		failedToLoad: 'Failed to load data. Please try again later',
-		failedToSignout: 'Failed to sign out. Please try again later',
+		errorOccured: 'An error occurred. Please try again later',
 		positiveInteger: 'Please enter positive integer.',
 		lengthInvalid: '{{name}} must have from {{min}} to {{max}} characters.',
 		initEditorErr: 'Failed to initialize editor. Please try again later',
-		thereIsError: 'There are some error(s). Please fix them to proceed.'
+		thereIsError: 'There are some error(s). Please fix them to proceed.',
+		doYouAgree: 'Are you agree with our term and policies?',
 	},
 	placeholders: {
 		enterPrdName: 'Enter product name',
 	},
 	pages: {
-		cart: 'Shopping Cart'	,
+		cart: 'Shopping Cart',
 		checkout: 'Checkout',
 		payment: 'Payment',
 		orderConfirm: 'Order Confirmation',

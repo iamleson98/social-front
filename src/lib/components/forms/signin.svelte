@@ -54,7 +54,7 @@
 	let signinFormErrors = $state.raw<Partial<Record<keyof SigninSchema, string[]>>>({});
 
 	let loading = $state(false);
-	let error = $state(null);
+	let signinError = $state(null);
 
 	const validateForm = () => {
 		const parseResult = signinSchema.safeParse(signinValue);
@@ -74,12 +74,19 @@
 		const loginResult = await fetch(AppRoute.AUTH_SIGNIN, {
 			method: 'POST',
 			body: JSON.stringify(signinValue)
-		}).then((res) => res.json());
+		})
+			.then((res) => res.json())
+			.catch(() =>
+				toastStore.send({
+					variant: 'error',
+					message: $tranFunc('error.errorOccured')
+				})
+			);
 
 		loading = false;
 
 		if (loginResult.status !== HTTPStatusSuccess) {
-			error = loginResult.error;
+			signinError = loginResult.error;
 			return;
 		}
 
@@ -104,9 +111,9 @@
 <div>
 	<h1 class="p-2 mb-4">{$tranFunc('signin.title')}</h1>
 
-	{#if error}
+	{#if signinError}
 		<Alert variant="error" class="mb-3" size="sm" bordered>
-			{error}
+			{signinError}
 		</Alert>
 	{/if}
 	<div class="mb-3">
@@ -129,6 +136,7 @@
 			onblur={validateForm}
 			bind:value={signinValue.password}
 			class="mb-1"
+			disabled={loading}
 			variant={signinFormErrors?.password?.length ? 'error' : 'info'}
 			required
 			showAction
@@ -143,6 +151,7 @@
 			size="sm"
 			class="mb-3"
 			bind:checked={signinValue.rememberMe}
+			disabled={loading}
 		/>
 
 		<Button variant="filled" onclick={handleLogin} size="sm" fullWidth {loading}>

@@ -48,5 +48,4 @@ export const POST = async (event) => {
     data: result.data?.tokenCreate?.user as User,
     status: HTTPStatusSuccess,
   });
-
 };

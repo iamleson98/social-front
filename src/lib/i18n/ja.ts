@@ -13,6 +13,7 @@ export default {
 		confirmPasswordPlaceholder: 'パスワードを確認してください',
 		agreeToTerms: '利用規約に同意します',
 		alreadyHasAccount: 'すでにアカウントをお持ちですか？',
+		signupSuccess: 'Welcome to Sitename. An email is sent to your email address. Please check your inbox.',
 	},
 	resetPassword: {
 		title: 'パスワードをリセット',
@@ -146,13 +147,14 @@ export default {
 		noVariantSelected: 'バリエーションを選択してください',
 		negativeNumber: '正の数を入力してください',
 		startGreaterEnd: '開始は終了より小さくなければなりません',
-		noResult: '結果が見つかりませんでした。もう一度お試しください',
-		failedToLoad: 'データの読み込みに失敗しました。後でもう一度お試しください',
-		failedToSignout: 'サインアウトに失敗しました。後でもう一度お試しください',
-		positiveInteger: 'Vui lòng nhập số nguyên dương',
+		noResult: '結果が見つかりませんでした。もう一度お試しくください',
+		failedToLoad: 'データの読み込みに失敗しました。後でもう一度お試しくください',
+		errorOccured: 'サインアウトに失敗しました。後でもう一度お試しくください',
+		positiveInteger: '正の整数を入力してください',
 		lengthInvalid: '{{name}} must have from {{min}} to {{max}} characters.',
 		initEditorErr: 'Failed to initialize editor. Please try again later',
-		thereIsError: 'There are some error(s). Please fix them to proceed.'
+		thereIsError: 'There are some error(s). Please fix them to proceed.',
+		doYouAgree: 'Are you agree with our term and policies?',
 	},
 	placeholders: {
 		enterPrdName: '製品名を入力してください',

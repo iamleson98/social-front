@@ -13,6 +13,7 @@ export default {
 		confirmPasswordPlaceholder: 'Vui lòng xác nhận mật khẩu',
 		agreeToTerms: 'Tôi đồng ý với các điều khoản và điều kiện',
 		alreadyHasAccount: 'Bạn đã có tài khoản?',
+		signupSuccess: 'Chào mừng bạn đến với Sitename. Vui lòng kiểm tra hòm thư để xác thực tài khoản.',
 	},
 	resetPassword: {
 		title: 'Yêu cầu đặt lại mật khẩu',
@@ -148,11 +149,12 @@ export default {
 		startGreaterEnd: 'Bắt đầu phải nhỏ hơn kết thúc',
 		noResult: 'Không tìm thấy kết quả. Vui lòng thử lại',
 		failedToLoad: 'Không thể tải dữ liệu. Vui lòng thử lại sau',
-		failedToSignout: 'Không thể đăng xuất. Vui lòng thử lại sau',
+		errorOccured: 'Đã có lỗi xảy ra. Vui lòng thử lại sau',
 		positiveInteger: 'Vui lòng nhập số nguyên dương.',
 		lengthInvalid: '{{name}} phải có độ dài từ {{min}} tới {{max}} ký tự.',
 		initEditorErr: 'Lỗi khởi chạy trình soạn thảo văn bản. Vui lòng thử lại sau.',
-		thereIsError: 'Có lỗi xảy ra. Bạn vui lòng sửa chúng.'
+		thereIsError: 'Có lỗi xảy ra. Bạn vui lòng sửa chúng.',
+		doYouAgree: 'Bạn có đồng ý với các điều khoản và chính sách của chúng tôi không?',
 	},
 	placeholders: {
 		enterPrdName: 'Nhập tên sản phẩm',

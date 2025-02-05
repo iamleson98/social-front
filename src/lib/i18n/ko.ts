@@ -13,6 +13,7 @@ export default {
 		confirmPasswordPlaceholder: '비밀번호를 확인해주세요',
 		agreeToTerms: '이용 약관에 동의합니다',
 		alreadyHasAccount: '이미 계정이 있으신가요?',
+		signupSuccess: 'Welcome to Sitename. An email is sent to your email address. Please check your inbox.',
 	},
 	resetPassword: {
 		title: '비밀번호 재설정',
@@ -148,11 +149,12 @@ export default {
 		startGreaterEnd: '시작은 끝보다 작아야 합니다',
 		noResult: '결과를 찾을 수 없습니다. 다시 시도해주세요',
 		failedToLoad: '데이터를 불러오지 못했습니다. 나중에 다시 시도해주세요',
-		failedToSignout: '로그아웃에 실패했습니다. 나중에 다시 시도해주세요',
-		positiveInteger: 'Vui lòng nhập số nguyên dương',
+		errorOccured: '로그아웃에 실패했습니다. 나중에 다시 시도해주세요',
+		positiveInteger: '양수를 입력해주세요',
 		lengthInvalid: '{{name}} must have from {{min}} to {{max}} characters.',
 		initEditorErr: 'Failed to initialize editor. Please try again later',
-		thereIsError: 'There are some error(s). Please fix them to proceed.'
+		thereIsError: 'There are some error(s). Please fix them to proceed.',
+		doYouAgree: 'Are you agree with our term and policies?',
 	},
 	placeholders: {
 		enterPrdName: '제품 이름을 입력해주세요',

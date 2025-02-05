@@ -12,13 +12,15 @@
 	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import { CHANNEL_KEY, defaultChannel } from '$lib/utils/consts';
 	import { PUBLIC_LOCAL_URL } from '$env/static/public';
+	import { omit } from 'lodash-es';
+	import { slide } from 'svelte/transition';
 
 	const CHANNEL_SLUG = clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug);
 
 	const SignupZodSchema = object({
 		email: string()
-			.email({ message: $tranFunc('error.invalidEmail') })
 			.nonempty({ message: $tranFunc('helpText.fieldRequired') })
+			.email({ message: $tranFunc('error.invalidEmail') })
 			.max(128, {
 				message: $tranFunc('error.lengthInvalid', {
 					name: $tranFunc('common.email'),
@@ -30,29 +32,41 @@
 		firstName: string().nonempty({ message: $tranFunc('helpText.fieldRequired') }),
 		lastName: string().nonempty({ message: $tranFunc('helpText.fieldRequired') }),
 		confirmPassword: string().nonempty({ message: $tranFunc('helpText.fieldRequired') }),
-		termAndPoliciesAgree: boolean({ coerce: true }).default(false),
-		redirectUrl: string(),
-		channel: string()
-	}).refine((data) => data.password !== data.confirmPassword, {
-		message: $tranFunc('error.passwordsNotMatch'),
-		path: ['confirmPassword']
-	});
+		termAndPoliciesAgree: boolean({ coerce: true }),
+		redirectUrl: string().min(1, { message: $tranFunc('helpText.fieldRequired') }),
+		channel: string().min(1, { message: $tranFunc('helpText.fieldRequired') })
+	})
+		.refine((data) => data.password === data.confirmPassword, {
+			message: $tranFunc('error.passwordsNotMatch'),
+			path: ['confirmPassword']
+		})
+		.refine((data) => !!data.termAndPoliciesAgree, {
+			message: $tranFunc('error.doYouAgree'),
+			path: ['termAndPoliciesAgree']
+		});
 
 	type SignupProps = z.infer<typeof SignupZodSchema>;
 
-	let signupInfo = $state<Partial<SignupProps>>({
+	let signupInfo = $state<SignupProps>({
 		redirectUrl: PUBLIC_LOCAL_URL,
-		channel: CHANNEL_SLUG
+		channel: CHANNEL_SLUG,
+		email: '',
+		password: '',
+		firstName: '',
+		lastName: '',
+		confirmPassword: '',
+		termAndPoliciesAgree: false
 	});
 	let signupFormErrors = $state.raw<Partial<Record<keyof SignupProps, string[]>>>({});
-	let signupQueryStore = $state<OperationResultStore<unknown>>();
+	let signupQueryStore =
+		$state<OperationResultStore<Pick<Mutation, 'accountRegister'>, MutationAccountRegisterArgs>>();
 
 	const validateForm = () => {
 		const parseResult = SignupZodSchema.safeParse(signupInfo);
 
 		if (!parseResult.success) {
 			signupFormErrors = parseResult.error.formErrors.fieldErrors;
-			console.log(signupFormErrors);
+			console.log(parseResult.error.format());
 			return false;
 		}
 
@@ -70,7 +84,7 @@
 			kind: 'mutation',
 			query: USER_SIGNUP_MUTATION_STORE,
 			variables: {
-				input: signupInfo
+				input: omit(signupInfo, ['confirmPassword', 'termAndPoliciesAgree'])
 			},
 			context: {
 				requestPolicy: 'network-only'
@@ -83,8 +97,16 @@
 	<h1 class="p-2 mb-4">{$tranFunc('signup.title')}</h1>
 
 	{#if $signupQueryStore?.error}
-		<Alert variant="error" class="mb-3" bordered>
+		<Alert variant="error" class="mb-3" bordered size="sm">
 			{$signupQueryStore.error.message}
+		</Alert>
+	{:else if $signupQueryStore?.data?.accountRegister?.errors.length}
+		<Alert variant="error" class="mb-3" bordered size="sm">
+			{$signupQueryStore.data.accountRegister.errors[0].message}
+		</Alert>
+	{:else if $signupQueryStore?.data?.accountRegister?.user}
+		<Alert variant="success" class="mb-3" bordered size="sm">
+			{$tranFunc('signup.signupSuccess')}
 		</Alert>
 	{/if}
 	<div class="mb-4">
@@ -149,14 +171,21 @@
 			onblur={validateForm}
 		/>
 
-		<Checkbox
-			label={$tranFunc('signup.agreeToTerms')}
-			class="mb-3"
-			bind:checked={signupInfo.termAndPoliciesAgree}
-			required
-			disabled={$signupQueryStore?.fetching}
-			size="sm"
-		/>
+		<div class="mb-3">
+			<Checkbox
+				label={$tranFunc('signup.agreeToTerms')}
+				bind:checked={signupInfo.termAndPoliciesAgree}
+				required
+				disabled={$signupQueryStore?.fetching}
+				onchange={validateForm}
+				size="sm"
+			/>
+			{#if signupFormErrors?.termAndPoliciesAgree?.length}
+				<div class="text-xs text-red-600" transition:slide>
+					{signupFormErrors.termAndPoliciesAgree[0]}
+				</div>
+			{/if}
+		</div>
 
 		<Button
 			variant="filled"
@@ -165,6 +194,7 @@
 			fullWidth
 			onclick={handleSignup}
 			loading={$signupQueryStore?.fetching}
+			disabled={$signupQueryStore?.fetching}
 		>
 			{$tranFunc('signup.signupButton')}
 		</Button>

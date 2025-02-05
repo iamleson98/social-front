@@ -57,7 +57,7 @@
 		if (parsedResult.status !== HTTPStatusSuccess) {
 			toastStore.send({
 				variant: 'error',
-				message: $tranFunc('error.failedToSignout')
+				message: $tranFunc('error.errorOccured')
 			});
 			return;
 		}

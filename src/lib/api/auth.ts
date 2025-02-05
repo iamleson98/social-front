@@ -30,6 +30,7 @@ export const USER_SIGNUP_MUTATION_STORE = gql`
 		accountRegister(input: $input) {
 			user {
 				id
+				email
 			}
 			errors {
 				field

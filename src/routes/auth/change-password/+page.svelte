@@ -1,29 +1,21 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { goto } from '$app/navigation';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button } from '$lib/components/ui';
-	import { AppRoute } from '$lib/utils';
-	import { HTTPStatusSuccess } from '$lib/utils/consts';
-	import type { ActionData } from './$types';
 	import { page } from '$app/state';
 	import { PasswordInput } from '$lib/components/ui/Input';
 	import { tranFunc } from '$i18n';
+	import { object, string } from 'zod';
 
-	interface Props {
-		form: ActionData;
-	}
-
-	let { form }: Props = $props();
-
-	$effect(() => {
-		if (form?.status === HTTPStatusSuccess) {
-			let timeout = setTimeout(() => {
-				clearTimeout(timeout);
-				goto(AppRoute.AUTH_SIGNIN, { invalidateAll: true });
-			}, 3000);
-		}
+	const ChangePasswordSchema = object({
+		password: string().nonempty({ message: $tranFunc('helpText.fieldRequired') }),
+		confirmPassword: string().nonempty({ message: $tranFunc('helpText.fieldRequired') })
+	}).refine((data) => data.password === data.confirmPassword, {
+		message: $tranFunc('error.passwordsNotMatch'),
+		path: ['confirmPassword']
 	});
+
+	let changePasswordStore = $state<>()
 
 	let newPassword = $state('');
 	let confirmNewPassword = $state('');
