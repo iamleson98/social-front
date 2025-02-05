@@ -3,10 +3,10 @@ import { CHANNEL_KEY, defaultChannel, HTTPStatusBadRequest, HTTPStatusServerErro
 import validator from 'validator';
 import { tranFunc } from "$i18n";
 import { performServerSideGraphqlRequest } from "$lib/api/client";
-import { CATEGORY_DETAIL_QUERY_STORE } from "$lib/stores/api";
 import type { Query } from "$lib/gql/graphql";
-import type { CategoryDetailQueryArgs } from "$lib/stores/api/product";
 import { get } from "svelte/store";
+import { CATEGORY_DETAIL_QUERY_STORE } from "$lib/api";
+import type { CategoryDetailQueryArgs } from "$lib/api/product";
 
 
 export const load = async (event) => {
