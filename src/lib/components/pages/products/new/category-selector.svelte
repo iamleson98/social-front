@@ -39,7 +39,6 @@
 	});
 
 	const handleCategorySelection = (newCateId: string | null) => {
-		console.log('ol')
 		categoryError = newCateId ? undefined : $tranFunc('helpText.fieldRequired');
 		categoryID = newCateId;
 	};
@@ -50,7 +49,7 @@
 </script>
 
 <div class="mb-3">
-	<RequiredAt class="text-sm" label={$tranFunc('product.prdCategory')} required />
+	<RequiredAt class="text-sm" label={$tranFunc('product.prdCategory')} required pos='end' />
 	<div
 		class="border rounded-lg p-3 {categoryError
 			? 'border-red-200 bg-red-50'

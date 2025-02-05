@@ -71,6 +71,8 @@ export default {
 		minimal_price: 'giá tối thiểu',
 		price: 'giá',
 		advanced: 'nâng cao',
+		email: 'Email',
+		password: 'Mật khẩu',
 	},
 	product: {
 		chooseAddress: 'Vui lòng chọn địa chỉ',

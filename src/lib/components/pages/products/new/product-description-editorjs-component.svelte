@@ -22,7 +22,7 @@
 </script>
 
 <div class="mb-3">
-	<RequiredAt class="text-sm" label={$tranFunc('product.prdDescription')} required />
+	<RequiredAt class="text-sm" label={$tranFunc('product.prdDescription')} required pos="end" />
 
 	<div
 		class="rounded-lg border p-3 {!ok && descriptionError

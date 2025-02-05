@@ -71,6 +71,8 @@ export default {
 		minimal_price: '最小価格',
 		price: '価格',
 		advanced: '進化',
+		email: 'メールアドレス',
+		password: 'パスワード',
 	},
 	product: {
 		chooseAddress: '住所を選択してください',

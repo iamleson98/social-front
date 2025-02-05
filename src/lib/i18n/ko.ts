@@ -71,6 +71,8 @@ export default {
 		minimal_price: '최소 가격',
 		price: '가격',
 		advanced: '연급',
+		email: '이메일',
+		password: '비밀번호',
 	},
 	product: {
 		chooseAddress: '주소를 선택해주세요',

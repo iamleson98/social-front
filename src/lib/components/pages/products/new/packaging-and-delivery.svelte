@@ -28,7 +28,7 @@
 {/snippet}
 
 <div class="mb-3">
-	<RequiredAt class="text-sm" label={$tranFunc('common.packaging')} required />
+	<RequiredAt class="text-sm" label={$tranFunc('common.packaging')} required pos="end" />
 
 	<div class="flex items-center text-xs gap-2 rounded-lg bg-gray-50 border border-gray-200 p-3">
 		<div class="w-3/12">

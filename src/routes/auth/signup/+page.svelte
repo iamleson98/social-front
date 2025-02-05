@@ -9,38 +9,59 @@
 	import { operationStore, type OperationResultStore } from '$lib/api/operation';
 	import type { Mutation, MutationAccountRegisterArgs } from '$lib/gql/graphql';
 	import { USER_SIGNUP_MUTATION_STORE } from '$lib/api';
+	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
+	import { CHANNEL_KEY, defaultChannel } from '$lib/utils/consts';
+	import { PUBLIC_LOCAL_URL } from '$env/static/public';
+
+	const CHANNEL_SLUG = clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug);
 
 	const SignupZodSchema = object({
-			email: string()
-				.email({ message: 'invalid email' })
-				.nonempty({ message: 'email is required' }),
-			password: string().nonempty({ message: 'password is required' }),
-			firstName: string().nonempty({ message: 'first name is required' }),
-			lastName: string().nonempty({ message: 'last name is required' }),
-			confirmPassword: string().nonempty({ message: 'confirm password is required' }),
-			termAndPoliciesAgree: boolean({ coerce: true }).default(false)
-		})
-		.refine((data) => data.password === data.confirmPassword, {
-			message: 'passwords do not match',
-			path: ['confirmPassword']
-		})
-		.innerType();
+		email: string()
+			.email({ message: $tranFunc('error.invalidEmail') })
+			.nonempty({ message: $tranFunc('helpText.fieldRequired') })
+			.max(128, {
+				message: $tranFunc('error.lengthInvalid', {
+					name: $tranFunc('common.email'),
+					max: 128,
+					min: 1
+				})
+			}),
+		password: string().nonempty({ message: $tranFunc('helpText.fieldRequired') }),
+		firstName: string().nonempty({ message: $tranFunc('helpText.fieldRequired') }),
+		lastName: string().nonempty({ message: $tranFunc('helpText.fieldRequired') }),
+		confirmPassword: string().nonempty({ message: $tranFunc('helpText.fieldRequired') }),
+		termAndPoliciesAgree: boolean({ coerce: true }).default(false),
+		redirectUrl: string(),
+		channel: string()
+	}).refine((data) => data.password !== data.confirmPassword, {
+		message: $tranFunc('error.passwordsNotMatch'),
+		path: ['confirmPassword']
+	});
 
 	type SignupProps = z.infer<typeof SignupZodSchema>;
 
-	let signupInfo = $state<Partial<SignupProps>>({});
-	let signupErrors = $state.raw<Partial<Record<keyof SignupProps, string>>>({});
+	let signupInfo = $state<Partial<SignupProps>>({
+		redirectUrl: PUBLIC_LOCAL_URL,
+		channel: CHANNEL_SLUG
+	});
+	let signupFormErrors = $state.raw<Partial<Record<keyof SignupProps, string[]>>>({});
+	let signupQueryStore = $state<OperationResultStore<unknown>>();
 
-	let signupQueryStore: OperationResultStore<unknown>;
-
-	const handleSignup = async () => {
+	const validateForm = () => {
 		const parseResult = SignupZodSchema.safeParse(signupInfo);
 
 		if (!parseResult.success) {
-			console.log(parseResult.error?.formErrors);
-			// signupErrors = parseResult.error?.formErrors;
-			return;
+			signupFormErrors = parseResult.error.formErrors.fieldErrors;
+			console.log(signupFormErrors);
+			return false;
 		}
+
+		signupFormErrors = {};
+		return true;
+	};
+
+	const handleSignup = async () => {
+		if (!validateForm()) return;
 
 		signupQueryStore = operationStore<
 			Pick<Mutation, 'accountRegister'>,
@@ -48,20 +69,14 @@
 		>({
 			kind: 'mutation',
 			query: USER_SIGNUP_MUTATION_STORE,
-			variables: {}
+			variables: {
+				input: signupInfo
+			},
+			context: {
+				requestPolicy: 'network-only'
+			}
 		});
 	};
-
-	let passwordDontMatch = $derived(signupInfo.password !== signupInfo.confirmPassword);
-	let signupButtonDisabled = $derived(
-		$signupQueryStore?.fetching ||
-			!signupInfo.firstName?.trim() ||
-			!signupInfo.lastName?.trim() ||
-			!signupInfo.email?.trim() ||
-			!signupInfo.password ||
-			!signupInfo.confirmPassword ||
-			!signupInfo.termAndPoliciesAgree
-	);
 </script>
 
 <div class="w-md rounded-md p-2">
@@ -73,21 +88,31 @@
 		</Alert>
 	{/if}
 	<div class="mb-4">
-		<div class="flex flex-row mobile-m:flex-col justify-between items-center gap-2 mb-2">
-			<Input
-				type="text"
-				placeholder={$tranFunc('common.firstName')}
-				required
-				disabled={$signupQueryStore?.fetching}
-				bind:value={signupInfo.firstName}
-			/>
-			<Input
-				type="text"
-				placeholder={$tranFunc('common.lastName')}
-				required
-				disabled={$signupQueryStore?.fetching}
-				bind:value={signupInfo.lastName}
-			/>
+		<div class="flex flex-row mobile-m:flex-col justify-between items-start gap-2 mb-2">
+			<div class="w-1/2">
+				<Input
+					type="text"
+					placeholder={$tranFunc('common.firstName')}
+					required
+					disabled={$signupQueryStore?.fetching}
+					bind:value={signupInfo.firstName}
+					onblur={validateForm}
+					variant={signupFormErrors?.firstName?.length ? 'error' : 'info'}
+					subText={signupFormErrors?.firstName?.length ? signupFormErrors.firstName[0] : ''}
+				/>
+			</div>
+			<div class="w-1/2">
+				<Input
+					type="text"
+					placeholder={$tranFunc('common.lastName')}
+					required
+					disabled={$signupQueryStore?.fetching}
+					bind:value={signupInfo.lastName}
+					onblur={validateForm}
+					variant={signupFormErrors?.lastName?.length ? 'error' : 'info'}
+					subText={signupFormErrors?.lastName?.length ? signupFormErrors.lastName[0] : ''}
+				/>
+			</div>
 		</div>
 		<Input
 			type="text"
@@ -97,15 +122,20 @@
 			disabled={$signupQueryStore?.fetching}
 			bind:value={signupInfo.email}
 			startIcon={Email}
+			onblur={validateForm}
+			variant={signupFormErrors?.email?.length ? 'error' : 'info'}
+			subText={signupFormErrors?.email?.length ? signupFormErrors.email[0] : ''}
 		/>
 		<PasswordInput
 			placeholder={$tranFunc('common.passwordPlaceholder')}
 			bind:value={signupInfo.password}
 			disabled={$signupQueryStore?.fetching}
 			class="mb-2"
-			variant={passwordDontMatch ? 'error' : 'info'}
+			variant={signupFormErrors?.password?.length ? 'error' : 'info'}
+			subText={signupFormErrors?.password?.length ? signupFormErrors.password[0] : ''}
 			required
 			showAction
+			onblur={validateForm}
 		/>
 		<PasswordInput
 			placeholder={$tranFunc('signup.confirmPasswordPlaceholder')}
@@ -113,8 +143,10 @@
 			disabled={$signupQueryStore?.fetching}
 			class="mb-3"
 			showAction={false}
-			variant={passwordDontMatch ? 'error' : 'info'}
+			variant={signupFormErrors?.confirmPassword?.length ? 'error' : 'info'}
+			subText={signupFormErrors?.confirmPassword?.length ? signupFormErrors.confirmPassword[0] : ''}
 			required
+			onblur={validateForm}
 		/>
 
 		<Checkbox
@@ -131,8 +163,8 @@
 			type="submit"
 			size="sm"
 			fullWidth
-			disabled={signupButtonDisabled}
 			onclick={handleSignup}
+			loading={$signupQueryStore?.fetching}
 		>
 			{$tranFunc('signup.signupButton')}
 		</Button>

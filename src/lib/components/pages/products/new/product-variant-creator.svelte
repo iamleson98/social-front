@@ -517,7 +517,7 @@
 {/snippet}
 
 <div class="mb-3">
-	<RequiredAt class="text-sm" label={$tranFunc('product.variants')} required />
+	<RequiredAt class="text-sm" label={$tranFunc('product.variants')} required pos="end" />
 
 	<div
 		class={`rounded-lg w-full border p-3 ${hasGeneralError ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}`}

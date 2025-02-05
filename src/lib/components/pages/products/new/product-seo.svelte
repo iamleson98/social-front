@@ -82,7 +82,7 @@
 </script>
 
 <div class="mb-3">
-	<RequiredAt class="text-sm" label={$tranFunc('product.seo')} required />
+	<RequiredAt class="text-sm" label={$tranFunc('product.seo')} required pos='end' />
 
 	<div
 		class="rounded-lg border p-3 {Object.values(seoErrors).some(Boolean)
@@ -90,7 +90,6 @@
 			: 'bg-gray-50 border-gray-200'}"
 	>
 		<!-- slug -->
-		 <RequiredAt class="text-xs" label={$tranFunc('product.prdSlug')} required />
 		<Input
 			placeholder={$tranFunc('product.prdSlug')}
 			size="sm"
@@ -100,10 +99,12 @@
 			onblur={handleValueChange}
 			variant={seoErrors?.slug?.length ? 'error' : 'info'}
 			subText={seoErrors?.slug?.length ? seoErrors.slug[0] : undefined}
+			required
+			label={$tranFunc('product.prdSlug')}
 		/>
 
 		<!-- title -->
-		 <RequiredAt class="text-xs" label={$tranFunc('product.seoTitle')} required />
+		 <!-- <RequiredAt class="text-xs" label={$tranFunc('product.seoTitle')} required /> -->
 		<Input
 			bind:value={innerSeo.title}
 			placeholder={$tranFunc('product.seoTitle')}
@@ -114,21 +115,26 @@
 			onblur={handleValueChange}
 			variant={seoErrors?.title?.length ? 'error' : 'info'}
 			subText={seoErrors?.title?.length ? seoErrors.title[0] : undefined}
+			label={$tranFunc('product.seoTitle')}
+			required
 		/>
 
 		<!-- description -->
-		 <RequiredAt class="text-xs" label={$tranFunc('product.seoDescription')} required />
+		 <!-- <RequiredAt class="text-xs" label={$tranFunc('product.seoDescription')} required /> -->
 		<TextArea
 			bind:value={innerSeo.description}
 			placeholder={$tranFunc('product.seoDescription')}
 			type="text"
 			inputClass="min-h-20"
+			size="sm"
 			onblur={handleValueChange}
 			inputDebounceOption={{ onInput: handleValueChange }}
 			variant={seoErrors?.description?.length ? 'error' : 'info'}
 			subText={seoErrors?.description?.length
 				? seoErrors.description[0]
 				: `${seo?.description?.length || 0} / ${SEO_DESCRIPTION_MAX_LENGTH}`}
+			label={$tranFunc('product.seoDescription')}
+			required
 		/>
 	</div>
 

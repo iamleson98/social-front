@@ -43,7 +43,7 @@
 
 <!-- product name -->
 <div class="mb-2">
-	<RequiredAt class="text-sm" label={$tranFunc('product.prdName')} required />
+	<!-- <RequiredAt class="text-sm" label={$tranFunc('product.prdName')} required /> -->
 	<Input
 		placeholder={$tranFunc('placeholders.enterPrdName')}
 		size="md"
@@ -52,6 +52,8 @@
 		inputDebounceOption={{ onInput: handleNameChange }}
 		variant={nameError ? 'error' : undefined}
 		subText={nameError || nameCharCount}
+		required
+		label={$tranFunc('product.prdName')}
 	/>
 	<div class="text-right">
 		<span class="text-xs">{NOW.toDateString()}</span>

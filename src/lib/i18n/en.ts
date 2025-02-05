@@ -71,6 +71,8 @@ export default {
 		minimal_price: 'minimal price',
 		price: 'price',
 		advanced: 'advanced',
+		email: 'Email',
+		password: 'Password',
 	},
 	product: {
 		chooseAddress: 'Please choose address',
