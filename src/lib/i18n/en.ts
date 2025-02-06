@@ -23,6 +23,7 @@ export default {
 	changePassword: {
 		title: 'Set new password',
 		btnText: 'Change password',
+		changePasswordSuccess: 'Your password has been changed successfully.',
 	},
 	common: {
 		home: 'Home',

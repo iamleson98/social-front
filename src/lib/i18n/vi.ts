@@ -23,6 +23,7 @@ export default {
 	changePassword: {
 		title: 'Thay đổi mật khẩu',
 		btnText: 'Đổi mật khẩu',
+		changePasswordSuccess: 'Mật khẩu cuối cùng đã được thay đổi thành công.',
 	},
 	common: {
 		home: 'Trang chủ',
