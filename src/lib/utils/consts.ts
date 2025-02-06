@@ -168,3 +168,30 @@ export interface ParsedPaymentGateway<ID extends string, TData extends Record<st
 };
 
 export type AdyenCheckoutInstance = Awaited<ReturnType<typeof AdyenCheckout>>;
+
+export const LATITUDE = 'LATITUDE';
+export const LONGITUDE = 'LONGITUDE';
+
+export type NominatimOsmProps = {
+  place_id: number;
+  license: string;
+  osm_type: string;
+  osm_id: number;
+  lat: string;
+  lon: string;
+  class: string;
+  type: string;
+  place_rank: number;
+  importance: number;
+  addresstype: string;
+  name: string;
+  display_name: string;
+  address: {
+    village: string;
+    county: string;
+    city: string;
+    country: string;
+    country_code: string;
+  };
+  boundingbox: string[];
+};

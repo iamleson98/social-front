@@ -127,6 +127,7 @@ export const USER_REQUEST_PASSWORD_RESET_MUTATION_STORE = gql`
 	}
 `;
 
+/** used for authenticated user update t¥his password  */
 export const USER_CHANGE_PASSWORD_MUTATION_STORE = gql`
 	mutation ChangePassword($oldPassword: String!, $newPassword: String!) {
 		passwordChange(newPassword: $newPassword, oldPassword: $oldPassword) {
@@ -135,10 +136,14 @@ export const USER_CHANGE_PASSWORD_MUTATION_STORE = gql`
 				message
 				code
 			}
+			user {
+				id
+			}
 		}
 	}
 `;
 
+/** used for resetting password */
 export const USER_SET_PASSWORD_MUTATION_STORE = gql`
 	mutation SetPassword($token: String!, $email: String!, $password: String!) {
 		setPassword(email: $email, token: $token, password: $password) {

@@ -15,7 +15,6 @@
 	};
 
 	const handleClick = () => {
-		console.log('clicked');
 		openMenu = !openMenu;
 	};
 </script>

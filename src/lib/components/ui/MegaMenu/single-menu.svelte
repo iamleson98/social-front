@@ -12,7 +12,7 @@
 		if (disabled) return;
 
 		activeItemIndex = index;
-		onSelect(items[index]);
+		onSelect?.(items[index]);
 	};
 </script>
 
@@ -28,8 +28,8 @@
 			aria-disabled={disabled}
 		>
 			<span>{item.title}</span>
-			{#if activeItemIndex === idx}
-				<span in:fly={{ x: -10 }}>
+			{#if activeItemIndex === idx && item.children?.length}
+				<span transition:fly={{ x: -10 }}>
 					<Icon icon={ChevronRight} />
 				</span>
 			{/if}

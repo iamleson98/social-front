@@ -24,6 +24,7 @@ export default {
 		title: 'パスワードを変更',
 		btnText: 'パスワードを変更する',
 		changePasswordSuccess: 'パスワードが正常に変更されました。',
+		invalidUrl: 'URLを確認してください',
 	},
 	common: {
 		home: 'ホーム',

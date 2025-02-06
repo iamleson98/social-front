@@ -7,19 +7,24 @@
 	import { Checkbox, Input, PasswordInput } from '$lib/components/ui/Input';
 	import { boolean, object, string, z } from 'zod';
 	import { operationStore, type OperationResultStore } from '$lib/api/operation';
-	import type { Mutation, MutationAccountRegisterArgs } from '$lib/gql/graphql';
+	import type { CountryCode, Mutation, MutationAccountRegisterArgs } from '$lib/gql/graphql';
 	import { USER_SIGNUP_MUTATION_STORE } from '$lib/api';
 	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import { CHANNEL_KEY, defaultChannel } from '$lib/utils/consts';
-	import { PUBLIC_LOCAL_URL } from '$env/static/public';
+	import { PUBLIC_LOCAL_URL, PUBLIC_STORE_FRONT_URL } from '$env/static/public';
 	import { omit } from 'lodash-es';
 	import { slide } from 'svelte/transition';
+	import { dev } from '$app/environment';
+	import Language from '$lib/components/common/country-language/language.svelte';
+	import Country from '$lib/components/common/country-language/country.svelte';
+	import { channels } from '$lib/utils/channels';
 
 	const CHANNEL_SLUG = clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug);
+	const FIELD_REQUIRED_MSG = $tranFunc('helpText.fieldRequired');
 
 	const SignupZodSchema = object({
 		email: string()
-			.nonempty({ message: $tranFunc('helpText.fieldRequired') })
+			.nonempty({ message: FIELD_REQUIRED_MSG })
 			.email({ message: $tranFunc('error.invalidEmail') })
 			.max(128, {
 				message: $tranFunc('error.lengthInvalid', {
@@ -28,13 +33,14 @@
 					min: 1
 				})
 			}),
-		password: string().nonempty({ message: $tranFunc('helpText.fieldRequired') }),
-		firstName: string().nonempty({ message: $tranFunc('helpText.fieldRequired') }),
-		lastName: string().nonempty({ message: $tranFunc('helpText.fieldRequired') }),
-		confirmPassword: string().nonempty({ message: $tranFunc('helpText.fieldRequired') }),
+		password: string().nonempty({ message: FIELD_REQUIRED_MSG }),
+		firstName: string().nonempty({ message: FIELD_REQUIRED_MSG }),
+		lastName: string().nonempty({ message: FIELD_REQUIRED_MSG }),
+		confirmPassword: string().nonempty({ message: FIELD_REQUIRED_MSG }),
 		termAndPoliciesAgree: boolean({ coerce: true }),
-		redirectUrl: string().min(1, { message: $tranFunc('helpText.fieldRequired') }),
-		channel: string().min(1, { message: $tranFunc('helpText.fieldRequired') })
+		redirectUrl: string().min(1, { message: FIELD_REQUIRED_MSG }),
+		channel: string().min(1, { message: FIELD_REQUIRED_MSG }),
+		languageCode: string()
 	})
 		.refine((data) => data.password === data.confirmPassword, {
 			message: $tranFunc('error.passwordsNotMatch'),
@@ -48,25 +54,37 @@
 	type SignupProps = z.infer<typeof SignupZodSchema>;
 
 	let signupInfo = $state<SignupProps>({
-		redirectUrl: PUBLIC_LOCAL_URL,
+		redirectUrl: dev ? PUBLIC_LOCAL_URL : PUBLIC_STORE_FRONT_URL,
 		channel: CHANNEL_SLUG,
 		email: '',
 		password: '',
 		firstName: '',
 		lastName: '',
 		confirmPassword: '',
-		termAndPoliciesAgree: false
+		termAndPoliciesAgree: false,
+		languageCode: ''
 	});
+	let countryCode = $state<CountryCode>();
 	let signupFormErrors = $state.raw<Partial<Record<keyof SignupProps, string[]>>>({});
 	let signupQueryStore =
 		$state<OperationResultStore<Pick<Mutation, 'accountRegister'>, MutationAccountRegisterArgs>>();
+
+	$effect(() => {
+		if (countryCode) {
+			for (const chan of channels) {
+				if (chan.countries.includes(countryCode)) {
+					signupInfo.channel = chan.slug;
+					break;
+				}
+			}
+		}
+	});
 
 	const validateForm = () => {
 		const parseResult = SignupZodSchema.safeParse(signupInfo);
 
 		if (!parseResult.success) {
 			signupFormErrors = parseResult.error.formErrors.fieldErrors;
-			console.log(parseResult.error.format());
 			return false;
 		}
 
@@ -163,13 +181,17 @@
 			placeholder={$tranFunc('signup.confirmPasswordPlaceholder')}
 			bind:value={signupInfo.confirmPassword}
 			disabled={$signupQueryStore?.fetching}
-			class="mb-3"
+			class="mb-2"
 			showAction={false}
 			variant={signupFormErrors?.confirmPassword?.length ? 'error' : 'info'}
 			subText={signupFormErrors?.confirmPassword?.length ? signupFormErrors.confirmPassword[0] : ''}
 			required
 			onblur={validateForm}
 		/>
+		<div class="flex mb-2 items-start gap-2">
+			<Country class="w-1/2" bind:singleValue={countryCode} />
+			<Language class="w-1/2" autoDefault bind:value={signupInfo.languageCode} />
+		</div>
 
 		<div class="mb-3">
 			<Checkbox

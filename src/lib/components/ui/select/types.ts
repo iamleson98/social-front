@@ -21,10 +21,12 @@ export type SelectProps<T extends SelectOption = SelectOption> = {
   onchange?: (opt?: T) => void;
 } & Omit<InputProps, 'value' | 'onchange'> & Omit<HTMLSelectAttributes, 'size' | 'onchange'>;
 
+export type MultiSelectSizeType = Exclude<SocialSize, 'xs'>;
+
 export type MultiSelectProps<T extends SelectOption = SelectOption> = {
   options: T[];
   value: T[];
-  size?: Exclude<SocialSize, 'xs'>
+  size?: MultiSelectSizeType;
   /** number of items to fully display, the rest will be summaried as "+n". if <= 0, throw Error  */
   maxDisplay?: number;
 } & Omit<InputProps, "value" | "size">;

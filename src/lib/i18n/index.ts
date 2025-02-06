@@ -40,9 +40,27 @@ const parseTranslationObject = (obj: Record<string, unknown>, trans: Translation
 
 export type LanguageCode = LanguageCodeEnum.Vi | LanguageCodeEnum.Ja | LanguageCodeEnum.Ko | LanguageCodeEnum.En | 'vi-VN' | 'en-US';
 
+export const languageSupportInfer = (language: LanguageCode | LanguageCodeEnum) => {
+  switch (language) {
+    case LanguageCodeEnum.En:
+    case 'en-US':
+      return LanguageCodeEnum.En;
+    case LanguageCodeEnum.Vi:
+    case 'vi-VN':
+      return LanguageCodeEnum.Vi;
+    case LanguageCodeEnum.Ko:
+      return LanguageCodeEnum.Ko;
+    case LanguageCodeEnum.Ja:
+      return LanguageCodeEnum.Ja;
+
+    default:
+      return null;
+  }
+}
+
 const englishTran = parseTranslationObject(english, {})
 
-export const setTranslation = (language: LanguageCode) => {
+export const switchLanguage = (language: LanguageCode) => {
   switch (language) {
     case LanguageCodeEnum.En:
     case 'en-US':

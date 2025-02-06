@@ -323,6 +323,7 @@
 	closeOnOutsideClick
 	onClose={() => (openDeliveryModal = false)}
 	onCancel={() => (openDeliveryModal = false)}
+	onOk={() => (openDeliveryModal = false)}
 >
-	<MegaMenu items={VIETNAM_COUNTRY_UNITS} onSelect={console.log} onDeselect={console.log} />
+	<MegaMenu items={VIETNAM_COUNTRY_UNITS} onSelectWhole={console.log} onDeselect={console.log} />
 </Modal>

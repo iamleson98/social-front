@@ -23,6 +23,7 @@ export default {
 	changePassword: {
 		title: '비밀번호 변경',
 		btnText: '비밀번호 변경',
+		invalidUrl: 'URL을 확인해주세요',
 		changePasswordSuccess: '백엔서 비밀번호가 변경되었습니다.',
 	},
 	common: {
