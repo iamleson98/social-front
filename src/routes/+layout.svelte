@@ -10,7 +10,8 @@
 	import { LANGUAGE_KEY } from '$lib/utils/consts';
 	import { LanguageCodeEnum } from '$lib/gql/graphql';
 	import { switchLanguage, type LanguageCode } from '$i18n';
-	import Location from '$lib/components/pages/plugins/location.svelte';
+	import Location from '$lib/components/plugins/location.svelte';
+	import Language from '$lib/components/plugins/language.svelte';
 
 	interface Props {
 		children: Snippet;
@@ -52,6 +53,7 @@
 <Header />
 
 <Location />
+<Language />
 
 <main class="pt-16 mx-auto min-h-screen max-w-6xl">
 	{@render children()}

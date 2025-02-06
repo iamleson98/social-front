@@ -1,13 +1,14 @@
 import { CHECKOUT_CREATE_MUTATION, CHECKOUT_PREVIEW_QUERY } from "$lib/api/checkout";
 import { cookieOpts, performServerSideGraphqlRequest } from "$lib/api/client";
 import type { Checkout, CheckoutCreateInput, Mutation, Query } from "$lib/gql/graphql";
-import { CHANNEL_KEY, defaultChannel, HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess } from "$lib/utils/consts";
+import { DEFAULT_CHANNEL } from "$lib/utils/channels.js";
+import { CHANNEL_KEY, HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess } from "$lib/utils/consts";
 import type { CustomQueryCheckoutArgs } from "$lib/utils/types";
 import { json } from "@sveltejs/kit";
 
 
 export const GET = async (event) => {
-  const channelSlug = event.cookies.get(CHANNEL_KEY) || defaultChannel.slug;
+  const channelSlug = event.cookies.get(CHANNEL_KEY) || DEFAULT_CHANNEL.slug;
   const checkoutId = event.cookies.get(`checkout-${channelSlug}`);
 
   if (checkoutId) {

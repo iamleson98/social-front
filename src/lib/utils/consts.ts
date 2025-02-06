@@ -1,9 +1,9 @@
-import { CircleCheckFilled, CurrencyDollar, CurrencyDong, CurrencyEuror, ExclamationCircleFilled, InfoCircleFilled, InfoTriangleFilled, type IconType } from "$lib/components/icons";
+import { CircleCheckFilled, ExclamationCircleFilled, InfoCircleFilled, InfoTriangleFilled, type IconType } from "$lib/components/icons";
 import type { SocialSize } from "$lib/components/ui/common";
 import { CountryCode, LanguageCodeEnum, type PaymentGatewayConfig } from "$lib/gql/graphql";
 import { type PaymentMethodsResponse } from "@adyen/adyen-web";
 import { AdyenCheckout } from "@adyen/adyen-web";
-
+import { CHANNELS } from "./channels";
 
 export const EASEPICK_CORE_STYLE_v1_2_1 = '/css/easepick-core/1.2.1.css';
 export const EASEPICK_AMP_STYLE_v1_2_1 = '/css/easepick-amp/1.2.1.css';
@@ -45,8 +45,8 @@ export const LANGUAGE_KEY = "language";
 export const COUNTRY_CODE_KEY = "country";
 
 
-export type CurrencyCode = "USD" | "VND" | "PLN";
-type CurrencySymbol = "$" | "₫" | "€";
+export type CurrencyCode = "USD" | "VND" | "PLN" | "EUR" | "JPY" | "KRW";
+type CurrencySymbol = "$" | "₫" | "€" | "¥" | "₩";
 
 export type Channel = {
   name: string;
@@ -59,42 +59,10 @@ export type Channel = {
 
 export type WeightUnit = 'kg' | 'lb' | 'g' | 'oz';
 
-export const CurrencyIconMap: Record<CurrencyCode | string, IconType> = {
-  'USD': CurrencyDollar,
-  'VND': CurrencyDong,
-  'PLN': CurrencyEuror,
-};
-
-export const CurrencyCodeSymbolMap: Record<CurrencyCode, CurrencySymbol> = {
-  USD: '$',
-  VND: '₫',
-  PLN: '€',
-};
-
-export const defaultChannel: Channel = {
-  name: 'English',
-  currency: 'USD',
-  locale: LanguageCodeEnum.EnUs,
-  slug: 'default-channel',
-  currencySymbol: '$',
-  countryCode: CountryCode.Us,
-};
-
-export const vnChannel: Channel = {
-  name: 'Tiếng Việt',
-  currency: 'VND',
-  locale: LanguageCodeEnum.Vi,
-  slug: 'vn',
-  currencySymbol: '₫',
-  countryCode: CountryCode.Vn,
-};
-
-export const channels = [
-  defaultChannel,
-  vnChannel,
-];
-
-export const findChannelBySlug = (slug: string) => channels.find(channel => channel.slug === slug) || defaultChannel;
+export const CurrencyIconMap = CHANNELS.reduce((acc, chan) => ({
+  ...acc,
+  [chan.currency as CurrencyCode]: chan.currencyIcon,
+}), {} as Record<CurrencyCode, IconType>);
 
 export const SocialVariantIconsMap: Record<SocialVariant, IconType> = {
   'error': ExclamationCircleFilled,

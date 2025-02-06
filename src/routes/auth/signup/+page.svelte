@@ -9,17 +9,17 @@
 	import { operationStore, type OperationResultStore } from '$lib/api/operation';
 	import type { CountryCode, Mutation, MutationAccountRegisterArgs } from '$lib/gql/graphql';
 	import { USER_SIGNUP_MUTATION_STORE } from '$lib/api';
-	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
-	import { CHANNEL_KEY, defaultChannel } from '$lib/utils/consts';
+	import { clientSideGetCookieOrDefault, clientSideSetCookie } from '$lib/utils/cookies';
+	import { CHANNEL_KEY } from '$lib/utils/consts';
 	import { PUBLIC_LOCAL_URL, PUBLIC_STORE_FRONT_URL } from '$env/static/public';
 	import { omit } from 'lodash-es';
 	import { slide } from 'svelte/transition';
 	import { dev } from '$app/environment';
 	import Language from '$lib/components/common/country-language/language.svelte';
 	import Country from '$lib/components/common/country-language/country.svelte';
-	import { channels } from '$lib/utils/channels';
+	import { CHANNELS, DEFAULT_CHANNEL } from '$lib/utils/channels';
 
-	const CHANNEL_SLUG = clientSideGetCookieOrDefault(CHANNEL_KEY, defaultChannel.slug);
+	const CHANNEL_SLUG = clientSideGetCookieOrDefault(CHANNEL_KEY, DEFAULT_CHANNEL.slug);
 	const FIELD_REQUIRED_MSG = $tranFunc('helpText.fieldRequired');
 
 	const SignupZodSchema = object({
@@ -71,12 +71,18 @@
 
 	$effect(() => {
 		if (countryCode) {
-			for (const chan of channels) {
+			for (const chan of CHANNELS) {
 				if (chan.countries.includes(countryCode)) {
 					signupInfo.channel = chan.slug;
-					break;
+					clientSideSetCookie(CHANNEL_KEY, chan.slug, {
+						secure: true,
+						expires: new Date(2300, 1, 1),
+						path: '/'
+					});
+					return;
 				}
 			}
+			signupInfo.channel = DEFAULT_CHANNEL.slug;
 		}
 	});
 

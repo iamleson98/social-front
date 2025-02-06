@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Email } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import { defaultChannel } from '$lib/utils/consts';
+	import { CHANNEL_KEY } from '$lib/utils/consts';
 	import { tranFunc } from '$lib/i18n';
 	import { Input } from '$lib/components/ui/Input';
 	import { USER_REQUEST_PASSWORD_RESET_MUTATION_STORE } from '$lib/api/auth';
@@ -11,6 +11,8 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { PUBLIC_LOCAL_URL } from '$env/static/public';
 	import { string } from 'zod';
+	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
+	import { DEFAULT_CHANNEL } from '$lib/utils/channels';
 
 	let email = $state('');
 	let emailError = $state<string>();
@@ -43,7 +45,7 @@
 			variables: {
 				email,
 				redirectUrl: PUBLIC_LOCAL_URL + AppRoute.AUTH_CHANGE_PASSWORD,
-				channel: defaultChannel.slug
+				channel: clientSideGetCookieOrDefault(CHANNEL_KEY, DEFAULT_CHANNEL.slug)
 			}
 		});
 	};

@@ -8,7 +8,6 @@
 		type CustomAttributesQueryArgs
 	} from '$lib/api/admin/attribute';
 	import { operationStore } from '$lib/api/operation';
-	import { defaultChannel } from '$lib/utils/consts';
 	import { slide } from 'svelte/transition';
 	import { tranFunc } from '$i18n';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
@@ -118,7 +117,6 @@
 		variables: {
 			first: MAX_FETCHING_BATCH,
 			choiceFirst: MAX_FETCHING_BATCH,
-			channel: defaultChannel.slug,
 			where: {
 				inCategory: categoryID
 			}

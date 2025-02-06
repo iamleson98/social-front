@@ -1,5 +1,5 @@
 import { error } from "@sveltejs/kit";
-import { CHANNEL_KEY, defaultChannel, HTTPStatusBadRequest, HTTPStatusServerError } from "$lib/utils/consts";
+import { CHANNEL_KEY, HTTPStatusBadRequest, HTTPStatusServerError } from "$lib/utils/consts";
 import validator from 'validator';
 import { tranFunc } from "$i18n";
 import { performServerSideGraphqlRequest } from "$lib/api/client";
@@ -7,6 +7,7 @@ import type { Query } from "$lib/gql/graphql";
 import { get } from "svelte/store";
 import { CATEGORY_DETAIL_QUERY_STORE } from "$lib/api";
 import type { CategoryDetailQueryArgs } from "$lib/api/product";
+import { DEFAULT_CHANNEL } from "$lib/utils/channels.js";
 
 
 export const load = async (event) => {
@@ -18,7 +19,7 @@ export const load = async (event) => {
     });
   }
 
-  const channelSlug = event.cookies.get(CHANNEL_KEY) || defaultChannel.slug;
+  const channelSlug = event.cookies.get(CHANNEL_KEY) || DEFAULT_CHANNEL.slug;
 
   const categoryResult = await performServerSideGraphqlRequest<Pick<Query, 'category'>, CategoryDetailQueryArgs>(
     'query',

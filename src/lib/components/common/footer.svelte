@@ -1,63 +1,20 @@
 <script lang="ts">
 	import { AppRoute } from '$lib/utils';
-	import { onMount, type Component } from 'svelte';
 	import {
 		Facebook,
 		Instagram,
-		JapanFlag,
-		KoreaFlag,
 		Twitter,
-		UsaFlag,
-		VietnamFlag
 	} from '../icons/SvgOuterIcon';
-	import { LanguageCodeEnum } from '$lib/gql/graphql';
-	import { LANGUAGE_KEY } from '$lib/utils/consts';
-	import { getCookieByKey } from '$lib/utils/cookies';
-	import { languageSupportInfer, switchLanguage, type LanguageCode } from '$i18n';
+	import {  SUPPORTED_LANGUAGES, switchLanguage } from '$i18n';
 	import { DropDown, MenuItem, type DropdownTriggerInterface } from '../ui/Dropdown';
 	import { Button } from '../ui';
-	import { userStore } from '$lib/stores/auth';
 
-	type LanguageProps = { code: LanguageCode; name: string; icon: Component };
+	let activeLanguage = $state(SUPPORTED_LANGUAGES[0]);
 
-	const languageOptions: LanguageProps[] = [
-		{ icon: UsaFlag, name: 'English', code: LanguageCodeEnum.En },
-		{ icon: VietnamFlag, name: 'Tiếng Việt', code: LanguageCodeEnum.Vi },
-		{ icon: KoreaFlag, name: '한국어', code: LanguageCodeEnum.Ko },
-		{ icon: JapanFlag, name: '日本語', code: LanguageCodeEnum.Ja }
-	];
-
-	let activeLanguage = $state(languageOptions[0]);
-
-	const setLanguageByCode = (code: LanguageCode) => {
-		switchLanguage(code);
-		activeLanguage =
-			languageOptions.find((language) => language.code === code) ?? languageOptions[0];
-		document.cookie = `${LANGUAGE_KEY}=${code}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure; SameSite=Lax`;
+	const setLanguageByCode = (idx: number) => {
+		activeLanguage = SUPPORTED_LANGUAGES[idx];
+		switchLanguage(activeLanguage.code);
 	};
-
-	$effect(() => {
-		return userStore.subscribe((user) => {
-			if (user?.languageCode) {
-				const code = languageSupportInfer(user.languageCode);
-				if (code) setLanguageByCode(code as LanguageCode);
-			}
-		});
-	});
-
-	onMount(async () => {
-		// 1) check cookie
-		let languageCode = getCookieByKey(LANGUAGE_KEY);
-
-		// 2) check navigator
-		if (!languageCode && typeof navigator !== 'undefined') {
-			languageCode = navigator.language;
-		}
-
-		const code = languageSupportInfer(languageCode as LanguageCode);
-
-		setLanguageByCode(code ? code : LanguageCodeEnum.En);
-	});
 </script>
 
 <footer class="p-6 max-w-6xl mx-auto">
@@ -119,8 +76,8 @@
 						</Button>
 					{/snippet}
 					<DropDown {trigger} placement="bottom-end">
-						{#each languageOptions as language, idx (idx)}
-							<MenuItem onclick={() => setLanguageByCode(language.code)}>
+						{#each SUPPORTED_LANGUAGES as language, idx (idx)}
+							<MenuItem onclick={() => setLanguageByCode(idx)}>
 								<div class="flex items-center gap-2">
 									<language.icon />
 									<span class="text-nowrap">{language.name}</span>

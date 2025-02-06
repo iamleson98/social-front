@@ -237,7 +237,7 @@ export const CATEGORY_DETAIL_QUERY_STORE = gql`
 `;
 
 export const PRODUCT_DETAIL_QUERY_STORE = gql`
-	query Product($slug: String!, $channel: String!, $countryCode: CountryCode) {
+	query Product($slug: String!, $channel: String, $countryCode: CountryCode) {
 		product(slug: $slug, channel: $channel) {
 			id
 			name

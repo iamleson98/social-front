@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { onMount, type Snippet } from 'svelte';
-	import { dropdownResizeDebounce, type DropdownTriggerInterface, type MenuItemProps } from './types';
+	import {
+		dropdownResizeDebounce,
+		type DropdownTriggerInterface,
+		type MenuItemProps
+	} from './types';
 	import { computePosition, offset, shift, flip, type Placement } from '@floating-ui/dom';
 	import { clickOutside } from '$lib/actions/click-outside';
 	import { fly } from 'svelte/transition';
@@ -22,7 +26,7 @@
 		placement = 'bottom',
 		children,
 		noReCalculateOnWindowResize = false,
-		open = $bindable(false),
+		open = $bindable(false)
 	}: Props = $props();
 
 	if ((options?.length && children) || (!options?.length && !children)) {
@@ -33,7 +37,7 @@
 	let triggerRef = $state<HTMLElement>();
 
 	const computeStyle = async () => {
-		if (!triggerRef || !menuElemRef || !open) return;
+		if (!triggerRef || !menuElemRef) return;
 
 		const { x, y } = await computePosition(triggerRef, menuElemRef, {
 			placement,
@@ -47,13 +51,13 @@
 	};
 
 	const handleTriggerClick = async () => {
-		open = true;
 		computeStyle();
+		open = true;
 	};
 
 	onMount(() => {
-		if (noReCalculateOnWindowResize) return;
-		return dropdownResizeDebounce(window, { onFire: computeStyle });
+		if (!noReCalculateOnWindowResize)
+			return dropdownResizeDebounce(window, { onFire: computeStyle });
 	});
 </script>
 

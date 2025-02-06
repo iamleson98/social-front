@@ -18,7 +18,7 @@
 		ProductVariant
 	} from '$lib/gql/graphql';
 	import { userStore } from '$lib/stores/auth';
-	import { defaultChannel, HTTPStatusSuccess, MAX_RATING } from '$lib/utils/consts';
+	import { HTTPStatusSuccess, MAX_RATING } from '$lib/utils/consts';
 	import { formatMoney, preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { fade } from 'svelte/transition';
 	import { Rating } from '$lib/components/ui/rating';
@@ -34,6 +34,7 @@
 	import { VIETNAM_COUNTRY_UNITS } from '$lib/utils/countries';
 	import { AppRoute } from '$lib/utils';
 	import { operationStore, type OperationResultStore } from '$lib/api/operation';
+	import { findChannel } from '$lib/utils/channels';
 
 	type Props = {
 		productInformation: Omit<Product, 'variants'>;
@@ -55,15 +56,16 @@
 	});
 
 	let displayPrice = $derived.by(() => {
+		const prdChannel = findChannel((chan) => chan.slug === productInformation.channel);
 		if (!selectedVariant)
 			return formatMoney(
-				productInformation.pricing?.priceRange?.start?.gross.currency || defaultChannel.currency,
+				productInformation.pricing?.priceRange?.start?.gross.currency || prdChannel!.currency,
 				productInformation.pricing?.priceRange?.start?.gross.amount || 0,
 				productInformation.pricing?.priceRange?.stop?.gross.amount
 			);
 
 		return formatMoney(
-			selectedVariant.pricing?.price?.gross.currency || defaultChannel.currency,
+			selectedVariant.pricing?.price?.gross.currency || prdChannel!.currency,
 			selectedVariant.pricing?.price?.gross.amount || 0
 		);
 	});

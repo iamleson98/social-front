@@ -1,11 +1,15 @@
 <script lang="ts">
 	import { PUBLIC_NOMINATIM_OSM_API } from '$env/static/public';
+	import { CountryCode } from '$lib/gql/graphql';
+	import { CHANNELS } from '$lib/utils/channels';
 	import {
+		CHANNEL_KEY,
 		HTTPStatusSuccess,
 		LATITUDE,
 		LONGITUDE,
 		type NominatimOsmProps
 	} from '$lib/utils/consts';
+	import { clientSideSetCookie } from '$lib/utils/cookies';
 	import { LOCATION_KEY } from '$lib/utils/preferences';
 	import { onMount } from 'svelte';
 
@@ -40,7 +44,22 @@
 		);
 
 		if (fetchResult.status === HTTPStatusSuccess) {
-			onSuccess?.(await fetchResult.json());
+			const locationData: NominatimOsmProps = await fetchResult.json();
+			onSuccess?.(locationData);
+
+			// set default channel
+			for (const chan of CHANNELS) {
+				const countryCode = locationData.address?.country_code.toUpperCase() || CountryCode.Vn;
+				if (chan.countries.includes(countryCode as CountryCode)) {
+					clientSideSetCookie(CHANNEL_KEY, chan.slug, {
+						secure: true,
+						expires: new Date(2300, 1, 2),
+						sameSite: 'lax',
+						path: '/'
+					});
+					return;
+				}
+			}
 			return;
 		}
 
@@ -52,7 +71,9 @@
 	};
 
 	const getGeoLocationErr = (err: GeolocationPositionError) => {
-		localStorage.setItem(LOCATION_KEY, 'false');
+		if (err.code === 1)
+			// user deny location service
+			localStorage.setItem(LOCATION_KEY, 'false');
 	};
 
 	onMount(async () => {

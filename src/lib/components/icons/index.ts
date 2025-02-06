@@ -77,6 +77,8 @@ export { default as Building } from './tabler--building.svelte';
 export { default as Edit } from './tabler--edit.svelte';
 export { default as CurrencyEuror } from './tabler--currency-euror.svelte'
 export { default as MdiWeightKg } from './mdi--weight-kg.svelte';
+export { default as CurrencyKrw } from './mdi--currency-krw.svelte';
+export { default as CurrencyJpy } from './mdi--currency-jpy.svelte';
 
 export { default as Icon } from './icon.svelte';
 export { AlertHexagonFilled };

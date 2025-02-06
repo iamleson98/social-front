@@ -4,11 +4,12 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { AppRoute } from '$lib/utils';
-	import { defaultChannel, MAX_RATING, MIN_RATING } from '$lib/utils/consts';
+	import { MAX_RATING, MIN_RATING } from '$lib/utils/consts';
 	import { clamp, formatMoney } from '$lib/utils/utils';
 	import { fade } from 'svelte/transition';
 	import type { Product } from '$lib/gql/graphql';
 	import FoundationBurstSale from '$lib/components/icons/foundation-burst-sale.svelte';
+	import { DEFAULT_CHANNEL, findChannel } from '$lib/utils/channels';
 
 	type ProductProps = {
 		product: Product;
@@ -70,7 +71,9 @@
 			<p class="text-xs font-normal text-gray-500">{$tranFunc('common.startAt')}</p>
 			<p class="font-bold text-blue-700 text-xl underline">
 				{formatMoney(
-					pricing?.priceRange?.start?.gross.currency || defaultChannel.currency,
+					pricing?.priceRange?.start?.gross.currency ||
+						findChannel((chan) => chan.slug === product.channel, DEFAULT_CHANNEL)?.currency ||
+						'',
 					pricing?.priceRange?.start?.gross.amount || 0
 				)}
 			</p>

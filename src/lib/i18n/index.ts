@@ -4,8 +4,19 @@ import { default as korean } from './ko';
 import { default as japanese } from './ja';
 import { LanguageCodeEnum } from "$lib/gql/graphql";
 import { derived, writable } from "svelte/store";
+import type { Component } from 'svelte';
+import { JapanFlag, KoreaFlag, UsaFlag, VietnamFlag } from '$lib/components/icons/SvgOuterIcon';
 
 const placeholderRegex = /{{([a-zA-Z ]+)}}/g;
+
+type LanguageProps = { code: LanguageCode; name: string; icon: Component };
+
+export const SUPPORTED_LANGUAGES: LanguageProps[] = [
+  { icon: UsaFlag, name: 'English', code: LanguageCodeEnum.En },
+  { icon: VietnamFlag, name: 'Tiếng Việt', code: LanguageCodeEnum.Vi },
+  { icon: KoreaFlag, name: '한국어', code: LanguageCodeEnum.Ko },
+  { icon: JapanFlag, name: '日本語', code: LanguageCodeEnum.Ja }
+];
 
 const findTemplatePlaceholders = (template: string): string[] => {
   const matches = template.matchAll(placeholderRegex);
