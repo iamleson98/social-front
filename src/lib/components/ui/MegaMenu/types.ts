@@ -7,7 +7,8 @@ export type SelectItemProps = {
 
 export type MenuProps = {
   items: SelectItemProps[];
-  onSelect: (item: SelectItemProps) => void;
+  onSelect?: (item: SelectItemProps) => void;
+  onSelectWhole?: (items: SelectItemProps[]) => void;
   onDeselect?: () => void;
   disabled?: boolean;
 };

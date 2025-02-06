@@ -9,7 +9,8 @@
 	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import { LANGUAGE_KEY } from '$lib/utils/consts';
 	import { LanguageCodeEnum } from '$lib/gql/graphql';
-	import { setTranslation, type LanguageCode } from '$i18n';
+	import { switchLanguage, type LanguageCode } from '$i18n';
+	import Location from '$lib/components/pages/plugins/location.svelte';
 
 	interface Props {
 		children: Snippet;
@@ -22,7 +23,7 @@
 			LANGUAGE_KEY,
 			LanguageCodeEnum.En
 		) as LanguageCode;
-		setTranslation(languageCode);
+		switchLanguage(languageCode);
 	});
 </script>
 
@@ -49,6 +50,8 @@
 </svelte:head>
 
 <Header />
+
+<Location />
 
 <main class="pt-16 mx-auto min-h-screen max-w-6xl">
 	{@render children()}

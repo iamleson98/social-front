@@ -10,6 +10,16 @@ init({
 	// spotlight: import.meta.env.DEV,
 });
 
+// export const userLanguageHandle: import('@sveltejs/kit').Handle = async ({event, resolve}) => {
+// 	if (event.cookies.get(LANGUAGE_KEY)) return await resolve(event);
+
+// 	let lang = event.request.headers.get('accept-language')?.split(',')[0] || LanguageCodeEnum.En;
+// 	lang = lang.toUpperCase();
+// 	event.cookies.set(LANGUAGE_KEY, lang, {...cookieOpts, expires: new Date(3000, 0, 1)});
+
+// 	return await resolve(event);
+// }
+
 // If you have custom handlers, make sure to place them after `sentryHandle()` in the `sequence` function.
 export const handle = sequence(sentryHandle());
 

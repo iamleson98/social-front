@@ -12,12 +12,13 @@
 	} from '../icons/SvgOuterIcon';
 	import { LanguageCodeEnum } from '$lib/gql/graphql';
 	import { LANGUAGE_KEY } from '$lib/utils/consts';
-	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
-	import { setTranslation, type LanguageCode } from '$i18n';
+	import { getCookieByKey } from '$lib/utils/cookies';
+	import { languageSupportInfer, switchLanguage, type LanguageCode } from '$i18n';
 	import { DropDown, MenuItem, type DropdownTriggerInterface } from '../ui/Dropdown';
 	import { Button } from '../ui';
+	import { userStore } from '$lib/stores/auth';
 
-	type LanguageProps = { code: LanguageCodeEnum; name: string; icon: Component };
+	type LanguageProps = { code: LanguageCode; name: string; icon: Component };
 
 	const languageOptions: LanguageProps[] = [
 		{ icon: UsaFlag, name: 'English', code: LanguageCodeEnum.En },
@@ -26,32 +27,37 @@
 		{ icon: JapanFlag, name: '日本語', code: LanguageCodeEnum.Ja }
 	];
 
-	type FooterItemStructure = {
-		title: string;
-		items: FooterItemProps[];
-	};
-
-	type FooterItemProps = {
-		title: string;
-		href?: string;
-	};
-
 	let activeLanguage = $state(languageOptions[0]);
 
-	onMount(async () => {
-		const cookieLanguage = clientSideGetCookieOrDefault(LANGUAGE_KEY, LanguageCodeEnum.En);
-		const language = languageOptions.find((lang) => lang.code === cookieLanguage);
-		if (language) {
-			activeLanguage = language;
-		}
+	const setLanguageByCode = (code: LanguageCode) => {
+		switchLanguage(code);
+		activeLanguage =
+			languageOptions.find((language) => language.code === code) ?? languageOptions[0];
+		document.cookie = `${LANGUAGE_KEY}=${code}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure; SameSite=Lax`;
+	};
+
+	$effect(() => {
+		return userStore.subscribe((user) => {
+			if (user?.languageCode) {
+				const code = languageSupportInfer(user.languageCode);
+				if (code) setLanguageByCode(code as LanguageCode);
+			}
+		});
 	});
 
-	const handleSwitchLanguageCode = async (index: number) => {
-		document.cookie = `${LANGUAGE_KEY}=${languageOptions[index].code}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; Secure; SameSite=Lax`;
-		activeLanguage = languageOptions[index];
+	onMount(async () => {
+		// 1) check cookie
+		let languageCode = getCookieByKey(LANGUAGE_KEY);
 
-		setTranslation(languageOptions[index].code as LanguageCode);
-	};
+		// 2) check navigator
+		if (!languageCode && typeof navigator !== 'undefined') {
+			languageCode = navigator.language;
+		}
+
+		const code = languageSupportInfer(languageCode as LanguageCode);
+
+		setLanguageByCode(code ? code : LanguageCodeEnum.En);
+	});
 </script>
 
 <footer class="p-6 max-w-6xl mx-auto">
@@ -112,9 +118,9 @@
 							{activeLanguage.name}
 						</Button>
 					{/snippet}
-					<DropDown {trigger} placement='bottom-end'>
+					<DropDown {trigger} placement="bottom-end">
 						{#each languageOptions as language, idx (idx)}
-							<MenuItem onclick={() => handleSwitchLanguageCode(idx)}>
+							<MenuItem onclick={() => setLanguageByCode(language.code)}>
 								<div class="flex items-center gap-2">
 									<language.icon />
 									<span class="text-nowrap">{language.name}</span>
