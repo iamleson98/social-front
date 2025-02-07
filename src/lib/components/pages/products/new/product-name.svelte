@@ -1,12 +1,9 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { RequiredAt } from '$lib/components/ui';
 	import { Input } from '$lib/components/ui/Input';
 	import type { ProductCreateInput } from '$lib/gql/graphql';
 	import { string } from 'zod';
 	import { PRODUCT_NAME_MAX_LENGTH } from './utils';
-
-	const NOW = new Date();
 
 	type Props = {
 		name: ProductCreateInput['name'];
@@ -55,7 +52,4 @@
 		required
 		label={$tranFunc('product.prdName')}
 	/>
-	<div class="text-right">
-		<span class="text-xs">{NOW.toDateString()}</span>
-	</div>
 </div>

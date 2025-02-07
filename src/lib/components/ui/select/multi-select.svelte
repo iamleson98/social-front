@@ -191,35 +191,35 @@
 				onInput
 			}}
 			{action}
-		/>
-	</div>
-
-	{#if openSelect}
-		<ul
-			role="listbox"
-			id={LISTBOX_ID}
-			transition:fly={{ duration: 250, y: 10 }}
-			class={SELECT_CLASSES.selectMenu}
-			tabindex="0"
 		>
-			{#if !searchFilteredOptions.length}
-				{@render selectOption({
-					idx: 0,
-					disabled: true,
-					optionClassName: 'cursor-default',
-					onclick: () => toggleDropdown(false),
-					label: 'No data',
-					value: ''
-				})}
+			{#if openSelect}
+				<ul
+					role="listbox"
+					id={LISTBOX_ID}
+					transition:fly={{ duration: 250, y: 10 }}
+					class={SELECT_CLASSES.selectMenu}
+					tabindex="0"
+				>
+					{#if !searchFilteredOptions.length}
+						{@render selectOption({
+							idx: 0,
+							disabled: true,
+							optionClassName: 'cursor-default',
+							onclick: () => toggleDropdown(false),
+							label: 'No data',
+							value: ''
+						})}
+					{/if}
+					{#each searchFilteredOptions as option, idx (idx)}
+						{@render selectOption({
+							idx,
+							optionClassName: `${option.disabled ? 'cursor-not-allowed! text-gray-400!' : ''}`,
+							onclick: () => handleSelect(option),
+							...option
+						})}
+					{/each}
+				</ul>
 			{/if}
-			{#each searchFilteredOptions as option, idx (idx)}
-				{@render selectOption({
-					idx,
-					optionClassName: `${option.disabled ? 'cursor-not-allowed! text-gray-400!' : ''}`,
-					onclick: () => handleSelect(option),
-					...option
-				})}
-			{/each}
-		</ul>
-	{/if}
+		</Input>
+	</div>
 </div>

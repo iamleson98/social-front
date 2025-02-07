@@ -18,6 +18,7 @@
 		value = $bindable<SelectOption['value'] | undefined>(),
 		onchange,
 		class: className = '',
+		onblur,
 		...rest
 	}: SelectProps = $props();
 
@@ -81,10 +82,22 @@
 		toggleDropdown(false);
 		onchange?.(option);
 	};
+
+	const handleFocusOutside = (evt: any) => {
+		deactivate();
+		onblur?.(evt);
+	};
 </script>
 
 <!-- this common snippet is used for rendering select options -->
-{#snippet selectOption({ idx, disabled, optionClassName, onclick, value: _value, label }: SelectItemprops)}
+{#snippet selectOption({
+	idx,
+	disabled,
+	optionClassName,
+	onclick,
+	value: _value,
+	label
+}: SelectItemprops)}
 	<li
 		id={`${LISTBOX_ID}-${idx}`}
 		aria-selected={_value === value}
@@ -124,8 +137,8 @@
 
 <div
 	class="relative w-full text-gray-700 text-base"
-	use:clickOutside={{ onOutclick: deactivate }}
-	use:focusOutside={{ onFocusOut: deactivate }}
+	use:clickOutside={{ onOutclick: handleFocusOutside }}
+	use:focusOutside={{ onFocusOut: handleFocusOutside }}
 	use:shortcuts={[
 		{
 			shortcut: { key: 'Escape' },
@@ -155,34 +168,34 @@
 			onInput
 		}}
 		{action}
-	/>
-
-	{#if openSelect}
-		<ul
-			role="listbox"
-			id={LISTBOX_ID}
-			transition:fly={{ duration: 250, y: 10 }}
-			class={SELECT_CLASSES.selectMenu}
-			tabindex="0"
-		>
-			{#if !filteredOptions.length}
-				{@render selectOption({
-					idx: 0,
-					disabled: true,
-					optionClassName: 'cursor-default',
-					onclick: () => toggleDropdown(false),
-					value: '',
-					label: 'No data'
-				})}
-			{/if}
-			{#each filteredOptions as option, idx (idx)}
-				{@render selectOption({
-					idx,
-					optionClassName: `${option.disabled ? 'cursor-not-allowed! text-gray-400!' : ''}`,
-					onclick: () => handleSelect(option),
-					...option
-				})}
-			{/each}
-		</ul>
-	{/if}
+	>
+		{#if openSelect}
+			<ul
+				role="listbox"
+				id={LISTBOX_ID}
+				transition:fly={{ duration: 250, y: 10 }}
+				class={SELECT_CLASSES.selectMenu}
+				tabindex="0"
+			>
+				{#if !filteredOptions.length}
+					{@render selectOption({
+						idx: 0,
+						disabled: true,
+						optionClassName: 'cursor-default',
+						onclick: () => toggleDropdown(false),
+						value: '',
+						label: 'No data'
+					})}
+				{/if}
+				{#each filteredOptions as option, idx (idx)}
+					{@render selectOption({
+						idx,
+						optionClassName: `${option.disabled ? 'cursor-not-allowed! text-gray-400!' : ''}`,
+						onclick: () => handleSelect(option),
+						...option
+					})}
+				{/each}
+			</ul>
+		{/if}
+	</Input>
 </div>

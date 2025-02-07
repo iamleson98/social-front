@@ -8,10 +8,6 @@
 		type Query,
 		type QueryProductTypeArgs
 	} from '$lib/gql/graphql';
-	import {
-		PRODUCT_ATTRIBUTES_QUERY,
-		type CustomAttributesQueryArgs
-	} from '$lib/api/admin/attribute';
 	import { operationStore } from '$lib/api/operation';
 	import { slide } from 'svelte/transition';
 	import { tranFunc } from '$i18n';
@@ -114,22 +110,6 @@
 		ok = !attributeErrors.some(Boolean);
 	});
 
-	// const attributeQueryStore = operationStore<Pick<Query, 'attributes'>, CustomAttributesQueryArgs>({
-	// 	kind: 'query',
-	// 	query: PRODUCT_ATTRIBUTES_QUERY,
-	// 	context: {
-	// 		requestPolicy: 'network-only'
-	// 	},
-	// 	variables: {
-	// 		first: MAX_FETCHING_BATCH,
-	// 		choiceFirst: MAX_FETCHING_BATCH,
-	// 		where: {
-	// 			inCategory: productTypeID
-	// 		}
-	// 	},
-	// 	pause: !productTypeID
-	// });
-
 	const productTypeQuery = operationStore<Pick<Query, 'productType'>, QueryProductTypeArgs>({
 		kind: 'query',
 		query: PRODUCT_TYPE_QUERY,
@@ -146,10 +126,11 @@
 			if (result.data?.productType?.productAttributes?.length) {
 				blurTriggers = new Array(result.data.productType.productAttributes.length).fill(false);
 				attributes = result.data.productType.productAttributes.map<CustomAttributeInput>(
-					({ valueRequired, inputType }) => {
+					({ valueRequired, inputType, id }) => {
 						const result: CustomAttributeInput = {
 							required: valueRequired,
-							inputType
+							inputType,
+							id
 						};
 
 						if (inputType === AttributeInputTypeEnum.Dropdown) {
@@ -234,14 +215,17 @@
 										{options}
 										size="sm"
 										onchange={(opt) => {
-											attributes = attributes.map((attr, i) =>
-												i === idx
-													? {
-															...attr,
-															dropdown: opt ? { id: `${opt.value}`, value: opt.label } : {}
-														}
-													: attr
-											);
+											attributes = attributes.map((attr, i) => {
+												if (i !== idx) return attr;
+
+												if (opt)
+													return {
+														id: attr.id,
+														dropdown: { id: opt.value as string }
+													};
+
+												return attr;
+											});
 										}}
 										onblur={() => {
 											blurTriggers[idx] = true;
@@ -254,7 +238,7 @@
 										size="sm"
 										onchange={(evt) => {
 											attributes = attributes.map((attr, i) =>
-												i === idx ? { ...attr, boolean: evt.currentTarget.checked } : attr
+												i === idx ? { id: attr.id, boolean: evt.currentTarget.checked } : attr
 											);
 										}}
 									/>
@@ -263,7 +247,7 @@
 										size="sm"
 										onchange={(value) => {
 											attributes = attributes.map((attr, i) =>
-												i === idx ? { ...attr, date: value.date } : attr
+												i === idx ? { id: attr.id, date: value.date } : attr
 											);
 										}}
 										timeConfig={false}
@@ -278,7 +262,7 @@
 										size="sm"
 										onchange={(evt) => {
 											attributes = attributes.map((attr, i) =>
-												i === idx ? { ...attr, file: evt.currentTarget.files?.[0].name } : attr
+												i === idx ? { id: attr.id, file: evt.currentTarget.files?.[0].name } : attr
 											);
 										}}
 									/>
@@ -289,7 +273,7 @@
 										type="number"
 										onchange={(evt) => {
 											attributes = attributes.map((attr, i) =>
-												i === idx ? { ...attr, numeric: evt.currentTarget.value } : attr
+												i === idx ? { id: attr.id, numeric: evt.currentTarget.value } : attr
 											);
 										}}
 										onblur={() => (blurTriggers[idx] = true)}
@@ -301,7 +285,7 @@
 										size="sm"
 										onchange={(value) => {
 											attributes = attributes.map((attr, i) =>
-												i === idx ? { ...attr, dateTime: value.date } : attr
+												i === idx ? { id: attr.id, dateTime: value.date } : attr
 											);
 										}}
 										autoApply={false}
@@ -320,7 +304,7 @@
 										type="text"
 										onchange={(evt) => {
 											attributes = attributes.map((attr, i) =>
-												i === idx ? { ...attr, plainText: evt.currentTarget.value } : attr
+												i === idx ? { id: attr.id, plainText: evt.currentTarget.value } : attr
 											);
 										}}
 										onblur={() => (blurTriggers[idx] = true)}

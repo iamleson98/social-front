@@ -19,6 +19,8 @@
 		ProductVariantBulkCreateInput
 	} from '$lib/gql/graphql';
 
+	const NOW = new Date();
+
 	let productCreateInput = $state<ProductCreateInput>({
 		productType: '',
 		attributes: [],
@@ -41,7 +43,7 @@
 		privateMetadata: true, // not supported yet
 		collections: true, // this field is optional
 		chargeTaxes: true, // not supported yet
-		metadata: true, // not supported yet
+		metadata: true,
 		taxClass: true, // optional
 		taxCode: true, // not supported yet
 		rating: true, // default set to 5 (highest)
@@ -61,6 +63,11 @@
 		$state<OperationResultStore<Pick<Mutation, 'productCreate'>, MutationProductCreateArgs>>();
 
 	const handleSubmit = () => {
+
+		const submitData: ProductCreateInput = {
+			...productCreateInput,
+			description: productCreateInput.description ? JSON.stringify(productCreateInput.description) : null
+		};
 		productCreateMutationStore = operationStore<
 			Pick<Mutation, 'productCreate'>,
 			MutationProductCreateArgs
@@ -68,7 +75,7 @@
 			kind: 'mutation',
 			query: CREATE_PRODUCT_MUTATION,
 			variables: {
-				input: productCreateInput
+				input: submitData
 			},
 			requestPolicy: 'network-only'
 		});
@@ -76,6 +83,9 @@
 </script>
 
 <div class="m-auto rounded-lg bg-white w-full p-5 text-gray-600">
+	<div class="text-right">
+		<span class="text-xs">{NOW.toDateString()}</span>
+	</div>
 	<ProductName bind:name={productCreateInput.name} bind:ok={productInputError.name} />
 	<ProductType
 		bind:value={productCreateInput.productType}

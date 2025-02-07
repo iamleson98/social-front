@@ -24,6 +24,7 @@
 		value = $bindable<string | number>(),
 		required,
 		inputClass = '',
+		children,
 		...rest
 	}: InputProps & Omit<HTMLInputAttributes, 'size'> = $props();
 </script>
@@ -38,35 +39,34 @@
 			{#if required}<strong class="font-bold text-red-600!">*</strong>{/if}
 		</label>
 	{/if}
-	<div class={`${INPUT_TYPES[variant].fg}`}>
-		<div class={`relative mt-0`}>
-			{#if startIcon}
-				<div class="absolute inset-y-0 start-0 flex items-center ps-2.5 pointer-events-none">
-					<Icon icon={startIcon} />
-				</div>
-			{/if}
-			<input
-				bind:this={ref}
-				{id}
-				{placeholder}
-				{required}
-				bind:value
-				use:shortcuts={selectShortcutOptions}
-				use:debounceInput={inputDebounceOption}
-				class={`w-full text-sm rounded-lg ring-1 placeholder:opacity-55 focus:ring-2 inline-block px-2.5 ${inputClass} ${INPUT_TYPES[variant].bg} ${startIcon ? 'ps-8' : ''} ${action ? 'pe-10' : ''} ${INPUT_BUTTON_SIZE_MAP[size]}`}
-				{...rest}
-			/>
+	<div class={`relative mt-0 ${INPUT_TYPES[variant].fg}`}>
+		{#if startIcon}
+			<div class="absolute inset-y-0 start-0 flex items-center ps-2.5 pointer-events-none">
+				<Icon icon={startIcon} />
+			</div>
+		{/if}
+		<input
+			bind:this={ref}
+			{id}
+			{placeholder}
+			{required}
+			bind:value
+			use:shortcuts={selectShortcutOptions}
+			use:debounceInput={inputDebounceOption}
+			class={`w-full text-sm rounded-lg ring-1 placeholder:opacity-55 focus:ring-2 inline-block px-2.5 ${inputClass} ${INPUT_TYPES[variant].bg} ${startIcon ? 'ps-8' : ''} ${action ? 'pe-10' : ''} ${INPUT_BUTTON_SIZE_MAP[size]}`}
+			{...rest}
+		/>
 
-			{#if action}
-				<div class="absolute end-2 top-1/2 transform -translate-y-1/2 input-action">
-					{@render action()}
-				</div>
-			{/if}
-		</div>
-		{#if subText}
-			<p class={`text-[10px] mt-0.5 text-right!`}>{subText}</p>
+		{#if action}
+			<div class="absolute end-2 top-1/2 transform -translate-y-1/2 input-action">
+				{@render action()}
+			</div>
 		{/if}
 	</div>
+	{@render children?.()}
+	{#if subText}
+		<div class={`text-[10px] mt-0.5 text-right! ${INPUT_TYPES[variant].fg}`}>{subText}</div>
+	{/if}
 </div>
 
 <style>
