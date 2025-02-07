@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { CREATE_PRODUCT_MUTATION } from '$lib/api/admin/product';
+	import { operationStore, type OperationResultStore } from '$lib/api/operation';
 	import ProductType from '$lib/components/common/product-type-select/product-type.svelte';
 	import CategorySelector from '$lib/components/pages/products/new/category-selector.svelte';
 	import CollectionAndTax from '$lib/components/pages/products/new/collections-and-tax.svelte';
@@ -9,7 +11,13 @@
 	import ProductSeo from '$lib/components/pages/products/new/product-seo.svelte';
 	import ProductVariantCreator from '$lib/components/pages/products/new/product-variant-creator.svelte';
 	import { Button } from '$lib/components/ui';
-	import type { ProductCreateInput, ProductVariantBulkCreateInput } from '$lib/gql/graphql';
+	import { Alert } from '$lib/components/ui/Alert';
+	import type {
+		Mutation,
+		MutationProductCreateArgs,
+		ProductCreateInput,
+		ProductVariantBulkCreateInput
+	} from '$lib/gql/graphql';
 
 	let productCreateInput = $state<ProductCreateInput>({
 		productType: '',
@@ -39,7 +47,7 @@
 		rating: true, // default set to 5 (highest)
 		weight: true,
 		slug: true,
-		
+
 		productType: false,
 		description: false,
 		attributes: false,
@@ -49,9 +57,21 @@
 	});
 
 	let productVariantsInput = $state.raw<ProductVariantBulkCreateInput[]>([]);
+	let productCreateMutationStore =
+		$state<OperationResultStore<Pick<Mutation, 'productCreate'>, MutationProductCreateArgs>>();
 
 	const handleSubmit = () => {
-		console.log(productCreateInput);
+		productCreateMutationStore = operationStore<
+			Pick<Mutation, 'productCreate'>,
+			MutationProductCreateArgs
+		>({
+			kind: 'mutation',
+			query: CREATE_PRODUCT_MUTATION,
+			variables: {
+				input: productCreateInput
+			},
+			requestPolicy: 'network-only'
+		});
 	};
 </script>
 
@@ -91,11 +111,27 @@
 		bind:weight={productCreateInput.weight}
 	/>
 
+	{#if $productCreateMutationStore?.error}
+		<Alert variant="error" size="sm" class="mb-3" bordered
+			>{$productCreateMutationStore.error.message}</Alert
+		>
+	{:else if $productCreateMutationStore?.data?.productCreate?.errors.length}
+		<Alert variant="error" size="sm" class="mb-3" bordered
+			>{$productCreateMutationStore.data.productCreate.errors[0].message}</Alert
+		>
+	{:else if $productCreateMutationStore?.data?.productCreate?.product}
+		<Alert variant="success" size="sm" class="mb-3" bordered>Product created successfully</Alert>
+	{/if}
+
 	<Button
 		size="md"
 		variant="filled"
 		fullWidth
 		onclick={handleSubmit}
-		disabled={!Object.values(productInputError).every(Boolean)}>Submit</Button
+		loading={$productCreateMutationStore?.fetching}
+		disabled={!Object.values(productInputError).every(Boolean) ||
+			$productCreateMutationStore?.fetching}
 	>
+		Submit
+	</Button>
 </div>

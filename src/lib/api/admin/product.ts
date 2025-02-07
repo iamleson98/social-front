@@ -114,3 +114,16 @@ query ProductType($id: ID!, $attributeChoicesFirst: Int!, $attributeChoicesAfter
 		}
 	}
 }`;
+
+export const CREATE_PRODUCT_MUTATION = gql`
+mutation CreateProduct($input: ProductCreateInput!) {
+	productCreate(input: $input) {
+		errors {
+			message
+			field
+		}
+		product {
+			id
+		}
+	}
+}`;
