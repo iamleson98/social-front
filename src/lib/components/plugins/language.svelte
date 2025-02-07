@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { languageSupportInfer, switchLanguage, type LanguageCode } from '$i18n';
+	import { languageSupportInfer, switchTranslationLanguage, type LanguageCode } from '$i18n';
 	import { LanguageCodeEnum } from '$lib/gql/graphql';
 	import { userStore } from '$lib/stores/auth';
 	import { getCookieByKey } from '$lib/utils';
@@ -17,26 +17,28 @@
 		}
 
 		let code = languageSupportInfer(languageCode as LanguageCode);
-		if (code === null) {
+		if (!code) {
 			code = LanguageCodeEnum.En;
 		}
 
-		switchLanguage(code);
+		switchTranslationLanguage(code);
 		clientSideSetCookie(LANGUAGE_KEY, code, {
 			expires: new Date(3000, 1, 1),
 			secure: true,
-			sameSite: 'lax'
+			sameSite: 'lax',
+      path: '/'
 		});
 
 		return userStore.subscribe((user) => {
 			if (user?.languageCode) {
 				const code = languageSupportInfer(user.languageCode);
 				if (code) {
-					switchLanguage(code);
+					switchTranslationLanguage(code);
 					clientSideSetCookie(LANGUAGE_KEY, code, {
-						expires: new Date(2100, 1, 1),
+						expires: new Date(3000, 1, 1),
 						secure: true,
-						sameSite: 'lax'
+						sameSite: 'lax',
+						path: '/'
 					});
 				}
 			}

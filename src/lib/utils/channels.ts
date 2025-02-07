@@ -13,8 +13,6 @@ export const DEFAULT_CHANNEL = {
   currencyIcon: CurrencyDong
 };
 
-type ChannelProps = typeof DEFAULT_CHANNEL;
-
 /**
  * NOTE: When 
  */
@@ -65,7 +63,3 @@ export const CHANNELS = [
     defaultCountryCode: CountryCode.Jp,
   }
 ];
-
-export const findChannel = (predicate: (chan: ChannelProps) => boolean, defaultChannel?: ChannelProps) => {
-  return CHANNELS.find(predicate) ?? defaultChannel;
-};

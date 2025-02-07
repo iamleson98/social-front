@@ -7,7 +7,7 @@
 	import { Checkbox, Input, PasswordInput } from '$lib/components/ui/Input';
 	import { boolean, object, string, z } from 'zod';
 	import { operationStore, type OperationResultStore } from '$lib/api/operation';
-	import type { CountryCode, Mutation, MutationAccountRegisterArgs } from '$lib/gql/graphql';
+	import { CountryCode, type Mutation, type MutationAccountRegisterArgs } from '$lib/gql/graphql';
 	import { USER_SIGNUP_MUTATION_STORE } from '$lib/api';
 	import { clientSideGetCookieOrDefault, clientSideSetCookie } from '$lib/utils/cookies';
 	import { CHANNEL_KEY } from '$lib/utils/consts';
@@ -15,11 +15,14 @@
 	import { omit } from 'lodash-es';
 	import { slide } from 'svelte/transition';
 	import { dev } from '$app/environment';
-	import Language from '$lib/components/common/country-language/language.svelte';
-	import Country from '$lib/components/common/country-language/country.svelte';
+	import LanguageSelect from '$lib/components/common/country-language/language-select.svelte';
+	import CountrySelect from '$lib/components/common/country-language/country-select.svelte';
 	import { CHANNELS, DEFAULT_CHANNEL } from '$lib/utils/channels';
 
 	const CHANNEL_SLUG = clientSideGetCookieOrDefault(CHANNEL_KEY, DEFAULT_CHANNEL.slug);
+	const DEFAULT_COUNTRY =
+		CHANNELS.find((chan) => chan.slug === CHANNEL_SLUG)?.defaultCountryCode ||
+		DEFAULT_CHANNEL.defaultCountryCode;
 	const FIELD_REQUIRED_MSG = $tranFunc('helpText.fieldRequired');
 
 	const SignupZodSchema = object({
@@ -64,24 +67,25 @@
 		termAndPoliciesAgree: false,
 		languageCode: ''
 	});
-	let countryCode = $state<CountryCode>();
+	let countryCode = $state<CountryCode>(DEFAULT_COUNTRY);
 	let signupFormErrors = $state.raw<Partial<Record<keyof SignupProps, string[]>>>({});
 	let signupQueryStore =
 		$state<OperationResultStore<Pick<Mutation, 'accountRegister'>, MutationAccountRegisterArgs>>();
 
 	$effect(() => {
 		if (countryCode) {
-			for (const chan of CHANNELS) {
-				if (chan.countries.includes(countryCode)) {
-					signupInfo.channel = chan.slug;
-					clientSideSetCookie(CHANNEL_KEY, chan.slug, {
-						secure: true,
-						expires: new Date(2300, 1, 1),
-						path: '/'
-					});
-					return;
-				}
+			const chan = CHANNELS.find((chan) => chan.countries.includes(countryCode as CountryCode));
+
+			if (chan) {
+				signupInfo.channel = chan.slug;
+				clientSideSetCookie(CHANNEL_KEY, chan.slug, {
+					secure: true,
+					expires: new Date(3000, 1, 1),
+					path: '/'
+				});
+				return;
 			}
+
 			signupInfo.channel = DEFAULT_CHANNEL.slug;
 		}
 	});
@@ -195,8 +199,8 @@
 			onblur={validateForm}
 		/>
 		<div class="flex mb-2 items-start gap-2">
-			<Country class="w-1/2" bind:singleValue={countryCode} />
-			<Language class="w-1/2" autoDefault bind:value={signupInfo.languageCode} />
+			<CountrySelect class="w-1/2" bind:singleValue={countryCode} />
+			<LanguageSelect class="w-1/2" autoDefault bind:value={signupInfo.languageCode} />
 		</div>
 
 		<div class="mb-3">

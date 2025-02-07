@@ -34,7 +34,7 @@
 	import { VIETNAM_COUNTRY_UNITS } from '$lib/utils/countries';
 	import { AppRoute } from '$lib/utils';
 	import { operationStore, type OperationResultStore } from '$lib/api/operation';
-	import { findChannel } from '$lib/utils/channels';
+	import { CHANNELS } from '$lib/utils/channels';
 
 	type Props = {
 		productInformation: Omit<Product, 'variants'>;
@@ -56,7 +56,7 @@
 	});
 
 	let displayPrice = $derived.by(() => {
-		const prdChannel = findChannel((chan) => chan.slug === productInformation.channel);
+		const prdChannel = CHANNELS.find((chan) => chan.slug === productInformation.channel);
 		if (!selectedVariant)
 			return formatMoney(
 				productInformation.pricing?.priceRange?.start?.gross.currency || prdChannel!.currency,

@@ -14,18 +14,27 @@
 	import { onMount } from 'svelte';
 
 	type Props = {
+		/** when user denies browser location service, the `location` will be set to string 'false', in local storage.
+		 * If this prop is set to `true`, the app gona asks user again for their permission on location access
+		 */
 		forceAskLocation?: boolean;
+		/** Number of times to retry getting location via Open Street Api Call */
 		retryCount?: number;
 		onSuccess?: (data: NominatimOsmProps) => void;
+		onError?: () => void;
 	};
 
-	let { forceAskLocation = false, retryCount = 3, onSuccess }: Props = $props();
+	let { forceAskLocation = false, retryCount = 3, onSuccess, onError }: Props = $props();
 
-	const getLocationSuccess = async (
-		{ coords: { latitude, longitude } }: GeolocationPosition,
-		tryTime = 0
-	) => {
-		if (tryTime >= retryCount) return;
+	const handleBrowserGetLocationSuccess = async (geoPosition: GeolocationPosition, tryTime = 0) => {
+		if (tryTime >= retryCount) {
+			onError?.();
+			return;
+		}
+
+		const {
+			coords: { latitude, longitude }
+		} = geoPosition;
 
 		// save local storage
 		localStorage.setItem(
@@ -49,11 +58,11 @@
 
 			// set default channel
 			for (const chan of CHANNELS) {
-				const countryCode = locationData.address?.country_code.toUpperCase() || CountryCode.Vn;
+				const countryCode = locationData.address?.country_code.toUpperCase();
 				if (chan.countries.includes(countryCode as CountryCode)) {
 					clientSideSetCookie(CHANNEL_KEY, chan.slug, {
 						secure: true,
-						expires: new Date(2300, 1, 2),
+						expires: new Date(3000, 1, 1),
 						sameSite: 'lax',
 						path: '/'
 					});
@@ -64,31 +73,42 @@
 		}
 
 		setTimeout(
-			() =>
-				getLocationSuccess({ coords: { latitude, longitude } } as GeolocationPosition, tryTime + 1),
-			1100
+			() => handleBrowserGetLocationSuccess(geoPosition as GeolocationPosition, tryTime + 1),
+			1100 // Open Street API allows 1 request/sec
 		);
 	};
 
-	const getGeoLocationErr = (err: GeolocationPositionError) => {
+	const handleBrowserGetLocationError = (err: GeolocationPositionError) => {
 		if (err.code === 1)
 			// user deny location service
 			localStorage.setItem(LOCATION_KEY, 'false');
+
+		onError?.();
 	};
 
 	onMount(async () => {
 		const location = localStorage.getItem(LOCATION_KEY);
 		if (location === 'false') {
-			if (!forceAskLocation) return;
+			if (!forceAskLocation) {
+				onError?.();
+				return;
+			}
 		} else if (location?.length) {
-			getLocationSuccess({ coords: JSON.parse(location) } as GeolocationPosition);
+			handleBrowserGetLocationSuccess({ coords: JSON.parse(location) } as GeolocationPosition);
 			return;
 		}
 
-		if (typeof navigator === 'undefined') return;
+		if (typeof navigator === 'undefined') {
+			onError?.();
+			return;
+		}
 
-		navigator.geolocation.getCurrentPosition(getLocationSuccess, getGeoLocationErr, {
-			enableHighAccuracy: true
-		});
+		navigator.geolocation.getCurrentPosition(
+			handleBrowserGetLocationSuccess,
+			handleBrowserGetLocationError,
+			{
+				enableHighAccuracy: true
+			}
+		);
 	});
 </script>

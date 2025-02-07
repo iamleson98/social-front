@@ -27,13 +27,11 @@ export const clientSideSetCookie = (key: string, value: string, opts?: CookieSer
 
   let options = '';
 
-  if (opts) {
-    if (opts.expires) options += `; expires=${opts.expires.toUTCString()}`;
-    if (opts.path) options += `; path=${opts.path}`;
-    if (opts.domain) options += `; domain=${opts.domain}`;
-    if (opts.secure) options += '; secure';
-    if (opts.sameSite) options += `; SameSite=${opts.sameSite}`;
-  }
+  if (opts?.expires) options += `; expires=${opts.expires.toUTCString()}`;
+  if (opts?.path) options += `; path=${opts.path}`;
+  if (opts?.domain) options += `; domain=${opts.domain}`;
+  if (opts?.secure) options += '; Secure';
+  if (opts?.sameSite) options += `; SameSite=${opts.sameSite}`;
 
   document.cookie = `${key}=${value}${options}`;
 };

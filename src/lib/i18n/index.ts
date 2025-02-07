@@ -71,7 +71,7 @@ export const languageSupportInfer = (language: LanguageCode | LanguageCodeEnum) 
 
 const englishTran = parseTranslationObject(english, {})
 
-export const switchLanguage = (language: LanguageCode) => {
+export const switchTranslationLanguage = (language: LanguageCode) => {
   switch (language) {
     case LanguageCodeEnum.En:
     case 'en-US':
@@ -87,11 +87,18 @@ export const switchLanguage = (language: LanguageCode) => {
     case LanguageCodeEnum.Ja:
       innerStore.set(parseTranslationObject(japanese, {}));
       break;
+
+    default:
+      innerStore.set(englishTran);
   }
 }
 
 const innerStore = writable(englishTran);
 
+/**a svelte store for translation.
+ * On client side (in .svelte files), use it like: const result = $tranFunc('`<your_key>`').
+ * On server side or utils fies (**.ts files), use it like: const result = get(tranFunc)('`<your_key>`')
+ */
 export const tranFunc = derived(innerStore, ($trans) => {
   return (key: string, args?: Record<string, unknown>) => {
     const tranObject = $trans[key];

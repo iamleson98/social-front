@@ -9,7 +9,7 @@
 	import { fade } from 'svelte/transition';
 	import type { Product } from '$lib/gql/graphql';
 	import FoundationBurstSale from '$lib/components/icons/foundation-burst-sale.svelte';
-	import { DEFAULT_CHANNEL, findChannel } from '$lib/utils/channels';
+	import { CHANNELS, DEFAULT_CHANNEL } from '$lib/utils/channels';
 
 	type ProductProps = {
 		product: Product;
@@ -72,7 +72,7 @@
 			<p class="font-bold text-blue-700 text-xl underline">
 				{formatMoney(
 					pricing?.priceRange?.start?.gross.currency ||
-						findChannel((chan) => chan.slug === product.channel, DEFAULT_CHANNEL)?.currency ||
+						CHANNELS.find((chan) => chan.slug === product.channel, DEFAULT_CHANNEL)?.currency ||
 						'',
 					pricing?.priceRange?.start?.gross.amount || 0
 				)}

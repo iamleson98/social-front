@@ -1,19 +1,23 @@
 <script lang="ts">
 	import { AppRoute } from '$lib/utils';
-	import {
-		Facebook,
-		Instagram,
-		Twitter,
-	} from '../icons/SvgOuterIcon';
-	import {  SUPPORTED_LANGUAGES, switchLanguage } from '$i18n';
+	import { Facebook, Instagram, Twitter } from '../icons/SvgOuterIcon';
+	import { SUPPORTED_LANGUAGES, switchTranslationLanguage } from '$i18n';
 	import { DropDown, MenuItem, type DropdownTriggerInterface } from '../ui/Dropdown';
 	import { Button } from '../ui';
+	import { clientSideSetCookie } from '$lib/utils/cookies';
+	import { LANGUAGE_KEY } from '$lib/utils/consts';
 
 	let activeLanguage = $state(SUPPORTED_LANGUAGES[0]);
 
 	const setLanguageByCode = (idx: number) => {
 		activeLanguage = SUPPORTED_LANGUAGES[idx];
-		switchLanguage(activeLanguage.code);
+		switchTranslationLanguage(activeLanguage.code);
+		clientSideSetCookie(LANGUAGE_KEY, activeLanguage.code, {
+			secure: true,
+			path: '/',
+			expires: new Date(3000, 1, 1),
+			sameSite: 'lax'
+		});
 	};
 </script>
 

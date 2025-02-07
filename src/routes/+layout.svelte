@@ -9,7 +9,7 @@
 	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import { LANGUAGE_KEY } from '$lib/utils/consts';
 	import { LanguageCodeEnum } from '$lib/gql/graphql';
-	import { switchLanguage, type LanguageCode } from '$i18n';
+	import { switchTranslationLanguage, type LanguageCode } from '$i18n';
 	import Location from '$lib/components/plugins/location.svelte';
 	import Language from '$lib/components/plugins/language.svelte';
 
@@ -24,7 +24,7 @@
 			LANGUAGE_KEY,
 			LanguageCodeEnum.En
 		) as LanguageCode;
-		switchLanguage(languageCode);
+		switchTranslationLanguage(languageCode);
 	});
 </script>
 
