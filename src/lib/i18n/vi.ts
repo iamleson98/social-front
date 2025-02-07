@@ -75,6 +75,7 @@ export default {
 		advanced: 'nâng cao',
 		email: 'Email',
 		password: 'Mật khẩu',
+		confirmPwd: 'Xâc nhận mật khâu',
 	},
 	product: {
 		chooseAddress: 'Vui lòng chọn địa chỉ',

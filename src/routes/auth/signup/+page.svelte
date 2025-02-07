@@ -141,8 +141,10 @@
 		<div class="flex flex-row mobile-m:flex-col justify-between items-start gap-2 mb-2">
 			<div class="w-1/2">
 				<Input
+					size="sm"
 					type="text"
 					placeholder={$tranFunc('common.firstName')}
+					label={$tranFunc('common.firstName')}
 					required
 					disabled={$signupQueryStore?.fetching}
 					bind:value={signupInfo.firstName}
@@ -153,7 +155,9 @@
 			</div>
 			<div class="w-1/2">
 				<Input
+					size="sm"
 					type="text"
+					label={$tranFunc('common.lastName')}
 					placeholder={$tranFunc('common.lastName')}
 					required
 					disabled={$signupQueryStore?.fetching}
@@ -165,10 +169,12 @@
 			</div>
 		</div>
 		<Input
-			type="text"
+			size="sm"
+			type="email"
 			placeholder={$tranFunc('common.emailPlaceholder')}
 			class="mb-2"
 			required
+			label={$tranFunc('common.email')}
 			disabled={$signupQueryStore?.fetching}
 			bind:value={signupInfo.email}
 			startIcon={Email}
@@ -177,8 +183,10 @@
 			subText={signupFormErrors?.email?.length ? signupFormErrors.email[0] : ''}
 		/>
 		<PasswordInput
+			size="sm"
 			placeholder={$tranFunc('common.passwordPlaceholder')}
 			bind:value={signupInfo.password}
+			label={$tranFunc('common.password')}
 			disabled={$signupQueryStore?.fetching}
 			class="mb-2"
 			variant={signupFormErrors?.password?.length ? 'error' : 'info'}
@@ -188,9 +196,11 @@
 			onblur={validateForm}
 		/>
 		<PasswordInput
+			size="sm"
 			placeholder={$tranFunc('signup.confirmPasswordPlaceholder')}
 			bind:value={signupInfo.confirmPassword}
 			disabled={$signupQueryStore?.fetching}
+			label={$tranFunc('common.confirmPwd')}
 			class="mb-2"
 			showAction={false}
 			variant={signupFormErrors?.confirmPassword?.length ? 'error' : 'info'}
@@ -199,8 +209,19 @@
 			onblur={validateForm}
 		/>
 		<div class="flex mb-2 items-start gap-2">
-			<CountrySelect class="w-1/2" bind:singleValue={countryCode} />
-			<LanguageSelect class="w-1/2" autoDefault bind:value={signupInfo.languageCode} />
+			<CountrySelect
+				size="sm"
+				class="w-1/2"
+				bind:singleValue={countryCode}
+				label={$tranFunc('common.country')}
+			/>
+			<LanguageSelect
+				size="sm"
+				class="w-1/2"
+				autoDefault
+				bind:value={signupInfo.languageCode}
+				label={$tranFunc('footer.language')}
+			/>
 		</div>
 
 		<div class="mb-3">

@@ -37,22 +37,20 @@
 	let triggerRef = $state<HTMLElement>();
 
 	const computeStyle = async () => {
-		if (!triggerRef || !menuElemRef) return;
-
-		const { x, y } = await computePosition(triggerRef, menuElemRef, {
+		const { x, y } = await computePosition(triggerRef!, menuElemRef!, {
 			placement,
-			middleware: [offset(6), flip(), shift()]
+			middleware: [offset(4), flip(), shift()]
 		});
 
-		Object.assign(menuElemRef.style, {
+		Object.assign(menuElemRef!.style, {
 			left: `${x}px`,
 			top: `${y}px`
 		});
 	};
 
 	const handleTriggerClick = async () => {
-		computeStyle();
 		open = true;
+		computeStyle();
 	};
 
 	onMount(() => {
@@ -63,21 +61,24 @@
 
 <div bind:this={triggerRef} class="relative inline-block">
 	{@render trigger({ onclick: handleTriggerClick, onfocus: handleTriggerClick })}
-
-	{#if open}
-		<div
-			use:clickOutside={{ onOutclick: () => (open = false) }}
-			transition:fly={{ y: 10 }}
-			bind:this={menuElemRef}
-			class="absolute z-100 py-2 rounded-lg border border-gray-200 bg-white min-w-full shadow-xs"
-		>
-			{#if options?.length}
-				{#each options as option, idx (idx)}
-					<MenuItem {...option} />
-				{/each}
-			{:else}
-				{@render children?.()}
-			{/if}
-		</div>
-	{/if}
+	<div class="absolute z-100 min-w-full" bind:this={menuElemRef}>
+		{#if open}
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<div
+				use:clickOutside={{ onOutclick: () => (open = false) }}
+				transition:fly={{ y: 10 }}
+				class="py-2 rounded-lg border border-gray-200 bg-white shadow-xs"
+				onclick={computeStyle}
+			>
+				{#if options?.length}
+					{#each options as option, idx (idx)}
+						<MenuItem {...option} />
+					{/each}
+				{:else}
+					{@render children?.()}
+				{/if}
+			</div>
+		{/if}
+	</div>
 </div>

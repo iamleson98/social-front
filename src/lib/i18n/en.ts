@@ -75,6 +75,7 @@ export default {
 		advanced: 'advanced',
 		email: 'Email',
 		password: 'Password',
+		confirmPwd: 'Confirm password',
 	},
 	product: {
 		chooseAddress: 'Please choose address',

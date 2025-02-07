@@ -76,11 +76,14 @@
 		required
 		disabled={$resetPasswordStore?.fetching}
 		startIcon={Email}
-		class="mb-2"
+		class="mb-1"
 		variant={emailError ? 'error' : 'info'}
 		subText={emailError}
 		onblur={validateForm}
 	/>
+	<a href={AppRoute.AUTH_SIGNIN} class="mb-3 text-right block text-xs text-blue-600"
+		>{$tranFunc('signin.title')}</a
+	>
 	<Button
 		variant="filled"
 		size="sm"

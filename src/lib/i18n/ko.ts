@@ -75,6 +75,7 @@ export default {
 		advanced: '연급',
 		email: '이메일',
 		password: '비밀번호',
+		confirmPwd: '비밀번호 확인',
 	},
 	product: {
 		chooseAddress: '주소를 선택해주세요',
@@ -121,7 +122,7 @@ export default {
 		fromPrd: 'từ sản phẩm',
 		toPrd: 'tới sản phẩm',
 		addDiscountRange: 'thêm khoảng giảm giá',
-		weight: 'Weight',
+		weight: 'weight',
 		length: 'Length',
 		width: 'Width',
 		height: 'Height',
@@ -166,15 +167,15 @@ export default {
 		payment: '지불',
 		orderConfirm: '주문 확인',
 		home: '홈',
-		trending: 'Trending',
+		trending: '픽리텍',
 	},
 	btn: {
 		apply: '조회',
 	},
 	helpText: {
 		chooseDeliveryAddress: '배송지를 선택해주세요',
-		selectDate: 'Select date',
-		fieldRequired: 'This field is required',
+		selectDate: '날짜를 선택해주세요',
+		fieldRequired: '이 필드는 필요합니다',
 	},
 	footer: {
 		socialMedia: 'Mạng xã hội',

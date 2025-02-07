@@ -75,6 +75,7 @@ export default {
 		advanced: '進化',
 		email: 'メールアドレス',
 		password: 'パスワード',
+		confirmPwd: 'パスワード確認',
 	},
 	product: {
 		chooseAddress: '住所を選択してください',

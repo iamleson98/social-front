@@ -13,9 +13,6 @@ export const DEFAULT_CHANNEL = {
   currencyIcon: CurrencyDong
 };
 
-/**
- * NOTE: When 
- */
 export const CHANNELS = [
   DEFAULT_CHANNEL,
   {
