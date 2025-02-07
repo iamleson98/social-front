@@ -142,6 +142,7 @@ export default {
 		trackInventory: 'tự động quản lý hàng tồn',
 		collection: 'Bộ sưu tập',
 		taxCls: 'Lớp thuế',
+		prdType: 'Loại sản phẩm',
 	},
 	error: {
 		invalidSlug: 'Giá trị slug không hợp lệ',

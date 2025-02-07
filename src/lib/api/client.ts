@@ -12,11 +12,11 @@ import {
 	type OperationType,
 } from '@urql/core';
 import { AppRoute, getCookieByKey } from '../utils';
-import { redirect, type RequestEvent } from '@sveltejs/kit';
+import { error, redirect, type RequestEvent } from '@sveltejs/kit';
 import { browser } from '$app/environment';
-import { ACCESS_TOKEN_KEY, CSRF_TOKEN_KEY, HTTPStatusTemporaryRedirect, REFRESH_TOKEN_KEY } from '../utils/consts';
+import { ACCESS_TOKEN_KEY, CSRF_TOKEN_KEY, HTTPStatusTemporaryRedirect, HTTPStatusUnauthorized, REFRESH_TOKEN_KEY } from '../utils/consts';
 import { authExchange, type AuthUtilities } from '@urql/exchange-auth';
-import type { Query, User } from '../gql/graphql';
+import type { PermissionEnum, Query, User } from '../gql/graphql';
 import { userStore } from '../stores/auth';
 import type { CookieSerializeOptions } from 'cookie';
 import { retryExchange } from '@urql/exchange-retry';
@@ -274,6 +274,33 @@ export const pageRequiresAuthentication = async (event: RequestEvent<Partial<Rec
 		redirect(HTTPStatusTemporaryRedirect, `${AppRoute.AUTH_SIGNIN}?next=${event.url.pathname}`);
 	}
 
-	const meQueryResult = await performServerSideGraphqlRequest<Pick<Query, 'me'>>('query', USER_ME_QUERY_STORE, {}, event);
+	const meQueryResult = await performServerSideGraphqlRequest<Pick<Query, 'me'>>('query', USER_ME_QUERY_STORE, {}, event, { requestPolicy: 'cache-and-network' });
 	return meQueryResult.data?.me as User;
+};
+
+/**
+ * @note This function MUST be used in server load only
+ * @param event 
+ * @returns 
+ */
+export const pageRequiresPermissions = async (event: RequestEvent<Partial<Record<string, string>>, string | null>, ...permissions: PermissionEnum[]) => {
+	const authenticatedUser = await pageRequiresAuthentication(event);
+
+	if (!permissions.length) return authenticatedUser;
+	if (!authenticatedUser.userPermissions?.length) {
+		return error(HTTPStatusUnauthorized, 'Unauthorized');
+	}
+
+	const userPermMap: Partial<Record<PermissionEnum, boolean>> = {};
+	for (const perm of authenticatedUser.userPermissions) {
+		userPermMap[perm.code] = true;
+	}
+
+	for (const perm of permissions) {
+		if (!userPermMap[perm]) {
+			return error(HTTPStatusUnauthorized, 'Unauthorized');
+		}
+	}
+
+	return authenticatedUser;
 };

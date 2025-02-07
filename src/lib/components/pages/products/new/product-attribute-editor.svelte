@@ -2,7 +2,12 @@
 	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { MultiSelect, Select, type SelectOption } from '$lib/components/ui/select';
-	import { AttributeInputTypeEnum, type AttributeValueInput, type Query } from '$lib/gql/graphql';
+	import {
+		AttributeInputTypeEnum,
+		type AttributeValueInput,
+		type Query,
+		type QueryProductTypeArgs
+	} from '$lib/gql/graphql';
 	import {
 		PRODUCT_ATTRIBUTES_QUERY,
 		type CustomAttributesQueryArgs
@@ -15,6 +20,7 @@
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { RequiredAt } from '$lib/components/ui';
 	import ErrorMsg from './error-msg.svelte';
+	import { PRODUCT_TYPE_QUERY } from '$lib/api/admin/product';
 
 	type CustomAttributeInput = AttributeValueInput & {
 		required: boolean;
@@ -22,15 +28,15 @@
 	};
 
 	type Props = {
-		categoryID?: string | null;
+		productTypeID?: string | null;
 		attributes: AttributeValueInput[];
 		ok: boolean;
 	};
 
-	const MAX_FETCHING_BATCH = 50;
-	let { categoryID, attributes = $bindable([]), ok = $bindable() }: Props = $props();
+	const MAX_FETCHING_BATCH = 100;
+	let { productTypeID, attributes = $bindable([]), ok = $bindable() }: Props = $props();
 
-	let prevCategoryID = $state(categoryID);
+	let prevproductTypeID = $state(productTypeID);
 	let blurTriggers = $state<boolean[]>([]);
 
 	/** asynchronously calculate attribute errors */
@@ -108,43 +114,56 @@
 		ok = !attributeErrors.some(Boolean);
 	});
 
-	const attributeQueryStore = operationStore<Pick<Query, 'attributes'>, CustomAttributesQueryArgs>({
+	// const attributeQueryStore = operationStore<Pick<Query, 'attributes'>, CustomAttributesQueryArgs>({
+	// 	kind: 'query',
+	// 	query: PRODUCT_ATTRIBUTES_QUERY,
+	// 	context: {
+	// 		requestPolicy: 'network-only'
+	// 	},
+	// 	variables: {
+	// 		first: MAX_FETCHING_BATCH,
+	// 		choiceFirst: MAX_FETCHING_BATCH,
+	// 		where: {
+	// 			inCategory: productTypeID
+	// 		}
+	// 	},
+	// 	pause: !productTypeID
+	// });
+
+	const productTypeQuery = operationStore<Pick<Query, 'productType'>, QueryProductTypeArgs>({
 		kind: 'query',
-		query: PRODUCT_ATTRIBUTES_QUERY,
-		context: {
-			requestPolicy: 'network-only'
-		},
+		query: PRODUCT_TYPE_QUERY,
+		requestPolicy: 'network-only',
 		variables: {
-			first: MAX_FETCHING_BATCH,
-			choiceFirst: MAX_FETCHING_BATCH,
-			where: {
-				inCategory: categoryID
-			}
+			id: productTypeID,
+			attributeChoicesFirst: MAX_FETCHING_BATCH
 		},
-		pause: !categoryID
+		pause: !productTypeID
 	});
 
 	onMount(() => {
-		const unsub = attributeQueryStore.subscribe((result) => {
-			if (result.data?.attributes?.edges.length) {
-				blurTriggers = new Array(result.data.attributes.edges.length).fill(false);
-				attributes = result.data.attributes.edges.map<CustomAttributeInput>(({ node }) => {
-					const result: CustomAttributeInput = {
-						required: node.valueRequired,
-						inputType: node.inputType
-					};
+		const unsub = productTypeQuery.subscribe((result) => {
+			if (result.data?.productType?.productAttributes?.length) {
+				blurTriggers = new Array(result.data.productType.productAttributes.length).fill(false);
+				attributes = result.data.productType.productAttributes.map<CustomAttributeInput>(
+					({ valueRequired, inputType }) => {
+						const result: CustomAttributeInput = {
+							required: valueRequired,
+							inputType
+						};
 
-					if (node.inputType === AttributeInputTypeEnum.Dropdown) {
-						result.dropdown = {};
-					} else if (node.inputType === AttributeInputTypeEnum.Multiselect) {
-						result.multiselect = [];
-					} else if (node.inputType === AttributeInputTypeEnum.Swatch) {
-						result.swatch = {};
-					} else if (node.inputType === AttributeInputTypeEnum.Reference) {
-						result.references = [];
+						if (inputType === AttributeInputTypeEnum.Dropdown) {
+							result.dropdown = {};
+						} else if (inputType === AttributeInputTypeEnum.Multiselect) {
+							result.multiselect = [];
+						} else if (inputType === AttributeInputTypeEnum.Swatch) {
+							result.swatch = {};
+						} else if (inputType === AttributeInputTypeEnum.Reference) {
+							result.references = [];
+						}
+						return result;
 					}
-					return result;
-				});
+				);
 			}
 		});
 
@@ -153,14 +172,12 @@
 
 	// listener when category id changes
 	$effect(() => {
-		if (categoryID && categoryID !== prevCategoryID) {
-			prevCategoryID = categoryID; // reassign prev state
-			attributeQueryStore.reexecute({
+		if (productTypeID && productTypeID !== prevproductTypeID) {
+			prevproductTypeID = productTypeID; // reassign prev state
+			productTypeQuery.reexecute({
 				variables: {
-					...$attributeQueryStore.operation.variables,
-					where: {
-						inCategory: categoryID
-					}
+					...$productTypeQuery.operation.variables,
+					id: productTypeID
 				}
 			});
 		}
@@ -169,12 +186,17 @@
 
 <div class="hidden!"></div>
 
-{#if categoryID}
+{#if productTypeID}
 	<div class="mb-3">
 		<RequiredAt class="text-sm" label={$tranFunc('product.tabAttributes')} required />
 
-		<div class="rounded-lg border p-3 {blurTriggers.some(Boolean) && !ok ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}" transition:slide>
-			{#if $attributeQueryStore.fetching}
+		<div
+			class="rounded-lg border p-3 {blurTriggers.some(Boolean) && !ok
+				? 'bg-red-50 border-red-200'
+				: 'bg-gray-50 border-gray-200'}"
+			transition:slide
+		>
+			{#if $productTypeQuery.fetching}
 				<div class="flex items-center flex-wrap">
 					{#each [null, null] as _}
 						<div class="w-1/2">
@@ -184,15 +206,15 @@
 						</div>
 					{/each}
 				</div>
-			{:else if $attributeQueryStore.error}
+			{:else if $productTypeQuery.error}
 				<Alert variant="error" size="sm" bordered>
-					{$attributeQueryStore.error.message}
+					{$productTypeQuery.error.message}
 				</Alert>
-			{:else if !$attributeQueryStore.data?.attributes?.edges.length}
+			{:else if !$productTypeQuery.data?.productType?.productAttributes?.length}
 				<Alert variant="info" size="sm" bordered>{$tranFunc('product.noAttributes')}</Alert>
-			{:else if $attributeQueryStore.data?.attributes?.edges}
+			{:else if $productTypeQuery.data?.productType?.productAttributes}
 				<div class="flex items-start flex-wrap">
-					{#each $attributeQueryStore.data?.attributes?.edges as { node }, idx (idx)}
+					{#each $productTypeQuery.data?.productType?.productAttributes as node, idx (idx)}
 						<div class="w-1/2 tablet:w-full p-1 shrink flex items-center mb-2">
 							<div class="w-1/4 text-xs">
 								<RequiredAt

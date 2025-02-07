@@ -142,6 +142,7 @@ export default {
 		trackInventory: 'track inventory',
 		collection: 'Bộ sưu tập',
 		taxCls: 'Lớp thuế',
+		prdType: 'Loại sản phẩm',
 	},
 	error: {
 		invalidSlug: '잘못된 슬러그 값',

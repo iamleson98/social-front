@@ -137,7 +137,7 @@
 {#if label}
 	<label
 		for={INPUT_ID}
-		class={`block mb-1.5 ${INPUT_LABEL_SIZE_STYLE_MAP[size]} font-medium ${INPUT_TYPES[variant].fg}`}
+		class={`block mb-1 ${INPUT_LABEL_SIZE_STYLE_MAP[size]} font-medium ${INPUT_TYPES[variant].fg}`}
 	>
 		{label}
 		{#if rest.required}<strong class="font-bold text-red-600!">*</strong>{/if}

@@ -140,8 +140,9 @@ export default {
 		qtyLimit: 'quantity limit',
 		preOrderEndDate: 'preorder end date',
 		trackInventory: 'track inventory',
-		collection: 'collection',
-		taxCls: 'tax class',
+		collection: 'Collection',
+		taxCls: 'Tax class',
+		prdType: 'Product type',
 	},
 	error: {
 		invalidSlug: 'Invalid slug value',

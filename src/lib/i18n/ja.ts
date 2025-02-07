@@ -142,6 +142,7 @@ export default {
 		trackInventory: 'track inventory',
 		collection: 'collection',
 		taxCls: 'tax class',
+		prdType: 'Product type',
 	},
 	error: {
 		invalidSlug: '無効なスラッグ値',

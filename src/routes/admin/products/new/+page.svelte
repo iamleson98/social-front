@@ -1,4 +1,5 @@
 <script lang="ts">
+	import ProductType from '$lib/components/common/product-type-select/product-type.svelte';
 	import CategorySelector from '$lib/components/pages/products/new/category-selector.svelte';
 	import CollectionAndTax from '$lib/components/pages/products/new/collections-and-tax.svelte';
 	import PackagingAndDelivery from '$lib/components/pages/products/new/packaging-and-delivery.svelte';
@@ -36,10 +37,10 @@
 		taxClass: true, // optional
 		taxCode: true, // not supported yet
 		rating: true, // default set to 5 (highest)
-		productType: true,
 		weight: true,
 		slug: true,
-
+		
+		productType: false,
 		description: false,
 		attributes: false,
 		category: false,
@@ -56,14 +57,19 @@
 
 <div class="m-auto rounded-lg bg-white w-full p-5 text-gray-600">
 	<ProductName bind:name={productCreateInput.name} bind:ok={productInputError.name} />
+	<ProductType
+		bind:value={productCreateInput.productType}
+		bind:ok={productInputError.productType}
+		class="mb-3"
+	/>
+	<ProductAttributeEditor
+		productTypeID={productCreateInput.productType}
+		bind:attributes={productCreateInput.attributes!}
+		bind:ok={productInputError.attributes}
+	/>
 	<CategorySelector
 		bind:categoryID={productCreateInput.category}
 		bind:ok={productInputError.category}
-	/>
-	<ProductAttributeEditor
-		categoryID={productCreateInput.category}
-		bind:attributes={productCreateInput.attributes!}
-		bind:ok={productInputError.attributes}
 	/>
 	<ProductDescriptionEditorjsComponent
 		bind:description={productCreateInput.description}
