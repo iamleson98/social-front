@@ -5,7 +5,7 @@
 	import type { ProductCreateInput, SeoInput } from '$lib/gql/graphql';
 	import slugify from 'slugify';
 	import ErrorMsg from './error-msg.svelte';
-	import { object, string } from 'zod';
+	import { object, string, z } from 'zod';
 	import { PRODUCT_SLUG_MAX_LENGTH } from './utils';
 
 	type Props = {
@@ -16,7 +16,6 @@
 		ok: boolean;
 	};
 
-	// const fieldRequired = $tranFunc('helpText.fieldRequired');
 	const SEO_DESCRIPTION_MAX_LENGTH = 300; // saleor reference
 	const SEO_TITLE_MAX_LENGTH = 70;
 
@@ -50,10 +49,15 @@
 			})
 	});
 
+	type SeoProps = z.infer<typeof seoSchema>;
+
 	let { productName, slug = $bindable(), seo = $bindable(), ok = $bindable() }: Props = $props();
 
-	let seoErrors = $state<Record<string, any>>({});
-	let innerSeo = $state<SeoInput>({});
+	let seoErrors = $state<Partial<Record<keyof SeoProps, string[]>>>({});
+	let innerSeo = $state<SeoInput>({
+		title: '',
+		description: ''
+	});
 
 	$effect(() => {
 		if (productName) {
@@ -69,8 +73,7 @@
 	const handleValueChange = (): void => {
 		const parseResult = seoSchema.safeParse({
 			slug,
-			title: innerSeo.title,
-			description: innerSeo.description
+			...innerSeo,
 		});
 		if (!parseResult.success) {
 			seoErrors = parseResult.error.formErrors.fieldErrors;

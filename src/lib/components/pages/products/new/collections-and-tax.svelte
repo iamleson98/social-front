@@ -1,9 +1,10 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { COLLECTIONS_QUERY } from '$lib/api/collections';
 	import { operationStore } from '$lib/api/operation';
 	import { TAX_CLASSES_QUERY } from '$lib/api/tax';
 	import { Alert } from '$lib/components/ui/Alert';
-	import RequiredAt from '$lib/components/ui/required-at.svelte';
+	// import RequiredAt from '$lib/components/ui/required-at.svelte';
 	import { MultiSelect, Select, type SelectOption } from '$lib/components/ui/select';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import type {
@@ -52,7 +53,7 @@
 <div class="mb-3 flex items-center gap-2">
 	<!-- MARK: Collections -->
 	<div class="w-1/2 mobile-l:w-full">
-		<RequiredAt label={'Collections'} class="text-xs" />
+		<!-- <RequiredAt label={'Collections'} class="text-xs" /> -->
 
 		{#if $collectionsStore.fetching}
 			<SkeletonContainer class="w-full">
@@ -64,13 +65,19 @@
 			{@const selectOptions = $collectionsStore.data?.collections?.edges.map<SelectOption>(
 				({ node }) => ({ value: node.id, label: node.name })
 			)}
-			<MultiSelect options={selectOptions} class="w-full" bind:value={innerCollections} />
+			<MultiSelect
+				options={selectOptions}
+				class="w-full"
+				bind:value={innerCollections}
+				label={$tranFunc('product.collection')}
+				size="sm"
+			/>
 		{/if}
 	</div>
 
 	<!-- MARK: Tax classes -->
 	<div class="w-1/2 mobile-l:w-full">
-		<RequiredAt label={'Tax classes'} class="text-xs" />
+		<!-- <RequiredAt label={'Tax classes'} class="text-xs" /> -->
 
 		{#if $taxClassesStore.fetching}
 			<SkeletonContainer class="w-full">
@@ -82,7 +89,13 @@
 			{@const selectOptions = $taxClassesStore.data?.taxClasses?.edges.map<SelectOption>(
 				({ node }) => ({ value: node.id, label: node.name })
 			)}
-			<Select options={selectOptions} class="w-full" bind:value={taxClassID as string} />
+			<Select
+				options={selectOptions}
+				class="w-full"
+				bind:value={taxClassID as string}
+				label={$tranFunc('product.taxCls')}
+				size="sm"
+			/>
 		{/if}
 	</div>
 </div>

@@ -140,6 +140,8 @@ export default {
 		qtyLimit: 'hạn mức',
 		preOrderEndDate: 'hạn giao hàng',
 		trackInventory: 'tự động quản lý hàng tồn',
+		collection: 'Bộ sưu tập',
+		taxCls: 'Lớp thuế',
 	},
 	error: {
 		invalidSlug: 'Giá trị slug không hợp lệ',

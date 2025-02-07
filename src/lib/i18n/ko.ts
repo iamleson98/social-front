@@ -140,6 +140,8 @@ export default {
 		qtyLimit: 'hạn mức',
 		preOrderEndDate: 'hạn giao hàng',
 		trackInventory: 'track inventory',
+		collection: 'Bộ sưu tập',
+		taxCls: 'Lớp thuế',
 	},
 	error: {
 		invalidSlug: '잘못된 슬러그 값',

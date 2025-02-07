@@ -15,12 +15,15 @@
 	} from './types';
 	import { Badge } from '../badge';
 	import type { FocusEventHandler } from 'svelte/elements';
+	import { INPUT_LABEL_SIZE_STYLE_MAP, INPUT_TYPES } from '../Input/input.types';
 
 	let {
 		value = $bindable<SelectOption[]>([]),
 		class: className = '',
 		maxDisplay,
 		size = 'md',
+		label,
+		variant = 'info',
 		...rest
 	}: MultiSelectProps = $props();
 
@@ -37,7 +40,7 @@
 	let selectMapper = $derived.by(() => {
 		const result: Record<string | number, boolean> = {};
 		for (const vl of value) {
-			result[vl.value] = true
+			result[vl.value] = true;
 		}
 		return result;
 	});
@@ -131,6 +134,15 @@
 	{/if}
 {/snippet}
 
+{#if label}
+	<label
+		for={INPUT_ID}
+		class={`block mb-1.5 ${INPUT_LABEL_SIZE_STYLE_MAP[size]} font-medium ${INPUT_TYPES[variant].fg}`}
+	>
+		{label}
+		{#if rest.required}<strong class="font-bold text-red-600!">*</strong>{/if}
+	</label>
+{/if}
 <div
 	class={`relative text-gray-700 text-base bg-white rounded-lg w-fit py-1 px-1.5 ring-1 ring-gray-200 ${className}`}
 	use:clickOutside={{ onOutclick: interactOutsideHandler }}
@@ -160,6 +172,7 @@
 		<!-- please dont worry about 'onfocus' error warning, it still works -->
 		<Input
 			{...rest}
+			{variant}
 			aria-controls={LISTBOX_ID}
 			aria-expanded={openSelect}
 			bind:ref={input}
