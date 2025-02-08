@@ -18,20 +18,24 @@
 </script>
 
 <div class={`${className} py-2 px-3 rounded-md text-gray-800`}>
-	<div
-		class="flex items-center justify-between cursor-pointer select-none"
-		role="button"
-		tabindex="0"
-		onclick={toggle}
-		onkeydown={(evt) => evt.key === 'Enter' && toggle()}
-	>
-		<div class="text-sm font-semibold flex items-center">
+	<div class="flex items-center justify-between select-none">
+		<div
+			class="text-sm font-semibold flex items-center cursor-pointer"
+			role="button"
+			tabindex="0"
+			onclick={toggle}
+			onkeyup={(evt) => evt.key === 'Enter' && toggle()}
+		>
 			{#if headerIcon}
 				<Icon icon={headerIcon} class="mr-2" />
 			{/if}
-			<span>
-				{header}
-			</span>
+			<div>
+				{#if typeof header === 'string'}
+					{header}
+				{:else}
+					{@render header()}
+				{/if}
+			</div>
 		</div>
 		<div>
 			<Icon icon={open ? ChevronUp : ChevronDown} />

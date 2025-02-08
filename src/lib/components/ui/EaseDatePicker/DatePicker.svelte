@@ -47,7 +47,9 @@
 		/** for time selection and day time format */
 		timeConfig?:
 			| {
+					/** default `1` */
 					stepHours?: number;
+					/** default `5` */
 					stepMinutes?: number;
 					stepSeconds?: number;
 					format?: 12 | 24;

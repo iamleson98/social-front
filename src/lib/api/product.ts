@@ -45,6 +45,7 @@ export const PRODUCT_LIST_QUERY_STORE = gql`
 					created
 					updatedAt
 					rating
+					channel
 					category {
 						id
 						name

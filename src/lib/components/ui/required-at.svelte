@@ -3,6 +3,7 @@
 		class?: string;
 		required?: boolean;
 		label: string;
+		/** The position of the `*` symbol */
 		pos?: 'start' | 'end';
 	};
 

@@ -3,6 +3,7 @@
 	import { operationStore, type OperationResultStore } from '$lib/api/operation';
 	import ProductType from '$lib/components/common/product-type-select/product-type.svelte';
 	import CategorySelector from '$lib/components/pages/products/new/category-selector.svelte';
+	import ChannelsSelector from '$lib/components/pages/products/new/channels-selector.svelte';
 	import CollectionAndTax from '$lib/components/pages/products/new/collections-and-tax.svelte';
 	import PackagingAndDelivery from '$lib/components/pages/products/new/packaging-and-delivery.svelte';
 	import ProductAttributeEditor from '$lib/components/pages/products/new/product-attribute-editor.svelte';
@@ -63,10 +64,11 @@
 		$state<OperationResultStore<Pick<Mutation, 'productCreate'>, MutationProductCreateArgs>>();
 
 	const handleSubmit = () => {
-
 		const submitData: ProductCreateInput = {
 			...productCreateInput,
-			description: productCreateInput.description ? JSON.stringify(productCreateInput.description) : null
+			description: productCreateInput.description
+				? JSON.stringify(productCreateInput.description)
+				: null
 		};
 		productCreateMutationStore = operationStore<
 			Pick<Mutation, 'productCreate'>,
@@ -105,6 +107,7 @@
 		bind:description={productCreateInput.description}
 		bind:ok={productInputError.description}
 	/>
+	<ChannelsSelector />
 	<ProductVariantCreator bind:productVariantsInput />
 	<ProductSeo
 		productName={productCreateInput.name}

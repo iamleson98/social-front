@@ -2,7 +2,7 @@ import type { IconType } from "$lib/components/icons";
 import type { Snippet } from "svelte";
 
 export type AccordionProps = {
-  header: string;
+  header: Snippet | string;
   headerIcon?: IconType;
   class?: string;
   children: Snippet;

@@ -115,7 +115,7 @@ export default {
 		quickFilling: 'Quick Filling',
 		price: 'price',
 		costPrice: 'cost price',
-		channel: 'channel',
+		channel: 'channels',
 		stock: 'stock',
 		sku: 'sku',
 		fromPrd: 'from product',

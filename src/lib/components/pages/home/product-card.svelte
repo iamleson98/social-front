@@ -72,7 +72,7 @@
 			<p class="font-bold text-blue-700 text-xl underline">
 				{formatMoney(
 					pricing?.priceRange?.start?.gross.currency ||
-						CHANNELS.find((chan) => chan.slug === product.channel, DEFAULT_CHANNEL)?.currency ||
+						CHANNELS.find((chan) => chan.slug === product.channel)?.currency ||
 						'',
 					pricing?.priceRange?.start?.gross.amount || 0
 				)}
