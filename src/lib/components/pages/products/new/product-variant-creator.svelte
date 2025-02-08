@@ -565,7 +565,7 @@
 									type="text"
 									class="w-4/5"
 									size="sm"
-									placeholder={$tranFunc('product.valuePlaceholder')}
+									placeholder={$tranFunc('placeholders.valuePlaceholder')}
 									inputDebounceOption={{
 										onInput: handleVariantValueChange(variantIdx, valueIdx) as (
 											result: unknown
@@ -822,7 +822,7 @@
 									bind:value={quickFillingValues.quantityLimitPerCustomer}
 									size="sm"
 									min="0"
-									placeholder={$tranFunc('product.valuePlaceholder')}
+									placeholder={$tranFunc('placeholders.valuePlaceholder')}
 									variant={typeof quickFillingValues.quantityLimitPerCustomer === 'number' &&
 									quickFillingValues.quantityLimitPerCustomer % 1 !== 0
 										? 'error'
@@ -891,7 +891,7 @@
 														CurrencyIconMap[
 															channelListing[
 																'currency' as keyof ProductVariantChannelListingAddInput
-															]
+															] as CurrencyCode
 														]}
 													<Input
 														startIcon={iconType}
@@ -921,7 +921,7 @@
 														CurrencyIconMap[
 															channelListing[
 																'currency' as keyof ProductVariantChannelListingAddInput
-															]
+															] as CurrencyCode
 														]}
 													<Input
 														startIcon={iconType}

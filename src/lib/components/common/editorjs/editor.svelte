@@ -139,12 +139,12 @@
 	});
 </script>
 
-{#if editorInitializing}
-	<SkeletonContainer class="w-full">
-		<Skeleton class="h-6 w-full" />
-	</SkeletonContainer>
-{:else if editorInitError}
-	<Alert size="md" variant="error">{editorInitError}</Alert>
-{/if}
-
-<div id="editorjs" class={editorInitError ? 'hidden!' : ''} bind:this={editorElem}></div>
+<div id="editorjs" bind:this={editorElem}>
+	{#if editorInitError}
+		<Alert size="md" variant="error">{editorInitError}</Alert>
+	{:else if editorInitializing}
+		<SkeletonContainer class="w-full">
+			<Skeleton class="h-6 w-full" />
+		</SkeletonContainer>
+	{/if}
+</div>

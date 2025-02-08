@@ -18,7 +18,6 @@
 		value = $bindable<SelectOption['value'] | undefined>(),
 		onchange,
 		class: className = '',
-		onblur,
 		...rest
 	}: SelectProps = $props();
 
@@ -82,11 +81,6 @@
 		toggleDropdown(false);
 		onchange?.(option);
 	};
-
-	const handleFocusOutside = (evt: any) => {
-		deactivate();
-		onblur?.(evt);
-	};
 </script>
 
 <!-- this common snippet is used for rendering select options -->
@@ -137,8 +131,8 @@
 
 <div
 	class="relative w-full text-gray-700 text-base"
-	use:clickOutside={{ onOutclick: handleFocusOutside }}
-	use:focusOutside={{ onFocusOut: handleFocusOutside }}
+	use:clickOutside={{ onOutclick: deactivate }}
+	use:focusOutside={{ onFocusOut: deactivate }}
 	use:shortcuts={[
 		{
 			shortcut: { key: 'Escape' },
@@ -149,7 +143,6 @@
 		}
 	]}
 >
-	<!-- please dont worry about 'onfocus' error warning, it still works -->
 	<Input
 		{...rest}
 		aria-controls={LISTBOX_ID}

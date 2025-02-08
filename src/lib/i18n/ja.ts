@@ -104,7 +104,6 @@ export default {
 		variantNameExist: "バリエーション '{{name}}' はすでに存在します",
 		variantValueExist: "値 '{{name}}' はすでに存在します",
 		variantPlaceholder: 'バリエーション名を入力してください',
-		valuePlaceholder: '値を入力してください',
 		category: 'カテゴリー',
 		products: '製品',
 		subCategories: 'サブカテゴリー',
@@ -163,6 +162,7 @@ export default {
 	},
 	placeholders: {
 		enterPrdName: '製品名を入力してください',
+		valuePlaceholder: '値を入力してください',
 	},
 	pages: {
 		cart: 'ショッピングカート',

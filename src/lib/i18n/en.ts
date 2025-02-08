@@ -104,7 +104,6 @@ export default {
 		variantNameExist: "Variant '{{name}}' already exists",
 		variantValueExist: "Value '{{name}}' already exists",
 		variantPlaceholder: 'Please enter variant name',
-		valuePlaceholder: 'Please enter value',
 		category: 'Category',
 		products: 'Products',
 		subCategories: 'Sub Categories',
@@ -163,6 +162,7 @@ export default {
 	},
 	placeholders: {
 		enterPrdName: 'Enter product name',
+		valuePlaceholder: 'Please enter value',
 	},
 	pages: {
 		cart: 'Shopping Cart',

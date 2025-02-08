@@ -104,7 +104,6 @@ export default {
 		variantNameExist: "변형 '{{name}}'은 이미 존재합니다",
 		variantValueExist: "값 '{{name}}'은 이미 존재합니다",
 		variantPlaceholder: '변형 이름을 입력해주세요',
-		valuePlaceholder: '값을 입력해주세요',
 		category: '카테고리',
 		products: '제품',
 		subCategories: '하위 카테고리',
@@ -163,6 +162,7 @@ export default {
 	},
 	placeholders: {
 		enterPrdName: '제품 이름을 입력해주세요',
+		valuePlaceholder: '값을 입력해주세요',
 	},
 	pages: {
 		cart: '장바구니',

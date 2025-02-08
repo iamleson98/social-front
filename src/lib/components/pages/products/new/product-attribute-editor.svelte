@@ -17,6 +17,7 @@
 	import { RequiredAt } from '$lib/components/ui';
 	import ErrorMsg from './error-msg.svelte';
 	import { PRODUCT_TYPE_QUERY } from '$lib/api/admin/product';
+	import Editor from '$lib/components/common/editorjs/editor.svelte';
 
 	type CustomAttributeInput = AttributeValueInput & {
 		required: boolean;
@@ -34,6 +35,19 @@
 
 	let prevproductTypeID = $state(productTypeID);
 	let blurTriggers = $state<boolean[]>([]);
+
+	const handleSwatchChange = (attrIdx: number, value: string) => {
+		attributes = attributes.map((attr, idx) => {
+			if (idx !== attrIdx) return attr;
+
+			return {
+				id: attr.id,
+				swatch: {
+					value
+				}
+			};
+		});
+	};
 
 	/** asynchronously calculate attribute errors */
 	let attributeErrors = $derived.by<(string | undefined)[]>(() => {
@@ -268,7 +282,7 @@
 									/>
 								{:else if node.inputType === AttributeInputTypeEnum.Numeric}
 									<Input
-										placeholder={$tranFunc('product.valuePlaceholder')}
+										placeholder={$tranFunc('placeholders.valuePlaceholder')}
 										size="sm"
 										type="number"
 										onchange={(evt) => {
@@ -297,7 +311,16 @@
 								{:else if node.inputType === AttributeInputTypeEnum.Reference}
 									<div>ref</div>
 								{:else if node.inputType === AttributeInputTypeEnum.RichText}
-									<div>richText</div>
+									<div>
+										<Editor
+											placeholder={$tranFunc('placeholders.valuePlaceholder')}
+											onchange={(data) => {
+												attributes = attributes.map((attr, i) =>
+													i === idx ? { id: attr.id, richText: JSON.stringify(data) } : attr
+												);
+											}}
+										/>
+									</div>
 								{:else if node.inputType === AttributeInputTypeEnum.PlainText}
 									<Input
 										size="sm"
@@ -325,7 +348,24 @@
 										subText={blurTriggers[idx] ? attributeErrors[idx] : undefined}
 									/>
 								{:else if node.inputType === AttributeInputTypeEnum.Swatch}
-									<div>swatch</div>
+									<div class="flex items-center gap-2 flex-wrap flex-row">
+										{#each node.choices?.edges || [] as edge, sid (sid)}
+											<div class="tooltip tooltip-top" data-tip={edge.node.name}>
+												<div
+													class="w-9 h-9 rounded bg-gray-200 flex items-center justify-center"
+													style="background-color: {edge.node.value}"
+												>
+													<input
+														type="radio"
+														class="radio radio-xs"
+														value={edge.node.value}
+														checked={edge.node.value === attributes[idx]?.swatch?.value}
+														onchange={(evt) => handleSwatchChange(idx, evt.currentTarget.value)}
+													/>
+												</div>
+											</div>
+										{/each}
+									</div>
 								{/if}
 							</div>
 						</div>

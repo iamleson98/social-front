@@ -104,7 +104,6 @@ export default {
 		variantNameExist: "Phân loại '{{name}}' đã tồn tại",
 		variantValueExist: "Giá trị '{{name}}' đã tồn tại",
 		variantPlaceholder: 'Vui lòng nhập tên phân loại',
-		valuePlaceholder: 'Vui lòng nhập giá trị',
 		category: 'Danh mục',
 		products: 'Các sản phẩm',
 		subCategories: 'Danh mục con',
@@ -163,6 +162,7 @@ export default {
 	},
 	placeholders: {
 		enterPrdName: 'Nhập tên sản phẩm',
+		valuePlaceholder: 'Vui lòng nhập giá trị',
 	},
 	pages: {
 		cart: 'Giỏ hàng',

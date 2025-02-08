@@ -11,7 +11,7 @@
 	let {
 		label,
 		id = randomID(),
-		placeholder = $tranFunc('product.valuePlaceholder'),
+		placeholder = $tranFunc('placeholders.valuePlaceholder'),
 		variant = 'info',
 		subText,
 		startIcon,

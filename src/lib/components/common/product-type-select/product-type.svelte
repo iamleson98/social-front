@@ -29,7 +29,6 @@
 
 	$effect(() => {
 		ok = !!value;
-		// error = value ? undefined : $tranFunc('helpText.fieldRequired');
 	});
 
 	const handleBlur = () => {
@@ -55,7 +54,7 @@
 			bind:value
 			label={$tranFunc('product.prdType')}
 			variant={!ok && error ? 'error' : 'info'}
-			subText={error}
+			subText={!ok && error ? error : undefined}
 			onblur={handleBlur}
 		/>
 	{/if}

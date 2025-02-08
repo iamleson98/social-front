@@ -57,7 +57,7 @@
 				{options}
 				{size}
 				bind:value={singleValue}
-				placeholder={$tranFunc('product.valuePlaceholder')}
+				placeholder={$tranFunc('placeholders.valuePlaceholder')}
 				{label}
 			/>
 		{:else}
@@ -65,7 +65,7 @@
 				{options}
 				size={size as MultiSelectSizeType}
 				bind:value={multiValues}
-				placeholder={$tranFunc('product.valuePlaceholder')}
+				placeholder={$tranFunc('placeholders.valuePlaceholder')}
 				{label}
 			/>
 		{/if}

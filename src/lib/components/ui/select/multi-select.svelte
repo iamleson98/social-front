@@ -169,7 +169,6 @@
 		{#if maxDisplay && value.length > maxDisplay}
 			<Badge text={`+${value.length - maxDisplay}`} variant="light" size={SIZE_REDUCE_MAP[size]} />
 		{/if}
-		<!-- please dont worry about 'onfocus' error warning, it still works -->
 		<Input
 			{...rest}
 			{variant}

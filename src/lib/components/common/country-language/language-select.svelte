@@ -43,6 +43,6 @@
 			label: item.language,
 			value: item.code
 		}))}
-		<Select {options} {...rest} bind:value placeholder={$tranFunc('product.valuePlaceholder')} />
+		<Select {options} {...rest} bind:value placeholder={$tranFunc('placeholders.valuePlaceholder')} />
 	{/if}
 </div>
