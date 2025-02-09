@@ -18,6 +18,7 @@
 	import ErrorMsg from './error-msg.svelte';
 	import { PRODUCT_TYPE_QUERY } from '$lib/api/admin/product';
 	import Editor from '$lib/components/common/editorjs/editor.svelte';
+	import Dayjs from 'dayjs';
 
 	type CustomAttributeInput = AttributeValueInput & {
 		required: boolean;
@@ -261,7 +262,9 @@
 										size="sm"
 										onchange={(value) => {
 											attributes = attributes.map((attr, i) =>
-												i === idx ? { id: attr.id, date: value.date } : attr
+												i === idx
+													? { id: attr.id, date: Dayjs(value.date).format('YYYY-MM-DD') }
+													: attr
 											);
 										}}
 										timeConfig={false}

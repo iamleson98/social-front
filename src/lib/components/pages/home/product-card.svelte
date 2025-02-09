@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { Heart, ShoppingBagPlus } from '$lib/components/icons';
+	import { Heart, OpenEye } from '$lib/components/icons';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { AppRoute } from '$lib/utils';
@@ -9,7 +9,8 @@
 	import { fade } from 'svelte/transition';
 	import type { Product } from '$lib/gql/graphql';
 	import FoundationBurstSale from '$lib/components/icons/foundation-burst-sale.svelte';
-	import { CHANNELS, DEFAULT_CHANNEL } from '$lib/utils/channels';
+	import { CHANNELS } from '$lib/utils/channels';
+	import { pushState } from '$app/navigation';
 
 	type ProductProps = {
 		product: Product;
@@ -17,6 +18,13 @@
 
 	let { product }: ProductProps = $props();
 	const { name, category, slug, rating, thumbnail, pricing } = product;
+
+	// shallow routing to display product preview modal
+	const handlePreviewProduct = () => {
+		pushState(``, {
+			productPreview: product
+		});
+	};
 </script>
 
 <div class="bg-white rounded-lg border mb-3" transition:fade>
@@ -79,6 +87,8 @@
 			</p>
 		</div>
 
-		<Button variant="filled" startIcon={ShoppingBagPlus} size="sm" fullWidth>Add to cart</Button>
+		<Button variant="filled" startIcon={OpenEye} size="sm" fullWidth onclick={handlePreviewProduct}
+			>Preview</Button
+		>
 	</div>
 </div>

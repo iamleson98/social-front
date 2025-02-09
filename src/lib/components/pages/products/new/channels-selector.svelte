@@ -4,7 +4,7 @@
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
-	import { Checkbox, Input } from '$lib/components/ui/Input';
+	import { Checkbox } from '$lib/components/ui/Input';
 	import RequiredAt from '$lib/components/ui/required-at.svelte';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import type { Query } from '$lib/gql/graphql';
