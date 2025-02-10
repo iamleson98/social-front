@@ -157,7 +157,7 @@
 	</p>
 {/snippet}
 
-<div class="bg-white w-3/5 rounded-lg border tablet:w-full p-4">
+<div class="bg-white rounded-lg border p-4">
 	<h1 class="text-gray-700 text-xl font-semibold mb-1">{productInformation.name}</h1>
 	<div class="flex items-center text-red-500 gap-2 mb-4">
 		<Rating

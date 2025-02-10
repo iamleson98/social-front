@@ -4,9 +4,9 @@
 	import ProductListPage from './product-list-page.svelte';
 	import { onMount, tick } from 'svelte';
 	import { Modal } from '$lib/components/ui/Modal';
-	import ProductCard from './product-card.svelte';
 	import { page } from '$app/state';
 	import { pushState } from '$app/navigation';
+	import ProductPreview from './product-preview.svelte';
 
 	let productLoadPageVariables = $state.raw([$productFilterParamStore]);
 
@@ -53,8 +53,9 @@
 	onClose={() => pushState('', { productPreview: null })}
 	onCancel={() => pushState('', { productPreview: null })}
 	closeOnOutsideClick
+	size="sm"
 >
 	{#if page.state.productPreview}
-		<ProductCard product={page.state.productPreview} />
+		<ProductPreview productSlug={page.state.productPreview.slug} />
 	{/if}
 </Modal>

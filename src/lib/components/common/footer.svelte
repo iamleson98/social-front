@@ -4,8 +4,13 @@
 	import { SUPPORTED_LANGUAGES, switchTranslationLanguage } from '$i18n';
 	import { DropDown, MenuItem, type DropdownTriggerInterface } from '../ui/Dropdown';
 	import { Button } from '../ui';
-	import { clientSideSetCookie } from '$lib/utils/cookies';
+	import {
+		clientSideGetCookieOrDefault,
+		clientSideSetCookie,
+	} from '$lib/utils/cookies';
 	import { LANGUAGE_KEY } from '$lib/utils/consts';
+	import { onMount } from 'svelte';
+	import { LanguageCodeEnum } from '$lib/gql/graphql';
 
 	let activeLanguage = $state(SUPPORTED_LANGUAGES[0]);
 
@@ -19,6 +24,15 @@
 			sameSite: 'lax'
 		});
 	};
+
+	onMount(async () => {
+		const cookieLang = clientSideGetCookieOrDefault(
+			LANGUAGE_KEY,
+			LanguageCodeEnum.En
+		).toUpperCase();
+		const supportedLang = SUPPORTED_LANGUAGES.find((lang) => lang.code === cookieLang);
+		if (supportedLang) activeLanguage = supportedLang;
+	});
 </script>
 
 <footer class="p-6 max-w-6xl mx-auto">

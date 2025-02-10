@@ -70,7 +70,7 @@ const productSlideShowStoreManager = () => {
     handleNavigate,
     handleFocus,
     subscribe: store.subscribe,
-    reset: () => store.set(defaultSlideShowState),
+    reset: async () => store.set(defaultSlideShowState),
   };
 };
 

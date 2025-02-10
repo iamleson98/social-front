@@ -115,8 +115,12 @@
 	</nav>
 
 	<div class="flex flex-row tablet:flex-col tablet:flex-wrap gap-2 w-full mb-2">
-		<ProductMediaSlideShow />
-		<ProductPricingPanel {productInformation} productVariants={variants || []} />
+		<div class="w-2/5 tablet:w-full">
+			<ProductMediaSlideShow />
+		</div>
+		<div class="w-3/5 tablet:w-full">
+			<ProductPricingPanel {productInformation} productVariants={variants || []} />
+		</div>
 	</div>
 
 	<!-- product more details -->
