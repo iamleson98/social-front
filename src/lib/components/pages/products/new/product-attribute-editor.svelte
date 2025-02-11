@@ -363,7 +363,7 @@
 														class="radio radio-xs"
 														value={edge.node.value}
 														checked={edge.node.value === attributes[idx]?.swatch?.value}
-														onchange={(evt) => handleSwatchChange(idx, edge.node.value)}
+														onchange={(evt) => handleSwatchChange(idx, edge.node.value as string)}
 													/>
 												</div>
 											</div>
