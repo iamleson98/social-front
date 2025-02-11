@@ -16,6 +16,7 @@
 	import type {
 		Mutation,
 		MutationProductCreateArgs,
+		ProductChannelListingUpdateInput,
 		ProductCreateInput,
 		ProductVariantBulkCreateInput
 	} from '$lib/gql/graphql';
@@ -38,6 +39,7 @@
 		],
 		collections: []
 	});
+	let channelListingUpdateInput = $state.raw<ProductChannelListingUpdateInput>({});
 
 	let productInputError = $state<Record<keyof ProductCreateInput, boolean>>({
 		externalReference: true, // not supported yet
@@ -107,7 +109,7 @@
 		bind:description={productCreateInput.description}
 		bind:ok={productInputError.description}
 	/>
-	<ChannelsSelector />
+	<ChannelsSelector bind:channelListingUpdateInput />
 	<ProductVariantCreator bind:productVariantsInput />
 	<ProductSeo
 		productName={productCreateInput.name}

@@ -15,7 +15,7 @@
 	let nameCharCount = $derived(`${name?.trim().length || 0}/${PRODUCT_NAME_MAX_LENGTH}`);
 
 	$effect(() => {
-		ok = !nameError;
+		ok = !!name && !nameError;
 	});
 
 	const nameSchema = string()

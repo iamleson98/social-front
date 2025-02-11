@@ -25,7 +25,7 @@
 			showMonths?: boolean;
 			showYears?: {
 				min?: number;
-        /** default to current year */
+				/** default to current year */
 				max?: number;
 			};
 			showResetBtn?: boolean;
@@ -71,7 +71,7 @@
 			format: 24
 		},
 		onfocus,
-		autoApply = true,
+		autoApply = timeConfig ? false : true,
 		value: realValue = $bindable({}),
 		format = 'YYYY-MM-DD',
 		onchange,
@@ -218,5 +218,5 @@
 	value={inputReprValue}
 	class={`${!datePicker ? 'hidden! opacity-0!' : ''}`}
 	readonly
-  placeholder={rest.placeholder || timeFormat}
+	placeholder={rest.placeholder || timeFormat}
 />

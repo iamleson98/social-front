@@ -7,8 +7,36 @@
 	import { Checkbox } from '$lib/components/ui/Input';
 	import RequiredAt from '$lib/components/ui/required-at.svelte';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
-	import type { Query } from '$lib/gql/graphql';
+	import type {
+		ProductChannelListing,
+		ProductChannelListingAddInput,
+		ProductChannelListingUpdateInput,
+		Query
+	} from '$lib/gql/graphql';
 	import { tranFunc } from '$lib/i18n';
+	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { onMount } from 'svelte';
+	import { fade } from 'svelte/transition';
+
+	type Props = {
+		channelListings?: ProductChannelListing[];
+		channelListingUpdateInput: ProductChannelListingUpdateInput;
+	};
+
+	let { channelListings, channelListingUpdateInput = $bindable({}) }: Props = $props();
+	// map of channels that are already assigned to a product
+	let assignedChannelsMap = $derived.by(() => {
+		if (channelListings?.length)
+			return channelListings.reduce(
+				(map, channelListing) => {
+					map[channelListing.channel.id] = true;
+					return map;
+				},
+				{} as Record<string, boolean>
+			);
+
+		return {};
+	});
 
 	const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
@@ -16,7 +44,73 @@
 		requestPolicy: 'cache-first'
 	});
 
-	const TODAY = new Date();
+	type CustomChannelListingAddInput = ProductChannelListingAddInput & {
+		used: boolean; // for checkbox binding
+		channelName: string; // for label displaying
+	};
+
+	type CustomProductChannelListingUpdateInput = {
+		removeChannels: string[];
+		updateChannels: CustomChannelListingAddInput[];
+	};
+
+	let productChannelListingUpdateInput = $state<CustomProductChannelListingUpdateInput>({
+		updateChannels: [],
+		removeChannels: []
+	});
+
+	$effect(() => {
+		channelListingUpdateInput = {
+			updateChannels: productChannelListingUpdateInput.updateChannels,
+			removeChannels: productChannelListingUpdateInput.removeChannels
+		};
+	});
+
+	onMount(() => {
+		if (channelListings?.length) {
+			productChannelListingUpdateInput = {
+				...productChannelListingUpdateInput,
+				updateChannels: channelListings.map((listing) => ({
+					channelId: listing.channel.id,
+					used: assignedChannelsMap[listing.channel.id],
+					channelName: listing.channel.name,
+					availableForPurchaseAt: listing.availableForPurchaseAt,
+					isAvailableForPurchase: listing.isAvailableForPurchase,
+					isPublished: listing.isPublished,
+					publishedAt: listing.publishedAt,
+					visibleInListings: listing.visibleInListings
+				}))
+			};
+		}
+
+		return channelsQueryStore.subscribe((result) => {
+			if (preHandleErrorOnGraphqlResult(result)) return;
+
+			for (const chan of result.data?.channels || []) {
+				if (!assignedChannelsMap[chan.id]) {
+					productChannelListingUpdateInput = {
+						...productChannelListingUpdateInput,
+						updateChannels: productChannelListingUpdateInput.updateChannels.concat({
+							channelId: chan.id,
+							used: false,
+							channelName: chan.name,
+							isPublished: true,
+							isAvailableForPurchase: true
+						})
+					};
+				}
+			}
+		});
+	});
+
+	const handleDeselectChannel = (channelID: string, checked: boolean) => {
+		if (!checked && assignedChannelsMap[channelID]) {
+			productChannelListingUpdateInput = {
+				...productChannelListingUpdateInput,
+				removeChannels: productChannelListingUpdateInput.removeChannels.concat(channelID)
+			};
+		}
+	};
 </script>
 
 <div class="mb-3">
@@ -29,57 +123,61 @@
 			</SkeletonContainer>
 		{:else if $channelsQueryStore.error}
 			<Alert variant="error" size="sm" bordered>{$channelsQueryStore.error.message}</Alert>
-		{:else if $channelsQueryStore.data?.channels}
-			{#each $channelsQueryStore.data.channels as channel, idx (idx)}
-				{@const use = {
-					ok: false,
-					published: true,
-					publicationDate: { date: '' },
-					availableForPurchase: true,
-					availableDate: { date: '' }
-				}}
+		{:else}
+			{#each productChannelListingUpdateInput.updateChannels! as channelListing, idx (idx)}
 				{#snippet channelHead()}
-					<Checkbox label={channel.name} bind:checked={use.ok} size="sm" />
+					<Checkbox
+						label={channelListing.channelName}
+						bind:checked={channelListing.used}
+						onchange={(evt) =>
+							handleDeselectChannel(channelListing.channelId, evt.currentTarget.checked)}
+					/>
 				{/snippet}
 
-				<div class="w-1/3 tablet:w-1/2 mobile-l:w-full">
+				<div class="w-1/4 tablet:w-1/3 mobile-l:w-full">
 					<Accordion
 						header={channelHead}
-						open={use.ok}
+						open={channelListing.used}
 						class="p-2 rounded-lg bg-white border border-gray-200"
 					>
-						<div class="mb-2">
-							<Checkbox bind:checked={use.published} size="xs" label="Published" />
-							{#if !use.published}
+						<Checkbox
+							bind:checked={channelListing.isPublished}
+							size="sm"
+							label="Published"
+							class="mb-2"
+						/>
+						{#if !channelListing.isPublished}
+							<div transition:fade class="mb-2 pb-2 border-b border-gray-300">
 								<EaseDatePicker
-									size="sm"
-									timeConfig={{}}
-									bind:value={use.publicationDate}
+									size="xs"
+									onchange={(value) => (channelListing.publishedAt = value.date)}
+									allowSelectMonthYears={{
+										showYears: { min: 2020 },
+										showMonths: true
+									}}
+									label="If not, please set datetime"
+								/>
+							</div>
+						{/if}
+						<Checkbox
+							bind:checked={channelListing.isAvailableForPurchase}
+							size="sm"
+							label="Available for purchase"
+							class="mb-2"
+						/>
+						{#if !channelListing.isAvailableForPurchase}
+							<div transition:fade>
+								<EaseDatePicker
+									label="If not, please set datetime"
+									size="xs"
+									onchange={(value) => (channelListing.availableForPurchaseAt = value.date)}
 									allowSelectMonthYears={{
 										showYears: { min: 2020 },
 										showMonths: true
 									}}
 								/>
-							{/if}
-						</div>
-						<div>
-							<Checkbox
-								bind:checked={use.availableForPurchase}
-								size="xs"
-								label="Available for purchase"
-							/>
-							{#if !use.availableForPurchase}
-								<EaseDatePicker
-									size="sm"
-									timeConfig={{}}
-									bind:value={use.availableDate}
-									allowSelectMonthYears={{
-										showYears: { min: 2020 },
-										showMonths: true
-									}}
-								/>
-							{/if}
-						</div>
+							</div>
+						{/if}
 					</Accordion>
 				</div>
 			{/each}

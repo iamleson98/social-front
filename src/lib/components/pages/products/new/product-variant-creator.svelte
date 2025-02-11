@@ -446,7 +446,7 @@
 		variantManifests = newVariantManifests;
 	};
 
-	const handleDeleteValue = (variantIndex: number, valueIndex: number) => {
+	const handleDeleteVariantValue = (variantIndex: number, valueIndex: number) => {
 		const newVariantManifests = variantManifests.map((variant, idx) => {
 			if (idx !== variantIndex) return variant;
 
@@ -456,17 +456,24 @@
 			};
 		});
 
-		if (variantIndex === 0) {
-			const beginIndex = valueIndex * variantManifests[1].values.length;
-			const endIndex = (valueIndex + 1) * variantManifests[1].values.length;
+		if (variantManifests.length === 1) {
+			variantsInputDetails = variantsInputDetails.filter((_, idx) => idx !== valueIndex);
+		} else if (variantManifests.length === MAX_VARIANT_TYPES) {
+			if (variantIndex === 0) {
+				const beginIndex = valueIndex * variantManifests[1].values.length;
+				const endIndex = (valueIndex + 1) * variantManifests[1].values.length;
 
-			variantsInputDetails = variantsInputDetails.filter(
-				(_, idx) => idx < beginIndex || idx >= endIndex
-			);
-		} else {
-			variantsInputDetails = variantsInputDetails.filter(
-				(_, idx) => idx % variantManifests[1].values.length !== valueIndex
-			);
+				variantsInputDetails = variantsInputDetails.filter(
+					(_, idx) => idx < beginIndex || idx >= endIndex
+				);
+			} else {
+				const chunks = chunk(variantsInputDetails, variantManifests[1].values.length);
+				for (let i = 0; i < chunks.length; i++) {
+					chunks[i] = chunks[i].filter((_, idx) => idx !== valueIndex);
+				}
+
+				variantsInputDetails = flatten(chunks);
+			}
 		}
 
 		variantManifests = newVariantManifests;
@@ -507,14 +514,6 @@
 		}
 	};
 </script>
-
-{#snippet variantActionButton({ title, text = '', ...rest }: ButtonProps & { text?: string })}
-	<div class="tooltip grow shrink" data-tip={title}>
-		<Button {...rest}>
-			{text}
-		</Button>
-	</div>
-{/snippet}
 
 <div class="mb-3">
 	<RequiredAt class="text-sm" label={$tranFunc('product.variants')} required pos="end" />
@@ -582,48 +581,52 @@
 										variant="light"
 										rounded
 										color="red"
-										onclick={() => handleDeleteValue(variantIdx, valueIdx)}
-										title={$tranFunc('product.delValue')}
+										onclick={() => handleDeleteVariantValue(variantIdx, valueIdx)}
+										class="tooltip tooltip-top"
+										data-tip={$tranFunc('product.delValue')}
 									/>
 								{/if}
 							</div>
 						</div>
 					{/each}
 					<div class="flex justify-center items-center gap-1.5 mt-4">
-						{@render variantActionButton({
-							title: $tranFunc('product.delVariant'),
-							onclick: () => handleDeleteVariant(variantIdx),
-							color: 'red',
-							endIcon: Trash,
-							variant: 'light',
-							size: 'sm',
-							fullWidth: true
-						})}
-						{@render variantActionButton({
-							title: $tranFunc('product.addValue'),
-							onclick: () => handleAddVariantValue(variantIdx),
-							color: 'blue',
-							endIcon: Plus,
-							variant: 'light',
-							disabled: variant.values.length >= MAX_VALUES_PER_VARIANT,
-							text: `${variant.values.length}/${MAX_VALUES_PER_VARIANT}`,
-							size: 'sm',
-							fullWidth: true
-						})}
+						<Button
+							class="tooltip tooltip-top"
+							data-tip={$tranFunc('product.delVariant')}
+							startIcon={Trash}
+							size="sm"
+							variant="light"
+							color="red"
+							onclick={() => handleDeleteVariant(variantIdx)}
+							fullWidth
+						></Button>
+						<Button
+							class="tooltip tooltip-top"
+							data-tip={$tranFunc('product.addValue')}
+							endIcon={Plus}
+							size="sm"
+							variant="light"
+							color="blue"
+							onclick={() => handleAddVariantValue(variantIdx)}
+							disabled={variant.values.length >= MAX_VALUES_PER_VARIANT}
+							fullWidth
+						>
+							{variant.values.length}/{MAX_VALUES_PER_VARIANT}
+						</Button>
 					</div>
 				</div>
 			{/each}
 			{#if variantManifests.length < MAX_VARIANT_TYPES}
 				<div class="w-1/2 mobile-l:w-full flex items-center justify-center">
-					<div class="tooltip" data-tip={$tranFunc('product.addVariant')}>
-						<IconButton
-							onclick={handleAddVariant}
-							icon={Plus}
-							size="xl"
-							variant="outline"
-							color="blue"
-						/>
-					</div>
+					<IconButton
+						onclick={handleAddVariant}
+						icon={Plus}
+						size="xl"
+						variant="outline"
+						color="blue"
+						class="tooltip tooltip-top"
+						data-tip={$tranFunc('product.addVariant')}
+					/>
 				</div>
 			{/if}
 		</div>
