@@ -143,7 +143,7 @@
 						<Checkbox
 							bind:checked={channelListing.isPublished}
 							size="sm"
-							label="Published"
+							label={$tranFunc('product.published')}
 							class="mb-2"
 						/>
 						{#if !channelListing.isPublished}
@@ -155,20 +155,20 @@
 										showYears: { min: 2020 },
 										showMonths: true
 									}}
-									label="If not, please set datetime"
+									label={$tranFunc('product.promptPublicationTime')}
 								/>
 							</div>
 						{/if}
 						<Checkbox
 							bind:checked={channelListing.isAvailableForPurchase}
 							size="sm"
-							label="Available for purchase"
+							label={$tranFunc('product.availForPurhase')}
 							class="mb-2"
 						/>
 						{#if !channelListing.isAvailableForPurchase}
 							<div transition:fade>
 								<EaseDatePicker
-									label="If not, please set datetime"
+									label={$tranFunc('product.promptAvailTime')}
 									size="xs"
 									onchange={(value) => (channelListing.availableForPurchaseAt = value.date)}
 									allowSelectMonthYears={{

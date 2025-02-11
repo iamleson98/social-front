@@ -142,6 +142,10 @@ export default {
 		collection: 'Bộ sưu tập',
 		taxCls: 'Lớp thuế',
 		prdType: 'Loại sản phẩm',
+		published: 'Published',
+		promptPublicationTime: 'If not, please specify publidation time',
+		availForPurhase: 'Available for purchase',
+		promptAvailTime: 'If not, please specify availability time',
 	},
 	error: {
 		invalidSlug: '잘못된 슬러그 값',
