@@ -14,6 +14,7 @@ export default {
 		agreeToTerms: '利用規約に同意します',
 		alreadyHasAccount: 'すでにアカウントをお持ちですか？',
 		signupSuccess: 'Welcome to Sitename. An email is sent to your email address. Please check your inbox.',
+		promtGeoAccessPerm: 'We need your precise location to provide better experience. Please accept location request. Thank you!',
 	},
 	resetPassword: {
 		title: 'パスワードをリセット',

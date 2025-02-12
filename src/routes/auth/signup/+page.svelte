@@ -3,14 +3,19 @@
 	import { Button } from '$lib/components/ui';
 	import { AppRoute } from '$lib/utils';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { tranFunc } from '$lib/i18n';
+	import { SUPPORTED_LANGUAGES, tranFunc } from '$lib/i18n';
 	import { Checkbox, Input, PasswordInput } from '$lib/components/ui/Input';
 	import { boolean, object, string, z } from 'zod';
 	import { operationStore, type OperationResultStore } from '$lib/api/operation';
-	import { CountryCode, type Mutation, type MutationAccountRegisterArgs } from '$lib/gql/graphql';
+	import {
+		CountryCode,
+		LanguageCodeEnum,
+		type Mutation,
+		type MutationAccountRegisterArgs
+	} from '$lib/gql/graphql';
 	import { USER_SIGNUP_MUTATION_STORE } from '$lib/api';
 	import { clientSideGetCookieOrDefault, clientSideSetCookie } from '$lib/utils/cookies';
-	import { CHANNEL_KEY } from '$lib/utils/consts';
+	import { CHANNEL_KEY, COUNTRY_CODE_KEY, LANGUAGE_KEY } from '$lib/utils/consts';
 	import { PUBLIC_LOCAL_URL, PUBLIC_STORE_FRONT_URL } from '$env/static/public';
 	import { omit } from 'lodash-es';
 	import { slide } from 'svelte/transition';
@@ -18,11 +23,14 @@
 	import LanguageSelect from '$lib/components/common/country-language/language-select.svelte';
 	import CountrySelect from '$lib/components/common/country-language/country-select.svelte';
 	import { CHANNELS, DEFAULT_CHANNEL } from '$lib/utils/channels';
+	import Location from '$lib/components/plugins/location.svelte';
 
 	const CHANNEL_SLUG = clientSideGetCookieOrDefault(CHANNEL_KEY, DEFAULT_CHANNEL.slug);
 	const DEFAULT_COUNTRY =
 		CHANNELS.find((chan) => chan.slug === CHANNEL_SLUG)?.defaultCountryCode ||
 		DEFAULT_CHANNEL.defaultCountryCode;
+	const DEFAULT_LANGUAGE = clientSideGetCookieOrDefault(LANGUAGE_KEY, LanguageCodeEnum.En);
+
 	const FIELD_REQUIRED_MSG = $tranFunc('helpText.fieldRequired');
 
 	const SignupZodSchema = object({
@@ -65,7 +73,7 @@
 		lastName: '',
 		confirmPassword: '',
 		termAndPoliciesAgree: false,
-		languageCode: ''
+		languageCode: DEFAULT_LANGUAGE
 	});
 	let countryCode = $state<CountryCode>(DEFAULT_COUNTRY);
 	let signupFormErrors = $state.raw<Partial<Record<keyof SignupProps, string[]>>>({});
@@ -83,10 +91,29 @@
 					expires: new Date(3000, 1, 1),
 					path: '/'
 				});
+				clientSideSetCookie(COUNTRY_CODE_KEY, countryCode, {
+					secure: true,
+					expires: new Date(3000, 1, 1),
+					path: '/'
+				});
+
+				1;
 				return;
 			}
 
 			signupInfo.channel = DEFAULT_CHANNEL.slug;
+		}
+	});
+
+	$effect(() => {
+		if (signupInfo.languageCode && signupInfo.languageCode !== DEFAULT_LANGUAGE) {
+			if (SUPPORTED_LANGUAGES.some((lang) => lang.code === signupInfo.languageCode)) {
+				clientSideSetCookie(LANGUAGE_KEY, signupInfo.languageCode, {
+					secure: true,
+					expires: new Date(3000, 1, 1),
+					path: '/'
+				});
+			}
 		}
 	});
 
@@ -121,6 +148,8 @@
 	};
 </script>
 
+<Location forceAskLocation />
+
 <div class="w-md rounded-md p-2">
 	<h1 class="p-2 mb-4">{$tranFunc('signup.title')}</h1>
 
@@ -137,6 +166,7 @@
 			{$tranFunc('signup.signupSuccess')}
 		</Alert>
 	{/if}
+	<Alert class="mb-2" size="sm" bordered>{$tranFunc('signup.promtGeoAccessPerm')}</Alert>
 	<div class="mb-4">
 		<div class="flex flex-row mobile-m:flex-col justify-between items-start gap-2 mb-2">
 			<div class="w-1/2">

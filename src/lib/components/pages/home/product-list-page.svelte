@@ -6,7 +6,7 @@
 	import type { Query, QueryProductsArgs } from '$lib/gql/graphql';
 	import { PRODUCT_LIST_QUERY_STORE } from '$lib/api';
 	import ProductCard from './product-card.svelte';
-	import type { ProductFilterParams } from '$lib/stores/app/product-filter';
+	import type { ProductFilterParams } from '$lib/stores/app/product-filter.svelte';
 	import { operationStore } from '$lib/api/operation';
 
 	type Props = {

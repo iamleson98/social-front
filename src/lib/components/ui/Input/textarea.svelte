@@ -7,6 +7,7 @@
 	import { TEXT_AREA_SIZE_MAP } from '$lib/utils/consts';
 	import { INPUT_LABEL_SIZE_STYLE_MAP, INPUT_TYPES, type InputProps } from './input.types';
 	import type { HTMLTextareaAttributes } from 'svelte/elements';
+	import Label from './label.svelte';
 
 	let {
 		label,
@@ -30,13 +31,7 @@
 
 <div class={`${className} ${rest.disabled ? 'text-gray-300! cursor-not-allowed!' : ''}`}>
 	{#if label}
-		<label
-			for={id}
-			class={`block mb-1.5 ${INPUT_LABEL_SIZE_STYLE_MAP[size]} font-medium ${INPUT_TYPES[variant].fg}`}
-		>
-			{label}
-			{#if required}<strong class="font-bold text-red-600!">*</strong>{/if}
-		</label>
+		<Label {label} {id} {required} {size} {variant} requiredAtPos="end" />
 	{/if}
 	<div class={`${INPUT_TYPES[variant].fg}`}>
 		<div class={`relative mt-0`}>

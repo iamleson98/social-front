@@ -52,7 +52,7 @@
 
 <Header />
 
-<Location />
+<Location forceAskLocation={false} />
 <Language />
 
 <main class="pt-16 mx-auto min-h-screen max-w-6xl">

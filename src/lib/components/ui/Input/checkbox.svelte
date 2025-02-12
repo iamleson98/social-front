@@ -2,7 +2,8 @@
 	import { randomID } from '$lib/utils/utils';
 	import type { HTMLInputAttributes } from 'svelte/elements';
 	import type { SocialSize } from '../common';
-	import { CHECKBOX_SIZES, INPUT_LABEL_SIZE_STYLE_MAP } from './input.types';
+	import { CHECKBOX_SIZES } from './input.types';
+	import Label from './label.svelte';
 
 	type Props = {
 		label?: string;
@@ -20,7 +21,7 @@
 	}: Props = $props();
 </script>
 
-<div class={`flex items-center ${className}`}>
+<div class={`flex items-center gap-2 ${className}`}>
 	<input
 		{...rest}
 		{required}
@@ -30,9 +31,6 @@
 		class={`checkbox ${CHECKBOX_SIZES[size]}`}
 	/>
 	{#if label}
-		<label for={id} class={`ms-2 text-gray-900 dark:text-gray-300 select-none ${INPUT_LABEL_SIZE_STYLE_MAP[size]}`}>
-			{label}
-			{#if required}<strong class="font-bold text-red-600!">*</strong>{/if}
-		</label>
+		<Label {id} {label} {required} {size} requiredAtPos="end" />
 	{/if}
 </div>

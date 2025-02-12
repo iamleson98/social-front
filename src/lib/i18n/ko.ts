@@ -14,6 +14,7 @@ export default {
 		agreeToTerms: '이용 약관에 동의합니다',
 		alreadyHasAccount: '이미 계정이 있으신가요?',
 		signupSuccess: 'Welcome to Sitename. An email is sent to your email address. Please check your inbox.',
+		promtGeoAccessPerm: 'We need your precise location to provide better experience. Please accept location request. Thank you!',
 	},
 	resetPassword: {
 		title: '비밀번호 재설정',

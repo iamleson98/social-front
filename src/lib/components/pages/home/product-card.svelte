@@ -10,7 +10,7 @@
 	import type { Product } from '$lib/gql/graphql';
 	import FoundationBurstSale from '$lib/components/icons/foundation-burst-sale.svelte';
 	import { CHANNELS } from '$lib/utils/channels';
-	import { pushState } from '$app/navigation';
+	import { PRODUCT_PREVIEW_STORE } from './common';
 
 	type ProductProps = {
 		product: Product;
@@ -21,9 +21,7 @@
 
 	// shallow routing to display product preview modal
 	const handlePreviewProduct = () => {
-		pushState(``, {
-			productPreview: product
-		});
+		PRODUCT_PREVIEW_STORE.set(product);
 	};
 </script>
 

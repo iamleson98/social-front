@@ -14,6 +14,7 @@ export default {
 		agreeToTerms: 'Tôi đồng ý với các điều khoản và điều kiện',
 		alreadyHasAccount: 'Bạn đã có tài khoản?',
 		signupSuccess: 'Chào mừng bạn đến với Sitename. Vui lòng kiểm tra hòm thư để xác thực tài khoản.',
+		promtGeoAccessPerm: 'Chúng tôi cần nắm được khu vực bạn sinh sống để cung cấp trải nghiệm tốt hơn. Bạn vui lòng chấp nhận yêu cầu quyền truy cập vị trí. Cảm ơn bạn!',
 	},
 	resetPassword: {
 		title: 'Yêu cầu đặt lại mật khẩu',

@@ -1,45 +1,58 @@
 <script lang="ts">
-	import { preloadData } from '$app/navigation';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
-	import type { Product } from '$lib/gql/graphql';
+	import { type Query } from '$lib/gql/graphql';
 	import { slideShowManager } from '$lib/stores/ui/slideshow';
-	import { HTTPStatusSuccess } from '$lib/utils/consts';
+	import { CHANNEL_KEY, COUNTRY_CODE_KEY } from '$lib/utils/consts';
 	import { onMount } from 'svelte';
 	import ProductSlideShowPannel from '../products/detail/product-slide-show-pannel.svelte';
+	import { operationStore } from '$lib/api/operation';
+	import { PRODUCT_DETAIL_QUERY_STORE } from '$lib/api';
+	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
+	import { DEFAULT_CHANNEL } from '$lib/utils/channels';
 
 	type Props = {
-		// productName: string;
 		productSlug: string;
 	};
 
 	let { productSlug }: Props = $props();
 
-	let product = $state<Product>();
-	let loading = $state(true);
+	const CHANNEL_SLUG = clientSideGetCookieOrDefault(CHANNEL_KEY, DEFAULT_CHANNEL.slug);
+	const COUNTRY_CODE = clientSideGetCookieOrDefault(
+		COUNTRY_CODE_KEY,
+		DEFAULT_CHANNEL.defaultCountryCode
+	);
 
-	onMount(async () => {
-		const data: {
-			type: 'loaded';
-			status: number;
-			data: Record<string, any>;
-		} = await preloadData(`/products/${productSlug}`);
+	const productDetailStore = operationStore<Pick<Query, 'product'>>({
+		kind: 'query',
+		query: PRODUCT_DETAIL_QUERY_STORE,
+		variables: {
+			slug: productSlug,
+			channel: CHANNEL_SLUG,
+			countryCode: COUNTRY_CODE
+		},
+		requestPolicy: 'cache-and-network'
+	});
 
-		loading = false;
+	onMount(() => {
+		const unsub = productDetailStore.subscribe((result) => {
+			if (result.data?.product) {
+				slideShowManager.setMedias(result.data.product.media || []);
+			}
+		});
 
-		if (data.status === HTTPStatusSuccess) {
-			product = data.data.product;
-			slideShowManager.setMedias(product?.media || []);
-		} else {
-		}
+		return () => {
+			unsub();
+			slideShowManager.reset();
+		};
 	});
 </script>
 
 <div>
-	{#if loading}
+	{#if $productDetailStore.fetching}
 		<SkeletonContainer>
 			<Skeleton class="w-full h-96" rounded={false} />
 		</SkeletonContainer>
-	{:else if product}
+	{:else if $productDetailStore.data?.product}
 		<ProductSlideShowPannel />
 	{/if}
 </div>

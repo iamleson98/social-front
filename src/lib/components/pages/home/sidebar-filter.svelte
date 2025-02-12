@@ -18,7 +18,7 @@
 	import { CurrencyIconMap, type CurrencyCode } from '$lib/utils/consts';
 	import { flipDirection } from '$lib/utils/utils';
 	import { ORDER_BY_FIELD, PRICE_RANGE, SORT_KEY } from './common';
-	import { productFilterParamStore } from '$lib/stores/app/product-filter';
+	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
 	import { get } from 'svelte/store';
 
 	type Props = {

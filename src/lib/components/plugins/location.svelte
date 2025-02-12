@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { PUBLIC_NOMINATIM_OSM_API } from '$env/static/public';
 	import { CountryCode } from '$lib/gql/graphql';
-	import { CHANNELS } from '$lib/utils/channels';
+	import { CHANNELS, DEFAULT_CHANNEL } from '$lib/utils/channels';
 	import {
 		CHANNEL_KEY,
+		COUNTRY_CODE_KEY,
 		HTTPStatusSuccess,
 		LATITUDE,
 		LONGITUDE,
@@ -21,14 +22,15 @@
 		/** Number of times to retry getting location via Open Street Api Call */
 		retryCount?: number;
 		onSuccess?: (data: NominatimOsmProps) => void;
-		onError?: () => void;
+		onError?: (type: 'timeout' | 'other' | 'user-deny') => void;
+		askPosition?: boolean;
 	};
 
 	let { forceAskLocation = false, retryCount = 3, onSuccess, onError }: Props = $props();
 
 	const handleBrowserGetLocationSuccess = async (geoPosition: GeolocationPosition, tryTime = 0) => {
 		if (tryTime >= retryCount) {
-			onError?.();
+			onError?.('timeout');
 			return;
 		}
 
@@ -56,19 +58,30 @@
 			const locationData: NominatimOsmProps = await fetchResult.json();
 			onSuccess?.(locationData);
 
-			// set default channel
-			for (const chan of CHANNELS) {
-				const countryCode = locationData.address?.country_code.toUpperCase();
-				if (chan.countries.includes(countryCode as CountryCode)) {
-					clientSideSetCookie(CHANNEL_KEY, chan.slug, {
-						secure: true,
-						expires: new Date(3000, 1, 1),
-						sameSite: 'lax',
-						path: '/'
-					});
-					return;
-				}
+			let channelSlug = DEFAULT_CHANNEL.slug;
+			let countryCode = DEFAULT_CHANNEL.defaultCountryCode;
+
+			const suportedChannel = CHANNELS.find((chan) =>
+				chan.countries.includes(locationData.address?.country_code.toUpperCase() as CountryCode)
+			);
+			if (suportedChannel) {
+				channelSlug = suportedChannel.slug;
+				countryCode = locationData.address?.country_code.toUpperCase() as CountryCode;
 			}
+
+			clientSideSetCookie(CHANNEL_KEY, channelSlug, {
+				secure: true,
+				expires: new Date(3000, 1, 1),
+				sameSite: 'lax',
+				path: '/'
+			});
+			clientSideSetCookie(COUNTRY_CODE_KEY, countryCode, {
+				secure: true,
+				expires: new Date(3000, 1, 1),
+				sameSite: 'lax',
+				path: '/'
+			});
+
 			return;
 		}
 
@@ -83,14 +96,14 @@
 			// user deny location service
 			localStorage.setItem(LOCATION_KEY, 'false');
 
-		onError?.();
+		onError?.('user-deny');
 	};
 
-	onMount(async () => {
+	onMount(() => {
 		const location = localStorage.getItem(LOCATION_KEY);
 		if (location === 'false') {
 			if (!forceAskLocation) {
-				onError?.();
+				onError?.('user-deny');
 				return;
 			}
 		} else if (location?.length) {
@@ -99,16 +112,17 @@
 		}
 
 		if (typeof navigator === 'undefined') {
-			onError?.();
+			onError?.('other');
 			return;
 		}
 
-		navigator.geolocation.getCurrentPosition(
-			handleBrowserGetLocationSuccess,
-			handleBrowserGetLocationError,
-			{
-				enableHighAccuracy: true
-			}
-		);
+		if (forceAskLocation)
+			navigator.geolocation.getCurrentPosition(
+				handleBrowserGetLocationSuccess,
+				handleBrowserGetLocationError,
+				{
+					enableHighAccuracy: true
+				}
+			);
 	});
 </script>

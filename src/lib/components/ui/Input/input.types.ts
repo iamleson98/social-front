@@ -28,7 +28,7 @@ export type CustomInputProps = {
 export type InputProps = CustomInputProps & Omit<HTMLInputAttributes, 'size'>;
 export type TextAreaPropsProps = CustomInputProps & Omit<HTMLTextareaAttributes, 'size'>;
 
-export const INPUT_TYPES: Record<Exclude<SocialVariant, 'warning'>, Record<'bg' | 'fg', string>> = {
+export const INPUT_TYPES: Record<SocialVariant, Record<'bg' | 'fg', string>> = {
   info: {
     bg: 'bg-white text-gray-900 ring-gray-200 focus:ring-blue-500 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500',
     fg: 'text-gray-800! dark:text-white',
@@ -41,6 +41,10 @@ export const INPUT_TYPES: Record<Exclude<SocialVariant, 'warning'>, Record<'bg' 
     bg: 'bg-red-50 text-red-700 placeholder-red-600 ring-red-200 focus:ring-red-500 dark:bg-red-700 dark:placeholder-red-400 dark:text-white dark:focus:ring-red-500',
     fg: 'text-red-600!',
   },
+  warning: {
+    bg: 'bg-orange-50 text-orange-700 placeholder-orange-600 ring-orange-200 focus:ring-orange-500 dark:bg-orange-700 dark:placeholder-orange-400 dark:text-white dark:focus:ring-orange-500',
+    fg: 'text-orange-600!',
+  }
 }
 
 export const INPUT_LABEL_SIZE_STYLE_MAP: Record<SocialSize, string> = {

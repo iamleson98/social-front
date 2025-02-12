@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
-	import { productFilterParamStore } from '$lib/stores/app/product-filter';
+	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
 	import { page } from '$app/state';
 	import { numberRegex, parseUrlSearchParams } from '$lib/utils/utils';
 	import { ORDER_BY_FIELD, PRICE_RANGE, SORT_KEY } from './common';
