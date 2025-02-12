@@ -66,6 +66,7 @@
 			class="absolute left-1.5 top-1/2 -translate-y-1/2 z-10"
 			rounded
 			onclick={() => slideShowManager.handleNavigate(-1)}
+			aria-label="navigate previous"
 		/>
 		<IconButton
 			icon={ChevronRight}
@@ -74,6 +75,7 @@
 			class="absolute right-1.5 top-1/2 -translate-y-1/2 z-10"
 			rounded
 			onclick={() => slideShowManager.handleNavigate(1)}
+			aria-label="navigate next"
 		/>
 	</div>
 </div>

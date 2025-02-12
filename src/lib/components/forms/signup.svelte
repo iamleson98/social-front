@@ -17,7 +17,7 @@
 	import { clientSideGetCookieOrDefault, clientSideSetCookie } from '$lib/utils/cookies';
 	import { CHANNEL_KEY, COUNTRY_CODE_KEY, LANGUAGE_KEY } from '$lib/utils/consts';
 	import { PUBLIC_LOCAL_URL, PUBLIC_STORE_FRONT_URL } from '$env/static/public';
-	import { omit } from 'lodash-es';
+	import { omit } from 'es-toolkit';
 	import { slide } from 'svelte/transition';
 	import { dev } from '$app/environment';
 	import LanguageSelect from '$lib/components/common/country-language/language-select.svelte';

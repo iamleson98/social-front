@@ -48,13 +48,14 @@
 	});
 </script>
 
-<div>
+<div class="max-h-[700px] overflow-y-scroll">
 	{#if $productDetailStore.fetching}
 		<SkeletonContainer>
 			<Skeleton class="w-full h-96" rounded={false} />
 		</SkeletonContainer>
 	{:else if $productDetailStore.data?.product}
 		<ProductSlideShowPannel />
+		<div class="mb-2"></div>
 		<ProductPricingPannel
 			useForPreviewModal
 			productInformation={$productDetailStore.data.product}

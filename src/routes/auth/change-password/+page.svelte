@@ -8,7 +8,7 @@
 	import type { Mutation, MutationPasswordChangeArgs, MutationSetPasswordArgs } from '$lib/gql/graphql';
 	import { operationStore, type OperationResultStore } from '$lib/api/operation';
 	import { USER_SET_PASSWORD_MUTATION_STORE } from '$lib/api/auth';
-	import { omit } from 'lodash-es';
+	import { omit } from 'es-toolkit';
 	import { goto } from '$app/navigation';
 	import { AppRoute } from '$lib/utils';
 

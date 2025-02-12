@@ -16,7 +16,7 @@
 	import { operationStore } from '$lib/api/operation';
 	import { preHandleErrorOnGraphqlResult, randomString } from '$lib/utils/utils';
 	import { slide } from 'svelte/transition';
-	import { chunk, flatten } from 'lodash-es';
+	import { chunk, flatten } from 'es-toolkit';
 	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 	import { CurrencyIconMap, type CurrencyCode } from '$lib/utils/consts';
 	import { onMount } from 'svelte';

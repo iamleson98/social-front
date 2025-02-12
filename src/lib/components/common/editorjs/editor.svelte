@@ -2,7 +2,7 @@
 	import { tranFunc } from '$i18n';
 	import Alert from '$lib/components/ui/Alert/alert.svelte';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
-	import { noop } from 'lodash-es';
+	import { noop } from 'es-toolkit';
 	import { onMount } from 'svelte';
 
 	type Props = {

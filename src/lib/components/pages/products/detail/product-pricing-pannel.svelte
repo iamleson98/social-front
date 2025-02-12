@@ -40,7 +40,7 @@
 		productInformation: Product;
 
 		/** this component is used for product detail screen and preview modal.
-		 * If `true`, only some important part would be rendered to screen */
+		 * If `true`, only some important parts would be rendered */
 		useForPreviewModal?: boolean;
 	};
 

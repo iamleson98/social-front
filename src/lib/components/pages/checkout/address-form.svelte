@@ -20,9 +20,11 @@
 		addressToFieldValues
 	} from '$lib/utils/address';
 	import { Input } from '$lib/components/ui/Input';
-	import { uniqBy } from 'lodash-es';
+	import { uniqBy } from 'es-toolkit';
 	import { Button } from '$lib/components/ui';
 	import { toastStore } from '$lib/stores/ui/toast';
+	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
+	import { Alert } from '$lib/components/ui/Alert';
 
 	type Props = {
 		countrySelectOptions: SelectOption[];
@@ -108,9 +110,11 @@
 	/>
 
 	{#if $validationStore.fetching}
-		<div>Loading...</div>
+		<SkeletonContainer class="w-full">
+			<Skeleton class="h-6 w-full" />
+		</SkeletonContainer>
 	{:else if $validationStore.error}
-		<div>Error: {$validationStore.error.message}</div>
+		<Alert variant="error" size="sm" bordered>{$validationStore.error.message}</Alert>
 	{:else if $validationStore.data?.addressValidationRules}
 		{@const { allowedFields, countryAreaChoices, countryAreaType, cityType, postalCodeType } =
 			$validationStore.data.addressValidationRules}
@@ -125,7 +129,7 @@
 			{@const label = getFieldLabel(field, localizedObj)}
 			{@const required = checkFieldIsRequired(field)}
 			{#if field === 'countryArea' && label}
-				{@const choiceOptions = uniqBy(countryAreaChoices, 'raw').map<SelectOption>(
+				{@const choiceOptions = uniqBy(countryAreaChoices, (item) => item.raw).map<SelectOption>(
 					({ verbose, raw }) => ({
 						value: raw as string,
 						label: verbose as string

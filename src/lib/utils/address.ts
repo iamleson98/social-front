@@ -1,7 +1,6 @@
 import { tranFunc } from "$i18n";
 import { CountryCode, type Address, type AddressValidationData, type Maybe } from "$lib/gql/graphql";
-import { uniq } from "lodash-es";
-import camelCase from 'lodash-es/camelCase';
+import { uniq, camelCase } from "es-toolkit";
 import { numberRegex } from "./utils";
 import { parsePhoneNumberWithError, type CountryCode as PhoneCountryCode } from "libphonenumber-js/max";
 import { get } from "svelte/store";
@@ -250,7 +249,7 @@ export const getOrderedAddressFields = (addressFields: AddressField[]) => {
   return result;
 };
 
-const getLocalizedFieldLabel = (field: AddressField, localizedField?: string) => {
+const getLocalizedFieldLabel = (field: AddressField, localizedField: string = '') => {
   try {
     const translatedLabel = localizedAddressFieldMessages[camelCase(localizedField) as LocalizedAddressFieldLabel];
     return translatedLabel;
