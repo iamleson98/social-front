@@ -25,7 +25,7 @@
 
 <div
 	class={`flex items-start gap-2 rounded-lg ${className} ${ALERT_VARIANT_STYLE_MAP[variant]} ${ALERT_SIZE_STYLE_MAP[size].container} ${bordered ? 'border' : 'border-none!'}`}
-	transition:fly={{ y: 10 }}
+	in:fly={{ y: 10 }}
 >
 	<span class="flex items-center">
 		<Icon

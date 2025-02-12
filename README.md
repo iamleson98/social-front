@@ -1,15 +1,17 @@
 <p align="center">
-  <a href="https://example.com/">
-    <img src="https://via.placeholder.com/72" alt="Logo" width=72 height=72>
+  <a href="http://localhost:5173/">
+    <img src="./static/logo.png" alt="Logo" width=auto height=50>
   </a>
 
-  <h3 align="center">Sitename</h3>
-
   <p align="center">
-    Sitename front end is a web interface for online shopping
+    Sitename front end is a web interface for online shopping, focusing on giving best value and gain back trusts.
     <br>
   </p>
 </p>
+
+<hr />
+
+<h3>I) DEVELOPMENT DOC</h3>
 
 # NOTE: every conventions, specifications below are for a better developer yourself.
 If you have any idea or contributions, do research first then tell me advantages and drawbacks of your solutions.
@@ -34,7 +36,6 @@ If you have good ideas and I find that hepful, there will be $ money award.
 
 Below is a brief on project files/folder structure
 
-- `src/graphql` - graphql schema definitions
 - `src/lib` - common svelte components used by the web, utility functions, api call stores, translations. To import things from `src/lib` folder, simply `import {...} from '$lib/...'`
 - `src/routes` - contains pages of the project
 - `src/routes/auth` - Contains all the pages for authen/author (login, signup, request password reset, reset new password)
@@ -49,8 +50,8 @@ Below is a brief on project files/folder structure
 - Consider to export functions, consts, in the `index.ts` file of folder. This helps reduce typing efforts when importing.
 - use tabs with 2 white spaces for indentation, both `js/html/css`
 - Always try to find component style class in daisyui first, if not avalable, use tailwind css classes if possible. If not available also, create your own css, classes in the `<style>` section. This helps the project code smaller and increase performance.
-- Function names must be in `camelCase` only.
-- Constant names must be in `UPPER_SNAKE_CASE` only.
+- Function names MUST be in `camelCase` only.
+- Constant names is RECOMMENDED to be in `UPPER_SNAKE_CASE`.
 - Always apply the rule `Don't repeat yourself (DRY)` by making reusable code, when possible.
 - Note: @iamleson98 is responsible for those conventions, make sure to follow them, otherwise there won't code merge, and of couse critisim will happens.
 
@@ -65,15 +66,20 @@ Developers must use `pnpm/npm install -D ...` to install those libs. For example
 
 ## How to use common libraries
 
-- `Icons` - `ALWAYS` find for icons on this website first https://icon-sets.iconify.design/system-uicons/ . 
-For example:
-```html
-<span class="icon-[system-uicons--alarm-clock]"></span>
-      <!--this class can be found in the website above, its show the alarm clock icon-->
-```
+- `Icons`: - ALWAYS look up icon by going to `/icons` folder irst. <br/>
+           - If not found, go to this website: https://icon-sets.iconify.design/tabler/ then find your desired icon there. <br/>
+           - If you still can't find your icon, you can find for it using universal icon lookup from given website. <br />
+           - When you found your icon, copy its svg source, then create a new icon file in `/icons` folder <br/>
+           - File naming as follow: <br />
+
+           <icon_lib_name>--<icon_name>.svelte
+
+           If your icon is from `tabler`, and the icon name is `home`, the file name should be: tabler--home.svelte
+
 - `Common components` - For example `Button`, `Loading` component is already created in the `lib/ui` folder. Since Daisyui's buttons don't satisfy this project requirements, so I developed some specific components.
-- `Daisyui` - daisyui is already installed. https://daisyui.com/components/ . `ALWAYS` refer to this document for available components first before trying to create your own component.
-Since it helps reduce the number of tailwind css utility classes used in the code -> more clean code, increase productivity.
+- `Daisyui` - daisyui is already installed. https://v5.daisyui.com/docs/v5-beta/ . `ALWAYS` refer to this document for available components first before trying to create your own component.
+Since it helps reduce the number of tailwind css utility classes used in the code -> maintainability ++, productivity ++.
+- NOTE: For example if you want to use specific component from daisy, you have to enable that component in `src/app.css`
 
 ## Bugs and feature requests
 
