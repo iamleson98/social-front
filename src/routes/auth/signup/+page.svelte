@@ -75,7 +75,7 @@
 		termAndPoliciesAgree: false,
 		languageCode: DEFAULT_LANGUAGE
 	});
-	let countryCode = $state<CountryCode>(DEFAULT_COUNTRY);
+	let countryCode = $state<CountryCode>();
 	let signupFormErrors = $state.raw<Partial<Record<keyof SignupProps, string[]>>>({});
 	let signupQueryStore =
 		$state<OperationResultStore<Pick<Mutation, 'accountRegister'>, MutationAccountRegisterArgs>>();
@@ -96,8 +96,6 @@
 					expires: new Date(3000, 1, 1),
 					path: '/'
 				});
-
-				1;
 				return;
 			}
 
