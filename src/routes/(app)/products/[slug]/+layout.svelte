@@ -34,34 +34,31 @@
 		{
 			title: $tranFunc('product.tabDescription'),
 			href: `${AppRoute.PRODUCTS}/${page.params.slug}`,
-			icon: FileText,
+			icon: FileText
 		},
 		{
 			title: $tranFunc('product.tabAttributes'),
 			href: `${AppRoute.PRODUCTS}/${page.params.slug}/attributes`,
-			icon: SettingCheck,
+			icon: SettingCheck
 		},
 		{
 			title: $tranFunc('product.tabFeedBack'),
 			href: `${AppRoute.PRODUCTS}/${page.params.slug}/customer-feedbacks`,
-			icon: HeadSet,
+			icon: HeadSet
 		},
 		{
 			title: $tranFunc('product.tabPackaging'),
 			href: `${AppRoute.PRODUCTS}/${page.params.slug}/packaging`,
-			icon: PackageExport,
+			icon: PackageExport
 		}
 	]);
 
-	const {
-		product: { media, category, channel, variants, ...productInformation },
-		productJsonLd
-	} = data;
+	const { product, productJsonLd } = data;
 
 	let categories = $derived.by(() => {
-		if (!category) return [];
+		if (!product?.category) return [];
 
-		const { ancestors, ...rest } = category;
+		const { ancestors, ...rest } = product.category;
 		if (!ancestors) return [rest];
 
 		let accumulateCategories = [rest];
@@ -73,9 +70,9 @@
 	onMount(() => {
 		let allProductMedias: ProductMedia[] = [];
 
-		if (media) allProductMedias = allProductMedias.concat(media);
-		if (variants?.length) {
-			for (const variant of variants) {
+		if (product?.media) allProductMedias = allProductMedias.concat(product.media);
+		if (product?.variants?.length) {
+			for (const variant of product.variants) {
 				const variantMedias = variant.media;
 				if (variantMedias) allProductMedias = allProductMedias.concat(variantMedias);
 			}
@@ -109,7 +106,7 @@
 			{/each}
 			<li class="text-gray-700">
 				<Icon icon={ChevronRight} />
-				<span>{productInformation.name}</span>
+				<span>{product.name}</span>
 			</li>
 		</ol>
 	</nav>
@@ -119,7 +116,7 @@
 			<ProductMediaSlideShow />
 		</div>
 		<div class="w-3/5 tablet:w-full">
-			<ProductPricingPanel {productInformation} productVariants={variants || []} />
+			<ProductPricingPanel productInformation={product} />
 		</div>
 	</div>
 

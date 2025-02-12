@@ -37,11 +37,14 @@
 	import { CHANNELS } from '$lib/utils/channels';
 
 	type Props = {
-		productInformation: Omit<Product, 'variants'>;
-		productVariants: ProductVariant[];
+		productInformation: Product;
+
+		/** this component is used for product detail screen and preview modal.
+		 * If `true`, only some important part would be rendered to screen */
+		useForPreviewModal?: boolean;
 	};
 
-	let { productInformation, productVariants }: Props = $props();
+	let { productInformation, useForPreviewModal = false }: Props = $props();
 
 	/** user selected variant quantity */
 	let quantitySelected = $state(1);
@@ -169,7 +172,7 @@
 	</div>
 
 	<div class="mb-5 bg-gray-100 rounded-sm px-5 py-2">
-		<!-- price -->
+		<!-- MARK: price -->
 		<div class="">
 			<div class="text-blue-700 font-semibold text-xl mb-1">
 				{displayPrice}
@@ -193,30 +196,32 @@
 		</div>
 	</div>
 
-	<!-- delivery -->
-	<div class="flex flex-row items-center mb-4 text-gray-600">
-		<span class="w-1/6 text-xs">{$tranFunc('product.delivery')}</span>
-		<div class="w-5/6 text-blue-700 font-normal flex items-center">
-			<span class="text-sm mr-1">
-				{userShippingAddress}
-			</span>
-			<IconButton
-				icon={MapPin}
-				rounded
-				size="xs"
-				variant="light"
-				disabled={$checkoutAddLineStore?.fetching}
-				onclick={() => (openDeliveryModal = true)}
-			/>
+	<!-- MARK: delivery -->
+	{#if !useForPreviewModal}
+		<div class="flex flex-row items-center mb-4 text-gray-600">
+			<span class="w-1/6 text-xs">{$tranFunc('product.delivery')}</span>
+			<div class="w-5/6 text-blue-700 font-normal flex items-center">
+				<span class="text-sm mr-1">
+					{userShippingAddress}
+				</span>
+				<IconButton
+					icon={MapPin}
+					rounded
+					size="xs"
+					variant="light"
+					disabled={$checkoutAddLineStore?.fetching}
+					onclick={() => (openDeliveryModal = true)}
+				/>
+			</div>
 		</div>
-	</div>
+	{/if}
 
-	<!-- variant -->
+	<!-- MARK: variants -->
 	<div class="flex flex-row items-center mb-4 text-gray-600">
 		<span class="w-1/6 text-xs">{$tranFunc('product.variants')}</span>
 		<div class="w-5/6">
 			<div class="flex gap-2 flex-wrap flex-row text-blue-600 text-sm">
-				{#each productVariants as variant, idx (idx)}
+				{#each productInformation.variants || [] as variant, idx (idx)}
 					{@const isVariantActive = selectedVariant?.id === variant.id}
 					<Button
 						size="sm"
@@ -244,7 +249,7 @@
 		</div>
 	</div>
 
-	<!-- quantity selection -->
+	<!-- MARK: quantity selection -->
 	<div class="flex flex-row items-center mb-4 text-gray-600">
 		<span class="w-1/6 text-xs">{$tranFunc('product.quantity')}</span>
 		<div class="w-5/6 flex items-center flex-wrap flex-row">
@@ -280,7 +285,7 @@
 						$checkoutAddLineStore?.fetching}
 				/>
 			</div>
-			<!-- quantity available -->
+			<!-- MARK: quantity available -->
 			{#if selectedVariant}
 				<span class="text-gray-600 text-xs ml-2" transition:fade={{ duration: 100 }}>
 					{$tranFunc('product.variantAvailable', { quantity: selectedVariant.quantityAvailable })}
@@ -290,14 +295,16 @@
 	</div>
 
 	<!-- customer policy -->
-	<div class="flex flex-row items-center mb-6 text-gray-600">
-		<span class="w-1/6 text-xs">{$tranFunc('product.prdPolicy')}</span>
-		<div class="w-5/6 flex items-center flex-wrap flex-row">
-			<div class="w-2/3">
-				<Alert variant="info" size="xs">{$tranFunc('product.prdPolicyDetail')}</Alert>
+	{#if !useForPreviewModal}
+		<div class="flex flex-row items-center mb-6 text-gray-600">
+			<span class="w-1/6 text-xs">{$tranFunc('product.prdPolicy')}</span>
+			<div class="w-5/6 flex items-center flex-wrap flex-row">
+				<div class="w-2/3">
+					<Alert variant="info" size="xs">{$tranFunc('product.prdPolicyDetail')}</Alert>
+				</div>
 			</div>
 		</div>
-	</div>
+	{/if}
 
 	<!-- purchase button -->
 	<div class="flex flex-row items-center">
@@ -317,14 +324,16 @@
 	</div>
 </div>
 
-<Modal
-	open={openDeliveryModal}
-	header={$tranFunc('helpText.chooseDeliveryAddress')}
-	closeOnEscape
-	closeOnOutsideClick
-	onClose={() => (openDeliveryModal = false)}
-	onCancel={() => (openDeliveryModal = false)}
-	onOk={() => (openDeliveryModal = false)}
->
-	<MegaMenu items={VIETNAM_COUNTRY_UNITS} onSelectWhole={console.log} onDeselect={console.log} />
-</Modal>
+{#if !useForPreviewModal}
+	<Modal
+		open={openDeliveryModal}
+		header={$tranFunc('helpText.chooseDeliveryAddress')}
+		closeOnEscape
+		closeOnOutsideClick
+		onClose={() => (openDeliveryModal = false)}
+		onCancel={() => (openDeliveryModal = false)}
+		onOk={() => (openDeliveryModal = false)}
+	>
+		<MegaMenu items={VIETNAM_COUNTRY_UNITS} onSelectWhole={console.log} onDeselect={console.log} />
+	</Modal>
+{/if}

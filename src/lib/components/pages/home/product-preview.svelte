@@ -9,6 +9,7 @@
 	import { PRODUCT_DETAIL_QUERY_STORE } from '$lib/api';
 	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import { DEFAULT_CHANNEL } from '$lib/utils/channels';
+	import ProductPricingPannel from '../products/detail/product-pricing-pannel.svelte';
 
 	type Props = {
 		productSlug: string;
@@ -54,5 +55,9 @@
 		</SkeletonContainer>
 	{:else if $productDetailStore.data?.product}
 		<ProductSlideShowPannel />
+		<ProductPricingPannel
+			useForPreviewModal
+			productInformation={$productDetailStore.data.product}
+		/>
 	{/if}
 </div>

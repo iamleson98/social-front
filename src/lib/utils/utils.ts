@@ -16,7 +16,11 @@ export const randomID = () => {
 	return _counter.toString(36);
 };
 
-export function randomString(length = 10) {
+/**
+ * @param length default to 10
+ * @returns 
+ */
+export function randomString(length: number = 10) {
 	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 	let result = '';
 	for (let i = 0; i < length; i++) {

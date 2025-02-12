@@ -32,7 +32,7 @@ export const load = async (event) => {
 		PRODUCT_DETAIL_QUERY_STORE,
 		variables,
 		event,
-		{ requestPolicy: 'network-only' },
+		{ requestPolicy: 'cache-and-network' },
 	);
 	if (productDetailResult.error) {
 		return error(HTTPStatusServerError, {
@@ -73,7 +73,7 @@ export const load = async (event) => {
 		product: product as TypeProduct,
 		productJsonLd,
 		meta: {
-			title: product?.name + ' | ' + product?.seoTitle || '',
+			title: product?.name || product?.slug,
 		},
 		openGraph: product?.thumbnail ? {
 			images: [
