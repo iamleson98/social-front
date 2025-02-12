@@ -59,14 +59,14 @@
 		const prdChannel = CHANNELS.find((chan) => chan.slug === productInformation.channel);
 		if (!selectedVariant)
 			return formatMoney(
-				productInformation.pricing?.priceRange?.start?.gross.currency || prdChannel!.currency,
-				productInformation.pricing?.priceRange?.start?.gross.amount || 0,
-				productInformation.pricing?.priceRange?.stop?.gross.amount
+				productInformation.pricing?.priceRange?.start?.gross?.currency || prdChannel!.currency,
+				productInformation.pricing?.priceRange?.start?.gross?.amount || 0,
+				productInformation.pricing?.priceRange?.stop?.gross?.amount
 			);
 
 		return formatMoney(
-			selectedVariant.pricing?.price?.gross.currency || prdChannel!.currency,
-			selectedVariant.pricing?.price?.gross.amount || 0
+			selectedVariant.pricing?.price?.gross?.currency || prdChannel!.currency,
+			selectedVariant.pricing?.price?.gross?.amount || 0
 		);
 	});
 
@@ -151,15 +151,14 @@
 	};
 </script>
 
-{#snippet slotText()}
-	<p slot="text" class="text-sm font-medium underline ml-1 text-gray-700">
-		{typeof productInformation.rating === 'number' ? productInformation.rating : MAX_RATING} / {MAX_RATING}
-	</p>
-{/snippet}
-
-<div class="bg-white rounded-lg border p-4">
+<div class="bg-white rounded-lg border p-4 h-full">
 	<h1 class="text-gray-700 text-xl font-semibold mb-1">{productInformation.name}</h1>
 	<div class="flex items-center text-red-500 gap-2 mb-4">
+		{#snippet slotText()}
+			<p slot="text" class="text-sm font-medium underline ml-1 text-gray-700">
+				{typeof productInformation.rating === 'number' ? productInformation.rating : MAX_RATING} / {MAX_RATING}
+			</p>
+		{/snippet}
 		<Rating
 			total={5}
 			rating={typeof productInformation.rating === 'number'
