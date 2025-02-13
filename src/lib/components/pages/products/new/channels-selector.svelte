@@ -162,7 +162,7 @@
 						<Checkbox
 							bind:checked={channelListing.isAvailableForPurchase}
 							size="sm"
-							label={$tranFunc('product.availForPurhase')}
+							label={$tranFunc('product.availForPurchase')}
 							class="mb-2"
 						/>
 						{#if !channelListing.isAvailableForPurchase}

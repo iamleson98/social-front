@@ -145,7 +145,7 @@ export default {
 		prdType: 'Product type',
 		published: 'Published',
 		promptPublicationTime: 'If not, please specify publidation time',
-		availForPurhase: 'Available for purchase',
+		availForPurchase: 'Available for purchase',
 		promptAvailTime: 'If not, please specify availability time',
 	},
 	error: {

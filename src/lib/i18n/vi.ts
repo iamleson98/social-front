@@ -145,7 +145,7 @@ export default {
 		prdType: 'Loại sản phẩm',
 		published: 'Đã phát hành',
 		promptPublicationTime: 'Nếu chưa, vui ấn định thời gian phát hành',
-		availForPurhase: 'Hàng có sẵn để bán',
+		availForPurchase: 'Hàng có sẵn để bán',
 		promptAvailTime: 'Nếu chưa, vui lòng khai báo thời gian có hàng',
 	},
 	error: {
