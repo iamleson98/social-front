@@ -1,11 +1,10 @@
 <script lang="ts">
-	import { CHANNELS_QUERY_STORE } from '$lib/api/channels';
+	import { CHANNELS_QUERY } from '$lib/api/channels';
 	import { operationStore } from '$lib/api/operation';
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
-	import { Checkbox } from '$lib/components/ui/Input';
-	import RequiredAt from '$lib/components/ui/required-at.svelte';
+	import { Checkbox, Label } from '$lib/components/ui/Input';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import type {
 		ProductChannelListing,
@@ -15,6 +14,7 @@
 	} from '$lib/gql/graphql';
 	import { tranFunc } from '$lib/i18n';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { omit } from 'es-toolkit';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 
@@ -25,23 +25,14 @@
 
 	let { channelListings, channelListingUpdateInput = $bindable({}) }: Props = $props();
 	// map of channels that are already assigned to a product
-	let assignedChannelsMap = $derived.by(() => {
-		if (channelListings?.length)
-			return channelListings.reduce(
-				(map, channelListing) => {
-					map[channelListing.channel.id] = true;
-					return map;
-				},
-				{} as Record<string, boolean>
-			);
+	const ASSIGNED_CHANNEL_IDS_MAP: Record<string, boolean> = channelListings?.length
+		? channelListings.reduce((acc, cur) => ({ ...acc, [cur.channel.id]: true }), {})
+		: {};
 
-		return {};
-	});
-
-	const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
+	const CHANNELS_QUERY_STORE = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
-		query: CHANNELS_QUERY_STORE,
-		requestPolicy: 'cache-first'
+		query: CHANNELS_QUERY,
+		requestPolicy: 'cache-and-network'
 	});
 
 	type CustomChannelListingAddInput = ProductChannelListingAddInput & {
@@ -61,7 +52,9 @@
 
 	$effect(() => {
 		channelListingUpdateInput = {
-			updateChannels: productChannelListingUpdateInput.updateChannels,
+			updateChannels: productChannelListingUpdateInput.updateChannels?.map((chan) =>
+				omit(chan, ['used', 'channelName'])
+			),
 			removeChannels: productChannelListingUpdateInput.removeChannels
 		};
 	});
@@ -72,7 +65,7 @@
 				...productChannelListingUpdateInput,
 				updateChannels: channelListings.map((listing) => ({
 					channelId: listing.channel.id,
-					used: assignedChannelsMap[listing.channel.id],
+					used: ASSIGNED_CHANNEL_IDS_MAP[listing.channel.id],
 					channelName: listing.channel.name,
 					availableForPurchaseAt: listing.availableForPurchaseAt,
 					isAvailableForPurchase: listing.isAvailableForPurchase,
@@ -83,11 +76,11 @@
 			};
 		}
 
-		return channelsQueryStore.subscribe((result) => {
+		return CHANNELS_QUERY_STORE.subscribe((result) => {
 			if (preHandleErrorOnGraphqlResult(result)) return;
 
 			for (const chan of result.data?.channels || []) {
-				if (!assignedChannelsMap[chan.id]) {
+				if (!ASSIGNED_CHANNEL_IDS_MAP[chan.id]) {
 					productChannelListingUpdateInput = {
 						...productChannelListingUpdateInput,
 						updateChannels: productChannelListingUpdateInput.updateChannels.concat({
@@ -103,10 +96,15 @@
 		});
 	});
 
-	const handleDeselectChannel = (channelID: string, checked: boolean) => {
-		if (!checked && assignedChannelsMap[channelID]) {
+	/**
+	 * This happens when update product, user want to stop selling in specific channel
+	 */
+	const toggleSelectChannel = (channelID: string, checked: boolean) => {
+		if (!checked && ASSIGNED_CHANNEL_IDS_MAP[channelID]) {
 			productChannelListingUpdateInput = {
-				...productChannelListingUpdateInput,
+				updateChannels: productChannelListingUpdateInput.updateChannels.filter(
+					(chan) => chan.channelId !== channelID
+				),
 				removeChannels: productChannelListingUpdateInput.removeChannels.concat(channelID)
 			};
 		}
@@ -114,15 +112,15 @@
 </script>
 
 <div class="mb-3">
-	<RequiredAt class="text-sm" label={$tranFunc('product.channel')} required pos="end" />
+	<Label required requiredAtPos="end" label={$tranFunc('product.channel')} />
 
 	<div class="rounded-lg bg-gray-50 p-3 border border-gray-200 flex items-start gap-2">
-		{#if $channelsQueryStore.fetching}
+		{#if $CHANNELS_QUERY_STORE.fetching}
 			<SkeletonContainer class="w-1/2">
 				<Skeleton class="h-6 w-full" />
 			</SkeletonContainer>
-		{:else if $channelsQueryStore.error}
-			<Alert variant="error" size="sm" bordered>{$channelsQueryStore.error.message}</Alert>
+		{:else if $CHANNELS_QUERY_STORE.error}
+			<Alert variant="error" size="sm" bordered>{$CHANNELS_QUERY_STORE.error.message}</Alert>
 		{:else}
 			{#each productChannelListingUpdateInput.updateChannels! as channelListing, idx (idx)}
 				{#snippet channelHead()}
@@ -130,7 +128,7 @@
 						label={channelListing.channelName}
 						bind:checked={channelListing.used}
 						onchange={(evt) =>
-							handleDeselectChannel(channelListing.channelId, evt.currentTarget.checked)}
+							toggleSelectChannel(channelListing.channelId, evt.currentTarget.checked)}
 					/>
 				{/snippet}
 

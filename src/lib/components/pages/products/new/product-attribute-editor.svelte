@@ -11,10 +11,9 @@
 	import { operationStore } from '$lib/api/operation';
 	import { slide } from 'svelte/transition';
 	import { tranFunc } from '$i18n';
-	import { Checkbox, Input } from '$lib/components/ui/Input';
+	import { Checkbox, Input, Label } from '$lib/components/ui/Input';
 	import { onMount } from 'svelte';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
-	import { RequiredAt } from '$lib/components/ui';
 	import ErrorMsg from './error-msg.svelte';
 	import { PRODUCT_TYPE_QUERY } from '$lib/api/admin/product';
 	import Editor from '$lib/components/common/editorjs/editor.svelte';
@@ -184,7 +183,7 @@
 
 {#if productTypeID}
 	<div class="mb-3">
-		<RequiredAt class="text-sm" label={$tranFunc('product.tabAttributes')} required />
+		<Label required requiredAtPos="end" label={$tranFunc('product.tabAttributes')} />
 
 		<div
 			class="rounded-lg border p-3 {blurTriggers.some(Boolean) && !ok
@@ -213,10 +212,10 @@
 					{#each $productTypeQuery.data?.productType?.productAttributes as node, idx (idx)}
 						<div class="w-1/2 tablet:w-full p-1 shrink flex items-center mb-2">
 							<div class="w-1/4 text-xs">
-								<RequiredAt
-									class="mr-1"
+								<Label
 									required={node.valueRequired}
-									pos="start"
+									size="sm"
+									requiredAtPos="start"
 									label={node.name || ''}
 								/>
 							</div>

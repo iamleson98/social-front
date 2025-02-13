@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { RequiredAt } from '$lib/components/ui';
-	import { Input, TextArea } from '$lib/components/ui/Input';
+	import { Input, Label, TextArea } from '$lib/components/ui/Input';
 	import type { ProductCreateInput, SeoInput } from '$lib/gql/graphql';
 	import slugify from 'slugify';
 	import ErrorMsg from './error-msg.svelte';
@@ -73,7 +72,7 @@
 	const handleValueChange = (): void => {
 		const parseResult = seoSchema.safeParse({
 			slug,
-			...innerSeo,
+			...innerSeo
 		});
 		if (!parseResult.success) {
 			seoErrors = parseResult.error.formErrors.fieldErrors;
@@ -85,7 +84,7 @@
 </script>
 
 <div class="mb-3">
-	<RequiredAt class="text-sm" label={$tranFunc('product.seo')} required pos='end' />
+	<Label required requiredAtPos="end" label={$tranFunc('product.seoTitle')} />
 
 	<div
 		class="rounded-lg border p-3 {Object.values(seoErrors).some(Boolean)
@@ -107,7 +106,7 @@
 		/>
 
 		<!-- title -->
-		 <!-- <RequiredAt class="text-xs" label={$tranFunc('product.seoTitle')} required /> -->
+		<!-- <RequiredAt class="text-xs" label={$tranFunc('product.seoTitle')} required /> -->
 		<Input
 			bind:value={innerSeo.title}
 			placeholder={$tranFunc('product.seoTitle')}
@@ -123,7 +122,7 @@
 		/>
 
 		<!-- description -->
-		 <!-- <RequiredAt class="text-xs" label={$tranFunc('product.seoDescription')} required /> -->
+		<!-- <RequiredAt class="text-xs" label={$tranFunc('product.seoDescription')} required /> -->
 		<TextArea
 			bind:value={innerSeo.description}
 			placeholder={$tranFunc('product.seoDescription')}

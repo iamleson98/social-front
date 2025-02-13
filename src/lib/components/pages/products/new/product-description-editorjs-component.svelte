@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
-	import { RequiredAt } from '$lib/components/ui';
 	import { tranFunc } from '$i18n';
 	import ErrorMsg from './error-msg.svelte';
+	import { Label } from '$lib/components/ui/Input';
 
 	type Props = {
 		description?: any;
@@ -22,7 +22,7 @@
 </script>
 
 <div class="mb-3">
-	<RequiredAt class="text-sm" label={$tranFunc('product.prdDescription')} required pos="end" />
+	<Label required requiredAtPos="end" label={$tranFunc('product.prdDescription')} />
 
 	<div
 		class="rounded-lg border p-3 {!ok && descriptionError

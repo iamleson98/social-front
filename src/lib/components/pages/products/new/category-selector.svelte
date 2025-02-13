@@ -10,8 +10,8 @@
 	import { MegaMenu } from '$lib/components/ui/MegaMenu';
 	import { convertCategoryEdgesToMenuSelect } from './utils';
 	import { tranFunc } from '$i18n';
-	import { RequiredAt } from '$lib/components/ui';
 	import ErrorMsg from './error-msg.svelte';
+	import { Label } from '$lib/components/ui/Input';
 
 	type Props = {
 		categoryID?: string | null;
@@ -49,7 +49,7 @@
 </script>
 
 <div class="mb-3">
-	<RequiredAt class="text-sm" label={$tranFunc('product.prdCategory')} required pos='end' />
+	<Label required requiredAtPos="end" label={$tranFunc('product.prdCategory')} />
 	<div
 		class="border rounded-lg p-3 {categoryError
 			? 'border-red-200 bg-red-50'

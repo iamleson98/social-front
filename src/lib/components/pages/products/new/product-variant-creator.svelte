@@ -2,8 +2,8 @@
 	import { tranFunc } from '$i18n';
 	import { Plus, Trash, MdiWeightKg } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { Button, IconButton, type ButtonProps } from '$lib/components/ui/Button';
-	import { Checkbox, Input } from '$lib/components/ui/Input';
+	import { Button, IconButton } from '$lib/components/ui/Button';
+	import { Checkbox, Input, Label } from '$lib/components/ui/Input';
 	import { MultiSelect, type SelectOption } from '$lib/components/ui/select';
 	import {
 		type PreorderSettingsInput,
@@ -12,7 +12,7 @@
 		type Query,
 		type StockInput
 	} from '$lib/gql/graphql';
-	import { CHANNELS_QUERY_STORE } from '$lib/api/channels';
+	import { CHANNELS_QUERY } from '$lib/api/channels';
 	import { operationStore } from '$lib/api/operation';
 	import { preHandleErrorOnGraphqlResult, randomString } from '$lib/utils/utils';
 	import { slide } from 'svelte/transition';
@@ -23,7 +23,6 @@
 	import DAYJS from 'dayjs';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Accordion } from '$lib/components/ui/Accordion';
-	import { RequiredAt } from '$lib/components/ui';
 	import ErrorMsg from './error-msg.svelte';
 
 	type VariantManifestProps = {
@@ -94,7 +93,7 @@
 	let { productVariantsInput = $bindable([]) }: Props = $props();
 	let variantsInputDetails = $state<ProductVariantBulkCreateInput[]>([]);
 	let quickFillingHighlightClass = $state<QuickFillHighlight>();
-	let variantManifests = $state.raw<VariantManifestProps[]>([]);
+	let variantManifests = $state.raw<VariantManifestProps[]>(DEFAULT_VARIANTS);
 	let variantManifestError = $state(false);
 	let quickFillingValues = $state<QuickFillingProps>({
 		channels: [],
@@ -166,7 +165,7 @@
 
 	const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
-		query: CHANNELS_QUERY_STORE,
+		query: CHANNELS_QUERY,
 		context: { requestPolicy: 'network-only' }
 	});
 
@@ -516,7 +515,7 @@
 </script>
 
 <div class="mb-3">
-	<RequiredAt class="text-sm" label={$tranFunc('product.variants')} required pos="end" />
+	<Label required requiredAtPos="end" label={$tranFunc('product.variants')} />
 
 	<div
 		class={`rounded-lg w-full border p-3 ${hasGeneralError ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}`}

@@ -89,7 +89,7 @@ export default {
 		tabFeedBack: 'Ý kiến khách hàng',
 		tabAttributes: 'Thuộc tính',
 		tabPackaging: 'Đóng gói',
-		variantAvailable: '{{quantity}} có sẵn',
+		variantAvailable: '{{quantity}} sản phẩm có sẵn',
 		prdName: 'Tên sản phẩm',
 		prdCategory: 'Danh mục sản phẩm',
 		prdDescription: 'Mô tả sản phẩm',
@@ -145,7 +145,7 @@ export default {
 		prdType: 'Loại sản phẩm',
 		published: 'Đã phát hành',
 		promptPublicationTime: 'Nếu chưa, vui lòng khai báo thời gian phát hành',
-		availForPurhase: 'Hàng có sẵn để bán',
+		availForPurchase: 'Hàng có sẵn để bán',
 		promptAvailTime: 'Nếu chưa, vui lòng khai báo thời gian có hàng',
 	},
 	error: {

@@ -266,7 +266,7 @@
 					size="sm"
 					type="number"
 					min={1}
-					max={selectedVariant?.quantityAvailable || selectedVariant?.quantityLimitPerCustomer}
+					max={selectedVariant?.quantityLimitPerCustomer || selectedVariant?.quantityAvailable}
 					class="text-center w-24!"
 					bind:value={quantitySelected}
 					disabled={$checkoutAddLineStore?.fetching}
@@ -280,15 +280,16 @@
 					size="sm"
 					onclick={() => quantitySelected++}
 					disabled={quantitySelected >=
-						((selectedVariant?.quantityAvailable ||
-							selectedVariant?.quantityLimitPerCustomer) as number) ||
-						$checkoutAddLineStore?.fetching}
+						((selectedVariant?.quantityLimitPerCustomer ||
+							selectedVariant?.quantityAvailable) as number) || $checkoutAddLineStore?.fetching}
 				/>
 			</div>
 			<!-- MARK: quantity available -->
 			{#if selectedVariant}
 				<span class="text-gray-600 text-xs ml-2" transition:fade={{ duration: 100 }}>
-					{$tranFunc('product.variantAvailable', { quantity: selectedVariant.quantityAvailable })}
+					{$tranFunc('product.variantAvailable', {
+						quantity: selectedVariant.quantityLimitPerCustomer || selectedVariant.quantityAvailable
+					})}
 				</span>
 			{/if}
 		</div>

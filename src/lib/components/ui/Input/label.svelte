@@ -6,7 +6,7 @@
 	type Props = {
 		class?: string;
 		required?: boolean | null;
-		size: SocialSize;
+		size?: SocialSize;
 		id?: string | null;
 		variant?: SocialVariant;
 		label: string;
@@ -16,7 +16,7 @@
 	let {
 		class: className = '',
 		required = false,
-		size,
+		size = 'md',
 		id,
 		variant = 'info',
 		label,

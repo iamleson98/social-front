@@ -97,13 +97,13 @@
 
 	let inputReprValue = $derived.by(() => {
 		if (!realValue) return '';
-		if (realValue['date'] !== undefined) {
-			return dayjs(realValue['date']).format(timeFormat);
-		}
-		const start = realValue['start'];
-		const end = realValue['end'];
 
-		if (start !== undefined && end !== undefined) {
+		const { start, end, date } = realValue;
+		if (!!date) {
+			return dayjs(date).format(timeFormat);
+		}
+
+		if (!!start && !!end) {
 			const startStr = dayjs(start).format(timeFormat);
 			const endStr = dayjs(end).format(timeFormat);
 
@@ -180,6 +180,7 @@
 
 		datePicker.on('select', (evt) => {
 			realValue = evt.detail;
+			console.log(evt.detail);
 			onchange?.(evt.detail);
 		});
 	});
