@@ -144,8 +144,8 @@ export default {
 		taxCls: 'Lớp thuế',
 		prdType: 'Loại sản phẩm',
 		published: 'Đã phát hành',
-		promptPublicationTime: 'Nếu chưa, vui ấn định thời gian phát hành',
-		availForPurchase: 'Hàng có sẵn để bán',
+		promptPublicationTime: 'Nếu chưa, vui lòng khai báo thời gian phát hành',
+		availForPurhase: 'Hàng có sẵn để bán',
 		promptAvailTime: 'Nếu chưa, vui lòng khai báo thời gian có hàng',
 	},
 	error: {

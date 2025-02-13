@@ -31,7 +31,10 @@
 			LanguageCodeEnum.En
 		).toUpperCase();
 		const supportedLang = SUPPORTED_LANGUAGES.find((lang) => lang.code === cookieLang);
-		if (supportedLang) activeLanguage = supportedLang;
+		if (supportedLang) {
+			activeLanguage = supportedLang;
+			switchTranslationLanguage(activeLanguage.code);
+		}
 	});
 </script>
 
