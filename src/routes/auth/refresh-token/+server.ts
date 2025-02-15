@@ -1,4 +1,4 @@
-import { cookieOpts, graphqlClient } from "$lib/api/client";
+import { cookieOpts, GRAPHQL_CLIENT } from "$lib/api/client";
 import type { Mutation, MutationTokenRefreshArgs } from "$lib/gql/graphql";
 import { ACCESS_TOKEN_KEY, CSRF_TOKEN_KEY, HTTPStatusPermanentRedirect, REFRESH_TOKEN_KEY } from "$lib/utils/consts";
 import { json, redirect } from "@sveltejs/kit";
@@ -21,7 +21,7 @@ export const POST = async (event: RequestEvent) => {
     redirect(HTTPStatusPermanentRedirect, AppRoute.AUTH_SIGNIN);
   }
 
-  const result = await graphqlClient
+  const result = await GRAPHQL_CLIENT
     .mutation<Pick<Mutation, 'tokenRefresh'>, MutationTokenRefreshArgs>(
       USER_REFRESH_TOKEN_MUTATION_STORE,
       {

@@ -16,7 +16,7 @@
 	import { scale } from 'svelte/transition';
 	import { Input } from '../ui/Input';
 	import { IconButton } from '../ui/Button';
-	import { graphqlClient } from '$lib/api/client';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { USER_ME_QUERY_STORE } from '$lib/api';
 	import type { Query } from '$lib/gql/graphql';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
@@ -42,7 +42,7 @@
 		const token = getCookieByKey(ACCESS_TOKEN_KEY);
 		if (!token) return;
 
-		const userResult = await graphqlClient
+		const userResult = await GRAPHQL_CLIENT
 			.query<Pick<Query, 'me'>>(USER_ME_QUERY_STORE, {}, { requestPolicy: 'network-only' })
 			.toPromise();
 

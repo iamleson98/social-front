@@ -173,9 +173,9 @@ const authExchangeInner = async (utils: AuthUtilities) => {
 }
 
 /**
- * graphqlClient is similar to 'Client' of urql but with additional methods for server-side.
+ * GRAPHQL_CLIENT is similar to 'Client' of urql but with additional methods for server-side.
  */
-export const graphqlClient = new Client({
+export const GRAPHQL_CLIENT = new Client({
 	url: PUBLIC_GRAPHQL_API_END_POINT,
 	exchanges: [
 		// this auth exchange can run on slient side only
@@ -251,8 +251,8 @@ export const performServerSideGraphqlRequest = async <Data = never, Variables ex
 ): Promise<OperationResult<Data, Variables>> => {
 	const newContext = attachAuthorizationHeaderToRequestIfNeeded(event, context);
 	const request = createRequest(query, variables);
-	const operation = graphqlClient.createRequestOperation(type, request, newContext);
-	const result = await graphqlClient.executeRequestOperation(operation).toPromise();
+	const operation = GRAPHQL_CLIENT.createRequestOperation(type, request, newContext);
+	const result = await GRAPHQL_CLIENT.executeRequestOperation(operation).toPromise();
 	const mustRetryOperation = await checkIsAuthenAuthorErrorAndRedirectIfNeeded(result, event);
 	if (!mustRetryOperation) return result;
 
@@ -260,7 +260,7 @@ export const performServerSideGraphqlRequest = async <Data = never, Variables ex
 		...operation.context,
 		...attachAuthorizationHeaderToRequestIfNeeded(event, context),
 	};
-	return graphqlClient.executeRequestOperation(operation).toPromise();
+	return GRAPHQL_CLIENT.executeRequestOperation(operation).toPromise();
 };
 
 /**

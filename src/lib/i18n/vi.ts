@@ -147,6 +147,7 @@ export default {
 		promptPublicationTime: 'Nếu chưa, vui lòng khai báo thời gian phát hành',
 		availForPurchase: 'Hàng có sẵn để bán',
 		promptAvailTime: 'Nếu chưa, vui lòng khai báo thời gian có hàng',
+		preorderHint: 'Hàng đặt trước là khi bạn phải lấy hàng từ một nhà cung cấp khác. Thời gian để giao hàng phải từ {{min}} tới {{max}} ngày làm việc.',
 	},
 	error: {
 		invalidSlug: 'Giá trị slug không hợp lệ',

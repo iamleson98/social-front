@@ -1,4 +1,4 @@
-import { graphqlClient } from '$lib/api/client';
+import { GRAPHQL_CLIENT } from '$lib/api/client';
 import {
 	createRequest,
 	type AnyVariables,
@@ -89,7 +89,7 @@ export function operationStore<Data = unknown, Variables extends AnyVariables = 
 		...args.context
 	};
 
-	const operation = graphqlClient.createRequestOperation<Data, Variables>(
+	const operation = GRAPHQL_CLIENT.createRequestOperation<Data, Variables>(
 		args.kind,
 		request,
 		context
@@ -118,7 +118,7 @@ export function operationStore<Data = unknown, Variables extends AnyVariables = 
 						return concat<Partial<OperationResultState<Data, Variables>>>([
 							fromValue({ fetching: true, stale: false }),
 							pipe(
-								graphqlClient.executeRequestOperation(operation),
+								GRAPHQL_CLIENT.executeRequestOperation(operation),
 								map(({ stale, data, error, extensions, operation }) => ({
 									fetching: false,
 									stale: !!stale,
@@ -149,7 +149,7 @@ export function operationStore<Data = unknown, Variables extends AnyVariables = 
 	const reexecute = (args: ReexecuteProps<Variables>): void => {
 		const newContext = { ...context, ...args.context };
 		request.variables = args.variables as Variables;
-		const newOperation = graphqlClient.createRequestOperation(operation.kind, request, newContext);
+		const newOperation = GRAPHQL_CLIENT.createRequestOperation(operation.kind, request, newContext);
 
 		isPaused$.set(false);
 		operation$.set(newOperation);

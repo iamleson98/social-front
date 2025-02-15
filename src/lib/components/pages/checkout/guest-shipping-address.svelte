@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { graphqlClient } from '$lib/api/client';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import UserAddress from '$lib/components/common/user-address/user-address.svelte';
 	import { Edit } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
@@ -49,7 +49,7 @@
 			enableFieldsNormalization: true
 		};
 
-		const updateShippingAddressMutation = graphqlClient
+		const updateShippingAddressMutation = GRAPHQL_CLIENT
 			.mutation<
 				Pick<Mutation, 'checkoutShippingAddressUpdate'>,
 				MutationCheckoutShippingAddressUpdateArgs
@@ -60,7 +60,7 @@
 			})
 			.toPromise();
 
-		const updateBillingAddressMutation = graphqlClient
+		const updateBillingAddressMutation = GRAPHQL_CLIENT
 			.mutation<
 				Pick<Mutation, 'checkoutBillingAddressUpdate'>,
 				MutationCheckoutBillingAddressUpdateArgs

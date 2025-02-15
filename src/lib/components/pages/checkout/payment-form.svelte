@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { graphqlClient } from '$lib/api/client';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import {
 		CheckoutAuthorizeStatusEnum,
 		CheckoutChargeStatusEnum,
@@ -56,7 +56,7 @@
 				[]
 			);
 
-			graphqlClient
+			GRAPHQL_CLIENT
 				.mutation<Pick<Mutation, 'paymentGatewayInitialize'>, MutationPaymentGatewayInitializeArgs>(
 					PAYMENT_GATEWAYS_INITIALIZE_MUTATION,
 					{
@@ -91,7 +91,7 @@
 
 	$effect(() => {
 		if ($checkoutStore && paidStatuses.includes(paymentStatus)) {
-			graphqlClient
+			GRAPHQL_CLIENT
 				.mutation<Pick<Mutation, 'checkoutComplete'>, MutationCheckoutCompleteArgs>(
 					CHECKOUT_COMPLETE_MUTATION,
 					{

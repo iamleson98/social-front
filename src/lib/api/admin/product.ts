@@ -127,3 +127,16 @@ mutation CreateProduct($input: ProductCreateInput!) {
 		}
 	}
 }`;
+
+export const UPDATE_PRODUCT_CHANNEL_LISTINGS_MUTATION = gql`
+mutation UpdateChannelListings($id: ID!, $input: ProductChannelListingUpdateInput!) {
+  productChannelListingUpdate(id: $id, input: $input) {
+    product {
+      id
+    }
+    errors {
+      field
+      message
+    }
+  }
+}`;

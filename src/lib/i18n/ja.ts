@@ -147,6 +147,7 @@ export default {
 		promptPublicationTime: 'If not, please specify publidation time',
 		availForPurchase: 'Available for purchase',
 		promptAvailTime: 'If not, please specify availability time',
+		preorderHint: 'Pre-order is when you must order the product from other suppliers. The days it takes to delivery must be between {{min}} to {{max}} working days.',
 	},
 	error: {
 		invalidSlug: '無効なスラッグ値',

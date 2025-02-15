@@ -208,7 +208,7 @@
 	]}
 />
 
-<EaseDatePicker bind:value={date} onchange={console.log} timeConfig={false} />
+<EaseDatePicker bind:value={date} onchange={console.log}  size="sm" allowSelectRange />
 
 {#snippet trigger({ onclick, onfocus }: DropdownTriggerInterface)}
 	<Button {onclick} {onfocus}>Open</Button>

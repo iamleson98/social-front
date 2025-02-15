@@ -11,13 +11,16 @@
 	} from '$lib/utils/consts';
 	import type { IPickerConfig } from '@easepick/core/dist/types';
 	import { Skeleton, SkeletonContainer } from '../Skeleton';
-	import type { FocusEventHandler } from 'svelte/elements';
 	import dayjs from 'dayjs';
 
 	const NOW = new Date();
+	const BASIC_TIME_CONFIG = 'YYYY-MM-DD';
+
+	type TimeValue = Partial<Record<'date' | 'start' | 'end', string | Date>>;
 
 	type Props = {
 		theme?: 'light' | 'dark';
+		/** default `YYYY-MM-DD` */
 		format?: string;
 
 		/** for quick month, year navigation */
@@ -42,7 +45,7 @@
 			maxDays?: number;
 		};
 
-		value?: Partial<Record<'date' | 'start' | 'end', string | Date>>;
+		value?: TimeValue;
 
 		/** for time selection and day time format */
 		timeConfig?:
@@ -57,7 +60,8 @@
 			| false;
 
 		autoApply?: boolean;
-		onchange?: (value: Partial<Record<'date' | 'start' | 'end', string | Date>>) => void;
+		onchange?: (value: TimeValue) => void;
+		class?: string;
 	} & Omit<InputProps, 'value' | 'onchange'>;
 
 	let {
@@ -70,20 +74,19 @@
 			stepMinutes: 5,
 			format: 24
 		},
-		onfocus,
 		autoApply = timeConfig ? false : true,
-		value: realValue = $bindable({}),
-		format = 'YYYY-MM-DD',
+		value: REAL_VALUE = $bindable({}),
+		format = BASIC_TIME_CONFIG,
 		onchange,
+		class: className = '',
 		...rest
 	}: Props = $props();
 
 	let datePicker = $state<easePick.Core>();
 	let inputRef = $state<HTMLInputElement>();
+	let inputEndRef = $state<HTMLInputElement>();
 
-	const BASIC_TIME_CONFIG = 'YYYY-MM-DD';
-
-	let timeFormat = $derived.by(() => {
+	let ACTUAL_TIME_FORMAT = $derived.by(() => {
 		if (!timeConfig) {
 			return format ? format : BASIC_TIME_CONFIG;
 		}
@@ -95,27 +98,37 @@
 		return `${BASIC_TIME_CONFIG} hh:mm`;
 	});
 
-	let inputReprValue = $derived.by(() => {
-		if (!realValue) return '';
+	let inputReprValue = $state<TimeValue>({});
 
-		const { start, end, date } = realValue;
-		if (!!date) {
-			return dayjs(date).format(timeFormat);
+	$effect(() => {
+		if (!REAL_VALUE) {
+			inputReprValue = {};
+			return;
 		}
 
-		if (!!start && !!end) {
-			const startStr = dayjs(start).format(timeFormat);
-			const endStr = dayjs(end).format(timeFormat);
-
-			return `${startStr} - ${endStr}`;
+		const { start, end, date } = REAL_VALUE;
+		if (date) {
+			inputReprValue = {
+				date: dayjs(date).format(ACTUAL_TIME_FORMAT)
+			};
+			return;
 		}
-		return undefined;
+
+		if (start && end) {
+			const startStr = dayjs(start).format(ACTUAL_TIME_FORMAT);
+			const endStr = dayjs(end).format(ACTUAL_TIME_FORMAT);
+
+			inputReprValue = {
+				start: startStr,
+				end: endStr
+			};
+		}
 	});
 
 	onMount(async () => {
 		const pickerConfig: IPickerConfig = {
 			zIndex: 100000000,
-			element: inputRef!,
+			element: inputRef as HTMLElement,
 			css: [EASEPICK_CORE_STYLE_v1_2_1],
 			plugins: [],
 			autoApply,
@@ -144,18 +157,16 @@
 			(pickerConfig.css as string[]).push(EASEPICK_LOCK_STYLE_v1_2_1);
 			pickerConfig.plugins!.push(lockPlugin.LockPlugin);
 
-			pickerConfig['LockPlugin'] = {
-				minDate: timeLock.minDate,
-				maxDate: timeLock.maxDate,
-				minDays: timeLock.minDays,
-				maxDays: timeLock.maxDays
-			};
+			pickerConfig['LockPlugin'] = timeLock;
 		}
 
 		if (allowSelectRange) {
 			const rangePlugin = await import('@easepick/range-plugin');
 			(pickerConfig.css as string[]).push(EASEPICK_RANGE_STYLE_v1_2_1);
 			pickerConfig.plugins!.push(rangePlugin.RangePlugin);
+			pickerConfig['RangePlugin'] = {
+				elementEnd: inputEndRef
+			};
 		}
 
 		if (timeConfig) {
@@ -173,38 +184,18 @@
 		}
 
 		if (!pickerConfig.element && inputRef) {
-			pickerConfig.element = inputRef;
+			pickerConfig.element = inputRef as HTMLElement;
 		}
 
 		datePicker = new easePick.create(pickerConfig);
 
 		datePicker.on('select', (evt) => {
-			realValue = evt.detail;
-			console.log(evt.detail);
+			REAL_VALUE = evt.detail;
 			onchange?.(evt.detail);
 		});
 	});
 
 	onDestroy(() => datePicker?.destroy());
-
-	const handleFocus: FocusEventHandler<HTMLInputElement> = (evt) => {
-		onfocus?.(evt);
-
-		if (!datePicker) return;
-
-		const { value } = evt.currentTarget;
-
-		if (value) {
-			try {
-				const date = dayjs(value);
-				datePicker.setDate(date.toDate());
-			} catch {
-				datePicker.setDate(NOW);
-			}
-		}
-
-		datePicker.show();
-	};
 </script>
 
 {#if !datePicker}
@@ -212,12 +203,33 @@
 		<Skeleton class="h-6 w-full" />
 	</SkeletonContainer>
 {/if}
-<Input
-	{...rest}
-	bind:ref={inputRef}
-	onfocus={handleFocus}
-	value={inputReprValue}
-	class={`${!datePicker ? 'hidden! opacity-0!' : ''}`}
-	readonly
-	placeholder={rest.placeholder || timeFormat}
-/>
+
+{#if allowSelectRange}
+	<div class="flex items-start gap-1 {!datePicker ? 'hidden! opacity-0!' : ''} {className}">
+		<Input
+			{...rest}
+			bind:ref={inputRef}
+			label="from"
+			bind:value={inputReprValue.start}
+			readonly
+			placeholder={rest.placeholder || ACTUAL_TIME_FORMAT}
+		/>
+		<Input
+			{...rest}
+			bind:ref={inputEndRef}
+			label="to"
+			bind:value={inputReprValue.end}
+			readonly
+			placeholder={rest.placeholder || ACTUAL_TIME_FORMAT}
+		/>
+	</div>
+{:else}
+	<Input
+		{...rest}
+		bind:ref={inputRef}
+		bind:value={inputReprValue.date}
+		class={`${!datePicker ? 'hidden! opacity-0!' : ''}`}
+		readonly
+		placeholder={rest.placeholder || ACTUAL_TIME_FORMAT}
+	/>
+{/if}

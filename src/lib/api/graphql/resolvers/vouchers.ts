@@ -1,7 +1,7 @@
-// import { graphqlClient } from "$lib/client";
+// import { GRAPHQL_CLIENT } from "$lib/client";
 import type { QueryVouchersArgs, VoucherCountableConnection } from "$lib/gql/graphql";
 import type { YogaInitialContext } from "graphql-yoga";
 
 export const resolveVouchers = async function (root: unknown, { first, last, sortBy, before, after }: QueryVouchersArgs, context: YogaInitialContext): Promise<VoucherCountableConnection> {
-  // graphqlClient.query
+  // GRAPHQL_CLIENT.query
 }

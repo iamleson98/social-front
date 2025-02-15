@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { graphqlClient } from '$lib/api/client';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { RadioButton } from '$lib/components/ui/Input';
 	import type { Maybe, Mutation, MutationCheckoutDeliveryMethodUpdateArgs } from '$lib/gql/graphql';
 	import { CHECKOUT_UPDATE_DELIVERY_METHOD_MUTATION } from '$lib/api/checkout';
@@ -23,7 +23,7 @@
 		if (!selectedShippingMethodId || !$checkoutStore) return;
 
 		updating = true; //
-		graphqlClient
+		GRAPHQL_CLIENT
 			.mutation<
 				Pick<Mutation, 'checkoutDeliveryMethodUpdate'>,
 				MutationCheckoutDeliveryMethodUpdateArgs

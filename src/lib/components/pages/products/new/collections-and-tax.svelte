@@ -52,7 +52,6 @@
 <div class="mb-3 flex items-center gap-2">
 	<!-- MARK: Collections -->
 	<div class="w-1/2 mobile-l:w-full">
-		<!-- <RequiredAt label={'Collections'} class="text-xs" /> -->
 
 		{#if $collectionsStore.fetching}
 			<SkeletonContainer class="w-full">
@@ -76,7 +75,6 @@
 
 	<!-- MARK: Tax classes -->
 	<div class="w-1/2 mobile-l:w-full">
-		<!-- <RequiredAt label={'Tax classes'} class="text-xs" /> -->
 
 		{#if $taxClassesStore.fetching}
 			<SkeletonContainer class="w-full">

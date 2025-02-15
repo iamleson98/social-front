@@ -1,5 +1,9 @@
 <script lang="ts">
-	import { CREATE_PRODUCT_MUTATION } from '$lib/api/admin/product';
+	import {
+		CREATE_PRODUCT_MUTATION,
+		UPDATE_PRODUCT_CHANNEL_LISTINGS_MUTATION
+	} from '$lib/api/admin/product';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore, type OperationResultStore } from '$lib/api/operation';
 	import ProductType from '$lib/components/common/product-type-select/product-type.svelte';
 	import CategorySelector from '$lib/components/pages/products/new/category-selector.svelte';
@@ -15,11 +19,16 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import type {
 		Mutation,
+		MutationProductChannelListingUpdateArgs,
 		MutationProductCreateArgs,
+		ProductChannelListingAddInput,
 		ProductChannelListingUpdateInput,
 		ProductCreateInput,
 		ProductVariantBulkCreateInput
 	} from '$lib/gql/graphql';
+	import { toastStore } from '$lib/stores/ui/toast';
+	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { omit } from 'es-toolkit';
 
 	const NOW = new Date();
 
@@ -40,6 +49,7 @@
 		collections: []
 	});
 	let channelListingUpdateInput = $state.raw<ProductChannelListingUpdateInput>({});
+	let channelListingUpdateInputOk = $state(true);
 
 	let productInputError = $state<Record<keyof ProductCreateInput, boolean>>({
 		externalReference: true, // not supported yet
@@ -65,24 +75,77 @@
 	let productCreateMutationStore =
 		$state<OperationResultStore<Pick<Mutation, 'productCreate'>, MutationProductCreateArgs>>();
 
-	const handleSubmit = () => {
-		const submitData: ProductCreateInput = {
+	const handleSubmit = async () => {
+		// validate:
+		if (
+			!channelListingUpdateInput.updateChannels?.some(
+				(item) => item['used' as keyof ProductChannelListingAddInput]
+			)
+		) {
+			channelListingUpdateInputOk = false;
+			return;
+		}
+
+		// 1) Create product
+		const productCreateBody: ProductCreateInput = {
 			...productCreateInput,
 			description: productCreateInput.description
 				? JSON.stringify(productCreateInput.description)
 				: null
 		};
-		productCreateMutationStore = operationStore<
+
+		const productCreateResult = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'productCreate'>,
 			MutationProductCreateArgs
-		>({
-			kind: 'mutation',
-			query: CREATE_PRODUCT_MUTATION,
-			variables: {
-				input: submitData
+		>(
+			CREATE_PRODUCT_MUTATION,
+			{
+				input: productCreateBody
 			},
-			requestPolicy: 'network-only'
+			{
+				requestPolicy: 'network-only'
+			}
+		);
+		if (preHandleErrorOnGraphqlResult(productCreateResult)) return;
+		if (productCreateResult.data?.productCreate?.errors.length) {
+			toastStore.send({
+				variant: 'error',
+				message: productCreateResult.data.productCreate.errors[0].message as string
+			});
+			return;
+		}
+
+		// 2) assign product channel listings
+		// clean input
+		const cleanChannelListingUpdateInput: ProductChannelListingUpdateInput = {
+			...channelListingUpdateInput,
+			updateChannels: channelListingUpdateInput.updateChannels
+				.filter((item) => item['used' as keyof ProductChannelListingAddInput])
+				.map((item) =>
+					omit(item, [
+						'used' as keyof ProductChannelListingAddInput,
+						'channelName' as keyof ProductChannelListingAddInput,
+						'currency' as keyof ProductChannelListingAddInput
+					])
+				) as ProductChannelListingAddInput[]
+		};
+
+		const updateProductChannelListingResult = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'productChannelListingUpdate'>,
+			MutationProductChannelListingUpdateArgs
+		>(UPDATE_PRODUCT_CHANNEL_LISTINGS_MUTATION, {
+			id: productCreateResult.data?.productCreate?.product?.id as string,
+			input: cleanChannelListingUpdateInput
 		});
+		if (preHandleErrorOnGraphqlResult(updateProductChannelListingResult)) return;
+		if (updateProductChannelListingResult.data?.productChannelListingUpdate?.errors.length) {
+			toastStore.send({
+				variant: 'error',
+				message: updateProductChannelListingResult.data.productChannelListingUpdate.errors[0]
+					.message as string
+			});
+			return;
+		}
 	};
 </script>
 
@@ -109,8 +172,8 @@
 		bind:description={productCreateInput.description}
 		bind:ok={productInputError.description}
 	/>
-	<ChannelsSelector bind:channelListingUpdateInput />
-	<ProductVariantCreator bind:productVariantsInput />
+	<ChannelsSelector bind:channelListingUpdateInput ok={channelListingUpdateInputOk} />
+	<ProductVariantCreator bind:productVariantsInput channelsListing={channelListingUpdateInput} />
 	<ProductSeo
 		productName={productCreateInput.name}
 		bind:seo={productCreateInput.seo}

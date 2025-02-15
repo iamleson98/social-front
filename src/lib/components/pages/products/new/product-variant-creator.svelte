@@ -7,6 +7,8 @@
 	import { MultiSelect, type SelectOption } from '$lib/components/ui/select';
 	import {
 		type PreorderSettingsInput,
+		type ProductChannelListingAddInput,
+		type ProductChannelListingUpdateInput,
 		type ProductVariantBulkCreateInput,
 		type ProductVariantChannelListingAddInput,
 		type Query,
@@ -38,6 +40,8 @@
 
 	type Props = {
 		productVariantsInput: ProductVariantBulkCreateInput[];
+		/** constraint on channel listings */
+		channelsListing: ProductChannelListingUpdateInput;
 	};
 
 	type CustomStockInput = StockInput & { warehouseName: string };
@@ -82,18 +86,22 @@
 	};
 
 	const VARIANT_ATTRIBUTE_HINTS = [
-		'product.channelHint',
-		'product.priceHint',
-		'product.costPriceHint',
-		'product.stockHint',
-		'product.weightHint',
-		'product.skuHint'
+		{ title: 'product.channelHint' },
+		{ title: 'product.priceHint' },
+		{ title: 'product.costPriceHint' },
+		{ title: 'product.stockHint' },
+		{ title: 'product.weightHint' },
+		{ title: 'product.skuHint' },
+		{
+			title: 'product.preorderHint',
+			args: { min: MIN_DAYS_FOR_PREORDER, max: MAX_DAYS_FOR_PREORDER }
+		}
 	];
 
-	let { productVariantsInput = $bindable([]) }: Props = $props();
+	let { productVariantsInput = $bindable([]), channelsListing }: Props = $props();
 	let variantsInputDetails = $state<ProductVariantBulkCreateInput[]>([]);
 	let quickFillingHighlightClass = $state<QuickFillHighlight>();
-	let variantManifests = $state.raw<VariantManifestProps[]>(DEFAULT_VARIANTS);
+	let variantManifests = $state.raw<VariantManifestProps[]>([]);
 	let variantManifestError = $state(false);
 	let quickFillingValues = $state<QuickFillingProps>({
 		channels: [],
@@ -102,6 +110,7 @@
 		weight: 0,
 		trackInventory: true
 	});
+	/** contains channel select options, this list depends on the prop `channelsListing` */
 	let channelSelectOptions = $state.raw<ChannelSelectOptionProps[]>([]);
 	let showQuickFillingAdvancedSettings = $state(false);
 
@@ -166,31 +175,17 @@
 	const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
 		query: CHANNELS_QUERY,
-		context: { requestPolicy: 'network-only' }
-	});
-
-	// let parent know about the changes
-	$effect(() => {
-		productVariantsInput = variantsInputDetails;
+		context: { requestPolicy: 'cache-and-network' }
 	});
 
 	onMount(() => {
-		const unsub = channelsQueryStore.subscribe((channelsResult) => {
-			if (preHandleErrorOnGraphqlResult(channelsResult) || !channelsResult.data) return;
+		return channelsQueryStore.subscribe((result) => {
+			if (preHandleErrorOnGraphqlResult(result)) return;
 
-			const newChannelSelectOptions: ChannelSelectOptionProps[] = [];
 			const warehousesOfChannels: CustomStockInput[] = [];
 			const warehouseMeetMap: Record<string, boolean> = {};
 
-			channelsResult.data.channels?.forEach((channel) => {
-				newChannelSelectOptions.push({
-					value: channel.id,
-					label: channel.name,
-					currency: channel.currencyCode.toUpperCase(),
-					channelId: channel.id,
-					price: undefined
-				});
-
+			for (const channel of result.data?.channels || []) {
 				for (const warehouse of channel.warehouses) {
 					if (!warehouseMeetMap[warehouse.id]) {
 						warehouseMeetMap[warehouse.id] = true;
@@ -202,16 +197,35 @@
 						});
 					}
 				}
-			});
+			}
 
-			channelSelectOptions = newChannelSelectOptions;
 			quickFillingValues = {
 				...quickFillingValues,
 				stocks: warehousesOfChannels
 			};
 		});
+	});
 
-		return unsub;
+	// let parent know about the changes
+	$effect(() => {
+		productVariantsInput = variantsInputDetails;
+	});
+
+	$effect(() => {
+		const newChannelSelectOptions: ChannelSelectOptionProps[] = [];
+
+		channelsListing?.updateChannels?.forEach((channelListing) => {
+			if (channelListing['used' as keyof ProductChannelListingAddInput])
+				newChannelSelectOptions.push({
+					value: channelListing.channelId,
+					label: channelListing['channelName' as keyof ProductChannelListingAddInput],
+					currency: channelListing['currency' as keyof ProductChannelListingAddInput],
+					channelId: channelListing.channelId,
+					price: undefined
+				});
+		});
+
+		channelSelectOptions = newChannelSelectOptions;
 	});
 
 	const handleFocusHighlightQuickFilling = (highlight?: QuickFillHighlight) =>
@@ -640,7 +654,7 @@
 							<!-- CHANNELS -->
 							<div class="w-1/6">
 								<div class="text-xs">{$tranFunc('product.channel')}</div>
-								{#if !channelSelectOptions?.length}
+								{#if $channelsQueryStore.fetching}
 									<SkeletonContainer>
 										<Skeleton class="w-full h-4" rounded={false} />
 									</SkeletonContainer>
@@ -729,12 +743,12 @@
 										class="mb-2"
 										bind:value={quickFillingValues.preOrder.globalThreshold}
 										variant={typeof quickFillingValues.preOrder.globalThreshold === 'number' &&
-										quickFillingValues.preOrder.globalThreshold < 0
+										quickFillingValues.preOrder.globalThreshold % 1 !== 0
 											? 'error'
 											: 'info'}
 										subText={typeof quickFillingValues.preOrder.globalThreshold === 'number' &&
-										quickFillingValues.preOrder.globalThreshold < 0
-											? $tranFunc('error.negativeNumber')
+										quickFillingValues.preOrder.globalThreshold % 1 !== 0
+											? $tranFunc('error.positiveInteger')
 											: undefined}
 										onfocus={() => handleFocusHighlightQuickFilling('td-preorder-hl')}
 									/>
@@ -769,7 +783,7 @@
 										class="max-h-32 overflow-y-auto border border-gray-200 bg-white p-1 rounded-lg"
 									>
 										{#each quickFillingValues.stocks as stockInput, idx (idx)}
-											{@const isError = stockInput.quantity < 0 || stockInput.quantity % 1 !== 0}
+											{@const isError = stockInput.quantity % 1 !== 0}
 											<div class="flex items-start flex-row gap-1.5 mt-1 odd:bg-gray-100 p-1">
 												<span class="w-1/3 text-xs">
 													{stockInput.warehouseName}
@@ -783,7 +797,7 @@
 													onfocus={() => handleFocusHighlightQuickFilling('td-stock-hl')}
 													bind:value={stockInput.quantity}
 													variant={isError ? 'error' : 'info'}
-													subText={isError ? $tranFunc('error.negativeNumber') : ''}
+													subText={isError ? $tranFunc('error.positiveInteger') : ''}
 												/>
 											</div>
 										{/each}
@@ -797,9 +811,11 @@
 							<Button
 								class="btn btn-sm grow shrink"
 								size="sm"
+								disabled={quickFillingError}
 								fullWidth
-								onclick={handleQuickFillingClick}>{$tranFunc('btn.apply')}</Button
-							>
+								onclick={handleQuickFillingClick}
+								>{$tranFunc('btn.apply')}
+							</Button>
 						</div>
 					</div>
 
@@ -970,12 +986,12 @@
 												class="mb-2"
 												bind:value={variantInputDetail.preorder!.globalThreshold}
 												variant={typeof variantInputDetail.preorder?.globalThreshold === 'number' &&
-												variantInputDetail.preorder.globalThreshold < 0
+												variantInputDetail.preorder.globalThreshold % 1 !== 0
 													? 'error'
 													: 'info'}
 												subText={typeof variantInputDetail.preorder?.globalThreshold === 'number' &&
-												variantInputDetail.preorder.globalThreshold < 0
-													? $tranFunc('error.negativeNumber')
+												variantInputDetail.preorder.globalThreshold % 1 !== 0
+													? $tranFunc('error.positiveInteger')
 													: undefined}
 											/>
 											<EaseDatePicker
@@ -1012,9 +1028,9 @@
 															bind:value={variantInputDetail.stocks![idx].quantity}
 															type="number"
 															min={0}
-															variant={stock.quantity < 0 ? 'error' : 'info'}
-															subText={typeof stock.quantity === 'number' && stock.quantity < 0
-																? $tranFunc('error.negativeNumber')
+															variant={stock.quantity % 1 !== 0 ? 'error' : 'info'}
+															subText={stock.quantity % 1 !== 0
+																? $tranFunc('error.positiveInteger')
 																: ''}
 														/>
 													</div>
@@ -1044,7 +1060,7 @@
 					<Alert variant="info" size="sm" bordered>
 						<ol class="text-xs">
 							{#each VARIANT_ATTRIBUTE_HINTS as hint, idx (idx)}
-								<li>{idx + 1}. {$tranFunc(hint)}</li>
+								<li>{idx + 1}. {$tranFunc(hint.title, hint.args)}</li>
 							{/each}
 						</ol>
 					</Alert>

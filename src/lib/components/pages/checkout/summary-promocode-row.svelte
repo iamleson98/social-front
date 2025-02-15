@@ -9,7 +9,7 @@
 	import Money from './money.svelte';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Trash } from '$lib/components/icons';
-	import { graphqlClient } from '$lib/api/client';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { CHECKOUT_REMOVE_PROMO_CODE_MUTATION } from '$lib/api/checkout';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { toastStore } from '$lib/stores/ui/toast';
@@ -41,7 +41,7 @@
 			: { promoCodeId };
 		variables.checkoutId = checkoutId;
 
-		const removeResult = await graphqlClient
+		const removeResult = await GRAPHQL_CLIENT
 			.mutation<
 				Pick<Mutation, 'checkoutRemovePromoCode'>,
 				CustomMutationCheckoutRemovePromoCodeArgs

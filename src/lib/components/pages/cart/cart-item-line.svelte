@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { graphqlClient } from '$lib/api/client';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 	import { Minus, Plus } from '$lib/components/icons';
 	import { IconButton } from '$lib/components/ui/Button';
@@ -52,7 +52,7 @@
 	const handleDeleteCheckoutLine = async () => {
 		loading = true; //
 
-		const deleteResult = await graphqlClient
+		const deleteResult = await GRAPHQL_CLIENT
 			.mutation<Pick<Mutation, 'checkoutLinesDelete'>, MutationCheckoutLinesDeleteArgs>(
 				CHECKOUT_LINES_DELETE_MUTATION,
 				{
@@ -90,7 +90,7 @@
 
 		loading = true; //
 
-		const updateResult = await graphqlClient
+		const updateResult = await GRAPHQL_CLIENT
 			.mutation<Pick<Mutation, 'checkoutLinesUpdate'>, MutationCheckoutLinesUpdateArgs>(
 				CHECKOUT_LINES_UPDATE_MUTATION,
 				{

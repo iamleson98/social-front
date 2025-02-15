@@ -14,16 +14,20 @@
 	} from '$lib/gql/graphql';
 	import { tranFunc } from '$lib/i18n';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
-	import { omit } from 'es-toolkit';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
+	import ErrorMsg from './error-msg.svelte';
 
 	type Props = {
+		/**
+		 * When update exiting product, caller will provide existing channel listings
+		 */
 		channelListings?: ProductChannelListing[];
 		channelListingUpdateInput: ProductChannelListingUpdateInput;
+		ok: boolean;
 	};
 
-	let { channelListings, channelListingUpdateInput = $bindable({}) }: Props = $props();
+	let { channelListings, channelListingUpdateInput = $bindable({}), ok }: Props = $props();
 	// map of channels that are already assigned to a product
 	const ASSIGNED_CHANNEL_IDS_MAP: Record<string, boolean> = channelListings?.length
 		? channelListings.reduce((acc, cur) => ({ ...acc, [cur.channel.id]: true }), {})
@@ -38,6 +42,7 @@
 	type CustomChannelListingAddInput = ProductChannelListingAddInput & {
 		used: boolean; // for checkbox binding
 		channelName: string; // for label displaying
+		currency: string;
 	};
 
 	type CustomProductChannelListingUpdateInput = {
@@ -51,48 +56,59 @@
 	});
 
 	$effect(() => {
-		channelListingUpdateInput = {
-			updateChannels: productChannelListingUpdateInput.updateChannels?.map((chan) =>
-				omit(chan, ['used', 'channelName'])
-			),
-			removeChannels: productChannelListingUpdateInput.removeChannels
-		};
+		channelListingUpdateInput = productChannelListingUpdateInput;
 	});
 
 	onMount(() => {
+		const populatedChanelMap: Record<string, boolean> = {};
+
+		// if the product already has channel listings, populate the map
 		if (channelListings?.length) {
 			productChannelListingUpdateInput = {
 				...productChannelListingUpdateInput,
-				updateChannels: channelListings.map((listing) => ({
-					channelId: listing.channel.id,
-					used: ASSIGNED_CHANNEL_IDS_MAP[listing.channel.id],
-					channelName: listing.channel.name,
-					availableForPurchaseAt: listing.availableForPurchaseAt,
-					isAvailableForPurchase: listing.isAvailableForPurchase,
-					isPublished: listing.isPublished,
-					publishedAt: listing.publishedAt,
-					visibleInListings: listing.visibleInListings
-				}))
+				updateChannels: channelListings.map((listing) => {
+					populatedChanelMap[listing.channel.id] = true;
+
+					return {
+						channelId: listing.channel.id,
+						used: ASSIGNED_CHANNEL_IDS_MAP[listing.channel.id],
+						channelName: listing.channel.name,
+						currency: listing.channel.currencyCode.toUpperCase(),
+
+						availableForPurchaseAt: listing.availableForPurchaseAt,
+						isAvailableForPurchase: listing.isAvailableForPurchase,
+						isPublished: listing.isPublished,
+						publishedAt: listing.publishedAt,
+						visibleInListings: listing.visibleInListings
+					};
+				})
 			};
 		}
 
+		// add not added channel(s) to the list for user to use
 		return CHANNELS_QUERY_STORE.subscribe((result) => {
 			if (preHandleErrorOnGraphqlResult(result)) return;
 
+			const newChannelListings = productChannelListingUpdateInput.updateChannels;
 			for (const chan of result.data?.channels || []) {
-				if (!ASSIGNED_CHANNEL_IDS_MAP[chan.id]) {
-					productChannelListingUpdateInput = {
-						...productChannelListingUpdateInput,
-						updateChannels: productChannelListingUpdateInput.updateChannels.concat({
-							channelId: chan.id,
-							used: false,
-							channelName: chan.name,
-							isPublished: true,
-							isAvailableForPurchase: true
-						})
-					};
+				if (!populatedChanelMap[chan.id]) {
+					populatedChanelMap[chan.id] = true; // prevent adding again
+
+					newChannelListings.push({
+						channelId: chan.id,
+						used: false,
+						channelName: chan.name,
+						isPublished: true,
+						isAvailableForPurchase: true,
+						currency: chan.currencyCode.toUpperCase()
+					});
 				}
 			}
+
+			productChannelListingUpdateInput = {
+				...productChannelListingUpdateInput,
+				updateChannels: newChannelListings
+			};
 		});
 	});
 
@@ -114,7 +130,11 @@
 <div class="mb-3">
 	<Label required requiredAtPos="end" label={$tranFunc('product.channel')} />
 
-	<div class="rounded-lg bg-gray-50 p-3 border border-gray-200 flex items-start gap-2">
+	<div
+		class="rounded-lg p-3 border flex items-start gap-2 flex-nowrap tablet:flex-wrap {!ok
+			? 'bg-red-50 border-red-200'
+			: 'bg-gray-50 border-gray-200'}"
+	>
 		{#if $CHANNELS_QUERY_STORE.fetching}
 			<SkeletonContainer class="w-1/2">
 				<Skeleton class="h-6 w-full" />
@@ -181,4 +201,5 @@
 			{/each}
 		{/if}
 	</div>
+	<ErrorMsg error={!ok ? $tranFunc('error.thereIsError') : undefined} />
 </div>
