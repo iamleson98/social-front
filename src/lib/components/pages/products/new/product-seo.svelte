@@ -106,7 +106,6 @@
 		/>
 
 		<!-- title -->
-		<!-- <RequiredAt class="text-xs" label={$tranFunc('product.seoTitle')} required /> -->
 		<Input
 			bind:value={innerSeo.title}
 			placeholder={$tranFunc('product.seoTitle')}
@@ -122,7 +121,6 @@
 		/>
 
 		<!-- description -->
-		<!-- <RequiredAt class="text-xs" label={$tranFunc('product.seoDescription')} required /> -->
 		<TextArea
 			bind:value={innerSeo.description}
 			placeholder={$tranFunc('product.seoDescription')}

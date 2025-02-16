@@ -25,7 +25,7 @@
 	import { editorConfig } from '$lib/configs';
 	import { tranFunc } from '$i18n';
 	import CheckList from '$lib/components/common/lexical-editor/plugins/check-list.svelte';
-	import { RequiredAt } from '$lib/components/ui';
+	import { Label } from '$lib/components/ui/Input';
 
 	type Props = {
 		ariaActiveDescendantID?: string;
@@ -148,7 +148,7 @@
 <CheckList editor={activeEditor} />
 
 <div class="mb-3">
-	<RequiredAt class="text-sm" label={$tranFunc('product.prdDescription')} required />
+	<Label class="text-sm" label={$tranFunc('product.prdDescription')} required />
 
 	<div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
 		<DescriptionEditorToolbar disabled={!isEditable || !activeEditor} editor={activeEditor} />

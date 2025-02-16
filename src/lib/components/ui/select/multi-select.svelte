@@ -24,6 +24,7 @@
 		size = 'md',
 		label,
 		variant = 'info',
+		onchange,
 		...rest
 	}: MultiSelectProps = $props();
 
@@ -88,10 +89,12 @@
 
 		value = value.concat(option);
 		searchQuery = '';
+		onchange?.(value);
 	};
 
 	const handleDeselectOption = (option: SelectOption) => {
 		value = value.filter((opt) => opt.value !== option.value);
+		onchange?.(value);
 	};
 </script>
 

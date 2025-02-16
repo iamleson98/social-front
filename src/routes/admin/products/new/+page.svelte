@@ -1,10 +1,10 @@
 <script lang="ts">
 	import {
 		CREATE_PRODUCT_MUTATION,
+		PRODUCT_VARIANTS_BULK_CREATE_MUTATION,
 		UPDATE_PRODUCT_CHANNEL_LISTINGS_MUTATION
 	} from '$lib/api/admin/product';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { operationStore, type OperationResultStore } from '$lib/api/operation';
 	import ProductType from '$lib/components/common/product-type-select/product-type.svelte';
 	import CategorySelector from '$lib/components/pages/products/new/category-selector.svelte';
 	import ChannelsSelector from '$lib/components/pages/products/new/channels-selector.svelte';
@@ -16,11 +16,11 @@
 	import ProductSeo from '$lib/components/pages/products/new/product-seo.svelte';
 	import ProductVariantCreator from '$lib/components/pages/products/new/product-variant-creator.svelte';
 	import { Button } from '$lib/components/ui';
-	import { Alert } from '$lib/components/ui/Alert';
 	import type {
 		Mutation,
 		MutationProductChannelListingUpdateArgs,
 		MutationProductCreateArgs,
+		MutationProductVariantBulkCreateArgs,
 		ProductChannelListingAddInput,
 		ProductChannelListingUpdateInput,
 		ProductCreateInput,
@@ -72,8 +72,9 @@
 	});
 
 	let productVariantsInput = $state.raw<ProductVariantBulkCreateInput[]>([]);
-	let productCreateMutationStore =
-		$state<OperationResultStore<Pick<Mutation, 'productCreate'>, MutationProductCreateArgs>>();
+	// let productCreateMutationStore =
+	// 	$state<OperationResultStore<Pick<Mutation, 'productCreate'>, MutationProductCreateArgs>>();
+	let loading = $state(false);
 
 	const handleSubmit = async () => {
 		// validate:
@@ -85,6 +86,8 @@
 			channelListingUpdateInputOk = false;
 			return;
 		}
+
+		loading = true;
 
 		// 1) Create product
 		const productCreateBody: ProductCreateInput = {
@@ -101,9 +104,6 @@
 			CREATE_PRODUCT_MUTATION,
 			{
 				input: productCreateBody
-			},
-			{
-				requestPolicy: 'network-only'
 			}
 		);
 		if (preHandleErrorOnGraphqlResult(productCreateResult)) return;
@@ -119,15 +119,13 @@
 		// clean input
 		const cleanChannelListingUpdateInput: ProductChannelListingUpdateInput = {
 			...channelListingUpdateInput,
-			updateChannels: channelListingUpdateInput.updateChannels
-				.filter((item) => item['used' as keyof ProductChannelListingAddInput])
-				.map((item) =>
-					omit(item, [
-						'used' as keyof ProductChannelListingAddInput,
-						'channelName' as keyof ProductChannelListingAddInput,
-						'currency' as keyof ProductChannelListingAddInput
-					])
-				) as ProductChannelListingAddInput[]
+			updateChannels: channelListingUpdateInput.updateChannels.map((item) =>
+				omit(item, [
+					'used' as keyof ProductChannelListingAddInput,
+					'channelName' as keyof ProductChannelListingAddInput,
+					'currency' as keyof ProductChannelListingAddInput
+				])
+			) as ProductChannelListingAddInput[]
 		};
 
 		const updateProductChannelListingResult = await GRAPHQL_CLIENT.mutation<
@@ -146,6 +144,39 @@
 			});
 			return;
 		}
+
+		// 3) bulk create variants
+		const variantsBulkCreateResult = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'productVariantBulkCreate'>,
+			MutationProductVariantBulkCreateArgs
+		>(PRODUCT_VARIANTS_BULK_CREATE_MUTATION, {
+			product: productCreateResult.data?.productCreate?.product?.id as string,
+			variants: productVariantsInput
+		});
+		if (preHandleErrorOnGraphqlResult(variantsBulkCreateResult)) return;
+		if (variantsBulkCreateResult.data?.productVariantBulkCreate?.errors.length) {
+			toastStore.send({
+				variant: 'error',
+				message: variantsBulkCreateResult.data.productVariantBulkCreate.errors[0].message as string
+			});
+			return;
+		}
+		let hasError = false;
+		for (const result of variantsBulkCreateResult.data?.productVariantBulkCreate?.results || []) {
+			if (result.errors?.length) {
+				toastStore.send({
+					variant: 'error',
+					message: result.errors[0].message as string
+				});
+				hasError = true;
+			}
+		}
+
+		if (!hasError)
+			toastStore.send({
+				variant: 'success',
+				message: 'Product created successfully'
+			});
 	};
 </script>
 
@@ -189,26 +220,13 @@
 		bind:weight={productCreateInput.weight}
 	/>
 
-	{#if $productCreateMutationStore?.error}
-		<Alert variant="error" size="sm" class="mb-3" bordered
-			>{$productCreateMutationStore.error.message}</Alert
-		>
-	{:else if $productCreateMutationStore?.data?.productCreate?.errors.length}
-		<Alert variant="error" size="sm" class="mb-3" bordered
-			>{$productCreateMutationStore.data.productCreate.errors[0].message}</Alert
-		>
-	{:else if $productCreateMutationStore?.data?.productCreate?.product}
-		<Alert variant="success" size="sm" class="mb-3" bordered>Product created successfully</Alert>
-	{/if}
-
 	<Button
 		size="md"
 		variant="filled"
 		fullWidth
 		onclick={handleSubmit}
-		loading={$productCreateMutationStore?.fetching}
-		disabled={!Object.values(productInputError).every(Boolean) ||
-			$productCreateMutationStore?.fetching}
+		{loading}
+		disabled={!Object.values(productInputError).every(Boolean) || loading}
 	>
 		Submit
 	</Button>

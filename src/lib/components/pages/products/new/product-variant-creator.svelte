@@ -18,7 +18,7 @@
 	import { operationStore } from '$lib/api/operation';
 	import { preHandleErrorOnGraphqlResult, randomString } from '$lib/utils/utils';
 	import { slide } from 'svelte/transition';
-	import { chunk, flatten } from 'es-toolkit';
+	import { chunk, flatten, omit } from 'es-toolkit';
 	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 	import { CurrencyIconMap, type CurrencyCode } from '$lib/utils/consts';
 	import { onMount } from 'svelte';
@@ -208,21 +208,35 @@
 
 	// let parent know about the changes
 	$effect(() => {
-		productVariantsInput = variantsInputDetails;
+		productVariantsInput = variantsInputDetails.map((item) => {
+			return {
+				...item,
+				stocks: item.stocks?.map(
+					(stock) => omit(stock, ['warehouseName' as keyof StockInput]) as StockInput
+				),
+				channelListings: item.channelListings?.map(
+					(listing) =>
+						omit(listing, [
+							'label' as keyof ProductVariantChannelListingAddInput,
+							'value' as keyof ProductVariantChannelListingAddInput,
+							'currency' as keyof ProductVariantChannelListingAddInput
+						]) as ProductVariantChannelListingAddInput
+				)
+			};
+		});
 	});
 
 	$effect(() => {
 		const newChannelSelectOptions: ChannelSelectOptionProps[] = [];
 
 		channelsListing?.updateChannels?.forEach((channelListing) => {
-			if (channelListing['used' as keyof ProductChannelListingAddInput])
-				newChannelSelectOptions.push({
-					value: channelListing.channelId,
-					label: channelListing['channelName' as keyof ProductChannelListingAddInput],
-					currency: channelListing['currency' as keyof ProductChannelListingAddInput],
-					channelId: channelListing.channelId,
-					price: undefined
-				});
+			newChannelSelectOptions.push({
+				value: channelListing.channelId,
+				label: channelListing['channelName' as keyof ProductChannelListingAddInput],
+				currency: channelListing['currency' as keyof ProductChannelListingAddInput],
+				channelId: channelListing.channelId,
+				price: undefined
+			});
 		});
 
 		channelSelectOptions = newChannelSelectOptions;
@@ -504,9 +518,10 @@
 							channelId,
 							price,
 							costPrice,
-							label,
-							value,
-							currency
+
+							label, // extra field
+							value, // extra field
+							currency // extra field
 						})
 					);
 				}
@@ -654,7 +669,7 @@
 							<!-- CHANNELS -->
 							<div class="w-1/6">
 								<div class="text-xs">{$tranFunc('product.channel')}</div>
-								{#if $channelsQueryStore.fetching}
+								{#if !channelSelectOptions?.length}
 									<SkeletonContainer>
 										<Skeleton class="w-full h-4" rounded={false} />
 									</SkeletonContainer>

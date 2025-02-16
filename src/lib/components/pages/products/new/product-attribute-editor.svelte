@@ -18,6 +18,7 @@
 	import { PRODUCT_TYPE_QUERY } from '$lib/api/admin/product';
 	import Editor from '$lib/components/common/editorjs/editor.svelte';
 	import Dayjs from 'dayjs';
+	import { omit } from 'es-toolkit';
 
 	type CustomAttributeInput = AttributeValueInput & {
 		required: boolean;
@@ -35,27 +36,15 @@
 
 	let prevproductTypeID = $state(productTypeID);
 	let blurTriggers = $state<boolean[]>([]);
-
-	const handleSwatchChange = (attrIdx: number, value: string) => {
-		attributes = attributes.map((attr, idx) => {
-			if (idx !== attrIdx) return attr;
-
-			return {
-				id: attr.id,
-				swatch: {
-					value
-				}
-			};
-		});
-	};
+	let innerAttributes = $state<CustomAttributeInput[]>([]);
 
 	/** asynchronously calculate attribute errors */
 	let attributeErrors = $derived.by<(string | undefined)[]>(() => {
-		const result = new Array(attributes.length).fill(undefined);
+		const result = new Array(innerAttributes.length).fill(undefined);
 		const requiredErr = $tranFunc('helpText.fieldRequired');
 
-		for (let idx = 0; idx < attributes.length; idx++) {
-			const attr = attributes[idx];
+		for (let idx = 0; idx < innerAttributes.length; idx++) {
+			const attr = innerAttributes[idx];
 
 			if (!attr['required' as keyof AttributeValueInput]) continue;
 
@@ -122,6 +111,11 @@
 
 	$effect(() => {
 		ok = !attributeErrors.some(Boolean);
+		if (ok) {
+			attributes = innerAttributes.map<AttributeValueInput>((attr) =>
+				omit(attr, ['inputType', 'required'])
+			);
+		}
 	});
 
 	const productTypeQuery = operationStore<Pick<Query, 'productType'>, QueryProductTypeArgs>({
@@ -139,7 +133,7 @@
 		const unsub = productTypeQuery.subscribe((result) => {
 			if (result.data?.productType?.productAttributes?.length) {
 				blurTriggers = new Array(result.data.productType.productAttributes.length).fill(false);
-				attributes = result.data.productType.productAttributes.map<CustomAttributeInput>(
+				innerAttributes = result.data.productType.productAttributes.map<CustomAttributeInput>(
 					({ valueRequired, inputType, id }) => {
 						const result: CustomAttributeInput = {
 							required: valueRequired,
@@ -229,16 +223,13 @@
 										{options}
 										size="sm"
 										onchange={(opt) => {
-											attributes = attributes.map((attr, i) => {
+											innerAttributes = innerAttributes.map((attr, i) => {
 												if (i !== idx) return attr;
 
-												if (opt)
-													return {
-														id: attr.id,
-														dropdown: { id: opt.value as string }
-													};
-
-												return attr;
+												return {
+													...attr,
+													dropdown: opt ? { id: opt.value as string } : undefined
+												};
 											});
 										}}
 										onblur={() => {
@@ -251,8 +242,8 @@
 									<Checkbox
 										size="sm"
 										onchange={(evt) => {
-											attributes = attributes.map((attr, i) =>
-												i === idx ? { id: attr.id, boolean: evt.currentTarget.checked } : attr
+											innerAttributes = innerAttributes.map((attr, i) =>
+												i === idx ? { ...attr, boolean: evt.currentTarget.checked } : attr
 											);
 										}}
 									/>
@@ -260,10 +251,8 @@
 									<EaseDatePicker
 										size="sm"
 										onchange={(value) => {
-											attributes = attributes.map((attr, i) =>
-												i === idx
-													? { id: attr.id, date: Dayjs(value.date).format('YYYY-MM-DD') }
-													: attr
+											innerAttributes = innerAttributes.map((attr, i) =>
+												i === idx ? { ...attr, date: Dayjs(value.date).format('YYYY-MM-DD') } : attr
 											);
 										}}
 										timeConfig={false}
@@ -277,8 +266,8 @@
 										type="file"
 										size="sm"
 										onchange={(evt) => {
-											attributes = attributes.map((attr, i) =>
-												i === idx ? { id: attr.id, file: evt.currentTarget.files?.[0].name } : attr
+											innerAttributes = innerAttributes.map((attr, i) =>
+												i === idx ? { ...attr, file: evt.currentTarget.files?.[0].name } : attr
 											);
 										}}
 									/>
@@ -288,8 +277,8 @@
 										size="sm"
 										type="number"
 										onchange={(evt) => {
-											attributes = attributes.map((attr, i) =>
-												i === idx ? { id: attr.id, numeric: evt.currentTarget.value } : attr
+											innerAttributes = innerAttributes.map((attr, i) =>
+												i === idx ? { ...attr, numeric: evt.currentTarget.value } : attr
 											);
 										}}
 										onblur={() => (blurTriggers[idx] = true)}
@@ -300,8 +289,8 @@
 									<EaseDatePicker
 										size="sm"
 										onchange={(value) => {
-											attributes = attributes.map((attr, i) =>
-												i === idx ? { id: attr.id, dateTime: value.date } : attr
+											innerAttributes = innerAttributes.map((attr, i) =>
+												i === idx ? { ...attr, dateTime: value.date } : attr
 											);
 										}}
 										autoApply={false}
@@ -317,8 +306,8 @@
 										<Editor
 											placeholder={$tranFunc('placeholders.valuePlaceholder')}
 											onchange={(data) => {
-												attributes = attributes.map((attr, i) =>
-													i === idx ? { id: attr.id, richText: JSON.stringify(data) } : attr
+												innerAttributes = innerAttributes.map((attr, i) =>
+													i === idx ? { ...attr, richText: JSON.stringify(data) } : attr
 												);
 											}}
 										/>
@@ -328,8 +317,8 @@
 										size="sm"
 										type="text"
 										onchange={(evt) => {
-											attributes = attributes.map((attr, i) =>
-												i === idx ? { id: attr.id, plainText: evt.currentTarget.value } : attr
+											innerAttributes = innerAttributes.map((attr, i) =>
+												i === idx ? { ...attr, plainText: evt.currentTarget.value } : attr
 											);
 										}}
 										onblur={() => (blurTriggers[idx] = true)}
@@ -344,7 +333,17 @@
 									<MultiSelect
 										{options}
 										size="sm"
-										value={[]}
+										onchange={(values) => {
+											innerAttributes = innerAttributes.map((attr, i) => {
+												if (i !== idx || !values) return attr;
+												return {
+													...attr,
+													multiselect: values.map((vl) => ({
+														value: `${vl.value}`
+													}))
+												};
+											});
+										}}
 										onblur={() => (blurTriggers[idx] = true)}
 										variant={blurTriggers[idx] && attributeErrors[idx] ? 'error' : 'info'}
 										subText={blurTriggers[idx] ? attributeErrors[idx] : undefined}
@@ -361,8 +360,19 @@
 														type="radio"
 														class="radio radio-xs"
 														value={edge.node.value}
-														checked={edge.node.value === attributes[idx]?.swatch?.value}
-														onchange={(evt) => handleSwatchChange(idx, edge.node.value as string)}
+														checked={edge.node.value === innerAttributes[idx]?.swatch?.value}
+														onchange={(evt) => {
+															innerAttributes = innerAttributes.map((attr, i) => {
+																if (i !== idx) return attr;
+
+																return {
+																	...attr,
+																	swatch: {
+																		value: evt.currentTarget.value
+																	}
+																};
+															});
+														}}
 													/>
 												</div>
 											</div>

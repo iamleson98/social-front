@@ -25,11 +25,12 @@ export type MultiSelectSizeType = Exclude<SocialSize, 'xs'>;
 
 export type MultiSelectProps<T extends SelectOption = SelectOption> = {
   options: T[];
-  value: T[];
+  value?: T[];
   size?: MultiSelectSizeType;
   /** number of items to fully display, the rest will be summaried as "+n". if <= 0, throw Error  */
   maxDisplay?: number;
-} & Omit<InputProps, "value" | "size">;
+  onchange?: (opts?: T[]) => void;
+} & Omit<InputProps, 'value' | 'size' | 'onchange'>;
 
 /** SIZE_REDUCE_MAP is useful you want your input and badge items to reasonably fit your multi select component */
 export const SIZE_REDUCE_MAP: Record<Exclude<SocialSize, 'xs'>, SocialSize> = {

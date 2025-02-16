@@ -140,3 +140,23 @@ mutation UpdateChannelListings($id: ID!, $input: ProductChannelListingUpdateInpu
     }
   }
 }`;
+
+export const PRODUCT_VARIANTS_BULK_CREATE_MUTATION = gql`
+mutation ProductVariantsBulkCreate($product: ID!, $variants: [ProductVariantBulkCreateInput!]!) {
+  productVariantBulkCreate(product: $product, variants: $variants) {
+    count
+    results {
+      productVariant {
+        id
+      }
+      errors {
+        field
+        message
+      }
+    }
+    errors {
+      field
+      message
+    }
+  }
+}`;

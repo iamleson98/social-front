@@ -40,7 +40,6 @@
 
 <!-- product name -->
 <div class="mb-2">
-	<!-- <RequiredAt class="text-sm" label={$tranFunc('product.prdName')} required /> -->
 	<Input
 		placeholder={$tranFunc('placeholders.enterPrdName')}
 		size="md"

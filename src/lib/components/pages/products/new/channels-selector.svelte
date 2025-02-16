@@ -56,7 +56,10 @@
 	});
 
 	$effect(() => {
-		channelListingUpdateInput = productChannelListingUpdateInput;
+		channelListingUpdateInput = {
+			...productChannelListingUpdateInput,
+			updateChannels: productChannelListingUpdateInput.updateChannels.filter((chan) => chan.used)
+		};
 	});
 
 	onMount(() => {
