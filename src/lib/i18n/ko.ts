@@ -148,6 +148,8 @@ export default {
 		availForPurchase: 'Available for purchase',
 		promptAvailTime: 'If not, please specify availability time',
 		preorderHint: 'Pre-order is when you must order the product from other suppliers. The days it takes to delivery must be between {{min}} to {{max}} working days.',
+		prdCreated: 'Product created successfully',
+		prdUpdated: 'Product updated successfully',
 	},
 	error: {
 		invalidSlug: '잘못된 슬러그 값',
@@ -180,6 +182,8 @@ export default {
 	},
 	btn: {
 		apply: '조회',
+		create: '타입 생성',
+		update: '타입 변경',
 	},
 	helpText: {
 		chooseDeliveryAddress: '배송지를 선택해주세요',

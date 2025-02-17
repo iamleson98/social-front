@@ -148,6 +148,8 @@ export default {
 		availForPurchase: 'Available for purchase',
 		promptAvailTime: 'If not, please specify availability time',
 		preorderHint: 'Pre-order is when you must order the product from other suppliers. The number of days it takes to delivery must be between {{min}} to {{max}} working days.',
+		prdCreated: 'Product created successfully',
+		prdUpdated: 'Product updated successfully',
 	},
 	error: {
 		invalidSlug: 'Invalid slug value',
@@ -180,6 +182,8 @@ export default {
 	},
 	btn: {
 		apply: 'Apply',
+		create: 'Create',
+		update: 'Update',
 	},
 	helpText: {
 		chooseDeliveryAddress: 'Please choose delivery address',

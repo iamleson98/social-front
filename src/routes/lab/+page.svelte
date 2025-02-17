@@ -148,6 +148,7 @@
 <MultiSelect
 	value={[]}
 	size="sm"
+	disabled
 	options={[
 		{
 			value: '1',

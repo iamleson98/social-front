@@ -7,9 +7,10 @@
 	type Props = {
 		metadata: ProductInput['metadata'];
 		weight: ProductInput['weight'];
+		loading: boolean;
 	};
 
-	let { metadata = $bindable([]), weight = $bindable() }: Props = $props();
+	let { metadata = $bindable([]), weight = $bindable(), loading }: Props = $props();
 
 	const handleMetaChange = (index: number, value: string) => {
 		metadata = metadata!.map((item, i) => {
@@ -39,6 +40,7 @@
 			size="sm"
 			min="0"
 			class="w-1/4 tablet:w-1/2 mobile-l:w-full"
+			disabled={loading}
 		/>
 		<Input
 			type="number"
@@ -49,6 +51,7 @@
 			action={cm}
 			min="0"
 			class="w-1/4 tablet:w-1/2 mobile-l:w-full"
+			disabled={loading}
 		/>
 		<Input
 			type="number"
@@ -59,6 +62,7 @@
 			action={cm}
 			min="0"
 			class="w-1/4 tablet:w-1/2 mobile-l:w-full"
+			disabled={loading}
 		/>
 		<Input
 			type="number"
@@ -69,6 +73,7 @@
 			action={cm}
 			min="0"
 			class="w-1/4 tablet:w-1/2 mobile-l:w-full"
+			disabled={loading}
 		/>
 	</div>
 </div>

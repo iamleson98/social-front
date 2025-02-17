@@ -13,6 +13,7 @@
 		productName: ProductCreateInput['name'];
 		slug: ProductCreateInput['slug'];
 		ok: boolean;
+		loading: boolean;
 	};
 
 	const SEO_DESCRIPTION_MAX_LENGTH = 300; // saleor reference
@@ -50,7 +51,7 @@
 
 	type SeoProps = z.infer<typeof seoSchema>;
 
-	let { productName, slug = $bindable(), seo = $bindable(), ok = $bindable() }: Props = $props();
+	let { productName, slug = $bindable(), seo = $bindable(), ok = $bindable(), loading }: Props = $props();
 
 	let seoErrors = $state<Partial<Record<keyof SeoProps, string[]>>>({});
 	let innerSeo = $state<SeoInput>({
@@ -103,6 +104,7 @@
 			subText={seoErrors?.slug?.length ? seoErrors.slug[0] : undefined}
 			required
 			label={$tranFunc('product.prdSlug')}
+			disabled={loading}
 		/>
 
 		<!-- title -->
@@ -118,6 +120,7 @@
 			subText={seoErrors?.title?.length ? seoErrors.title[0] : undefined}
 			label={$tranFunc('product.seoTitle')}
 			required
+			disabled={loading}
 		/>
 
 		<!-- description -->
@@ -135,6 +138,7 @@
 				: `${seo?.description?.length || 0} / ${SEO_DESCRIPTION_MAX_LENGTH}`}
 			label={$tranFunc('product.seoDescription')}
 			required
+			disabled={loading}
 		/>
 	</div>
 

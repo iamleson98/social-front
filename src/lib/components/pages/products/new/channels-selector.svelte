@@ -25,9 +25,10 @@
 		channelListings?: ProductChannelListing[];
 		channelListingUpdateInput: ProductChannelListingUpdateInput;
 		ok: boolean;
+		loading: boolean;
 	};
 
-	let { channelListings, channelListingUpdateInput = $bindable({}), ok }: Props = $props();
+	let { channelListings, channelListingUpdateInput = $bindable({}), ok, loading }: Props = $props();
 	// map of channels that are already assigned to a product
 	const ASSIGNED_CHANNEL_IDS_MAP: Record<string, boolean> = channelListings?.length
 		? channelListings.reduce((acc, cur) => ({ ...acc, [cur.channel.id]: true }), {})
@@ -166,6 +167,7 @@
 							size="sm"
 							label={$tranFunc('product.published')}
 							class="mb-2"
+							disabled={loading}
 						/>
 						{#if !channelListing.isPublished}
 							<div transition:fade class="mb-2 pb-2 border-b border-gray-300">
@@ -177,6 +179,7 @@
 										showMonths: true
 									}}
 									label={$tranFunc('product.promptPublicationTime')}
+									disabled={loading}
 								/>
 							</div>
 						{/if}
@@ -185,6 +188,7 @@
 							size="sm"
 							label={$tranFunc('product.availForPurchase')}
 							class="mb-2"
+							disabled={loading}
 						/>
 						{#if !channelListing.isAvailableForPurchase}
 							<div transition:fade>
@@ -196,6 +200,7 @@
 										showYears: { min: 2020 },
 										showMonths: true
 									}}
+									disabled={loading}
 								/>
 							</div>
 						{/if}

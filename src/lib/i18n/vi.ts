@@ -148,6 +148,8 @@ export default {
 		availForPurchase: 'Hàng có sẵn để bán',
 		promptAvailTime: 'Nếu chưa, vui lòng khai báo thời gian có hàng',
 		preorderHint: 'Hàng đặt trước là khi bạn phải lấy hàng từ một nhà cung cấp khác. Thời gian để giao hàng phải từ {{min}} tới {{max}} ngày làm việc.',
+		prdCreated: 'Sản phẩm đã được tạo mới thành công',
+		prdUpdated: 'Sản phẩm đã được cập nhật thành công',
 	},
 	error: {
 		invalidSlug: 'Giá trị slug không hợp lệ',
@@ -180,6 +182,8 @@ export default {
 	},
 	btn: {
 		apply: 'Áp dụng',
+		create: 'Tạo',
+		update: 'Cập nhật',
 	},
 	helpText: {
 		chooseDeliveryAddress: 'Vui lòng chọn điểm giao hàng',

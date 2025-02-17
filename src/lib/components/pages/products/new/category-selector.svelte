@@ -12,15 +12,21 @@
 	import { tranFunc } from '$i18n';
 	import ErrorMsg from './error-msg.svelte';
 	import { Label } from '$lib/components/ui/Input';
+	import Loading from '$lib/components/ui/Loading/loading.svelte';
 
 	type Props = {
 		categoryID?: string | null;
 		ok: boolean;
+		loading: boolean;
 	};
 
 	const NUMBER_OF_CATEGORIES_PER_FETCH = 35;
 
-	let { categoryID = $bindable<string | null | undefined>(), ok = $bindable() }: Props = $props();
+	let {
+		categoryID = $bindable<string | null | undefined>(),
+		ok = $bindable(),
+		loading
+	}: Props = $props();
 	let categoryError = $state<string>();
 
 	const categoriesStore = operationStore<
@@ -75,6 +81,7 @@
 				{items}
 				onSelect={(item) => handleCategorySelection(item.value as string)}
 				onDeselect={() => handleCategorySelection(null)}
+				disabled={loading}
 			/>
 		{/if}
 	</div>

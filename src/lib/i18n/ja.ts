@@ -148,6 +148,8 @@ export default {
 		availForPurchase: 'Available for purchase',
 		promptAvailTime: 'If not, please specify availability time',
 		preorderHint: 'Pre-order is when you must order the product from other suppliers. The days it takes to delivery must be between {{min}} to {{max}} working days.',
+		prdCreated: 'Product created successfully',
+		prdUpdated: 'Product updated successfully',
 	},
 	error: {
 		invalidSlug: '無効なスラッグ値',
@@ -180,6 +182,8 @@ export default {
 	},
 	btn: {
 		apply: '適用',
+		create: '型作成',
+		update: '型更新',
 	},
 	helpText: {
 		chooseDeliveryAddress: '配送先を選択してください',

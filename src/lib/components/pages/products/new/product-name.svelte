@@ -8,9 +8,10 @@
 	type Props = {
 		name: ProductCreateInput['name'];
 		ok: boolean;
+		loading: boolean;
 	};
 
-	let { name = $bindable(), ok = $bindable() }: Props = $props();
+	let { name = $bindable(), ok = $bindable(), loading }: Props = $props();
 	let nameError = $state('');
 	let nameCharCount = $derived(`${name?.trim().length || 0}/${PRODUCT_NAME_MAX_LENGTH}`);
 
@@ -50,5 +51,6 @@
 		subText={nameError || nameCharCount}
 		required
 		label={$tranFunc('product.prdName')}
+		disabled={loading}
 	/>
 </div>

@@ -11,8 +11,9 @@
 		value = $bindable(),
 		ok = $bindable(),
 		class: className = '',
+		loading,
 		...props
-	}: Omit<SelectProps, 'options' | 'label'> & { ok: boolean } = $props();
+	}: Omit<SelectProps, 'options' | 'label'> & { ok: boolean; loading: boolean } = $props();
 
 	const productTypesQueryStore = operationStore<Pick<Query, 'productTypes'>, QueryProductTypesArgs>(
 		{
@@ -36,7 +37,7 @@
 	};
 </script>
 
-<div class={className}>
+<div class="{className} mb-3">
 	{#if $productTypesQueryStore.fetching}
 		<SkeletonContainer class="w-full">
 			<Skeleton class="h-6 w-full" />
@@ -56,6 +57,7 @@
 			variant={!ok && error ? 'error' : 'info'}
 			subText={!ok && error ? error : undefined}
 			onblur={handleBlur}
+			disabled={loading}
 		/>
 	{/if}
 </div>

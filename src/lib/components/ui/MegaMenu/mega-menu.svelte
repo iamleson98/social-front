@@ -5,7 +5,7 @@
 	import { tick } from 'svelte';
 	import { Checkbox } from '../Input';
 
-	let { items, onSelect, onDeselect, onSelectWhole }: MenuProps = $props();
+	let { items, onSelect, onDeselect, onSelectWhole, disabled }: MenuProps = $props();
 
 	let menuSectionsData = $state.raw<SelectItemProps[][]>([items]);
 	let selectedItems = $state.raw<SelectItemProps[]>([]);
@@ -33,7 +33,7 @@
 <div>
 	<div class="flex gap-2 flex-row w-full overflow-x-auto">
 		{#each menuSectionsData as items, idx (idx)}
-			<SingleMenu {items} onSelect={(item) => handleItemSelect(idx, item)} disabled={checked} />
+			<SingleMenu {items} onSelect={(item) => handleItemSelect(idx, item)} disabled={checked || disabled} />
 		{/each}
 	</div>
 
@@ -44,7 +44,7 @@
 		/>
 
 		{#if selectedItems.length && !selectedItems[selectedItems.length - 1].children?.length}
-			<Checkbox bind:checked title="Select this item" size="sm" />
+			<Checkbox bind:checked title="Select this item" size="sm" {disabled} />
 		{/if}
 	</div>
 </div>

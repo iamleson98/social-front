@@ -29,10 +29,11 @@
 		productTypeID?: string | null;
 		attributes: AttributeValueInput[];
 		ok: boolean;
+		loading: boolean;
 	};
 
 	const MAX_FETCHING_BATCH = 100;
-	let { productTypeID, attributes = $bindable([]), ok = $bindable() }: Props = $props();
+	let { productTypeID, attributes = $bindable([]), ok = $bindable(), loading }: Props = $props();
 
 	let prevproductTypeID = $state(productTypeID);
 	let blurTriggers = $state<boolean[]>([]);
@@ -222,6 +223,7 @@
 									<Select
 										{options}
 										size="sm"
+										disabled={loading}
 										onchange={(opt) => {
 											innerAttributes = innerAttributes.map((attr, i) => {
 												if (i !== idx) return attr;
@@ -241,6 +243,7 @@
 								{:else if node.inputType === AttributeInputTypeEnum.Boolean}
 									<Checkbox
 										size="sm"
+										disabled={loading}
 										onchange={(evt) => {
 											innerAttributes = innerAttributes.map((attr, i) =>
 												i === idx ? { ...attr, boolean: evt.currentTarget.checked } : attr
@@ -250,6 +253,7 @@
 								{:else if node.inputType === AttributeInputTypeEnum.Date}
 									<EaseDatePicker
 										size="sm"
+										disabled={loading}
 										onchange={(value) => {
 											innerAttributes = innerAttributes.map((attr, i) =>
 												i === idx ? { ...attr, date: Dayjs(value.date).format('YYYY-MM-DD') } : attr
@@ -265,6 +269,7 @@
 									<Input
 										type="file"
 										size="sm"
+										disabled={loading}
 										onchange={(evt) => {
 											innerAttributes = innerAttributes.map((attr, i) =>
 												i === idx ? { ...attr, file: evt.currentTarget.files?.[0].name } : attr
@@ -276,6 +281,7 @@
 										placeholder={$tranFunc('placeholders.valuePlaceholder')}
 										size="sm"
 										type="number"
+										disabled={loading}
 										onchange={(evt) => {
 											innerAttributes = innerAttributes.map((attr, i) =>
 												i === idx ? { ...attr, numeric: evt.currentTarget.value } : attr
@@ -288,6 +294,7 @@
 								{:else if node.inputType === AttributeInputTypeEnum.DateTime}
 									<EaseDatePicker
 										size="sm"
+										disabled={loading}
 										onchange={(value) => {
 											innerAttributes = innerAttributes.map((attr, i) =>
 												i === idx ? { ...attr, dateTime: value.date } : attr
@@ -302,6 +309,7 @@
 								{:else if node.inputType === AttributeInputTypeEnum.Reference}
 									<div>ref</div>
 								{:else if node.inputType === AttributeInputTypeEnum.RichText}
+									<!-- NOTE: we cannot disable editorJs for now -->
 									<div>
 										<Editor
 											placeholder={$tranFunc('placeholders.valuePlaceholder')}
@@ -322,6 +330,7 @@
 											);
 										}}
 										onblur={() => (blurTriggers[idx] = true)}
+										disabled={loading}
 										variant={blurTriggers[idx] && attributeErrors[idx] ? 'error' : 'info'}
 										subText={blurTriggers[idx] ? attributeErrors[idx] : undefined}
 									/>
@@ -333,6 +342,7 @@
 									<MultiSelect
 										{options}
 										size="sm"
+										disabled={loading}
 										onchange={(values) => {
 											innerAttributes = innerAttributes.map((attr, i) => {
 												if (i !== idx || !values) return attr;
@@ -358,6 +368,7 @@
 												>
 													<input
 														type="radio"
+														disabled={loading}
 														class="radio radio-xs"
 														value={edge.node.value}
 														checked={edge.node.value === innerAttributes[idx]?.swatch?.value}

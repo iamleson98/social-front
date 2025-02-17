@@ -7,5 +7,5 @@ export const load = async (event) => {
 		meta: {
 			title: 'New Product'
 		}
-	}
+	};
 };

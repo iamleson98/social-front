@@ -42,6 +42,7 @@
 		productVariantsInput: ProductVariantBulkCreateInput[];
 		/** constraint on channel listings */
 		channelsListing: ProductChannelListingUpdateInput;
+		loading: boolean;
 	};
 
 	type CustomStockInput = StockInput & { warehouseName: string };
@@ -98,7 +99,7 @@
 		}
 	];
 
-	let { productVariantsInput = $bindable([]), channelsListing }: Props = $props();
+	let { productVariantsInput = $bindable([]), channelsListing, loading }: Props = $props();
 	let variantsInputDetails = $state<ProductVariantBulkCreateInput[]>([]);
 	let quickFillingHighlightClass = $state<QuickFillHighlight>();
 	let variantManifests = $state.raw<VariantManifestProps[]>([]);
@@ -579,6 +580,7 @@
 								size="md"
 								variant={variant.name.error ? 'error' : 'info'}
 								subText={variant.name.error}
+								disabled={loading}
 							/>
 						</label>
 					</div>
@@ -590,6 +592,7 @@
 								<Input
 									variant={value.error ? 'error' : 'info'}
 									type="text"
+									disabled={loading}
 									class="w-4/5"
 									size="sm"
 									placeholder={$tranFunc('placeholders.valuePlaceholder')}
@@ -606,6 +609,7 @@
 									<IconButton
 										icon={Trash}
 										size="xs"
+										disabled={loading}
 										variant="light"
 										rounded
 										color="red"
@@ -623,6 +627,7 @@
 							data-tip={$tranFunc('product.delVariant')}
 							startIcon={Trash}
 							size="sm"
+							disabled={loading}
 							variant="light"
 							color="red"
 							onclick={() => handleDeleteVariant(variantIdx)}
@@ -636,7 +641,7 @@
 							variant="light"
 							color="blue"
 							onclick={() => handleAddVariantValue(variantIdx)}
-							disabled={variant.values.length >= MAX_VALUES_PER_VARIANT}
+							disabled={variant.values.length >= MAX_VALUES_PER_VARIANT || loading}
 							fullWidth
 						>
 							{variant.values.length}/{MAX_VALUES_PER_VARIANT}
@@ -651,6 +656,7 @@
 						icon={Plus}
 						size="xl"
 						variant="outline"
+						disabled={loading}
 						color="blue"
 						class="tooltip tooltip-top"
 						data-tip={$tranFunc('product.addVariant')}
@@ -680,6 +686,7 @@
 										onfocus={() => handleFocusHighlightQuickFilling('td-channel-hl')}
 										bind:value={quickFillingValues.channels}
 										class="w-full"
+										disabled={loading}
 									/>
 								{/if}
 							</div>
@@ -699,6 +706,7 @@
 												<Input
 													startIcon={iconType}
 													type="number"
+													disabled={loading}
 													min={0}
 													placeholder={channel.currency}
 													size="xs"
@@ -713,6 +721,7 @@
 													type="number"
 													min={0}
 													placeholder={channel.currency}
+													disabled={loading}
 													size="xs"
 													class="w-1/2"
 													bind:value={channel.costPrice}
@@ -733,6 +742,7 @@
 									type="number"
 									bind:value={quickFillingValues.weight}
 									min={0}
+									disabled={loading}
 									startIcon={MdiWeightKg}
 									onfocus={() => handleFocusHighlightQuickFilling('td-weight-hl')}
 									variant={typeof quickFillingValues.weight === 'number' &&
@@ -755,6 +765,7 @@
 										label={$tranFunc('product.qtyLimit')}
 										min={0}
 										size="xs"
+										disabled={loading}
 										class="mb-2"
 										bind:value={quickFillingValues.preOrder.globalThreshold}
 										variant={typeof quickFillingValues.preOrder.globalThreshold === 'number' &&
@@ -770,6 +781,7 @@
 									<!-- AVAILABLE DATE -->
 									<EaseDatePicker
 										size="xs"
+										disabled={loading}
 										onchange={(date) => (quickFillingValues.preOrder.endDate = date.date)}
 										value={quickFillingValues.preOrder.endDate}
 										onfocus={() => handleFocusHighlightQuickFilling('td-preorder-hl')}
@@ -808,6 +820,7 @@
 													placeholder="quantity"
 													min={0}
 													class="w-2/3"
+													disabled={loading}
 													size="xs"
 													onfocus={() => handleFocusHighlightQuickFilling('td-stock-hl')}
 													bind:value={stockInput.quantity}
@@ -826,7 +839,7 @@
 							<Button
 								class="btn btn-sm grow shrink"
 								size="sm"
-								disabled={quickFillingError}
+								disabled={quickFillingError || loading}
 								fullWidth
 								onclick={handleQuickFillingClick}
 								>{$tranFunc('btn.apply')}
@@ -842,6 +855,7 @@
 								<Checkbox
 									bind:checked={quickFillingValues.trackInventory}
 									size="md"
+									disabled={loading}
 									label={quickFillingValues.trackInventory
 										? $tranFunc('common.yes')
 										: $tranFunc('common.no')}
@@ -854,6 +868,7 @@
 									type="number"
 									bind:value={quickFillingValues.quantityLimitPerCustomer}
 									size="sm"
+									disabled={loading}
 									min="0"
 									placeholder={$tranFunc('placeholders.valuePlaceholder')}
 									variant={typeof quickFillingValues.quantityLimitPerCustomer === 'number' &&
@@ -910,6 +925,7 @@
 										{:else}
 											<MultiSelect
 												size="sm"
+												disabled={loading}
 												options={channelSelectOptions}
 												bind:value={variantInputDetail.channelListings as unknown as SelectOption[]}
 											/>
@@ -930,6 +946,7 @@
 														startIcon={iconType}
 														type="number"
 														min={0}
+														disabled={loading}
 														size="xs"
 														placeholder={channelListing[
 															'currency' as keyof ProductVariantChannelListingAddInput
@@ -960,6 +977,7 @@
 														startIcon={iconType}
 														type="number"
 														min={0}
+														disabled={loading}
 														size="xs"
 														placeholder={channelListing[
 															'currency' as keyof ProductVariantChannelListingAddInput
@@ -982,6 +1000,7 @@
 											size="sm"
 											min={0}
 											placeholder="kg"
+											disabled={loading}
 											startIcon={MdiWeightKg}
 											bind:value={variantInputDetail.weight}
 											variant={variantInputDetail.weight >= 0 ? 'info' : 'error'}
@@ -999,6 +1018,7 @@
 												label={$tranFunc('product.qtyLimit')}
 												size="xs"
 												class="mb-2"
+												disabled={loading}
 												bind:value={variantInputDetail.preorder!.globalThreshold}
 												variant={typeof variantInputDetail.preorder?.globalThreshold === 'number' &&
 												variantInputDetail.preorder.globalThreshold % 1 !== 0
@@ -1016,6 +1036,7 @@
 													showMonths: true,
 													showYears: { min: 2020, max: DAYJS_NOW.year() + 1 }
 												}}
+												disabled={loading}
 												timeConfig={false}
 												onchange={(date) => (variantInputDetail.preorder!.endDate = date.date)}
 												value={{ date: variantInputDetail.preorder!.endDate }}
@@ -1042,6 +1063,7 @@
 															class="w-2/3"
 															bind:value={variantInputDetail.stocks![idx].quantity}
 															type="number"
+															disabled={loading}
 															min={0}
 															variant={stock.quantity % 1 !== 0 ? 'error' : 'info'}
 															subText={stock.quantity % 1 !== 0
@@ -1058,6 +1080,7 @@
 										<Input
 											type="text"
 											size="sm"
+											disabled={loading}
 											placeholder="SKU"
 											bind:value={variantInputDetail.sku}
 											variant={variantInputDetail.sku?.trim() ? 'info' : 'error'}

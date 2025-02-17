@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import {
 		CREATE_PRODUCT_MUTATION,
 		PRODUCT_VARIANTS_BULK_CREATE_MUTATION,
@@ -72,9 +73,9 @@
 	});
 
 	let productVariantsInput = $state.raw<ProductVariantBulkCreateInput[]>([]);
-	// let productCreateMutationStore =
-	// 	$state<OperationResultStore<Pick<Mutation, 'productCreate'>, MutationProductCreateArgs>>();
 	let loading = $state(false);
+
+	const setLoading = (load: boolean) => (loading = load);
 
 	const handleSubmit = async () => {
 		// validate:
@@ -87,7 +88,7 @@
 			return;
 		}
 
-		loading = true;
+		setLoading(true);
 
 		// 1) Create product
 		const productCreateBody: ProductCreateInput = {
@@ -100,18 +101,19 @@
 		const productCreateResult = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'productCreate'>,
 			MutationProductCreateArgs
-		>(
-			CREATE_PRODUCT_MUTATION,
-			{
-				input: productCreateBody
-			}
-		);
-		if (preHandleErrorOnGraphqlResult(productCreateResult)) return;
+		>(CREATE_PRODUCT_MUTATION, {
+			input: productCreateBody
+		});
+		if (preHandleErrorOnGraphqlResult(productCreateResult)) {
+			setLoading(false);
+			return;
+		}
 		if (productCreateResult.data?.productCreate?.errors.length) {
 			toastStore.send({
 				variant: 'error',
 				message: productCreateResult.data.productCreate.errors[0].message as string
 			});
+			setLoading(false);
 			return;
 		}
 
@@ -135,13 +137,17 @@
 			id: productCreateResult.data?.productCreate?.product?.id as string,
 			input: cleanChannelListingUpdateInput
 		});
-		if (preHandleErrorOnGraphqlResult(updateProductChannelListingResult)) return;
+		if (preHandleErrorOnGraphqlResult(updateProductChannelListingResult)) {
+			setLoading(false);
+			return;
+		}
 		if (updateProductChannelListingResult.data?.productChannelListingUpdate?.errors.length) {
 			toastStore.send({
 				variant: 'error',
 				message: updateProductChannelListingResult.data.productChannelListingUpdate.errors[0]
 					.message as string
 			});
+			setLoading(false);
 			return;
 		}
 
@@ -153,7 +159,11 @@
 			product: productCreateResult.data?.productCreate?.product?.id as string,
 			variants: productVariantsInput
 		});
-		if (preHandleErrorOnGraphqlResult(variantsBulkCreateResult)) return;
+		setLoading(false);
+
+		if (preHandleErrorOnGraphqlResult(variantsBulkCreateResult)) {
+			return;
+		}
 		if (variantsBulkCreateResult.data?.productVariantBulkCreate?.errors.length) {
 			toastStore.send({
 				variant: 'error',
@@ -161,6 +171,7 @@
 			});
 			return;
 		}
+
 		let hasError = false;
 		for (const result of variantsBulkCreateResult.data?.productVariantBulkCreate?.results || []) {
 			if (result.errors?.length) {
@@ -175,7 +186,7 @@
 		if (!hasError)
 			toastStore.send({
 				variant: 'success',
-				message: 'Product created successfully'
+				message: $tranFunc('product.prdCreated')
 			});
 	};
 </script>
@@ -184,40 +195,49 @@
 	<div class="text-right">
 		<span class="text-xs">{NOW.toDateString()}</span>
 	</div>
-	<ProductName bind:name={productCreateInput.name} bind:ok={productInputError.name} />
+	<ProductName bind:name={productCreateInput.name} bind:ok={productInputError.name} {loading} />
 	<ProductType
 		bind:value={productCreateInput.productType}
 		bind:ok={productInputError.productType}
-		class="mb-3"
+		{loading}
 	/>
 	<ProductAttributeEditor
 		productTypeID={productCreateInput.productType}
 		bind:attributes={productCreateInput.attributes!}
 		bind:ok={productInputError.attributes}
+		{loading}
 	/>
 	<CategorySelector
 		bind:categoryID={productCreateInput.category}
 		bind:ok={productInputError.category}
+		{loading}
 	/>
 	<ProductDescriptionEditorjsComponent
 		bind:description={productCreateInput.description}
 		bind:ok={productInputError.description}
 	/>
-	<ChannelsSelector bind:channelListingUpdateInput ok={channelListingUpdateInputOk} />
-	<ProductVariantCreator bind:productVariantsInput channelsListing={channelListingUpdateInput} />
+	<ChannelsSelector bind:channelListingUpdateInput ok={channelListingUpdateInputOk} {loading} />
+	<ProductVariantCreator
+		bind:productVariantsInput
+		channelsListing={channelListingUpdateInput}
+		{loading}
+	/>
 	<ProductSeo
 		productName={productCreateInput.name}
 		bind:seo={productCreateInput.seo}
 		bind:slug={productCreateInput.slug}
 		bind:ok={productInputError.seo}
+		{loading}
 	/>
 	<CollectionAndTax
 		bind:collections={productCreateInput.collections}
 		bind:taxClassID={productCreateInput.taxClass}
+		{loading}
 	/>
 	<PackagingAndDelivery
 		bind:metadata={productCreateInput.metadata}
 		bind:weight={productCreateInput.weight}
+		{loading}
 	/>
 
 	<Button
@@ -228,6 +248,6 @@
 		{loading}
 		disabled={!Object.values(productInputError).every(Boolean) || loading}
 	>
-		Submit
+		{$tranFunc('btn.create')}
 	</Button>
 </div>

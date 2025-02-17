@@ -16,9 +16,10 @@
 	type Props = {
 		collections: ProductInput['collections'];
 		taxClassID: ProductInput['taxClass'];
+		loading: boolean;
 	};
 
-	let { collections = $bindable(), taxClassID = $bindable() }: Props = $props();
+	let { collections = $bindable(), taxClassID = $bindable(), loading }: Props = $props();
 
 	let innerCollections = $state<SelectOption[]>([]);
 
@@ -69,6 +70,7 @@
 				bind:value={innerCollections}
 				label={$tranFunc('product.collection')}
 				size="sm"
+				disabled={loading}
 			/>
 		{/if}
 	</div>
@@ -92,6 +94,7 @@
 				bind:value={taxClassID as string}
 				label={$tranFunc('product.taxCls')}
 				size="sm"
+				disabled={loading}
 			/>
 		{/if}
 	</div>
