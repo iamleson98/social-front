@@ -12,7 +12,6 @@
 	import { tranFunc } from '$i18n';
 	import ErrorMsg from './error-msg.svelte';
 	import { Label } from '$lib/components/ui/Input';
-	import Loading from '$lib/components/ui/Loading/loading.svelte';
 
 	type Props = {
 		categoryID?: string | null;

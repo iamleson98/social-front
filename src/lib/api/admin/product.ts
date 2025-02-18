@@ -160,3 +160,167 @@ mutation ProductVariantsBulkCreate($product: ID!, $variants: [ProductVariantBulk
     }
   }
 }`;
+
+
+export const PRODUCT_DETAIL_QUERY = gql`
+query Product($slug: String!, $channel: String) {
+  product(slug: $slug, channel: $channel) {
+    id
+    name
+    description
+    slug
+    taxClass {
+      id
+      name
+    }
+    availableForPurchaseAt
+    isAvailableForPurchase
+    collections {
+      id
+      name
+      slug
+    }
+    category {
+      id
+      name
+      slug
+    }
+    created
+    updatedAt
+    weight {
+      unit
+      value
+    }
+    defaultVariant {
+      id
+      name
+      sku
+    }
+    rating
+    attributes {
+      attribute {
+        id
+        name
+        slug
+        inputType
+        type
+        unit
+        valueRequired
+        visibleInStorefront
+        filterableInDashboard
+        withChoices
+        choices(first: 100) {
+          edges {
+            node {
+              id
+              name
+              slug
+              value
+              inputType
+              reference
+              richText
+              plainText
+              boolean
+              date
+              dateTime
+              externalReference
+            }
+          }
+        }
+      }
+      values {
+        id
+        name
+        slug
+        value
+        inputType
+        reference
+        richText
+        plainText
+        boolean
+        date
+        dateTime
+        externalReference
+      }
+    }
+    variants {
+      id
+      name
+      sku
+      trackInventory
+      quantityLimitPerCustomer
+      weight {
+        value
+        unit
+      }
+      preorder {
+        globalThreshold
+        globalSoldUnits
+        endDate
+      }
+      channelListings {
+        id
+        channel {
+          id
+          name
+          slug
+        }
+        price {
+          amount
+          currency
+        }
+        costPrice {
+          amount
+          currency
+        }
+        margin
+        preorderThreshold {
+          quantity
+          soldUnits
+        }
+      }
+    }
+    productType {
+      id
+      name
+      slug
+    }
+    channelListings {
+      id
+      publishedAt
+      isPublished
+      channel {
+        slug
+        id
+        name
+      }
+      visibleInListings
+      availableForPurchaseAt
+      discountedPrice {
+        amount
+        currency
+      }
+      purchaseCost {
+        start {
+          amount
+          currency
+        }
+        stop {
+          amount
+          currency
+        }
+      }
+      margin {
+        start
+        stop
+      }
+      isAvailableForPurchase
+    }
+    metadata {
+      key
+      value
+    }
+    seoTitle
+    seoDescription
+  }
+}`;

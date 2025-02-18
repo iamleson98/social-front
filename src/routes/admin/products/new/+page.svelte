@@ -224,7 +224,7 @@
 	/>
 	<ProductSeo
 		productName={productCreateInput.name}
-		bind:seo={productCreateInput.seo}
+		bind:seo={productCreateInput.seo!}
 		bind:slug={productCreateInput.slug}
 		bind:ok={productInputError.seo}
 		{loading}
@@ -233,7 +233,7 @@
 		bind:collections={productCreateInput.collections}
 		bind:taxClassID={productCreateInput.taxClass}
 		{loading}
-	/>
+	/>	
 	<PackagingAndDelivery
 		bind:metadata={productCreateInput.metadata}
 		bind:weight={productCreateInput.weight}

@@ -36,6 +36,7 @@
 		};
 		onchange?: (data: any) => void;
 		placeholder?: string;
+		defaultValue?: any;
 	};
 
 	let {
@@ -47,7 +48,8 @@
 		embed,
 		quote,
 		onchange = noop,
-		placeholder
+		placeholder,
+		defaultValue
 	}: Props = $props();
 
 	let editor = $state<any>();
@@ -121,6 +123,7 @@
 			hideToolbar: false,
 			tools: toolsConfig as { [toolName: string]: any },
 			placeholder,
+			data: defaultValue,
 
 			onChange(api, event) {
 				api.saver.save().then(onchange);

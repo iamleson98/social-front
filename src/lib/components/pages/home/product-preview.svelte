@@ -6,7 +6,7 @@
 	import { onMount } from 'svelte';
 	import ProductSlideShowPannel from '../products/detail/product-slide-show-pannel.svelte';
 	import { operationStore } from '$lib/api/operation';
-	import { PRODUCT_DETAIL_QUERY_STORE } from '$lib/api';
+	import { PRODUCT_DETAIL_QUERY } from '$lib/api';
 	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import { DEFAULT_CHANNEL } from '$lib/utils/channels';
 	import ProductPricingPannel from '../products/detail/product-pricing-pannel.svelte';
@@ -25,7 +25,7 @@
 
 	const productDetailStore = operationStore<Pick<Query, 'product'>>({
 		kind: 'query',
-		query: PRODUCT_DETAIL_QUERY_STORE,
+		query: PRODUCT_DETAIL_QUERY,
 		variables: {
 			slug: productSlug,
 			channel: CHANNEL_SLUG,

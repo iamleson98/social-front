@@ -68,6 +68,8 @@
 	const toggleDropdown = (open: boolean) => (openSelect = open);
 
 	const onClear = () => {
+		if (rest.disabled) return;
+
 		input?.focus();
 		value = undefined;
 		searchQuery = '';
@@ -121,6 +123,7 @@
 			tabindex="0"
 			onkeydown={(evt) => evt.key === 'Enter' && onClear()}
 			class="cursor-pointer select-none!"
+			title="Clear"
 		>
 			<Icon icon={CloseX} />
 		</span>

@@ -45,6 +45,7 @@
 			quote={{ inlineToolbar: true }}
 			onchange={handleChangeDescription}
 			placeholder={$tranFunc('placeholders.valuePlaceholder')}
+			defaultValue={description}
 		/>
 	</div>
 	<ErrorMsg error={descriptionError} />

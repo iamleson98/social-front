@@ -5,7 +5,7 @@ import { performServerSideGraphqlRequest } from "$lib/api/client";
 import type { WithContext, Product } from 'schema-dts';
 import { tranFunc } from "$i18n";
 import { get } from "svelte/store";
-import { PRODUCT_DETAIL_QUERY_STORE } from "$lib/api";
+import { PRODUCT_DETAIL_QUERY } from "$lib/api";
 import { DEFAULT_CHANNEL } from "$lib/utils/channels";
 
 
@@ -29,7 +29,7 @@ export const load = async (event) => {
 
 	const productDetailResult = await performServerSideGraphqlRequest<Pick<Query, 'product'>, QueryProductArgs>(
 		'query',
-		PRODUCT_DETAIL_QUERY_STORE,
+		PRODUCT_DETAIL_QUERY,
 		variables,
 		event,
 		{ requestPolicy: 'cache-and-network' },

@@ -12,3 +12,5 @@ export type MenuProps = {
   onDeselect?: () => void;
   disabled?: boolean;
 };
+
+export const traverseMenu = () => {}

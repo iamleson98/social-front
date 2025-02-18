@@ -8,7 +8,7 @@
 	import { PRODUCT_SLUG_MAX_LENGTH } from './utils';
 
 	type Props = {
-		seo?: SeoInput | null;
+		seo?: SeoInput;
 		/** reference for creating default seo */
 		productName: ProductCreateInput['name'];
 		slug: ProductCreateInput['slug'];
@@ -51,29 +51,27 @@
 
 	type SeoProps = z.infer<typeof seoSchema>;
 
-	let { productName, slug = $bindable(), seo = $bindable(), ok = $bindable(), loading }: Props = $props();
+	let {
+		productName,
+		slug = $bindable(),
+		seo = $bindable({}),
+		ok = $bindable(),
+		loading
+	}: Props = $props();
 
 	let seoErrors = $state<Partial<Record<keyof SeoProps, string[]>>>({});
-	let innerSeo = $state<SeoInput>({
-		title: '',
-		description: ''
-	});
 
 	$effect(() => {
 		if (productName) {
 			slug = slugify(productName, { lower: true, strict: true });
-			innerSeo.title = productName;
+			seo.title = productName;
 		}
-	});
-
-	$effect(() => {
-		seo = innerSeo;
 	});
 
 	const handleValueChange = (): void => {
 		const parseResult = seoSchema.safeParse({
 			slug,
-			...innerSeo
+			...seo
 		});
 		if (!parseResult.success) {
 			seoErrors = parseResult.error.formErrors.fieldErrors;
@@ -109,7 +107,7 @@
 
 		<!-- title -->
 		<Input
-			bind:value={innerSeo.title}
+			bind:value={seo!.title}
 			placeholder={$tranFunc('product.seoTitle')}
 			type="text"
 			class="mb-1"
@@ -125,7 +123,7 @@
 
 		<!-- description -->
 		<TextArea
-			bind:value={innerSeo.description}
+			bind:value={seo!.description}
 			placeholder={$tranFunc('product.seoDescription')}
 			type="text"
 			inputClass="min-h-20"
