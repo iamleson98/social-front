@@ -19,7 +19,10 @@ export function scrollToEnd(node: HTMLElement, opts: OnscrollToEndOpts): ActionR
   const { unsubscribe: destroy } = pipe(
     fromDomEvent(node, 'scroll'),
     debounce(() => opts.debounceTime || DEBOUNCE_INPUT_TIME),
-    filter(() => node.clientHeight + node.scrollTop === node.scrollHeight),
+    filter(() => {
+      const result = node.clientHeight + node.scrollTop >= node.scrollHeight - 5;
+      return result;
+    }),
     subscribe(opts.onScrollToEnd)
   );
 

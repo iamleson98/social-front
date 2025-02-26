@@ -9,6 +9,9 @@
 	import { DropDown, type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
 	import { UserCog } from '$lib/components/icons';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
+	import { SingleSelect } from '$lib/components/common/infinite-select';
+	import { CATEGORIES_LIST_QUERY_STORE } from '$lib/api';
+	import { scrollToEnd } from '$lib/actions/scroll-end';
 
 	let option = $state(1);
 
@@ -209,13 +212,13 @@
 	]}
 />
 
-<EaseDatePicker bind:value={date} onchange={console.log}  size="sm" allowSelectRange />
+<EaseDatePicker bind:value={date} onchange={console.log} size="sm" allowSelectRange />
 
 {#snippet trigger({ onclick, onfocus }: DropdownTriggerInterface)}
 	<Button {onclick} {onfocus}>Open</Button>
 {/snippet}
 
-<DropDown {trigger} options={[{ children: 'test' }, { children: 'another', startIcon: UserCog }]} />
+<!-- <DropDown {trigger} options={[{ children: 'test' }, { children: 'another', startIcon: UserCog }]} /> -->
 
 <Select
 	options={[{ value: '1', label: 'Option 1' }]}
@@ -239,3 +242,17 @@
 	quote={{ inlineToolbar: true }}
 	onchange={console.log}
 />
+
+<SingleSelect
+	query={CATEGORIES_LIST_QUERY_STORE}
+	queryKey="categories"
+	selectLabelKey="name"
+	selectValueKey="slug"
+	first={10}
+/>
+
+<div class=" max-h-80 overflow-y-scroll" use:scrollToEnd={{ onScrollToEnd: console.log }}>
+	<div class=" h-96">
+		lol
+	</div>
+</div>

@@ -1,6 +1,6 @@
 import { CircleCheckFilled, ExclamationCircleFilled, InfoCircleFilled, InfoTriangleFilled, type IconType } from "$lib/components/icons";
 import type { SocialSize } from "$lib/components/ui/common";
-import { CountryCode, LanguageCodeEnum, type PaymentGatewayConfig } from "$lib/gql/graphql";
+import { CountryCode, LanguageCodeEnum, type PageInfo, type PaymentGatewayConfig } from "$lib/gql/graphql";
 import { type PaymentMethodsResponse } from "@adyen/adyen-web";
 import { AdyenCheckout } from "@adyen/adyen-web";
 import { CHANNELS } from "./channels";
@@ -162,4 +162,18 @@ export type NominatimOsmProps = {
     country_code: string;
   };
   boundingbox: string[];
+};
+
+export type CountableConnection = {
+  edges: { node: Record<string, unknown>; cursor: string }[];
+  pageInfo: PageInfo;
+  totalCount?: number;
+};
+
+export const LOADING_SIZE_MAP: Record<SocialSize, string> = {
+  xs: "loading-xs",
+  sm: "loading-sm",
+  md: "loading-md",
+  lg: "loading-lg",
+  xl: "loading-xl",
 };

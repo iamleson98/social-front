@@ -19,6 +19,8 @@ export type SelectProps<T extends SelectOption = SelectOption> = {
   options: T[];
   value?: SelectOption['value'];
   onchange?: (opt?: T) => void;
+  onScrollToEnd?: () => void;
+  loading?: boolean;
 } & Omit<InputProps, 'value' | 'onchange'> & Omit<HTMLSelectAttributes, 'size' | 'onchange' | 'onblur'>;
 
 export type MultiSelectSizeType = Exclude<SocialSize, 'xs'>;
@@ -29,7 +31,9 @@ export type MultiSelectProps<T extends SelectOption = SelectOption> = {
   size?: MultiSelectSizeType;
   /** number of items to fully display, the rest will be summaried as "+n". if <= 0, throw Error  */
   maxDisplay?: number;
-  onchange?: (opts?: T[]) => void;
+  onchange?: (opts: T[]) => void;
+  onScrollToEnd?: () => void;
+  loading?: boolean;
 } & Omit<InputProps, 'value' | 'size' | 'onchange'>;
 
 /** SIZE_REDUCE_MAP is useful you want your input and badge items to reasonably fit your multi select component */
