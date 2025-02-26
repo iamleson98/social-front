@@ -5,7 +5,15 @@
 	import { tick } from 'svelte';
 	import { Checkbox } from '../Input';
 
-	let { items, onSelect, onDeselect, onSelectWhole, disabled }: MenuProps = $props();
+	let {
+		items,
+		onSelect,
+		onDeselect,
+		onSelectWhole,
+		disabled,
+		value = $bindable(),
+		values = $bindable()
+	}: MenuProps = $props();
 
 	let menuSectionsData = $state.raw<SelectItemProps[][]>([items]);
 	let selectedItems = $state.raw<SelectItemProps[]>([]);
@@ -19,7 +27,13 @@
 			});
 		}
 
-		selectedItems = [...selectedItems.slice(0, level), item];
+		selectedItems = selectedItems.slice(0, level).concat(item);
+
+		if (!item.children?.length) {
+			// only leaf node is considered
+			value = item.value;
+			values = selectedItems.map((item) => item.value);
+		}
 	};
 
 	$effect(() => {
@@ -33,7 +47,11 @@
 <div>
 	<div class="flex gap-2 flex-row w-full overflow-x-auto">
 		{#each menuSectionsData as items, idx (idx)}
-			<SingleMenu {items} onSelect={(item) => handleItemSelect(idx, item)} disabled={checked || disabled} />
+			<SingleMenu
+				{items}
+				onSelect={(item) => handleItemSelect(idx, item)}
+				disabled={checked || disabled}
+			/>
 		{/each}
 	</div>
 

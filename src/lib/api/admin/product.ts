@@ -324,3 +324,23 @@ query Product($slug: String!, $channel: String) {
     seoDescription
   }
 }`;
+
+export const CATEGORY_WITH_ANCESTORS = gql`
+query Category($id: ID!) {
+  category(id: $id) {
+    id
+    level
+    name
+    slug
+    ancestors(first: 10) {
+      edges {
+        node {
+          id
+          name
+          slug
+          level
+        }
+      }
+    }
+  }
+}`;

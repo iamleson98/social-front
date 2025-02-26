@@ -11,6 +11,8 @@ export type MenuProps = {
   onSelectWhole?: (items: SelectItemProps[]) => void;
   onDeselect?: () => void;
   disabled?: boolean;
+  value?: string | number;
+  values?: (string | number)[];
 };
 
-export const traverseMenu = () => {}
+export const traverseMenu = () => { }

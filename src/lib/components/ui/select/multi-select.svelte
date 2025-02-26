@@ -16,6 +16,8 @@
 	import { Badge } from '../badge';
 	import type { FocusEventHandler } from 'svelte/elements';
 	import { INPUT_LABEL_SIZE_STYLE_MAP, INPUT_TYPES } from '../Input/input.types';
+	import { scrollToEnd } from '$lib/actions/scroll-end';
+	import { noop } from 'es-toolkit';
 
 	let {
 		value = $bindable<SelectOption[]>([]),
@@ -23,7 +25,9 @@
 		maxDisplay,
 		size = 'md',
 		label,
+		loading,
 		variant = 'info',
+		onScrollToEnd = noop,
 		onchange,
 		...rest
 	}: MultiSelectProps = $props();
@@ -201,6 +205,9 @@
 					transition:fly={{ duration: 250, y: 10 }}
 					class={SELECT_CLASSES.selectMenu}
 					tabindex="0"
+					use:scrollToEnd={{
+						onScrollToEnd
+					}}
 				>
 					{#if !searchFilteredOptions.length}
 						{@render selectOption({
@@ -220,6 +227,12 @@
 							...option
 						})}
 					{/each}
+					{#if loading}
+						<li class={SELECT_CLASSES.selectOption}>
+							<span class="loading loading-spinner loading-xs"></span>
+							<span>loading...</span>
+						</li>
+					{/if}
 				</ul>
 			{/if}
 		</Input>

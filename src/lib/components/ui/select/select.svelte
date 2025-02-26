@@ -12,12 +12,16 @@
 		type SelectOption,
 		type SelectProps
 	} from './types';
+	import { scrollToEnd } from '$lib/actions/scroll-end';
+	import { noop } from 'es-toolkit';
 
 	let {
 		options,
 		value = $bindable<SelectOption['value'] | undefined>(),
 		onchange,
 		class: className = '',
+		loading = false,
+		onScrollToEnd = noop,
 		...rest
 	}: SelectProps = $props();
 
@@ -172,6 +176,9 @@
 				transition:fly={{ duration: 250, y: 10 }}
 				class={SELECT_CLASSES.selectMenu}
 				tabindex="0"
+				use:scrollToEnd={{
+					onScrollToEnd
+				}}
 			>
 				{#if !filteredOptions.length}
 					{@render selectOption({
@@ -191,6 +198,12 @@
 						...option
 					})}
 				{/each}
+				{#if loading}
+					<li class={SELECT_CLASSES.selectOption}>
+						<span class="loading loading-spinner loading-xs"></span>
+						<span>loading...</span>
+					</li>
+				{/if}
 			</ul>
 		{/if}
 	</Input>
