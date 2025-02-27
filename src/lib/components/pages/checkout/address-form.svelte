@@ -5,7 +5,8 @@
 		AddressInput,
 		CountryCode,
 		Query,
-		QueryAddressValidationRulesArgs
+		QueryAddressValidationRulesArgs,
+		QueryChannelArgs
 	} from '$lib/gql/graphql';
 	import { operationStore } from '$lib/api/operation';
 	import { ADDRESS_VALIDATION_RULES_QUERY } from '$lib/api/account';
@@ -17,7 +18,8 @@
 		typeTags,
 		addressFieldValidators,
 		defaultAddressFormValues,
-		addressToFieldValues
+		addressToFieldValues,
+		getCountryName
 	} from '$lib/utils/address';
 	import { Input } from '$lib/components/ui/Input';
 	import { uniqBy } from 'es-toolkit';
@@ -25,16 +27,21 @@
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import { Alert } from '$lib/components/ui/Alert';
+	import { CHANNEL_DETAILS_QUERY_STORE } from '$lib/api/channels';
+	import { DEFAULT_CHANNEL } from '$lib/utils/channels';
+	import { CHANNEL_KEY } from '$lib/utils/consts';
+	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 
 	type Props = {
-		countrySelectOptions: SelectOption[];
+		countrySelectOptions?: SelectOption[];
 		onSubmit: (address: AddressInput) => void;
 		onCancel: () => void;
 		updatingCHeckoutAddresses: boolean;
 		defaultValue?: Address;
+		channelSlug: string;
 	};
 
-	let { countrySelectOptions, onSubmit, updatingCHeckoutAddresses, defaultValue, onCancel }: Props =
+	let { onSubmit, updatingCHeckoutAddresses, defaultValue, onCancel, channelSlug }: Props =
 		$props();
 
 	let formValues = $state(
@@ -50,6 +57,14 @@
 		query: ADDRESS_VALIDATION_RULES_QUERY,
 		context: { requestPolicy: 'network-only' },
 		pause: true
+	});
+
+	const channelStore = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
+		kind: 'query',
+		query: CHANNEL_DETAILS_QUERY_STORE,
+		variables: {
+			slug: clientSideGetCookieOrDefault(CHANNEL_KEY, DEFAULT_CHANNEL.slug)
+		}
 	});
 
 	$effect(() => {
@@ -101,13 +116,26 @@
 </script>
 
 <div>
-	<Select
-		disabled={$validationStore.fetching}
-		bind:value={formValues.countryCode.value}
-		size="sm"
-		options={countrySelectOptions}
-		label="Choose your country"
-	/>
+	{#if $channelStore.fetching}
+		<SkeletonContainer class="w-full">
+			<Skeleton class="h-4 w-full" />
+		</SkeletonContainer>
+	{:else if $channelStore.error}
+		<Alert variant="error" size="sm" bordered>{$channelStore.error.message}</Alert>
+	{:else if $channelStore.data?.channel}
+		{@const availableCountries =
+			$channelStore.data?.channel?.countries?.map<SelectOption>(({ code }) => ({
+				value: code,
+				label: getCountryName(code)
+			})) || []}
+		<Select
+			disabled={$validationStore.fetching}
+			bind:value={formValues.countryCode.value}
+			size="sm"
+			options={availableCountries}
+			label="Choose your country"
+		/>
+	{/if}
 
 	{#if $validationStore.fetching}
 		<SkeletonContainer class="w-full">

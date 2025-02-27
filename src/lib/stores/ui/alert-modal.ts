@@ -31,4 +31,4 @@ export const newAlertModalStore = () => {
 	};
 };
 
-export const alertStore = newAlertModalStore();
+export const ALERT_MODAL_STORE = newAlertModalStore();

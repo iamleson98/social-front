@@ -18,7 +18,7 @@
 </script>
 
 <Modal header="" size="xs" hideFooter hideHeader {open}>
-	<div class="text-yellow-300 flex justify-center py-2">
+	<div class="text-orange-400 flex justify-center py-2">
 		<Icon icon={AlertCircle} width="3rem" height="3rem" />
 	</div>
 
@@ -30,7 +30,7 @@
 		<Button variant="filled" size="sm" color="red" onclick={onOk}>
 			{okText}
 		</Button>
-		<Button variant="light" size="sm" color="green" onclick={onCancel}>
+		<Button variant="light" size="sm" color="blue" onclick={onCancel}>
 			{cancelText}
 		</Button>
 	</div>

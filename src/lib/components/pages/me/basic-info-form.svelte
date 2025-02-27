@@ -4,7 +4,7 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { Email } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import { Input } from '$lib/components/ui/Input';
+	import { Input, Label } from '$lib/components/ui/Input';
 	import type { Mutation, MutationCustomerUpdateArgs, User } from '$lib/gql/graphql';
 	import { userStore } from '$lib/stores/auth';
 	import { toastStore } from '$lib/stores/ui/toast';
@@ -93,44 +93,48 @@
 	};
 </script>
 
-<div class="flex items-start gap-2 w-full tablet:flex-wrap flex-nowrap">
+<div class="rounded-lg bg-white border border-gray-200 p-4">
+	<Label size="lg" label="Basic info" />
+
+	<div class="flex items-start mt-3 gap-2 w-full tablet:flex-wrap flex-nowrap">
+		<Input
+			placeholder="first name"
+			label="First name"
+			class="w-1/2 tablet:w-full"
+			required
+			bind:value={userInfoInputs.firstName}
+			variant={userInfoFormErrors.firstName?.length ? 'error' : 'info'}
+			subText={userInfoFormErrors.firstName?.length ? userInfoFormErrors.firstName[0] : ''}
+			onblur={userValidate}
+			disabled={loading}
+		/>
+		<Input
+			placeholder="last name"
+			label="Last name"
+			class="w-1/2 tablet:w-full"
+			required
+			bind:value={userInfoInputs.lastName}
+			variant={userInfoFormErrors.lastName?.length ? 'error' : 'info'}
+			subText={userInfoFormErrors.lastName?.length ? userInfoFormErrors.lastName[0] : ''}
+			onblur={userValidate}
+			disabled={loading}
+		/>
+	</div>
+
 	<Input
-		placeholder="first name"
-		label="First name"
-		class="w-1/2 tablet:w-full"
+		placeholder="email"
+		class="mt-2"
+		label="Email"
 		required
-		bind:value={userInfoInputs.firstName}
-		variant={userInfoFormErrors.firstName?.length ? 'error' : 'info'}
-		subText={userInfoFormErrors.firstName?.length ? userInfoFormErrors.firstName[0] : ''}
+		startIcon={Email}
+		bind:value={userInfoInputs.email}
+		variant={userInfoFormErrors.email?.length ? 'error' : 'info'}
+		subText={userInfoFormErrors.email?.length ? userInfoFormErrors.email[0] : ''}
 		onblur={userValidate}
 		disabled={loading}
 	/>
-	<Input
-		placeholder="last name"
-		label="Last name"
-		class="w-1/2 tablet:w-full"
-		required
-		bind:value={userInfoInputs.lastName}
-		variant={userInfoFormErrors.lastName?.length ? 'error' : 'info'}
-		subText={userInfoFormErrors.lastName?.length ? userInfoFormErrors.lastName[0] : ''}
-		onblur={userValidate}
-		disabled={loading}
-	/>
-</div>
 
-<Input
-	placeholder="email"
-	class="mt-2"
-	label="Email"
-	required
-	startIcon={Email}
-	bind:value={userInfoInputs.email}
-	variant={userInfoFormErrors.email?.length ? 'error' : 'info'}
-	subText={userInfoFormErrors.email?.length ? userInfoFormErrors.email[0] : ''}
-	onblur={userValidate}
-	disabled={loading}
-/>
-
-<div class="text-right mt-4">
-	<Button onclick={handleSubmit} {loading} disabled={loading || !userInfoChanged}>Update</Button>
+	<div class="text-right mt-4">
+		<Button onclick={handleSubmit} {loading} disabled={loading || !userInfoChanged}>Update</Button>
+	</div>
 </div>

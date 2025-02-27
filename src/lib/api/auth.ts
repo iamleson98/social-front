@@ -87,6 +87,11 @@ export const USER_ME_QUERY_STORE = gql`
 				phone
 				isDefaultShippingAddress
 				isDefaultBillingAddress
+				countryArea
+				country {
+					country
+					code
+				}
 			}
 		}
 	}

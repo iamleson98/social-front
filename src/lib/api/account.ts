@@ -1,86 +1,86 @@
 import { gql } from "@urql/core";
 
-export const USER_ADDRESS_CREATE_MUTATION = gql`
-mutation CreateUserAddress($address: AddressInput!, $type: AddressTypeEnum) {
-  accountAddressCreate(type: $type, input: $address) {
-    user {
-      id
-      email
-      addresses {
-        id
-        city
-        phone
-        postalCode
-        companyName
-        cityArea
-        streetAddress1
-        streetAddress2
-        countryArea
-        country {
-          country
-          code
-        }
-        firstName
-        lastName
-      }
-      defaultBillingAddress {
-        id
-        city
-        phone
-        postalCode
-        companyName
-        cityArea
-        streetAddress1
-        streetAddress2
-        countryArea
-        country {
-          country
-          code
-        }
-        firstName
-        lastName
-      }
-      defaultShippingAddress {
-        id
-        city
-        phone
-        postalCode
-        companyName
-        cityArea
-        streetAddress1
-        streetAddress2
-        countryArea
-        country {
-          country
-          code
-        }
-        firstName
-        lastName
-      }
-    }
-    errors {
-      message
-      field
-    }
-    address {
-      id
-      city
-      phone
-      postalCode
-      companyName
-      cityArea
-      streetAddress1
-      streetAddress2
-      countryArea
-      country {
-        country
-        code
-      }
-      firstName
-      lastName
-    }
-  }
-}`;
+// export const USER_ADDRESS_CREATE_MUTATION = gql`
+// mutation CreateUserAddress($address: AddressInput!, $type: AddressTypeEnum) {
+//   accountAddressCreate(type: $type, input: $address) {
+//     user {
+//       id
+//       email
+//       addresses {
+//         id
+//         city
+//         phone
+//         postalCode
+//         companyName
+//         cityArea
+//         streetAddress1
+//         streetAddress2
+//         countryArea
+//         country {
+//           country
+//           code
+//         }
+//         firstName
+//         lastName
+//       }
+//       defaultBillingAddress {
+//         id
+//         city
+//         phone
+//         postalCode
+//         companyName
+//         cityArea
+//         streetAddress1
+//         streetAddress2
+//         countryArea
+//         country {
+//           country
+//           code
+//         }
+//         firstName
+//         lastName
+//       }
+//       defaultShippingAddress {
+//         id
+//         city
+//         phone
+//         postalCode
+//         companyName
+//         cityArea
+//         streetAddress1
+//         streetAddress2
+//         countryArea
+//         country {
+//           country
+//           code
+//         }
+//         firstName
+//         lastName
+//       }
+//     }
+//     errors {
+//       message
+//       field
+//     }
+//     address {
+//       id
+//       city
+//       phone
+//       postalCode
+//       companyName
+//       cityArea
+//       streetAddress1
+//       streetAddress2
+//       countryArea
+//       country {
+//         country
+//         code
+//       }
+//       firstName
+//       lastName
+//     }
+//   }
+// }`;
 
 export const ADDRESS_VALIDATION_RULES_QUERY = gql`
 query AddressValidationRules($countryCode: CountryCode!) {
@@ -116,6 +116,43 @@ mutation UserUpdate($id: ID!, $input: CustomerInput!) {
 export const PASSWORD_UPDATE_MUTATION = gql`
 mutation UpdatePassword($oldPassword: String!, $newPassword: String!) {
   passwordChange(oldPassword: $oldPassword, newPassword: $newPassword) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const ADDRESS_CREATE_MUTATION = gql`
+mutation AddressCreate($userId: ID!, $input: AddressInput!) {
+  addressCreate(userId: $userId, input: $input) {
+    errors {
+      field
+      message
+    }
+    address {
+      id
+      firstName
+      lastName
+      companyName
+      streetAddress1
+      streetAddress2
+      cityArea
+      city
+      postalCode
+      countryArea
+      phone
+      country {
+        code
+        country
+      }
+    }
+  }
+}`;
+
+export const ADDRESS_DELETE_MUTATION = gql`
+mutation DeleteAddress($id: ID!) {
+  addressDelete(id: $id) {
     errors {
       field
       message

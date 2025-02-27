@@ -3,7 +3,8 @@
 	import { PASSWORD_UPDATE_MUTATION } from '$lib/api/account';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { Button } from '$lib/components/ui';
-	import { PasswordInput } from '$lib/components/ui/Input';
+	import { Accordion } from '$lib/components/ui/Accordion';
+	import { Label, PasswordInput } from '$lib/components/ui/Input';
 	import type { Mutation, MutationPasswordChangeArgs } from '$lib/gql/graphql';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
@@ -78,9 +79,12 @@
 	};
 </script>
 
-<div>
+{#snippet label()}
+	<Label size="lg" label="Change password" class="cursor-pointer!" />
+{/snippet}
+
+<Accordion header={label} class="bg-white p-4! mt-2 border border-gray-200" open={false}>
 	<PasswordInput
-		size="sm"
 		class="mt-2"
 		required
 		placeholder="old password"
@@ -93,7 +97,6 @@
 		disabled={loading}
 	/>
 	<PasswordInput
-		size="sm"
 		class="mt-2"
 		required
 		placeholder="new password"
@@ -106,7 +109,6 @@
 		disabled={loading}
 	/>
 	<PasswordInput
-		size="sm"
 		class="mt-2"
 		required
 		placeholder="confirm new password"
@@ -119,8 +121,9 @@
 			? passwordFormErrors.confirmPassword[0]
 			: ''}
 	/>
-</div>
 
-<div class="text-right mt-4">
-	<Button onclick={handleSubmit} {loading} disabled={loading || !passwordChanged}>Update</Button>
-</div>
+	<div class="text-right mt-4">
+		<Button onclick={handleSubmit} {loading} disabled={loading || !passwordChanged}>Update</Button>
+	</div>
+	<!-- </div> -->
+</Accordion>

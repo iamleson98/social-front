@@ -6,12 +6,13 @@
 	type Props = {
 		address: Address;
 		children?: Snippet;
+		class?: string;
 	};
 
-	let { address, children }: Props = $props();
+	let { address, children, class: className = '' }: Props = $props();
 </script>
 
-<div class="mx-auto overflow-hidden rounded-lg border bg-white py-3 px-5">
+<div class="overflow-hidden rounded-lg border bg-white py-3 px-5 {className}">
 	<h2 class="text-base font-bold leading-7 text-blue-700">{address.firstName} {address.lastName}</h2>
 	<ul class="mt-2 text-gray-600 text-xs">
 		<!-- place -->

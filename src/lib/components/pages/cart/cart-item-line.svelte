@@ -17,7 +17,7 @@
 		CHECKOUT_LINES_UPDATE_MUTATION
 	} from '$lib/api/checkout';
 	import { checkoutStore } from '$lib/stores/app';
-	import { alertStore } from '$lib/stores/ui/alert-modal';
+	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { defaultSlideShowState } from '$lib/stores/ui/slideshow';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { AppRoute } from '$lib/utils';
@@ -145,7 +145,7 @@
 	$effect(() => {
 		// in case user want to remove the item
 		if (quantity <= 0) {
-			alertStore.openAlertModal({
+			ALERT_MODAL_STORE.openAlertModal({
 				content: $tranFunc('common.confirmRemoveProduct'),
 				onOk: handleDeleteCheckoutLine,
 				onCancel: () => {
