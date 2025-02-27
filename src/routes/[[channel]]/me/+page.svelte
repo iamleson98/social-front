@@ -4,13 +4,11 @@
 	import { operationStore, type OperationResultStore } from '$lib/api/operation';
 	import { Email } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import { Alert } from '$lib/components/ui/Alert';
 	import { Checkbox, Input, PasswordInput } from '$lib/components/ui/Input';
 	import type {
 		Mutation,
 		MutationCustomerUpdateArgs,
 		MutationPasswordChangeArgs,
-		User
 	} from '$lib/gql/graphql';
 	import { userStore } from '$lib/stores/auth';
 	import { toastStore } from '$lib/stores/ui/toast';
