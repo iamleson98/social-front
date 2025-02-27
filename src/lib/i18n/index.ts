@@ -1,7 +1,4 @@
 import { default as english } from './en';
-import { default as vietnamese } from './vi';
-import { default as korean } from './ko';
-import { default as japanese } from './ja';
 import { LanguageCodeEnum } from "$lib/gql/graphql";
 import { derived, writable } from "svelte/store";
 import type { Component } from 'svelte';
@@ -71,7 +68,7 @@ export const languageSupportInfer = (language: LanguageCode | LanguageCodeEnum) 
 
 const englishTran = parseTranslationObject(english, {})
 
-export const switchTranslationLanguage = (language: LanguageCode) => {
+export const switchTranslationLanguage = async (language: LanguageCode) => {
   switch (language) {
     case LanguageCodeEnum.En:
     case 'en-US':
@@ -79,13 +76,13 @@ export const switchTranslationLanguage = (language: LanguageCode) => {
       break;
     case LanguageCodeEnum.Vi:
     case 'vi-VN':
-      innerStore.set(parseTranslationObject(vietnamese, {}));
+      import('./vi').then(({ default: vietnamese }) => innerStore.set(parseTranslationObject(vietnamese, {})));
       break;
     case LanguageCodeEnum.Ko:
-      innerStore.set(parseTranslationObject(korean, {}));
+      import('./ko').then(({ default: korean }) => innerStore.set(parseTranslationObject(korean, {})));
       break;
     case LanguageCodeEnum.Ja:
-      innerStore.set(parseTranslationObject(japanese, {}));
+      import('./ja').then(({ default: japanese }) => innerStore.set(parseTranslationObject(japanese, {})));
       break;
 
     default:

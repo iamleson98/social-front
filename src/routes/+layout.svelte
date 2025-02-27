@@ -6,7 +6,6 @@
 	import Footer from '$lib/components/common/footer.svelte';
 	import { AlertListener } from '$lib/components/ui/Modal';
 	import '../app.css';
-	import Location from '$lib/components/plugins/location.svelte';
 	import Language from '$lib/components/plugins/language.svelte';
 
 	interface Props {
@@ -40,7 +39,6 @@
 
 <Header />
 
-<Location forceAskLocation={false} />
 <Language />
 
 <main class="pt-16 mx-auto min-h-screen max-w-6xl">
