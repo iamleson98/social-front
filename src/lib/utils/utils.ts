@@ -6,6 +6,10 @@ import editorJsToHtml from 'editorjs-html';
 import { AppRoute } from './routes';
 import xss from 'xss';
 import { get } from 'svelte/store';
+import type { ServerLoadEvent } from '@sveltejs/kit';
+import { CHANNEL_KEY } from './consts';
+import { getCookieByKey } from './cookies';
+import { DEFAULT_CHANNEL } from './channels';
 
 
 export const editorJsParser = editorJsToHtml();
@@ -164,7 +168,7 @@ export const recursiveSearch = <T extends { children?: T[] }>(
 };
 
 export const getHrefForVariant = (productSlug: string, variantID: string): string => {
-	const pathName = `${AppRoute.PRODUCTS}/${encodeURIComponent(productSlug)}`;
+	const pathName = `${AppRoute.PRODUCT_DETAILS(productSlug)}`;
 	if (!variantID) {
 		return pathName;
 	}
@@ -215,4 +219,25 @@ export const classNames = (classes: Record<string, boolean>): string => {
 	return result.trim();
 }
 
-export const noop = () => { };
+/**
+ * Builds the link for the home page.
+ * With respect to current channel
+ */
+export const buildHomePageLink = (event?: ServerLoadEvent) => {
+	let channelSlug: string | undefined;
+	if (event) {
+		channelSlug = event.cookies.get(CHANNEL_KEY);
+	} else {
+		channelSlug = getCookieByKey(CHANNEL_KEY);
+	}
+
+	if (!channelSlug) {
+		channelSlug = DEFAULT_CHANNEL.slug;
+	}
+
+	return `/${channelSlug}`;
+};
+
+export const buildLinkWithRespectToChannel = (uri: string, event?: ServerLoadEvent) => {
+	return `${buildHomePageLink(event)}/${uri}`;
+};

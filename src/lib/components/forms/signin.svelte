@@ -71,7 +71,7 @@
 
 		loading = true;
 
-		const loginResult = await fetch(AppRoute.AUTH_SIGNIN, {
+		const loginResult = await fetch(AppRoute.AUTH_SIGNIN(), {
 			method: 'POST',
 			body: JSON.stringify(signinValue)
 		})
@@ -142,7 +142,7 @@
 			showAction
 			subText={signinFormErrors?.password?.length ? signinFormErrors.password[0] : ''}
 		/>
-		<a href={AppRoute.AUTH_RESET_PASSWORD} class="text-xs text-right block text-blue-600 mb-4">
+		<a href={AppRoute.AUTH_RESET_PASSWORD()} class="text-xs text-right block text-blue-600 mb-4">
 			{$tranFunc('signin.forgotPassword')}
 		</a>
 
@@ -162,7 +162,7 @@
 	<div class="mb-4">
 		<span class="text-xs text-gray-500">
 			{$tranFunc('signin.noAccount')}
-			<a href={AppRoute.AUTH_REGISTER} class="text-blue-600">{$tranFunc('signup.title')}</a>
+			<a href={AppRoute.AUTH_REGISTER()} class="text-blue-600">{$tranFunc('signup.title')}</a>
 		</span>
 	</div>
 

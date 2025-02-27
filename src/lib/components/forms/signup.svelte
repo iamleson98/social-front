@@ -284,7 +284,7 @@
 	<div>
 		<span class="text-xs text-gray-500">
 			{$tranFunc('signup.alreadyHasAccount')}
-			<a href={AppRoute.AUTH_SIGNIN} class="text-blue-600">{$tranFunc('signin.title')}</a>
+			<a href={AppRoute.AUTH_SIGNIN()} class="text-blue-600">{$tranFunc('signin.title')}</a>
 		</span>
 	</div>
 </div>

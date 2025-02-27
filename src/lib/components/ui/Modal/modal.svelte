@@ -4,9 +4,9 @@
 	import { modalSizeMap, type ModalProps } from './types';
 	import { fly } from 'svelte/transition';
 	import { tranFunc } from '$i18n';
-	import { noop } from '$lib/utils/utils';
 	import { clickOutside } from '$lib/actions/click-outside';
 	import { focusOutside } from '$lib/actions/focus-outside';
+	import { noop } from 'es-toolkit';
 
 	let {
 		size = 'md',

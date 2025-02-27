@@ -1,5 +1,5 @@
 import { DEBOUNCE_INPUT_TIME } from "$lib/utils/consts";
-import { noop } from "$lib/utils/utils";
+import { noop } from "es-toolkit";
 import type { ActionReturn } from "svelte/action";
 import { debounce, fromDomEvent, pipe, scan, subscribe } from "wonka";
 

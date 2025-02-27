@@ -28,7 +28,7 @@
 <div class="bg-white rounded-lg border mb-3" transition:fade>
 	<div class="product-card-picture relative">
 		<div class="px-5">
-			<a href={`${AppRoute.PRODUCTS}/${encodeURIComponent(slug)}`}>
+			<a href={`${AppRoute.PRODUCT_DETAILS(product.slug)}`}>
 				<img src={thumbnail?.url} alt={thumbnail?.alt || name} class="select-none" loading="lazy" />
 			</a>
 		</div>
@@ -51,7 +51,7 @@
 	<div class="px-6 py-2">
 		<!-- name -->
 		<a
-			href={`${AppRoute.PRODUCTS}/${encodeURIComponent(slug)}`}
+			href={`${AppRoute.PRODUCT_DETAILS(product.slug)}`}
 			class="font-semibold text-base text-gray-700 leading-5 hover:underline mb-3 block">{name}</a
 		>
 

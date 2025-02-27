@@ -1,12 +1,11 @@
 import { type Product as TypeProduct, type Query, type QueryProductArgs } from "$lib/gql/graphql";
-import { CHANNEL_KEY, COUNTRY_CODE_KEY, HTTPStatusBadRequest, HTTPStatusServerError } from "$lib/utils/consts";
-import { error } from "@sveltejs/kit";
+import { CHANNEL_KEY, COUNTRY_CODE_KEY, HTTPStatusPermanentRedirect, HTTPStatusServerError } from "$lib/utils/consts";
+import { error, redirect } from "@sveltejs/kit";
 import { performServerSideGraphqlRequest } from "$lib/api/client";
 import type { WithContext, Product } from 'schema-dts';
-import { tranFunc } from "$i18n";
-import { get } from "svelte/store";
 import { PRODUCT_DETAIL_QUERY } from "$lib/api";
 import { DEFAULT_CHANNEL } from "$lib/utils/channels";
+import { AppRoute } from "$lib/utils/routes.js";
 
 
 export const load = async (event) => {
@@ -14,10 +13,7 @@ export const load = async (event) => {
 	const variantID = event.url.searchParams.get('variant')?.trim();
 
 	if (!slug) {
-		return error(
-			HTTPStatusBadRequest,
-			{ message: get(tranFunc)('error.invalidSlug'), }
-		);
+		redirect(HTTPStatusPermanentRedirect, AppRoute.HOME());
 	}
 
 	const channel = event.cookies.get(CHANNEL_KEY);

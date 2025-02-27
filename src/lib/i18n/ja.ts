@@ -77,6 +77,8 @@ export default {
 		email: 'メールアドレス',
 		password: 'パスワード',
 		confirmPwd: 'パスワード確認',
+		from: 'From',
+		to: 'To',
 	},
 	product: {
 		chooseAddress: '住所を選択してください',

@@ -40,12 +40,11 @@
 
 		return () => {
 			unsub();
-			pushState('', { productPreview: null });
 		};
 	});
 
 	const handleCloseModal = () => {
-		pushState('', { productPreview: null });
+		history.back();
 		PRODUCT_PREVIEW_STORE.set(null);
 	};
 </script>

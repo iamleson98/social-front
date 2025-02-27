@@ -21,7 +21,7 @@
 
 {#snippet category({ node }: CategoryCountableEdge)}
 	<a
-		href={`${AppRoute.CATEGORIES}/${encodeURIComponent(node.slug)}`}
+		href={`${AppRoute.CATEGORY_DETAILS(node.slug)}`}
 		class="block p-2 rounded-md bg-white border border-gray-200"
 	>
 		<div class="flex items-center gap-2">

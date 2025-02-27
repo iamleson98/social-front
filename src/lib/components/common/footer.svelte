@@ -11,6 +11,7 @@
 	import { LANGUAGE_KEY } from '$lib/utils/consts';
 	import { onMount } from 'svelte';
 	import { LanguageCodeEnum } from '$lib/gql/graphql';
+	import { buildHomePageLink } from '$lib/utils/utils';
 
 	let activeLanguage = $state(SUPPORTED_LANGUAGES[0]);
 
@@ -42,7 +43,7 @@
 	<div class="mx-auto max-w-[theme(screens.xl)]">
 		<div class="md:flex md:justify-between">
 			<div class="mb-6 md:mb-0">
-				<a href={AppRoute.HOME} class="flex items-center">
+				<a href={buildHomePageLink()} class="flex items-center">
 					<img src="/logo.png" class="mr-3 h-8" alt="FlowBite Logo" />
 				</a>
 			</div>

@@ -71,7 +71,7 @@
 				`${filterState.filter?.price?.gte},${filterState.filter?.price?.lte}`
 			);
 
-		await goto(`${AppRoute.HOME}?${searchParams.toString()}`, {
+		await goto(`${AppRoute.HOME()}?${searchParams.toString()}`, {
 			invalidateAll: false,
 			replaceState: false
 		});
@@ -85,7 +85,7 @@
 </script>
 
 <Accordion header={$tranFunc('common.filter')} headerIcon={FilterCog}>
-	<!-- price order -->
+	<!-- MARK: order -->
 	<div class="mb-4">
 		<div class="text-xs mb-2">{$tranFunc('common.ordering')}</div>
 		<div class="flex items-center gap-1">
@@ -105,12 +105,12 @@
 		</div>
 	</div>
 
-	<!-- price range filter -->
+	<!-- MARK; price range filter -->
 	<div class="mb-4">
 		<div class="text-xs mb-2">{$tranFunc('common.priceRange')}</div>
 		<div class="flex items-center gap-2 justify-between mb-1">
 			<Input
-				placeholder="from"
+				placeholder={$tranFunc('common.from')}
 				type="number"
 				min={0}
 				size="sm"
@@ -119,7 +119,7 @@
 				variant={priceRangeError ? 'error' : 'info'}
 			/>
 			<Input
-				placeholder="to"
+				placeholder={$tranFunc('common.to')}
 				type="number"
 				min={0}
 				size="sm"

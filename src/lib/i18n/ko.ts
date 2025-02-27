@@ -77,6 +77,8 @@ export default {
 		email: '이메일',
 		password: '비밀번호',
 		confirmPwd: '비밀번호 확인',
+		from: 'From',
+		to: 'To',
 	},
 	product: {
 		chooseAddress: '주소를 선택해주세요',

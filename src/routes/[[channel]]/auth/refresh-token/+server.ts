@@ -18,7 +18,7 @@ export const POST = async (event: RequestEvent) => {
   const { refreshToken, csrfToken }: Props = await event.request.json();
 
   if (!refreshToken || !csrfToken) {
-    redirect(HTTPStatusPermanentRedirect, AppRoute.AUTH_SIGNIN);
+    redirect(HTTPStatusPermanentRedirect, AppRoute.AUTH_SIGNIN());
   }
 
   const result = await GRAPHQL_CLIENT
@@ -36,7 +36,7 @@ export const POST = async (event: RequestEvent) => {
     event.cookies.delete(REFRESH_TOKEN_KEY, cookieOpts);
     event.cookies.delete(CSRF_TOKEN_KEY, cookieOpts);
 
-    redirect(HTTPStatusPermanentRedirect, AppRoute.AUTH_SIGNIN);
+    redirect(HTTPStatusPermanentRedirect, AppRoute.AUTH_SIGNIN());
   }
 
   event.cookies.set(ACCESS_TOKEN_KEY, result.data?.tokenRefresh?.token as string, cookieOpts);

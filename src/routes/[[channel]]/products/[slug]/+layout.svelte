@@ -33,22 +33,22 @@
 	let tabs = $derived([
 		{
 			title: $tranFunc('product.tabDescription'),
-			href: `${AppRoute.PRODUCTS}/${page.params.slug}`,
+			href: `${AppRoute.PRODUCT_DETAILS(page.params.slug)}`,
 			icon: FileText
 		},
 		{
 			title: $tranFunc('product.tabAttributes'),
-			href: `${AppRoute.PRODUCTS}/${page.params.slug}/attributes`,
+			href: `${AppRoute.PRODUCT_ATTRIBUTES(page.params.slug)}`,
 			icon: SettingCheck
 		},
 		{
 			title: $tranFunc('product.tabFeedBack'),
-			href: `${AppRoute.PRODUCTS}/${page.params.slug}/customer-feedbacks`,
+			href: `${AppRoute.PRODUCT_FEEDBACKS(page.params.slug)}`,
 			icon: HeadSet
 		},
 		{
 			title: $tranFunc('product.tabPackaging'),
-			href: `${AppRoute.PRODUCTS}/${page.params.slug}/packaging`,
+			href: `${AppRoute.PRODUCT_PACKAGING(page.params.slug)}`,
 			icon: PackageExport
 		}
 	]);
@@ -91,7 +91,7 @@
 	<nav class="flex mb-2" aria-label="Breadcrumb">
 		<ol class="inline-flex items-center space-x-1 breadcrumb text-sm">
 			<li>
-				<a href="/" class="flex items-center">
+				<a href={AppRoute.HOME()} class="flex items-center">
 					<Icon icon={MingcuteHome} class="mr-1" />
 					{$tranFunc('common.home')}
 				</a>
@@ -99,7 +99,7 @@
 			{#each categories as category, idx (idx)}
 				<li>
 					<Icon icon={ChevronRight} />
-					<a href={`${AppRoute.CATEGORIES}/${encodeURIComponent(category.slug)}`}>
+					<a href={`${AppRoute.CATEGORY_DETAILS(category.slug)}`}>
 						{category.name}
 					</a>
 				</li>

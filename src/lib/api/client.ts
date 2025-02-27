@@ -149,7 +149,7 @@ const authExchangeInner = async (utils: AuthUtilities) => {
 		isTokenRefreshingInProgress = true
 
 		const refreshResult = await fetch(
-			AppRoute.AUTH_REFRESH_TOKEN,
+			AppRoute.AUTH_REFRESH_TOKEN(),
 			{
 				method: 'POST',
 				body: JSON.stringify({
@@ -208,7 +208,7 @@ const checkIsAuthenAuthorErrorAndRedirectIfNeeded = async <Data = never, Variabl
 	}
 
 	await event.fetch(
-		`${AppRoute.AUTH_REFRESH_TOKEN}`,
+		`${AppRoute.AUTH_REFRESH_TOKEN()}`,
 		{
 			method: 'POST',
 			body: JSON.stringify({
@@ -271,7 +271,7 @@ export const performServerSideGraphqlRequest = async <Data = never, Variables ex
 export const pageRequiresAuthentication = async (event: RequestEvent<Partial<Record<string, string>>, string | null>) => {
 	const accessToken = event.cookies.get(ACCESS_TOKEN_KEY);
 	if (!accessToken) {
-		redirect(HTTPStatusTemporaryRedirect, `${AppRoute.AUTH_SIGNIN}?next=${event.url.pathname}`);
+		redirect(HTTPStatusTemporaryRedirect, `${AppRoute.AUTH_SIGNIN()}?next=${event.url.pathname}`);
 	}
 
 	const meQueryResult = await performServerSideGraphqlRequest<Pick<Query, 'me'>>('query', USER_ME_QUERY_STORE, {}, event, { requestPolicy: 'cache-and-network' });

@@ -1,61 +1,76 @@
-import { CurrencyDollar, CurrencyDong, CurrencyEuror, CurrencyJpy, CurrencyKrw } from "$lib/components/icons";
+import { CurrencyDollar, CurrencyDong, CurrencyEuror, CurrencyJpy, CurrencyKrw, type IconType } from "$lib/components/icons";
 import { CountryCode, LanguageCodeEnum } from "$lib/gql/graphql";
+import type { CurrencyCode } from "./consts";
 
-export const DEFAULT_CHANNEL = {
-  "slug": "channel-vietnam",
-  "countries": [
+
+export type ChannelProps = {
+  slug: string;
+  countries: CountryCode[];
+  currency: CurrencyCode;
+  currencySymbol: string;
+  locale: LanguageCodeEnum;
+  currencyIcon: IconType;
+  defaultCountryCode: CountryCode;
+}
+
+export const DEFAULT_CHANNEL: ChannelProps = {
+  slug: "vn",
+  countries: [
     CountryCode.Vn,
   ],
   defaultCountryCode: CountryCode.Vn,
-  "currency": "VND",
-  "currencySymbol": "₫",
-  "locale": LanguageCodeEnum.Vi,
+  currency: "VND",
+  currencySymbol: "₫",
+  locale: LanguageCodeEnum.Vi,
   currencyIcon: CurrencyDong
 };
 
-export const CHANNELS = [
+/**
+ * NOTE: Those channels must match channels defined in bakend
+ */
+export const CHANNELS: ChannelProps[] = [
   DEFAULT_CHANNEL,
   {
-    "slug": "channel-pln",
-    "countries": [
+    slug: "pl",
+    countries: [
       CountryCode.Pl,
     ],
-    "currency": "PLN",
-    "currencySymbol": "€",
-    "locale": LanguageCodeEnum.Pl,
+    currency: 'PLN',
+    currencySymbol: "€",
+    locale: LanguageCodeEnum.Pl,
     currencyIcon: CurrencyEuror,
     defaultCountryCode: CountryCode.Pl,
   },
   {
-    "slug": "default-channel",
-    "countries": [
+    slug: "us",
+    countries: [
       CountryCode.Us,
     ],
-    "currency": "USD",
-    "currencySymbol": "$",
-    "locale": LanguageCodeEnum.En,
+    currency: "USD",
+    currencySymbol: "$",
+    locale: LanguageCodeEnum.En,
     currencyIcon: CurrencyDollar,
     defaultCountryCode: CountryCode.Us,
   },
   {
-    "slug": "channel-korea",
-    "countries": [
+    slug: "kr",
+    countries: [
       CountryCode.Kr,
     ],
-    "currency": "KRW",
-    "currencySymbol": "₩",
-    "locale": LanguageCodeEnum.Ko,
+    currency: "KRW",
+    currencySymbol: "₩",
+    locale: LanguageCodeEnum.Ko,
     currencyIcon: CurrencyKrw,
     defaultCountryCode: CountryCode.Kr,
   },
   {
-    "slug": "channel-japan",
-    "countries": [
+    slug: "jp",
+    countries: [
       CountryCode.Jp,
     ],
-    "currency": "JPY",
-    "currencySymbol": "¥",
-    "locale": LanguageCodeEnum.Ja,
+    currency: "JPY",
+    currencySymbol: "¥",
+    locale: LanguageCodeEnum.Ja,
     currencyIcon: CurrencyJpy,
     defaultCountryCode: CountryCode.Jp,
   }

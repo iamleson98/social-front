@@ -19,7 +19,7 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { USER_ME_QUERY_STORE } from '$lib/api';
 	import type { Query } from '$lib/gql/graphql';
-	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { buildHomePageLink, preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { tranFunc } from '$i18n';
 	import { onMount } from 'svelte';
 	import { ACCESS_TOKEN_KEY, HTTPStatusSuccess } from '$lib/utils/consts';
@@ -51,7 +51,7 @@
 	});
 
 	const handleLogout = async () => {
-		const result = await fetch(AppRoute.AUTH_SIGNOUT, { method: 'POST' });
+		const result = await fetch(AppRoute.AUTH_SIGNOUT(), { method: 'POST' });
 		const parsedResult = await result.json();
 
 		if (parsedResult.status !== HTTPStatusSuccess) {
@@ -89,7 +89,7 @@
 	<!-- navigating -->
 	<div class="w-1/2 flex items-center gap-3">
 		<!-- logo -->
-		<a href={AppRoute.HOME} class="inline select-none!">
+		<a href={buildHomePageLink()} class="inline select-none!">
 			<img src="/logo.png" alt="logo" class="select-none! w-16 h-auto" />
 		</a>
 
@@ -105,12 +105,12 @@
 	</div>
 	<div class="w-1/2 flex justify-between">
 		<div class="flex gap-1">
-			<a href={AppRoute.HOME}>
+			<a href={buildHomePageLink()}>
 				<Button variant="light" size="sm" startIcon={MingcuteHome}>
 					<span>{$tranFunc('pages.home')}</span>
 				</Button>
 			</a>
-			<a href={AppRoute.TRENDING}>
+			<a href={AppRoute.TRENDING()}>
 				<Button variant="light" size="sm" startIcon={IonFlame}>
 					<span>{$tranFunc('pages.trending')}</span>
 				</Button>
@@ -118,7 +118,7 @@
 		</div>
 
 		<div class="flex items-center gap-3.5">
-			<a href={AppRoute.SHOPPING_CART}>
+			<a href={AppRoute.SHOPPING_CART()}>
 				<IconButton size="sm" icon={ShoppingBag} variant="light" color="gray" class="relative">
 					{#key $checkoutStore}
 						<span
@@ -151,14 +151,14 @@
 					options={[
 						{
 							children: $tranFunc('common.settings'),
-							href: AppRoute.ME,
+							href: AppRoute.ME(),
 							startIcon: UserCog
 						},
 						{ children: $tranFunc('common.logout'), onclick: handleLogout, startIcon: Logout }
 					]}
 				/>
 			{:else if !$userStore && !page.url.pathname.startsWith('/auth')}
-				<a href={AppRoute.AUTH_SIGNIN}>
+				<a href={AppRoute.AUTH_SIGNIN()}>
 					<Button variant="filled" size="sm">{$tranFunc('signin.title')}</Button>
 				</a>
 			{/if}

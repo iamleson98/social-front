@@ -55,7 +55,7 @@
 
 		return changePasswordMutationStore.subscribe((result) => {
 			if (result.data?.setPassword?.user)
-				goto(AppRoute.AUTH_SIGNIN, { replaceState: true, invalidateAll: true });
+				goto(AppRoute.AUTH_SIGNIN(), { replaceState: true, invalidateAll: true });
 		});
 	});
 

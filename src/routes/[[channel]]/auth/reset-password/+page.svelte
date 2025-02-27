@@ -44,7 +44,7 @@
 			query: USER_REQUEST_PASSWORD_RESET_MUTATION_STORE,
 			variables: {
 				email,
-				redirectUrl: PUBLIC_LOCAL_URL + AppRoute.AUTH_CHANGE_PASSWORD,
+				redirectUrl: PUBLIC_LOCAL_URL + AppRoute.AUTH_CHANGE_PASSWORD(),
 				channel: clientSideGetCookieOrDefault(CHANNEL_KEY, DEFAULT_CHANNEL.slug)
 			}
 		});
@@ -81,7 +81,7 @@
 		subText={emailError}
 		onblur={validateForm}
 	/>
-	<a href={AppRoute.AUTH_SIGNIN} class="mb-3 text-right block text-xs text-blue-600"
+	<a href={AppRoute.AUTH_SIGNIN()} class="mb-3 text-right block text-xs text-blue-600"
 		>{$tranFunc('signin.title')}</a
 	>
 	<Button

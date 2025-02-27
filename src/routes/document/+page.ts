@@ -6,7 +6,7 @@ import { redirect } from "@sveltejs/kit";
 
 export const load = async () => {
   if (!dev) {
-    redirect(HTTPStatusPermanentRedirect, AppRoute.HOME);
+    redirect(HTTPStatusPermanentRedirect, AppRoute.HOME());
   }
 
   return {

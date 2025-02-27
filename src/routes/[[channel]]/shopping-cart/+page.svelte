@@ -82,7 +82,7 @@
 				<div class="mt-3">
 					<Button
 						size="sm"
-						onclick={() => goto(AppRoute.HOME)}
+						onclick={() => goto(AppRoute.HOME())}
 						variant="outline"
 						startIcon={ChevronLeft}
 					>
