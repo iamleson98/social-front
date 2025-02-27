@@ -6,7 +6,7 @@
 
 	const onSuccess = async () => {
 		const next = page.url.searchParams.get('next');
-		await goto(next ? decodeURIComponent(next) : AppRoute.HOME, { invalidateAll: true });
+		await goto(next ? decodeURIComponent(next) : AppRoute.HOME(), { invalidateAll: true });
 	};
 </script>
 
