@@ -79,6 +79,7 @@ export { default as CurrencyEuror } from './tabler--currency-euror.svelte'
 export { default as MdiWeightKg } from './mdi--weight-kg.svelte';
 export { default as CurrencyKrw } from './mdi--currency-krw.svelte';
 export { default as CurrencyJpy } from './mdi--currency-jpy.svelte';
+export { default as RosetteDiscountChecked } from './tabler--rosette-discount-check-filled.svelte';
 
 export { default as Icon } from './icon.svelte';
 export { AlertHexagonFilled };

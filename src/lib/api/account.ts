@@ -97,3 +97,28 @@ query AddressValidationRules($countryCode: CountryCode!) {
 		}
   }
 }`;
+
+export const USER_UPDATE_MUTATION = gql`
+mutation UserUpdate($id: ID!, $input: CustomerInput!) {
+  customerUpdate(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
+    user {
+      firstName
+      lastName
+      email
+    }
+  }
+}`;
+
+export const PASSWORD_UPDATE_MUTATION = gql`
+mutation UpdatePassword($oldPassword: String!, $newPassword: String!) {
+  passwordChange(oldPassword: $oldPassword, newPassword: $newPassword) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
