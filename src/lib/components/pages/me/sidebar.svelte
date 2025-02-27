@@ -39,7 +39,7 @@
 	</svelte:element>
 {/snippet}
 
-<div class="max-w-3xs w-2/5">
+<div class="w-1/4">
 	<AccordionList header="Account" child={sidebarItem} items={ACCOUNT_ITEMS} class="w-full" />
 
 	<AccordionList

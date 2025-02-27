@@ -3,7 +3,7 @@
 	import PasswordChangeForm from '$lib/components/pages/me/password-change-form.svelte';
 </script>
 
-<div>
+<div class="m-auto">
 	<BasicInfoForm />
 	<br />
 	<PasswordChangeForm />

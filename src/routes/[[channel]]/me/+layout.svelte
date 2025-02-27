@@ -45,7 +45,7 @@
 <div class="flex flex-nowrap mt-5 gap-2">
 	<Sidebar />
 
-	<div class="w-3/5">
+	<div class="w-3/4">
 		{@render children()}
 	</div>
 </div>

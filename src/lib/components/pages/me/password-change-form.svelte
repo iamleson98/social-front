@@ -7,7 +7,6 @@
 	import type { Mutation, MutationPasswordChangeArgs } from '$lib/gql/graphql';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
-	import { slide } from 'svelte/transition';
 	import { object, string, z } from 'zod';
 
 	const FIELD_REQUIRED = $tranFunc('helpText.fieldRequired');
@@ -79,7 +78,7 @@
 	};
 </script>
 
-<div in:slide>
+<div>
 	<PasswordInput
 		size="sm"
 		class="mt-2"
