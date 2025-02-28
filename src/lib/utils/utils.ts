@@ -1,4 +1,4 @@
-import { type SelectedAttribute, AttributeInputTypeEnum, OrderDirection } from '$lib/gql/graphql';
+import { type SelectedAttribute, AttributeInputTypeEnum, OrderDirection, PaymentChargeStatusEnum } from '$lib/gql/graphql';
 import { tranFunc } from '$lib/i18n';
 import { toastStore } from '$lib/stores/ui/toast';
 import type { AnyVariables, OperationResult } from '@urql/core';
@@ -258,3 +258,26 @@ export const buildHomePageLink = (event?: ServerLoadEvent) => {
 export const buildLinkWithRespectToChannel = (uri: string, event?: ServerLoadEvent) => {
 	return `${buildHomePageLink(event)}/${uri}`;
 };
+
+// export const humanFriendlyPaymentChargeStatus = (status: PaymentChargeStatusEnum) => {
+// 	switch (status) {
+// 		case PaymentChargeStatusEnum.Cancelled:
+// 			return 'Cancelled';
+// 		case PaymentChargeStatusEnum.FullyCharged:
+// 			return 'Fully charged';
+// 		case PaymentChargeStatusEnum.FullyRefunded:
+// 			return 'Fully refunded';
+// 		case PaymentChargeStatusEnum.NotCharged:
+// 			return 'Not charged';
+// 		case PaymentChargeStatusEnum.PartiallyCharged:
+// 			return 'Partially charged';
+// 		case PaymentChargeStatusEnum.PartiallyRefunded:
+// 			return 'Partially refunded';
+// 		case PaymentChargeStatusEnum.Pending:
+// 			return 'Pending';
+// 		case PaymentChargeStatusEnum.Refused:
+// 			return 'Refused';
+// 		default:
+// 			return 'Pending';
+// 	}
+// };

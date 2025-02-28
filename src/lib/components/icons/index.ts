@@ -81,6 +81,8 @@ export { default as CurrencyKrw } from './mdi--currency-krw.svelte';
 export { default as CurrencyJpy } from './mdi--currency-jpy.svelte';
 export { default as RosetteDiscountChecked } from './tabler--rosette-discount-check-filled.svelte';
 export { default as billing } from './stash--billing.svelte';
+export { default as Order } from './material--order.svelte';
+export { default as AdjustmentHorizontal } from './tabler--adjustment-horizontal.svelte';
 
 export { default as Icon } from './icon.svelte';
 export { AlertHexagonFilled };

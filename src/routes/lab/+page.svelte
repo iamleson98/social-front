@@ -9,6 +9,7 @@
 	import { DropDown, type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
 	import { UserCog } from '$lib/components/icons';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
+	import { Table } from '$lib/components/ui/Table';
 
 	let option = $state(1);
 
@@ -209,7 +210,7 @@
 	]}
 />
 
-<EaseDatePicker bind:value={date} onchange={console.log}  size="sm" allowSelectRange />
+<EaseDatePicker bind:value={date} onchange={console.log} size="sm" allowSelectRange />
 
 {#snippet trigger({ onclick, onfocus }: DropdownTriggerInterface)}
 	<Button {onclick} {onfocus}>Open</Button>
@@ -238,4 +239,28 @@
 	}}
 	quote={{ inlineToolbar: true }}
 	onchange={console.log}
+/>
+
+<Table
+	columns={[
+		{
+			startIcon: UserCog,
+			title: 'name',
+			getter: (item) => item.name
+		},
+		{
+			title: 'age',
+			getter: (item) => item.age
+		}
+	]}
+	items={[
+		{
+			name: 'minh',
+			age: 23
+		},
+		{
+			name: 'lol',
+			age: 23
+		}
+	]}
 />

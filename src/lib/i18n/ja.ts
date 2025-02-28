@@ -79,6 +79,8 @@ export default {
 		confirmPwd: 'パスワード確認',
 		from: 'From',
 		to: 'To',
+		prevPage: 'Previous page',
+		nextPage: 'Next page',
 	},
 	product: {
 		chooseAddress: '住所を選択してください',

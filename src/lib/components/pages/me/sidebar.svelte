@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { Icon, UserCog, type IconType } from '$lib/components/icons';
+	import {
+		AdjustmentHorizontal,
+		Icon,
+		Order,
+		UserCog,
+		type IconType
+	} from '$lib/components/icons';
 	import { AccordionList } from '$lib/components/ui/Accordion';
 	import { AppRoute } from '$lib/utils';
 
@@ -10,16 +16,24 @@
 		href?: string;
 	};
 
-	const ACCOUNT_ITEMS: TabItem[] = [
+	const ACCOUNT_TAB_ITEMS: TabItem[] = [
 		{
 			icon: UserCog,
 			name: 'Account',
 			href: AppRoute.ME()
 		},
-    {
-			icon: UserCog,
+		{
+			icon: AdjustmentHorizontal,
 			name: 'Preference',
 			href: AppRoute.ME_PREFERENCES()
+		}
+	];
+
+	const SHOPPING_TAB_ITEMS: TabItem[] = [
+		{
+			icon: Order,
+			name: 'My Orders',
+			href: AppRoute.MY_ORDERS()
 		}
 	];
 </script>
@@ -40,12 +54,12 @@
 {/snippet}
 
 <div class="w-1/4">
-	<AccordionList header="Account" child={sidebarItem} items={ACCOUNT_ITEMS} class="w-full" />
+	<AccordionList header="Account" child={sidebarItem} items={ACCOUNT_TAB_ITEMS} class="w-full" />
 
 	<AccordionList
 		header="Shopping History"
 		child={sidebarItem}
-		items={[{ icon: UserCog, name: 'Account' }]}
+		items={SHOPPING_TAB_ITEMS}
 		class="w-full"
 	/>
 </div>

@@ -79,6 +79,8 @@ export default {
 		confirmPwd: '비밀번호 확인',
 		from: 'From',
 		to: 'To',
+		prevPage: 'Previous page',
+		nextPage: 'Next page',
 	},
 	product: {
 		chooseAddress: '주소를 선택해주세요',

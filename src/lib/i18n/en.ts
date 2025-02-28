@@ -79,6 +79,8 @@ export default {
 		confirmPwd: 'Confirm password',
 		from: 'From',
 		to: 'To',
+		prevPage: 'Previous page',
+		nextPage: 'Next page',
 	},
 	product: {
 		chooseAddress: 'Please choose address',

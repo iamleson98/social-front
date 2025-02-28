@@ -79,6 +79,8 @@ export default {
 		confirmPwd: 'Xác nhận mật khẩu',
 		from: 'Từ',
 		to: 'Đến',
+		prevPage: 'Trang trước',
+		nextPage: 'Trang sau',
 	},
 	product: {
 		chooseAddress: 'Vui lòng chọn địa chỉ',

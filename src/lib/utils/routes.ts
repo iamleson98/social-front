@@ -9,7 +9,7 @@ export const AppRoute = {
 	AUTH_SIGNOUT: () => buildLinkWithRespectToChannel('auth/signout'),
 
 	ME: () => buildLinkWithRespectToChannel('me'),
-	// ME_INFO: () => buildLinkWithRespectToChannel('me/info'),
+	MY_ORDERS: () => buildLinkWithRespectToChannel('me/orders'),
 	ME_PREFERENCES: () => buildLinkWithRespectToChannel('me/preferences'),
 
 	HOME: () => buildHomePageLink(),
