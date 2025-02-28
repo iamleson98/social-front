@@ -62,3 +62,19 @@ export const CHECKBOX_SIZES: Record<SocialSize, string> = {
   lg: 'checkbox-lg',
   xl: 'checkbox-xl',
 };
+
+export const RADIO_SIZES: Record<SocialSize, string> = {
+  xs: 'radio-xs',
+  sm: 'radio-sm',
+  md: 'radio-md',
+  lg: 'radio-lg',
+  xl: 'radio-xl',
+};
+
+export const TOGGLE_SIZES: Record<SocialSize, string> = {
+  xs: 'toggle-xs',
+  sm: 'toggle-sm',
+  md: 'toggle-md',
+  lg: 'toggle-lg',
+  xl: 'toggle-xl',
+};

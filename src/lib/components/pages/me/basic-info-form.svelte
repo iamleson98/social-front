@@ -72,14 +72,7 @@
 
 		loading = false; //
 
-		if (preHandleErrorOnGraphqlResult(result)) return;
-		if (result.data?.customerUpdate?.errors.length) {
-			toastStore.send({
-				message: result.data.customerUpdate.errors[0].message as string,
-				variant: 'error'
-			});
-			return;
-		}
+		if (preHandleErrorOnGraphqlResult(result, 'customerUpdate')) return;
 		toastStore.send({
 			message: 'Update success',
 			variant: 'success'

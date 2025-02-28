@@ -123,6 +123,9 @@ mutation UpdatePassword($oldPassword: String!, $newPassword: String!) {
   }
 }`;
 
+/**
+ * NOTE: This action requires Administration role
+ */
 export const ADDRESS_CREATE_MUTATION = gql`
 mutation AddressCreate($userId: ID!, $input: AddressInput!) {
   addressCreate(userId: $userId, input: $input) {
@@ -142,6 +145,8 @@ mutation AddressCreate($userId: ID!, $input: AddressInput!) {
       postalCode
       countryArea
       phone
+      isDefaultShippingAddress
+      isDefaultBillingAddress
       country {
         code
         country
@@ -150,12 +155,105 @@ mutation AddressCreate($userId: ID!, $input: AddressInput!) {
   }
 }`;
 
+/**
+ * NOTE: Requires Administration role
+ */
 export const ADDRESS_DELETE_MUTATION = gql`
 mutation DeleteAddress($id: ID!) {
   addressDelete(id: $id) {
     errors {
       field
       message
+    }
+  }
+}`;
+
+/**
+ * NOTE: This action does not require Administration role
+ */
+export const ACCOUNT_ADDRESS_CREATE_MUTATION = gql`
+mutation AccountAddressCreate($input: AddressInput!, $type: AddressTypeEnum!) {
+  accountAddressCreate(input: $input, type: $type) {
+    errors {
+      field
+      message
+    }
+    address {
+      id
+      firstName
+      lastName
+      companyName
+      streetAddress1
+      streetAddress2
+      cityArea
+      city
+      postalCode
+      countryArea
+      phone
+      isDefaultShippingAddress
+      isDefaultBillingAddress
+      country {
+        code
+        country
+      }
+    }
+  }
+}`
+
+/**
+ * NOTE: This action does not require Administration role
+ */
+export const ACCOUNT_ADDRESS_DELETE_MUTATION = gql`
+mutation AccountAddressDelete($id: ID!) {
+  accountAddressDelete(id: $id) {
+    errors {
+      field
+      message
+    }
+  }
+}`
+
+/**
+ * NOTE: This action does not require Administration role
+ */
+export const ACCOUNT_SET_DEFAULT_ADDRESS_MUTATION = gql`
+mutation AccountSetDefaultAddress($id: ID!, $type: AddressTypeEnum!) {
+  accountSetDefaultAddress(id: $id, type: $type) {
+    errors {
+      field
+      message
+    }
+  }
+}`
+
+/**
+ * NOTE: This action does not require Administration role
+ */
+export const ACCOUNT_ADDRESS_UPDATE_MUTATION = gql`
+mutation AccountAddressUpdate($id: ID!, $input: AddressInput!) {
+  accountAddressUpdate(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
+    address {
+      id
+      firstName
+      lastName
+      companyName
+      streetAddress1
+      streetAddress2
+      cityArea
+      city
+      postalCode
+      countryArea
+      phone
+      isDefaultShippingAddress
+      isDefaultBillingAddress
+      country {
+        code
+        country
+      }
     }
   }
 }`;

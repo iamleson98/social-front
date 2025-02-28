@@ -131,18 +131,35 @@ export const getPrefersReducedMotion = () => {
 /**
  * If given `result` has an error, it will show a toast message with the error message.
  * @param result GraphQl query, operation results
+ * @param apiErrorKey Some Graphql mutations return errors in result payload (errors field)
  * @returns `true` if there is an error, `false` otherwise.
  */
 export const preHandleErrorOnGraphqlResult = <T, K extends AnyVariables>(
-	result: OperationResult<T, K>
+	result: OperationResult<T, K>,
+	apiErrorKey?: string,
 ): boolean => {
-	if (!result.error) return false;
+	if (result.error) {
+		toastStore.send({
+			message: result.error.message,
+			variant: 'error'
+		});
+		return true
+	}
 
-	toastStore.send({
-		message: result.error.message,
-		variant: 'error'
-	});
-	return true;
+	if (apiErrorKey && result.data) {
+		const errors = (result.data as Record<string, Record<string, unknown>>)?.[apiErrorKey]?.errors;
+		if (!errors) console.warn('No errors field. You MUST check your GraphQL query.');
+
+		if (errors && Array.isArray(errors) && errors.length > 0) {
+			toastStore.send({
+				message: errors[0].message,
+				variant: 'error'
+			});
+			return true;
+		}
+	}
+
+	return false;
 };
 
 export type PredicateFunc<T> = (obj: T) => boolean;

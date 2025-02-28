@@ -4,52 +4,103 @@
 	import { Button } from '$lib/components/ui';
 	import { Label } from '$lib/components/ui/Input';
 	import { userStore } from '$lib/stores/auth';
-	import { noop } from 'es-toolkit';
 	import AddressForm from '../checkout/address-form.svelte';
 	import type {
 		Address,
 		AddressInput,
+		AddressTypeEnum,
 		Mutation,
-		MutationAddressCreateArgs,
-		MutationAddressDeleteArgs,
+		MutationAccountAddressCreateArgs,
+		MutationAccountAddressDeleteArgs,
+		MutationAccountAddressUpdateArgs,
 		User
 	} from '$lib/gql/graphql';
 	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import { CHANNEL_KEY } from '$lib/utils/consts';
 	import { DEFAULT_CHANNEL } from '$lib/utils/channels';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { ADDRESS_CREATE_MUTATION, ADDRESS_DELETE_MUTATION } from '$lib/api/account';
+	import {
+		ACCOUNT_ADDRESS_CREATE_MUTATION,
+		ACCOUNT_ADDRESS_DELETE_MUTATION,
+		ACCOUNT_ADDRESS_UPDATE_MUTATION
+	} from '$lib/api/account';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { tick } from 'svelte';
+	import { omit } from 'es-toolkit';
 
 	let showAddressCreateForm = $state(false);
 	let loading = $state(false);
+	let addressUpdateInputInitValue = $state<Address>();
 
-	const addNewAddress = () => {
+	$effect(() => {
+		if (!$userStore) return;
+	});
+
+	const handleClickShowAddCreateForm = async () => {
+		addressUpdateInputInitValue = undefined;
+		await tick();
 		showAddressCreateForm = true;
 	};
 
-	const handleCreateAddress = async (input: AddressInput) => {
+	const handleShowAddressUpdateForm = async (address: Address) => {
+		showAddressCreateForm = false;
+		await tick();
+		addressUpdateInputInitValue = address;
+	};
+
+	const handleUpdateAddress = async (input: AddressInput, type?: AddressTypeEnum) => {
 		loading = true; //
 
 		const result = await GRAPHQL_CLIENT.mutation<
-			Pick<Mutation, 'addressCreate'>,
-			MutationAddressCreateArgs
-		>(ADDRESS_CREATE_MUTATION, {
-			userId: $userStore?.id as string,
+			Pick<Mutation, 'accountAddressUpdate'>,
+			MutationAccountAddressUpdateArgs
+		>(ACCOUNT_ADDRESS_UPDATE_MUTATION, {
+			id: addressUpdateInputInitValue?.id!,
 			input
 		}).toPromise();
 
 		loading = false; //
-		if (preHandleErrorOnGraphqlResult(result)) return;
-		if (result.data?.addressCreate?.errors.length) {
-			toastStore.send({
-				variant: 'error',
-				message: result.data?.addressCreate?.errors[0]?.message as string
-			});
-			return;
-		}
+		const { id } = addressUpdateInputInitValue!;
+
+		// hide update form
+		addressUpdateInputInitValue = undefined;
+
+		if (preHandleErrorOnGraphqlResult(result, 'accountAddressUpdate')) return;
+		toastStore.send({
+			variant: 'success',
+			message: 'Address updated'
+		});
+
+		// update user state
+		$userStore = {
+			...$userStore,
+			addresses: $userStore?.addresses.map((addr) => {
+				if (addr.id !== id) return addr;
+
+				return {
+					...addr,
+					...result.data?.accountAddressUpdate?.address
+				};
+			})
+		} as User;
+	};
+
+	const handleCreateAddress = async (input: AddressInput, type?: AddressTypeEnum) => {
+		loading = true; //
+
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'accountAddressCreate'>,
+			MutationAccountAddressCreateArgs
+		>(ACCOUNT_ADDRESS_CREATE_MUTATION, {
+			input,
+			type
+		}).toPromise();
+
+		loading = false; //
+
+		if (preHandleErrorOnGraphqlResult(result, 'accountAddressCreate')) return;
 		toastStore.send({
 			variant: 'success',
 			message: 'Address created'
@@ -57,7 +108,7 @@
 		$userStore = {
 			...$userStore,
 			addresses: ($userStore?.addresses || []).concat(
-				result.data?.addressCreate?.address as Address
+				result.data?.accountAddressCreate?.address as Address
 			)
 		} as User;
 		showAddressCreateForm = false;
@@ -67,23 +118,15 @@
 		loading = true; //
 
 		const result = await GRAPHQL_CLIENT.mutation<
-			Pick<Mutation, 'addressDelete'>,
-			MutationAddressDeleteArgs
-		>(ADDRESS_DELETE_MUTATION, {
+			Pick<Mutation, 'accountAddressDelete'>,
+			MutationAccountAddressDeleteArgs
+		>(ACCOUNT_ADDRESS_DELETE_MUTATION, {
 			id
 		}).toPromise();
 
 		loading = false; //
 
-		if (preHandleErrorOnGraphqlResult(result)) return;
-		if (result.data?.addressDelete?.errors.length) {
-			toastStore.send({
-				variant: 'error',
-				message: result.data?.addressDelete?.errors[0]?.message as string
-			});
-			return;
-		}
-
+		if (preHandleErrorOnGraphqlResult(result, 'accountAddressDelete')) return;
 		toastStore.send({
 			variant: 'success',
 			message: 'Address deleted'
@@ -101,11 +144,17 @@
 
 	<div class="mt-2">
 		{#if $userStore?.addresses.length}
-			<div class="flex gap-2 mobile-l:flex-wrap">
+			<div class="flex gap-2 flex-wrap">
 				{#each $userStore?.addresses as address, idx (idx)}
-					<UserAddress {address} class="w-1/2 mobile-l:w-full">
+					<UserAddress {address} class="w-[48%] mobile-l:w-full">
 						<div class="text-right flex gap-2 justify-end">
-							<Button size="xs" variant="light" startIcon={Edit} disabled={loading}>Edit</Button>
+							<Button
+								size="xs"
+								variant="light"
+								startIcon={Edit}
+								disabled={loading}
+								onclick={() => handleShowAddressUpdateForm(address)}>Edit</Button
+							>
 							<Button
 								size="xs"
 								color="red"
@@ -125,9 +174,11 @@
 		{:else}
 			<div class="text-sm">You have no address yet</div>
 		{/if}
-		{#if !showAddressCreateForm}
+		{#if !showAddressCreateForm && !addressUpdateInputInitValue}
 			<div class="mt-2 text-right">
-				<Button size="xs" onclick={addNewAddress} startIcon={Plus}>New Address</Button>
+				<Button size="xs" onclick={handleClickShowAddCreateForm} startIcon={Plus}
+					>New Address</Button
+				>
 			</div>
 		{/if}
 	</div>
@@ -139,6 +190,19 @@
 				onCancel={() => (showAddressCreateForm = false)}
 				updatingCHeckoutAddresses={loading}
 				channelSlug={clientSideGetCookieOrDefault(CHANNEL_KEY, DEFAULT_CHANNEL.slug)}
+				showSetAsDefaultAddressField
+			/>
+		</div>
+	{/if}
+
+	{#if addressUpdateInputInitValue}
+		<div class="mt-3">
+			<AddressForm
+				onSubmit={handleUpdateAddress}
+				onCancel={() => (addressUpdateInputInitValue = undefined)}
+				updatingCHeckoutAddresses={loading}
+				channelSlug={clientSideGetCookieOrDefault(CHANNEL_KEY, DEFAULT_CHANNEL.slug)}
+				defaultValue={addressUpdateInputInitValue}
 			/>
 		</div>
 	{/if}

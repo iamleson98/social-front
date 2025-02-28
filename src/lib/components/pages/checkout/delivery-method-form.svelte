@@ -37,14 +37,7 @@
 			)
 			.toPromise()
 			.then((result) => {
-				if (preHandleErrorOnGraphqlResult(result)) return;
-				if (result.data?.checkoutDeliveryMethodUpdate?.errors.length) {
-					toastStore.send({
-						message: result.data.checkoutDeliveryMethodUpdate.errors[0].message as string,
-						variant: 'error'
-					});
-					return;
-				}
+				if (preHandleErrorOnGraphqlResult(result, 'checkoutDeliveryMethodUpdate')) return;
 			})
 			.catch((err) =>
 				toastStore.send({

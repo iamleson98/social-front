@@ -8,6 +8,7 @@
 		QueryAddressValidationRulesArgs,
 		QueryChannelArgs
 	} from '$lib/gql/graphql';
+	import { AddressTypeEnum } from '$lib/gql/graphql';
 	import { operationStore } from '$lib/api/operation';
 	import { ADDRESS_VALIDATION_RULES_QUERY } from '$lib/api/account';
 	import {
@@ -21,32 +22,37 @@
 		addressToFieldValues,
 		getCountryName
 	} from '$lib/utils/address';
-	import { Input } from '$lib/components/ui/Input';
+	import { Input, Label, RadioButton } from '$lib/components/ui/Input';
 	import { uniqBy } from 'es-toolkit';
 	import { Button } from '$lib/components/ui';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { CHANNEL_DETAILS_QUERY_STORE } from '$lib/api/channels';
-	import { DEFAULT_CHANNEL } from '$lib/utils/channels';
-	import { CHANNEL_KEY } from '$lib/utils/consts';
-	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 
 	type Props = {
 		countrySelectOptions?: SelectOption[];
-		onSubmit: (address: AddressInput) => void;
+		onSubmit: (address: AddressInput, type?: AddressTypeEnum) => void;
 		onCancel: () => void;
 		updatingCHeckoutAddresses: boolean;
 		defaultValue?: Address;
 		channelSlug: string;
+		showSetAsDefaultAddressField?: boolean;
 	};
 
-	let { onSubmit, updatingCHeckoutAddresses, defaultValue, onCancel, channelSlug }: Props =
-		$props();
+	let {
+		onSubmit,
+		updatingCHeckoutAddresses,
+		defaultValue,
+		onCancel,
+		channelSlug,
+		showSetAsDefaultAddressField = false
+	}: Props = $props();
 
 	let formValues = $state(
 		defaultValue ? addressToFieldValues(defaultValue) : defaultAddressFormValues
 	);
+	let addressType = $state<AddressTypeEnum>();
 	let requiredFields: Partial<Record<AddressField, boolean>> = {};
 
 	const validationStore = operationStore<
@@ -55,15 +61,16 @@
 	>({
 		kind: 'query',
 		query: ADDRESS_VALIDATION_RULES_QUERY,
-		context: { requestPolicy: 'network-only' },
+		context: { requestPolicy: 'cache-and-network' },
 		pause: true
 	});
 
 	const channelStore = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
 		kind: 'query',
 		query: CHANNEL_DETAILS_QUERY_STORE,
+		requestPolicy: 'cache-and-network',
 		variables: {
-			slug: clientSideGetCookieOrDefault(CHANNEL_KEY, DEFAULT_CHANNEL.slug)
+			slug: channelSlug
 		}
 	});
 
@@ -110,7 +117,7 @@
 			);
 			addressInput.country = formValues.countryCode.value as CountryCode;
 			delete addressInput['countryCode' as never];
-			onSubmit(addressInput);
+			onSubmit(addressInput, addressType);
 		}
 	};
 </script>
@@ -190,7 +197,26 @@
 			{/if}
 		{/each}
 
-		<div class="flex gap-2 justify-end items-center">
+		<!-- MARK: address type -->
+		{#if showSetAsDefaultAddressField}
+			<Label label="Set as default address?" size="sm" />
+			<div class="flex items-center gap-2">
+				<RadioButton
+					label={AddressTypeEnum.Billing}
+					value={AddressTypeEnum.Billing}
+					bind:group={addressType}
+					disabled={updatingCHeckoutAddresses}
+				/>
+				<RadioButton
+					label={AddressTypeEnum.Shipping}
+					value={AddressTypeEnum.Shipping}
+					bind:group={addressType}
+					disabled={updatingCHeckoutAddresses}
+				/>
+			</div>
+		{/if}
+
+		<div class="text-end">
 			<Button
 				size="xs"
 				variant="light"
@@ -200,9 +226,11 @@
 			>
 				Use this address
 			</Button>
-			<Button size="xs" onclick={onCancel} disabled={updatingCHeckoutAddresses} color="red">
-				Cancel
-			</Button>
 		</div>
 	{/if}
+	<div class="text-end mt-2">
+		<Button size="xs" onclick={onCancel} disabled={updatingCHeckoutAddresses} color="red">
+			Cancel
+		</Button>
+	</div>
 </div>

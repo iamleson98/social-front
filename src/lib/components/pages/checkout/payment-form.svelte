@@ -56,26 +56,21 @@
 				[]
 			);
 
-			GRAPHQL_CLIENT
-				.mutation<Pick<Mutation, 'paymentGatewayInitialize'>, MutationPaymentGatewayInitializeArgs>(
-					PAYMENT_GATEWAYS_INITIALIZE_MUTATION,
-					{
-						id: $checkoutStore.id,
-						paymentGateways,
-						amount: $checkoutStore.totalPrice.gross.amount
-					},
-					{ requestPolicy: 'network-only' }
-				)
+			GRAPHQL_CLIENT.mutation<
+				Pick<Mutation, 'paymentGatewayInitialize'>,
+				MutationPaymentGatewayInitializeArgs
+			>(
+				PAYMENT_GATEWAYS_INITIALIZE_MUTATION,
+				{
+					id: $checkoutStore.id,
+					paymentGateways,
+					amount: $checkoutStore.totalPrice.gross.amount
+				},
+				{ requestPolicy: 'network-only' }
+			)
 				.toPromise()
 				.then((result) => {
-					if (preHandleErrorOnGraphqlResult(result)) return;
-					if (result.data?.paymentGatewayInitialize?.errors?.length) {
-						toastStore.send({
-							message: result.data.paymentGatewayInitialize.errors[0].message as string,
-							variant: 'error'
-						});
-						return;
-					}
+					if (preHandleErrorOnGraphqlResult(result, 'paymentGatewayInitialize')) return;
 
 					availablePaymentGateways = result.data?.paymentGatewayInitialize
 						?.gatewayConfigs as ParsedPaymentGateways;
@@ -91,23 +86,16 @@
 
 	$effect(() => {
 		if ($checkoutStore && paidStatuses.includes(paymentStatus)) {
-			GRAPHQL_CLIENT
-				.mutation<Pick<Mutation, 'checkoutComplete'>, MutationCheckoutCompleteArgs>(
-					CHECKOUT_COMPLETE_MUTATION,
-					{
-						id: $checkoutStore.id
-					},
-					{ requestPolicy: 'network-only' }
-				)
+			GRAPHQL_CLIENT.mutation<Pick<Mutation, 'checkoutComplete'>, MutationCheckoutCompleteArgs>(
+				CHECKOUT_COMPLETE_MUTATION,
+				{
+					id: $checkoutStore.id
+				},
+				{ requestPolicy: 'network-only' }
+			)
 				.toPromise()
 				.then((result) => {
-					if (preHandleErrorOnGraphqlResult(result)) return;
-					if (result.data?.checkoutComplete?.errors?.length) {
-						toastStore.send({
-							message: result.data.checkoutComplete.errors[0].message as string,
-							variant: 'error'
-						});
-					}
+					if (preHandleErrorOnGraphqlResult(result, 'checkoutComplete')) return;
 				})
 				.catch((err) => {
 					toastStore.send({

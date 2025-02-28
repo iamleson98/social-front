@@ -104,15 +104,7 @@
 		>(CREATE_PRODUCT_MUTATION, {
 			input: productCreateBody
 		});
-		if (preHandleErrorOnGraphqlResult(productCreateResult)) {
-			setLoading(false);
-			return;
-		}
-		if (productCreateResult.data?.productCreate?.errors.length) {
-			toastStore.send({
-				variant: 'error',
-				message: productCreateResult.data.productCreate.errors[0].message as string
-			});
+		if (preHandleErrorOnGraphqlResult(productCreateResult, 'productCreate')) {
 			setLoading(false);
 			return;
 		}
@@ -137,16 +129,7 @@
 			id: productCreateResult.data?.productCreate?.product?.id as string,
 			input: cleanChannelListingUpdateInput
 		});
-		if (preHandleErrorOnGraphqlResult(updateProductChannelListingResult)) {
-			setLoading(false);
-			return;
-		}
-		if (updateProductChannelListingResult.data?.productChannelListingUpdate?.errors.length) {
-			toastStore.send({
-				variant: 'error',
-				message: updateProductChannelListingResult.data.productChannelListingUpdate.errors[0]
-					.message as string
-			});
+		if (preHandleErrorOnGraphqlResult(updateProductChannelListingResult, 'productChannelListingUpdate')) {
 			setLoading(false);
 			return;
 		}
@@ -161,14 +144,7 @@
 		});
 		setLoading(false);
 
-		if (preHandleErrorOnGraphqlResult(variantsBulkCreateResult)) {
-			return;
-		}
-		if (variantsBulkCreateResult.data?.productVariantBulkCreate?.errors.length) {
-			toastStore.send({
-				variant: 'error',
-				message: variantsBulkCreateResult.data.productVariantBulkCreate.errors[0].message as string
-			});
+		if (preHandleErrorOnGraphqlResult(variantsBulkCreateResult, 'productVariantBulkCreate')) {
 			return;
 		}
 

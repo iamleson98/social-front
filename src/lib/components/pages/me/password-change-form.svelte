@@ -64,14 +64,7 @@
 
 		loading = false;
 
-		if (preHandleErrorOnGraphqlResult(result)) return;
-		if (result.data?.passwordChange?.errors.length) {
-			toastStore.send({
-				message: result.data.passwordChange.errors[0].message as string,
-				variant: 'error'
-			});
-			return;
-		}
+		if (preHandleErrorOnGraphqlResult(result, 'passwordChange')) return;
 		toastStore.send({
 			message: 'Update success',
 			variant: 'success'

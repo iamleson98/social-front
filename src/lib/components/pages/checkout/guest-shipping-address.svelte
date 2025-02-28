@@ -7,6 +7,7 @@
 	import type {
 		Address,
 		AddressInput,
+		AddressTypeEnum,
 		Checkout,
 		CheckoutAddressValidationRules,
 		Mutation,
@@ -42,7 +43,7 @@
 		pause: !$checkoutStore?.channel.slug || !!$checkoutStore?.shippingAddress
 	});
 
-	const handleAttachAddressToCheckout = async (addressInput: AddressInput) => {
+	const handleAttachAddressToCheckout = async (addressInput: AddressInput, type?: AddressTypeEnum) => {
 		const validationRules: CheckoutAddressValidationRules = {
 			checkFieldsFormat: true,
 			checkRequiredFields: true,
@@ -131,6 +132,7 @@
 	<AddressForm
 		{updatingCHeckoutAddresses}
 		{countrySelectOptions}
+		channelSlug={$checkoutStore?.channel.slug!}
 		onSubmit={handleAttachAddressToCheckout}
 		defaultValue={currentAddress as Address}
 		onCancel={handleCancelEditAddress}

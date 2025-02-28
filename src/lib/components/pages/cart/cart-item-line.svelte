@@ -52,26 +52,17 @@
 	const handleDeleteCheckoutLine = async () => {
 		loading = true; //
 
-		const deleteResult = await GRAPHQL_CLIENT
-			.mutation<Pick<Mutation, 'checkoutLinesDelete'>, MutationCheckoutLinesDeleteArgs>(
-				CHECKOUT_LINES_DELETE_MUTATION,
-				{
-					linesIds: [line.id],
-					id: checkoutId
-				}
-			)
-			.toPromise();
+		const deleteResult = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'checkoutLinesDelete'>,
+			MutationCheckoutLinesDeleteArgs
+		>(CHECKOUT_LINES_DELETE_MUTATION, {
+			linesIds: [line.id],
+			id: checkoutId
+		}).toPromise();
 
 		loading = false; //
 
-		if (preHandleErrorOnGraphqlResult(deleteResult)) return;
-		if (deleteResult.data?.checkoutLinesDelete?.errors.length) {
-			toastStore.send({
-				variant: 'error',
-				message: deleteResult.data.checkoutLinesDelete.errors[0].message as string
-			});
-			return;
-		}
+		if (preHandleErrorOnGraphqlResult(deleteResult, 'checkoutLinesDelete')) return;
 
 		checkoutStore.set(deleteResult.data?.checkoutLinesDelete?.checkout as Checkout);
 	};
@@ -90,26 +81,17 @@
 
 		loading = true; //
 
-		const updateResult = await GRAPHQL_CLIENT
-			.mutation<Pick<Mutation, 'checkoutLinesUpdate'>, MutationCheckoutLinesUpdateArgs>(
-				CHECKOUT_LINES_UPDATE_MUTATION,
-				{
-					lines: [{ lineId: line.id, quantity }],
-					id: checkoutId
-				}
-			)
-			.toPromise();
+		const updateResult = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'checkoutLinesUpdate'>,
+			MutationCheckoutLinesUpdateArgs
+		>(CHECKOUT_LINES_UPDATE_MUTATION, {
+			lines: [{ lineId: line.id, quantity }],
+			id: checkoutId
+		}).toPromise();
 
 		loading = false; //
 
-		if (preHandleErrorOnGraphqlResult(updateResult)) return;
-		if (updateResult.data?.checkoutLinesUpdate?.errors.length) {
-			toastStore.send({
-				variant: 'error',
-				message: updateResult.data.checkoutLinesUpdate.errors[0].message as string
-			});
-			return;
-		}
+		if (preHandleErrorOnGraphqlResult(updateResult, 'checkoutLinesUpdate')) return;
 
 		checkoutStore.set(updateResult.data?.checkoutLinesUpdate?.checkout as Checkout);
 	};

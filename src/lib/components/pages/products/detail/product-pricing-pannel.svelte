@@ -99,16 +99,7 @@
 		if (!checkoutAddLineStore) return;
 
 		const unsub = checkoutAddLineStore.subscribe((result) => {
-			if (preHandleErrorOnGraphqlResult(result)) return;
-
-			if (result.data?.checkoutLinesAdd?.errors?.length) {
-				toastStore.send({
-					message: result.data.checkoutLinesAdd.errors[0].message as string,
-					variant: 'error'
-				});
-				return;
-			}
-
+			if (preHandleErrorOnGraphqlResult(result, 'checkoutLinesAdd')) return;
 			checkoutStore.set(result.data?.checkoutLinesAdd?.checkout as Checkout);
 		});
 
