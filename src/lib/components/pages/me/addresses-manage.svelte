@@ -27,27 +27,14 @@
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
-	import { tick } from 'svelte';
-	import { omit } from 'es-toolkit';
 
 	let showAddressCreateForm = $state(false);
 	let loading = $state(false);
 	let addressUpdateInputInitValue = $state<Address>();
 
-	$effect(() => {
-		if (!$userStore) return;
-	});
-
-	const handleClickShowAddCreateForm = async () => {
-		addressUpdateInputInitValue = undefined;
-		await tick();
-		showAddressCreateForm = true;
-	};
-
-	const handleShowAddressUpdateForm = async (address: Address) => {
-		showAddressCreateForm = false;
-		await tick();
-		addressUpdateInputInitValue = address;
+	const handleShowAddressForm = (showCreateForm: boolean, defaultAddress?: Address) => {
+		showAddressCreateForm = showCreateForm;
+		addressUpdateInputInitValue = defaultAddress;
 	};
 
 	const handleUpdateAddress = async (input: AddressInput, type?: AddressTypeEnum) => {
@@ -62,12 +49,13 @@
 		}).toPromise();
 
 		loading = false; //
+
+		if (preHandleErrorOnGraphqlResult(result, 'accountAddressUpdate')) return;
+
 		const { id } = addressUpdateInputInitValue!;
 
 		// hide update form
 		addressUpdateInputInitValue = undefined;
-
-		if (preHandleErrorOnGraphqlResult(result, 'accountAddressUpdate')) return;
 		toastStore.send({
 			variant: 'success',
 			message: 'Address updated'
@@ -101,6 +89,7 @@
 		loading = false; //
 
 		if (preHandleErrorOnGraphqlResult(result, 'accountAddressCreate')) return;
+
 		toastStore.send({
 			variant: 'success',
 			message: 'Address created'
@@ -143,7 +132,9 @@
 	<Label label="Manage Addresses" size="lg" />
 
 	<div class="mt-2">
-		{#if $userStore?.addresses.length}
+		{#if !$userStore?.addresses?.length}
+			<div class="text-sm">You have no address yet</div>
+		{:else}
 			<div class="flex gap-2 flex-wrap">
 				{#each $userStore?.addresses as address, idx (idx)}
 					<UserAddress {address} class="w-[48%] mobile-l:w-full">
@@ -153,7 +144,7 @@
 								variant="light"
 								startIcon={Edit}
 								disabled={loading}
-								onclick={() => handleShowAddressUpdateForm(address)}>Edit</Button
+								onclick={() => handleShowAddressForm(false, address)}>Edit</Button
 							>
 							<Button
 								size="xs"
@@ -171,12 +162,10 @@
 					</UserAddress>
 				{/each}
 			</div>
-		{:else}
-			<div class="text-sm">You have no address yet</div>
 		{/if}
 		{#if !showAddressCreateForm && !addressUpdateInputInitValue}
 			<div class="mt-2 text-right">
-				<Button size="xs" onclick={handleClickShowAddCreateForm} startIcon={Plus}
+				<Button size="xs" onclick={() => handleShowAddressForm(true)} startIcon={Plus}
 					>New Address</Button
 				>
 			</div>
@@ -191,6 +180,7 @@
 				updatingCHeckoutAddresses={loading}
 				channelSlug={clientSideGetCookieOrDefault(CHANNEL_KEY, DEFAULT_CHANNEL.slug)}
 				showSetAsDefaultAddressField
+				defaultValue={undefined}
 			/>
 		</div>
 	{/if}

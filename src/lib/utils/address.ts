@@ -56,8 +56,12 @@ export const addressFieldsOrder: AddressField[] = [
   "phone",
 ];
 
+export const defaultAddressFormValues = () => addressFieldsOrder
+  .reduce((prev, acc) => ({ ...prev, [acc]: { value: "", error: null } }), {} as Record<AddressField, AddressFieldObj>);
+
 export const addressToFieldValues = (addr: Address): Record<AddressField, AddressFieldObj> => {
-  const result: Record<AddressField, AddressFieldObj> = defaultAddressFormValues;
+  const result = defaultAddressFormValues()
+
   for (const key in addr) {
     if (key === "country") {
       result.countryCode.value = addr.country.code;
@@ -70,9 +74,6 @@ export const addressToFieldValues = (addr: Address): Record<AddressField, Addres
 
   return result;
 };
-
-export const defaultAddressFormValues: Record<AddressField, AddressFieldObj> = addressFieldsOrder
-  .reduce((prev, acc) => ({ ...prev, [acc]: { value: "", error: null } }), {} as Record<AddressField, AddressFieldObj>);
 
 export type AddressFormData = Omit<Record<AddressField, string>, "country" | "countryCode"> & {
   countryCode: CountryCode;

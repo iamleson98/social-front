@@ -50,7 +50,7 @@
 	}: Props = $props();
 
 	let formValues = $state(
-		defaultValue ? addressToFieldValues(defaultValue) : defaultAddressFormValues
+		defaultValue ? addressToFieldValues(defaultValue) : defaultAddressFormValues()
 	);
 	let addressType = $state<AddressTypeEnum>();
 	let requiredFields: Partial<Record<AddressField, boolean>> = {};
@@ -61,7 +61,7 @@
 	>({
 		kind: 'query',
 		query: ADDRESS_VALIDATION_RULES_QUERY,
-		context: { requestPolicy: 'cache-and-network' },
+		context: { requestPolicy: 'network-only' },
 		pause: true
 	});
 

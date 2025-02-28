@@ -172,7 +172,7 @@ mutation DeleteAddress($id: ID!) {
  * NOTE: This action does not require Administration role
  */
 export const ACCOUNT_ADDRESS_CREATE_MUTATION = gql`
-mutation AccountAddressCreate($input: AddressInput!, $type: AddressTypeEnum!) {
+mutation AccountAddressCreate($input: AddressInput!, $type: AddressTypeEnum) {
   accountAddressCreate(input: $input, type: $type) {
     errors {
       field

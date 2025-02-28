@@ -4,6 +4,7 @@
 	import { userStore } from '$lib/stores/auth';
 	import { onMount, type Snippet } from 'svelte';
 	import type { LayoutServerData } from './$types';
+	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 
 	type Props = {
 		children: Snippet;
@@ -25,27 +26,33 @@
 	});
 </script>
 
-<!-- MARK: Header -->
-<div class="flex items-start gap-2 text-gray-700">
-	<div class="rounded-full h-16 w-16 overflow-hidden">
-		<img src={$userStore?.avatar?.url} alt={$userStore?.avatar?.alt} class="h-full w-full" />
-	</div>
-	<div>
-		<div class="text-lg font-semibold">
-			{userNameDisplay}
+{#if !$userStore}
+	<SkeletonContainer>
+		<Skeleton class="w-full h-6" />
+	</SkeletonContainer>
+{:else}
+	<!-- MARK: Header -->
+	<div class="flex items-start gap-2 text-gray-700">
+		<div class="rounded-full h-16 w-16 overflow-hidden">
+			<img src={$userStore?.avatar?.url} alt={$userStore?.avatar?.alt} class="h-full w-full" />
 		</div>
-		<div class="flex items-center gap-1">
-			<Icon icon={RosetteDiscountChecked} class="text-blue-500 h-6 w-6" />
-			<span class="text-sm text-gray-500">Verified</span>
+		<div>
+			<div class="text-lg font-semibold">
+				{userNameDisplay}
+			</div>
+			<div class="flex items-center gap-1">
+				<Icon icon={RosetteDiscountChecked} class="text-blue-500 h-6 w-6" />
+				<span class="text-sm text-gray-500">Verified</span>
+			</div>
 		</div>
 	</div>
-</div>
 
-<!-- MARK: Detail -->
-<div class="flex flex-nowrap mt-5 gap-2">
-	<Sidebar />
+	<!-- MARK: Detail -->
+	<div class="flex flex-nowrap mt-5 gap-2">
+		<Sidebar />
 
-	<div class="w-3/4">
-		{@render children()}
+		<div class="w-3/4">
+			{@render children()}
+		</div>
 	</div>
-</div>
+{/if}
