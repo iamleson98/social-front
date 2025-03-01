@@ -83,6 +83,7 @@ export { default as RosetteDiscountChecked } from './tabler--rosette-discount-ch
 export { default as billing } from './stash--billing.svelte';
 export { default as Order } from './material--order.svelte';
 export { default as AdjustmentHorizontal } from './tabler--adjustment-horizontal.svelte';
+export { default as MailQuestion } from './tabler--mail-question.svelte'
 
 export { default as Icon } from './icon.svelte';
 export { AlertHexagonFilled };

@@ -11,9 +11,11 @@
 	import MenuItem from './menuItem.svelte';
 
 	type Props = {
+		/** NOTE: children and options must be provided exclusively */
 		options?: MenuItemProps[];
 		trigger: Snippet<[DropdownTriggerInterface]>;
 		placement?: Placement;
+		/** NOTE: children and options must be provided exclusively */
 		children?: Snippet;
 		/** if `true`, will not recalculate position on window resize nor scroll */
 		noReCalculateOnWindowResize?: boolean;
@@ -63,20 +65,28 @@
 	{@render trigger({ onclick: handleTriggerClick, onfocus: handleTriggerClick })}
 	<div class="absolute z-100 min-w-full" bind:this={menuElemRef}>
 		{#if open}
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<div
 				use:clickOutside={{ onOutclick: () => (open = false) }}
 				transition:fly={{ y: 10 }}
 				class="py-2 rounded-lg border border-gray-200 bg-white shadow-xs"
 				onclick={computeStyle}
+				onkeyup={(e) => e.key === 'Escape' && (open = false)}
+				role="menu"
+				tabindex="-1"
 			>
 				{#if options?.length}
 					{#each options as option, idx (idx)}
-						<MenuItem {...option} />
+						{@const { onclick, ...rest } = option}
+						<MenuItem
+							{...rest}
+							onclick={() => {
+								onclick?.();
+								open = false;
+							}}
+						/>
 					{/each}
-				{:else}
-					{@render children?.()}
+				{:else if children}
+					{@render children()}
 				{/if}
 			</div>
 		{/if}

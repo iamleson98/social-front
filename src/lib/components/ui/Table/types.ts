@@ -1,6 +1,5 @@
 import type { IconType } from "$lib/components/icons";
 import type { PageInfo } from "$lib/gql/graphql";
-import type { Component } from "svelte";
 
 export type TableProps<T extends Record<string, unknown>> = {
   items: T[];
@@ -10,7 +9,9 @@ export type TableProps<T extends Record<string, unknown>> = {
   onNextPagelick?: (afterCursor: string) => void;
   onPreviousPagelick?: (beforeCursor: string) => void;
   onChangeRowsPerPage?: (no: number) => void;
+  /**default to [10, 20, 30, 50, 100] */
   rowsOptions?: number[];
+  onSortChange?: (sort: SortState) => void;
 };
 
 export type TableColumnProps<T extends Record<string, unknown>> = {
@@ -18,6 +19,8 @@ export type TableColumnProps<T extends Record<string, unknown>> = {
   startIcon?: IconType;
   endIcon?: IconType;
   sortable?: boolean;
-  getter: (item: T) => string | number | Component;
+  getter: (item: T) => string | number;
 };
 
+export type SortDirection = 'asc' | 'desc' | 'neutral';
+export type SortState = Record<string, { direction: SortDirection; icon: IconType }>;

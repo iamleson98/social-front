@@ -11,8 +11,6 @@
 		...rest
 	}: MenuItemProps = $props();
 
-	if (onclick && rest.href) throw new Error('Cannot use both onclick and href');
-
 	const handleClick = (evt: MouseEvent) => {
 		if (disabled) {
 			if (rest.href) evt.preventDefault();

@@ -1,11 +1,18 @@
 <script lang="ts" generics="T extends Record<string, unknown>">
 	import { tranFunc } from '$i18n';
-	import { ChevronLeft, ChevronRight, Icon } from '$lib/components/icons';
+	import {
+		ChevronDown,
+		ChevronLeft,
+		ChevronRight,
+		ChevronSort,
+		ChevronUp,
+		Icon
+	} from '$lib/components/icons';
 	import { IconButton } from '../Button';
 	import Button from '../Button/Button.svelte';
 	import { DropDown, type DropdownTriggerInterface } from '../Dropdown';
 	import MenuItem from '../Menu/menuItem.svelte';
-	import type { TableProps } from './types';
+	import type { SortState, TableProps } from './types';
 
 	const ROW_OPTIONS = [10, 20, 30, 50, 100];
 
@@ -17,19 +24,41 @@
 		onNextPagelick,
 		onPreviousPagelick,
 		rowsOptions = ROW_OPTIONS,
-		onChangeRowsPerPage
+		onChangeRowsPerPage,
+		onSortChange
 	}: TableProps<T> = $props();
 
+	const DEFAULT_SORT_STATE = columns.reduce((acc, column) => {
+		if (column.sortable)
+			return { ...acc, [column.title]: { direction: 'neutral', icon: ChevronSort } };
+		return acc;
+	}, {});
 	let rowsPerPage = $state<number>(rowsOptions[0]);
-
-	$effect(() => {
-		if (typeof rowsPerPage === 'number') onChangeRowsPerPage?.(rowsPerPage);
-	});
+	let sortState = $state.raw<SortState>(DEFAULT_SORT_STATE);
 
 	const handleNavigateClick = (dir: 1 | -1) => {
 		if (!pagination) return;
 		if (dir === -1 && pagination.startCursor) onPreviousPagelick?.(pagination.startCursor);
 		if (dir === 1 && pagination.endCursor) onNextPagelick?.(pagination.endCursor);
+	};
+
+	const handleSortClick = (column: string) => {
+		if (sortState[column].direction === 'neutral') {
+			sortState = { ...sortState, [column]: { direction: 'asc', icon: ChevronUp } };
+		} else if (sortState[column].direction === 'asc') {
+			sortState = { ...sortState, [column]: { direction: 'desc', icon: ChevronDown } };
+		} else {
+			sortState = { ...sortState, [column]: { direction: 'neutral', icon: ChevronSort } };
+		}
+
+		onSortChange?.(sortState);
+	};
+
+	const handleRowsPerPageChange = (num: number) => {
+		if (num !== rowsPerPage) {
+			rowsPerPage = num;
+			onChangeRowsPerPage?.(num);
+		}
 	};
 </script>
 
@@ -37,16 +66,36 @@
 	<thead>
 		<tr>
 			{#each columns as column, idx (idx)}
-				<th>
-					<div class="flex items-center gap-2">
-						{#if column.startIcon}
-							<Icon icon={column.startIcon} />
+				{@const classes = column.sortable
+					? 'cursor-pointer hover:bg-gray-100 p-2 active:bg-gray-200 focus:bg-gray-200'
+					: ''}
+				{@const props = column.sortable
+					? {
+							onclick: () => handleSortClick(column.title),
+							onkeyup: (evt: KeyboardEvent) => evt.key === 'Enter' && handleSortClick(column.title)
+						}
+					: {}}
+				<th class="p-[unset]!">
+					<svelte:element
+						this={column.sortable ? 'button' : 'div'}
+						class="flex items-center gap-2 w-full h-full p-2 justify-between {classes}"
+						{...props}
+					>
+						<div class="flex items-center gap-1">
+							{#if column.startIcon}
+								<Icon icon={column.startIcon} />
+							{/if}
+							<span>{column.title}</span>
+							{#if column.endIcon}
+								<Icon icon={column.endIcon} />
+							{/if}
+						</div>
+						{#if column.sortable}
+							<span>
+								<Icon icon={sortState[column.title].icon} />
+							</span>
 						{/if}
-						<span>{column.title}</span>
-						{#if column.endIcon}
-							<Icon icon={column.endIcon} />
-						{/if}
-					</div>
+					</svelte:element>
 				</th>
 			{/each}
 		</tr>
@@ -76,7 +125,7 @@
 			{/snippet}
 			<DropDown {trigger} placement="bottom-start">
 				{#each rowsOptions as option, idx (idx)}
-					<MenuItem onclick={() => (rowsPerPage = option)}>{option}</MenuItem>
+					<MenuItem onclick={() => handleRowsPerPageChange(option)}>{option}</MenuItem>
 				{/each}
 			</DropDown>
 		</div>

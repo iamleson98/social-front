@@ -211,8 +211,8 @@ importers:
         specifier: ^7.18.0
         version: 7.18.0(eslint@8.57.1)(typescript@5.7.3)
       daisyui:
-        specifier: 5.0.0-beta.1
-        version: 5.0.0-beta.1
+        specifier: 5.0.0
+        version: 5.0.0
       dotenv-cli:
         specifier: ^7.4.4
         version: 7.4.4
@@ -2820,8 +2820,8 @@ packages:
   cssfilter@0.0.10:
     resolution: {integrity: sha512-FAaLDaplstoRsDR8XGYH51znUN0UY7nMc6Z9/fvE8EXGwvJE9hu7W2vHwx1+bd6gCYnln9nLbzxFTrcO9YQDZw==}
 
-  daisyui@5.0.0-beta.1:
-    resolution: {integrity: sha512-VEWUsfhslDhF4zgwFc9rqjETISGJWy8o9ElfJs9GpBDIc0voHUxGAltSwaXA4NUJkuI9ov3J2B9FTBHbAsIhUA==}
+  daisyui@5.0.0:
+    resolution: {integrity: sha512-U0K9Bac3Bi3zZGm6ojrw12F0vBHTpEgf46zv/BYxLe07hF0Xnx7emIQliwaRBgJuYhY0BhwQ6wSnq5cJXHA2yA==}
 
   data-uri-to-buffer@4.0.1:
     resolution: {integrity: sha512-0R9ikRb668HB7QDxT1vkpuUBtqc53YyAwMwGeUFKRojY/NWKvdZ+9UYtRfGmhqNbRkTSVpMbmyhXipFFv2cb/A==}
@@ -8869,7 +8869,7 @@ snapshots:
 
   cssfilter@0.0.10: {}
 
-  daisyui@5.0.0-beta.1: {}
+  daisyui@5.0.0: {}
 
   data-uri-to-buffer@4.0.1: {}
 

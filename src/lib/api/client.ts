@@ -178,7 +178,7 @@ const authExchangeInner = async (utils: AuthUtilities) => {
 export const GRAPHQL_CLIENT = new Client({
 	url: PUBLIC_GRAPHQL_API_END_POINT,
 	exchanges: [
-		// this auth exchange can run on slient side only
+		// this auth exchange can run on client side only
 		authExchange(authExchangeInner),
 		cacheExchange,
 		retryExchange({

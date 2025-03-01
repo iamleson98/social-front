@@ -1,2 +1,2 @@
-export { default as Table } from './table-com.svelte';
+export { default as Table } from './table.svelte';
 export * from './types';

@@ -11,9 +11,53 @@ export const USER_LOGIN_MUTATION_STORE = gql`
 				email
 				firstName
 				lastName
-				avatar {
+				isStaff
+				restrictedAccessToChannels
+				languageCode
+				metadata {
+					key
+					value
+				}
+				userPermissions {
+					code
+					name
+				}
+				avatar(size: 100, format: WEBP) {
 					url
 					alt
+				}
+				accessibleChannels {
+					id
+					name
+					slug
+					isActive
+					currencyCode
+					defaultCountry {
+						code
+						country
+					}
+					stockSettings {
+						allocationStrategy
+					}
+				}
+				addresses {
+					id
+					streetAddress1
+					streetAddress2
+					city
+					postalCode
+					cityArea
+					phone
+					isDefaultShippingAddress
+					isDefaultBillingAddress
+					companyName
+					countryArea
+					firstName
+					lastName
+					country {
+						country
+						code
+					}
 				}
 			}
 			errors {
@@ -109,10 +153,54 @@ export const USER_REFRESH_TOKEN_MUTATION_STORE = gql`
 				email
 				firstName
 				lastName
-				avatar {
+				isStaff
+				restrictedAccessToChannels
+				languageCode
+				metadata {
+					key
+					value
+				}
+				userPermissions {
+					code
+					name
+				}
+				avatar(size: 100, format: WEBP) {
 					url
 					alt
 				}
+				# accessibleChannels {
+				# 	id
+				# 	name
+				# 	slug
+				# 	isActive
+				# 	currencyCode
+				# 	defaultCountry {
+				# 		code
+				# 		country
+				# 	}
+				# 	stockSettings {
+				# 		allocationStrategy
+				# 	}
+				# }
+				# addresses {
+				# 	id
+				# 	streetAddress1
+				# 	streetAddress2
+				# 	city
+				# 	postalCode
+				# 	cityArea
+				# 	phone
+				# 	isDefaultShippingAddress
+				# 	isDefaultBillingAddress
+				# 	companyName
+				# 	countryArea
+				# 	firstName
+				# 	lastName
+				# 	country {
+				# 		country
+				# 		code
+				# 	}
+				# }
 			}
 			errors {
 				code

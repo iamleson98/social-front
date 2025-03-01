@@ -3,6 +3,7 @@
 	import {
 		AdjustmentHorizontal,
 		Icon,
+		MailQuestion,
 		Order,
 		UserCog,
 		type IconType
@@ -34,6 +35,11 @@
 			icon: Order,
 			name: 'My Orders',
 			href: AppRoute.MY_ORDERS()
+		},
+		{
+			icon: MailQuestion,
+			name: 'Supports',
+			href: AppRoute.ME_SUPPORT()
 		}
 	];
 </script>
@@ -56,10 +62,5 @@
 <div class="w-1/4">
 	<AccordionList header="Account" child={sidebarItem} items={ACCOUNT_TAB_ITEMS} class="w-full" />
 
-	<AccordionList
-		header="Shopping History"
-		child={sidebarItem}
-		items={SHOPPING_TAB_ITEMS}
-		class="w-full"
-	/>
+	<AccordionList header="Shopping" child={sidebarItem} items={SHOPPING_TAB_ITEMS} class="w-full" />
 </div>
