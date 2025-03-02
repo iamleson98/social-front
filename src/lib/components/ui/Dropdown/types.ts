@@ -19,7 +19,6 @@ export type MenuItemProps = {
   class?: string;
 };
 
-
 type commonEventDebounceOpts = {
   onFire: () => void
 };
@@ -32,16 +31,15 @@ export const dropdownResizeDebounce = (
   { onFire }: commonEventDebounceOpts
 ) => {
   resizeSubscribers.add(onFire);
-
-  if (unsub) {
-    return () => {
-      resizeSubscribers.delete(onFire);
-      if (!resizeSubscribers.size) {
-        unsub?.();
-        unsub = null;
-      }
+  const destroy = () => {
+    resizeSubscribers.delete(onFire);
+    if (!resizeSubscribers.size) {
+      unsub?.();
+      unsub = null;
     }
-  }
+  };
+
+  if (unsub) return destroy;
 
   const eventListeners = ['resize', 'scroll'].map(evt => fromDomEvent(node as HTMLElement, evt));
 
@@ -56,4 +54,5 @@ export const dropdownResizeDebounce = (
   );
 
   unsub = unsubscribe;
+  return destroy;
 };
