@@ -116,13 +116,13 @@
 			return;
 		}
 
-		if (forceAskLocation)
-			navigator.geolocation.getCurrentPosition(
-				handleBrowserGetLocationSuccess,
-				handleBrowserGetLocationError,
-				{
-					enableHighAccuracy: true
-				}
-			);
+		// if (forceAskLocation)
+		navigator.geolocation.getCurrentPosition(
+			handleBrowserGetLocationSuccess,
+			handleBrowserGetLocationError,
+			{
+				enableHighAccuracy: true
+			}
+		);
 	});
 </script>
