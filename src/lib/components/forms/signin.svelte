@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui';
-	import { userStore } from '$lib/stores/auth';
 	import { AppRoute } from '$lib/utils';
 	import { Email } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
@@ -10,6 +9,7 @@
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { Facebook, Twitter, Google } from '$lib/components/icons/SvgOuterIcon';
 	import { boolean, object, string, z } from 'zod';
+	import { setUserStoreValue } from '$lib/stores/auth/user';
 
 	type Props = {
 		onSuccess: () => void;
@@ -90,7 +90,7 @@
 			return;
 		}
 
-		userStore.set(loginResult.data);
+		setUserStoreValue(loginResult.data);
 		toastStore.send({
 			message: $tranFunc('signin.welcomeBack', {
 				name: loginResult.data.firstName + ' ' + loginResult.data.lastName

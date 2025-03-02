@@ -95,6 +95,7 @@ export const USER_ME_QUERY_STORE = gql`
 			isStaff
 			restrictedAccessToChannels
 			languageCode
+			isConfirmed
 			metadata {
 				key
 				value

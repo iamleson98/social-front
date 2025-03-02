@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui';
-	import { userStore } from '$lib/stores/auth';
 	import { AppRoute, getCookieByKey } from '$lib/utils';
 	import { page } from '$app/state';
 	import { checkoutStore } from '$lib/stores/app';
@@ -18,7 +17,7 @@
 	import { IconButton } from '../ui/Button';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { USER_ME_QUERY_STORE } from '$lib/api';
-	import type { Query } from '$lib/gql/graphql';
+	import type { Query, User } from '$lib/gql/graphql';
 	import { buildHomePageLink, preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { tranFunc } from '$i18n';
 	import { onMount } from 'svelte';
@@ -26,13 +25,14 @@
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { invalidateAll } from '$app/navigation';
 	import { DropDown, type DropdownTriggerInterface } from '../ui/Dropdown';
+	import { READ_ONLY_USER_STORE, setUserStoreValue } from '$lib/stores/auth/user';
 
 	const { userDisplayName } = $derived.by(() => {
 		let userDisplayName;
 
-		if ($userStore?.firstName && $userStore.lastName)
-			userDisplayName = `${$userStore.firstName[0]}${$userStore.lastName[0]}`;
-		else if ($userStore?.email) userDisplayName = $userStore.email.slice(0, 2);
+		if ($READ_ONLY_USER_STORE?.firstName && $READ_ONLY_USER_STORE.lastName)
+			userDisplayName = `${$READ_ONLY_USER_STORE.firstName[0]}${$READ_ONLY_USER_STORE.lastName[0]}`;
+		else if ($READ_ONLY_USER_STORE?.email) userDisplayName = $READ_ONLY_USER_STORE.email.slice(0, 2);
 
 		return { userDisplayName };
 	});
@@ -47,7 +47,7 @@
 			.toPromise();
 
 		if (preHandleErrorOnGraphqlResult(userResult)) return;
-		userStore.set(userResult.data?.me);
+		setUserStoreValue(userResult.data?.me as User);
 	});
 
 	const handleLogout = async () => {
@@ -62,7 +62,7 @@
 			return;
 		}
 
-		userStore.set(null);
+		setUserStoreValue(null);
 		await invalidateAll();
 	};
 
@@ -130,13 +130,13 @@
 					{/key}
 				</IconButton>
 			</a>
-			{#if $userStore}
+			{#if $READ_ONLY_USER_STORE}
 				{#snippet trigger({ onclick, onfocus }: DropdownTriggerInterface)}
 					<Button variant="light" size="sm" class="space-x-2 uppercase" {onclick} {onfocus}>
-						{#if $userStore.avatar}
+						{#if $READ_ONLY_USER_STORE.avatar}
 							<span
 								class="rounded-full w-5 h-5 bg-blue-300 flex items-center justify-center font-bold bg-cover bg-center bg-no-repeat"
-								style="background-image: url({$userStore.avatar.url});"
+								style="background-image: url({$READ_ONLY_USER_STORE.avatar.url});"
 							>
 							</span>
 						{/if}
@@ -157,7 +157,7 @@
 						{ children: $tranFunc('common.logout'), onclick: handleLogout, startIcon: Logout }
 					]}
 				/>
-			{:else if !$userStore && !page.url.pathname.startsWith('/auth')}
+			{:else if !$READ_ONLY_USER_STORE && !page.url.pathname.startsWith('/auth')}
 				<a href={AppRoute.AUTH_SIGNIN()}>
 					<Button variant="filled" size="sm">{$tranFunc('signin.title')}</Button>
 				</a>

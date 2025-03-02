@@ -1,12 +1,18 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
-	import { USER_UPDATE_MUTATION } from '$lib/api/account';
+	import { SUPPORTED_LANGUAGES, tranFunc } from '$i18n';
+	import { ACCOUNT_UPDATE_MUTATION } from '$lib/api/account';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { Email } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { Input, Label } from '$lib/components/ui/Input';
-	import type { Mutation, MutationCustomerUpdateArgs, User } from '$lib/gql/graphql';
-	import { userStore } from '$lib/stores/auth';
+	import { Select } from '$lib/components/ui/select';
+	import {
+		type AccountInput,
+		type Mutation,
+		type MutationAccountUpdateArgs,
+		type User
+	} from '$lib/gql/graphql';
+	import { ME_PAGE_USER_STORE } from '$lib/stores/app/me';
+	import { setUserStoreValue } from '$lib/stores/auth';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { object, string, z } from 'zod';
@@ -16,35 +22,33 @@
 	const UserInfoSchema = object({
 		firstName: string().min(1, { message: FIELD_REQUIRED }),
 		lastName: string().min(1, { message: FIELD_REQUIRED }),
-		email: string()
-			.email({ message: $tranFunc('error.invalidEmail') })
-			.min(1, { message: FIELD_REQUIRED })
+		languageCode: string().min(1, { message: FIELD_REQUIRED })
 	});
 	type InfoProps = z.infer<typeof UserInfoSchema>;
 
 	let userInfoInputs = $state<InfoProps>({
 		firstName: '',
 		lastName: '',
-		email: ''
+		languageCode: ''
 	});
 	let userInfoFormErrors = $state.raw<Partial<Record<keyof InfoProps, string[]>>>({});
 	let loading = $state(false);
 
 	$effect(() => {
-		if ($userStore) {
+		if ($ME_PAGE_USER_STORE) {
 			userInfoInputs = {
-				firstName: $userStore.firstName,
-				lastName: $userStore.lastName,
-				email: $userStore.email
+				firstName: $ME_PAGE_USER_STORE.firstName,
+				lastName: $ME_PAGE_USER_STORE.lastName,
+				languageCode: $ME_PAGE_USER_STORE.languageCode
 			};
 		}
 	});
 
 	let userInfoChanged = $derived.by(() => {
 		return (
-			userInfoInputs.firstName !== $userStore?.firstName ||
-			userInfoInputs.lastName !== $userStore?.lastName ||
-			userInfoInputs.email !== $userStore?.email
+			userInfoInputs.firstName !== $ME_PAGE_USER_STORE?.firstName ||
+			userInfoInputs.lastName !== $ME_PAGE_USER_STORE?.lastName ||
+			userInfoInputs.languageCode !== $ME_PAGE_USER_STORE?.languageCode
 		);
 	});
 
@@ -63,26 +67,26 @@
 		loading = true; //
 
 		const result = await GRAPHQL_CLIENT.mutation<
-			Pick<Mutation, 'customerUpdate'>,
-			MutationCustomerUpdateArgs
-		>(USER_UPDATE_MUTATION, {
-			input: { ...userInfoInputs },
-			id: $userStore?.id
+			Pick<Mutation, 'accountUpdate'>,
+			MutationAccountUpdateArgs
+		>(ACCOUNT_UPDATE_MUTATION, {
+			input: { ...userInfoInputs } as AccountInput
 		}).toPromise();
 
 		loading = false; //
 
-		if (preHandleErrorOnGraphqlResult(result, 'customerUpdate')) return;
+		if (preHandleErrorOnGraphqlResult(result, 'accountUpdate')) return;
 		toastStore.send({
 			message: 'Update success',
 			variant: 'success'
 		});
-		$userStore = {
-			...$userStore,
-			firstName: userInfoInputs.firstName,
-			lastName: userInfoInputs.lastName,
-			email: userInfoInputs.email
+		$ME_PAGE_USER_STORE = {
+			...$ME_PAGE_USER_STORE,
+			...userInfoInputs
 		} as User;
+
+		// in case user update display language , we need to update it for the whole UI also
+		setUserStoreValue($ME_PAGE_USER_STORE);
 	};
 </script>
 
@@ -114,15 +118,18 @@
 		/>
 	</div>
 
-	<Input
-		placeholder="email"
+	<Select
+		placeholder="Language"
 		class="mt-2"
-		label="Email"
 		required
-		startIcon={Email}
-		bind:value={userInfoInputs.email}
-		variant={userInfoFormErrors.email?.length ? 'error' : 'info'}
-		subText={userInfoFormErrors.email?.length ? userInfoFormErrors.email[0] : ''}
+		label="Display Language"
+		options={SUPPORTED_LANGUAGES.map((lang) => ({
+			value: lang.code,
+			label: lang.name
+		}))}
+		bind:value={userInfoInputs.languageCode}
+		variant={userInfoFormErrors.languageCode?.length ? 'error' : 'info'}
+		subText={userInfoFormErrors.languageCode?.length ? userInfoFormErrors.languageCode[0] : ''}
 		onblur={userValidate}
 		disabled={loading}
 	/>

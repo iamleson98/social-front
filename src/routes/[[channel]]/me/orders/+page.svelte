@@ -45,7 +45,7 @@
 		},
 		{
 			title: 'Total',
-			getter: (item) => formatMoney(item.total.gross.currency, item.total.gross.amount)
+			getter: (item) => `<div class="font-semibold text-blue-600">${formatMoney(item.total.gross.currency, item.total.gross.amount)}</div>`
 		}
 	];
 </script>

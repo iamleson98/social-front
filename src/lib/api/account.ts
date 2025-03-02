@@ -1,86 +1,5 @@
 import { gql } from "@urql/core";
 
-// export const USER_ADDRESS_CREATE_MUTATION = gql`
-// mutation CreateUserAddress($address: AddressInput!, $type: AddressTypeEnum) {
-//   accountAddressCreate(type: $type, input: $address) {
-//     user {
-//       id
-//       email
-//       addresses {
-//         id
-//         city
-//         phone
-//         postalCode
-//         companyName
-//         cityArea
-//         streetAddress1
-//         streetAddress2
-//         countryArea
-//         country {
-//           country
-//           code
-//         }
-//         firstName
-//         lastName
-//       }
-//       defaultBillingAddress {
-//         id
-//         city
-//         phone
-//         postalCode
-//         companyName
-//         cityArea
-//         streetAddress1
-//         streetAddress2
-//         countryArea
-//         country {
-//           country
-//           code
-//         }
-//         firstName
-//         lastName
-//       }
-//       defaultShippingAddress {
-//         id
-//         city
-//         phone
-//         postalCode
-//         companyName
-//         cityArea
-//         streetAddress1
-//         streetAddress2
-//         countryArea
-//         country {
-//           country
-//           code
-//         }
-//         firstName
-//         lastName
-//       }
-//     }
-//     errors {
-//       message
-//       field
-//     }
-//     address {
-//       id
-//       city
-//       phone
-//       postalCode
-//       companyName
-//       cityArea
-//       streetAddress1
-//       streetAddress2
-//       countryArea
-//       country {
-//         country
-//         code
-//       }
-//       firstName
-//       lastName
-//     }
-//   }
-// }`;
 
 export const ADDRESS_VALIDATION_RULES_QUERY = gql`
 query AddressValidationRules($countryCode: CountryCode!) {
@@ -98,6 +17,9 @@ query AddressValidationRules($countryCode: CountryCode!) {
   }
 }`;
 
+/**
+ * NOTE: This action requires Administration role
+ */
 export const USER_UPDATE_MUTATION = gql`
 mutation UserUpdate($id: ID!, $input: CustomerInput!) {
   customerUpdate(id: $id, input: $input) {
@@ -109,6 +31,25 @@ mutation UserUpdate($id: ID!, $input: CustomerInput!) {
       firstName
       lastName
       email
+    }
+  }
+}`;
+
+/**
+ * NOTE: This action does not require Administration role
+ */
+export const ACCOUNT_UPDATE_MUTATION = gql`
+mutation AccountUpdate($input: AccountInput!) {
+  accountUpdate(input: $input) {
+    errors {
+      field
+      message
+    }
+    user {
+      firstName
+      lastName
+      email
+      languageCode
     }
   }
 }`;
@@ -178,23 +119,25 @@ mutation AccountAddressCreate($input: AddressInput!, $type: AddressTypeEnum) {
       field
       message
     }
-    address {
-      id
-      firstName
-      lastName
-      companyName
-      streetAddress1
-      streetAddress2
-      cityArea
-      city
-      postalCode
-      countryArea
-      phone
-      isDefaultShippingAddress
-      isDefaultBillingAddress
-      country {
-        code
-        country
+    user {
+      addresses {
+        id
+        firstName
+        lastName
+        companyName
+        streetAddress1
+        streetAddress2
+        cityArea
+        city
+        postalCode
+        countryArea
+        phone
+        isDefaultShippingAddress
+        isDefaultBillingAddress
+        country {
+          code
+          country
+        }
       }
     }
   }
@@ -223,6 +166,27 @@ mutation AccountSetDefaultAddress($id: ID!, $type: AddressTypeEnum!) {
       field
       message
     }
+    user {
+      addresses {
+        id
+        firstName
+        lastName
+        companyName
+        streetAddress1
+        streetAddress2
+        cityArea
+        city
+        postalCode
+        countryArea
+        phone
+        isDefaultShippingAddress
+        isDefaultBillingAddress
+        country {
+          code
+          country
+        }
+      }
+    }
   }
 }`
 
@@ -236,23 +200,25 @@ mutation AccountAddressUpdate($id: ID!, $input: AddressInput!) {
       field
       message
     }
-    address {
-      id
-      firstName
-      lastName
-      companyName
-      streetAddress1
-      streetAddress2
-      cityArea
-      city
-      postalCode
-      countryArea
-      phone
-      isDefaultShippingAddress
-      isDefaultBillingAddress
-      country {
-        code
-        country
+    user {
+      addresses {
+        id
+        firstName
+        lastName
+        companyName
+        streetAddress1
+        streetAddress2
+        cityArea
+        city
+        postalCode
+        countryArea
+        phone
+        isDefaultShippingAddress
+        isDefaultBillingAddress
+        country {
+          code
+          country
+        }
       }
     }
   }

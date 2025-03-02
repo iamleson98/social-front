@@ -4,14 +4,12 @@
 	import { SUPPORTED_LANGUAGES, switchTranslationLanguage } from '$i18n';
 	import { DropDown, MenuItem, type DropdownTriggerInterface } from '../ui/Dropdown';
 	import { Button } from '../ui';
-	import {
-		clientSideGetCookieOrDefault,
-		clientSideSetCookie,
-	} from '$lib/utils/cookies';
+	import { clientSideGetCookieOrDefault, clientSideSetCookie } from '$lib/utils/cookies';
 	import { LANGUAGE_KEY } from '$lib/utils/consts';
 	import { onMount } from 'svelte';
 	import { LanguageCodeEnum } from '$lib/gql/graphql';
 	import { buildHomePageLink } from '$lib/utils/utils';
+	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
 
 	let activeLanguage = $state(SUPPORTED_LANGUAGES[0]);
 
@@ -53,7 +51,7 @@
 					<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">Resources</h2>
 					<ul class="text-gray-600">
 						<li class="mb-4">
-							<a href="/" class="hover:underline">Sitename</a>
+							<a href={AppRoute.HOME()} class="hover:underline">Sitename</a>
 						</li>
 						<li>
 							<a href="https://tailwindcss.com/" class="hover:underline">Tailwind CSS</a>
@@ -89,25 +87,27 @@
 					</ul>
 				</div>
 
-				<div>
-					<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">Language</h2>
-					{#snippet trigger({ onclick, onfocus }: DropdownTriggerInterface)}
-						<Button {onclick} {onfocus} size="xs" variant="outline">
-							<activeLanguage.icon />
-							{activeLanguage.name}
-						</Button>
-					{/snippet}
-					<DropDown {trigger} placement="bottom-end">
-						{#each SUPPORTED_LANGUAGES as language, idx (idx)}
-							<MenuItem onclick={() => setLanguageByCode(idx)}>
-								<div class="flex items-center gap-2">
-									<language.icon />
-									<span class="text-nowrap">{language.name}</span>
-								</div>
-							</MenuItem>
-						{/each}
-					</DropDown>
-				</div>
+				{#if !$READ_ONLY_USER_STORE}
+					<div>
+						<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">Language</h2>
+						{#snippet trigger({ onclick, onfocus }: DropdownTriggerInterface)}
+							<Button {onclick} {onfocus} size="xs" variant="outline">
+								<activeLanguage.icon />
+								{activeLanguage.name}
+							</Button>
+						{/snippet}
+						<DropDown {trigger} placement="bottom-end">
+							{#each SUPPORTED_LANGUAGES as language, idx (idx)}
+								<MenuItem onclick={() => setLanguageByCode(idx)}>
+									<div class="flex items-center gap-2">
+										<language.icon />
+										<span class="text-nowrap">{language.name}</span>
+									</div>
+								</MenuItem>
+							{/each}
+						</DropDown>
+					</div>
+				{/if}
 			</div>
 		</div>
 		<hr class="my-6 border-gray-200 sm:mx-auto lg:my-8" />

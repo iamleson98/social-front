@@ -4,9 +4,9 @@
 	import type { Maybe, Mutation, MutationCheckoutDeliveryMethodUpdateArgs } from '$lib/gql/graphql';
 	import { CHECKOUT_UPDATE_DELIVERY_METHOD_MUTATION } from '$lib/api/checkout';
 	import { checkoutStore } from '$lib/stores/app';
-	import { userStore } from '$lib/stores/auth';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { formatMoney, preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { READ_ONLY_USER_STORE } from '$lib/stores/auth/user';
 
 	const getDeliveryMethodSubTitle = (
 		minDays: Maybe<number> | undefined,
@@ -55,10 +55,10 @@
 	<div class="text-sm font-semibold mb-2 text-gray-800">Shipping method</div>
 
 	<div class="flex flex-row flex-wrap">
-		{#if !$userStore && !$checkoutStore?.shippingAddress}
+		{#if !$READ_ONLY_USER_STORE && !$checkoutStore?.shippingAddress}
 			<p>Please provide shipping address first to see available shipping methods</p>
 		{/if}
-		{#if $userStore && !$checkoutStore?.shippingAddress}
+		{#if $READ_ONLY_USER_STORE && !$checkoutStore?.shippingAddress}
 			<p>Loading...</p>
 		{:else if $checkoutStore?.shippingMethods.length}
 			{#each $checkoutStore?.shippingMethods as method, idx (idx)}

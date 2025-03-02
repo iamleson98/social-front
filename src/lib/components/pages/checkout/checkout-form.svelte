@@ -3,7 +3,7 @@
 	import { Email } from '$lib/components/icons';
 	import { Input } from '$lib/components/ui/Input';
 	import { checkoutStore } from '$lib/stores/app';
-	import { userStore } from '$lib/stores/auth';
+	import { READ_ONLY_USER_STORE } from '$lib/stores/auth/user';
 	import DeliveryMethodForm from './delivery-method-form.svelte';
 	import GuestShippingAddress from './guest-shipping-address.svelte';
 	import PaymentForm from './payment-form.svelte';
@@ -19,8 +19,8 @@
 <div class="w-1/2 tablet:w-full">
 	<div class="bg-white rounded-lg p-4 border">
 		<div class="text-sm font-semibold mb-2 text-gray-800">Account</div>
-		{#if $userStore}
-			<div>{$userStore.email}</div>
+		{#if $READ_ONLY_USER_STORE}
+			<div>{$READ_ONLY_USER_STORE.email}</div>
 		{:else}
 			<div>
 				{#if showLoginForm}
@@ -48,7 +48,7 @@
 		<div class="text-sm font-semibold mb-2 text-gray-800">Delivery address</div>
 
 		{#if $checkoutStore?.isShippingRequired}
-			{#if $userStore}
+			{#if $READ_ONLY_USER_STORE}
 				<UserShippingAddress />
 			{:else}
 				<GuestShippingAddress />

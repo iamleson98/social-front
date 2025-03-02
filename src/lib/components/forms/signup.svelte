@@ -26,9 +26,9 @@
 	import Location from '$lib/components/plugins/location.svelte';
 
 	const CHANNEL_SLUG = clientSideGetCookieOrDefault(CHANNEL_KEY, DEFAULT_CHANNEL.slug);
-	// const DEFAULT_COUNTRY =
-	// 	CHANNELS.find((chan) => chan.slug === CHANNEL_SLUG)?.defaultCountryCode ||
-	// 	DEFAULT_CHANNEL.defaultCountryCode;
+	const DEFAULT_COUNTRY =
+		CHANNELS.find((chan) => chan.slug === CHANNEL_SLUG)?.defaultCountryCode ||
+		DEFAULT_CHANNEL.defaultCountryCode;
 	const DEFAULT_LANGUAGE = clientSideGetCookieOrDefault(LANGUAGE_KEY, LanguageCodeEnum.En);
 
 	const FIELD_REQUIRED_MSG = $tranFunc('helpText.fieldRequired');
@@ -75,7 +75,7 @@
 		termAndPoliciesAgree: false,
 		languageCode: DEFAULT_LANGUAGE
 	});
-	let countryCode = $state<CountryCode>();
+	let countryCode = $state<CountryCode>(DEFAULT_COUNTRY);
 	let signupFormErrors = $state.raw<Partial<Record<keyof SignupProps, string[]>>>({});
 	let signupQueryStore =
 		$state<OperationResultStore<Pick<Mutation, 'accountRegister'>, MutationAccountRegisterArgs>>();
@@ -164,7 +164,7 @@
 			{$tranFunc('signup.signupSuccess')}
 		</Alert>
 	{/if}
-	<Alert class="mb-2" size="sm" bordered>{$tranFunc('signup.promtGeoAccessPerm')}</Alert>
+	<Alert class="mb-2" dismissable size="sm" bordered>{$tranFunc('signup.promtGeoAccessPerm')}</Alert>
 	<div class="mb-4">
 		<div class="flex flex-row mobile-m:flex-col justify-between items-start gap-2 mb-2">
 			<div class="w-1/2">

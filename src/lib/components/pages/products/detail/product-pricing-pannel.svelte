@@ -17,7 +17,6 @@
 		Product,
 		ProductVariant
 	} from '$lib/gql/graphql';
-	import { userStore } from '$lib/stores/auth';
 	import { HTTPStatusSuccess, MAX_RATING } from '$lib/utils/consts';
 	import { formatMoney, preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { fade } from 'svelte/transition';
@@ -35,6 +34,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { operationStore, type OperationResultStore } from '$lib/api/operation';
 	import { CHANNELS } from '$lib/utils/channels';
+	import { READ_ONLY_USER_STORE } from '$lib/stores/auth/user';
 
 	type Props = {
 		productInformation: Product;
@@ -74,10 +74,10 @@
 	});
 
 	let userShippingAddress = $derived.by(() => {
-		if (!$userStore || !$userStore?.addresses?.length) return $tranFunc('product.chooseAddress');
+		if (!$READ_ONLY_USER_STORE || !$READ_ONLY_USER_STORE?.addresses?.length) return $tranFunc('product.chooseAddress');
 
 		const defaulShippingAddress =
-			$userStore.addresses.find((addr) => addr.isDefaultShippingAddress) || $userStore.addresses[0];
+			$READ_ONLY_USER_STORE.addresses.find((addr) => addr.isDefaultShippingAddress) || $READ_ONLY_USER_STORE.addresses[0];
 
 		return `${defaulShippingAddress.streetAddress1 || defaulShippingAddress.streetAddress2}, ${defaulShippingAddress.cityArea}, ${defaulShippingAddress.city}`;
 	});

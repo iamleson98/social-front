@@ -2,19 +2,19 @@
 	import UserAddress from '$lib/components/common/user-address/user-address.svelte';
 	import { Edit, Plus, Trash } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import { Label } from '$lib/components/ui/Input';
-	import { userStore } from '$lib/stores/auth';
+	import { Checkbox, Label } from '$lib/components/ui/Input';
 	import AddressForm from '../checkout/address-form.svelte';
 	import type {
 		Address,
 		AddressInput,
-		AddressTypeEnum,
 		Mutation,
 		MutationAccountAddressCreateArgs,
 		MutationAccountAddressDeleteArgs,
 		MutationAccountAddressUpdateArgs,
+		MutationAccountSetDefaultAddressArgs,
 		User
 	} from '$lib/gql/graphql';
+	import { AddressTypeEnum } from '$lib/gql/graphql';
 	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import { CHANNEL_KEY } from '$lib/utils/consts';
 	import { DEFAULT_CHANNEL } from '$lib/utils/channels';
@@ -22,15 +22,18 @@
 	import {
 		ACCOUNT_ADDRESS_CREATE_MUTATION,
 		ACCOUNT_ADDRESS_DELETE_MUTATION,
-		ACCOUNT_ADDRESS_UPDATE_MUTATION
+		ACCOUNT_ADDRESS_UPDATE_MUTATION,
+		ACCOUNT_SET_DEFAULT_ADDRESS_MUTATION
 	} from '$lib/api/account';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { ME_PAGE_USER_STORE } from '$lib/stores/app/me';
 
 	let showAddressCreateForm = $state(false);
 	let loading = $state(false);
 	let addressUpdateInputInitValue = $state<Address>();
+	const MAX_USER_ADDRESSES = 5;
 
 	const handleShowAddressForm = (showCreateForm: boolean, defaultAddress?: Address) => {
 		showAddressCreateForm = showCreateForm;
@@ -52,8 +55,6 @@
 
 		if (preHandleErrorOnGraphqlResult(result, 'accountAddressUpdate')) return;
 
-		const { id } = addressUpdateInputInitValue!;
-
 		// hide update form
 		addressUpdateInputInitValue = undefined;
 		toastStore.send({
@@ -62,16 +63,9 @@
 		});
 
 		// update user state
-		$userStore = {
-			...$userStore,
-			addresses: $userStore?.addresses.map((addr) => {
-				if (addr.id !== id) return addr;
-
-				return {
-					...addr,
-					...result.data?.accountAddressUpdate?.address
-				};
-			})
+		$ME_PAGE_USER_STORE = {
+			...$ME_PAGE_USER_STORE,
+			addresses: result.data?.accountAddressUpdate?.user?.addresses || []
 		} as User;
 	};
 
@@ -94,11 +88,9 @@
 			variant: 'success',
 			message: 'Address created'
 		});
-		$userStore = {
-			...$userStore,
-			addresses: ($userStore?.addresses || []).concat(
-				result.data?.accountAddressCreate?.address as Address
-			)
+		$ME_PAGE_USER_STORE = {
+			...$ME_PAGE_USER_STORE,
+			addresses: result.data?.accountAddressCreate?.user?.addresses || []
 		} as User;
 		showAddressCreateForm = false;
 	};
@@ -121,9 +113,35 @@
 			message: 'Address deleted'
 		});
 
-		$userStore = {
-			...$userStore,
-			addresses: ($userStore?.addresses || []).filter((address) => address.id !== id)
+		$ME_PAGE_USER_STORE = {
+			...$ME_PAGE_USER_STORE,
+			addresses: ($ME_PAGE_USER_STORE?.addresses || []).filter((address) => address.id !== id)
+		} as User;
+	};
+
+	const setDefaultAddress = async (id: string, type: AddressTypeEnum) => {
+		loading = true; //
+
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'accountSetDefaultAddress'>,
+			MutationAccountSetDefaultAddressArgs
+		>(ACCOUNT_SET_DEFAULT_ADDRESS_MUTATION, {
+			id,
+			type
+		});
+
+		loading = false; //
+
+		if (preHandleErrorOnGraphqlResult(result, 'accountSetDefaultAddress')) return;
+
+		toastStore.send({
+			variant: 'success',
+			message: 'Address set as default'
+		});
+
+		$ME_PAGE_USER_STORE = {
+			...$ME_PAGE_USER_STORE,
+			addresses: result.data?.accountSetDefaultAddress?.user?.addresses || []
 		} as User;
 	};
 </script>
@@ -132,13 +150,31 @@
 	<Label label="Manage Addresses" size="lg" />
 
 	<div class="mt-2">
-		{#if !$userStore?.addresses?.length}
+		{#if !$ME_PAGE_USER_STORE?.addresses?.length}
 			<div class="text-sm">You have no address yet</div>
 		{:else}
 			<div class="flex gap-2 flex-wrap">
-				{#each $userStore?.addresses as address, idx (idx)}
+				{#each $ME_PAGE_USER_STORE?.addresses as address, idx (idx)}
 					<UserAddress {address} class="w-[48%] mobile-l:w-full">
-						<div class="text-right flex gap-2 justify-end">
+						<div class="flex items-center gap-2 text-gray-600!">
+							{#if !address.isDefaultBillingAddress}
+								<Checkbox
+									label="Set as default billing address"
+									onchange={() => setDefaultAddress(address.id, AddressTypeEnum.Billing)}
+									size="sm"
+									disabled={loading}
+								/>
+							{/if}
+							{#if !address.isDefaultShippingAddress}
+								<Checkbox
+									label="Set as default shipping address"
+									onchange={() => setDefaultAddress(address.id, AddressTypeEnum.Shipping)}
+									size="sm"
+									disabled={loading}
+								/>
+							{/if}
+						</div>
+						<div class="text-right flex gap-2 justify-end mt-2">
 							<Button
 								size="xs"
 								variant="light"
@@ -163,7 +199,7 @@
 				{/each}
 			</div>
 		{/if}
-		{#if !showAddressCreateForm && !addressUpdateInputInitValue}
+		{#if !showAddressCreateForm && !addressUpdateInputInitValue && ($ME_PAGE_USER_STORE?.addresses?.length || 0) < MAX_USER_ADDRESSES}
 			<div class="mt-2 text-right">
 				<Button size="xs" onclick={() => handleShowAddressForm(true)} startIcon={Plus}
 					>New Address</Button

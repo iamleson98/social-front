@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { Icon, RosetteDiscountChecked } from '$lib/components/icons';
+	import { CheckOff, Icon, RosetteDiscountChecked } from '$lib/components/icons';
 	import Sidebar from '$lib/components/pages/me/sidebar.svelte';
-	import { userStore } from '$lib/stores/auth';
 	import { onMount, type Snippet } from 'svelte';
 	import type { LayoutServerData } from './$types';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
+	import { ME_PAGE_USER_STORE } from '$lib/stores/app/me';
 
 	type Props = {
 		children: Snippet;
@@ -14,19 +14,19 @@
 	let { children, data }: Props = $props();
 
 	onMount(() => {
-		userStore.set(data.user);
+		ME_PAGE_USER_STORE.set(data.user);
 	});
 
 	let userNameDisplay = $derived.by(() => {
-		if ($userStore?.firstName && $userStore?.lastName) {
-			return `${$userStore?.firstName} ${$userStore?.lastName}`;
+		if ($ME_PAGE_USER_STORE?.firstName && $ME_PAGE_USER_STORE?.lastName) {
+			return `${$ME_PAGE_USER_STORE?.firstName} ${$ME_PAGE_USER_STORE?.lastName}`;
 		}
 
-		return $userStore?.email;
+		return $ME_PAGE_USER_STORE?.email;
 	});
 </script>
 
-{#if !$userStore}
+{#if !$ME_PAGE_USER_STORE}
 	<SkeletonContainer>
 		<Skeleton class="w-full h-6" />
 	</SkeletonContainer>
@@ -34,15 +34,24 @@
 	<!-- MARK: Header -->
 	<div class="flex items-start gap-2 text-gray-700">
 		<div class="rounded-full h-16 w-16 overflow-hidden">
-			<img src={$userStore?.avatar?.url} alt={$userStore?.avatar?.alt} class="h-full w-full" />
+			<img
+				src={$ME_PAGE_USER_STORE?.avatar?.url}
+				alt={$ME_PAGE_USER_STORE?.avatar?.alt}
+				class="h-full w-full"
+			/>
 		</div>
 		<div>
 			<div class="text-lg font-semibold">
 				{userNameDisplay}
 			</div>
 			<div class="flex items-center gap-1">
-				<Icon icon={RosetteDiscountChecked} class="text-blue-500 h-6 w-6" />
-				<span class="text-sm text-gray-500">Verified</span>
+				{#if $ME_PAGE_USER_STORE?.isConfirmed}
+					<Icon icon={RosetteDiscountChecked} class="text-blue-500 h-6 w-6" />
+					<span class="text-sm text-gray-500">Verified</span>
+				{:else}
+					<Icon icon={CheckOff} class="text-red-500 h-6 w-6" />
+					<span class="text-sm text-gray-500">Unverified</span>
+				{/if}
 			</div>
 		</div>
 	</div>
