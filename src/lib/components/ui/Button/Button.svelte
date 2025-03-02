@@ -2,7 +2,7 @@
 	import { buttonVariantColorsMap, type ButtonProps } from './button.types';
 	import { Icon, type IconType } from '$lib/components/icons';
 	import { debounceClick } from '$lib/actions/input-debounce';
-	import { INPUT_BUTTON_SIZE_MAP } from '$lib/utils/consts';
+	import { INPUT_BUTTON_SIZE_MAP } from './button.types';
 
 	type IconProps = {
 		icon?: IconType;

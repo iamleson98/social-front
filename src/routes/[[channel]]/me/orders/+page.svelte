@@ -4,10 +4,14 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
-	import { OrderStatus, PaymentChargeStatusEnum, type Order, type Query } from '$lib/gql/graphql';
-	import { formatMoney, type PaginationOptions } from '$lib/utils/utils';
+	import { type Order, type Query } from '$lib/gql/graphql';
+	import {
+		formatMoney,
+		orderStatusBuider,
+		paymentStatusBuilder,
+		type PaginationOptions
+	} from '$lib/utils/utils';
 	import dayjs from 'dayjs';
-	import { lowerCase, startCase } from 'es-toolkit';
 
 	const BATCH_LOAD = 20;
 
@@ -20,87 +24,16 @@
 		}
 	});
 
-	const paymentStatusBuilder = (status: PaymentChargeStatusEnum) => {
-		// NOTE: Those badge classes are found on: https://v5.daisyui.com/components/badge/
-		let badgeClass = 'badge-success';
-
-		switch (status) {
-			case PaymentChargeStatusEnum.Cancelled:
-				badgeClass = 'badge-error';
-				break;
-			case PaymentChargeStatusEnum.FullyCharged:
-				badgeClass = 'badge-success';
-				break;
-			case PaymentChargeStatusEnum.FullyRefunded:
-				badgeClass = 'badge-primary';
-				break;
-			case PaymentChargeStatusEnum.NotCharged:
-				badgeClass = 'badge-warning';
-				break;
-			case PaymentChargeStatusEnum.PartiallyCharged:
-				badgeClass = 'badge-info';
-				break;
-			case PaymentChargeStatusEnum.PartiallyRefunded:
-				badgeClass = 'badge-accent';
-				break;
-			case PaymentChargeStatusEnum.Pending:
-				badgeClass = 'badge-dash! badge-neutral';
-				break;
-			case PaymentChargeStatusEnum.Refused:
-				badgeClass = 'badge-neutral';
-				break;
-		}
-
-		return `<div class="badge badge-outline ${badgeClass} badge-sm">${startCase(lowerCase(status.replace(/_/g, ' ')))}</div>`;
-	};
-
-	const orderStatusBuider = (status: OrderStatus) => {
-		// NOTE: Those badge classes are found on: https://v5.daisyui.com/components/badge/
-		let badge = 'badge-success';
-
-		switch (status) {
-			case OrderStatus.Canceled:
-				badge = 'badge-error';
-				break;
-			case OrderStatus.Draft:
-				badge = 'badge-neutral';
-				break;
-			case OrderStatus.Expired:
-				badge = 'badge-secondary';
-				break;
-			case OrderStatus.Fulfilled:
-				badge = 'badge-success';
-				break;
-			case OrderStatus.PartiallyFulfilled:
-				badge = 'badge-accent';
-				break;
-			case OrderStatus.PartiallyReturned:
-				badge = 'badge-info';
-				break;
-			case OrderStatus.Returned:
-				badge = 'badge-warning';
-				break;
-			case OrderStatus.Unconfirmed:
-				badge = 'badge-dash! badge-neutral';
-				break;
-			case OrderStatus.Unfulfilled:
-				badge = 'badge-neutral';
-				break;
-		}
-
-		return `<div class="badge ${badge} badge-sm">${startCase(lowerCase(status.replace(/_/g, ' ')))}</div>`;
-	};
-
 	const ORDER_TABLE_COLUMNS: TableColumnProps<Order>[] = [
 		{
 			title: 'No',
 			getter: (item) => item.number,
-			sortable: true
+			// sortable: true
 		},
 		{
 			title: 'Date',
 			getter: (item) => dayjs(item.created).format('MMMM D, YYYY [at] h:mm A'),
-			sortable: true
+			// sortable: true
 		},
 		{
 			title: 'Payment',

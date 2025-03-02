@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Icon, type IconType } from '$lib/components/icons';
-	import { ICON_BTN_SIZE_MAP } from '$lib/utils/consts';
+	import { ICON_BTN_SIZE_MAP } from './button.types';
 	import Button from './Button.svelte';
 	import type { ButtonProps } from './button.types';
 

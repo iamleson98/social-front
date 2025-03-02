@@ -23,6 +23,22 @@ export type ButtonProps = {
   clickDebounceOptions?: ClickDebounceOpts;
 } & HTMLButtonAttributes;
 
+export const ICON_BTN_SIZE_MAP: Record<SocialSize, string> = {
+  xs: 'w-7!',
+  sm: 'w-9!',
+  md: 'w-10!',
+  lg: 'w-12!',
+  xl: 'w-14!',
+};
+
+export const INPUT_BUTTON_SIZE_MAP: Record<SocialSize, string> = {
+  xs: 'h-7 text-xs',
+  sm: 'h-9 text-sm',
+  md: 'h-10 text-base',
+  lg: 'h-12 text-lg',
+  xl: 'h-14 text-xl',
+};
+
 export const buttonVariantColorsMap: Record<ButtonVariant, Record<SocialColor, string>> = {
   filled: {
     dark: 'text-white bg-gray-900 focus:ring-gray-200',

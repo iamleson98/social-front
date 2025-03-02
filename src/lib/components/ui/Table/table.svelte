@@ -39,7 +39,7 @@
 	const handleNavigateClick = (dir: 1 | -1) => {
 		if (!pagination) return;
 		if (dir === -1 && pagination.startCursor) onPreviousPagelick?.(pagination.startCursor);
-		if (dir === 1 && pagination.endCursor) onNextPagelick?.(pagination.endCursor);
+		else if (dir === 1 && pagination.endCursor) onNextPagelick?.(pagination.endCursor);
 	};
 
 	const handleSortClick = (column: string) => {
@@ -119,7 +119,7 @@
 <!-- MARK: pagination -->
 {#if pagination}
 	<div class="mt-4 flex items-center justify-between">
-		<div>
+		<div class:hidden!={!onChangeRowsPerPage}>
 			{#snippet trigger({ onclick, onfocus }: DropdownTriggerInterface)}
 				<Button size="xs" variant="light" {onclick} {onfocus}>No. of row {rowsPerPage}</Button>
 			{/snippet}

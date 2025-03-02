@@ -1,5 +1,4 @@
 import { CircleCheckFilled, ExclamationCircleFilled, InfoCircleFilled, InfoTriangleFilled, type IconType } from "$lib/components/icons";
-import type { SocialSize } from "$lib/components/ui/common";
 import { CountryCode, LanguageCodeEnum, type PaymentGatewayConfig } from "$lib/gql/graphql";
 import { type PaymentMethodsResponse } from "@adyen/adyen-web";
 import { AdyenCheckout } from "@adyen/adyen-web";
@@ -81,30 +80,6 @@ export const MIN_RATING = 0;
 
 /** used for some input fields that requires event handling after a moment instead of always  */
 export const DEBOUNCE_INPUT_TIME = 333;
-
-export const INPUT_BUTTON_SIZE_MAP: Record<SocialSize, string> = {
-  xs: 'h-7 text-xs',
-  sm: 'h-9 text-sm',
-  md: 'h-10 text-base',
-  lg: 'h-12 text-lg',
-  xl: 'h-14 text-xl',
-};
-
-export const TEXT_AREA_SIZE_MAP: Record<SocialSize, string> = {
-  xs: 'text-xs',
-  sm: 'text-sm',
-  md: 'text-base',
-  lg: 'text-lg',
-  xl: 'text-xl',
-};
-
-export const ICON_BTN_SIZE_MAP: Record<SocialSize, string> = {
-  xs: 'w-7!',
-  sm: 'w-9!',
-  md: 'w-10!',
-  lg: 'w-12!',
-  xl: 'w-14!',
-};
 
 export type PaymentStatus = "paidInFull" | "overpaid" | "none" | "authorized";
 

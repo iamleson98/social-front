@@ -4,8 +4,8 @@
 	import { randomID } from '$lib/utils/utils';
 	import { debounceInput } from '$lib/actions/input-debounce';
 	import { tranFunc } from '$i18n';
-	import { TEXT_AREA_SIZE_MAP } from '$lib/utils/consts';
-	import { INPUT_LABEL_SIZE_STYLE_MAP, INPUT_TYPES, type InputProps } from './input.types';
+	import { TEXT_AREA_SIZE_MAP } from './input.types';
+	import { INPUT_TYPES, type InputProps } from './input.types';
 	import type { HTMLTextareaAttributes } from 'svelte/elements';
 	import Label from './label.svelte';
 
