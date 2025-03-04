@@ -1,6 +1,5 @@
 import { ACCESS_TOKEN_KEY, CSRF_TOKEN_KEY, REFRESH_TOKEN_KEY } from "$lib/utils/consts";
-import { tranFunc } from "$lib/i18n";
-import { get } from "svelte/store";
+import { serverSideTranslate } from "$lib/i18n";
 
 
 export const load = async (event) => {
@@ -15,7 +14,7 @@ export const load = async (event) => {
 
   return {
     meta: {
-      title: get(tranFunc)('signup.title'),
+      title: await serverSideTranslate('signup.title', event),
       description: "Sign up to create an account on our platform",
     },
   };

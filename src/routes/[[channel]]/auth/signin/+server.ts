@@ -1,9 +1,8 @@
 import { json } from "@sveltejs/kit";
 import { ACCESS_TOKEN_KEY, CSRF_TOKEN_KEY, HTTPStatusBadRequest, HTTPStatusServerError, HTTPStatusSuccess, REFRESH_TOKEN_KEY } from "$lib/utils/consts";
-import { tranFunc } from "$i18n";
+import { serverSideTranslate } from "$i18n";
 import { cookieOpts, performServerSideGraphqlRequest } from "$lib/api/client";
 import type { Mutation, User } from "$lib/gql/graphql";
-import { get } from "svelte/store";
 import { USER_LOGIN_MUTATION_STORE } from "$lib/api";
 
 type Props = {
@@ -19,7 +18,7 @@ export const POST = async (event) => {
   const rememberMe = credentials.rememberMe || false;
 
   if (!email.trim() || !password) {
-    return json({ error: get(tranFunc)('error.invalidEmailAndPassword'), status: HTTPStatusBadRequest });
+    return json({ error: await serverSideTranslate('error.invalidEmailAndPassword', event), status: HTTPStatusBadRequest });
   }
 
   const result = await performServerSideGraphqlRequest<Pick<Mutation, 'tokenCreate'>>(

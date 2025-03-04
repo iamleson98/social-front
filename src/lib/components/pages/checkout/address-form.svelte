@@ -5,8 +5,7 @@
 		AddressInput,
 		CountryCode,
 		Query,
-		QueryAddressValidationRulesArgs,
-		QueryChannelArgs
+		QueryAddressValidationRulesArgs
 	} from '$lib/gql/graphql';
 	import { AddressTypeEnum } from '$lib/gql/graphql';
 	import { operationStore } from '$lib/api/operation';
@@ -14,21 +13,21 @@
 	import {
 		getOrderedAddressFields,
 		type AddressField,
-		getFieldLabel,
 		isRequiredField,
 		typeTags,
 		addressFieldValidators,
 		defaultAddressFormValues,
 		addressToFieldValues,
-		getCountryName
+		type AddressFieldLabel
 	} from '$lib/utils/address';
 	import { Input, Label, RadioButton } from '$lib/components/ui/Input';
-	import { uniqBy } from 'es-toolkit';
+	import { camelCase, uniqBy } from 'es-toolkit';
 	import { Button } from '$lib/components/ui';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { CHANNEL_DETAILS_QUERY_STORE } from '$lib/api/channels';
+	import CountryByChannelSelect from '$lib/components/common/country-language/country-by-channel-select.svelte';
+	import { tranFunc } from '$i18n';
 
 	type Props = {
 		countrySelectOptions?: SelectOption[];
@@ -55,42 +54,51 @@
 	let addressType = $state<AddressTypeEnum>();
 	let requiredFields: Partial<Record<AddressField, boolean>> = {};
 
-	const validationStore = operationStore<
+	/** NOTE: this code must be use by client side since it contains client translation */
+	const addressFieldMessages: Record<AddressFieldLabel, string> = {
+		city: $tranFunc('common.city'),
+		firstName: $tranFunc('common.firstName'),
+		countryArea: $tranFunc('common.countryArea'),
+		lastName: $tranFunc('common.lastName'),
+		country: $tranFunc('common.country'),
+		cityArea: $tranFunc('common.cityArea'),
+		postalCode: $tranFunc('common.postalCode'),
+		companyName: $tranFunc('common.companyName'),
+		streetAddress1: $tranFunc('common.streetAddress1'),
+		streetAddress2: $tranFunc('common.streetAddress2'),
+		phone: $tranFunc('common.phone')
+	};
+
+	const ADDRESS_VALIDATION_RULES_STORE = operationStore<
 		Pick<Query, 'addressValidationRules'>,
 		QueryAddressValidationRulesArgs
 	>({
 		kind: 'query',
 		query: ADDRESS_VALIDATION_RULES_QUERY,
-		context: { requestPolicy: 'network-only' },
+		context: { requestPolicy: 'cache-and-network' },
 		pause: true
-	});
-
-	const channelStore = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
-		kind: 'query',
-		query: CHANNEL_DETAILS_QUERY_STORE,
-		requestPolicy: 'cache-and-network',
-		variables: {
-			slug: channelSlug
-		}
 	});
 
 	$effect(() => {
 		if (!formValues.countryCode.value) return;
 
-		validationStore.reexecute({
+		ADDRESS_VALIDATION_RULES_STORE.reexecute({
 			variables: { countryCode: formValues.countryCode.value as CountryCode }
 		});
 	});
 
 	const checkFieldIsRequired = (field: AddressField) => {
-		if (!$validationStore.data?.addressValidationRules) return false;
+		if (!$ADDRESS_VALIDATION_RULES_STORE.data?.addressValidationRules) return false;
 
-		const required = isRequiredField(field, $validationStore.data.addressValidationRules);
+		const required = isRequiredField(
+			field,
+			$ADDRESS_VALIDATION_RULES_STORE.data.addressValidationRules
+		);
 		return (requiredFields[field] = required); //
 	};
 
 	const handleSubmit = () => {
-		if (!$validationStore.data?.addressValidationRules) {
+		if (!$ADDRESS_VALIDATION_RULES_STORE.data?.addressValidationRules) {
 			toastStore.send({
 				variant: 'error',
 				message: 'Address validation rules are not available'
@@ -123,63 +131,49 @@
 </script>
 
 <div>
-	{#if $channelStore.fetching}
-		<SkeletonContainer class="w-full">
-			<Skeleton class="h-4 w-full" />
-		</SkeletonContainer>
-	{:else if $channelStore.error}
-		<Alert variant="error" size="sm" bordered>{$channelStore.error.message}</Alert>
-	{:else if $channelStore.data?.channel}
-		{@const availableCountries =
-			$channelStore.data?.channel?.countries?.map<SelectOption>(({ code }) => ({
-				value: code,
-				label: getCountryName(code)
-			})) || []}
-		<Select
-			disabled={$validationStore.fetching}
-			bind:value={formValues.countryCode.value}
-			size="sm"
-			options={availableCountries}
+	<div class="mb-2">
+		<CountryByChannelSelect
+			{channelSlug}
 			label="Choose your country"
+			bind:singleValue={formValues.countryCode.value}
+			disabled={$ADDRESS_VALIDATION_RULES_STORE.fetching}
+			size="sm"
 		/>
-	{/if}
+	</div>
 
-	{#if $validationStore.fetching}
+	{#if $ADDRESS_VALIDATION_RULES_STORE.fetching}
 		<SkeletonContainer class="w-full">
 			<Skeleton class="h-6 w-full" />
 		</SkeletonContainer>
-	{:else if $validationStore.error}
-		<Alert variant="error" size="sm" bordered>{$validationStore.error.message}</Alert>
-	{:else if $validationStore.data?.addressValidationRules}
+	{:else if $ADDRESS_VALIDATION_RULES_STORE.error}
+		<Alert variant="error" size="sm" bordered>{$ADDRESS_VALIDATION_RULES_STORE.error.message}</Alert
+		>
+	{:else if $ADDRESS_VALIDATION_RULES_STORE.data?.addressValidationRules}
 		{@const { allowedFields, countryAreaChoices, countryAreaType, cityType, postalCodeType } =
-			$validationStore.data.addressValidationRules}
+			$ADDRESS_VALIDATION_RULES_STORE.data.addressValidationRules}
 		{@const orderedAddressFields = getOrderedAddressFields(allowedFields as AddressField[])}
-		{@const localizedObj = {
-			countryArea: countryAreaType,
-			city: cityType,
-			postalCode: postalCodeType
-		}}
 
 		{#each orderedAddressFields as field, idx (idx)}
-			{@const label = getFieldLabel(field, localizedObj)}
+			{@const label = addressFieldMessages[camelCase(field) as AddressFieldLabel] || field}
 			{@const required = checkFieldIsRequired(field)}
-			{#if field === 'countryArea' && label}
+			{#if field === 'countryArea'}
 				{@const choiceOptions = uniqBy(countryAreaChoices, (item) => item.raw).map<SelectOption>(
 					({ verbose, raw }) => ({
-						value: raw as string,
-						label: verbose as string
+						value: verbose as string,
+						label: raw as string
 					})
 				)}
 				<Select
 					options={choiceOptions}
-					placeholder={label}
-					{label}
+					placeholder={label || 'Country Area'}
+					label={label || 'Country Area'}
 					size="sm"
 					{required}
 					bind:value={formValues[field].value}
 					variant={formValues[field].error ? 'error' : 'info'}
 					subText={formValues[field].error || ''}
 					disabled={updatingCHeckoutAddresses}
+					class="mb-2"
 				/>
 			{:else if label}
 				<Input
@@ -206,12 +200,14 @@
 					value={AddressTypeEnum.Billing}
 					bind:group={addressType}
 					disabled={updatingCHeckoutAddresses}
+					size="sm"
 				/>
 				<RadioButton
 					label={AddressTypeEnum.Shipping}
 					value={AddressTypeEnum.Shipping}
 					bind:group={addressType}
 					disabled={updatingCHeckoutAddresses}
+					size="sm"
 				/>
 			</div>
 		{/if}

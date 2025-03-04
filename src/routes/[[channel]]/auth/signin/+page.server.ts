@@ -6,8 +6,7 @@ import {
 import { redirect } from '@sveltejs/kit';
 import { AppRoute } from '$lib/utils';
 import { performServerSideGraphqlRequest } from '$lib/api/client';
-import { tranFunc } from '$lib/i18n';
-import { get } from 'svelte/store';
+import { serverSideTranslate } from '$lib/i18n';
 import { USER_ME_QUERY_STORE } from '$lib/api';
 
 
@@ -24,13 +23,13 @@ export const load = async (event) => {
 		);
 		if (!result.error) {
 			const next = event.url.searchParams.get('next');
-			throw redirect(HTTPStatusPermanentRedirect, next ? decodeURIComponent(next) : AppRoute.HOME);
+			throw redirect(HTTPStatusPermanentRedirect, next ? decodeURIComponent(next) : AppRoute.HOME());
 		}
 	}
 
 	return {
 		meta: {
-			title: get(tranFunc)('signin.title'),
+			title: await serverSideTranslate('signin.title', event),
 		},
 	};
 };

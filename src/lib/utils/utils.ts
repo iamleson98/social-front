@@ -112,7 +112,7 @@ export const formatSelectedAttributeValue = (attribute: SelectedAttribute) => {
 		case AttributeInputTypeEnum.Dropdown:
 			return attribute.values[0].name;
 		case AttributeInputTypeEnum.Boolean:
-			return attribute.values[0].boolean ? get(tranFunc)('common.yes') : get(tranFunc)('common.no');
+			return attribute.values[0].boolean ? 'yes' : 'no';
 		case AttributeInputTypeEnum.PlainText:
 			return attribute.values[0].name;
 		case AttributeInputTypeEnum.Multiselect:

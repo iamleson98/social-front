@@ -1,9 +1,7 @@
-import { tranFunc } from "$i18n";
 import { CountryCode, type Address, type AddressValidationData, type Maybe } from "$lib/gql/graphql";
-import { uniq, camelCase } from "es-toolkit";
+import { uniq } from "es-toolkit";
 import { numberRegex } from "./utils";
 import { parsePhoneNumberWithError, type CountryCode as PhoneCountryCode } from "libphonenumber-js/max";
-import { get } from "svelte/store";
 
 export type LocalizedAddressFieldLabel =
   | "province"
@@ -37,6 +35,8 @@ export type AddressField =
   | "streetAddress2"
   | "phone";
 
+export type ApiAddressField = AddressField | "name";
+
 type AddressFieldObj = {
   value: string | number;
   error: string | null;
@@ -56,8 +56,7 @@ export const addressFieldsOrder: AddressField[] = [
   "phone",
 ];
 
-export const defaultAddressFormValues = () => addressFieldsOrder
-  .reduce((prev, acc) => ({ ...prev, [acc]: { value: "", error: null } }), {} as Record<AddressField, AddressFieldObj>);
+export const defaultAddressFormValues = () => addressFieldsOrder.reduce((prev, acc) => ({ ...prev, [acc]: { value: "", error: null } }), {} as Record<AddressField, AddressFieldObj>);
 
 export const addressToFieldValues = (addr: Address): Record<AddressField, AddressFieldObj> => {
   const result = defaultAddressFormValues()
@@ -201,23 +200,6 @@ export const addressFieldValidators: Record<AddressField, AddressFieldValidator>
 
 export type AddressFieldLabel = Exclude<AddressField, "countryCode"> | "country";
 
-/** NOTE: this code must be use by client side since it contains client translation */
-export const addressFieldMessages: Record<AddressFieldLabel, string> = {
-  city: get(tranFunc)('common.city'),
-  firstName: get(tranFunc)('common.firstName'),
-  countryArea: get(tranFunc)('common.countryArea'),
-  lastName: get(tranFunc)('common.lastName'),
-  country: get(tranFunc)('common.country'),
-  cityArea: get(tranFunc)('common.cityArea'),
-  postalCode: get(tranFunc)('common.postalCode'),
-  companyName: get(tranFunc)('common.companyName'),
-  streetAddress1: get(tranFunc)('common.streetAddress1'),
-  streetAddress2: get(tranFunc)('common.streetAddress2'),
-  phone: get(tranFunc)('common.phone'),
-};
-
-export type ApiAddressField = AddressField | "name";
-
 export const getRequiredAddressFields = (requiredFields: AddressField[] = []): AddressField[] => [
   ...requiredFields,
   "firstName",
@@ -225,7 +207,7 @@ export const getRequiredAddressFields = (requiredFields: AddressField[] = []): A
   "phone",
 ];
 
-type LocalizedObj = {
+export type LocalizedObj = {
   countryArea: string,
   city: string,
   postalCode: string,
@@ -236,29 +218,24 @@ export const typeTags: Partial<Record<AddressField, string>> = {
 };
 
 export const getFilteredAddressFields = (addressFields: ApiAddressField[]) => {
-  const filteredAddressFields = addressFields.filter(
-    (addressField: ApiAddressField) => addressField !== "name",
-  ) as AddressField[];
+  const filteredAddressFields = addressFields.filter((addressField) => addressField !== "name") as AddressField[];
 
   return uniq([...filteredAddressFields, "firstName", "lastName", "phone"]);
 };
 
 export const getOrderedAddressFields = (addressFields: AddressField[]) => {
   const filteredAddressFields = getFilteredAddressFields(addressFields);
-  const result = addressFieldsOrder.filter(field => filteredAddressFields.includes(field));
-
-  return result;
+  return addressFieldsOrder.filter(field => filteredAddressFields.includes(field));
 };
 
-const getLocalizedFieldLabel = (field: AddressField, localizedField: string = '') => {
-  try {
-    const translatedLabel = localizedAddressFieldMessages[camelCase(localizedField) as LocalizedAddressFieldLabel];
-    return translatedLabel;
-  } catch {
-    console.warn(`Missing translation: ${localizedField}`);
-    return addressFieldMessages[camelCase(field) as AddressFieldLabel];
-  }
-};
+// const getLocalizedFieldLabel = (field: AddressField, localizedField: string = '') => {
+//   try {
+//     return localizedAddressFieldMessages[camelCase(localizedField) as LocalizedAddressFieldLabel];
+//   } catch {
+//     console.warn(`Missing translation: ${localizedField}`);
+//     return addressFieldMessages[camelCase(field) as AddressFieldLabel];
+//   }
+// };
 
 export const isRequiredField = (field: AddressField, validationRules: AddressValidationData) => {
   if (!validationRules.requiredFields) return false;
@@ -287,7 +264,7 @@ const getMissingFieldsFromAddress = (address: Maybe<AddressFragment>, validation
 
   const missingFields: AddressField[] = [];
 
-  for (const field of Object.keys(address)) {
+  for (const field in address) {
     const value = address[field as keyof typeof address];
 
     if (!isRequiredField(field as AddressField, validationRules) || !!value) continue;
@@ -301,16 +278,16 @@ export const hasAllRequiredFields = (address: Maybe<AddressFragment>, validation
   return !getMissingFieldsFromAddress(address, validationRules).length;
 };
 
-export const getFieldLabel = (field: AddressField, localizedFields: LocalizedObj) => {
-  const localizedField = localizedFields[field as keyof typeof localizedFields];
-  const isLocalizedField = !!localizedField && localizedField !== field;
+// export const getFieldLabel = (field: AddressField, localizedFields: LocalizedObj) => {
+//   const localizedField = localizedFields[field as keyof typeof localizedFields];
+//   const isLocalizedField = !!localizedField && localizedField !== field;
 
-  if (isLocalizedField) {
-    return getLocalizedFieldLabel(field, localizedField);
-  }
+//   if (isLocalizedField) {
+//     return getLocalizedFieldLabel(field, localizedField);
+//   }
 
-  return addressFieldMessages[camelCase(field) as AddressFieldLabel];
-};
+//   return addressFieldMessages[camelCase(field) as AddressFieldLabel];
+// };
 
 const countryNames = new Intl.DisplayNames("EN-US", {
   type: "region",

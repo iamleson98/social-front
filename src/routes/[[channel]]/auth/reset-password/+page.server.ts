@@ -1,12 +1,11 @@
 import { HTTPStatusSuccess } from "$lib/utils/consts";
-import { tranFunc } from "$lib/i18n";
-import { get } from "svelte/store";
+import { serverSideTranslate } from "$lib/i18n";
 
-export const load = async () => {
+export const load = async (event) => {
   return {
     status: HTTPStatusSuccess,
     meta: {
-      title: get(tranFunc)('resetPassword.title'),
+      title: await serverSideTranslate('resetPassword.title', event),
       description: "Reset your password by providing your email address",
     }
   };

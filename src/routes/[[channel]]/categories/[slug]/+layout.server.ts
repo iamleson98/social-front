@@ -1,10 +1,9 @@
 import { error } from "@sveltejs/kit";
 import { CHANNEL_KEY, HTTPStatusBadRequest, HTTPStatusServerError } from "$lib/utils/consts";
 import validator from 'validator';
-import { tranFunc } from "$i18n";
+import { serverSideTranslate } from "$i18n";
 import { performServerSideGraphqlRequest } from "$lib/api/client";
 import type { Query } from "$lib/gql/graphql";
-import { get } from "svelte/store";
 import { CATEGORY_DETAIL_QUERY_STORE } from "$lib/api";
 import type { CategoryDetailQueryArgs } from "$lib/api/product";
 import { DEFAULT_CHANNEL } from "$lib/utils/channels.js";
@@ -15,7 +14,7 @@ export const load = async (event) => {
 
   if (!slug || !validator.isSlug(slug)) {
     return error(HTTPStatusBadRequest, {
-      message: get(tranFunc)('error.invalidSlug'),
+      message: await serverSideTranslate('error.invalidSlug', event),
     });
   }
 
@@ -33,7 +32,7 @@ export const load = async (event) => {
 
   if (categoryResult.error) {
     return error(HTTPStatusServerError, {
-      message: get(tranFunc)('error.failedToLoad'),
+      message: await serverSideTranslate('error.failedToLoad', event),
     });
   }
 

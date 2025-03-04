@@ -3,6 +3,8 @@ import { LanguageCodeEnum } from "$lib/gql/graphql";
 import { derived, writable } from "svelte/store";
 import type { Component } from 'svelte';
 import { JapanFlag, KoreaFlag, UsaFlag, VietnamFlag } from '$lib/components/icons/SvgOuterIcon';
+import type { RequestEvent } from '@sveltejs/kit';
+import { LANGUAGE_KEY } from '$lib/utils/consts';
 
 const placeholderRegex = /{{([a-zA-Z ]+)}}/g;
 
@@ -12,7 +14,7 @@ export const SUPPORTED_LANGUAGES: LanguageProps[] = [
   { icon: UsaFlag, name: 'English', code: LanguageCodeEnum.En },
   { icon: VietnamFlag, name: 'Tiếng Việt', code: LanguageCodeEnum.Vi },
   { icon: KoreaFlag, name: '한국어', code: LanguageCodeEnum.Ko },
-  { icon: JapanFlag, name: '日本語', code: LanguageCodeEnum.Ja }
+  { icon: JapanFlag, name: '日本語', code: LanguageCodeEnum.Ja },
 ];
 
 const findTemplatePlaceholders = (template: string): string[] => {
@@ -37,7 +39,7 @@ const parseTranslationObject = (obj: Record<string, unknown>, trans: Translation
       trans[newPrefix] = {
         template: value,
         args: matches.length ? new Set(matches) : null,
-      }
+      };
     } else if (typeof value === 'object') {
       parseTranslationObject(value as Record<string, unknown>, trans, newPrefix);
     }
@@ -66,39 +68,45 @@ export const languageSupportInfer = (language: LanguageCode | LanguageCodeEnum) 
   }
 }
 
-const englishTran = parseTranslationObject(english, {})
+const TRANS_MAP: Partial<Record<LanguageCodeEnum, Translation>> = {
+  [LanguageCodeEnum.En]: parseTranslationObject(english, {}),
+};
+const innerStore = writable(TRANS_MAP.EN);
 
 export const switchTranslationLanguage = async (language: LanguageCode) => {
-  switch (language) {
-    case LanguageCodeEnum.En:
-    case 'en-US':
-      innerStore.set(englishTran);
-      break;
-    case LanguageCodeEnum.Vi:
-    case 'vi-VN':
-      import('./vi').then(({ default: vietnamese }) => innerStore.set(parseTranslationObject(vietnamese, {})));
-      break;
-    case LanguageCodeEnum.Ko:
-      import('./ko').then(({ default: korean }) => innerStore.set(parseTranslationObject(korean, {})));
-      break;
-    case LanguageCodeEnum.Ja:
-      import('./ja').then(({ default: japanese }) => innerStore.set(parseTranslationObject(japanese, {})));
-      break;
+  const lang = languageSupportInfer(language) || LanguageCodeEnum.En;
+  const trans = await getTranslation(lang);
+  innerStore.set(trans!);
+};
 
-    default:
-      innerStore.set(englishTran);
+const getTranslation = async (lang: LanguageCodeEnum) => {
+  if (!TRANS_MAP[lang]) {
+    const inferLang = languageSupportInfer(lang) || LanguageCodeEnum.En;
+
+    if (inferLang === LanguageCodeEnum.Ko) {
+      const im = await import('./ko');
+      TRANS_MAP[lang] = parseTranslationObject(im.default, {});
+    } else if (inferLang === LanguageCodeEnum.Ja) {
+      const im = await import('./ja');
+      TRANS_MAP[lang] = parseTranslationObject(im.default, {});
+    } else if (inferLang === LanguageCodeEnum.Vi) {
+      const im = await import('./vi');
+      TRANS_MAP[lang] = parseTranslationObject(im.default, {});
+    }
   }
+  return TRANS_MAP[lang];
 }
 
-const innerStore = writable(englishTran);
+export const serverSideTranslate = async <T extends RequestEvent>(key: string, event: T, args?: Record<string, unknown>) => {
+  const languageCookie = event.cookies.get(LANGUAGE_KEY) as LanguageCodeEnum || LanguageCodeEnum.En;
 
-/**a svelte store for translation.
- * On client side (in .svelte files), use it like: const result = $tranFunc('`<your_key>`').
- * On server side or utils fies (**.ts files), use it like: const result = get(tranFunc)('`<your_key>`')
- */
-export const tranFunc = derived(innerStore, ($trans) => {
-  return (key: string, args?: Record<string, unknown>) => {
-    const tranObject = $trans[key];
+  const inferLang = languageSupportInfer(languageCookie) || LanguageCodeEnum.En;
+  const trans = await getTranslation(inferLang);
+  return buildTranslationText(trans!, key, args);
+};
+
+const buildTranslationText = (trans: Translation, key: string, args?: Record<string, unknown>) => {
+  const tranObject = trans[key];
     if (tranObject === undefined) {
       throw new Error(`Translation key ${key} not found in translations`);
     }
@@ -112,7 +120,14 @@ export const tranFunc = derived(innerStore, ($trans) => {
     }
 
     return result;
-  };
+}
+
+/**a svelte store for translation.
+ * On client side (in .svelte files), use it like: const result = $tranFunc('`<your_key>`').
+ * On server side or utils fies (**.ts files), use it like: const result = get(tranFunc)('`<your_key>`')
+ */
+export const tranFunc = derived(innerStore, ($trans) => {
+  return (key: string, args?: Record<string, unknown>) => buildTranslationText($trans, key, args);
 });
 
 /**

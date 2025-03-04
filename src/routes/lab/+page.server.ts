@@ -2,7 +2,7 @@ import { redirect } from "@sveltejs/kit";
 import { HTTPStatusPermanentRedirect } from "$lib/utils/consts";
 import { dev } from "$app/environment";
 
-// export const ssr = false;
+export const ssr = false;
 
 export const load = async () => {
   if (!dev) {

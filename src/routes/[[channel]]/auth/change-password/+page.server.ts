@@ -3,8 +3,7 @@ import {
 	HTTPStatusSuccess,
 } from '$lib/utils/consts';
 import { error } from '@sveltejs/kit';
-import { tranFunc } from '$lib/i18n';
-import { get } from 'svelte/store';
+import { serverSideTranslate } from '$lib/i18n';
 import validator from 'validator';
 
 export const load = async (event) => {
@@ -13,14 +12,14 @@ export const load = async (event) => {
 
 	if (!token || !email || !validator.isEmail(email)) {
 		return error(HTTPStatusBadRequest, {
-			message: get(tranFunc)('changePassword.invalidUrl')
+			message: await serverSideTranslate('changePassword.invalidUrl', event)
 		})
 	}
 
 	return {
 		status: HTTPStatusSuccess,
 		meta: {
-			title: get(tranFunc)('changePassword.title'),
+			title: await serverSideTranslate('changePassword.title', event),
 			description: 'Change your password by providing your new password',
 		},
 	};

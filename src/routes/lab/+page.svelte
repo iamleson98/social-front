@@ -10,6 +10,7 @@
 	import { UserCog } from '$lib/components/icons';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
 	import { Table } from '$lib/components/ui/Table';
+	import Map from '$lib/components/pages/me/map.svelte';
 
 	let option = $state(1);
 
@@ -264,3 +265,5 @@
 		}
 	]}
 />
+
+<Map />

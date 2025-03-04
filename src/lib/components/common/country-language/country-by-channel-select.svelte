@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
+	import { CHANNEL_DETAILS_QUERY_STORE } from '$lib/api/channels';
 	import { operationStore } from '$lib/api/operation';
-	import { SHOP_QUERY } from '$lib/api/shop';
 	import { Alert } from '$lib/components/ui/Alert';
 	import type { SocialSize } from '$lib/components/ui/common';
 	import {
@@ -11,7 +11,7 @@
 		type SelectOption
 	} from '$lib/components/ui/select';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
-	import type { Query } from '$lib/gql/graphql';
+	import type { Query, QueryChannelArgs } from '$lib/gql/graphql';
 
 	type Props = {
 		singleValue?: SelectOption['value'];
@@ -20,7 +20,8 @@
 		multiValues?: SelectOption[];
 		class?: string;
 		label?: string;
-		disabled?: boolean;
+		channelSlug: string;
+    disabled?: boolean;
 	};
 
 	let {
@@ -30,27 +31,31 @@
 		class: className = '',
 		multiValues = $bindable([]),
 		label,
-		disabled,
+		channelSlug,
+    disabled
 	}: Props = $props();
 
 	if (selectType === 'multiple' && size === 'xs') size = 'sm';
 
-	const shopStore = operationStore<Pick<Query, 'shop'>>({
+	const CHANEL_STORE = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
 		kind: 'query',
-		query: SHOP_QUERY,
-		requestPolicy: 'cache-first'
+		query: CHANNEL_DETAILS_QUERY_STORE,
+		variables: {
+			slug: channelSlug
+		},
+		requestPolicy: 'cache-and-network'
 	});
 </script>
 
 <div class={className}>
-	{#if $shopStore.fetching}
+	{#if $CHANEL_STORE.fetching}
 		<SkeletonContainer class="w-full">
 			<Skeleton class="h-4 w-full" />
 		</SkeletonContainer>
-	{:else if $shopStore.error}
-		<Alert variant="error" size="sm" bordered>{$shopStore.error.message}</Alert>
-	{:else if $shopStore.data?.shop}
-		{@const options = $shopStore.data.shop.countries.map<SelectOption>((item) => ({
+	{:else if $CHANEL_STORE.error}
+		<Alert variant="error" {size} bordered>{$CHANEL_STORE.error.message}</Alert>
+	{:else if $CHANEL_STORE.data?.channel?.countries}
+		{@const options = $CHANEL_STORE.data.channel.countries.map<SelectOption>((item) => ({
 			label: item.country,
 			value: item.code
 		}))}
@@ -61,7 +66,7 @@
 				bind:value={singleValue}
 				placeholder={$tranFunc('placeholders.valuePlaceholder')}
 				{label}
-				{disabled}
+        {disabled}
 			/>
 		{:else}
 			<MultiSelect
@@ -70,7 +75,7 @@
 				bind:value={multiValues}
 				placeholder={$tranFunc('placeholders.valuePlaceholder')}
 				{label}
-				{disabled}
+        {disabled}
 			/>
 		{/if}
 	{/if}
