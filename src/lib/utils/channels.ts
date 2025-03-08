@@ -3,26 +3,27 @@ import { CountryCode, LanguageCodeEnum } from "$lib/gql/graphql";
 import type { CurrencyCode } from "./consts";
 
 
+/**
+ * NOTE: one channel has 1 country only
+ */
 export type ChannelProps = {
   slug: string;
-  countries: CountryCode[];
   currency: CurrencyCode;
   currencySymbol: string;
   locale: LanguageCodeEnum;
   currencyIcon: IconType;
   defaultCountryCode: CountryCode;
-}
+  capitalLatLong: number[];
+};
 
 export const DEFAULT_CHANNEL: ChannelProps = {
   slug: "vn",
-  countries: [
-    CountryCode.Vn,
-  ],
   defaultCountryCode: CountryCode.Vn,
   currency: "VND",
   currencySymbol: "₫",
   locale: LanguageCodeEnum.Vi,
-  currencyIcon: CurrencyDong
+  currencyIcon: CurrencyDong,
+  capitalLatLong: [21.0278, 105.8342]
 };
 
 /**
@@ -32,46 +33,38 @@ export const CHANNELS: ChannelProps[] = [
   DEFAULT_CHANNEL,
   {
     slug: "pl",
-    countries: [
-      CountryCode.Pl,
-    ],
     currency: 'PLN',
     currencySymbol: "€",
     locale: LanguageCodeEnum.Pl,
     currencyIcon: CurrencyEuror,
     defaultCountryCode: CountryCode.Pl,
+    capitalLatLong: [52.2297, 21.0122]
   },
   {
     slug: "us",
-    countries: [
-      CountryCode.Us,
-    ],
     currency: "USD",
     currencySymbol: "$",
     locale: LanguageCodeEnum.En,
     currencyIcon: CurrencyDollar,
     defaultCountryCode: CountryCode.Us,
+    capitalLatLong: [47.7511, 120.7401]
   },
   {
     slug: "kr",
-    countries: [
-      CountryCode.Kr,
-    ],
     currency: "KRW",
     currencySymbol: "₩",
     locale: LanguageCodeEnum.Ko,
     currencyIcon: CurrencyKrw,
     defaultCountryCode: CountryCode.Kr,
+    capitalLatLong: [37.5503, 126.9971]
   },
   {
     slug: "jp",
-    countries: [
-      CountryCode.Jp,
-    ],
     currency: "JPY",
     currencySymbol: "¥",
     locale: LanguageCodeEnum.Ja,
     currencyIcon: CurrencyJpy,
     defaultCountryCode: CountryCode.Jp,
+    capitalLatLong: [35.6764, 139.6500]
   }
 ];

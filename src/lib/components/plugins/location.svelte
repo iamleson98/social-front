@@ -61,8 +61,10 @@
 			let channelSlug = DEFAULT_CHANNEL.slug;
 			let countryCode = DEFAULT_CHANNEL.defaultCountryCode;
 
-			const suportedChannel = CHANNELS.find((chan) =>
-				chan.countries.includes(locationData.address?.country_code.toUpperCase() as CountryCode)
+			const suportedChannel = CHANNELS.find(
+				(chan) =>
+					chan.defaultCountryCode ===
+					(locationData.address.country_code.toUpperCase() as CountryCode)
 			);
 			if (suportedChannel) {
 				channelSlug = suportedChannel.slug;

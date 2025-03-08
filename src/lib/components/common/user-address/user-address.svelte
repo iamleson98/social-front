@@ -3,7 +3,6 @@
 	billing,
 		Building,
 		Check,
-		Email,
 		Icon,
 		MapPin,
 		Phone,

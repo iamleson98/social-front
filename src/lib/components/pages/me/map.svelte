@@ -1,28 +1,19 @@
 <script lang="ts">
-	// import type {Hst} from '@histoire/plugin-svelte';
-	import { LeafletMap, TileLayer } from 'svelte-leafletjs';
-	import type { MapOptions } from 'leaflet';
-	// import { DEFAULT_TILE_LAYER_OPTIONS, DEFAULT_TILE_URL } from './common.js';
+	import { onMount } from 'svelte';
+	import 'leaflet/dist/leaflet.css';
 
-	// export let Hst: Hst;
+	let L = $state<any>();
+	let MAP = $state<any>();
+	let mapContainer = $state<HTMLDivElement>();
 
-	const mapOptions: MapOptions = {
-		center: [1.364917, 103.822872],
-		zoom: 11
-	};
-
-	const options = {
-		maxZoom: 19,
-		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-	};
+	onMount(async () => {
+		L = await import('leaflet');
+		MAP = L.map(mapContainer).setView([51.505, -0.09], 13);
+		L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			attribution:
+				'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+		}).addTo(MAP);
+	});
 </script>
 
-<!-- <Hst.Story group="top"> -->
-<LeafletMap options={mapOptions}>
-	<TileLayer url={`https://tile.openstreetmap.org/{z}/{x}/{y}.png`} {options} />
-</LeafletMap>
-<!-- </Hst.Story> -->
-
-<style>
-  @import 'leaflet/dist/leaflet.css';
-</style>
+<div bind:this={mapContainer} class=" h-80 w-80"></div>

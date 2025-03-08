@@ -183,25 +183,25 @@ export const USER_REFRESH_TOKEN_MUTATION_STORE = gql`
 				# 		allocationStrategy
 				# 	}
 				# }
-				# addresses {
-				# 	id
-				# 	streetAddress1
-				# 	streetAddress2
-				# 	city
-				# 	postalCode
-				# 	cityArea
-				# 	phone
-				# 	isDefaultShippingAddress
-				# 	isDefaultBillingAddress
-				# 	companyName
-				# 	countryArea
-				# 	firstName
-				# 	lastName
-				# 	country {
-				# 		country
-				# 		code
-				# 	}
-				# }
+				addresses {
+					id
+					streetAddress1
+					streetAddress2
+					city
+					postalCode
+					cityArea
+					phone
+					isDefaultShippingAddress
+					isDefaultBillingAddress
+					companyName
+					countryArea
+					firstName
+					lastName
+					country {
+						country
+						code
+					}
+				}
 			}
 			errors {
 				code

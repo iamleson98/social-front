@@ -82,7 +82,7 @@
 
 	$effect(() => {
 		if (countryCode) {
-			const chan = CHANNELS.find((chan) => chan.countries.includes(countryCode as CountryCode));
+			const chan = CHANNELS.find((chan) => chan.defaultCountryCode === countryCode);
 
 			if (chan) {
 				signupInfo.channel = chan.slug;

@@ -19,7 +19,6 @@
 	import { checkoutStore } from '$lib/stores/app';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { defaultSlideShowState } from '$lib/stores/ui/slideshow';
-	import { toastStore } from '$lib/stores/ui/toast';
 	import { AppRoute } from '$lib/utils';
 	import { formatMoney, preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 

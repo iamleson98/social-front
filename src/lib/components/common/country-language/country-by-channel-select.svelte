@@ -11,10 +11,10 @@
 		type SelectOption
 	} from '$lib/components/ui/select';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
-	import type { Query, QueryChannelArgs } from '$lib/gql/graphql';
+	import type { CountryCode, Query, QueryChannelArgs } from '$lib/gql/graphql';
 
 	type Props = {
-		singleValue?: SelectOption['value'];
+		singleValue?: CountryCode;
 		selectType?: 'single' | 'multiple';
 		size?: SocialSize;
 		multiValues?: SelectOption[];

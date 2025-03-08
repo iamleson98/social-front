@@ -1,4 +1,4 @@
-import { default as english } from './en';
+import { default as vietnamese } from './vi';
 import { LanguageCodeEnum } from "$lib/gql/graphql";
 import { derived, writable } from "svelte/store";
 import type { Component } from 'svelte';
@@ -69,19 +69,19 @@ export const languageSupportInfer = (language: LanguageCode | LanguageCodeEnum) 
 }
 
 const TRANS_MAP: Partial<Record<LanguageCodeEnum, Translation>> = {
-  [LanguageCodeEnum.En]: parseTranslationObject(english, {}),
+  [LanguageCodeEnum.Vi]: parseTranslationObject(vietnamese, {}),
 };
-const innerStore = writable(TRANS_MAP.EN);
+const innerStore = writable(TRANS_MAP.VI);
 
 export const switchTranslationLanguage = async (language: LanguageCode) => {
-  const lang = languageSupportInfer(language) || LanguageCodeEnum.En;
+  const lang = languageSupportInfer(language) || LanguageCodeEnum.Vi;
   const trans = await getTranslation(lang);
   innerStore.set(trans!);
 };
 
 const getTranslation = async (lang: LanguageCodeEnum) => {
   if (!TRANS_MAP[lang]) {
-    const inferLang = languageSupportInfer(lang) || LanguageCodeEnum.En;
+    const inferLang = languageSupportInfer(lang) || LanguageCodeEnum.Vi;
 
     if (inferLang === LanguageCodeEnum.Ko) {
       const im = await import('./ko');
@@ -89,18 +89,18 @@ const getTranslation = async (lang: LanguageCodeEnum) => {
     } else if (inferLang === LanguageCodeEnum.Ja) {
       const im = await import('./ja');
       TRANS_MAP[lang] = parseTranslationObject(im.default, {});
-    } else if (inferLang === LanguageCodeEnum.Vi) {
-      const im = await import('./vi');
+    } else if (inferLang === LanguageCodeEnum.En) {
+      const im = await import('./en');
       TRANS_MAP[lang] = parseTranslationObject(im.default, {});
     }
   }
-  return TRANS_MAP[lang];
+  return TRANS_MAP[lang] || TRANS_MAP.EN;
 }
 
 export const serverSideTranslate = async <T extends RequestEvent>(key: string, event: T, args?: Record<string, unknown>) => {
-  const languageCookie = event.cookies.get(LANGUAGE_KEY) as LanguageCodeEnum || LanguageCodeEnum.En;
+  const languageCookie = event.cookies.get(LANGUAGE_KEY) as LanguageCodeEnum || LanguageCodeEnum.Vi;
 
-  const inferLang = languageSupportInfer(languageCookie) || LanguageCodeEnum.En;
+  const inferLang = languageSupportInfer(languageCookie) || LanguageCodeEnum.Vi;
   const trans = await getTranslation(inferLang);
   return buildTranslationText(trans!, key, args);
 };

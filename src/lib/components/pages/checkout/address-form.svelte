@@ -55,7 +55,7 @@
 	let requiredFields: Partial<Record<AddressField, boolean>> = {};
 
 	/** NOTE: this code must be use by client side since it contains client translation */
-	const addressFieldMessages: Record<AddressFieldLabel, string> = {
+	const addressFieldMessages: Record<AddressFieldLabel, string> = $derived({
 		city: $tranFunc('common.city'),
 		firstName: $tranFunc('common.firstName'),
 		countryArea: $tranFunc('common.countryArea'),
@@ -67,7 +67,7 @@
 		streetAddress1: $tranFunc('common.streetAddress1'),
 		streetAddress2: $tranFunc('common.streetAddress2'),
 		phone: $tranFunc('common.phone')
-	};
+	});
 
 	const ADDRESS_VALIDATION_RULES_STORE = operationStore<
 		Pick<Query, 'addressValidationRules'>,
@@ -159,8 +159,8 @@
 			{#if field === 'countryArea'}
 				{@const choiceOptions = uniqBy(countryAreaChoices, (item) => item.raw).map<SelectOption>(
 					({ verbose, raw }) => ({
-						value: verbose as string,
-						label: raw as string
+						value: raw as string,
+						label: verbose as string
 					})
 				)}
 				<Select
