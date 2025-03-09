@@ -669,7 +669,8 @@
 			<div class="mt-4">
 				<!-- MARK: QUICK FILLING -->
 				<div class="mb-4 rounded-lg bg-white p-3 border border-gray-200">
-					<div class="text-xs mb-1">{$tranFunc('product.quickFilling')}</div>
+					<!-- <div class="text-xs mb-1">{$tranFunc('product.quickFilling')}</div> -->
+					<Label label={$tranFunc('product.quickFilling')} size="sm" />
 					<div class="flex gap-x-2 items-start flex-row w-full">
 						<div class="w-11/12 flex gap-1 items-start flex-row">
 							<!-- CHANNELS -->
@@ -883,6 +884,15 @@
 							</div>
 						</div>
 					</Accordion>
+
+					<!-- DOCUMENT -->
+					<Alert variant="info" size="sm" bordered>
+						<ol class="text-xs">
+							{#each VARIANT_ATTRIBUTE_HINTS as hint, idx (idx)}
+								<li>{idx + 1}. {$tranFunc(hint.title, hint.args)}</li>
+							{/each}
+						</ol>
+					</Alert>
 				</div>
 
 				<!-- MARK: DETAILS -->
@@ -1093,15 +1103,6 @@
 							{/each}
 						</tbody>
 					</table>
-
-					<!-- DOCUMENT -->
-					<Alert variant="info" size="sm" bordered>
-						<ol class="text-xs">
-							{#each VARIANT_ATTRIBUTE_HINTS as hint, idx (idx)}
-								<li>{idx + 1}. {$tranFunc(hint.title, hint.args)}</li>
-							{/each}
-						</ol>
-					</Alert>
 				</div>
 			</div>
 		{/if}
