@@ -5,7 +5,7 @@
 	import { debounceInput } from '$lib/actions/input-debounce';
 	import { tranFunc } from '$i18n';
 	import { TEXT_AREA_SIZE_MAP } from './input.types';
-	import { INPUT_TYPES, type InputProps } from './input.types';
+	import { INPUT_CLASSES, type InputProps } from './input.types';
 	import type { HTMLTextareaAttributes } from 'svelte/elements';
 	import Label from './label.svelte';
 
@@ -33,7 +33,7 @@
 	{#if label}
 		<Label {label} {id} {required} {size} {variant} requiredAtPos="end" />
 	{/if}
-	<div class={`${INPUT_TYPES[variant].fg}`}>
+	<div class={`${INPUT_CLASSES[variant].fg}`}>
 		<div class={`relative mt-0`}>
 			{#if startIcon}
 				<div class="absolute inset-y-0 start-0 flex items-center ps-2.5 pointer-events-none">
@@ -49,7 +49,7 @@
 				bind:value
 				use:shortcuts={selectShortcutOptions}
 				use:debounceInput={inputDebounceOption}
-				class={`w-full text-sm placeholder:opacity-55 rounded-lg ring-1 focus:ring-2 outline-none! field-sizing-content inline-block px-2.5 py-1 ${inputClass} ${INPUT_TYPES[variant].bg} ${startIcon ? 'ps-8' : ''} ${TEXT_AREA_SIZE_MAP[size]}`}
+				class={`w-full text-sm placeholder:opacity-55 rounded-lg ring-1 focus:ring-2 outline-none! field-sizing-content inline-block px-2.5 py-1 ${inputClass} ${INPUT_CLASSES[variant].bg} ${startIcon ? 'ps-8' : ''} ${TEXT_AREA_SIZE_MAP[size]}`}
 				{...rest}
 			></textarea>
 

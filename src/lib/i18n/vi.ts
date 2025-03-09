@@ -140,7 +140,7 @@ export default {
 		costPriceHint: 'Giá nhập là giá đầu vào của từng phân loại sản phẩm.',
 		stockHint: 'Tồn kho là số lượng còn lại trong kho.',
 		weightHint: 'Cân nặng là trọng lượng từng phân loại hàng của bạn tính theo đơn vị kg.',
-		skuHint: 'SKU giá giá trị để việc quản lý từng phân loại hàng của bạn dễ dàng hơn.',
+		skuHint: 'SKU là giá trị để việc quản lý từng phân loại hàng của bạn dễ dàng hơn.',
 		qtyLimit: 'hạn mức',
 		preOrderEndDate: 'hạn giao hàng',
 		trackInventory: 'tự động quản lý hàng tồn',

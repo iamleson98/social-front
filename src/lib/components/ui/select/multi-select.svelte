@@ -5,7 +5,7 @@
 	import { ChevronSort, CloseX, Icon } from '$lib/components/icons';
 	import { randomID } from '$lib/utils/utils';
 	import { fly } from 'svelte/transition';
-	import { Input } from '../Input';
+	import { Input, Label } from '../Input';
 	import {
 		SELECT_CLASSES,
 		type SelectItemprops,
@@ -15,7 +15,7 @@
 	} from './types';
 	import { Badge } from '../badge';
 	import type { FocusEventHandler } from 'svelte/elements';
-	import { INPUT_LABEL_SIZE_STYLE_MAP, INPUT_TYPES } from '../Input/input.types';
+	import { INPUT_CLASSES } from '../Input/input.types';
 
 	let {
 		value = $bindable<SelectOption[]>([]),
@@ -25,6 +25,7 @@
 		label,
 		variant = 'info',
 		onchange,
+		options,
 		...rest
 	}: MultiSelectProps = $props();
 
@@ -48,7 +49,7 @@
 
 	/** list of options that match search query */
 	let searchFilteredOptions = $derived.by(() => {
-		const notSelectedOptions = rest.options.filter((opt) => !selectMapper[opt.value]);
+		const notSelectedOptions = options.filter((opt) => !selectMapper[opt.value]);
 		if (!searchQuery) return notSelectedOptions;
 
 		return notSelectedOptions.filter((opt) =>
@@ -138,16 +139,10 @@
 {/snippet}
 
 {#if label}
-	<label
-		for={INPUT_ID}
-		class={`block mb-1 ${INPUT_LABEL_SIZE_STYLE_MAP[size]} font-medium ${INPUT_TYPES[variant].fg}`}
-	>
-		{label}
-		{#if rest.required}<strong class="font-bold text-red-600!">*</strong>{/if}
-	</label>
+	<Label {label} id={INPUT_ID} required={rest.required} {size} {variant} requiredAtPos="end" />
 {/if}
 <div
-	class={`relative text-gray-700 text-base bg-white rounded-lg w-fit py-1 px-1.5 ring-1 ring-gray-200 ${className}`}
+	class={`relative rounded-lg w-fit py-1 px-1.5 ${INPUT_CLASSES[variant].bg} ${className}`}
 	use:clickOutside={{ onOutclick: interactOutsideHandler }}
 	use:focusOutside={{ onFocusOut: interactOutsideHandler }}
 	use:shortcuts={[
@@ -159,6 +154,8 @@
 			}
 		}
 	]}
+	role="menu"
+	tabindex="0"
 >
 	<div class="flex flex-wrap items-center gap-1 flex-1">
 		{#each value.slice(0, maxDisplay || value.length) as option, idx (idx)}
@@ -174,14 +171,13 @@
 		{/if}
 		<Input
 			{...rest}
-			{variant}
+			variant="ghost"
 			aria-controls={LISTBOX_ID}
 			aria-expanded={openSelect}
 			bind:ref={input}
 			aria-autocomplete="list"
 			autocomplete="off"
 			class={`grow shrink basis-[min-content]`}
-			inputClass="ring-0!"
 			id={INPUT_ID}
 			size={SIZE_REDUCE_MAP[size]}
 			onclick={handleClick}

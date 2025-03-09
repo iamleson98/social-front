@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { MultiSelect } from '$lib/components/ui/select';
 	import { onMount } from 'svelte';
 
 	onMount(async () => {
@@ -18,3 +19,12 @@
 </script>
 
 <div>lab</div>
+
+<MultiSelect
+	options={[
+		{ label: 'Option 1', value: '1' },
+		{ label: 'Option 2', value: '2' },
+		{ label: 'Option 3', value: '3' }
+	]}
+	variant="error"
+/>

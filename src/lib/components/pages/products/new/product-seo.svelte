@@ -18,10 +18,12 @@
 
 	const SEO_DESCRIPTION_MAX_LENGTH = 300; // saleor reference
 	const SEO_TITLE_MAX_LENGTH = 70;
+	const FIELD_REQUIRED = $tranFunc('helpText.fieldRequired');
 
 	const seoSchema = object({
 		slug: string()
-			.min(1, { message: $tranFunc('helpText.fieldRequired') })
+			.min(1, FIELD_REQUIRED)
+			.nonempty(FIELD_REQUIRED)
 			.max(PRODUCT_SLUG_MAX_LENGTH, {
 				message: $tranFunc('error.lengthInvalid', {
 					name: $tranFunc('product.prdSlug'),
@@ -30,7 +32,8 @@
 				})
 			}),
 		title: string()
-			.min(1, { message: $tranFunc('helpText.fieldRequired') })
+			.min(1, FIELD_REQUIRED)
+			.nonempty(FIELD_REQUIRED)
 			.max(SEO_TITLE_MAX_LENGTH, {
 				message: $tranFunc('error.lengthInvalid', {
 					name: $tranFunc('product.seoTitle'),
@@ -39,7 +42,8 @@
 				})
 			}),
 		description: string()
-			.min(1, { message: $tranFunc('helpText.fieldRequired') })
+			.min(1, FIELD_REQUIRED)
+			.nonempty(FIELD_REQUIRED)
 			.max(SEO_DESCRIPTION_MAX_LENGTH, {
 				message: $tranFunc('error.lengthInvalid', {
 					name: $tranFunc('product.seoDescription'),
@@ -59,7 +63,7 @@
 		loading
 	}: Props = $props();
 
-	let seoErrors = $state<Partial<Record<keyof SeoProps, string[]>>>({});
+	let seoErrors = $state.raw<Partial<Record<keyof SeoProps, string[]>>>({});
 
 	$effect(() => {
 		if (productName) {
@@ -71,8 +75,10 @@
 	const handleValueChange = (): void => {
 		const parseResult = seoSchema.safeParse({
 			slug,
-			...seo
+			title: seo.title || '',
+			description: seo.description || ''
 		});
+
 		if (!parseResult.success) {
 			seoErrors = parseResult.error.formErrors.fieldErrors;
 		} else {
@@ -107,7 +113,7 @@
 
 		<!-- title -->
 		<Input
-			bind:value={seo!.title}
+			bind:value={seo.title}
 			placeholder={$tranFunc('product.seoTitle')}
 			type="text"
 			class="mb-1"
@@ -123,7 +129,7 @@
 
 		<!-- description -->
 		<TextArea
-			bind:value={seo!.description}
+			bind:value={seo.description}
 			placeholder={$tranFunc('product.seoDescription')}
 			type="text"
 			inputClass="min-h-20"

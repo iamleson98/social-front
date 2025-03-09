@@ -5,7 +5,7 @@
 	import { debounceInput } from '$lib/actions/input-debounce';
 	import { tranFunc } from '$i18n';
 	import { INPUT_BUTTON_SIZE_MAP } from '../Button/button.types';
-	import { INPUT_TYPES, type InputProps } from './input.types';
+	import { INPUT_CLASSES, type InputProps } from './input.types';
 	import type { HTMLInputAttributes } from 'svelte/elements';
 	import Label from './label.svelte';
 
@@ -34,7 +34,7 @@
 	{#if label}
 		<Label {label} {id} {required} {size} {variant} requiredAtPos="end" />
 	{/if}
-	<div class={`relative mt-0 ${INPUT_TYPES[variant].fg}`}>
+	<div class={`relative mt-0 ${INPUT_CLASSES[variant].fg}`}>
 		{#if startIcon}
 			<div class="absolute inset-y-0 start-0 flex items-center ps-2.5 pointer-events-none">
 				<Icon icon={startIcon} />
@@ -48,7 +48,7 @@
 			bind:value
 			use:shortcuts={selectShortcutOptions}
 			use:debounceInput={inputDebounceOption}
-			class={`w-full text-sm rounded-lg ring-1 placeholder:opacity-55 focus:ring-2 inline-block px-2.5 ${inputClass} ${INPUT_TYPES[variant].bg} ${startIcon ? 'ps-8' : ''} ${action ? 'pe-9' : ''} ${INPUT_BUTTON_SIZE_MAP[size]}`}
+			class={`w-full text-sm rounded-lg placeholder:opacity-55 inline-block px-2.5 ${inputClass} ${INPUT_CLASSES[variant].bg} ${startIcon ? 'ps-8' : ''} ${action ? 'pe-9' : ''} ${INPUT_BUTTON_SIZE_MAP[size]}`}
 			{...rest}
 		/>
 
@@ -60,7 +60,7 @@
 	</div>
 	{@render children?.()}
 	{#if subText}
-		<div class={`text-[10px] mt-0.5 text-right! ${INPUT_TYPES[variant].fg}`}>{subText}</div>
+		<div class={`text-[10px] mt-0.5 text-right! ${INPUT_CLASSES[variant].fg}`}>{subText}</div>
 	{/if}
 </div>
 
