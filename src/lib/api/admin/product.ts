@@ -344,3 +344,20 @@ export const PRODUCT_MEDIA_CREATE_MUTATION = gql`
     }
   }
 `;
+
+export const PRODUCT_MEDIA_CREATE_INPUT = gql`
+mutation ProductMediaCreate($input: ProductMediaCreateInput!) {
+  productMediaCreate(input: $input) {
+    errors {
+      field
+      message
+    }
+    product {
+      id
+      media {
+        id
+        alt
+      }
+    }
+  }
+}`

@@ -171,6 +171,7 @@ export default {
 		initEditorErr: 'Lỗi khởi chạy trình soạn thảo văn bản. Vui lòng thử lại sau.',
 		thereIsError: 'Có lỗi xảy ra. Bạn vui lòng sửa chúng.',
 		doYouAgree: 'Bạn có đồng ý với các điều khoản và chính sách của chúng tôi không?',
+		itemsExceed: 'Chỉ được phép tối đa {{max}} mục',
 	},
 	placeholders: {
 		enterPrdName: 'Nhập tên sản phẩm',

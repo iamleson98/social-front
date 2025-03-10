@@ -12,6 +12,7 @@
 		size?: SocialSize;
 		multiple?: boolean;
 		onChange: (fileList: FileList) => void;
+		disabled?: boolean;
 	} & HTMLAttributes<HTMLDivElement>;
 
 	const INPUT_ID = randomID();
@@ -24,6 +25,7 @@
 		size = 'xl',
 		multiple = false,
 		onChange,
+		disabled = false,
 		...rest
 	}: Props = $props();
 </script>
@@ -42,6 +44,7 @@
 		}}
 		id={INPUT_ID}
 		{multiple}
+		{disabled}
 	/>
 
 	<label for={INPUT_ID}>
@@ -52,6 +55,7 @@
 			variant="outline"
 			onclick={() => input?.click()}
 			class="border-dashed!"
+			{disabled}
 		/>
 	</label>
 </div>

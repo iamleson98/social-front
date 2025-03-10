@@ -171,6 +171,7 @@ export default {
 		initEditorErr: 'Failed to initialize editor. Please try again later',
 		thereIsError: 'There are some error(s). Please fix them to proceed.',
 		doYouAgree: 'Are you agree with our term and policies?',
+		itemsExceed: 'At most {{max}} items allowed',
 	},
 	placeholders: {
 		enterPrdName: '제품 이름을 입력해주세요',

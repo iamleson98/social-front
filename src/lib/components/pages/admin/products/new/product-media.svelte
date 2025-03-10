@@ -4,11 +4,13 @@
 	import { IconButton } from '$lib/components/ui/Button';
 	import { FileInput, Input, Label } from '$lib/components/ui/Input';
 	import { IMAGE_EXTENSION_REGEX } from '$lib/utils/consts';
+	import ErrorMsg from './error-msg.svelte';
 
 	const MAX_MEDIAS = 9;
 
 	type Props = {
 		medias: ImageWithUrl[];
+		disabled?: boolean;
 	};
 
 	type ImageWithUrl = {
@@ -19,18 +21,24 @@
 		height?: number;
 	};
 
-	let { medias = $bindable([]) }: Props = $props();
+	let { medias = $bindable([]), disabled = false }: Props = $props();
 	let filesMap = $state<Record<string, ImageWithUrl>>({});
 	let errors = $derived.by(() => {
 		const keys = Object.keys(filesMap);
-		if (keys.length > MAX_MEDIAS) return true;
+		if (keys.length > MAX_MEDIAS)
+			return {
+				length: true
+			};
 
 		for (const key of keys) {
 			const obj = filesMap[key];
-			if (!obj.alt?.trim()) return true;
+			if (!obj.alt?.trim())
+				return {
+					alt: true
+				};
 		}
 
-		return false;
+		return null;
 	});
 
 	$effect(() => {
@@ -82,6 +90,7 @@
 	};
 
 	const handleDeleteImage = (key: string) => {
+		URL.revokeObjectURL(filesMap[key].url);
 		const newFilesMap = { ...filesMap };
 		delete newFilesMap[key];
 		filesMap = newFilesMap;
@@ -114,6 +123,7 @@
 							bind:value={filesMap[key].alt}
 							variant={!alt?.trim() ? 'error' : 'info'}
 							subText={!alt?.trim() ? $tranFunc('helpText.fieldRequired') : ''}
+							{disabled}
 						/>
 					</div>
 					{#if width && height}
@@ -132,6 +142,7 @@
 							class="tooltip tooltip-top"
 							data-tip="Remove"
 							onclick={() => handleDeleteImage(key)}
+							{disabled}
 						/>
 					</div>
 				</div>
@@ -148,8 +159,15 @@
 					accept="image/*"
 					multiple
 					onChange={handleFileSelect}
+					{disabled}
 				/>
 			</div>
 		{/if}
 	</div>
+
+	<!-- MARK: Error message -->
+	<ErrorMsg error={errors ? $tranFunc('error.thereIsError') : undefined} />
+	{#if !errors}
+		<div class="text-xs text-right">{medias.length}/{MAX_MEDIAS}</div>
+	{/if}
 </div>
