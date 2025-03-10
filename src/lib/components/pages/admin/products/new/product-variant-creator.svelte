@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { Plus, Trash, MdiWeightKg } from '$lib/components/icons';
+	import { Plus, Trash, MdiWeightKg, PhotoUp } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { Checkbox, Input, Label } from '$lib/components/ui/Input';
@@ -917,18 +917,29 @@
 						</thead>
 						<tbody>
 							{#each variantsInputDetails as variantInputDetail, detailIdx (detailIdx)}
+								<!-- {@const rowspan = variantManifests.length === MAX_VARIANT_TYPES ? variantManifests[1].values.length : 1} -->
 								<tr
 									class={`variant-table-row ${quickFillingHighlightClass} border-b border-gray-200`}
 								>
 									{#if variantManifests.length === MAX_VARIANT_TYPES}
 										{#if detailIdx % variantManifests[1].values.length === 0}
-											<td class="text-center" rowspan={variantManifests[1].values.length}
-												>{variantInputDetail.name?.split('-')[0]}</td
-											>
+											<td class="text-center" rowspan={variantManifests[1].values.length}>
+												{variantInputDetail.name?.split('-')[0]}
+											</td>
 										{/if}
 										<td class="text-center">{variantInputDetail.name?.split('-')[1]}</td>
 									{:else}
-										<td class="text-center">{variantInputDetail.name?.split('-')[0]}</td>
+										<td class="text-center">
+											<dir>{variantInputDetail.name?.split('-')[0]}</dir>
+											<div>
+												<IconButton
+													icon={PhotoUp}
+													size="lg"
+													variant="outline"
+													class="border-dashed"
+												/>
+											</div>
+										</td>
 									{/if}
 									<!-- CHANNELS -->
 									<td class="channel-td max-w-3xs min-w-28">

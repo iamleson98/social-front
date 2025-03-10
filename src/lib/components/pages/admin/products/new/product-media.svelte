@@ -19,7 +19,7 @@
 		height?: number;
 	};
 
-	let { medias = [] }: Props = $props();
+	let { medias = $bindable([]) }: Props = $props();
 	let filesMap = $state<Record<string, ImageWithUrl>>({});
 	let errors = $derived.by(() => {
 		const keys = Object.keys(filesMap);
@@ -31,6 +31,12 @@
 		}
 
 		return false;
+	});
+
+	$effect(() => {
+		if (!errors) {
+			medias = Object.values(filesMap);
+		}
 	});
 
 	const handleFileSelect = async (fileList: FileList) => {
