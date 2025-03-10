@@ -1,11 +1,9 @@
 import { type SelectedAttribute, AttributeInputTypeEnum, OrderDirection, OrderStatus, PaymentChargeStatusEnum } from '$lib/gql/graphql';
-import { tranFunc } from '$lib/i18n';
 import { toastStore } from '$lib/stores/ui/toast';
 import type { AnyVariables, OperationResult } from '@urql/core';
 import editorJsToHtml from 'editorjs-html';
 import { AppRoute } from './routes';
 import xss from 'xss';
-import { get } from 'svelte/store';
 import type { ServerLoadEvent } from '@sveltejs/kit';
 import { CHANNEL_KEY } from './consts';
 import { getCookieByKey } from './cookies';

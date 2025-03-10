@@ -10,6 +10,8 @@ export const EASEPICK_LOCK_STYLE_v1_2_1 = '/css/easepick-lock/1.2.1.css';
 export const EASEPICK_TIME_STYLE_v1_2_1 = '/css/easepick-time/1.2.1.css';
 export const EASEPICK_RANGE_STYLE_v1_2_1 = '/css/easepick-range/1.2.1.css';
 
+export const IMAGE_EXTENSION_REGEX = /\.(jpg|jpeg|png|gif|bmp|tiff|webp|svg)$/g;
+
 /**
  * all server methods MUST return this type, for consistency
  */

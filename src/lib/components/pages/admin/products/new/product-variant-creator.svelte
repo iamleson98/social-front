@@ -658,7 +658,7 @@
 						variant="outline"
 						disabled={loading}
 						color="blue"
-						class="tooltip tooltip-top"
+						class="tooltip tooltip-top border-dashed!"
 						data-tip={$tranFunc('product.addVariant')}
 					/>
 				</div>
@@ -920,11 +920,15 @@
 								<tr
 									class={`variant-table-row ${quickFillingHighlightClass} border-b border-gray-200`}
 								>
-									<!-- NAME 1 -->
-									<td class="text-center">{variantInputDetail.name?.split('-')[0]}</td>
 									{#if variantManifests.length === MAX_VARIANT_TYPES}
-										<!-- NAME 2 -->
+										{#if detailIdx % variantManifests[1].values.length === 0}
+											<td class="text-center" rowspan={variantManifests[1].values.length}
+												>{variantInputDetail.name?.split('-')[0]}</td
+											>
+										{/if}
 										<td class="text-center">{variantInputDetail.name?.split('-')[1]}</td>
+									{:else}
+										<td class="text-center">{variantInputDetail.name?.split('-')[0]}</td>
 									{/if}
 									<!-- CHANNELS -->
 									<td class="channel-td max-w-3xs min-w-28">

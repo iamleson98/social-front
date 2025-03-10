@@ -1,5 +1,8 @@
 <script lang="ts">
-	import { MultiSelect } from '$lib/components/ui/select';
+	import { Email, FileUpload, Home, PhotoUp } from '$lib/components/icons';
+	import { IconButton } from '$lib/components/ui/Button';
+	import { FileInput } from '$lib/components/ui/Input';
+import { MultiSelect } from '$lib/components/ui/select';
 	import { onMount } from 'svelte';
 
 	onMount(async () => {
@@ -28,3 +31,12 @@
 	]}
 	variant="error"
 />
+
+<FileInput icon={PhotoUp} accept="image/*" color="blue"  />
+
+<!-- <IconButton size="xs" icon={Email} />
+<IconButton size="sm" icon={Email} />
+<IconButton size="md" icon={Email} />
+<IconButton size="lg" icon={Email} />
+<IconButton size="xl" icon={Email} /> -->
+

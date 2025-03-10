@@ -324,3 +324,23 @@ query Product($slug: String!, $channel: String) {
     seoDescription
   }
 }`;
+
+export const PRODUCT_MEDIA_CREATE_MUTATION = gql`
+  mutation ProductMediaCreate($input: ProductMediaCreateInput!) {
+    productMediaCreate(
+      input: $input
+    ) {
+      errors {
+        field
+        message
+      }
+      product {
+        id
+        media {
+          id
+          alt
+        }
+      }
+    }
+  }
+`;

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { buttonVariantColorsMap, type ButtonProps } from './button.types';
+	import { buttonVariantColorsMap, ICON_OF_BUTTON_SIZE_MAP, type ButtonProps } from './button.types';
 	import { Icon, type IconType } from '$lib/components/icons';
 	import { debounceClick } from '$lib/actions/input-debounce';
 	import { INPUT_BUTTON_SIZE_MAP } from './button.types';
@@ -35,7 +35,7 @@
 {#snippet buttonIcon({ icon }: IconProps)}
 	{#if icon}
 		<span class={`text-xl`}>
-			<Icon {icon} />
+			<Icon {icon} class={ICON_OF_BUTTON_SIZE_MAP[size]} />
 		</span>
 	{/if}
 {/snippet}

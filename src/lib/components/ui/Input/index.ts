@@ -6,3 +6,4 @@ export { default as Toggle } from './toggle.svelte';
 export { default as RadioButton } from './radio.svelte';
 export { default as Label } from './label.svelte';
 export { type InputProps, type TextAreaPropsProps } from './input.types';
+export { default as FileInput } from './file.svelte';

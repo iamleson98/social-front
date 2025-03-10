@@ -7,15 +7,16 @@
 	} from '$lib/api/admin/product';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import ProductType from '$lib/components/common/product-type-select/product-type.svelte';
-	import CategorySelector from '$lib/components/pages/products/new/category-selector.svelte';
-	import ChannelsSelector from '$lib/components/pages/products/new/channels-selector.svelte';
-	import CollectionAndTax from '$lib/components/pages/products/new/collections-and-tax.svelte';
-	import PackagingAndDelivery from '$lib/components/pages/products/new/packaging-and-delivery.svelte';
-	import ProductAttributeEditor from '$lib/components/pages/products/new/product-attribute-editor.svelte';
-	import ProductDescriptionEditorjsComponent from '$lib/components/pages/products/new/product-description-editorjs-component.svelte';
-	import ProductName from '$lib/components/pages/products/new/product-name.svelte';
-	import ProductSeo from '$lib/components/pages/products/new/product-seo.svelte';
-	import ProductVariantCreator from '$lib/components/pages/products/new/product-variant-creator.svelte';
+	import CategorySelector from '$lib/components/pages/admin/products/new/category-selector.svelte';
+	import ChannelsSelector from '$lib/components/pages/admin/products/new/channels-selector.svelte';
+	import CollectionAndTax from '$lib/components/pages/admin/products/new/collections-and-tax.svelte';
+	import PackagingAndDelivery from '$lib/components/pages/admin/products/new/packaging-and-delivery.svelte';
+	import ProductAttributeEditor from '$lib/components/pages/admin/products/new/product-attribute-editor.svelte';
+	import ProductDescriptionEditorjsComponent from '$lib/components/pages/admin/products/new/product-description-editorjs-component.svelte';
+	import ProductMedia from '$lib/components/pages/admin/products/new/product-media.svelte';
+	import ProductName from '$lib/components/pages/admin/products/new/product-name.svelte';
+	import ProductSeo from '$lib/components/pages/admin/products/new/product-seo.svelte';
+	import ProductVariantCreator from '$lib/components/pages/admin/products/new/product-variant-creator.svelte';
 	import { Button } from '$lib/components/ui';
 	import type {
 		Mutation,
@@ -187,6 +188,9 @@
 		bind:categoryID={productCreateInput.category}
 		bind:ok={productInputError.category}
 		{loading}
+	/>
+	<ProductMedia
+		medias={[]}
 	/>
 	<ProductDescriptionEditorjsComponent
 		bind:description={productCreateInput.description}
