@@ -26,6 +26,8 @@
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import ErrorMsg from './error-msg.svelte';
+	import { Modal } from '$lib/components/ui/Modal';
+	import type { MediaObject } from './utils';
 
 	type VariantManifestProps = {
 		name: {
@@ -43,6 +45,11 @@
 		/** constraint on channel listings */
 		channelsListing: ProductChannelListingUpdateInput;
 		loading: boolean;
+
+		/**
+		 * parent product's media, use for assigning to variants
+		 */
+		productMedias: MediaObject[];
 	};
 
 	type CustomStockInput = StockInput & { warehouseName: string };
@@ -99,7 +106,12 @@
 		}
 	];
 
-	let { productVariantsInput = $bindable([]), channelsListing, loading }: Props = $props();
+	let {
+		productVariantsInput = $bindable([]),
+		channelsListing,
+		loading,
+		productMedias
+	}: Props = $props();
 	let variantsInputDetails = $state<ProductVariantBulkCreateInput[]>([]);
 	let quickFillingHighlightClass = $state<QuickFillHighlight>();
 	let variantManifests = $state.raw<VariantManifestProps[]>([]);
@@ -114,6 +126,7 @@
 	/** contains channel select options, this list depends on the prop `channelsListing` */
 	let channelSelectOptions = $state.raw<ChannelSelectOptionProps[]>([]);
 	let showQuickFillingAdvancedSettings = $state(false);
+	let openImageModal = $state(false);
 
 	/** check if quick filling form has any error */
 	let quickFillingError = $derived.by(() => {
@@ -669,7 +682,6 @@
 			<div class="mt-4">
 				<!-- MARK: QUICK FILLING -->
 				<div class="mb-4 rounded-lg bg-white p-3 border border-gray-200">
-					<!-- <div class="text-xs mb-1">{$tranFunc('product.quickFilling')}</div> -->
 					<Label label={$tranFunc('product.quickFilling')} size="sm" />
 					<div class="flex gap-x-2 items-start flex-row w-full">
 						<div class="w-11/12 flex gap-1 items-start flex-row">
@@ -917,7 +929,6 @@
 						</thead>
 						<tbody>
 							{#each variantsInputDetails as variantInputDetail, detailIdx (detailIdx)}
-								<!-- {@const rowspan = variantManifests.length === MAX_VARIANT_TYPES ? variantManifests[1].values.length : 1} -->
 								<tr
 									class={`variant-table-row ${quickFillingHighlightClass} border-b border-gray-200`}
 								>
@@ -936,7 +947,9 @@
 													icon={PhotoUp}
 													size="lg"
 													variant="outline"
-													class="border-dashed"
+													class="border-dashed tooltip tooltip-top"
+													data-tip="Add photo(s)"
+													onclick={() => (openImageModal = true)}
 												/>
 											</div>
 										</td>
@@ -1124,6 +1137,29 @@
 	</div>
 	<ErrorMsg error={hasGeneralError ? $tranFunc('error.thereIsError') : undefined} />
 </div>
+
+<Modal
+	open={openImageModal}
+	header="Choose photos"
+	closeOnEscape
+	closeOnOutsideClick
+	onClose={() => (openImageModal = false)}
+	onCancel={() => (openImageModal = false)}
+	onOk={() => (openImageModal = false)}
+>
+	{#if productMedias.length > 0}
+		<div class="flex gap-1 flex-wrap">
+			{#each productMedias as media, idx (idx)}
+				<div
+					class="h-30 w-30 bg-no-repeat bg-center bg-cover"
+					style="background-image: url('{media.url}');"
+				></div>
+			{/each}
+		</div>
+	{:else}
+		<Alert variant="warning" bordered size="sm">Please add photos for the parent product</Alert>
+	{/if}
+</Modal>
 
 <style>
 	@import 'tailwindcss/theme';

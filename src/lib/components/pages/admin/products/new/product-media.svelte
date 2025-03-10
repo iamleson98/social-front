@@ -5,24 +5,17 @@
 	import { FileInput, Input, Label } from '$lib/components/ui/Input';
 	import { IMAGE_EXTENSION_REGEX } from '$lib/utils/consts';
 	import ErrorMsg from './error-msg.svelte';
+	import type { MediaObject } from './utils';
 
 	const MAX_MEDIAS = 9;
 
 	type Props = {
-		medias: ImageWithUrl[];
-		disabled?: boolean;
+		medias: MediaObject[];
+		loading?: boolean;
 	};
 
-	type ImageWithUrl = {
-		file?: File;
-		url: string;
-		alt: string;
-		width?: number;
-		height?: number;
-	};
-
-	let { medias = $bindable([]), disabled = false }: Props = $props();
-	let filesMap = $state<Record<string, ImageWithUrl>>({});
+	let { medias = $bindable([]), loading = false }: Props = $props();
+	let filesMap = $state<Record<string, MediaObject>>({});
 	let errors = $derived.by(() => {
 		const keys = Object.keys(filesMap);
 		if (keys.length > MAX_MEDIAS)
@@ -42,9 +35,7 @@
 	});
 
 	$effect(() => {
-		if (!errors) {
-			medias = Object.values(filesMap);
-		}
+		medias = Object.values(filesMap);
 	});
 
 	const handleFileSelect = async (fileList: FileList) => {
@@ -60,7 +51,7 @@
 				const image = new Image();
 				image.src = url;
 
-				const prm = new Promise<ImageWithUrl & { key: string }>((resolve) => {
+				const prm = new Promise<MediaObject & { key: string }>((resolve) => {
 					image.onload = () => {
 						resolve({
 							file,
@@ -76,11 +67,11 @@
 				acc.push(prm);
 				return acc;
 			},
-			[] as Promise<ImageWithUrl & { key: string }>[]
+			[] as Promise<MediaObject & { key: string }>[]
 		);
 
 		const results = await Promise.all(promises);
-		const addFilesMap: Record<string, ImageWithUrl> = {};
+		const addFilesMap: Record<string, MediaObject> = {};
 
 		for (const result of results) {
 			addFilesMap[result.key] = result;
@@ -123,7 +114,7 @@
 							bind:value={filesMap[key].alt}
 							variant={!alt?.trim() ? 'error' : 'info'}
 							subText={!alt?.trim() ? $tranFunc('helpText.fieldRequired') : ''}
-							{disabled}
+							disabled={loading}
 						/>
 					</div>
 					{#if width && height}
@@ -142,7 +133,7 @@
 							class="tooltip tooltip-top"
 							data-tip="Remove"
 							onclick={() => handleDeleteImage(key)}
-							{disabled}
+							disabled={loading}
 						/>
 					</div>
 				</div>
@@ -159,7 +150,7 @@
 					accept="image/*"
 					multiple
 					onChange={handleFileSelect}
-					{disabled}
+					disabled={loading}
 				/>
 			</div>
 		{/if}

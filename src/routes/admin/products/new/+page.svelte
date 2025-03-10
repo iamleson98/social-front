@@ -2,6 +2,7 @@
 	import { tranFunc } from '$i18n';
 	import {
 		CREATE_PRODUCT_MUTATION,
+		PRODUCT_MEDIA_CREATE_MUTATION,
 		PRODUCT_VARIANTS_BULK_CREATE_MUTATION,
 		UPDATE_PRODUCT_CHANNEL_LISTINGS_MUTATION
 	} from '$lib/api/admin/product';
@@ -17,11 +18,13 @@
 	import ProductName from '$lib/components/pages/admin/products/new/product-name.svelte';
 	import ProductSeo from '$lib/components/pages/admin/products/new/product-seo.svelte';
 	import ProductVariantCreator from '$lib/components/pages/admin/products/new/product-variant-creator.svelte';
+	import type { MediaObject } from '$lib/components/pages/admin/products/new/utils';
 	import { Button } from '$lib/components/ui';
 	import type {
 		Mutation,
 		MutationProductChannelListingUpdateArgs,
 		MutationProductCreateArgs,
+		MutationProductMediaCreateArgs,
 		MutationProductVariantBulkCreateArgs,
 		ProductChannelListingAddInput,
 		ProductChannelListingUpdateInput,
@@ -52,6 +55,7 @@
 	});
 	let channelListingUpdateInput = $state.raw<ProductChannelListingUpdateInput>({});
 	let channelListingUpdateInputOk = $state(true);
+	let productMedias = $state.raw<MediaObject[]>([]);
 
 	let productInputError = $state<Record<keyof ProductCreateInput, boolean>>({
 		externalReference: true, // not supported yet
@@ -77,6 +81,35 @@
 	let loading = $state(false);
 
 	const setLoading = (load: boolean) => (loading = load);
+
+	const createProductMedias = async (productID: string) => {
+		if (!productMedias.length) return;
+
+		const operations = productMedias.map((media) => {
+			return GRAPHQL_CLIENT.mutation<
+				Pick<Mutation, 'productMediaCreate'>,
+				MutationProductMediaCreateArgs
+			>(
+				PRODUCT_MEDIA_CREATE_MUTATION,
+				{
+					input: {
+						product: productID,
+						alt: media.alt,
+						image: media.file
+					}
+				},
+				{
+					requestPolicy: 'network-only'
+				}
+			).toPromise();
+		});
+
+		const results = await Promise.all(operations);
+		let numFails = 0;
+		for (const result of results) {
+			if (preHandleErrorOnGraphqlResult(result, 'productMediaCreate')) numFails++;
+		}
+	};
 
 	const handleSubmit = async () => {
 		// validate:
@@ -130,7 +163,12 @@
 			id: productCreateResult.data?.productCreate?.product?.id as string,
 			input: cleanChannelListingUpdateInput
 		});
-		if (preHandleErrorOnGraphqlResult(updateProductChannelListingResult, 'productChannelListingUpdate')) {
+		if (
+			preHandleErrorOnGraphqlResult(
+				updateProductChannelListingResult,
+				'productChannelListingUpdate'
+			)
+		) {
 			setLoading(false);
 			return;
 		}
@@ -149,22 +187,23 @@
 			return;
 		}
 
-		let hasError = false;
 		for (const result of variantsBulkCreateResult.data?.productVariantBulkCreate?.results || []) {
 			if (result.errors?.length) {
 				toastStore.send({
 					variant: 'error',
 					message: result.errors[0].message as string
 				});
-				hasError = true;
 			}
 		}
 
-		if (!hasError)
-			toastStore.send({
-				variant: 'success',
-				message: $tranFunc('product.prdCreated')
-			});
+		// 4) create product medias
+
+		await createProductMedias(productCreateResult.data?.productCreate?.product?.id as string);
+
+		toastStore.send({
+			variant: 'success',
+			message: $tranFunc('product.prdCreated')
+		});
 	};
 </script>
 
@@ -189,9 +228,7 @@
 		bind:ok={productInputError.category}
 		{loading}
 	/>
-	<ProductMedia
-		medias={[]}
-	/>
+	<ProductMedia bind:medias={productMedias} {loading} />
 	<ProductDescriptionEditorjsComponent
 		bind:description={productCreateInput.description}
 		bind:ok={productInputError.description}
@@ -201,6 +238,7 @@
 		bind:productVariantsInput
 		channelsListing={channelListingUpdateInput}
 		{loading}
+		{productMedias}
 	/>
 	<ProductSeo
 		productName={productCreateInput.name}
@@ -213,7 +251,7 @@
 		bind:collections={productCreateInput.collections}
 		bind:taxClassID={productCreateInput.taxClass}
 		{loading}
-	/>	
+	/>
 	<PackagingAndDelivery
 		bind:metadata={productCreateInput.metadata}
 		bind:weight={productCreateInput.weight}
