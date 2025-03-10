@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { Edit, PhotoUp, Trash } from '$lib/components/icons';
+	import { PhotoUp, Trash } from '$lib/components/icons';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { FileInput, Input, Label } from '$lib/components/ui/Input';
 	import { IMAGE_EXTENSION_REGEX } from '$lib/utils/consts';
 
-	const MAX_MEDIAS = 6;
+	const MAX_MEDIAS = 9;
 
 	type Props = {
 		medias: ImageWithUrl[];
@@ -15,25 +15,61 @@
 		file?: File;
 		url: string;
 		alt: string;
+		width?: number;
+		height?: number;
 	};
 
 	let { medias = [] }: Props = $props();
 	let filesMap = $state<Record<string, ImageWithUrl>>({});
+	let errors = $derived.by(() => {
+		const keys = Object.keys(filesMap);
+		if (keys.length > MAX_MEDIAS) return true;
 
-	const handleFileSelect = (fileList: FileList) => {
+		for (const key of keys) {
+			const obj = filesMap[key];
+			if (!obj.alt?.trim()) return true;
+		}
+
+		return false;
+	});
+
+	const handleFileSelect = async (fileList: FileList) => {
 		if (!fileList.length) return;
 
+		const promises = Array.from(fileList).reduce(
+			(acc, file) => {
+				const key = `${file.name}-${file.size}`;
+				if (filesMap[key]) return acc;
+
+				const url = URL.createObjectURL(file);
+				const alt = file.name.replace(IMAGE_EXTENSION_REGEX, ''); // remove file extension
+				const image = new Image();
+				image.src = url;
+
+				const prm = new Promise<ImageWithUrl & { key: string }>((resolve) => {
+					image.onload = () => {
+						resolve({
+							file,
+							alt,
+							url,
+							key,
+							width: image.width,
+							height: image.height
+						});
+					};
+				});
+
+				acc.push(prm);
+				return acc;
+			},
+			[] as Promise<ImageWithUrl & { key: string }>[]
+		);
+
+		const results = await Promise.all(promises);
 		const addFilesMap: Record<string, ImageWithUrl> = {};
-		for (const file of fileList) {
-			if (!file) continue;
 
-			const key = `${file.name}-${file.size}`;
-			if (filesMap[key]) continue;
-
-			const url = URL.createObjectURL(file);
-			const alt = file.name.replace(IMAGE_EXTENSION_REGEX, ''); // remove file extension
-
-			addFilesMap[key] = { file, url, alt };
+		for (const result of results) {
+			addFilesMap[result.key] = result;
 		}
 
 		filesMap = { ...filesMap, ...addFilesMap };
@@ -48,19 +84,24 @@
 
 <div class="mb-3">
 	<Label label="Product Images" required requiredAtPos="end" />
-	<div class="rounded-lg bg-gray-50 border border-gray-200 flex gap-1 p-3 flex-wrap">
+	<div
+		class="rounded-lg border {errors
+			? 'border-red-200 bg-red-50'
+			: 'border-gray-200 bg-gray-50'} flex gap-1 p-3 flex-wrap"
+	>
 		{#each Object.keys(filesMap) as key, idx (idx)}
-			{@const { url, alt } = filesMap[key]}
+			{@const { url, alt, width, height } = filesMap[key]}
+			{@const classes = alt?.trim() ? 'ring-1 ring-gray-200' : 'ring-2 ring-red-500'}
 			<div
-				class="h-50 w-50 relative rounded-md border border-gray-200 bg-white flex bg-cover bg-center bg-no-repeat bg- items-center justify-center"
+				class="h-50 w-50 relative rounded-md {classes} bg-white bg-cover bg-center bg-no-repeat"
 				style="background-image: url('{url}');"
 			>
 				<div
-					class="absolute p-1 bottom-0 left-0 right-0 h-1/2 bg-white opacity-0 transition-opacity hover:opacity-90 ease-in"
+					class="absolute p-1.5 rounded-md bottom-0 left-0 right-0 h-1/2 bg-white opacity-0 transition-opacity hover:opacity-90 ease-in"
 				>
 					<!-- alt editing -->
 					<div class="text-gray-700 flex items-center text-xs">
-						<span class="font-semibold w-1/5">alt:</span>
+						<span class="font-semibold w-1/4">alt:</span>
 						<Input
 							size="xs"
 							placeholder="Enter alt"
@@ -69,6 +110,12 @@
 							subText={!alt?.trim() ? $tranFunc('helpText.fieldRequired') : ''}
 						/>
 					</div>
+					{#if width && height}
+						<div class="text-gray-700 flex items-center text-xs">
+							<span class="font-semibold w-1/4">W x H:</span>
+							<span>{width} x {height}</span>
+						</div>
+					{/if}
 
 					<div class="text-right absolute bottom-1 right-1">
 						<IconButton
