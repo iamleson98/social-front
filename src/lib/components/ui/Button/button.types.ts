@@ -8,9 +8,10 @@ export type ButtonVariant = 'filled' | 'light' | 'outline' | 'gradient';
 
 export type ButtonProps = {
   variant?: ButtonVariant;
-  ref?: HTMLButtonElement;
+  ref?: HTMLButtonElement | HTMLAnchorElement;
   type?: 'button' | 'submit' | 'reset';
   color?: SocialColor;
+  href?: string;
   /** weather to display text in uppercase */
   upper?: boolean;
   size?: SocialSize;

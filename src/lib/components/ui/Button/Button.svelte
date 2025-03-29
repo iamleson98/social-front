@@ -1,8 +1,13 @@
 <script lang="ts">
-	import { buttonVariantColorsMap, ICON_OF_BUTTON_SIZE_MAP, type ButtonProps } from './button.types';
+	import {
+		buttonVariantColorsMap,
+		ICON_OF_BUTTON_SIZE_MAP,
+		type ButtonProps
+	} from './button.types';
 	import { Icon, type IconType } from '$lib/components/icons';
 	import { debounceClick } from '$lib/actions/input-debounce';
 	import { INPUT_BUTTON_SIZE_MAP } from './button.types';
+	import type { ActionReturn } from 'svelte/action';
 
 	type IconProps = {
 		icon?: IconType;
@@ -19,6 +24,7 @@
 		class: className = '',
 		loading = false,
 		fullWidth = false,
+		href,
 		children,
 		startIcon,
 		endIcon,
@@ -26,6 +32,15 @@
 		clickDebounceOptions,
 		...restProps
 	}: ButtonProps = $props();
+
+	const bindAction = (node: HTMLButtonElement | HTMLAnchorElement): ActionReturn => {
+		ref = node;
+		return {
+			destroy: () => {}
+		};
+	};
+
+	let extraProps = $derived(href ? { href } : {});
 </script>
 
 {#snippet noopChildren()}
@@ -40,15 +55,17 @@
 	{/if}
 {/snippet}
 
-<button
+<svelte:element
+	this={href ? 'a' : 'button'}
 	class={`${buttonVariantColorsMap[variant][color]} button button-${size} ${INPUT_BUTTON_SIZE_MAP[size]} ${radius} ${className}`}
 	class:uppercase={upper}
 	class:w-full={fullWidth}
 	{type}
 	disabled={loading || disabled}
-	bind:this={ref}
+	use:bindAction
 	use:debounceClick={clickDebounceOptions}
 	{...restProps}
+	{...extraProps}
 >
 	{#if loading}
 		<span class="loading loading-dots loading-sm"></span>
@@ -61,10 +78,10 @@
 		{/if}
 		{@render buttonIcon({ icon: endIcon })}
 	{/if}
-</button>
+</svelte:element>
 
 <style>
-	@import "tailwindcss/theme";
+	@import 'tailwindcss/theme';
 	.button {
 		@apply cursor-pointer outline-hidden! !select-none gap-1.5 appearance-none text-center inline-flex justify-center items-center leading-none grow-0 font-medium focus:ring-4;
 		-webkit-tap-highlight-color: transparent;

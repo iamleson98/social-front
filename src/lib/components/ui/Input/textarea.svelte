@@ -34,7 +34,7 @@
 		<Label {label} {id} {required} {size} {variant} requiredAtPos="end" />
 	{/if}
 	<div class={`${INPUT_CLASSES[variant].fg}`}>
-		<div class={`relative mt-0`}>
+		<div class={`relative`}>
 			{#if startIcon}
 				<div class="absolute inset-y-0 start-0 flex items-center ps-2.5 pointer-events-none">
 					<Icon icon={startIcon} />
@@ -60,7 +60,7 @@
 			{/if}
 		</div>
 		{#if subText}
-			<p class={`text-[10px] mt-0.5 text-right!`}>{subText}</p>
+			<div class={`text-[10px] text-right!`}>{subText}</div>
 		{/if}
 	</div>
 </div>

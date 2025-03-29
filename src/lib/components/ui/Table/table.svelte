@@ -8,10 +8,10 @@
 		ChevronUp,
 		Icon
 	} from '$lib/components/icons';
+	import { type Snippet } from 'svelte';
 	import { IconButton } from '../Button';
 	import Button from '../Button/Button.svelte';
-	import { DropDown, type DropdownTriggerInterface } from '../Dropdown';
-	import MenuItem from '../Menu/menuItem.svelte';
+	import { DropDown, type DropdownTriggerInterface, type MenuItemProps } from '../Dropdown';
 	import type { SortState, TableProps } from './types';
 
 	const ROW_OPTIONS = [10, 20, 30, 50, 100];
@@ -60,6 +60,13 @@
 			onChangeRowsPerPage?.(num);
 		}
 	};
+
+	let paginOptisons = $derived(
+		rowsOptions.map<MenuItemProps>((num) => ({
+			children: `${num}`,
+			onclick: () => handleRowsPerPageChange(num)
+		}))
+	);
 </script>
 
 <table class="table {tableClass}">
@@ -67,7 +74,7 @@
 		<tr>
 			{#each columns as column, idx (idx)}
 				{@const classes = column.sortable
-					? 'cursor-pointer hover:bg-gray-100 p-2 active:bg-gray-200 focus:bg-gray-200'
+					? 'cursor-pointer hover:bg-gray-100 active:bg-gray-200 focus:bg-gray-200'
 					: ''}
 				{@const props = column.sortable
 					? {
@@ -78,7 +85,7 @@
 				<th class="p-[unset]!">
 					<svelte:element
 						this={column.sortable ? 'button' : 'div'}
-						class="flex items-center gap-2 w-full h-full p-2 justify-between {classes}"
+						class="flex items-center gap-2 w-full h-full py-2 px-4 justify-between {classes}"
 						{...props}
 					>
 						<div class="flex items-center gap-1">
@@ -104,10 +111,9 @@
 		{#each items as item, idx (idx)}
 			<tr>
 				{#each columns as column, idx (idx)}
-					{@const data = column.getter(item)}
 					<td>
 						<div>
-							{@html data}
+							{@render (column.child as Snippet<[{ item: T }]>)({ item })}
 						</div>
 					</td>
 				{/each}
@@ -123,11 +129,7 @@
 			{#snippet trigger({ onclick, onfocus }: DropdownTriggerInterface)}
 				<Button size="xs" variant="light" {onclick} {onfocus}>No. of row {rowsPerPage}</Button>
 			{/snippet}
-			<DropDown {trigger} placement="bottom-start">
-				{#each rowsOptions as option, idx (idx)}
-					<MenuItem onclick={() => handleRowsPerPageChange(option)}>{option}</MenuItem>
-				{/each}
-			</DropDown>
+			<DropDown {trigger} placement="bottom-start" options={paginOptisons} />
 		</div>
 		<div class="flex items-center gap-2 justify-end">
 			<IconButton

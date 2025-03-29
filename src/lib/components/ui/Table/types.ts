@@ -1,5 +1,7 @@
 import type { IconType } from "$lib/components/icons";
 import type { PageInfo } from "$lib/gql/graphql";
+import type { Snippet } from "svelte";
+
 
 export type TableProps<T extends Record<string, unknown>> = {
   items: T[];
@@ -19,7 +21,7 @@ export type TableColumnProps<T extends Record<string, unknown>> = {
   startIcon?: IconType;
   endIcon?: IconType;
   sortable?: boolean;
-  getter: (item: T) => string | number;
+  child: Snippet<[{ item: T }]>
 };
 
 export type SortDirection = 'asc' | 'desc' | 'neutral';

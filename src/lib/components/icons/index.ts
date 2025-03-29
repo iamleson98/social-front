@@ -86,7 +86,9 @@ export { default as AdjustmentHorizontal } from './tabler--adjustment-horizontal
 export { default as MailQuestion } from './tabler--mail-question.svelte'
 export { default as CheckOff } from './tabler--check-off.svelte';
 export { default as FileUpload } from './tabler--file-upload.svelte';
-export { default as PhotoUp } from './tabler--photo-up.svelte'
+export { default as PhotoUp } from './tabler--photo-up.svelte';
+export { default as Dots } from './tabler--dots.svelte';
+export { default as Send } from './tabler--send.svelte';
 
 export { default as Icon } from './icon.svelte';
 export { AlertHexagonFilled };

@@ -1,4 +1,4 @@
-import { type SelectedAttribute, AttributeInputTypeEnum, OrderDirection, OrderStatus, PaymentChargeStatusEnum } from '$lib/gql/graphql';
+import { type SelectedAttribute, AttributeInputTypeEnum, OrderDirection } from '$lib/gql/graphql';
 import { toastStore } from '$lib/stores/ui/toast';
 import type { AnyVariables, OperationResult } from '@urql/core';
 import editorJsToHtml from 'editorjs-html';
@@ -8,7 +8,6 @@ import type { ServerLoadEvent } from '@sveltejs/kit';
 import { CHANNEL_KEY } from './consts';
 import { getCookieByKey } from './cookies';
 import { DEFAULT_CHANNEL } from './channels';
-import { lowerCase, startCase } from 'es-toolkit';
 
 
 export const editorJsParser = editorJsToHtml();
@@ -256,75 +255,4 @@ export const buildHomePageLink = (event?: ServerLoadEvent) => {
 
 export const buildLinkWithRespectToChannel = (uri: string, event?: ServerLoadEvent) => {
 	return `${buildHomePageLink(event)}/${uri}`;
-};
-
-export const paymentStatusBuilder = (status: PaymentChargeStatusEnum) => {
-	// NOTE: Those badge classes are found on: https://v5.daisyui.com/components/badge/
-	let badgeClass = 'badge-success';
-
-	switch (status) {
-		case PaymentChargeStatusEnum.Cancelled:
-			badgeClass = 'badge-error';
-			break;
-		case PaymentChargeStatusEnum.FullyCharged:
-			badgeClass = 'badge-success';
-			break;
-		case PaymentChargeStatusEnum.FullyRefunded:
-			badgeClass = 'badge-primary';
-			break;
-		case PaymentChargeStatusEnum.NotCharged:
-			badgeClass = 'badge-warning';
-			break;
-		case PaymentChargeStatusEnum.PartiallyCharged:
-			badgeClass = 'badge-info';
-			break;
-		case PaymentChargeStatusEnum.PartiallyRefunded:
-			badgeClass = 'badge-accent';
-			break;
-		case PaymentChargeStatusEnum.Pending:
-			badgeClass = 'badge-dash! badge-neutral';
-			break;
-		case PaymentChargeStatusEnum.Refused:
-			badgeClass = 'badge-neutral';
-			break;
-	}
-
-	return `<div class="badge badge-outline ${badgeClass} badge-sm">${startCase(lowerCase(status.replace(/_/g, ' ')))}</div>`;
-};
-
-export const orderStatusBuider = (status: OrderStatus) => {
-	// NOTE: Those badge classes are found on: https://v5.daisyui.com/components/badge/
-	let badge = 'badge-success';
-
-	switch (status) {
-		case OrderStatus.Canceled:
-			badge = 'badge-error';
-			break;
-		case OrderStatus.Draft:
-			badge = 'badge-neutral';
-			break;
-		case OrderStatus.Expired:
-			badge = 'badge-secondary';
-			break;
-		case OrderStatus.Fulfilled:
-			badge = 'badge-success';
-			break;
-		case OrderStatus.PartiallyFulfilled:
-			badge = 'badge-accent';
-			break;
-		case OrderStatus.PartiallyReturned:
-			badge = 'badge-info';
-			break;
-		case OrderStatus.Returned:
-			badge = 'badge-warning';
-			break;
-		case OrderStatus.Unconfirmed:
-			badge = 'badge-dash! badge-neutral';
-			break;
-		case OrderStatus.Unfulfilled:
-			badge = 'badge-neutral';
-			break;
-	}
-
-	return `<div class="badge ${badge} badge-sm">${startCase(lowerCase(status.replace(/_/g, ' ')))}</div>`;
 };

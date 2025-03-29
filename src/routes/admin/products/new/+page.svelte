@@ -109,6 +109,12 @@
 		for (const result of results) {
 			if (preHandleErrorOnGraphqlResult(result, 'productMediaCreate')) numFails++;
 		}
+
+		/**
+		 * In case user want to assign some media(s) to some variant(s),
+		 * For that API to work, we have to assign just created media images to media state,
+		 * So the variant editors know how to mapping them
+		 */
 	};
 
 	const handleSubmit = async () => {
@@ -181,23 +187,25 @@
 			product: productCreateResult.data?.productCreate?.product?.id as string,
 			variants: productVariantsInput
 		});
-		setLoading(false);
+		if (preHandleErrorOnGraphqlResult(variantsBulkCreateResult, 'productVariantBulkCreate')) return;
 
-		if (preHandleErrorOnGraphqlResult(variantsBulkCreateResult, 'productVariantBulkCreate')) {
-			return;
-		}
-
+		let hasError = false;
 		for (const result of variantsBulkCreateResult.data?.productVariantBulkCreate?.results || []) {
 			if (result.errors?.length) {
 				toastStore.send({
 					variant: 'error',
 					message: result.errors[0].message as string
 				});
+				hasError = true;
 			}
 		}
 
-		// 4) create product medias
+		if (hasError) {
+			setLoading(false);
+			return;
+		}
 
+		// 4) create product medias
 		await createProductMedias(productCreateResult.data?.productCreate?.product?.id as string);
 
 		toastStore.send({

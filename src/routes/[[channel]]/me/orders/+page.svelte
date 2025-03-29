@@ -5,13 +5,15 @@
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import { type Order, type Query } from '$lib/gql/graphql';
-	import {
-		formatMoney,
-		orderStatusBuider,
-		paymentStatusBuilder,
-		type PaginationOptions
-	} from '$lib/utils/utils';
+	import { formatMoney, type PaginationOptions } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
+	import { orderStatusBadgeClass, paymentStatusBadgeClass } from './utils';
+	import { lowerCase, startCase } from 'es-toolkit';
+	import { DropDown, type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
+	import { IconButton } from '$lib/components/ui/Button';
+	import { Dots } from '$lib/components/icons';
+	import { goto } from '$app/navigation';
+	import { AppRoute } from '$lib/utils';
 
 	const BATCH_LOAD = 20;
 
@@ -27,30 +29,76 @@
 	const ORDER_TABLE_COLUMNS: TableColumnProps<Order>[] = [
 		{
 			title: 'No',
-			getter: (item) => item.number,
-			// sortable: true
+			// sortable: true,
+			child: no
 		},
 		{
 			title: 'Date',
-			getter: (item) => dayjs(item.created).format('MMMM D, YYYY [at] h:mm A'),
+			child: date
 			// sortable: true
 		},
 		{
 			title: 'Payment',
-			getter: (item) => paymentStatusBuilder(item.paymentStatus)
+			child: payment
 		},
 		{
 			title: 'Status',
-			getter: (item) => orderStatusBuider(item.status)
+			child: status
 		},
 		{
 			title: 'Total',
-			getter: (item) => `<div class="font-semibold text-blue-600">${formatMoney(item.total.gross.currency, item.total.gross.amount)}</div>`
+			child: total
+		},
+		{
+			title: 'Action',
+			child: action
 		}
 	];
 </script>
 
-<div class="rounded-lg bg-white border border-gray-200 p-4">
+{#snippet no({ item }: { item: Order })}
+	{item.number}
+{/snippet}
+
+{#snippet date({ item }: { item: Order })}
+	{dayjs(item.created).format('MMMM D, YYYY [at] h:mm A')}
+{/snippet}
+
+{#snippet payment({ item }: { item: Order })}
+	<div class="{paymentStatusBadgeClass(item.paymentStatus)} badge badge-outline badge-sm">
+		{startCase(lowerCase(item.paymentStatus.replace(/_/g, ' ')))}
+	</div>
+{/snippet}
+
+{#snippet status({ item }: { item: Order })}
+	<div class="{orderStatusBadgeClass(item.status)} badge badge-sm">
+		{startCase(lowerCase(item.status.replace(/_/g, ' ')))}
+	</div>
+{/snippet}
+
+{#snippet total({ item }: { item: Order })}
+	<div class="font-semibold text-blue-600">
+		{formatMoney(item.total.gross.currency, item.total.gross.amount)}
+	</div>
+{/snippet}
+
+{#snippet action({item}: { item: Order })}
+	{#snippet trigger({ onclick }: DropdownTriggerInterface)}
+		<IconButton icon={Dots} {onclick} size="xs" variant="light" color="gray" />
+	{/snippet}
+	<DropDown
+		{trigger}
+		options={[
+			{
+				children: 'Request support',
+				href: `${AppRoute.ME_SUPPORT_NEW()}?order_number=${item.number}`,
+			}
+		]}
+
+	/>
+{/snippet}
+
+<div class="rounded-lg bg-white border border-gray-200 p-3">
 	{#if $userOrdersStore.fetching}
 		<SkeletonContainer>
 			<Skeleton class="h-4 w-full" />

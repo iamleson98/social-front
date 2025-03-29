@@ -13,8 +13,9 @@
 
 	type TabItem = {
 		icon: IconType;
-		name: string;
-		href?: string;
+		name?: string;
+		href: string;
+		children?: TabItem[];
 	};
 
 	const ACCOUNT_TAB_ITEMS: TabItem[] = [
@@ -39,14 +40,20 @@
 		{
 			icon: MailQuestion,
 			name: 'Supports',
-			href: AppRoute.ME_SUPPORT()
+			href: AppRoute.ME_SUPPORT(),
+			children: [
+				{
+					href: AppRoute.ME_SUPPORT_NEW(),
+					icon: MailQuestion,
+				},
+			]
 		}
 	];
 </script>
 
 {#snippet sidebarItem(item: TabItem)}
 	{@const attrs = item.href ? { href: item.href } : {}}
-	{@const active = item.href && item.href === page.url.pathname}
+	{@const active = item.href == page.url.pathname || item.children?.some(child => child.href == page.url.pathname)}
 	<svelte:element
 		this={item.href ? 'a' : 'div'}
 		{...attrs}

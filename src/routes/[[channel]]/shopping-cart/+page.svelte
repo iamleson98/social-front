@@ -137,7 +137,7 @@
 						)}
 					</div>
 
-					<Button variant="filled" fullWidth size="sm" onclick={() => goto(`${AppRoute.CHECKOUT}/${$checkoutStore.id}`)}>
+					<Button variant="filled" fullWidth size="sm" onclick={() => goto(`${AppRoute.CHECKOUT()}/${$checkoutStore.id}`)}>
 						{$tranFunc('cart.proceedCheckout')}
 					</Button>
 
