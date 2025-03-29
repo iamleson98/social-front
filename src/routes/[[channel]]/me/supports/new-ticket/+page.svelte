@@ -1,9 +1,15 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { operationStore } from '$lib/api/operation';
+	import { USER_ORDERS_QUERY } from '$lib/api/orders';
 	import { Send } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
+	import { Alert } from '$lib/components/ui/Alert';
 	import { Input, TextArea } from '$lib/components/ui/Input';
-	import { Select } from '$lib/components/ui/select';
+	import { Select, type SelectOption } from '$lib/components/ui/select';
+	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
+	import type { Query } from '$lib/gql/graphql';
+	import type { PaginationOptions } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import { object, string, z } from 'zod';
 
@@ -21,6 +27,17 @@
 		tag: '',
 		message: '',
 		orderNo: ''
+	});
+
+	const BATCH_LOAD = 20;
+
+	const userOrdersStore = operationStore<Pick<Query, 'me'>, PaginationOptions>({
+		kind: 'query',
+		requestPolicy: 'cache-and-network',
+		query: USER_ORDERS_QUERY,
+		variables: {
+			first: BATCH_LOAD
+		}
 	});
 
 	onMount(() => {
@@ -79,14 +96,30 @@
 			variant={ticketErrors.tag?.length ? 'error' : 'info'}
 			subText={ticketErrors.tag?.length ? ticketErrors.tag[0] : ''}
 		/>
-		<Select
-			options={[]}
-			label="Order"
-			required
-			bind:value={ticketInput.orderNo}
-			variant={ticketErrors.orderNo?.length ? 'error' : 'info'}
-			subText={ticketErrors.orderNo?.length ? ticketErrors.orderNo[0] : ''}
-		/>
+		{#if $userOrdersStore.fetching}
+			<SkeletonContainer>
+				<Skeleton class="h-4 w-full" />
+			</SkeletonContainer>
+		{:else if $userOrdersStore.error}
+			<Alert size="sm" variant="error" class="mb-3" bordered>
+				{$userOrdersStore.error.message}
+			</Alert>
+		{:else if $userOrdersStore.data?.me}
+			{@const items =
+				$userOrdersStore.data.me.orders?.edges.map<SelectOption>((item) => ({
+					value: item.node.number,
+					label: item.node.number
+				})) || []}
+
+			<Select
+				options={items}
+				label="Order"
+				required
+				bind:value={ticketInput.orderNo}
+				variant={ticketErrors.orderNo?.length ? 'error' : 'info'}
+				subText={ticketErrors.orderNo?.length ? ticketErrors.orderNo[0] : ''}
+			/>
+		{/if}
 	</div>
 
 	<TextArea

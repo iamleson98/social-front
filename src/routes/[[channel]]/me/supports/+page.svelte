@@ -90,8 +90,7 @@
 {/snippet}
 
 <div class="mt-3 rounded-lg bg-white border border-gray-200 p-3 flex items-center justify-between">
-	<!-- <Label label="Support Tickets" size="lg" /> -->
-	<div>tickets</div>
+	<div>Tickets</div>
 	<div>
 		<Button size="xs" endIcon={Plus} href={AppRoute.ME_SUPPORT_NEW()}>New Ticket</Button>
 	</div>

@@ -12,7 +12,6 @@
 	import { DropDown, type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Dots } from '$lib/components/icons';
-	import { goto } from '$app/navigation';
 	import { AppRoute } from '$lib/utils';
 
 	const BATCH_LOAD = 20;
