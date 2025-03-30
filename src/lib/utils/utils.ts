@@ -1,4 +1,4 @@
-import { type SelectedAttribute, AttributeInputTypeEnum, OrderDirection } from '$lib/gql/graphql';
+import { type SelectedAttribute, type User, AttributeInputTypeEnum, OrderDirection, PermissionEnum } from '$lib/gql/graphql';
 import { toastStore } from '$lib/stores/ui/toast';
 import type { AnyVariables, OperationResult } from '@urql/core';
 import editorJsToHtml from 'editorjs-html';
@@ -255,4 +255,25 @@ export const buildHomePageLink = (event?: ServerLoadEvent) => {
 
 export const buildLinkWithRespectToChannel = (uri: string, event?: ServerLoadEvent) => {
 	return `${buildHomePageLink(event)}/${uri}`;
+};
+
+
+export const userIsShopAdmin = (user: User) => {
+	let canManageSettings: boolean = false, canManageStaff: boolean = false, canManageUsers: boolean = false;
+
+	for (const perm of user.userPermissions || []) {
+		switch (perm.code) {
+			case PermissionEnum.ManageSettings:
+				canManageSettings = true;
+				break;
+			case PermissionEnum.ManageStaff:
+				canManageStaff = true;
+				break;
+			case PermissionEnum.ManageUsers:
+				canManageUsers = true;
+				break;
+		}
+	}
+
+	return canManageUsers && canManageSettings && canManageStaff;
 };

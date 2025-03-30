@@ -9,7 +9,9 @@
 		type IconType
 	} from '$lib/components/icons';
 	import { AccordionList } from '$lib/components/ui/Accordion';
+	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
 	import { AppRoute } from '$lib/utils';
+	import { userIsShopAdmin } from '$lib/utils/utils';
 
 	type TabItem = {
 		icon: IconType;
@@ -49,6 +51,31 @@
 			]
 		}
 	];
+
+	const SHOP_TAB_ITEMS: TabItem[] = [
+		{
+			icon: UserCog,
+			name: 'Products',
+			href: AppRoute.SETTINGS_PRODUCTS(),
+			children: [
+				{
+					href: AppRoute.SETTINGS_PRODUCTS_NEW(),
+					icon: UserCog,
+				},
+			]
+		},
+		{
+			icon: UserCog,
+			name: 'Contracts',
+			href: AppRoute.SETTINGS_CONTRACTS(),
+			children: [
+				{
+					href: AppRoute.SETTINGS_CONTRACTS_NEW(),
+					icon: UserCog,
+				},
+			]
+		}
+	];
 </script>
 
 {#snippet sidebarItem(item: TabItem)}
@@ -70,4 +97,8 @@
 	<AccordionList header="Account" child={sidebarItem} items={ACCOUNT_TAB_ITEMS} class="w-full" />
 
 	<AccordionList header="Shopping" child={sidebarItem} items={SHOPPING_TAB_ITEMS} class="w-full" />
+
+	{#if !!$READ_ONLY_USER_STORE && userIsShopAdmin($READ_ONLY_USER_STORE)}
+		<AccordionList header="Shop Management" child={sidebarItem} items={SHOP_TAB_ITEMS} class="w-full" />
+	{/if}
 </div>

@@ -79,47 +79,51 @@
 	/>
 
 	<div class="mt-2 flex items-start gap-2 flex-row">
-		<Select
-			options={[
-				{
-					value: 'CONSULT',
-					label: 'Consult'
-				},
-				{
-					value: 'WARRANTY',
-					label: 'Warranty'
-				}
-			]}
-			label="Tag"
-			required
-			bind:value={ticketInput.tag}
-			variant={ticketErrors.tag?.length ? 'error' : 'info'}
-			subText={ticketErrors.tag?.length ? ticketErrors.tag[0] : ''}
-		/>
-		{#if $userOrdersStore.fetching}
-			<SkeletonContainer>
-				<Skeleton class="h-4 w-full" />
-			</SkeletonContainer>
-		{:else if $userOrdersStore.error}
-			<Alert size="sm" variant="error" class="mb-3" bordered>
-				{$userOrdersStore.error.message}
-			</Alert>
-		{:else if $userOrdersStore.data?.me}
-			{@const items =
-				$userOrdersStore.data.me.orders?.edges.map<SelectOption>((item) => ({
-					value: item.node.number,
-					label: item.node.number
-				})) || []}
-
+		<div class="w-1/2">
 			<Select
-				options={items}
-				label="Order"
+				options={[
+					{
+						value: 'CONSULT',
+						label: 'Consult'
+					},
+					{
+						value: 'WARRANTY',
+						label: 'Warranty'
+					}
+				]}
+				label="Tag"
 				required
-				bind:value={ticketInput.orderNo}
-				variant={ticketErrors.orderNo?.length ? 'error' : 'info'}
-				subText={ticketErrors.orderNo?.length ? ticketErrors.orderNo[0] : ''}
+				bind:value={ticketInput.tag}
+				variant={ticketErrors.tag?.length ? 'error' : 'info'}
+				subText={ticketErrors.tag?.length ? ticketErrors.tag[0] : ''}
 			/>
-		{/if}
+		</div>
+		<div class="w-1/2">
+			{#if $userOrdersStore.fetching}
+				<SkeletonContainer>
+					<Skeleton class="h-4 w-full" />
+				</SkeletonContainer>
+			{:else if $userOrdersStore.error}
+				<Alert size="sm" variant="error" class="mb-3" bordered>
+					{$userOrdersStore.error.message}
+				</Alert>
+			{:else if $userOrdersStore.data?.me}
+				{@const items =
+					$userOrdersStore.data.me.orders?.edges.map<SelectOption>((item) => ({
+						value: item.node.number,
+						label: item.node.number
+					})) || []}
+
+				<Select
+					options={items}
+					label="Order"
+					required
+					bind:value={ticketInput.orderNo}
+					variant={ticketErrors.orderNo?.length ? 'error' : 'info'}
+					subText={ticketErrors.orderNo?.length ? ticketErrors.orderNo[0] : ''}
+				/>
+			{/if}
+		</div>
 	</div>
 
 	<TextArea

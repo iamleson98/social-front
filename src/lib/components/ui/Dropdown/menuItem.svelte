@@ -26,7 +26,7 @@
 	{...rest}
 	class="flex items-center gap-2 py-1 px-2 text-sm select-none! {disabled
 		? 'cursor-not-allowed! text-gray-400'
-		: 'cursor-pointer hover:bg-gray-100'} {className}"
+		: 'cursor-pointer hover:bg-gray-100 text-gray-700'} {className}"
 	onclick={handleClick}
 	tabindex="0"
 	role="button"

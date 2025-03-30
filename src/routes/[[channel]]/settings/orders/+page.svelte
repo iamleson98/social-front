@@ -10,8 +10,8 @@
 	import { orderStatusBadgeClass, paymentStatusBadgeClass } from './utils';
 	import { lowerCase, startCase } from 'es-toolkit';
 	import { DropDown, type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
-	import { IconButton } from '$lib/components/ui/Button';
-	import { Dots } from '$lib/components/icons';
+	import { Button, IconButton } from '$lib/components/ui/Button';
+	import { Dots, Plus } from '$lib/components/icons';
 	import { AppRoute } from '$lib/utils';
 
 	const BATCH_LOAD = 20;
@@ -81,23 +81,30 @@
 	</div>
 {/snippet}
 
-{#snippet action({item}: { item: Order })}
-	{#snippet trigger({ onclick }: DropdownTriggerInterface)}
-		<IconButton icon={Dots} {onclick} size="xs" variant="light" color="gray" />
+{#snippet action({ item }: { item: Order })}
+	{#snippet trigger({ ...rest }: DropdownTriggerInterface)}
+		<IconButton icon={Dots} {...rest} size="xs" variant="light" color="gray" />
 	{/snippet}
 	<DropDown
 		{trigger}
 		options={[
 			{
 				children: 'Request support',
-				href: `${AppRoute.ME_SUPPORT_NEW()}?order_number=${item.number}`,
+				href: `${AppRoute.ME_SUPPORT_NEW()}?order_number=${item.number}`
 			}
 		]}
-
 	/>
 {/snippet}
 
-<div class="rounded-lg bg-white border border-gray-200 p-3">
+
+<div class="mt-3 rounded-lg bg-white border border-gray-200 p-3 flex items-center justify-between">
+	<div>Orders</div>
+	<div>
+		<Button size="xs" endIcon={Plus} href={AppRoute.ME_SUPPORT_NEW()}>New Order</Button>
+	</div>
+</div>
+
+<div class="rounded-lg bg-white border border-gray-200 p-3 mt-3">
 	{#if $userOrdersStore.fetching}
 		<SkeletonContainer>
 			<Skeleton class="h-4 w-full" />
