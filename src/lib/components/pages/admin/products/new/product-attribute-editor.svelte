@@ -122,7 +122,7 @@
 	const productTypeQuery = operationStore<Pick<Query, 'productType'>, QueryProductTypeArgs>({
 		kind: 'query',
 		query: PRODUCT_TYPE_QUERY,
-		requestPolicy: 'network-only',
+		requestPolicy: 'cache-and-network',
 		variables: {
 			id: productTypeID,
 			attributeChoicesFirst: MAX_FETCHING_BATCH

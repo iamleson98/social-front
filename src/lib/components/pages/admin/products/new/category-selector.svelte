@@ -35,7 +35,7 @@
 		kind: 'query',
 		query: CATEGORIES_LIST_FOR_CREATE_PRODUCT,
 		context: {
-			requestPolicy: 'network-only'
+			requestPolicy: 'cache-and-network'
 		},
 		variables: {
 			level: 0,
