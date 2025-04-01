@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 @plugin "daisyui" {
-  include: menu, checkbox, tooltip, tab, radio, progress, calendar, loading, file, file-input, toggle, table, badge;
+  include: menu, checkbox, tooltip, tab, radio, progress, calendar, loading, file, file-input, toggle, table, badge, breadcrumbs, link;
   themes: light --default, dark --prefersdark;
 }
 

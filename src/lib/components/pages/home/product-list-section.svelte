@@ -52,7 +52,7 @@
 <!-- url search params listener -->
 <ProductFilterStateListener />
 
-<div class="max-w-md m-auto">
+<div>
 	{#each productLoadPageVariables as variables, idx (idx)}
 		<ProductListPage
 			{variables}

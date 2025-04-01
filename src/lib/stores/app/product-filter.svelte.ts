@@ -13,7 +13,7 @@ export type ProductFilterParams = QueryProductsArgs & {
 /** this store keeps track of products filter options  */
 export const productFilterParamStore = writable<ProductFilterParams>({
   channel: clientSideGetCookieOrDefault(CHANNEL_KEY, DEFAULT_CHANNEL.slug),
-  first: 10,
+  first: 12,
   sortBy: {
     field: ProductOrderField.Price,
     direction: OrderDirection.Asc,

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { Dots, Edit, Icon, Plus, TagFilled, Trash } from '$lib/components/icons';
-	import { Button } from '$lib/components/ui';
+	import { Dots, Edit, Icon, TagFilled, Trash } from '$lib/components/icons';
+	// import { Button } from '$lib/components/ui';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown, type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
-	import { AlertModal } from '$lib/components/ui/Modal';
+	// import { AlertModal } from '$lib/components/ui/Modal';
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
@@ -122,12 +122,12 @@
 	/>
 {/snippet}
 
-<div class="mt-3 rounded-lg bg-white border border-gray-200 p-3 flex items-center justify-between">
+<!-- <div class="mt-3 rounded-lg bg-white border border-gray-200 p-3 flex items-center justify-between">
 	<div>Tickets</div>
 	<div>
 		<Button size="xs" endIcon={Plus} href={AppRoute.ME_SUPPORT_NEW()}>New Ticket</Button>
 	</div>
-</div>
+</div> -->
 
 <div class="rounded-lg bg-white border border-gray-200 mt-3 p-3">
 	<Table {items} columns={ORDER_TABLE_COLUMNS}></Table>

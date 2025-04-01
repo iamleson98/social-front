@@ -13,11 +13,11 @@
 	</aside>
 
 	<div class="w-4/5 flex gap-3">
-		<div class="w-2/3 tablet:w-full">
+		<div class="w-3/4 tablet:w-full">
 			<ProductListSection />
 		</div>
 		<div
-			class="w-1/3 tablet:hidden sticky overflow-auto top-16 h-[calc(100vh-4rem)]"
+			class="w-1/4 tablet:hidden sticky overflow-auto top-16 h-[calc(100vh-4rem)]"
 			style="scrollbar-width: none;"
 		>
 			<RecommendationSection />

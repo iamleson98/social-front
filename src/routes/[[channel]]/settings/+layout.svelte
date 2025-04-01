@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { CheckOff, Icon, RosetteDiscountChecked } from '$lib/components/icons';
-	import Sidebar from '$lib/components/pages/me/sidebar.svelte';
+	import Sidebar from '$lib/components/pages/settings/sidebar.svelte';
 	import { onMount, type Snippet } from 'svelte';
 	import type { LayoutServerData } from './$types';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';

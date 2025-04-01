@@ -64,10 +64,6 @@
 	};
 </script>
 
-<div class="mt-3 rounded-lg bg-white border border-gray-200 p-3 flex items-center justify-between">
-	<div>Compose new ticket</div>
-</div>
-
 <div class="mt-3 p-3 rounded-lg bg-white border border-gray-200">
 	<Input
 		placeholder="Ticket title"

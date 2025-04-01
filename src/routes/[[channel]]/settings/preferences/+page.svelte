@@ -1,7 +1,7 @@
 <script lang="ts">
 	// import { onMount } from 'svelte';
 	// import 'leaflet/dist/leaflet.css';
-	import Map from '$lib/components/pages/me/map.svelte';
+	import Map from '$lib/components/pages/settings/map.svelte';
 
 	// let L = $state<any>();
 	// let MAP = $state<any>();

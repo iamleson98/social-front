@@ -4,10 +4,10 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import type { Query, QueryProductsArgs } from '$lib/gql/graphql';
 	import { PRODUCT_LIST_QUERY_STORE } from '$lib/api';
-	import ProductCard from '../../common/product/product-card.svelte';
+	import ProductCard from '../../../common/product/product-card.svelte';
 	import type { ProductFilterParams } from '$lib/stores/app/product-filter.svelte';
 	import { operationStore } from '$lib/api/operation';
-	import ProductCardSkeleton from '../../common/product/product-card-skeleton.svelte';
+	import ProductCardSkeleton from '../../../common/product/product-card-skeleton.svelte';
 
 	type Props = {
 		isLastPage: boolean;
@@ -27,9 +27,9 @@
 
 <div class="mt-1.5">
 	{#if $productFetchStore.fetching}
-		<div class="flex flex-wrap flex-row gap-1.5 justify-between">
-			{#each Array(2) as _, idx (idx)}
-				<div class="w-[49.5%]">
+		<div class="flex flex-wrap flex-row gap-1 justify-between">
+			{#each Array(4) as _, idx (idx)}
+				<div class="w-[24.3%]">
 					<ProductCardSkeleton />
 				</div>
 			{/each}
@@ -39,9 +39,9 @@
 			{$tranFunc('error.failedToLoad')}
 		</Alert>
 	{:else if $productFetchStore.data?.products?.edges.length}
-		<div class="flex flex-wrap flex-row gap-1.5 justify-between">
+		<div class="flex flex-wrap flex-row gap-1 justify-between">
 			{#each $productFetchStore.data?.products?.edges as { node }, idx (idx)}
-				<div class="w-[49.5%]">
+				<div class="w-[24.3%]">
 					<ProductCard product={node} />
 				</div>
 			{/each}

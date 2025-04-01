@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { Plus } from '$lib/components/icons';
+	import { Button } from '$lib/components/ui';
 	import { AppRoute } from '$lib/utils';
 	import type { Snippet } from 'svelte';
 
@@ -9,13 +11,24 @@
 
 	let { children }: Props = $props();
 
-	const meSupportPath = AppRoute.SETTINGS_PRODUCTS();
-	const meSupportNewPath = AppRoute.SETTINGS_PRODUCTS_NEW();
+	const productsLink = AppRoute.SETTINGS_PRODUCTS();
+	const newProductLink = AppRoute.SETTINGS_PRODUCTS_NEW();
 </script>
 
-<div role="tablist" class="tabs tabs-border">
-	<a role="tab" class="tab {page.url.pathname === meSupportPath ? 'tab-active' : ''}"  href={meSupportPath}>Products</a>
-	<a role="tab" class="tab {page.url.pathname === meSupportNewPath ? 'tab-active' : ''}" href={meSupportNewPath}>New Product</a>
+<div class="flex items-center justify-between mb-3">
+	<div class="breadcrumbs text-sm">
+		<ul>
+			<li><a href={AppRoute.SETTINGS_PRODUCTS()}>Products</a></li>
+			{#if page.url.pathname === newProductLink}
+				<li>Add Product</li>
+			{:else if page.route.id === '/[[channel]]/settings/products/[slug]'}
+				<li>{page.params.slug}</li>
+			{/if}
+		</ul>
+	</div>
+	<div>
+		<Button size="xs" endIcon={Plus} href={AppRoute.SETTINGS_PRODUCTS_NEW()}>New Product</Button>
+	</div>
 </div>
 
 <div>

@@ -14,6 +14,7 @@ export const AppRoute = {
 	ME_SUPPORT: () => buildLinkWithRespectToChannel('settings/supports'),
 	ME_SUPPORT_NEW: () => buildLinkWithRespectToChannel('settings/supports/new-ticket'),
 	SETTINGS_PRODUCTS: () => buildLinkWithRespectToChannel('settings/products'),
+	SETTINGS_PRODUCTS_EDIT: (id: string) => buildLinkWithRespectToChannel(`settings/products/${id}`),
 	SETTINGS_PRODUCTS_NEW: () => buildLinkWithRespectToChannel('settings/products/new'),
 	SETTINGS_CONTRACTS: () => buildLinkWithRespectToChannel('settings/contracts'),
 	SETTINGS_CONTRACTS_NEW: () => buildLinkWithRespectToChannel('settings/contracts/new'),

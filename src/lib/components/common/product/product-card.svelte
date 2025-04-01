@@ -10,7 +10,7 @@
 	import type { Product } from '$lib/gql/graphql';
 	import FoundationBurstSale from '$lib/components/icons/foundation-burst-sale.svelte';
 	import { CHANNELS } from '$lib/utils/channels';
-	import { PRODUCT_PREVIEW_STORE } from './common';
+	import { PRODUCT_PREVIEW_STORE } from '../../pages/home/common';
 
 	type ProductProps = {
 		product: Product;
@@ -25,13 +25,14 @@
 	};
 </script>
 
-<div class="bg-white rounded-lg border mb-3" transition:fade>
+<div class="bg-white rounded-lg border overflow-hidden" transition:fade>
 	<div class="product-card-picture relative">
-		<div class="px-5">
-			<a href={`${AppRoute.PRODUCT_DETAILS(product.slug)}`}>
-				<img src={thumbnail?.url} alt={thumbnail?.alt || name} class="select-none" loading="lazy" />
-			</a>
-		</div>
+		<a href={`${AppRoute.PRODUCT_DETAILS(product.slug)}`}>
+			<div
+				class="pt-[100%] bg-cover bg-center bg-no-repeat"
+				style="background-image: url('{thumbnail?.url}');"
+			></div>
+		</a>
 
 		<div class="absolute top-0 right-0 p-2">
 			<IconButton icon={Heart} variant="light" size="sm" />
@@ -85,7 +86,7 @@
 			</p>
 		</div>
 
-		<Button variant="filled" startIcon={OpenEye} size="sm" fullWidth onclick={handlePreviewProduct}
+		<Button startIcon={OpenEye} variant="light" size="sm" fullWidth onclick={handlePreviewProduct}
 			>Preview</Button
 		>
 	</div>
