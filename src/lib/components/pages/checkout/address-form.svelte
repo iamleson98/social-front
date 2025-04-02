@@ -134,8 +134,8 @@
 	<div class="mb-2">
 		<CountryByChannelSelect
 			{channelSlug}
-			label="Choose your country"
-			bind:singleValue={formValues.countryCode.value}
+			label={$tranFunc('settings.chooseCountry')}
+			bind:singleValue={formValues.countryCode.value as CountryCode}
 			disabled={$ADDRESS_VALIDATION_RULES_STORE.fetching}
 			size="sm"
 		/>
@@ -220,13 +220,13 @@
 				disabled={updatingCHeckoutAddresses}
 				loading={updatingCHeckoutAddresses}
 			>
-				Use this address
+				{$tranFunc('settings.useThisAddr')}
 			</Button>
 		</div>
 	{/if}
 	<div class="text-end mt-2">
 		<Button size="xs" onclick={onCancel} disabled={updatingCHeckoutAddresses} color="red">
-			Cancel
+			{$tranFunc('common.cancel')}
 		</Button>
 	</div>
 </div>

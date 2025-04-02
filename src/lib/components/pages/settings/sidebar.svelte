@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { tranFunc } from '$i18n';
 	import {
 		AdjustmentHorizontal,
 		Icon,
@@ -27,12 +28,12 @@
 	const ACCOUNT_TAB_ITEMS: TabItem[] = [
 		{
 			icon: UserCog,
-			name: 'Account',
+			name: $tranFunc('settings.account'),
 			href: AppRoute.ME()
 		},
 		{
 			icon: AdjustmentHorizontal,
-			name: 'Preference',
+			name: $tranFunc('settings.preference'),
 			href: AppRoute.ME_PREFERENCES()
 		}
 	];
@@ -40,12 +41,12 @@
 	const SHOPPING_TAB_ITEMS: TabItem[] = [
 		{
 			icon: Order,
-			name: 'My Orders',
+			name: $tranFunc('settings.myOrders'),
 			href: AppRoute.MY_ORDERS()
 		},
 		{
 			icon: MailQuestion,
-			name: 'Supports',
+			name: $tranFunc('settings.supports'),
 			href: AppRoute.ME_SUPPORT(),
 			children: [
 				{
@@ -61,7 +62,7 @@
 	const SHOP_TAB_ITEMS: TabItem[] = [
 		{
 			icon: UserCog,
-			name: 'Products',
+			name: $tranFunc('product.products'),
 			href: AppRoute.SETTINGS_PRODUCTS(),
 			children: [
 				{
@@ -74,7 +75,7 @@
 		},
 		{
 			icon: UserCog,
-			name: 'Contracts',
+			name: $tranFunc('settings.contracts'),
 			href: AppRoute.SETTINGS_CONTRACTS(),
 			children: [
 				{
@@ -104,13 +105,13 @@
 {/snippet}
 
 <div class="w-1/4">
-	<AccordionList header="Account" child={sidebarItem} items={ACCOUNT_TAB_ITEMS} class="w-full" />
+	<AccordionList header={$tranFunc('settings.account')} child={sidebarItem} items={ACCOUNT_TAB_ITEMS} class="w-full" />
 
-	<AccordionList header="Shopping" child={sidebarItem} items={SHOPPING_TAB_ITEMS} class="w-full" />
+	<AccordionList header={$tranFunc('settings.shopping')} child={sidebarItem} items={SHOPPING_TAB_ITEMS} class="w-full" />
 
 	{#if !!$READ_ONLY_USER_STORE && userIsShopAdmin($READ_ONLY_USER_STORE)}
 		<AccordionList
-			header="Shop Management"
+			header={$tranFunc('settings.shopManage')}
 			child={sidebarItem}
 			items={SHOP_TAB_ITEMS}
 			class="w-full"

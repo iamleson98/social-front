@@ -73,15 +73,15 @@
 </script>
 
 {#snippet label()}
-	<Label size="lg" label="Change password" class="cursor-pointer!" />
+	<Label size="lg" label={$tranFunc('settings.pwdUpdate')} class="cursor-pointer!" />
 {/snippet}
 
 <Accordion header={label} class="bg-white p-4! mt-2 border border-gray-200" open={false}>
 	<PasswordInput
 		class="mt-2"
 		required
-		placeholder="old password"
-		label="Old password"
+		placeholder={$tranFunc('settings.oldPwd')}
+		label={$tranFunc('settings.oldPwd')}
 		bind:value={passwordInputs.oldPassword}
 		showAction
 		variant={passwordFormErrors.oldPassword?.length ? 'error' : 'info'}
@@ -92,8 +92,8 @@
 	<PasswordInput
 		class="mt-2"
 		required
-		placeholder="new password"
-		label="New password"
+		placeholder={$tranFunc('settings.newPwd')}
+		label={$tranFunc('settings.newPwd')}
 		bind:value={passwordInputs.newPassword}
 		showAction
 		variant={passwordFormErrors.newPassword?.length ? 'error' : 'info'}
@@ -104,8 +104,8 @@
 	<PasswordInput
 		class="mt-2"
 		required
-		placeholder="confirm new password"
-		label="Confirm new password"
+		placeholder={$tranFunc('settings.confirmPwd')}
+		label={$tranFunc('settings.confirmPwd')}
 		bind:value={passwordInputs.confirmPassword}
 		variant={passwordFormErrors.confirmPassword?.length ? 'error' : 'info'}
 		onblur={passwordValidate}
@@ -116,7 +116,8 @@
 	/>
 
 	<div class="text-right mt-4">
-		<Button onclick={handleSubmit} {loading} disabled={loading || !passwordChanged}>Update</Button>
+		<Button onclick={handleSubmit} {loading} disabled={loading || !passwordChanged}>
+			{$tranFunc('btn.update')}
+		</Button>
 	</div>
-	<!-- </div> -->
 </Accordion>

@@ -91,12 +91,12 @@
 </script>
 
 <div class="rounded-lg bg-white border border-gray-200 p-4">
-	<Label size="lg" label="Basic info" />
+	<Label size="lg" label={$tranFunc('settings.basicInfo')} />
 
 	<div class="flex items-start mt-3 gap-2 w-full tablet:flex-wrap flex-nowrap">
 		<Input
-			placeholder="first name"
-			label="First name"
+			placeholder={$tranFunc('common.firstName')}
+			label={$tranFunc('common.firstName')}
 			class="w-1/2 tablet:w-full"
 			required
 			bind:value={userInfoInputs.firstName}
@@ -106,8 +106,8 @@
 			disabled={loading}
 		/>
 		<Input
-			placeholder="last name"
-			label="Last name"
+			placeholder={$tranFunc('common.lastName')}
+			label={$tranFunc('common.lastName')}
 			class="w-1/2 tablet:w-full"
 			required
 			bind:value={userInfoInputs.lastName}
@@ -119,10 +119,10 @@
 	</div>
 
 	<Select
-		placeholder="Language"
+		placeholder={$tranFunc('footer.language')}
 		class="mt-2"
 		required
-		label="Display Language"
+		label={$tranFunc('footer.language')}
 		options={SUPPORTED_LANGUAGES.map((lang) => ({
 			value: lang.code,
 			label: lang.name
@@ -135,6 +135,8 @@
 	/>
 
 	<div class="text-right mt-4">
-		<Button onclick={handleSubmit} {loading} disabled={loading || !userInfoChanged}>Update</Button>
+		<Button onclick={handleSubmit} {loading} disabled={loading || !userInfoChanged}
+			>{$tranFunc('btn.update')}</Button
+		>
 	</div>
 </div>

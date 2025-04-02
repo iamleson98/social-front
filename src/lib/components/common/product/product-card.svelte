@@ -49,7 +49,7 @@
 		{/if}
 	</div>
 
-	<div class="px-6 py-2">
+	<div class="p-3">
 		<!-- name -->
 		<a
 			href={`${AppRoute.PRODUCT_DETAILS(product.slug)}`}
@@ -86,8 +86,8 @@
 			</p>
 		</div>
 
-		<Button startIcon={OpenEye} variant="light" size="sm" fullWidth onclick={handlePreviewProduct}
-			>Preview</Button
-		>
+		<Button startIcon={OpenEye} variant="light" size="sm" fullWidth onclick={handlePreviewProduct}>
+			{$tranFunc('settings.preview')}
+		</Button>
 	</div>
 </div>
