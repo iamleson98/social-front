@@ -240,5 +240,6 @@ export default {
 		addrDeleted: 'Address deleted successfully',
 		addrUpdated: 'Address updated successfully',
 		addrCreated: 'Address created successfully',
+		accountUpdated: 'Tài khoản đã được cập nhật',
 	}
 };

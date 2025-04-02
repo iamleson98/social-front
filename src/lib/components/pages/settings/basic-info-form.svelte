@@ -77,7 +77,7 @@
 
 		if (preHandleErrorOnGraphqlResult(result, 'accountUpdate')) return;
 		toastStore.send({
-			message: 'Update success',
+			message: $tranFunc('settings.accountUpdated'),
 			variant: 'success'
 		});
 		$ME_PAGE_USER_STORE = {

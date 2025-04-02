@@ -240,5 +240,6 @@ export default {
 		addrDeleted: 'Địa chỉ đã được xoá',
 		addrUpdated: 'Địa chỉ đã được cập nhật',
 		addrCreated: 'Địa chỉ đã được tạo',
+		accountUpdated: 'Tài khoản đã được cập nhật',
 	}
 };
