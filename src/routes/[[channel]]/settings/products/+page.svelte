@@ -4,7 +4,7 @@
 	import { operationStore } from '$lib/api/operation';
 	import ProductFilterStateListener from '$lib/components/pages/home/product-filter-state-listener.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
+	import { Table, TableSkeleton, type TableColumnProps } from '$lib/components/ui/Table';
 	import type { Product, Query, QueryProductsArgs } from '$lib/gql/graphql';
 	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
 	import { AppRoute } from '$lib/utils';
@@ -74,7 +74,6 @@
 {/snippet}
 
 {#snippet availability({ item }: { item: Product })}
-	<!-- {item.productType} -->
 	<span>2 channels</span>
 {/snippet}
 
@@ -89,13 +88,13 @@
 
 <div class="bg-white rounded-lg p-3 border border-gray-200">
 	{#if $productFetchStore.fetching}
-	<div>loading...</div>
-{:else if $productFetchStore.error}
-	<Alert variant="warning" size="sm" bordered>
-		{$tranFunc('error.failedToLoad')}
-	</Alert>
-{:else if $productFetchStore.data?.products}
-	{@const products = $productFetchStore.data?.products?.edges?.map((edge) => edge?.node)}
-	<Table items={products} columns={productColumns} />
-{/if}
+		<TableSkeleton numColumns={4} showPagination />
+	{:else if $productFetchStore.error}
+		<Alert variant="warning" size="sm" bordered>
+			{$tranFunc('error.failedToLoad')}
+		</Alert>
+	{:else if $productFetchStore.data?.products}
+		{@const products = $productFetchStore.data?.products?.edges?.map((edge) => edge?.node)}
+		<Table items={products} columns={productColumns} />
+	{/if}
 </div>

@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { Plus } from '$lib/components/icons';
+	import { Button } from '$lib/components/ui';
 	import { AppRoute } from '$lib/utils';
 	import type { Snippet } from 'svelte';
 
@@ -9,13 +11,23 @@
 
 	let { children }: Props = $props();
 
-	const meSupportPath = AppRoute.SETTINGS_CONTRACTS();
-	const meSupportNewPath = AppRoute.SETTINGS_CONTRACTS_NEW();
+	const newContractPath = AppRoute.SETTINGS_CONTRACTS_NEW();
 </script>
 
-<div role="tablist" class="tabs tabs-border">
-	<a role="tab" class="tab {page.url.pathname === meSupportPath ? 'tab-active' : ''}"  href={meSupportPath}>Contracts</a>
-	<a role="tab" class="tab {page.url.pathname === meSupportNewPath ? 'tab-active' : ''}" href={meSupportNewPath}>New Contract</a>
+<div class="flex items-center justify-between mb-3">
+	<div class="breadcrumbs text-sm">
+		<ul>
+			<li><a href={AppRoute.SETTINGS_CONTRACTS()}>Contracts</a></li>
+			{#if page.url.pathname === newContractPath}
+				<li>Add Contract</li>
+			{:else if page.route.id === '/[[channel]]/settings/contracts/[id]'}
+				<li>{page.params.id}</li>
+			{/if}
+		</ul>
+	</div>
+	<div>
+		<Button size="xs" endIcon={Plus} href={newContractPath}>New Contract</Button>
+	</div>
 </div>
 
 <div>

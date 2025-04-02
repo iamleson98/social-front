@@ -13,11 +13,15 @@
 	import { AppRoute } from '$lib/utils';
 	import { userIsShopAdmin } from '$lib/utils/utils';
 
+	type TabChild = {
+		parentShouldActive: () => boolean;
+	};
+
 	type TabItem = {
-		icon: IconType;
+		icon?: IconType;
 		name?: string;
 		href: string;
-		children?: TabItem[];
+		children?: TabChild[];
 	};
 
 	const ACCOUNT_TAB_ITEMS: TabItem[] = [
@@ -45,9 +49,11 @@
 			href: AppRoute.ME_SUPPORT(),
 			children: [
 				{
-					href: AppRoute.ME_SUPPORT_NEW(),
-					icon: MailQuestion,
+					parentShouldActive: () => page.url.pathname === AppRoute.ME_SUPPORT_NEW()
 				},
+				{
+					parentShouldActive: () => page.route.id === '/[[channel]]/settings/supports/[id]'
+				}
 			]
 		}
 	];
@@ -59,9 +65,11 @@
 			href: AppRoute.SETTINGS_PRODUCTS(),
 			children: [
 				{
-					href: AppRoute.SETTINGS_PRODUCTS_NEW(),
-					icon: UserCog,
+					parentShouldActive: () => page.url.pathname === AppRoute.SETTINGS_PRODUCTS_NEW()
 				},
+				{
+					parentShouldActive: () => page.route.id === '/[[channel]]/settings/products/[slug]'
+				}
 			]
 		},
 		{
@@ -70,9 +78,8 @@
 			href: AppRoute.SETTINGS_CONTRACTS(),
 			children: [
 				{
-					href: AppRoute.SETTINGS_CONTRACTS_NEW(),
-					icon: UserCog,
-				},
+					parentShouldActive: () => page.url.pathname === AppRoute.SETTINGS_CONTRACTS_NEW()
+				}
 			]
 		}
 	];
@@ -80,7 +87,8 @@
 
 {#snippet sidebarItem(item: TabItem)}
 	{@const attrs = item.href ? { href: item.href } : {}}
-	{@const active = item.href == page.url.pathname || item.children?.some(child => child.href == page.url.pathname)}
+	{@const active =
+		item.href == page.url.pathname || item.children?.some((child) => child.parentShouldActive())}
 	<svelte:element
 		this={item.href ? 'a' : 'div'}
 		{...attrs}
@@ -88,7 +96,9 @@
 			? 'bg-blue-100 text-blue-700 font-semibold before:content-[" "] before:h-full before:w-2 before:rounded-sm before:bg-blue-500 before:absolute before:right-[calc(100%+4px)]'
 			: ''} hover:bg-blue-100 hover:text-blue-700 cursor-pointer relative"
 	>
-		<Icon icon={item.icon} />
+		{#if item.icon}
+			<Icon icon={item.icon} />
+		{/if}
 		<span>{item.name}</span>
 	</svelte:element>
 {/snippet}
@@ -99,6 +109,11 @@
 	<AccordionList header="Shopping" child={sidebarItem} items={SHOPPING_TAB_ITEMS} class="w-full" />
 
 	{#if !!$READ_ONLY_USER_STORE && userIsShopAdmin($READ_ONLY_USER_STORE)}
-		<AccordionList header="Shop Management" child={sidebarItem} items={SHOP_TAB_ITEMS} class="w-full" />
+		<AccordionList
+			header="Shop Management"
+			child={sidebarItem}
+			items={SHOP_TAB_ITEMS}
+			class="w-full"
+		/>
 	{/if}
 </div>

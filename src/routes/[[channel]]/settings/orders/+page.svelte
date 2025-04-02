@@ -2,8 +2,7 @@
 	import { operationStore } from '$lib/api/operation';
 	import { USER_ORDERS_QUERY } from '$lib/api/orders';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
-	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
+	import { Table, TableSkeleton, type TableColumnProps } from '$lib/components/ui/Table';
 	import { type Order, type Query } from '$lib/gql/graphql';
 	import { formatMoney, type PaginationOptions } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
@@ -96,7 +95,6 @@
 	/>
 {/snippet}
 
-
 <div class="mt-3 rounded-lg bg-white border border-gray-200 p-3 flex items-center justify-between">
 	<div>Orders</div>
 	<div>
@@ -106,9 +104,10 @@
 
 <div class="rounded-lg bg-white border border-gray-200 p-3 mt-3">
 	{#if $userOrdersStore.fetching}
-		<SkeletonContainer>
+		<!-- <SkeletonContainer>
 			<Skeleton class="h-4 w-full" />
-		</SkeletonContainer>
+		</SkeletonContainer> -->
+		<TableSkeleton numColumns={6} showPagination />
 	{:else if $userOrdersStore.error}
 		<Alert variant="error" size="sm" bordered>{$userOrdersStore.error.message}</Alert>
 	{:else if $userOrdersStore.data?.me}

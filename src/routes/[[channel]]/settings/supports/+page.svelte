@@ -109,7 +109,7 @@
 		options={[
 			{
 				children: 'Edit ticket',
-				href: `${AppRoute.ME_SUPPORT_NEW()}?id=${item.id}`,
+				href: `${AppRoute.ME_SUPPORT()}/${item.id}`,
 				startIcon: Edit
 			},
 			{
@@ -121,13 +121,6 @@
 		]}
 	/>
 {/snippet}
-
-<!-- <div class="mt-3 rounded-lg bg-white border border-gray-200 p-3 flex items-center justify-between">
-	<div>Tickets</div>
-	<div>
-		<Button size="xs" endIcon={Plus} href={AppRoute.ME_SUPPORT_NEW()}>New Ticket</Button>
-	</div>
-</div> -->
 
 <div class="rounded-lg bg-white border border-gray-200 mt-3 p-3">
 	<Table {items} columns={ORDER_TABLE_COLUMNS}></Table>

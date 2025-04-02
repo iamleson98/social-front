@@ -73,10 +73,10 @@
 	<thead>
 		<tr>
 			{#each columns as column, idx (idx)}
-				{@const classes = column.sortable
+				{@const classes = column?.sortable
 					? 'cursor-pointer hover:bg-gray-100 active:bg-gray-200 focus:bg-gray-200'
 					: ''}
-				{@const props = column.sortable
+				{@const props = column?.sortable
 					? {
 							onclick: () => handleSortClick(column.title),
 							onkeyup: (evt: KeyboardEvent) => evt.key === 'Enter' && handleSortClick(column.title)
@@ -84,20 +84,20 @@
 					: {}}
 				<th class="p-[unset]!">
 					<svelte:element
-						this={column.sortable ? 'button' : 'div'}
+						this={column?.sortable ? 'button' : 'div'}
 						class="flex items-center gap-2 w-full h-full py-2 px-4 justify-between {classes}"
 						{...props}
 					>
 						<div class="flex items-center gap-1">
-							{#if column.startIcon}
+							{#if column?.startIcon}
 								<Icon icon={column.startIcon} />
 							{/if}
 							<span>{column.title}</span>
-							{#if column.endIcon}
+							{#if column?.endIcon}
 								<Icon icon={column.endIcon} />
 							{/if}
 						</div>
-						{#if column.sortable}
+						{#if column?.sortable}
 							<span>
 								<Icon icon={sortState[column.title].icon} />
 							</span>

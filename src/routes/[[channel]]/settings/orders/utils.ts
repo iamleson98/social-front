@@ -27,7 +27,6 @@ export const paymentStatusBadgeClass = (status: PaymentChargeStatusEnum) => {
 
 export const orderStatusBadgeClass = (status: OrderStatus) => {
 	// NOTE: Those badge classes are found on: https://v5.daisyui.com/components/badge/
-	// let badge = 'badge-success';
 
 	switch (status) {
 		case OrderStatus.Canceled:
