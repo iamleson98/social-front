@@ -8,7 +8,6 @@
 		ChevronUp,
 		Icon
 	} from '$lib/components/icons';
-	import { type Snippet } from 'svelte';
 	import { IconButton } from '../Button';
 	import Button from '../Button/Button.svelte';
 	import { DropDown, type DropdownTriggerInterface, type MenuItemProps } from '../Dropdown';
@@ -25,8 +24,11 @@
 		onPreviousPagelick,
 		rowsOptions = ROW_OPTIONS,
 		onChangeRowsPerPage,
-		onSortChange
+		onSortChange,
+		scale = 'md'
 	}: TableProps<T> = $props();
+
+	let tdClass = scale === 'sm' ? 'p-1!' : '';
 
 	const DEFAULT_SORT_STATE = columns.reduce((acc, column) => {
 		if (column.sortable)
@@ -111,9 +113,9 @@
 		{#each items as item, idx (idx)}
 			<tr>
 				{#each columns as column, idx (idx)}
-					<td>
+					<td class={tdClass}>
 						<div>
-							{@render (column.child as Snippet<[{ item: T }]>)({ item })}
+							{@render column.child({ item })}
 						</div>
 					</td>
 				{/each}

@@ -14,6 +14,7 @@ export type TableProps<T extends Record<string, unknown>> = {
   /**default to [10, 20, 30, 50, 100] */
   rowsOptions?: number[];
   onSortChange?: (sort: SortState) => void;
+  scale?: 'md' | 'sm';
 };
 
 export type TableColumnProps<T extends Record<string, unknown>> = {

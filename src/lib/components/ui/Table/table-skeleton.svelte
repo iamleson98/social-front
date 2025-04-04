@@ -16,8 +16,6 @@
 			child: nooptd
 		}))
 	);
-
-	$inspect(columns);
 </script>
 
 {#snippet nooptd({}: { item: Record<string, unknown> })}

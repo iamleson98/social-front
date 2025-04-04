@@ -340,3 +340,104 @@ export const PRODUCT_MEDIA_CREATE_MUTATION = gql`
     }
   }
 `;
+
+/**
+ * specifically for admin
+ */
+export const PRODUCT_LIST_QUERY_ADMIN = gql`
+	query ProductsList(
+		$filter: ProductFilterInput
+		$where: ProductWhereInput
+		$sortBy: ProductOrder
+		$search: String
+		$channel: String
+		$before: String
+		$after: String
+		$first: Int
+		$last: Int
+	) {
+		products(
+			filter: $filter
+			where: $where
+			sortBy: $sortBy
+			search: $search
+			channel: $channel
+			before: $before
+			after: $after
+			first: $first
+			last: $last
+		) {
+			pageInfo {
+				startCursor
+				endCursor
+				hasPreviousPage
+				hasNextPage
+			}
+			edges {
+				cursor
+				node {
+					id
+					name
+					slug
+					created
+					updatedAt
+					rating
+					channel
+					category {
+						id
+						name
+					}
+					thumbnail(size: 100, format: WEBP) {
+						url
+						alt
+					}
+					# pricing {
+					# 	onSale
+					# 	priceRange {
+					# 		start {
+					# 			currency
+					# 			gross {
+					# 				amount
+					# 				currency
+					# 			}
+					# 		}
+					# 		stop {
+					# 			currency
+					# 			gross {
+					# 				amount
+					# 				currency
+					# 			}
+					
+					# 		}
+					# 	}
+					# }
+          channelListings {
+            channel {
+              slug
+              currencyCode
+            }
+            pricing {
+              onSale
+              priceRange {
+                start {
+                  currency
+                  gross {
+                    amount
+                    currency
+                  }
+                }
+                stop {
+                  currency
+                  gross {
+                    amount
+                    currency
+                  }
+                }
+              }
+            }
+          }
+				}
+			}
+		}
+	}
+`;
