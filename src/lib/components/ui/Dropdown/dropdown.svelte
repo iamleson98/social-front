@@ -44,7 +44,7 @@
 			middleware: [offset(4), flip(), shift()]
 		});
 
-		Object.assign(menuElemRef!.style, {
+		Object.assign(menuElemRef?.style || {}, {
 			left: `${x}px`,
 			top: `${y}px`
 		});

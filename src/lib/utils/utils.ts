@@ -277,3 +277,10 @@ export const userIsShopAdmin = (user: User) => {
 
 	return canManageUsers && canManageSettings && canManageStaff;
 };
+
+export function formatCurrency(value: number): string {
+	return value.toLocaleString('en-US', {
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2
+	});
+}

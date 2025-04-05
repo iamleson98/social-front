@@ -391,26 +391,6 @@ export const PRODUCT_LIST_QUERY_ADMIN = gql`
 						url
 						alt
 					}
-					# pricing {
-					# 	onSale
-					# 	priceRange {
-					# 		start {
-					# 			currency
-					# 			gross {
-					# 				amount
-					# 				currency
-					# 			}
-					# 		}
-					# 		stop {
-					# 			currency
-					# 			gross {
-					# 				amount
-					# 				currency
-					# 			}
-					
-					# 		}
-					# 	}
-					# }
           channelListings {
             channel {
               slug

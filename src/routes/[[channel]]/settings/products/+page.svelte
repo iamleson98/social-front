@@ -1,52 +1,48 @@
 <script lang="ts">
+	import { beforeNavigate, goto } from '$app/navigation';
 	import { tranFunc } from '$i18n';
-	import { PRODUCT_LIST_QUERY_STORE } from '$lib/api';
 	import { PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
 	import { operationStore } from '$lib/api/operation';
 	import { Icon, InforCircle } from '$lib/components/icons';
+	import { AFTER, BEFORE, FIRST, LAST } from '$lib/components/pages/home/common';
 	import ProductFilterStateListener from '$lib/components/pages/home/product-filter-state-listener.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Table, TableSkeleton, type TableColumnProps } from '$lib/components/ui/Table';
 	import type { Product, Query, QueryProductsArgs } from '$lib/gql/graphql';
 	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
 	import { AppRoute } from '$lib/utils';
+	import { formatCurrency } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
-	import { tick } from 'svelte';
-	import { CurrencyCodes } from 'validator/lib/isISO4217';
-
-	let productLoadPageVariables = $state.raw([$productFilterParamStore]);
-
-	$effect(() => {
-		if (!$productFilterParamStore.reload) return;
-
-		productLoadPageVariables = [];
-		tick().then(() => {
-			productFilterParamStore.set({
-				...$productFilterParamStore,
-				reload: false
-			});
-			productLoadPageVariables = [$productFilterParamStore];
-		});
-	});
-
-	const handleLoadMore = (afterCursor: string) => {
-		productLoadPageVariables = productLoadPageVariables.concat({
-			...$productFilterParamStore,
-			after: afterCursor
-		});
-	};
+	import { get } from 'svelte/store';
 
 	const productFetchStore = operationStore<Pick<Query, 'products'>, QueryProductsArgs>({
 		kind: 'query',
 		query: PRODUCT_LIST_QUERY_ADMIN,
-		context: { requestPolicy: 'cache-and-network' },
+		context: { requestPolicy: 'network-only' },
 		variables: $productFilterParamStore
+	});
+
+	const DEFAULT_BATCH = 10; // 10 is also default rows per page in table footer
+
+	beforeNavigate(() => {
+		$productFilterParamStore.first = DEFAULT_BATCH;
+	});
+
+	$effect(() => {
+		if ($productFilterParamStore.reload) {
+			productFetchStore.reexecute({
+				variables: $productFilterParamStore,
+				context: { requestPolicy: 'network-only' }
+			});
+			$productFilterParamStore.reload = false;
+		}
 	});
 
 	const productColumns: TableColumnProps<Product>[] = [
 		{
 			title: 'Name',
-			child: name
+			child: name,
+			sortable: true
 		},
 		{
 			title: 'Availability',
@@ -58,9 +54,55 @@
 		},
 		{
 			title: 'Created',
-			child: createdAt
+			child: createdAt,
+			sortable: true
 		}
 	];
+
+	const applyFilter = async () => {
+		const filterState = get(productFilterParamStore);
+		const searchParams = new URLSearchParams();
+
+		if (filterState.first) {
+			searchParams.set(FIRST, filterState.first.toString());
+		} else if (filterState.last) {
+			searchParams.set(LAST, filterState.last.toString());
+		}
+
+		if (filterState.before) {
+			searchParams.set(BEFORE, filterState.before);
+		} else if (filterState.after) {
+			searchParams.set(AFTER, filterState.after);
+		}
+
+		await goto(`${AppRoute.SETTINGS_PRODUCTS()}?${searchParams.toString()}`, {
+			invalidateAll: false,
+			replaceState: false
+		});
+	};
+
+	const handleNextPagelick = (after: string) => {
+		$productFilterParamStore.after = after;
+		$productFilterParamStore.before = null;
+		$productFilterParamStore.first = $productFilterParamStore.last || DEFAULT_BATCH;
+		$productFilterParamStore.last = null;
+		applyFilter();
+	};
+
+	const handlePreviousPagelick = (before: string) => {
+		$productFilterParamStore.before = before;
+		$productFilterParamStore.after = null;
+		$productFilterParamStore.last = $productFilterParamStore.first || DEFAULT_BATCH;
+		$productFilterParamStore.first = null;
+		applyFilter();
+	};
+
+	const handleRowsPerPageChange = (no: number) => {
+		if ($productFilterParamStore.first) $productFilterParamStore.first = no;
+		else if ($productFilterParamStore.last) $productFilterParamStore.last = no;
+
+		applyFilter();
+	};
 </script>
 
 <!-- url search params listener -->
@@ -85,26 +127,25 @@
 		<div class={tooltipClass} data-tip={tooltip}>
 			<Icon icon={InforCircle} class="size-3 text-blue-500" />
 		</div>
-		<span>{item.channelListings?.length || 0} channels</span>
+		<span class="whitespace-nowrap">{item.channelListings?.length || 0} channels</span>
 	</div>
 {/snippet}
 
 {#snippet prices({ item }: { item: Product })}
-	<!-- {item.description} -->
 	{#each item.channelListings || [] as channelListing}
-		<div class="flex items-center gap-1">
-			<span class="w-1/3 text-gray-400 text-xs">{channelListing.channel.currencyCode}</span>
-			<span class="w-2/3"
-				>{channelListing.pricing?.priceRange?.start?.gross?.amount || ''}-{channelListing.pricing
-					?.priceRange?.stop?.gross?.amount || ''}</span
-			>
+		{@const startAmount = channelListing.pricing?.priceRange?.start?.gross?.amount || 0}
+		{@const endAmount = channelListing.pricing?.priceRange?.stop?.gross?.amount || 0}
+		<div class="flex items-center justify-between gap-1">
+			<span class="text-gray-500 text-xs">{channelListing.channel.currencyCode}</span>
+			<span class="font-semibold text-blue-600 text-right">
+				{formatCurrency(startAmount)}-{formatCurrency(endAmount)}
+			</span>
 		</div>
 	{/each}
 {/snippet}
 
 {#snippet createdAt({ item }: { item: Product })}
-	<!-- {item.created} -->
-	{dayjs(item.created).format('DD/MM/YYYY')}
+	<span class="whitespace-nowrap">{dayjs(item.created).format('DD/MM/YYYY HH:mm')}</span>
 {/snippet}
 
 <div class="bg-white rounded-lg p-3 border border-gray-200">
@@ -121,6 +162,9 @@
 			columns={productColumns}
 			scale="sm"
 			pagination={$productFetchStore.data?.products.pageInfo}
+			onNextPagelick={handleNextPagelick}
+			onPreviousPagelick={handlePreviousPagelick}
+			onChangeRowsPerPage={handleRowsPerPageChange}
 		/>
 	{/if}
 </div>

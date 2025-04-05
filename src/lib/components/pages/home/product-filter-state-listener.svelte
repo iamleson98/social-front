@@ -3,7 +3,7 @@
 	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
 	import { page } from '$app/state';
 	import { numberRegex, parseUrlSearchParams } from '$lib/utils/utils';
-	import { ORDER_BY_FIELD, PRICE_RANGE, SORT_KEY } from './common';
+	import { AFTER, BEFORE, FIRST, LAST, ORDER_BY_FIELD, PRICE_RANGE, SORT_KEY } from './common';
 	import { OrderDirection, ProductOrderField } from '$lib/gql/graphql';
 	import { get } from 'svelte/store';
 
@@ -46,6 +46,28 @@
 					}
 				};
 			}
+		}
+
+		// before, after
+		const before = queryParams[BEFORE];
+		const after = queryParams[AFTER];
+		if (before) {
+			newProductQueryArgs.before = before as string;
+			newProductQueryArgs.after = null;
+		} else if (after) {
+			newProductQueryArgs.after = after as string;
+			newProductQueryArgs.before = null;
+		}
+
+		// first, last
+		const first = queryParams[FIRST];
+		const last = queryParams[LAST];
+		if (first) {
+			newProductQueryArgs.first = Number(first);
+			newProductQueryArgs.last = null;
+		} else if (last) {
+			newProductQueryArgs.last = Number(last);
+			newProductQueryArgs.first = null;
 		}
 
 		newProductQueryArgs.reload = true;

@@ -87,7 +87,7 @@
 				<th class="p-[unset]!">
 					<svelte:element
 						this={column?.sortable ? 'button' : 'div'}
-						class="flex items-center gap-2 w-full h-full py-2 px-4 justify-between {classes}"
+						class="flex items-center gap-2 w-full h-full p-2 justify-between {classes}"
 						{...props}
 					>
 						<div class="flex items-center gap-1">
@@ -127,9 +127,9 @@
 <!-- MARK: pagination -->
 {#if pagination}
 	<div class="mt-4 flex items-center justify-between">
-		<div class:hidden!={!onChangeRowsPerPage}>
-			{#snippet trigger({ onclick, onfocus }: DropdownTriggerInterface)}
-				<Button size="xs" variant="light" {onclick} {onfocus}>No. of row {rowsPerPage}</Button>
+		<div>
+			{#snippet trigger(opts: DropdownTriggerInterface)}
+				<Button size="xs" variant="light" {...opts}>No. of row {rowsPerPage}</Button>
 			{/snippet}
 			<DropDown {trigger} placement="bottom-start" options={paginOptisons} />
 		</div>
