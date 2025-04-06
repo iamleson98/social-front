@@ -12,6 +12,7 @@
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { Dots, Plus } from '$lib/components/icons';
 	import { AppRoute } from '$lib/utils';
+	import { tranFunc } from '$i18n';
 
 	const BATCH_LOAD = 20;
 
@@ -24,34 +25,34 @@
 		}
 	});
 
-	const ORDER_TABLE_COLUMNS: TableColumnProps<Order>[] = [
+	const ORDER_TABLE_COLUMNS: TableColumnProps<Order>[] = $derived([
 		{
-			title: 'No',
+			title: $tranFunc('settings.no'),
 			// sortable: true,
 			child: no
 		},
 		{
-			title: 'Date',
+			title: $tranFunc('settings.date'),
 			child: date
 			// sortable: true
 		},
 		{
-			title: 'Payment',
+			title: $tranFunc('settings.payment'),
 			child: payment
 		},
 		{
-			title: 'Status',
+			title: $tranFunc('settings.status'),
 			child: status
 		},
 		{
-			title: 'Total',
+			title: $tranFunc('settings.total'),
 			child: total
 		},
 		{
-			title: 'Action',
+			title: $tranFunc('settings.action'),
 			child: action
 		}
-	];
+	]);
 </script>
 
 {#snippet no({ item }: { item: Order })}
@@ -59,7 +60,7 @@
 {/snippet}
 
 {#snippet date({ item }: { item: Order })}
-	{dayjs(item.created).format('MMMM D, YYYY [at] h:mm A')}
+	{dayjs(item.created).format('DD/MM/YYYY h:mm A')}
 {/snippet}
 
 {#snippet payment({ item }: { item: Order })}
@@ -88,7 +89,7 @@
 		{trigger}
 		options={[
 			{
-				children: 'Request support',
+				children: $tranFunc('settings.reqSupport'),
 				href: `${AppRoute.ME_SUPPORT_NEW()}?order_number=${item.number}`
 			}
 		]}
@@ -96,9 +97,9 @@
 {/snippet}
 
 <div class="rounded-lg bg-white border border-gray-200 p-3 flex items-center justify-between">
-	<div>Orders</div>
+	<div>{$tranFunc('settings.orders')}</div>
 	<div>
-		<Button size="xs" endIcon={Plus} href={AppRoute.ME_SUPPORT_NEW()}>New Order</Button>
+		<Button size="xs" endIcon={Plus} href={AppRoute.ME_SUPPORT_NEW()}>{$tranFunc('settings.newOrder')}</Button>
 	</div>
 </div>
 

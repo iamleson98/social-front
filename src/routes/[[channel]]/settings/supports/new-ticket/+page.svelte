@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { tranFunc } from '$i18n';
 	import { operationStore } from '$lib/api/operation';
 	import { USER_ORDERS_QUERY } from '$lib/api/orders';
-	import { Send } from '$lib/components/icons';
+	import {  PhotoUp, Send } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { Input, TextArea } from '$lib/components/ui/Input';
+	import { FileInput, Input, TextArea } from '$lib/components/ui/Input';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import type { Query } from '$lib/gql/graphql';
@@ -13,11 +14,13 @@
 	import { onMount } from 'svelte';
 	import { object, string, z } from 'zod';
 
+  const fieldRequired = $tranFunc('helpText.fieldRequired');
+
 	const TicketSchema = object({
-		title: string().min(1, 'Title is required'),
-		tag: string().min(1, 'Tag is required'),
-		message: string().min(1, 'Message is required'),
-		orderNo: string().min(1, 'Order number is required')
+		title: string().min(1, fieldRequired),
+		tag: string().min(1, fieldRequired),
+		description: string().min(1, fieldRequired),
+		orderNo: string().min(1, fieldRequired)
 	});
 
 	type TicketInput = z.infer<typeof TicketSchema>;
@@ -25,7 +28,7 @@
 	let ticketInput = $state<TicketInput>({
 		title: '',
 		tag: '',
-		message: '',
+		description: '',
 		orderNo: ''
 	});
 
@@ -66,8 +69,8 @@
 
 <div class="mt-3 p-3 rounded-lg bg-white border border-gray-200">
 	<Input
-		placeholder="Ticket title"
-		label="Title"
+		placeholder={$tranFunc('settings.title')}
+		label={$tranFunc('settings.title')}
 		required
 		bind:value={ticketInput.title}
 		variant={ticketErrors.title?.length ? 'error' : 'info'}
@@ -80,14 +83,14 @@
 				options={[
 					{
 						value: 'CONSULT',
-						label: 'Consult'
+						label: $tranFunc('settings.consult')
 					},
 					{
 						value: 'WARRANTY',
-						label: 'Warranty'
+						label: $tranFunc('settings.warranty')
 					}
 				]}
-				label="Tag"
+				label={$tranFunc('settings.tag')}
 				required
 				bind:value={ticketInput.tag}
 				variant={ticketErrors.tag?.length ? 'error' : 'info'}
@@ -112,7 +115,7 @@
 
 				<Select
 					options={items}
-					label="Order"
+					label={$tranFunc('settings.orderNo')}
 					required
 					bind:value={ticketInput.orderNo}
 					variant={ticketErrors.orderNo?.length ? 'error' : 'info'}
@@ -122,18 +125,20 @@
 		</div>
 	</div>
 
+	<FileInput class="mt-2" size="md" icon={PhotoUp} accept="image/*" onChange={(files) => {}} label={$tranFunc('settings.attachments')} />
+
 	<TextArea
 		class="mt-2"
-		label="Message"
-		placeholder="Enter your message"
+		label={$tranFunc('settings.description')}
+		placeholder={$tranFunc('settings.description')}
 		inputClass="min-h-20"
 		required
-		bind:value={ticketInput.message}
-		variant={ticketErrors.message?.length ? 'error' : 'info'}
-		subText={ticketErrors.message?.length ? ticketErrors.message[0] : ''}
+		bind:value={ticketInput.description}
+		variant={ticketErrors.description?.length ? 'error' : 'info'}
+		subText={ticketErrors.description?.length ? ticketErrors.description[0] : ''}
 	/>
 
 	<div class="text-right mt-2">
-		<Button size="sm" endIcon={Send} onclick={handleSubmit}>Submit</Button>
+		<Button size="sm" endIcon={Send} onclick={handleSubmit}>{$tranFunc('btn.create')}</Button>
 	</div>
 </div>

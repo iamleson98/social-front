@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { Dots, Edit, Icon, TagFilled, Trash } from '$lib/components/icons';
 	// import { Button } from '$lib/components/ui';
 	import { IconButton } from '$lib/components/ui/Button';
@@ -46,45 +47,47 @@
 		}
 	];
 
-	const ORDER_TABLE_COLUMNS: TableColumnProps<SupportTicket>[] = [
+	const ORDER_TABLE_COLUMNS: TableColumnProps<SupportTicket>[] = $derived([
 		{
-			title: 'Title',
+			title: $tranFunc('settings.title'),
 			child: title
 		},
 		{
-			title: 'Tag',
+			title: $tranFunc('settings.tag'),
 			child: tag
 		},
 		{
-			title: 'Status',
+			title: $tranFunc('settings.status'),
 			child: status
 		},
 		{
-			title: 'Date',
+			title: $tranFunc('settings.date'),
 			child: date,
 			sortable: true
 		},
 		{
-			title: 'Action',
+			title: $tranFunc('settings.action'),
 			child: action
 		}
-	];
+	]);
 
 	const handleConfirmDeleteTicket = (id: string) => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: `Are you sure you want to delete ticket '${id}'?`,
+			content: $tranFunc('settings.confirmDelRequest', { id }),
 			onOk: () => {},
 			onCancel: () => {}
 		});
-	}
+	};
 </script>
 
 {#snippet title({ item }: { item: SupportTicket })}
-	{item.title}
+	<a class="link link-hover" href="{AppRoute.ME_SUPPORT()}/{item.id}" aria-label={item.title}>
+		{item.title}
+	</a>
 {/snippet}
 
 {#snippet date({ item }: { item: SupportTicket })}
-	{dayjs(item.createdAt).format('MMMM D, YYYY [at] h:mm A')}
+	{dayjs(item.createdAt).format('MM/DD/YYYY h:mm A')}
 {/snippet}
 
 {#snippet status({ item }: { item: SupportTicket })}
@@ -108,12 +111,12 @@
 		{trigger}
 		options={[
 			{
-				children: 'Edit ticket',
+				children: $tranFunc('settings.editTicket'),
 				href: `${AppRoute.ME_SUPPORT()}/${item.id}`,
 				startIcon: Edit
 			},
 			{
-				children: 'Delete ticket',
+				children: $tranFunc('settings.deleteTicket'),
 				startIcon: Trash,
 				class: 'text-red-600',
 				onclick: () => handleConfirmDeleteTicket(item.id)

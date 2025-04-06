@@ -14,7 +14,7 @@
 	const newContractPath = AppRoute.SETTINGS_CONTRACTS_NEW();
 </script>
 
-<div class="flex items-center justify-between mb-3">
+<div class="flex items-center justify-between mb-3 p-3 rounded-lg bg-white border border-gray-200">
 	<div class="breadcrumbs text-sm">
 		<ul>
 			<li><a href={AppRoute.SETTINGS_CONTRACTS()}>Contracts</a></li>

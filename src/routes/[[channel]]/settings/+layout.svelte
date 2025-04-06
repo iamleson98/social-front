@@ -50,7 +50,7 @@
 		children?: TabChild[];
 	};
 
-	const ACCOUNT_TAB_ITEMS: TabItem[] = [
+	const ACCOUNT_TAB_ITEMS: TabItem[] = $derived([
 		{
 			icon: UserCog,
 			name: $tranFunc('settings.account'),
@@ -61,9 +61,9 @@
 			name: $tranFunc('settings.preference'),
 			href: AppRoute.ME_PREFERENCES()
 		}
-	];
+	]);
 
-	const SHOPPING_TAB_ITEMS: TabItem[] = [
+	const SHOPPING_TAB_ITEMS: TabItem[] = $derived([	
 		{
 			icon: Order,
 			name: $tranFunc('settings.myOrders'),
@@ -82,9 +82,9 @@
 				}
 			]
 		}
-	];
+	]);
 
-	const SHOP_TAB_ITEMS: TabItem[] = [
+	const SHOP_TAB_ITEMS: TabItem[] = $derived([
 		{
 			icon: UserCog,
 			name: $tranFunc('product.products'),
@@ -108,7 +108,7 @@
 				}
 			]
 		}
-	];
+	]);
 </script>
 
 {#snippet sidebarItem(item: TabItem)}

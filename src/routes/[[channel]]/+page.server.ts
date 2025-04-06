@@ -7,9 +7,7 @@ import {
 } from "@sveltejs/kit";
 
 
-export const load = async ({ params, cookies }) => {
-  console.log('---------------');
-  
+export const load = async ({ params, cookies }) => {  
   if (!params.channel) {
     params.channel = DEFAULT_CHANNEL.slug;
   } else {

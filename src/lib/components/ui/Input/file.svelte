@@ -4,6 +4,7 @@
 	import { IconButton } from '../Button';
 	import type { SocialColor, SocialSize } from '../common';
 	import type { HTMLAttributes } from 'svelte/elements';
+	import Label from './label.svelte';
 
 	type Props = {
 		icon: IconType;
@@ -13,6 +14,8 @@
 		multiple?: boolean;
 		onChange: (fileList: FileList) => void;
 		disabled?: boolean;
+		label?: string;
+		required?: boolean;
 	} & HTMLAttributes<HTMLDivElement>;
 
 	const INPUT_ID = randomID();
@@ -26,11 +29,16 @@
 		multiple = false,
 		onChange,
 		disabled = false,
+		label,
+		required = false,
 		...rest
 	}: Props = $props();
 </script>
 
 <div {...rest}>
+	{#if label}
+		<Label id={INPUT_ID} {label} {size} {required} />
+	{/if}
 	<input
 		type="file"
 		bind:this={input}
