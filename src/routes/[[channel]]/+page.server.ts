@@ -8,6 +8,8 @@ import {
 
 
 export const load = async ({ params, cookies }) => {
+  console.log('---------------');
+  
   if (!params.channel) {
     params.channel = DEFAULT_CHANNEL.slug;
   } else {

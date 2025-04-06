@@ -95,7 +95,7 @@
 	/>
 {/snippet}
 
-<div class="mt-3 rounded-lg bg-white border border-gray-200 p-3 flex items-center justify-between">
+<div class="rounded-lg bg-white border border-gray-200 p-3 flex items-center justify-between">
 	<div>Orders</div>
 	<div>
 		<Button size="xs" endIcon={Plus} href={AppRoute.ME_SUPPORT_NEW()}>New Order</Button>
@@ -104,9 +104,6 @@
 
 <div class="rounded-lg bg-white border border-gray-200 p-3 mt-3">
 	{#if $userOrdersStore.fetching}
-		<!-- <SkeletonContainer>
-			<Skeleton class="h-4 w-full" />
-		</SkeletonContainer> -->
 		<TableSkeleton numColumns={6} showPagination />
 	{:else if $userOrdersStore.error}
 		<Alert variant="error" size="sm" bordered>{$userOrdersStore.error.message}</Alert>

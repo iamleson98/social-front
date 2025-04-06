@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { beforeNavigate, goto } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import { tranFunc } from '$i18n';
 	import { PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
 	import { operationStore } from '$lib/api/operation';
@@ -8,35 +8,43 @@
 	import ProductFilterStateListener from '$lib/components/pages/home/product-filter-state-listener.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Table, TableSkeleton, type TableColumnProps } from '$lib/components/ui/Table';
-	import type { Product, Query, QueryProductsArgs } from '$lib/gql/graphql';
-	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
+	import {
+		OrderDirection,
+		ProductOrderField,
+		type Product,
+		type Query,
+		type QueryProductsArgs
+	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
+	import { DEFAULT_CHANNEL } from '$lib/utils/channels';
+	import { CHANNEL_KEY } from '$lib/utils/consts';
+	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import { formatCurrency } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
-	import { get } from 'svelte/store';
-
-	const productFetchStore = operationStore<Pick<Query, 'products'>, QueryProductsArgs>({
-		kind: 'query',
-		query: PRODUCT_LIST_QUERY_ADMIN,
-		context: { requestPolicy: 'network-only' },
-		variables: $productFilterParamStore
-	});
 
 	const DEFAULT_BATCH = 10; // 10 is also default rows per page in table footer
 
-	beforeNavigate(() => {
-		$productFilterParamStore.first = DEFAULT_BATCH;
-	});
-
-	$effect(() => {
-		if ($productFilterParamStore.reload) {
-			productFetchStore.reexecute({
-				variables: $productFilterParamStore,
-				context: { requestPolicy: 'network-only' }
-			});
-			$productFilterParamStore.reload = false;
+	let variableState = $state.raw<QueryProductsArgs>({
+		channel: clientSideGetCookieOrDefault(CHANNEL_KEY, DEFAULT_CHANNEL.slug),
+		first: DEFAULT_BATCH,
+		sortBy: {
+			field: ProductOrderField.Price,
+			direction: OrderDirection.Asc
+		},
+		filter: {
+			price: {},
+			giftCard: false
 		}
 	});
+
+	let productFetchStore = $derived(
+		operationStore<Pick<Query, 'products'>, QueryProductsArgs>({
+			kind: 'query',
+			query: PRODUCT_LIST_QUERY_ADMIN,
+			context: { requestPolicy: 'network-only' },
+			variables: variableState
+		})
+	);
 
 	const productColumns: TableColumnProps<Product>[] = [
 		{
@@ -59,20 +67,19 @@
 		}
 	];
 
-	const applyFilter = async () => {
-		const filterState = get(productFilterParamStore);
+	const applyFilterPath = async () => {
 		const searchParams = new URLSearchParams();
 
-		if (filterState.first) {
-			searchParams.set(FIRST, filterState.first.toString());
-		} else if (filterState.last) {
-			searchParams.set(LAST, filterState.last.toString());
+		if (variableState.first) {
+			searchParams.set(FIRST, variableState.first.toString());
+		} else if (variableState.last) {
+			searchParams.set(LAST, variableState.last.toString());
 		}
 
-		if (filterState.before) {
-			searchParams.set(BEFORE, filterState.before);
-		} else if (filterState.after) {
-			searchParams.set(AFTER, filterState.after);
+		if (variableState.before) {
+			searchParams.set(BEFORE, variableState.before);
+		} else if (variableState.after) {
+			searchParams.set(AFTER, variableState.after);
 		}
 
 		await goto(`${AppRoute.SETTINGS_PRODUCTS()}?${searchParams.toString()}`, {
@@ -82,30 +89,34 @@
 	};
 
 	const handleNextPagelick = (after: string) => {
-		$productFilterParamStore.after = after;
-		$productFilterParamStore.before = null;
-		$productFilterParamStore.first = $productFilterParamStore.last || DEFAULT_BATCH;
-		$productFilterParamStore.last = null;
-		applyFilter();
+		variableState = {
+			...variableState,
+			after,
+			before: null,
+			first: variableState.last || DEFAULT_BATCH,
+			last: null
+		};
+		applyFilterPath();
 	};
 
 	const handlePreviousPagelick = (before: string) => {
-		$productFilterParamStore.before = before;
-		$productFilterParamStore.after = null;
-		$productFilterParamStore.last = $productFilterParamStore.first || DEFAULT_BATCH;
-		$productFilterParamStore.first = null;
-		applyFilter();
+		variableState = {
+			...variableState,
+			before,
+			after: null,
+			last: variableState.first || DEFAULT_BATCH,
+			first: null
+		};
+		applyFilterPath();
 	};
 
 	const handleRowsPerPageChange = (no: number) => {
-		if ($productFilterParamStore.first) $productFilterParamStore.first = no;
-		else if ($productFilterParamStore.last) $productFilterParamStore.last = no;
-
-		applyFilter();
+		if (variableState.first) variableState.first = no;
+		else if (variableState.last) variableState.last = no;
+		applyFilterPath();
 	};
 </script>
 
-<!-- url search params listener -->
 <ProductFilterStateListener />
 
 {#snippet name({ item }: { item: Product })}

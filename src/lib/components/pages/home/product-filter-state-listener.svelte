@@ -7,7 +7,7 @@
 	import { OrderDirection, ProductOrderField } from '$lib/gql/graphql';
 	import { get } from 'svelte/store';
 
-	afterNavigate(() => {
+	afterNavigate(async () => {
 		const queryParams = parseUrlSearchParams(page.url);
 		const newProductQueryArgs = get(productFilterParamStore);
 
