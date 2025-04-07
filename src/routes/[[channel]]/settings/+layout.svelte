@@ -1,10 +1,12 @@
 <script lang="ts">
 	import {
 		AdjustmentHorizontal,
+		Box,
 		CheckOff,
 		Icon,
 		MailQuestion,
 		Order,
+		Parking,
 		RosetteDiscountChecked,
 		UserCog,
 		type IconType
@@ -65,7 +67,7 @@
 
 	const SHOPPING_TAB_ITEMS: TabItem[] = $derived([	
 		{
-			icon: Order,
+			icon: Box,
 			name: $tranFunc('settings.myOrders'),
 			href: AppRoute.MY_ORDERS()
 		},
@@ -86,7 +88,7 @@
 
 	const SHOP_TAB_ITEMS: TabItem[] = $derived([
 		{
-			icon: UserCog,
+			icon: Parking,
 			name: $tranFunc('product.products'),
 			href: AppRoute.SETTINGS_PRODUCTS(),
 			children: [
@@ -99,7 +101,7 @@
 			]
 		},
 		{
-			icon: UserCog,
+			icon: Order,
 			name: $tranFunc('settings.contracts'),
 			href: AppRoute.SETTINGS_CONTRACTS(),
 			children: [

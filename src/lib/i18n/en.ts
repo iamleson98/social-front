@@ -262,5 +262,10 @@ export default {
 		description: 'Description',
 		attachments: 'Attachments',
 		orderNo: 'Order Number',
+		newPrd: 'Create new product',
+		name: 'Name',
+		availability: 'Availability',
+		prices: 'Prices',
+		createdAt: 'Created',
 	}
 };

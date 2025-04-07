@@ -262,5 +262,10 @@ export default {
 		description: 'Mô tả',
 		attachments: 'Attachments',
 		orderNo: 'Số Hiệu Đơn hàng',
+		newPrd: 'Tạo sản phẩm mới',
+		name: 'Name',
+		availability: 'Availability',
+		prices: 'Prices',
+		createdAt: 'Created',
 	}
 };

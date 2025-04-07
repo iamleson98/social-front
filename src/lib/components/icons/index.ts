@@ -89,6 +89,8 @@ export { default as FileUpload } from './tabler--file-upload.svelte';
 export { default as PhotoUp } from './tabler--photo-up.svelte';
 export { default as Dots } from './tabler--dots.svelte';
 export { default as Send } from './tabler--send.svelte';
+export { default as Pacman } from './tabler--pacman.svelte';
+export { default as Parking } from './tabler--parking.svelte';
 
 export { default as Icon } from './icon.svelte';
 export { AlertHexagonFilled };

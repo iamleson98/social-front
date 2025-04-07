@@ -12,7 +12,6 @@
 
 	let { children }: Props = $props();
 
-	// const meSupportPath = AppRoute.ME_SUPPORT();
 	const meSupportNewPath = AppRoute.ME_SUPPORT_NEW();
 </script>
 

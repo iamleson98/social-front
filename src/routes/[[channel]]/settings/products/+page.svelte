@@ -46,26 +46,26 @@
 		})
 	);
 
-	const productColumns: TableColumnProps<Product>[] = [
+	const productColumns: TableColumnProps<Product>[] = $derived([
 		{
-			title: 'Name',
+			title: $tranFunc('settings.name'),
 			child: name,
 			sortable: true
 		},
 		{
-			title: 'Availability',
+			title: $tranFunc('settings.availability'),
 			child: availability
 		},
 		{
-			title: 'Prices',
+			title: $tranFunc('settings.prices'),
 			child: prices
 		},
 		{
-			title: 'Created',
+			title: $tranFunc('settings.createdAt'),
 			child: createdAt,
 			sortable: true
 		}
-	];
+	]);
 
 	const applyFilterPath = async () => {
 		const searchParams = new URLSearchParams();
