@@ -8,43 +8,32 @@
 	import ProductFilterStateListener from '$lib/components/pages/home/product-filter-state-listener.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Table, TableSkeleton, type TableColumnProps } from '$lib/components/ui/Table';
-	import {
-		OrderDirection,
-		ProductOrderField,
-		type Product,
-		type Query,
-		type QueryProductsArgs
-	} from '$lib/gql/graphql';
+	import { type Product, type Query, type QueryProductsArgs } from '$lib/gql/graphql';
+	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
 	import { AppRoute } from '$lib/utils';
-	import { DEFAULT_CHANNEL } from '$lib/utils/channels';
-	import { CHANNEL_KEY } from '$lib/utils/consts';
-	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import { formatCurrency } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
+	import { onMount } from 'svelte';
 
 	const DEFAULT_BATCH = 10; // 10 is also default rows per page in table footer
 
-	let variableState = $state.raw<QueryProductsArgs>({
-		channel: clientSideGetCookieOrDefault(CHANNEL_KEY, DEFAULT_CHANNEL.slug),
-		first: DEFAULT_BATCH,
-		sortBy: {
-			field: ProductOrderField.Price,
-			direction: OrderDirection.Asc
-		},
-		filter: {
-			price: {},
-			giftCard: false
+	const productFetchStore = operationStore<Pick<Query, 'products'>, QueryProductsArgs>({
+		kind: 'query',
+		query: PRODUCT_LIST_QUERY_ADMIN,
+		context: { requestPolicy: 'network-only' },
+		variables: $productFilterParamStore
+	});
+
+	$effect(() => {
+		if ($productFilterParamStore.reload) {
+			productFetchStore.reexecute({
+				variables: $productFilterParamStore
+			});
+			$productFilterParamStore.reload = false; // prevent calling agrain
 		}
 	});
 
-	let productFetchStore = $derived(
-		operationStore<Pick<Query, 'products'>, QueryProductsArgs>({
-			kind: 'query',
-			query: PRODUCT_LIST_QUERY_ADMIN,
-			context: { requestPolicy: 'network-only' },
-			variables: variableState
-		})
-	);
+	onMount(() => productFilterParamStore.reset);
 
 	const productColumns: TableColumnProps<Product>[] = $derived([
 		{
@@ -70,16 +59,16 @@
 	const applyFilterPath = async () => {
 		const searchParams = new URLSearchParams();
 
-		if (variableState.first) {
-			searchParams.set(FIRST, variableState.first.toString());
-		} else if (variableState.last) {
-			searchParams.set(LAST, variableState.last.toString());
+		if ($productFilterParamStore.first) {
+			searchParams.set(FIRST, $productFilterParamStore.first.toString());
+		} else if ($productFilterParamStore.last) {
+			searchParams.set(LAST, $productFilterParamStore.last.toString());
 		}
 
-		if (variableState.before) {
-			searchParams.set(BEFORE, variableState.before);
-		} else if (variableState.after) {
-			searchParams.set(AFTER, variableState.after);
+		if ($productFilterParamStore.before) {
+			searchParams.set(BEFORE, $productFilterParamStore.before);
+		} else if ($productFilterParamStore.after) {
+			searchParams.set(AFTER, $productFilterParamStore.after);
 		}
 
 		await goto(`${AppRoute.SETTINGS_PRODUCTS()}?${searchParams.toString()}`, {
@@ -89,30 +78,30 @@
 	};
 
 	const handleNextPagelick = (after: string) => {
-		variableState = {
-			...variableState,
+		$productFilterParamStore = {
+			...$productFilterParamStore,
 			after,
 			before: null,
-			first: variableState.last || DEFAULT_BATCH,
+			first: $productFilterParamStore.last || DEFAULT_BATCH,
 			last: null
 		};
 		applyFilterPath();
 	};
 
 	const handlePreviousPagelick = (before: string) => {
-		variableState = {
-			...variableState,
+		$productFilterParamStore = {
+			...$productFilterParamStore,
 			before,
 			after: null,
-			last: variableState.first || DEFAULT_BATCH,
+			last: $productFilterParamStore.first || DEFAULT_BATCH,
 			first: null
 		};
 		applyFilterPath();
 	};
 
 	const handleRowsPerPageChange = (no: number) => {
-		if (variableState.first) variableState.first = no;
-		else if (variableState.last) variableState.last = no;
+		if ($productFilterParamStore.first) $productFilterParamStore.first = no;
+		else if ($productFilterParamStore.last) $productFilterParamStore.last = no;
 		applyFilterPath();
 	};
 </script>
@@ -176,6 +165,7 @@
 			onNextPagelick={handleNextPagelick}
 			onPreviousPagelick={handlePreviousPagelick}
 			onChangeRowsPerPage={handleRowsPerPageChange}
+			rowsPerPage={$productFilterParamStore.first || $productFilterParamStore.last}
 		/>
 	{/if}
 </div>

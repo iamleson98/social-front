@@ -22,10 +22,10 @@
 		pagination,
 		onNextPagelick,
 		onPreviousPagelick,
-		rowsOptions = ROW_OPTIONS,
 		onChangeRowsPerPage,
 		onSortChange,
-		scale = 'md'
+		scale = 'md',
+		rowsPerPage
 	}: TableProps<T> = $props();
 
 	let tdClass = scale === 'sm' ? 'p-1!' : '';
@@ -35,7 +35,7 @@
 			return { ...acc, [column.title]: { direction: 'neutral', icon: ChevronSort } };
 		return acc;
 	}, {});
-	let rowsPerPage = $state<number>(rowsOptions[0]);
+	let innerRowsPerPage = $state<number>(rowsPerPage || ROW_OPTIONS[0]);
 	let sortState = $state.raw<SortState>(DEFAULT_SORT_STATE);
 
 	const handleNavigateClick = (dir: 1 | -1) => {
@@ -57,14 +57,14 @@
 	};
 
 	const handleRowsPerPageChange = (num: number) => {
-		if (num !== rowsPerPage) {
-			rowsPerPage = num;
+		if (num !== innerRowsPerPage) {
+			innerRowsPerPage = num;
 			onChangeRowsPerPage?.(num);
 		}
 	};
 
-	let paginOptisons = $derived(
-		rowsOptions.map<MenuItemProps>((num) => ({
+	let PAGIN_OPTIONS = $derived(
+		ROW_OPTIONS.map<MenuItemProps>((num) => ({
 			children: `${num}`,
 			onclick: () => handleRowsPerPageChange(num)
 		}))
@@ -129,9 +129,9 @@
 	<div class="mt-4 flex items-center justify-between">
 		<div>
 			{#snippet trigger(opts: DropdownTriggerInterface)}
-				<Button size="xs" variant="light" {...opts}>No. of row {rowsPerPage}</Button>
+				<Button size="xs" variant="light" {...opts}>No. of row {innerRowsPerPage}</Button>
 			{/snippet}
-			<DropDown {trigger} placement="bottom-start" options={paginOptisons} />
+			<DropDown {trigger} placement="bottom-start" options={PAGIN_OPTIONS} />
 		</div>
 		<div class="flex items-center gap-2 justify-end">
 			<IconButton

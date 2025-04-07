@@ -10,8 +10,7 @@ export type ProductFilterParams = QueryProductsArgs & {
   reload: boolean
 };
 
-/** this store keeps track of products filter options  */
-export const productFilterParamStore = writable<ProductFilterParams>({
+const defaultState: ProductFilterParams = {
   channel: clientSideGetCookieOrDefault(CHANNEL_KEY, DEFAULT_CHANNEL.slug),
   first: 10,
   sortBy: {
@@ -23,5 +22,17 @@ export const productFilterParamStore = writable<ProductFilterParams>({
     giftCard: false,
   },
   reload: false,
-});
+};
 
+const createProductFilterParamsStore = () => {
+  const { subscribe, set } = writable<ProductFilterParams>(defaultState);
+
+  return {
+    subscribe,
+    reset: () => set(defaultState),
+    set: (args: ProductFilterParams) => set(args),
+  };
+};
+
+/** this store keeps track of products filter options  */
+export const productFilterParamStore = createProductFilterParamsStore();

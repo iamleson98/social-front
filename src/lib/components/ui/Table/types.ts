@@ -12,9 +12,10 @@ export type TableProps<T extends Record<string, unknown>> = {
   onPreviousPagelick?: (beforeCursor: string) => void;
   onChangeRowsPerPage?: (no: number) => void;
   /**default to [10, 20, 30, 50, 100] */
-  rowsOptions?: number[];
+  // rowsPerPageOptions?: number[];
   onSortChange?: (sort: SortState) => void;
   scale?: 'md' | 'sm';
+  rowsPerPage?: number | null;
 };
 
 export type TableColumnProps<T extends Record<string, unknown>> = {

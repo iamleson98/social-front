@@ -280,7 +280,13 @@ export const userIsShopAdmin = (user: User) => {
 
 export function formatCurrency(value: number): string {
 	return value.toLocaleString('en-US', {
-			minimumFractionDigits: 2,
-			maximumFractionDigits: 2
+		minimumFractionDigits: 2,
+		maximumFractionDigits: 2
 	});
-}
+};
+
+export const inferRowsPerPage = (paging: PaginationOptions) => {
+	if (paging.first) return paging.first;
+	if (paging.last) return paging.last;
+	return undefined;
+};

@@ -20,6 +20,7 @@
 	import { ORDER_BY_FIELD, PRICE_RANGE, SORT_KEY } from './common';
 	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
 	import { get } from 'svelte/store';
+	import { onMount } from 'svelte';
 
 	type Props = {
 		currency: CurrencyCode;
@@ -82,6 +83,8 @@
 			$productFilterParamStore.sortBy?.direction as OrderDirection
 		);
 	};
+
+	onMount(() => productFilterParamStore.reset);
 </script>
 
 <Accordion header={$tranFunc('common.filter')} headerIcon={FilterCog}>
