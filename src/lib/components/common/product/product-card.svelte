@@ -27,7 +27,7 @@
 
 <div class="bg-white rounded-lg border overflow-hidden" transition:fade>
 	<div class="product-card-picture relative">
-		<a href={`${AppRoute.PRODUCT_DETAILS(product.slug)}`}>
+		<a href={AppRoute.PRODUCT_DETAILS(slug)} aria-label={name}>
 			<div
 				class="pt-[100%] bg-cover bg-center bg-no-repeat"
 				style="background-image: url('{thumbnail?.url}');"
@@ -52,7 +52,7 @@
 	<div class="p-3">
 		<!-- name -->
 		<a
-			href={`${AppRoute.PRODUCT_DETAILS(product.slug)}`}
+			href={AppRoute.PRODUCT_DETAILS(product.slug)}
 			class="font-semibold text-base text-gray-700 leading-5 hover:underline mb-3 block">{name}</a
 		>
 

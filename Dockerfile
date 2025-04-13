@@ -1,32 +1,23 @@
-# Base image with Node.js
+# Base image
 FROM node:20-alpine AS base
-WORKDIR /usr/src/app
+WORKDIR /app
 EXPOSE 3000
-
-# Dependencies stage
-FROM base AS dependencies
-COPY package*.json ./
-RUN npm ci
-
-# Install DragonFly
-RUN apk add --no-cache \
-    dragonfly \
-    && mkdir -p /var/lib/dragonfly
+ENV NODE_ENV=production
 
 # Builder stage
-FROM dependencies AS builder
+FROM base AS builder
+# Install pnpm
+RUN apk add --no-cache npm && npm install -g pnpm
+# Copy and build
 COPY . .
-RUN npm run build
+RUN pnpm install && pnpm run build
+RUN pnpm prune --production
 
 # Production stage
 FROM base AS production
-COPY --from=dependencies /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/build ./build
-COPY static ./static
-
-# Set permissions
-RUN chown -R node:node /usr/src/app
-USER node
-
+# Copy the build output
+COPY --from=builder /app/build build/
+# Clean up any unnecessary files
+RUN rm -rf /app/build/.svelte-kit
 # Start the application
-CMD ["npm", "start"]
+CMD [ "node", "./build" ]

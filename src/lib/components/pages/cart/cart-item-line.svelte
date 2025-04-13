@@ -152,7 +152,7 @@
 		<!-- MARK: NAME -->
 		<div class="w-8/12">
 			<a
-				href={`${AppRoute.PRODUCT_DETAILS(line.variant.product.slug)}`}
+				href={AppRoute.PRODUCT_DETAILS(line.variant.product.slug)}
 				class="text-gray-800 text-md hover:underline"
 			>
 				{line.variant.product.name}

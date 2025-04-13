@@ -33,22 +33,22 @@
 	let tabs = $derived([
 		{
 			title: $tranFunc('product.tabDescription'),
-			href: `${AppRoute.PRODUCT_DETAILS(page.params.slug)}`,
+			href: AppRoute.PRODUCT_DETAILS(page.params.slug),
 			icon: FileText
 		},
 		{
 			title: $tranFunc('product.tabAttributes'),
-			href: `${AppRoute.PRODUCT_ATTRIBUTES(page.params.slug)}`,
+			href: AppRoute.PRODUCT_ATTRIBUTES(page.params.slug),
 			icon: SettingCheck
 		},
 		{
 			title: $tranFunc('product.tabFeedBack'),
-			href: `${AppRoute.PRODUCT_FEEDBACKS(page.params.slug)}`,
+			href: AppRoute.PRODUCT_FEEDBACKS(page.params.slug),
 			icon: HeadSet
 		},
 		{
 			title: $tranFunc('product.tabPackaging'),
-			href: `${AppRoute.PRODUCT_PACKAGING(page.params.slug)}`,
+			href: AppRoute.PRODUCT_PACKAGING(page.params.slug),
 			icon: PackageExport
 		}
 	]);

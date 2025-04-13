@@ -23,7 +23,7 @@
 				</div>
 
 				<div class="text-xs">
-					<a class="w-full text-wrap" href={`${AppRoute.PRODUCT_DETAILS(node.slug)}`}>{node.name}</a>
+					<a class="w-full text-wrap" href={AppRoute.PRODUCT_DETAILS(node.slug)}>{node.name}</a>
 				</div>
 			</div>
 		{/each}

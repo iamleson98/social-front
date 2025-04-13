@@ -46,11 +46,7 @@ export const dropdownResizeDebounce = (
   const { unsubscribe } = pipe(
     merge(eventListeners),
     debounce(() => DEBOUNCE_INPUT_TIME),
-    subscribe(() => {
-      for (const _onFire of resizeSubscribers) {
-        _onFire();
-      }
-    }),
+    subscribe(() => resizeSubscribers.forEach(_onFire => _onFire())),
   );
 
   unsub = unsubscribe;
