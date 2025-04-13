@@ -1,10 +1,32 @@
-FROM node:lts-alpine
-ENV NODE_ENV=production
+# Base image with Node.js
+FROM node:20-alpine AS base
 WORKDIR /usr/src/app
-COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
-RUN npm install --production --silent && mv node_modules ../
+EXPOSE 3000
+
+# Dependencies stage
+FROM base AS dependencies
+COPY package*.json ./
+RUN npm ci
+
+# Install DragonFly
+RUN apk add --no-cache \
+    dragonfly \
+    && mkdir -p /var/lib/dragonfly
+
+# Builder stage
+FROM dependencies AS builder
 COPY . .
-EXPOSE 5173
-RUN chown -R node /usr/src/app
+RUN npm run build
+
+# Production stage
+FROM base AS production
+COPY --from=dependencies /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/build ./build
+COPY static ./static
+
+# Set permissions
+RUN chown -R node:node /usr/src/app
 USER node
+
+# Start the application
 CMD ["npm", "start"]

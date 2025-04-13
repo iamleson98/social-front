@@ -1,11 +1,10 @@
-import { pageRequiresPermissions } from '$lib/api/client';
-import { PermissionEnum } from '$lib/gql/graphql.js';
+import { pageRequiresAuthentication } from '$lib/api/client';
 
 export const ssr = false;
 export const prerender = false;
 
 export const load = async (event) => {
-  const user = await pageRequiresPermissions(event, PermissionEnum.ManageSettings);
+  const user = await pageRequiresAuthentication(event); // for normal user basic settings, admin related pages will be fine-grained
   return {
     user
   }
