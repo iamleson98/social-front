@@ -84,7 +84,7 @@
 		);
 	};
 
-	onMount(() => productFilterParamStore.reset);
+	onMount(() => productFilterParamStore.reset); // reset filter params
 </script>
 
 <Accordion header={$tranFunc('common.filter')} headerIcon={FilterCog}>

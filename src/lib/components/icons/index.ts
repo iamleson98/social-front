@@ -95,4 +95,4 @@ export { default as Parking } from './tabler--parking.svelte';
 export { default as Icon } from './icon.svelte';
 export { AlertHexagonFilled };
 
-export type IconType = typeof AlertHexagonFilled;
+export type IconType = typeof AlertHexagonFilled | string;

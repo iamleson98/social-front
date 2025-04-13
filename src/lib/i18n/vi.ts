@@ -190,6 +190,7 @@ export default {
 		create: 'Tạo',
 		update: 'Cập nhật',
 		delete: 'Xoá',
+		goto: 'Đi tới',
 	},
 	helpText: {
 		chooseDeliveryAddress: 'Vui lòng chọn điểm giao hàng',
@@ -267,5 +268,9 @@ export default {
 		availability: 'Kênh có sẵn',
 		prices: 'Giá',
 		createdAt: 'Ngày tạo',
+		configs: 'Cấu hình',
+		staffs: 'Nhân viên',
+		channelLinkHelpTxt: 'Tạo và khai báo các kênh bán hàng',
+		staffLinkHelpTxt: 'Quản lý nhân viên và phân quyền',
 	},
 };

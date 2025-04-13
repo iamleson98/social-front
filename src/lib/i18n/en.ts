@@ -190,6 +190,7 @@ export default {
 		create: 'Create',
 		update: 'Update',
 		delete: 'Delete',
+		goto: 'Go to',
 	},
 	helpText: {
 		chooseDeliveryAddress: 'Please choose delivery address',
@@ -267,5 +268,9 @@ export default {
 		availability: 'Availability',
 		prices: 'Prices',
 		createdAt: 'Created',
+		configs: 'Configurations',
+		staffs: 'Staffs',
+		channelLinkHelpTxt: 'Define and manage your sales channels',
+		staffLinkHelpTxt: 'Manage your employees and their permissions',
 	}
 };

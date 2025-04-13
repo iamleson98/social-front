@@ -190,6 +190,7 @@ export default {
 		create: '타입 생성',
 		update: '타입 변경',
 		delete: 'Delete',
+		goto: 'Đi tới',
 	},
 	helpText: {
 		chooseDeliveryAddress: '배송지를 선택해주세요',
@@ -267,5 +268,9 @@ export default {
 		availability: 'Availability',
 		prices: 'Prices',
 		createdAt: 'Created',
+		configs: 'Configurations',
+		staffs: 'Staffs',
+		channelLinkHelpTxt: 'Define and manage your sales channels',
+		staffLinkHelpTxt: 'Manage your employees and their permissions',
 	}
 };

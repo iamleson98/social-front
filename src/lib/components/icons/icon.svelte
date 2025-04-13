@@ -3,7 +3,12 @@
 	import type { Component } from 'svelte';
 
 	interface Props {
-		icon: Component;
+		/**
+		 * in case it is string:
+		 * - it must have format like <path /> or <g />.
+		 * - you must define your svg body within ./consts.ts file with a meaningful name.
+		 */
+		icon: Component | string;
 		title?: string;
 		flipped?: boolean;
 		class?: string;
@@ -33,5 +38,9 @@
 	{#if title}
 		<title>{title}</title>
 	{/if}
-	<Icon />
+	{#if typeof Icon === 'string'}
+		{@html Icon}
+	{:else}
+		<Icon />
+	{/if}
 </svg>

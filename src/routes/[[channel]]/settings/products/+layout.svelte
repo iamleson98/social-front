@@ -15,7 +15,7 @@
 	const newProductLink = AppRoute.SETTINGS_PRODUCTS_NEW();
 </script>
 
-<div class="rounded-lg bg-white border border-gray-200 p-3 flex items-center justify-between mb-3">
+<div class="rounded-lg bg-white border border-gray-200 px-3 py-2 flex items-center justify-between mb-3">
 	<div class="breadcrumbs text-sm">
 		<ul>
 			<li><a href={AppRoute.SETTINGS_PRODUCTS()}>{$tranFunc('product.products')}</a></li>

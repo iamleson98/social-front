@@ -15,7 +15,7 @@
 	const meSupportNewPath = AppRoute.ME_SUPPORT_NEW();
 </script>
 
-<div class="rounded-lg bg-white border border-gray-200 p-3 flex items-center justify-between">
+<div class="rounded-lg bg-white border border-gray-200 px-3 py-2 flex items-center justify-between">
 	<div class="breadcrumbs text-sm">
 		<ul>
 			<li><a href={AppRoute.ME_SUPPORT()}>{$tranFunc('settings.requests')}</a></li>

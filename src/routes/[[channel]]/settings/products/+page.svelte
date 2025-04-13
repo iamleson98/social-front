@@ -3,10 +3,14 @@
 	import { tranFunc } from '$i18n';
 	import { PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
 	import { operationStore } from '$lib/api/operation';
-	import { Icon, InforCircle } from '$lib/components/icons';
+	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
+	import { ChevronDown, Icon, InforCircle } from '$lib/components/icons';
 	import { AFTER, BEFORE, FIRST, LAST } from '$lib/components/pages/home/common';
 	import ProductFilterStateListener from '$lib/components/pages/home/product-filter-state-listener.svelte';
+	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
+	import { Popover } from '$lib/components/ui/Popover';
 	import { Table, TableSkeleton, type TableColumnProps } from '$lib/components/ui/Table';
 	import { type Product, type Query, type QueryProductsArgs } from '$lib/gql/graphql';
 	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
@@ -33,7 +37,7 @@
 		}
 	});
 
-	onMount(() => productFilterParamStore.reset);
+	onMount(() => productFilterParamStore.reset); // reset filter params
 
 	const productColumns: TableColumnProps<Product>[] = $derived([
 		{
@@ -56,7 +60,7 @@
 		}
 	]);
 
-	const applyFilterPath = async () => {
+	const applyFilterToUrlPath = async () => {
 		const searchParams = new URLSearchParams();
 
 		if ($productFilterParamStore.first) {
@@ -85,7 +89,7 @@
 			first: $productFilterParamStore.last || DEFAULT_BATCH,
 			last: null
 		};
-		applyFilterPath();
+		applyFilterToUrlPath();
 	};
 
 	const handlePreviousPagelick = (before: string) => {
@@ -96,13 +100,13 @@
 			last: $productFilterParamStore.first || DEFAULT_BATCH,
 			first: null
 		};
-		applyFilterPath();
+		applyFilterToUrlPath();
 	};
 
 	const handleRowsPerPageChange = (no: number) => {
 		if ($productFilterParamStore.first) $productFilterParamStore.first = no;
 		else if ($productFilterParamStore.last) $productFilterParamStore.last = no;
-		applyFilterPath();
+		applyFilterToUrlPath();
 	};
 </script>
 
@@ -147,6 +151,24 @@
 {#snippet createdAt({ item }: { item: Product })}
 	<span class="whitespace-nowrap">{dayjs(item.created).format('DD/MM/YYYY HH:mm')}</span>
 {/snippet}
+
+<!-- <div class="bg-white rounded-lg border border-gray-200 p-3 mb-2 flex items-center"> -->
+<!-- <dir class="w-1/4">
+		<ChannelSelect
+			bind:value={$productFilterParamStore.channel}
+			size="sm"
+			label={$tranFunc('product.channel')}
+		/>
+	</dir> -->
+<div class="mb-2">
+	{#snippet trigger(opts: DropdownTriggerInterface)}
+		<Button endIcon={ChevronDown} variant="light" color="gray" size="sm" {...opts}>Filters</Button>
+	{/snippet}
+	<Popover {trigger} placement="bottom-start">
+		<div class=" whitespace-nowrap">hello worl i love you guys</div>
+	</Popover>
+</div>
+<!-- </div> -->
 
 <div class="bg-white rounded-lg p-3 border border-gray-200">
 	{#if $productFetchStore.fetching}

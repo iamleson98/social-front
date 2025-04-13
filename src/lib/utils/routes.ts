@@ -18,6 +18,9 @@ export const AppRoute = {
 	SETTINGS_PRODUCTS_NEW: () => buildLinkWithRespectToChannel('settings/products/new'),
 	SETTINGS_CONTRACTS: () => buildLinkWithRespectToChannel('settings/contracts'),
 	SETTINGS_CONTRACTS_NEW: () => buildLinkWithRespectToChannel('settings/contracts/new'),
+	SETTINGS_CONFIGS: () => buildLinkWithRespectToChannel('settings/configs'),
+	SETTINGS_CONFIGS_CHANNELS: () => buildLinkWithRespectToChannel('settings/configs/channels'),
+	SETTINGS_CONFIGS_STAFFS: () => buildLinkWithRespectToChannel('settings/configs/staffs'),
 
 	HOME: () => buildHomePageLink(),
 	TRENDING: () => buildLinkWithRespectToChannel('trending'),

@@ -21,6 +21,7 @@
 	import { page } from '$app/state';
 	import { userIsShopAdmin } from '$lib/utils/utils';
 	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
+	import { TablerSettingCog } from '$lib/components/icons/consts';
 
 	type Props = {
 		children: Snippet;
@@ -109,6 +110,11 @@
 					parentShouldActive: () => page.url.pathname === AppRoute.SETTINGS_CONTRACTS_NEW()
 				}
 			]
+		},
+		{
+			icon: TablerSettingCog,
+			name: $tranFunc('settings.configs'),
+			href: AppRoute.SETTINGS_CONFIGS()
 		}
 	]);
 </script>

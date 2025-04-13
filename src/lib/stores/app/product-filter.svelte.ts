@@ -30,7 +30,7 @@ const createProductFilterParamsStore = () => {
   return {
     subscribe,
     reset: () => set(defaultState),
-    set: (args: ProductFilterParams) => set(args),
+    set,
   };
 };
 
