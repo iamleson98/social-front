@@ -1,23 +1,29 @@
 # Base image
-FROM node:20-alpine AS base
+FROM node:22-alpine AS base
 WORKDIR /app
 EXPOSE 3000
 ENV NODE_ENV=production
 
-# Builder stage
-FROM base AS builder
+# Dependencies stage
+FROM base AS dependencies
 # Install pnpm
 RUN apk add --no-cache npm && npm install -g pnpm
+# Copy package files
+COPY pnpm-lock.yaml package.json ./
+# Install dependencies
+RUN pnpm install
+
+# Builder stage
+FROM dependencies AS builder
 # Copy and build
 COPY . .
-RUN pnpm install && pnpm run build
-RUN pnpm prune --production
+RUN pnpm run build
 
 # Production stage
-FROM base AS production
+FROM dependencies AS production
 # Copy the build output
 COPY --from=builder /app/build build/
-# Clean up any unnecessary files
-RUN rm -rf /app/build/.svelte-kit
+COPY --from=builder /app/node_modules ./node_modules
+
 # Start the application
-CMD [ "node", "./build" ]
+CMD [ "node", "build" ]

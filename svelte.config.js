@@ -34,10 +34,10 @@ const config = {
 		prerender: {
 			concurrency: 5,
 		},
-		// inlineStyleThreshold: Infinity
 	},
 	compilerOptions: {
 		runes: true,
+		sourcemap: false
 	},
 };
 

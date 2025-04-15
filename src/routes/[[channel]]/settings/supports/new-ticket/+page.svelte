@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { tranFunc } from '$i18n';
 	import { operationStore } from '$lib/api/operation';
@@ -10,8 +11,7 @@
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import type { Query } from '$lib/gql/graphql';
-	import type { PaginationOptions } from '$lib/utils/utils';
-	import { onMount } from 'svelte';
+	import { numberRegex, type PaginationOptions } from '$lib/utils/utils';
 	import { object, string, z } from 'zod';
 
   const fieldRequired = $tranFunc('helpText.fieldRequired');
@@ -43,10 +43,12 @@
 		}
 	});
 
-	onMount(() => {
+	afterNavigate(() => {
 		const orderNumber = page.url.searchParams.get('order_number');
-		if (orderNumber) {
+		if (orderNumber && numberRegex.test(orderNumber)) {
 			ticketInput.orderNo = orderNumber;
+		} else {
+			ticketInput.orderNo = '';
 		}
 	});
 

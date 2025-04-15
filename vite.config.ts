@@ -17,5 +17,8 @@ export default defineConfig({
 	test: {
 		include: ['src/**/*.{test,spec}.{js,ts}']
 	},
-	assetsInclude: ['**/*.graphql']
+	assetsInclude: ['**/*.graphql'],
+	server: {
+		port: 3000
+	}
 });

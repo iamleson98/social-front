@@ -70,7 +70,6 @@ export const PRODUCT_LIST_QUERY_STORE = gql`
 									amount
 									currency
 								}
-					
 							}
 						}
 					}
@@ -174,7 +173,6 @@ export const CATEGORY_DETAIL_QUERY_STORE = gql`
 		$lastChildren: Int = 10
 		$childrenBefore: String
 		$childrenAfter: String
-
 		$productFirst: Int = 10
 		$productLast: Int
 		$productBefore: String
