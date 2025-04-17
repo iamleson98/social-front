@@ -92,7 +92,7 @@ export { TablerSend as Send } from '$lib/components/icons/consts';
 export { TablerPacman as Pacman } from '$lib/components/icons/consts';
 export { TablerParking as Parking } from '$lib/components/icons/consts';
 
-export { Icon } from '$lib/components/icons/icon.svelte';
+export { default as Icon } from './icon.svelte';
 export { TablerAlertHexagonFilled };
 
 export type IconType = typeof TablerAlertHexagonFilled | string;
