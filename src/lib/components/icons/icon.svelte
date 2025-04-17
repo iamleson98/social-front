@@ -41,6 +41,6 @@
 	{#if typeof Icon === 'string'}
 		{@html Icon}
 	{:else}
-		<Icon />
+		<svelte:component this={Icon} />
 	{/if}
 </svg>
