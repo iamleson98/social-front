@@ -1,4 +1,4 @@
-import type { IconType } from "$lib/components/icons";
+import type { IconContent } from "$lib/components/icons";
 import type { SocialVariant } from "$lib/utils";
 import { type Snippet } from "svelte";
 import type { SocialSize } from "../common";
@@ -10,7 +10,7 @@ export type CustomInputProps = {
   label?: string;
   variant?: SocialVariant | 'ghost';
   subText?: string;
-  startIcon?: IconType;
+  startIcon?: IconContent;
   /** size of the input, default = `md` */
   size?: SocialSize;
   /** a component to the end of input */

@@ -71,34 +71,10 @@
 	{@render trigger({ onclick: handleTriggerClick, onfocus: handleTriggerClick })}
 	<div class="absolute z-100 min-w-full" bind:this={menuElemRef}>
 		{#if open}
-			<!-- <div
-				use:clickOutside={{ onOutclick: () => (open = false) }}
-				transition:fly={{ y: 10 }}
-				class="py-2 rounded-lg border border-gray-200 bg-white shadow-xs"
-				onclick={computeStyle}
-				onkeyup={(e) => e.key === 'Escape' && (open = false)}
-				role="menu"
-				tabindex="-1"
-			>
-				{#if options?.length}
-					{#each options as option, idx (idx)}
-						{@const { onclick, ...rest } = option}
-						<MenuItem
-							{...rest}
-							onclick={() => {
-								onclick?.();
-								open = false;
-							}}
-						/>
-					{/each}
-				{:else if children}
-					{@render children()}
-				{/if}
-			</div> -->
 			<div
 				use:clickOutside={{ onOutclick: () => (open = false) }}
 				transition:fly={flyOpts}
-				class="p-2 rounded-lg border border-gray-200 bg-white shadow-xs"
+				class="rounded-lg shadow-xs"
 				onclick={computeStyle}
 				onkeyup={(e) => e.key === 'Escape' && (open = false)}
 				role="menu"

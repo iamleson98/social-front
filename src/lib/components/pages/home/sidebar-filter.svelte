@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { tranFunc } from '$i18n';
-	import { ArrowDown, ArrowUp, FilterCog, type IconType } from '$lib/components/icons';
+	import { ArrowDown, ArrowUp, FilterCog, type IconContent } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
@@ -41,7 +41,7 @@
 
 	let selectedRating = $state(RATINGS[0]);
 
-	const sortingIcons: Record<OrderDirection, IconType> = {
+	const sortingIcons: Record<OrderDirection, IconContent> = {
 		ASC: ArrowUp,
 		DESC: ArrowDown
 	};

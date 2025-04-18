@@ -1,5 +1,5 @@
 import type { ClickDebounceOpts } from '$lib/actions/input-debounce';
-import type { IconType } from '$lib/components/icons';
+import type { IconContent } from '$lib/components/icons';
 import type { SocialColor, SocialRadius, SocialSize } from '$lib/components/ui/common';
 import { type Snippet } from 'svelte';
 import type { HTMLButtonAttributes } from 'svelte/elements';
@@ -19,8 +19,8 @@ export type ButtonProps = {
   loading?: boolean;
   fullWidth?: boolean;
   children?: string | number | Snippet;
-  startIcon?: IconType;
-  endIcon?: IconType;
+  startIcon?: IconContent;
+  endIcon?: IconContent;
   clickDebounceOptions?: ClickDebounceOpts;
 } & HTMLButtonAttributes;
 

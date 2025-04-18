@@ -6,13 +6,13 @@
 		MailQuestion,
 		Order,
 		UserCog,
-		type IconType
+		type IconContent
 	} from '$lib/components/icons';
 	import { AccordionList } from '$lib/components/ui/Accordion';
 	import { AppRoute } from '$lib/utils';
 
 	type TabItem = {
-		icon: IconType;
+		icon: IconContent;
 		name: string;
 		href?: string;
 	};

@@ -133,7 +133,7 @@
 {/snippet}
 
 <div
-	class="relative w-full text-gray-700 text-base"
+	class="relative w-full text-gray-700 text-base {className}"
 	use:clickOutside={{ onOutclick: deactivate }}
 	use:focusOutside={{ onFocusOut: deactivate }}
 	use:shortcuts={[
@@ -153,7 +153,6 @@
 		bind:ref={input}
 		aria-autocomplete="list"
 		autocomplete="off"
-		class={className}
 		id={INPUT_ID}
 		onclick={activate}
 		onfocus={handleFocus}

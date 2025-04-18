@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { CloseX, Icon, type IconType } from '$lib/components/icons';
+	import { CloseX, Icon, type IconContent } from '$lib/components/icons';
 	import { buttonVariantColorsMap, type ButtonVariant } from '../Button/button.types';
 	import type { SocialColor, SocialSize } from '../common';
 	import { BADGE_SIZE_VARIANTS } from './types';
@@ -13,7 +13,7 @@
 		class?: string;
 		variant?: BadgeVariant;
 		ref?: HTMLSpanElement;
-		startIcon?: IconType;
+		startIcon?: IconContent;
 		size?: SocialSize;
 		rounded?: boolean;
 	};

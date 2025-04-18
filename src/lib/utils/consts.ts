@@ -1,4 +1,4 @@
-import { CircleCheckFilled, ExclamationCircleFilled, InfoCircleFilled, InfoTriangleFilled, type IconType } from "$lib/components/icons";
+import { CircleCheckFilled, ExclamationCircleFilled, InfoCircleFilled, InfoTriangleFilled, type IconContent } from "$lib/components/icons";
 import { CountryCode, LanguageCodeEnum, type PaymentGatewayConfig } from "$lib/gql/graphql";
 import { type PaymentMethodsResponse } from "@adyen/adyen-web";
 import { AdyenCheckout } from "@adyen/adyen-web";
@@ -63,9 +63,9 @@ export type WeightUnit = 'kg' | 'lb' | 'g' | 'oz';
 export const CurrencyIconMap = CHANNELS.reduce((acc, chan) => ({
   ...acc,
   [chan.currency as CurrencyCode]: chan.currencyIcon,
-}), {} as Record<CurrencyCode, IconType>);
+}), {} as Record<CurrencyCode, IconContent>);
 
-export const SocialVariantIconsMap: Record<SocialVariant, IconType> = {
+export const SocialVariantIconsMap: Record<SocialVariant, IconContent> = {
   'error': ExclamationCircleFilled,
   'info': InfoCircleFilled,
   'warning': InfoTriangleFilled,

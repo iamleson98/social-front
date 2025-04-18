@@ -1,7 +1,7 @@
 <script lang="ts" module>
 	export type TabItem = {
 		title: string;
-		icon?: IconType;
+		icon?: IconContent;
 		/** if provided, each tab will be a link */
 		href?: string;
 		active?: boolean;
@@ -9,7 +9,7 @@
 </script>
 
 <script lang="ts">
-	import type { IconType } from '$lib/components/icons';
+	import type { IconContent } from '$lib/components/icons';
 	import { Icon } from '$lib/components/icons';
 
 	type Props = {

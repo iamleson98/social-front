@@ -1,4 +1,4 @@
-import { CurrencyDollar, CurrencyDong, CurrencyEuror, CurrencyJpy, CurrencyKrw, type IconType } from "$lib/components/icons";
+import { CurrencyDollar, CurrencyDong, CurrencyEuror, CurrencyJpy, CurrencyKrw, type IconContent } from "$lib/components/icons";
 import { CountryCode, LanguageCodeEnum } from "$lib/gql/graphql";
 import type { CurrencyCode } from "./consts";
 
@@ -11,7 +11,7 @@ export type ChannelProps = {
   currency: CurrencyCode;
   currencySymbol: string;
   locale: LanguageCodeEnum;
-  currencyIcon: IconType;
+  currencyIcon: IconContent;
   defaultCountryCode: CountryCode;
   capitalLatLong: number[];
 };

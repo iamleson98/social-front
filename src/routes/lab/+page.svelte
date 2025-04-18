@@ -1,6 +1,10 @@
 <script lang="ts">
+	import FilterBox from '$lib/components/common/filter-box/filter-box.svelte';
 	import { PhotoUp } from '$lib/components/icons';
+	import { Button } from '$lib/components/ui';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
 	import { FileInput } from '$lib/components/ui/Input';
+	import { Popover } from '$lib/components/ui/Popover';
 	import { MultiSelect } from '$lib/components/ui/select';
 	import { onMount } from 'svelte';
 
@@ -31,10 +35,36 @@
 	variant="error"
 />
 
-<FileInput icon={PhotoUp} accept="image/*" color="blue" />
+<!-- <FileInput icon={PhotoUp} accept="image/*" color="blue" /> -->
 
 <!-- <IconButton size="xs" icon={Email} />
 <IconButton size="sm" icon={Email} />
 <IconButton size="md" icon={Email} />
 <IconButton size="lg" icon={Email} />
 <IconButton size="xl" icon={Email} /> -->
+
+{#snippet trigger(opts: DropdownTriggerInterface)}
+	<Button variant="light" color="gray" size="sm" {...opts}>Filters</Button>
+{/snippet}
+
+{#snippet filter({ onValue }: { onValue: (value: string[] | number[] | string | number) => void })}
+	<div></div>
+{/snippet}
+
+<Popover {trigger} placement="bottom-start">
+	<FilterBox
+		options={[
+			{
+				label: 'Option 1',
+				key: '1',
+				operation: [
+					{
+						operator: 'in',
+						component: filter
+					}
+				]
+			}
+		]}
+		class="min-w-96"
+	/>
+</Popover>

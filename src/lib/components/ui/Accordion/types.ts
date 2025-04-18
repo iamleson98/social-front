@@ -1,9 +1,9 @@
-import type { IconType } from "$lib/components/icons";
+import type { IconContent } from "$lib/components/icons";
 import type { Snippet } from "svelte";
 
 export type AccordionProps = {
   header: Snippet | string;
-  headerIcon?: IconType;
+  headerIcon?: IconContent;
   class?: string;
   children: Snippet;
   open?: boolean;

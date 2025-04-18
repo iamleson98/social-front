@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { ChevronRight, Icon, type IconType } from '$lib/components/icons';
+	import { ChevronRight, Icon, type IconContent } from '$lib/components/icons';
 
 	type ItemProps = {
 		value: string;
-		icon?: IconType;
+		icon?: IconContent;
 		url?: string;
 	};
 

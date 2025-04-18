@@ -4,13 +4,13 @@
 		ICON_OF_BUTTON_SIZE_MAP,
 		type ButtonProps
 	} from './button.types';
-	import { Icon, type IconType } from '$lib/components/icons';
+	import { Icon, type IconContent } from '$lib/components/icons';
 	import { debounceClick } from '$lib/actions/input-debounce';
 	import { INPUT_BUTTON_SIZE_MAP } from './button.types';
 	import type { ActionReturn } from 'svelte/action';
 
 	type IconProps = {
-		icon?: IconType;
+		icon?: IconContent;
 	};
 
 	let {

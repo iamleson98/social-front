@@ -1,5 +1,12 @@
+<<<<<<< Updated upstream
 export {
   TablerAccessPoint as AccessPoint,
+=======
+export type { IconContent } from './consts';
+
+export {
+  TablerAlertHexagonFilled as AlertHexagonFilled,
+>>>>>>> Stashed changes
   TablerEmail as Email,
   TablerEyeClosed as ClosedEye,
   TablerOpenEye as OpenEye,
@@ -87,6 +94,7 @@ export {
   TablerSend as Send,
   TablerPacman as Pacman,
   TablerParking as Parking,
+<<<<<<< Updated upstream
   TablerListNumbers as NumberList,
   IconparkH2 as Heading2,
   IconparkH3 as Heading3,
@@ -101,3 +109,12 @@ export { default as Icon } from './icon.svelte';
 import { TablerAlertHexagonFilled as AlertHexagonFilled } from '$lib/components/icons/consts';
 export { AlertHexagonFilled };
 export type IconType = typeof AlertHexagonFilled | string;
+=======
+  MajestionText as Paragraph,
+  IconparkH2 as Heading2,
+  IconparkH3 as Heading3,
+  TablerListNumbers as NumberList
+} from './consts';
+
+export { default as Icon } from './icon.svelte';
+>>>>>>> Stashed changes

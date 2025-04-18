@@ -1,4 +1,4 @@
-import type { IconType } from "$lib/components/icons";
+import type { IconContent } from "$lib/components/icons";
 import { DEBOUNCE_INPUT_TIME } from "$lib/utils/consts";
 import { type Snippet } from "svelte";
 import type { EventHandler } from "svelte/elements"
@@ -13,7 +13,7 @@ export type MenuItemProps = {
   children?: Snippet | string;
   /** if provided, display item as a link  */
   href?: string;
-  startIcon?: IconType;
+  startIcon?: IconContent;
   disabled?: boolean;
   onclick?: () => void;
   class?: string;

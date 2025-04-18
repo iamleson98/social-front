@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { IconType } from '$lib/components/icons';
+	import type { IconContent } from '$lib/components/icons';
 	import { randomID } from '$lib/utils/utils';
 	import { IconButton } from '../Button';
 	import type { SocialColor, SocialSize } from '../common';
@@ -7,7 +7,7 @@
 	import Label from './label.svelte';
 
 	type Props = {
-		icon: IconType;
+		icon: IconContent;
 		accept: string;
 		color?: SocialColor;
 		size?: SocialSize;

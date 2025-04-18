@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { Icon, type IconType } from '$lib/components/icons';
+	import { Icon, type IconContent } from '$lib/components/icons';
 	import { ICON_BTN_SIZE_MAP, ICON_OF_BUTTON_SIZE_MAP } from './button.types';
 	import Button from './Button.svelte';
 	import type { ButtonProps } from './button.types';
 
-	type Props = { icon: IconType; rounded?: boolean } & Omit<
+	type Props = { icon: IconContent; rounded?: boolean } & Omit<
 		ButtonProps,
 		'startIcon' | 'endIcon' | 'upper' | 'fullWidth' | 'radius'
 	>;

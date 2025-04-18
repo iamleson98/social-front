@@ -9,7 +9,7 @@
 		Parking,
 		RosetteDiscountChecked,
 		UserCog,
-		type IconType
+		type IconContent
 	} from '$lib/components/icons';
 	import { onMount, type Snippet } from 'svelte';
 	import type { LayoutServerData } from './$types';
@@ -47,7 +47,7 @@
 	};
 
 	type TabItem = {
-		icon?: IconType;
+		icon?: IconContent;
 		name?: string;
 		href: string;
 		children?: TabChild[];
