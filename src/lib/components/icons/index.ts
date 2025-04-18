@@ -1,98 +1,103 @@
-import { TablerAlertHexagonFilled } from '$lib/components/icons/consts';
-
-export { TablerEmail as Email } from '$lib/components/icons/consts';
-export { TablerEyeClosed as ClosedEye } from '$lib/components/icons/consts';
-export { TablerOpenEye as OpenEye } from '$lib/components/icons/consts';
-export { TablerHome as Home } from '$lib/components/icons/consts';
-export { TablerFlame as Flame } from '$lib/components/icons/consts';
-export { TablerMapPin as MapPin } from '$lib/components/icons/consts';
-export { TablerPlus as Plus } from '$lib/components/icons/consts';
-export { TablerMinus as Minus } from '$lib/components/icons/consts';
-export { TablerSearch as Search } from '$lib/components/icons/consts';
-export { TablerShoppingBag as ShoppingBag } from '$lib/components/icons/consts';
-export { TablerShoppingBagPlus as ShoppingBagPlus } from '$lib/components/icons/consts';
-export { TablerLock as Lock } from '$lib/components/icons/consts';
-export { TablerInfoCircle as InforCircle } from '$lib/components/icons/consts';
-export { TablerCheck as Check } from '$lib/components/icons/consts';
-export { TablerAlertTriangle as Warn } from '$lib/components/icons/consts';
-export { TablerHeart as Heart } from '$lib/components/icons/consts';
-export { TablerHeartFilled as HeartFilled } from '$lib/components/icons/consts';
-export { TablerChevronLeft as ChevronLeft } from '$lib/components/icons/consts';
-export { TablerChevronRight as ChevronRight } from '$lib/components/icons/consts';
-export { TablerTagFilled as TagFilled } from '$lib/components/icons/consts';
-export { LogoFacebook as Facebook } from '$lib/components/icons/consts';
-export { LogoGoogle as Google } from '$lib/components/icons/consts';
-export { LogoTwitter as Twitter } from '$lib/components/icons/consts';
-export { TablerStar as Star } from '$lib/components/icons/consts';
-export { TablerStarFilled as StarFilled } from '$lib/components/icons/consts';
-export { MingcuteHome as MingcuteHome } from '$lib/components/icons/consts';
-export { IonFlame as IonFlame } from '$lib/components/icons/consts';
-export { TablerFileText as FileText } from '$lib/components/icons/consts';
-export { TablerHeadset as HeadSet } from '$lib/components/icons/consts';
-export { TablerSettingCheck as SettingCheck } from '$lib/components/icons/consts';
-export { TablerPackageExport as PackageExport } from '$lib/components/icons/consts';
-export { TablerArrowDownRight as ArrowDownRight } from '$lib/components/icons/consts';
-export { TablerPhoto as Photo } from '$lib/components/icons/consts';
-export { FoundationBurstSale as BurstSale } from '$lib/components/icons/consts';
-export { FlowbiteChevronSort as ChevronSort } from '$lib/components/icons/consts';
-export { TablerX as CloseX } from '$lib/components/icons/consts';
-export { TablerBold as Bold } from '$lib/components/icons/consts';
-export { TablerUnderline as Underline } from '$lib/components/icons/consts';
-export { TablerItalic as Italic } from '$lib/components/icons/consts';
-export { TablerStrikethrough as StrikeThrough } from '$lib/components/icons/consts';
-export { TablerSubscript as Subscript } from '$lib/components/icons/consts';
-export { TablerSuperscript as Superscript } from '$lib/components/icons/consts';
-export { TablerHighlight as Highlight } from '$lib/components/icons/consts';
-export { default as NumberList } from './tabler--list-numbers.svelte';
-export { TablerCheckList as CheckList } from '$lib/components/icons/consts';
-export { TablerBulletList as BulletList } from '$lib/components/icons/consts';
-export { default as Heading2 } from './iconpark--h2.svelte';
-export { default as Heading3 } from './iconpark--h3.svelte';
-export { default as Paragraph } from './majestion--text.svelte';
-export { TablerChevronDown as ChevronDown } from '$lib/components/icons/consts';
-export { TablerQuote as Quote } from '$lib/components/icons/consts';
-export { TablerTrash as Trash } from '$lib/components/icons/consts';
-export { TablerCircleCheckFilled as CircleCheckFilled } from '$lib/components/icons/consts';
-export { TablerExclamationCircleFilled as ExclamationCircleFilled } from '$lib/components/icons/consts';
-export { TablerInfoTriangleFilled as InfoTriangleFilled } from '$lib/components/icons/consts';
-export { TablerInfoCircleFilled as InfoCircleFilled } from '$lib/components/icons/consts';
-export { TablerArrowNarrowRight as ArrowNarrowRight } from '$lib/components/icons/consts';
-export { TablerLogout as Logout } from '$lib/components/icons/consts';
-export { TablerUserCog as UserCog } from '$lib/components/icons/consts';
-export { TablerChevronUp as ChevronUp } from '$lib/components/icons/consts';
-export { TablerTruckDelivery as TruckDelivery } from '$lib/components/icons/consts';
-export { TablerCurrencyDollar as CurrencyDollar } from '$lib/components/icons/consts';
-export { TablerCurrencyDong as CurrencyDong } from '$lib/components/icons/consts';
-export { TablerFilterCog as FilterCog } from '$lib/components/icons/consts';
-export { TablerArrowDown as ArrowDown } from '$lib/components/icons/consts';
-export { TablerArrowUp as ArrowUp } from '$lib/components/icons/consts';
-export { TablerCategory as Category } from '$lib/components/icons/consts';
-export { TablerBox as Box } from '$lib/components/icons/consts';
-export { TablerCatergoryPlus as CategoryPlus } from '$lib/components/icons/consts';
-export { TablerRosetteDiscount as RosetteDiscount } from '$lib/components/icons/consts';
-export { TablerAlertCircle as AlertCircle } from '$lib/components/icons/consts';
-export { IcomoonDrawer as EmptyDrawer } from '$lib/components/icons/consts';
-export { TablerPhone as Phone } from '$lib/components/icons/consts';
-export { TablerBuilding as Building } from '$lib/components/icons/consts';
-export { TablerEdit as Edit } from '$lib/components/icons/consts';
-export { TablerCurrencyEuror as CurrencyEuror } from '$lib/components/icons/consts';
-export { MdiWeightKg as MdiWeightKg } from '$lib/components/icons/consts';
-export { MdiCurrencyKrw as CurrencyKrw } from '$lib/components/icons/consts';
-export { MdiCurrencyJpy as CurrencyJpy } from '$lib/components/icons/consts';
-export { TablerRosetteDiscountCheckFilled as RosetteDiscountChecked } from '$lib/components/icons/consts';
-export { StashBilling as Billing } from '$lib/components/icons/consts';
-export { MaterialOrder as Order } from '$lib/components/icons/consts';
-export { TablerAdjustmentHorizontal as AdjustmentHorizontal } from '$lib/components/icons/consts';
-export { TablerMailQuestion as MailQuestion } from '$lib/components/icons/consts';
-export { TablerCheckOff as CheckOff } from '$lib/components/icons/consts';
-export { TablerFileUpload as FileUpload } from '$lib/components/icons/consts';
-export { TablerPhotoUp as PhotoUp } from '$lib/components/icons/consts';
-export { TablerDots as Dots } from '$lib/components/icons/consts';
-export { TablerSend as Send } from '$lib/components/icons/consts';
-export { TablerPacman as Pacman } from '$lib/components/icons/consts';
-export { TablerParking as Parking } from '$lib/components/icons/consts';
+export {
+  TablerAccessPoint as AccessPoint,
+  TablerEmail as Email,
+  TablerEyeClosed as ClosedEye,
+  TablerOpenEye as OpenEye,
+  TablerHome as Home,
+  TablerFlame as Flame,
+  TablerMapPin as MapPin,
+  TablerPlus as Plus,
+  TablerMinus as Minus,
+  TablerSearch as Search,
+  TablerShoppingBag as ShoppingBag,
+  TablerShoppingBagPlus as ShoppingBagPlus,
+  TablerLock as Lock,
+  TablerInfoCircle as InforCircle,
+  TablerCheck as Check,
+  TablerAlertTriangle as Warn,
+  TablerHeart as Heart,
+  TablerHeartFilled as HeartFilled,
+  TablerChevronLeft as ChevronLeft,
+  TablerChevronRight as ChevronRight,
+  TablerTagFilled as TagFilled,
+  LogoFacebook as Facebook,
+  LogoGoogle as Google,
+  LogoTwitter as Twitter,
+  TablerStar as Star,
+  TablerStarFilled as StarFilled,
+  MingcuteHome as MingcuteHome,
+  IonFlame as IonFlame,
+  TablerFileText as FileText,
+  TablerHeadset as HeadSet,
+  TablerSettingCheck as SettingCheck,
+  TablerPackageExport as PackageExport,
+  TablerArrowDownRight as ArrowDownRight,
+  TablerPhoto as Photo,
+  FoundationBurstSale as BurstSale,
+  FlowbiteChevronSort as ChevronSort,
+  TablerX as CloseX,
+  TablerBold as Bold,
+  TablerUnderline as Underline,
+  TablerItalic as Italic,
+  TablerStrikethrough as StrikeThrough,
+  TablerSubscript as Subscript,
+  TablerSuperscript as Superscript,
+  TablerHighlight as Highlight,
+  TablerCheckList as CheckList,
+  TablerBulletList as BulletList,
+  TablerChevronDown as ChevronDown,
+  TablerQuote as Quote,
+  TablerTrash as Trash,
+  TablerCircleCheckFilled as CircleCheckFilled,
+  TablerExclamationCircleFilled as ExclamationCircleFilled,
+  TablerInfoTriangleFilled as InfoTriangleFilled,
+  TablerInfoCircleFilled as InfoCircleFilled,
+  TablerArrowNarrowRight as ArrowNarrowRight,
+  TablerLogout as Logout,
+  TablerUserCog as UserCog,
+  TablerChevronUp as ChevronUp,
+  TablerTruckDelivery as TruckDelivery,
+  TablerCurrencyDollar as CurrencyDollar,
+  TablerCurrencyDong as CurrencyDong,
+  TablerFilterCog as FilterCog,
+  TablerArrowDown as ArrowDown,
+  TablerArrowUp as ArrowUp,
+  TablerCategory as Category,
+  TablerBox as Box,
+  TablerCatergoryPlus as CategoryPlus,
+  TablerRosetteDiscount as RosetteDiscount,
+  TablerAlertCircle as AlertCircle,
+  IcomoonDrawer as EmptyDrawer,
+  TablerPhone as Phone,
+  TablerBuilding as Building,
+  TablerEdit as Edit,
+  TablerCurrencyEuror as CurrencyEuror,
+  MdiWeightKg as MdiWeightKg,
+  MdiCurrencyKrw as CurrencyKrw,
+  MdiCurrencyJpy as CurrencyJpy,
+  TablerRosetteDiscountCheckFilled as RosetteDiscountChecked,
+  StashBilling as Billing,
+  MaterialOrder as Order,
+  TablerAdjustmentHorizontal as AdjustmentHorizontal,
+  TablerMailQuestion as MailQuestion,
+  TablerCheckOff as CheckOff,
+  TablerFileUpload as FileUpload,
+  TablerPhotoUp as PhotoUp,
+  TablerDots as Dots,
+  TablerSend as Send,
+  TablerPacman as Pacman,
+  TablerParking as Parking,
+  TablerListNumbers as NumberList,
+  IconparkH2 as Heading2,
+  IconparkH3 as Heading3,
+  MajestionText as Paragraph,
+  TablerUsersGroup as UsersGroup,
+  TablerGlobe as Globe,
+  TablerSettingCog as SettingCog
+} from '$lib/components/icons/consts';
 
 export { default as Icon } from './icon.svelte';
-export { TablerAlertHexagonFilled };
 
-export type IconType = typeof TablerAlertHexagonFilled | string;
+import { TablerAlertHexagonFilled as AlertHexagonFilled } from '$lib/components/icons/consts';
+export { AlertHexagonFilled };
+export type IconType = typeof AlertHexagonFilled | string;
