@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import { Icon } from '$lib/components/icons';
-	import { TablerGlobe, TablerUsersGroup } from '$lib/components/icons/consts';
+	import { Globe, UsersGroup } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { AppRoute } from '$lib/utils';
 	import { string } from 'zod';
@@ -11,13 +11,13 @@
 			title: 'product.channel',
 			description: 'settings.channelLinkHelpTxt',
 			href: AppRoute.SETTINGS_CONFIGS_CHANNELS(),
-			icon: TablerGlobe
+			icon: Globe
 		},
 		{
 			title: 'settings.staffs',
 			description: 'settings.staffLinkHelpTxt',
 			href: AppRoute.SETTINGS_CONFIGS_STAFFS(),
-			icon: TablerUsersGroup
+			icon: UsersGroup
 		}
 	]);
 </script>

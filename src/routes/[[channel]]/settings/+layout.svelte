@@ -21,7 +21,7 @@
 	import { page } from '$app/state';
 	import { userIsShopAdmin } from '$lib/utils/utils';
 	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
-	import { TablerSettingCog } from '$lib/components/icons/consts';
+	import { SettingCog } from '$lib/components/icons';
 
 	type Props = {
 		children: Snippet;
@@ -112,7 +112,7 @@
 			]
 		},
 		{
-			icon: TablerSettingCog,
+			icon: SettingCog,
 			name: $tranFunc('settings.configs'),
 			href: AppRoute.SETTINGS_CONFIGS()
 		}
