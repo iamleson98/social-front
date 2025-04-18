@@ -1,6 +1,6 @@
 <script lang="ts">
 	import {
-	billing,
+		Billing,
 		Building,
 		Check,
 		Icon,
@@ -59,7 +59,7 @@
 		<!-- billing -->
 		<li class="mt-2 flex items-start gap-2" aria-label="Default Billing Address">
 			<div>
-				<Icon icon={billing} class="text-blue-600 mt-0.5" />
+				<Icon icon={Billing} class="text-blue-600 mt-0.5" />
 			</div>
 			<div>
 				{#if address.isDefaultBillingAddress}
