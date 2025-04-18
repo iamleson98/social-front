@@ -4,7 +4,6 @@
 	import { Globe, UsersGroup } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { AppRoute } from '$lib/utils';
-	import { string } from 'zod';
 
 	let items = $derived([
 		{

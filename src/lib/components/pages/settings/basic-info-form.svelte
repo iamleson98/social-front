@@ -20,9 +20,12 @@
 	const FIELD_REQUIRED = $tranFunc('helpText.fieldRequired');
 
 	const UserInfoSchema = object({
-		firstName: string().min(1, { message: FIELD_REQUIRED }),
-		lastName: string().min(1, { message: FIELD_REQUIRED }),
-		languageCode: string().min(1, { message: FIELD_REQUIRED })
+		firstName: string().nonempty(FIELD_REQUIRED),
+		lastName: string().nonempty(FIELD_REQUIRED),
+		languageCode: string()
+			.nonempty(FIELD_REQUIRED)
+			.optional()
+			.refine((val) => val !== undefined, FIELD_REQUIRED)
 	});
 	type InfoProps = z.infer<typeof UserInfoSchema>;
 
@@ -31,6 +34,11 @@
 		lastName: '',
 		languageCode: ''
 	});
+
+	$effect(() => {
+		console.log($state.snapshot(userInfoInputs));
+	});
+
 	let userInfoFormErrors = $state.raw<Partial<Record<keyof InfoProps, string[]>>>({});
 	let loading = $state(false);
 
@@ -55,10 +63,12 @@
 	const userValidate = () => {
 		const userInfoParse = UserInfoSchema.safeParse(userInfoInputs);
 		if (!userInfoParse.success) {
-			userInfoFormErrors = userInfoParse.error.flatten().fieldErrors;
+			userInfoFormErrors = userInfoParse.error.formErrors.fieldErrors;
+			console.log(userInfoParse.error?.format());
+			return false;
 		}
-
-		return userInfoParse.success;
+		userInfoFormErrors = {};
+		return true;
 	};
 
 	const handleSubmit = async () => {
@@ -70,7 +80,7 @@
 			Pick<Mutation, 'accountUpdate'>,
 			MutationAccountUpdateArgs
 		>(ACCOUNT_UPDATE_MUTATION, {
-			input: { ...userInfoInputs } as AccountInput
+			input: userInfoInputs as AccountInput
 		}).toPromise();
 
 		loading = false; //
@@ -130,7 +140,7 @@
 		bind:value={userInfoInputs.languageCode}
 		variant={userInfoFormErrors.languageCode?.length ? 'error' : 'info'}
 		subText={userInfoFormErrors.languageCode?.length ? userInfoFormErrors.languageCode[0] : ''}
-		onblur={userValidate}
+		onchange={userValidate}
 		disabled={loading}
 	/>
 

@@ -8,6 +8,7 @@
 		Order,
 		Parking,
 		RosetteDiscountChecked,
+		SettingCog,
 		UserCog,
 		type IconContent
 	} from '$lib/components/icons';
@@ -21,7 +22,6 @@
 	import { page } from '$app/state';
 	import { userIsShopAdmin } from '$lib/utils/utils';
 	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
-	import { SettingCog } from '$lib/components/icons';
 
 	type Props = {
 		children: Snippet;
