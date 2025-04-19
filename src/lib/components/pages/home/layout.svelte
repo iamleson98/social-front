@@ -6,7 +6,7 @@
 
 <div class="flex gap-6">
 	<aside
-		class="sticky overflow-auto top-16 h-[calc(100vh-4rem)] w-1/5"
+		class="sticky overflow-auto top-16 h-[calc(100vh-4rem)] w-1/5 tablet:hidden!"
 		style="scrollbar-width: none;"
 	>
 		<Sidebar />

@@ -38,9 +38,7 @@
 			}
 		});
 
-		return () => {
-			unsub();
-		};
+		return unsub;
 	});
 
 	const handleCloseModal = () => {

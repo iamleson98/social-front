@@ -27,9 +27,9 @@
 
 <div class="mt-1.5">
 	{#if $productFetchStore.fetching}
-		<div class="flex flex-wrap flex-row gap-1.5 justify-between">
+		<div class="flex flex-wrap flex-row justify-between">
 			{#each Array(2) as _, idx (idx)}
-				<div class="w-[49.5%]">
+				<div class="w-1/2 p-0.5">
 					<ProductCardSkeleton />
 				</div>
 			{/each}
@@ -39,9 +39,9 @@
 			{$tranFunc('error.failedToLoad')}
 		</Alert>
 	{:else if $productFetchStore.data?.products?.edges.length}
-		<div class="flex flex-wrap flex-row gap-1.5 justify-between">
+		<div class="flex flex-wrap flex-row justify-between">
 			{#each $productFetchStore.data?.products?.edges as { node }, idx (idx)}
-				<div class="w-[49.5%]">
+				<div class="w-1/2 p-0.5">
 					<ProductCard product={node} />
 				</div>
 			{/each}
