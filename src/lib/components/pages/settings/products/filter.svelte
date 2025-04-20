@@ -1,6 +1,7 @@
 <script lang="ts">
 	import FilterBox from '$lib/components/common/filter-box/filter-box.svelte';
 	import type { FilterProps, SingleFilter } from '$lib/components/common/filter-box/types';
+	import { FilterCog } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
 	import { Input } from '$lib/components/ui/Input';
@@ -45,16 +46,15 @@
 	let isFilterOpening = $state(false);
 
 	let filters = $state<SingleFilter[]>([]);
+
+	const handleApplyClick = (newFilters: SingleFilter[]) => {
+		filters = newFilters;
+		isFilterOpening = false;
+	};
 </script>
 
 {#snippet trigger(opts: DropdownTriggerInterface)}
-	<Button
-		variant="light"
-		color={isFilterOpening ? 'blue' : 'gray'}
-		size="sm"
-		{...opts}
-		class="indicator"
-	>
+	<Button variant="light" size="sm" {...opts} class="indicator" endIcon={FilterCog}>
 		{#if filters.length}
 			<span class="indicator-item badge badge-xs text-white! bg-blue-500">{filters.length}</span>
 		{/if}
@@ -127,7 +127,7 @@
 		header="Filters"
 		options={FILTER_OPTIONS}
 		class="min-w-96 border border-gray-200"
-		onApply={(fts) => (filters = fts)}
+		onApply={handleApplyClick}
 		onClose={() => (isFilterOpening = false)}
 	/>
 </Popover>

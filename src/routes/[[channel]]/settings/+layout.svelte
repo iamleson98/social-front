@@ -66,7 +66,7 @@
 		}
 	]);
 
-	const SHOPPING_TAB_ITEMS: TabItem[] = $derived([	
+	const SHOPPING_TAB_ITEMS: TabItem[] = $derived([
 		{
 			icon: Box,
 			name: $tranFunc('settings.myOrders'),
@@ -114,7 +114,15 @@
 		{
 			icon: SettingCog,
 			name: $tranFunc('settings.configs'),
-			href: AppRoute.SETTINGS_CONFIGS()
+			href: AppRoute.SETTINGS_CONFIGS(),
+			children: [
+				{
+					parentShouldActive: () => page.url.pathname === AppRoute.SETTINGS_CONFIGS_CHANNELS()
+				},
+				{
+					parentShouldActive: () => page.url.pathname === AppRoute.SETTINGS_CONFIGS_STAFFS()
+				}
+			]
 		}
 	]);
 </script>
