@@ -146,6 +146,9 @@
 			direction: direction === 'asc' ? OrderDirection.Asc : OrderDirection.Desc
 		};
 
+		$productFilterParamStore.before = null;
+		$productFilterParamStore.after = null;
+
 		applyFilterToUrlPath();
 	};
 </script>
