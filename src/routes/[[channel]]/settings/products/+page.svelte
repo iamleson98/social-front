@@ -3,10 +3,10 @@
 	import { tranFunc } from '$i18n';
 	import { PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
 	import { operationStore } from '$lib/api/operation';
-	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import { ChevronDown, Icon, InforCircle } from '$lib/components/icons';
 	import { AFTER, BEFORE, FIRST, LAST } from '$lib/components/pages/home/common';
 	import ProductFilterStateListener from '$lib/components/pages/home/product-filter-state-listener.svelte';
+	import Filter from '$lib/components/pages/settings/products/filter.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
@@ -24,7 +24,7 @@
 	const productFetchStore = operationStore<Pick<Query, 'products'>, QueryProductsArgs>({
 		kind: 'query',
 		query: PRODUCT_LIST_QUERY_ADMIN,
-		context: { requestPolicy: 'network-only' },
+		context: { requestPolicy: 'cache-and-network' },
 		variables: $productFilterParamStore
 	});
 
@@ -161,12 +161,13 @@
 		/>
 	</dir> -->
 <div class="mb-2">
-	{#snippet trigger(opts: DropdownTriggerInterface)}
+	<!-- {#snippet trigger(opts: DropdownTriggerInterface)}
 		<Button endIcon={ChevronDown} variant="light" color="gray" size="sm" {...opts}>Filters</Button>
 	{/snippet}
 	<Popover {trigger} placement="bottom-start">
 		<div class=" whitespace-nowrap">hello worl i love you guys</div>
-	</Popover>
+	</Popover> -->
+	<Filter />
 </div>
 <!-- </div> -->
 

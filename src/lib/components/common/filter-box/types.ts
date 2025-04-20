@@ -7,6 +7,8 @@ export type FilterProps = {
   key: string;
   operation: {
     operator: FilterOperator;
-    component: Snippet<[{ onValue: (value: string[] | number[] | string | number) => void }]>;
+    component: Snippet<[{ onValue: FilterComponentCallback }]>;
   }[];
 };
+
+export type FilterComponentCallback = (value: string[] | number[] | string | number) => void;

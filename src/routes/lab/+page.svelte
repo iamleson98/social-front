@@ -3,7 +3,7 @@
 	import { PhotoUp } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
-	import { FileInput } from '$lib/components/ui/Input';
+	import { FileInput, Input } from '$lib/components/ui/Input';
 	import { Popover } from '$lib/components/ui/Popover';
 	import { MultiSelect } from '$lib/components/ui/select';
 	import { onMount } from 'svelte';
@@ -48,18 +48,20 @@
 {/snippet}
 
 {#snippet filter({ onValue }: { onValue: (value: string[] | number[] | string | number) => void })}
-	<div></div>
+	<!-- <div></div> -->
+	<Input size="xs" placeholder="Enter price" type="number" min="0" />
 {/snippet}
 
 <Popover {trigger} placement="bottom-start">
 	<FilterBox
+		header="Filters"
 		options={[
 			{
-				label: 'Option 1',
-				key: '1',
+				label: 'price',
+				key: 'price',
 				operation: [
 					{
-						operator: 'in',
+						operator: 'is',
 						component: filter
 					}
 				]

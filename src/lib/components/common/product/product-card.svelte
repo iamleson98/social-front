@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { Heart, OpenEye } from '$lib/components/icons';
+	import { BurstSale, Heart, OpenEye } from '$lib/components/icons';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { AppRoute } from '$lib/utils';
@@ -8,7 +8,6 @@
 	import { clamp, formatMoney } from '$lib/utils/utils';
 	import { fade } from 'svelte/transition';
 	import type { Product } from '$lib/gql/graphql';
-	import FoundationBurstSale from '$lib/components/icons/foundation-burst-sale.svelte';
 	import { CHANNELS } from '$lib/utils/channels';
 	import { PRODUCT_PREVIEW_STORE } from '../../pages/home/common';
 
@@ -42,7 +41,7 @@
 			<Badge
 				color="red"
 				variant="filled"
-				startIcon={FoundationBurstSale}
+				startIcon={BurstSale}
 				text="Sale"
 				class="absolute top-4 left-2"
 			/>

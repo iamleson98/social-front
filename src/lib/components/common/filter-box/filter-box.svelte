@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { CloseX, Plus } from '$lib/components/icons';
+	import { CloseX, Plus, Trash } from '$lib/components/icons';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import Select from '$lib/components/ui/select/select.svelte';
 	import type { FilterOperator, FilterProps } from './types';
 	import type { SelectOption } from '$lib/components/ui/select';
-	import type { Snippet } from 'svelte';
 
 	type Props = {
 		options: FilterProps[];
@@ -18,21 +17,14 @@
 	type SingleFilter = {
 		key: string;
 		operator: FilterOperator;
-		component: Snippet<
-			[
-				{
-					onValue: (value: string[] | number[] | string | number) => void;
-				}
-			]
-		>;
-		// operatorOpts: SelectOption[];
+		value?: string[] | number[] | string | number;
 	};
 
 	let activeFilters = $state<Partial<SingleFilter>[]>([]);
 	let availableFilters = $derived.by(() => {
 		const usedFilterMap: Record<string, boolean> = {};
-		for (const { key, operator, component } of activeFilters) {
-			if (key && operator && component) {
+		for (const { key, operator, value } of activeFilters) {
+			if (key && operator && value !== undefined) {
 				usedFilterMap[key] = true;
 			}
 		}
@@ -46,8 +38,9 @@
 
 		return result;
 	});
+
 	let disableAddFilterBtn = $derived(
-		activeFilters.some((filter) => !filter.key || !filter.operator || !filter.component)
+		activeFilters.some((filter) => !filter.key || !filter.operator)
 	);
 
 	const onClickAddFilter = () => {
@@ -59,7 +52,7 @@
 	};
 </script>
 
-<div class="{className} bg-white rounded-md p-2">
+<div class="{className} bg-white rounded-lg p-2 shadow-md">
 	<dir class="flex items-center justify-between">
 		<span class="text-sm font-medium">{header}</span>
 		<IconButton icon={CloseX} color="gray" size="xs" variant="light" onclick={onClose} />
@@ -84,24 +77,35 @@
 								label: operator,
 								value: operator
 							}))}
+
 							<Select
 								options={operatorOpts}
 								size="xs"
 								class="w-[49.5%]!"
 								bind:value={filter.operator}
 							/>
-							<!-- <Input placeholder="Enter filter value" size="xs" class="w-[49.5%]!" /> -->
+							{#if filter.operator}
+								{@const component = operations.find(
+									({ operator }) => operator === filter.operator
+								)?.component}
+								<div class="w-[49.5%]">
+									{@render component?.({
+										onValue: (vl) => (filter.value = vl)
+									})}
+								</div>
+							{/if}
 						{/if}
 					</div>
 
 					<div class="w-[10%] text-right">
 						<IconButton
-							icon={CloseX}
+							icon={Trash}
 							rounded
 							size="xs"
 							variant="light"
 							color="red"
 							onclick={() => handleDeleteFilter(idx)}
+							aria-label="Delete filter"
 						/>
 					</div>
 				</div>
