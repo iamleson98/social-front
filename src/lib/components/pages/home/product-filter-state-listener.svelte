@@ -3,7 +3,7 @@
 	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
 	import { page } from '$app/state';
 	import { numberRegex, parseUrlSearchParams } from '$lib/utils/utils';
-	import { AFTER, BEFORE, FIRST, LAST, ORDER_BY_FIELD, PRICE_RANGE, SORT_KEY } from './common';
+	import { AFTER, BEFORE, FIRST, LAST, ORDER_BY_FIELD, PRICE_RANGE, ORDER_DIRECTION } from './common';
 	import { OrderDirection, ProductOrderField } from '$lib/gql/graphql';
 	import { get } from 'svelte/store';
 
@@ -12,8 +12,8 @@
 		const newProductQueryArgs = get(productFilterParamStore);
 
 		// parse sort by field:
-		let sortDirection = queryParams[SORT_KEY]
-			? (queryParams[SORT_KEY] as string).toUpperCase()
+		let sortDirection = queryParams[ORDER_DIRECTION]
+			? (queryParams[ORDER_DIRECTION] as string).toUpperCase()
 			: OrderDirection.Asc;
 		let sortField = queryParams[ORDER_BY_FIELD]
 			? (queryParams[ORDER_BY_FIELD] as string).toUpperCase()

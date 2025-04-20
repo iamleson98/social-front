@@ -1,17 +1,10 @@
 <script lang="ts" generics="T extends Record<string, unknown>">
 	import { tranFunc } from '$i18n';
-	import {
-		ChevronDown,
-		ChevronLeft,
-		ChevronRight,
-		ChevronSort,
-		ChevronUp,
-		Icon
-	} from '$lib/components/icons';
+	import { ChevronLeft, ChevronRight, Icon } from '$lib/components/icons';
 	import { IconButton } from '../Button';
 	import Button from '../Button/Button.svelte';
 	import { DropDown, type DropdownTriggerInterface, type MenuItemProps } from '../Dropdown';
-	import type { SortState, TableProps } from './types';
+	import { SortIconsMap, type SortState, type TableProps } from './types';
 
 	const ROW_OPTIONS = [10, 20, 30, 50, 100];
 
@@ -25,18 +18,19 @@
 		onChangeRowsPerPage,
 		onSortChange,
 		scale = 'md',
-		rowsPerPage
+		rowsPerPage,
+		sortMultiple = false,
+		defaultSortState = {}
 	}: TableProps<T> = $props();
 
 	let tdClass = scale === 'sm' ? 'p-1!' : '';
 
-	const DEFAULT_SORT_STATE = columns.reduce((acc, column) => {
-		if (column.sortable)
-			return { ...acc, [column.title]: { direction: 'neutral', icon: ChevronSort } };
+	const DEFAULT_SORT_STATE = columns.reduce<SortState>((acc, column) => {
+		if (column.sortable) return { ...acc, [column.key || column.title]: 'neutral' };
 		return acc;
 	}, {});
 	let innerRowsPerPage = $state<number>(rowsPerPage || ROW_OPTIONS[0]);
-	let sortState = $state.raw<SortState>(DEFAULT_SORT_STATE);
+	let sortState = $state.raw<SortState>({ ...DEFAULT_SORT_STATE, ...defaultSortState });
 
 	const handleNavigateClick = (dir: 1 | -1) => {
 		if (!pagination) return;
@@ -45,15 +39,21 @@
 	};
 
 	const handleSortClick = (column: string) => {
-		if (sortState[column].direction === 'neutral') {
-			sortState = { ...sortState, [column]: { direction: 'asc', icon: ChevronUp } };
-		} else if (sortState[column].direction === 'asc') {
-			sortState = { ...sortState, [column]: { direction: 'desc', icon: ChevronDown } };
+		const colSortState: SortState = {};
+		if (sortState[column] === 'neutral') {
+			colSortState[column] = 'asc';
+		} else if (sortState[column] === 'asc') {
+			colSortState[column] = 'desc';
 		} else {
-			sortState = { ...sortState, [column]: { direction: 'neutral', icon: ChevronSort } };
+			colSortState[column] = 'neutral';
 		}
-
-		onSortChange?.(sortState);
+		if (sortMultiple) {
+			sortState = { ...sortState, ...colSortState };
+			onSortChange?.(sortState);
+		} else {
+			sortState = { ...DEFAULT_SORT_STATE, ...colSortState };
+			onSortChange?.(colSortState);
+		}
 	};
 
 	const handleRowsPerPageChange = (num: number) => {
@@ -80,8 +80,9 @@
 					: ''}
 				{@const props = column?.sortable
 					? {
-							onclick: () => handleSortClick(column.title),
-							onkeyup: (evt: KeyboardEvent) => evt.key === 'Enter' && handleSortClick(column.title)
+							onclick: () => handleSortClick(column.key || column.title),
+							onkeyup: (evt: KeyboardEvent) =>
+								evt.key === 'Enter' && handleSortClick(column.key || column.title)
 						}
 					: {}}
 				<th class="p-[unset]!">
@@ -101,7 +102,7 @@
 						</div>
 						{#if column?.sortable}
 							<span>
-								<Icon icon={sortState[column.title].icon} />
+								<Icon icon={SortIconsMap[sortState[column.key || column.title]]} />
 							</span>
 						{/if}
 					</svelte:element>

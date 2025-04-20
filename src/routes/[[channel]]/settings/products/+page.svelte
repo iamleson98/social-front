@@ -4,12 +4,31 @@
 	import { PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
 	import { operationStore } from '$lib/api/operation';
 	import { Icon, InforCircle } from '$lib/components/icons';
-	import { AFTER, BEFORE, FIRST, LAST } from '$lib/components/pages/home/common';
+	import {
+		AFTER,
+		BEFORE,
+		FIRST,
+		LAST,
+		ORDER_BY_FIELD,
+		ORDER_DIRECTION
+	} from '$lib/components/pages/home/common';
 	import ProductFilterStateListener from '$lib/components/pages/home/product-filter-state-listener.svelte';
 	import Filter from '$lib/components/pages/settings/products/filter.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { Table, TableSkeleton, type TableColumnProps } from '$lib/components/ui/Table';
-	import { type Product, type Query, type QueryProductsArgs } from '$lib/gql/graphql';
+	import {
+		Table,
+		TableSkeleton,
+		type SortDirection,
+		type SortState,
+		type TableColumnProps
+	} from '$lib/components/ui/Table';
+	import {
+		OrderDirection,
+		ProductOrderField,
+		type Product,
+		type Query,
+		type QueryProductsArgs
+	} from '$lib/gql/graphql';
 	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
 	import { AppRoute } from '$lib/utils';
 	import { formatCurrency } from '$lib/utils/utils';
@@ -40,7 +59,8 @@
 		{
 			title: $tranFunc('settings.name'),
 			child: name,
-			sortable: true
+			sortable: true,
+			key: ProductOrderField.Name
 		},
 		{
 			title: $tranFunc('settings.availability'),
@@ -53,7 +73,8 @@
 		{
 			title: $tranFunc('settings.createdAt'),
 			child: createdAt,
-			sortable: true
+			sortable: true,
+			key: ProductOrderField.CreatedAt
 		}
 	]);
 
@@ -64,6 +85,11 @@
 			searchParams.set(FIRST, $productFilterParamStore.first.toString());
 		} else if ($productFilterParamStore.last) {
 			searchParams.set(LAST, $productFilterParamStore.last.toString());
+		}
+
+		if ($productFilterParamStore.sortBy?.field && $productFilterParamStore.sortBy?.direction) {
+			searchParams.set(ORDER_BY_FIELD, $productFilterParamStore.sortBy.field);
+			searchParams.set(ORDER_DIRECTION, $productFilterParamStore.sortBy.direction);
 		}
 
 		if ($productFilterParamStore.before) {
@@ -103,6 +129,23 @@
 	const handleRowsPerPageChange = (no: number) => {
 		if ($productFilterParamStore.first) $productFilterParamStore.first = no;
 		else if ($productFilterParamStore.last) $productFilterParamStore.last = no;
+		applyFilterToUrlPath();
+	};
+
+	const handleSortChange = (sort: SortState) => {
+		// currently products screen support single field sort only
+		const keys = Object.keys(sort);
+		if (!keys.length) return;
+
+		const key = keys[0];
+		const direction = sort[key];
+		if (direction === 'neutral') return;
+
+		$productFilterParamStore.sortBy = {
+			field: key as ProductOrderField,
+			direction: direction === 'asc' ? OrderDirection.Asc : OrderDirection.Desc
+		};
+
 		applyFilterToUrlPath();
 	};
 </script>
@@ -171,6 +214,11 @@
 			onPreviousPagelick={handlePreviousPagelick}
 			onChangeRowsPerPage={handleRowsPerPageChange}
 			rowsPerPage={$productFilterParamStore.first || $productFilterParamStore.last}
+			onSortChange={handleSortChange}
+			defaultSortState={{
+				[$productFilterParamStore.sortBy?.field as string]: $productFilterParamStore.sortBy
+					?.direction as unknown as SortDirection
+			} as SortState}
 		/>
 	{/if}
 </div>

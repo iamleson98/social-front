@@ -20,13 +20,13 @@
 	import type { Query, User } from '$lib/gql/graphql';
 	import { buildHomePageLink, preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { tranFunc } from '$i18n';
-	import { onMount, tick } from 'svelte';
+	import { onMount } from 'svelte';
 	import { ACCESS_TOKEN_KEY, HTTPStatusSuccess } from '$lib/utils/consts';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { afterNavigate, beforeNavigate, invalidateAll } from '$app/navigation';
 	import { DropDown, type DropdownTriggerInterface } from '../ui/Dropdown';
 	import { READ_ONLY_USER_STORE, setUserStoreValue } from '$lib/stores/auth/user';
-	import { tweened } from 'svelte/motion';
+	import { Tween } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 
 	const { userDisplayName } = $derived.by(() => {
@@ -90,19 +90,21 @@
 	});
 
 	let loading = $state(false);
-	const loadingProgress = tweened(0, {
+	let timeout = $state<NodeJS.Timeout>();
+	const loadingProgress = new Tween(0, {
 		duration: 500,
 		easing: cubicOut
-	});
+	})
 
-	beforeNavigate(async () => {
+	beforeNavigate(() => {
 		loading = true;
 		loadingProgress.set(10);
 	});
 
-	afterNavigate(async () => {
+	afterNavigate(() => {
 		loadingProgress.set(100);
-		setTimeout(() => {
+		clearTimeout(timeout);
+		timeout = setTimeout(() => {
 			loading = false;
 			loadingProgress.set(0);
 		}, 500);
@@ -113,7 +115,7 @@
 	{#if loading}
 		<progress
 			class="progress h-[3px]! text-blue-400 fixed z-210 left-0 right-0 top-0"
-			value={$loadingProgress}
+			value={loadingProgress.current}
 			max="100"
 		></progress>
 	{/if}
@@ -138,12 +140,12 @@
 		<div class="flex gap-1">
 			<a href={buildHomePageLink()}>
 				<Button variant="light" size="sm" startIcon={MingcuteHome}>
-					<span>{$tranFunc('pages.home')}</span>
+					<span class="tablet:hidden!">{$tranFunc('pages.home')}</span>
 				</Button>
 			</a>
 			<a href={AppRoute.TRENDING()}>
 				<Button variant="light" size="sm" startIcon={IonFlame}>
-					<span>{$tranFunc('pages.trending')}</span>
+					<span class="tablet:hidden!">{$tranFunc('pages.trending')}</span>
 				</Button>
 			</a>
 		</div>
