@@ -153,6 +153,7 @@
 						bind:checked={channelListing.used}
 						onchange={(evt) =>
 							toggleSelectChannel(channelListing.channelId, evt.currentTarget.checked)}
+						size="sm"
 					/>
 				{/snippet}
 

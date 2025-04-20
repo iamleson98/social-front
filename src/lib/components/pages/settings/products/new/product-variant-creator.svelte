@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { Plus, Trash, MdiWeightKg, PhotoUp } from '$lib/components/icons';
+	import { Plus, Trash, MdiWeightKg } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { Checkbox, Input, Label } from '$lib/components/ui/Input';
@@ -79,6 +79,7 @@
 
 	const MAX_VARIANT_TYPES = 2;
 	const MAX_VALUES_PER_VARIANT = 4;
+	const MAX_VALUES_SINGLE_VARIANT = 10;
 	// on some platforms, pre-order product will be available in 5-15 days
 	const MIN_DAYS_FOR_PREORDER = 5;
 	const MAX_DAYS_FOR_PREORDER = 15;
@@ -276,7 +277,7 @@
 			return {
 				name: variant.name,
 				values: variant.values.map((value, idx) => {
-					if (idx !== valueIdx) return value;
+					if (idx !== valueIdx) return { ...value, error: undefined };
 
 					return {
 						value: valueTrimLower,
@@ -298,7 +299,8 @@
 				return {
 					...detail,
 					name: valueTrimLower,
-					sku: `${randomString()}-${valueTrimLower}`
+					// sku: `${randomString()}-${valueTrimLower}`
+					sku: randomString()
 				};
 			});
 
@@ -314,12 +316,13 @@
 			for (; index < endIndex; index++) {
 				const existingValue = variantsInputDetails[index];
 				const splitName = (existingValue.name || '-').split('-');
-				const newSku = `${randomString()}-${valueTrimLower}-${splitName[1]}`;
+				// const newSku = `${randomString()}-${valueTrimLower}-${splitName[1]}`;
 
 				newVariantDetails[index] = {
 					...existingValue,
 					name: `${valueTrimLower}-${splitName[1]}`,
-					sku: newSku
+					// sku: newSku
+					sku: randomString()
 				};
 			}
 		} else {
@@ -330,12 +333,13 @@
 			) {
 				const existingValue = variantsInputDetails[index];
 				const splitName = (existingValue.name || '-').split('-');
-				const newSku = `${randomString()}-${splitName[0]}-${valueTrimLower}`;
+				// const newSku = `${randomString()}-${splitName[0]}-${valueTrimLower}`;
 
 				newVariantDetails[index] = {
 					...existingValue,
 					name: `${splitName[0]}-${valueTrimLower}`,
-					sku: newSku
+					// sku: newSku
+					sku: randomString()
 				};
 			}
 		}
@@ -432,8 +436,9 @@
 	};
 
 	const handleAddVariantValue = (variantIdx: number) => {
+		const maxValues = variantManifests.length === MAX_VARIANT_TYPES ? MAX_VALUES_PER_VARIANT : MAX_VALUES_SINGLE_VARIANT;
 		const newVariantManifests = variantManifests.map((variant, idx) => {
-			if (idx !== variantIdx || variant.values.length >= MAX_VALUES_PER_VARIANT) return variant;
+			if (idx !== variantIdx || variant.values.length >= maxValues) return variant;
 
 			return {
 				name: variant.name,
@@ -654,10 +659,15 @@
 							variant="light"
 							color="blue"
 							onclick={() => handleAddVariantValue(variantIdx)}
-							disabled={variant.values.length >= MAX_VALUES_PER_VARIANT || loading}
+							disabled={variant.values.length >=
+								(variantManifests.length === MAX_VARIANT_TYPES
+									? MAX_VALUES_PER_VARIANT
+									: MAX_VALUES_SINGLE_VARIANT) || loading}
 							fullWidth
 						>
-							{variant.values.length}/{MAX_VALUES_PER_VARIANT}
+							{variant.values.length}/{variantManifests.length === MAX_VARIANT_TYPES
+								? MAX_VALUES_PER_VARIANT
+								: MAX_VALUES_SINGLE_VARIANT}
 						</Button>
 					</div>
 				</div>
@@ -942,7 +952,7 @@
 									{:else}
 										<td class="text-center">
 											<dir>{variantInputDetail.name?.split('-')[0]}</dir>
-											<div>
+											<!-- <div>
 												<IconButton
 													icon={PhotoUp}
 													size="lg"
@@ -951,7 +961,7 @@
 													data-tip="Add photo(s)"
 													onclick={() => (openImageModal = true)}
 												/>
-											</div>
+											</div> -->
 										</td>
 									{/if}
 									<!-- CHANNELS -->
