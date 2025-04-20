@@ -3,14 +3,11 @@
 	import { tranFunc } from '$i18n';
 	import { PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
 	import { operationStore } from '$lib/api/operation';
-	import { ChevronDown, Icon, InforCircle } from '$lib/components/icons';
+	import { Icon, InforCircle } from '$lib/components/icons';
 	import { AFTER, BEFORE, FIRST, LAST } from '$lib/components/pages/home/common';
 	import ProductFilterStateListener from '$lib/components/pages/home/product-filter-state-listener.svelte';
 	import Filter from '$lib/components/pages/settings/products/filter.svelte';
-	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
-	import { Popover } from '$lib/components/ui/Popover';
 	import { Table, TableSkeleton, type TableColumnProps } from '$lib/components/ui/Table';
 	import { type Product, type Query, type QueryProductsArgs } from '$lib/gql/graphql';
 	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
@@ -152,24 +149,9 @@
 	<span class="whitespace-nowrap">{dayjs(item.created).format('DD/MM/YYYY HH:mm')}</span>
 {/snippet}
 
-<!-- <div class="bg-white rounded-lg border border-gray-200 p-3 mb-2 flex items-center"> -->
-<!-- <dir class="w-1/4">
-		<ChannelSelect
-			bind:value={$productFilterParamStore.channel}
-			size="sm"
-			label={$tranFunc('product.channel')}
-		/>
-	</dir> -->
 <div class="mb-2">
-	<!-- {#snippet trigger(opts: DropdownTriggerInterface)}
-		<Button endIcon={ChevronDown} variant="light" color="gray" size="sm" {...opts}>Filters</Button>
-	{/snippet}
-	<Popover {trigger} placement="bottom-start">
-		<div class=" whitespace-nowrap">hello worl i love you guys</div>
-	</Popover> -->
 	<Filter />
 </div>
-<!-- </div> -->
 
 <div class="bg-white rounded-lg p-3 border border-gray-200">
 	{#if $productFetchStore.fetching}

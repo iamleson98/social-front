@@ -22,7 +22,7 @@
 </script>
 
 {#snippet card(title: string, description: string, href: string, icon: string)}
-	<div class="card bg-white border border-gray-200 card-sm w-[49.5%]">
+	<div class="card bg-white border border-gray-200 card-sm w-[49%] mobile-l:w-full!">
 		<div class="card-body">
 			<h2 class="card-title">
 				<Icon {icon} class="size-5" />
@@ -38,7 +38,7 @@
 	</div>
 {/snippet}
 
-<dir class="flex flex-wrap gap-2 justify-between">
+<dir class="flex flex-wrap gap-1 justify-between">
 	{#each items as item, idx (idx)}
 		{@render card(item.title, item.description, item.href, item.icon)}
 	{/each}

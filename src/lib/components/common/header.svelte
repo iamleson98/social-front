@@ -20,19 +20,22 @@
 	import type { Query, User } from '$lib/gql/graphql';
 	import { buildHomePageLink, preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { tranFunc } from '$i18n';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { ACCESS_TOKEN_KEY, HTTPStatusSuccess } from '$lib/utils/consts';
 	import { toastStore } from '$lib/stores/ui/toast';
-	import { invalidateAll } from '$app/navigation';
+	import { afterNavigate, beforeNavigate, invalidateAll } from '$app/navigation';
 	import { DropDown, type DropdownTriggerInterface } from '../ui/Dropdown';
 	import { READ_ONLY_USER_STORE, setUserStoreValue } from '$lib/stores/auth/user';
+	import { tweened } from 'svelte/motion';
+	import { cubicOut } from 'svelte/easing';
 
 	const { userDisplayName } = $derived.by(() => {
 		let userDisplayName;
 
 		if ($READ_ONLY_USER_STORE?.firstName && $READ_ONLY_USER_STORE.lastName)
 			userDisplayName = `${$READ_ONLY_USER_STORE.firstName[0]}${$READ_ONLY_USER_STORE.lastName[0]}`;
-		else if ($READ_ONLY_USER_STORE?.email) userDisplayName = $READ_ONLY_USER_STORE.email.slice(0, 2);
+		else if ($READ_ONLY_USER_STORE?.email)
+			userDisplayName = $READ_ONLY_USER_STORE.email.slice(0, 2);
 
 		return { userDisplayName };
 	});
@@ -42,9 +45,11 @@
 		const token = getCookieByKey(ACCESS_TOKEN_KEY);
 		if (!token) return;
 
-		const userResult = await GRAPHQL_CLIENT
-			.query<Pick<Query, 'me'>>(USER_ME_QUERY_STORE, {}, { requestPolicy: 'network-only' })
-			.toPromise();
+		const userResult = await GRAPHQL_CLIENT.query<Pick<Query, 'me'>>(
+			USER_ME_QUERY_STORE,
+			{},
+			{ requestPolicy: 'network-only' }
+		).toPromise();
 
 		if (preHandleErrorOnGraphqlResult(userResult)) return;
 		setUserStoreValue(userResult.data?.me as User);
@@ -83,9 +88,35 @@
 
 		checkoutStore.set(parsedResult.checkout);
 	});
+
+	let loading = $state(false);
+	const loadingProgress = tweened(0, {
+		duration: 500,
+		easing: cubicOut
+	});
+
+	beforeNavigate(async () => {
+		loading = true;
+		loadingProgress.set(10);
+	});
+
+	afterNavigate(async () => {
+		loadingProgress.set(100);
+		setTimeout(() => {
+			loading = false;
+			loadingProgress.set(0);
+		}, 500);
+	});
 </script>
 
 <header class="fixed top-0 left-0 right-0 flex p-2 bg-white shadow-xs z-200 w-full">
+	{#if loading}
+		<progress
+			class="progress h-[3px]! text-blue-400 fixed z-210 left-0 right-0 top-0"
+			value={$loadingProgress}
+			max="100"
+		></progress>
+	{/if}
 	<!-- navigating -->
 	<div class="w-1/2 flex items-center gap-3">
 		<!-- logo -->
@@ -119,12 +150,15 @@
 
 		<div class="flex items-center gap-3.5">
 			<a href={AppRoute.SHOPPING_CART()}>
-				<IconButton size="sm" icon={ShoppingBag} variant="light" color="gray" class="relative">
+				<IconButton
+					size="sm"
+					icon={ShoppingBag}
+					variant="light"
+					color="gray"
+					class="relative indicator"
+				>
 					{#key $checkoutStore}
-						<span
-							class="absolute -right-1/4 -top-1/4 z-99999999 !text-[10px] flex h-4 min-w-4 items-center text-xs justify-center rounded-full bg-blue-500 p-1 font-bold text-white"
-							in:scale
-						>
+						<span class="indicator-item badge badge-xs text-white! bg-blue-500" in:scale>
 							{$checkoutStore?.lines.length || 0}
 						</span>
 					{/key}

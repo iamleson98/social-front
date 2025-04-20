@@ -29,9 +29,9 @@
 </script>
 
 <Accordion {...rest}>
-	<ul class="list-none text-sm">
+	<ul class="list-none text-sm tablet:text-xs">
 		{#each items.slice(0, numOfItemsToShow) as item, idx (idx)}
-			<li class="py-1">
+			<li class="py-1 break-all">
 				{@render child(item)}
 			</li>
 		{/each}

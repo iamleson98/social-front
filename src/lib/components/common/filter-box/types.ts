@@ -11,4 +11,10 @@ export type FilterProps = {
   }[];
 };
 
-export type FilterComponentCallback = (value: string[] | number[] | string | number) => void;
+export type SingleFilter = {
+  key: string;
+  operator: FilterOperator;
+  value?: string[] | number[] | string | number | boolean;
+};
+
+export type FilterComponentCallback = (value: string[] | number[] | string | number | boolean) => void;

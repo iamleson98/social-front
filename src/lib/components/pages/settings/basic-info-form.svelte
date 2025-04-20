@@ -35,10 +35,6 @@
 		languageCode: ''
 	});
 
-	$effect(() => {
-		console.log($state.snapshot(userInfoInputs));
-	});
-
 	let userInfoFormErrors = $state.raw<Partial<Record<keyof InfoProps, string[]>>>({});
 	let loading = $state(false);
 

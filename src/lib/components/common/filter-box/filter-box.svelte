@@ -2,7 +2,7 @@
 	import { CloseX, Plus, Trash } from '$lib/components/icons';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import Select from '$lib/components/ui/select/select.svelte';
-	import type { FilterOperator, FilterProps } from './types';
+	import type { FilterProps, SingleFilter } from './types';
 	import type { SelectOption } from '$lib/components/ui/select';
 
 	type Props = {
@@ -10,15 +10,10 @@
 		header?: string;
 		onClose?: () => void;
 		class?: string;
+		onApply?: (filters: SingleFilter[]) => void;
 	};
 
-	let { options, header, onClose, class: className = '' }: Props = $props();
-
-	type SingleFilter = {
-		key: string;
-		operator: FilterOperator;
-		value?: string[] | number[] | string | number;
-	};
+	let { options, header, onClose, class: className = '', onApply }: Props = $props();
 
 	let activeFilters = $state<Partial<SingleFilter>[]>([]);
 	let availableFilters = $derived.by(() => {
@@ -31,16 +26,18 @@
 
 		const result: SelectOption[] = [];
 		for (const { key, label } of options) {
-			if (!usedFilterMap[key]) {
-				result.push({ label, value: key });
-			}
+			result.push({
+				value: key,
+				label,
+				disabled: usedFilterMap[key]
+			});
 		}
 
 		return result;
 	});
 
 	let disableAddFilterBtn = $derived(
-		activeFilters.some((filter) => !filter.key || !filter.operator)
+		activeFilters.some((filter) => !filter.key || !filter.operator || filter.value === undefined)
 	);
 
 	const onClickAddFilter = () => {
@@ -50,6 +47,8 @@
 	const handleDeleteFilter = (index: number) => {
 		activeFilters = activeFilters.filter((_, idx) => idx !== index);
 	};
+
+	const handleApplyClick = () => onApply?.(activeFilters as SingleFilter[]);
 </script>
 
 <div class="{className} bg-white rounded-lg p-2 shadow-md">
@@ -131,8 +130,10 @@
 				Add Filter
 			</Button>
 			<div class="gap-1">
-				<Button size="xs" variant="light" color="gray">Reset</Button>
-				<Button size="xs" disabled={disableAddFilterBtn}>Apply</Button>
+				<Button size="xs" variant="light" color="gray" onclick={() => (activeFilters = [])}
+					>Reset</Button
+				>
+				<Button size="xs" disabled={disableAddFilterBtn} onclick={handleApplyClick}>Apply</Button>
 			</div>
 		</div>
 	</div>
