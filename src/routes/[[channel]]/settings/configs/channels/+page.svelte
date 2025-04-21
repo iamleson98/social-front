@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
+	import { CHANNEL_DELETE_MUTATION } from '$lib/api/admin/channels';
 	import { CHANNELS_QUERY } from '$lib/api/channels';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
 	import { Dots, Edit, Trash } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
@@ -14,9 +16,10 @@
 	import { Modal } from '$lib/components/ui/Modal';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { Table, TableSkeleton, type TableColumnProps } from '$lib/components/ui/Table';
-	import type { Channel, Query } from '$lib/gql/graphql';
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import type { Channel, Mutation, MutationChannelDeleteArgs, Query } from '$lib/gql/graphql';
+	import { toastStore } from '$lib/stores/ui/toast';
 	import { AppRoute } from '$lib/utils';
+	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 
 	const channelsQuery = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
@@ -51,10 +54,27 @@
 
 	let delModalHeader = $derived($tranFunc('settings.confirmDelChannel', { id: channelToDeleteId }));
 
-	const handleConfirmDeleteChannel = (id: string) => {
-		ALERT_MODAL_STORE.openAlertModal({
-			content: $tranFunc('settings.confirmDelChannel', { id }),
-			onOk: () => {}
+	const handleDeleteChannel = async () => {
+		if (!channelToDeleteId) return;
+
+		const variable: MutationChannelDeleteArgs = {
+			id: channelToDeleteId
+		};
+		if (channelToReplaceId) {
+			variable.input = {
+				channelId: channelToReplaceId
+			};
+		}
+
+		const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'channelDelete'>>(
+			CHANNEL_DELETE_MUTATION,
+			variable
+		);
+
+		if (preHandleErrorOnGraphqlResult(result, 'channelDelete')) return;
+		toastStore.send({
+			variant: 'success',
+			message: 'Channel deleted successfully'
 		});
 	};
 </script>
@@ -86,7 +106,7 @@
 			children: 'Delete channel',
 			startIcon: Trash,
 			onclick: () => channelToDeleteId = item.id,
-			class: 'text-red-500',
+			class: 'text-red-600',
 
 		}
 	]}
@@ -111,12 +131,13 @@
 <Modal
 	open={!!channelToDeleteId}
 	header={delModalHeader}
-	onClose={() => (channelToDeleteId = '')}
+	onOk={handleDeleteChannel}
 	onCancel={() => (channelToDeleteId = '')}
+	onClose={() => (channelToDeleteId = '')}
 	closeOnOutsideClick
 	size="sm"
 	cancelText={$tranFunc('common.cancel')}
-	okText={$tranFunc('product.detail')}
+	okText={$tranFunc('btn.delete')}
 >
 	<Select
 		options={$channelsQuery.data?.channels?.map<SelectOption>((chan) => ({
@@ -126,7 +147,10 @@
 		})) ?? []}
 		bind:value={channelToReplaceId}
 		label="Please specify channel to replace"
-		required
 		placeholder="Channel to replace"
 	/>
+	<Alert variant="info" size="sm" bordered class="mt-3">
+		Specify a new channel to assign products to. The replace channel must have the same currency as
+		deleting channel
+	</Alert>
 </Modal>

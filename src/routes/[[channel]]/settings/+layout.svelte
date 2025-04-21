@@ -78,11 +78,13 @@
 			href: AppRoute.ME_SUPPORT(),
 			children: [
 				{
-					parentShouldActive: () => page.url.pathname === AppRoute.ME_SUPPORT_NEW()
-				},
-				{
-					parentShouldActive: () => page.route.id === '/[[channel]]/settings/supports/[id]'
+					parentShouldActive: () =>
+						page.url.pathname === AppRoute.ME_SUPPORT_NEW() ||
+						page.route.id === '/[[channel]]/settings/supports/[id]'
 				}
+				// {
+				// 	parentShouldActive: () =>
+				// }
 			]
 		}
 	]);
@@ -94,11 +96,13 @@
 			href: AppRoute.SETTINGS_PRODUCTS(),
 			children: [
 				{
-					parentShouldActive: () => page.url.pathname === AppRoute.SETTINGS_PRODUCTS_NEW()
-				},
-				{
-					parentShouldActive: () => page.route.id === '/[[channel]]/settings/products/[slug]'
+					parentShouldActive: () =>
+						page.url.pathname === AppRoute.SETTINGS_PRODUCTS_NEW() ||
+						page.route.id === '/[[channel]]/settings/products/[slug]'
 				}
+				// {
+				// 	parentShouldActive: () => page.route.id === '/[[channel]]/settings/products/[slug]'
+				// }
 			]
 		},
 		{
@@ -117,11 +121,14 @@
 			href: AppRoute.SETTINGS_CONFIGS(),
 			children: [
 				{
-					parentShouldActive: () => page.url.pathname === AppRoute.SETTINGS_CONFIGS_CHANNELS()
-				},
-				{
-					parentShouldActive: () => page.url.pathname === AppRoute.SETTINGS_CONFIGS_STAFFS()
+					parentShouldActive: () =>
+						page.url.pathname === AppRoute.SETTINGS_CONFIGS_CHANNELS() ||
+						page.url.pathname === AppRoute.SETTINGS_CONFIGS_STAFFS() ||
+						page.route.id === '/[[channel]]/settings/configs/channels/[slug]'
 				}
+				// {
+				// 	parentShouldActive: () => page.url.pathname === AppRoute.SETTINGS_CONFIGS_STAFFS()
+				// }
 			]
 		}
 	]);
