@@ -258,6 +258,7 @@ export default {
 		editTicket: 'Edit Ticket',
 		deleteTicket: 'Delete Ticket',
 		confirmDelRequest: 'Are you sure you want to delete the ticket {{id}}?',
+		confirmDelChannel: 'Are you sure you want to delete the channel {{id}}?',
 		consult: 'Consult',
 		warranty: 'Warranty',
 		description: 'Description',

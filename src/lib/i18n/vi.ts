@@ -258,6 +258,7 @@ export default {
 		editTicket: 'Sửa yêu cầu',
 		deleteTicket: 'Xoá yêu cầu',
 		confirmDelRequest: 'Bạn có chắc chắn muốn xoá yêu cầu {{id}}?',
+		confirmDelChannel: 'Bạn có chắc chắn muốn xoá kênh {{slug}}?',
 		consult: 'Tư vấn',
 		warranty: 'Bảo hành',
 		description: 'Mô tả',
