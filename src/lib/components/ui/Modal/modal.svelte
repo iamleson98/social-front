@@ -46,15 +46,17 @@
 					<div
 						class="flex items-center justify-between px-4 py-3 tablet:p-5 border-b rounded-t dark:border-gray-600"
 					>
-						<h3 class="text-lg font-medium text-gray-900 dark:text-white">{header}</h3>
-						<IconButton
-							icon={CloseX}
-							size="xs"
-							variant="light"
-							color="gray"
-							onclick={onClose}
-							rounded
-						/>
+						<h3 class="text-lg font-medium text-gray-900 dark:text-white grow">{header}</h3>
+						<div class="grow">
+							<IconButton
+								icon={CloseX}
+								size="xs"
+								variant="light"
+								color="gray"
+								onclick={onClose}
+								rounded
+							/>
+						</div>
 					</div>
 				{/if}
 

@@ -96,15 +96,18 @@
 				options={PRODUCT_SORT_FIELDS}
 				size="sm"
 				bind:value={$productFilterParamStore.sortBy!.field as ProductOrderField}
+				class="grow"
 			/>
 
-			<IconButton
-				icon={sortingIcons[$productFilterParamStore.sortBy?.direction as OrderDirection]}
-				size="sm"
-				color="gray"
-				onclick={handleOrderingButtonClick}
-				aria-label="order by"
-			/>
+			<div class="grow">
+				<IconButton
+					icon={sortingIcons[$productFilterParamStore.sortBy?.direction as OrderDirection]}
+					size="sm"
+					color="gray"
+					onclick={handleOrderingButtonClick}
+					aria-label="order by"
+				/>
+			</div>
 		</div>
 	</div>
 
