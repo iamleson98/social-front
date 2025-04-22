@@ -10,3 +10,14 @@ export const CHANNEL_DELETE_MUTATION = gql`
     }
   }
 `
+export const CHANNEL_DETAILS_QUERY = gql`
+  query ChannelDetails($slug: String!) {
+    channel(slug: $slug) {
+      id
+      name
+      slug
+      isActive
+      currencyCode
+    }
+  }
+`
