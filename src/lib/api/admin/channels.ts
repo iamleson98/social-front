@@ -9,15 +9,22 @@ export const CHANNEL_DELETE_MUTATION = gql`
       }
     }
   }
-`
-export const CHANNEL_DETAILS_QUERY = gql`
-  query ChannelDetails($slug: String!) {
-    channel(slug: $slug) {
-      id
-      name
-      slug
-      isActive
-      currencyCode
+`;
+
+export const CHANNEL_UPDATE_MUTATION = gql`
+  mutation UpdateChannel($id: ID!, $input: ChannelUpdateInput!) {
+    channelUpdate(id: $id, input: $input) {
+      channel {
+        id
+        name
+        slug
+        isActive
+        currencyCode
+      }
+      errors {
+        field
+        message
+      }
     }
   }
-`
+`;
