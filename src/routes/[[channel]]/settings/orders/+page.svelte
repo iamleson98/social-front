@@ -103,7 +103,7 @@
 	</div>
 </div>
 
-<div class="rounded-lg bg-white border border-gray-200 p-3 mt-3">
+<div class="rounded-lg bg-white border border-gray-200 p-4 mt-3">
 	{#if $userOrdersStore.fetching}
 		<TableSkeleton numColumns={6} showPagination />
 	{:else if $userOrdersStore.error}

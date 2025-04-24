@@ -199,7 +199,7 @@
 	<Filter />
 </div>
 
-<div class="bg-white rounded-lg p-3 border border-gray-200">
+<div class="bg-white rounded-lg p-4 border border-gray-200">
 	{#if $productFetchStore.fetching}
 		<TableSkeleton numColumns={4} showPagination />
 	{:else if $productFetchStore.error}

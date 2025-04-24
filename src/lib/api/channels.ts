@@ -31,6 +31,19 @@ query Channel($slug: String!) {
       code
       country
     }
+    defaultCountry {
+      code
+      country
+    }
+    id
+    name
+    slug
+    isActive
+    currencyCode
+    warehouses {
+      id
+      name
+    }
   }
 }
 `;

@@ -69,7 +69,7 @@
 	};
 </script>
 
-<div class="mt-3 p-3 rounded-lg bg-white border border-gray-200">
+<div class="mt-3 p-4 rounded-lg bg-white border border-gray-200">
 	<Input
 		placeholder={$tranFunc('settings.title')}
 		label={$tranFunc('settings.title')}
