@@ -36,6 +36,11 @@ query Channel($slug: String!) {
     slug
     isActive
     currencyCode
+    warehouses {
+      id
+      name
+      __typename
+    }
   }
 }
 `;
