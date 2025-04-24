@@ -24,4 +24,8 @@ export type ModalProps = {
   hideFooter?: boolean;
   closeOnEscape?: boolean;
   closeOnOutsideClick?: boolean;
+  /**
+   * E.g: when you submit a form and the API call is in progress, buttons on modal should be disabled
+   */
+  disableElements?: boolean;
 };

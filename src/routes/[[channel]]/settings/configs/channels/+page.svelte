@@ -51,6 +51,34 @@
 
 	let channelToDeleteId = $state<string>();
 	let channelToReplaceId = $state<string>();
+	let loading = $state(false);
+
+	let channelsToReplaceOptions = $derived.by(() => {
+		if (!channelToDeleteId) return [];
+		if (!$channelsQuery.data?.channels?.length) return [];
+		let channelToDel: Channel | undefined = undefined;
+
+		// const result: SelectOption[] = [];
+		const currencyMeetMap: Record<string, SelectOption[]> = {};
+
+		for (const channel of $channelsQuery.data.channels) {
+			if (channel.id === channelToDeleteId) {
+				channelToDel = channel;
+				continue;
+			}
+			if (currencyMeetMap[channel.currencyCode] === undefined) {
+				currencyMeetMap[channel.currencyCode] = [];
+			}
+
+			currencyMeetMap[channel.currencyCode].push({
+				value: channel.id,
+				label: channel.slug
+			});
+		}
+
+		if (channelToDel) return currencyMeetMap[channelToDel.currencyCode] || [];
+		return [];
+	});
 
 	let delModalHeader = $derived($tranFunc('settings.confirmDelChannel', { id: channelToDeleteId }));
 
@@ -66,10 +94,14 @@
 			};
 		}
 
+		loading = true;
+
 		const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'channelDelete'>>(
 			CHANNEL_DELETE_MUTATION,
 			variable
 		);
+
+		loading = false;
 
 		if (preHandleErrorOnGraphqlResult(result, 'channelDelete')) return;
 		toastStore.send({
@@ -138,19 +170,19 @@
 	size="sm"
 	cancelText={$tranFunc('common.cancel')}
 	okText={$tranFunc('btn.delete')}
+	disableElements={loading}
 >
-	<Select
-		options={$channelsQuery.data?.channels?.map<SelectOption>((chan) => ({
-			value: chan.id,
-			label: chan.name,
-			disabled: channelToDeleteId === chan.id
-		})) ?? []}
-		bind:value={channelToReplaceId}
-		label="Please specify channel to replace"
-		placeholder="Channel to replace"
-	/>
-	<Alert variant="info" size="sm" bordered class="mt-3">
-		Specify a new channel to assign products to. The replace channel must have the same currency as
-		deleting channel
-	</Alert>
+	{#if channelsToReplaceOptions.length}
+		<Select
+			options={channelsToReplaceOptions}
+			bind:value={channelToReplaceId}
+			label="Please specify channel to replace"
+			placeholder="Channel to replace"
+			disabled={loading}
+		/>
+		<!-- <Alert variant="info" size="sm" bordered class="mt-3">
+			Specify a new channel to assign products to. The replace channel must have the same currency
+			as deleting channel
+		</Alert> -->
+	{/if}
 </Modal>

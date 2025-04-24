@@ -21,7 +21,8 @@
 		hideHeader = false,
 		hideFooter = false,
 		closeOnOutsideClick,
-		closeOnEscape
+		closeOnEscape,
+		disableElements = false
 	}: ModalProps = $props();
 </script>
 
@@ -55,6 +56,7 @@
 								color="gray"
 								onclick={onClose}
 								rounded
+								disabled={disableElements}
 							/>
 						</div>
 					</div>
@@ -69,8 +71,21 @@
 				{#if !hideFooter}
 					<div class="border-t px-4 py-3 text-right">
 						<div>
-							<Button variant="filled" color="blue" size="sm" onclick={onOk}>{okText}</Button>
-							<Button variant="light" color="red" size="sm" class="mr-1" onclick={onCancel}>
+							<Button
+								variant="filled"
+								color="blue"
+								size="sm"
+								onclick={onOk}
+								disabled={disableElements}>{okText}</Button
+							>
+							<Button
+								variant="light"
+								color="red"
+								size="sm"
+								class="mr-1"
+								onclick={onCancel}
+								disabled={disableElements}
+							>
 								{cancelText}
 							</Button>
 						</div>
