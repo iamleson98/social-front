@@ -116,7 +116,7 @@
 	<DropDown {trigger} options={MENU_OPTIONS} />
 {/snippet}
 
-<div class="bg-white rounded-lg border border-gray-200 p-3">
+<div class="bg-white rounded-lg border border-gray-200 p-4">
 	{#if $channelsQuery.fetching}
 		<TableSkeleton numColumns={3} />
 	{:else if $channelsQuery.error}

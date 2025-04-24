@@ -20,27 +20,32 @@
 	import { Checkbox } from '$lib/components/ui/Input';
 	import { boolean, object, string, z } from 'zod';
 	import ChannelDetailRightSidebar from '$lib/components/pages/settings/config/channel/channel-detail-right-sidebar.svelte';
+	import { onMount } from 'svelte';
+	import slugify from 'slugify';
 
 	const channelDetailQuery = operationStore<Pick<Query, 'channel'>>({
 		kind: 'query',
 		query: CHANNEL_DETAILS_QUERY_STORE,
-		variables: { slug: page.params.slug }
+		variables: { slug: page.params.slug },
+		requestPolicy: 'network-only'
 	});
 	const channelsQuery = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
-		requestPolicy: 'cache-and-network',
+		requestPolicy: 'network-only',
 		query: CHANNELS_QUERY
 	});
 
 	let channelToReplaceId = $state<string>();
 	let loading = $state(false);
 	let openDeleteModal = $state(false);
+	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 
 	const channelSchema = object({
-		name: string().nonempty({ message: $tranFunc('helpText.fieldRequired') }),
-		slug: string().nonempty({ message: $tranFunc('helpText.fieldRequired') }),
+		name: string().nonempty(REQUIRED_ERROR),
+		slug: string().nonempty(REQUIRED_ERROR),
 		isActive: boolean(),
-		currencyCode: string()
+		currencyCode: string(),
+		defaultCountry: string().nonempty(REQUIRED_ERROR)
 	});
 
 	type ChannelSchema = z.infer<typeof channelSchema>;
@@ -51,7 +56,8 @@
 		name: $channelDetailQuery.data?.channel?.name ?? '',
 		slug: $channelDetailQuery.data?.channel?.slug ?? '',
 		isActive: $channelDetailQuery.data?.channel?.isActive ?? false,
-		currencyCode: $channelDetailQuery.data?.channel?.currencyCode ?? ''
+		currencyCode: $channelDetailQuery.data?.channel?.currencyCode ?? '',
+		defaultCountry: ''
 	});
 
 	const validate = () => {
@@ -75,14 +81,34 @@
 	// 	})) ?? []
 	// );
 
-	const setActive = (active: boolean) => (channelValues.isActive = active);
+	// const setActive = (active: boolean) => (channelValues.isActive = active);
 
-	$effect(() => {
-		if ($channelDetailQuery.data?.channel) {
-			channelValues = {
-				...channelValues
-			};
-		}
+	// $effect(() => {
+	// 	if ($channelDetailQuery.data?.channel) {
+	// 		channelValues = {
+	// 			...channelValues
+	// 		};
+	// 	}
+	// });
+
+	const handleNameChange = () => {
+		channelValues.slug = slugify(channelValues.name, { lower: true });
+	};
+
+	onMount(() => {
+		const unsub = channelDetailQuery.subscribe((result) => {
+			if (result.data?.channel) {
+				channelValues = {
+					name: result.data.channel.name,
+					slug: result.data.channel.slug,
+					isActive: result.data.channel.isActive,
+					currencyCode: result.data.channel.currencyCode,
+					defaultCountry: result.data.channel.defaultCountry.code
+				};
+			}
+		});
+
+		return unsub;
 	});
 
 	const handleDeleteChannel = async () => {
@@ -105,7 +131,6 @@
 		loading = false;
 
 		if (preHandleErrorOnGraphqlResult(result, 'channelDelete')) return;
-
 		toastStore.send({
 			variant: 'success',
 			message: 'Channel deleted successfully'
@@ -133,7 +158,6 @@
 		loading = false;
 
 		if (preHandleErrorOnGraphqlResult(result, 'channelUpdate')) return;
-
 		toastStore.send({
 			variant: 'success',
 			message: 'Channel updated successfully'
@@ -160,19 +184,39 @@
 {:else if $channelDetailQuery.error}
 	<Alert variant="error" title="Error">{$channelDetailQuery.error.message}</Alert>
 {:else if $channelDetailQuery.data?.channel}
+	{@const countryOptions =
+		$channelDetailQuery.data.channel.countries?.map<SelectOption>((country) => ({
+			value: country.code,
+			label: country.country
+		})) || []}
 	<div class="flex flex-row gap-2">
-		<div class="w-3/4 rounded-lg bg-white border border-gray-200 mt-3 p-3">
-			<Input label="Name" bind:value={channelValues.name} class="mt-3" />
+		<!-- MARK: general information -->
+		<div class="w-3/4 rounded-lg bg-white border border-gray-200 mt-3 p-4">
+			<Input
+				label="Name"
+				bind:value={channelValues.name}
+				class="mt-3"
+				inputDebounceOption={{ onInput: handleNameChange }}
+			/>
 			<div class="mt-3 flex gap-3">
 				<Input label="Slug" bind:value={channelValues.slug} class="flex-1" />
 				<div class="flex flex-1 gap-2 py-2">
-					<Checkbox label={channelValues.isActive ? 'Active' : 'Inactive'} bind:checked={channelValues.isActive} />
+					<Checkbox
+						label={channelValues.isActive ? 'Active' : 'Inactive'}
+						bind:checked={channelValues.isActive}
+					/>
 				</div>
 			</div>
 
 			<div class="mt-3 flex gap-3">
 				<Input label="Currency" bind:value={channelValues.currencyCode} disabled class="flex-1" />
-				<Select label="Country" options={[]} placeholder="Select a country" class="flex-1" />
+				<Select
+					label="Country"
+					options={countryOptions}
+					placeholder="Select a country"
+					class="flex-1"
+					bind:value={channelValues.defaultCountry}
+				/>
 			</div>
 			<Modal
 				open={openDeleteModal}
@@ -204,10 +248,13 @@
 			</Modal>
 		</div>
 
+		<!-- MARK: channel detail sidebar -->
 		<div class="w-1/4">
 			<ChannelDetailRightSidebar channel={$channelDetailQuery.data?.channel} />
 		</div>
 	</div>
+
+	<!-- MARK: channel detail actions -->
 	<div class="mt-5 flex justify-between items-center">
 		<div>
 			<Button
@@ -223,11 +270,7 @@
 			</Button>
 		</div>
 		<div class="space-x-2">
-			<Button
-				variant="light"
-				color="gray"
-				onclick={() => goto(AppRoute.SETTINGS_CONFIGS_CHANNELS())}>Back</Button
-			>
+			<Button variant="light" color="gray" href={AppRoute.SETTINGS_CONFIGS_CHANNELS()}>Back</Button>
 			<Button onclick={handleUpdateChannel}>Update</Button>
 		</div>
 	</div>
