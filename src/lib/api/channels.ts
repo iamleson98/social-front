@@ -39,7 +39,6 @@ query Channel($slug: String!) {
     warehouses {
       id
       name
-      __typename
     }
   }
 }
