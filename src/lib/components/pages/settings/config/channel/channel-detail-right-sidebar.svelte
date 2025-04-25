@@ -7,16 +7,17 @@
 
   type Props = {
     channel: Channel;
+    warehouseItems: TabItem[];
   };
 
   type TabItem = {
     name: string;
   };
 
-  let { channel }: Props = $props();
+  let { channel, warehouseItems }: Props = $props();
 </script>
 
-<div class="rounded-lg bg-white border border-gray-200 mt-3 p-2">
+<div class="rounded-lg bg-white border border-gray-200 p-2">
   {#snippet sidebarItem(item: TabItem)}
     <div class="flex items-center justify-between gap-1 rounded-md py-1">
       <span class="truncate">{item.name}</span>
@@ -35,7 +36,7 @@
   <AccordionList
     header="2 Warehouses"
     child={sidebarItem}
-    items={[]}
+    items={warehouseItems}
     class="w-full"
     open={false}
   />
