@@ -14,26 +14,31 @@
 	import { tranFunc } from '$i18n';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { CHANNEL_DETAILS_QUERY_STORE, CHANNELS_QUERY } from '$lib/api/channels';
+	import {
+		CHANNEL_DETAILS_BY_ID,
+		CHANNEL_DETAILS_QUERY_STORE,
+		CHANNELS_QUERY
+	} from '$lib/api/channels';
 	import { type IconContent, Trash } from '$lib/components/icons';
 	import { Checkbox } from '$lib/components/ui/Input';
 	import { boolean, object, string, z } from 'zod';
-	import ChannelDetailRightSidebar from '$lib/components/pages/settings/config/channel/channel-detail-right-sidebar.svelte';
+	import ChannelDetailRightSidebar from '$lib/components/pages/settings/config/channel/channel-warehouses.svelte';
 	import { onMount } from 'svelte';
 	import slugify from 'slugify';
 	import ChannelDetailSkeleton from '$lib/components/pages/settings/config/channel-detail-skeleton.svelte';
+	import ChannelShippingZones from '$lib/components/pages/settings/config/channel/channel-shipping-zones.svelte';
 
 	const channelDetailQuery = operationStore<Pick<Query, 'channel'>>({
 		kind: 'query',
-		query: CHANNEL_DETAILS_QUERY_STORE,
-		variables: { slug: page.params.slug },
+		query: CHANNEL_DETAILS_BY_ID,
+		variables: { id: page.params.id },
 		requestPolicy: 'network-only'
 	});
 
-	$effect(() => {
-		const slug = page.params.slug;
-		channelDetailQuery.reexecute({ variables: { slug } });
-	});
+	// $effect(() => {
+	// 	const id = page.params.id;
+	// 	channelDetailQuery.reexecute({ variables: { id } });
+	// });
 
 	const channelsQuery = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
@@ -59,10 +64,10 @@
 	let channelFormErrors = $state.raw<Partial<Record<keyof ChannelSchema, string[]>>>({});
 
 	let channelValues = $state<ChannelSchema>({
-		name: $channelDetailQuery.data?.channel?.name ?? '',
-		slug: $channelDetailQuery.data?.channel?.slug ?? '',
-		isActive: $channelDetailQuery.data?.channel?.isActive ?? false,
-		currencyCode: $channelDetailQuery.data?.channel?.currencyCode ?? '',
+		name: '',
+		slug: '',
+		isActive: false,
+		currencyCode: '',
 		defaultCountry: ''
 	});
 
@@ -176,36 +181,33 @@
 			});
 		}
 	};
-
-	type TabItem = {
-		name: string;
-		href?: string;
-		icon: IconContent;
-	};
-
-	const WAREHOUSE_TAB_ITEMS = $derived(
-		$channelDetailQuery.data?.channel?.warehouses?.map((w) => ({
-			name: w.name,
-			href: undefined,
-			icon: Trash
-		})) ?? []
-	);
 </script>
 
 {#if $channelDetailQuery.fetching}
-	<ChannelDetailSkeleton/>
+	<ChannelDetailSkeleton />
 {:else if $channelDetailQuery.error}
-	<Alert variant="error" title="Error">{$channelDetailQuery.error.message}</Alert>
+	<Alert variant="error" bordered>{$channelDetailQuery.error.message}</Alert>
 {:else if $channelDetailQuery.data?.channel}
+	{@const { channel } = $channelDetailQuery.data}
 	{@const countryOptions =
-		$channelDetailQuery.data.channel.countries?.map<SelectOption>((country) => ({
+		channel.countries?.map<SelectOption>((country) => ({
 			value: country.code,
 			label: country.country
 		})) || []}
+	{@const replaceChannelOptions =
+		$channelsQuery.data?.channels?.reduce<SelectOption[]>((acc, cur) => {
+			if (cur.id !== channel.id && cur.currencyCode === channel.currencyCode) {
+				return acc.concat({
+					value: cur.id,
+					label: cur.name
+				});
+			}
+			return acc;
+		}, []) || []}
 	<div class="relative">
 		<div class="flex flex-row gap-2">
 			<!-- MARK: general information -->
-			<div class="w-2/3 rounded-lg bg-white border border-gray-200 p-4">
+			<div class="w-2/3 rounded-lg bg-white border border-gray-200 p-4 h-fit">
 				<Input
 					label="Name"
 					bind:value={channelValues.name}
@@ -234,9 +236,7 @@
 				<Modal
 					open={openDeleteModal}
 					header={delModalHeader}
-					onOk={async () => {
-						await handleDeleteChannel();
-					}}
+					onOk={handleDeleteChannel}
 					onCancel={() => (openDeleteModal = false)}
 					onClose={() => (openDeleteModal = false)}
 					closeOnOutsideClick
@@ -245,16 +245,7 @@
 					okText={$tranFunc('btn.delete')}
 				>
 					<Select
-						options={$channelsQuery.data?.channels
-							?.filter(
-								(chan) =>
-									chan.id !== $channelDetailQuery.data?.channel?.id &&
-									chan.currencyCode === $channelDetailQuery.data?.channel?.currencyCode
-							)
-							?.map<SelectOption>((chan) => ({
-								value: chan.id,
-								label: chan.name
-							})) ?? []}
+						options={replaceChannelOptions}
 						bind:value={channelToReplaceId}
 						label="Please specify channel to replace"
 						placeholder="Channel to replace"
@@ -269,30 +260,26 @@
 
 			<!-- MARK: channel detail sidebar -->
 			<div class="w-1/3">
-				<ChannelDetailRightSidebar channel={$channelDetailQuery.data?.channel} warehouseItems={WAREHOUSE_TAB_ITEMS}/>
+				<ChannelShippingZones
+					channelSlug={channel.slug}
+					addShippingZones={[]}
+					removeShippingZones={[]}
+				/>
+				<ChannelDetailRightSidebar {channel} />
 			</div>
 		</div>
 
 		<!-- MARK: channel detail actions -->
 		<div class="mt-5 flex justify-between items-center">
-			<Button
-				variant="light"
-				color="red"
-				loading={loading}
-				onclick={() => {
-					if ($channelDetailQuery.data?.channel?.id) {
-						openDeleteModal = true;
-					}
-				}}
-			>
+			<Button variant="light" color="red" {loading} onclick={() => (openDeleteModal = true)}>
 				Delete
 			</Button>
 
 			<div class="space-x-2 absolute bottom-0 right-0 mt-5 flex justify-end">
-				<Button variant="light" color="gray" loading={loading} href={AppRoute.SETTINGS_CONFIGS_CHANNELS()}
+				<Button variant="light" color="gray" {loading} href={AppRoute.SETTINGS_CONFIGS_CHANNELS()}
 					>Back</Button
 				>
-				<Button onclick={handleUpdateChannel} loading={loading}>Update</Button>
+				<Button onclick={handleUpdateChannel} {loading}>Update</Button>
 			</div>
 		</div>
 	</div>
