@@ -47,3 +47,27 @@ query Channel($slug: String!) {
   }
 }
 `;
+
+export const CHANNEL_DETAILS_BY_ID = gql`
+query Channel($id: ID!) {
+  channel(id: $id) {
+    countries {
+      code
+      country
+    }
+    defaultCountry {
+      code
+      country
+    }
+    id
+    name
+    slug
+    isActive
+    currencyCode
+    warehouses {
+      id
+      name
+    }
+  }
+}
+`;

@@ -27,11 +27,11 @@
 				<li>{$tranFunc('settings.staffs')}</li>
 			{/if}
 
-			{#if page.route.id === '/[[channel]]/settings/configs/channels/[slug]'}
+			{#if page.route.id === '/[[channel]]/settings/configs/channels/[id]'}
 				<li>
 					<a href={CHANNELS_PATH}>{$tranFunc('product.channel')}</a>
 				</li>
-				<li>{page.params.slug}</li>
+				<li>{page.params.id}</li>
 			{/if}
 		</ul>
 	</div>

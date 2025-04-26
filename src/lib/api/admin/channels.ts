@@ -28,3 +28,15 @@ export const CHANNEL_UPDATE_MUTATION = gql`
     }
   }
 `;
+
+export const SHIPPING_ZONES_QUERY = gql`
+query ShippingZones($channel: String, $filter: ShippingZoneFilterInput, $before: String, $after: String, $first: Int, $last: Int) {
+  shippingZones(channel: $channel, filter: $filter, before: $before, after: $after, first: $first, last: $last) {
+    edges {
+      node {
+        id
+        name
+      }
+    }
+  }
+}`;
