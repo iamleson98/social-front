@@ -78,7 +78,7 @@
 		</Alert>
 	{:else if $shippingZonesOfChanelQuery.data?.shippingZones?.edges.length}
 		<Accordion
-			open
+			open={false}
 			header="Shipping zones ({shippingZonesOfChannel.length})"
 			class="rounded-lg border border-gray-200 bg-white mb-3"
 		>

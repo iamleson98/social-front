@@ -1,35 +1,131 @@
 <script lang="ts">
-	import { Trash } from '$lib/components/icons';
+	import { tranFunc } from '$i18n';
+	import { WAREHOUSES_QUERY } from '$lib/api/admin/channels';
+	import { operationStore } from '$lib/api/operation';
+	import { Plus, Trash } from '$lib/components/icons';
 	import { AccordionList } from '$lib/components/ui/Accordion';
+	import Accordion from '$lib/components/ui/Accordion/accordion.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { IconButton } from '$lib/components/ui/Button';
-	import type { Channel, Warehouse } from '$lib/gql/graphql';
+	import { Button, IconButton } from '$lib/components/ui/Button';
+	import { MultiSelect } from '$lib/components/ui/select';
+	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
+	import type { Channel, Query, QueryWarehousesArgs, Warehouse } from '$lib/gql/graphql';
+	import { differenceBy } from 'es-toolkit';
+	import { onMount } from 'svelte';
 
 	type Props = {
-		channel: Channel;
+		channelSlug: string;
+		addWarehouses: string[];
+		removeWarehouses: string[];
 	};
 
-	let { channel }: Props = $props();
+	let {
+		channelSlug,
+		addWarehouses = $bindable([]),
+		removeWarehouses = $bindable([])
+	}: Props = $props();
+
+	let showAddWarehouses = $state(false);
+	let warehousesOfChannel = $state.raw<Warehouse[]>([]);
+
+	const warehousesOfChannelQuery = operationStore<Pick<Query, 'warehouses'>, QueryWarehousesArgs>({
+		kind: 'query',
+		query: WAREHOUSES_QUERY,
+		variables: { channel: channelSlug, first: 100 },
+		requestPolicy: 'cache-and-network'
+	});
+
+	const allWarehouses = operationStore<Pick<Query, 'warehouses'>, QueryWarehousesArgs>({
+		kind: 'query',
+		query: WAREHOUSES_QUERY,
+		variables: { first: 100 },
+		requestPolicy: 'cache-and-network',
+		pause: true
+	});
+
+	onMount(() => {
+		const unsub = warehousesOfChannelQuery.subscribe((result) => {
+			if (result.error) {
+				console.error('Warehouses fetching error:', result.error);
+			}
+			if (result.data && !result.error) {
+				allWarehouses.resume();
+				warehousesOfChannel = result.data?.warehouses?.edges.map((edge) => edge.node) || [];
+			}
+		});
+
+		return unsub;
+	});
+
+	const handleDeleteWarehouse = (id: string) => {
+		warehousesOfChannel = warehousesOfChannel.filter((warehouse) => warehouse.id !== id);
+		if (!removeWarehouses.includes(id)) {
+			removeWarehouses = removeWarehouses.concat(id);
+		}
+	};
 </script>
 
 <div>
-	{#snippet sidebarItem(item: Warehouse)}
-		<div class="flex items-center justify-between gap-1 rounded-md py-1">
-			<span class="truncate">{item.name}</span>
-			<IconButton icon={Trash} size="xs" rounded variant="light" color="red" />
+	{#if $warehousesOfChannelQuery.fetching}
+		<div class="rounded-md border border-gray-200 bg-white mb-2">
+			<SkeletonContainer class="flex items-center gap-1">
+				<Skeleton class="w-7 h-7 rounded-full"></Skeleton>
+				<Skeleton class="h-4 w-2/3"></Skeleton>
+			</SkeletonContainer>
 		</div>
-	{/snippet}
+	{:else if $warehousesOfChannelQuery.error}
+		<Alert variant="error" size="sm" bordered class="mb-3">
+			{$tranFunc('error.failedToLoad')}</Alert
+		>
+	{:else if $warehousesOfChannelQuery.data?.warehouses?.edges.length}
+		<Accordion
+			open={false}
+			header="Warehouses ({warehousesOfChannel.length})"
+			class="rounded-lg border border-gray-200 bg-white mb-3"
+		>
+			<Alert variant="info" size="sm" bordered class="mb-3">
+				Assign and sort warehouses that will be used in this channel (warehouses can be assigned in
+				multiple channels).</Alert
+			>
+			{#each warehousesOfChannel as warehouse, idx (idx)}
+				<div class="flex items-center justify-between gap-1 rounded-md py-1 text-sm">
+					<span class="truncate">{warehouse.name}</span>
+					<IconButton
+						icon={Trash}
+						size="xs"
+						rounded
+						variant="light"
+						color="red"
+						onclick={() => handleDeleteWarehouse(warehouse.id)}
+					/>
+				</div>
+			{/each}
 
-	<Alert variant="info" size="sm" bordered class="mb-3">
-		Assign and sort warehouses that will be used in this channel (warehouses can be assigned in
-		multiple channels).
-	</Alert>
-
-	<AccordionList
-		header="Warehouses ({channel.warehouses.length})"
-		child={sidebarItem}
-		items={channel.warehouses}
-		class="rounded-lg bg-white border border-gray-200 p-3"
-		open={false}
-	/>
+			{#if $allWarehouses.data?.warehouses?.edges.length}
+				<div class="pt-2 mt-2 border-t border-gray-200">
+					{#if showAddWarehouses}
+						{@const allWh = $allWarehouses.data?.warehouses?.edges.map((edge) => edge.node)}
+						{@const availableWarehouses = differenceBy(
+							allWh,
+							warehousesOfChannel,
+							(warehouse) => warehouse.id
+						).map((warehouse) => ({
+							label: warehouse.name,
+							value: warehouse.id
+						}))}
+						<MultiSelect
+							size="sm"
+							options={availableWarehouses}
+							label="Select Warehouse"
+							class="mb-2 w-full"
+							onchange={(opts) => (addWarehouses = opts?.map((opt) => opt.value as string) || [])}
+						/>
+					{/if}
+					<Button endIcon={Plus} size="xs" onclick={() => (showAddWarehouses = true)}
+						>Add Warehouse</Button
+					>
+				</div>
+			{/if}
+		</Accordion>
+	{/if}
 </div>
