@@ -40,3 +40,16 @@ query ShippingZones($channel: String, $filter: ShippingZoneFilterInput, $before:
     }
   }
 }`;
+
+export const WAREHOUSES_QUERY = gql`
+	query ChannelWarehouses($filter: WarehouseFilterInput, $before: String, $after: String, $first: Int, $last: Int) {
+		warehouses(filter: $filter, before: $before, after: $after, first: $first, last: $last) {
+			edges {
+				node {
+					id
+					name
+				}
+			}
+		}
+	}
+`;
