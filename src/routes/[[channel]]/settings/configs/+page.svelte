@@ -51,6 +51,16 @@
 	]);
 </script>
 
+<div
+	class="rounded-lg bg-white border border-gray-200 px-3 py-2 flex items-center justify-between mb-3"
+>
+	<div class="breadcrumbs text-sm">
+		<ul>
+			<li><a href={AppRoute.SETTINGS_CONFIGS()}>{$tranFunc('settings.configs')}</a></li>
+		</ul>
+	</div>
+</div>
+
 {#snippet card(title: string, description: string, href: string, icon: string)}
 	<div class="w-1/2 mobile-l:w-full p-1">
 		<div class="card bg-white border border-gray-200 card-sm">
