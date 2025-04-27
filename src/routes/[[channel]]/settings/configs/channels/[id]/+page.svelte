@@ -16,10 +16,8 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import {
 		CHANNEL_DETAILS_BY_ID,
-		CHANNEL_DETAILS_QUERY_STORE,
 		CHANNELS_QUERY
 	} from '$lib/api/channels';
-	import { type IconContent, Trash } from '$lib/components/icons';
 	import { Checkbox } from '$lib/components/ui/Input';
 	import { boolean, object, string, z } from 'zod';
 	import ChannelDetailRightSidebar from '$lib/components/pages/settings/config/channel/channel-warehouses.svelte';
@@ -34,11 +32,6 @@
 		variables: { id: page.params.id },
 		requestPolicy: 'network-only'
 	});
-
-	// $effect(() => {
-	// 	const id = page.params.id;
-	// 	channelDetailQuery.reexecute({ variables: { id } });
-	// });
 
 	const channelsQuery = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
@@ -84,23 +77,6 @@
 	const delModalHeader = $derived(
 		$tranFunc('settings.confirmDelChannel', { id: channelValues.name })
 	);
-
-	// const countriesOptions = $derived(
-	// 	$channelDetailQuery.data?.channel?.countries?.map((c) => ({
-	// 		value: c.country,
-	// 		label: c.country
-	// 	})) ?? []
-	// );
-
-	// const setActive = (active: boolean) => (channelValues.isActive = active);
-
-	// $effect(() => {
-	// 	if ($channelDetailQuery.data?.channel) {
-	// 		channelValues = {
-	// 			...channelValues
-	// 		};
-	// 	}
-	// });
 
 	const handleNameChange = () => {
 		channelValues.slug = slugify(channelValues.name, { lower: true });

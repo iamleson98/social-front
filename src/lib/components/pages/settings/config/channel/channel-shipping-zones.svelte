@@ -6,7 +6,7 @@
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
-	import { MultiSelect, Select, type SelectOption } from '$lib/components/ui/select';
+	import { MultiSelect } from '$lib/components/ui/select';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import type { Query, QueryShippingZonesArgs, ShippingZone } from '$lib/gql/graphql';
 	import { differenceBy } from 'es-toolkit';
@@ -67,16 +67,16 @@
 <div>
 	{#if $shippingZonesOfChanelQuery.fetching}
 		<div class="rounded-md border border-gray-200 bg-white mb-2">
-			<SkeletonContainer class="flex items-center gap-1">
-				<Skeleton class="w-7 h-7 rounded-full"></Skeleton>
+			<SkeletonContainer class="flex items-center gap-1 justify-between">
 				<Skeleton class="h-4 w-2/3"></Skeleton>
+				<Skeleton class="w-6 h-6 rounded-full"></Skeleton>
 			</SkeletonContainer>
 		</div>
 	{:else if $shippingZonesOfChanelQuery.error}
 		<Alert variant="error" size="sm" bordered class="mb-3">
 			{$tranFunc('error.failedToLoad')}
 		</Alert>
-	{:else if $shippingZonesOfChanelQuery.data?.shippingZones?.edges.length}
+	{:else if $shippingZonesOfChanelQuery.data?.shippingZones}
 		<Accordion
 			open
 			header="Shipping zones ({shippingZonesOfChannel.length})"

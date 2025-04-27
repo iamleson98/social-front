@@ -139,7 +139,6 @@
 			startIcon: Trash,
 			onclick: () => channelToDeleteId = item.id,
 			class: 'text-red-600',
-
 		}
 	]}
 	{#snippet trigger(opts: DropdownTriggerInterface)}
@@ -180,9 +179,9 @@
 			placeholder="Channel to replace"
 			disabled={loading}
 		/>
-		<!-- <Alert variant="info" size="sm" bordered class="mt-3">
+		<Alert variant="info" size="sm" bordered class="mt-3">
 			Specify a new channel to assign products to. The replace channel must have the same currency
 			as deleting channel
-		</Alert> -->
+		</Alert>
 	{/if}
 </Modal>

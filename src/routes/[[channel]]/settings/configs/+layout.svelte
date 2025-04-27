@@ -20,16 +20,33 @@
 		<ul>
 			<li><a href={AppRoute.SETTINGS_CONFIGS()}>{$tranFunc('settings.configs')}</a></li>
 			{#if page.url.pathname === CHANNELS_PATH}
-				<li>
-					<a href={CHANNELS_PATH}>{$tranFunc('product.channel')}</a>
-				</li>
+				<li>{$tranFunc('product.channel')}</li>
 			{:else if page.url.pathname === AppRoute.SETTINGS_CONFIGS_STAFFS()}
 				<li>{$tranFunc('settings.staffs')}</li>
+			{:else if page.url.pathname === AppRoute.SETTINGS_CONFIGS_USERS()}
+				<li>{$tranFunc('settings.users')}</li>
 			{/if}
 
+			<!-- CHANNEL -->
 			{#if page.route.id === '/[[channel]]/settings/configs/channels/[id]'}
 				<li>
 					<a href={CHANNELS_PATH}>{$tranFunc('product.channel')}</a>
+				</li>
+				<li>{page.params.id}</li>
+			{/if}
+
+			<!-- STAFFS -->
+			{#if page.route.id === '/[[channel]]/settings/configs/staffs/[id]'}
+				<li>
+					<a href={CHANNELS_PATH}>{$tranFunc('settings.staffs')}</a>
+				</li>
+				<li>{page.params.id}</li>
+			{/if}
+
+			<!-- USERS -->
+			{#if page.route.id === '/[[channel]]/settings/configs/customers/[id]'}
+				<li>
+					<a href={CHANNELS_PATH}>{$tranFunc('settings.users')}</a>
 				</li>
 				<li>{page.params.id}</li>
 			{/if}

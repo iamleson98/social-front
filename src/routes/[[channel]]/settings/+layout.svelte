@@ -42,15 +42,11 @@
 		return $ME_PAGE_USER_STORE?.email;
 	});
 
-	type TabChild = {
-		parentShouldActive: () => boolean;
-	};
-
 	type TabItem = {
 		icon?: IconContent;
 		name?: string;
 		href: string;
-		children?: TabChild[];
+		shouldActive?: () => boolean;
 	};
 
 	const ACCOUNT_TAB_ITEMS: TabItem[] = $derived([
@@ -76,16 +72,9 @@
 			icon: MailQuestion,
 			name: $tranFunc('settings.supports'),
 			href: AppRoute.ME_SUPPORT(),
-			children: [
-				{
-					parentShouldActive: () =>
-						page.url.pathname === AppRoute.ME_SUPPORT_NEW() ||
-						page.route.id === '/[[channel]]/settings/supports/[id]'
-				}
-				// {
-				// 	parentShouldActive: () =>
-				// }
-			]
+			shouldActive: () =>
+				page.url.pathname === AppRoute.ME_SUPPORT_NEW() ||
+				page.route.id === '/[[channel]]/settings/supports/[id]'
 		}
 	]);
 
@@ -94,50 +83,35 @@
 			icon: Parking,
 			name: $tranFunc('product.products'),
 			href: AppRoute.SETTINGS_PRODUCTS(),
-			children: [
-				{
-					parentShouldActive: () =>
-						page.url.pathname === AppRoute.SETTINGS_PRODUCTS_NEW() ||
-						page.route.id === '/[[channel]]/settings/products/[slug]'
-				}
-				// {
-				// 	parentShouldActive: () => page.route.id === '/[[channel]]/settings/products/[slug]'
-				// }
-			]
+			shouldActive: () =>
+				page.url.pathname === AppRoute.SETTINGS_PRODUCTS_NEW() ||
+				page.route.id === '/[[channel]]/settings/products/[slug]'
 		},
 		{
 			icon: Order,
 			name: $tranFunc('settings.contracts'),
 			href: AppRoute.SETTINGS_CONTRACTS(),
-			children: [
-				{
-					parentShouldActive: () => page.url.pathname === AppRoute.SETTINGS_CONTRACTS_NEW()
-				}
-			]
+			shouldActive: () => page.url.pathname === AppRoute.SETTINGS_CONTRACTS_NEW()
 		},
 		{
 			icon: SettingCog,
 			name: $tranFunc('settings.configs'),
 			href: AppRoute.SETTINGS_CONFIGS(),
-			children: [
-				{
-					parentShouldActive: () =>
-						page.url.pathname === AppRoute.SETTINGS_CONFIGS_CHANNELS() ||
-						page.url.pathname === AppRoute.SETTINGS_CONFIGS_STAFFS() ||
-						page.route.id === '/[[channel]]/settings/configs/channels/[slug]'
-				}
-				// {
-				// 	parentShouldActive: () => page.url.pathname === AppRoute.SETTINGS_CONFIGS_STAFFS()
-				// }
-			]
+			shouldActive: () =>
+				// page.url.pathname === AppRoute.SETTINGS_CONFIGS_CHANNELS() ||
+				// page.url.pathname === AppRoute.SETTINGS_CONFIGS_STAFFS() ||
+				// page.url.pathname === AppRoute.SETTINGS_CONFIGS_USERS() ||
+				// page.route.id === '/[[channel]]/settings/configs/channels/[id]' ||
+				// page.route.id === '/[[channel]]/settings/configs/staffs/[id]' ||
+				// page.route.id === '/[[channel]]/settings/configs/customers/[id]'
+				page.url.pathname.startsWith(AppRoute.SETTINGS_CONFIGS())
 		}
 	]);
 </script>
 
 {#snippet sidebarItem(item: TabItem)}
 	{@const attrs = item.href ? { href: item.href } : {}}
-	{@const active =
-		item.href == page.url.pathname || item.children?.some((child) => child.parentShouldActive())}
+	{@const active = item.href == page.url.pathname || item.shouldActive?.()}
 	<svelte:element
 		this={item.href ? 'a' : 'div'}
 		{...attrs}

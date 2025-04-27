@@ -23,6 +23,8 @@ export const AppRoute = {
 	SETTINGS_CONFIGS_CHANNEL_DETAILS: (id: string) => buildLinkWithRespectToChannel(`settings/configs/channels/${id}`),
 	SETTINGS_CONFIGS_STAFFS: () => buildLinkWithRespectToChannel('settings/configs/staffs'),
 	SETTINGS_CONFIGS_STAFF_DETAILS: (id: string) => buildLinkWithRespectToChannel(`settings/configs/staffs/${id}`),
+	SETTINGS_CONFIGS_USERS: () => buildLinkWithRespectToChannel('settings/configs/customers'),
+	SETTINGS_CONFIGS_USER_DETAILS: (id: string) => buildLinkWithRespectToChannel(`settings/configs/customers/${id}`),
 
 	HOME: () => buildHomePageLink(),
 	TRENDING: () => buildLinkWithRespectToChannel('trending'),

@@ -273,5 +273,6 @@ export default {
 		staffs: 'Nhân viên',
 		channelLinkHelpTxt: 'Tạo và khai báo các kênh bán hàng',
 		staffLinkHelpTxt: 'Quản lý nhân viên và phân quyền',
+		users: 'Users',
 	},
 };

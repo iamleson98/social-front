@@ -273,5 +273,6 @@ export default {
 		staffs: 'Staffs',
 		channelLinkHelpTxt: 'Define and manage your sales channels',
 		staffLinkHelpTxt: 'Manage your employees and their permissions',
+		users: 'Users',
 	}
 };
