@@ -14,17 +14,14 @@
 	import { tranFunc } from '$i18n';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { Alert } from '$lib/components/ui/Alert';
-	import {
-		CHANNEL_DETAILS_BY_ID,
-		CHANNELS_QUERY
-	} from '$lib/api/channels';
+	import { CHANNEL_DETAILS_BY_ID, CHANNELS_QUERY } from '$lib/api/channels';
 	import { Checkbox } from '$lib/components/ui/Input';
 	import { boolean, object, string, z } from 'zod';
-	import ChannelDetailRightSidebar from '$lib/components/pages/settings/config/channel/channel-warehouses.svelte';
 	import { onMount } from 'svelte';
 	import slugify from 'slugify';
 	import ChannelDetailSkeleton from '$lib/components/pages/settings/config/channel-detail-skeleton.svelte';
 	import ChannelShippingZones from '$lib/components/pages/settings/config/channel/channel-shipping-zones.svelte';
+	import ChannelWarehouses from '$lib/components/pages/settings/config/channel/channel-warehouses.svelte';
 
 	const channelDetailQuery = operationStore<Pick<Query, 'channel'>>({
 		kind: 'query',
@@ -241,7 +238,7 @@
 					addShippingZones={[]}
 					removeShippingZones={[]}
 				/>
-				<ChannelDetailRightSidebar {channel} />
+				<ChannelWarehouses channelSlug={channel.slug} addWarehouses={[]} removeWarehouses={[]} />
 			</div>
 		</div>
 

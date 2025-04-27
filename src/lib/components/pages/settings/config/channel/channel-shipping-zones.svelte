@@ -66,19 +66,17 @@
 
 <div>
 	{#if $shippingZonesOfChanelQuery.fetching}
-		<div class="rounded-md border border-gray-200 bg-white mb-2">
-			<SkeletonContainer class="flex items-center gap-1 justify-between">
-				<Skeleton class="h-4 w-2/3"></Skeleton>
-				<Skeleton class="w-6 h-6 rounded-full"></Skeleton>
-			</SkeletonContainer>
-		</div>
+		<SkeletonContainer class="flex items-center gap-1 justify-between">
+			<Skeleton class="h-4 w-2/3"></Skeleton>
+			<Skeleton class="w-6 h-6 rounded-full"></Skeleton>
+		</SkeletonContainer>
 	{:else if $shippingZonesOfChanelQuery.error}
 		<Alert variant="error" size="sm" bordered class="mb-3">
 			{$tranFunc('error.failedToLoad')}
 		</Alert>
 	{:else if $shippingZonesOfChanelQuery.data?.shippingZones}
 		<Accordion
-			open={false}
+			open
 			header="Shipping zones ({shippingZonesOfChannel.length})"
 			class="rounded-lg border border-gray-200 bg-white mb-3"
 		>

@@ -40,10 +40,6 @@ query Channel($slug: String!) {
     slug
     isActive
     currencyCode
-    warehouses {
-      id
-      name
-    }
   }
 }
 `;
@@ -64,10 +60,6 @@ query Channel($id: ID!) {
     slug
     isActive
     currencyCode
-    warehouses {
-      id
-      name
-    }
   }
 }
 `;
