@@ -6,7 +6,7 @@
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
-	import { MultiSelect, Select, type SelectOption } from '$lib/components/ui/select';
+	import { MultiSelect } from '$lib/components/ui/select';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import type { Query, QueryShippingZonesArgs, ShippingZone } from '$lib/gql/graphql';
 	import { differenceBy } from 'es-toolkit';
@@ -78,7 +78,7 @@
 		</Alert>
 	{:else if $shippingZonesOfChanelQuery.data?.shippingZones?.edges.length}
 		<Accordion
-			open={false}
+			open
 			header="Shipping zones ({shippingZonesOfChannel.length})"
 			class="rounded-lg border border-gray-200 bg-white mb-3"
 		>

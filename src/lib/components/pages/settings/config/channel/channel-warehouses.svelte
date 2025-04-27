@@ -3,13 +3,12 @@
 	import { WAREHOUSES_QUERY } from '$lib/api/admin/channels';
 	import { operationStore } from '$lib/api/operation';
 	import { Plus, Trash } from '$lib/components/icons';
-	import { AccordionList } from '$lib/components/ui/Accordion';
-	import Accordion from '$lib/components/ui/Accordion/accordion.svelte';
+	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { MultiSelect } from '$lib/components/ui/select';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
-	import type { Channel, Query, QueryWarehousesArgs, Warehouse } from '$lib/gql/graphql';
+	import type { Query, QueryWarehousesArgs, Warehouse } from '$lib/gql/graphql';
 	import { differenceBy } from 'es-toolkit';
 	import { onMount } from 'svelte';
 

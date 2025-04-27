@@ -14,19 +14,13 @@
 	import { tranFunc } from '$i18n';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { Alert } from '$lib/components/ui/Alert';
-	import {
-		CHANNEL_DETAILS_BY_ID,
-		CHANNEL_DETAILS_QUERY_STORE,
-		CHANNELS_QUERY
-	} from '$lib/api/channels';
-	import { type IconContent, Trash } from '$lib/components/icons';
-	import { Checkbox } from '$lib/components/ui/Input';
+	import { CHANNEL_DETAILS_BY_ID, CHANNELS_QUERY } from '$lib/api/channels';
 	import { boolean, object, string, z } from 'zod';
-	import ChannelDetailRightSidebar from '$lib/components/pages/settings/config/channel/channel-warehouses.svelte';
 	import { onMount } from 'svelte';
 	import slugify from 'slugify';
 	import ChannelDetailSkeleton from '$lib/components/pages/settings/config/channel-detail-skeleton.svelte';
 	import ChannelShippingZones from '$lib/components/pages/settings/config/channel/channel-shipping-zones.svelte';
+	import ChannelWarehouses from '$lib/components/pages/settings/config/channel/channel-warehouses.svelte';
 
 	const channelDetailQuery = operationStore<Pick<Query, 'channel'>>({
 		kind: 'query',
@@ -34,11 +28,6 @@
 		variables: { id: page.params.id },
 		requestPolicy: 'network-only'
 	});
-
-	// $effect(() => {
-	// 	const id = page.params.id;
-	// 	channelDetailQuery.reexecute({ variables: { id } });
-	// });
 
 	const channelsQuery = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
@@ -84,23 +73,6 @@
 	const delModalHeader = $derived(
 		$tranFunc('settings.confirmDelChannel', { id: channelValues.name })
 	);
-
-	// const countriesOptions = $derived(
-	// 	$channelDetailQuery.data?.channel?.countries?.map((c) => ({
-	// 		value: c.country,
-	// 		label: c.country
-	// 	})) ?? []
-	// );
-
-	// const setActive = (active: boolean) => (channelValues.isActive = active);
-
-	// $effect(() => {
-	// 	if ($channelDetailQuery.data?.channel) {
-	// 		channelValues = {
-	// 			...channelValues
-	// 		};
-	// 	}
-	// });
 
 	const handleNameChange = () => {
 		channelValues.slug = slugify(channelValues.name, { lower: true });
@@ -150,9 +122,14 @@
 	};
 
 	const handleUpdateChannel = async () => {
-		if (!validate()) return;
-		const oldSlug = page.params.slug;
-		const newSlug = channelValues.slug;
+		if (!validate()) {
+			toastStore.send({
+				variant: 'error',
+				message: 'Please fill in all required fields'
+			});
+			return;
+		}
+
 		loading = true;
 
 		const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'channelUpdate'>>(
@@ -174,12 +151,6 @@
 			variant: 'success',
 			message: 'Channel updated successfully'
 		});
-
-		if (oldSlug != newSlug) {
-			await goto(AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(newSlug), {
-				replaceState: true
-			});
-		}
 	};
 </script>
 
@@ -208,19 +179,29 @@
 		<div class="flex flex-row gap-2">
 			<!-- MARK: general information -->
 			<div class="w-2/3 rounded-lg bg-white border border-gray-200 p-4 h-fit">
-				<Input
-					label="Name"
-					bind:value={channelValues.name}
-					inputDebounceOption={{ onInput: handleNameChange }}
-				/>
 				<div class="mt-3 flex gap-3">
-					<Input label="Slug" bind:value={channelValues.slug} class="flex-1" />
-					<div class="flex flex-1 gap-2 py-2">
-						<Checkbox
-							label={channelValues.isActive ? 'Active' : 'Inactive'}
-							bind:checked={channelValues.isActive}
-						/>
-					</div>
+					<Input
+						label="Name"
+						bind:value={channelValues.name}
+						inputDebounceOption={{ onInput: handleNameChange }}
+						required
+						disabled={loading}
+						class="flex-1"
+						variant={channelFormErrors.name?.length ? 'error' : 'info'}
+						subText={channelFormErrors?.name?.length ? channelFormErrors.name[0] : ''}
+					/>
+				</div>
+
+				<div class="mt-3 flex gap-3">
+					<Input
+						label="Slug"
+						bind:value={channelValues.slug}
+						class="flex-1"
+						required
+						disabled={loading}
+						variant={channelFormErrors.slug?.length ? 'error' : 'info'}
+						subText={channelFormErrors?.slug?.length ? channelFormErrors.slug[0] : ''}
+					/>
 				</div>
 
 				<div class="mt-3 flex gap-3">
@@ -265,7 +246,7 @@
 					addShippingZones={[]}
 					removeShippingZones={[]}
 				/>
-				<ChannelDetailRightSidebar {channel} />
+				<ChannelWarehouses channelSlug={channel.slug} addWarehouses={[]} removeWarehouses={[]} />
 			</div>
 		</div>
 
@@ -276,8 +257,11 @@
 			</Button>
 
 			<div class="space-x-2 absolute bottom-0 right-0 mt-5 flex justify-end">
-				<Button variant="light" color="gray" {loading} href={AppRoute.SETTINGS_CONFIGS_CHANNELS()}
-					>Back</Button
+				<Button
+					variant="light"
+					color="gray"
+					disabled={loading}
+					href={AppRoute.SETTINGS_CONFIGS_CHANNELS()}>Back</Button
 				>
 				<Button onclick={handleUpdateChannel} {loading}>Update</Button>
 			</div>
