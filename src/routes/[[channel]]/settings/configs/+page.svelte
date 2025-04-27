@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { Icon } from '$lib/components/icons';
+	import { BuildingWarehouse, Category, Dimension, FolderCog, Icon } from '$lib/components/icons';
 	import { Globe, UsersGroup } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { AppRoute } from '$lib/utils';
@@ -23,12 +23,36 @@
 			description: 'Users of shop',
 			href: AppRoute.SETTINGS_CONFIGS_USERS(),
 			icon: UsersGroup
+		},
+		{
+			title: 'Categories',
+			description: 'Categories of shop',
+			href: AppRoute.SETTINGS_CONFIGS_CATEGORIES(),
+			icon: Category
+		},
+		{
+			title: 'Collections',
+			description: 'Collections of shop',
+			href: AppRoute.SETTINGS_CONFIGS_COLLECTIONS(),
+			icon: FolderCog
+		},
+		{
+			title: 'Warehouses',
+			description: 'Warehouses of shop',
+			href: AppRoute.SETTINGS_CONFIGS_WAREHOUSES(),
+			icon: BuildingWarehouse
+		},
+		{
+			title: 'Attributes',
+			description: 'Attributes of shop',
+			href: AppRoute.SETTINGS_CONFIGS_ATTRIBUTES(),
+			icon: Dimension
 		}
 	]);
 </script>
 
 {#snippet card(title: string, description: string, href: string, icon: string)}
-	<div class="w-1/2 mobile-l:w-full p-0.5">
+	<div class="w-1/2 mobile-l:w-full p-1">
 		<div class="card bg-white border border-gray-200 card-sm">
 			<div class="card-body">
 				<h2 class="card-title">

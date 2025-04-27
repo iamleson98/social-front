@@ -96,6 +96,9 @@ export {
   TablerSettingCog as SettingCog,
   TablerGlobe as Globe,
   TablerUsersGroup as UsersGroup,
+  TablerFolderCog as FolderCog,
+  TablerBuildingWarehouse as BuildingWarehouse,
+  TablerDimension as Dimension,
 } from './consts';
 
 export { default as Icon } from './icon.svelte';

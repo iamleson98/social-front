@@ -80,6 +80,12 @@
 
 	const SHOP_TAB_ITEMS: TabItem[] = $derived([
 		{
+			icon: Box,
+			name: $tranFunc('settings.orders'),
+			href: AppRoute.SETTINGS_ORDERS(),
+			shouldActive: () => page.url.pathname.startsWith(AppRoute.SETTINGS_ORDERS())
+		},
+		{
 			icon: Parking,
 			name: $tranFunc('product.products'),
 			href: AppRoute.SETTINGS_PRODUCTS(),

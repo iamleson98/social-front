@@ -1,30 +1,21 @@
 <script lang="ts">
 	import { operationStore } from '$lib/api/operation';
-	import { USER_ORDERS_QUERY } from '$lib/api/orders';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Table, TableSkeleton, type TableColumnProps } from '$lib/components/ui/Table';
-	import { type Order, type Query } from '$lib/gql/graphql';
-	import {
-	formatCurrency,
-		orderStatusBadgeClass,
-		paymentStatusBadgeClass,
-		type PaginationOptions
-	} from '$lib/utils/utils';
+	import { type Order, type Query, type QueryOrdersArgs } from '$lib/gql/graphql';
+	import { formatCurrency, orderStatusBadgeClass, paymentStatusBadgeClass } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 	import { lowerCase, startCase } from 'es-toolkit';
-	import { DropDown, type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
-	import { IconButton } from '$lib/components/ui/Button';
-	import { Dots } from '$lib/components/icons';
-	import { AppRoute } from '$lib/utils';
 	import { tranFunc } from '$i18n';
+	import { SHOP_ORDERS_QUERY } from '$lib/api/admin/orders';
 	import { Badge } from '$lib/components/ui/badge';
 
 	const BATCH_LOAD = 20;
 
-	const userOrdersStore = operationStore<Pick<Query, 'me'>, PaginationOptions>({
+	const shopOrdersQuery = operationStore<Pick<Query, 'orders'>, QueryOrdersArgs>({
 		kind: 'query',
 		requestPolicy: 'cache-and-network',
-		query: USER_ORDERS_QUERY,
+		query: SHOP_ORDERS_QUERY,
 		variables: {
 			first: BATCH_LOAD
 		}
@@ -37,9 +28,8 @@
 			child: no
 		},
 		{
-			title: $tranFunc('settings.date'),
-			child: date
-			// sortable: true
+			title: $tranFunc('common.email'),
+			child: email
 		},
 		{
 			title: $tranFunc('settings.payment'),
@@ -51,11 +41,13 @@
 		},
 		{
 			title: $tranFunc('settings.total'),
-			child: total
+			child: total,
+			sortable: true
 		},
 		{
-			title: $tranFunc('settings.action'),
-			child: action
+			title: $tranFunc('settings.date'),
+			child: date,
+			sortable: true
 		}
 	]);
 </script>
@@ -91,7 +83,7 @@
 	</div>
 {/snippet}
 
-{#snippet action({ item }: { item: Order })}
+<!-- {#snippet action({ item }: { item: Order })}
 	{#snippet trigger({ ...rest }: DropdownTriggerInterface)}
 		<IconButton icon={Dots} {...rest} size="xs" variant="light" color="gray" />
 	{/snippet}
@@ -104,35 +96,28 @@
 			}
 		]}
 	/>
+{/snippet} -->
+
+{#snippet email({ item }: { item: Order })}
+	{item.userEmail}
 {/snippet}
 
-<div
-	class="rounded-lg bg-white border border-gray-200 px-3 py-2 flex items-center text-sm justify-between"
->
-	<div>{$tranFunc('settings.orders')}</div>
-	<!-- <div>
-		<Button size="xs" endIcon={Plus} href={AppRoute.ME_SUPPORT_NEW()}
-			>{$tranFunc('settings.newOrder')}</Button
-		>
-	</div> -->
-</div>
-
 <div class="rounded-lg bg-white border border-gray-200 p-4 mt-3">
-	{#if $userOrdersStore.fetching}
+	{#if $shopOrdersQuery.fetching}
 		<TableSkeleton numColumns={6} showPagination />
-	{:else if $userOrdersStore.error}
-		<Alert variant="error" size="sm" bordered>{$userOrdersStore.error.message}</Alert>
-	{:else if $userOrdersStore.data?.me}
-		{@const items = $userOrdersStore.data.me.orders?.edges.map((item) => item.node) || []}
+	{:else if $shopOrdersQuery.error}
+		<Alert variant="error" size="sm" bordered>{$shopOrdersQuery.error.message}</Alert>
+	{:else if $shopOrdersQuery.data}
+		{@const items = $shopOrdersQuery.data.orders?.edges.map((item) => item.node) || []}
 		<Table
 			{items}
 			columns={ORDER_TABLE_COLUMNS}
-			pagination={$userOrdersStore.data.me.orders?.pageInfo}
+			pagination={$shopOrdersQuery.data.orders?.pageInfo}
 			onNextPagelick={(cursor) =>
-				userOrdersStore.reexecute({ variables: { first: BATCH_LOAD, after: cursor } })}
+				shopOrdersQuery.reexecute({ variables: { first: BATCH_LOAD, after: cursor } })}
 			onPreviousPagelick={(cursor) =>
-				userOrdersStore.reexecute({ variables: { last: BATCH_LOAD, before: cursor } })}
-			onChangeRowsPerPage={(no) => userOrdersStore.reexecute({ variables: { first: no } })}
+				shopOrdersQuery.reexecute({ variables: { last: BATCH_LOAD, before: cursor } })}
+			onChangeRowsPerPage={(no) => shopOrdersQuery.reexecute({ variables: { first: no } })}
 		/>
 	{/if}
 </div>

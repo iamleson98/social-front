@@ -97,7 +97,7 @@
 
 <div class="bg-white rounded-lg border border-gray-200 p-4">
 	{#if $usersQuery.fetching}
-		<TableSkeleton numColumns={3} />
+		<TableSkeleton numColumns={7} />
 	{:else if $usersQuery.error}
 		<Alert variant="error" size="sm" bordered>
 			{$usersQuery.error.message}

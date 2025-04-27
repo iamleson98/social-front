@@ -8,6 +8,9 @@ import type { ServerLoadEvent } from '@sveltejs/kit';
 import { CHANNEL_KEY } from './consts';
 import { getCookieByKey } from './cookies';
 import { DEFAULT_CHANNEL } from './channels';
+import { OrderStatus, PaymentChargeStatusEnum } from "$lib/gql/graphql";
+import type { SocialColor } from '$lib/components/ui/common';
+import type { ButtonVariant } from '$lib/components/ui';
 
 
 export const editorJsParser = editorJsToHtml();
@@ -290,3 +293,60 @@ export const inferRowsPerPage = (paging: PaginationOptions) => {
 	if (paging.last) return paging.last;
 	return undefined;
 };
+
+export type BadgeAttr = {
+	color: SocialColor;
+	variant: ButtonVariant;
+};
+
+export const paymentStatusBadgeClass = (status: PaymentChargeStatusEnum): BadgeAttr => {
+	// NOTE: Those badge classes are found on: https://v5.daisyui.com/components/badge/
+	switch (status) {
+		case PaymentChargeStatusEnum.Cancelled:
+			return { color: 'red', variant: 'filled' };
+		case PaymentChargeStatusEnum.FullyCharged:
+			return { color: 'green', variant: 'filled' };
+		case PaymentChargeStatusEnum.FullyRefunded:
+			return { color: 'blue', variant: 'outline' };
+		case PaymentChargeStatusEnum.NotCharged:
+			return { color: 'yellow', variant: 'filled' };
+		case PaymentChargeStatusEnum.PartiallyCharged:
+			return { color: 'blue', variant: 'filled' };
+		case PaymentChargeStatusEnum.PartiallyRefunded:
+			return { color: 'blue', variant: 'filled' };
+		case PaymentChargeStatusEnum.Pending:
+			return { color: 'blue', variant: 'light' };
+		case PaymentChargeStatusEnum.Refused:
+			return { color: 'blue', variant: 'filled' };
+		default:
+			return { color: 'blue', variant: 'filled' };
+	}
+};
+
+export const orderStatusBadgeClass = (status: OrderStatus): BadgeAttr => {
+	// NOTE: Those badge classes are found on: https://v5.daisyui.com/components/badge/
+
+	switch (status) {
+		case OrderStatus.Canceled:
+			return { color: 'red', variant: 'filled' };
+		case OrderStatus.Draft:
+			return { color: 'gray', variant: 'outline' };
+		case OrderStatus.Expired:
+			return { color: 'blue', variant: 'light' };
+		case OrderStatus.Fulfilled:
+			return { color: 'green', variant: 'filled' };
+		case OrderStatus.PartiallyFulfilled:
+			return { color: 'blue', variant: 'filled' };
+		case OrderStatus.PartiallyReturned:
+			return { color: 'blue', variant: 'filled' };
+		case OrderStatus.Returned:
+			return { color: 'yellow', variant: 'filled' };
+		case OrderStatus.Unconfirmed:
+			return { color: 'gray', variant: 'light' };
+		case OrderStatus.Unfulfilled:
+			return { color: 'orange', variant: 'light' };
+		default:
+			return { color: 'blue', variant: 'filled' };
+	}
+};
+
