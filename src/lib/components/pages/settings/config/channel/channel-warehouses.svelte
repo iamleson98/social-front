@@ -65,7 +65,7 @@
 </script>
 
 <div>
-	<!-- {#if $warehousesOfChannelQuery.fetching}
+	{#if $warehousesOfChannelQuery.fetching}
 		<SkeletonContainer class="flex items-center gap-1 justify-between">
 			<Skeleton class="h-4 w-2/3"></Skeleton>
 			<Skeleton class="w-6 h-6 rounded-full"></Skeleton>
@@ -98,7 +98,7 @@
 				</div>
 			{/each}
 
-			{#if $allWarehouses.data?.warehouses?.edges.length}
+			{#if $allWarehouses.data?.warehouses}
 				<div class="pt-2 mt-2 border-t border-gray-200">
 					{#if showAddWarehouses}
 						{@const allWh = $allWarehouses.data?.warehouses?.edges.map((edge) => edge.node)}
@@ -124,5 +124,5 @@
 				</div>
 			{/if}
 		</Accordion>
-	{/if} -->
+	{/if}
 </div>

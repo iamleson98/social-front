@@ -22,6 +22,7 @@
 	import slugify from 'slugify';
   import ChannelShippingZones from '$lib/components/pages/settings/config/channel/channel-shipping-zones.svelte';
 	import ChannelDetailSkeleton from '$lib/components/pages/settings/config/channel-detail-skeleton.svelte';
+	import ChannelWarehouses from '$lib/components/pages/settings/config/channel/channel-warehouses.svelte';
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 
@@ -99,7 +100,7 @@
         addShippingZones={[]}
         removeShippingZones={[]}
       />
-      <!-- <ChannelDetailRightSidebar {channel} /> -->
+      <ChannelWarehouses channelSlug={"channel.slug"} addWarehouses={[]} removeWarehouses={[]} />
     </div>
   </div>
     <!-- MARK: channel detail actions -->

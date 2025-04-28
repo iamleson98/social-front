@@ -124,8 +124,6 @@
 
 	const handleUpdateChannel = async () => {
 		if (!validate()) return;
-		const oldSlug = page.params.slug;
-		const newSlug = channelValues.slug;
 		loading = true;
 
 		const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'channelUpdate'>>(
@@ -147,12 +145,6 @@
 			variant: 'success',
 			message: 'Channel updated successfully'
 		});
-
-		if (oldSlug != newSlug) {
-			await goto(AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(newSlug), {
-				replaceState: true
-			});
-		}
 	};
 </script>
 
@@ -185,9 +177,19 @@
 					label="Name"
 					bind:value={channelValues.name}
 					inputDebounceOption={{ onInput: handleNameChange }}
+					variant={channelFormErrors?.name?.length ? 'error' : 'info'}
+					subText={channelFormErrors?.name?.length ? channelFormErrors.name[0] : ''}
+					required
 				/>
 				<div class="mt-3 flex gap-3">
-					<Input label="Slug" bind:value={channelValues.slug} class="flex-1" />
+					<Input
+						label="Slug"
+						bind:value={channelValues.slug}
+						class="flex-1"
+						required
+						variant={channelFormErrors?.slug?.length ? 'error' : 'info'}
+						subText={channelFormErrors?.slug?.length ? channelFormErrors.slug[0] : ''}
+					/>
 					<div class="flex flex-1 gap-2 py-2">
 						<Checkbox
 							label={channelValues.isActive ? 'Active' : 'Inactive'}
