@@ -2,7 +2,15 @@
 	import { page } from '$app/state';
 	import { operationStore } from '$lib/api/operation';
 	import { CHANNEL_DELETE_MUTATION, CHANNEL_UPDATE_MUTATION } from '$lib/api/admin/channels';
-	import type { Mutation, MutationChannelDeleteArgs, Query } from '$lib/gql/graphql';
+	import type {
+		Channel,
+		ChannelUpdateInput,
+		CountryCode,
+		Mutation,
+		MutationChannelDeleteArgs,
+		MutationChannelUpdateArgs,
+		Query
+	} from '$lib/gql/graphql';
 	import Input from '$lib/components/ui/Input/input.svelte';
 	import { Button } from '$lib/components/ui';
 	import { toastStore } from '$lib/stores/ui/toast';
@@ -22,6 +30,7 @@
 	import ChannelDetailSkeleton from '$lib/components/pages/settings/config/channel-detail-skeleton.svelte';
 	import ChannelShippingZones from '$lib/components/pages/settings/config/channel/channel-shipping-zones.svelte';
 	import ChannelWarehouses from '$lib/components/pages/settings/config/channel/channel-warehouses.svelte';
+	import { omit } from 'es-toolkit';
 
 	const channelDetailQuery = operationStore<Pick<Query, 'channel'>>({
 		kind: 'query',
@@ -45,20 +54,37 @@
 		name: string().nonempty(REQUIRED_ERROR),
 		slug: string().nonempty(REQUIRED_ERROR),
 		isActive: boolean(),
-		currencyCode: string(),
-		defaultCountry: string().nonempty(REQUIRED_ERROR)
+		defaultCountry: string()
+			.nonempty(REQUIRED_ERROR)
+			.optional()
+			.refine((val) => val !== undefined, REQUIRED_ERROR)
 	});
 
 	type ChannelSchema = z.infer<typeof channelSchema>;
 
 	let channelFormErrors = $state.raw<Partial<Record<keyof ChannelSchema, string[]>>>({});
 
-	let channelValues = $state<ChannelSchema>({
+	let channelValues = $state<ChannelUpdateInput & { currencyCode: string }>({
 		name: '',
 		slug: '',
 		isActive: false,
-		currencyCode: '',
-		defaultCountry: ''
+		defaultCountry: undefined,
+		addShippingZones: [],
+		removeShippingZones: [],
+		addWarehouses: [],
+		removeWarehouses: [],
+		currencyCode: ''
+	});
+	let oldChannel = $state<Channel>();
+
+	let nothingChanged = $derived.by(() => {
+		if (!oldChannel) return true;
+		return (
+			channelValues.name === oldChannel.name &&
+			channelValues.slug === oldChannel.slug &&
+			channelValues.isActive === oldChannel.isActive &&
+			channelValues.defaultCountry === oldChannel.defaultCountry?.code
+		);
 	});
 
 	const validate = () => {
@@ -75,19 +101,24 @@
 		$tranFunc('settings.confirmDelChannel', { id: channelValues.name })
 	);
 
-	const handleNameChange = () => {
-		channelValues.slug = slugify(channelValues.name, { lower: true });
+	const handleFormChange = (field: keyof ChannelSchema) => {
+		if (field === 'name' && typeof channelValues.name === 'string') {
+			channelValues.slug = slugify(channelValues.name, { lower: true });
+		}
+		validate();
 	};
 
 	onMount(() => {
 		const unsub = channelDetailQuery.subscribe((result) => {
 			if (result.data?.channel) {
+				oldChannel = result.data.channel;
 				channelValues = {
+					...channelValues,
 					name: result.data.channel.name,
 					slug: result.data.channel.slug,
 					isActive: result.data.channel.isActive,
-					currencyCode: result.data.channel.currencyCode,
-					defaultCountry: result.data.channel.defaultCountry.code
+					defaultCountry: result.data.channel?.defaultCountry?.code as CountryCode,
+					currencyCode: result.data.channel.currencyCode
 				};
 			}
 		});
@@ -106,7 +137,6 @@
 		}
 
 		loading = true;
-
 		const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'channelDelete'>>(
 			CHANNEL_DELETE_MUTATION,
 			variable
@@ -124,19 +154,15 @@
 
 	const handleUpdateChannel = async () => {
 		if (!validate()) return;
-		loading = true;
 
-		const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'channelUpdate'>>(
-			CHANNEL_UPDATE_MUTATION,
-			{
-				id: $channelDetailQuery.data?.channel?.id,
-				input: {
-					name: channelValues.name,
-					slug: channelValues.slug,
-					isActive: channelValues.isActive
-				}
-			}
-		);
+		loading = true;
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'channelUpdate'>,
+			MutationChannelUpdateArgs
+		>(CHANNEL_UPDATE_MUTATION, {
+			id: $channelDetailQuery.data?.channel?.id as string,
+			input: omit(channelValues, ['currencyCode'])
+		});
 
 		loading = false;
 
@@ -169,17 +195,18 @@
 			}
 			return acc;
 		}, []) || []}
-	<div class="relative">
+	<div class="h-full">
 		<div class="flex flex-row gap-2">
 			<!-- MARK: general information -->
 			<div class="w-2/3 rounded-lg bg-white border border-gray-200 p-4 h-fit">
 				<Input
 					label="Name"
 					bind:value={channelValues.name}
-					inputDebounceOption={{ onInput: handleNameChange }}
+					inputDebounceOption={{ onInput: () => handleFormChange('name') }}
 					variant={channelFormErrors?.name?.length ? 'error' : 'info'}
 					subText={channelFormErrors?.name?.length ? channelFormErrors.name[0] : ''}
 					required
+					disabled={loading}
 				/>
 				<div class="mt-3 flex gap-3">
 					<Input
@@ -189,23 +216,33 @@
 						required
 						variant={channelFormErrors?.slug?.length ? 'error' : 'info'}
 						subText={channelFormErrors?.slug?.length ? channelFormErrors.slug[0] : ''}
+						inputDebounceOption={{ onInput: () => handleFormChange('slug') }}
+						disabled={loading}
 					/>
 					<div class="flex flex-1 gap-2 py-2">
 						<Checkbox
 							label={channelValues.isActive ? 'Active' : 'Inactive'}
 							bind:checked={channelValues.isActive}
+							disabled={loading}
 						/>
 					</div>
 				</div>
 
 				<div class="mt-3 flex gap-3">
-					<Input label="Currency" bind:value={channelValues.currencyCode} disabled class="flex-1" />
+					<Input label="Currency" value={channelValues.currencyCode} disabled class="flex-1" />
 					<Select
 						label="Country"
 						options={countryOptions}
 						placeholder="Select a country"
 						class="flex-1"
-						bind:value={channelValues.defaultCountry}
+						bind:value={channelValues.defaultCountry as string}
+						required
+						variant={channelFormErrors?.defaultCountry?.length ? 'error' : 'info'}
+						subText={channelFormErrors?.defaultCountry?.length
+							? channelFormErrors.defaultCountry[0]
+							: ''}
+						onchange={() => handleFormChange('defaultCountry')}
+						disabled={loading}
 					/>
 				</div>
 				<Modal
@@ -237,24 +274,34 @@
 			<div class="w-1/3">
 				<ChannelShippingZones
 					channelSlug={channel.slug}
-					addShippingZones={[]}
-					removeShippingZones={[]}
+					bind:addShippingZones={channelValues.addShippingZones as string[]}
+					bind:removeShippingZones={channelValues.removeShippingZones as string[]}
+					disabled={loading}
 				/>
-				<ChannelWarehouses channelSlug={channel.slug} addWarehouses={[]} removeWarehouses={[]} />
+				<ChannelWarehouses
+					channelSlug={channel.slug}
+					bind:addWarehouses={channelValues.addWarehouses as string[]}
+					bind:removeWarehouses={channelValues.removeWarehouses as string[]}
+					disabled={loading}
+				/>
 			</div>
 		</div>
 
 		<!-- MARK: channel detail actions -->
-		<div class="mt-5 flex justify-between items-center">
-			<Button variant="light" color="red" {loading} onclick={() => (openDeleteModal = true)}>
-				Delete
-			</Button>
+		<div
+			class="mt-5 sticky bottom-0 flex justify-between items-center bg-white p-2 border rounded-lg border-gray-200"
+		>
+			<Button color="red" disabled={loading} onclick={() => (openDeleteModal = true)}>Delete</Button
+			>
 
-			<div class="space-x-2 absolute bottom-0 right-0 mt-5 flex justify-end">
-				<Button variant="light" color="gray" {loading} href={AppRoute.SETTINGS_CONFIGS_CHANNELS()}
-					>Back</Button
+			<div class="flex gap-2">
+				<Button
+					variant="light"
+					color="gray"
+					disabled={loading}
+					href={AppRoute.SETTINGS_CONFIGS_CHANNELS()}>Back</Button
 				>
-				<Button onclick={handleUpdateChannel} {loading}>Update</Button>
+				<Button disabled={loading || nothingChanged} onclick={handleUpdateChannel}>Update</Button>
 			</div>
 		</div>
 	</div>

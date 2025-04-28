@@ -60,6 +60,9 @@ query Channel($id: ID!) {
     slug
     isActive
     currencyCode
+    orderSettings {
+      allowUnpaidOrders
+    }
   }
 }
 `;

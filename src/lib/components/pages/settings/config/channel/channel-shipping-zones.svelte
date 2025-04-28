@@ -16,12 +16,14 @@
 		channelSlug: string;
 		addShippingZones: string[];
 		removeShippingZones: string[];
+		disabled: boolean;
 	};
 
 	let {
 		channelSlug,
 		addShippingZones = $bindable([]),
-		removeShippingZones = $bindable([])
+		removeShippingZones = $bindable([]),
+		disabled
 	}: Props = $props();
 
 	const shippingZonesOfChanelQuery = operationStore<
@@ -95,6 +97,7 @@
 						variant="light"
 						color="red"
 						onclick={() => handleDeleteZone(zone.id)}
+						{disabled}
 					/>
 				</div>
 			{/each}
@@ -114,6 +117,7 @@
 							value: zone.id
 						}))}
 						<MultiSelect
+							{disabled}
 							size="sm"
 							options={availableZones}
 							label="Select Shipping Zone"
@@ -122,7 +126,7 @@
 								(addShippingZones = opts?.map((opt) => opt.value as string) || [])}
 						/>
 					{/if}
-					<Button endIcon={Plus} size="xs" onclick={() => (showAddShippingZones = true)}
+					<Button endIcon={Plus} size="xs" {disabled} onclick={() => (showAddShippingZones = true)}
 						>Add Shipping Zone</Button
 					>
 				</div>

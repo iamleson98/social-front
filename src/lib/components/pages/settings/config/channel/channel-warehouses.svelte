@@ -3,7 +3,7 @@
 	import { WAREHOUSES_QUERY } from '$lib/api/admin/channels';
 	import { operationStore } from '$lib/api/operation';
 	import { Plus, Trash } from '$lib/components/icons';
-	import {Accordion} from '$lib/components/ui/Accordion';
+	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { MultiSelect } from '$lib/components/ui/select';
@@ -16,12 +16,14 @@
 		channelSlug: string;
 		addWarehouses: string[];
 		removeWarehouses: string[];
+		disabled: boolean;
 	};
 
 	let {
 		channelSlug,
 		addWarehouses = $bindable([]),
-		removeWarehouses = $bindable([])
+		removeWarehouses = $bindable([]),
+		disabled
 	}: Props = $props();
 
 	let showAddWarehouses = $state(false);
@@ -94,6 +96,7 @@
 						variant="light"
 						color="red"
 						onclick={() => handleDeleteWarehouse(warehouse.id)}
+						{disabled}
 					/>
 				</div>
 			{/each}
@@ -113,12 +116,13 @@
 						<MultiSelect
 							size="sm"
 							options={availableWarehouses}
+							{disabled}
 							label="Select Warehouse"
 							class="mb-2 w-full"
 							onchange={(opts) => (addWarehouses = opts?.map((opt) => opt.value as string) || [])}
 						/>
 					{/if}
-					<Button endIcon={Plus} size="xs" onclick={() => (showAddWarehouses = true)}
+					<Button {disabled} endIcon={Plus} size="xs" onclick={() => (showAddWarehouses = true)}
 						>Add Warehouse</Button
 					>
 				</div>

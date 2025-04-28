@@ -15,11 +15,17 @@
 	} from '$lib/components/ui/Dropdown';
 	import { Modal } from '$lib/components/ui/Modal';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
-	import { Table, TableSkeleton, type TableColumnProps } from '$lib/components/ui/Table';
+	import {
+		Table,
+		TableSkeleton,
+		type SortState,
+		type TableColumnProps
+	} from '$lib/components/ui/Table';
 	import type { Channel, Mutation, MutationChannelDeleteArgs, Query } from '$lib/gql/graphql';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { AppRoute } from '$lib/utils';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { onMount } from 'svelte';
 
 	const channelsQuery = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
@@ -36,7 +42,6 @@
 		},
 		{
 			title: 'Currency',
-			key: 'currency',
 			child: currency
 		},
 		{
@@ -52,13 +57,21 @@
 	let channelToDeleteId = $state<string>();
 	let channelToReplaceId = $state<string>();
 	let loading = $state(false);
+	let allChannels = $state<Channel[]>([]);
+
+	onMount(() =>
+		channelsQuery.subscribe((data) => {
+			if (data?.data) {
+				allChannels = data.data.channels || [];
+			}
+		})
+	);
 
 	let channelsToReplaceOptions = $derived.by(() => {
 		if (!channelToDeleteId) return [];
 		if (!$channelsQuery.data?.channels?.length) return [];
 		let channelToDel: Channel | undefined = undefined;
 
-		// const result: SelectOption[] = [];
 		const currencyMeetMap: Record<string, SelectOption[]> = {};
 
 		for (const channel of $channelsQuery.data.channels) {
@@ -109,6 +122,14 @@
 			message: 'Channel deleted successfully'
 		});
 	};
+
+	const handleSortChange = (state: SortState) => {
+		if (state['name'] === 'asc') {
+			allChannels.sort((f, s) => (f.name < s.name ? -1 : 1));
+		} else if (state['name'] === 'desc') {
+			allChannels.sort((f, s) => (f.name > s.name ? -1 : 1));
+		}
+	};
 </script>
 
 {#snippet name({ item }: { item: Channel })}
@@ -149,13 +170,13 @@
 
 <div class="bg-white rounded-lg border border-gray-200 p-4">
 	{#if $channelsQuery.fetching}
-		<TableSkeleton numColumns={3} />
+		<TableSkeleton numColumns={4} />
 	{:else if $channelsQuery.error}
 		<Alert variant="error" size="sm" bordered>
 			{$channelsQuery.error.message}
 		</Alert>
 	{:else if $channelsQuery.data}
-		<Table columns={CHANNEL_COLUMNS} items={$channelsQuery.data?.channels || []} />
+		<Table columns={CHANNEL_COLUMNS} items={allChannels} onSortChange={handleSortChange} />
 	{/if}
 </div>
 
