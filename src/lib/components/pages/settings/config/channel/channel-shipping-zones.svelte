@@ -16,12 +16,14 @@
 		channelSlug: string;
 		addShippingZones: string[];
 		removeShippingZones: string[];
+		disabled: boolean;
 	};
 
 	let {
 		channelSlug,
 		addShippingZones = $bindable([]),
-		removeShippingZones = $bindable([])
+		removeShippingZones = $bindable([]),
+		disabled
 	}: Props = $props();
 
 	const shippingZonesOfChanelQuery = operationStore<
@@ -66,12 +68,10 @@
 
 <div>
 	{#if $shippingZonesOfChanelQuery.fetching}
-		<div class="rounded-md border border-gray-200 bg-white mb-2">
-			<SkeletonContainer class="flex items-center gap-1 justify-between">
-				<Skeleton class="h-4 w-2/3"></Skeleton>
-				<Skeleton class="w-6 h-6 rounded-full"></Skeleton>
-			</SkeletonContainer>
-		</div>
+		<SkeletonContainer class="flex items-center gap-1 justify-between">
+			<Skeleton class="h-4 w-2/3"></Skeleton>
+			<Skeleton class="w-6 h-6 rounded-full"></Skeleton>
+		</SkeletonContainer>
 	{:else if $shippingZonesOfChanelQuery.error}
 		<Alert variant="error" size="sm" bordered class="mb-3">
 			{$tranFunc('error.failedToLoad')}
@@ -97,6 +97,7 @@
 						variant="light"
 						color="red"
 						onclick={() => handleDeleteZone(zone.id)}
+						{disabled}
 					/>
 				</div>
 			{/each}
@@ -116,6 +117,7 @@
 							value: zone.id
 						}))}
 						<MultiSelect
+							{disabled}
 							size="sm"
 							options={availableZones}
 							label="Select Shipping Zone"
@@ -124,7 +126,7 @@
 								(addShippingZones = opts?.map((opt) => opt.value as string) || [])}
 						/>
 					{/if}
-					<Button endIcon={Plus} size="xs" onclick={() => (showAddShippingZones = true)}
+					<Button endIcon={Plus} size="xs" {disabled} onclick={() => (showAddShippingZones = true)}
 						>Add Shipping Zone</Button
 					>
 				</div>
