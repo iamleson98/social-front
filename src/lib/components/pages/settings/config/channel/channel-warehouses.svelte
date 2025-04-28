@@ -3,7 +3,7 @@
 	import { WAREHOUSES_QUERY } from '$lib/api/admin/channels';
 	import { operationStore } from '$lib/api/operation';
 	import { Plus, Trash } from '$lib/components/icons';
-	import Accordion from '$lib/components/ui/Accordion/accordion.svelte';
+	import {Accordion} from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { MultiSelect } from '$lib/components/ui/select';
@@ -65,7 +65,7 @@
 </script>
 
 <div>
-	{#if $warehousesOfChannelQuery.fetching}
+	<!-- {#if $warehousesOfChannelQuery.fetching}
 		<SkeletonContainer class="flex items-center gap-1 justify-between">
 			<Skeleton class="h-4 w-2/3"></Skeleton>
 			<Skeleton class="w-6 h-6 rounded-full"></Skeleton>
@@ -124,5 +124,5 @@
 				</div>
 			{/if}
 		</Accordion>
-	{/if}
+	{/if} -->
 </div>
