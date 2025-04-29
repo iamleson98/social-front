@@ -22,8 +22,8 @@
 			<li><a href={AppRoute.SETTINGS_CONFIGS_CHANNELS()}>Channels</a></li>
 			{#if page.url.pathname === newChannelLink}
 				<li>New Channel</li>
-			{:else if page.route.id === '/[[channel]]/settings/configs/channels/[id]'}
-				<li>{page.params.id}</li>
+			{:else if page.route.id === '/[[channel]]/settings/configs/channels/[slug]'}
+				<li>{page.params.slug}</li>
 			{/if}
 		</ul>
 	</div>

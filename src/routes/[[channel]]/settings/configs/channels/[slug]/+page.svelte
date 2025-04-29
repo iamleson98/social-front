@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { operationStore } from '$lib/api/operation';
 	import { CHANNEL_DELETE_MUTATION, CHANNEL_UPDATE_MUTATION } from '$lib/api/admin/channels';
+	import { CHANNEL_DETAILS_QUERY_STORE, CHANNELS_QUERY } from '$lib/api/channels';
 	import type {
 		Channel,
 		ChannelUpdateInput,
@@ -11,18 +12,17 @@
 		MutationChannelUpdateArgs,
 		Query
 	} from '$lib/gql/graphql';
-	import Input from '$lib/components/ui/Input/input.svelte';
+	import { Input } from '$lib/components/ui/Input';
 	import { Button } from '$lib/components/ui';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { AppRoute } from '$lib/utils';
-	import { goto } from '$app/navigation';
+	import { afterNavigate, goto } from '$app/navigation';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { Modal } from '$lib/components/ui/Modal';
 	import { tranFunc } from '$i18n';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { CHANNEL_DETAILS_BY_ID, CHANNELS_QUERY } from '$lib/api/channels';
 	import { Checkbox } from '$lib/components/ui/Input';
 	import { boolean, object, string, z } from 'zod';
 	import { onMount } from 'svelte';
@@ -34,8 +34,8 @@
 
 	const channelDetailQuery = operationStore<Pick<Query, 'channel'>>({
 		kind: 'query',
-		query: CHANNEL_DETAILS_BY_ID,
-		variables: { id: page.params.id },
+		query: CHANNEL_DETAILS_QUERY_STORE,
+		variables: { slug: page.params.slug },
 		requestPolicy: 'network-only'
 	});
 
@@ -79,11 +79,15 @@
 
 	let nothingChanged = $derived.by(() => {
 		if (!oldChannel) return true;
+		const shippingZonesChanged = (channelValues.addShippingZones?.length as number) > 0 || (channelValues.removeShippingZones?.length as number) > 0;
+		const warehousesChanged = (channelValues.addWarehouses?.length as number) > 0 || (channelValues.removeWarehouses?.length as number) > 0;
 		return (
 			channelValues.name === oldChannel.name &&
 			channelValues.slug === oldChannel.slug &&
 			channelValues.isActive === oldChannel.isActive &&
-			channelValues.defaultCountry === oldChannel.defaultCountry?.code
+			channelValues.defaultCountry === oldChannel.defaultCountry?.code &&
+			!shippingZonesChanged &&
+			!warehousesChanged
 		);
 	});
 
@@ -118,7 +122,11 @@
 					slug: result.data.channel.slug,
 					isActive: result.data.channel.isActive,
 					defaultCountry: result.data.channel?.defaultCountry?.code as CountryCode,
-					currencyCode: result.data.channel.currencyCode
+					currencyCode: result.data.channel.currencyCode,
+					addShippingZones: [],
+					removeShippingZones: [],
+					addWarehouses: [],
+					removeWarehouses: []
 				};
 			}
 		});
@@ -171,7 +179,16 @@
 			variant: 'success',
 			message: 'Channel updated successfully'
 		});
+
+		await goto(AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(channelValues.slug as string), {
+			replaceState: true
+		});
 	};
+
+	afterNavigate(() => {
+		const slug = page.params.slug;
+		channelDetailQuery.reexecute({ variables: { slug } });
+	});
 </script>
 
 {#if $channelDetailQuery.fetching}
@@ -299,7 +316,7 @@
 					variant="light"
 					color="gray"
 					disabled={loading}
-					href={AppRoute.SETTINGS_CONFIGS_CHANNELS()}>Back</Button
+					onclick={() => goto(AppRoute.SETTINGS_CONFIGS_CHANNELS())}>Back</Button
 				>
 				<Button disabled={loading || nothingChanged} onclick={handleUpdateChannel}>Update</Button>
 			</div>

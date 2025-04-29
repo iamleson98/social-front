@@ -133,7 +133,7 @@
 </script>
 
 {#snippet name({ item }: { item: Channel })}
-	<a href={AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(item.id)} class="link">{item.name}</a>
+	<a href={AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(item.slug)} class="link">{item.name}</a>
 {/snippet}
 
 {#snippet status({ item }: { item: Channel })}

@@ -122,8 +122,11 @@
 							options={availableZones}
 							label="Select Shipping Zone"
 							class="mb-2 w-full"
-							onchange={(opts) =>
-								(addShippingZones = opts?.map((opt) => opt.value as string) || [])}
+							onchange={(opts) => {
+								const selectedIds = opts?.map((opt) => opt.value as string) || [];
+								removeShippingZones = removeShippingZones.filter(id => !selectedIds.includes(id));
+								addShippingZones = selectedIds;
+							}}
 						/>
 					{/if}
 					<Button endIcon={Plus} size="xs" {disabled} onclick={() => (showAddShippingZones = true)}

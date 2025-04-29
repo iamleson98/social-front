@@ -33,14 +33,14 @@
 		kind: 'query',
 		query: WAREHOUSES_QUERY,
 		variables: { channel: channelSlug, first: 100 },
-		requestPolicy: 'cache-and-network'
+		requestPolicy: 'network-only'
 	});
 
 	const allWarehouses = operationStore<Pick<Query, 'warehouses'>, QueryWarehousesArgs>({
 		kind: 'query',
 		query: WAREHOUSES_QUERY,
 		variables: { first: 100 },
-		requestPolicy: 'cache-and-network',
+		requestPolicy: 'network-only',
 		pause: true
 	});
 
@@ -119,7 +119,11 @@
 							{disabled}
 							label="Select Warehouse"
 							class="mb-2 w-full"
-							onchange={(opts) => (addWarehouses = opts?.map((opt) => opt.value as string) || [])}
+							onchange={(opts) => {
+								const selectedIds = opts?.map((opt) => opt.value as string) || [];
+								removeWarehouses = removeWarehouses.filter(id => !selectedIds.includes(id));
+								addWarehouses = selectedIds;
+							}}
 						/>
 					{/if}
 					<Button {disabled} endIcon={Plus} size="xs" onclick={() => (showAddWarehouses = true)}
