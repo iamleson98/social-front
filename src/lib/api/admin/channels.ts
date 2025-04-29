@@ -1,5 +1,23 @@
 import { gql } from "@urql/core";
 
+export const CHANNEL_CREATE_MUTATION = gql`
+  mutation CreateChannel($input: ChannelCreateInput!) {
+    channelCreate(input: $input) {
+      channel {
+        id
+        name
+        slug
+        isActive
+        currencyCode
+      }
+      errors {
+        field
+        message
+      }
+    }
+  }
+`;
+
 export const CHANNEL_DELETE_MUTATION = gql`
   mutation DeleteChannel($id: ID!, $input: ChannelDeleteInput) {
     channelDelete(id: $id, input: $input) {
@@ -41,8 +59,21 @@ query ShippingZones($channel: String, $filter: ShippingZoneFilterInput, $before:
   }
 }`;
 
+export const CHANNEL_WAREHOUSES_QUERY = gql`
+	query ChannelWarehouses($slug: String!) {
+		channel(slug: $slug) {
+			id
+			name
+			warehouses {
+				id
+				name
+			}
+		}
+	}
+`;
+
 export const WAREHOUSES_QUERY = gql`
-	query ChannelWarehouses($filter: WarehouseFilterInput, $before: String, $after: String, $first: Int, $last: Int) {
+	query Warehouses($filter: WarehouseFilterInput, $before: String, $after: String, $first: Int, $last: Int) {
 		warehouses(filter: $filter, before: $before, after: $after, first: $first, last: $last) {
 			edges {
 				node {

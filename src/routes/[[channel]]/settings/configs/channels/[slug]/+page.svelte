@@ -123,10 +123,6 @@
 					isActive: result.data.channel.isActive,
 					defaultCountry: result.data.channel?.defaultCountry?.code as CountryCode,
 					currencyCode: result.data.channel.currencyCode,
-					addShippingZones: [],
-					removeShippingZones: [],
-					addWarehouses: [],
-					removeWarehouses: []
 				};
 			}
 		});
@@ -162,7 +158,7 @@
 
 	const handleUpdateChannel = async () => {
 		if (!validate()) return;
-
+		const newSlug = channelValues.slug;
 		loading = true;
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'channelUpdate'>,
@@ -180,7 +176,7 @@
 			message: 'Channel updated successfully'
 		});
 
-		await goto(AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(channelValues.slug as string), {
+		await goto(AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(newSlug as string), {
 			replaceState: true
 		});
 	};
@@ -285,6 +281,19 @@
 						currency as deleting channel
 					</Alert>
 				</Modal>
+
+				<div class="mt-3 flex flex-col">
+					<Checkbox
+						label="Allow unpaid orders"
+						checked={channelValues.orderSettings?.allowUnpaidOrders}
+						disabled={loading}
+					/>
+					<Checkbox
+						label="Allow partial payments"
+						checked={channelValues.orderSettings?.automaticallyConfirmAllNewOrders}
+						disabled={loading}
+					/>
+				</div>
 			</div>
 
 			<!-- MARK: channel detail sidebar -->
