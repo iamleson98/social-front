@@ -62,6 +62,7 @@ query Channel($id: ID!) {
     currencyCode
     orderSettings {
       allowUnpaidOrders
+      allowPartialPayments
     }
   }
 }

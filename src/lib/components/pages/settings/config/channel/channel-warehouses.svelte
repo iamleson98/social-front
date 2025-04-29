@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { WAREHOUSES_QUERY } from '$lib/api/admin/channels';
+	import { CHANNEL_WAREHOUSES_QUERY, WAREHOUSES_QUERY } from '$lib/api/admin/channels';
 	import { operationStore } from '$lib/api/operation';
 	import { Plus, Trash } from '$lib/components/icons';
 	import { Accordion } from '$lib/components/ui/Accordion';
@@ -8,7 +8,7 @@
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { MultiSelect } from '$lib/components/ui/select';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
-	import type { Query, QueryWarehousesArgs, Warehouse } from '$lib/gql/graphql';
+	import type { Query, QueryChannelArgs, QueryWarehousesArgs, Warehouse } from '$lib/gql/graphql';
 	import { differenceBy } from 'es-toolkit';
 	import { onMount } from 'svelte';
 
@@ -29,18 +29,21 @@
 	let showAddWarehouses = $state(false);
 	let warehousesOfChannel = $state.raw<Warehouse[]>([]);
 
-	const warehousesOfChannelQuery = operationStore<Pick<Query, 'warehouses'>, QueryWarehousesArgs>({
+	const warehousesOfChannelQuery = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
 		kind: 'query',
-		query: WAREHOUSES_QUERY,
-		variables: { channel: channelSlug, first: 100 },
-		requestPolicy: 'cache-and-network'
+		query: CHANNEL_WAREHOUSES_QUERY,
+		variables: { 
+			slug: channelSlug, 
+			first: 100 
+		},
+		requestPolicy: 'network-only'
 	});
 
 	const allWarehouses = operationStore<Pick<Query, 'warehouses'>, QueryWarehousesArgs>({
 		kind: 'query',
 		query: WAREHOUSES_QUERY,
 		variables: { first: 100 },
-		requestPolicy: 'cache-and-network',
+		requestPolicy: 'network-only',
 		pause: true
 	});
 
@@ -51,7 +54,7 @@
 			}
 			if (result.data && !result.error) {
 				allWarehouses.resume();
-				warehousesOfChannel = result.data?.warehouses?.edges.map((edge) => edge.node) || [];
+				warehousesOfChannel = result.data?.channel?.warehouses || [];
 			}
 		});
 
@@ -76,7 +79,7 @@
 		<Alert variant="error" size="sm" bordered class="mb-3">
 			{$tranFunc('error.failedToLoad')}</Alert
 		>
-	{:else if $warehousesOfChannelQuery.data?.warehouses}
+	{:else if $warehousesOfChannelQuery.data?.channel?.warehouses}
 		<Accordion
 			open={false}
 			header="Warehouses ({warehousesOfChannel.length})"
@@ -119,7 +122,11 @@
 							{disabled}
 							label="Select Warehouse"
 							class="mb-2 w-full"
-							onchange={(opts) => (addWarehouses = opts?.map((opt) => opt.value as string) || [])}
+							onchange={(opts) => {
+								const selectedIds = opts?.map((opt) => opt.value as string) || [];
+								removeWarehouses = removeWarehouses.filter(id => !selectedIds.includes(id));
+								addWarehouses = selectedIds;
+							}}
 						/>
 					{/if}
 					<Button {disabled} endIcon={Plus} size="xs" onclick={() => (showAddWarehouses = true)}
