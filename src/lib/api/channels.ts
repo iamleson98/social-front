@@ -40,6 +40,17 @@ query Channel($slug: String!) {
     slug
     isActive
     currencyCode
+    orderSettings {
+      allowUnpaidOrders
+      deleteExpiredOrdersAfter
+      markAsPaidStrategy
+    }
+    checkoutSettings {
+      automaticallyCompleteFullyPaidCheckouts
+    }
+    paymentSettings {
+      defaultTransactionFlowStrategy
+    }
   }
 }
 `;

@@ -3,14 +3,16 @@
 	import { operationStore } from '$lib/api/operation';
 	import { CHANNEL_DELETE_MUTATION, CHANNEL_UPDATE_MUTATION } from '$lib/api/admin/channels';
 	import { CHANNEL_DETAILS_QUERY_STORE, CHANNELS_QUERY } from '$lib/api/channels';
-	import type {
-		Channel,
-		ChannelUpdateInput,
-		CountryCode,
-		Mutation,
-		MutationChannelDeleteArgs,
-		MutationChannelUpdateArgs,
-		Query
+	import {
+		MarkAsPaidStrategyEnum,
+		TransactionFlowStrategyEnum,
+		type Channel,
+		type ChannelUpdateInput,
+		type CountryCode,
+		type Mutation,
+		type MutationChannelDeleteArgs,
+		type MutationChannelUpdateArgs,
+		type Query
 	} from '$lib/gql/graphql';
 	import { Input } from '$lib/components/ui/Input';
 	import { Button } from '$lib/components/ui';
@@ -24,13 +26,13 @@
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Checkbox } from '$lib/components/ui/Input';
-	import { boolean, object, string, z } from 'zod';
+	import { boolean, number, object, string, z } from 'zod';
 	import { onMount } from 'svelte';
 	import slugify from 'slugify';
 	import ChannelDetailSkeleton from '$lib/components/pages/settings/config/channel-detail-skeleton.svelte';
 	import ChannelShippingZones from '$lib/components/pages/settings/config/channel/channel-shipping-zones.svelte';
 	import ChannelWarehouses from '$lib/components/pages/settings/config/channel/channel-warehouses.svelte';
-	import { omit } from 'es-toolkit';
+	import { isEqual, omit } from 'es-toolkit';
 
 	const channelDetailQuery = operationStore<Pick<Query, 'channel'>>({
 		kind: 'query',
@@ -58,7 +60,10 @@
 		defaultCountry: string()
 			.nonempty(REQUIRED_ERROR)
 			.optional()
-			.refine((val) => val !== undefined, REQUIRED_ERROR)
+			.refine((val) => val !== undefined, REQUIRED_ERROR),
+		orderSettings: object({
+			deleteExpiredOrdersAfter: number().min(1, 'Must be >= 1').max(120, 'Must be <= 120')
+		})
 	});
 
 	type ChannelSchema = z.infer<typeof channelSchema>;
@@ -74,7 +79,18 @@
 		removeShippingZones: [],
 		addWarehouses: [],
 		removeWarehouses: [],
-		currencyCode: ''
+		currencyCode: '',
+		checkoutSettings: {
+			automaticallyCompleteFullyPaidCheckouts: false
+		},
+		orderSettings: {
+			allowUnpaidOrders: false,
+			deleteExpiredOrdersAfter: 60,
+			markAsPaidStrategy: MarkAsPaidStrategyEnum.PaymentFlow
+		},
+		paymentSettings: {
+			defaultTransactionFlowStrategy: TransactionFlowStrategyEnum.Charge
+		}
 	});
 	/** the existing channel props, used for keeping track of changes */
 	let oldChannel = $state<Channel>();
@@ -82,14 +98,18 @@
 	onMount(() => {
 		const unsub = channelDetailQuery.subscribe((result) => {
 			if (result.data?.channel) {
-				oldChannel = result.data.channel;
+				oldChannel = result.data.channel; // assign old channel values right when fetching success
+
 				channelValues = {
 					...channelValues,
-					name: result.data.channel.name,
-					slug: result.data.channel.slug,
-					isActive: result.data.channel.isActive,
-					defaultCountry: result.data.channel?.defaultCountry?.code as CountryCode,
-					currencyCode: result.data.channel.currencyCode
+					name: oldChannel.name,
+					slug: oldChannel.slug,
+					isActive: oldChannel.isActive,
+					defaultCountry: oldChannel?.defaultCountry?.code as CountryCode,
+					currencyCode: oldChannel.currencyCode,
+					orderSettings: { ...oldChannel.orderSettings },
+					checkoutSettings: { ...oldChannel.checkoutSettings },
+					paymentSettings: { ...oldChannel.paymentSettings }
 				};
 			}
 		});
@@ -115,7 +135,17 @@
 			channelValues.isActive === oldChannel.isActive &&
 			channelValues.defaultCountry === oldChannel.defaultCountry?.code &&
 			shippingZonesNotChanged &&
-			warehousesNotChanged
+			warehousesNotChanged &&
+			channelValues.orderSettings?.markAsPaidStrategy ===
+				oldChannel.orderSettings.markAsPaidStrategy &&
+			channelValues.orderSettings?.allowUnpaidOrders ===
+				oldChannel.orderSettings.allowUnpaidOrders &&
+			channelValues.orderSettings?.deleteExpiredOrdersAfter ===
+				oldChannel.orderSettings.deleteExpiredOrdersAfter &&
+			channelValues.checkoutSettings?.automaticallyCompleteFullyPaidCheckouts ===
+				oldChannel.checkoutSettings.automaticallyCompleteFullyPaidCheckouts &&
+			channelValues.paymentSettings?.defaultTransactionFlowStrategy ===
+				oldChannel.paymentSettings.defaultTransactionFlowStrategy
 		);
 	});
 
@@ -128,6 +158,8 @@
 		channelFormErrors = {};
 		return true;
 	};
+
+	$inspect(channelValues, oldChannel);
 
 	const delModalHeader = $derived(
 		$tranFunc('settings.confirmDelChannel', { id: channelValues.name })
@@ -222,16 +254,17 @@
 		<div class="flex flex-row gap-2">
 			<!-- MARK: general information -->
 			<div class="w-2/3 rounded-lg bg-white border border-gray-200 p-4 h-fit">
-				<Input
-					label="Name"
-					bind:value={channelValues.name}
-					inputDebounceOption={{ onInput: () => handleFormChange('name') }}
-					variant={channelFormErrors?.name?.length ? 'error' : 'info'}
-					subText={channelFormErrors?.name?.length ? channelFormErrors.name[0] : ''}
-					required
-					disabled={loading}
-				/>
-				<div class="mt-3 flex gap-3">
+				<div class="flex gap-2 items-start">
+					<Input
+						label="Name"
+						bind:value={channelValues.name}
+						inputDebounceOption={{ onInput: () => handleFormChange('name') }}
+						variant={channelFormErrors?.name?.length ? 'error' : 'info'}
+						subText={channelFormErrors?.name?.length ? channelFormErrors.name[0] : ''}
+						required
+						disabled={loading}
+						class="flex-1"
+					/>
 					<Input
 						label="Slug"
 						bind:value={channelValues.slug}
@@ -242,14 +275,30 @@
 						inputDebounceOption={{ onInput: () => handleFormChange('slug') }}
 						disabled={loading}
 					/>
-					<div class="flex flex-1 gap-2 py-2">
-						<Checkbox
-							label={channelValues.isActive ? 'Active' : 'Inactive'}
-							bind:checked={channelValues.isActive}
-							disabled={loading}
-							size="sm"
-						/>
-					</div>
+				</div>
+
+				<div class="mt-3 flex gap-3 items-center">
+					<Input
+						label="Order expiration"
+						bind:value={channelValues.orderSettings!.deleteExpiredOrdersAfter}
+						disabled={loading}
+						class="flex-1"
+						type="number"
+						min={1}
+						max={120}
+						inputDebounceOption={{ onInput: () => handleFormChange('orderSettings') }}
+						variant={channelFormErrors?.orderSettings?.length ? 'error' : 'info'}
+						subText={channelFormErrors?.orderSettings?.length
+							? channelFormErrors.orderSettings[0]
+							: 'The time in days after expired orders will be deleted. Allowed range between 1 and 120.'}
+					/>
+					<Checkbox
+						label={channelValues.isActive ? 'Active' : 'Inactive'}
+						bind:checked={channelValues.isActive}
+						disabled={loading}
+						size="sm"
+						class="flex-1"
+					/>
 				</div>
 
 				<div class="mt-3 flex gap-3">
@@ -296,15 +345,47 @@
 				<div class="mt-3 flex flex-col gap-1">
 					<Checkbox
 						label="Allow unpaid orders"
-						checked={channelValues.orderSettings?.allowUnpaidOrders}
+						bind:checked={channelValues.orderSettings!.allowUnpaidOrders}
 						disabled={loading}
 						size="sm"
+						subText={`Enables completing checkout with order before a successful payment. <div class="badge badge-outline badge-xs badge-warning">Preview</div>`}
+						class="mb-3"
 					/>
 					<Checkbox
-						label="Allow partial payments"
-						checked={channelValues.orderSettings?.automaticallyConfirmAllNewOrders}
+						label="Use Transaction flow when marking order as paid"
 						disabled={loading}
 						size="sm"
+						class="mb-3"
+						checked={channelValues.orderSettings!.markAsPaidStrategy ===
+							MarkAsPaidStrategyEnum.TransactionFlow}
+						onchange={(evt) => {
+							channelValues.orderSettings!.markAsPaidStrategy = evt.currentTarget.checked
+								? MarkAsPaidStrategyEnum.TransactionFlow
+								: MarkAsPaidStrategyEnum.PaymentFlow;
+						}}
+						subText={`"Mark as paid" feature creates a Transaction - used by Payment Apps. <br /> If left unchecked it creates a Payment - used by Payment Plugins. <div class="badge badge-outline badge-xs badge-warning">Preview</div>`}
+					/>
+					<Checkbox
+						label="Automatically complete checkouts when fully paid"
+						bind:checked={channelValues.checkoutSettings!.automaticallyCompleteFullyPaidCheckouts}
+						disabled={loading}
+						size="sm"
+						class="mb-3"
+						subText="When enabled, checkouts detected as fully paid will be completed automatically, without checkoutComplete mutation."
+					/>
+					<Checkbox
+						label="Authorize transaction instead of charging"
+						checked={channelValues.paymentSettings!.defaultTransactionFlowStrategy ===
+							TransactionFlowStrategyEnum.Authorization}
+						onchange={(evt) => {
+							channelValues.paymentSettings!.defaultTransactionFlowStrategy = evt.currentTarget
+								.checked
+								? TransactionFlowStrategyEnum.Authorization
+								: TransactionFlowStrategyEnum.Charge;
+						}}
+						disabled={loading}
+						size="sm"
+						subText={`When enabled, all transactions would require an additional step to be charged. <div class="badge badge-outline badge-xs badge-warning">Preview</div>`}
 					/>
 				</div>
 			</div>
@@ -338,8 +419,7 @@
 					variant="light"
 					color="gray"
 					disabled={loading}
-					href={AppRoute.SETTINGS_CONFIGS_CHANNELS()}
-					>Back</Button
+					href={AppRoute.SETTINGS_CONFIGS_CHANNELS()}>Back</Button
 				>
 				<Button disabled={loading || nothingChanged} onclick={handleUpdateChannel}>Update</Button>
 			</div>
