@@ -229,12 +229,14 @@
 		label="Prioritize high stock"
 		bind:group={allocationStrategy}
 		size="sm"
+		{disabled}
 	/>
 	<RadioButton
 		value={AllocationStrategyEnum.PrioritizeSortingOrder}
 		label="Prioritize sorting order"
 		bind:group={allocationStrategy}
 		size="sm"
+		{disabled}
 		class="mt-2"
 	/>
 </div>
