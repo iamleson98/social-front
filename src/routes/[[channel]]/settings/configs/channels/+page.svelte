@@ -121,6 +121,10 @@
 			variant: 'success',
 			message: 'Channel deleted successfully'
 		});
+
+		channelToDeleteId = '';
+		channelToReplaceId = '';
+		channelsQuery.reexecute({});
 	};
 
 	const handleSortChange = (state: SortState) => {
