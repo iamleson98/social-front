@@ -63,7 +63,7 @@
 			icon={ChevronLeft}
 			size="xs"
 			variant="light"
-			class="absolute left-1.5 top-1/2 -translate-y-1/2 z-10"
+			class="absolute! left-1.5 top-1/2 -translate-y-1/2 z-10"
 			rounded
 			onclick={() => slideShowManager.handleNavigate(-1)}
 			aria-label="navigate previous"
@@ -72,7 +72,7 @@
 			icon={ChevronRight}
 			size="xs"
 			variant="light"
-			class="absolute right-1.5 top-1/2 -translate-y-1/2 z-10"
+			class="absolute! right-1.5 top-1/2 -translate-y-1/2 z-10"
 			rounded
 			onclick={() => slideShowManager.handleNavigate(1)}
 			aria-label="navigate next"

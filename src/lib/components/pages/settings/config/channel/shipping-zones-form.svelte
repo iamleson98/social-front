@@ -37,7 +37,7 @@
 		query: SHIPPING_ZONES_QUERY,
 		variables: { channel: channelSlug, first: BATCH },
 		requestPolicy: 'network-only',
-		pause: !channelSlug
+		pause: true
 	});
 
 	let showAddShippingZones = $state(false);
@@ -136,21 +136,20 @@
 					size="sm"
 					options={availableZones}
 					label="Select Shipping Zone"
-					class="mb-2 w-full"
 					onchange={handleAddShippingZones}
 				/>
 			{:else if $allShippingZones.error}
-				<Alert variant="warning" size="xs" bordered>
+				<Alert variant="error" size="xs" bordered>
 					{$allShippingZones.error.message}
 				</Alert>
 			{:else if $allShippingZones.fetching}
-				<SkeletonContainer class="mb-2">
+				<SkeletonContainer>
 					<Skeleton class="h-4 w-full"></Skeleton>
 				</SkeletonContainer>
 			{/if}
 		{/if}
 
-		<Button endIcon={Plus} size="xs" {disabled} onclick={handleClickAddShippingZoneButton}>
+		<Button endIcon={Plus} size="xs" class="mt-2" {disabled} onclick={handleClickAddShippingZoneButton}>
 			Add Shipping Zone
 		</Button>
 	</div>

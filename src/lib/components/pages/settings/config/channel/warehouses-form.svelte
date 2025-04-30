@@ -40,7 +40,7 @@
 			first: BATCH_FETCH
 		},
 		requestPolicy: 'network-only',
-		pause: !channelSlug // don't call this when in channel creation page
+		pause: true // don't call this when in channel creation page
 	});
 
 	const allWarehouses = operationStore<Pick<Query, 'warehouses'>, QueryWarehousesArgs>({
@@ -136,11 +136,10 @@
 					options={availableWarehouses}
 					{disabled}
 					label="Select Warehouse"
-					class="mb-2 w-full"
 					onchange={handleAddWarehouses}
 				/>
 			{:else if $allWarehouses.fetching}
-				<SkeletonContainer class="mb-2">
+				<SkeletonContainer>
 					<Skeleton class="h-4 w-full"></Skeleton>
 				</SkeletonContainer>
 			{:else if $allWarehouses.error}
@@ -150,7 +149,7 @@
 			{/if}
 		{/if}
 
-		<Button {disabled} endIcon={Plus} size="xs" onclick={handleClickAddWarehouseButton}>
+		<Button {disabled} endIcon={Plus} size="xs" class="mt-2" onclick={handleClickAddWarehouseButton}>
 			Add Warehouse
 		</Button>
 	</div>
