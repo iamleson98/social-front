@@ -8,12 +8,14 @@
 	import { AppRoute } from '$lib/utils';
 	import dayjs from 'dayjs';
 
+	const BATCH = 20;
+
 	const usersQuery = operationStore<Pick<Query, 'customers'>, QueryCustomersArgs>({
 		kind: 'query',
 		requestPolicy: 'cache-and-network',
 		query: QUERY_CUSTOMERS,
 		variables: {
-			first: 20
+			first: BATCH
 		}
 	});
 
@@ -107,6 +109,7 @@
 			columns={USER_TABLE_COLUMNS}
 			items={$usersQuery.data?.customers?.edges.map((edge) => edge.node) || []}
       pagination={$usersQuery.data.customers?.pageInfo}
+			rowsPerPage={BATCH}
 		/>
 	{/if}
 </div>

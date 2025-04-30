@@ -29,7 +29,7 @@
 	import { boolean, number, object, string, z } from 'zod';
 	import { onMount } from 'svelte';
 	import slugify from 'slugify';
-	import ChannelDetailSkeleton from '$lib/components/pages/settings/config/channel-detail-skeleton.svelte';
+	import ChannelDetailSkeleton from '$lib/components/pages/settings/config/channel/channel-detail-skeleton.svelte';
 	import ChannelShippingZones from '$lib/components/pages/settings/config/channel/channel-shipping-zones.svelte';
 	import ChannelWarehouses from '$lib/components/pages/settings/config/channel/channel-warehouses.svelte';
 	import { isEqual, omit } from 'es-toolkit';
@@ -158,8 +158,6 @@
 		channelFormErrors = {};
 		return true;
 	};
-
-	$inspect(channelValues, oldChannel);
 
 	const delModalHeader = $derived(
 		$tranFunc('settings.confirmDelChannel', { id: channelValues.name })
