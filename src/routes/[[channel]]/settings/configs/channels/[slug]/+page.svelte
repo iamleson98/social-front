@@ -93,7 +93,7 @@
 		}
 	});
 	/** the existing channel props, used for keeping track of changes */
-	let oldChannel = $state<Channel>();
+	let oldChannel = $state.raw<Channel>();
 
 	onMount(() => {
 		const unsub = channelDetailQuery.subscribe((result) => {
@@ -107,9 +107,9 @@
 					isActive: oldChannel.isActive,
 					defaultCountry: oldChannel?.defaultCountry?.code as CountryCode,
 					currencyCode: oldChannel.currencyCode,
-					orderSettings: { ...oldChannel.orderSettings },
-					checkoutSettings: { ...oldChannel.checkoutSettings },
-					paymentSettings: { ...oldChannel.paymentSettings }
+					orderSettings: omit(oldChannel.orderSettings, ['__typename']),
+					checkoutSettings: omit(oldChannel.checkoutSettings, ['__typename']),
+					paymentSettings: omit(oldChannel.paymentSettings, ['__typename'])
 				};
 			}
 		});
@@ -124,18 +124,15 @@
 	let nothingChanged = $derived.by(() => {
 		if (!oldChannel) return true;
 
-		const shippingZonesNotChanged =
-			!channelValues.addShippingZones?.length && !channelValues.removeShippingZones?.length;
-		const warehousesNotChanged =
-			!channelValues.addWarehouses?.length && !channelValues.removeWarehouses?.length;
-
 		return (
 			channelValues.name === oldChannel.name &&
 			channelValues.slug === oldChannel.slug &&
 			channelValues.isActive === oldChannel.isActive &&
 			channelValues.defaultCountry === oldChannel.defaultCountry?.code &&
-			shippingZonesNotChanged &&
-			warehousesNotChanged &&
+			!channelValues.addShippingZones?.length &&
+			!channelValues.removeShippingZones?.length &&
+			!channelValues.addWarehouses?.length &&
+			!channelValues.removeWarehouses?.length &&
 			channelValues.orderSettings?.markAsPaidStrategy ===
 				oldChannel.orderSettings.markAsPaidStrategy &&
 			channelValues.orderSettings?.allowUnpaidOrders ===
@@ -217,12 +214,13 @@
 		});
 
 		await goto(AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(channelValues.slug as string), {
-			replaceState: true
+			replaceState: true,
+			invalidateAll: true
 		});
 	};
 
 	afterNavigate(() => {
-		const slug = page.params.slug;
+		const { slug } = page.params;
 		channelDetailQuery.reexecute({ variables: { slug } });
 	});
 </script>
