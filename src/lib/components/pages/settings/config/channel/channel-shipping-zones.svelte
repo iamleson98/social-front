@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
 	import { SHIPPING_ZONES_QUERY } from '$lib/api/admin/channels';
 	import { operationStore } from '$lib/api/operation';
 	import { Plus, Trash } from '$lib/components/icons';
@@ -47,10 +46,13 @@
 		pause: true
 	});
 
+	$effect(() => {
+		if (showAddShippingZones) allShippingZones.resume();
+	});
+
 	onMount(() => {
 		const unsub = shippingZonesOfChanelQuery.subscribe((result) => {
 			if (result.data && !result.error) {
-				allShippingZones.resume();
 				shippingZonesOfChannel = result.data?.shippingZones?.edges.map((edge) => edge.node) || [];
 			}
 		});
@@ -70,11 +72,10 @@
 	{#if $shippingZonesOfChanelQuery.fetching}
 		<SkeletonContainer class="flex items-center gap-1 justify-between">
 			<Skeleton class="h-4 w-2/3"></Skeleton>
-			<Skeleton class="w-6 h-6 rounded-full"></Skeleton>
 		</SkeletonContainer>
 	{:else if $shippingZonesOfChanelQuery.error}
 		<Alert variant="error" size="sm" bordered class="mb-3">
-			{$tranFunc('error.failedToLoad')}
+			{$shippingZonesOfChanelQuery.error.message}
 		</Alert>
 	{:else if $shippingZonesOfChanelQuery.data?.shippingZones}
 		<Accordion
@@ -102,9 +103,9 @@
 				</div>
 			{/each}
 
-			{#if $allShippingZones.data?.shippingZones?.edges.length}
-				<div class="pt-2 mt-2 border-t border-gray-200">
-					{#if showAddShippingZones}
+			<div class="pt-2 mt-2 border-t border-gray-200">
+				{#if showAddShippingZones}
+					{#if $allShippingZones.data?.shippingZones}
 						{@const allZones = $allShippingZones.data?.shippingZones?.edges.map(
 							(edge) => edge.node
 						)}
@@ -124,20 +125,25 @@
 							class="mb-2 w-full"
 							onchange={(opts) => {
 								const selectedIds = opts?.map((opt) => opt.value as string) || [];
-								removeShippingZones = removeShippingZones.filter(id => !selectedIds.includes(id));
+								removeShippingZones = removeShippingZones.filter((id) => !selectedIds.includes(id));
 								addShippingZones = selectedIds;
 							}}
 						/>
+					{:else if $allShippingZones.error}
+						<Alert variant="warning" size="xs" bordered>
+							{$allShippingZones.error.message}
+						</Alert>
+					{:else if $allShippingZones.fetching}
+						<SkeletonContainer>
+							<Skeleton class="h-4 w-full"></Skeleton>
+						</SkeletonContainer>
 					{/if}
-					<Button endIcon={Plus} size="xs" {disabled} onclick={() => (showAddShippingZones = true)}
-						>Add Shipping Zone</Button
-					>
-				</div>
-			{:else if $allShippingZones.error}
-				<Alert variant="warning" size="xs" bordered>
-					{$tranFunc('error.failedToLoad')}
-				</Alert>
-			{/if}
+				{/if}
+
+				<Button endIcon={Plus} size="xs" {disabled} onclick={() => (showAddShippingZones = true)}
+					>Add Shipping Zone</Button
+				>
+			</div>
 		</Accordion>
 	{/if}
 </div>

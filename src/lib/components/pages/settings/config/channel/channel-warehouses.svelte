@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
 	import { CHANNEL_WAREHOUSES_QUERY, WAREHOUSES_QUERY } from '$lib/api/admin/channels';
 	import { operationStore } from '$lib/api/operation';
 	import { Plus, Trash } from '$lib/components/icons';
@@ -32,9 +31,9 @@
 	const warehousesOfChannelQuery = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
 		kind: 'query',
 		query: CHANNEL_WAREHOUSES_QUERY,
-		variables: { 
-			slug: channelSlug, 
-			first: 100 
+		variables: {
+			slug: channelSlug,
+			first: 100
 		},
 		requestPolicy: 'network-only'
 	});
@@ -47,13 +46,17 @@
 		pause: true
 	});
 
+	$effect(() => {
+		if (showAddWarehouses) allWarehouses.resume();
+	});
+
 	onMount(() => {
 		const unsub = warehousesOfChannelQuery.subscribe((result) => {
 			if (result.error) {
 				console.error('Warehouses fetching error:', result.error);
 			}
 			if (result.data && !result.error) {
-				allWarehouses.resume();
+				// allWarehouses.resume();
 				warehousesOfChannel = result.data?.channel?.warehouses || [];
 			}
 		});
@@ -77,8 +80,8 @@
 		</SkeletonContainer>
 	{:else if $warehousesOfChannelQuery.error}
 		<Alert variant="error" size="sm" bordered class="mb-3">
-			{$tranFunc('error.failedToLoad')}</Alert
-		>
+			{$warehousesOfChannelQuery.error.message}
+		</Alert>
 	{:else if $warehousesOfChannelQuery.data?.channel?.warehouses}
 		<Accordion
 			open={false}
@@ -104,9 +107,9 @@
 				</div>
 			{/each}
 
-			{#if $allWarehouses.data?.warehouses}
-				<div class="pt-2 mt-2 border-t border-gray-200">
-					{#if showAddWarehouses}
+			<div class="pt-2 mt-2 border-t border-gray-200">
+				{#if showAddWarehouses}
+					{#if $allWarehouses.data?.warehouses}
 						{@const allWh = $allWarehouses.data?.warehouses?.edges.map((edge) => edge.node)}
 						{@const availableWarehouses = differenceBy(
 							allWh,
@@ -124,16 +127,25 @@
 							class="mb-2 w-full"
 							onchange={(opts) => {
 								const selectedIds = opts?.map((opt) => opt.value as string) || [];
-								removeWarehouses = removeWarehouses.filter(id => !selectedIds.includes(id));
+								removeWarehouses = removeWarehouses.filter((id) => !selectedIds.includes(id));
 								addWarehouses = selectedIds;
 							}}
 						/>
+					{:else if $allWarehouses.fetching}
+						<SkeletonContainer>
+							<Skeleton class="h-4 w-full"></Skeleton>
+						</SkeletonContainer>
+					{:else if $allWarehouses.error}
+						<Alert variant="error" size="sm" bordered>
+							{$allWarehouses.error.message}
+						</Alert>
 					{/if}
-					<Button {disabled} endIcon={Plus} size="xs" onclick={() => (showAddWarehouses = true)}
-						>Add Warehouse</Button
-					>
-				</div>
-			{/if}
+				{/if}
+
+				<Button {disabled} endIcon={Plus} size="xs" onclick={() => (showAddWarehouses = true)}
+					>Add Warehouse</Button
+				>
+			</div>
 		</Accordion>
 	{/if}
 </div>

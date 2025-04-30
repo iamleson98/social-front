@@ -25,7 +25,7 @@
 		loading = false,
 		fullWidth = false,
 		href,
-		children,
+		children = noopChildren,
 		startIcon,
 		endIcon,
 		disabled,
@@ -40,7 +40,22 @@
 		};
 	};
 
-	let extraProps = $derived(href ? { href } : {});
+	let extraProps = $derived.by(() => {
+		const res: Record<string, unknown> = {};
+
+		if (href) {
+			res.href = href;
+
+			if (disabled !== undefined) {
+				res['aria-disabled'] = disabled;
+			}
+			return res;
+		} else {
+			res.disabled = disabled;
+		}
+
+		return res;
+	});
 </script>
 
 {#snippet noopChildren()}
@@ -61,32 +76,29 @@
 	class:uppercase={upper}
 	class:w-full={fullWidth}
 	{type}
-	disabled={loading || disabled}
 	use:bindAction
 	use:debounceClick={clickDebounceOptions}
 	{...restProps}
 	{...extraProps}
 >
 	{#if loading}
-		<span class="loading loading-dots loading-sm"></span>
-	{:else}
-		{@render buttonIcon({ icon: startIcon })}
-		{#if children}
-			{@render children()}
-		{:else}
-			{@render noopChildren()}
-		{/if}
-		{@render buttonIcon({ icon: endIcon })}
+		<div class="absolute inset-0 z-500 flex items-center justify-center">
+			<span class="loading loading-dots loading-sm"></span>
+		</div>
 	{/if}
+	{@render buttonIcon({ icon: startIcon })}
+	{@render children()}
+	{@render buttonIcon({ icon: endIcon })}
 </svelte:element>
 
 <style>
 	@import 'tailwindcss/theme';
 	.button {
-		@apply cursor-pointer outline-hidden! !select-none gap-1.5 appearance-none text-center inline-flex justify-center items-center leading-none grow-0 font-medium focus:ring-4;
+		@apply cursor-pointer relative outline-hidden! !select-none gap-1.5 appearance-none text-center inline-flex justify-center items-center leading-none grow-0 font-medium focus:ring-4;
 		-webkit-tap-highlight-color: transparent;
 	}
-	.button[disabled] {
+	.button[disabled],
+	.button[aria-disabled='true'] {
 		@apply !text-gray-500 !bg-gray-200 !cursor-not-allowed !pointer-events-none !touch-none !border-none;
 	}
 	.button-xs {

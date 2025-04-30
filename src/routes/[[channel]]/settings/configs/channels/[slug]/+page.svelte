@@ -42,7 +42,8 @@
 	const channelsQuery = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
 		requestPolicy: 'network-only',
-		query: CHANNELS_QUERY
+		query: CHANNELS_QUERY,
+		pause: true
 	});
 
 	let channelToReplaceId = $state<string>();
@@ -75,19 +76,46 @@
 		removeWarehouses: [],
 		currencyCode: ''
 	});
+	/** the existing channel props, used for keeping track of changes */
 	let oldChannel = $state<Channel>();
+
+	onMount(() => {
+		const unsub = channelDetailQuery.subscribe((result) => {
+			if (result.data?.channel) {
+				oldChannel = result.data.channel;
+				channelValues = {
+					...channelValues,
+					name: result.data.channel.name,
+					slug: result.data.channel.slug,
+					isActive: result.data.channel.isActive,
+					defaultCountry: result.data.channel?.defaultCountry?.code as CountryCode,
+					currencyCode: result.data.channel.currencyCode
+				};
+			}
+		});
+
+		return unsub;
+	});
+
+	$effect(() => {
+		if (openDeleteModal) channelsQuery.resume();
+	});
 
 	let nothingChanged = $derived.by(() => {
 		if (!oldChannel) return true;
-		const shippingZonesChanged = (channelValues.addShippingZones?.length as number) > 0 || (channelValues.removeShippingZones?.length as number) > 0;
-		const warehousesChanged = (channelValues.addWarehouses?.length as number) > 0 || (channelValues.removeWarehouses?.length as number) > 0;
+
+		const shippingZonesNotChanged =
+			!channelValues.addShippingZones?.length && !channelValues.removeShippingZones?.length;
+		const warehousesNotChanged =
+			!channelValues.addWarehouses?.length && !channelValues.removeWarehouses?.length;
+
 		return (
 			channelValues.name === oldChannel.name &&
 			channelValues.slug === oldChannel.slug &&
 			channelValues.isActive === oldChannel.isActive &&
 			channelValues.defaultCountry === oldChannel.defaultCountry?.code &&
-			!shippingZonesChanged &&
-			!warehousesChanged
+			shippingZonesNotChanged &&
+			warehousesNotChanged
 		);
 	});
 
@@ -111,24 +139,6 @@
 		}
 		validate();
 	};
-
-	onMount(() => {
-		const unsub = channelDetailQuery.subscribe((result) => {
-			if (result.data?.channel) {
-				oldChannel = result.data.channel;
-				channelValues = {
-					...channelValues,
-					name: result.data.channel.name,
-					slug: result.data.channel.slug,
-					isActive: result.data.channel.isActive,
-					defaultCountry: result.data.channel?.defaultCountry?.code as CountryCode,
-					currencyCode: result.data.channel.currencyCode,
-				};
-			}
-		});
-
-		return unsub;
-	});
 
 	const handleDeleteChannel = async () => {
 		const variable: MutationChannelDeleteArgs = {
@@ -158,7 +168,7 @@
 
 	const handleUpdateChannel = async () => {
 		if (!validate()) return;
-		const newSlug = channelValues.slug;
+
 		loading = true;
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'channelUpdate'>,
@@ -176,7 +186,7 @@
 			message: 'Channel updated successfully'
 		});
 
-		await goto(AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(newSlug as string), {
+		await goto(AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(channelValues.slug as string), {
 			replaceState: true
 		});
 	};
@@ -237,6 +247,7 @@
 							label={channelValues.isActive ? 'Active' : 'Inactive'}
 							bind:checked={channelValues.isActive}
 							disabled={loading}
+							size="sm"
 						/>
 					</div>
 				</div>
@@ -282,16 +293,18 @@
 					</Alert>
 				</Modal>
 
-				<div class="mt-3 flex flex-col">
+				<div class="mt-3 flex flex-col gap-1">
 					<Checkbox
 						label="Allow unpaid orders"
 						checked={channelValues.orderSettings?.allowUnpaidOrders}
 						disabled={loading}
+						size="sm"
 					/>
 					<Checkbox
 						label="Allow partial payments"
 						checked={channelValues.orderSettings?.automaticallyConfirmAllNewOrders}
 						disabled={loading}
+						size="sm"
 					/>
 				</div>
 			</div>
@@ -325,7 +338,8 @@
 					variant="light"
 					color="gray"
 					disabled={loading}
-					onclick={() => goto(AppRoute.SETTINGS_CONFIGS_CHANNELS())}>Back</Button
+					href={AppRoute.SETTINGS_CONFIGS_CHANNELS()}
+					>Back</Button
 				>
 				<Button disabled={loading || nothingChanged} onclick={handleUpdateChannel}>Update</Button>
 			</div>
