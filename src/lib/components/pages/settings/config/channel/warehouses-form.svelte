@@ -137,6 +137,7 @@
 					{disabled}
 					label="Select Warehouse"
 					onchange={handleAddWarehouses}
+					class="w-full"
 				/>
 			{:else if $allWarehouses.fetching}
 				<SkeletonContainer>

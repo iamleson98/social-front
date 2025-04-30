@@ -137,6 +137,7 @@
 					options={availableZones}
 					label="Select Shipping Zone"
 					onchange={handleAddShippingZones}
+					class="w-full"
 				/>
 			{:else if $allShippingZones.error}
 				<Alert variant="error" size="xs" bordered>
