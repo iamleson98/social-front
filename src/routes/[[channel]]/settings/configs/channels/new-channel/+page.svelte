@@ -20,10 +20,10 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { getCountryName } from '$lib/utils/address';
 	import { CHANNELS } from '$lib/utils/channels';
-	import NewChannelShippingZones from '$lib/components/pages/settings/config/channel/new-channel-shipping-zones.svelte';
-	import NewChannelWarehouses from '$lib/components/pages/settings/config/channel/new-channel-warehouses.svelte';
 	import { goto } from '$app/navigation';
 	import { AppRoute } from '$lib/utils';
+	import ShippingZonesForm from '$lib/components/pages/settings/config/channel/shipping-zones-form.svelte';
+	import WarehousesForm from '$lib/components/pages/settings/config/channel/warehouses-form.svelte';
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 
@@ -89,8 +89,11 @@
 		return true;
 	};
 
-	const handleNameChange = () => {
-		channelValues.slug = slugify(channelValues.name, { lower: true });
+	const handleFormChange = (field: keyof ChannelCreateInput) => {
+		if (field === 'name' && typeof channelValues.name === 'string') {
+			channelValues.slug = slugify(channelValues.name, { lower: true });
+		}
+		validate();
 	};
 
 	const handleAddChannel = async () => {
@@ -135,8 +138,7 @@
 					required
 					disabled={loading}
 					class="flex-1"
-					oninput={handleNameChange}
-					inputDebounceOption={{ onInput: () => handleNameChange() }}
+					inputDebounceOption={{ onInput: () => handleFormChange('name') }}
 				/>
 				<Input
 					label="Slug"
@@ -146,7 +148,7 @@
 					variant={channelFormErrors?.slug?.length ? 'error' : 'info'}
 					subText={channelFormErrors?.slug?.length ? channelFormErrors.slug[0] : ''}
 					disabled={loading}
-					inputDebounceOption={{ onInput: () => handleNameChange() }}
+					inputDebounceOption={{ onInput: () => handleFormChange('slug') }}
 				/>
 			</div>
 
@@ -154,6 +156,7 @@
 				<Input
 					label="Order expiration"
 					bind:value={channelValues.orderSettings!.deleteExpiredOrdersAfter}
+					inputDebounceOption={{ onInput: () => handleFormChange('orderSettings') }}
 					disabled={loading}
 					class="flex-1"
 					type="number"
@@ -248,7 +251,7 @@
 
 		<!-- MARK: channel detail sidebar -->
 		<div class="w-1/3">
-			<NewChannelShippingZones
+			<!-- <NewChannelShippingZones
 				channelSlug={"channelValues.slug"}
 				bind:addShippingZones
 				bind:removeShippingZones
@@ -258,6 +261,15 @@
 				channelSlug={channelValues.slug}
 				bind:addWarehouses
 				bind:removeWarehouses
+				disabled={loading}
+			/> -->
+
+			<ShippingZonesForm
+				bind:addShippingZones={addShippingZones}
+				disabled={loading}
+			/>
+			<WarehousesForm
+				bind:addWarehouses={addWarehouses}
 				disabled={loading}
 			/>
 		</div>

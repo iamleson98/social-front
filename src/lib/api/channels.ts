@@ -51,6 +51,9 @@ query Channel($slug: String!) {
     paymentSettings {
       defaultTransactionFlowStrategy
     }
+    stockSettings {
+      allocationStrategy
+    }
   }
 }
 `;

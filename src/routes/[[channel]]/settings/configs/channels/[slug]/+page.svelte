@@ -4,6 +4,7 @@
 	import { CHANNEL_DELETE_MUTATION, CHANNEL_UPDATE_MUTATION } from '$lib/api/admin/channels';
 	import { CHANNEL_DETAILS_QUERY_STORE, CHANNELS_QUERY } from '$lib/api/channels';
 	import {
+		AllocationStrategyEnum,
 		MarkAsPaidStrategyEnum,
 		TransactionFlowStrategyEnum,
 		type Channel,
@@ -30,9 +31,9 @@
 	import { onMount } from 'svelte';
 	import slugify from 'slugify';
 	import ChannelDetailSkeleton from '$lib/components/pages/settings/config/channel/channel-detail-skeleton.svelte';
-	import ChannelShippingZones from '$lib/components/pages/settings/config/channel/channel-shipping-zones.svelte';
-	import ChannelWarehouses from '$lib/components/pages/settings/config/channel/channel-warehouses.svelte';
-	import { isEqual, omit } from 'es-toolkit';
+	import { omit } from 'es-toolkit';
+	import ShippingZonesForm from '$lib/components/pages/settings/config/channel/shipping-zones-form.svelte';
+	import WarehousesForm from '$lib/components/pages/settings/config/channel/warehouses-form.svelte';
 
 	const channelDetailQuery = operationStore<Pick<Query, 'channel'>>({
 		kind: 'query',
@@ -90,6 +91,9 @@
 		},
 		paymentSettings: {
 			defaultTransactionFlowStrategy: TransactionFlowStrategyEnum.Charge
+		},
+		stockSettings: {
+			allocationStrategy: AllocationStrategyEnum.PrioritizeSortingOrder
 		}
 	});
 	/** the existing channel props, used for keeping track of changes */
@@ -314,29 +318,6 @@
 						disabled={loading}
 					/>
 				</div>
-				<Modal
-					open={openDeleteModal}
-					header={delModalHeader}
-					onOk={handleDeleteChannel}
-					onCancel={() => (openDeleteModal = false)}
-					onClose={() => (openDeleteModal = false)}
-					closeOnOutsideClick
-					size="sm"
-					cancelText={$tranFunc('common.cancel')}
-					okText={$tranFunc('btn.delete')}
-				>
-					<Select
-						options={replaceChannelOptions}
-						bind:value={channelToReplaceId}
-						label="Please specify channel to replace"
-						placeholder="Channel to replace"
-					/>
-
-					<Alert variant="info" size="sm" bordered class="mt-3">
-						Specify a new channel to assign products to. The replace channel must have the same
-						currency as deleting channel
-					</Alert>
-				</Modal>
 
 				<div class="mt-3 flex flex-col gap-1">
 					<Checkbox
@@ -388,13 +369,14 @@
 
 			<!-- MARK: channel detail sidebar -->
 			<div class="w-1/3">
-				<ChannelShippingZones
+				<ShippingZonesForm
 					channelSlug={channel.slug}
 					bind:addShippingZones={channelValues.addShippingZones as string[]}
 					bind:removeShippingZones={channelValues.removeShippingZones as string[]}
 					disabled={loading}
 				/>
-				<ChannelWarehouses
+
+				<WarehousesForm
 					channelSlug={channel.slug}
 					bind:addWarehouses={channelValues.addWarehouses as string[]}
 					bind:removeWarehouses={channelValues.removeWarehouses as string[]}
@@ -421,4 +403,28 @@
 			</div>
 		</div>
 	</div>
+
+	<Modal
+		open={openDeleteModal}
+		header={delModalHeader}
+		onOk={handleDeleteChannel}
+		onCancel={() => (openDeleteModal = false)}
+		onClose={() => (openDeleteModal = false)}
+		closeOnOutsideClick
+		size="sm"
+		cancelText={$tranFunc('common.cancel')}
+		okText={$tranFunc('btn.delete')}
+	>
+		<Select
+			options={replaceChannelOptions}
+			bind:value={channelToReplaceId}
+			label="Please specify channel to replace"
+			placeholder="Channel to replace"
+		/>
+
+		<Alert variant="info" size="sm" bordered class="mt-3">
+			Specify a new channel to assign products to. The replace channel must have the same currency
+			as deleting channel
+		</Alert>
+	</Modal>
 {/if}
