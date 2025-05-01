@@ -219,7 +219,7 @@
 					bind:slug={channelValues.slug as string}
 					bind:defaultCountry={channelValues.defaultCountry as CountryCode}
 					bind:isActive={channelValues.isActive as boolean}
-					bind:currencyCode={channelValues.currencyCode as string}
+					bind:currencyCode={channelValues.currencyCode}
 					bind:allowUnpaidOrders={channelValues.orderSettings!.allowUnpaidOrders as boolean}
 					bind:deleteExpiredOrdersAfter={
 						channelValues.orderSettings!.deleteExpiredOrdersAfter as number

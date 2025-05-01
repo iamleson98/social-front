@@ -62,25 +62,23 @@
 </div>
 
 {#snippet card(title: string, description: string, href: string, icon: string)}
-	<div class="w-1/2 mobile-l:w-full p-1">
-		<div class="card bg-white border border-gray-200 card-sm">
-			<div class="card-body">
-				<h2 class="card-title">
-					<Icon {icon} class="size-5" />
-					<span>{title}</span>
-				</h2>
-				<p>
-					{description}
-				</p>
-				<div class="justify-end card-actions">
-					<Button {href} size="xs" variant="light">{$tranFunc('btn.goto')}</Button>
-				</div>
+	<div class="card bg-white border border-gray-200 card-sm">
+		<div class="card-body">
+			<h2 class="card-title">
+				<Icon {icon} class="size-5" />
+				<span>{title}</span>
+			</h2>
+			<p>
+				{description}
+			</p>
+			<div class="justify-end card-actions">
+				<Button {href} size="xs" variant="light">{$tranFunc('btn.goto')}</Button>
 			</div>
 		</div>
 	</div>
 {/snippet}
 
-<dir class="flex flex-wrap flex-row mobile-l:flex-col">
+<dir class="grid grid-cols-2 mobile-l:grid-cols-1 gap-2">
 	{#each items as item, idx (idx)}
 		{@render card(item.title, item.description, item.href, item.icon)}
 	{/each}

@@ -1,11 +1,11 @@
 <script lang="ts">
-	import FilterBox from '$lib/components/common/filter-box/filter-box.svelte';
-	import type { FilterProps, SingleFilter } from '$lib/components/common/filter-box/types';
-	import { FilterCog } from '$lib/components/icons';
-	import { Button } from '$lib/components/ui';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
+	import { FilterButton } from '$lib/components/common/filter-box';
+	import type {
+		FilterComponentType,
+		FilterProps,
+		SingleFilter
+	} from '$lib/components/common/filter-box/types';
 	import { Input } from '$lib/components/ui/Input';
-	import { Popover } from '$lib/components/ui/Popover';
 	import { Select } from '$lib/components/ui/select';
 
 	const FILTER_OPTIONS: FilterProps[] = [
@@ -43,46 +43,23 @@
 		}
 	];
 
-	let isFilterOpening = $state(false);
-
 	let filters = $state<SingleFilter[]>([]);
-
-	const handleApplyClick = (newFilters: SingleFilter[]) => {
-		filters = newFilters;
-		isFilterOpening = false;
-	};
 </script>
 
-{#snippet trigger(opts: DropdownTriggerInterface)}
-	<Button variant="light" size="sm" {...opts} class="indicator" endIcon={FilterCog}>
-		{#if filters.length}
-			<span class="indicator-item badge badge-xs text-white! bg-blue-500">{filters.length}</span>
-		{/if}
-		Filters
-	</Button>
-{/snippet}
-
-{#snippet priceCmp({
-	onValue
-}: {
-	onValue: (value: string[] | number[] | string | number) => void;
-})}
+{#snippet priceCmp({ onValue, initialValue }: FilterComponentType)}
 	<Input
 		size="xs"
 		placeholder="Enter price"
 		type="number"
 		min="0"
+		value={initialValue}
 		inputDebounceOption={{
 			onInput: (evt) => onValue(((evt as Event).target as HTMLInputElement).value)
 		}}
 	/>
 {/snippet}
 
-{#snippet priceBetween({
-	onValue
-}: {
-	onValue: (value: string[] | number[] | string | number) => void;
-})}
+{#snippet priceBetween({ onValue, initialValue }: FilterComponentType)}
 	{@const bounds = ['', '']}
 	<div class="flex gap-1 flex-col">
 		<Input
@@ -91,6 +68,7 @@
 			placeholder=">="
 			type="number"
 			min="0"
+			value={(initialValue as string[])?.[0]}
 			inputDebounceOption={{
 				onInput: (evt) => {
 					bounds[0] = ((evt as Event).target as HTMLInputElement).value;
@@ -104,6 +82,7 @@
 			class="w-full"
 			type="number"
 			min="0"
+			value={(initialValue as string[])?.[1]}
 			inputDebounceOption={{
 				onInput: (evt) => {
 					bounds[1] = ((evt as Event).target as HTMLInputElement).value;
@@ -114,20 +93,8 @@
 	</div>
 {/snippet}
 
-{#snippet categoryIs({
-	onValue
-}: {
-	onValue: (value: string[] | number[] | string | number) => void;
-})}
+{#snippet categoryIs({ onValue }: FilterComponentType)}
 	<Select options={[]} size="xs" />
 {/snippet}
 
-<Popover {trigger} placement="bottom-start" bind:open={isFilterOpening}>
-	<FilterBox
-		header="Filters"
-		options={FILTER_OPTIONS}
-		class="min-w-96 border border-gray-200"
-		onApply={handleApplyClick}
-		onClose={() => (isFilterOpening = false)}
-	/>
-</Popover>
+<FilterButton filterOptions={FILTER_OPTIONS} onApply={(flts) => (filters = flts)} />

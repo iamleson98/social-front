@@ -52,6 +52,8 @@
 	}: Props = $props();
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
+	const MIN_EXPIRE_DAY = 1;
+	const MAX_EXPIRE_DAY = 120;
 
 	const channelSchema = object({
 		name: string().nonempty(REQUIRED_ERROR),
@@ -62,7 +64,9 @@
 			.optional()
 			.refine((val) => val !== undefined, REQUIRED_ERROR),
 		orderSettings: object({
-			deleteExpiredOrdersAfter: number().min(1, 'Must be >= 1').max(120, 'Must be <= 120')
+			deleteExpiredOrdersAfter: number()
+				.min(MIN_EXPIRE_DAY, `Must be >= ${MIN_EXPIRE_DAY}`)
+				.max(MAX_EXPIRE_DAY, `Must be <= ${MAX_EXPIRE_DAY}`)
 		}),
 		currencyCode: string().nonempty(REQUIRED_ERROR)
 	});
@@ -72,7 +76,7 @@
 	let channelFormErrors = $state.raw<Partial<Record<keyof ChannelSchema, string[]>>>({});
 
 	$effect(() => {
-		formOk = Object.keys(channelFormErrors).length === 0;
+		formOk = !Object.keys(channelFormErrors).length;
 	});
 
 	const shopQuery = operationStore<Pick<Query, 'shop'>>({
@@ -89,7 +93,8 @@
 			defaultCountry,
 			orderSettings: {
 				deleteExpiredOrdersAfter
-			}
+			},
+			currencyCode
 		});
 		if (!parseResult.success) {
 			channelFormErrors = parseResult.error.formErrors.fieldErrors;
@@ -117,6 +122,7 @@
 		required
 		{disabled}
 		class="flex-1"
+		onblur={validate}
 	/>
 	<Input
 		label="Slug"
@@ -126,6 +132,8 @@
 		variant={channelFormErrors?.slug?.length ? 'error' : 'info'}
 		subText={channelFormErrors?.slug?.length ? channelFormErrors.slug[0] : ''}
 		{disabled}
+		inputDebounceOption={{ onInput: validate }}
+		onblur={validate}
 	/>
 </div>
 
@@ -136,12 +144,14 @@
 		{disabled}
 		class="flex-1"
 		type="number"
-		min={1}
-		max={120}
+		min={MIN_EXPIRE_DAY}
+		max={MAX_EXPIRE_DAY}
+		inputDebounceOption={{ onInput: validate }}
+		onblur={validate}
 		variant={channelFormErrors?.orderSettings?.length ? 'error' : 'info'}
 		subText={channelFormErrors?.orderSettings?.length
 			? channelFormErrors.orderSettings[0]
-			: 'The time in days after expired orders will be deleted. Allowed range between 1 and 120.'}
+			: `The time in days after expired orders will be deleted. Allowed range between ${MIN_EXPIRE_DAY} and ${MAX_EXPIRE_DAY}.`}
 	/>
 	<Checkbox label="Active" bind:checked={isActive} {disabled} size="sm" class="flex-1" />
 </div>
@@ -155,6 +165,8 @@
 		subText={channelFormErrors?.currencyCode?.length ? channelFormErrors.currencyCode[0] : ''}
 		disabled={!isCreatePage}
 		class="flex-1"
+		inputDebounceOption={{ onInput: validate }}
+		onblur={validate}
 	/>
 	<div class="flex-1">
 		{#if $shopQuery.fetching}
@@ -180,6 +192,8 @@
 					? channelFormErrors.defaultCountry[0]
 					: ''}
 				{disabled}
+				onchange={validate}
+				onblur={validate}
 			/>
 		{/if}
 	</div>

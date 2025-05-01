@@ -7,6 +7,7 @@
 	import type { Query, QueryCustomersArgs, User } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import dayjs from 'dayjs';
+	import CustomerFilter from '$lib/components/pages/settings/config/customers/filter.svelte';
 
 	const BATCH = 20;
 
@@ -97,7 +98,9 @@
 	<span>{dayjs(item.dateJoined).format('DD/MM/YYYY')}</span>
 {/snippet}
 
-<div class="bg-white rounded-lg border border-gray-200 p-4">
+<CustomerFilter />
+
+<div class="bg-white rounded-lg border border-gray-200 p-4 mt-2">
 	{#if $usersQuery.fetching}
 		<TableSkeleton numColumns={7} />
 	{:else if $usersQuery.error}

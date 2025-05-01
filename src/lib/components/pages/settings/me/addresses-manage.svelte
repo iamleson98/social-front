@@ -3,7 +3,7 @@
 	import { Edit, Plus, Trash } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { Checkbox, Label } from '$lib/components/ui/Input';
-	import AddressForm from '../checkout/address-form.svelte';
+	import AddressForm from '../../checkout/address-form.svelte';
 	import type {
 		Address,
 		AddressInput,

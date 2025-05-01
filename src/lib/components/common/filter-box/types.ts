@@ -7,14 +7,21 @@ export type FilterProps = {
   key: string;
   operation: {
     operator: FilterOperator;
-    component: Snippet<[{ onValue: FilterComponentCallback }]>;
+    component: Snippet<[FilterComponentType]>;
   }[];
 };
+
+export type FilterComponentType = {
+  onValue: FilterComponentCallback;
+  initialValue?: FilterItemValue;
+}
 
 export type SingleFilter = {
   key: string;
   operator: FilterOperator;
-  value?: string[] | number[] | string | number | boolean;
+  value?: FilterItemValue;
 };
 
-export type FilterComponentCallback = (value: string[] | number[] | string | number | boolean) => void;
+export type FilterItemValue = string[] | number[] | boolean[] | string | number | boolean;
+
+export type FilterComponentCallback = (value: FilterItemValue) => void;

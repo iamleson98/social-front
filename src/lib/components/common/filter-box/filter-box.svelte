@@ -10,12 +10,20 @@
 		header?: string;
 		onClose?: () => void;
 		class?: string;
+		filters?: SingleFilter[];
 		onApply?: (filters: SingleFilter[]) => void;
 	};
 
-	let { options, header, onClose, class: className = '', onApply }: Props = $props();
+	let {
+		options,
+		header,
+		onClose,
+		class: className = '',
+		filters = $bindable([]),
+		onApply
+	}: Props = $props();
 
-	let activeFilters = $state<Partial<SingleFilter>[]>([]);
+	let activeFilters = $state<Partial<SingleFilter>[]>(filters);
 	let availableFilters = $derived.by(() => {
 		const usedFilterMap: Record<string, boolean> = {};
 		for (const { key, operator, value } of activeFilters) {
@@ -48,7 +56,11 @@
 		activeFilters = activeFilters.filter((_, idx) => idx !== index);
 	};
 
-	const handleApplyClick = () => onApply?.(activeFilters as SingleFilter[]);
+	const handleApplyClick = () => {
+		filters = activeFilters as SingleFilter[];
+		onApply?.(filters);
+		onClose?.();
+	};
 </script>
 
 <div class="{className} bg-white rounded-lg p-2 shadow-md">
@@ -64,12 +76,12 @@
 					<Select
 						options={availableFilters}
 						size="xs"
-						class="w-[30%]!"
+						class="flex-2"
 						bind:value={filter.key}
 						placeholder="Select filter"
 					/>
 
-					<div class="w-[60%] flex items-center gap-1">
+					<div class="flex-4 flex items-center gap-1">
 						{#if filter.key}
 							{@const operations = options.find(({ key }) => key === filter.key)?.operation ?? []}
 							{@const operatorOpts = operations.map(({ operator }) => ({
@@ -80,23 +92,24 @@
 							<Select
 								options={operatorOpts}
 								size="xs"
-								class="w-[49.5%]!"
+								class="flex-1"
 								bind:value={filter.operator}
 							/>
 							{#if filter.operator}
 								{@const component = operations.find(
 									({ operator }) => operator === filter.operator
 								)?.component}
-								<div class="w-[49.5%]">
+								<div class="flex-1">
 									{@render component?.({
-										onValue: (vl) => (filter.value = vl)
+										onValue: (value) => (filter.value = value),
+										initialValue: filter.value
 									})}
 								</div>
 							{/if}
 						{/if}
 					</div>
 
-					<div class="w-[10%] text-right">
+					<div class="flex-1 text-right">
 						<IconButton
 							icon={Trash}
 							rounded
