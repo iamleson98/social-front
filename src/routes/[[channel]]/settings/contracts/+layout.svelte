@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { page } from '$app/state';
-	import { Plus } from '$lib/components/icons';
-	import { Button } from '$lib/components/ui';
 	import { AppRoute } from '$lib/utils';
 	import type { Snippet } from 'svelte';
+	import HeadBar from '$lib/components/pages/settings/config/head-bar.svelte';
+	import { tranFunc } from '$i18n';
 
 	type Props = {
 		children: Snippet;
@@ -14,21 +13,14 @@
 	const newContractPath = AppRoute.SETTINGS_CONTRACTS_NEW();
 </script>
 
-<div class="flex items-center justify-between mb-3 px-3 py-2 rounded-lg bg-white border border-gray-200">
-	<div class="breadcrumbs text-sm">
-		<ul>
-			<li><a href={AppRoute.SETTINGS_CONTRACTS()}>Contracts</a></li>
-			{#if page.url.pathname === newContractPath}
-				<li>Add Contract</li>
-			{:else if page.route.id === '/[[channel]]/settings/contracts/[id]'}
-				<li>{page.params.id}</li>
-			{/if}
-		</ul>
-	</div>
-	<div>
-		<Button size="xs" endIcon={Plus} href={newContractPath}>New Contract</Button>
-	</div>
-</div>
+<HeadBar
+	listingPageHref={AppRoute.SETTINGS_CONTRACTS()}
+	listingPageLabel={$tranFunc('settings.contracts')}
+	newPageHref={newContractPath}
+	newPageLabel="New Contract"
+	detailRouteID="/[[channel]]/settings/contracts/[id]"
+	detailPageLabelGetter={(page) => page.params.id}
+/>
 
 <div>
 	{@render children()}

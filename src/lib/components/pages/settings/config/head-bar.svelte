@@ -9,7 +9,7 @@
 		listingPageLabel: string;
 		newPageHref: string;
 		newPageLabel: string;
-    detailRouteID: string;
+		detailRouteID: string;
 		detailPageLabelGetter: (page: Page<Record<string, string>, string | null>) => string;
 	};
 
@@ -19,7 +19,7 @@
 		newPageHref,
 		newPageLabel,
 		detailRouteID,
-		detailPageLabelGetter,
+		detailPageLabelGetter
 	}: Props = $props();
 </script>
 
@@ -36,7 +36,7 @@
 			{/if}
 		</ul>
 	</div>
-	<div>
+	{#if newPageHref}
 		<Button size="xs" endIcon={Plus} href={newPageHref}>{newPageLabel}</Button>
-	</div>
+	{/if}
 </div>

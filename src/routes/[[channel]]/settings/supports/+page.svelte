@@ -1,10 +1,8 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import { Dots, Edit, Icon, TagFilled, Trash } from '$lib/components/icons';
-	// import { Button } from '$lib/components/ui';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown, type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
-	// import { AlertModal } from '$lib/components/ui/Modal';
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';

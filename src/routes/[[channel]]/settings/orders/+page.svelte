@@ -5,7 +5,7 @@
 	import { Table, TableSkeleton, type TableColumnProps } from '$lib/components/ui/Table';
 	import { type Order, type Query } from '$lib/gql/graphql';
 	import {
-	formatCurrency,
+		formatCurrency,
 		orderStatusBadgeClass,
 		paymentStatusBadgeClass,
 		type PaginationOptions
@@ -18,6 +18,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { tranFunc } from '$i18n';
 	import { Badge } from '$lib/components/ui/badge';
+	import HeadBar from '$lib/components/pages/settings/config/head-bar.svelte';
 
 	const BATCH_LOAD = 20;
 
@@ -106,11 +107,14 @@
 	/>
 {/snippet}
 
-<div
-	class="rounded-lg bg-white border border-gray-200 px-3 py-2 flex items-center text-sm justify-between"
->
-	<div>{$tranFunc('settings.orders')}</div>
-</div>
+<HeadBar
+	listingPageHref={AppRoute.SETTINGS_ORDERS()}
+	listingPageLabel={$tranFunc('settings.orders')}
+	newPageHref=""
+	newPageLabel=""
+	detailRouteID="/[[channel]]/settings/orders/[id]"
+	detailPageLabelGetter={(page) => page.params.id}
+/>
 
 <div class="rounded-lg bg-white border border-gray-200 p-4 mt-3">
 	{#if $userOrdersStore.fetching}
