@@ -93,7 +93,8 @@
 					currencyCode: oldChannel.currencyCode,
 					orderSettings: omit(oldChannel.orderSettings, ['__typename']),
 					checkoutSettings: omit(oldChannel.checkoutSettings, ['__typename']),
-					paymentSettings: omit(oldChannel.paymentSettings, ['__typename'])
+					paymentSettings: omit(oldChannel.paymentSettings, ['__typename']),
+					stockSettings: omit(oldChannel.stockSettings, ['__typename'])
 				};
 			}
 		});

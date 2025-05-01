@@ -63,7 +63,8 @@
 			.refine((val) => val !== undefined, REQUIRED_ERROR),
 		orderSettings: object({
 			deleteExpiredOrdersAfter: number().min(1, 'Must be >= 1').max(120, 'Must be <= 120')
-		})
+		}),
+		currencyCode: string().nonempty(REQUIRED_ERROR)
 	});
 
 	type ChannelSchema = z.infer<typeof channelSchema>;
@@ -124,7 +125,6 @@
 		required
 		variant={channelFormErrors?.slug?.length ? 'error' : 'info'}
 		subText={channelFormErrors?.slug?.length ? channelFormErrors.slug[0] : ''}
-		inputDebounceOption={{ onInput: () => handleFormChange('slug') }}
 		{disabled}
 	/>
 </div>
@@ -138,7 +138,6 @@
 		type="number"
 		min={1}
 		max={120}
-		inputDebounceOption={{ onInput: () => handleFormChange('orderSettings') }}
 		variant={channelFormErrors?.orderSettings?.length ? 'error' : 'info'}
 		subText={channelFormErrors?.orderSettings?.length
 			? channelFormErrors.orderSettings[0]
@@ -148,34 +147,45 @@
 </div>
 
 <div class="mt-3 flex gap-3 items-start">
-	<Input label="Currency" bind:value={currencyCode} disabled={!isCreatePage} class="flex-1" />
-	<div class="flex-1">
-		{#if $shopQuery.fetching}
-			<SkeletonContainer>
-				<Skeleton class="h-5 w-full" />
-			</SkeletonContainer>
-		{:else if $shopQuery.error}
-			<Alert variant="error" size="sm" bordered>{$shopQuery.error.message}</Alert>
-		{:else if $shopQuery.data?.shop}
-			{@const countriesOpts = $shopQuery.data.shop.countries.map<SelectOption>((country) => ({
-				value: country.code,
-				label: country.country
-			}))}
-			<Select
-				label="Country"
-				options={countriesOpts}
-				placeholder="Select a country"
-				bind:value={defaultCountry}
-				required
-				variant={channelFormErrors?.defaultCountry?.length ? 'error' : 'info'}
-				subText={channelFormErrors?.defaultCountry?.length
-					? channelFormErrors.defaultCountry[0]
-					: ''}
-				onchange={() => handleFormChange('defaultCountry')}
-				{disabled}
-			/>
-		{/if}
-	</div>
+	{#if $shopQuery.fetching}
+		<SkeletonContainer class="flex gap-3">
+			<Skeleton class="h-5 flex-1" />
+			<Skeleton class="h-5 flex-1" />
+		</SkeletonContainer>
+	{:else if $shopQuery.error}
+		<Alert variant="error" size="sm" bordered>{$shopQuery.error.message}</Alert>
+	{:else if $shopQuery.data?.shop}
+		{@const countriesOpts = $shopQuery.data.shop.countries.map<SelectOption>((country) => ({
+			value: country.code,
+			label: country.country
+		}))}
+		{@const currencies = $shopQuery.data.shop.channelCurrencies.map<SelectOption>((currency) => ({
+			value: currency,
+			label: currency
+		}))}
+		<Select
+			label="Currency"
+			options={currencies}
+			bind:value={currencyCode}
+			required
+			variant={channelFormErrors?.currencyCode?.length ? 'error' : 'info'}
+			subText={channelFormErrors?.currencyCode?.length ? channelFormErrors.currencyCode[0] : ''}
+			disabled={!isCreatePage}
+			class="flex-1"
+		/>
+
+		<Select
+			label="Country"
+			options={countriesOpts}
+			placeholder="Select a country"
+			bind:value={defaultCountry}
+			required
+			variant={channelFormErrors?.defaultCountry?.length ? 'error' : 'info'}
+			subText={channelFormErrors?.defaultCountry?.length ? channelFormErrors.defaultCountry[0] : ''}
+			{disabled}
+			class="flex-1"
+		/>
+	{/if}
 </div>
 
 <div class="mt-3 flex flex-col gap-1">
@@ -226,14 +236,14 @@
 	<Label label="Allocation strategy" />
 	<RadioButton
 		value={AllocationStrategyEnum.PrioritizeHighStock}
-		label="Prioritize high stock"
+		label="Prioritize warehouses with highest stock"
 		bind:group={allocationStrategy}
 		size="sm"
 		{disabled}
 	/>
 	<RadioButton
 		value={AllocationStrategyEnum.PrioritizeSortingOrder}
-		label="Prioritize sorting order"
+		label="Prioritize warehouses by sorting order"
 		bind:group={allocationStrategy}
 		size="sm"
 		{disabled}

@@ -42,7 +42,7 @@
 			defaultTransactionFlowStrategy: TransactionFlowStrategyEnum.Charge
 		},
 		stockSettings: {
-			allocationStrategy: AllocationStrategyEnum.PrioritizeHighStock
+			allocationStrategy: AllocationStrategyEnum.PrioritizeSortingOrder
 		}
 	});
 
@@ -55,12 +55,7 @@
 			Pick<Mutation, 'channelCreate'>,
 			MutationChannelCreateArgs
 		>(CHANNEL_CREATE_MUTATION, {
-			input: {
-				...channelValues,
-				defaultCountry: channelValues.defaultCountry as CountryCode,
-				addShippingZones: channelValues.addShippingZones,
-				addWarehouses: channelValues.addWarehouses
-			}
+			input: channelValues
 		});
 
 		loading = false;
@@ -130,6 +125,6 @@
 			disabled={loading}
 			href={AppRoute.SETTINGS_CONFIGS_CHANNELS()}>Back</Button
 		>
-		<Button disabled={loading} onclick={handleAddChannel}>Create</Button>
+		<Button disabled={loading || !formOk} onclick={handleAddChannel}>Create</Button>
 	</div>
 </div>
