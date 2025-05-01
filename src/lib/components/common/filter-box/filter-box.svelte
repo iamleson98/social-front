@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" generics="T">
 	import { CloseX, Plus, Trash } from '$lib/components/icons';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import Select from '$lib/components/ui/select/select.svelte';
@@ -6,12 +6,12 @@
 	import type { SelectOption } from '$lib/components/ui/select';
 
 	type Props = {
-		options: FilterProps[];
+		options: FilterProps<T>[];
 		header?: string;
 		onClose?: () => void;
 		class?: string;
-		filters?: SingleFilter[];
-		onApply?: (filters: SingleFilter[]) => void;
+		filters?: SingleFilter<T>[];
+		onApply?: () => void;
 	};
 
 	let {
@@ -23,9 +23,10 @@
 		onApply
 	}: Props = $props();
 
-	let activeFilters = $state<Partial<SingleFilter>[]>(filters);
+	let activeFilters = $state<SingleFilter<T>[]>(filters);
 	let availableFilters = $derived.by(() => {
-		const usedFilterMap: Record<string, boolean> = {};
+		const usedFilterMap: Partial<Record<keyof T, boolean>> = {};
+
 		for (const { key, operator, value } of activeFilters) {
 			if (key && operator && value !== undefined) {
 				usedFilterMap[key] = true;
@@ -35,9 +36,9 @@
 		const result: SelectOption[] = [];
 		for (const { key, label } of options) {
 			result.push({
-				value: key,
+				value: key as string | number,
 				label,
-				disabled: usedFilterMap[key]
+				disabled: usedFilterMap[key as keyof T]
 			});
 		}
 
@@ -49,7 +50,7 @@
 	);
 
 	const onClickAddFilter = () => {
-		activeFilters = activeFilters.concat({}); // empty to display select box
+		activeFilters = activeFilters.concat({} as SingleFilter<T>); // empty to display select box
 	};
 
 	const handleDeleteFilter = (index: number) => {
@@ -57,9 +58,9 @@
 	};
 
 	const handleApplyClick = () => {
-		filters = activeFilters as SingleFilter[];
-		onApply?.(filters);
-		onClose?.();
+		filters = activeFilters;
+		onApply?.();
+		// onClose?.();
 	};
 </script>
 
@@ -77,7 +78,7 @@
 						options={availableFilters}
 						size="xs"
 						class="flex-2"
-						bind:value={filter.key}
+						bind:value={filter.key as string}
 						placeholder="Select filter"
 					/>
 
@@ -102,7 +103,8 @@
 								<div class="flex-1">
 									{@render component?.({
 										onValue: (value) => (filter.value = value),
-										initialValue: filter.value
+										initialValue: filter.value,
+										// placeholder: filter.placeholder
 									})}
 								</div>
 							{/if}

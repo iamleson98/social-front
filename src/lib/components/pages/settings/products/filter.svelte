@@ -3,47 +3,48 @@
 	import type {
 		FilterComponentType,
 		FilterProps,
-		SingleFilter
+		// SingleFilter
 	} from '$lib/components/common/filter-box/types';
 	import { Input } from '$lib/components/ui/Input';
 	import { Select } from '$lib/components/ui/select';
+	import type { ProductFilterInput } from '$lib/gql/graphql';
 
-	const FILTER_OPTIONS: FilterProps[] = [
+	const FILTER_OPTIONS: FilterProps<ProductFilterInput>[] = [
 		{
 			label: 'Price',
 			key: 'price',
 			operation: [
 				{
-					operator: 'is',
+					operator: 'eq',
 					component: priceCmp
 				},
 				{
-					operator: 'lower',
+					operator: 'lte',
 					component: priceCmp
 				},
 				{
-					operator: 'greater',
+					operator: 'gte',
 					component: priceCmp
 				},
 				{
-					operator: 'between',
+					operator: 'range',
 					component: priceBetween
 				}
 			]
 		},
-		{
-			label: 'Category',
-			key: 'category',
-			operation: [
-				{
-					operator: 'is',
-					component: categoryIs
-				}
-			]
-		}
+		// {
+		// 	label: 'Category',
+		// 	key: 'category',
+		// 	operation: [
+		// 		{
+		// 			operator: 'is',
+		// 			component: categoryIs
+		// 		}
+		// 	]
+		// }
 	];
 
-	let filters = $state<SingleFilter[]>([]);
+	// let filters = $state<SingleFilter[]>([]);
 </script>
 
 {#snippet priceCmp({ onValue, initialValue }: FilterComponentType)}
@@ -97,4 +98,4 @@
 	<Select options={[]} size="xs" />
 {/snippet}
 
-<FilterButton filterOptions={FILTER_OPTIONS} onApply={(flts) => (filters = flts)} />
+<FilterButton filterOptions={FILTER_OPTIONS} />

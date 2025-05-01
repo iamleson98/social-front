@@ -4,7 +4,12 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Table, TableSkeleton, type TableColumnProps } from '$lib/components/ui/Table';
-	import type { Query, QueryCustomersArgs, User } from '$lib/gql/graphql';
+	import {
+		type CustomerFilterInput,
+		type Query,
+		type QueryCustomersArgs,
+		type User
+	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import dayjs from 'dayjs';
 	import CustomerFilter from '$lib/components/pages/settings/config/customers/filter.svelte';
@@ -19,6 +24,15 @@
 			first: BATCH
 		}
 	});
+
+	const onFilterChange = (filter: CustomerFilterInput) => {
+		usersQuery.reexecute({
+			variables: {
+				...$usersQuery.operation.variables,
+				filter
+			}
+		});
+	};
 
 	const USER_TABLE_COLUMNS: TableColumnProps<User>[] = [
 		{
@@ -98,7 +112,7 @@
 	<span>{dayjs(item.dateJoined).format('DD/MM/YYYY')}</span>
 {/snippet}
 
-<CustomerFilter />
+<CustomerFilter {onFilterChange} />
 
 <div class="bg-white rounded-lg border border-gray-200 p-4 mt-2">
 	{#if $usersQuery.fetching}
@@ -111,7 +125,7 @@
 		<Table
 			columns={USER_TABLE_COLUMNS}
 			items={$usersQuery.data?.customers?.edges.map((edge) => edge.node) || []}
-      pagination={$usersQuery.data.customers?.pageInfo}
+			pagination={$usersQuery.data.customers?.pageInfo}
 			rowsPerPage={BATCH}
 		/>
 	{/if}

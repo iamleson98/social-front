@@ -2,27 +2,35 @@
 	import FilterButton from '$lib/components/common/filter-box/filter-button.svelte';
 	import type {
 		FilterComponentType,
-		FilterProps,
-		SingleFilter
+		FilterConditions,
+		FilterProps
 	} from '$lib/components/common/filter-box/types';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Input } from '$lib/components/ui/Input';
+	import type { CustomerFilterInput, IntRangeInput } from '$lib/gql/graphql';
+	import dayjs from 'dayjs';
 
-	const FILTER_OPTIONS: FilterProps[] = [
+	type Props = {
+		onFilterChange: (filter: CustomerFilterInput) => void;
+	};
+
+	let { onFilterChange }: Props = $props();
+
+	const FILTER_OPTIONS: FilterProps<CustomerFilterInput>[] = [
 		{
 			label: 'Join date',
-			key: 'joinDate',
+			key: 'dateJoined',
 			operation: [
 				{
-					operator: 'lower',
+					operator: 'lte',
 					component: joinDateSingle
 				},
 				{
-					operator: 'greater',
+					operator: 'gte',
 					component: joinDateSingle
 				},
 				{
-					operator: 'between',
+					operator: 'range',
 					component: joinDateBetween
 				}
 			]
@@ -32,34 +40,67 @@
 			key: 'numberOfOrders',
 			operation: [
 				{
-					operator: 'in',
+					operator: 'oneOf',
 					component: numberOfOrdersSingle
 				},
 				{
-					operator: 'greater',
+					operator: 'gte',
 					component: numberOfOrdersSingle
 				},
 				{
-					operator: 'lower',
+					operator: 'lte',
 					component: numberOfOrdersSingle
 				},
 				{
-					operator: 'between',
+					operator: 'range',
 					component: numberOfOrdersBetween
 				}
 			]
 		}
 	];
 
-	let filters = $state<SingleFilter[]>([]);
+	const handleApply = (conditions: FilterConditions<CustomerFilterInput>) => {
+		const newFilters = {} as CustomerFilterInput;
+		let conditionChanged = false;
+
+		if ('dateJoined' in conditions) {
+			conditionChanged = true; //
+
+			if ('range' in conditions.dateJoined && Array.isArray(conditions.dateJoined.range)) {
+				newFilters.dateJoined = {
+					gte: conditions.dateJoined.range[0],
+					lte: conditions.dateJoined.range[1]
+				};
+			} else {
+				newFilters.dateJoined = conditions.dateJoined;
+			}
+		}
+
+		if ('numberOfOrders' in conditions) {
+			conditionChanged = true; //
+
+			if ('range' in conditions.numberOfOrders && Array.isArray(conditions.numberOfOrders.range)) {
+				newFilters.numberOfOrders = {
+					gte: conditions.numberOfOrders.range[0] as number,
+					lte: conditions.numberOfOrders.range[1] as number
+				};
+			} else {
+				newFilters.numberOfOrders = conditions.numberOfOrders as IntRangeInput;
+			}
+		}
+
+		if (conditionChanged) onFilterChange(newFilters);
+	};
 </script>
 
-{#snippet joinDateSingle({ onValue, initialValue }: FilterComponentType)}
+{#snippet joinDateSingle({ onValue, initialValue, placeholder }: FilterComponentType)}
 	<EaseDatePicker
 		size="xs"
 		value={{ date: initialValue as string }}
-		onchange={(value) => onValue(value.date as string)}
-		placeholder="Enter join date"
+		onchange={(value) => {
+			onValue(dayjs(value.date).format('YYYY-MM-DD'));
+		}}
+		{placeholder}
 		timeConfig={false}
 		autoApply={false}
 	/>
@@ -68,68 +109,56 @@
 {#snippet joinDateBetween({ onValue, initialValue }: FilterComponentType)}
 	{@const range = (initialValue || ['', '']) as string[]}
 	<div class="flex flex-col gap-1">
-		<EaseDatePicker
-			size="xs"
-			value={{ date: range[0] }}
-			onchange={(value) => {
-				range[0] = value.date as string;
+		{@render joinDateSingle({
+			onValue: (value) => {
+				range[0] = value as string;
 				onValue(range);
-			}}
-			placeholder="Start date"
-			timeConfig={false}
-			autoApply={false}
-		/>
-		<EaseDatePicker
-			size="xs"
-			value={{ date: range[1] }}
-			onchange={(value) => {
-				range[1] = value.date as string;
+			},
+			initialValue: range[0],
+			placeholder: 'Start date'
+		})}
+		{@render joinDateSingle({
+			onValue: (value) => {
+				range[1] = value as string;
 				onValue(range);
-			}}
-			placeholder="End date"
-			timeConfig={false}
-			autoApply={false}
-		/>
+			},
+			initialValue: range[1],
+			placeholder: 'End date'
+		})}
 	</div>
 {/snippet}
 
-{#snippet numberOfOrdersSingle({ onValue, initialValue }: FilterComponentType)}
+{#snippet numberOfOrdersSingle({ onValue, initialValue, placeholder }: FilterComponentType)}
 	<Input
 		size="xs"
 		type="number"
 		min="0"
 		value={initialValue as string}
-		onchange={(evt) => onValue((evt.target as HTMLInputElement).value)}
-		placeholder="Enter number"
+		onchange={(evt) => onValue(parseInt((evt.target as HTMLInputElement).value))}
+		{placeholder}
 	/>
 {/snippet}
 
 {#snippet numberOfOrdersBetween({ onValue, initialValue }: FilterComponentType)}
-	{@const range = (initialValue || ['', '']) as string[]}
+	{@const range = (initialValue || []) as number[]}
 	<div class="flex flex-col gap-1">
-		<Input
-			size="xs"
-			type="number"
-			min="0"
-			value={range[0]}
-			onchange={(evt) => {
-				range[0] = (evt.target as HTMLInputElement).value;
+		{@render numberOfOrdersSingle({
+			onValue: (value) => {
+				range[0] = value as number;
 				onValue(range);
-			}}
-			placeholder="From"
-		/>
-		<Input
-			size="xs"
-			type="number"
-			min="1"
-			value={range[1]}
-			onchange={(evt) => {
-				range[1] = (evt.target as HTMLInputElement).value;
+			},
+			initialValue: range[0],
+			placeholder: 'From'
+		})}
+		{@render numberOfOrdersSingle({
+			onValue: (value) => {
+				range[1] = value as number;
 				onValue(range);
-			}}
-			placeholder="To"
-		/>
+			},
+			initialValue: range[1],
+			placeholder: 'To'
+		})}
 	</div>
 {/snippet}
 
-<FilterButton filterOptions={FILTER_OPTIONS} onApply={(flts) => (filters = flts)} />
+<FilterButton filterOptions={FILTER_OPTIONS} onApply={handleApply} />
