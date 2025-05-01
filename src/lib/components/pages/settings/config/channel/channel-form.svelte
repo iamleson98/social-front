@@ -147,45 +147,42 @@
 </div>
 
 <div class="mt-3 flex gap-3 items-start">
-	{#if $shopQuery.fetching}
-		<SkeletonContainer class="flex gap-3">
-			<Skeleton class="h-5 flex-1" />
-			<Skeleton class="h-5 flex-1" />
-		</SkeletonContainer>
-	{:else if $shopQuery.error}
-		<Alert variant="error" size="sm" bordered>{$shopQuery.error.message}</Alert>
-	{:else if $shopQuery.data?.shop}
-		{@const countriesOpts = $shopQuery.data.shop.countries.map<SelectOption>((country) => ({
-			value: country.code,
-			label: country.country
-		}))}
-		{@const currencies = $shopQuery.data.shop.channelCurrencies.map<SelectOption>((currency) => ({
-			value: currency,
-			label: currency
-		}))}
-		<Select
-			label="Currency"
-			options={currencies}
-			bind:value={currencyCode}
-			required
-			variant={channelFormErrors?.currencyCode?.length ? 'error' : 'info'}
-			subText={channelFormErrors?.currencyCode?.length ? channelFormErrors.currencyCode[0] : ''}
-			disabled={!isCreatePage}
-			class="flex-1"
-		/>
-
-		<Select
-			label="Country"
-			options={countriesOpts}
-			placeholder="Select a country"
-			bind:value={defaultCountry}
-			required
-			variant={channelFormErrors?.defaultCountry?.length ? 'error' : 'info'}
-			subText={channelFormErrors?.defaultCountry?.length ? channelFormErrors.defaultCountry[0] : ''}
-			{disabled}
-			class="flex-1"
-		/>
-	{/if}
+	<Input
+		label="Currency"
+		bind:value={currencyCode}
+		required
+		variant={channelFormErrors?.currencyCode?.length ? 'error' : 'info'}
+		subText={channelFormErrors?.currencyCode?.length ? channelFormErrors.currencyCode[0] : ''}
+		disabled={!isCreatePage}
+		class="flex-1"
+	/>
+	<div class="flex-1">
+		{#if $shopQuery.fetching}
+			<SkeletonContainer class="flex gap-3">
+				<Skeleton class="h-5 flex-1" />
+				<Skeleton class="h-5 flex-1" />
+			</SkeletonContainer>
+		{:else if $shopQuery.error}
+			<Alert variant="error" size="sm" bordered>{$shopQuery.error.message}</Alert>
+		{:else if $shopQuery.data?.shop}
+			{@const countriesOpts = $shopQuery.data.shop.countries.map<SelectOption>((country) => ({
+				value: country.code,
+				label: country.country
+			}))}
+			<Select
+				label="Country"
+				options={countriesOpts}
+				placeholder="Select a country"
+				bind:value={defaultCountry}
+				required
+				variant={channelFormErrors?.defaultCountry?.length ? 'error' : 'info'}
+				subText={channelFormErrors?.defaultCountry?.length
+					? channelFormErrors.defaultCountry[0]
+					: ''}
+				{disabled}
+			/>
+		{/if}
+	</div>
 </div>
 
 <div class="mt-3 flex flex-col gap-1">

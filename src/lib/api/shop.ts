@@ -12,6 +12,5 @@ query Shop {
       code
       language
     }
-    channelCurrencies
   }
 }`
