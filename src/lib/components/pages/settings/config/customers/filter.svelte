@@ -2,17 +2,19 @@
 	import FilterButton from '$lib/components/common/filter-box/filter-button.svelte';
 	import type {
 		FilterComponentType,
-		FilterConditions,
-		FilterProps
+		FilterProps,
+		FilterResult
 	} from '$lib/components/common/filter-box/types';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Input } from '$lib/components/ui/Input';
-	import type { CustomerFilterInput, IntRangeInput } from '$lib/gql/graphql';
+	import type { CustomerFilterInput } from '$lib/gql/graphql';
 	import dayjs from 'dayjs';
 
 	type Props = {
-		onFilterChange: (filter: CustomerFilterInput) => void;
+		onFilterChange: (filter: FilterResult<CustomerFilterInput>) => void;
 	};
+
+	const THIS_YEAR = new Date().getFullYear();
 
 	let { onFilterChange }: Props = $props();
 
@@ -20,7 +22,7 @@
 		{
 			label: 'Join date',
 			key: 'dateJoined',
-			operation: [
+			operations: [
 				{
 					operator: 'lte',
 					component: joinDateSingle
@@ -38,9 +40,9 @@
 		{
 			label: 'Number of orders',
 			key: 'numberOfOrders',
-			operation: [
+			operations: [
 				{
-					operator: 'oneOf',
+					operator: 'eq',
 					component: numberOfOrdersSingle
 				},
 				{
@@ -58,39 +60,6 @@
 			]
 		}
 	];
-
-	const handleApply = (conditions: FilterConditions<CustomerFilterInput>) => {
-		const newFilters = {} as CustomerFilterInput;
-		let conditionChanged = false;
-
-		if ('dateJoined' in conditions) {
-			conditionChanged = true; //
-
-			if ('range' in conditions.dateJoined && Array.isArray(conditions.dateJoined.range)) {
-				newFilters.dateJoined = {
-					gte: conditions.dateJoined.range[0],
-					lte: conditions.dateJoined.range[1]
-				};
-			} else {
-				newFilters.dateJoined = conditions.dateJoined;
-			}
-		}
-
-		if ('numberOfOrders' in conditions) {
-			conditionChanged = true; //
-
-			if ('range' in conditions.numberOfOrders && Array.isArray(conditions.numberOfOrders.range)) {
-				newFilters.numberOfOrders = {
-					gte: conditions.numberOfOrders.range[0] as number,
-					lte: conditions.numberOfOrders.range[1] as number
-				};
-			} else {
-				newFilters.numberOfOrders = conditions.numberOfOrders as IntRangeInput;
-			}
-		}
-
-		if (conditionChanged) onFilterChange(newFilters);
-	};
 </script>
 
 {#snippet joinDateSingle({ onValue, initialValue, placeholder }: FilterComponentType)}
@@ -103,6 +72,13 @@
 		{placeholder}
 		timeConfig={false}
 		autoApply={false}
+		allowSelectMonthYears={{
+			showMonths: true,
+			showYears: {
+				min: 2010,
+				max: THIS_YEAR
+			}
+		}}
 	/>
 {/snippet}
 
@@ -161,4 +137,4 @@
 	</div>
 {/snippet}
 
-<FilterButton filterOptions={FILTER_OPTIONS} onApply={handleApply} />
+<FilterButton filterOptions={FILTER_OPTIONS} onApply={onFilterChange} />

@@ -4,9 +4,7 @@
 	import { IconButton } from '../Button';
 	import Button from '../Button/Button.svelte';
 	import { DropDown, type DropdownTriggerInterface, type MenuItemProps } from '../Dropdown';
-	import { SortIconsMap, type SortState, type TableProps } from './types';
-
-	const ROW_OPTIONS = [10, 20, 30, 50, 100];
+	import { ROW_OPTIONS, SortIconsMap, type RowOptions, type SortState, type TableProps } from './types';
 
 	let {
 		items,
@@ -56,19 +54,12 @@
 		}
 	};
 
-	const handleRowsPerPageChange = (num: number) => {
+	const handleRowsPerPageChange = (num: RowOptions) => {
 		if (num !== innerRowsPerPage) {
 			innerRowsPerPage = num;
 			onChangeRowsPerPage?.(num);
 		}
 	};
-
-	let PAGIN_OPTIONS = $derived(
-		ROW_OPTIONS.map<MenuItemProps>((num) => ({
-			children: `${num}`,
-			onclick: () => handleRowsPerPageChange(num)
-		}))
-	);
 </script>
 
 <table class="table {tableClass}">
@@ -127,6 +118,10 @@
 
 <!-- MARK: pagination -->
 {#if pagination}
+	{@const PAGIN_OPTIONS = ROW_OPTIONS.map<MenuItemProps>((num) => ({
+		children: `${num}`,
+		onclick: () => handleRowsPerPageChange(num)
+	}))}
 	<div class="mt-4 flex items-center justify-between">
 		<div>
 			{#snippet trigger(opts: DropdownTriggerInterface)}

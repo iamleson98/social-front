@@ -2,16 +2,16 @@
 	import { CloseX, Plus, Trash } from '$lib/components/icons';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import Select from '$lib/components/ui/select/select.svelte';
-	import type { FilterProps, SingleFilter } from './types';
-	import type { SelectOption } from '$lib/components/ui/select';
+	import type { FilterConditions, FilterItemValue, FilterOperator, FilterProps } from './types';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	type Props = {
 		options: FilterProps<T>[];
 		header?: string;
 		onClose?: () => void;
 		class?: string;
-		filters?: SingleFilter<T>[];
-		onApply?: () => void;
+		filters?: FilterConditions<T>;
+		onApply: (filters: FilterConditions<T>) => void;
 	};
 
 	let {
@@ -19,48 +19,61 @@
 		header,
 		onClose,
 		class: className = '',
-		filters = $bindable([]),
+		filters = new SvelteMap(),
 		onApply
 	}: Props = $props();
 
-	let activeFilters = $state<SingleFilter<T>[]>(filters);
+	let activeFilters = $state<FilterConditions<T>>(filters);
+
 	let availableFilters = $derived.by(() => {
 		const usedFilterMap: Partial<Record<keyof T, boolean>> = {};
 
-		for (const { key, operator, value } of activeFilters) {
-			if (key && operator && value !== undefined) {
+		for (const key of activeFilters.keys()) {
+			const filterOpt = activeFilters.get(key);
+			if (filterOpt && filterOpt.operator && filterOpt.value !== undefined) {
 				usedFilterMap[key] = true;
 			}
 		}
 
-		const result: SelectOption[] = [];
-		for (const { key, label } of options) {
-			result.push({
-				value: key as string | number,
-				label,
-				disabled: usedFilterMap[key as keyof T]
-			});
-		}
-
-		return result;
+		return options.map(({ key, label }) => ({
+			value: key as string | number,
+			label,
+			disabled: usedFilterMap[key]
+		}));
 	});
 
 	let disableAddFilterBtn = $derived(
-		activeFilters.some((filter) => !filter.key || !filter.operator || filter.value === undefined)
+		activeFilters
+			.entries()
+			.some(([key, value]) => !key || !value.operator || value.value === undefined)
 	);
 
 	const onClickAddFilter = () => {
-		activeFilters = activeFilters.concat({} as SingleFilter<T>); // empty to display select box
+		activeFilters.set('' as keyof T, {});
 	};
 
-	const handleDeleteFilter = (index: number) => {
-		activeFilters = activeFilters.filter((_, idx) => idx !== index);
+	const handleDeleteFilter = (key: keyof T) => {
+		activeFilters.delete(key);
 	};
 
 	const handleApplyClick = () => {
-		filters = activeFilters;
-		onApply?.();
-		// onClose?.();
+		onApply(activeFilters);
+	};
+
+	const handleItemKeyChange = (oldKey: keyof T, newKey?: keyof T) => {
+		if (oldKey === newKey) return;
+
+		if (newKey) {
+			activeFilters.set(newKey, {});
+		}
+		activeFilters.delete(oldKey);
+	};
+
+	const setFilterItemValue = (key: keyof T, operator: FilterOperator, value?: FilterItemValue) => {
+		activeFilters.set(key, {
+			operator,
+			value
+		});
 	};
 </script>
 
@@ -71,20 +84,22 @@
 	</dir>
 
 	<div class="p-2">
-		{#if activeFilters.length}
-			{#each activeFilters as filter, idx (idx)}
+		{#if activeFilters.size}
+			{#each activeFilters.keys() as key, idx (idx)}
+				{@const filterOpt = activeFilters.get(key)}
 				<div class="flex items-center gap-1 mt-1.5 justify-between">
 					<Select
 						options={availableFilters}
 						size="xs"
 						class="flex-2"
-						bind:value={filter.key as string}
+						value={key as string}
+						onchange={(vl) => handleItemKeyChange(key, vl?.value as keyof T)}
 						placeholder="Select filter"
 					/>
 
 					<div class="flex-4 flex items-center gap-1">
-						{#if filter.key}
-							{@const operations = options.find(({ key }) => key === filter.key)?.operation ?? []}
+						{#if key && filterOpt}
+							{@const operations = options.find((opt) => opt.key === key)?.operations ?? []}
 							{@const operatorOpts = operations.map(({ operator }) => ({
 								label: operator,
 								value: operator
@@ -94,17 +109,18 @@
 								options={operatorOpts}
 								size="xs"
 								class="flex-1"
-								bind:value={filter.operator}
+								value={filterOpt.operator}
+								onchange={(vl) => setFilterItemValue(key, vl?.value as FilterOperator)}
 							/>
-							{#if filter.operator}
+							{#if filterOpt.operator}
 								{@const component = operations.find(
-									({ operator }) => operator === filter.operator
+									({ operator }) => operator === filterOpt.operator
 								)?.component}
 								<div class="flex-1">
 									{@render component?.({
-										onValue: (value) => (filter.value = value),
-										initialValue: filter.value,
-										// placeholder: filter.placeholder
+										onValue: (value) =>
+											setFilterItemValue(key, filterOpt.operator as FilterOperator, value),
+										initialValue: filterOpt.value
 									})}
 								</div>
 							{/if}
@@ -118,7 +134,7 @@
 							size="xs"
 							variant="light"
 							color="red"
-							onclick={() => handleDeleteFilter(idx)}
+							onclick={() => handleDeleteFilter(key)}
 							aria-label="Delete filter"
 						/>
 					</div>
@@ -145,8 +161,11 @@
 				Add Filter
 			</Button>
 			<div class="gap-1">
-				<Button size="xs" variant="light" color="gray" onclick={() => (activeFilters = [])}
-					>Reset</Button
+				<Button
+					size="xs"
+					variant="light"
+					color="gray"
+					onclick={() => (activeFilters = new SvelteMap())}>Reset</Button
 				>
 				<Button size="xs" disabled={disableAddFilterBtn} onclick={handleApplyClick}>Apply</Button>
 			</div>

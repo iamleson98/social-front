@@ -3,9 +3,17 @@
 	import { operationStore } from '$lib/api/operation';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Table, TableSkeleton, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
+		Table,
+		TableSkeleton,
+		type RowOptions,
+		type SortState,
+		type TableColumnProps
+	} from '$lib/components/ui/Table';
+	import {
+		UserSortField,
 		type CustomerFilterInput,
+		type IntRangeInput,
 		type Query,
 		type QueryCustomersArgs,
 		type User
@@ -13,23 +21,32 @@
 	import { AppRoute } from '$lib/utils';
 	import dayjs from 'dayjs';
 	import CustomerFilter from '$lib/components/pages/settings/config/customers/filter.svelte';
+	import type { FilterResult } from '$lib/components/common/filter-box';
+	import { Input } from '$lib/components/ui/Input';
+	import { Search } from '$lib/components/icons';
 
-	const BATCH = 20;
+	let BATCH = $state<RowOptions>(20);
 
 	const usersQuery = operationStore<Pick<Query, 'customers'>, QueryCustomersArgs>({
 		kind: 'query',
 		requestPolicy: 'cache-and-network',
 		query: QUERY_CUSTOMERS,
 		variables: {
-			first: BATCH
+			first: (() => BATCH)()
 		}
 	});
 
-	const onFilterChange = (filter: CustomerFilterInput) => {
+	let filter = $state<CustomerFilterInput>({});
+
+	const onFilterChange = (newFilter: FilterResult<CustomerFilterInput>) => {
 		usersQuery.reexecute({
 			variables: {
 				...$usersQuery.operation.variables,
-				filter
+				filter: {
+					dateJoined: newFilter.dateJoined,
+					numberOfOrders: newFilter.numberOfOrders as IntRangeInput,
+					search: filter.search
+				}
 			}
 		});
 	};
@@ -41,15 +58,21 @@
 		},
 		{
 			title: 'First Name',
-			child: firstName
+			child: firstName,
+			sortable: true,
+			key: UserSortField.FirstName
 		},
 		{
 			title: 'Last Name',
-			child: lastName
+			child: lastName,
+			sortable: true,
+			key: UserSortField.LastName
 		},
 		{
 			title: 'Email',
-			child: email
+			child: email,
+			sortable: true,
+			key: UserSortField.Email
 		},
 		{
 			title: 'Status',
@@ -61,9 +84,13 @@
 		},
 		{
 			title: 'Joined At',
-			child: dateJoined
+			child: dateJoined,
+			sortable: true,
+			key: UserSortField.CreatedAt
 		}
 	];
+
+	const handleSortChange = (sort: SortState) => {};
 </script>
 
 {#snippet avatar({ item }: { item: User })}
@@ -112,7 +139,10 @@
 	<span>{dayjs(item.dateJoined).format('DD/MM/YYYY')}</span>
 {/snippet}
 
-<CustomerFilter {onFilterChange} />
+<div class="flex items-center gap-2">
+	<CustomerFilter {onFilterChange} />
+	<Input placeholder="Search" size="sm" startIcon={Search} bind:value={filter.search} />
+</div>
 
 <div class="bg-white rounded-lg border border-gray-200 p-4 mt-2">
 	{#if $usersQuery.fetching}
@@ -127,6 +157,8 @@
 			items={$usersQuery.data?.customers?.edges.map((edge) => edge.node) || []}
 			pagination={$usersQuery.data.customers?.pageInfo}
 			rowsPerPage={BATCH}
+			onChangeRowsPerPage={(no) => (BATCH = no)}
+			onSortChange={handleSortChange}
 		/>
 	{/if}
 </div>

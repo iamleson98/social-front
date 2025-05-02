@@ -1,11 +1,12 @@
 import type { Snippet } from "svelte";
+import type { SvelteMap } from "svelte/reactivity";
 
 export type FilterOperator = 'oneOf' | 'lte' | 'gte' | 'range' | 'eq';
 
 export type FilterProps<T> = {
   label: string;
   key: keyof T;
-  operation: {
+  operations: {
     operator: FilterOperator;
     component: Snippet<[FilterComponentType]>;
   }[];
@@ -23,7 +24,7 @@ export type SingleFilter<T> = {
   value?: FilterItemValue;
 };
 
-export type FilterConditions<T> = Record<keyof T, Record<FilterOperator, FilterItemValue>>;
+export type FilterConditions<T> = SvelteMap<keyof T, Partial<{ operator: FilterOperator; value: FilterItemValue }>>;
 
 export type FilterItemValue = string[] | number[] | boolean[] | string | number | boolean;
 

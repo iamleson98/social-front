@@ -28,3 +28,30 @@ query Customers($filter: CustomerFilterInput, $sortBy: UserSortingInput, $first:
     totalCount
   }
 }`;
+
+export const USER_DETAIL_QUERY = gql`
+query UserDetail($id: ID, $email: String) {
+  user(id: $id, email: $email) {
+    id
+    firstName
+    lastName
+    email
+    isStaff
+    isActive
+    dateJoined
+    metadata {
+      key
+      value
+    }
+    note
+    privateMetadata {
+      key
+      value
+    }
+    avatar(size: 100, format: WEBP) {
+      url
+      alt
+    }
+  }
+}`
+

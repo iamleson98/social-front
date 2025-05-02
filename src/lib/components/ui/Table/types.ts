@@ -3,6 +3,10 @@ import type { PageInfo } from "$lib/gql/graphql";
 import type { Snippet } from "svelte";
 
 
+export const ROW_OPTIONS = [10, 20, 30, 50, 100] as const;
+
+export type RowOptions = typeof ROW_OPTIONS[number];
+
 export type TableProps<T extends Record<string, unknown>> = {
   items: T[];
   columns: TableColumnProps<T>[];
@@ -10,10 +14,10 @@ export type TableProps<T extends Record<string, unknown>> = {
   pagination?: PageInfo;
   onNextPagelick?: (afterCursor: string) => void;
   onPreviousPagelick?: (beforeCursor: string) => void;
-  onChangeRowsPerPage?: (no: number) => void;
+  onChangeRowsPerPage?: (no: RowOptions) => void;
   onSortChange?: (sort: SortState) => void;
   scale?: 'md' | 'sm';
-  rowsPerPage?: number | null;
+  rowsPerPage?: RowOptions;
   /**
    * Allow multiple columns to be sorted.
    * Currently we support single field sort only
