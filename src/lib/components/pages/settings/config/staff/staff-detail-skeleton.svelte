@@ -1,0 +1,10 @@
+<script lang="ts">
+	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
+</script>
+
+<div class="flex gap-2 flex-col h-full bg-white border border-gray-200 rounded-lg">
+	<SkeletonContainer class="p-4">
+		<Skeleton class="h-4 w-16 mb-2" />
+		<Skeleton class="h-8 w-full" />
+	</SkeletonContainer>
+</div>
