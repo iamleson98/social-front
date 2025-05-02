@@ -26,6 +26,8 @@ export type SingleFilter<T> = {
 
 export type FilterConditions<T> = SvelteMap<keyof T, Partial<{ operator: FilterOperator; value: FilterItemValue }>>;
 
+export type FilterResult<T> = Partial<Record<keyof T, Partial<Record<FilterOperator, FilterItemValue>>>>;
+
 export type FilterItemValue = string[] | number[] | boolean[] | string | number | boolean;
 
 export type FilterComponentCallback = (value: FilterItemValue) => void;
