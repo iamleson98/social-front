@@ -1,65 +1,56 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { operationStore } from '$lib/api/operation';
-	import { STAFF_DETAILS_QUERY, STAFF_UPDATE_MUTATION } from '$lib/api/admin/staff';
+	import { STAFF_UPDATE_MUTATION } from '$lib/api/admin/staff';
 	import { Alert } from '$lib/components/ui/Alert';
-	import StaffForm from '$lib/components/pages/settings/config/staff/staff-form.svelte';
-	import { type Mutation, type MutationStaffUpdateArgs, type Query, type StaffUpdateInput, type User } from '$lib/gql/graphql';
+	import {
+		type Mutation,
+		type MutationStaffUpdateArgs,
+		type Query,
+		type QueryUserArgs
+	} from '$lib/gql/graphql';
 	import StaffDetailSkeleton from '$lib/components/pages/settings/config/staff/staff-detail-skeleton.svelte';
 	import { Button } from '$lib/components/ui';
 	import { AppRoute } from '$lib/utils';
-	import { goto } from '$app/navigation';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { USER_DETAIL_QUERY } from '$lib/api/admin/users';
+	import { Checkbox, Input } from '$lib/components/ui/Input';
 
-	const staffDetailQuery = operationStore<Pick<Query, 'user'>>({
+	const staffDetailQuery = operationStore<Pick<Query, 'user'>, QueryUserArgs>({
 		kind: 'query',
-		query: STAFF_DETAILS_QUERY,
+		query: USER_DETAIL_QUERY,
 		variables: { id: page.params.id },
-		requestPolicy: 'network-only'
+		requestPolicy: 'cache-and-network'
 	});
 
 	let loading = $state(false);
-	let formOk = $state(false);
-  let oldStaff = $state.raw<StaffUpdateInput>();
-
-  let staffValues = $state<StaffUpdateInput>({
-    lastName: '',
-    firstName: '',
-    isActive: false,
-    email: '',
-    
-  });
 
 	const handleUpdateStaff = async () => {
-		if (!formOk) return;
-
 		loading = true;
-		const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'staffUpdate'>, MutationStaffUpdateArgs>(
-			STAFF_UPDATE_MUTATION,
-			{
-				id: $staffDetailQuery.data?.user?.id as string,
-				input: {
-					lastName: staffValues.lastName,
-					firstName: staffValues.firstName,
-					isActive: staffValues.isActive,
-					email: staffValues.email
-				}
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'staffUpdate'>,
+			MutationStaffUpdateArgs
+		>(STAFF_UPDATE_MUTATION, {
+			id: $staffDetailQuery.data?.user?.id as string,
+			input: {
+				isActive: false
 			}
-		);
+		});
 
 		loading = false;
 
 		if (preHandleErrorOnGraphqlResult(result, 'userUpdate')) return;
 		toastStore.send({
 			variant: 'success',
-			message: 'User updated successfully'
+			message: 'Staff updated successfully'
 		});
 
-		await goto(AppRoute.SETTINGS_CONFIGS_STAFFS(), {
-			replaceState: true,
-			invalidateAll: true
+		staffDetailQuery.reexecute({
+			context: {
+				requestPolicy: 'network-only'
+			}
 		});
 	};
 </script>
@@ -67,36 +58,46 @@
 {#if $staffDetailQuery.fetching}
 	<StaffDetailSkeleton />
 {:else if $staffDetailQuery.error}
-	<Alert variant="error" bordered>{$staffDetailQuery.error.message}</Alert>
+	<Alert variant="error" bordered size="sm">{$staffDetailQuery.error.message}</Alert>
 {:else if $staffDetailQuery.data?.user}
 	{@const { user } = $staffDetailQuery.data}
 	<div class="h-full w-full rounded-lg bg-white border border-gray-200 p-4">
-		<StaffForm
-      bind:lastName={user.lastName}
-      bind:firstName={user.firstName}
-      bind:email={user.email}
-      bind:isActive={user.isActive}
-      bind:formOk
-      disabled={loading}
-    />
-	</div>
-  <div
-			class="mt-5 sticky bottom-0 flex justify-between items-center bg-white p-2 border rounded-lg border-gray-200"
+		<div
+			class="rounded-full overflow-hidden h-20 w-20 flex items-center justify-center bg-blue-600"
 		>
-			<Button color="red" disabled={loading} onclick={() => (loading = true)}>
-				Delete
-			</Button>
-
-			<div class="flex gap-2">
-				<Button
-					variant="light"
-					color="gray"
-					disabled={loading}
-					href={AppRoute.SETTINGS_CONFIGS_STAFFS()}>Back</Button
-				>
-				<Button disabled={loading || !formOk} onclick={handleUpdateStaff}
-					>Update</Button
-				>
-			</div>
+			{#if user.avatar}
+				<img src={user.avatar?.url} alt={user.avatar?.alt} />
+			{:else}
+				<span class="text-white text-2xl font-bold">
+					{`${user.firstName[0] || user.email[0]}${user.lastName[0] || user.email[1]}`.toUpperCase()}
+				</span>
+			{/if}
 		</div>
+
+		<div class="flex gap-2 items-start mt-5">
+			<Input label="First name" value={user.firstName} required disabled class="flex-1" />
+			<Input label="Last name" value={user.lastName} required disabled class="flex-1" />
+		</div>
+
+		<Input label="Email" value={user.email} class="mt-3" required disabled />
+
+		<div class="mt-3">
+			<Checkbox label="Active" bind:checked={user.isActive} disabled size="sm" />
+		</div>
+	</div>
+	<div
+		class="mt-5 sticky bottom-0 flex justify-between items-center bg-white p-2 border rounded-lg border-gray-200"
+	>
+		<Button color="red" disabled={loading} onclick={() => (loading = true)}>Delete</Button>
+
+		<div class="flex gap-2">
+			<Button
+				variant="light"
+				color="gray"
+				disabled={loading}
+				href={AppRoute.SETTINGS_CONFIGS_STAFFS()}>Back</Button
+			>
+			<Button disabled={loading} onclick={handleUpdateStaff}>Update</Button>
+		</div>
+	</div>
 {/if}

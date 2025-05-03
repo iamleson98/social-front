@@ -16,7 +16,15 @@
 		/** for example the products query support pagination, then you must pass 'products' as resultKey */
 		resultKey: keyof Query;
 		forceReExecuteGraphqlQuery: boolean;
-	} & TableProps<T, K>;
+	} & Omit<
+		TableProps<T, K>,
+		| 'items'
+		| 'pagination'
+		| 'onNextPagelick'
+		| 'onPreviousPagelick'
+		| 'onChangeRowsPerPage'
+		| 'onSortChange'
+	>;
 
 	let {
 		query,

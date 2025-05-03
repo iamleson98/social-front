@@ -132,7 +132,6 @@
 	query={QUERY_CUSTOMERS}
 	bind:variables={filterVariables}
 	resultKey="customers"
-	columns={USER_TABLE_COLUMNS as TableColumnProps<Record<string, unknown>, string>[]}
+	columns={USER_TABLE_COLUMNS}
 	bind:forceReExecuteGraphqlQuery
-	items={[]}
 />

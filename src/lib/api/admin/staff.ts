@@ -1,8 +1,9 @@
 import { gql } from "@urql/core";
 
+
 export const STAFFS_QUERY = gql`
-query StaffList {
-  staffUsers(first: 100) {
+query StaffList($first: Int, $after: String, $last: Int, $before: String, $sortBy: UserSortingInput, $filter: StaffUserInput) {
+  staffUsers(first: $first, after: $after, last: $last, before: $before, sortBy: $sortBy, filter: $filter) {
     edges {
       node {
         id
@@ -10,23 +11,19 @@ query StaffList {
         firstName
         lastName
         isActive
+        avatar(size: 100, format: WEBP) {
+          url
+          alt
+        }
       }
     }
-  }
-}`;
-
-export const STAFF_DETAILS_QUERY = gql`
-query UserDetails($id: ID!) {
-  user(id: $id) {
-    id
-    email
-    firstName
-    lastName
-    isActive
-    avatar {
-      url
-      alt
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
     }
+    # totalCount
   }
 }`;
 
