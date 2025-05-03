@@ -1,20 +1,10 @@
 <script lang="ts">
 	import { QUERY_CUSTOMERS } from '$lib/api/admin/users';
-	import { operationStore } from '$lib/api/operation';
-	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/badge';
-	import {
-		Table,
-		TableSkeleton,
-		type RowOptions,
-		type SortState,
-		type TableColumnProps
-	} from '$lib/components/ui/Table';
+	import { type TableColumnProps } from '$lib/components/ui/Table';
 	import {
 		UserSortField,
 		type CustomerFilterInput,
-		type IntRangeInput,
-		type Query,
 		type QueryCustomersArgs,
 		type User
 	} from '$lib/gql/graphql';
@@ -69,7 +59,8 @@
 		},
 		{
 			title: 'Is Staff',
-			child: isStaff
+			child: isStaff,
+			placement: 'center'
 		},
 		{
 			title: 'Joined At',

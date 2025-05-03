@@ -1172,8 +1172,8 @@
 	{/if}
 </Modal>
 
-<style>
-	@import 'tailwindcss/theme';
+<style lang="postcss">
+	@reference "tailwindcss";
 
 	td {
 		@apply p-1 border-transparent border-l border-r;

@@ -35,8 +35,8 @@
 	{/each}
 </div>
 
-<style>
-	@import "tailwindcss/theme";
+<style lang="postcss">
+	@reference "tailwindcss";
 
 	.tl-horizontal {
 		@apply flex-row;

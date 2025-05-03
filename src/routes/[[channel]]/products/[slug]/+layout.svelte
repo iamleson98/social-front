@@ -144,8 +144,8 @@
 	</div>
 </div>
 
-<style>
-	@import 'tailwindcss/theme';
+<style lang="postcss">
+	@reference "tailwindcss";
 
 	.breadcrumb > li {
 		@apply flex items-center not-last:text-blue-700;

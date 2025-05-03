@@ -47,14 +47,14 @@
 		else if (dir === 1 && pagination.endCursor) onNextPagelick?.(pagination.endCursor);
 	};
 
-	const handleSortClick = (column: K) => {
+	const handleSortClick = (columnKey: K) => {
 		const colSortState: SortState<K> = {} as SortState<K>;
-		if (sortState[column] === 'NEUTRAL') {
-			colSortState[column] = OrderDirection.Asc;
-		} else if (sortState[column] === OrderDirection.Asc) {
-			colSortState[column] = OrderDirection.Desc;
+		if (sortState[columnKey] === 'NEUTRAL') {
+			colSortState[columnKey] = OrderDirection.Asc;
+		} else if (sortState[columnKey] === OrderDirection.Asc) {
+			colSortState[columnKey] = OrderDirection.Desc;
 		} else {
-			colSortState[column] = 'NEUTRAL';
+			colSortState[columnKey] = 'NEUTRAL';
 		}
 		if (sortMultiple) {
 			sortState = { ...sortState, ...colSortState };
@@ -115,10 +115,12 @@
 		{#each items as item, idx (idx)}
 			<tr>
 				{#each columns as column, idx (idx)}
-					<td class={tdClass}>
-						<div>
-							{@render column.child({ item })}
-						</div>
+					<td
+						class={tdClass}
+						class:text-center={column.placement === 'center'}
+						class:text-right={column.placement === 'right'}
+					>
+						{@render column.child({ item })}
 					</td>
 				{/each}
 			</tr>
@@ -165,3 +167,11 @@
 		</div>
 	</div>
 {/if}
+
+<style lang="postcss">
+	@reference "tailwindcss";
+
+	td {
+		@apply px-1 py-1.5;
+	}
+</style>

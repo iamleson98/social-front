@@ -27,6 +27,7 @@ export type TableProps<T extends Record<string, unknown>, K extends string> = {
 };
 
 export type TableColumnProps<T extends Record<string, unknown>, K extends string> = {
+  /** the head title of each column */
   title: string;
   /**
    * Key of the column to be used for sorting.
@@ -39,7 +40,17 @@ export type TableColumnProps<T extends Record<string, unknown>, K extends string
    * If true (in conjunction with key), the column will be sortable.
    */
   sortable?: boolean;
-  child: Snippet<[{ item: T }]>
+  /**
+   * The content of each row in the column.
+   * @param item the item of the row
+   */
+  child: Snippet<[{ item: T }]>;
+
+  /**
+   * The placement of the column within the table data cell.
+   * @default 'left'
+   */
+  placement?: 'center' | 'left' | 'right';
 };
 
 export type SortDirection = OrderDirection | 'NEUTRAL';

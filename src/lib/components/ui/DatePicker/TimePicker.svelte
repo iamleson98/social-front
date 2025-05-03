@@ -209,8 +209,8 @@
 	</div>
 {/if}
 
-<style>
-	@import 'tailwindcss/theme';
+<style lang="postcss">
+	@reference "tailwindcss";
 
 	span {
 		@apply select-all outline-none relative z-1 py-1 px-0 first:pl-1.5 last:pr-1.5 not-focus:selection:bg-transparent;

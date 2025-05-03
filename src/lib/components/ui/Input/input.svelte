@@ -61,8 +61,8 @@
 	{/if}
 </div>
 
-<style>
-	@import 'tailwindcss/theme';
+<style lang="postcss">
+	@reference "tailwindcss";
 
 	.input-action > * {
 		@apply max-h-full max-w-full;

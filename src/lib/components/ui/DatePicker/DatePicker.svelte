@@ -376,8 +376,8 @@
 	</div>
 </div>
 
-<style>
-	@import 'tailwindcss/theme';
+<style lang="postcss">
+	@reference "tailwindcss";
 
 	.other-month {
 		@apply text-gray-300!;

@@ -42,8 +42,6 @@
 		requestPolicy
 	});
 
-	$inspect(forceReExecuteGraphqlQuery);
-
 	$effect(() => {
 		if (forceReExecuteGraphqlQuery) {
 			queryOperationStore.reexecute({ variables });

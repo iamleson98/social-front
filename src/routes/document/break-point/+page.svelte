@@ -44,8 +44,8 @@
 	</div>
 </div>
 
-<style>
-	@import "tailwindcss/theme";
+<style lang="postcss">
+	@reference "tailwindcss";
 
 	.common {
 		@apply rounded-lg border border-blue-400 bg-blue-200 p-2 mb-2;
