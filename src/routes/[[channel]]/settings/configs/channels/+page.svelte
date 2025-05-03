@@ -33,7 +33,7 @@
 		query: CHANNELS_QUERY
 	});
 
-	const CHANNEL_COLUMNS: TableColumnProps<Channel>[] = [
+	const CHANNEL_COLUMNS: TableColumnProps<Channel, any>[] = [
 		{
 			title: 'Name',
 			key: 'name',
@@ -127,10 +127,10 @@
 		channelsQuery.reexecute({});
 	};
 
-	const handleSortChange = (state: SortState) => {
-		if (state['name'] === 'asc') {
+	const handleSortChange = (state: SortState<any>) => {
+		if (state['name'] === 'ASC') {
 			allChannels.sort((f, s) => (f.name < s.name ? -1 : 1));
-		} else if (state['name'] === 'desc') {
+		} else if (state['name'] === 'DESC') {
 			allChannels.sort((f, s) => (f.name > s.name ? -1 : 1));
 		}
 	};
