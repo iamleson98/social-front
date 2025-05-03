@@ -1,6 +1,12 @@
 <script lang="ts" generics="T">
 	import FilterBox from './filter-box.svelte';
-	import type { FilterConditions, FilterItemValue, FilterOperator, FilterProps, FilterResult } from './types';
+	import type {
+		FilterConditions,
+		FilterItemValue,
+		FilterOperator,
+		FilterProps,
+		FilterResult
+	} from './types';
 	import { FilterCog } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import type { SocialSize } from '$lib/components/ui/common';
@@ -14,9 +20,7 @@
 	type Props = {
 		filterOptions: FilterProps<T>[];
 		size?: SocialSize;
-		onApply?: (
-			filters: FilterResult<T>
-		) => void;
+		onApply?: (filters: FilterResult<T>) => void;
 	};
 
 	let { filterOptions, size = 'sm', onApply }: Props = $props();
@@ -60,6 +64,8 @@
 	};
 
 	afterNavigate(async () => {
+		scrollTo({ top: 0, behavior: 'smooth' });
+
 		const queryParams = parseUrlSearchParams(page.url);
 		const filtersResult: FilterResult<T> = {};
 		const newFilters: FilterConditions<T> = new SvelteMap();

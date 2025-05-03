@@ -22,36 +22,25 @@
 	import dayjs from 'dayjs';
 	import CustomerFilter from '$lib/components/pages/settings/config/customers/filter.svelte';
 	import type { FilterResult } from '$lib/components/common/filter-box';
-	import { Input } from '$lib/components/ui/Input';
+	import { DebounceInput, Input } from '$lib/components/ui/Input';
 	import { Search } from '$lib/components/icons';
+	import GraphqlPaginableTable from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 
-	let BATCH = $state<RowOptions>(20);
-
-	const usersQuery = operationStore<Pick<Query, 'customers'>, QueryCustomersArgs>({
-		kind: 'query',
-		requestPolicy: 'cache-and-network',
-		query: QUERY_CUSTOMERS,
-		variables: {
-			first: (() => BATCH)()
-		}
+	let filterVariables = $state<QueryCustomersArgs>({
+		filter: {},
+		first: 10
 	});
-
-	let filter = $state<CustomerFilterInput>({});
+	let forceReExecuteGraphqlQuery = $state(true);
 
 	const onFilterChange = (newFilter: FilterResult<CustomerFilterInput>) => {
-		usersQuery.reexecute({
-			variables: {
-				...$usersQuery.operation.variables,
-				filter: {
-					dateJoined: newFilter.dateJoined,
-					numberOfOrders: newFilter.numberOfOrders as IntRangeInput,
-					search: filter.search
-				}
-			}
-		});
+		filterVariables = {
+			...filterVariables,
+			filter: newFilter as CustomerFilterInput
+		};
+		forceReExecuteGraphqlQuery = true;
 	};
 
-	const USER_TABLE_COLUMNS: TableColumnProps<User>[] = [
+	const USER_TABLE_COLUMNS: TableColumnProps<User, UserSortField>[] = [
 		{
 			title: 'Avatar',
 			child: avatar
@@ -89,8 +78,6 @@
 			key: UserSortField.CreatedAt
 		}
 	];
-
-	const handleSortChange = (sort: SortState) => {};
 </script>
 
 {#snippet avatar({ item }: { item: User })}
@@ -139,26 +126,22 @@
 	<span>{dayjs(item.dateJoined).format('DD/MM/YYYY')}</span>
 {/snippet}
 
-<div class="flex items-center gap-2">
+<div class="flex items-center gap-2 mb-2">
 	<CustomerFilter {onFilterChange} />
-	<Input placeholder="Search" size="sm" startIcon={Search} bind:value={filter.search} />
+	<DebounceInput
+		debounceTime={500}
+		bind:value={filterVariables.filter!.search}
+		placeholder="Search"
+		size="sm"
+		startIcon={Search}
+	/>
 </div>
 
-<div class="bg-white rounded-lg border border-gray-200 p-4 mt-2">
-	{#if $usersQuery.fetching}
-		<TableSkeleton numColumns={7} />
-	{:else if $usersQuery.error}
-		<Alert variant="error" size="sm" bordered>
-			{$usersQuery.error.message}
-		</Alert>
-	{:else if $usersQuery.data}
-		<Table
-			columns={USER_TABLE_COLUMNS}
-			items={$usersQuery.data?.customers?.edges.map((edge) => edge.node) || []}
-			pagination={$usersQuery.data.customers?.pageInfo}
-			rowsPerPage={BATCH}
-			onChangeRowsPerPage={(no) => (BATCH = no)}
-			onSortChange={handleSortChange}
-		/>
-	{/if}
-</div>
+<GraphqlPaginableTable
+	query={QUERY_CUSTOMERS}
+	bind:variables={filterVariables}
+	resultKey="customers"
+	columns={USER_TABLE_COLUMNS as TableColumnProps<Record<string, unknown>, string>[]}
+	bind:forceReExecuteGraphqlQuery
+	items={[]}
+/>

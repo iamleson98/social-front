@@ -21,9 +21,12 @@ export type CustomInputProps = {
   /** indicate if this component is being used in as <Select /> component */
   selectShortcutOptions?: ShortcutOptions<HTMLInputElement | HTMLTextAreaElement>[];
   inputDebounceOption?: InputDebounceOpts;
-  /** Input is used in `<Select />` component. We need to insert the menu items before subText */
-  children?: Snippet;
 }
+
+export type InputDebounceProps = Omit<InputProps, 'inputDebounceOption'> & {
+  /** debounce time in ms, default to 333 */
+  debounceTime?: number;
+};
 
 export type InputProps = CustomInputProps & Omit<HTMLInputAttributes, 'size'>;
 export type TextAreaPropsProps = CustomInputProps & Omit<HTMLTextareaAttributes, 'size'>;

@@ -26,6 +26,7 @@
 		variant = 'info',
 		onchange,
 		options,
+		subText,
 		...rest
 	}: MultiSelectProps = $props();
 
@@ -189,35 +190,37 @@
 				onInput
 			}}
 			{action}
-		>
-			{#if openSelect}
-				<ul
-					role="listbox"
-					id={LISTBOX_ID}
-					transition:fly={{ duration: 250, y: 10 }}
-					class={SELECT_CLASSES.selectMenu}
-					tabindex="0"
-				>
-					{#if !searchFilteredOptions.length}
-						{@render selectOption({
-							idx: 0,
-							disabled: true,
-							optionClassName: 'cursor-default',
-							onclick: () => toggleDropdown(false),
-							label: 'No data',
-							value: ''
-						})}
-					{/if}
-					{#each searchFilteredOptions as option, idx (idx)}
-						{@render selectOption({
-							idx,
-							optionClassName: `${option.disabled ? 'cursor-not-allowed! text-gray-400!' : ''}`,
-							onclick: () => handleSelect(option),
-							...option
-						})}
-					{/each}
-				</ul>
-			{/if}
-		</Input>
+		/>
 	</div>
+	{#if openSelect}
+		<ul
+			role="listbox"
+			id={LISTBOX_ID}
+			transition:fly={{ duration: 250, y: 10 }}
+			class="{SELECT_CLASSES.selectMenu} mt-2!"
+			tabindex="0"
+		>
+			{#if !searchFilteredOptions.length}
+				{@render selectOption({
+					idx: 0,
+					disabled: true,
+					optionClassName: 'cursor-default',
+					onclick: () => toggleDropdown(false),
+					label: 'No data',
+					value: ''
+				})}
+			{/if}
+			{#each searchFilteredOptions as option, idx (idx)}
+				{@render selectOption({
+					idx,
+					optionClassName: `${option.disabled ? 'cursor-not-allowed! text-gray-400!' : ''}`,
+					onclick: () => handleSelect(option),
+					...option
+				})}
+			{/each}
+		</ul>
+	{/if}
+	{#if subText}
+		<div class={`text-[10px] mt-0.5 text-right! ${INPUT_CLASSES[variant].fg}`}>{subText}</div>
+	{/if}
 </div>

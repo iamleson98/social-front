@@ -10,20 +10,13 @@
 		header?: string;
 		onClose?: () => void;
 		class?: string;
-		filters?: FilterConditions<T>;
+		filters: FilterConditions<T>;
 		onApply: (filters: FilterConditions<T>) => void;
 	};
 
-	let {
-		options,
-		header,
-		onClose,
-		class: className = '',
-		filters = new SvelteMap(),
-		onApply
-	}: Props = $props();
+	let { options, header, onClose, class: className = '', filters, onApply }: Props = $props();
 
-	let activeFilters = $state<FilterConditions<T>>(filters);
+	let activeFilters = $state<FilterConditions<T>>(new SvelteMap(filters));
 
 	let availableFilters = $derived.by(() => {
 		const usedFilterMap: Partial<Record<keyof T, boolean>> = {};

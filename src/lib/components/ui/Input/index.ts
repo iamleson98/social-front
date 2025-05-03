@@ -7,3 +7,5 @@ export { default as RadioButton } from './radio.svelte';
 export { default as Label } from './label.svelte';
 export { type InputProps, type TextAreaPropsProps } from './input.types';
 export { default as FileInput } from './file.svelte';
+export { default as DebounceInput } from './debounce-input.svelte';
+export * from './input.types';

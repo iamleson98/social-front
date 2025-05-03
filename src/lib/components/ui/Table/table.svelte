@@ -1,10 +1,17 @@
-<script lang="ts" generics="T extends Record<string, unknown>">
+<script lang="ts" generics="T extends Record<string, unknown>, K extends string">
 	import { tranFunc } from '$i18n';
 	import { ChevronLeft, ChevronRight, Icon } from '$lib/components/icons';
+	import { OrderDirection } from '$lib/gql/graphql';
 	import { IconButton } from '../Button';
 	import Button from '../Button/Button.svelte';
 	import { DropDown, type DropdownTriggerInterface, type MenuItemProps } from '../Dropdown';
-	import { ROW_OPTIONS, SortIconsMap, type RowOptions, type SortState, type TableProps } from './types';
+	import {
+		ROW_OPTIONS,
+		SortIconsMap,
+		type RowOptions,
+		type SortState,
+		type TableProps
+	} from './types';
 
 	let {
 		items,
@@ -18,17 +25,21 @@
 		scale = 'md',
 		rowsPerPage,
 		sortMultiple = false,
-		defaultSortState = {}
-	}: TableProps<T> = $props();
+		defaultSortState = {} as SortState<K>
+	}: TableProps<T, K> = $props();
+
+	if (columns.some((col) => col.sortable && !col.key)) {
+		throw new Error('All sortable columns must have an unique key');
+	}
 
 	let tdClass = scale === 'sm' ? 'p-1!' : '';
 
-	const DEFAULT_SORT_STATE = columns.reduce<SortState>((acc, column) => {
-		if (column.sortable) return { ...acc, [column.key || column.title]: 'neutral' };
+	const DEFAULT_SORT_STATE = columns.reduce<SortState<K>>((acc, column) => {
+		if (column.sortable) return { ...acc, [column.key!]: 'NEUTRAL' };
 		return acc;
-	}, {});
+	}, {} as SortState<K>);
 	let innerRowsPerPage = $state<number>(rowsPerPage || ROW_OPTIONS[0]);
-	let sortState = $state.raw<SortState>({ ...DEFAULT_SORT_STATE, ...defaultSortState });
+	let sortState = $state.raw<SortState<K>>({ ...DEFAULT_SORT_STATE, ...defaultSortState });
 
 	const handleNavigateClick = (dir: 1 | -1) => {
 		if (!pagination) return;
@@ -36,14 +47,14 @@
 		else if (dir === 1 && pagination.endCursor) onNextPagelick?.(pagination.endCursor);
 	};
 
-	const handleSortClick = (column: string) => {
-		const colSortState: SortState = {};
-		if (sortState[column] === 'neutral') {
-			colSortState[column] = 'asc';
-		} else if (sortState[column] === 'asc') {
-			colSortState[column] = 'desc';
+	const handleSortClick = (column: K) => {
+		const colSortState: SortState<K> = {} as SortState<K>;
+		if (sortState[column] === 'NEUTRAL') {
+			colSortState[column] = OrderDirection.Asc;
+		} else if (sortState[column] === OrderDirection.Asc) {
+			colSortState[column] = OrderDirection.Desc;
 		} else {
-			colSortState[column] = 'neutral';
+			colSortState[column] = 'NEUTRAL';
 		}
 		if (sortMultiple) {
 			sortState = { ...sortState, ...colSortState };
@@ -71,9 +82,8 @@
 					: ''}
 				{@const props = column?.sortable
 					? {
-							onclick: () => handleSortClick(column.key || column.title),
-							onkeyup: (evt: KeyboardEvent) =>
-								evt.key === 'Enter' && handleSortClick(column.key || column.title)
+							onclick: () => handleSortClick(column.key!),
+							onkeyup: (evt: KeyboardEvent) => evt.key === 'Enter' && handleSortClick(column.key!)
 						}
 					: {}}
 				<th class="p-[unset]!">
@@ -93,7 +103,7 @@
 						</div>
 						{#if column?.sortable}
 							<span>
-								<Icon icon={SortIconsMap[sortState[column.key || column.title]]} />
+								<Icon icon={SortIconsMap[sortState[column.key!]]} />
 							</span>
 						{/if}
 					</svelte:element>

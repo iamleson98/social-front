@@ -5,15 +5,18 @@ import { debounce, fromDomEvent, pipe, scan, subscribe } from "wonka";
 
 
 export type InputDebounceOpts = {
-  onInput: (result: Event | number | string) => void;
+  onInput: (result: Event) => void;
   /** skip checking events until specific duration is up. Default to `333`  */
   debounceTime?: number;
 };
 
 export type ClickDebounceOpts = {
-  /** default to `true`  */
+  /** reset the internal counter number value to 0 after the event fire. Default to `true`  */
   resetCounter?: boolean;
-} & InputDebounceOpts;
+  debounceTime?: number;
+  /** callback function to be called when the event is fired. the params is the number of click(s) performed*/
+  onInput: (result: number) => void;
+};
 
 /**
  * @doc debounceInput keeps track of the input value on an input element and emits the value after a specific duration. 
@@ -45,11 +48,14 @@ export function debounceInput(node: HTMLInputElement | HTMLTextAreaElement | HTM
  * @param opts options for the debounce action
  * @returns 
  */
-export const debounceClick = (node: HTMLElement, opts?: ClickDebounceOpts): ActionReturn => {
+export const debounceClick = (node: HTMLElement, opts: ClickDebounceOpts = {
+  debounceTime: DEBOUNCE_INPUT_TIME,
+  resetCounter: true,
+  onInput: () => { }
+}): ActionReturn => {
   if (!opts) return { destroy: noop };
 
   let counter = 0;
-  if (opts.resetCounter === undefined) opts.resetCounter = true;
 
   const { unsubscribe: destroy } = pipe(
     fromDomEvent(node, 'click'),

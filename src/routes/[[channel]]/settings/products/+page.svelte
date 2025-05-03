@@ -55,7 +55,7 @@
 
 	onMount(() => productFilterParamStore.reset); // reset filter params
 
-	const productColumns: TableColumnProps<Product>[] = $derived([
+	const productColumns: TableColumnProps<Product, ProductOrderField>[] = $derived([
 		{
 			title: $tranFunc('settings.name'),
 			child: name,
@@ -104,7 +104,7 @@
 		});
 	};
 
-	const handleNextPagelick = (after: string) => {
+	const handleNextPageClick = (after: string) => {
 		$productFilterParamStore = {
 			...$productFilterParamStore,
 			after,
@@ -132,18 +132,18 @@
 		applyFilterToUrlPath();
 	};
 
-	const handleSortChange = (sort: SortState) => {
+	const handleSortChange = (sort: SortState<ProductOrderField>) => {
 		// currently products screen support single field sort only
 		const keys = Object.keys(sort);
 		if (!keys.length) return;
 
 		const key = keys[0];
-		const direction = sort[key];
-		if (direction === 'neutral') return;
+		const direction = sort[key as ProductOrderField];
+		if (direction === 'NEUTRAL') return;
 
 		$productFilterParamStore.sortBy = {
 			field: key as ProductOrderField,
-			direction: direction === 'asc' ? OrderDirection.Asc : OrderDirection.Desc
+			direction
 		};
 
 		$productFilterParamStore.before = null;
@@ -213,7 +213,7 @@
 			columns={productColumns}
 			scale="sm"
 			pagination={$productFetchStore.data?.products.pageInfo}
-			onNextPagelick={handleNextPagelick}
+			onNextPagelick={handleNextPageClick}
 			onPreviousPagelick={handlePreviousPagelick}
 			onChangeRowsPerPage={handleRowsPerPageChange}
 			rowsPerPage={$productFilterParamStore.first || $productFilterParamStore.last}
@@ -221,7 +221,7 @@
 			defaultSortState={{
 				[$productFilterParamStore.sortBy?.field as string]: $productFilterParamStore.sortBy
 					?.direction as unknown as SortDirection
-			} as SortState}
+			} as SortState<ProductOrderField>}
 		/>
 	{/if}
 </div>

@@ -3,7 +3,7 @@
 	import { PhotoUp } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
-	import { FileInput, Input } from '$lib/components/ui/Input';
+	import { DebounceInput, FileInput, Input } from '$lib/components/ui/Input';
 	import { Popover } from '$lib/components/ui/Popover';
 	import { MultiSelect } from '$lib/components/ui/select';
 	import { onMount } from 'svelte';
@@ -22,6 +22,10 @@
 
 		// console.log(instance);
 	});
+
+	let value = $state('');
+
+	$inspect(value);
 </script>
 
 <div>lab</div>
@@ -52,7 +56,7 @@
 	<Input size="xs" placeholder="Enter price" type="number" min="0" />
 {/snippet}
 
-<Popover {trigger} placement="bottom-start">
+<!-- <Popover {trigger} placement="bottom-start">
 	<FilterBox
 		header="Filters"
 		options={[
@@ -69,6 +73,10 @@
 		]}
 		class="min-w-96"
 	/>
-</Popover>
+</Popover> -->
 
 <Button href="/">lol</Button>
+
+<input type="text" onchange={console.log} placeholder="Enter something" />
+
+<DebounceInput debounceTime={1000} bind:value placeholder="enter value" />
