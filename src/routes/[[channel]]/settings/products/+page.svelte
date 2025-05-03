@@ -211,7 +211,6 @@
 		<Table
 			items={products}
 			columns={productColumns}
-			scale="sm"
 			pagination={$productFetchStore.data?.products.pageInfo}
 			onNextPagelick={handleNextPageClick}
 			onPreviousPagelick={handlePreviousPagelick}

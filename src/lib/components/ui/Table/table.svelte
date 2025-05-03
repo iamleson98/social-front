@@ -22,7 +22,6 @@
 		onPreviousPagelick,
 		onChangeRowsPerPage,
 		onSortChange,
-		scale = 'md',
 		rowsPerPage,
 		sortMultiple = false,
 		defaultSortState = {} as SortState<K>,
@@ -32,8 +31,6 @@
 	if (columns.some((col) => col.sortable && !col.key)) {
 		throw new Error('All sortable columns must have an unique key');
 	}
-
-	let tdClass = scale === 'sm' ? 'p-1!' : '';
 
 	const DEFAULT_SORT_STATE = columns.reduce<SortState<K>>((acc, column) => {
 		if (column.sortable) return { ...acc, [column.key!]: 'NEUTRAL' };
@@ -118,7 +115,7 @@
 			<tr>
 				{#each columns as column, idx (idx)}
 					<td
-						class={tdClass}
+						class="px-1 py-2"
 						class:text-center={column.placement === 'center'}
 						class:text-right={column.placement === 'right'}
 					>
@@ -171,11 +168,3 @@
 		</div>
 	</div>
 {/if}
-
-<style lang="postcss">
-	@reference "tailwindcss";
-
-	td {
-		@apply px-1 py-1.5;
-	}
-</style>

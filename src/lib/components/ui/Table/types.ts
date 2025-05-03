@@ -16,7 +16,6 @@ export type TableProps<T extends Record<string, unknown>, K extends string> = {
   onPreviousPagelick?: (beforeCursor: string) => void;
   onChangeRowsPerPage?: (no: RowOptions) => void;
   onSortChange?: (sort: SortState<K>) => void;
-  scale?: 'md' | 'sm';
   rowsPerPage?: RowOptions;
   /**
    * Allow multiple columns to be sorted.

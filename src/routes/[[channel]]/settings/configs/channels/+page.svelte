@@ -180,7 +180,7 @@
 			{$channelsQuery.error.message}
 		</Alert>
 	{:else if $channelsQuery.data}
-		<Table columns={CHANNEL_COLUMNS} items={allChannels} onSortChange={handleSortChange} scale="sm" />
+		<Table columns={CHANNEL_COLUMNS} items={allChannels} onSortChange={handleSortChange} />
 	{/if}
 </div>
 

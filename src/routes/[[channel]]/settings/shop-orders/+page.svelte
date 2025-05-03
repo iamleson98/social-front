@@ -1,8 +1,6 @@
 <script lang="ts">
-	import { operationStore } from '$lib/api/operation';
-	import { Alert } from '$lib/components/ui/Alert';
-	import { Table, TableSkeleton, type TableColumnProps } from '$lib/components/ui/Table';
-	import { type Order, type Query, type QueryOrdersArgs } from '$lib/gql/graphql';
+	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import { OrderSortField, type Order, type QueryOrdersArgs } from '$lib/gql/graphql';
 	import { formatCurrency, orderStatusBadgeClass, paymentStatusBadgeClass } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 	import { lowerCase, startCase } from 'es-toolkit';
@@ -12,20 +10,18 @@
 
 	const BATCH_LOAD = 20;
 
-	const shopOrdersQuery = operationStore<Pick<Query, 'orders'>, QueryOrdersArgs>({
-		kind: 'query',
-		requestPolicy: 'cache-and-network',
-		query: SHOP_ORDERS_QUERY,
-		variables: {
-			first: BATCH_LOAD
-		}
+	let filterVariables = $state<QueryOrdersArgs>({
+		first: BATCH_LOAD
 	});
+	let forceReExecuteGraphqlQuery = $state(true);
 
-	const ORDER_TABLE_COLUMNS: TableColumnProps<Order>[] = $derived([
+	const ORDER_TABLE_COLUMNS: TableColumnProps<Order, OrderSortField>[] = $derived([
 		{
 			title: $tranFunc('settings.no'),
-			// sortable: true,
-			child: no
+			sortable: true,
+			child: no,
+			key: OrderSortField.Number,
+			placement: 'center'
 		},
 		{
 			title: $tranFunc('common.email'),
@@ -41,13 +37,13 @@
 		},
 		{
 			title: $tranFunc('settings.total'),
-			child: total,
-			sortable: true
+			child: total
+			// sortable: true
 		},
 		{
 			title: $tranFunc('settings.date'),
-			child: date,
-			sortable: true
+			child: date
+			// sortable: true
 		}
 	]);
 </script>
@@ -102,22 +98,10 @@
 	{item.userEmail}
 {/snippet}
 
-<div class="rounded-lg bg-white border border-gray-200 p-4 mt-3">
-	{#if $shopOrdersQuery.fetching}
-		<TableSkeleton numColumns={6} showPagination />
-	{:else if $shopOrdersQuery.error}
-		<Alert variant="error" size="sm" bordered>{$shopOrdersQuery.error.message}</Alert>
-	{:else if $shopOrdersQuery.data}
-		{@const items = $shopOrdersQuery.data.orders?.edges.map((item) => item.node) || []}
-		<Table
-			{items}
-			columns={ORDER_TABLE_COLUMNS}
-			pagination={$shopOrdersQuery.data.orders?.pageInfo}
-			onNextPagelick={(cursor) =>
-				shopOrdersQuery.reexecute({ variables: { first: BATCH_LOAD, after: cursor } })}
-			onPreviousPagelick={(cursor) =>
-				shopOrdersQuery.reexecute({ variables: { last: BATCH_LOAD, before: cursor } })}
-			onChangeRowsPerPage={(no) => shopOrdersQuery.reexecute({ variables: { first: no } })}
-		/>
-	{/if}
-</div>
+<GraphqlPaginableTable
+	query={SHOP_ORDERS_QUERY}
+	bind:variables={filterVariables}
+	resultKey="orders"
+	bind:forceReExecuteGraphqlQuery
+	columns={ORDER_TABLE_COLUMNS}
+/>
