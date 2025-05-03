@@ -25,7 +25,8 @@
 		scale = 'md',
 		rowsPerPage,
 		sortMultiple = false,
-		defaultSortState = {} as SortState<K>
+		defaultSortState = {} as SortState<K>,
+		disabled = false
 	}: TableProps<T, K> = $props();
 
 	if (columns.some((col) => col.sortable && !col.key)) {
@@ -83,7 +84,8 @@
 				{@const props = column?.sortable
 					? {
 							onclick: () => handleSortClick(column.key!),
-							onkeyup: (evt: KeyboardEvent) => evt.key === 'Enter' && handleSortClick(column.key!)
+							onkeyup: (evt: KeyboardEvent) => evt.key === 'Enter' && handleSortClick(column.key!),
+							disabled
 						}
 					: {}}
 				<th class="p-[unset]!">
@@ -137,7 +139,9 @@
 	<div class="mt-4 flex items-center justify-between">
 		<div>
 			{#snippet trigger(opts: DropdownTriggerInterface)}
-				<Button size="xs" variant="light" {...opts}>No. of row {innerRowsPerPage}</Button>
+				<Button size="xs" variant="light" {...opts} {disabled}>
+					No. of row {innerRowsPerPage}
+				</Button>
 			{/snippet}
 			<DropDown {trigger} placement="bottom-start" options={PAGIN_OPTIONS} />
 		</div>
@@ -145,7 +149,7 @@
 			<IconButton
 				icon={ChevronLeft}
 				size="xs"
-				disabled={!pagination.hasPreviousPage}
+				disabled={!pagination.hasPreviousPage || disabled}
 				aria-label="Previous page"
 				class="tooltip tooltip-top"
 				data-tip={$tranFunc('common.prevPage')}
@@ -156,7 +160,7 @@
 			<IconButton
 				icon={ChevronRight}
 				size="xs"
-				disabled={!pagination.hasNextPage}
+				disabled={!pagination.hasNextPage || disabled}
 				aria-label="Next page"
 				class="tooltip tooltip-top"
 				data-tip={$tranFunc('common.nextPage')}

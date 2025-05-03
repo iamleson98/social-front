@@ -16,7 +16,6 @@
 		/** for example the products query support pagination, then you must pass 'products' as resultKey */
 		resultKey: keyof Query;
 		forceReExecuteGraphqlQuery: boolean;
-		// onVariablesChange?: (variables: AnyVariables & GraphqlPaginationArgs) => void;
 	} & TableProps<T, K>;
 
 	let {
@@ -24,11 +23,10 @@
 		variables = $bindable({
 			first: 10
 		}),
-		requestPolicy = 'cache-and-network',
+		requestPolicy = 'network-only',
 		forceReExecuteGraphqlQuery = $bindable(),
 		resultKey,
 		columns,
-		defaultSortState,
 		tableClass
 	}: Props = $props();
 
@@ -41,6 +39,8 @@
 		variables,
 		requestPolicy
 	});
+
+	let sortState = $state<SortState<K>>({} as SortState<K>);
 
 	$effect(() => {
 		if (forceReExecuteGraphqlQuery) {
@@ -78,7 +78,9 @@
 		variables = {
 			...variables,
 			first: num,
-			last: null
+			last: null,
+			before: null,
+			after: null
 		};
 		forceReExecuteGraphqlQuery = true;
 	};
@@ -90,6 +92,8 @@
 		const key = keys[0];
 		const direction = sort[key as K];
 		if (direction === 'NEUTRAL') return;
+
+		sortState = sort;
 
 		variables = {
 			...variables,
@@ -126,8 +130,9 @@
 			onChangeRowsPerPage={handleRowsPerPageChange}
 			onSortChange={handleSortChange}
 			rowsPerPage={(variables.first || variables.last) as RowOptions}
-			{defaultSortState}
+			defaultSortState={sortState}
 			{tableClass}
+			disabled={$queryOperationStore.fetching}
 		/>
 	{/if}
 </div>

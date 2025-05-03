@@ -12,7 +12,7 @@
 	import dayjs from 'dayjs';
 	import CustomerFilter from '$lib/components/pages/settings/config/customers/filter.svelte';
 	import type { FilterResult } from '$lib/components/common/filter-box';
-	import { DebounceInput, Input } from '$lib/components/ui/Input';
+	import { DebounceInput } from '$lib/components/ui/Input';
 	import { Search } from '$lib/components/icons';
 	import GraphqlPaginableTable from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 
