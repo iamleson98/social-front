@@ -21,7 +21,6 @@
 			key: UserSortField.FirstName,
 			child: fullName,
 			sortable: true,
-			placement: 'center'
 		},
 		{
 			title: 'Email',
