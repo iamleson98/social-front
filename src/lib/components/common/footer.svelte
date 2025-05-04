@@ -2,7 +2,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { Facebook, Instagram, Twitter } from '../icons/SvgOuterIcon';
 	import { SUPPORTED_LANGUAGES, switchTranslationLanguage } from '$i18n';
-	import { DropDown, MenuItem, type DropdownTriggerInterface } from '../ui/Dropdown';
+	import { DropDown, MenuItem } from '../ui/Dropdown';
 	import { Button } from '../ui';
 	import { clientSideGetCookieOrDefault, clientSideSetCookie } from '$lib/utils/cookies';
 	import { LANGUAGE_KEY } from '$lib/utils/consts';
@@ -10,6 +10,7 @@
 	import { LanguageCodeEnum } from '$lib/gql/graphql';
 	import { buildHomePageLink } from '$lib/utils/utils';
 	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 
 	let activeLanguage = $state(SUPPORTED_LANGUAGES[0]);
 

@@ -4,7 +4,7 @@
 	import { OrderDirection } from '$lib/gql/graphql';
 	import { IconButton } from '../Button';
 	import Button from '../Button/Button.svelte';
-	import { DropDown, type DropdownTriggerInterface, type MenuItemProps } from '../Dropdown';
+	import { DropDown, type MenuItemProps } from '../Dropdown';
 	import {
 		ROW_OPTIONS,
 		SortIconsMap,
@@ -12,6 +12,7 @@
 		type SortState,
 		type TableProps
 	} from './types';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 
 	let {
 		items,

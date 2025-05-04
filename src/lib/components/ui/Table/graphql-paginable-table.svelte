@@ -7,6 +7,7 @@
 	import TableSkeleton from './table-skeleton.svelte';
 	import Alert from '../Alert/alert.svelte';
 	import { tick } from 'svelte';
+	import { get } from 'es-toolkit/compat';
 
 	type Props = {
 		query: TypedDocumentNode<any, AnyVariables & GraphqlPaginationArgs>;
@@ -125,10 +126,9 @@
 		<Alert variant="error" size="sm" bordered>
 			{$queryOperationStore.error.message}
 		</Alert>
-	{:else if $queryOperationStore.data?.[resultKey]}
-		{@const pagination = $queryOperationStore.data?.[resultKey].pageInfo}
-		{@const items =
-			$queryOperationStore.data?.[resultKey].edges?.map((edge: any) => edge?.node) || []}
+	{:else if $queryOperationStore.data}
+		{@const { pageInfo: pagination, edges } = get($queryOperationStore.data, resultKey)}
+		{@const items = edges?.map((edge: any) => edge?.node) || []}
 		<Table
 			{items}
 			{columns}

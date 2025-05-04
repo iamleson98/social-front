@@ -2,7 +2,7 @@
 	import { FilterButton } from '$lib/components/common/filter-box';
 	import type {
 		FilterComponentType,
-		FilterProps,
+		FilterProps
 		// SingleFilter
 	} from '$lib/components/common/filter-box/types';
 	import { Input } from '$lib/components/ui/Input';
@@ -31,7 +31,7 @@
 					component: priceBetween
 				}
 			]
-		},
+		}
 		// {
 		// 	label: 'Category',
 		// 	key: 'category',
@@ -61,36 +61,24 @@
 {/snippet}
 
 {#snippet priceBetween({ onValue, initialValue }: FilterComponentType)}
-	{@const bounds = ['', '']}
+	{@const bounds = (initialValue || ['', '']) as string[]}
 	<div class="flex gap-1 flex-col">
-		<Input
-			size="xs"
-			class="w-full"
-			placeholder=">="
-			type="number"
-			min="0"
-			value={(initialValue as string[])?.[0]}
-			inputDebounceOption={{
-				onInput: (evt) => {
-					bounds[0] = ((evt as Event).target as HTMLInputElement).value;
-					onValue(bounds);
-				}
-			}}
-		/>
-		<Input
-			size="xs"
-			placeholder="<="
-			class="w-full"
-			type="number"
-			min="0"
-			value={(initialValue as string[])?.[1]}
-			inputDebounceOption={{
-				onInput: (evt) => {
-					bounds[1] = ((evt as Event).target as HTMLInputElement).value;
-					onValue(bounds);
-				}
-			}}
-		/>
+		{@render priceCmp({
+			onValue: (value) => {
+				bounds[0] = value as string;
+				onValue(bounds);
+			},
+			initialValue: bounds[0],
+			placeholder: '>='
+		})}
+		{@render priceCmp({
+			onValue: (value) => {
+				bounds[1] = value as string;
+				onValue(bounds);
+			},
+			initialValue: bounds[1],
+			placeholder: '<='
+		})}
 	</div>
 {/snippet}
 

@@ -10,7 +10,6 @@
 	import { IconButton } from '$lib/components/ui/Button';
 	import {
 		DropDown,
-		type DropdownTriggerInterface,
 		type MenuItemProps
 	} from '$lib/components/ui/Dropdown';
 	import { Modal } from '$lib/components/ui/Modal';
@@ -26,6 +25,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 
 	const channelsQuery = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',

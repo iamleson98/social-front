@@ -24,10 +24,11 @@
 	import { ACCESS_TOKEN_KEY, HTTPStatusSuccess } from '$lib/utils/consts';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { afterNavigate, beforeNavigate, invalidateAll } from '$app/navigation';
-	import { DropDown, type DropdownTriggerInterface } from '../ui/Dropdown';
+	import { DropDown } from '../ui/Dropdown';
 	import { READ_ONLY_USER_STORE, setUserStoreValue } from '$lib/stores/auth/user';
 	import { Tween } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 
 	const { userDisplayName } = $derived.by(() => {
 		let userDisplayName;

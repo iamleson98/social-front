@@ -10,12 +10,12 @@
 	import { FilterCog } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import type { SocialSize } from '$lib/components/ui/common';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
 	import { Popover } from '$lib/components/ui/Popover';
 	import { afterNavigate, goto } from '$app/navigation';
 	import { numberRegex, parseUrlSearchParams } from '$lib/utils/utils';
 	import { page } from '$app/state';
 	import { SvelteMap } from 'svelte/reactivity';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 
 	type Props = {
 		filterOptions: FilterProps<T>[];

@@ -33,7 +33,8 @@
 	} from '@lexical/rich-text';
 	import { $setBlocksType as setBlocksType } from '@lexical/selection';
 	import { Button, IconButton } from '$lib/components/ui/Button';
-	import { DropDown, MenuItem, type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
+	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 
 	type Props = {
 		/** indicates if editing mode is allowed */

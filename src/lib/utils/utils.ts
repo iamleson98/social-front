@@ -63,10 +63,10 @@ export const parseProductDescription = (description: string): string[] => {
  * this type represents the graphql query params that are used for pagination.
  */
 export type PaginationOptions = {
-	before: string | null | undefined;
-	after: string | null | undefined;
-	first: number | null | undefined;
-	last: number | null | undefined;
+	before?: string | null;
+	after?: string | null;
+	first?: number | null;
+	last?: number | null;
 };
 
 /**

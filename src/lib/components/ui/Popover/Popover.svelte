@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { onMount, tick, type Snippet } from 'svelte';
+	import { onMount, type Snippet } from 'svelte';
 	import { computePosition, offset, shift, flip, type Placement } from '@floating-ui/dom';
 	import { clickOutside } from '$lib/actions/click-outside';
 	import { fly } from 'svelte/transition';
-	import { dropdownResizeDebounce, type DropdownTriggerInterface } from '../Dropdown';
+	import { dropdownResizeDebounce, type DropdownTriggerInterface } from './types';
 
 	type Props = {
 		/** NOTE: children and options must be provided exclusively */

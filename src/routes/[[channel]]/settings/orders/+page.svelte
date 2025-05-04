@@ -1,8 +1,6 @@
 <script lang="ts">
-	import { operationStore } from '$lib/api/operation';
 	import { USER_ORDERS_QUERY } from '$lib/api/orders';
-	import { Alert } from '$lib/components/ui/Alert';
-	import { Table, TableSkeleton, type TableColumnProps } from '$lib/components/ui/Table';
+	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { type Order, type Query } from '$lib/gql/graphql';
 	import {
 		formatCurrency,
@@ -12,35 +10,30 @@
 	} from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 	import { lowerCase, startCase } from 'es-toolkit';
-	import { DropDown, type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
+	import { DropDown } from '$lib/components/ui/Dropdown';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Dots } from '$lib/components/icons';
 	import { AppRoute } from '$lib/utils';
 	import { tranFunc } from '$i18n';
 	import { Badge } from '$lib/components/ui/badge';
 	import HeadBar from '$lib/components/pages/settings/config/head-bar.svelte';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 
 	const BATCH_LOAD = 20;
 
-	const userOrdersStore = operationStore<Pick<Query, 'me'>, PaginationOptions>({
-		kind: 'query',
-		requestPolicy: 'cache-and-network',
-		query: USER_ORDERS_QUERY,
-		variables: {
-			first: BATCH_LOAD
-		}
+	let filterVariables = $state<PaginationOptions>({
+		first: BATCH_LOAD
 	});
+	let forceReExecuteGraphqlQuery = $state<boolean>(false);
 
 	const ORDER_TABLE_COLUMNS: TableColumnProps<Order, any>[] = $derived([
 		{
 			title: $tranFunc('settings.no'),
-			// sortable: true,
 			child: no
 		},
 		{
 			title: $tranFunc('settings.date'),
 			child: date
-			// sortable: true
 		},
 		{
 			title: $tranFunc('settings.payment'),
@@ -93,18 +86,20 @@
 {/snippet}
 
 {#snippet action({ item }: { item: Order })}
-	{#snippet trigger({ ...rest }: DropdownTriggerInterface)}
-		<IconButton icon={Dots} {...rest} size="xs" variant="light" color="gray" />
-	{/snippet}
-	<DropDown
-		{trigger}
-		options={[
-			{
-				children: $tranFunc('settings.reqSupport'),
-				href: `${AppRoute.ME_SUPPORT_NEW()}?order_number=${item.number}`
-			}
-		]}
-	/>
+	<div class="text-center">
+		{#snippet trigger({ ...rest }: DropdownTriggerInterface)}
+			<IconButton icon={Dots} {...rest} size="xs" variant="light" color="gray" />
+		{/snippet}
+		<DropDown
+			{trigger}
+			options={[
+				{
+					children: $tranFunc('settings.reqSupport'),
+					href: `${AppRoute.ME_SUPPORT_NEW()}?order_number=${item.number}`
+				}
+			]}
+		/>
+	</div>
 {/snippet}
 
 <HeadBar
@@ -116,22 +111,10 @@
 	detailPageLabelGetter={(page) => page.params.id}
 />
 
-<div class="rounded-lg bg-white border border-gray-200 p-4 mt-3">
-	{#if $userOrdersStore.fetching}
-		<TableSkeleton numColumns={6} showPagination />
-	{:else if $userOrdersStore.error}
-		<Alert variant="error" size="sm" bordered>{$userOrdersStore.error.message}</Alert>
-	{:else if $userOrdersStore.data?.me}
-		{@const items = $userOrdersStore.data.me.orders?.edges.map((item) => item.node) || []}
-		<Table
-			{items}
-			columns={ORDER_TABLE_COLUMNS}
-			pagination={$userOrdersStore.data.me.orders?.pageInfo}
-			onNextPagelick={(cursor) =>
-				userOrdersStore.reexecute({ variables: { first: BATCH_LOAD, after: cursor } })}
-			onPreviousPagelick={(cursor) =>
-				userOrdersStore.reexecute({ variables: { last: BATCH_LOAD, before: cursor } })}
-			onChangeRowsPerPage={(no) => userOrdersStore.reexecute({ variables: { first: no } })}
-		/>
-	{/if}
-</div>
+<GraphqlPaginableTable
+	query={USER_ORDERS_QUERY}
+	columns={ORDER_TABLE_COLUMNS}
+	bind:variables={filterVariables}
+	resultKey={'me.orders' as keyof Query}
+	bind:forceReExecuteGraphqlQuery
+/>

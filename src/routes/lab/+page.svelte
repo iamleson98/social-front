@@ -2,7 +2,7 @@
 	import FilterBox from '$lib/components/common/filter-box/filter-box.svelte';
 	import { PhotoUp } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { DebounceInput, FileInput, Input } from '$lib/components/ui/Input';
 	import { Popover } from '$lib/components/ui/Popover';
 	import { MultiSelect } from '$lib/components/ui/select';

@@ -30,6 +30,7 @@
 	let startIcon = $state(false);
 	let endIcon = $state(false);
 	let loading = $state(false);
+	let tooltip = $state(false);
 
 	const handleCopyButton = (btnType: 'normal' | 'icon', color: SocialColor, size: SocialSize) => {
 		const tagName = btnType === 'normal' ? 'Button' : 'IconButton';
@@ -38,6 +39,7 @@
 		if (loading) codeContent += ` loading`;
 		if (startIcon) codeContent += ` startIcon={Email}`;
 		if (endIcon) codeContent += ` endIcon={Email}`;
+		if (tooltip) codeContent += ` class="tooltip tooltip-top" data-tip="${color} ${size}"`;
 
 		if (btnType === 'icon') {
 			codeContent += ` icon={Email} />`;
@@ -73,6 +75,9 @@
 <div>loading control</div>
 <Checkbox bind:checked={loading} label="Loading" />
 
+<div>tooltip control</div>
+<Checkbox bind:checked={tooltip} label="Tooltip" />
+
 <div class="mt-5">Buttons</div>
 
 {#each socialSizes as size, idx (idx)}
@@ -87,6 +92,8 @@
 				startIcon={startIcon ? Email : undefined}
 				endIcon={endIcon ? Email : undefined}
 				loading={loading}
+				class={tooltip ? 'tooltip tooltip-top' : ''}
+				data-tip={tooltip ? `Button ${color} ${size}` : undefined}
 			>
 				{color}
 				{size}

@@ -2,7 +2,7 @@
 	import { tranFunc } from '$i18n';
 	import { Dots, Edit, Icon, TagFilled, Trash } from '$lib/components/icons';
 	import { IconButton } from '$lib/components/ui/Button';
-	import { DropDown, type DropdownTriggerInterface } from '$lib/components/ui/Dropdown';
+	import { DropDown } from '$lib/components/ui/Dropdown';
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
@@ -13,6 +13,7 @@
 		type SupportTicketTag
 	} from '$lib/utils/types';
 	import dayjs from 'dayjs';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 
 	type SupportTicket = {
 		id: string;
