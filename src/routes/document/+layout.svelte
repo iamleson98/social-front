@@ -24,6 +24,10 @@
 		{
 			name: 'Radio',
 			path: '/document/radio'
+		},
+		{
+			name: 'Input',
+			path: '/document/input'
 		}
 	];
 </script>

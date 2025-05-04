@@ -2,7 +2,7 @@
 	import { Email } from '$lib/components/icons';
 	import { Button, IconButton, type ButtonVariant } from '$lib/components/ui/Button';
 	import type { SocialColor, SocialSize } from '$lib/components/ui/common';
-	import { RadioButton } from '$lib/components/ui/Input';
+	import { Checkbox, RadioButton } from '$lib/components/ui/Input';
 	import { toastStore } from '$lib/stores/ui/toast';
 
 	const socialColors: SocialColor[] = [
@@ -23,12 +23,22 @@
 	];
 
 	const socialSizes: SocialSize[] = ['xs', 'sm', 'md', 'lg', 'xl'];
+	const buttonvariants: ButtonVariant[] = ['filled', 'light', 'outline', 'gradient'];
 
 	let variant = $state<ButtonVariant>('filled');
+	let disabled = $state(false);
+	let startIcon = $state(false);
+	let endIcon = $state(false);
+	let loading = $state(false);
 
 	const handleCopyButton = (btnType: 'normal' | 'icon', color: SocialColor, size: SocialSize) => {
 		const tagName = btnType === 'normal' ? 'Button' : 'IconButton';
 		let codeContent = `<${tagName} variant="${variant}" color="${color}" size="${size}"`;
+		if (disabled) codeContent += ` disabled`;
+		if (loading) codeContent += ` loading`;
+		if (startIcon) codeContent += ` startIcon={Email}`;
+		if (endIcon) codeContent += ` endIcon={Email}`;
+
 		if (btnType === 'icon') {
 			codeContent += ` icon={Email} />`;
 		} else {
@@ -48,18 +58,36 @@
 <div>Variant Control</div>
 
 <div class="flex gap-2 items-center mb-3">
-	<RadioButton bind:group={variant} value="filled" label="Filled" />
-	<RadioButton bind:group={variant} value="light" label="Light" />
-	<RadioButton bind:group={variant} value="outline" label="Outline" />
-	<RadioButton bind:group={variant} value="gradient" label="Gradient" />
+	{#each buttonvariants as btnVariant, idx (idx)}
+		<RadioButton bind:group={variant} value={btnVariant} label={btnVariant} />
+	{/each}
 </div>
 
-<div>Buttons</div>
+<div>disable control</div>
+<Checkbox bind:checked={disabled} label="Disabled" />
+
+<div>icons control</div>
+<Checkbox bind:checked={startIcon} label="Start Icon" />
+<Checkbox bind:checked={endIcon} label="End Icon" />
+
+<div>loading control</div>
+<Checkbox bind:checked={loading} label="Loading" />
+
+<div class="mt-5">Buttons</div>
 
 {#each socialSizes as size, idx (idx)}
 	<div class="flex items-start gap-2 mb-3 flex-wrap">
 		{#each socialColors as color, idx (idx)}
-			<Button {variant} {color} {size} onclick={() => handleCopyButton('normal', color, size)}>
+			<Button
+				{variant}
+				{color}
+				{size}
+				onclick={() => handleCopyButton('normal', color, size)}
+				{disabled}
+				startIcon={startIcon ? Email : undefined}
+				endIcon={endIcon ? Email : undefined}
+				loading={loading}
+			>
 				{color}
 				{size}
 			</Button>
@@ -78,6 +106,8 @@
 					{color}
 					{size}
 					icon={Email}
+					{disabled}
+					loading={loading}
 					onclick={() => handleCopyButton('icon', color, size)}
 				/>
 				<div>{color} {size}</div>

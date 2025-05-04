@@ -1,26 +1,13 @@
 <script lang="ts">
-	import { onMount, tick, type Snippet } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import {
 		dropdownResizeDebounce,
-		type DropdownTriggerInterface,
-		type MenuItemProps
+		type DropdownProps
 	} from './types';
-	import { computePosition, offset, shift, flip, type Placement } from '@floating-ui/dom';
+	import { computePosition, offset, shift, flip } from '@floating-ui/dom';
 	import { clickOutside } from '$lib/actions/click-outside';
 	import { fly } from 'svelte/transition';
 	import MenuItem from './menuItem.svelte';
-
-	type Props = {
-		/** NOTE: children and options must be provided exclusively */
-		options?: MenuItemProps[];
-		trigger: Snippet<[DropdownTriggerInterface]>;
-		placement?: Placement;
-		/** NOTE: children and options must be provided exclusively */
-		children?: Snippet;
-		/** if `true`, will not recalculate position on window resize nor scroll */
-		noReCalculateOnWindowResize?: boolean;
-		open?: boolean;
-	};
 
 	let {
 		trigger,
@@ -29,7 +16,7 @@
 		children,
 		noReCalculateOnWindowResize = false,
 		open = $bindable(false)
-	}: Props = $props();
+	}: DropdownProps = $props();
 
 	if ((options?.length && children) || (!options?.length && !children)) {
 		throw new Error('Dropdown must have either options or children, not both');

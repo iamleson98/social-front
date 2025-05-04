@@ -82,7 +82,7 @@
 	{...extraProps}
 >
 	{#if loading}
-		<div class="absolute inset-0 z-500 flex items-center justify-center">
+		<div class="absolute inset-0 z-10 flex items-center justify-center">
 			<span class="loading loading-dots loading-sm"></span>
 		</div>
 	{/if}
