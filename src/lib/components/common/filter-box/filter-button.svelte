@@ -150,7 +150,7 @@
 		options={filterOptions}
 		onApply={handleApply}
 		{filters}
-		class="min-w-96 border border-gray-200"
+		class="min-w-96"
 		onClose={() => (isFilterOpening = false)}
 	/>
 </Popover>

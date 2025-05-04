@@ -49,7 +49,7 @@
 			middleware: [offset(4), flip(), shift()]
 		});
 
-		Object.assign(menuElemRef.style || {}, {
+		Object.assign(menuElemRef.style, {
 			left: `${x}px`,
 			top: `${y}px`
 		});
@@ -57,8 +57,7 @@
 
 	const handleTriggerClick = async () => {
 		open = true;
-		await tick();
-		computeStyle();
+		await computeStyle();
 	};
 
 	onMount(() => {
@@ -73,8 +72,8 @@
 		{#if open}
 			<div
 				use:clickOutside={{ onOutclick: () => (open = false) }}
-				transition:fly={flyOpts}
-				class="rounded-lg shadow-xs"
+				in:fly={flyOpts}
+				out:fly={flyOpts}
 				onclick={computeStyle}
 				onkeyup={(e) => e.key === 'Escape' && (open = false)}
 				role="menu"

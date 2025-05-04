@@ -70,7 +70,7 @@
 	};
 </script>
 
-<div class="{className} bg-white rounded-lg p-2 shadow-md">
+<div class="{className} bg-white rounded-lg p-2 shadow-md border border-gray-200">
 	<dir class="flex items-center justify-between">
 		<span class="text-sm font-medium">{header}</span>
 		<IconButton icon={CloseX} color="gray" size="xs" variant="light" onclick={onClose} />
