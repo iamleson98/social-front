@@ -114,11 +114,7 @@
 		{#each items as item, idx (idx)}
 			<tr>
 				{#each columns as column, idx (idx)}
-					<td
-						class="px-1 py-2"
-						class:text-center={column.placement === 'center'}
-						class:text-right={column.placement === 'right'}
-					>
+					<td class="px-1 py-2">
 						{@render column.child({ item })}
 					</td>
 				{/each}

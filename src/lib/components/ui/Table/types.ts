@@ -46,12 +46,6 @@ export type TableColumnProps<T extends Record<string, unknown>, K extends string
    * @param item the item of the row
    */
   child: Snippet<[{ item: T }]>;
-
-  /**
-   * The placement of the column within the table data cell.
-   * @default 'left'
-   */
-  placement?: 'center' | 'left' | 'right';
 };
 
 export type SortDirection = OrderDirection | 'NEUTRAL';
@@ -80,7 +74,7 @@ export type GraphqlPaginationArgs = {
   after?: string | null;
   before?: string | null;
   sortBy?: Record<string, unknown> & {
-    field: string;
+    field?: string | null;
     direction: OrderDirection;
   } | null;
 };

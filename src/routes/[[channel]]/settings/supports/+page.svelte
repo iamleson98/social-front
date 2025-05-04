@@ -45,7 +45,7 @@
 		}
 	];
 
-	const ORDER_TABLE_COLUMNS: TableColumnProps<SupportTicket>[] = $derived([
+	const ORDER_TABLE_COLUMNS: TableColumnProps<SupportTicket, string>[] = $derived([
 		{
 			title: $tranFunc('settings.title'),
 			child: title
@@ -61,7 +61,8 @@
 		{
 			title: $tranFunc('settings.date'),
 			child: date,
-			sortable: true
+			sortable: true,
+			key: 'createdAt'
 		},
 		{
 			title: $tranFunc('settings.action'),

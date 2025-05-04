@@ -59,8 +59,7 @@
 		},
 		{
 			title: 'Is Staff',
-			child: isStaff,
-			placement: 'center'
+			child: isStaff
 		},
 		{
 			title: 'Joined At',
@@ -106,11 +105,13 @@
 {/snippet}
 
 {#snippet isStaff({ item }: { item: User })}
-	{#if item.isStaff}
-		<Badge text="Yes" color="green" variant="light" />
-	{:else}
-		<Badge text="No" color="red" variant="light" />
-	{/if}
+	<div class="text-center">
+		{#if item.isStaff}
+			<Badge text="Yes" color="green" variant="light" />
+		{:else}
+			<Badge text="No" color="red" variant="light" />
+		{/if}
+	</div>
 {/snippet}
 
 {#snippet dateJoined({ item }: { item: User })}

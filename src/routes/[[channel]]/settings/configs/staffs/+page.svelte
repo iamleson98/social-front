@@ -14,13 +14,14 @@
 	const STAFF_COLUMNS: TableColumnProps<User, UserSortField>[] = [
 		{
 			title: 'Avatar',
-			child: avatar
+			child: avatar,
 		},
 		{
 			title: 'Full Name',
 			key: UserSortField.FirstName,
 			child: fullName,
-			sortable: true
+			sortable: true,
+			placement: 'center'
 		},
 		{
 			title: 'Email',

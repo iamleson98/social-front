@@ -21,7 +21,6 @@
 			sortable: true,
 			child: no,
 			key: OrderSortField.Number,
-			placement: 'center'
 		},
 		{
 			title: $tranFunc('common.email'),
