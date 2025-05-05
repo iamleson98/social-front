@@ -11,6 +11,7 @@
 		disabled: boolean;
 		isActive: boolean;
 		formOk?: boolean;
+		isCreatePage: boolean;
 	};
 
 	let {
@@ -21,6 +22,7 @@
 		disabled,
 		isActive = $bindable(false),
 		formOk = $bindable(false),
+		isCreatePage = $bindable(false)
 	}: Props = $props();
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
@@ -74,6 +76,7 @@
 			subText={staffFormErrors?.lastName?.length ? staffFormErrors.lastName[0] : ''}
 			required
 			{disabled}
+			readonly={!isCreatePage}
 			class="flex-1"
 			onblur={validate}
 		/>
@@ -85,6 +88,7 @@
 			subText={staffFormErrors?.firstName?.length ? staffFormErrors.firstName[0] : ''}
 			required
 			{disabled}
+			readonly={!isCreatePage}
 			class="flex-1"
 			onblur={validate}
 		/>
@@ -97,11 +101,18 @@
 		variant={staffFormErrors?.email?.length ? 'error' : 'info'}
 		subText={staffFormErrors?.email?.length ? staffFormErrors.email[0] : ''}
 		{disabled}
+		readonly={!isCreatePage}
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
 	/>
 
 	<div class="mt-3 flex gap-3 items-center">
-		<Checkbox label="Active" bind:checked={isActive} size="sm" class="flex-1" />
+		<Checkbox
+			label="Active"
+			bind:checked={isActive}
+			{disabled}
+			size="sm"
+			class="flex-1"
+		/>
 	</div>
 </div>

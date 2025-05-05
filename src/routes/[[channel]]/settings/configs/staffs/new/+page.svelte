@@ -56,17 +56,19 @@
 		bind:isActive={user.isActive}
 		disabled={loading}
 		bind:formOk
+		isCreatePage={true}
 	/>
 
-  <div
-		class="mt-5 sticky bottom-0 flex justify-between items-center bg-white p-2 border rounded-lg border-gray-200"
+	<div
+		class="mt-5 sticky bottom-0 text-right bg-white p-2 border rounded-lg border-gray-200"
 	>
-  <Button
-				variant="light"
-				color="gray"
-				disabled={loading}
-				href={AppRoute.SETTINGS_CONFIGS_STAFFS()}>Back</Button
-			>
-			<Button disabled={loading || !formOk} onclick={handleAddStaff}>Add</Button>
+		<Button
+			variant="light"
+			color="gray"
+			class="mr-2"
+			disabled={loading}
+			href={AppRoute.SETTINGS_CONFIGS_STAFFS()}>Back</Button
+		>
+		<Button disabled={loading || !formOk} onclick={handleAddStaff}>Add</Button>
 	</div>
 </div>
