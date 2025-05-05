@@ -35,6 +35,11 @@ mutation StaffUpdate($id: ID!, $input: StaffUpdateInput!) {
       lastName
       isActive
     }
+    errors {
+      field
+      message
+      code
+    }
   }
 }`;
 
@@ -43,6 +48,11 @@ mutation StaffDelete($id: ID!) {
   staffDelete(id: $id) {
     user {
       id
+    }
+    errors {
+      field
+      message
+      code
     }
   }
 }`;
