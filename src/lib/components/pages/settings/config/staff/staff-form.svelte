@@ -25,7 +25,7 @@
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 
-	const channelSchema = object({
+	const staffSchema = object({
 		avatar: string().optional(),
 		lastName: string().nonempty(REQUIRED_ERROR),
 		firstName: string().nonempty(REQUIRED_ERROR),
@@ -33,12 +33,12 @@
 		isActive: boolean()
 	});
 
-	type StaffSchema = z.infer<typeof channelSchema>;
+	type StaffSchema = z.infer<typeof staffSchema>;
 
 	let staffFormErrors = $state.raw<Partial<Record<keyof StaffSchema, string[]>>>({});
 
 	const validate = () => {
-		const parseResult = channelSchema.safeParse({
+		const parseResult = staffSchema.safeParse({
 			lastName,
 			firstName,
 			email,

@@ -86,10 +86,7 @@
 
 		loading = false;
 
-		if (preHandleErrorOnGraphqlResult(result, 'userDelete')) {
-			console.log(result);
-			return;
-		}
+		if (preHandleErrorOnGraphqlResult(result, 'userDelete')) return;
 		toastStore.send({
 			variant: 'success',
 			message: 'Staff deleted successfully'
