@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { CloseX, Icon, type IconContent } from '$lib/components/icons';
+	import type { HTMLAttributes } from 'svelte/elements';
 	import { buttonVariantColorsMap, type ButtonVariant } from '../Button/button.types';
 	import type { SocialColor, SocialSize } from '../common';
 	import { BADGE_SIZE_VARIANTS } from './types';
@@ -17,7 +18,7 @@
 		/** default to `sm` */
 		size?: SocialSize;
 		rounded?: boolean;
-	};
+	} & HTMLAttributes<HTMLSpanElement>;
 
 	let {
 		variant = 'filled',
@@ -29,6 +30,7 @@
 		startIcon,
 		size = 'sm',
 		rounded = false,
+		...restProps
 	}: Props = $props();
 
 	const roundClass = rounded ? 'rounded-full!' : 'rounded-sm';
@@ -37,6 +39,7 @@
 <span
 	bind:this={ref}
 	class={`inline-flex items-center whitespace-nowrap select-none! gap-2 ${roundClass} ${BADGE_SIZE_VARIANTS[size].badge} font-medium badge-${size} ${className} ${buttonVariantColorsMap[variant][color]}`}
+	{...restProps}
 >
 	{#if startIcon}
 		<Icon icon={startIcon} />
