@@ -260,7 +260,7 @@
 	const handleFocusHighlightQuickFilling = (highlight?: QuickFillHighlight) =>
 		(quickFillingHighlightClass = highlight);
 
-	const handleVariantValueChange = (variantIdx: number, valueIdx: number) => (evt: Event) => {
+	const handleVariantValueChange = (variantIdx: number, valueIdx: number, evt: Event) => {
 		if (!evt.target) return;
 		const newValue = (evt.target as HTMLInputElement).value;
 		const valueTrimLower = newValue.trim().toLowerCase();
@@ -347,7 +347,7 @@
 		variantsInputDetails = newVariantDetails;
 	};
 
-	const handleVariantNameChange = (variantIdx: number) => (evt: Event) => {
+	const handleVariantNameChange = (variantIdx: number, evt: Event) => {
 		if (!evt.target) return;
 		const name = (evt.target as HTMLInputElement).value;
 		const nameTrimLower = name.trim().toLowerCase();
@@ -436,7 +436,10 @@
 	};
 
 	const handleAddVariantValue = (variantIdx: number) => {
-		const maxValues = variantManifests.length === MAX_VARIANT_TYPES ? MAX_VALUES_PER_VARIANT : MAX_VALUES_SINGLE_VARIANT;
+		const maxValues =
+			variantManifests.length === MAX_VARIANT_TYPES
+				? MAX_VALUES_PER_VARIANT
+				: MAX_VALUES_SINGLE_VARIANT;
 		const newVariantManifests = variantManifests.map((variant, idx) => {
 			if (idx !== variantIdx || variant.values.length >= maxValues) return variant;
 
@@ -592,7 +595,7 @@
 								class="w-full"
 								placeholder={$tranFunc('product.variantPlaceholder')}
 								inputDebounceOption={{
-									onInput: handleVariantNameChange(variantIdx) as (result: unknown) => void
+									onInput: (evt) => handleVariantNameChange(variantIdx, evt)
 								}}
 								value={variant.name.value}
 								size="md"
@@ -615,9 +618,7 @@
 									size="sm"
 									placeholder={$tranFunc('placeholders.valuePlaceholder')}
 									inputDebounceOption={{
-										onInput: handleVariantValueChange(variantIdx, valueIdx) as (
-											result: unknown
-										) => void,
+										onInput: (evt) => handleVariantValueChange(variantIdx, valueIdx, evt),
 										debounceTime: 500 // only fire after 0.5 sec after user stop typing
 									}}
 									value={value.value}
@@ -1171,8 +1172,8 @@
 	{/if}
 </Modal>
 
-<style>
-	@import 'tailwindcss/theme';
+<style lang="postcss">
+	@reference "tailwindcss";
 
 	td {
 		@apply p-1 border-transparent border-l border-r;

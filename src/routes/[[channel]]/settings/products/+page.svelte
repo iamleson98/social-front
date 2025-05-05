@@ -1,61 +1,21 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { tranFunc } from '$i18n';
 	import { PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
-	import { operationStore } from '$lib/api/operation';
 	import { Icon, InforCircle } from '$lib/components/icons';
-	import {
-		AFTER,
-		BEFORE,
-		FIRST,
-		LAST,
-		ORDER_BY_FIELD,
-		ORDER_DIRECTION
-	} from '$lib/components/pages/home/common';
 	import ProductFilterStateListener from '$lib/components/pages/home/product-filter-state-listener.svelte';
 	import Filter from '$lib/components/pages/settings/products/filter.svelte';
-	import { Alert } from '$lib/components/ui/Alert';
-	import {
-		Table,
-		TableSkeleton,
-		type SortDirection,
-		type SortState,
-		type TableColumnProps
-	} from '$lib/components/ui/Table';
-	import {
-		OrderDirection,
-		ProductOrderField,
-		type Product,
-		type Query,
-		type QueryProductsArgs
-	} from '$lib/gql/graphql';
-	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
+	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import { ProductOrderField, type Product, type QueryProductsArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { formatCurrency } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
-	import { onMount } from 'svelte';
 
-	const DEFAULT_BATCH = 10; // 10 is also default rows per page in table footer
-
-	const productFetchStore = operationStore<Pick<Query, 'products'>, QueryProductsArgs>({
-		kind: 'query',
-		query: PRODUCT_LIST_QUERY_ADMIN,
-		context: { requestPolicy: 'cache-and-network' },
-		variables: $productFilterParamStore
+	let productsFilterVariables = $state<QueryProductsArgs>({
+		first: 10
 	});
+	let forceReExecuteGraphqlQuery = $state(true);
 
-	$effect(() => {
-		if ($productFilterParamStore.reload) {
-			productFetchStore.reexecute({
-				variables: $productFilterParamStore
-			});
-			$productFilterParamStore.reload = false; // prevent calling agrain
-		}
-	});
-
-	onMount(() => productFilterParamStore.reset); // reset filter params
-
-	const productColumns: TableColumnProps<Product>[] = $derived([
+	const productColumns: TableColumnProps<Product, ProductOrderField>[] = $derived([
 		{
 			title: $tranFunc('settings.name'),
 			child: name,
@@ -77,80 +37,6 @@
 			key: ProductOrderField.CreatedAt
 		}
 	]);
-
-	const applyFilterToUrlPath = async () => {
-		const searchParams = new URLSearchParams();
-
-		if ($productFilterParamStore.first) {
-			searchParams.set(FIRST, $productFilterParamStore.first.toString());
-		} else if ($productFilterParamStore.last) {
-			searchParams.set(LAST, $productFilterParamStore.last.toString());
-		}
-
-		if ($productFilterParamStore.sortBy?.field && $productFilterParamStore.sortBy?.direction) {
-			searchParams.set(ORDER_BY_FIELD, $productFilterParamStore.sortBy.field);
-			searchParams.set(ORDER_DIRECTION, $productFilterParamStore.sortBy.direction);
-		}
-
-		if ($productFilterParamStore.before) {
-			searchParams.set(BEFORE, $productFilterParamStore.before);
-		} else if ($productFilterParamStore.after) {
-			searchParams.set(AFTER, $productFilterParamStore.after);
-		}
-
-		await goto(`${AppRoute.SETTINGS_PRODUCTS()}?${searchParams.toString()}`, {
-			invalidateAll: false,
-			replaceState: false
-		});
-	};
-
-	const handleNextPagelick = (after: string) => {
-		$productFilterParamStore = {
-			...$productFilterParamStore,
-			after,
-			before: null,
-			first: $productFilterParamStore.last || DEFAULT_BATCH,
-			last: null
-		};
-		applyFilterToUrlPath();
-	};
-
-	const handlePreviousPagelick = (before: string) => {
-		$productFilterParamStore = {
-			...$productFilterParamStore,
-			before,
-			after: null,
-			last: $productFilterParamStore.first || DEFAULT_BATCH,
-			first: null
-		};
-		applyFilterToUrlPath();
-	};
-
-	const handleRowsPerPageChange = (no: number) => {
-		if ($productFilterParamStore.first) $productFilterParamStore.first = no;
-		else if ($productFilterParamStore.last) $productFilterParamStore.last = no;
-		applyFilterToUrlPath();
-	};
-
-	const handleSortChange = (sort: SortState) => {
-		// currently products screen support single field sort only
-		const keys = Object.keys(sort);
-		if (!keys.length) return;
-
-		const key = keys[0];
-		const direction = sort[key];
-		if (direction === 'neutral') return;
-
-		$productFilterParamStore.sortBy = {
-			field: key as ProductOrderField,
-			direction: direction === 'asc' ? OrderDirection.Asc : OrderDirection.Desc
-		};
-
-		$productFilterParamStore.before = null;
-		$productFilterParamStore.after = null;
-
-		applyFilterToUrlPath();
-	};
 </script>
 
 <ProductFilterStateListener />
@@ -199,29 +85,10 @@
 	<Filter />
 </div>
 
-<div class="bg-white rounded-lg p-4 border border-gray-200">
-	{#if $productFetchStore.fetching}
-		<TableSkeleton numColumns={4} showPagination />
-	{:else if $productFetchStore.error}
-		<Alert variant="warning" size="sm" bordered>
-			{$tranFunc('error.failedToLoad')}
-		</Alert>
-	{:else if $productFetchStore.data?.products}
-		{@const products = $productFetchStore.data?.products?.edges?.map((edge) => edge?.node)}
-		<Table
-			items={products}
-			columns={productColumns}
-			scale="sm"
-			pagination={$productFetchStore.data?.products.pageInfo}
-			onNextPagelick={handleNextPagelick}
-			onPreviousPagelick={handlePreviousPagelick}
-			onChangeRowsPerPage={handleRowsPerPageChange}
-			rowsPerPage={$productFilterParamStore.first || $productFilterParamStore.last}
-			onSortChange={handleSortChange}
-			defaultSortState={{
-				[$productFilterParamStore.sortBy?.field as string]: $productFilterParamStore.sortBy
-					?.direction as unknown as SortDirection
-			} as SortState}
-		/>
-	{/if}
-</div>
+<GraphqlPaginableTable
+	query={PRODUCT_LIST_QUERY_ADMIN}
+	bind:variables={productsFilterVariables}
+	resultKey="products"
+	columns={productColumns}
+	bind:forceReExecuteGraphqlQuery
+/>

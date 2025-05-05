@@ -16,7 +16,7 @@
 	import { EmptyCart } from '$lib/components/icons/SvgOuterIcon';
 
 	afterNavigate(() => {
-		window.scrollTo({
+		scrollTo({
 			top: 0,
 			behavior: 'smooth'
 		});

@@ -82,7 +82,7 @@
 	{...extraProps}
 >
 	{#if loading}
-		<div class="absolute inset-0 z-500 flex items-center justify-center">
+		<div class="absolute inset-0 z-10 flex items-center justify-center">
 			<span class="loading loading-dots loading-sm"></span>
 		</div>
 	{/if}
@@ -91,8 +91,9 @@
 	{@render buttonIcon({ icon: endIcon })}
 </svelte:element>
 
-<style>
-	@import 'tailwindcss/theme';
+<style lang="postcss">
+	@reference "tailwindcss";
+
 	.button {
 		@apply cursor-pointer relative outline-hidden! !select-none gap-1.5 appearance-none text-center inline-flex justify-center items-center leading-none grow-0 font-medium focus:ring-4;
 		-webkit-tap-highlight-color: transparent;

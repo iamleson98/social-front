@@ -1,12 +1,17 @@
-<script lang="ts" generics="T extends Record<string, unknown>">
+<script lang="ts" generics="T extends Record<string, unknown>, K extends string">
 	import { tranFunc } from '$i18n';
 	import { ChevronLeft, ChevronRight, Icon } from '$lib/components/icons';
+	import { OrderDirection } from '$lib/gql/graphql';
 	import { IconButton } from '../Button';
 	import Button from '../Button/Button.svelte';
 	import { DropDown, type DropdownTriggerInterface, type MenuItemProps } from '../Dropdown';
-	import { SortIconsMap, type SortState, type TableProps } from './types';
-
-	const ROW_OPTIONS = [10, 20, 30, 50, 100];
+	import {
+		ROW_OPTIONS,
+		SortIconsMap,
+		type RowOptions,
+		type SortState,
+		type TableProps
+	} from './types';
 
 	let {
 		items,
@@ -17,20 +22,22 @@
 		onPreviousPagelick,
 		onChangeRowsPerPage,
 		onSortChange,
-		scale = 'md',
 		rowsPerPage,
 		sortMultiple = false,
-		defaultSortState = {}
-	}: TableProps<T> = $props();
+		defaultSortState = {} as SortState<K>,
+		disabled = false
+	}: TableProps<T, K> = $props();
 
-	let tdClass = scale === 'sm' ? 'p-1!' : '';
+	if (columns.some((col) => col.sortable && !col.key)) {
+		throw new Error('All sortable columns must have an unique key');
+	}
 
-	const DEFAULT_SORT_STATE = columns.reduce<SortState>((acc, column) => {
-		if (column.sortable) return { ...acc, [column.key || column.title]: 'neutral' };
+	const DEFAULT_SORT_STATE = columns.reduce<SortState<K>>((acc, column) => {
+		if (column.sortable) return { ...acc, [column.key!]: 'NEUTRAL' };
 		return acc;
-	}, {});
+	}, {} as SortState<K>);
 	let innerRowsPerPage = $state<number>(rowsPerPage || ROW_OPTIONS[0]);
-	let sortState = $state.raw<SortState>({ ...DEFAULT_SORT_STATE, ...defaultSortState });
+	let sortState = $state.raw<SortState<K>>({ ...DEFAULT_SORT_STATE, ...defaultSortState });
 
 	const handleNavigateClick = (dir: 1 | -1) => {
 		if (!pagination) return;
@@ -38,14 +45,14 @@
 		else if (dir === 1 && pagination.endCursor) onNextPagelick?.(pagination.endCursor);
 	};
 
-	const handleSortClick = (column: string) => {
-		const colSortState: SortState = {};
-		if (sortState[column] === 'neutral') {
-			colSortState[column] = 'asc';
-		} else if (sortState[column] === 'asc') {
-			colSortState[column] = 'desc';
+	const handleSortClick = (columnKey: K) => {
+		const colSortState: SortState<K> = {} as SortState<K>;
+		if (sortState[columnKey] === 'NEUTRAL') {
+			colSortState[columnKey] = OrderDirection.Asc;
+		} else if (sortState[columnKey] === OrderDirection.Asc) {
+			colSortState[columnKey] = OrderDirection.Desc;
 		} else {
-			colSortState[column] = 'neutral';
+			colSortState[columnKey] = 'NEUTRAL';
 		}
 		if (sortMultiple) {
 			sortState = { ...sortState, ...colSortState };
@@ -56,19 +63,12 @@
 		}
 	};
 
-	const handleRowsPerPageChange = (num: number) => {
+	const handleRowsPerPageChange = (num: RowOptions) => {
 		if (num !== innerRowsPerPage) {
 			innerRowsPerPage = num;
 			onChangeRowsPerPage?.(num);
 		}
 	};
-
-	let PAGIN_OPTIONS = $derived(
-		ROW_OPTIONS.map<MenuItemProps>((num) => ({
-			children: `${num}`,
-			onclick: () => handleRowsPerPageChange(num)
-		}))
-	);
 </script>
 
 <table class="table {tableClass}">
@@ -80,9 +80,9 @@
 					: ''}
 				{@const props = column?.sortable
 					? {
-							onclick: () => handleSortClick(column.key || column.title),
-							onkeyup: (evt: KeyboardEvent) =>
-								evt.key === 'Enter' && handleSortClick(column.key || column.title)
+							onclick: () => handleSortClick(column.key!),
+							onkeyup: (evt: KeyboardEvent) => evt.key === 'Enter' && handleSortClick(column.key!),
+							disabled
 						}
 					: {}}
 				<th class="p-[unset]!">
@@ -102,7 +102,7 @@
 						</div>
 						{#if column?.sortable}
 							<span>
-								<Icon icon={SortIconsMap[sortState[column.key || column.title]]} />
+								<Icon icon={SortIconsMap[sortState[column.key!]]} />
 							</span>
 						{/if}
 					</svelte:element>
@@ -114,10 +114,8 @@
 		{#each items as item, idx (idx)}
 			<tr>
 				{#each columns as column, idx (idx)}
-					<td class={tdClass}>
-						<div>
-							{@render column.child({ item })}
-						</div>
+					<td class="px-1 py-2">
+						{@render column.child({ item })}
 					</td>
 				{/each}
 			</tr>
@@ -127,10 +125,16 @@
 
 <!-- MARK: pagination -->
 {#if pagination}
+	{@const PAGIN_OPTIONS = ROW_OPTIONS.map<MenuItemProps>((num) => ({
+		children: `${num}`,
+		onclick: () => handleRowsPerPageChange(num)
+	}))}
 	<div class="mt-4 flex items-center justify-between">
 		<div>
 			{#snippet trigger(opts: DropdownTriggerInterface)}
-				<Button size="xs" variant="light" {...opts}>No. of row {innerRowsPerPage}</Button>
+				<Button size="xs" variant="light" {...opts} {disabled}>
+					No. of row {innerRowsPerPage}
+				</Button>
 			{/snippet}
 			<DropDown {trigger} placement="bottom-start" options={PAGIN_OPTIONS} />
 		</div>
@@ -138,7 +142,7 @@
 			<IconButton
 				icon={ChevronLeft}
 				size="xs"
-				disabled={!pagination.hasPreviousPage}
+				disabled={!pagination.hasPreviousPage || disabled}
 				aria-label="Previous page"
 				class="tooltip tooltip-top"
 				data-tip={$tranFunc('common.prevPage')}
@@ -149,7 +153,7 @@
 			<IconButton
 				icon={ChevronRight}
 				size="xs"
-				disabled={!pagination.hasNextPage}
+				disabled={!pagination.hasNextPage || disabled}
 				aria-label="Next page"
 				class="tooltip tooltip-top"
 				data-tip={$tranFunc('common.nextPage')}

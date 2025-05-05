@@ -31,7 +31,7 @@
 		}
 	});
 
-	const ORDER_TABLE_COLUMNS: TableColumnProps<Order>[] = $derived([
+	const ORDER_TABLE_COLUMNS: TableColumnProps<Order, any>[] = $derived([
 		{
 			title: $tranFunc('settings.no'),
 			// sortable: true,

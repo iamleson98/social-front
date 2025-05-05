@@ -14,6 +14,7 @@
 		variant?: BadgeVariant;
 		ref?: HTMLSpanElement;
 		startIcon?: IconContent;
+		/** default to `sm` */
 		size?: SocialSize;
 		rounded?: boolean;
 	};

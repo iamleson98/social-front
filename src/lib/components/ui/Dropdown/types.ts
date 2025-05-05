@@ -1,5 +1,6 @@
 import type { IconContent } from "$lib/components/icons";
 import { DEBOUNCE_INPUT_TIME } from "$lib/utils/consts";
+import type { Placement } from "@floating-ui/dom";
 import { type Snippet } from "svelte";
 import type { EventHandler } from "svelte/elements"
 import { debounce, fromDomEvent, merge, pipe, subscribe } from "wonka";
@@ -17,6 +18,18 @@ export type MenuItemProps = {
   disabled?: boolean;
   onclick?: () => void;
   class?: string;
+};
+
+export type DropdownProps = {
+  /** NOTE: children and options must be provided exclusively */
+  options?: MenuItemProps[];
+  trigger: Snippet<[DropdownTriggerInterface]>;
+  placement?: Placement;
+  /** NOTE: children and options must be provided exclusively */
+  children?: Snippet;
+  /** if `true`, will not recalculate position on window resize nor scroll */
+  noReCalculateOnWindowResize?: boolean;
+  open?: boolean;
 };
 
 type commonEventDebounceOpts = {

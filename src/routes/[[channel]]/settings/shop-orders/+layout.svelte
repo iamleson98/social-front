@@ -9,14 +9,12 @@
 	};
 
 	let { children }: Props = $props();
-
-	const newOrderLink = AppRoute.SETTINGS_ORDERS_NEW();
 </script>
 
 <HeadBar
 	listingPageHref={AppRoute.SETTINGS_ORDERS()}
 	listingPageLabel={$tranFunc('settings.orders')}
-	newPageHref={newOrderLink}
+	newPageHref={AppRoute.SETTINGS_ORDERS_NEW()}
 	newPageLabel={$tranFunc('settings.newOrder')}
 	detailRouteID="/[[channel]]/settings/orders/[id]"
 	detailPageLabelGetter={(page) => page.params.id}

@@ -8,14 +8,12 @@
 	};
 
 	let { children }: Props = $props();
-
-	const newCustomerLink = AppRoute.SETTINGS_CONFIGS_USER_NEW();
 </script>
 
 <HeadBar
 	listingPageHref={AppRoute.SETTINGS_CONFIGS_USERS()}
 	listingPageLabel="Customers"
-	newPageHref={newCustomerLink}
+	newPageHref={AppRoute.SETTINGS_CONFIGS_USER_NEW()}
 	newPageLabel="New customer"
 	detailRouteID="/[[channel]]/settings/configs/customers/[id]"
 	detailPageLabelGetter={(page) => page.params.id}

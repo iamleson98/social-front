@@ -11,7 +11,7 @@
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 
 	afterNavigate(() => {
-		window.scrollTo({ top: 0, behavior: 'smooth' });
+		scrollTo({ top: 0, behavior: 'smooth' });
 	});
 
 	const checkoutQueryStore = operationStore<Pick<Query, 'checkout'>, QueryCheckoutArgs>({

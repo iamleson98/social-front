@@ -6,7 +6,6 @@
 	import { tranFunc } from '$i18n';
 	import { INPUT_BUTTON_SIZE_MAP } from '../Button/button.types';
 	import { INPUT_CLASSES, type InputProps } from './input.types';
-	import type { HTMLInputAttributes } from 'svelte/elements';
 	import Label from './label.svelte';
 
 	let {
@@ -19,15 +18,14 @@
 		class: className = '',
 		size = 'md',
 		action,
-		ref = $bindable<HTMLInputElement | HTMLTextAreaElement>(),
+		ref = $bindable<HTMLInputElement>(),
 		inputDebounceOption,
 		selectShortcutOptions = [],
 		value = $bindable<string | number>(),
 		required,
 		inputClass = '',
-		children,
 		...rest
-	}: InputProps & Omit<HTMLInputAttributes, 'size'> = $props();
+	}: InputProps = $props();
 </script>
 
 <div class={`${className} ${rest.disabled ? 'text-gray-300! cursor-not-allowed!' : ''}`}>
@@ -58,14 +56,13 @@
 			</div>
 		{/if}
 	</div>
-	{@render children?.()}
 	{#if subText}
 		<div class={`text-[10px] mt-0.5 text-right! ${INPUT_CLASSES[variant].fg}`}>{subText}</div>
 	{/if}
 </div>
 
-<style>
-	@import 'tailwindcss/theme';
+<style lang="postcss">
+	@reference "tailwindcss";
 
 	.input-action > * {
 		@apply max-h-full max-w-full;

@@ -1,55 +1,57 @@
 <script lang="ts">
 	import { QUERY_CUSTOMERS } from '$lib/api/admin/users';
-	import { operationStore } from '$lib/api/operation';
-	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Table, TableSkeleton, type TableColumnProps } from '$lib/components/ui/Table';
+	import { type TableColumnProps } from '$lib/components/ui/Table';
 	import {
+		UserSortField,
 		type CustomerFilterInput,
-		type Query,
 		type QueryCustomersArgs,
 		type User
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import dayjs from 'dayjs';
 	import CustomerFilter from '$lib/components/pages/settings/config/customers/filter.svelte';
+	import type { FilterResult } from '$lib/components/common/filter-box';
+	import { DebounceInput } from '$lib/components/ui/Input';
+	import { Search } from '$lib/components/icons';
+	import GraphqlPaginableTable from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 
-	const BATCH = 20;
-
-	const usersQuery = operationStore<Pick<Query, 'customers'>, QueryCustomersArgs>({
-		kind: 'query',
-		requestPolicy: 'cache-and-network',
-		query: QUERY_CUSTOMERS,
-		variables: {
-			first: BATCH
-		}
+	let filterVariables = $state<QueryCustomersArgs>({
+		filter: {},
+		first: 10
 	});
+	let forceReExecuteGraphqlQuery = $state(true);
 
-	const onFilterChange = (filter: CustomerFilterInput) => {
-		usersQuery.reexecute({
-			variables: {
-				...$usersQuery.operation.variables,
-				filter
-			}
-		});
+	const onFilterChange = (newFilter: FilterResult<CustomerFilterInput>) => {
+		filterVariables = {
+			...filterVariables,
+			filter: newFilter as CustomerFilterInput
+		};
+		forceReExecuteGraphqlQuery = true;
 	};
 
-	const USER_TABLE_COLUMNS: TableColumnProps<User>[] = [
+	const USER_TABLE_COLUMNS: TableColumnProps<User, UserSortField>[] = [
 		{
 			title: 'Avatar',
 			child: avatar
 		},
 		{
 			title: 'First Name',
-			child: firstName
+			child: firstName,
+			sortable: true,
+			key: UserSortField.FirstName
 		},
 		{
 			title: 'Last Name',
-			child: lastName
+			child: lastName,
+			sortable: true,
+			key: UserSortField.LastName
 		},
 		{
 			title: 'Email',
-			child: email
+			child: email,
+			sortable: true,
+			key: UserSortField.Email
 		},
 		{
 			title: 'Status',
@@ -61,7 +63,9 @@
 		},
 		{
 			title: 'Joined At',
-			child: dateJoined
+			child: dateJoined,
+			sortable: true,
+			key: UserSortField.CreatedAt
 		}
 	];
 </script>
@@ -101,32 +105,34 @@
 {/snippet}
 
 {#snippet isStaff({ item }: { item: User })}
-	{#if item.isStaff}
-		<Badge text="Yes" color="green" variant="light" />
-	{:else}
-		<Badge text="No" color="red" variant="light" />
-	{/if}
+	<div class="text-center">
+		{#if item.isStaff}
+			<Badge text="Yes" color="green" variant="light" />
+		{:else}
+			<Badge text="No" color="red" variant="light" />
+		{/if}
+	</div>
 {/snippet}
 
 {#snippet dateJoined({ item }: { item: User })}
 	<span>{dayjs(item.dateJoined).format('DD/MM/YYYY')}</span>
 {/snippet}
 
-<CustomerFilter {onFilterChange} />
-
-<div class="bg-white rounded-lg border border-gray-200 p-4 mt-2">
-	{#if $usersQuery.fetching}
-		<TableSkeleton numColumns={7} />
-	{:else if $usersQuery.error}
-		<Alert variant="error" size="sm" bordered>
-			{$usersQuery.error.message}
-		</Alert>
-	{:else if $usersQuery.data}
-		<Table
-			columns={USER_TABLE_COLUMNS}
-			items={$usersQuery.data?.customers?.edges.map((edge) => edge.node) || []}
-			pagination={$usersQuery.data.customers?.pageInfo}
-			rowsPerPage={BATCH}
-		/>
-	{/if}
+<div class="flex items-center gap-2 mb-2">
+	<CustomerFilter {onFilterChange} />
+	<DebounceInput
+		debounceTime={500}
+		bind:value={filterVariables.filter!.search}
+		placeholder="Search"
+		size="sm"
+		startIcon={Search}
+	/>
 </div>
+
+<GraphqlPaginableTable
+	query={QUERY_CUSTOMERS}
+	bind:variables={filterVariables}
+	resultKey="customers"
+	columns={USER_TABLE_COLUMNS}
+	bind:forceReExecuteGraphqlQuery
+/>

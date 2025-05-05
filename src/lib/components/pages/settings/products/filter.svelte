@@ -13,7 +13,7 @@
 		{
 			label: 'Price',
 			key: 'price',
-			operation: [
+			operations: [
 				{
 					operator: 'eq',
 					component: priceCmp
