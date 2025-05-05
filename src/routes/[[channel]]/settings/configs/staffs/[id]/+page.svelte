@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { operationStore } from '$lib/api/operation';
-	import { STAFF_UPDATE_MUTATION } from '$lib/api/admin/staff';
+	import { STAFF_DELETE_MUTATION, STAFF_UPDATE_MUTATION } from '$lib/api/admin/staff';
 	import { Alert } from '$lib/components/ui/Alert';
 	import {
 		type Mutation,
+		type MutationStaffDeleteArgs,
 		type MutationStaffUpdateArgs,
 		type Query,
 		type QueryUserArgs
@@ -16,7 +17,9 @@
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { USER_DETAIL_QUERY } from '$lib/api/admin/users';
-	import { Checkbox, Input } from '$lib/components/ui/Input';
+	import { goto } from '$app/navigation';
+	import StaffForm from '$lib/components/pages/settings/config/staff/staff-form.svelte';
+	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 
 	const staffDetailQuery = operationStore<Pick<Query, 'user'>, QueryUserArgs>({
 		kind: 'query',
@@ -26,6 +29,16 @@
 	});
 
 	let loading = $state(false);
+	let initialIsActive = $state(false);
+	let isActive = $state(false);
+	let nothingChanged = $derived(isActive === initialIsActive);
+
+	$effect(() => {
+		if ($staffDetailQuery.data?.user) {
+			initialIsActive = $staffDetailQuery.data.user.isActive;
+			isActive = initialIsActive;
+		}
+	});
 
 	const handleUpdateStaff = async () => {
 		loading = true;
@@ -35,23 +48,56 @@
 		>(STAFF_UPDATE_MUTATION, {
 			id: $staffDetailQuery.data?.user?.id as string,
 			input: {
-				isActive: false
+				isActive: isActive
 			}
 		});
 
 		loading = false;
 
-		if (preHandleErrorOnGraphqlResult(result, 'userUpdate')) return;
+		if (preHandleErrorOnGraphqlResult(result, 'staffUpdate')) {
+			console.log(result);
+			return;
+		}
 		toastStore.send({
 			variant: 'success',
 			message: 'Staff updated successfully'
 		});
 
 		staffDetailQuery.reexecute({
+			variables: {
+				id: page.params.id
+			},
 			context: {
 				requestPolicy: 'network-only'
 			}
 		});
+	};
+
+	const handleOpenDeleteModal = () => {
+		ALERT_MODAL_STORE.openAlertModal({
+			content: 'Are you sure you want to delete this staff?',
+			onOk: handleDeleteStaff
+		});
+	};
+
+	const handleDeleteStaff = async () => {
+		loading = true;
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'staffDelete'>,
+			MutationStaffDeleteArgs
+		>(STAFF_DELETE_MUTATION, {
+			id: page.params.id
+		});
+
+		loading = false;
+
+		if (preHandleErrorOnGraphqlResult(result, 'staffDelete')) return;
+		toastStore.send({
+			variant: 'success',
+			message: 'Staff deleted successfully'
+		});
+
+		goto(AppRoute.SETTINGS_CONFIGS_STAFFS());
 	};
 </script>
 
@@ -61,34 +107,20 @@
 	<Alert variant="error" bordered size="sm">{$staffDetailQuery.error.message}</Alert>
 {:else if $staffDetailQuery.data?.user}
 	{@const { user } = $staffDetailQuery.data}
-	<div class="h-full w-full rounded-lg bg-white border border-gray-200 p-4">
-		<div
-			class="rounded-full overflow-hidden h-20 w-20 flex items-center justify-center bg-blue-600"
-		>
-			{#if user.avatar}
-				<img src={user.avatar?.url} alt={user.avatar?.alt} />
-			{:else}
-				<span class="text-white text-2xl font-bold">
-					{`${user.firstName[0] || user.email[0]}${user.lastName[0] || user.email[1]}`.toUpperCase()}
-				</span>
-			{/if}
-		</div>
+	<StaffForm
+		avatar={user.avatar?.url}
+		firstName={user.firstName}
+		lastName={user.lastName}
+		email={user.email}
+		bind:isActive
+		disabled={loading}
+		isCreatePage={false}
+	/>
 
-		<div class="flex gap-2 items-start mt-5">
-			<Input label="First name" value={user.firstName} required disabled class="flex-1" />
-			<Input label="Last name" value={user.lastName} required disabled class="flex-1" />
-		</div>
-
-		<Input label="Email" value={user.email} class="mt-3" required disabled />
-
-		<div class="mt-3">
-			<Checkbox label="Active" bind:checked={user.isActive} disabled size="sm" />
-		</div>
-	</div>
 	<div
 		class="mt-5 sticky bottom-0 flex justify-between items-center bg-white p-2 border rounded-lg border-gray-200"
 	>
-		<Button color="red" disabled={loading} onclick={() => (loading = true)}>Delete</Button>
+		<Button color="red" disabled={loading} onclick={handleOpenDeleteModal}>Delete</Button>
 
 		<div class="flex gap-2">
 			<Button
@@ -97,7 +129,7 @@
 				disabled={loading}
 				href={AppRoute.SETTINGS_CONFIGS_STAFFS()}>Back</Button
 			>
-			<Button disabled={loading} onclick={handleUpdateStaff}>Update</Button>
+			<Button disabled={loading || nothingChanged} onclick={handleUpdateStaff}>Update</Button>
 		</div>
 	</div>
 {/if}

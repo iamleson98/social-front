@@ -71,9 +71,8 @@
 	<div class="absolute z-100 min-w-full" bind:this={menuElemRef}>
 		{#if open}
 			<div
-				use:clickOutside={{ onOutclick: () => (open = false) }}
-				in:fly={flyOpts}
-				out:fly={flyOpts}
+				use:clickOutside={{onOutclick: () => (open = false)}}
+				transition:fly|local={flyOpts}
 				onclick={computeStyle}
 				onkeyup={(e) => e.key === 'Escape' && (open = false)}
 				role="menu"
