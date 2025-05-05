@@ -4,18 +4,17 @@
 	import { boolean, object, string, z } from 'zod';
 
 	type Props = {
-    avatar?: string;
+		avatar?: string;
 		lastName: string;
 		firstName: string;
 		email: string;
 		disabled: boolean;
 		isActive: boolean;
-		formOk: boolean;
-		isCreatePage?: boolean;
+		formOk?: boolean;
 	};
 
 	let {
-    avatar = $bindable(''),
+		avatar = $bindable(''),
 		lastName = $bindable(''),
 		firstName = $bindable(''),
 		email = $bindable(''),
@@ -27,20 +26,16 @@
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 
 	const channelSchema = object({
-    avatar: string().optional(),
+		avatar: string().optional(),
 		lastName: string().nonempty(REQUIRED_ERROR),
 		firstName: string().nonempty(REQUIRED_ERROR),
-		email: string().nonempty(REQUIRED_ERROR),
-		isActive: boolean(),
+		email: string().nonempty(REQUIRED_ERROR).email($tranFunc('error.invalidEmail')),
+		isActive: boolean()
 	});
 
 	type StaffSchema = z.infer<typeof channelSchema>;
 
 	let staffFormErrors = $state.raw<Partial<Record<keyof StaffSchema, string[]>>>({});
-
-	$effect(() => {
-		formOk = !Object.keys(staffFormErrors).length;
-	});
 
 	const validate = () => {
 		const parseResult = channelSchema.safeParse({
@@ -54,45 +49,47 @@
 			return false;
 		}
 		staffFormErrors = {};
+		formOk = true;
 		return true;
-	};
-
-	const handleFormChange = (field: keyof StaffSchema) => {
-		validate();
 	};
 </script>
 
-<img
-  src={avatar}
-  alt="Avatar"
-  class="w-12 h-12 rounded-full"
-/>
+<div class="h-full w-full rounded-lg bg-white border border-gray-200 p-4">
+	<div class="rounded-full overflow-hidden h-20 w-20 flex items-center justify-center bg-blue-600">
+		{#if avatar}
+			<img src={avatar} alt={avatar} />
+		{:else}
+			<span class="text-white text-2xl font-bold">
+				{`${firstName[0] || email[0]}${lastName[0] || email[1]}`.toUpperCase()}
+			</span>
+		{/if}
+	</div>
 
-<div class="flex gap-2 items-start">
+	<div class="flex gap-2 items-start mt-5">
+		<Input
+			label="Last name"
+			bind:value={lastName}
+			inputDebounceOption={{ onInput: validate }}
+			variant={staffFormErrors?.lastName?.length ? 'error' : 'info'}
+			subText={staffFormErrors?.lastName?.length ? staffFormErrors.lastName[0] : ''}
+			required
+			{disabled}
+			class="flex-1"
+			onblur={validate}
+		/>
+		<Input
+			label="First name"
+			bind:value={firstName}
+			inputDebounceOption={{ onInput: validate }}
+			variant={staffFormErrors?.firstName?.length ? 'error' : 'info'}
+			subText={staffFormErrors?.firstName?.length ? staffFormErrors.firstName[0] : ''}
+			required
+			{disabled}
+			class="flex-1"
+			onblur={validate}
+		/>
+	</div>
 	<Input
-		label="Last name"
-		bind:value={lastName}
-		inputDebounceOption={{ onInput: () => handleFormChange('lastName') }}
-		variant={staffFormErrors?.lastName?.length ? 'error' : 'info'}
-		subText={staffFormErrors?.lastName?.length ? staffFormErrors.lastName[0] : ''}
-		required
-		{disabled}
-		class="flex-1"
-		onblur={validate}
-	/>
-  <Input
-		label="First name"
-		bind:value={firstName}
-		inputDebounceOption={{ onInput: () => handleFormChange('firstName') }}
-		variant={staffFormErrors?.firstName?.length ? 'error' : 'info'}
-		subText={staffFormErrors?.firstName?.length ? staffFormErrors.firstName[0] : ''}
-		required
-		{disabled}
-		class="flex-1"
-		onblur={validate}
-	/>
-</div>
-<Input
 		label="Email"
 		bind:value={email}
 		class="flex-1 mt-3"
@@ -104,6 +101,7 @@
 		onblur={validate}
 	/>
 
-<div class="mt-3 flex gap-3 items-center">
-	<Checkbox label="Active" bind:checked={isActive} {disabled} size="sm" class="flex-1" />
+	<div class="mt-3 flex gap-3 items-center">
+		<Checkbox label="Active" bind:checked={isActive} size="sm" class="flex-1" />
+	</div>
 </div>

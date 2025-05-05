@@ -22,7 +22,6 @@ query StaffList($first: Int, $after: String, $last: Int, $before: String, $sortB
       startCursor
       endCursor
     }
-    totalCount
   }
 }`;
 
@@ -35,6 +34,33 @@ mutation StaffUpdate($id: ID!, $input: StaffUpdateInput!) {
       firstName
       lastName
       isActive
+    }
+  }
+}`;
+
+export const STAFF_DELETE_MUTATION = gql`
+mutation StaffDelete($id: ID!) {
+  staffDelete(id: $id) {
+    user {
+      id
+    }
+  }
+}`;
+
+export const STAFF_CREATE_MUTATION = gql`
+mutation StaffCreate($input: StaffCreateInput!) {
+  staffCreate(input: $input) {
+    user {
+      id
+      email
+      firstName
+      lastName
+      isActive
+    }
+    errors {
+      field
+      message
+      code
     }
   }
 }`;
