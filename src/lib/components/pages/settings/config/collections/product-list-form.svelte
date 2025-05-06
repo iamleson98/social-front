@@ -76,7 +76,7 @@
 	{#snippet trigger({ onclick }: DropdownTriggerInterface)}
 		<Badge text={`${channels.length} channels`} onmouseenter={onclick} ontouchstart={onclick} />
 	{/snippet}
-	<Popover {trigger} placement="left" noReCalculateOnWindowResize closeBy="mouse-leave">
+	<Popover {trigger} placement="left" noReCalculateOnWindowResize>
 		<div class="py-1 px-2 rounded-lg border border-gray-200 bg-white w-fit shadow-sm">
 			<div class="flex flex-nowrap font-medium gap-1 text-sm">
 				<span class="flex-1">channel</span>

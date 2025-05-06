@@ -18,8 +18,6 @@
 		/** if `true`, will not recalculate position on window resize nor scroll */
 		noReCalculateOnWindowResize?: boolean;
 		open?: boolean;
-		/**whether to close your popover by click outside or leave your mouse*/
-		closeBy?: CloseByType;
 	};
 
 	let {
@@ -28,7 +26,6 @@
 		children,
 		noReCalculateOnWindowResize = false,
 		open = $bindable(false),
-		closeBy = 'click-out'
 	}: Props = $props();
 
 	let menuElemRef = $state<HTMLElement>();
@@ -70,22 +67,17 @@
 		if (!noReCalculateOnWindowResize)
 			return dropdownResizeDebounce(window, { onFire: computeStyle });
 	});
-
-	const handleUnFocus = (type: CloseByType) => {
-		open = type !== closeBy;
-	};
 </script>
 
 <div
 	bind:this={triggerRef}
 	class="relative inline-block"
-	use:mouseLeave={{ onMouseLeave: () => handleUnFocus('mouse-leave') }}
 >
 	{@render trigger({ onclick: handleTriggerClick, onfocus: handleTriggerClick })}
 	<div class="absolute z-100 min-w-full" bind:this={menuElemRef}>
 		{#if open}
 			<div
-				use:clickOutside={{ onOutclick: () => handleUnFocus('click-out') }}
+				use:clickOutside={{ onOutclick: () => open = false }}
 				transition:fly={flyOpts}
 				onclick={computeStyle}
 				onkeyup={(e) => e.key === 'Escape' && (open = false)}

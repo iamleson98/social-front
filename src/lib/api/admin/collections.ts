@@ -99,8 +99,8 @@ mutation ReorderProductsInCollection($collectionId: ID!, $moves: [MoveProductInp
   }
 }`;
 
-export const REMOVE_PRODUCTS_FROM_COLLECTION_MUTATION = gql`
-mutation `;
+// export const REMOVE_PRODUCTS_FROM_COLLECTION_MUTATION = gql`
+// mutation `;
 
 // mutation UnassignCollectionProduct($collectionId: ID!, $productIds: [ID!]!, $first: Int, $after: String, $last: Int, $before: String) {
 //   collectionRemoveProducts(collectionId: $collectionId, products: $productIds) {
