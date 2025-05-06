@@ -8,8 +8,8 @@
 	import {
 		DropDown,
 		type MenuItemProps,
-		type DropdownTriggerInterface
 	} from '$lib/components/ui/Dropdown';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
 		type Collection,
