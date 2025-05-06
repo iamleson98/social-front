@@ -3,8 +3,8 @@ import type { EventHandler } from "svelte/elements";
 import { debounce, fromDomEvent, merge, pipe, subscribe } from "wonka";
 
 export type DropdownTriggerInterface = {
-  onclick?: EventHandler<MouseEvent>;
-  onfocus?: EventHandler<FocusEvent>;
+  onclick?: EventHandler<MouseEvent | TouchEvent>;
+  onfocus?: EventHandler<FocusEvent | TouchEvent>;
 };
 
 type commonEventDebounceOpts = {
