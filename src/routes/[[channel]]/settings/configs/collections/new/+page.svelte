@@ -12,13 +12,13 @@
 </script>
 
 <div class="flex gap-2 flex-row">
-	<div class="w-3/4 flex flex-col gap-2">
+	<div class="w-7/10 flex flex-col gap-2">
 		<GeneralInformationForm />
 		<ProductListForm />
 		<SeoForm />
 	</div>
 
-	<div class="w-1/4">
+	<div class="w-3/10">
 		<AvailabilityForm />
 	</div>
 </div>

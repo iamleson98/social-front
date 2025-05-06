@@ -99,85 +99,53 @@ mutation ReorderProductsInCollection($collectionId: ID!, $moves: [MoveProductInp
   }
 }`;
 
-// export const REMOVE_PRODUCTS_FROM_COLLECTION_MUTATION = gql`
-// mutation `;
+export const COLLECTION_DETAIL_QUERY = gql`
+query CollectionDetail($id: ID!) {
+  collection(id: $id) {
+    id
+    name
+    slug
+    channelListings {
+      id
+      isPublished
+      publishedAt
+      # isAvailableForPurchase
+      # availableForPurchaseAt
+      # visibleInListings
+      channel {
+        id
+        name
+        currencyCode
+      }
+    }
+    seoTitle
+    seoDescription
+    description
+    backgroundImage(size: 300, format: WEBP) {
+      url
+      alt
+    }
+    metadata {
+      key
+      value
+    }
+    privateMetadata {
+      key
+      value
+    }
+  }
+}`;
 
-// mutation UnassignCollectionProduct($collectionId: ID!, $productIds: [ID!]!, $first: Int, $after: String, $last: Int, $before: String) {
-//   collectionRemoveProducts(collectionId: $collectionId, products: $productIds) {
-//     collection {
-//       id
-//       products(
-//         first: $first
-//         after: $after
-//         before: $before
-//         last: $last
-//         sortBy: {field: COLLECTION, direction: ASC}
-//       ) {
-//         edges {
-//           node {
-//             ...CollectionProduct
-//             __typename
-//           }
-//           __typename
-//         }
-//         pageInfo {
-//           endCursor
-//           hasNextPage
-//           hasPreviousPage
-//           startCursor
-//           __typename
-//         }
-//         __typename
-//       }
-//       __typename
-//     }
-//     errors {
-//       ...CollectionError
-//       __typename
-//     }
-//     __typename
-//   }
-// }
-
-// fragment CollectionProduct on Product {
-//   id
-//   name
-//   productType {
-//     id
-//     name
-//     __typename
-//   }
-//   thumbnail {
-//     url
-//     __typename
-//   }
-//   channelListings {
-//     ...ChannelListingProductWithoutPricing
-//     __typename
-//   }
-//   __typename
-// }
-
-// fragment ChannelListingProductWithoutPricing on ProductChannelListing {
-//   id
-//   isPublished
-//   publishedAt
-//   isAvailableForPurchase
-//   availableForPurchaseAt
-//   visibleInListings
-//   channel {
-//     id
-//     name
-//     currencyCode
-//     __typename
-//   }
-//   __typename
-// }
-
-// fragment CollectionError on CollectionError {
-//   code
-//   field
-//   message
-//   __typename
-// }
+export const ASSIGN_PRODUCTS_TO_COLLECTION_MUTATION = gql`
+mutation AssignProductsToCollection($collectionId: ID!, $products: [ID!]!) {
+  collectionAddProducts(collectionId: $collectionId, products: $products) {
+    collection {
+      id
+    }
+    errors {
+      field
+      message
+    }
+  }
+}`
 

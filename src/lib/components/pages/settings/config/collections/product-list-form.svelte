@@ -1,12 +1,29 @@
 <script lang="ts">
-	import { COLLECTION_PRODUCTS_QUERY } from '$lib/api/admin/collections';
+	import {
+		ASSIGN_PRODUCTS_TO_COLLECTION_MUTATION,
+		COLLECTION_PRODUCTS_QUERY
+	} from '$lib/api/admin/collections';
+	import { PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { operationStore } from '$lib/api/operation';
 	import { Trash } from '$lib/components/icons';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button, IconButton } from '$lib/components/ui/Button';
+	import { Checkbox, Input } from '$lib/components/ui/Input';
+	import { Modal } from '$lib/components/ui/Modal';
 	import { Popover, type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import type { TableColumnProps } from '$lib/components/ui/Table';
 	import GraphqlPaginableTable from '$lib/components/ui/Table/graphql-paginable-table.svelte';
-	import type { Product, ProductOrderField, Query, QueryProductsArgs } from '$lib/gql/graphql';
+	import type {
+		Mutation,
+		MutationCollectionAddProductsArgs,
+		Product,
+		ProductOrderField,
+		Query,
+		QueryProductsArgs
+	} from '$lib/gql/graphql';
+	import { toastStore } from '$lib/stores/ui/toast';
+	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 
 	type Props = {
 		/**if not provided, meaning this is create page*/
@@ -19,7 +36,15 @@
 		first: 10,
 		id: collectionID
 	});
+	let filterAllProductsVariables = $state<QueryProductsArgs>({
+		first: 10,
+		filter: {
+			search: ''
+		}
+	});
 	let forceReExecuteGraphqlQuery = $state(collectionID ? true : false);
+	let openAssignProductModal = $state(false);
+	let performSearch = $state(true);
 
 	const PRODUCT_COLUMNS: TableColumnProps<Product, ProductOrderField>[] = [
 		{
@@ -40,9 +65,66 @@
 		}
 	];
 
+	const PRODUCT_MODAL_COLUMNS: TableColumnProps<Product, ProductOrderField>[] = [
+		{
+			title: '',
+			child: checkbox
+		},
+		{
+			title: '',
+			child: picture
+		},
+		{
+			title: '',
+			child: title
+		}
+	];
+
+	let selectedProductIDs = $state<Record<string, boolean>>({});
+
 	const handleDetachProductFromCollection = (productId: string) => {};
-	const handleAssignNewProducts = () => {};
+
+	const handleClickOpenProductListModal = () => {
+		openAssignProductModal = true;
+	};
+
+	const handleAssignproducts = async () => {
+		if (!collectionID) return;
+
+		const productIds = Object.keys(selectedProductIDs).filter((key) => selectedProductIDs[key]);
+
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'collectionAddProducts'>,
+			MutationCollectionAddProductsArgs
+		>(ASSIGN_PRODUCTS_TO_COLLECTION_MUTATION, {
+			collectionId: collectionID,
+			products: productIds
+		});
+
+		if (preHandleErrorOnGraphqlResult(result, 'collectionAddProducts')) return;
+
+		toastStore.send({
+			variant: 'success',
+			message: 'Products assigned successfully'
+		});
+
+		openAssignProductModal = false;
+	};
 </script>
+
+{#snippet checkbox({ item }: { item: Product })}
+	<Checkbox bind:checked={selectedProductIDs[item.id]} />
+{/snippet}
+
+{#snippet picture({ item }: { item: Product })}
+	<div class="rounded-full border border-gray-200 w-8 h-8 overflow-hidden">
+		<img src={item.thumbnail?.url} alt={item.thumbnail?.alt} class="w-full h-full" />
+	</div>
+{/snippet}
+
+{#snippet title({ item }: { item: Product })}
+	<div>{item.name}</div>
+{/snippet}
 
 {#snippet action({ item }: { item: Product })}
 	<IconButton
@@ -101,7 +183,7 @@
 <div class="bg-white rounded-lg border w-full border-gray-200 p-3">
 	<div class="mb-4 flex items-center justify-between">
 		<div class="text-gray-700 font-semibold">Products in collection</div>
-		<Button size="sm" onclick={handleAssignNewProducts}>Assign Product</Button>
+		<Button size="sm" onclick={handleClickOpenProductListModal}>Assign Product</Button>
 	</div>
 	<GraphqlPaginableTable
 		query={COLLECTION_PRODUCTS_QUERY}
@@ -112,3 +194,28 @@
 		columns={PRODUCT_COLUMNS}
 	/>
 </div>
+
+<Modal header="Assign products to collection" open={openAssignProductModal}>
+	<div class="mb-4">
+		<Input
+			placeholder="Search product"
+			class="w-full"
+			bind:value={filterAllProductsVariables.filter!.search}
+			inputDebounceOption={{ onInput: () => (performSearch = true), debounceTime: 800 }}
+		/>
+	</div>
+
+	{#if openAssignProductModal}
+		<GraphqlPaginableTable
+			query={PRODUCT_LIST_QUERY_ADMIN}
+			resultKey={'products' as keyof Query}
+			bind:variables={filterAllProductsVariables}
+			bind:forceReExecuteGraphqlQuery={performSearch}
+			columns={PRODUCT_MODAL_COLUMNS}
+		/>
+	{/if}
+
+	<div>
+		<Button size="sm" onclick={handleAssignproducts}>Assign</Button>
+	</div>
+</Modal>

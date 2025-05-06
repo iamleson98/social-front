@@ -2,11 +2,8 @@
 	import { onMount, type Snippet } from 'svelte';
 	import { computePosition, offset, shift, flip, type Placement } from '@floating-ui/dom';
 	import { clickOutside } from '$lib/actions/click-outside';
-	import { mouseLeave } from '$lib/actions/mouse-leave';
 	import { fly, type FlyParams } from 'svelte/transition';
 	import { dropdownResizeDebounce, type DropdownTriggerInterface } from './types';
-
-	type CloseByType = 'click-out' | 'mouse-leave';
 
 	type Props = {
 		/** NOTE: children and options must be provided exclusively */
@@ -25,7 +22,7 @@
 		placement = 'bottom',
 		children,
 		noReCalculateOnWindowResize = false,
-		open = $bindable(false),
+		open = $bindable(false)
 	}: Props = $props();
 
 	let menuElemRef = $state<HTMLElement>();
@@ -69,15 +66,12 @@
 	});
 </script>
 
-<div
-	bind:this={triggerRef}
-	class="relative inline-block"
->
+<div bind:this={triggerRef} class="relative inline-block">
 	{@render trigger({ onclick: handleTriggerClick, onfocus: handleTriggerClick })}
 	<div class="absolute z-100 min-w-full" bind:this={menuElemRef}>
 		{#if open}
 			<div
-				use:clickOutside={{ onOutclick: () => open = false }}
+				use:clickOutside={{ onOutclick: () => (open = false) }}
 				transition:fly={flyOpts}
 				onclick={computeStyle}
 				onkeyup={(e) => e.key === 'Escape' && (open = false)}
