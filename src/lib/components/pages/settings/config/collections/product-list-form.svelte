@@ -86,6 +86,8 @@
 
 	const handleClickOpenProductListModal = () => {
 		openAssignProductModal = true;
+		performSearch = true;
+		selectedProductIDs = {};
 	};
 
 	const handleAssignproducts = async () => {
@@ -195,7 +197,16 @@
 	/>
 </div>
 
-<Modal header="Assign products to collection" open={openAssignProductModal}>
+<Modal
+	header="Assign products to collection"
+	open={openAssignProductModal}
+	okText="Assign"
+	cancelText="Cancel"
+	onOk={handleAssignproducts}
+	onCancel={() => (openAssignProductModal = false)}
+	onClose={() => (openAssignProductModal = false)}
+	closeOnOutsideClick
+>
 	<div class="mb-4">
 		<Input
 			placeholder="Search product"
@@ -208,14 +219,10 @@
 	{#if openAssignProductModal}
 		<GraphqlPaginableTable
 			query={PRODUCT_LIST_QUERY_ADMIN}
-			resultKey={'products' as keyof Query}
+			resultKey={'products'}
 			bind:variables={filterAllProductsVariables}
 			bind:forceReExecuteGraphqlQuery={performSearch}
 			columns={PRODUCT_MODAL_COLUMNS}
 		/>
 	{/if}
-
-	<div>
-		<Button size="sm" onclick={handleAssignproducts}>Assign</Button>
-	</div>
 </Modal>

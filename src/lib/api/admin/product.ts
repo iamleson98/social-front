@@ -387,6 +387,9 @@ export const PRODUCT_LIST_QUERY_ADMIN = gql`
 						id
 						name
 					}
+          collections {
+            id
+          }
 					thumbnail(size: 100, format: WEBP) {
 						url
 						alt
