@@ -99,6 +99,8 @@ export {
   TablerFolderCog as FolderCog,
   TablerBuildingWarehouse as BuildingWarehouse,
   TablerDimension as Dimension,
+  TablerArrowsMove as ArrowsMove,
+  TablerArrowsMoveVertical as ArrowsMoveVertical,
 } from './consts';
 
 export { default as Icon } from './icon.svelte';

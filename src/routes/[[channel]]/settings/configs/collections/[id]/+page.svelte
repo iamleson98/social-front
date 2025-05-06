@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import AvailabilityForm from '$lib/components/pages/settings/config/collections/availability-form.svelte';
 	import GeneralInformationForm from '$lib/components/pages/settings/config/collections/general-information-form.svelte';
@@ -14,7 +15,7 @@
 <div class="flex gap-2 flex-row">
 	<div class="w-2/3 flex flex-col gap-2">
 		<GeneralInformationForm />
-		<ProductListForm />
+		<ProductListForm collectionID={page.params.id} />
 		<SeoForm />
 	</div>
 
