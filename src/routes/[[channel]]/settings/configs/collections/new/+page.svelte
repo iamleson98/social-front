@@ -13,7 +13,7 @@
 
 <div class="flex gap-2 flex-row">
 	<div class="w-7/10 flex flex-col gap-2">
-		<GeneralInformationForm name="" description="" media={null} metadata={[]} privateMetadata={[]} />
+		<GeneralInformationForm name="" description="" media={null} metadata={[]} privateMetadata={[]} backgroundImageAlt="" />
 		<ProductListForm />
 		<SeoForm slug="" seo={{}} />
 	</div>
