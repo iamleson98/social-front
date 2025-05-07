@@ -25,6 +25,7 @@
 		| 'onPreviousPagelick'
 		| 'onChangeRowsPerPage'
 		| 'onSortChange'
+		| 'rowsPerPage'
 	>;
 
 	let {
@@ -36,7 +37,8 @@
 		forceReExecuteGraphqlQuery = $bindable(),
 		resultKey,
 		columns,
-		tableClass
+		tableClass,
+		supportDragDrop,
 	}: Props = $props();
 
 	const queryOperationStore = operationStore<
@@ -46,7 +48,8 @@
 		kind: 'query',
 		query,
 		variables,
-		requestPolicy
+		requestPolicy,
+		pause: true // default to pause
 	});
 
 	let sortState = $state<SortState<K>>({} as SortState<K>);
@@ -141,6 +144,7 @@
 			defaultSortState={sortState}
 			{tableClass}
 			disabled={$queryOperationStore.fetching}
+			{supportDragDrop}
 		/>
 	{/if}
 </div>

@@ -1,12 +1,7 @@
 <script lang="ts">
-	import FilterBox from '$lib/components/common/filter-box/filter-box.svelte';
-	import { PhotoUp } from '$lib/components/icons';
-	import { Button } from '$lib/components/ui';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
-	import { DebounceInput, FileInput, Input } from '$lib/components/ui/Input';
-	import { Popover } from '$lib/components/ui/Popover';
 	import { MultiSelect } from '$lib/components/ui/select';
 	import { onMount } from 'svelte';
+	import { draggable, droppable, type DragDropState } from '@thisux/sveltednd';
 
 	onMount(async () => {
 		const result = fetch('/figma.wasm', {
@@ -25,7 +20,20 @@
 
 	let value = $state('');
 
-	$inspect(value);
+	let items = $state([
+		{
+			one: 1,
+			two: 2
+		},
+		{
+			one: 3,
+			two: 4
+		}
+	]);
+
+	const handleDrop = (state: DragDropState<{}>) => {
+		console.log(state);
+	};
 </script>
 
 <div>lab</div>
@@ -39,44 +47,19 @@
 	variant="error"
 />
 
-<!-- <FileInput icon={PhotoUp} accept="image/*" color="blue" /> -->
-
-<!-- <IconButton size="xs" icon={Email} />
-<IconButton size="sm" icon={Email} />
-<IconButton size="md" icon={Email} />
-<IconButton size="lg" icon={Email} />
-<IconButton size="xl" icon={Email} /> -->
-
-{#snippet trigger(opts: DropdownTriggerInterface)}
-	<Button variant="light" color="gray" size="sm" {...opts}>Filters</Button>
-{/snippet}
-
-{#snippet filter({ onValue }: { onValue: (value: string[] | number[] | string | number) => void })}
-	<!-- <div></div> -->
-	<Input size="xs" placeholder="Enter price" type="number" min="0" />
-{/snippet}
-
-<!-- <Popover {trigger} placement="bottom-start">
-	<FilterBox
-		header="Filters"
-		options={[
-			{
-				label: 'price',
-				key: 'price',
-				operation: [
-					{
-						operator: 'is',
-						component: filter
-					}
-				]
-			}
-		]}
-		class="min-w-96"
-	/>
-</Popover> -->
-
-<Button href="/">lol</Button>
-
-<input type="text" onchange={console.log} placeholder="Enter something" />
-
-<DebounceInput debounceTime={1000} bind:value placeholder="enter value" />
+<table class="table">
+	<thead>
+		<tr>
+			<th>one</th>
+			<th>two</th>
+		</tr>
+	</thead>
+	<tbody use:droppable={{ container: 'list', callbacks: { onDrop: handleDrop } }}>
+		{#each items as item, idx (idx)}
+			<tr use:draggable={{ container: 'list', dragData: item }}>
+				<td>{item.one}</td>
+				<td>{item.two}</td>
+			</tr>
+		{/each}
+	</tbody>
+</table>

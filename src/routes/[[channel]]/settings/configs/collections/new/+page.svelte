@@ -12,13 +12,13 @@
 </script>
 
 <div class="flex gap-2 flex-row">
-	<div class="w-2/3 flex flex-col gap-2">
-		<GeneralInformationForm />
+	<div class="w-7/10 flex flex-col gap-2">
+		<GeneralInformationForm name="" description="" media={null} metadata={[]} privateMetadata={[]} />
 		<ProductListForm />
-		<SeoForm />
+		<SeoForm slug="" seo={{}} />
 	</div>
 
-	<div class="w-1/3">
+	<div class="w-3/10">
 		<AvailabilityForm />
 	</div>
 </div>

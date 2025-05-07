@@ -25,6 +25,8 @@ export type TableProps<T extends Record<string, unknown>, K extends string> = {
   defaultSortState?: SortState<K>;
   /** for example when your data is fetching, it is batter to temporary disable interactive items within the table */
   disabled?: boolean;
+  /** If true, you can exchange places of rows of your table. Default to `false` */
+  supportDragDrop?: boolean;
 };
 
 export type TableColumnProps<T extends Record<string, unknown>, K extends string> = {

@@ -45,3 +45,22 @@ mutation CollectionDelete($id: ID!) {
     }
   }
 }`;
+
+export const COLLECTION_DETAIL_QUERY = gql`
+query CollectionDetail($id: ID!) {
+  collection(id: $id) {
+    id
+    name
+    channelListings {
+      isPublished
+      publishedAt
+      channel {
+        id
+        name
+      }
+    }
+    products {
+      totalCount
+    }
+  }
+}`;

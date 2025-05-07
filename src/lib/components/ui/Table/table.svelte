@@ -1,6 +1,6 @@
 <script lang="ts" generics="T extends Record<string, unknown>, K extends string">
 	import { tranFunc } from '$i18n';
-	import { ChevronLeft, ChevronRight, Icon } from '$lib/components/icons';
+	import { ArrowsMove, ChevronLeft, ChevronRight, Icon } from '$lib/components/icons';
 	import { OrderDirection } from '$lib/gql/graphql';
 	import { IconButton } from '../Button';
 	import Button from '../Button/Button.svelte';
@@ -10,9 +10,13 @@
 		SortIconsMap,
 		type RowOptions,
 		type SortState,
+		type TableColumnProps,
 		type TableProps
 	} from './types';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
+	import { draggable, droppable, type DragDropState } from '@thisux/sveltednd';
+	import { flip } from 'svelte/animate';
+	import { fade } from 'svelte/transition';
 
 	let {
 		items,
@@ -26,7 +30,8 @@
 		rowsPerPage,
 		sortMultiple = false,
 		defaultSortState = {} as SortState<K>,
-		disabled = false
+		disabled = false,
+		supportDragDrop
 	}: TableProps<T, K> = $props();
 
 	if (columns.some((col) => col.sortable && !col.key)) {
@@ -70,11 +75,20 @@
 			onChangeRowsPerPage?.(num);
 		}
 	};
+
+	const handleDrop = (state: DragDropState<number>) => {
+		const { draggedItem, targetContainer } = state;
+		const dropIndex = parseInt(targetContainer ?? "0");
+		console.log(dropIndex, draggedItem)
+	};
 </script>
 
 <table class="table {tableClass}">
 	<thead>
 		<tr>
+			{#if supportDragDrop}
+				<th class="w-8"></th>
+			{/if}
 			{#each columns as column, idx (idx)}
 				{@const classes = column?.sortable
 					? 'cursor-pointer hover:bg-gray-100 active:bg-gray-200 focus:bg-gray-200'
@@ -112,17 +126,42 @@
 		</tr>
 	</thead>
 	<tbody>
-		{#each items as item, idx (idx)}
-			<tr>
-				{#each columns as column, idx (idx)}
-					<td class="px-1 py-2">
-						{@render column.child({ item })}
+		{#if supportDragDrop}
+			{#each items as item, idx (idx)}
+				<tr
+					use:draggable={{ container: idx.toString(), dragData: idx }}
+					use:droppable={{
+						container: idx.toString(),
+						callbacks: { onDrop: handleDrop }
+					}}
+					animate:flip={{ duration: 200 }}
+					in:fade={{ duration: 150 }}
+					out:fade={{ duration: 150 }}
+					class="svelte-dnd-touch-feedback"
+				>
+					<td>
+						<IconButton icon={ArrowsMove} size="xs" color="gray" variant="light" />
 					</td>
-				{/each}
-			</tr>
-		{/each}
+					{@render customTr(item, columns)}
+				</tr>
+			{/each}
+		{:else}
+			{#each items as item, idx (idx)}
+				<tr>
+					{@render customTr(item, columns)}
+				</tr>
+			{/each}
+		{/if}
 	</tbody>
 </table>
+
+{#snippet customTr(item: T, columns: TableColumnProps<T, K>[])}
+	{#each columns as column, idx (idx)}
+		<td>
+			{@render column.child({ item })}
+		</td>
+	{/each}
+{/snippet}
 
 <!-- MARK: pagination -->
 {#if pagination}
@@ -165,3 +204,19 @@
 		</div>
 	</div>
 {/if}
+
+<style lang="postcss">
+	@reference "tailwindcss"
+
+	td {
+		@apply px-1! py-2!;
+	}
+
+	:global(.dragging) {
+		@apply opacity-50 shadow-lg ring-2 ring-blue-400 rounded-lg;
+	}
+
+	:global(.drag-over) {
+		@apply bg-blue-50 rounded-lg;
+	}
+</style>

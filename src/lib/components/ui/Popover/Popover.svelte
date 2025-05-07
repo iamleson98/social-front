@@ -2,7 +2,7 @@
 	import { onMount, type Snippet } from 'svelte';
 	import { computePosition, offset, shift, flip, type Placement } from '@floating-ui/dom';
 	import { clickOutside } from '$lib/actions/click-outside';
-	import { fly } from 'svelte/transition';
+	import { fly, type FlyParams } from 'svelte/transition';
 	import { dropdownResizeDebounce, type DropdownTriggerInterface } from './types';
 
 	type Props = {
@@ -28,7 +28,7 @@
 	let menuElemRef = $state<HTMLElement>();
 	let triggerRef = $state<HTMLElement>();
 
-	let flyOpts = $derived.by(() => {
+	let flyOpts = $derived.by<FlyParams>(() => {
 		switch (placement) {
 			case 'left':
 			case 'right':
@@ -71,8 +71,8 @@
 	<div class="absolute z-100 min-w-full" bind:this={menuElemRef}>
 		{#if open}
 			<div
-				use:clickOutside={{onOutclick: () => (open = false)}}
-				transition:fly|local={flyOpts}
+				use:clickOutside={{ onOutclick: () => (open = false) }}
+				transition:fly={flyOpts}
 				onclick={computeStyle}
 				onkeyup={(e) => e.key === 'Escape' && (open = false)}
 				role="menu"

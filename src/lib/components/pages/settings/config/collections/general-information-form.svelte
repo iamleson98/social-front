@@ -1,109 +1,114 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { EditorJSComponent } from '$lib/components/common/editorjs';
 	import { FileInput, Input, Label } from '$lib/components/ui/Input';
 	import ErrorMsg from '$lib/components/pages/settings/products/new/error-msg.svelte';
 	import type { MediaObject } from '$lib/components/pages/settings/products/new/utils';
 	import { IMAGE_EXTENSION_REGEX } from '$lib/utils/consts';
-	import { IconButton } from '$lib/components/ui/Button';
+	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { PhotoUp, Trash } from '$lib/components/icons';
-
-	const MAX_MEDIAS = 1;
+	import Accordion from '$lib/components/ui/Accordion/accordion.svelte';
+	import { EditorJSComponent } from '$lib/components/common/editorjs';
 
 	type Props = {
-		name?: string;
-		slug?: string;
+		name: string;
 		description?: any;
 		disabled?: boolean;
 		isCreatePage?: boolean;
-		ok?: boolean;
-		medias?: MediaObject[];
+		media: MediaObject | null;
+		metadata: { key: string; value: string }[];
+		privateMetadata: { key: string; value: string }[];
+		backgroundImageAlt?: string;
 	};
 
 	let {
 		name = $bindable(''),
-		slug = $bindable(''),
 		description = $bindable(),
 		disabled = $bindable(false),
 		isCreatePage = $bindable(false),
-		ok = $bindable(false),
-		medias = $bindable([])
+		media = $bindable<MediaObject | null>(null),
+		metadata = $bindable<{ key: string; value: string }[]>([]),
+		privateMetadata = $bindable<{ key: string; value: string }[]>([]),
+		backgroundImageAlt = $bindable('')
 	}: Props = $props();
 
 	let descriptionError = $state<string>();
-	let filesMap = $state<Record<string, MediaObject>>({});
 
-	let errors = $derived.by(() => {
-		if (Object.keys(filesMap).length > MAX_MEDIAS) return { length: true };
-		for (const key in filesMap) {
-			if (!filesMap[key].alt?.trim()) return { alt: true };
-		}
-		return null;
-	});
-
-	$effect(() => {
-		medias = Object.values(filesMap);
-	});
+	let error = $derived.by(
+		() =>
+			media &&
+			((isCreatePage && !media.alt?.trim()) || (!media.alt?.trim() && !backgroundImageAlt?.trim()))
+	);
 
 	const handleChangeDescription = (data: any) => {
 		description = data;
 		const isEmpty = !data?.blocks?.length;
 		descriptionError = isEmpty ? $tranFunc('helpText.fieldRequired') : undefined;
-		ok = !isEmpty;
 	};
 
 	const handleFileSelect = async (fileList: FileList) => {
-		if (!fileList.length) return;
+		if (!fileList.length || media) return;
 
-		const newEntries: Record<string, MediaObject> = {};
+		const file = fileList[0];
+		const url = URL.createObjectURL(file);
+		const alt = file.name.replace(IMAGE_EXTENSION_REGEX, '');
 
-		await Promise.all(
-			Array.from(fileList).map((file) => {
-				const key = `${file.name}-${file.size}`;
-				if (filesMap[key]) return;
-
-				const url = URL.createObjectURL(file);
-				const alt = file.name.replace(IMAGE_EXTENSION_REGEX, '');
-
-				return new Promise<void>((resolve) => {
-					const img = new Image();
-					img.onload = () => {
-						newEntries[key] = { file, url, alt, width: img.width, height: img.height };
-						resolve();
-					};
-					img.src = url;
-				});
-			})
-		);
-
-		filesMap = { ...filesMap, ...newEntries };
+		await new Promise<void>((resolve) => {
+			const img = new Image();
+			img.onload = () => {
+				media = {
+					file,
+					url,
+					alt,
+					width: img.width,
+					height: img.height
+				};
+				resolve();
+			};
+			img.src = url;
+		});
 	};
 
-	const handleDeleteImage = (key: string) => {
-		URL.revokeObjectURL(filesMap[key].url);
-		const { [key]: _, ...rest } = filesMap;
-		filesMap = rest;
+	const handleDeleteImage = () => {
+		if (media) {
+			URL.revokeObjectURL(media.url);
+			media = null;
+		}
 	};
 
-	const validate = () => {};
+	const validate = () => {
+		let valid = true;
+
+		if (!name?.trim()) {
+			valid = false;
+		}
+
+		const isEmptyDescription = !description?.blocks?.length;
+		descriptionError = isEmptyDescription ? $tranFunc('helpText.fieldRequired') : undefined;
+		if (isEmptyDescription) valid = false;
+
+		if (error) {
+			valid = false;
+		}
+
+		return valid;
+	};
 </script>
 
-<div class="bg-white rounded-lg border w-full border-gray-200 p-3">
+<div class="bg-white rounded-lg border w-full border-gray-200 pb-2">
 	<Input
 		label="Name"
 		bind:value={name}
 		required
 		{disabled}
-		class="flex-1"
+		class="flex-1 p-3"
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
 	/>
 
-	<!-- Description -->
-	<div class="my-3">
+	<div class="my-3 p-3">
 		<Label required requiredAtPos="end" label="Collection description" />
 		<div
-			class="rounded-lg border px-3 {ok || !descriptionError
+			class="rounded-lg border px-3 {validate() || !descriptionError
 				? 'border-gray-200'
 				: 'bg-red-50 border-red-200'}"
 		>
@@ -121,21 +126,18 @@
 		<ErrorMsg error={descriptionError} />
 	</div>
 
-	<!-- Media upload -->
-	<div class="mb-3">
+	<!-- Media Upload -->
+	<div class="p-3">
 		<Label label="Collection Image" required requiredAtPos="end" />
 		<div
-			class="rounded-lg border p-3 flex gap-1 flex-wrap {errors
+			class="rounded-lg border p-3 flex gap-1 flex-wrap {error
 				? 'border-red-200 bg-red-50'
 				: 'border-gray-200 bg-gray-50'}"
 		>
-			{#each Object.entries(filesMap) as [key, file], idx (key)}
-				{@const { url, alt, width, height } = file}
+			{#if media}
 				<div
-					class="h-50 w-50 relative rounded-md bg-white bg-cover bg-center bg-no-repeat {alt?.trim()
-						? 'ring-1 ring-gray-200'
-						: 'ring-2 ring-red-500'}"
-					style="background-image: url('{url}')"
+					class="h-50 w-50 relative rounded-md bg-white bg-cover bg-center bg-no-repeat {media.alt?.trim() ? 'ring-1 ring-gray-200' : 'ring-2 ring-red-500'}"
+					style="background-image: url('{media.url}')"
 				>
 					<div
 						class="absolute p-1.5 rounded-md bottom-0 left-0 right-0 h-1/2 bg-white opacity-0 transition-opacity hover:opacity-90 ease-in"
@@ -145,15 +147,15 @@
 							<Input
 								size="xs"
 								placeholder="Enter alt"
-								bind:value={filesMap[key].alt}
-								variant={!alt?.trim() ? 'error' : 'info'}
-								subText={!alt?.trim() ? $tranFunc('helpText.fieldRequired') : ''}
+								bind:value={media.alt}
+								variant={!media.alt?.trim() ? 'error' : 'info'}
+								subText={!media.alt?.trim() ? $tranFunc('helpText.fieldRequired') : ''}
 							/>
 						</div>
-						{#if width && height}
+						{#if media.width && media.height}
 							<div class="text-gray-700 flex items-center text-xs">
 								<span class="font-semibold w-1/4">W x H:</span>
-								<span>{width} x {height}</span>
+								<span>{media.width} x {media.height}</span>
 							</div>
 						{/if}
 						<div class="text-right absolute bottom-1 right-1">
@@ -164,14 +166,12 @@
 								variant="light"
 								class="tooltip tooltip-top"
 								data-tip="Remove"
-								onclick={() => handleDeleteImage(key)}
+								onclick={handleDeleteImage}
 							/>
 						</div>
 					</div>
 				</div>
-			{/each}
-
-			{#if medias.length < MAX_MEDIAS}
+			{:else}
 				<div
 					class="h-50 w-50 rounded-md border border-gray-200 bg-white overflow-hidden flex items-center justify-center"
 				>
@@ -180,16 +180,93 @@
 						class="tooltip tooltip-top"
 						data-tip="Add Image"
 						accept="image/*"
-						multiple
+						multiple={false}
 						onChange={handleFileSelect}
 					/>
 				</div>
 			{/if}
 		</div>
-
-		<ErrorMsg error={errors ? $tranFunc('error.thereIsError') : undefined} />
-		{#if !errors}
-			<div class="text-xs text-right">{medias.length}/{MAX_MEDIAS}</div>
+		<ErrorMsg error={error ? $tranFunc('error.thereIsError') : undefined} />
+		{#if !error && media}
+			<div class="text-xs text-right">1/1</div>
 		{/if}
 	</div>
+
+	<!-- MetaData -->
+	<Accordion header="Metadata" open={false}>
+		{#each metadata as field}
+			<div class="flex gap-5 items-center my-2">
+				<Input
+					placeholder="Key"
+					{disabled}
+					class="flex-1"
+					inputDebounceOption={{ onInput: validate }}
+					onblur={validate}
+				/>
+				<Input
+					placeholder="Value"
+					{disabled}
+					class="flex-1"
+					inputDebounceOption={{ onInput: validate }}
+					onblur={validate}
+				/>
+				<IconButton
+					icon={Trash}
+					size="xs"
+					color="red"
+					variant="light"
+					class="tooltip tooltip-top"
+					data-tip="Remove"
+					onclick={() => metadata.splice(metadata.indexOf(field), 1)}
+				/>
+			</div>
+		{/each}
+		<Button
+			size="xs"
+			variant="light"
+			color="blue"
+			onclick={() => metadata.push({ key: '', value: '' })}
+		>
+			Add Field
+		</Button>
+	</Accordion>
+
+	<!-- privateMetadata -->
+	<Accordion header="Private Metadata" open={false}>
+		{#each privateMetadata as field}
+			<div class="flex gap-2 items-center my-2">
+				<Input
+					placeholder="Key"
+					{disabled}
+					class="flex-1"
+					inputDebounceOption={{ onInput: validate }}
+					onblur={validate}
+				/>
+				<Input
+					placeholder="Value"
+					{disabled}
+					class="flex-1"
+					inputDebounceOption={{ onInput: validate }}
+					onblur={validate}
+				/>
+				<IconButton
+					icon={Trash}
+					size="xs"
+					color="red"
+					variant="light"
+					class="tooltip tooltip-top"
+					data-tip="Remove"
+					onclick={() => privateMetadata.splice(privateMetadata.indexOf(field), 1)}
+				/>
+			</div>
+		{/each}
+		<Button
+			size="xs"
+			variant="light"
+			color="blue"
+			onclick={() => privateMetadata.push({ key: '', value: '' })}
+		>
+			Add Field
+		</Button>
+	</Accordion>
 </div>
