@@ -195,7 +195,7 @@
 	<!-- MetaData -->
 	<Accordion header="Metadata" open={false}>
 		{#each metadata as field}
-			<div class="flex gap-5 items-center my-2">
+			<div class="flex gap-5 items-center my-3">
 				<Input
 					placeholder="Key"
 					{disabled}
