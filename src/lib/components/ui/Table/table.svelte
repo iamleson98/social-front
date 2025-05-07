@@ -31,7 +31,7 @@
 		sortMultiple = false,
 		defaultSortState = {} as SortState<K>,
 		disabled = false,
-		supportDragDrop
+		onDragEnd
 	}: TableProps<T, K> = $props();
 
 	if (columns.some((col) => col.sortable && !col.key)) {
@@ -86,7 +86,7 @@
 <table class="table {tableClass}">
 	<thead>
 		<tr>
-			{#if supportDragDrop}
+			{#if onDragEnd}
 				<th class="w-8"></th>
 			{/if}
 			{#each columns as column, idx (idx)}
@@ -126,10 +126,9 @@
 		</tr>
 	</thead>
 	<tbody>
-		{#if supportDragDrop}
+		{#if onDragEnd}
 			{#each items as item, idx (idx)}
 				<tr
-					use:draggable={{ container: idx.toString(), dragData: idx }}
 					use:droppable={{
 						container: idx.toString(),
 						callbacks: { onDrop: handleDrop }
@@ -140,7 +139,9 @@
 					class="svelte-dnd-touch-feedback"
 				>
 					<td>
-						<IconButton icon={ArrowsMove} size="xs" color="gray" variant="light" />
+						<div use:draggable={{ container: idx.toString(), dragData: idx }}>
+							<IconButton icon={ArrowsMove} size="xs" color="gray" variant="light" />
+						</div>
 					</td>
 					{@render customTr(item, columns)}
 				</tr>

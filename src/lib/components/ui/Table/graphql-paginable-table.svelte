@@ -3,10 +3,10 @@
 	import Table from './table.svelte';
 	import type { GraphqlPaginationArgs, RowOptions, SortState, TableProps } from './types';
 	import { operationStore } from '$lib/api/operation';
-	import type { Query } from '$lib/gql/graphql';
+	import { type PageInfo, type Query } from '$lib/gql/graphql';
 	import TableSkeleton from './table-skeleton.svelte';
 	import Alert from '../Alert/alert.svelte';
-	import { tick } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { get } from 'es-toolkit/compat';
 
 	type Props = {
@@ -38,7 +38,7 @@
 		resultKey,
 		columns,
 		tableClass,
-		supportDragDrop,
+		onDragEnd
 	}: Props = $props();
 
 	const queryOperationStore = operationStore<
@@ -53,6 +53,18 @@
 	});
 
 	let sortState = $state<SortState<K>>({} as SortState<K>);
+	let items = $state<T[]>([]);
+	let pagination = $state<PageInfo>();
+
+	onMount(() =>
+		queryOperationStore.subscribe((result) => {
+			if (!result.error && result.data) {
+				const { pageInfo, edges } = get($queryOperationStore.data, resultKey);
+				items = edges?.map((edge: any) => edge?.node) || [];
+				pagination = pageInfo;
+			}
+		})
+	);
 
 	$effect(() => {
 		if (forceReExecuteGraphqlQuery) {
@@ -120,6 +132,10 @@
 		};
 		forceReExecuteGraphqlQuery = true;
 	};
+
+	const innerHandleDragEnd = (dragIdx: number, dropIdx: number) => {
+		onDragEnd?.(dragIdx, dropIdx);
+	};
 </script>
 
 <div class="bg-white rounded-lg p-4 border border-gray-200">
@@ -130,8 +146,6 @@
 			{$queryOperationStore.error.message}
 		</Alert>
 	{:else if $queryOperationStore.data}
-		{@const { pageInfo: pagination, edges } = get($queryOperationStore.data, resultKey)}
-		{@const items = edges?.map((edge: any) => edge?.node) || []}
 		<Table
 			{items}
 			{columns}
@@ -144,7 +158,7 @@
 			defaultSortState={sortState}
 			{tableClass}
 			disabled={$queryOperationStore.fetching}
-			{supportDragDrop}
+			onDragEnd={innerHandleDragEnd}
 		/>
 	{/if}
 </div>
