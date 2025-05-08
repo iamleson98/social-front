@@ -1,15 +1,17 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import { FileInput, Input, Label } from '$lib/components/ui/Input';
-	import ErrorMsg from '$lib/components/pages/settings/products/new/error-msg.svelte';
-	import type { MediaObject } from '$lib/components/pages/settings/products/new/utils';
-	import { IMAGE_EXTENSION_REGEX } from '$lib/utils/consts';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { PhotoUp, Trash } from '$lib/components/icons';
 	import Accordion from '$lib/components/ui/Accordion/accordion.svelte';
+	import ErrorMsg from '$lib/components/pages/settings/products/new/error-msg.svelte';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
+
+	import type { MediaObject } from '$lib/components/pages/settings/products/new/utils';
 	import type { MetadataInput } from '$lib/gql/graphql';
-	import { array, number, object, string, z } from 'zod';
+	import { IMAGE_EXTENSION_REGEX } from '$lib/utils/consts';
+	import { object, string, array, number, z } from 'zod';
+	import { createEventDispatcher } from 'svelte';
 
 	type Props = {
 		name: string;
@@ -28,54 +30,25 @@
 		disabled = $bindable(false),
 		isCreatePage = $bindable(false),
 		media = $bindable<MediaObject | null>(null),
-		metadata = $bindable<{ key: string; value: string }[]>([]),
-		privateMetadata = $bindable<{ key: string; value: string }[]>([]),
+		metadata = $bindable<MetadataInput[]>([]),
+		privateMetadata = $bindable<MetadataInput[]>([]),
 		backgroundImageAlt = $bindable('')
 	}: Props = $props();
 
-	let descriptionError = $state<string>();
+	const dispatch = createEventDispatcher();
+	const handleNameInputChange = (event: Event) => {
+		const input = event.target as HTMLInputElement;
+		name = input.value;
+		dispatch('nameChange', { name });
+	};
 
+	let descriptionError = $state<string>();
+	let collectionFormErrors = $state.raw<Partial<Record<keyof CollectionSchema, string[]>>>({});
 	let error = $derived.by(
 		() =>
 			media &&
-			((isCreatePage && !media.alt?.trim()) || (!media.alt?.trim() && !backgroundImageAlt?.trim()))
+			((!media.alt?.trim() && !backgroundImageAlt?.trim()) || (isCreatePage && !media.alt?.trim()))
 	);
-
-	const handleChangeDescription = (data: any) => {
-		description = data;
-		const isEmpty = !data?.blocks?.length;
-		descriptionError = isEmpty ? $tranFunc('helpText.fieldRequired') : undefined;
-	};
-
-	const handleFileSelect = async (fileList: FileList) => {
-		if (!fileList.length || media) return;
-
-		const file = fileList[0];
-		const url = URL.createObjectURL(file);
-		const alt = file.name.replace(IMAGE_EXTENSION_REGEX, '');
-
-		await new Promise<void>((resolve) => {
-			const img = new Image();
-			img.onload = () => {
-				media = {
-					file,
-					url,
-					alt,
-					width: img.width,
-					height: img.height
-				};
-				resolve();
-			};
-			img.src = url;
-		});
-	};
-
-	const handleDeleteImage = () => {
-		if (media) {
-			URL.revokeObjectURL(media.url);
-			media = null;
-		}
-	};
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 
@@ -83,10 +56,16 @@
 		name: string().nonempty(REQUIRED_ERROR),
 		description: string().nonempty(REQUIRED_ERROR),
 		metadata: array(
-			object({ key: string().nonempty(REQUIRED_ERROR), value: string().nonempty(REQUIRED_ERROR) })
+			object({
+				key: string().nonempty(REQUIRED_ERROR),
+				value: string().nonempty(REQUIRED_ERROR)
+			})
 		),
 		privateMetadata: array(
-			object({ key: string().nonempty(REQUIRED_ERROR), value: string().nonempty(REQUIRED_ERROR) })
+			object({
+				key: string().nonempty(REQUIRED_ERROR),
+				value: string().nonempty(REQUIRED_ERROR)
+			})
 		),
 		media: object({
 			alt: string().nonempty(REQUIRED_ERROR),
@@ -102,30 +81,57 @@
 
 	type CollectionSchema = z.infer<typeof collectionSchema>;
 
-	let collectionFormErrors = $state.raw<Partial<Record<keyof CollectionSchema, string[]>>>({});
+	const handleChangeDescription = (data: any) => {
+		description = data;
+		descriptionError = !data?.blocks?.length ? $tranFunc('helpText.fieldRequired') : undefined;
+	};
+
+	const handleFileSelect = async (fileList: FileList) => {
+		if (!fileList.length || media) return;
+
+		const file = fileList[0];
+		const url = URL.createObjectURL(file);
+		const alt = file.name.replace(IMAGE_EXTENSION_REGEX, '');
+
+		await new Promise<void>((resolve) => {
+			const img = new Image();
+			img.onload = () => {
+				media = { file, url, alt, width: img.width, height: img.height };
+				resolve();
+			};
+			img.src = url;
+		});
+	};
+
+	const handleDeleteImage = () => {
+		if (media) {
+			URL.revokeObjectURL(media.url);
+			media = null;
+		}
+	};
+
+	const getDescriptionText = (data: any): string => {
+		return data?.blocks?.length ? JSON.stringify(data) : '';
+	};
 
 	const validate = () => {
-		const parseResult = collectionSchema.safeParse({
+		const result = collectionSchema.safeParse({
 			name,
-			description,
+			description: getDescriptionText(description),
 			metadata,
 			privateMetadata,
 			media,
 			backgroundImageAlt
 		});
-		if (!parseResult.success) {
-			collectionFormErrors = parseResult.error.formErrors.fieldErrors;
+
+		if (!result.success) {
+			collectionFormErrors = result.error.formErrors.fieldErrors;
 			return false;
 		}
+
 		collectionFormErrors = {};
 		return true;
 	};
-
-	let formOk = $state(false);
-
-	$effect(() => {
-		formOk = !Object.keys(collectionFormErrors).length;
-	});
 </script>
 
 <div class="bg-white rounded-lg border w-full border-gray-200 pb-2">
@@ -138,11 +144,12 @@
 		class="flex-1 p-3"
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
+		oninput={handleNameInputChange}
 		variant={collectionFormErrors.name?.length ? 'error' : 'info'}
 		subText={collectionFormErrors.name?.length ? collectionFormErrors.name[0] : ''}
 	/>
 
-	<div class="my-3 p-3">
+	<div class="mb-3 px-3">
 		<Label required requiredAtPos="end" label="Collection description" />
 		<div
 			class="rounded-lg border px-3 {!collectionFormErrors.description?.length && !descriptionError
@@ -164,7 +171,7 @@
 	</div>
 
 	<!-- Media Upload -->
-	<div class="p-3">
+	<div class="mb-3 px-3">
 		<Label label="Collection Image" required requiredAtPos="end" />
 		<div
 			class="rounded-lg border p-3 flex gap-1 flex-wrap {error
@@ -234,11 +241,12 @@
 	<!-- MetaData -->
 	<Accordion header="Metadata" open={false}>
 		{#each metadata as item, idx}
-			<div class="flex gap-5 items-center my-3">
+			<div class="flex gap-5 items-center mb-3">
 				<Input
 					placeholder="Key"
 					{disabled}
 					class="flex-1"
+					required
 					inputDebounceOption={{ onInput: validate }}
 					onblur={validate}
 					bind:value={item.key}
@@ -249,6 +257,7 @@
 					placeholder="Value"
 					{disabled}
 					class="flex-1"
+					required
 					inputDebounceOption={{ onInput: validate }}
 					onblur={validate}
 					bind:value={item.value}
@@ -262,7 +271,7 @@
 					variant="light"
 					class="tooltip tooltip-top"
 					data-tip="Remove"
-					onclick={() => metadata.splice(idx, 1)}
+					onclick={() => (metadata = metadata.filter((_, i) => i !== idx))}
 				/>
 			</div>
 		{/each}
@@ -270,7 +279,7 @@
 			size="xs"
 			variant="light"
 			color="blue"
-			onclick={() => metadata = metadata.concat({ key: '', value: '' })}
+			onclick={() => (metadata = metadata.concat({ key: '', value: '' }))}
 		>
 			Add Field
 		</Button>
@@ -279,11 +288,12 @@
 	<!-- privateMetadata -->
 	<Accordion header="Private Metadata" open={false}>
 		{#each privateMetadata as item, idx}
-			<div class="flex gap-2 items-center my-2">
+			<div class="flex gap-5 items-center my-2">
 				<Input
 					placeholder="Key"
 					{disabled}
 					class="flex-1"
+					required
 					inputDebounceOption={{ onInput: validate }}
 					onblur={validate}
 					variant={collectionFormErrors.privateMetadata?.length ? 'error' : 'info'}
@@ -296,6 +306,7 @@
 					placeholder="Value"
 					{disabled}
 					class="flex-1"
+					required
 					inputDebounceOption={{ onInput: validate }}
 					onblur={validate}
 					bind:value={item.value}
@@ -311,7 +322,7 @@
 					variant="light"
 					class="tooltip tooltip-top"
 					data-tip="Remove"
-					onclick={() => privateMetadata.splice(idx, 1)}
+					onclick={() => (privateMetadata = privateMetadata.filter((_, i) => i !== idx))}
 				/>
 			</div>
 		{/each}
@@ -319,7 +330,7 @@
 			size="xs"
 			variant="light"
 			color="blue"
-			onclick={() => privateMetadata = privateMetadata.concat({ key: '', value: '' })}
+			onclick={() => (privateMetadata = privateMetadata.concat({ key: '', value: '' }))}
 		>
 			Add Field
 		</Button>

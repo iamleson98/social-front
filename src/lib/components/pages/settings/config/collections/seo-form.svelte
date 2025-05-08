@@ -54,6 +54,7 @@
       label="Slug"
       bind:value={slug}
       required
+			class="mb-2"
       inputDebounceOption={{ onInput: validate }}
       onblur={validate}
       variant={seoFormErrors.slug?.length ? 'error' : 'info'}
@@ -63,7 +64,7 @@
 			label="Title"
 			bind:value={seo.title}
       placeholder="Search Engine Title"
-			class="my-2"
+			class="mb-2"
 			required
       inputDebounceOption={{ onInput: validate }}
       onblur={validate}
