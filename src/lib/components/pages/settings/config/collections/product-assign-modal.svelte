@@ -87,7 +87,7 @@
 
 <div class="mb-4 flex items-center justify-between">
 	<div class="text-gray-700 font-semibold">Products in collection</div>
-	<Button size="sm" onclick={handleClickOpenProductListModal}>Assign Product</Button>
+	<Button size="xs" onclick={handleClickOpenProductListModal}>Assign Product</Button>
 </div>
 
 <Modal

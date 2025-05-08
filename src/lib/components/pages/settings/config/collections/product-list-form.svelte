@@ -162,7 +162,13 @@
 			published: item.isPublished
 		})) || []}
 	{#snippet trigger({ onclick }: DropdownTriggerInterface)}
-		<Badge text={`${channels.length} channels`} onmouseenter={onclick} ontouchstart={onclick} />
+		<Badge
+			text={`${channels.length} channels`}
+			color={channels.length ? 'green' : 'orange'}
+			variant={channels.length ? 'filled' : 'light'}
+			onmouseenter={onclick}
+			ontouchstart={onclick}
+		/>
 	{/snippet}
 	<Popover {trigger} placement="left" noReCalculateOnWindowResize>
 		<div class="py-1 px-2 rounded-lg border border-gray-200 bg-white w-fit shadow-sm">

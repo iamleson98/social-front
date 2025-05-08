@@ -6,15 +6,14 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Checkbox } from '$lib/components/ui/Input';
+	import type { SelectOption } from '$lib/components/ui/select';
 	import MultiSelect from '$lib/components/ui/select/multi-select.svelte';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import type {
 		Collection,
 		CollectionChannelListing,
 		Query,
-		QueryChannelArgs
 	} from '$lib/gql/graphql';
-	import { difference, differenceBy, differenceWith } from 'es-toolkit';
 
 	type Props = {
 		collection?: Collection;
@@ -30,10 +29,30 @@
 		pause: true
 	});
 
-	let showChannelSelect = $state(false);
+	let availableChannels = $derived.by(() => {
+		if ($channelsQuery.data) {
+			const usedChannels: Record<string, boolean> = channelListings.reduce(
+				(acc, listing) => ({ ...acc, [listing.channel.id]: true }),
+				{}
+			);
+
+			return (
+				$channelsQuery.data.channels?.reduce<SelectOption[]>((acc, chan) => {
+					if (!usedChannels[chan.id]) {
+						acc.push({
+							value: chan.id,
+							label: chan.name
+						});
+					}
+					return acc;
+				}, []) || []
+			);
+		}
+
+		return [];
+	});
 
 	const handleClickSelectChannels = () => {
-		showChannelSelect = true;
 		channelsQuery.resume();
 	};
 </script>
@@ -42,7 +61,7 @@
 	<div class="flex items-center justify-between">
 		<div>
 			<div class="text-gray-700 font-semibold">Availability</div>
-			<div class="text-xs text-gray-600">In {channelListings.length} channels</div>
+			<div class="text-xs text-gray-500">In {channelListings.length} channels</div>
 		</div>
 
 		<Button variant="light" size="xs" onclick={handleClickSelectChannels}>Manage</Button>
@@ -56,7 +75,7 @@
 		{:else if $channelsQuery.error}
 			<Alert size="sm" bordered variant="error">{$channelsQuery.error.message}</Alert>
 		{:else if $channelsQuery.data}
-			<MultiSelect size="sm" options={[]} />
+			<MultiSelect size="sm" options={availableChannels} />
 		{/if}
 	</div>
 </div>
