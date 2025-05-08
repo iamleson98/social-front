@@ -3,16 +3,16 @@
 	import { Accordion } from "$lib/components/ui/Accordion";
 	import { Input } from "$lib/components/ui/Input";
 	import { z, object, string } from "zod";
+	import type { SeoInput } from "$lib/gql/graphql";
+	import slugify from "slugify";
 
 	type Props = {
+		name?: string;
 		slug?: string;
-		seo: {
-			title?: string;
-			description?: string;
-		};
+		seo: SeoInput;
 	};
 
-	let { slug = $bindable(), seo = $bindable() }: Props = $props();
+	let { name, slug = $bindable(), seo = $bindable() }: Props = $props();
 
   const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 
@@ -40,11 +40,11 @@
 		return true;
 	};
 
-  let formOk = $state(false);
-
 	$effect(() => {
-		formOk = !Object.keys(seoFormErrors).length;
-	});
+    if(name){
+      slug = slugify(name, { lower: true, strict: true });
+    }
+  });
 </script>
 
 <div class="bg-white rounded-lg border w-full border-gray-200">
