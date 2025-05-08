@@ -6,7 +6,7 @@
 	import { type PageInfo, type Query } from '$lib/gql/graphql';
 	import TableSkeleton from './table-skeleton.svelte';
 	import Alert from '../Alert/alert.svelte';
-	import { onMount, tick } from 'svelte';
+	import { tick } from 'svelte';
 	import { get } from 'es-toolkit/compat';
 
 	type Props = {
@@ -17,6 +17,16 @@
 		/** for example the products query support pagination, then you must pass 'products' as resultKey */
 		resultKey: keyof Query;
 		forceReExecuteGraphqlQuery: boolean;
+
+		/**
+		 * tell the component how to reposition the items within the array list.
+		 *
+		 * if `swap-position`, then the 2 items at drag and drop position will be swapped.
+		 *
+		 * If `move-position`, then the drag item will move to the drop index
+		 */
+		dragEffectType?: 'swap-position' | 'move-position';
+		onDragEnd?: (dragIndex: number, dragItem: T, dropIndex: number, dropItem: T) => void;
 	} & Omit<
 		TableProps<T, K>,
 		| 'items'
@@ -26,6 +36,7 @@
 		| 'onChangeRowsPerPage'
 		| 'onSortChange'
 		| 'rowsPerPage'
+		| 'onDragEnd'
 	>;
 
 	let {
@@ -38,8 +49,13 @@
 		resultKey,
 		columns,
 		tableClass,
-		onDragEnd
+		onDragEnd,
+		dragEffectType,
+		disabled
 	}: Props = $props();
+
+	if ((dragEffectType && !onDragEnd) || (!dragEffectType && onDragEnd))
+		throw new Error('dragEffectType and onDragEnd must be provided together');
 
 	const queryOperationStore = operationStore<
 		Pick<Query, typeof resultKey>,
@@ -52,22 +68,22 @@
 		pause: true // default to pause
 	});
 
-	let sortState = $state<SortState<K>>({} as SortState<K>);
-	let items = $state<T[]>([]);
-	let pagination = $state<PageInfo>();
-
-	onMount(() =>
-		queryOperationStore.subscribe((result) => {
-			if (!result.error && result.data) {
-				const { pageInfo, edges } = get($queryOperationStore.data, resultKey);
-				items = edges?.map((edge: any) => edge?.node) || [];
-				pagination = pageInfo;
-			}
-		})
-	);
+	let sortState = $state.raw<SortState<K>>({} as SortState<K>);
+	let items = $state.raw<T[]>([]);
+	let pagination = $state.raw<PageInfo>();
 
 	$effect(() => {
-		debugger;
+		if (!$queryOperationStore.error && $queryOperationStore.data) {
+			const connection = get($queryOperationStore.data, resultKey);
+
+			if (!connection) throw new Error(`invalid result key: ${resultKey}`);
+
+			items = connection.edges.map((edge: any) => edge?.node) || [];
+			pagination = connection.pageInfo;
+		}
+	});
+
+	$effect(() => {
 		if (forceReExecuteGraphqlQuery) {
 			queryOperationStore.reexecute({ variables });
 
@@ -135,7 +151,25 @@
 	};
 
 	const innerHandleDragEnd = (dragIdx: number, dropIdx: number) => {
-		onDragEnd?.(dragIdx, dropIdx);
+		if (dragIdx === dropIdx) return;
+
+		const dragItem = items[dragIdx];
+		const dropItem = items[dropIdx];
+		const newItems = [...items];
+
+		if (Math.abs(dragIdx - dropIdx) === 1 || dragEffectType === 'swap-position') {
+			newItems[dragIdx] = newItems[dropIdx];
+			newItems[dropIdx] = dragItem;
+
+			items = newItems;
+		} else if (dragEffectType === 'move-position') {
+			const [dragItem] = newItems.splice(dragIdx, 1);
+			newItems.splice(dropIdx, 0, dragItem);
+
+			items = newItems;
+		}
+
+		onDragEnd?.(dragIdx, dragItem, dropIdx, dropItem);
 	};
 </script>
 
@@ -158,8 +192,8 @@
 			rowsPerPage={(variables.first || variables.last) as RowOptions}
 			defaultSortState={sortState}
 			{tableClass}
-			disabled={$queryOperationStore.fetching}
-			onDragEnd={innerHandleDragEnd}
+			disabled={$queryOperationStore.fetching || disabled}
+			onDragEnd={onDragEnd ? innerHandleDragEnd : undefined}
 		/>
 	{/if}
 </div>

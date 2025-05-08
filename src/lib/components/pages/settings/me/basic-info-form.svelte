@@ -60,7 +60,6 @@
 		const userInfoParse = UserInfoSchema.safeParse(userInfoInputs);
 		if (!userInfoParse.success) {
 			userInfoFormErrors = userInfoParse.error.formErrors.fieldErrors;
-			console.log(userInfoParse.error?.format());
 			return false;
 		}
 		userInfoFormErrors = {};
