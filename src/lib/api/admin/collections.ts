@@ -119,6 +119,16 @@ mutation UnassignProductsFromCollection($collectionId: ID!, $products: [ID!]!) {
   }
 }`;
 
+export const COLLECTION_CHANNEL_LISTING_UPDATE_MUTATION = gql`
+mutation CollectionChannelListingUpdate($id: ID!, $input: CollectionChannelListingUpdateInput!) {
+  collectionChannelListingUpdate(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
 // mutation UnassignCollectionProduct($collectionId: ID!, $productIds: [ID!]!, $first: Int, $after: String, $last: Int, $before: String) {
 //   collectionRemoveProducts(collectionId: $collectionId, products: $productIds) {
 //     collection {

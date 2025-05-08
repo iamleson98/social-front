@@ -138,6 +138,7 @@
 		size="xs"
 		color="red"
 		onclick={() => handleAssignProducts([], [item.id])}
+		disabled={loading}
 	/>
 {/snippet}
 

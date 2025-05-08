@@ -9,7 +9,11 @@
 	import SeoForm from '$lib/components/pages/settings/config/collections/seo-form.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
-	import type { CollectionInput, Query, QueryCollectionArgs } from '$lib/gql/graphql';
+	import {
+		type CollectionInput,
+		type Query,
+		type QueryCollectionArgs
+	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 
 	const onDeleteClick = () => {};
@@ -28,7 +32,16 @@
 
 	$effect(() => {
 		if ($collectionDetail.data?.collection) {
-			const { name, slug, description, backgroundImage, seoTitle, seoDescription, metadata, privateMetadata } = $collectionDetail.data.collection;
+			const {
+				name,
+				slug,
+				description,
+				backgroundImage,
+				seoTitle,
+				seoDescription,
+				metadata,
+				privateMetadata
+			} = $collectionDetail.data.collection;
 			collectionUpdateinput = {
 				name,
 				slug,
@@ -41,9 +54,9 @@
 				metadata,
 				privateMetadata,
 				backgroundImageAlt: backgroundImage?.alt
-			}
+			};
 		}
-	})
+	});
 </script>
 
 {#if $collectionDetail.fetching}
@@ -63,7 +76,9 @@
 		</div>
 
 		<div class="w-3/10">
-			<AvailabilityForm />
+			<AvailabilityForm
+				channelListings={$collectionDetail.data.collection?.channelListings || []}
+			/>
 		</div>
 	</div>
 
