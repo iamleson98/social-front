@@ -31,7 +31,7 @@
 		sortMultiple = false,
 		defaultSortState = {} as SortState<K>,
 		disabled = false,
-		onDragEnd
+		supportDragDrop = false
 	}: TableProps<T, K> = $props();
 
 	if (columns.some((col) => col.sortable && !col.key)) {
@@ -78,8 +78,8 @@
 
 	const handleDrop = (state: DragDropState<number>) => {
 		const { draggedItem, targetContainer } = state;
-		const dropIndex = parseInt(targetContainer ?? "0");
-		console.log(dropIndex, draggedItem)
+		const dropIndex = parseInt(targetContainer ?? '0');
+		console.log(dropIndex, draggedItem);
 	};
 </script>
 
