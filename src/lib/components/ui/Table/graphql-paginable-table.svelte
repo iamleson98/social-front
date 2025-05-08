@@ -34,7 +34,7 @@
 			first: 10
 		}),
 		requestPolicy = 'network-only',
-		forceReExecuteGraphqlQuery = $bindable(),
+		forceReExecuteGraphqlQuery = $bindable(false),
 		resultKey,
 		columns,
 		tableClass,
@@ -67,6 +67,7 @@
 	);
 
 	$effect(() => {
+		debugger;
 		if (forceReExecuteGraphqlQuery) {
 			queryOperationStore.reexecute({ variables });
 
