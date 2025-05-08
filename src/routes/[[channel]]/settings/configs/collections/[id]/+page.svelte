@@ -99,7 +99,10 @@
 			};
 		}
 	});
+<<<<<<< HEAD
 >>>>>>> 500f3ab (commit)
+=======
+>>>>>>> 500f3abcfe76b4361e9ee6a2b085b58799bc12c8
 </script>
 
 {#if $collectionDetail.fetching}
