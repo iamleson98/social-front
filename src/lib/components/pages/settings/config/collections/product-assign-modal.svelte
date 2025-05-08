@@ -58,6 +58,7 @@
 		}
 
 		onApply(addProductIds, removeProductIds);
+		openAssignProductModal = false;
 	};
 </script>
 
