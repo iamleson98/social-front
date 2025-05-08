@@ -11,7 +11,7 @@
     onApply: (addProductIds: string[], removeProductIds: string[]) => void;
 	};
 
-	let { collectionID }: Props = $props();
+	let { collectionID, onApply }: Props = $props();
 
 	const PRODUCT_MODAL_COLUMNS: TableColumnProps<Product, ProductOrderField>[] = [
 		{
@@ -45,7 +45,20 @@
 		selectedProductIDs = {};
 	};
 
-  const handleAssignproducts = () => {};
+  const handleAssignproducts = () => {
+		const addProductIds = [];
+		const removeProductIds = [];
+
+		for (const id of Object.keys(selectedProductIDs)) {
+			if (selectedProductIDs[id]) {
+				addProductIds.push(id);
+			} else {
+				removeProductIds.push(id);
+			}
+		}
+
+		onApply(addProductIds, removeProductIds);
+	};
 </script>
 
 {#snippet checkbox({ item }: { item: Product })}

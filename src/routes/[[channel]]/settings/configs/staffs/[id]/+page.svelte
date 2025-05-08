@@ -55,7 +55,6 @@
 		loading = false;
 
 		if (preHandleErrorOnGraphqlResult(result, 'staffUpdate')) {
-			console.log(result);
 			return;
 		}
 		toastStore.send({

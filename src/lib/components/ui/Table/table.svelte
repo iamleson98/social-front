@@ -77,9 +77,11 @@
 	};
 
 	const handleDrop = (state: DragDropState<number>) => {
+		if (!onDragEnd) return;
+
 		const { draggedItem, targetContainer } = state;
 		const dropIndex = parseInt(targetContainer ?? '0');
-		console.log(dropIndex, draggedItem);
+		onDragEnd(draggedItem, dropIndex);
 	};
 </script>
 
@@ -214,7 +216,7 @@
 	}
 
 	:global(.dragging) {
-		@apply opacity-50 shadow-lg ring-2 ring-blue-400 rounded-lg;
+		@apply opacity-50 shadow-lg rounded-lg;
 	}
 
 	:global(.drag-over) {

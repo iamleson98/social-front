@@ -1,4 +1,4 @@
-import { type SelectedAttribute, type User, AttributeInputTypeEnum, OrderDirection, PermissionEnum } from '$lib/gql/graphql';
+import { type Mutation, type Query, type SelectedAttribute, type User, AttributeInputTypeEnum, OrderDirection, PermissionEnum } from '$lib/gql/graphql';
 import { toastStore } from '$lib/stores/ui/toast';
 import type { AnyVariables, OperationResult } from '@urql/core';
 import editorJsToHtml from 'editorjs-html';
@@ -137,7 +137,8 @@ export const getPrefersReducedMotion = () => {
  */
 export const preHandleErrorOnGraphqlResult = <T, K extends AnyVariables>(
 	result: OperationResult<T, K>,
-	apiErrorKey?: string,
+	apiErrorKey?: keyof Mutation | keyof Query,
+	successMessage?: string,
 ): boolean => {
 	if (result.error) {
 		toastStore.send({
@@ -159,6 +160,11 @@ export const preHandleErrorOnGraphqlResult = <T, K extends AnyVariables>(
 			return true;
 		}
 	}
+
+	if (successMessage) toastStore.send({
+		variant: 'success',
+		message: successMessage,
+	});
 
 	return false;
 };

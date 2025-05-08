@@ -1,7 +1,8 @@
 <script lang="ts">
 	import {
 		ASSIGN_PRODUCTS_TO_COLLECTION_MUTATION,
-		COLLECTION_PRODUCTS_QUERY
+		COLLECTION_PRODUCTS_QUERY,
+		REORDER_PRODUCTS_IN_COLLECTION_MUTATION
 	} from '$lib/api/admin/collections';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { Trash } from '$lib/components/icons';
@@ -13,12 +14,13 @@
 	import type {
 		Mutation,
 		MutationCollectionAddProductsArgs,
+		MutationCollectionRemoveProductsArgs,
+		MutationCollectionReorderProductsArgs,
 		Product,
 		ProductOrderField,
 		Query,
 		QueryProductsArgs
 	} from '$lib/gql/graphql';
-	import { toastStore } from '$lib/stores/ui/toast';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import ProductAssignModal from './product-assign-modal.svelte';
 
@@ -35,7 +37,7 @@
 	});
 
 	let forceReExecuteGraphqlQuery = $state(collectionID ? true : false);
-	let openAssignProductModal = $state(false);
+	let loading = $state(false);
 
 	const PRODUCT_COLUMNS: TableColumnProps<Product, ProductOrderField>[] = [
 		{
@@ -56,31 +58,76 @@
 		}
 	];
 
-	let selectedProductIDs = $state<Record<string, boolean>>({});
-
-	const handleDetachProductFromCollection = (productId: string) => {};
-
-	const handleAssignproducts = async () => {
+	const handleReOrderProductsInCollection = async (
+		dragIndex: number,
+		dragItem: Product,
+		dropIndex: number,
+		_: Product
+	) => {
 		if (!collectionID) return;
 
-		const productIds = Object.keys(selectedProductIDs).filter((key) => selectedProductIDs[key]);
+		loading = true;
 
 		const result = await GRAPHQL_CLIENT.mutation<
-			Pick<Mutation, 'collectionAddProducts'>,
-			MutationCollectionAddProductsArgs
-		>(ASSIGN_PRODUCTS_TO_COLLECTION_MUTATION, {
+			Pick<Mutation, 'collectionReorderProducts'>,
+			MutationCollectionReorderProductsArgs
+		>(REORDER_PRODUCTS_IN_COLLECTION_MUTATION, {
 			collectionId: collectionID,
-			products: productIds
+			moves: [{ productId: dragItem.id, sortOrder: dropIndex - dragIndex }]
 		});
 
-		if (preHandleErrorOnGraphqlResult(result, 'collectionAddProducts')) return;
+		loading = false;
 
-		toastStore.send({
-			variant: 'success',
-			message: 'Products assigned successfully'
-		});
+		if (
+			preHandleErrorOnGraphqlResult(
+				result,
+				'collectionReorderProducts',
+				'Successfully reorderd products of collection'
+			)
+		)
+			return;
 
-		openAssignProductModal = false;
+		// success, trigger refetching data
+		forceReExecuteGraphqlQuery = true;
+	};
+
+	const handleAssignProducts = async (addProductIds: string[], removeProductIds: string[]) => {
+		if (!collectionID) return;
+
+		loading = true;
+
+		if (addProductIds.length) {
+			const result = await GRAPHQL_CLIENT.mutation<
+				Pick<Mutation, 'collectionAddProducts'>,
+				MutationCollectionAddProductsArgs
+			>(ASSIGN_PRODUCTS_TO_COLLECTION_MUTATION, {
+				collectionId: collectionID,
+				products: addProductIds
+			});
+			preHandleErrorOnGraphqlResult(
+				result,
+				'collectionAddProducts',
+				'Successfully assigned products to collection'
+			);
+		}
+		if (removeProductIds.length) {
+			const result = await GRAPHQL_CLIENT.mutation<
+				Pick<Mutation, 'collectionRemoveProducts'>,
+				MutationCollectionRemoveProductsArgs
+			>(ASSIGN_PRODUCTS_TO_COLLECTION_MUTATION, {
+				collectionId: collectionID,
+				products: removeProductIds
+			});
+			preHandleErrorOnGraphqlResult(
+				result,
+				'collectionRemoveProducts',
+				'Successfully unassigned products from collection'
+			);
+		}
+
+		loading = false;
+		// success, trigger refetching data
+		forceReExecuteGraphqlQuery = true;
 	};
 </script>
 
@@ -90,7 +137,7 @@
 		variant="light"
 		size="xs"
 		color="red"
-		onclick={() => handleDetachProductFromCollection(item.id)}
+		onclick={() => handleAssignProducts([], [item.id])}
 	/>
 {/snippet}
 
@@ -139,12 +186,15 @@
 {/snippet}
 
 <div class="bg-white rounded-lg border w-full border-gray-200 p-3">
-	<ProductAssignModal onApply={console.log} />
+	<ProductAssignModal onApply={handleAssignProducts} {collectionID} />
 	<GraphqlPaginableTable
 		query={COLLECTION_PRODUCTS_QUERY}
 		resultKey={'collection.products' as keyof Query}
 		bind:variables={filterVariables}
 		bind:forceReExecuteGraphqlQuery
 		columns={PRODUCT_COLUMNS}
+		onDragEnd={handleReOrderProductsInCollection}
+		dragEffectType="move-position"
+		disabled={loading}
 	/>
 </div>

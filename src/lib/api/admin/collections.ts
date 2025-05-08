@@ -50,51 +50,11 @@ query CollectionProducts($id: ID!, $first: Int, $last: Int, $before: String, $af
 }`;
 
 export const REORDER_PRODUCTS_IN_COLLECTION_MUTATION = gql`
-mutation ReorderProductsInCollection($collectionId: ID!, $moves: [MoveProductInput!]!, $first: Int, $after: String, $last: Int, $before: String) {
+mutation ReorderProductsInCollection($collectionId: ID!, $moves: [MoveProductInput!]!) {
   collectionReorderProducts(collectionId: $collectionId, moves: $moves) {
-    collection {
-      id
-      products(
-        first: $first
-        after: $after
-        before: $before
-        last: $last
-        sortBy: {field: COLLECTION, direction: ASC}
-      ) {
-        edges {
-          node {
-            id
-            name
-            category {
-              id
-              name
-            }
-            thumbnail(size: 100, format: WEBP) {
-              url
-              alt
-            }
-            channelListings {
-              id
-              isPublished
-              publishedAt
-              isAvailableForPurchase
-              availableForPurchaseAt
-              visibleInListings
-              channel {
-                id
-                name
-                currencyCode
-              }
-            }
-          }
-        }
-        pageInfo {
-          endCursor
-          hasNextPage
-          hasPreviousPage
-          startCursor
-        }
-      }
+    errors {
+      field
+      message
     }
   }
 }`;
@@ -109,9 +69,6 @@ query CollectionDetail($id: ID!) {
       id
       isPublished
       publishedAt
-      # isAvailableForPurchase
-      # availableForPurchaseAt
-      # visibleInListings
       channel {
         id
         name
@@ -147,5 +104,185 @@ mutation AssignProductsToCollection($collectionId: ID!, $products: [ID!]!) {
       message
     }
   }
-}`
+}`;
+
+export const COLLECTION_REMOVE_PRODUCTS_MUTATION = gql`
+mutation UnassignProductsFromCollection($collectionId: ID!, $products: [ID!]!) {
+  collectionRemoveProducts(collectionId: $collectionId, products: $products) {
+    collection {
+      id
+    }
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+// mutation UnassignCollectionProduct($collectionId: ID!, $productIds: [ID!]!, $first: Int, $after: String, $last: Int, $before: String) {
+//   collectionRemoveProducts(collectionId: $collectionId, products: $productIds) {
+//     collection {
+//       id
+//       products(
+//         first: $first
+//         after: $after
+//         before: $before
+//         last: $last
+//         sortBy: {field: COLLECTION, direction: ASC}
+//       ) {
+//         edges {
+//           node {
+//             ...CollectionProduct
+//             __typename
+//           }
+//           __typename
+//         }
+//         pageInfo {
+//           endCursor
+//           hasNextPage
+//           hasPreviousPage
+//           startCursor
+//           __typename
+//         }
+//         __typename
+//       }
+//       __typename
+//     }
+//     errors {
+//       ...CollectionError
+//       __typename
+//     }
+//     __typename
+//   }
+// }
+
+// fragment CollectionProduct on Product {
+//   id
+//   name
+//   productType {
+//     id
+//     name
+//     __typename
+//   }
+//   thumbnail {
+//     url
+//     __typename
+//   }
+//   channelListings {
+//     ...ChannelListingProductWithoutPricing
+//     __typename
+//   }
+//   __typename
+// }
+
+// fragment ChannelListingProductWithoutPricing on ProductChannelListing {
+//   id
+//   isPublished
+//   publishedAt
+//   isAvailableForPurchase
+//   availableForPurchaseAt
+//   visibleInListings
+//   channel {
+//     id
+//     name
+//     currencyCode
+//     __typename
+//   }
+//   __typename
+// }
+
+// fragment CollectionError on CollectionError {
+//   code
+//   field
+//   message
+//   __typename
+// }
+
+
+// mutation CollectionAssignProduct($collectionId: ID!, $productIds: [ID!]!, $moves: [MoveProductInput!]!, $first: Int, $after: String, $last: Int, $before: String) {
+//   collectionAddProducts(collectionId: $collectionId, products: $productIds) {
+//     errors {
+//       ...CollectionError
+//       __typename
+//     }
+//     __typename
+//   }
+//   collectionReorderProducts(collectionId: $collectionId, moves: $moves) {
+//     collection {
+//       id
+//       products(
+//         first: $first
+//         after: $after
+//         before: $before
+//         last: $last
+//         sortBy: {field: COLLECTION, direction: ASC}
+//       ) {
+//         edges {
+//           node {
+//             ...CollectionProduct
+//             __typename
+//           }
+//           __typename
+//         }
+//         pageInfo {
+//           endCursor
+//           hasNextPage
+//           hasPreviousPage
+//           startCursor
+//           __typename
+//         }
+//         __typename
+//       }
+//       __typename
+//     }
+//     errors {
+//       message
+//       __typename
+//     }
+//     __typename
+//   }
+// }
+
+// fragment CollectionError on CollectionError {
+//   code
+//   field
+//   message
+//   __typename
+// }
+
+// fragment CollectionProduct on Product {
+//   id
+//   name
+//   productType {
+//     id
+//     name
+//     __typename
+//   }
+//   thumbnail {
+//     url
+//     __typename
+//   }
+//   channelListings {
+//     ...ChannelListingProductWithoutPricing
+//     __typename
+//   }
+//   __typename
+// }
+
+// fragment ChannelListingProductWithoutPricing on ProductChannelListing {
+//   id
+//   isPublished
+//   publishedAt
+//   isAvailableForPurchase
+//   availableForPurchaseAt
+//   visibleInListings
+//   channel {
+//     id
+//     name
+//     currencyCode
+//     __typename
+//   }
+//   __typename
+// }
+
 

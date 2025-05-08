@@ -35,8 +35,7 @@
 
 		loading = false;
 
-		if (preHandleErrorOnGraphqlResult(result, 'userCreate')) {
-			console.log(result);
+		if (preHandleErrorOnGraphqlResult(result, 'staffCreate')) {
 			return;
 		}
 		toastStore.send({
