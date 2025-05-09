@@ -7,12 +7,12 @@
 	import slugify from "slugify";
 
 	type Props = {
-		name?: string;
+		name: string;
 		slug?: string;
 		seo: SeoInput;
 	};
 
-	let { name, slug = $bindable(), seo = $bindable() }: Props = $props();
+	let { name, slug = $bindable(''), seo = $bindable() }: Props = $props();
 
   const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 

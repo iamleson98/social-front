@@ -16,7 +16,7 @@
 
 	let { title = $bindable(), data = $bindable(), disabled }: Props = $props();
 
-	let dataFormErrors = $state.raw<Partial<Record<keyof DataSchema, string[]>>>({});
+	let dataFormErrors = $state<Array<Partial<Record<keyof DataSchema, string[]>>>>([]);
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 
@@ -27,27 +27,29 @@
 
 	type DataSchema = z.infer<typeof dataSchema>;
 
-	const validate = (data: MetadataInput) => {
+	const validate = (item: MetadataInput, index: number) => {
 		const result = dataSchema.safeParse({
-			key: data.key,
-			value: data.value
+			key: item.key,
+			value: item.value
 		});
 
 		if (!result.success) {
-			dataFormErrors = result.error.formErrors.fieldErrors;
+			dataFormErrors[index] = result.error.formErrors.fieldErrors;
 			return false;
 		}
 
-		dataFormErrors = {};
+		dataFormErrors[index] = {};
 		return true;
 	};
 
 	const addData = () => {
 		data = data.concat({ key: '', value: '' });
+		dataFormErrors = dataFormErrors.concat({});
 	};
 
 	const removeData = (idx: number) => {
 		data = data.filter((_, i) => i !== idx);
+		dataFormErrors = dataFormErrors.filter((_, i) => i !== idx);
 	};
 </script>
 
@@ -60,20 +62,22 @@
 				{disabled}
 				required
 				class="flex-1"
-				onblur={() => validate(item)}
-				variant={dataFormErrors?.key?.length ? 'error' : 'info'}
-				subText={dataFormErrors?.key?.length ? dataFormErrors.key[0] : undefined}
+				onblur={() => validate(item, idx)}
+				variant={dataFormErrors[idx]?.key?.length ? 'error' : 'info'}
+				subText={dataFormErrors[idx]?.key?.[0]}
 			/>
+
 			<Input
 				placeholder="Value"
 				bind:value={item.value}
 				{disabled}
 				required
 				class="flex-1"
-				onblur={() => validate(item)}
-				variant={dataFormErrors?.value?.length ? 'error' : 'info'}
-				subText={dataFormErrors?.value?.length ? dataFormErrors.value[0] : ''}
+				onblur={() => validate(item, idx)}
+				variant={dataFormErrors[idx]?.value?.length ? 'error' : 'info'}
+				subText={dataFormErrors[idx]?.value?.[0]}
 			/>
+
 			<IconButton
 				icon={Trash}
 				size="xs"

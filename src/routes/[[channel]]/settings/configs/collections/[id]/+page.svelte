@@ -78,7 +78,7 @@
 				bind:backgroundImageAlt={collectionUpdateinput.backgroundImageAlt as string}
 			/>
 			<ProductListForm collectionID={page.params.id} />
-			<SeoForm name={collectionUpdateinput.name as string} bind:slug={collectionUpdateinput.slug as string} seo={collectionUpdateinput.seo as any} />
+			<SeoForm bind:slug={collectionUpdateinput.slug as string} seo={collectionUpdateinput.seo as any} name={collectionUpdateinput.name as string}/>
 		</div>
 
 		<div class="w-3/10">
