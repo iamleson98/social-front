@@ -10,7 +10,13 @@
 	import { type MediaObject } from '$lib/components/pages/settings/products/new/utils';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
-	import type { CollectionInput, Query, QueryCollectionArgs } from '$lib/gql/graphql';
+	import type {
+		CollectionInput,
+		MetadataInput,
+		Query,
+		QueryCollectionArgs,
+		SeoInput
+	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 
 	const onDeleteClick = () => {};
@@ -54,7 +60,6 @@
 			};
 		}
 	});
-
 </script>
 
 {#if $collectionDetail.fetching}
@@ -71,14 +76,18 @@
 			<GeneralInformationForm
 				isCreatePage={false}
 				bind:name={collectionUpdateinput.name as string}
-				bind:description={collectionUpdateinput.description as any}
+				bind:description={collectionUpdateinput.description as string}
 				bind:media={collectionUpdateinput.backgroundImage as MediaObject | null}
-				bind:metadata={collectionUpdateinput.metadata as any}
-				bind:privateMetadata={collectionUpdateinput.privateMetadata as any}
+				bind:metadata={collectionUpdateinput.metadata as MetadataInput[]}
+				bind:privateMetadata={collectionUpdateinput.privateMetadata as MetadataInput[]}
 				bind:backgroundImageAlt={collectionUpdateinput.backgroundImageAlt as string}
 			/>
 			<ProductListForm collectionID={page.params.id} />
-			<SeoForm bind:slug={collectionUpdateinput.slug as string} seo={collectionUpdateinput.seo as any} name={collectionUpdateinput.name as string}/>
+			<SeoForm
+				bind:slug={collectionUpdateinput.slug as string}
+				bind:seo={collectionUpdateinput.seo as SeoInput}
+				name={collectionUpdateinput.name as string}
+			/>
 		</div>
 
 		<div class="w-3/10">

@@ -4,8 +4,9 @@
 	import GeneralInformationForm from '$lib/components/pages/settings/config/collections/general-information-form.svelte';
 	import ProductListForm from '$lib/components/pages/settings/config/collections/product-list-form.svelte';
 	import SeoForm from '$lib/components/pages/settings/config/collections/seo-form.svelte';
+	import { type MetadataInput, type SeoInput } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { type MediaObject } from 'schema-dts';
+	import { type MediaObject } from '$lib/components/pages/settings/products/new/utils';
 
 	const onDeleteClick = () => {};
 
@@ -14,7 +15,7 @@
 	let collectionCreateinput = $state({
 		name: '',
 		description: '',
-		backgroundImage: null,
+		backgroundImage: undefined,
 		metadata: [],
 		privateMetadata: [],
 		backgroundImageAlt: '',
@@ -28,9 +29,20 @@
 
 <div class="flex gap-2 flex-row">
 	<div class="w-7/10 flex flex-col gap-2">
-		<GeneralInformationForm bind:name={collectionCreateinput.name as string} bind:description={collectionCreateinput.description as any} bind:media={collectionCreateinput.backgroundImage as any} bind:metadata={collectionCreateinput.metadata as any} bind:privateMetadata={collectionCreateinput.privateMetadata as any} bind:backgroundImageAlt={collectionCreateinput.backgroundImageAlt as string} />
+		<GeneralInformationForm
+			bind:name={collectionCreateinput.name as string}
+			bind:description={collectionCreateinput.description as string}
+			bind:media={collectionCreateinput.backgroundImage as unknown as MediaObject | null}
+			bind:metadata={collectionCreateinput.metadata as MetadataInput[]}
+			bind:privateMetadata={collectionCreateinput.privateMetadata as MetadataInput[]}
+			bind:backgroundImageAlt={collectionCreateinput.backgroundImageAlt as string}
+		/>
 		<ProductListForm />
-		<SeoForm bind:slug={collectionCreateinput.slug as string} seo={collectionCreateinput.seo as any} name={collectionCreateinput.name as string}/>
+		<SeoForm
+			bind:slug={collectionCreateinput.slug as string}
+			seo={collectionCreateinput.seo as SeoInput}
+			name={collectionCreateinput.name as string}
+		/>
 	</div>
 
 	<div class="w-3/10">

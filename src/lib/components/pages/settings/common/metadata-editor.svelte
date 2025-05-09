@@ -42,12 +42,12 @@
 		return true;
 	};
 
-	const addData = () => {
+	const handleAddRecord = () => {
 		data = data.concat({ key: '', value: '' });
 		dataFormErrors = dataFormErrors.concat({});
 	};
 
-	const removeData = (idx: number) => {
+	const handleRemoveData = (idx: number) => {
 		data = data.filter((_, i) => i !== idx);
 		dataFormErrors = dataFormErrors.filter((_, i) => i !== idx);
 	};
@@ -83,10 +83,10 @@
 				size="xs"
 				color="red"
 				variant="light"
-				onclick={() => removeData(idx)}
+				onclick={() => handleRemoveData(idx)}
 			/>
 		</div>
 	{/each}
 
-	<Button variant="outline" size="xs" onclick={() => addData()}>Add</Button>
+	<Button variant="outline" size="xs" onclick={handleAddRecord}>Add</Button>
 </Accordion>

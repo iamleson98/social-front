@@ -14,7 +14,7 @@
 
 	type Props = {
 		name: string;
-		description?: any;
+		description?: string;
 		disabled?: boolean;
 		isCreatePage?: boolean;
 		media: MediaObject | null;
@@ -215,7 +215,7 @@
 		{/if}
 	</div>
 
-	<MetadataEditor title="Metadata" data={metadata} {disabled} />
+	<MetadataEditor title="Metadata" bind:data={metadata} {disabled} />
 
-	<MetadataEditor title="Private Metadata" data={privateMetadata} {disabled} />
+	<MetadataEditor title="Private Metadata" bind:data={privateMetadata} {disabled} />
 </div>
