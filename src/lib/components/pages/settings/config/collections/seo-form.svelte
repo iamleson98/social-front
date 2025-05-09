@@ -12,7 +12,7 @@
 		seo: SeoInput;
 	};
 
-	let { name, slug = $bindable(''), seo = $bindable() }: Props = $props();
+	let { name, slug = $bindable(), seo = $bindable() }: Props = $props();
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 
@@ -41,7 +41,7 @@
 	};
 
 	$effect(() => {
-		if (name && !slug) {
+		if (name) {
 			slug = slugify(name, { lower: true, strict: true });
 		}
 	});
@@ -58,7 +58,7 @@
 			inputDebounceOption={{ onInput: validate }}
 			onblur={validate}
 			variant={seoFormErrors.slug?.length ? 'error' : 'info'}
-			subText={seoFormErrors.slug?.length ? seoFormErrors.slug[0] : ''}
+			subText={seoFormErrors.slug?.length ? seoFormErrors.slug[0] : undefined}
 		/>
 		<Input
 			label="Title"
@@ -69,7 +69,7 @@
 			inputDebounceOption={{ onInput: validate }}
 			onblur={validate}
 			variant={seoFormErrors.title?.length ? 'error' : 'info'}
-			subText={seoFormErrors.title?.length ? seoFormErrors.title[0] : ''}
+			subText={seoFormErrors.title?.length ? seoFormErrors.title[0] : undefined}
 		/>
 		<Input
 			label="Description"

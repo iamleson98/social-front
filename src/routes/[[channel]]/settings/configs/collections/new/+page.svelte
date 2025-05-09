@@ -15,7 +15,8 @@
 	let collectionCreateinput = $state({
 		name: '',
 		description: '',
-		backgroundImage: undefined,
+		media: null,
+		backgroundImage: '',
 		metadata: [],
 		privateMetadata: [],
 		backgroundImageAlt: '',
@@ -32,7 +33,7 @@
 		<GeneralInformationForm
 			bind:name={collectionCreateinput.name as string}
 			bind:description={collectionCreateinput.description as string}
-			bind:media={collectionCreateinput.backgroundImage as unknown as MediaObject | null}
+			bind:media={collectionCreateinput.media as MediaObject | null}
 			bind:metadata={collectionCreateinput.metadata as MetadataInput[]}
 			bind:privateMetadata={collectionCreateinput.privateMetadata as MetadataInput[]}
 			bind:backgroundImageAlt={collectionCreateinput.backgroundImageAlt as string}

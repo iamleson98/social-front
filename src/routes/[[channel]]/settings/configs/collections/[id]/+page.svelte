@@ -23,7 +23,19 @@
 
 	const onUpdateClick = () => {};
 
-	let collectionUpdateinput = $state<CollectionInput>({});
+	let collectionUpdateinput = $state<CollectionInput>({
+		name: '',
+		description: '',
+		slug: '',
+		backgroundImage: null,
+		seo: {
+			title: '',
+			description: ''
+		},
+		metadata: [],
+		privateMetadata: [],
+		backgroundImageAlt: ''
+	});
 
 	const collectionDetail = operationStore<Pick<Query, 'collection'>, QueryCollectionArgs>({
 		kind: 'query',

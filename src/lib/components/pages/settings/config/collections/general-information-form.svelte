@@ -24,11 +24,11 @@
 	};
 
 	let {
-		name = $bindable(''),
+		name = $bindable(),
 		description = $bindable(),
 		disabled = $bindable(false),
 		isCreatePage = $bindable(false),
-		media = $bindable<MediaObject | null>(null),
+		media = $bindable<MediaObject>(undefined),
 		metadata = $bindable<MetadataInput[]>([]),
 		privateMetadata = $bindable<MetadataInput[]>([]),
 		backgroundImageAlt = $bindable('')
