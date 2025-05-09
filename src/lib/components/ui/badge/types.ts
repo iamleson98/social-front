@@ -1,4 +1,22 @@
-import type { SocialSize } from "../common";
+import type { IconContent } from "$lib/components/icons";
+import type { HTMLAttributes } from "svelte/elements";
+import type { ButtonVariant } from "../Button";
+import type { SocialColor, SocialSize } from "../common";
+
+export type BadgeVariant = ButtonVariant;
+
+export type BadgeProps = {
+  color?: SocialColor;
+  text: string | number;
+  onDismiss?: () => void;
+  class?: string;
+  variant?: BadgeVariant;
+  ref?: HTMLSpanElement;
+  startIcon?: IconContent;
+  /** default to `sm` */
+  size?: SocialSize;
+  rounded?: boolean;
+} & HTMLAttributes<HTMLSpanElement>;
 
 export const BADGE_SIZE_VARIANTS: Record<SocialSize, Record<'btn' | 'badge', string>> = {
   xs: {
@@ -21,4 +39,4 @@ export const BADGE_SIZE_VARIANTS: Record<SocialSize, Record<'btn' | 'badge', str
     btn: 'p-[3px]',
     badge: 'text-lg py-1 px-2'
   }
-}
+};

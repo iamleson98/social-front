@@ -9,16 +9,14 @@ import { CHANNEL_KEY } from './consts';
 import { getCookieByKey } from './cookies';
 import { DEFAULT_CHANNEL } from './channels';
 import { OrderStatus, PaymentChargeStatusEnum } from "$lib/gql/graphql";
-import type { SocialColor } from '$lib/components/ui/common';
-import type { ButtonVariant } from '$lib/components/ui';
+import type { BadgeProps } from '$lib/components/ui/badge/types';
 
 
 export const editorJsParser = editorJsToHtml();
 
 let _counter = 0;
 export const randomID = () => {
-	_counter++;
-	return _counter.toString(36);
+	return (++_counter).toString(36);
 };
 
 /**
@@ -33,7 +31,7 @@ export function randomString(length: number = 10) {
 		result += characters[randomIndex];
 	}
 	return result;
-}
+};
 
 /**
  * @description Parses the raw product description and returns an array of strings.
@@ -90,7 +88,7 @@ export function constructPaginationParams<T extends PaginationOptions>({
 		pagination.last = last;
 	}
 	return pagination;
-}
+};
 
 export const formatMoney = (currency: string, startAmount: number, endAmount?: number) => {
 	const formatter = new Intl.NumberFormat('en-US', {
@@ -133,6 +131,7 @@ export const getPrefersReducedMotion = () => {
  * If given `result` has an error, it will show a toast message with the error message.
  * @param result GraphQl query, operation results
  * @param apiErrorKey Some Graphql mutations return errors in result payload (errors field)
+ * @param successMessage Optional success toast message. If you provide this argument, you don't have to send success toast yourself
  * @returns `true` if there is an error, `false` otherwise.
  */
 export const preHandleErrorOnGraphqlResult = <T, K extends AnyVariables>(
@@ -145,12 +144,12 @@ export const preHandleErrorOnGraphqlResult = <T, K extends AnyVariables>(
 			message: result.error.message,
 			variant: 'error'
 		});
-		return true
+		return true;
 	}
 
 	if (apiErrorKey && result.data) {
 		const errors = (result.data as Record<string, Record<string, unknown>>)?.[apiErrorKey]?.errors;
-		if (!errors) console.warn('No errors field. You MUST check your GraphQL query.');
+		if (!errors) throw new Error('No errors field. You MUST check your GraphQL query.');
 
 		if (errors && Array.isArray(errors) && errors.length > 0) {
 			toastStore.send({
@@ -229,7 +228,7 @@ export const parseUrlSearchParams = (url: URL) => {
 
 export const clamp = (value: number, min: number, max: number): number => {
 	return Math.min(Math.max(value, min), max);
-}
+};
 
 export const classNames = (classes: Record<string, boolean>): string => {
 	let result = '';
@@ -241,7 +240,7 @@ export const classNames = (classes: Record<string, boolean>): string => {
 	}
 
 	return result.trim();
-}
+};
 
 /**
  * Builds the link for the home page.
@@ -300,10 +299,7 @@ export const inferRowsPerPage = (paging: PaginationOptions) => {
 	return undefined;
 };
 
-export type BadgeAttr = {
-	color: SocialColor;
-	variant: ButtonVariant;
-};
+export type BadgeAttr = Pick<BadgeProps, 'color' | 'variant'>;
 
 export const paymentStatusBadgeClass = (status: PaymentChargeStatusEnum): BadgeAttr => {
 	// NOTE: Those badge classes are found on: https://v5.daisyui.com/components/badge/

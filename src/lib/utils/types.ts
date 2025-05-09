@@ -20,7 +20,7 @@ export const supportTicketStatusToBadgeClass = (status: SupportTicketStatus) => 
     default:
       return 'badge-neutral badge-dash';
   }
-}
+};
 
 export const supportTicketTagToBadgeClass = (tag: SupportTicketTag) => {
   switch (tag) {
@@ -31,4 +31,4 @@ export const supportTicketTagToBadgeClass = (tag: SupportTicketTag) => {
     default:
       return 'badge-neutral badge-dash';
   }
-}
+};
