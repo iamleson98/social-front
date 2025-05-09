@@ -108,7 +108,7 @@
 		"libphonenumber-js": "^1.12.7",
 		"pg": "^8.15.6",
 		"slugify": "^1.6.6",
-		"typeorm": "^0.3.22",
+		"typeorm": "^0.3.23",
 		"validator": "^13.15.0",
 		"wonka": "^6.3.5",
 		"xss": "^1.0.15",

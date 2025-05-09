@@ -31,7 +31,7 @@
 		sortMultiple = false,
 		defaultSortState = {} as SortState<K>,
 		disabled = false,
-		supportDragDrop = false
+		onDragEnd
 	}: TableProps<T, K> = $props();
 
 	if (columns.some((col) => col.sortable && !col.key)) {

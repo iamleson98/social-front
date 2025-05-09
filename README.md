@@ -49,11 +49,11 @@ Below is a brief on project files/folder structure
 - `importing` - import `$lib/...` for library, custom component import
 - Consider to export functions, consts, in the `index.ts` file of folder. This helps reduce typing efforts when importing.
 - use tabs with 2 white spaces for indentation, both `js/html/css`
-- Always try to find component style class in daisyui first, if not avalable, use tailwind css classes if possible. If not available also, create your own css, classes in the `<style>` section. This helps the project code smaller and increase performance.
+- Always try to find component style class in daisyui first, if not available, use tailwind css classes if possible. If not available also, create your own css, classes in the `<style>` section. This helps the project code smaller and increase performance.
 - Function names MUST be in `camelCase` only.
 - Constant names is RECOMMENDED to be in `UPPER_SNAKE_CASE`.
 - Always apply the rule `Don't repeat yourself (DRY)` by making reusable code, when possible.
-- Note: @iamleson98 is responsible for those conventions, make sure to follow them, otherwise there won't code merge, and of couse critisim will happens.
+- Note: @iamleson98 is responsible for those conventions, make sure to follow them, otherwise there won't be code merge, and of couse critisim will happens.
 
 ## Dependencies Management
 
@@ -95,15 +95,11 @@ git rebase master
 # 6) commit code. (NOTE: if git does not allow to push, add flag -f to FORCE push)
 # E.g
 git push -u origin <your_branch_name> -f
-# 70 Create new pull request
+# 7) Create new pull request
 ```
 
 ### NOTE: Never merge code yourself before being accepted by (@iamleson98).
-If I find out you push without ask for review from me, I will deduct your salary
 
-- 1st time: 100k
-- 2nd time: 200k
-- >= 3 times: 500k
 
 ## Contributing
 

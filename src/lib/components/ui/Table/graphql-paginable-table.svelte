@@ -160,15 +160,12 @@
 		if (Math.abs(dragIdx - dropIdx) === 1 || dragEffectType === 'swap-position') {
 			newItems[dragIdx] = newItems[dropIdx];
 			newItems[dropIdx] = dragItem;
-
-			items = newItems;
 		} else if (dragEffectType === 'move-position') {
 			const [dragItem] = newItems.splice(dragIdx, 1);
 			newItems.splice(dropIdx, 0, dragItem);
-
-			items = newItems;
 		}
 
+		items = newItems;
 		onDragEnd?.(dragIdx, dragItem, dropIdx, dropItem);
 	};
 </script>

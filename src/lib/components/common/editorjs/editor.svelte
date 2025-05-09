@@ -125,7 +125,7 @@
 			placeholder,
 			data: defaultValue,
 
-			onChange(api, event) {
+			onChange(api, _event) {
 				api.saver.save().then(onchange);
 			}
 		});
@@ -137,9 +137,7 @@
 			});
 	});
 
-	onMount(() => {
-		return () => editor?.destroy();
-	});
+	onMount(() => editor?.destroy);
 </script>
 
 <div id="editorjs" bind:this={editorElem}>
