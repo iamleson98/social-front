@@ -55,7 +55,7 @@
 
 <Accordion header={title} open={false}>
 	{#each data as item, idx (idx)}
-		<div class="flex gap-5 items-center mb-3">
+		<div class="flex gap-5 items-start mb-3">
 			<Input
 				placeholder="Key"
 				bind:value={item.key}
@@ -83,6 +83,8 @@
 				size="xs"
 				color="red"
 				variant="light"
+				class="tooltip tooltip-top"
+				data-tip="Remove"
 				onclick={() => handleRemoveData(idx)}
 			/>
 		</div>

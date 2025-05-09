@@ -47,8 +47,8 @@
 	});
 </script>
 
-<div class="bg-white rounded-lg border w-full border-gray-200">
-	<h2 class="text-lg font-semibold p-3">Search engine preview</h2>
+<div class="bg-white rounded-lg border w-full border-gray-200 py-3">
+	<h2 class="text-lg font-semibold px-3">Search engine preview</h2>
 	<Accordion header="Search engine preview" open={false}>
 		<Input
 			label="Slug"
@@ -80,7 +80,7 @@
 			inputDebounceOption={{ onInput: validate }}
 			onblur={validate}
 			variant={seoFormErrors.description?.length ? 'error' : 'info'}
-			subText={seoFormErrors.description?.length ? seoFormErrors.description[0] : ''}
+			subText={seoFormErrors.description?.length ? seoFormErrors.description[0] : undefined}
 		/>
 	</Accordion>
 </div>
