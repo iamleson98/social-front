@@ -6,7 +6,6 @@
 	import SeoForm from '$lib/components/pages/settings/config/collections/seo-form.svelte';
 	import { type CollectionCreateInput, type MetadataInput, type SeoInput } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { type MediaObject } from '$lib/components/pages/settings/products/new/utils';
 
 	const onDeleteClick = () => {};
 
