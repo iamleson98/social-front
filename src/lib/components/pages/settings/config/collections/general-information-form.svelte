@@ -27,7 +27,7 @@
 		name = $bindable(),
 		description = $bindable(),
 		disabled = $bindable(false),
-		isCreatePage = false,
+		// isCreatePage = false,
 		metadata = $bindable<MetadataInput[]>([]),
 		privateMetadata = $bindable<MetadataInput[]>([]),
 		backgroundImageAlt = $bindable(''),
@@ -191,7 +191,6 @@
 				</div>
 			{/if}
 		</div>
-		<!-- <ErrorMsg error={error ? $tranFunc('error.thereIsError') : undefined} /> -->
 	</div>
 
 	<MetadataEditor title="Metadata" bind:data={metadata} {disabled} />
