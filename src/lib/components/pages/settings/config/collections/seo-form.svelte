@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import { Accordion } from '$lib/components/ui/Accordion';
-	import { Input } from '$lib/components/ui/Input';
+	import { Input, TextArea } from '$lib/components/ui/Input';
 	import { z, object, string } from 'zod';
 	import type { SeoInput } from '$lib/gql/graphql';
 	import slugify from 'slugify';
@@ -10,16 +10,30 @@
 		name: string;
 		slug?: string;
 		seo: SeoInput;
+		isCreatePage?: boolean;
+		disabled?: boolean;
 	};
 
-	let { name, slug = $bindable(), seo = $bindable() }: Props = $props();
+	let {
+		name,
+		slug = $bindable(),
+		seo = $bindable(),
+		isCreatePage = false,
+		disabled = false
+	}: Props = $props();
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
+	const DESCRIPTION_MAX_LENGTH = 300;
 
 	const seoSchema = object({
 		slug: string().nonempty(REQUIRED_ERROR),
 		title: string().nonempty(REQUIRED_ERROR),
-		description: string().nonempty(REQUIRED_ERROR)
+		description: string()
+			.nonempty(REQUIRED_ERROR)
+			.max(
+				DESCRIPTION_MAX_LENGTH,
+				`Description must be at most ${DESCRIPTION_MAX_LENGTH} characters`
+			)
 	});
 
 	type SeoSchema = z.infer<typeof seoSchema>;
@@ -41,17 +55,19 @@
 	};
 
 	$effect(() => {
-		if (name) {
+		if (name && isCreatePage) {
+			// we only generate slug when it's create page
 			slug = slugify(name, { lower: true, strict: true });
 		}
 	});
 </script>
 
-<div class="bg-white rounded-lg border w-full border-gray-200">
-	<h2 class="text-lg font-semibold p-3">Search engine preview</h2>
+<div class="bg-white rounded-lg border w-full border-gray-200 p-3">
+	<h2 class="text-lg font-semibold mb-3">Search engine preview</h2>
 	<Accordion header="Search engine preview" open={false}>
 		<Input
 			label="Slug"
+			{disabled}
 			bind:value={slug}
 			required
 			class="mb-2"
@@ -66,21 +82,25 @@
 			placeholder="Search Engine Title"
 			class="mb-2"
 			required
+			{disabled}
 			inputDebounceOption={{ onInput: validate }}
 			onblur={validate}
 			variant={seoFormErrors.title?.length ? 'error' : 'info'}
 			subText={seoFormErrors.title?.length ? seoFormErrors.title[0] : undefined}
 		/>
-		<Input
-			label="Description"
+		<TextArea
 			bind:value={seo.description}
 			placeholder="Search Engine Description"
-			class="mb-2"
+			label="Description"
 			required
+			{disabled}
+			inputClass="min-h-20"
 			inputDebounceOption={{ onInput: validate }}
 			onblur={validate}
 			variant={seoFormErrors.description?.length ? 'error' : 'info'}
-			subText={seoFormErrors.description?.length ? seoFormErrors.description[0] : ''}
+			subText={seoFormErrors.description?.length
+				? seoFormErrors.description[0]
+				: `${seo?.description?.length || 0} / ${DESCRIPTION_MAX_LENGTH}`}
 		/>
 	</Accordion>
 </div>

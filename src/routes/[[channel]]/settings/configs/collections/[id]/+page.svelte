@@ -86,7 +86,6 @@
 	<div class="flex gap-2 flex-row">
 		<div class="w-7/10 flex flex-col gap-2">
 			<GeneralInformationForm
-				isCreatePage={false}
 				bind:name={collectionUpdateinput.name as string}
 				bind:description={collectionUpdateinput.description as string}
 				bind:media={collectionUpdateinput.backgroundImage as MediaObject | null}

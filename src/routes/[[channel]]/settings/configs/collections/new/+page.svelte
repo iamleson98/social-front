@@ -4,7 +4,7 @@
 	import GeneralInformationForm from '$lib/components/pages/settings/config/collections/general-information-form.svelte';
 	import ProductListForm from '$lib/components/pages/settings/config/collections/product-list-form.svelte';
 	import SeoForm from '$lib/components/pages/settings/config/collections/seo-form.svelte';
-	import { type MetadataInput, type SeoInput } from '$lib/gql/graphql';
+	import { type CollectionCreateInput, type MetadataInput, type SeoInput } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { type MediaObject } from '$lib/components/pages/settings/products/new/utils';
 
@@ -12,7 +12,7 @@
 
 	const onAddClick = () => {};
 
-	let collectionCreateinput = $state({
+	let collectionCreateinput = $state<CollectionCreateInput>({
 		name: '',
 		description: '',
 		media: null,
@@ -37,6 +37,7 @@
 			bind:metadata={collectionCreateinput.metadata as MetadataInput[]}
 			bind:privateMetadata={collectionCreateinput.privateMetadata as MetadataInput[]}
 			bind:backgroundImageAlt={collectionCreateinput.backgroundImageAlt as string}
+			isCreatePage
 		/>
 		<ProductListForm />
 		<SeoForm
