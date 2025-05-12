@@ -16,6 +16,9 @@
 		requestPolicy?: RequestPolicy;
 		/** for example the products query support pagination, then you must pass 'products' as resultKey */
 		resultKey: keyof Query;
+		/** a bindable prop, it acts as a lock to help you keep control of when to re-execute the graphql query, from parent component.
+		 * Please note that your query will be paused by default, so you should set this prop to true when you want to re-execute the query.
+		 */
 		forceReExecuteGraphqlQuery: boolean;
 
 		/**
@@ -65,7 +68,7 @@
 		query,
 		variables,
 		requestPolicy,
-		pause: true // default to pause
+		pause: true // to prevent unnecessary network call, this operation will be paused by default
 	});
 
 	let sortState = $state.raw<SortState<K>>({} as SortState<K>);

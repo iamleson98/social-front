@@ -16,6 +16,14 @@
 
 	let { options, header, onClose, class: className = '', filters, onApply }: Props = $props();
 
+	const FILTER_MAP = options.reduce(
+		(acc, cur) => {
+			acc[cur.key] = cur;
+			return acc;
+		},
+		{} as Record<keyof T, FilterProps<T>>
+	);
+
 	let activeFilters = $state<FilterConditions<T>>(new SvelteMap(filters));
 
 	let availableFilters = $derived.by(() => {
@@ -58,6 +66,14 @@
 
 		if (newKey) {
 			activeFilters.set(newKey, {});
+
+			// check if this filter requires another filter
+			if (FILTER_MAP[newKey].mustPairWith) {
+				const { mustPairWith } = FILTER_MAP[newKey];
+				if (!activeFilters.has(mustPairWith) && FILTER_MAP[mustPairWith]) {
+					activeFilters.set(mustPairWith, {});
+				}
+			}
 		}
 		activeFilters.delete(oldKey);
 	};

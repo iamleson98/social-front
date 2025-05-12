@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, type Snippet } from 'svelte';
+	import { onMount, tick, type Snippet } from 'svelte';
 	import { computePosition, offset, shift, flip, type Placement } from '@floating-ui/dom';
 	import { clickOutside } from '$lib/actions/click-outside';
 	import { fly, type FlyParams } from 'svelte/transition';
@@ -57,6 +57,7 @@
 
 	const handleTriggerClick = async () => {
 		open = true;
+		await tick();
 		await computeStyle();
 	};
 
@@ -67,7 +68,11 @@
 </script>
 
 <div bind:this={triggerRef} class="relative inline-block">
-	{@render trigger({ onclick: handleTriggerClick, onfocus: handleTriggerClick })}
+	{@render trigger({
+		onclick: handleTriggerClick,
+		onfocus: handleTriggerClick,
+		onclose: () => (open = false)
+	})}
 	<div class="absolute z-100 min-w-full" bind:this={menuElemRef}>
 		{#if open}
 			<div

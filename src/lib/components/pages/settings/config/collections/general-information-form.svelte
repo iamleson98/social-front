@@ -4,67 +4,52 @@
 	import { PhotoUp, Trash } from '$lib/components/icons';
 	import ErrorMsg from '$lib/components/pages/settings/products/new/error-msg.svelte';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
-
 	import type { MediaObject } from '$lib/components/pages/settings/products/new/utils';
 	import type { MetadataInput } from '$lib/gql/graphql';
 	import { IMAGE_EXTENSION_REGEX } from '$lib/utils/consts';
-	import { object, string, number, z } from 'zod';
+	import { object, string, z } from 'zod';
 	import MetadataEditor from '../../common/metadata-editor.svelte';
 	import { IconButton } from '$lib/components/ui/Button';
 
 	type Props = {
 		name: string;
-		description?: string;
+		description?: any;
 		disabled?: boolean;
-		isCreatePage?: boolean;
-		media: MediaObject | null;
+		media?: MediaObject;
 		metadata: MetadataInput[];
 		privateMetadata: MetadataInput[];
-		backgroundImageAlt?: string;
+		ok?: boolean;
 	};
 
 	let {
 		name = $bindable(),
 		description = $bindable(),
 		disabled,
-		isCreatePage,
-		media = $bindable<MediaObject>(undefined),
+		media = $bindable<MediaObject | undefined>(),
 		metadata = $bindable<MetadataInput[]>([]),
 		privateMetadata = $bindable<MetadataInput[]>([]),
-		backgroundImageAlt = $bindable('')
+		ok = $bindable()
 	}: Props = $props();
-
-	let descriptionError = $state<string>();
-	let collectionFormErrors = $state.raw<Partial<Record<keyof CollectionSchema, string[]>>>({});
-	let error = $derived.by(
-		() =>
-			media &&
-			((!media.alt?.trim() && !backgroundImageAlt?.trim()) || (isCreatePage && !media.alt?.trim()))
-	);
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 
-	const collectionSchema = object({
-		name: string().nonempty(REQUIRED_ERROR),
-		description: string().nonempty(REQUIRED_ERROR),
-		media: object({
-			alt: string().nonempty(REQUIRED_ERROR),
-			width: number(),
-			height: number(),
-			file: object({
-				name: string().nonempty(REQUIRED_ERROR),
-				size: number(),
-				type: string().nonempty(REQUIRED_ERROR)
-			})
-		})
+	let descriptionError = $derived.by(() => {
+		if (!description?.blocks?.length) return REQUIRED_ERROR;
+		return undefined;
+	});
+	let collectionFormErrors = $state.raw<Partial<Record<keyof CollectionSchema, string[]>>>({});
+
+	$effect(() => {
+		ok = !Object.keys(collectionFormErrors).length && !descriptionError;
 	});
 
+	const collectionSchema = object({
+		name: string().nonempty(REQUIRED_ERROR),
+		media: object({
+			alt: string().nonempty(REQUIRED_ERROR)
+		}).nullable()
+	});
 	type CollectionSchema = z.infer<typeof collectionSchema>;
-
-	const handleChangeDescription = (data: any) => {
-		description = data;
-		descriptionError = !data?.blocks?.length ? $tranFunc('helpText.fieldRequired') : undefined;
-	};
 
 	const handleFileSelect = async (fileList: FileList) => {
 		if (!fileList.length || media) return;
@@ -72,34 +57,30 @@
 		const file = fileList[0];
 		const url = URL.createObjectURL(file);
 		const alt = file.name.replace(IMAGE_EXTENSION_REGEX, '');
-
-		await new Promise<void>((resolve) => {
-			const img = new Image();
-			img.onload = () => {
-				media = { file, url, alt, width: img.width, height: img.height };
-				resolve();
+		const img = new Image();
+		img.src = url;
+		img.onload = () => {
+			media = {
+				file,
+				url,
+				alt,
+				width: img.width,
+				height: img.height
 			};
-			img.src = url;
-		});
+		};
 	};
 
 	const handleDeleteImage = () => {
 		if (media) {
 			URL.revokeObjectURL(media.url);
-			media = null;
+			media = undefined;
 		}
-	};
-
-	const getDescriptionText = (data: any): string => {
-		return data?.blocks?.length ? JSON.stringify(data) : '';
 	};
 
 	const validate = () => {
 		const result = collectionSchema.safeParse({
 			name,
-			description: getDescriptionText(description),
-			media,
-			backgroundImageAlt
+			media
 		});
 
 		if (!result.success) {
@@ -128,9 +109,9 @@
 	<div>
 		<Label required requiredAtPos="end" label="Collection description" />
 		<div
-			class="rounded-lg border px-3 {!collectionFormErrors.description?.length && !descriptionError
-				? 'border-gray-200'
-				: 'bg-red-50 border-red-200'}"
+			class="rounded-lg border px-3 {descriptionError
+				? 'border-red-200 bg-red-50'
+				: 'border-gray-200 bg-gray-50'}"
 		>
 			<EditorJSComponent
 				header={{ placeholder: 'Heading 2', levels: [2, 3, 4], defaultLevel: 2 }}
@@ -138,7 +119,7 @@
 				list={{ defaultStyle: 'unordered', maxLevel: 3, inlineToolbar: true }}
 				embed={{ services: { youtube: true } }}
 				quote={{ inlineToolbar: true }}
-				onchange={handleChangeDescription}
+				onchange={(data) => (description = data)}
 				placeholder={$tranFunc('placeholders.valuePlaceholder')}
 				defaultValue={description}
 			/>
@@ -150,15 +131,16 @@
 	<div>
 		<Label label="Collection Image" required requiredAtPos="end" />
 		<div
-			class="rounded-lg border flex gap-1 flex-wrap {error
+			class="rounded-lg border flex gap-1 flex-wrap p-3 {collectionFormErrors.media?.length
 				? 'border-red-200 bg-red-50'
 				: 'border-gray-200 bg-gray-50'}"
 		>
 			{#if media}
+				{@const outerClass = collectionFormErrors.media?.length
+					? 'ring-2 ring-red-500'
+					: 'ring-1 ring-gray-200'}
 				<div
-					class="h-50 w-50 relative rounded-md bg-white bg-cover bg-center bg-no-repeat {media.alt?.trim()
-						? 'ring-1 ring-gray-200'
-						: 'ring-2 ring-red-500'}"
+					class="h-50 w-50 relative rounded-md bg-white bg-cover bg-center bg-no-repeat {outerClass}"
 					style="background-image: url('{media.url}')"
 				>
 					<div
@@ -170,11 +152,15 @@
 								size="xs"
 								placeholder="Enter alt"
 								bind:value={media.alt}
-								variant={!media.alt?.trim() ? 'error' : 'info'}
-								subText={!media.alt?.trim() ? $tranFunc('helpText.fieldRequired') : undefined}
+								onblur={validate}
+								inputDebounceOption={{ onInput: validate }}
+								variant={collectionFormErrors.media?.length ? 'error' : 'info'}
+								subText={collectionFormErrors.media?.length
+									? collectionFormErrors.media[0]
+									: undefined}
 							/>
 						</div>
-						{#if media.width && media.height}
+						{#if typeof media.width === 'number' && typeof media.height === 'number'}
 							<div class="text-gray-700 flex items-center text-xs">
 								<span class="font-semibold w-1/4">W x H:</span>
 								<span>{media.width} x {media.height}</span>
@@ -208,13 +194,11 @@
 				</div>
 			{/if}
 		</div>
-		<ErrorMsg error={error ? $tranFunc('error.thereIsError') : undefined} />
-		{#if !error && media}
-			<div class="text-xs text-right">1/1</div>
-		{/if}
+		<ErrorMsg
+			error={collectionFormErrors.media?.length ? collectionFormErrors.media[0] : undefined}
+		/>
 	</div>
 
 	<MetadataEditor title="Metadata" bind:data={metadata} {disabled} />
-
 	<MetadataEditor title="Private Metadata" bind:data={privateMetadata} {disabled} />
 </div>

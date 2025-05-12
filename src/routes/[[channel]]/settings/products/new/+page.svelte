@@ -217,9 +217,6 @@
 
 
 <div class="m-auto rounded-lg bg-white w-full p-5 text-gray-600 border border-gray-200">
-	<!-- <div class="text-right">
-		<span class="text-xs">{NOW.toDateString()}</span>
-	</div> -->
 	<ProductName bind:name={productCreateInput.name} bind:ok={productInputError.name} {loading} />
 	<ProductType
 		bind:value={productCreateInput.productType}

@@ -30,7 +30,6 @@ query GetOrdersOfUser($first: Int, $after: String, $last: Int, $before: String) 
         startCursor
         endCursor
       }
-      totalCount
     }
   }
 }

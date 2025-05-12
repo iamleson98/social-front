@@ -10,6 +10,10 @@ export type FilterProps<T> = {
     operator: FilterOperator;
     component: Snippet<[FilterComponentType]>;
   }[];
+  /**
+   * In case this filter must be used with another filter
+   */
+  mustPairWith?: keyof T;
 };
 
 export type FilterComponentType = {
@@ -17,12 +21,6 @@ export type FilterComponentType = {
   initialValue?: FilterItemValue;
   placeholder?: string;
 }
-
-export type SingleFilter<T> = {
-  key: keyof T;
-  operator: FilterOperator;
-  value?: FilterItemValue;
-};
 
 export type FilterConditions<T> = SvelteMap<keyof T, Partial<{ operator: FilterOperator; value: FilterItemValue }>>;
 

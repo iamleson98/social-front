@@ -22,6 +22,7 @@
 		Query,
 		QueryProductsArgs
 	} from '$lib/gql/graphql';
+	import { AppRoute } from '$lib/utils';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import ProductAssignModal from './product-assign-modal.svelte';
 
@@ -41,6 +42,10 @@
 	let loading = $state(false);
 
 	const PRODUCT_COLUMNS: TableColumnProps<Product, ProductOrderField>[] = [
+		{
+			title: 'Pic',
+			child: picture
+		},
 		{
 			title: 'Name',
 			child: name
@@ -140,16 +145,19 @@
 		color="red"
 		onclick={() => handleAssignProducts([], [item.id])}
 		disabled={loading}
+		data-interactive
 	/>
 {/snippet}
 
-{#snippet name({ item }: { item: Product })}
-	<div class="flex items-center gap-2">
-		<div class="rounded-full border border-gray-200 w-8 h-8 overflow-hidden">
-			<img src={item.thumbnail?.url} alt={item.thumbnail?.alt} class="w-full h-full" />
-		</div>
-		<div>{item.name}</div>
+{#snippet picture({ item }: { item: Product })}
+	<div class="rounded-lg border border-gray-200 w-9 h-9 overflow-hidden">
+		<img src={item.thumbnail?.url} alt={item.thumbnail?.alt} class="w-full h-full" />
 	</div>
+{/snippet}
+
+{#snippet name({ item }: { item: Product })}
+	<a href={AppRoute.PRODUCT_DETAILS(item.slug)} aria-label={item.name} data-interactive>{item.name}</a
+	>
 {/snippet}
 
 {#snippet category({ item }: { item: Product })}
@@ -162,13 +170,14 @@
 			channel: item.channel.name,
 			published: item.isPublished
 		})) || []}
-	{#snippet trigger({ onclick }: DropdownTriggerInterface)}
+	{#snippet trigger({ onclick, onclose }: DropdownTriggerInterface)}
 		<Badge
 			text={`${channels.length} channels`}
 			color={channels.length ? 'green' : 'orange'}
 			variant={channels.length ? 'filled' : 'light'}
 			onmouseenter={onclick}
 			ontouchstart={onclick}
+			onmouseleave={onclose}
 		/>
 	{/snippet}
 	<Popover {trigger} placement="left" noReCalculateOnWindowResize>

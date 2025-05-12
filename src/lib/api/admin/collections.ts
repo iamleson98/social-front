@@ -16,6 +16,7 @@ query CollectionProducts($id: ID!, $first: Int, $last: Int, $before: String, $af
         node {
           id
           name
+          slug
           thumbnail(size: 100, format: WEBP) {
             url
             alt

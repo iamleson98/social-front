@@ -117,7 +117,7 @@
 							disabled={loading}
 						/>
 					</div>
-					{#if width && height}
+					{#if typeof width === 'number' && typeof height === 'number'}
 						<div class="text-gray-700 flex items-center text-xs">
 							<span class="font-semibold w-1/4">W x H:</span>
 							<span>{width} x {height}</span>

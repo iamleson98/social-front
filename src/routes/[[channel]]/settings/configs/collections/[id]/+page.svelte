@@ -14,7 +14,6 @@
 		CollectionChannelListingUpdateInput,
 		CollectionInput,
 		MetadataInput,
-		PublishableChannelListingInput,
 		Query,
 		QueryCollectionArgs,
 		SeoInput
@@ -29,16 +28,16 @@
 		name: '',
 		description: '',
 		slug: '',
-		backgroundImage: null,
 		seo: {
 			title: '',
 			description: ''
 		},
 		metadata: [],
-		privateMetadata: [],
-		backgroundImageAlt: ''
+		privateMetadata: []
 	});
-
+	let media = $state<MediaObject>();
+	let generalFormOk = $state(false);
+	let seoFormOk = $state(false);
 	let collectionChannelListingUpdateInput = $state<CollectionChannelListingUpdateInput>({
 		addChannels: [],
 		removeChannels: []
@@ -69,21 +68,24 @@
 				name,
 				slug,
 				description: description ? JSON.parse(description) : undefined,
-				backgroundImage,
 				seo: {
 					title: seoTitle,
 					description: seoDescription
 				},
 				metadata,
-				privateMetadata,
-				backgroundImageAlt: backgroundImage?.alt
+				privateMetadata
 			};
+			if (backgroundImage)
+				media = {
+					alt: backgroundImage.alt || '',
+					url: backgroundImage.url
+				};
 
 			if (channelListings?.length) {
 				collectionChannelListingUpdateInput.addChannels = channelListings.map((item) => ({
 					channelId: item.channel.id,
 					isPublished: item.isPublished,
-					publishedAt: item.publishedAt,
+					publishedAt: item.publishedAt
 				}));
 			}
 		}
@@ -102,20 +104,19 @@
 	<div class="flex gap-2 flex-row">
 		<div class="w-7/10 flex flex-col gap-2">
 			<GeneralInformationForm
-				isCreatePage={false}
 				bind:name={collectionUpdateinput.name as string}
 				bind:description={collectionUpdateinput.description as string}
-				bind:media={collectionUpdateinput.backgroundImage as MediaObject | null}
 				bind:metadata={collectionUpdateinput.metadata as MetadataInput[]}
 				bind:privateMetadata={collectionUpdateinput.privateMetadata as MetadataInput[]}
-				bind:backgroundImageAlt={collectionUpdateinput.backgroundImageAlt as string}
+				bind:media
+				bind:ok={generalFormOk}
 			/>
 			<ProductListForm collectionID={page.params.id} />
 			<SeoForm
 				bind:slug={collectionUpdateinput.slug as string}
 				bind:seo={collectionUpdateinput.seo as SeoInput}
+				bind:ok={seoFormOk}
 				name={collectionUpdateinput.name as string}
-				isCreatePage={false}
 			/>
 		</div>
 

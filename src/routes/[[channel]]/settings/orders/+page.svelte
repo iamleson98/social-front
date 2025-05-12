@@ -24,7 +24,7 @@
 	let filterVariables = $state<PaginationOptions>({
 		first: BATCH_LOAD
 	});
-	let forceReExecuteGraphqlQuery = $state<boolean>(false);
+	let forceReExecuteGraphqlQuery = $state<boolean>(true);
 
 	const ORDER_TABLE_COLUMNS: TableColumnProps<Order, any>[] = $derived([
 		{

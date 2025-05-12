@@ -1,6 +1,6 @@
 <script lang="ts" generics="T extends Record<string, unknown>, K extends string">
 	import { tranFunc } from '$i18n';
-	import { ArrowsMove, ChevronLeft, ChevronRight, Icon } from '$lib/components/icons';
+	import { ChevronLeft, ChevronRight, GripVertical, Icon } from '$lib/components/icons';
 	import { OrderDirection } from '$lib/gql/graphql';
 	import { IconButton } from '../Button';
 	import Button from '../Button/Button.svelte';
@@ -89,7 +89,7 @@
 	<thead>
 		<tr>
 			{#if onDragEnd}
-				<th class="w-8"></th>
+				<th></th>
 			{/if}
 			{#each columns as column, idx (idx)}
 				{@const classes = column?.sortable
@@ -135,14 +135,19 @@
 						container: idx.toString(),
 						callbacks: { onDrop: handleDrop }
 					}}
+					use:draggable={{
+						container: idx.toString(),
+						dragData: idx,
+						interactive: ['[data-interactive]'] // within cell definition, add `data-interactive` to the element if you want to exclude it from draggable
+					}}
 					animate:flip={{ duration: 200 }}
 					in:fade={{ duration: 150 }}
 					out:fade={{ duration: 150 }}
 					class="svelte-dnd-touch-feedback"
 				>
-					<td>
-						<div use:draggable={{ container: idx.toString(), dragData: idx }}>
-							<IconButton icon={ArrowsMove} size="xs" color="gray" variant="light" {disabled} />
+					<td class="px-1! py-2!">
+						<div>
+							<IconButton icon={GripVertical} size="xs" color="gray" variant="light" />
 						</div>
 					</td>
 					{@render customTr(item, columns)}
@@ -160,7 +165,7 @@
 
 {#snippet customTr(item: T, columns: TableColumnProps<T, K>[])}
 	{#each columns as column, idx (idx)}
-		<td>
+		<td class="px-1! py-2!">
 			{@render column.child({ item })}
 		</td>
 	{/each}

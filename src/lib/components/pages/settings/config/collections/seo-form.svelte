@@ -12,9 +12,17 @@
 		seo: SeoInput;
 		isCreatePage?: boolean;
 		disabled?: boolean;
+		ok: boolean;
 	};
 
-	let { name, slug = $bindable(), seo = $bindable(), isCreatePage, disabled}: Props = $props();
+	let {
+		name,
+		slug = $bindable(),
+		seo = $bindable(),
+		isCreatePage = false,
+		disabled,
+		ok = $bindable()
+	}: Props = $props();
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 	const DESCRIPTION_MAX_LENGTH = 300;
@@ -22,12 +30,21 @@
 	const seoSchema = object({
 		slug: string().nonempty(REQUIRED_ERROR),
 		title: string().nonempty(REQUIRED_ERROR),
-		description: string().nonempty(REQUIRED_ERROR).max(DESCRIPTION_MAX_LENGTH, 'Description must be at most 300 characters long')
+		description: string()
+			.nonempty(REQUIRED_ERROR)
+			.max(
+				DESCRIPTION_MAX_LENGTH,
+				`Description must be at most ${DESCRIPTION_MAX_LENGTH} characters long`
+			)
 	});
 
 	type SeoSchema = z.infer<typeof seoSchema>;
 
 	let seoFormErrors = $state.raw<Partial<Record<keyof SeoSchema, string[]>>>({});
+
+	$effect(() => {
+		ok = !Object.keys(seoFormErrors).length;
+	});
 
 	const validate = () => {
 		const parseResult = seoSchema.safeParse({
@@ -50,9 +67,9 @@
 	});
 </script>
 
-<div class="bg-white rounded-lg border w-full border-gray-200 p-3 pb-6 flex flex-col gap-3">
-	<h2 class="text-lg font-semibold">Search engine preview</h2>
-	<Accordion header="Search engine preview" open={false}>
+<div class="bg-white rounded-lg border w-full border-gray-200 p-3">
+	<div class="font-semibold text-gray-700">Search engine preview</div>
+	<Accordion header="Search engine preview" class="mt-2">
 		<Input
 			label="Slug"
 			bind:value={slug}

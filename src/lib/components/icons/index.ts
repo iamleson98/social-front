@@ -101,6 +101,7 @@ export {
   TablerDimension as Dimension,
   TablerArrowsMove as ArrowsMove,
   TablerArrowsMoveVertical as ArrowsMoveVertical,
+  TablerGripVertical as GripVertical,
 } from './consts';
 
 export { default as Icon } from './icon.svelte';

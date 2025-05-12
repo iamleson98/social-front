@@ -14,7 +14,7 @@ export type TableProps<T extends Record<string, unknown>, K extends string> = {
   pagination?: PageInfo;
   onNextPagelick?: (afterCursor: string) => void;
   onPreviousPagelick?: (beforeCursor: string) => void;
-  onChangeRowsPerPage?: (no: RowOptions) => void;
+  onChangeRowsPerPage?: (num: RowOptions) => void;
   onSortChange?: (sort: SortState<K>) => void;
   rowsPerPage?: RowOptions;
   /**

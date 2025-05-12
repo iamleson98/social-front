@@ -89,10 +89,11 @@
 					color="red"
 					variant="light"
 					onclick={() => handleRemoveData(idx)}
+					{disabled}
 				/>
 			</div>
 		</div>
 	{/each}
 
-	<Button variant="outline" size="xs" onclick={handleAddRecord}>Add</Button>
+	<Button variant="outline" size="xs" onclick={handleAddRecord} {disabled}>Add</Button>
 </Accordion>
