@@ -43,6 +43,7 @@
 			bind:slug={collectionCreateinput.slug as string}
 			seo={collectionCreateinput.seo as SeoInput}
 			name={collectionCreateinput.name as string}
+			isCreatePage
 		/>
 	</div>
 

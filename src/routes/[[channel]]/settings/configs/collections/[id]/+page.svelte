@@ -99,6 +99,7 @@
 				bind:slug={collectionUpdateinput.slug as string}
 				bind:seo={collectionUpdateinput.seo as SeoInput}
 				name={collectionUpdateinput.name as string}
+				isCreatePage={false}
 			/>
 		</div>
 

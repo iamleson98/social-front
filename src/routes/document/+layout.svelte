@@ -28,6 +28,10 @@
 		{
 			name: 'Input',
 			path: '/document/input'
+		},
+		{
+			name: 'Table',
+			path: '/document/table'
 		}
 	];
 </script>

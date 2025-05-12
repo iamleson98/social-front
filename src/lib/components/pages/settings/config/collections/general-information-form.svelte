@@ -26,8 +26,8 @@
 	let {
 		name = $bindable(),
 		description = $bindable(),
-		disabled = $bindable(false),
-		isCreatePage = $bindable(false),
+		disabled,
+		isCreatePage,
 		media = $bindable<MediaObject>(undefined),
 		metadata = $bindable<MetadataInput[]>([]),
 		privateMetadata = $bindable<MetadataInput[]>([]),
@@ -112,21 +112,20 @@
 	};
 </script>
 
-<div class="bg-white rounded-lg border w-full border-gray-200 pb-2">
-	<h2 class="text-lg font-semibold p-3">General Information</h2>
+<div class="bg-white rounded-lg border w-full border-gray-200 p-3 pb-6 flex flex-col gap-3">
+	<h2 class="text-lg font-semibold">General Information</h2>
 	<Input
 		label="Name"
 		bind:value={name}
 		required
 		{disabled}
-		class="flex-1 p-3"
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
 		variant={collectionFormErrors.name?.length ? 'error' : 'info'}
 		subText={collectionFormErrors.name?.length ? collectionFormErrors.name[0] : undefined}
 	/>
 
-	<div class="mb-3 px-3">
+	<div>
 		<Label required requiredAtPos="end" label="Collection description" />
 		<div
 			class="rounded-lg border px-3 {!collectionFormErrors.description?.length && !descriptionError
@@ -148,10 +147,10 @@
 	</div>
 
 	<!-- Media Upload -->
-	<div class="mb-3 px-3">
+	<div>
 		<Label label="Collection Image" required requiredAtPos="end" />
 		<div
-			class="rounded-lg border p-3 flex gap-1 flex-wrap {error
+			class="rounded-lg border flex gap-1 flex-wrap {error
 				? 'border-red-200 bg-red-50'
 				: 'border-gray-200 bg-gray-50'}"
 		>
