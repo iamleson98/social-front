@@ -10,8 +10,10 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import type {
+		CollectionChannelListingUpdateInput,
 		CollectionInput,
 		MetadataInput,
+		PublishableChannelListingInput,
 		Query,
 		QueryCollectionArgs,
 		SeoInput
@@ -36,6 +38,11 @@
 		backgroundImageAlt: ''
 	});
 
+	let collectionChannelListingUpdateInput = $state<CollectionChannelListingUpdateInput>({
+		addChannels: [],
+		removeChannels: []
+	});
+
 	const collectionDetail = operationStore<Pick<Query, 'collection'>, QueryCollectionArgs>({
 		kind: 'query',
 		query: COLLECTION_DETAIL_QUERY,
@@ -54,7 +61,8 @@
 				seoTitle,
 				seoDescription,
 				metadata,
-				privateMetadata
+				privateMetadata,
+				channelListings
 			} = $collectionDetail.data.collection;
 			collectionUpdateinput = {
 				name,
@@ -69,6 +77,14 @@
 				privateMetadata,
 				backgroundImageAlt: backgroundImage?.alt
 			};
+
+			if (channelListings?.length) {
+				collectionChannelListingUpdateInput.addChannels = channelListings.map((item) => ({
+					channelId: item.channel.id,
+					isPublished: item.isPublished,
+					publishedAt: item.publishedAt,
+				}));
+			}
 		}
 	});
 </script>
@@ -101,7 +117,10 @@
 		</div>
 
 		<div class="w-3/10">
-			<AvailabilityForm />
+			<AvailabilityForm
+				bind:addChannelListings={collectionChannelListingUpdateInput.addChannels!}
+				bind:removeChannels={collectionChannelListingUpdateInput.removeChannels!}
+			/>
 		</div>
 	</div>
 

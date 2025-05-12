@@ -85,7 +85,7 @@
 	};
 </script>
 
-<table class="table {tableClass}">
+<table class="table {tableClass}" class:disable-table={disabled}>
 	<thead>
 		<tr>
 			{#if onDragEnd}
@@ -142,7 +142,7 @@
 				>
 					<td>
 						<div use:draggable={{ container: idx.toString(), dragData: idx }}>
-							<IconButton icon={ArrowsMove} size="xs" color="gray" variant="light" />
+							<IconButton icon={ArrowsMove} size="xs" color="gray" variant="light" {disabled} />
 						</div>
 					</td>
 					{@render customTr(item, columns)}
@@ -211,15 +211,19 @@
 <style lang="postcss">
 	@reference "tailwindcss"
 
-	td {
-		@apply px-1! py-2!;
-	}
-
 	:global(.dragging) {
 		@apply opacity-50 shadow-lg rounded-lg;
 	}
 
 	:global(.drag-over) {
 		@apply bg-blue-50 rounded-lg;
+	}
+
+	.disable-table button,
+	.disable-table input,
+	.disable-table select,
+	.disable-table textarea,
+	.disable-table a {
+		@apply pointer-events-none! cursor-not-allowed!;
 	}
 </style>
