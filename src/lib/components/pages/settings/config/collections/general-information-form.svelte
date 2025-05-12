@@ -4,11 +4,10 @@
 	import { PhotoUp, Trash } from '$lib/components/icons';
 	import ErrorMsg from '$lib/components/pages/settings/products/new/error-msg.svelte';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
-
 	import type { MediaObject } from '$lib/components/pages/settings/products/new/utils';
 	import type { MetadataInput } from '$lib/gql/graphql';
 	import { IMAGE_EXTENSION_REGEX } from '$lib/utils/consts';
-	import { object, string, number, z } from 'zod';
+	import { object, string, z } from 'zod';
 	import MetadataEditor from '../../common/metadata-editor.svelte';
 	import { IconButton } from '$lib/components/ui/Button';
 
@@ -17,77 +16,65 @@
 		description?: string;
 		disabled?: boolean;
 		isCreatePage?: boolean;
-		media: MediaObject | null;
+		// media: MediaObject | null;
 		metadata: MetadataInput[];
 		privateMetadata: MetadataInput[];
-		backgroundImageAlt?: string;
+		backgroundImageAlt: string;
+		backgroundImage: File | null;
 	};
 
 	let {
 		name = $bindable(),
 		description = $bindable(),
 		disabled = $bindable(false),
-		isCreatePage = $bindable(false),
-		media = $bindable<MediaObject>(undefined),
+		// isCreatePage = false,
 		metadata = $bindable<MetadataInput[]>([]),
 		privateMetadata = $bindable<MetadataInput[]>([]),
-		backgroundImageAlt = $bindable('')
+		backgroundImageAlt = $bindable(''),
+		backgroundImage = $bindable<File | null>(null)
 	}: Props = $props();
 
 	let descriptionError = $state<string>();
 	let collectionFormErrors = $state.raw<Partial<Record<keyof CollectionSchema, string[]>>>({});
-	let error = $derived.by(
-		() =>
-			media &&
-			((!media.alt?.trim() && !backgroundImageAlt?.trim()) || (isCreatePage && !media.alt?.trim()))
-	);
 
+	/** for UI representation */
+	let media = $state<MediaObject>();
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 
 	const collectionSchema = object({
 		name: string().nonempty(REQUIRED_ERROR),
 		description: string().nonempty(REQUIRED_ERROR),
-		media: object({
-			alt: string().nonempty(REQUIRED_ERROR),
-			width: number(),
-			height: number(),
-			file: object({
-				name: string().nonempty(REQUIRED_ERROR),
-				size: number(),
-				type: string().nonempty(REQUIRED_ERROR)
-			})
-		})
+		backgroundImageAlt: string().nonempty(REQUIRED_ERROR)
 	});
 
 	type CollectionSchema = z.infer<typeof collectionSchema>;
 
 	const handleChangeDescription = (data: any) => {
 		description = data;
-		descriptionError = !data?.blocks?.length ? $tranFunc('helpText.fieldRequired') : undefined;
+		descriptionError = !data?.blocks?.length ? REQUIRED_ERROR : undefined;
 	};
 
-	const handleFileSelect = async (fileList: FileList) => {
+	const handleFileSelect = (fileList: FileList) => {
 		if (!fileList.length || media) return;
 
 		const file = fileList[0];
 		const url = URL.createObjectURL(file);
 		const alt = file.name.replace(IMAGE_EXTENSION_REGEX, '');
 
-		await new Promise<void>((resolve) => {
-			const img = new Image();
-			img.onload = () => {
-				media = { file, url, alt, width: img.width, height: img.height };
-				resolve();
-			};
-			img.src = url;
-		});
+		const img = new Image();
+		img.src = url;
+		img.onload = () => {
+			media = { file, url, alt, width: img.width, height: img.height };
+			backgroundImageAlt = alt;
+			backgroundImage = file;
+		};
 	};
 
 	const handleDeleteImage = () => {
-		if (media) {
-			URL.revokeObjectURL(media.url);
-			media = null;
-		}
+		URL.revokeObjectURL(media!.url);
+		media = undefined;
+		backgroundImageAlt = '';
+		backgroundImage = null;
 	};
 
 	const getDescriptionText = (data: any): string => {
@@ -98,7 +85,6 @@
 		const result = collectionSchema.safeParse({
 			name,
 			description: getDescriptionText(description),
-			media,
 			backgroundImageAlt
 		});
 
@@ -112,21 +98,21 @@
 	};
 </script>
 
-<div class="bg-white rounded-lg border w-full border-gray-200 pb-2">
-	<h2 class="text-lg font-semibold p-3">General Information</h2>
+<div class="bg-white rounded-lg border w-full border-gray-200 p-3">
+	<h2 class="text-lg font-semibold mb-3">General Information</h2>
 	<Input
 		label="Name"
 		bind:value={name}
+		class="mb-3"
 		required
 		{disabled}
-		class="flex-1 p-3"
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
 		variant={collectionFormErrors.name?.length ? 'error' : 'info'}
 		subText={collectionFormErrors.name?.length ? collectionFormErrors.name[0] : undefined}
 	/>
 
-	<div class="mb-3 px-3">
+	<div class="mb-3">
 		<Label required requiredAtPos="end" label="Collection description" />
 		<div
 			class="rounded-lg border px-3 {!collectionFormErrors.description?.length && !descriptionError
@@ -148,13 +134,9 @@
 	</div>
 
 	<!-- Media Upload -->
-	<div class="mb-3 px-3">
+	<div class="mb-3">
 		<Label label="Collection Image" required requiredAtPos="end" />
-		<div
-			class="rounded-lg border p-3 flex gap-1 flex-wrap {error
-				? 'border-red-200 bg-red-50'
-				: 'border-gray-200 bg-gray-50'}"
-		>
+		<div class="rounded-lg border p-3 flex gap-1 flex-wrap border-gray-200 bg-gray-50">
 			{#if media}
 				<div
 					class="h-50 w-50 relative rounded-md bg-white bg-cover bg-center bg-no-repeat {media.alt?.trim()
@@ -209,13 +191,9 @@
 				</div>
 			{/if}
 		</div>
-		<ErrorMsg error={error ? $tranFunc('error.thereIsError') : undefined} />
-		{#if !error && media}
-			<div class="text-xs text-right">1/1</div>
-		{/if}
 	</div>
 
 	<MetadataEditor title="Metadata" bind:data={metadata} {disabled} />
-
+	<div class="h-2"></div>
 	<MetadataEditor title="Private Metadata" bind:data={privateMetadata} {disabled} />
 </div>

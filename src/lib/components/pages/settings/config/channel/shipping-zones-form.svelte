@@ -86,7 +86,7 @@
 <Accordion
 	open
 	header="Shipping zones ({shippingZonesOfChannel.length})"
-	class="rounded-lg border border-gray-200 bg-white mb-3"
+	class="rounded-lg border border-gray-200 bg-white mb-3 p-3"
 >
 	<Alert variant="info" size="sm" bordered class="mb-3">
 		Select shipping zones that will be supplied via this channel. You can assign shipping zones to

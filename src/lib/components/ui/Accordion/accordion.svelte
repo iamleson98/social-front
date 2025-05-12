@@ -17,7 +17,7 @@
 	};
 </script>
 
-<div class={`${className} py-2 px-3 rounded-md text-gray-800`}>
+<div class={`${className} rounded-lg text-gray-800`}>
 	<div
 		class="flex items-center justify-between select-none cursor-pointer"
 		role="button"

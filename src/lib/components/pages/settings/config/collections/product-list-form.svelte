@@ -2,6 +2,7 @@
 	import {
 		ASSIGN_PRODUCTS_TO_COLLECTION_MUTATION,
 		COLLECTION_PRODUCTS_QUERY,
+		COLLECTION_REMOVE_PRODUCTS_MUTATION,
 		REORDER_PRODUCTS_IN_COLLECTION_MUTATION
 	} from '$lib/api/admin/collections';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
@@ -114,7 +115,7 @@
 			const result = await GRAPHQL_CLIENT.mutation<
 				Pick<Mutation, 'collectionRemoveProducts'>,
 				MutationCollectionRemoveProductsArgs
-			>(ASSIGN_PRODUCTS_TO_COLLECTION_MUTATION, {
+			>(COLLECTION_REMOVE_PRODUCTS_MUTATION, {
 				collectionId: collectionID,
 				products: removeProductIds
 			});

@@ -16,7 +16,7 @@
 
 	let { title = $bindable(), data = $bindable(), disabled }: Props = $props();
 
-	let dataFormErrors = $state<Array<Partial<Record<keyof DataSchema, string[]>>>>([]);
+	let dataFormErrors = $state<Partial<Record<keyof DataSchema, string[]>>[]>([]);
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 
@@ -53,40 +53,44 @@
 	};
 </script>
 
-<Accordion header={title} open={false}>
+<Accordion header={title}>
 	{#each data as item, idx (idx)}
-		<div class="flex gap-5 items-start mb-3">
-			<Input
-				placeholder="Key"
-				bind:value={item.key}
-				{disabled}
-				required
-				class="flex-1"
-				onblur={() => validate(item, idx)}
-				variant={dataFormErrors[idx]?.key?.length ? 'error' : 'info'}
-				subText={dataFormErrors[idx]?.key?.[0]}
-			/>
+		<div class="flex gap-2 items-center mb-3">
+			<div class="flex items-start gap-2 w-9/10">
+				<Input
+					placeholder="Key"
+					bind:value={item.key}
+					{disabled}
+					required
+					class="flex-1"
+					onblur={() => validate(item, idx)}
+					inputDebounceOption={{ onInput: () => validate(item, idx) }}
+					variant={dataFormErrors[idx]?.key?.length ? 'error' : 'info'}
+					subText={dataFormErrors[idx]?.key?.[0]}
+				/>
 
-			<Input
-				placeholder="Value"
-				bind:value={item.value}
-				{disabled}
-				required
-				class="flex-1"
-				onblur={() => validate(item, idx)}
-				variant={dataFormErrors[idx]?.value?.length ? 'error' : 'info'}
-				subText={dataFormErrors[idx]?.value?.[0]}
-			/>
+				<Input
+					placeholder="Value"
+					bind:value={item.value}
+					{disabled}
+					required
+					class="flex-1"
+					onblur={() => validate(item, idx)}
+					inputDebounceOption={{ onInput: () => validate(item, idx) }}
+					variant={dataFormErrors[idx]?.value?.length ? 'error' : 'info'}
+					subText={dataFormErrors[idx]?.value?.[0]}
+				/>
+			</div>
 
-			<IconButton
-				icon={Trash}
-				size="xs"
-				color="red"
-				variant="light"
-				class="tooltip tooltip-top"
-				data-tip="Remove"
-				onclick={() => handleRemoveData(idx)}
-			/>
+			<div class="w-1/10 text-right">
+				<IconButton
+					icon={Trash}
+					size="xs"
+					color="red"
+					variant="light"
+					onclick={() => handleRemoveData(idx)}
+				/>
+			</div>
 		</div>
 	{/each}
 

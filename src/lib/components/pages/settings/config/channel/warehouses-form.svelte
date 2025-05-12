@@ -85,7 +85,7 @@
 
 <Accordion
 	header="Warehouses ({warehousesOfChannel.length})"
-	class="rounded-lg border border-gray-200 bg-white mb-3"
+	class="rounded-lg border border-gray-200 bg-white mb-3 p-3"
 	open={false}
 >
 	<Alert variant="info" size="sm" bordered class="mb-3">
