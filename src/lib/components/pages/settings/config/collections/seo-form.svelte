@@ -14,13 +14,7 @@
 		disabled?: boolean;
 	};
 
-	let {
-		name,
-		slug = $bindable(),
-		seo = $bindable(),
-		isCreatePage = false,
-		disabled = false
-	}: Props = $props();
+	let { name, slug = $bindable(), seo = $bindable(), isCreatePage, disabled}: Props = $props();
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 	const DESCRIPTION_MAX_LENGTH = 300;
@@ -28,12 +22,7 @@
 	const seoSchema = object({
 		slug: string().nonempty(REQUIRED_ERROR),
 		title: string().nonempty(REQUIRED_ERROR),
-		description: string()
-			.nonempty(REQUIRED_ERROR)
-			.max(
-				DESCRIPTION_MAX_LENGTH,
-				`Description must be at most ${DESCRIPTION_MAX_LENGTH} characters`
-			)
+		description: string().nonempty(REQUIRED_ERROR).max(DESCRIPTION_MAX_LENGTH, 'Description must be at most 300 characters long')
 	});
 
 	type SeoSchema = z.infer<typeof seoSchema>;
@@ -56,23 +45,21 @@
 
 	$effect(() => {
 		if (name && isCreatePage) {
-			// we only generate slug when it's create page
 			slug = slugify(name, { lower: true, strict: true });
 		}
 	});
 </script>
 
-<div class="bg-white rounded-lg border w-full border-gray-200 p-3">
-	<h2 class="text-lg font-semibold mb-3">Search engine preview</h2>
+<div class="bg-white rounded-lg border w-full border-gray-200 p-3 pb-6 flex flex-col gap-3">
+	<h2 class="text-lg font-semibold">Search engine preview</h2>
 	<Accordion header="Search engine preview" open={false}>
 		<Input
 			label="Slug"
-			{disabled}
 			bind:value={slug}
 			required
-			class="mb-2"
 			inputDebounceOption={{ onInput: validate }}
 			onblur={validate}
+			{disabled}
 			variant={seoFormErrors.slug?.length ? 'error' : 'info'}
 			subText={seoFormErrors.slug?.length ? seoFormErrors.slug[0] : undefined}
 		/>
@@ -80,11 +67,10 @@
 			label="Title"
 			bind:value={seo.title}
 			placeholder="Search Engine Title"
-			class="mb-2"
 			required
-			{disabled}
 			inputDebounceOption={{ onInput: validate }}
 			onblur={validate}
+			{disabled}
 			variant={seoFormErrors.title?.length ? 'error' : 'info'}
 			subText={seoFormErrors.title?.length ? seoFormErrors.title[0] : undefined}
 		/>

@@ -7,6 +7,7 @@
 	import GeneralInformationForm from '$lib/components/pages/settings/config/collections/general-information-form.svelte';
 	import ProductListForm from '$lib/components/pages/settings/config/collections/product-list-form.svelte';
 	import SeoForm from '$lib/components/pages/settings/config/collections/seo-form.svelte';
+	import { type MediaObject } from '$lib/components/pages/settings/products/new/utils';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import type {
@@ -101,9 +102,10 @@
 	<div class="flex gap-2 flex-row">
 		<div class="w-7/10 flex flex-col gap-2">
 			<GeneralInformationForm
+				isCreatePage={false}
 				bind:name={collectionUpdateinput.name as string}
 				bind:description={collectionUpdateinput.description as string}
-				bind:backgroundImage={collectionUpdateinput.backgroundImage}
+				bind:media={collectionUpdateinput.backgroundImage as MediaObject | null}
 				bind:metadata={collectionUpdateinput.metadata as MetadataInput[]}
 				bind:privateMetadata={collectionUpdateinput.privateMetadata as MetadataInput[]}
 				bind:backgroundImageAlt={collectionUpdateinput.backgroundImageAlt as string}
@@ -113,6 +115,7 @@
 				bind:slug={collectionUpdateinput.slug as string}
 				bind:seo={collectionUpdateinput.seo as SeoInput}
 				name={collectionUpdateinput.name as string}
+				isCreatePage={false}
 			/>
 		</div>
 
