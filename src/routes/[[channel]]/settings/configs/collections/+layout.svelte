@@ -8,14 +8,12 @@
 	};
 
 	let { children }: Props = $props();
-
-	const newCollectionLink = AppRoute.SETTINGS_CONFIGS_COLLECTION_NEW();
 </script>
 
 <HeadBar
 	listingPageHref={AppRoute.SETTINGS_CONFIGS_COLLECTIONS()}
 	listingPageLabel="Collections"
-	newPageHref={newCollectionLink}
+	newPageHref={AppRoute.SETTINGS_CONFIGS_COLLECTION_NEW()}
 	newPageLabel="New collection"
 	detailRouteID="/[[channel]]/settings/configs/collections/[id]"
 	detailPageLabelGetter={(page) => page.params.id}

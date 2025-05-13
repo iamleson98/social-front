@@ -23,7 +23,7 @@
 </script>
 
 <div
-	class="mt-5 sticky bottom-0 flex justify-between items-center bg-white p-2 border rounded-lg border-gray-200 {className}"
+	class="mt-5 sticky bottom-0 flex z-10 justify-between items-center bg-white p-2 border rounded-lg border-gray-200 {className}"
 >
 	<div>
 		{#if onDeleteClick}

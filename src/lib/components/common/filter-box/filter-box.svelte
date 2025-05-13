@@ -96,6 +96,9 @@
 		{#if activeFilters.size}
 			{#each activeFilters.keys() as key, idx (idx)}
 				{@const filterOpt = activeFilters.get(key)}
+				{@const disableDelBtn = options.some(
+					(opt) => opt.mustPairWith === key && activeFilters.has(opt.key)
+				)}
 				<div class="flex items-center gap-1 mt-1.5 justify-between">
 					<Select
 						options={availableFilters}
@@ -108,7 +111,7 @@
 
 					<div class="flex-4 flex items-center gap-1">
 						{#if key && filterOpt}
-							{@const operations = options.find((opt) => opt.key === key)?.operations ?? []}
+							{@const { operations } = FILTER_MAP[key]}
 							{@const operatorOpts = operations.map(({ operator }) => ({
 								label: operator,
 								value: operator
@@ -145,6 +148,7 @@
 							color="red"
 							onclick={() => handleDeleteFilter(key)}
 							aria-label="Delete filter"
+							disabled={disableDelBtn}
 						/>
 					</div>
 				</div>

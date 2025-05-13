@@ -129,3 +129,13 @@ mutation CollectionChannelListingUpdate($id: ID!, $input: CollectionChannelListi
     }
   }
 }`;
+
+export const COLLECTION_UPDATE_MUTATION = gql`
+mutation CollectionUpdate($id: ID!, $input: CollectionInput!) {
+  collectionUpdate(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
