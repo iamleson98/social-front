@@ -1,6 +1,9 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { COLLECTION_DETAIL_QUERY } from '$lib/api/admin/collections';
+	import { COLLECTION_DETAIL_QUERY, COLLECTION_UPDATE_MUTATION } from '$lib/api/admin/collections';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { COLLECTION_DELETE_MUTATION } from '$lib/api/collections';
 	import { operationStore } from '$lib/api/operation';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import AvailabilityForm from '$lib/components/pages/settings/config/collections/availability-form.svelte';
@@ -14,17 +17,18 @@
 		CollectionChannelListingUpdateInput,
 		CollectionInput,
 		MetadataInput,
+		Mutation,
+		MutationCollectionDeleteArgs,
+		MutationCollectionUpdateArgs,
 		Query,
 		QueryCollectionArgs,
 		SeoInput
 	} from '$lib/gql/graphql';
+	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
+	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 
-	const onDeleteClick = () => {};
-
-	const onUpdateClick = () => {};
-
-	let collectionUpdateinput = $state<CollectionInput>({
+	let collectionUpdateInput = $state<CollectionInput>({
 		name: '',
 		description: '',
 		slug: '',
@@ -42,6 +46,7 @@
 		addChannels: [],
 		removeChannels: []
 	});
+	let loading = $state(false);
 
 	const collectionDetail = operationStore<Pick<Query, 'collection'>, QueryCollectionArgs>({
 		kind: 'query',
@@ -64,7 +69,7 @@
 				privateMetadata,
 				channelListings
 			} = $collectionDetail.data.collection;
-			collectionUpdateinput = {
+			collectionUpdateInput = {
 				name,
 				slug,
 				description: description ? JSON.parse(description) : undefined,
@@ -90,6 +95,60 @@
 			}
 		}
 	});
+
+	const onDeleteClick = () => {
+		ALERT_MODAL_STORE.openAlertModal({
+			content: 'Are you sure deleting this collection',
+			onOk: async () => {
+				loading = true; //
+
+				const result = await GRAPHQL_CLIENT.mutation<
+					Pick<Mutation, 'collectionDelete'>,
+					MutationCollectionDeleteArgs
+				>(COLLECTION_DELETE_MUTATION, {
+					id: page.params.id
+				});
+
+				loading = false; //
+
+				if (
+					preHandleErrorOnGraphqlResult(
+						result,
+						'collectionDelete',
+						'Collection deleted successfully!'
+					)
+				)
+					return;
+
+				await goto(AppRoute.SETTINGS_CONFIGS_COLLECTIONS());
+			}
+		});
+	};
+
+	const onUpdateClick = async () => {
+		loading = true; //
+
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'collectionUpdate'>,
+			MutationCollectionUpdateArgs
+		>(COLLECTION_UPDATE_MUTATION, {
+			id: page.params.id,
+			input: collectionUpdateInput
+		});
+
+		loading = false; //
+
+		if (
+			preHandleErrorOnGraphqlResult(result, 'collectionUpdate', 'Collection updated successfully')
+		)
+			return;
+
+		collectionDetail.reexecute({
+			variables: {
+				id: page.params.id
+			}
+		});
+	};
 </script>
 
 {#if $collectionDetail.fetching}
@@ -104,19 +163,21 @@
 	<div class="flex gap-2 flex-row">
 		<div class="w-7/10 flex flex-col gap-2">
 			<GeneralInformationForm
-				bind:name={collectionUpdateinput.name as string}
-				bind:description={collectionUpdateinput.description as string}
-				bind:metadata={collectionUpdateinput.metadata as MetadataInput[]}
-				bind:privateMetadata={collectionUpdateinput.privateMetadata as MetadataInput[]}
+				bind:name={collectionUpdateInput.name as string}
+				bind:description={collectionUpdateInput.description as string}
+				bind:metadata={collectionUpdateInput.metadata as MetadataInput[]}
+				bind:privateMetadata={collectionUpdateInput.privateMetadata as MetadataInput[]}
 				bind:media
 				bind:ok={generalFormOk}
+				disabled={loading}
 			/>
 			<ProductListForm collectionID={page.params.id} />
 			<SeoForm
-				bind:slug={collectionUpdateinput.slug as string}
-				bind:seo={collectionUpdateinput.seo as SeoInput}
+				bind:slug={collectionUpdateInput.slug as string}
+				bind:seo={collectionUpdateInput.seo as SeoInput}
 				bind:ok={seoFormOk}
-				name={collectionUpdateinput.name as string}
+				name={collectionUpdateInput.name as string}
+				disabled={loading}
 			/>
 		</div>
 
@@ -132,5 +193,6 @@
 		backButtonUrl={AppRoute.SETTINGS_CONFIGS_COLLECTIONS()}
 		{onDeleteClick}
 		{onUpdateClick}
+		disabled={loading}
 	/>
 {/if}
