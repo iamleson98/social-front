@@ -27,6 +27,7 @@
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { omit } from 'es-toolkit';
 
 	let collectionUpdateInput = $state<CollectionInput>({
 		name: '',
@@ -77,8 +78,8 @@
 					title: seoTitle,
 					description: seoDescription
 				},
-				metadata,
-				privateMetadata
+				metadata: metadata.map((item) => omit(item, ['__typename'])),
+				privateMetadata: privateMetadata.map((item) => omit(item, ['__typename']))
 			};
 			if (backgroundImage)
 				media = {
@@ -133,7 +134,10 @@
 			MutationCollectionUpdateArgs
 		>(COLLECTION_UPDATE_MUTATION, {
 			id: page.params.id,
-			input: collectionUpdateInput
+			input: {
+				...collectionUpdateInput,
+				description: JSON.stringify(collectionUpdateInput.description) || null
+			}
 		});
 
 		loading = false; //
@@ -164,7 +168,7 @@
 		<div class="w-7/10 flex flex-col gap-2">
 			<GeneralInformationForm
 				bind:name={collectionUpdateInput.name as string}
-				bind:description={collectionUpdateInput.description as string}
+				bind:description={collectionUpdateInput.description}
 				bind:metadata={collectionUpdateInput.metadata as MetadataInput[]}
 				bind:privateMetadata={collectionUpdateInput.privateMetadata as MetadataInput[]}
 				bind:media
