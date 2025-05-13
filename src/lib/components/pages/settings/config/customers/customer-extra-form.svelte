@@ -24,61 +24,9 @@
 		metadata = $bindable([]),
 		privateMetadata = $bindable([])
 	}: Props = $props();
-
-	let filterVariables = $state<QueryOrdersArgs>({
-		first: 10,
-		after: null,
-		last: null,
-		before: null
-	});
-
-	let forceReExecuteGraphqlQuery = $state(true);
-
-	const ORDER_TABLE_COLUMNS: TableColumnProps<Order, OrderSortField>[] = [
-		{
-			title: 'Number',
-			child: number
-		},
-		{
-			title: 'Date',
-			child: date
-		},
-		{
-			title: 'Status',
-			child: status
-		},
-		{
-			title: 'Total',
-			child: total
-		}
-	];
 </script>
 
-{#snippet number({ item }: { item: Order })}
-	<span>{item.number}</span>
-{/snippet}
-{#snippet date({ item }: { item: Order })}
-	<span>{item.created}</span>
-{/snippet}
-{#snippet status({ item }: { item: Order })}
-	<span>{item.status}</span>
-{/snippet}
-{#snippet total({ item }: { item: Order })}
-	<span>{item.total}</span>
-{/snippet}
-<div class="bg-white rounded-lg border border-gray-200 p-3 pb-6 flex flex-col gap-3 flex-1">
-	<Accordion header="Recent orders">
-		<div>
-			<GraphqlPaginableTable
-				query={USER_ORDERS_QUERY}
-				bind:variables={filterVariables}
-				resultKey="orders"
-				columns={ORDER_TABLE_COLUMNS}
-				bind:forceReExecuteGraphqlQuery
-			/>
-		</div>
-	</Accordion>
-
+<div class="bg-white rounded-lg border border-gray-200 p-3 pb-6 flex flex-col gap-3 flex-1 w-4/10">
 	<Accordion header="Address information">
 		{#if addresses.length > 0}
 			{#each addresses as address}

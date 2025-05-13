@@ -59,6 +59,7 @@
 			<div class="flex items-start gap-2 w-9/10">
 				<Input
 					placeholder="Key"
+					size="sm"
 					bind:value={item.key}
 					{disabled}
 					required
@@ -71,6 +72,7 @@
 
 				<Input
 					placeholder="Value"
+					size="sm"
 					bind:value={item.value}
 					{disabled}
 					required
@@ -85,7 +87,7 @@
 			<div class="w-1/10 text-right">
 				<IconButton
 					icon={Trash}
-					size="xs"
+					size="sm"
 					color="red"
 					variant="light"
 					onclick={() => handleRemoveData(idx)}

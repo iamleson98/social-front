@@ -6,11 +6,11 @@
 	import { operationStore } from '$lib/api/operation';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import CustomerInformationForm from '$lib/components/pages/settings/config/customers/customer-information-form.svelte';
-	import CustomerStatisticalForm from '$lib/components/pages/settings/config/customers/customer-statistical-form.svelte';
 	import SkeletonCustomerDetail from '$lib/components/pages/settings/config/customers/skeleton-customer-detail.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import {
 		type Address,
+		type CustomerInput,
 		type MetadataInput,
 		type Mutation,
 		type Query,
@@ -23,6 +23,7 @@
 	import { LanguageCodeEnum, type MutationCustomerUpdateArgs } from '$lib/gql/graphql';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { omit } from 'es-toolkit';
+	import CustomerExtraForm from '$lib/components/pages/settings/config/customers/customer-extra-form.svelte';
 
 	const userDetailQuery = operationStore<Pick<Query, 'user'>, QueryUserArgs>({
 		kind: 'query',
@@ -35,27 +36,19 @@
 
 	let loading = $state(false);
 
-	let userInput = $state<User>({
+	let userInput = $state<CustomerInput>({
 		lastName: '',
 		firstName: '',
 		email: '',
 		isActive: false,
 		note: '',
 		metadata: [],
-		privateMetadata: [],
-		addresses: [],
-		id: '',
-		dateJoined: undefined,
-		isConfirmed: false,
-		isStaff: false,
-		languageCode: LanguageCodeEnum.Af,
-		restrictedAccessToChannels: false,
-		updatedAt: undefined
+		privateMetadata: []
 	});
 
 	$effect(() => {
 		if ($userDetailQuery.data?.user) {
-			const { firstName, lastName, email, isActive, note, metadata, privateMetadata, addresses } =
+			const { firstName, lastName, email, isActive, note, metadata, privateMetadata } =
 				$userDetailQuery.data.user;
 			userInput = {
 				firstName,
@@ -64,15 +57,7 @@
 				isActive,
 				note,
 				metadata,
-				privateMetadata,
-				addresses,
-				id: page.params.id,
-				dateJoined: undefined,
-				isConfirmed: false,
-				isStaff: false,
-				languageCode: LanguageCodeEnum.Af,
-				restrictedAccessToChannels: false,
-				updatedAt: undefined
+				privateMetadata
 			};
 		}
 	});
@@ -85,27 +70,19 @@
 		>(USER_UPDATE_MUTATION, {
 			id: $userDetailQuery.data?.user?.id as string,
 			input: {
-				isActive: userInput.isActive
+				isActive: userInput.isActive,
+				metadata: userInput.metadata,
+				privateMetadata: userInput.privateMetadata
 			}
 		});
 
 		loading = false;
 
-		if (preHandleErrorOnGraphqlResult(result, 'customerUpdate')) return;
-		toastStore.send({
-			variant: 'success',
-			message: 'Customer updated successfully'
-		});
+		if (preHandleErrorOnGraphqlResult(result, 'customerUpdate', 'Customer updated successfully'))
+			return;
 
-		await goto(AppRoute.SETTINGS_CONFIGS_USERS(), {
-			replaceState: true,
-			invalidateAll: true
-		});
-	};
-
-	afterNavigate(() => {
 		userDetailQuery.reexecute({ variables: { id: page.params.id } });
-	});
+	};
 </script>
 
 {#if $userDetailQuery.fetching}
@@ -113,9 +90,11 @@
 {:else if $userDetailQuery.error}
 	<Alert variant="error" size="sm" bordered>{$userDetailQuery.error.message}</Alert>
 {:else if $userDetailQuery.data?.user}
+	{@const orders = $userDetailQuery.data.user.orders?.edges.map((edge) => edge.node) ?? []}
 	<div class="flex flex-row gap-2 w-full">
-		<div class="w-2/5">
+		<div class="w-6/10">
 			<CustomerInformationForm
+				{orders}
 				bind:firstName={userInput.firstName as string}
 				bind:lastName={userInput.lastName as string}
 				bind:email={userInput.email as string}
@@ -125,9 +104,9 @@
 			/>
 		</div>
 
-		<CustomerStatisticalForm
+		<CustomerExtraForm
 			id={page.params.id}
-			addresses={userInput.addresses as Address[]}
+			addresses={$userDetailQuery.data?.user.addresses}
 			bind:metadata={userInput.metadata as MetadataInput[]}
 			bind:privateMetadata={userInput.privateMetadata as MetadataInput[]}
 		/>

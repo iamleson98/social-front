@@ -44,6 +44,30 @@ query UserDetail($id: ID, $email: String) {
       city
       postalCode
     }
+    orders(first: 5) {
+      edges {
+        node {
+          id
+          number
+          paymentStatus
+          total {
+            gross {
+              amount
+              currency
+            }
+          }
+          created
+        }
+        cursor
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      totalCount
+    }
     isStaff
     isActive
     dateJoined
