@@ -36,6 +36,14 @@ query UserDetail($id: ID, $email: String) {
     firstName
     lastName
     email
+    addresses {
+      companyName
+      streetAddress1
+      streetAddress2
+      cityArea
+      city
+      postalCode
+    }
     isStaff
     isActive
     dateJoined
