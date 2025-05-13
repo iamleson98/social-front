@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { CHANNELS_QUERY } from '$lib/api/channels';
 	import { operationStore } from '$lib/api/operation';
-	import { Trash } from '$lib/components/icons';
-	import { Button } from '$lib/components/ui';
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
@@ -12,12 +10,11 @@
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import type {
 		Channel,
-		Collection,
-		CollectionChannelListing,
 		PublishableChannelListingInput,
 		Query
 	} from '$lib/gql/graphql';
-	import { fade, slide } from 'svelte/transition';
+	import { onMount } from 'svelte';
+	import { slide } from 'svelte/transition';
 
 	type Props = {
 		addChannelListings?: PublishableChannelListingInput[];
@@ -32,48 +29,65 @@
 		requestPolicy: 'cache-and-network'
 	});
 
-	let channelsMap = $derived<Record<string, Channel>>(
-		$channelsQuery.data?.channels?.reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {}) || {}
-	);
-	let selectValues = $state<SelectOption[]>([]);
-	const usedChannels: Record<string, boolean> = addChannelListings.reduce(
-		(acc, listing) => ({ ...acc, [listing.channelId]: true }),
-		{}
+	/** keys are channel ids, values are channels themself */
+	let channelsMap = $state.raw<Record<string, Channel>>({});
+	let selectValues = $state.raw<SelectOption[]>([]);
+	let channelSelectOptions = $state.raw<SelectOption[]>([]);
+	let usedChanelsMap: Record<string, boolean> = $derived(
+		addChannelListings.reduce((acc, listing) => ({ ...acc, [listing.channelId]: true }), {})
 	);
 
-	let availableChannels = $derived.by(() => {
-		if ($channelsQuery.data) {
-			return Object.keys(channelsMap).reduce<SelectOption[]>((acc, cur) => {
-				if (!usedChannels[cur])
-					acc.push({
-						label: channelsMap[cur].name,
-						value: channelsMap[cur].id
+	onMount(() => {
+		return channelsQuery.subscribe((result) => {
+			if (result.data?.channels) {
+				const newChannelMap: Record<string, Channel> = {};
+				const newChannelSelectOption: SelectOption[] = [];
+
+				for (const chan of result.data.channels) {
+					newChannelMap[chan.id] = chan;
+					newChannelSelectOption.push({
+						value: chan.id,
+						label: chan.name
 					});
-				return acc;
-			}, []);
-		}
+				}
 
-		return [];
+				channelsMap = newChannelMap;
+				channelSelectOptions = newChannelSelectOption;
+
+				// display existing selected channel options
+				selectValues = addChannelListings.map((listing) => ({
+					value: listing.channelId,
+					label: channelsMap[listing.channelId].name
+				}));
+			}
+		});
 	});
 
-	const handleClickRemoveChannel = (idx: number, item: PublishableChannelListingInput) => {
-		addChannelListings = addChannelListings.filter((_, index) => index !== idx);
-		removeChannels = removeChannels.concat(item.channelId);
-	};
+	const handleSelectionCHange = (values?: SelectOption[]) => {
+		if (!values) return;
+		selectValues = values;
 
-	const handleSelectChannels = () => {
-		if (!selectValues?.length) return;
+		let newChannelListings = [...addChannelListings];
 
-		const addItems = selectValues.map<PublishableChannelListingInput>((val) => ({
-			channelId: val.value as string,
-			isPublished: true
-		}));
-		addChannelListings = addChannelListings.concat(addItems);
+		newChannelListings = newChannelListings.filter((listing) =>
+			selectValues.some((val) => val.value === listing.channelId)
+		);
+
+		for (const opt of selectValues) {
+			if (!usedChanelsMap[opt.value]) {
+				newChannelListings.push({
+					channelId: opt.value as string,
+					isPublished: true // for default
+				});
+			}
+		}
+
+		addChannelListings = newChannelListings;
 	};
 </script>
 
-<div class="bg-white rounded-lg border w-full border-gray-200 p-3 mb-3">
-	<div>
+<div class="">
+	<div class="bg-white rounded-lg border w-full border-gray-200 p-3 mb-3">
 		<div class="text-gray-700 font-semibold">Availability</div>
 		<div class="text-xs text-gray-500">In {addChannelListings.length} channels</div>
 	</div>
@@ -86,41 +100,29 @@
 		{:else if $channelsQuery.error}
 			<Alert size="sm" bordered variant="error">{$channelsQuery.error.message}</Alert>
 		{:else if $channelsQuery.data}
-			<div>
+			<div class="bg-white rounded-lg border w-full border-gray-200 p-3 mb-3">
 				<MultiSelect
 					size="sm"
-					options={availableChannels}
+					options={channelSelectOptions}
 					class="w-full"
-					bind:value={selectValues}
+					value={selectValues}
+					onchange={handleSelectionCHange}
 				/>
-				<Button size="xs" variant="light" fullWidth class="mt-2" onclick={handleSelectChannels}
-					>Select chanels</Button
-				>
 			</div>
+
+			{#each addChannelListings as listing, idx (idx)}
+				<Accordion
+					header={channelsMap[listing.channelId].name}
+					class="mb-2 rounded-full bg-white border border-gray-200 p-3"
+				>
+					<Checkbox bind:checked={listing.isPublished} label="Visible" size="sm" />
+					{#if !listing.isPublished}
+						<div class="mt-2" transition:slide>
+							<EaseDatePicker placeholder="Enter date time" size="xs" label="Publication date" />
+						</div>
+					{/if}
+				</Accordion>
+			{/each}
 		{/if}
 	</div>
 </div>
-
-{#each addChannelListings as listing, idx (idx)}
-	<Accordion
-		header={channelsMap[listing.channelId].name || listing.channelId}
-		class="mb-2 rounded-full bg-white border border-gray-200 p-3"
-	>
-		<Checkbox bind:checked={listing.isPublished} label="Visible" size="sm" />
-		{#if !listing.isPublished}
-			<div class="mt-2" transition:slide>
-				<EaseDatePicker placeholder="Enter date time" size="xs" label="Publication date" />
-			</div>
-		{/if}
-
-		<div class="text-right mt-2">
-			<Button
-				size="xs"
-				color="red"
-				variant="light"
-				startIcon={Trash}
-				onclick={() => handleClickRemoveChannel(idx, listing)}>Delete</Button
-			>
-		</div>
-	</Accordion>
-{/each}

@@ -14,7 +14,7 @@
 		disabled?: boolean;
 	};
 
-	let { title = $bindable(), data = $bindable(), disabled }: Props = $props();
+	let { title = $bindable(), data = $bindable([]), disabled }: Props = $props();
 
 	let dataFormErrors = $state<Partial<Record<keyof DataSchema, string[]>>[]>([]);
 
