@@ -19,13 +19,20 @@
 		values?: string[];
 		size?: SocialSize;
 		label?: string;
+		onchange?: (value: string | string[]) => void;
 	};
 
-	let { value = $bindable(), values = $bindable(), size = 'md', label }: Props = $props();
+	let {
+		value = $bindable(),
+		values = $bindable(),
+		size = 'md',
+		label,
+		onchange
+	}: Props = $props();
 
 	if (size === 'xs' && values) size = 'sm'; // since xs is not supported for multi select
 
-	if ((value && values) || (!value && !values)) {
+	if ((value === undefined && values === undefined) || (value !== undefined && values !== undefined)) {
 		throw new Error('please provide either value or values, not both');
 	}
 
@@ -57,8 +64,22 @@
 			value: channel.slug
 		})) ?? []}
 	{#if value}
-		<Select {options} bind:value {size} {label} />
+		<Select
+			{options}
+			bind:value
+			{size}
+			{label}
+			onchange={(opt) => opt && onchange?.(opt.value as string)}
+		/>
 	{:else if values}
-		<MultiSelect {options} bind:value={multiChannels} size={size as MultiSelectSizeType} {label} />
+		<MultiSelect
+			{options}
+			bind:value={multiChannels}
+			size={size as MultiSelectSizeType}
+			{label}
+			onchange={(opts) => {
+				opts?.length && onchange?.(opts.map((opt) => opt.value as string));
+			}}
+		/>
 	{/if}
 {/if}

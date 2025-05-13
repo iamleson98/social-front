@@ -2,13 +2,11 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { COLLECTION_DELETE_MUTATION, COLLECTIONS_QUERY } from '$lib/api/collections';
 	import { Dots, Edit, Trash } from '$lib/components/icons';
-	import FilterButton from '$lib/components/pages/settings/config/staff/filter-button.svelte';
+	import Filter from '$lib/components/pages/settings/config/collections/filter.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { IconButton } from '$lib/components/ui/Button';
-	import {
-		DropDown,
-		type MenuItemProps,
-	} from '$lib/components/ui/Dropdown';
+	import { DropDown, type MenuItemProps } from '$lib/components/ui/Dropdown';
+	import { Input } from '$lib/components/ui/Input';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
@@ -115,8 +113,9 @@
 	</div>
 {/snippet}
 
-<div class="mb-2">
-	<FilterButton />
+<div class="mb-2 flex items-center gap-2">
+	<Filter />
+	<Input size="sm" placeholder="Enter your query" />
 </div>
 
 <GraphqlPaginableTable

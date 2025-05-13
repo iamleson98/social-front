@@ -12,7 +12,7 @@
 	type Props = {
 		query: TypedDocumentNode<any, AnyVariables & GraphqlPaginationArgs>;
 		variables: AnyVariables & GraphqlPaginationArgs;
-		/** default to 'cache-and-network' */
+		/** default to 'network-only' */
 		requestPolicy?: RequestPolicy;
 		/** for example the products query support pagination, then you must pass 'products' as resultKey */
 		resultKey: keyof Query;
