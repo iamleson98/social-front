@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { CHANNELS_QUERY } from '$lib/api/channels';
 	import { operationStore } from '$lib/api/operation';
+	import { Trash } from '$lib/components/icons';
+	import { Button } from '$lib/components/ui';
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
@@ -8,11 +10,7 @@
 	import type { SelectOption } from '$lib/components/ui/select';
 	import MultiSelect from '$lib/components/ui/select/multi-select.svelte';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
-	import type {
-		Channel,
-		PublishableChannelListingInput,
-		Query
-	} from '$lib/gql/graphql';
+	import type { Channel, PublishableChannelListingInput, Query } from '$lib/gql/graphql';
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 
@@ -33,9 +31,13 @@
 	let channelsMap = $state.raw<Record<string, Channel>>({});
 	let selectValues = $state.raw<SelectOption[]>([]);
 	let channelSelectOptions = $state.raw<SelectOption[]>([]);
-	let usedChanelsMap: Record<string, boolean> = $derived(
+	let usedChanelsMap = $derived<Record<string, boolean>>(
 		addChannelListings.reduce((acc, listing) => ({ ...acc, [listing.channelId]: true }), {})
 	);
+	/**
+	 * this const keeps track of existing channel usage from backend
+	 */
+	const existingChannelUsageMap: Record<string, boolean> = {};
 
 	onMount(() => {
 		return channelsQuery.subscribe((result) => {
@@ -49,6 +51,8 @@
 						value: chan.id,
 						label: chan.name
 					});
+
+					existingChannelUsageMap[chan.id] = true;
 				}
 
 				channelsMap = newChannelMap;
@@ -63,15 +67,15 @@
 		});
 	});
 
-	const handleSelectionCHange = (values?: SelectOption[]) => {
+	const handleSelectionChange = (values?: SelectOption[]) => {
 		if (!values) return;
 		selectValues = values;
 
 		let newChannelListings = [...addChannelListings];
 
-		newChannelListings = newChannelListings.filter((listing) =>
-			selectValues.some((val) => val.value === listing.channelId)
-		);
+		newChannelListings = newChannelListings.filter((listing) => {
+			return selectValues.some((val) => val.value === listing.channelId);
+		});
 
 		for (const opt of selectValues) {
 			if (!usedChanelsMap[opt.value]) {
@@ -83,46 +87,55 @@
 		}
 
 		addChannelListings = newChannelListings;
+		
+	};
+
+	const removeChannelListing = (idx: number) => {
+		handleSelectionChange(selectValues.filter((_, i) => i !== idx));
 	};
 </script>
 
-<div class="">
-	<div class="bg-white rounded-lg border w-full border-gray-200 p-3 mb-3">
-		<div class="text-gray-700 font-semibold">Availability</div>
-		<div class="text-xs text-gray-500">In {addChannelListings.length} channels</div>
-	</div>
+<div>
+	{#if $channelsQuery.fetching}
+		<SkeletonContainer>
+			<Skeleton class="h-4" />
+		</SkeletonContainer>
+	{:else if $channelsQuery.error}
+		<Alert size="sm" bordered variant="error">{$channelsQuery.error.message}</Alert>
+	{:else if $channelsQuery.data}
+		<div class="bg-white rounded-lg border w-full border-gray-200 p-3 mb-3">
+			<div class="text-gray-700 font-semibold">Availability</div>
+			<div class="text-xs text-gray-500">In {addChannelListings.length} channels</div>
+			<MultiSelect
+				size="sm"
+				options={channelSelectOptions}
+				class="w-full mt-2"
+				value={selectValues}
+				onchange={handleSelectionChange}
+			/>
+		</div>
 
-	<div class="mt-2">
-		{#if $channelsQuery.fetching}
-			<SkeletonContainer>
-				<Skeleton class="h-4" />
-			</SkeletonContainer>
-		{:else if $channelsQuery.error}
-			<Alert size="sm" bordered variant="error">{$channelsQuery.error.message}</Alert>
-		{:else if $channelsQuery.data}
-			<div class="bg-white rounded-lg border w-full border-gray-200 p-3 mb-3">
-				<MultiSelect
-					size="sm"
-					options={channelSelectOptions}
-					class="w-full"
-					value={selectValues}
-					onchange={handleSelectionCHange}
-				/>
-			</div>
-
-			{#each addChannelListings as listing, idx (idx)}
-				<Accordion
-					header={channelsMap[listing.channelId].name}
-					class="mb-2 rounded-full bg-white border border-gray-200 p-3"
-				>
-					<Checkbox bind:checked={listing.isPublished} label="Visible" size="sm" />
-					{#if !listing.isPublished}
-						<div class="mt-2" transition:slide>
-							<EaseDatePicker placeholder="Enter date time" size="xs" label="Publication date" />
-						</div>
-					{/if}
-				</Accordion>
-			{/each}
-		{/if}
-	</div>
+		{#each addChannelListings as listing, idx (idx)}
+			<Accordion
+				header={channelsMap[listing.channelId]?.name || listing.channelId}
+				class="mb-2 rounded-full bg-white border border-gray-200 p-3"
+			>
+				<Checkbox bind:checked={listing.isPublished} label="Visible" size="sm" />
+				{#if !listing.isPublished}
+					<div class="mt-2" transition:slide>
+						<EaseDatePicker placeholder="Enter date time" size="sm" label="Publication date" />
+					</div>
+				{/if}
+				<div class="text-right mt-2">
+					<Button
+						size="xs"
+						variant="light"
+						color="red"
+						startIcon={Trash}
+						onclick={() => removeChannelListing(idx)}>Remove</Button
+					>
+				</div>
+			</Accordion>
+		{/each}
+	{/if}
 </div>
