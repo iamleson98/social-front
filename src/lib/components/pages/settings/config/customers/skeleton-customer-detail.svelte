@@ -8,16 +8,16 @@
 			<div class="flex flex-row gap-3">
 				<div class="flex flex-col w-1/2">
 					<Skeleton class="h-4 w-16 mb-2" />
-					<Skeleton class="h-8 w-full" />
+					<Skeleton class="h-8" />
 				</div>
 				<div class="flex flex-col w-1/2">
 					<Skeleton class="h-4 w-16 mb-2" />
-					<Skeleton class="h-8 w-full" />
+					<Skeleton class="h-8" />
 				</div>
 			</div>
 			<div>
 				<Skeleton class="h-4 w-16 mb-2" />
-				<Skeleton class="h-8 w-full" />
+				<Skeleton class="h-8" />
 			</div>
 			<div class="flex flex-row gap-3">
 				<Skeleton class="h-8 w-8" />
@@ -25,15 +25,15 @@
 			</div>
 			<div>
 				<Skeleton class="h-4 w-16 mb-2" />
-				<Skeleton class="h-8 w-full" />
+				<Skeleton class="h-8" />
 			</div>
 		</SkeletonContainer>
 	</div>
 
 	<div class="w-4/10 bg-white border border-gray-200 rounded-lg">
 		<SkeletonContainer class="p-4">
-			<Skeleton class="h-8 w-full mb-5" />
-			<Skeleton class="h-8 w-full" />
+			<Skeleton class="h-8 mb-5" />
+			<Skeleton class="h-8" />
 		</SkeletonContainer>
 	</div>
 </div>

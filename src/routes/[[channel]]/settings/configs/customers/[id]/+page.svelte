@@ -23,7 +23,7 @@
 	const userDetailQuery = operationStore<Pick<Query, 'user'>, QueryUserArgs>({
 		kind: 'query',
 		query: USER_DETAIL_QUERY,
-		requestPolicy: 'cache-and-network',
+		requestPolicy: 'network-only',
 		variables: {
 			id: page.params.id
 		}
@@ -62,14 +62,16 @@
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'customerUpdate'>,
 			MutationCustomerUpdateArgs
-		>(USER_UPDATE_MUTATION, {
-			id: $userDetailQuery.data?.user?.id as string,
-			input: {
-				isActive: userInput.isActive,
-				metadata: userInput.metadata,
-				privateMetadata: userInput.privateMetadata
+		>(
+			USER_UPDATE_MUTATION,
+			{
+				id: page.params.id,
+				input: userInput
+			},
+			{
+				requestPolicy: 'network-only'
 			}
-		});
+		);
 
 		loading = false;
 
@@ -90,11 +92,11 @@
 		<div class="w-6/10">
 			<CustomerInformationForm
 				{orders}
-				bind:firstName={userInput.firstName as string}
-				bind:lastName={userInput.lastName as string}
-				bind:email={userInput.email as string}
+				firstName={userInput.firstName as string}
+				lastName={userInput.lastName as string}
+				email={userInput.email as string}
 				bind:isActive={userInput.isActive as boolean}
-				bind:note={userInput.note as string}
+				note={userInput.note as string}
 				bind:metadata={userInput.metadata as MetadataInput[]}
 				bind:privateMetadata={userInput.privateMetadata as MetadataInput[]}
 				disabled
@@ -103,8 +105,8 @@
 
 		<CustomerExtraForm
 			addresses={$userDetailQuery.data?.user.addresses}
-			lastLogin={$userDetailQuery.data?.user.lastLogin}
-			lastOrder={orders?.[0]?.number as string}
+			lastLoginTime={$userDetailQuery.data?.user.lastLogin}
+			lastOrderAt={orders.length > 0 ? orders[0].created : undefined}
 		/>
 	</div>
 	<ActionBar backButtonUrl={AppRoute.SETTINGS_CONFIGS_USERS()} {onUpdateClick} />

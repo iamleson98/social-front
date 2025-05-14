@@ -63,18 +63,11 @@ query UserDetail($id: ID, $email: String) {
           }
           created
         }
-        cursor
       }
-      pageInfo {
-        hasNextPage
-        hasPreviousPage
-        startCursor
-        endCursor
-      }
-      totalCount
     }
     isStaff
     isActive
+    lastLogin
     dateJoined
     metadata {
       key

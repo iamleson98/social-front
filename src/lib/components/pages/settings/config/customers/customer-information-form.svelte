@@ -2,16 +2,14 @@
 	import { tranFunc } from '$i18n';
 	import { Checkbox, Input, TextArea } from '$lib/components/ui/Input';
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
-	import {
-		PaymentChargeStatusEnum,
-		type MetadataInput,
-		type Order,
-		type OrderSortField
-	} from '$lib/gql/graphql';
+	import { type MetadataInput, type Order, type OrderSortField } from '$lib/gql/graphql';
 	import { object, string, z } from 'zod';
 	import MetadataEditor from '$lib/components/pages/settings/common/metadata-editor.svelte';
 	import dayjs from 'dayjs';
 	import { Badge } from '$lib/components/ui/badge';
+	import { paymentStatusBadgeClass } from '$lib/utils/utils';
+	import { lowerCase, startCase } from 'es-toolkit';
+	import { Button } from '$lib/components/ui';
 
 	type Props = {
 		firstName: string;
@@ -38,15 +36,12 @@
 	}: Props = $props();
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
-	const DESCRIPTION_MAX_LENGTH = 300;
 
 	const customerSchema = object({
 		firstName: string().nonempty(REQUIRED_ERROR),
 		lastName: string().nonempty(REQUIRED_ERROR),
 		email: string().nonempty(REQUIRED_ERROR).email($tranFunc('error.invalidEmail')),
-		note: string()
-			.nonempty(REQUIRED_ERROR)
-			.max(DESCRIPTION_MAX_LENGTH, `Note must be at most ${DESCRIPTION_MAX_LENGTH} characters long`)
+		note: string().nonempty(REQUIRED_ERROR)
 	});
 
 	type CustomerSchema = z.infer<typeof customerSchema>;
@@ -57,7 +52,8 @@
 		const result = customerSchema.safeParse({
 			firstName,
 			lastName,
-			email
+			email,
+			note
 		});
 		if (!result.success) {
 			customerFormErrors = result.error.formErrors.fieldErrors;
@@ -90,34 +86,22 @@
 {#snippet number({ item }: { item: Order })}
 	<span>{item.number}</span>
 {/snippet}
+
 {#snippet date({ item }: { item: Order })}
 	<span class="whitespace-nowrap">{dayjs(item.created).format('DD/MM/YYYY HH:mm')}</span>
 {/snippet}
+
 {#snippet status({ item }: { item: Order })}
-	{@const status = item.paymentStatus}
-	{#if status === PaymentChargeStatusEnum.FullyCharged}
-		<Badge text="Fully charged" color="green" variant="light" />
-	{:else if status === PaymentChargeStatusEnum.PartiallyCharged}
-		<Badge text="Partially charged" color="green" variant="light" />
-	{:else if status === PaymentChargeStatusEnum.PartiallyRefunded}
-		<Badge text="Partially refunded" color="yellow" variant="light" />
-	{:else if status === PaymentChargeStatusEnum.FullyRefunded}
-		<Badge text="Fully refunded" color="blue" variant="light" />
-	{:else if status === PaymentChargeStatusEnum.Cancelled}
-		<Badge text="Cancelled" color="gray" variant="light" />
-	{:else if status === PaymentChargeStatusEnum.Pending}
-		<Badge text="Pending" color="red" variant="light" />
-	{:else if status === PaymentChargeStatusEnum.Refused}
-		<Badge text="Refused" color="red" variant="light" />
-	{:else if status === PaymentChargeStatusEnum.NotCharged}
-		<Badge text="Not charged" color="gray" variant="light" />
-	{:else}
-		<Badge text="Unknown" color="gray" variant="light" />
-	{/if}
+	<Badge
+		{...paymentStatusBadgeClass(item.paymentStatus)}
+		text={startCase(lowerCase(item.paymentStatus.replace(/_/g, ' ')))}
+	/>
 {/snippet}
+
 {#snippet total({ item }: { item: Order })}
 	<span>{item.total.gross.currency} {item.total.gross.amount}</span>
 {/snippet}
+
 <div class="bg-white rounded-lg border w-full border-gray-200 p-3 pb-6 flex flex-col gap-3">
 	<div class="flex flex-row gap-2 items-start">
 		<Input
@@ -168,11 +152,13 @@
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
 		variant={customerFormErrors.note?.length ? 'error' : 'info'}
-		subText={customerFormErrors.note?.length
-			? customerFormErrors.note[0]
-			: `${note?.length || 0} / ${DESCRIPTION_MAX_LENGTH}`}
+		subText={customerFormErrors.note?.length ? customerFormErrors.note[0] : undefined}
 	/>
 
+	<div class="flex justify-between items-center">
+		<h3 class="font-semibold text-gray-700">Recent Orders</h3>
+		<Button variant="outline" size="sm">View all orders</Button>
+	</div>
 	<Table columns={ORDER_TABLE_COLUMNS} items={orders} />
 
 	<MetadataEditor title="Metadata" bind:data={metadata} />
