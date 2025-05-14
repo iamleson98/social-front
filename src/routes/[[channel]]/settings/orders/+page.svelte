@@ -9,7 +9,6 @@
 		type PaginationOptions
 	} from '$lib/utils/utils';
 	import dayjs from 'dayjs';
-	import { lowerCase, startCase } from 'es-toolkit';
 	import { DropDown } from '$lib/components/ui/Dropdown';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Dots } from '$lib/components/icons';
@@ -63,17 +62,11 @@
 {/snippet}
 
 {#snippet payment({ item }: { item: Order })}
-	<Badge
-		{...paymentStatusBadgeClass(item.paymentStatus)}
-		text={startCase(lowerCase(item.paymentStatus.replace(/_/g, ' ')))}
-	/>
+	<Badge {...paymentStatusBadgeClass(item.paymentStatus)} />
 {/snippet}
 
 {#snippet status({ item }: { item: Order })}
-	<Badge
-		{...orderStatusBadgeClass(item.status)}
-		text={startCase(lowerCase(item.status.replace(/_/g, ' ')))}
-	/>
+	<Badge {...orderStatusBadgeClass(item.status)} />
 {/snippet}
 
 {#snippet total({ item }: { item: Order })}

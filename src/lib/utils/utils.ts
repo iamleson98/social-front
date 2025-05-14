@@ -10,6 +10,7 @@ import { getCookieByKey } from './cookies';
 import { DEFAULT_CHANNEL } from './channels';
 import { OrderStatus, PaymentChargeStatusEnum } from "$lib/gql/graphql";
 import type { BadgeProps } from '$lib/components/ui/badge/types';
+import { lowerCase, startCase } from 'es-toolkit';
 
 
 export const editorJsParser = editorJsToHtml();
@@ -299,56 +300,58 @@ export const inferRowsPerPage = (paging: PaginationOptions) => {
 	return undefined;
 };
 
-export type BadgeAttr = Pick<BadgeProps, 'color' | 'variant'>;
+export type BadgeAttr = Pick<BadgeProps, 'color' | 'variant' | 'text'>;
 
 export const paymentStatusBadgeClass = (status: PaymentChargeStatusEnum): BadgeAttr => {
 	// NOTE: Those badge classes are found on: https://v5.daisyui.com/components/badge/
+	const text = startCase(lowerCase(status.replace(/_/g, ' ')));
 	switch (status) {
 		case PaymentChargeStatusEnum.Cancelled:
-			return { color: 'red', variant: 'filled' };
+			return { text, color: 'red', variant: 'filled' };
 		case PaymentChargeStatusEnum.FullyCharged:
-			return { color: 'green', variant: 'filled' };
+			return { text, color: 'green', variant: 'filled' };
 		case PaymentChargeStatusEnum.FullyRefunded:
-			return { color: 'blue', variant: 'outline' };
+			return { text, color: 'blue', variant: 'outline' };
 		case PaymentChargeStatusEnum.NotCharged:
-			return { color: 'yellow', variant: 'filled' };
+			return { text, color: 'yellow', variant: 'filled' };
 		case PaymentChargeStatusEnum.PartiallyCharged:
-			return { color: 'blue', variant: 'filled' };
+			return { text, color: 'blue', variant: 'filled' };
 		case PaymentChargeStatusEnum.PartiallyRefunded:
-			return { color: 'blue', variant: 'filled' };
+			return { text, color: 'blue', variant: 'filled' };
 		case PaymentChargeStatusEnum.Pending:
-			return { color: 'blue', variant: 'light' };
+			return { text, color: 'blue', variant: 'light' };
 		case PaymentChargeStatusEnum.Refused:
-			return { color: 'blue', variant: 'filled' };
+			return { text, color: 'blue', variant: 'filled' };
 		default:
-			return { color: 'blue', variant: 'filled' };
+			return { text, color: 'blue', variant: 'filled' };
 	}
 };
 
 export const orderStatusBadgeClass = (status: OrderStatus): BadgeAttr => {
 	// NOTE: Those badge classes are found on: https://v5.daisyui.com/components/badge/
+	const text = startCase(lowerCase(status.replace(/_/g, ' ')));
 
 	switch (status) {
 		case OrderStatus.Canceled:
-			return { color: 'red', variant: 'filled' };
+			return { text, color: 'red', variant: 'filled' };
 		case OrderStatus.Draft:
-			return { color: 'gray', variant: 'outline' };
+			return { text, color: 'gray', variant: 'outline' };
 		case OrderStatus.Expired:
-			return { color: 'blue', variant: 'light' };
+			return { text, color: 'blue', variant: 'light' };
 		case OrderStatus.Fulfilled:
-			return { color: 'green', variant: 'filled' };
+			return { text, color: 'green', variant: 'filled' };
 		case OrderStatus.PartiallyFulfilled:
-			return { color: 'blue', variant: 'filled' };
+			return { text, color: 'blue', variant: 'filled' };
 		case OrderStatus.PartiallyReturned:
-			return { color: 'blue', variant: 'filled' };
+			return { text, color: 'blue', variant: 'filled' };
 		case OrderStatus.Returned:
-			return { color: 'yellow', variant: 'filled' };
+			return { text, color: 'yellow', variant: 'filled' };
 		case OrderStatus.Unconfirmed:
-			return { color: 'gray', variant: 'light' };
+			return { text, color: 'gray', variant: 'light' };
 		case OrderStatus.Unfulfilled:
-			return { color: 'orange', variant: 'light' };
+			return { text, color: 'orange', variant: 'light' };
 		default:
-			return { color: 'blue', variant: 'filled' };
+			return { text, color: 'blue', variant: 'filled' };
 	}
 };
 

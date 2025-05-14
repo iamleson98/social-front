@@ -20,7 +20,7 @@
 			title: $tranFunc('settings.no'),
 			sortable: true,
 			child: no,
-			key: OrderSortField.Number,
+			key: OrderSortField.Number
 		},
 		{
 			title: $tranFunc('common.email'),
@@ -56,17 +56,11 @@
 {/snippet}
 
 {#snippet payment({ item }: { item: Order })}
-	<Badge
-		{...paymentStatusBadgeClass(item.paymentStatus)}
-		text={startCase(lowerCase(item.paymentStatus.replace(/_/g, ' ')))}
-	/>
+	<Badge {...paymentStatusBadgeClass(item.paymentStatus)} />
 {/snippet}
 
 {#snippet status({ item }: { item: Order })}
-	<Badge
-		{...orderStatusBadgeClass(item.status)}
-		text={startCase(lowerCase(item.status.replace(/_/g, ' ')))}
-	/>
+	<Badge {...orderStatusBadgeClass(item.status)} />
 {/snippet}
 
 {#snippet total({ item }: { item: Order })}
