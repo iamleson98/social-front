@@ -33,6 +33,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { omit } from 'es-toolkit';
+	import { onMount } from 'svelte';
 
 	let collectionUpdateInput = $state<CollectionInput>({
 		name: '',
@@ -54,54 +55,57 @@
 	});
 	let loading = $state(false);
 
-	const collectionDetail = operationStore<Pick<Query, 'collection'>, QueryCollectionArgs>({
+	const collectionDetailQuery = operationStore<Pick<Query, 'collection'>, QueryCollectionArgs>({
 		kind: 'query',
 		query: COLLECTION_DETAIL_QUERY,
 		variables: {
 			id: page.params.id
 		},
-		pause: !page.params.id
+		pause: !page.params.id,
+		requestPolicy: 'network-only'
 	});
 
-	$effect(() => {
-		if ($collectionDetail.data?.collection) {
-			const {
-				name,
-				slug,
-				description,
-				backgroundImage,
-				seoTitle,
-				seoDescription,
-				metadata,
-				privateMetadata,
-				channelListings
-			} = $collectionDetail.data.collection;
-			collectionUpdateInput = {
-				name,
-				slug,
-				description: description ? JSON.parse(description) : undefined,
-				seo: {
-					title: seoTitle,
-					description: seoDescription
-				},
-				metadata: metadata.map((item) => omit(item, ['__typename'])),
-				privateMetadata: privateMetadata.map((item) => omit(item, ['__typename']))
-			};
-			if (backgroundImage)
-				media = {
-					alt: backgroundImage.alt || '',
-					url: backgroundImage.url
+	onMount(() =>
+		collectionDetailQuery.subscribe((result) => {
+			if (result.data?.collection) {
+				const {
+					name,
+					slug,
+					description,
+					backgroundImage,
+					seoTitle,
+					seoDescription,
+					metadata,
+					privateMetadata,
+					channelListings
+				} = result.data.collection;
+				collectionUpdateInput = {
+					name,
+					slug,
+					description: description ? JSON.parse(description) : undefined,
+					seo: {
+						title: seoTitle,
+						description: seoDescription
+					},
+					metadata: metadata.map((item) => omit(item, ['__typename'])),
+					privateMetadata: privateMetadata.map((item) => omit(item, ['__typename']))
 				};
+				if (backgroundImage)
+					media = {
+						alt: backgroundImage.alt || '',
+						url: backgroundImage.url
+					};
 
-			if (channelListings?.length) {
-				collectionChannelListingUpdateInput.addChannels = channelListings.map((item) => ({
-					channelId: item.channel.id,
-					isPublished: item.isPublished,
-					publishedAt: item.publishedAt
-				}));
+				if (channelListings?.length) {
+					collectionChannelListingUpdateInput.addChannels = channelListings.map((item) => ({
+						channelId: item.channel.id,
+						isPublished: item.isPublished,
+						publishedAt: item.publishedAt
+					}));
+				}
 			}
-		}
-	});
+		})
+	);
 
 	const onDeleteClick = () => {
 		ALERT_MODAL_STORE.openAlertModal({
@@ -174,7 +178,7 @@
 
 		if (hasError) return;
 
-		collectionDetail.reexecute({
+		collectionDetailQuery.reexecute({
 			variables: {
 				id: page.params.id
 			}
@@ -182,15 +186,15 @@
 	};
 </script>
 
-{#if $collectionDetail.fetching}
+{#if $collectionDetailQuery.fetching}
 	<SkeletonContainer>
 		<Skeleton class="h-10" />
 	</SkeletonContainer>
-{:else if $collectionDetail.error}
+{:else if $collectionDetailQuery.error}
 	<Alert variant="error" size="sm" bordered>
-		{$collectionDetail.error.message}
+		{$collectionDetailQuery.error.message}
 	</Alert>
-{:else if $collectionDetail.data}
+{:else if $collectionDetailQuery.data}
 	<div class="flex gap-2 flex-row">
 		<div class="w-7/10 flex flex-col gap-2">
 			<GeneralInformationForm
