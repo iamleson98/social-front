@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto, afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { USER_DETAIL_QUERY } from '$lib/api/admin/users';
@@ -9,20 +8,16 @@
 	import SkeletonCustomerDetail from '$lib/components/pages/settings/config/customers/skeleton-customer-detail.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import {
-		type Address,
 		type CustomerInput,
 		type MetadataInput,
 		type Mutation,
 		type Query,
-		type QueryUserArgs,
-		type User
+		type QueryUserArgs
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { USER_UPDATE_MUTATION } from '$lib/api/account';
-	import { LanguageCodeEnum, type MutationCustomerUpdateArgs } from '$lib/gql/graphql';
-	import { toastStore } from '$lib/stores/ui/toast';
-	import { omit } from 'es-toolkit';
+	import { type MutationCustomerUpdateArgs } from '$lib/gql/graphql';
 	import CustomerExtraForm from '$lib/components/pages/settings/config/customers/customer-extra-form.svelte';
 
 	const userDetailQuery = operationStore<Pick<Query, 'user'>, QueryUserArgs>({
@@ -100,15 +95,16 @@
 				bind:email={userInput.email as string}
 				bind:isActive={userInput.isActive as boolean}
 				bind:note={userInput.note as string}
+				bind:metadata={userInput.metadata as MetadataInput[]}
+				bind:privateMetadata={userInput.privateMetadata as MetadataInput[]}
 				disabled
 			/>
 		</div>
 
 		<CustomerExtraForm
-			id={page.params.id}
 			addresses={$userDetailQuery.data?.user.addresses}
-			bind:metadata={userInput.metadata as MetadataInput[]}
-			bind:privateMetadata={userInput.privateMetadata as MetadataInput[]}
+			lastLogin={$userDetailQuery.data?.user.lastLogin}
+			lastOrder={orders?.[0]?.number as string}
 		/>
 	</div>
 	<ActionBar backButtonUrl={AppRoute.SETTINGS_CONFIGS_USERS()} {onUpdateClick} />

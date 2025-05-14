@@ -1,10 +1,17 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { USER_ORDERS_QUERY } from '$lib/api/orders';
 	import { Checkbox, Input, TextArea } from '$lib/components/ui/Input';
-	import { GraphqlPaginableTable, Table, type TableColumnProps } from '$lib/components/ui/Table';
-	import type { Order, OrderSortField, QueryOrdersArgs } from '$lib/gql/graphql';
+	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
+	import {
+		PaymentChargeStatusEnum,
+		type MetadataInput,
+		type Order,
+		type OrderSortField
+	} from '$lib/gql/graphql';
 	import { object, string, z } from 'zod';
+	import MetadataEditor from '$lib/components/pages/settings/common/metadata-editor.svelte';
+	import dayjs from 'dayjs';
+	import { Badge } from '$lib/components/ui/badge';
 
 	type Props = {
 		firstName: string;
@@ -14,6 +21,8 @@
 		note: string;
 		disabled?: boolean;
 		orders: Order[];
+		metadata: MetadataInput[];
+		privateMetadata: MetadataInput[];
 	};
 
 	let {
@@ -23,7 +32,9 @@
 		isActive = $bindable(false),
 		note = $bindable(''),
 		disabled,
-		orders
+		orders,
+		metadata = $bindable([]),
+		privateMetadata = $bindable([])
 	}: Props = $props();
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
@@ -74,20 +85,38 @@
 			child: total
 		}
 	];
-
 </script>
 
 {#snippet number({ item }: { item: Order })}
 	<span>{item.number}</span>
 {/snippet}
 {#snippet date({ item }: { item: Order })}
-	<span>{item.created}</span>
+	<span class="whitespace-nowrap">{dayjs(item.created).format('DD/MM/YYYY HH:mm')}</span>
 {/snippet}
 {#snippet status({ item }: { item: Order })}
-	<span>{item.paymentStatus}</span>
+	{@const status = item.paymentStatus}
+	{#if status === PaymentChargeStatusEnum.FullyCharged}
+		<Badge text="Fully charged" color="green" variant="light" />
+	{:else if status === PaymentChargeStatusEnum.PartiallyCharged}
+		<Badge text="Partially charged" color="green" variant="light" />
+	{:else if status === PaymentChargeStatusEnum.PartiallyRefunded}
+		<Badge text="Partially refunded" color="yellow" variant="light" />
+	{:else if status === PaymentChargeStatusEnum.FullyRefunded}
+		<Badge text="Fully refunded" color="blue" variant="light" />
+	{:else if status === PaymentChargeStatusEnum.Cancelled}
+		<Badge text="Cancelled" color="gray" variant="light" />
+	{:else if status === PaymentChargeStatusEnum.Pending}
+		<Badge text="Pending" color="red" variant="light" />
+	{:else if status === PaymentChargeStatusEnum.Refused}
+		<Badge text="Refused" color="red" variant="light" />
+	{:else if status === PaymentChargeStatusEnum.NotCharged}
+		<Badge text="Not charged" color="gray" variant="light" />
+	{:else}
+		<Badge text="Unknown" color="gray" variant="light" />
+	{/if}
 {/snippet}
 {#snippet total({ item }: { item: Order })}
-	<span>{item.total.gross.amount}</span>
+	<span>{item.total.gross.currency} {item.total.gross.amount}</span>
 {/snippet}
 <div class="bg-white rounded-lg border w-full border-gray-200 p-3 pb-6 flex flex-col gap-3">
 	<div class="flex flex-row gap-2 items-start">
@@ -144,8 +173,8 @@
 			: `${note?.length || 0} / ${DESCRIPTION_MAX_LENGTH}`}
 	/>
 
-	<Table
-		columns={ORDER_TABLE_COLUMNS}
-		items={orders}
-	/>
+	<Table columns={ORDER_TABLE_COLUMNS} items={orders} />
+
+	<MetadataEditor title="Metadata" bind:data={metadata} />
+	<MetadataEditor title="Private Metadata" bind:data={privateMetadata} />
 </div>

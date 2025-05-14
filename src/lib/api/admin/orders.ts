@@ -25,12 +25,6 @@ query ShopOrders($first: Int, $after: String, $last: Int, $before: String) {
         # }
       }
     }
-    pageInfo {
-      hasNextPage
-      hasPreviousPage
-      startCursor
-      endCursor
-    }
     # totalCount
   }
 }`;

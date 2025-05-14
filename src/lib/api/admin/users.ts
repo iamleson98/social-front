@@ -37,12 +37,17 @@ query UserDetail($id: ID, $email: String) {
     lastName
     email
     addresses {
+      phone
       companyName
       streetAddress1
       streetAddress2
       cityArea
       city
       postalCode
+      country{
+        code
+        country
+      }
     }
     orders(first: 5) {
       edges {
@@ -86,4 +91,3 @@ query UserDetail($id: ID, $email: String) {
     }
   }
 }`
-
