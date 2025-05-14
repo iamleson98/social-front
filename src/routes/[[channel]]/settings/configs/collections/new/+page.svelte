@@ -8,8 +8,6 @@
 	import { AppRoute } from '$lib/utils';
 	import { type MediaObject } from '$lib/components/pages/settings/products/new/utils';
 
-	const onDeleteClick = () => {};
-
 	const onAddClick = () => {};
 
 	let generalFormOk = $state(false);

@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { COLLECTION_DETAIL_QUERY, COLLECTION_UPDATE_MUTATION } from '$lib/api/admin/collections';
+	import {
+		COLLECTION_CHANNEL_LISTING_UPDATE_MUTATION,
+		COLLECTION_DETAIL_QUERY,
+		COLLECTION_UPDATE_MUTATION
+	} from '$lib/api/admin/collections';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { COLLECTION_DELETE_MUTATION } from '$lib/api/collections';
 	import { operationStore } from '$lib/api/operation';
@@ -18,6 +22,7 @@
 		CollectionInput,
 		MetadataInput,
 		Mutation,
+		MutationCollectionChannelListingUpdateArgs,
 		MutationCollectionDeleteArgs,
 		MutationCollectionUpdateArgs,
 		Query,
@@ -54,7 +59,8 @@
 		query: COLLECTION_DETAIL_QUERY,
 		variables: {
 			id: page.params.id
-		}
+		},
+		pause: !page.params.id
 	});
 
 	$effect(() => {
@@ -99,7 +105,7 @@
 
 	const onDeleteClick = () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: 'Are you sure deleting this collection',
+			content: 'Are you sure deleting this collection?',
 			onOk: async () => {
 				loading = true; //
 
@@ -127,8 +133,11 @@
 	};
 
 	const onUpdateClick = async () => {
+		let hasError = false;
+
 		loading = true; //
 
+		// 1) update general information of collection:
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'collectionUpdate'>,
 			MutationCollectionUpdateArgs
@@ -140,12 +149,30 @@
 			}
 		});
 
+		hasError ||= preHandleErrorOnGraphqlResult(
+			result,
+			'collectionUpdate',
+			'Collection updated successfully'
+		);
+
+		// 2) update channel listings
+		const result2 = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'collectionChannelListingUpdate'>,
+			MutationCollectionChannelListingUpdateArgs
+		>(COLLECTION_CHANNEL_LISTING_UPDATE_MUTATION, {
+			id: page.params.id,
+			input: collectionChannelListingUpdateInput
+		});
+
 		loading = false; //
 
-		if (
-			preHandleErrorOnGraphqlResult(result, 'collectionUpdate', 'Collection updated successfully')
-		)
-			return;
+		hasError ||= preHandleErrorOnGraphqlResult(
+			result2,
+			'collectionChannelListingUpdate',
+			'Collection channel listing updated successfully'
+		);
+
+		if (hasError) return;
 
 		collectionDetail.reexecute({
 			variables: {
@@ -175,7 +202,7 @@
 				bind:ok={generalFormOk}
 				disabled={loading}
 			/>
-			<ProductListForm collectionID={page.params.id} />
+			<ProductListForm collectionID={page.params.id} disabled={loading} />
 			<SeoForm
 				bind:slug={collectionUpdateInput.slug as string}
 				bind:seo={collectionUpdateInput.seo as SeoInput}
@@ -189,6 +216,7 @@
 			<AvailabilityForm
 				bind:addChannelListings={collectionChannelListingUpdateInput.addChannels!}
 				bind:removeChannels={collectionChannelListingUpdateInput.removeChannels!}
+				disabled={loading}
 			/>
 		</div>
 	</div>

@@ -147,7 +147,7 @@
 				>
 					<td class="px-1! py-2!">
 						<div>
-							<IconButton icon={GripVertical} size="xs" color="gray" variant="light" />
+							<IconButton icon={GripVertical} size="xs" color="gray" variant="light" {disabled} />
 						</div>
 					</td>
 					{@render customTr(item, columns)}

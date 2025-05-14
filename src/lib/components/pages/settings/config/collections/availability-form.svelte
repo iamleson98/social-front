@@ -11,33 +11,52 @@
 	import MultiSelect from '$lib/components/ui/select/multi-select.svelte';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import type { Channel, PublishableChannelListingInput, Query } from '$lib/gql/graphql';
+	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 
 	type Props = {
 		addChannelListings?: PublishableChannelListingInput[];
 		removeChannels?: string[];
+		disabled?: boolean;
 	};
 
-	let { addChannelListings = $bindable([]), removeChannels = $bindable([]) }: Props = $props();
+	let {
+		addChannelListings = $bindable([]),
+		removeChannels = $bindable([]),
+		disabled
+	}: Props = $props();
 
 	const channelsQuery = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
 		query: CHANNELS_QUERY,
-		requestPolicy: 'cache-and-network'
+		requestPolicy: 'network-only'
 	});
+
+	/**
+	 * this const keeps track of existing channel usage from backend
+	 */
+	const existingChannelUsageMap = addChannelListings.reduce(
+		(acc, cur) => {
+			acc[cur.channelId] = true;
+			return acc;
+		},
+		{} as Record<string, boolean>
+	);
 
 	/** keys are channel ids, values are channels themself */
 	let channelsMap = $state.raw<Record<string, Channel>>({});
 	let selectValues = $state.raw<SelectOption[]>([]);
 	let channelSelectOptions = $state.raw<SelectOption[]>([]);
 	let usedChanelsMap = $derived<Record<string, boolean>>(
-		addChannelListings.reduce((acc, listing) => ({ ...acc, [listing.channelId]: true }), {})
+		addChannelListings.reduce(
+			(acc, listing) => {
+				acc[listing.channelId] = true;
+				return acc;
+			},
+			{} as Record<string, boolean>
+		)
 	);
-	/**
-	 * this const keeps track of existing channel usage from backend
-	 */
-	const existingChannelUsageMap: Record<string, boolean> = {};
 
 	onMount(() => {
 		return channelsQuery.subscribe((result) => {
@@ -51,8 +70,6 @@
 						value: chan.id,
 						label: chan.name
 					});
-
-					existingChannelUsageMap[chan.id] = true;
 				}
 
 				channelsMap = newChannelMap;
@@ -69,12 +86,23 @@
 
 	const handleSelectionChange = (values?: SelectOption[]) => {
 		if (!values) return;
-		selectValues = values;
 
+		selectValues = values;
 		let newChannelListings = [...addChannelListings];
 
+		// keep listings that is selected only
 		newChannelListings = newChannelListings.filter((listing) => {
-			return selectValues.some((val) => val.value === listing.channelId);
+			const useListing = selectValues.some((val) => val.value === listing.channelId);
+
+			if (
+				!useListing &&
+				existingChannelUsageMap[listing.channelId] &&
+				!removeChannels.includes(listing.channelId)
+			) {
+				removeChannels.push(listing.channelId);
+			}
+
+			return useListing;
 		});
 
 		for (const opt of selectValues) {
@@ -87,7 +115,6 @@
 		}
 
 		addChannelListings = newChannelListings;
-		
 	};
 
 	const removeChannelListing = (idx: number) => {
@@ -112,6 +139,7 @@
 				class="w-full mt-2"
 				value={selectValues}
 				onchange={handleSelectionChange}
+				{disabled}
 			/>
 		</div>
 
@@ -120,10 +148,17 @@
 				header={channelsMap[listing.channelId]?.name || listing.channelId}
 				class="mb-2 rounded-full bg-white border border-gray-200 p-3"
 			>
-				<Checkbox bind:checked={listing.isPublished} label="Visible" size="sm" />
+				<Checkbox bind:checked={listing.isPublished} label="Visible" size="sm" {disabled} />
 				{#if !listing.isPublished}
 					<div class="mt-2" transition:slide>
-						<EaseDatePicker placeholder="Enter date time" size="sm" label="Publication date" />
+						<EaseDatePicker
+							placeholder="Enter date time"
+							size="sm"
+							label="Publication date"
+							value={{ date: listing.publishedAt }}
+							onchange={(val) => (listing.publishedAt = dayjs(val.date).format())}
+							{disabled}
+						/>
 					</div>
 				{/if}
 				<div class="text-right mt-2">
@@ -132,6 +167,7 @@
 						variant="light"
 						color="red"
 						startIcon={Trash}
+						{disabled}
 						onclick={() => removeChannelListing(idx)}>Remove</Button
 					>
 				</div>
