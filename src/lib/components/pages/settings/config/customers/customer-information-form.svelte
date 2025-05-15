@@ -6,7 +6,7 @@
 	import { object, string, z } from 'zod';
 	import MetadataEditor from '$lib/components/pages/settings/common/metadata-editor.svelte';
 	import dayjs from 'dayjs';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { paymentStatusBadgeClass } from '$lib/utils/utils';
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
