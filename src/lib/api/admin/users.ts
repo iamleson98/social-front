@@ -36,8 +36,40 @@ query UserDetail($id: ID, $email: String) {
     firstName
     lastName
     email
+    addresses {
+      phone
+      companyName
+      streetAddress1
+      streetAddress2
+      cityArea
+      city
+      postalCode
+      isDefaultShippingAddress
+      isDefaultBillingAddress
+      country {
+        code
+        country
+      }
+    }
+    orders(first: 5) {
+      edges {
+        node {
+          id
+          number
+          paymentStatus
+          total {
+            gross {
+              amount
+              currency
+            }
+          }
+          created
+        }
+      }
+    }
     isStaff
     isActive
+    lastLogin
     dateJoined
     metadata {
       key
@@ -54,4 +86,3 @@ query UserDetail($id: ID, $email: String) {
     }
   }
 }`
-
