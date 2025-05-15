@@ -29,9 +29,10 @@
 	type Props = {
 		/**if not provided, meaning this is create page*/
 		collectionID?: string;
+		disabled?: boolean;
 	};
 
-	let { collectionID }: Props = $props();
+	let { collectionID, disabled }: Props = $props();
 
 	let filterVariables = $state<QueryProductsArgs & { id?: string }>({
 		first: 10,
@@ -40,6 +41,7 @@
 
 	let forceReExecuteGraphqlQuery = $state(collectionID ? true : false);
 	let loading = $state(false);
+	let shouldDisable = $derived(loading || disabled);
 
 	const PRODUCT_COLUMNS: TableColumnProps<Product, ProductOrderField>[] = [
 		{
@@ -144,7 +146,7 @@
 		size="xs"
 		color="red"
 		onclick={() => handleAssignProducts([], [item.id])}
-		disabled={loading}
+		disabled={shouldDisable}
 		data-interactive
 	/>
 {/snippet}
@@ -156,7 +158,8 @@
 {/snippet}
 
 {#snippet name({ item }: { item: Product })}
-	<a href={AppRoute.PRODUCT_DETAILS(item.slug)} aria-label={item.name} data-interactive>{item.name}</a
+	<a href={AppRoute.PRODUCT_DETAILS(item.slug)} aria-label={item.name} data-interactive
+		>{item.name}</a
 	>
 {/snippet}
 
@@ -203,7 +206,7 @@
 {/snippet}
 
 <div class="bg-white rounded-lg border w-full border-gray-200 p-3">
-	<ProductAssignModal onApply={handleAssignProducts} {collectionID} />
+	<ProductAssignModal onApply={handleAssignProducts} {collectionID} disabled={shouldDisable} />
 	<GraphqlPaginableTable
 		query={COLLECTION_PRODUCTS_QUERY}
 		resultKey={'collection.products' as keyof Query}
@@ -212,6 +215,6 @@
 		columns={PRODUCT_COLUMNS}
 		onDragEnd={handleReOrderProductsInCollection}
 		dragEffectType="move-position"
-		disabled={loading}
+		disabled={shouldDisable}
 	/>
 </div>

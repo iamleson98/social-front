@@ -10,9 +10,10 @@
 	type Props = {
 		collectionID?: string;
 		onApply: (addProductIds: string[], removeProductIds: string[]) => Promise<void>;
+		disabled?: boolean;
 	};
 
-	let { collectionID, onApply }: Props = $props();
+	let { collectionID, onApply, disabled }: Props = $props();
 
 	const PRODUCT_MODAL_COLUMNS: TableColumnProps<Product, ProductOrderField>[] = [
 		{
@@ -30,6 +31,7 @@
 	];
 
 	let loading = $state(false);
+	let shouldDisable = $derived(loading || disabled);
 
 	let filterAllProductsVariables = $state<QueryProductsArgs>({
 		first: 10,
@@ -99,9 +101,9 @@
 
 <div class="mb-4 flex items-center justify-between">
 	<div class="text-gray-700 font-semibold">Products in collection</div>
-	<Button size="xs" onclick={handleClickOpenProductListModal} disabled={loading}
-		>Assign Product</Button
-	>
+	<Button size="xs" onclick={handleClickOpenProductListModal} disabled={shouldDisable}>
+		Assign Product
+	</Button>
 </div>
 
 <Modal
@@ -114,7 +116,7 @@
 	onClose={() => (openAssignProductModal = false)}
 	closeOnOutsideClick
 	size="sm"
-	disableElements={loading}
+	disableElements={shouldDisable}
 >
 	<div class="mb-4">
 		<Input
@@ -126,7 +128,7 @@
 				onInput: () => (forceReExecuteGraphqlQuery = true), // force the result table to re-execute the query
 				debounceTime: 800
 			}}
-			disabled={loading}
+			disabled={shouldDisable}
 		/>
 	</div>
 
@@ -137,7 +139,7 @@
 			bind:variables={filterAllProductsVariables}
 			bind:forceReExecuteGraphqlQuery
 			columns={PRODUCT_MODAL_COLUMNS}
-			disabled={loading}
+			disabled={shouldDisable}
 		/>
 	{/if}
 </Modal>

@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { COLLECTION_DETAIL_QUERY, COLLECTION_UPDATE_MUTATION } from '$lib/api/admin/collections';
+	import {
+		COLLECTION_CHANNEL_LISTING_UPDATE_MUTATION,
+		COLLECTION_DETAIL_QUERY,
+		COLLECTION_UPDATE_MUTATION
+	} from '$lib/api/admin/collections';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { COLLECTION_DELETE_MUTATION } from '$lib/api/collections';
 	import { operationStore } from '$lib/api/operation';
@@ -18,6 +22,7 @@
 		CollectionInput,
 		MetadataInput,
 		Mutation,
+		MutationCollectionChannelListingUpdateArgs,
 		MutationCollectionDeleteArgs,
 		MutationCollectionUpdateArgs,
 		Query,
@@ -28,6 +33,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { omit } from 'es-toolkit';
+	import { onMount } from 'svelte';
 
 	let collectionUpdateInput = $state<CollectionInput>({
 		name: '',
@@ -49,57 +55,61 @@
 	});
 	let loading = $state(false);
 
-	const collectionDetail = operationStore<Pick<Query, 'collection'>, QueryCollectionArgs>({
+	const collectionDetailQuery = operationStore<Pick<Query, 'collection'>, QueryCollectionArgs>({
 		kind: 'query',
 		query: COLLECTION_DETAIL_QUERY,
 		variables: {
 			id: page.params.id
-		}
+		},
+		pause: !page.params.id,
+		requestPolicy: 'network-only'
 	});
 
-	$effect(() => {
-		if ($collectionDetail.data?.collection) {
-			const {
-				name,
-				slug,
-				description,
-				backgroundImage,
-				seoTitle,
-				seoDescription,
-				metadata,
-				privateMetadata,
-				channelListings
-			} = $collectionDetail.data.collection;
-			collectionUpdateInput = {
-				name,
-				slug,
-				description: description ? JSON.parse(description) : undefined,
-				seo: {
-					title: seoTitle,
-					description: seoDescription
-				},
-				metadata: metadata.map((item) => omit(item, ['__typename'])),
-				privateMetadata: privateMetadata.map((item) => omit(item, ['__typename']))
-			};
-			if (backgroundImage)
-				media = {
-					alt: backgroundImage.alt || '',
-					url: backgroundImage.url
+	onMount(() =>
+		collectionDetailQuery.subscribe((result) => {
+			if (result.data?.collection) {
+				const {
+					name,
+					slug,
+					description,
+					backgroundImage,
+					seoTitle,
+					seoDescription,
+					metadata,
+					privateMetadata,
+					channelListings
+				} = result.data.collection;
+				collectionUpdateInput = {
+					name,
+					slug,
+					description: description ? JSON.parse(description) : undefined,
+					seo: {
+						title: seoTitle,
+						description: seoDescription
+					},
+					metadata: metadata.map((item) => omit(item, ['__typename'])),
+					privateMetadata: privateMetadata.map((item) => omit(item, ['__typename']))
 				};
+				if (backgroundImage)
+					media = {
+						alt: backgroundImage.alt || '',
+						url: backgroundImage.url
+					};
 
-			if (channelListings?.length) {
-				collectionChannelListingUpdateInput.addChannels = channelListings.map((item) => ({
-					channelId: item.channel.id,
-					isPublished: item.isPublished,
-					publishedAt: item.publishedAt
-				}));
+				if (channelListings?.length) {
+					collectionChannelListingUpdateInput.addChannels = channelListings.map((item) => ({
+						channelId: item.channel.id,
+						isPublished: item.isPublished,
+						publishedAt: item.publishedAt
+					}));
+				}
 			}
-		}
-	});
+		})
+	);
 
 	const onDeleteClick = () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: 'Are you sure deleting this collection',
+			content: 'Are you sure deleting this collection?',
 			onOk: async () => {
 				loading = true; //
 
@@ -127,8 +137,11 @@
 	};
 
 	const onUpdateClick = async () => {
+		let hasError = false;
+
 		loading = true; //
 
+		// 1) update general information of collection:
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'collectionUpdate'>,
 			MutationCollectionUpdateArgs
@@ -140,14 +153,32 @@
 			}
 		});
 
+		hasError ||= preHandleErrorOnGraphqlResult(
+			result,
+			'collectionUpdate',
+			'Collection updated successfully'
+		);
+
+		// 2) update channel listings
+		const result2 = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'collectionChannelListingUpdate'>,
+			MutationCollectionChannelListingUpdateArgs
+		>(COLLECTION_CHANNEL_LISTING_UPDATE_MUTATION, {
+			id: page.params.id,
+			input: collectionChannelListingUpdateInput
+		});
+
 		loading = false; //
 
-		if (
-			preHandleErrorOnGraphqlResult(result, 'collectionUpdate', 'Collection updated successfully')
-		)
-			return;
+		hasError ||= preHandleErrorOnGraphqlResult(
+			result2,
+			'collectionChannelListingUpdate',
+			'Collection channel listing updated successfully'
+		);
 
-		collectionDetail.reexecute({
+		if (hasError) return;
+
+		collectionDetailQuery.reexecute({
 			variables: {
 				id: page.params.id
 			}
@@ -155,15 +186,15 @@
 	};
 </script>
 
-{#if $collectionDetail.fetching}
+{#if $collectionDetailQuery.fetching}
 	<SkeletonContainer>
 		<Skeleton class="h-10" />
 	</SkeletonContainer>
-{:else if $collectionDetail.error}
+{:else if $collectionDetailQuery.error}
 	<Alert variant="error" size="sm" bordered>
-		{$collectionDetail.error.message}
+		{$collectionDetailQuery.error.message}
 	</Alert>
-{:else if $collectionDetail.data}
+{:else if $collectionDetailQuery.data}
 	<div class="flex gap-2 flex-row">
 		<div class="w-7/10 flex flex-col gap-2">
 			<GeneralInformationForm
@@ -175,7 +206,7 @@
 				bind:ok={generalFormOk}
 				disabled={loading}
 			/>
-			<ProductListForm collectionID={page.params.id} />
+			<ProductListForm collectionID={page.params.id} disabled={loading} />
 			<SeoForm
 				bind:slug={collectionUpdateInput.slug as string}
 				bind:seo={collectionUpdateInput.seo as SeoInput}
@@ -189,6 +220,7 @@
 			<AvailabilityForm
 				bind:addChannelListings={collectionChannelListingUpdateInput.addChannels!}
 				bind:removeChannels={collectionChannelListingUpdateInput.removeChannels!}
+				disabled={loading}
 			/>
 		</div>
 	</div>
