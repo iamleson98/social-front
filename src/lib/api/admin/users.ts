@@ -44,7 +44,9 @@ query UserDetail($id: ID, $email: String) {
       cityArea
       city
       postalCode
-      country{
+      isDefaultShippingAddress
+      isDefaultBillingAddress
+      country {
         code
         country
       }

@@ -92,10 +92,7 @@
 {/snippet}
 
 {#snippet status({ item }: { item: Order })}
-	<Badge
-		{...paymentStatusBadgeClass(item.paymentStatus)}
-		text={startCase(lowerCase(item.paymentStatus.replace(/_/g, ' ')))}
-	/>
+	<Badge {...paymentStatusBadgeClass(item.paymentStatus)} />
 {/snippet}
 
 {#snippet total({ item }: { item: Order })}
@@ -103,7 +100,8 @@
 {/snippet}
 
 <div class="bg-white rounded-lg border w-full border-gray-200 p-3 pb-6 flex flex-col gap-3">
-	<div class="flex flex-row gap-2 items-start">
+	<h3 class="font-semibold text-gray-700">Customer Information</h3>
+	<div class="flex flex-row gap-3 items-start">
 		<Input
 			label="First Name"
 			bind:value={firstName}
@@ -157,9 +155,12 @@
 
 	<div class="flex justify-between items-center">
 		<h3 class="font-semibold text-gray-700">Recent Orders</h3>
-		<Button variant="outline" size="sm">View all orders</Button>
+		<Button variant="outline" size="xs">View all orders</Button>
 	</div>
 	<Table columns={ORDER_TABLE_COLUMNS} items={orders} />
+	{#if orders.length <= 0}
+		<span class="text-gray-500 text-xs">This customer has no orders</span>
+	{/if}
 
 	<MetadataEditor title="Metadata" bind:data={metadata} />
 	<MetadataEditor title="Private Metadata" bind:data={privateMetadata} />

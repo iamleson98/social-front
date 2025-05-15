@@ -56,7 +56,7 @@
 <Accordion header={title}>
 	{#each data as item, idx (idx)}
 		<div class="flex gap-2 items-center mb-3">
-			<div class="flex items-start gap-2 w-9/10">
+			<div class="flex items-start gap-2 w-4/5">
 				<Input
 					placeholder="Key"
 					size="sm"
@@ -84,7 +84,7 @@
 				/>
 			</div>
 
-			<div class="w-1/10 text-right">
+			<div class="w-1/5 text-right">
 				<IconButton
 					icon={Trash}
 					size="sm"

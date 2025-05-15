@@ -109,5 +109,5 @@
 			lastOrderAt={orders.length > 0 ? orders[0].created : undefined}
 		/>
 	</div>
-	<ActionBar backButtonUrl={AppRoute.SETTINGS_CONFIGS_USERS()} {onUpdateClick} />
+	<ActionBar backButtonUrl={AppRoute.SETTINGS_CONFIGS_USERS()} {onUpdateClick} disabled={loading}/>
 {/if}
