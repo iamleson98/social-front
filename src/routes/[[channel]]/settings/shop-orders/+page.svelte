@@ -3,10 +3,9 @@
 	import { OrderSortField, type Order, type QueryOrdersArgs } from '$lib/gql/graphql';
 	import { formatCurrency, orderStatusBadgeClass, paymentStatusBadgeClass } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
-	import { lowerCase, startCase } from 'es-toolkit';
 	import { tranFunc } from '$i18n';
 	import { SHOP_ORDERS_QUERY } from '$lib/api/admin/orders';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 
 	const BATCH_LOAD = 20;
 

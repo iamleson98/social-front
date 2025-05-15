@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { IconContent } from '$lib/components/icons';
 	import { randomID } from '$lib/utils/utils';
-	import { IconButton } from '../Button';
-	import type { SocialColor, SocialSize } from '../common';
+	import { IconButton } from '$lib/components/ui/Button';
+	import type { SocialColor, SocialSize } from '$lib/components/ui/common';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import Label from './label.svelte';
 

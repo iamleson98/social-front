@@ -5,7 +5,7 @@
 	import { ChevronSort, CloseX, Icon } from '$lib/components/icons';
 	import { randomID } from '$lib/utils/utils';
 	import { fly } from 'svelte/transition';
-	import { Input, Label } from '../Input';
+	import { Input, Label } from '$lib/components/ui/Input';
 	import {
 		SELECT_CLASSES,
 		type SelectItemprops,
@@ -13,9 +13,9 @@
 		type MultiSelectProps,
 		SIZE_REDUCE_MAP
 	} from './types';
-	import { Badge } from '../badge';
 	import type { FocusEventHandler } from 'svelte/elements';
-	import { INPUT_CLASSES } from '../Input/input.types';
+	import { INPUT_CLASSES } from '$lib/components/ui/Input/input.types';
+	import Badge from '$lib/components/ui/Badge/Badge.svelte';
 
 	let {
 		value = $bindable<SelectOption[]>([]),

@@ -2,6 +2,7 @@
 	import { tranFunc } from '$i18n';
 	import { operationStore } from '$lib/api/operation';
 	import { SHOP_QUERY } from '$lib/api/shop';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Checkbox, Input, Label, RadioButton } from '$lib/components/ui/Input';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
@@ -112,6 +113,8 @@
 	};
 </script>
 
+<SectionHeader title="General Information" />
+
 <div class="flex gap-2 items-start">
 	<Input
 		label="Name"
@@ -205,7 +208,7 @@
 		bind:checked={allowUnpaidOrders}
 		{disabled}
 		size="sm"
-		subText={`Enables completing checkout with order before a successful payment. <div class="badge badge-outline badge-xs badge-warning">Preview</div>`}
+		subText={`Enables completing checkout with order before a successful payment. <div class="badge badge-outline badge-xs badge-info">Preview</div>`}
 		class="mb-3"
 	/>
 	<Checkbox
@@ -219,7 +222,7 @@
 				? MarkAsPaidStrategyEnum.TransactionFlow
 				: MarkAsPaidStrategyEnum.PaymentFlow;
 		}}
-		subText={`"Mark as paid" feature creates a Transaction - used by Payment Apps. <br /> If left unchecked it creates a Payment - used by Payment Plugins. <div class="badge badge-outline badge-xs badge-warning">Preview</div>`}
+		subText={`"Mark as paid" feature creates a Transaction - used by Payment Apps. <br /> If left unchecked it creates a Payment - used by Payment Plugins. <div class="badge badge-outline badge-xs badge-info">Preview</div>`}
 	/>
 	<Checkbox
 		label="Automatically complete checkouts when fully paid"
@@ -239,7 +242,7 @@
 		}}
 		{disabled}
 		size="sm"
-		subText={`When enabled, all transactions would require an additional step to be charged. <div class="badge badge-outline badge-xs badge-warning">Preview</div>`}
+		subText={`When enabled, all transactions would require an additional step to be charged. <div class="badge badge-outline badge-xs badge-info">Preview</div>`}
 	/>
 </div>
 

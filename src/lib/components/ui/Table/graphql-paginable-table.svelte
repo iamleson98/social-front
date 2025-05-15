@@ -5,7 +5,7 @@
 	import { operationStore } from '$lib/api/operation';
 	import { type PageInfo, type Query } from '$lib/gql/graphql';
 	import TableSkeleton from './table-skeleton.svelte';
-	import Alert from '../Alert/alert.svelte';
+	import { Alert } from '$lib/components/ui/Alert';
 	import { tick } from 'svelte';
 	import { get } from 'es-toolkit/compat';
 

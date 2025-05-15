@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { PRODUCT_LIST_QUERY_STORE } from '$lib/api';
-	import { COLLECTION_PRODUCTS_QUERY } from '$lib/api/admin/collections';
 	import { OpenEye } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import IconButton from '$lib/components/ui/Button/IconButton.svelte';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';

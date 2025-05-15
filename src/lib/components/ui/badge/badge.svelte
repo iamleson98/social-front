@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { CloseX, Icon } from '$lib/components/icons';
-	import { buttonVariantColorsMap } from '../Button/button.types';
+	import { buttonVariantColorsMap } from '$lib/components/ui/Button/button.types';
 	import { BADGE_SIZE_VARIANTS, type BadgeProps } from './types';
 
 	let {

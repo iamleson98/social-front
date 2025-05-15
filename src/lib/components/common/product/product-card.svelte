@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import { BurstSale, Heart, OpenEye } from '$lib/components/icons';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { AppRoute } from '$lib/utils';
 	import { MAX_RATING, MIN_RATING } from '$lib/utils/consts';
@@ -9,7 +9,7 @@
 	import { fade } from 'svelte/transition';
 	import type { Product } from '$lib/gql/graphql';
 	import { CHANNELS } from '$lib/utils/channels';
-	import { PRODUCT_PREVIEW_STORE } from '../../pages/home/common';
+	import { PRODUCT_PREVIEW_STORE } from '$lib/components/pages/home/common';
 
 	type ProductProps = {
 		product: Product;

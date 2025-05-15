@@ -6,7 +6,7 @@
 	import { operationStore } from '$lib/api/operation';
 	import { Dots, Edit, Trash } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import {
 		DropDown,

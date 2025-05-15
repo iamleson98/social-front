@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { CloseX } from '$lib/components/icons';
-	import { Button, IconButton } from '../Button';
+	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { modalSizeMap, type ModalProps } from './types';
 	import { fly } from 'svelte/transition';
 	import { tranFunc } from '$i18n';

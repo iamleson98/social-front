@@ -4,7 +4,7 @@
 	import { randomID } from '$lib/utils/utils';
 	import { debounceInput } from '$lib/actions/input-debounce';
 	import { tranFunc } from '$i18n';
-	import { INPUT_BUTTON_SIZE_MAP } from '../Button/button.types';
+	import { INPUT_BUTTON_SIZE_MAP } from '$lib/components/ui/Button/button.types';
 	import { INPUT_CLASSES, type InputProps } from './input.types';
 	import Label from './label.svelte';
 

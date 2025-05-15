@@ -5,6 +5,7 @@
 	import { z, object, string } from 'zod';
 	import type { SeoInput } from '$lib/gql/graphql';
 	import slugify from 'slugify';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
 
 	type Props = {
 		name: string;
@@ -63,12 +64,13 @@
 	$effect(() => {
 		if (name && isCreatePage) {
 			slug = slugify(name, { lower: true, strict: true });
+			seo.title = name;
 		}
 	});
 </script>
 
 <div class="bg-white rounded-lg border w-full border-gray-200 p-3">
-	<div class="font-semibold text-gray-700">Search engine preview</div>
+	<SectionHeader title="Search engine preview" />
 	<Accordion header="Search engine preview" class="mt-2">
 		<Input
 			label="Slug"

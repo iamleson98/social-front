@@ -13,8 +13,8 @@
 		UserCog
 	} from '$lib/components/icons';
 	import { scale } from 'svelte/transition';
-	import { Input } from '../ui/Input';
-	import { IconButton } from '../ui/Button';
+	import { Input } from '$lib/components/ui/Input';
+	import { IconButton } from '$lib/components/ui/Button';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { USER_ME_QUERY_STORE } from '$lib/api';
 	import type { Query, User } from '$lib/gql/graphql';
@@ -24,7 +24,7 @@
 	import { ACCESS_TOKEN_KEY, HTTPStatusSuccess } from '$lib/utils/consts';
 	import { toastStore } from '$lib/stores/ui/toast';
 	import { afterNavigate, beforeNavigate, invalidateAll } from '$app/navigation';
-	import { DropDown } from '../ui/Dropdown';
+	import { DropDown } from '$lib/components/ui/Dropdown';
 	import { READ_ONLY_USER_STORE, setUserStoreValue } from '$lib/stores/auth/user';
 	import { Tween } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';

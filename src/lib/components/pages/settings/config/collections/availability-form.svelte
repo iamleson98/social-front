@@ -14,6 +14,7 @@
 	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
 
 	type Props = {
 		addChannelListings?: PublishableChannelListingInput[];
@@ -131,7 +132,7 @@
 		<Alert size="sm" bordered variant="error">{$channelsQuery.error.message}</Alert>
 	{:else if $channelsQuery.data}
 		<div class="bg-white rounded-lg border w-full border-gray-200 p-3 mb-3">
-			<div class="text-gray-700 font-semibold">Availability</div>
+			<SectionHeader title="Availability" />
 			<div class="text-xs text-gray-500">In {addChannelListings.length} channels</div>
 			<MultiSelect
 				size="sm"

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { AppRoute } from '$lib/utils';
-	import { Facebook, Instagram, Twitter } from '../icons/SvgOuterIcon';
+	import { Facebook, Instagram, Twitter } from '$lib/components/icons/SvgOuterIcon';
 	import { SUPPORTED_LANGUAGES, switchTranslationLanguage } from '$i18n';
-	import { DropDown, MenuItem } from '../ui/Dropdown';
-	import { Button } from '../ui';
+	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
+	import { Button } from '$lib/components/ui';
 	import { clientSideGetCookieOrDefault, clientSideSetCookie } from '$lib/utils/cookies';
 	import { LANGUAGE_KEY } from '$lib/utils/consts';
 	import { onMount } from 'svelte';

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { createEventDispatcher, type Snippet } from 'svelte';
-	import Close from '../icons/Close.svelte';
-	import Button from '../Button/Button.svelte';
+	import { CloseX } from '$lib/components/icons';
+	import { Button } from '$lib/components/ui/Button';
 	import { trackModal } from './modal-sore';
 	import { writable } from 'svelte/store';
-	import type { SocialSize } from '../common';
+	import type { SocialSize } from '$lib/components/ui/common';
 	import { randomString } from '$lib/utils/utils';
 
 	type Props = {

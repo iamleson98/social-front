@@ -5,14 +5,14 @@
 	import { ChevronSort, CloseX, Icon } from '$lib/components/icons';
 	import { randomID } from '$lib/utils/utils';
 	import { fly } from 'svelte/transition';
-	import { Input } from '../Input';
+	import { Input } from '$lib/components/ui/Input';
 	import {
 		SELECT_CLASSES,
 		type SelectItemprops,
 		type SelectOption,
 		type SelectProps
 	} from './types';
-	import { INPUT_CLASSES } from '../Input/input.types';
+	import { INPUT_CLASSES } from '$lib/components/ui/Input/input.types';
 
 	let {
 		options,

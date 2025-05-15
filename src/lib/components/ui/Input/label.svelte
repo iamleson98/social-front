@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { SocialVariant } from '$lib/utils';
-	import type { SocialSize } from '../common';
+	import type { SocialSize } from '$lib/components/ui/common';
 	import { INPUT_LABEL_SIZE_STYLE_MAP, INPUT_CLASSES } from './input.types';
 
 	type Props = {

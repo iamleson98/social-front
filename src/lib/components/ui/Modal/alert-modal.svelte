@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import { AlertCircle, Icon } from '$lib/components/icons';
-	import { Button } from '../Button';
+	import { Button } from '$lib/components/ui/Button';
 	import Modal from './modal.svelte';
 	import { type ModalProps } from './types';
 

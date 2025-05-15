@@ -3,9 +3,9 @@
 	import { cloneDate, getCalendarDays, getMonthLength, type CalendarDay } from './date-utils';
 	import { getInnerLocale } from './locale';
 	import type { Locale } from './types';
-	import { IconButton } from '../Button';
+	import { IconButton } from '$lib/components/ui/Button';
 	import { ChevronLeft, ChevronRight } from '$lib/components/icons';
-	import { Select, type SelectOption } from '../select';
+	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import type { Snippet } from 'svelte';
 	import TimePicker from './TimePicker.svelte';
 

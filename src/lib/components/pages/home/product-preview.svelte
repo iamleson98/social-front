@@ -4,12 +4,12 @@
 	import { slideShowManager } from '$lib/stores/ui/slideshow';
 	import { CHANNEL_KEY, COUNTRY_CODE_KEY } from '$lib/utils/consts';
 	import { onMount } from 'svelte';
-	import ProductSlideShowPannel from '../products/detail/product-slide-show-pannel.svelte';
+	import ProductSlideShowPannel from '$lib/components/pages/products/detail/product-slide-show-pannel.svelte';
 	import { operationStore } from '$lib/api/operation';
 	import { PRODUCT_DETAIL_QUERY } from '$lib/api';
 	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import { DEFAULT_CHANNEL } from '$lib/utils/channels';
-	import ProductPricingPannel from '../products/detail/product-pricing-pannel.svelte';
+	import ProductPricingPannel from '$lib/components/pages/products/detail/product-pricing-pannel.svelte';
 
 	type Props = {
 		productSlug: string;

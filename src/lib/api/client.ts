@@ -11,12 +11,12 @@ import {
 	type OperationResult,
 	type OperationType,
 } from '@urql/core';
-import { AppRoute, getCookieByKey } from '../utils';
+import { AppRoute, getCookieByKey } from '$lib/utils';
 import { error, redirect, type RequestEvent } from '@sveltejs/kit';
 import { browser } from '$app/environment';
-import { ACCESS_TOKEN_KEY, CSRF_TOKEN_KEY, HTTPStatusTemporaryRedirect, HTTPStatusUnauthorized, REFRESH_TOKEN_KEY } from '../utils/consts';
+import { ACCESS_TOKEN_KEY, CSRF_TOKEN_KEY, HTTPStatusTemporaryRedirect, HTTPStatusUnauthorized, REFRESH_TOKEN_KEY } from '$lib/utils/consts';
 import { authExchange, type AuthUtilities } from '@urql/exchange-auth';
-import type { PermissionEnum, Query, User } from '../gql/graphql';
+import type { PermissionEnum, Query, User } from '$lib/gql/graphql';
 import type { CookieSerializeOptions } from 'cookie';
 import { retryExchange } from '@urql/exchange-retry';
 import { PUBLIC_GRAPHQL_API_END_POINT } from '$env/static/public';

@@ -8,8 +8,9 @@
 	import type { MetadataInput } from '$lib/gql/graphql';
 	import { IMAGE_EXTENSION_REGEX } from '$lib/utils/consts';
 	import { object, string, z } from 'zod';
-	import MetadataEditor from '../../common/metadata-editor.svelte';
+	import MetadataEditor from '$lib/components/pages/settings/common/metadata-editor.svelte';
 	import { IconButton } from '$lib/components/ui/Button';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
 
 	type Props = {
 		name: string;
@@ -94,7 +95,7 @@
 </script>
 
 <div class="bg-white rounded-lg border w-full border-gray-200 p-3 pb-6 flex flex-col gap-3">
-	<h2 class="text-lg font-semibold">General Information</h2>
+	<SectionHeader title="General Information" />
 	<Input
 		label="Name"
 		bind:value={name}

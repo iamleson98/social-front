@@ -2,9 +2,9 @@
 	import { tranFunc } from '$i18n';
 	import { ChevronLeft, ChevronRight, GripVertical, Icon } from '$lib/components/icons';
 	import { OrderDirection } from '$lib/gql/graphql';
-	import { IconButton } from '../Button';
-	import Button from '../Button/Button.svelte';
-	import { DropDown, type MenuItemProps } from '../Dropdown';
+	import { IconButton } from '$lib/components/ui/Button';
+	import Button from '$lib/components/ui/Button/Button.svelte';
+	import { DropDown, type MenuItemProps } from '$lib/components/ui/Dropdown';
 	import {
 		ROW_OPTIONS,
 		SortIconsMap,

@@ -6,6 +6,7 @@
 	import { Modal } from '$lib/components/ui/Modal';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import type { Product, ProductOrderField, QueryProductsArgs } from '$lib/gql/graphql';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
 
 	type Props = {
 		collectionID?: string;
@@ -100,7 +101,7 @@
 {/snippet}
 
 <div class="mb-4 flex items-center justify-between">
-	<div class="text-gray-700 font-semibold">Products in collection</div>
+	<SectionHeader title="Products in collection" />
 	<Button size="xs" onclick={handleClickOpenProductListModal} disabled={shouldDisable}>
 		Assign Product
 	</Button>

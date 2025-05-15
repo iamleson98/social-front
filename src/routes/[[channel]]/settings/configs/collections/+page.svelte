@@ -3,7 +3,7 @@
 	import { COLLECTION_DELETE_MUTATION, COLLECTIONS_QUERY } from '$lib/api/collections';
 	import { Dots, Edit, Trash } from '$lib/components/icons';
 	import Filter from '$lib/components/pages/settings/config/collections/filter.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown, type MenuItemProps } from '$lib/components/ui/Dropdown';
 	import { Input } from '$lib/components/ui/Input';

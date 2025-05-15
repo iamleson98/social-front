@@ -5,8 +5,8 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { fly } from 'svelte/transition';
 	import { ALERT_VARIANT_STYLE_MAP, ALERT_SIZE_STYLE_MAP } from './types';
-	import type { SocialColor, SocialSize } from '../common';
-	import { IconButton } from '../Button';
+	import type { SocialColor, SocialSize } from '$lib/components/ui/common';
+	import { IconButton } from '$lib/components/ui/Button';
 
 	type Props = {
 		variant?: SocialVariant;

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Skeleton, SkeletonContainer } from '../Skeleton';
+	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import Table from './table.svelte';
 
 	type Props = {

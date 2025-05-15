@@ -3,7 +3,7 @@
 	import SingleMenu from './single-menu.svelte';
 	import { BreadCrumb } from '$lib/components/ui/Breadcrumb';
 	import { tick } from 'svelte';
-	import { Checkbox } from '../Input';
+	import { Checkbox } from '$lib/components/ui/Input';
 
 	let { items, onSelect, onDeselect, onSelectWhole, disabled }: MenuProps = $props();
 

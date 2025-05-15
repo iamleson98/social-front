@@ -1,11 +1,10 @@
 <script lang="ts">
 	import type { TypedDocumentNode } from '@urql/core';
-	import type { SocialSize } from '../ui/common';
-	import { operationStore } from '$lib/api/operation';
-	import { Select, type SelectOption } from '../ui/select';
-	import { SkeletonContainer } from '../ui/Skeleton';
-	import Skeleton from '../ui/Skeleton/skeleton.svelte';
-	import { Alert } from '../ui/Alert';
+	import type { SocialSize } from '$lib/components/ui/common';
+	import { Select, type SelectOption } from '$lib/components/ui/select';
+	import { SkeletonContainer } from '$lib/components/ui/Skeleton';
+	import Skeleton from '$lib/components/ui/Skeleton/skeleton.svelte';
+	import { Alert } from '$lib/components/ui/Alert';
 	import { onMount } from 'svelte';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 

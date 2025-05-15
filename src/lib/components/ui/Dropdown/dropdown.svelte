@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Popover } from '../Popover';
+	import { Popover } from '$lib/components/ui/Popover';
 	import MenuItem from './menuItem.svelte';
 	import type { DropdownProps } from './types';
 

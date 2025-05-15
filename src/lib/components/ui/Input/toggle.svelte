@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { randomID } from '$lib/utils/utils';
 	import type { HTMLInputAttributes } from 'svelte/elements';
-	import type { SocialSize } from '../common';
+	import type { SocialSize } from '$lib/components/ui/common';
 	import { TOGGLE_SIZES } from './input.types';
 	import Label from './label.svelte';
 
