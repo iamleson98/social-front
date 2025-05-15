@@ -8,14 +8,12 @@
 	};
 
 	let { children }: Props = $props();
-
-	const newChannelLink = AppRoute.SETTINGS_CONFIGS_CHANNEL_NEW();
 </script>
 
 <HeadBar
 	listingPageHref={AppRoute.SETTINGS_CONFIGS_CHANNELS()}
 	listingPageLabel="Channels"
-	newPageHref={newChannelLink}
+	newPageHref={AppRoute.SETTINGS_CONFIGS_CHANNEL_NEW()}
 	newPageLabel="New channel"
 	detailPageLabelGetter={(page) => page.params.slug}
 	detailRouteID="/[[channel]]/settings/configs/channels/[slug]"

@@ -14,7 +14,6 @@
 	import { Button } from '$lib/components/ui';
 	import { AppRoute } from '$lib/utils';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { toastStore } from '$lib/stores/ui/toast';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { USER_DETAIL_QUERY } from '$lib/api/admin/users';
 	import { goto } from '$app/navigation';
@@ -54,13 +53,9 @@
 
 		loading = false;
 
-		if (preHandleErrorOnGraphqlResult(result, 'staffUpdate')) {
+		if (preHandleErrorOnGraphqlResult(result, 'staffUpdate', 'Staff updated successfully')) {
 			return;
 		}
-		toastStore.send({
-			variant: 'success',
-			message: 'Staff updated successfully'
-		});
 
 		staffDetailQuery.reexecute({
 			variables: {
@@ -90,13 +85,9 @@
 
 		loading = false;
 
-		if (preHandleErrorOnGraphqlResult(result, 'staffDelete')) return;
-		toastStore.send({
-			variant: 'success',
-			message: 'Staff deleted successfully'
-		});
+		if (preHandleErrorOnGraphqlResult(result, 'staffDelete', 'Staff deleted successfully')) return;
 
-		goto(AppRoute.SETTINGS_CONFIGS_STAFFS());
+		await goto(AppRoute.SETTINGS_CONFIGS_STAFFS());
 	};
 </script>
 

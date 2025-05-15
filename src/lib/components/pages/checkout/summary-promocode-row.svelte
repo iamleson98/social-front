@@ -12,7 +12,6 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { CHECKOUT_REMOVE_PROMO_CODE_MUTATION } from '$lib/api/checkout';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
-	import { toastStore } from '$lib/stores/ui/toast';
 
 	type Props = {
 		editable?: boolean;
@@ -41,21 +40,17 @@
 			: { promoCodeId };
 		variables.checkoutId = checkoutId;
 
-		const removeResult = await GRAPHQL_CLIENT
-			.mutation<
-				Pick<Mutation, 'checkoutRemovePromoCode'>,
-				CustomMutationCheckoutRemovePromoCodeArgs
-			>(CHECKOUT_REMOVE_PROMO_CODE_MUTATION, variables)
-			.toPromise();
+		const removeResult = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'checkoutRemovePromoCode'>,
+			CustomMutationCheckoutRemovePromoCodeArgs
+		>(CHECKOUT_REMOVE_PROMO_CODE_MUTATION, variables);
 
 		loading = false;
 
-		if (preHandleErrorOnGraphqlResult(removeResult)) return;
-
-		toastStore.send({
-			message: 'Promo code removed',
-			variant: 'success'
-		});
+		if (
+			preHandleErrorOnGraphqlResult(removeResult, 'checkoutRemovePromoCode', 'Promo code removed')
+		)
+			return;
 	};
 </script>
 

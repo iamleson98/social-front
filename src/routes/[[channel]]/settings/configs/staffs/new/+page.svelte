@@ -4,7 +4,6 @@
 	import { Button } from '$lib/components/ui';
 	import { AppRoute } from '$lib/utils';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { toastStore } from '$lib/stores/ui/toast';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import StaffForm from '$lib/components/pages/settings/config/staff/staff-form.svelte';
 	import { goto } from '$app/navigation';
@@ -35,15 +34,9 @@
 
 		loading = false;
 
-		if (preHandleErrorOnGraphqlResult(result, 'staffCreate')) {
-			return;
-		}
-		toastStore.send({
-			variant: 'success',
-			message: 'Staff created successfully'
-		});
+		if (preHandleErrorOnGraphqlResult(result, 'staffCreate', 'Staff created successfully')) return;
 
-		goto(AppRoute.SETTINGS_CONFIGS_STAFFS());
+		await goto(AppRoute.SETTINGS_CONFIGS_STAFFS());
 	};
 </script>
 
@@ -58,9 +51,7 @@
 		isCreatePage={true}
 	/>
 
-	<div
-		class="mt-5 sticky bottom-0 text-right bg-white p-2 border rounded-lg border-gray-200"
-	>
+	<div class="mt-5 sticky bottom-0 text-right bg-white p-2 border rounded-lg border-gray-200">
 		<Button
 			variant="light"
 			color="gray"

@@ -23,13 +23,11 @@
 	});
 
 	onMount(() => {
-		const unsub = checkoutQueryStore.subscribe((result) => {
+		return checkoutQueryStore.subscribe((result) => {
 			if (preHandleErrorOnGraphqlResult(result)) return;
 
 			checkoutStore.set(result.data?.checkout as Checkout);
 		});
-
-		return unsub;
 	});
 </script>
 

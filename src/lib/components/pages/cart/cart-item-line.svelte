@@ -57,7 +57,7 @@
 		>(CHECKOUT_LINES_DELETE_MUTATION, {
 			linesIds: [line.id],
 			id: checkoutId
-		}).toPromise();
+		});
 
 		loading = false; //
 
@@ -86,7 +86,7 @@
 		>(CHECKOUT_LINES_UPDATE_MUTATION, {
 			lines: [{ lineId: line.id, quantity }],
 			id: checkoutId
-		}).toPromise();
+		});
 
 		loading = false; //
 

@@ -98,12 +98,10 @@
 	$effect(() => {
 		if (!checkoutAddLineStore) return;
 
-		const unsub = checkoutAddLineStore.subscribe((result) => {
+		return checkoutAddLineStore.subscribe((result) => {
 			if (preHandleErrorOnGraphqlResult(result, 'checkoutLinesAdd')) return;
 			checkoutStore.set(result.data?.checkoutLinesAdd?.checkout as Checkout);
 		});
-
-		return () => unsub();
 	});
 
 	const handleAddVariantToCart = async () => {

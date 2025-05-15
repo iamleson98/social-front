@@ -8,14 +8,12 @@
 	};
 
 	let { children }: Props = $props();
-
-	const newWarehouseLink = AppRoute.SETTINGS_CONFIGS_WAREHOUSE_NEW();
 </script>
 
 <HeadBar
 	listingPageHref={AppRoute.SETTINGS_CONFIGS_WAREHOUSES()}
 	listingPageLabel="Warehouses"
-	newPageHref={newWarehouseLink}
+	newPageHref={AppRoute.SETTINGS_CONFIGS_WAREHOUSE_NEW()}
 	newPageLabel="New warehouse"
 	detailPageLabelGetter={(page) => page.params.id}
 	detailRouteID="/[[channel]]/settings/configs/warehouses/[id]"

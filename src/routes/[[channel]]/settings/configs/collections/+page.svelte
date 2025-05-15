@@ -17,7 +17,6 @@
 		type QueryCollectionsArgs
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
-	import { toastStore } from '$lib/stores/ui/toast';
 	import { AppRoute } from '$lib/utils';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 
@@ -57,11 +56,7 @@
 			id: id
 		});
 
-		if (preHandleErrorOnGraphqlResult(result, 'collectionDelete')) return;
-		toastStore.send({
-			variant: 'success',
-			message: 'Collection deleted successfully'
-		});
+		if (preHandleErrorOnGraphqlResult(result, 'collectionDelete', 'Collection deleted successfully')) return;
 
 		forceReExecuteGraphqlQuery = true;
 	};

@@ -8,14 +8,12 @@
 	};
 
 	let { children }: Props = $props();
-
-	const newCategoryLink = AppRoute.SETTINGS_CONFIGS_CATEGORY_NEW();
 </script>
 
 <HeadBar
 	listingPageHref={AppRoute.SETTINGS_CONFIGS_CATEGORIES()}
 	listingPageLabel="Categories"
-	newPageHref={newCategoryLink}
+	newPageHref={AppRoute.SETTINGS_CONFIGS_CATEGORY_NEW()}
 	newPageLabel="New category"
 	detailRouteID="/[[channel]]/settings/configs/categories/[id]"
 	detailPageLabelGetter={(page) => page.params.id}

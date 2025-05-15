@@ -83,7 +83,7 @@
 	const setLoading = (load: boolean) => (loading = load);
 
 	const createProductMedias = async (productID: string) => {
-		if (!productMedias.length) return;
+		if (!productMedias.length) return false;
 
 		const operations = productMedias.map((media) => {
 			return GRAPHQL_CLIENT.mutation<
@@ -101,7 +101,7 @@
 				{
 					requestPolicy: 'network-only'
 				}
-			).toPromise();
+			);
 		});
 
 		const results = await Promise.all(operations);
@@ -115,6 +115,7 @@
 		 * For that API to work, we have to assign just created media images to media state,
 		 * So the variant editors know how to mapping them
 		 */
+		return numFails > 0;
 	};
 
 	const handleSubmit = async () => {
@@ -206,7 +207,9 @@
 		}
 
 		// 4) create product medias
-		await createProductMedias(productCreateResult.data?.productCreate?.product?.id as string);
+		hasError = await createProductMedias(productCreateResult.data?.productCreate?.product?.id as string);
+		setLoading(false)
+		if (hasError) return;
 
 		toastStore.send({
 			variant: 'success',

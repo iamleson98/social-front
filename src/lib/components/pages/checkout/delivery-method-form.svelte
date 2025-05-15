@@ -4,7 +4,6 @@
 	import type { Maybe, Mutation, MutationCheckoutDeliveryMethodUpdateArgs } from '$lib/gql/graphql';
 	import { CHECKOUT_UPDATE_DELIVERY_METHOD_MUTATION } from '$lib/api/checkout';
 	import { checkoutStore } from '$lib/stores/app';
-	import { toastStore } from '$lib/stores/ui/toast';
 	import { formatMoney, preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { READ_ONLY_USER_STORE } from '$lib/stores/auth/user';
 
@@ -22,33 +21,28 @@
 	$effect(() => {
 		if (!selectedShippingMethodId || !$checkoutStore) return;
 
-		updating = true; //
-		GRAPHQL_CLIENT
-			.mutation<
-				Pick<Mutation, 'checkoutDeliveryMethodUpdate'>,
-				MutationCheckoutDeliveryMethodUpdateArgs
-			>(
-				CHECKOUT_UPDATE_DELIVERY_METHOD_MUTATION,
-				{
-					id: $checkoutStore?.id,
-					deliveryMethodId: selectedShippingMethodId
-				},
-				{ requestPolicy: 'network-only' }
-			)
-			.toPromise()
-			.then((result) => {
-				if (preHandleErrorOnGraphqlResult(result, 'checkoutDeliveryMethodUpdate')) return;
-			})
-			.catch((err) =>
-				toastStore.send({
-					message: err,
-					variant: 'error'
-				})
-			)
-			.finally(() => {
-				updating = false; //
-			});
+		updateDeliveryMethod();
 	});
+
+	const updateDeliveryMethod = async () => {
+		updating = true; //
+
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'checkoutDeliveryMethodUpdate'>,
+			MutationCheckoutDeliveryMethodUpdateArgs
+		>(
+			CHECKOUT_UPDATE_DELIVERY_METHOD_MUTATION,
+			{
+				id: $checkoutStore?.id,
+				deliveryMethodId: selectedShippingMethodId
+			},
+			{ requestPolicy: 'network-only' }
+		);
+
+		updating = false; //
+
+		if (preHandleErrorOnGraphqlResult(result, 'checkoutDeliveryMethodUpdate', "Delivery method updated")) return;
+	};
 </script>
 
 <div class="mt-2 bg-white p-3 rounded-lg border">

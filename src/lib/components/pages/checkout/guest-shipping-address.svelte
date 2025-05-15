@@ -23,7 +23,6 @@
 	} from '$lib/api/checkout';
 	import { operationStore } from '$lib/api/operation';
 	import { checkoutStore } from '$lib/stores/app';
-	import { toastStore } from '$lib/stores/ui/toast';
 	import { getCountryName } from '$lib/utils/address';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import AddressForm from './address-form.svelte';
@@ -43,34 +42,33 @@
 		pause: !$checkoutStore?.channel.slug || !!$checkoutStore?.shippingAddress
 	});
 
-	const handleAttachAddressToCheckout = async (addressInput: AddressInput, type?: AddressTypeEnum) => {
+	const handleAttachAddressToCheckout = async (
+		addressInput: AddressInput,
+		type?: AddressTypeEnum
+	) => {
 		const validationRules: CheckoutAddressValidationRules = {
 			checkFieldsFormat: true,
 			checkRequiredFields: true,
 			enableFieldsNormalization: true
 		};
 
-		const updateShippingAddressMutation = GRAPHQL_CLIENT
-			.mutation<
-				Pick<Mutation, 'checkoutShippingAddressUpdate'>,
-				MutationCheckoutShippingAddressUpdateArgs
-			>(CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION, {
-				shippingAddress: addressInput,
-				id: $checkoutStore?.id,
-				validationRules
-			})
-			.toPromise();
+		const updateShippingAddressMutation = GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'checkoutShippingAddressUpdate'>,
+			MutationCheckoutShippingAddressUpdateArgs
+		>(CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION, {
+			shippingAddress: addressInput,
+			id: $checkoutStore?.id,
+			validationRules
+		});
 
-		const updateBillingAddressMutation = GRAPHQL_CLIENT
-			.mutation<
-				Pick<Mutation, 'checkoutBillingAddressUpdate'>,
-				MutationCheckoutBillingAddressUpdateArgs
-			>(CHECKOUT_BILLING_ADDRESS_UPDATE_MUTATION, {
-				billingAddress: addressInput,
-				id: $checkoutStore?.id,
-				validationRules
-			})
-			.toPromise();
+		const updateBillingAddressMutation = GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'checkoutBillingAddressUpdate'>,
+			MutationCheckoutBillingAddressUpdateArgs
+		>(CHECKOUT_BILLING_ADDRESS_UPDATE_MUTATION, {
+			billingAddress: addressInput,
+			id: $checkoutStore?.id,
+			validationRules
+		});
 
 		updatingCHeckoutAddresses = true; //
 		const updateResult = await Promise.all([
@@ -79,21 +77,21 @@
 		]);
 		updatingCHeckoutAddresses = false; //
 
-		if (preHandleErrorOnGraphqlResult(updateResult[0]) || preHandleErrorOnGraphqlResult(updateResult[1])) return;
-
-		const shippingAddressData = updateResult[0].data?.checkoutShippingAddressUpdate;
-		const billingAddressData = updateResult[1].data?.checkoutBillingAddressUpdate;
-
-		if (shippingAddressData?.errors.length || billingAddressData?.errors.length) {
-			toastStore.send({
-				variant: 'error',
-				message: (shippingAddressData?.errors[0].message ||
-					billingAddressData?.errors[0].message) as string
-			});
+		if (
+			preHandleErrorOnGraphqlResult(
+				updateResult[0],
+				'checkoutShippingAddressUpdate',
+				'Shipping address updated'
+			) ||
+			preHandleErrorOnGraphqlResult(
+				updateResult[1],
+				'checkoutBillingAddressUpdate',
+				'Billing address updated'
+			)
+		)
 			return;
-		}
 
-		checkoutStore.set(shippingAddressData?.checkout as Checkout);
+		checkoutStore.set(updateResult[0].data?.checkoutShippingAddressUpdate?.checkout as Checkout);
 		showAddressEdit = false;
 		scrollTo({ top: 0, behavior: 'smooth' });
 	};

@@ -64,11 +64,10 @@
 
 		loading = false;
 
-		if (preHandleErrorOnGraphqlResult(result, 'passwordChange')) return;
-		toastStore.send({
-			message: 'Update success',
-			variant: 'success'
-		});
+		if (
+			preHandleErrorOnGraphqlResult(result, 'passwordChange', $tranFunc('settings.accountUpdated'))
+		)
+			return;
 	};
 </script>
 

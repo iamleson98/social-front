@@ -21,7 +21,6 @@
 		type TableColumnProps
 	} from '$lib/components/ui/Table';
 	import type { Channel, Mutation, MutationChannelDeleteArgs, Query } from '$lib/gql/graphql';
-	import { toastStore } from '$lib/stores/ui/toast';
 	import { AppRoute } from '$lib/utils';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
@@ -116,11 +115,7 @@
 
 		loading = false;
 
-		if (preHandleErrorOnGraphqlResult(result, 'channelDelete')) return;
-		toastStore.send({
-			variant: 'success',
-			message: 'Channel deleted successfully'
-		});
+		if (preHandleErrorOnGraphqlResult(result, 'channelDelete', 'Channel deleted successfully')) return;
 
 		channelToDeleteId = '';
 		channelToReplaceId = '';

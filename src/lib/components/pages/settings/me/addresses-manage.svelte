@@ -26,7 +26,6 @@
 		ACCOUNT_SET_DEFAULT_ADDRESS_MUTATION
 	} from '$lib/api/account';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
-	import { toastStore } from '$lib/stores/ui/toast';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { ME_PAGE_USER_STORE } from '$lib/stores/app/me';
 	import { tranFunc } from '$i18n';
@@ -54,14 +53,17 @@
 
 		loading = false; //
 
-		if (preHandleErrorOnGraphqlResult(result, 'accountAddressUpdate')) return;
+		if (
+			preHandleErrorOnGraphqlResult(
+				result,
+				'accountAddressUpdate',
+				$tranFunc('settings.addrUpdated')
+			)
+		)
+			return;
 
 		// hide update form
 		addressUpdateInputInitValue = undefined;
-		toastStore.send({
-			variant: 'success',
-			message: $tranFunc('settings.addrUpdated')
-		});
 
 		// update user state
 		$ME_PAGE_USER_STORE = {
@@ -83,12 +85,15 @@
 
 		loading = false; //
 
-		if (preHandleErrorOnGraphqlResult(result, 'accountAddressCreate')) return;
+		if (
+			preHandleErrorOnGraphqlResult(
+				result,
+				'accountAddressCreate',
+				$tranFunc('settings.addrCreated')
+			)
+		)
+			return;
 
-		toastStore.send({
-			variant: 'success',
-			message: $tranFunc('settings.addrCreated')
-		});
 		$ME_PAGE_USER_STORE = {
 			...$ME_PAGE_USER_STORE,
 			addresses: result.data?.accountAddressCreate?.user?.addresses || []
@@ -108,11 +113,14 @@
 
 		loading = false; //
 
-		if (preHandleErrorOnGraphqlResult(result, 'accountAddressDelete')) return;
-		toastStore.send({
-			variant: 'success',
-			message: $tranFunc('settings.addrDeleted')
-		});
+		if (
+			preHandleErrorOnGraphqlResult(
+				result,
+				'accountAddressDelete',
+				$tranFunc('settings.addrDeleted')
+			)
+		)
+			return;
 
 		$ME_PAGE_USER_STORE = {
 			...$ME_PAGE_USER_STORE,
@@ -133,12 +141,14 @@
 
 		loading = false; //
 
-		if (preHandleErrorOnGraphqlResult(result, 'accountSetDefaultAddress')) return;
-
-		toastStore.send({
-			variant: 'success',
-			message: $tranFunc('settings.addrUpdated')
-		});
+		if (
+			preHandleErrorOnGraphqlResult(
+				result,
+				'accountSetDefaultAddress',
+				$tranFunc('settings.addrUpdated')
+			)
+		)
+			return;
 
 		$ME_PAGE_USER_STORE = {
 			...$ME_PAGE_USER_STORE,

@@ -25,12 +25,12 @@
 		class: className = ''
 	}: Props = $props();
 
-	const DISMISS_COLOR = ((): SocialColor => {
+	let dismissColor = $derived.by<SocialColor>(() => {
 		if (variant === 'error') return 'red';
 		if (variant === 'info') return 'blue';
 		if (variant === 'warning') return 'orange';
 		return 'green';
-	})();
+	});
 
 	let show = $state(true);
 </script>
@@ -55,7 +55,7 @@
 					rounded
 					size="xs"
 					variant="light"
-					color={DISMISS_COLOR}
+					color={dismissColor}
 				/>
 			</div>
 		{/if}

@@ -13,7 +13,6 @@
 	} from '$lib/gql/graphql';
 	import { ME_PAGE_USER_STORE } from '$lib/stores/app/me';
 	import { setUserStoreValue } from '$lib/stores/auth';
-	import { toastStore } from '$lib/stores/ui/toast';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { object, string, z } from 'zod';
 
@@ -80,11 +79,8 @@
 
 		loading = false; //
 
-		if (preHandleErrorOnGraphqlResult(result, 'accountUpdate')) return;
-		toastStore.send({
-			message: $tranFunc('settings.accountUpdated'),
-			variant: 'success'
-		});
+		if (preHandleErrorOnGraphqlResult(result, 'accountUpdate', $tranFunc('settings.accountUpdated'))) return;
+
 		$ME_PAGE_USER_STORE = {
 			...$ME_PAGE_USER_STORE,
 			...userInfoInputs
