@@ -67,9 +67,6 @@
 			{
 				id: page.params.id,
 				input: userInput
-			},
-			{
-				requestPolicy: 'network-only'
 			}
 		);
 

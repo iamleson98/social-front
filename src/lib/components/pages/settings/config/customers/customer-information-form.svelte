@@ -8,8 +8,8 @@
 	import dayjs from 'dayjs';
 	import { Badge } from '$lib/components/ui/badge';
 	import { paymentStatusBadgeClass } from '$lib/utils/utils';
-	import { lowerCase, startCase } from 'es-toolkit';
 	import { Button } from '$lib/components/ui';
+	import { Alert } from '$lib/components/ui/Alert';
 
 	type Props = {
 		firstName: string;
@@ -138,7 +138,7 @@
 		subText={customerFormErrors.email?.length ? customerFormErrors.email[0] : undefined}
 	/>
 
-	<Checkbox label="Is active" bind:checked={isActive} />
+	<Checkbox label="Active" bind:checked={isActive} />
 
 	<TextArea
 		bind:value={note}
@@ -153,13 +153,14 @@
 		subText={customerFormErrors.note?.length ? customerFormErrors.note[0] : undefined}
 	/>
 
-	<div class="flex justify-between items-center">
-		<h3 class="font-semibold text-gray-700">Recent Orders</h3>
-		<Button variant="outline" size="xs">View all orders</Button>
-	</div>
-	<Table columns={ORDER_TABLE_COLUMNS} items={orders} />
 	{#if orders.length <= 0}
-		<span class="text-gray-500 text-xs">This customer has no orders</span>
+		<Alert variant="info" size="sm" bordered={false}>This customer has no orders</Alert>
+	{:else}
+		<div class="flex justify-between items-center">
+			<h3 class="font-semibold text-gray-700">Recent Orders</h3>
+			<Button variant="light" size="xs">View all orders</Button>
+		</div>
+		<Table columns={ORDER_TABLE_COLUMNS} items={orders} />
 	{/if}
 
 	<MetadataEditor title="Metadata" bind:data={metadata} />

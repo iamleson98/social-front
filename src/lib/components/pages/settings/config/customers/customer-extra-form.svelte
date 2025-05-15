@@ -1,13 +1,14 @@
 <script lang="ts">
 	import UserAddress from '$lib/components/common/user-address/user-address.svelte';
 	import { Accordion } from '$lib/components/ui/Accordion';
+	import { Alert } from '$lib/components/ui/Alert';
 	import { type Address } from '$lib/gql/graphql';
 	import dayjs from 'dayjs';
 
 	type Props = {
 		addresses: Address[];
 		lastLoginTime: string;
-		lastOrderAt?: string;
+		lastOrderAt?: Date | string;
 	};
 
 	let { addresses, lastLoginTime, lastOrderAt }: Props = $props();
@@ -17,19 +18,19 @@
 </script>
 
 <div class="flex flex-col gap-3 flex-1 w-4/10">
-	<div class="bg-white rounded-lg border border-gray-200 p-3 flex flex-col gap-3">
+	<div class="bg-white rounded-lg border border-gray-200 p-3">
 		<Accordion header="Address information">
 			{#if addresses.length > 0}
 				{#each addresses as address, idx (idx)}
 					<UserAddress {address} class="w-full mb-3" />
 				{/each}
 			{:else}
-				<span class="text-gray-500 text-xs">This customer has no address</span>
+				<Alert variant="info" size="sm" bordered={false}>This customer has no address</Alert>
 			{/if}
 		</Accordion>
 	</div>
 
-	<div class="bg-white rounded-lg border border-gray-200 p-3 flex flex-col gap-3">
+	<div class="bg-white rounded-lg border border-gray-200 p-3">
 		<Accordion header="Customer history">
 			<div class="flex flex-col gap-2">
 				<span class="text-sm">{formatDateLabel('Last login', lastLoginTime)}</span>
