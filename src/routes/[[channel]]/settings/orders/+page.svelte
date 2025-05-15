@@ -98,8 +98,6 @@
 <HeadBar
 	listingPageHref={AppRoute.SETTINGS_ORDERS()}
 	listingPageLabel={$tranFunc('settings.orders')}
-	newPageHref=""
-	newPageLabel=""
 	detailRouteID="/[[channel]]/settings/orders/[id]"
 	detailPageLabelGetter={(page) => page.params.id}
 />

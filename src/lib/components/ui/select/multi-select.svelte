@@ -15,7 +15,7 @@
 	} from './types';
 	import type { FocusEventHandler } from 'svelte/elements';
 	import { INPUT_CLASSES } from '$lib/components/ui/Input/input.types';
-	import Badge from '$lib/components/ui/Badge/Badge.svelte';
+	import { Badge } from '$lib/components/ui/Badge';
 
 	let {
 		value = $bindable<SelectOption[]>([]),
