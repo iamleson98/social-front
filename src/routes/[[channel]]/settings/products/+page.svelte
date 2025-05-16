@@ -56,11 +56,12 @@
 	{@const tooltip = item.channelListings?.length
 		? item.channelListings.map((list) => list.channel.slug).join(', ')
 		: ''}
-	{@const tooltipClass = tooltip ? 'cursor-help tooltip tooltip-top tooltip-info' : ''}
 	<div class="flex items-center gap-1">
-		<div class={tooltipClass} data-tip={tooltip}>
-			<Icon icon={InforCircle} class="size-3 text-blue-500" />
-		</div>
+		<Icon
+			icon={InforCircle}
+			class="text-blue-500 cursor-help tooltip tooltip-top"
+			data-tip={tooltip}
+		/>
 		<span class="whitespace-nowrap">{item.channelListings?.length || 0} channels</span>
 	</div>
 {/snippet}

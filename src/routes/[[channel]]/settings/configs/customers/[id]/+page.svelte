@@ -19,7 +19,6 @@
 	import { USER_UPDATE_MUTATION } from '$lib/api/account';
 	import { type MutationCustomerUpdateArgs } from '$lib/gql/graphql';
 	import CustomerExtraForm from '$lib/components/pages/settings/config/customers/customer-extra-form.svelte';
-
 	const userDetailQuery = operationStore<Pick<Query, 'user'>, QueryUserArgs>({
 		kind: 'query',
 		query: USER_DETAIL_QUERY,
@@ -28,9 +27,8 @@
 			id: page.params.id
 		}
 	});
-
 	let loading = $state(false);
-
+	let informationOk = $state(false);
 	let userInput = $state<CustomerInput>({
 		lastName: '',
 		firstName: '',
@@ -40,7 +38,6 @@
 		metadata: [],
 		privateMetadata: []
 	});
-
 	$effect(() => {
 		if ($userDetailQuery.data?.user) {
 			const { firstName, lastName, email, isActive, note, metadata, privateMetadata } =
@@ -56,25 +53,18 @@
 			};
 		}
 	});
-
 	const onUpdateClick = async () => {
 		loading = true;
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'customerUpdate'>,
 			MutationCustomerUpdateArgs
-		>(
-			USER_UPDATE_MUTATION,
-			{
-				id: page.params.id,
-				input: userInput
-			}
-		);
-
+		>(USER_UPDATE_MUTATION, {
+			id: page.params.id,
+			input: userInput
+		});
 		loading = false;
-
 		if (preHandleErrorOnGraphqlResult(result, 'customerUpdate', 'Customer updated successfully'))
 			return;
-
 		userDetailQuery.reexecute({ variables: { id: page.params.id } });
 	};
 </script>
@@ -96,7 +86,7 @@
 				note={userInput.note as string}
 				bind:metadata={userInput.metadata as MetadataInput[]}
 				bind:privateMetadata={userInput.privateMetadata as MetadataInput[]}
-				disabled
+				bind:ok={informationOk}
 			/>
 		</div>
 
@@ -104,7 +94,8 @@
 			addresses={$userDetailQuery.data?.user.addresses}
 			lastLoginTime={$userDetailQuery.data?.user.lastLogin}
 			lastOrderAt={orders.length > 0 ? orders[0].created : undefined}
+			giftCards={$userDetailQuery.data?.user.giftCards?.edges.map((edge) => edge.node) ?? []}
 		/>
 	</div>
-	<ActionBar backButtonUrl={AppRoute.SETTINGS_CONFIGS_USERS()} {onUpdateClick} disabled={loading}/>
+	<ActionBar backButtonUrl={AppRoute.SETTINGS_CONFIGS_USERS()} {onUpdateClick} disabled={loading} />
 {/if}
