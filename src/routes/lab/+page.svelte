@@ -1,34 +1,38 @@
 <script lang="ts">
-	import { MultiSelect } from '$lib/components/ui/select';
+	import { MultiSelect, Select } from '$lib/components/ui/select';
 	import { onMount } from 'svelte';
 	import { draggable, droppable, type DragDropState } from '@thisux/sveltednd';
+	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
+	import { ButtonSkeleton } from '$lib/components/ui/Button';
+	import SelectSkeleton from '$lib/components/ui/select/select-skeleton.svelte';
+	// import { Input } from '$lib/components/ui/Input';
 
-	onMount(async () => {
-		const result = fetch('/figma.wasm', {
-			headers: {
-				'Accept-Encoding': 'gzip, deflate, br, zstd'
-			}
-		})
-			.then((res) => res.arrayBuffer())
-			.then((buffer) => WebAssembly.compile(buffer))
-			.then((module) => WebAssembly.instantiate(module))
-			.catch(console.error)
-			.then(() => console.log('done'));
+	// onMount(async () => {
+	// 	const result = fetch('/figma.wasm', {
+	// 		headers: {
+	// 			'Accept-Encoding': 'gzip, deflate, br, zstd'
+	// 		}
+	// 	})
+	// 		.then((res) => res.arrayBuffer())
+	// 		.then((buffer) => WebAssembly.compile(buffer))
+	// 		.then((module) => WebAssembly.instantiate(module))
+	// 		.catch(console.error)
+	// 		.then(() => console.log('done'));
 
-		// console.log(instance);
-	});
+	// 	// console.log(instance);
+	// });
 
-	let value = $state('');
+	// let value = $state('');
 
 	let items = $state([
 		{
 			one: 1,
-			two: 2
+			two: 2,
 		},
 		{
 			one: 3,
-			two: 4
-		}
+			two: 4,
+		},
 	]);
 
 	const handleDrop = (state: DragDropState<{}>) => {
@@ -42,7 +46,7 @@
 	options={[
 		{ label: 'Option 1', value: '1' },
 		{ label: 'Option 2', value: '2' },
-		{ label: 'Option 3', value: '3' }
+		{ label: 'Option 3', value: '3' },
 	]}
 	variant="error"
 />
@@ -63,3 +67,14 @@
 		{/each}
 	</tbody>
 </table>
+
+<SkeletonContainer>
+	<Skeleton class="w-2 h-8" />
+</SkeletonContainer>
+
+<ButtonSkeleton size="xl" />
+
+<div class="flex flex-row items-start gap-2 w-[500px]">
+	<SelectSkeleton size="xs" />
+	<SelectSkeleton label size="xs" />
+</div>

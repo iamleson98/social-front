@@ -303,8 +303,7 @@ export const inferRowsPerPage = (paging: PaginationOptions) => {
 export type BadgeAttr = Pick<BadgeProps, 'color' | 'variant' | 'text'>;
 
 export const paymentStatusBadgeClass = (status: PaymentChargeStatusEnum): BadgeAttr => {
-	// NOTE: Those badge classes are found on: https://v5.daisyui.com/components/badge/
-	const text = startCase(lowerCase(status.replace(/_/g, ' ')));
+	const text = startCase(lowerCase(status.replace(/_/, ' ')));
 	switch (status) {
 		case PaymentChargeStatusEnum.Cancelled:
 			return { text, color: 'red', variant: 'filled' };
@@ -328,8 +327,7 @@ export const paymentStatusBadgeClass = (status: PaymentChargeStatusEnum): BadgeA
 };
 
 export const orderStatusBadgeClass = (status: OrderStatus): BadgeAttr => {
-	// NOTE: Those badge classes are found on: https://v5.daisyui.com/components/badge/
-	const text = startCase(lowerCase(status.replace(/_/g, ' ')));
+	const text = startCase(lowerCase(status.replace(/_/, ' ')));
 
 	switch (status) {
 		case OrderStatus.Canceled:

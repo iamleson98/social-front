@@ -128,10 +128,10 @@
 			class="cursor-pointer select-none!"
 			title="Clear"
 		>
-			<Icon icon={CloseX} />
+			<Icon icon={CloseX} size="xs" />
 		</span>
 	{:else if !openSelect}
-		<Icon icon={ChevronSort} />
+		<Icon icon={ChevronSort} size="xs" />
 	{/if}
 {/snippet}
 

@@ -25,7 +25,7 @@
 	class={`${className} ${ICON_BTN_SIZE_MAP[size]} ${rounded ? 'rounded-full!' : ''}`}
 	style="padding: unset !important;"
 	>
-	<Icon {icon} class={ICON_OF_BUTTON_SIZE_MAP[size]} />
+	<Icon {icon} {size} />
 	{#if children}
 		{@render children()}
 	{/if}

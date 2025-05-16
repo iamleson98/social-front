@@ -1,13 +1,15 @@
 <script lang="ts">
 	import { STAFFS_QUERY } from '$lib/api/admin/staff';
+	import { Search } from '$lib/components/icons';
 	import FilterButton from '$lib/components/pages/settings/config/staff/filter-button.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
+	import { Input } from '$lib/components/ui/Input';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { type QueryStaffUsersArgs, type User, UserSortField } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 
 	let filterVariables = $state<QueryStaffUsersArgs>({
-		first: 10
+		first: 10,
 	});
 	let forceReExecuteGraphqlQuery = $state(true);
 
@@ -26,12 +28,12 @@
 			title: 'Email',
 			child: email,
 			sortable: true,
-			key: UserSortField.Email
+			key: UserSortField.Email,
 		},
 		{
 			title: 'Status',
-			child: status
-		}
+			child: status,
+		},
 	];
 </script>
 
@@ -66,8 +68,9 @@
 	{/if}
 {/snippet}
 
-<div class="mb-2">
+<div class="mb-2 flex items-center gap-2">
 	<FilterButton />
+	<Input size="sm" placeholder="Enter query" startIcon={Search} />
 </div>
 
 <GraphqlPaginableTable

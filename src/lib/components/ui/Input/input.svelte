@@ -35,7 +35,7 @@
 	<div class={`relative mt-0 ${INPUT_CLASSES[variant].fg}`}>
 		{#if startIcon}
 			<div class="absolute inset-y-0 start-0 flex items-center ps-2.5 pointer-events-none">
-				<Icon icon={startIcon} />
+				<Icon icon={startIcon} {size} />
 			</div>
 		{/if}
 		<input

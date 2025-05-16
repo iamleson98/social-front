@@ -13,6 +13,7 @@
 		startIcon,
 		size = 'sm',
 		rounded = false,
+		disabled = false,
 		...restProps
 	}: BadgeProps = $props();
 
@@ -31,9 +32,9 @@
 	{#if onDismiss}
 		<button
 			class={`text-inherit ${roundClass} cursor-pointer ${BADGE_SIZE_VARIANTS[size].btn} bg-inherit`}
-			onclick={onDismiss}
+			onclick={() => !disabled && onDismiss()}
 		>
-			<Icon icon={CloseX} width="0.7rem" height="0.7rem" />
+			<Icon icon={CloseX} {size} />
 		</button>
 	{/if}
 </span>

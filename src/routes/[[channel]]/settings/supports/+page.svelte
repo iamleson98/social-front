@@ -98,7 +98,7 @@
 
 {#snippet tag({ item }: { item: SupportTicket })}
 	<span class="{supportTicketTagToBadgeClass(item.tag)} badge badge-sm badge-outline">
-		<Icon icon={TagFilled} class="size-3" />
+		<Icon icon={TagFilled} size="sm" />
 		{item.tag}
 	</span>
 {/snippet}

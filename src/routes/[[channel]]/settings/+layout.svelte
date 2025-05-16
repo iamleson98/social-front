@@ -138,8 +138,8 @@
 	</SkeletonContainer>
 {:else}
 	<!-- MARK: Detail -->
-	<div class="flex flex-nowrap mt-5 gap-2">
-		<div class="w-1/4 sticky top-16 h-[calc(100vh-4rem)] p-2">
+	<div class="flex flex-nowrap gap-2">
+		<div class="w-1/4 sticky top-16 h-full p-2">
 			<!-- MARK: Avatar -->
 			<div class="flex items-start gap-2 text-gray-700 p-3">
 				<div class="rounded-full h-16 w-16 overflow-hidden">
@@ -155,10 +155,10 @@
 					</div>
 					<div class="flex items-center gap-1">
 						{#if $ME_PAGE_USER_STORE?.isConfirmed}
-							<Icon icon={RosetteDiscountChecked} class="text-blue-500 h-6 w-6" />
+							<Icon icon={RosetteDiscountChecked} class="text-blue-500" size="md" />
 							<span class="text-sm text-gray-500">Verified</span>
 						{:else}
-							<Icon icon={CheckOff} class="text-red-500 h-6 w-6" />
+							<Icon icon={CheckOff} class="text-red-500" size="md" />
 							<span class="text-sm text-gray-500">Unverified</span>
 						{/if}
 					</div>

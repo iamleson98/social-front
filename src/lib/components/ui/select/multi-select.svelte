@@ -95,6 +95,8 @@
 	};
 
 	const handleDeselectOption = (option: SelectOption) => {
+		if (rest.disabled) return;
+
 		value = value.filter((opt) => opt.value !== option.value);
 		onchange?.(value);
 	};
@@ -132,10 +134,10 @@
 			onkeydown={(evt) => evt.key === 'Enter' && onClear()}
 			class="cursor-pointer"
 		>
-			<Icon icon={CloseX} />
+			<Icon icon={CloseX} size="xs" />
 		</span>
 	{:else if !openSelect}
-		<Icon icon={ChevronSort} />
+		<Icon icon={ChevronSort} size="xs" />
 	{/if}
 {/snippet}
 
@@ -165,6 +167,7 @@
 				variant="light"
 				size={SIZE_REDUCE_MAP[size]}
 				onDismiss={() => handleDeselectOption(option)}
+				disabled={rest.disabled}
 			/>
 		{/each}
 		{#if maxDisplay && value.length > maxDisplay}

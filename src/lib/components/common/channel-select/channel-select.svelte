@@ -6,53 +6,53 @@
 	import {
 		MultiSelect,
 		Select,
+		SelectSkeleton,
 		type MultiSelectSizeType,
-		type SelectOption
+		type SelectOption,
 	} from '$lib/components/ui/select';
-	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import type { Query } from '$lib/gql/graphql';
 
 	type Props = {
 		/** use this if you need single channel */
-		value?: string | null;
+		value?: string;
 		/** use this if you need multiple channels */
 		values?: string[];
 		size?: SocialSize;
 		label?: string;
 		onchange?: (value: string | string[]) => void;
+		multiple?: boolean;
 	};
 
 	let {
-		value = $bindable(),
-		values = $bindable(),
+		value = $bindable(''),
+		values = $bindable([]),
 		size = 'md',
 		label,
-		onchange
+		onchange,
+		multiple = false,
 	}: Props = $props();
 
-	if (size === 'xs' && values) size = 'sm'; // since xs is not supported for multi select
+	if (size === 'xs' && multiple) size = 'sm'; // since xs is not supported for multi select
 
-	if ((value === undefined && values === undefined) || (value !== undefined && values !== undefined)) {
-		throw new Error('please provide either value or values, not both');
-	}
-
-	let multiChannels = $state<SelectOption[]>([]);
-
-	$effect(() => {
-		values = multiChannels.map((channel) => channel.value as string);
-	});
-
+	let selectedCHannels = $state<SelectOption[]>([]);
 	const channelStore = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
 		query: CHANNELS_QUERY,
-		requestPolicy: 'cache-and-network'
+		requestPolicy: 'cache-and-network',
 	});
+
+	const handleChange = () => {
+		if (multiple) {
+			values = selectedCHannels.map((item) => item.value as string);
+			onchange?.(values);
+		} else {
+			onchange?.(value);
+		}
+	};
 </script>
 
 {#if $channelStore.fetching}
-	<SkeletonContainer class="h-full">
-		<Skeleton class="h-4 w-full" />
-	</SkeletonContainer>
+	<SelectSkeleton {size} />
 {:else if $channelStore.error}
 	<Alert variant="error" size="xs" bordered>
 		{$channelStore.error.message}
@@ -61,25 +61,17 @@
 	{@const options =
 		$channelStore.data?.channels?.map((channel) => ({
 			label: channel.name,
-			value: channel.slug
+			value: channel.slug,
 		})) ?? []}
-	{#if value}
-		<Select
-			{options}
-			bind:value
-			{size}
-			{label}
-			onchange={(opt) => opt && onchange?.(opt.value as string)}
-		/>
-	{:else if values}
+	{#if multiple}
 		<MultiSelect
 			{options}
-			bind:value={multiChannels}
+			bind:value={selectedCHannels}
 			size={size as MultiSelectSizeType}
 			{label}
-			onchange={(opts) => {
-				opts?.length && onchange?.(opts.map((opt) => opt.value as string));
-			}}
+			onchange={handleChange}
 		/>
+	{:else}
+		<Select {options} bind:value {size} {label} onchange={handleChange} />
 	{/if}
 {/if}

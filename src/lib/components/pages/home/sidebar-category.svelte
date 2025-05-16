@@ -45,7 +45,7 @@
 {/snippet}
 
 {#if $categoryStore.fetching}
-	<Accordion header={$tranFunc('common.categories')} headerIcon={Category}>
+	<Accordion header={$tranFunc('common.categories')} headerIcon={Category} class="p-1">
 		{@render categorySkeleton()}
 		{@render categorySkeleton()}
 		{@render categorySkeleton()}
@@ -61,6 +61,6 @@
 		items={$categoryStore.data?.categories?.edges}
 		partialDisplay={5}
 		child={category}
-		class="mb-2"
+		class="mb-2 p-1"
 	/>
 {/if}

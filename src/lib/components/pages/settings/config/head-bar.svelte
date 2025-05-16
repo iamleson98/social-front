@@ -3,7 +3,6 @@
 	import { Button } from '$lib/components/ui';
 	import type { Page } from '@sveltejs/kit';
 	import { Plus } from '$lib/components/icons';
-	import { afterNavigate } from '$app/navigation';
 
 	type Props = {
 		listingPageHref: string;
@@ -14,6 +13,8 @@
 		newPageLabel?: string;
 		detailRouteID: string;
 		detailPageLabelGetter: (page: Page<Record<string, string>, string | null>) => string;
+		/** Optional url, for the convenient `back` link */
+		backLinkUrl?: string;
 	};
 
 	let {
@@ -22,17 +23,12 @@
 		newPageHref,
 		newPageLabel,
 		detailRouteID,
-		detailPageLabelGetter
+		detailPageLabelGetter,
+		backLinkUrl
 	}: Props = $props();
 
 	if ((newPageHref && !newPageLabel) || (!newPageHref && newPageLabel))
 		throw new Error('newPageHref and newPageLabel must be provided together');
-
-	let previousPage = $state<string>();
-
-	afterNavigate(async ({ from }) => {
-		if (from?.url) previousPage = from.url.pathname;
-	});
 </script>
 
 <div
@@ -40,9 +36,11 @@
 >
 	<div class="breadcrumbs text-sm">
 		<ul>
-			<li>
-				<a href={previousPage}> Back </a>
-			</li>
+			{#if backLinkUrl}
+				<li>
+					<a href={backLinkUrl}>Back</a>
+				</li>
+			{/if}
 			<li><a href={listingPageHref}>{listingPageLabel}</a></li>
 			{#if page.url.pathname === newPageHref}
 				<li>{newPageLabel}</li>

@@ -65,7 +65,7 @@
 	<div class="card bg-white border border-gray-200 card-sm">
 		<div class="card-body">
 			<h2 class="card-title">
-				<Icon {icon} class="size-5" />
+				<Icon {icon} size="sm" />
 				<span>{title}</span>
 			</h2>
 			<p>

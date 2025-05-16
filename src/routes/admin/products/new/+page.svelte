@@ -150,6 +150,8 @@
 			return;
 		}
 
+		const createdProductId = productCreateResult.data?.productCreate?.product?.id as string;
+
 		// 2) assign product channel listings
 		// clean input
 		const cleanChannelListingUpdateInput: ProductChannelListingUpdateInput = {
@@ -167,7 +169,7 @@
 			Pick<Mutation, 'productChannelListingUpdate'>,
 			MutationProductChannelListingUpdateArgs
 		>(UPDATE_PRODUCT_CHANNEL_LISTINGS_MUTATION, {
-			id: productCreateResult.data?.productCreate?.product?.id as string,
+			id: createdProductId as string,
 			input: cleanChannelListingUpdateInput
 		});
 		if (
@@ -185,7 +187,7 @@
 			Pick<Mutation, 'productVariantBulkCreate'>,
 			MutationProductVariantBulkCreateArgs
 		>(PRODUCT_VARIANTS_BULK_CREATE_MUTATION, {
-			product: productCreateResult.data?.productCreate?.product?.id as string,
+			product: createdProductId as string,
 			variants: productVariantsInput
 		});
 		if (preHandleErrorOnGraphqlResult(variantsBulkCreateResult, 'productVariantBulkCreate')) return;
@@ -207,8 +209,8 @@
 		}
 
 		// 4) create product medias
-		hasError = await createProductMedias(productCreateResult.data?.productCreate?.product?.id as string);
-		setLoading(false)
+		hasError = await createProductMedias(createdProductId as string);
+		setLoading(false);
 		if (hasError) return;
 
 		toastStore.send({

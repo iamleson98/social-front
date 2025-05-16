@@ -6,11 +6,14 @@
 	import { tranFunc } from '$i18n';
 	import { SHOP_ORDERS_QUERY } from '$lib/api/admin/orders';
 	import { Badge } from '$lib/components/ui/Badge';
+	import Filter from '$lib/components/pages/settings/orders/filter.svelte';
+	import { Search } from '$lib/components/icons';
+	import { Input } from '$lib/components/ui/Input';
 
 	const BATCH_LOAD = 20;
 
 	let filterVariables = $state<QueryOrdersArgs>({
-		first: BATCH_LOAD
+		first: BATCH_LOAD,
 	});
 	let forceReExecuteGraphqlQuery = $state(true);
 
@@ -19,30 +22,30 @@
 			title: $tranFunc('settings.no'),
 			sortable: true,
 			child: no,
-			key: OrderSortField.Number
+			key: OrderSortField.Number,
 		},
 		{
 			title: $tranFunc('common.email'),
-			child: email
+			child: email,
 		},
 		{
 			title: $tranFunc('settings.payment'),
-			child: payment
+			child: payment,
 		},
 		{
 			title: $tranFunc('settings.status'),
-			child: status
+			child: status,
 		},
 		{
 			title: $tranFunc('settings.total'),
-			child: total
+			child: total,
 			// sortable: true
 		},
 		{
 			title: $tranFunc('settings.date'),
-			child: date
+			child: date,
 			// sortable: true
-		}
+		},
 	]);
 </script>
 
@@ -89,6 +92,11 @@
 {#snippet email({ item }: { item: Order })}
 	{item.userEmail}
 {/snippet}
+
+<div class="flex mb-2 items-center gap-2">
+	<Filter />
+	<Input size="sm" placeholder="Enter query" startIcon={Search} />
+</div>
 
 <GraphqlPaginableTable
 	query={SHOP_ORDERS_QUERY}

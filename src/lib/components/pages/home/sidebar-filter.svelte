@@ -87,7 +87,7 @@
 	onMount(() => productFilterParamStore.reset); // reset filter params
 </script>
 
-<Accordion header={$tranFunc('common.filter')} headerIcon={FilterCog}>
+<Accordion header={$tranFunc('common.filter')} headerIcon={FilterCog} class="p-1">
 	<!-- MARK: order -->
 	<div class="mb-4">
 		<div class="text-xs mb-2">{$tranFunc('common.ordering')}</div>

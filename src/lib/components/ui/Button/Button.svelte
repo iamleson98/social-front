@@ -65,7 +65,7 @@
 {#snippet buttonIcon({ icon }: IconProps)}
 	{#if icon}
 		<span class={`text-xl`}>
-			<Icon {icon} class={ICON_OF_BUTTON_SIZE_MAP[size]} />
+			<Icon {icon} {size} />
 		</span>
 	{/if}
 {/snippet}

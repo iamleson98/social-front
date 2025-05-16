@@ -8,6 +8,10 @@
 		showPagination?: boolean;
 	};
 
+	type Item = {
+		[x: string]: unknown;
+	}
+
 	let { numColumns, numOfRows = 3, showPagination = false }: Props = $props();
 
 	let columns = $derived.by(() =>
@@ -18,7 +22,7 @@
 	);
 </script>
 
-{#snippet nooptd({}: { item: Record<string, unknown> })}
+{#snippet nooptd({}: { item: Item })}
 	<SkeletonContainer>
 		<Skeleton class="h-4" />
 	</SkeletonContainer>

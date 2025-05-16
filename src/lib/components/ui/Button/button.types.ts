@@ -108,9 +108,9 @@ export const buttonVariantColorsMap: Record<ButtonVariant, Record<SocialColor, s
 };
 
 export const ICON_OF_BUTTON_SIZE_MAP: Record<SocialSize, string> = {
-  xs: 'w-4 h-4',
-  sm: 'w-4.5 h-4.5',
-  md: 'w-5 h-5',
-  lg: 'w-6 h-6',
-  xl: 'w-7 h-7',
+  xs: 'size-3',
+  sm: 'size-4',
+  md: 'size-5',
+  lg: 'size-6',
+  xl: 'size-7',
 };

@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import { PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
-	import { Icon, InforCircle } from '$lib/components/icons';
+	import { Icon, InforCircle, Search } from '$lib/components/icons';
 	import ProductFilterStateListener from '$lib/components/pages/home/product-filter-state-listener.svelte';
 	import Filter from '$lib/components/pages/settings/products/filter.svelte';
+	import { Input } from '$lib/components/ui/Input';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { ProductOrderField, type Product, type QueryProductsArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
@@ -11,7 +12,7 @@
 	import dayjs from 'dayjs';
 
 	let productsFilterVariables = $state<QueryProductsArgs>({
-		first: 10
+		first: 10,
 	});
 	let forceReExecuteGraphqlQuery = $state(true);
 
@@ -20,22 +21,22 @@
 			title: $tranFunc('settings.name'),
 			child: name,
 			sortable: true,
-			key: ProductOrderField.Name
+			key: ProductOrderField.Name,
 		},
 		{
 			title: $tranFunc('settings.availability'),
-			child: availability
+			child: availability,
 		},
 		{
 			title: $tranFunc('settings.prices'),
-			child: prices
+			child: prices,
 		},
 		{
 			title: $tranFunc('settings.createdAt'),
 			child: createdAt,
 			sortable: true,
-			key: ProductOrderField.CreatedAt
-		}
+			key: ProductOrderField.CreatedAt,
+		},
 	]);
 </script>
 
@@ -81,8 +82,9 @@
 	<span class="whitespace-nowrap">{dayjs(item.created).format('DD/MM/YYYY HH:mm')}</span>
 {/snippet}
 
-<div class="mb-2">
+<div class="mb-2 flex items-center gap-2">
 	<Filter />
+	<Input size="sm" placeholder="Enter query" startIcon={Search} />
 </div>
 
 <GraphqlPaginableTable

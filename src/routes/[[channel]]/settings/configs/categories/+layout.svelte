@@ -17,6 +17,7 @@
 	newPageLabel="New category"
 	detailRouteID="/[[channel]]/settings/configs/categories/[id]"
 	detailPageLabelGetter={(page) => page.params.id}
+	backLinkUrl={AppRoute.SETTINGS_CONFIGS()}
 />
 
 <div>

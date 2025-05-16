@@ -4,7 +4,7 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { fly } from 'svelte/transition';
-	import { ALERT_VARIANT_STYLE_MAP, ALERT_SIZE_STYLE_MAP } from './types';
+	import { ALERT_VARIANT_STYLE_MAP } from './types';
 	import type { SocialColor, SocialSize } from '$lib/components/ui/common';
 	import { IconButton } from '$lib/components/ui/Button';
 
@@ -37,11 +37,11 @@
 
 {#if show}
 	<div
-		class={`flex items-start gap-2 wrap-anywhere rounded-lg ${className} ${ALERT_VARIANT_STYLE_MAP[variant]} ${ALERT_SIZE_STYLE_MAP[size].container} ${bordered ? 'border' : 'border-none!'}`}
+		class={`flex items-start gap-2 wrap-anywhere rounded-lg alert-${size} ${className} ${ALERT_VARIANT_STYLE_MAP[variant]} ${bordered ? 'border' : 'border-none!'}`}
 		in:fly={{ y: 10 }}
 	>
 		<span class="flex items-center">
-			<Icon icon={SocialVariantIconsMap[variant]} class={`${ALERT_SIZE_STYLE_MAP[size].icon}`} />
+			<Icon icon={SocialVariantIconsMap[variant]} {size} />
 		</span>
 		<div>
 			{@render children()}
@@ -61,3 +61,23 @@
 		{/if}
 	</div>
 {/if}
+
+<style lang="postcss">
+	@reference "tailwindcss";
+
+	.alert-xs {
+		@apply p-1.5 text-xs;
+	}
+	.alert-sm {
+		@apply p-2 text-sm;
+	}
+	.alert-md {
+		@apply p-3 text-base;
+	}
+	.alert-lg {
+		@apply p-4 text-lg font-medium;
+	}
+	.alert-xl {
+		@apply p-5 text-lg font-semibold;
+	}
+</style>

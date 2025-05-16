@@ -1,50 +1,98 @@
 <script lang="ts">
+	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import { FilterButton } from '$lib/components/common/filter-box';
-	import type {
-		FilterComponentType,
-		FilterProps
-		// SingleFilter
-	} from '$lib/components/common/filter-box/types';
-	import { Input } from '$lib/components/ui/Input';
-	import { Select } from '$lib/components/ui/select';
+	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box/types';
+	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import type { ProductFilterInput } from '$lib/gql/graphql';
 
 	const FILTER_OPTIONS: FilterProps<ProductFilterInput>[] = [
 		{
 			label: 'Price',
 			key: 'price',
+			mustPairWith: 'channel',
 			operations: [
 				{
 					operator: 'eq',
-					component: priceCmp
+					component: priceCmp,
 				},
 				{
 					operator: 'lte',
-					component: priceCmp
+					component: priceCmp,
 				},
 				{
 					operator: 'gte',
-					component: priceCmp
+					component: priceCmp,
 				},
 				{
 					operator: 'range',
-					component: priceBetween
-				}
-			]
-		}
-		// {
-		// 	label: 'Category',
-		// 	key: 'category',
-		// 	operation: [
-		// 		{
-		// 			operator: 'is',
-		// 			component: categoryIs
-		// 		}
-		// 	]
-		// }
+					component: priceBetween,
+				},
+			],
+		},
+		{
+			label: 'Channel',
+			key: 'channel',
+			operations: [
+				{
+					operator: 'eq',
+					component: channelComp,
+				},
+			],
+		},
+		{
+			label: 'Is available',
+			key: 'isAvailable',
+			mustPairWith: 'channel',
+			operations: [
+				{
+					operator: 'eq',
+					component: yesNo,
+				},
+			],
+		},
+		{
+			label: 'Visible in listing',
+			key: 'isVisibleInListing',
+			mustPairWith: 'channel',
+			operations: [
+				{
+					operator: 'eq',
+					component: yesNo,
+				},
+			],
+		},
+		{
+			label: 'Has category',
+			key: 'hasCategory',
+			operations: [
+				{
+					operator: 'eq',
+					component: yesNo,
+				},
+			],
+		},
+		{
+			label: 'Is giftcard',
+			key: 'giftCard',
+			operations: [
+				{
+					operator: 'eq',
+					component: yesNo,
+				},
+			],
+		},
+		{
+			label: 'Is published',
+			key: 'isPublished',
+			mustPairWith: 'channel',
+			operations: [
+				{
+					operator: 'eq',
+					component: yesNo,
+				},
+			],
+		},
 	];
-
-	// let filters = $state<SingleFilter[]>([]);
 </script>
 
 {#snippet priceCmp({ onValue, initialValue }: FilterComponentType)}
@@ -55,7 +103,7 @@
 		min="0"
 		value={initialValue}
 		inputDebounceOption={{
-			onInput: (evt) => onValue(((evt as Event).target as HTMLInputElement).value)
+			onInput: (evt) => onValue(((evt as Event).target as HTMLInputElement).value),
 		}}
 	/>
 {/snippet}
@@ -69,7 +117,7 @@
 				onValue(bounds);
 			},
 			initialValue: bounds[0],
-			placeholder: '>='
+			placeholder: '>=',
 		})}
 		{@render priceCmp({
 			onValue: (value) => {
@@ -77,13 +125,26 @@
 				onValue(bounds);
 			},
 			initialValue: bounds[1],
-			placeholder: '<='
+			placeholder: '<=',
 		})}
 	</div>
 {/snippet}
 
-{#snippet categoryIs({ onValue }: FilterComponentType)}
+<!-- {#snippet categoryIs({ onValue }: FilterComponentType)}
 	<Select options={[]} size="xs" />
+{/snippet} -->
+
+{#snippet channelComp({ onValue, initialValue = '' }: FilterComponentType)}
+	<ChannelSelect size="xs" value={initialValue as string} onchange={onValue} values={undefined} />
+{/snippet}
+
+{#snippet yesNo({ onValue, initialValue = false }: FilterComponentType)}
+	<Checkbox
+		size="sm"
+		label="Yes?"
+		checked={initialValue as boolean}
+		onchange={(evt) => onValue(evt.currentTarget.checked)}
+	/>
 {/snippet}
 
 <FilterButton filterOptions={FILTER_OPTIONS} />

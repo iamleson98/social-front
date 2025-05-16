@@ -17,6 +17,7 @@
 	newPageLabel="New collection"
 	detailRouteID="/[[channel]]/settings/configs/collections/[id]"
 	detailPageLabelGetter={(page) => page.params.id}
+	backLinkUrl={AppRoute.SETTINGS_CONFIGS()}
 />
 
 <div>

@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { SVGAttributes } from 'svelte/elements';
 	import type { IconContent } from './consts';
+	import type { SocialSize } from '$lib/components/ui/common';
+	import { ICON_OF_BUTTON_SIZE_MAP } from '$lib/components/ui/Button';
 
 	interface Props {
 		/**
@@ -12,27 +14,25 @@
 		title?: string;
 		flipped?: boolean;
 		class?: string;
+		size?: SocialSize;
 	}
 
 	let {
 		class: className,
 		icon: Icon,
 		title,
-		width = '1rem',
-		height = '1rem',
+		size = 'md',
 		viewBox = '0 0 24 24',
 		fill = 'currentColor',
 		flipped = false,
 		...restProps
-	}: Props & SVGAttributes<SVGSVGElement> = $props();
+	}: Props & Omit<SVGAttributes<SVGSVGElement>, 'width' | 'height'> = $props();
 </script>
 
 <svg
-	{width}
-	{height}
 	{viewBox}
 	{fill}
-	class="{className} {flipped ? '-scale-x-100' : ''}"
+	class="{className} {flipped ? '-scale-x-100' : ''} {ICON_OF_BUTTON_SIZE_MAP[size]}"
 	{...restProps}
 >
 	{#if title}

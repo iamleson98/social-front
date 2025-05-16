@@ -6,7 +6,7 @@
 		formatCurrency,
 		orderStatusBadgeClass,
 		paymentStatusBadgeClass,
-		type PaginationOptions
+		type PaginationOptions,
 	} from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 	import { DropDown } from '$lib/components/ui/Dropdown';
@@ -21,35 +21,35 @@
 	const BATCH_LOAD = 20;
 
 	let filterVariables = $state<PaginationOptions>({
-		first: BATCH_LOAD
+		first: BATCH_LOAD,
 	});
 	let forceReExecuteGraphqlQuery = $state<boolean>(true);
 
 	const ORDER_TABLE_COLUMNS: TableColumnProps<Order, any>[] = $derived([
 		{
 			title: $tranFunc('settings.no'),
-			child: no
+			child: no,
 		},
 		{
 			title: $tranFunc('settings.date'),
-			child: date
+			child: date,
 		},
 		{
 			title: $tranFunc('settings.payment'),
-			child: payment
+			child: payment,
 		},
 		{
 			title: $tranFunc('settings.status'),
-			child: status
+			child: status,
 		},
 		{
 			title: $tranFunc('settings.total'),
-			child: total
+			child: total,
 		},
 		{
 			title: $tranFunc('settings.action'),
-			child: action
-		}
+			child: action,
+		},
 	]);
 </script>
 
@@ -88,8 +88,8 @@
 			options={[
 				{
 					children: $tranFunc('settings.reqSupport'),
-					href: `${AppRoute.ME_SUPPORT_NEW()}?order_number=${item.number}`
-				}
+					href: `${AppRoute.ME_SUPPORT_NEW()}?order_number=${item.number}`,
+				},
 			]}
 		/>
 	</div>

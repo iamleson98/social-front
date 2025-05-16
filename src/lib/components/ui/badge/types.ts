@@ -16,6 +16,7 @@ export type BadgeProps = {
   /** default to `sm` */
   size?: SocialSize;
   rounded?: boolean;
+  disabled?: boolean | null;
 } & HTMLAttributes<HTMLSpanElement>;
 
 export const BADGE_SIZE_VARIANTS: Record<SocialSize, Record<'btn' | 'badge', string>> = {

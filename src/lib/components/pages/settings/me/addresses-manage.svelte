@@ -188,14 +188,6 @@
 						<div class="text-right flex gap-2 justify-end mt-2">
 							<Button
 								size="xs"
-								variant="light"
-								startIcon={Edit}
-								disabled={loading}
-								onclick={() => handleShowAddressForm(false, address)}
-								>{$tranFunc('btn.update')}</Button
-							>
-							<Button
-								size="xs"
 								color="red"
 								variant="light"
 								startIcon={Trash}
@@ -205,6 +197,14 @@
 										onOk: () => handleDeleteAddress(address.id)
 									})}
 								disabled={loading}>{$tranFunc('btn.delete')}</Button
+							>
+							<Button
+								size="xs"
+								variant="light"
+								startIcon={Edit}
+								disabled={loading}
+								onclick={() => handleShowAddressForm(false, address)}
+								>{$tranFunc('btn.update')}</Button
 							>
 						</div>
 					</UserAddress>
