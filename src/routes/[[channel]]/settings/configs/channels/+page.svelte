@@ -8,10 +8,7 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
-	import {
-		DropDown,
-		type MenuItemProps
-	} from '$lib/components/ui/Dropdown';
+	import { DropDown, type MenuItemProps } from '$lib/components/ui/Dropdown';
 	import { Modal } from '$lib/components/ui/Modal';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import {
@@ -115,7 +112,8 @@
 
 		loading = false;
 
-		if (preHandleErrorOnGraphqlResult(result, 'channelDelete', 'Channel deleted successfully')) return;
+		if (preHandleErrorOnGraphqlResult(result, 'channelDelete', 'Channel deleted successfully'))
+			return;
 
 		channelToDeleteId = '';
 		channelToReplaceId = '';
@@ -136,11 +134,11 @@
 {/snippet}
 
 {#snippet status({ item }: { item: Channel })}
-	{#if item.isActive}
-		<Badge text="Active" color="green" variant="light" />
-	{:else}
-		<Badge text="Inactive" color="red" variant="light" />
-	{/if}
+	<Badge
+		text={item.isActive ? 'Active' : 'Inactive'}
+		color={item.isActive ? 'green' : 'red'}
+		variant="light"
+	/>
 {/snippet}
 
 {#snippet currency({ item }: { item: Channel })}
