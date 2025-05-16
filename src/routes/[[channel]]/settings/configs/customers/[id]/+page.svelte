@@ -95,6 +95,8 @@
 			lastLoginTime={$userDetailQuery.data?.user.lastLogin}
 			lastOrderAt={orders.length > 0 ? orders[0].created : undefined}
 			giftCards={$userDetailQuery.data?.user.giftCards?.edges.map((edge) => edge.node) ?? []}
+			userGmail={$userDetailQuery.data?.user.email}
+			userName={$userDetailQuery.data?.user.firstName + ' ' + $userDetailQuery.data?.user.lastName}
 		/>
 	</div>
 	<ActionBar backButtonUrl={AppRoute.SETTINGS_CONFIGS_USERS()} {onUpdateClick} disabled={loading} />

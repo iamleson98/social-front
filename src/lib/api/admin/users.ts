@@ -86,3 +86,19 @@ query UserDetail($id: ID, $email: String) {
     }
   }
 }`
+
+export const GIFT_CARD_CREATE_MUTATION = gql`
+mutation GiftCardCreate($input: GiftCardCreateInput!) {
+  giftCardCreate(
+    input: $input
+  ) {
+    errors {
+      field
+      message
+    }
+    giftCard {
+      id
+    }
+  }
+}
+`

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import dayjs from 'dayjs';
-	import { object, string, z } from 'zod';
+	import { number, object, string, z } from 'zod';
 
 	import UserAddress from '$lib/components/common/user-address/user-address.svelte';
 	import { Button } from '$lib/components/ui';
@@ -10,62 +10,129 @@
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
 
-	import type { Address, GiftCard } from '$lib/gql/graphql';
+	import type {
+		Address,
+		Channel,
+		GiftCard,
+		GiftCardCreateInput,
+		Mutation,
+		MutationGiftCardCreateArgs,
+		Query
+	} from '$lib/gql/graphql';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { GIFT_CARD_CREATE_MUTATION } from '$lib/api/admin/users';
+	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { CHANNELS_QUERY } from '$lib/api/channels';
+	import { operationStore } from '$lib/api/operation';
+	import { Select, type SelectOption } from '$lib/components/ui/select';
+	import { CHANNELS } from '$lib/utils/channels';
+	import { Badge } from '$lib/components/ui/Badge';
 
 	type Props = {
 		addresses: Address[];
 		lastLoginTime: string;
 		lastOrderAt?: Date | string;
 		giftCards: GiftCard[];
+		userGmail: string;
+		userName: string;
 	};
 
-	let { addresses, lastLoginTime, lastOrderAt, giftCards }: Props = $props();
+	let { addresses, lastLoginTime, lastOrderAt, giftCards, userGmail, userName }: Props = $props();
 
 	const formatDate = (label: string, date: Date | string | undefined) =>
 		`${label}: ${date ? dayjs(date).format('DD/MM/YYYY HH:mm') : '_ _'}`;
 
-	let isModalOpen = $state(false);
+	let isAddCardModalOpen = $state(false);
+	let isNewCardModalOpen = $state(false);
+	let newCardId = $state('');
 	let ok = $state(false);
+	let loading = $state(false);
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 	const customerSchema = object({
-		amount: string().nonempty(REQUIRED_ERROR),
-		currency: string().nonempty(REQUIRED_ERROR)
+		amount: number().nonnegative(REQUIRED_ERROR),
+		currency: string().nonempty(REQUIRED_ERROR),
+		channel: string().nonempty(REQUIRED_ERROR),
+		note: string().nonempty(REQUIRED_ERROR),
+		addTags: string().nonempty(REQUIRED_ERROR)
 	});
 
 	type CustomerSchema = z.infer<typeof customerSchema>;
 	let customerFormErrors = $state.raw<Partial<Record<keyof CustomerSchema, string[]>>>({});
 
-	let giftCard = $state<GiftCard>({
-		code: '',
-		tags: [],
-		id: '',
-		metadata: [],
-		privateMetadata: [],
-		created: new Date(),
-		currentBalance: { amount: 0, currency: '' },
-		displayCode: '',
-		events: [],
-		initialBalance: { amount: 0, currency: '' },
+	let giftCardInput = $state<GiftCardCreateInput>({
+		addTags: [],
+		userEmail: userGmail,
+		channel: '',
+		balance: {
+			amount: '',
+			currency: ''
+		},
 		isActive: false,
-		last4CodeChars: ''
+		note: ''
 	});
 
 	$effect(() => {
 		ok = !Object.keys(customerFormErrors).length;
 	});
 
+	const currencyOptions = Array.from(new Set(CHANNELS.map((chan) => chan.currency))).map(
+		(code) => ({
+			value: code,
+			label: code
+		})
+	);
+
 	const validate = () => {
 		const result = customerSchema.safeParse({
-			amount: giftCard.currentBalance.amount,
-			currency: giftCard.currentBalance.currency
+			amount: giftCardInput.balance.amount,
+			currency: giftCardInput.balance.currency,
+			channel: giftCardInput.channel,
+			note: giftCardInput.note,
+			addTags: giftCardInput.addTags
 		});
 		customerFormErrors = result.success ? {} : result.error.formErrors.fieldErrors;
 		return result.success;
 	};
 
-	const issueNewCard = () => (isModalOpen = true);
-	const issueNewCardClick = () => validate() && (isModalOpen = false);
+	const openAddCardModal = () => (isAddCardModalOpen = true);
+	const addNewCard = async () => {
+		if (!validate()) return;
+
+		loading = true;
+
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'giftCardCreate'>,
+			MutationGiftCardCreateArgs
+		>(GIFT_CARD_CREATE_MUTATION, {
+			input: {
+				addTags: giftCardInput.addTags || [],
+				userEmail: giftCardInput.userEmail,
+				channel: giftCardInput.channel,
+				balance: {
+					amount: parseFloat(giftCardInput.balance.amount),
+					currency: giftCardInput.balance.currency
+				},
+				isActive: giftCardInput.isActive,
+				note: giftCardInput.note
+			}
+		});
+
+		loading = false;
+
+		if (preHandleErrorOnGraphqlResult(result, 'giftCardCreate', 'Gift card created successfully')) {
+			return;
+		}
+		newCardId = (result.data?.giftCardCreate?.giftCard?.id as string).slice(0, -1);
+		isAddCardModalOpen = false;
+		isNewCardModalOpen = true;
+	};
+
+	const queryChannel = operationStore<Pick<Query, 'channels'>, Channel[]>({
+		kind: 'query',
+		query: CHANNELS_QUERY,
+		requestPolicy: 'network-only'
+	});
 </script>
 
 <div class="flex flex-col gap-3 flex-1 w-4/10">
@@ -76,9 +143,7 @@
 					<UserAddress {address} class="w-full mb-3" />
 				{/each}
 			{:else}
-				<Alert variant="info" size="sm" bordered>
-					This customer has no address
-				</Alert>
+				<Alert variant="info" size="sm" bordered>This customer has no address</Alert>
 			{/if}
 		</Accordion>
 	</div>
@@ -106,34 +171,38 @@
 					There are no gift cards used by this customer
 				</Alert>
 			{/if}
-			<Button size="xs" class="mt-3" onclick={issueNewCard}>Issue new card</Button>
+			<Badge variant="outline" size="xs" text="Preview" color="cyan" />
+			<Button size="xs" class="mt-3" onclick={openAddCardModal}>Issue new card</Button>
 		</Accordion>
 	</div>
 </div>
 
 <Modal
-	open={isModalOpen}
+	open={isAddCardModalOpen}
 	header="Issue new gift card"
 	size="xs"
-	onCancel={() => (isModalOpen = false)}
-	onOk={issueNewCardClick}
+	onCancel={() => (isAddCardModalOpen = false)}
+	onOk={addNewCard}
 >
 	<div class="flex flex-col gap-2">
 		<div class="flex flex-row gap-3 items-start">
 			<Input
 				label="Amount"
-				bind:value={giftCard.currentBalance.amount}
+				bind:value={giftCardInput.balance.amount}
 				required
+				type="number"
 				inputDebounceOption={{ onInput: validate }}
 				onblur={validate}
 				variant={customerFormErrors.amount?.length ? 'error' : 'info'}
 				subText={customerFormErrors.amount?.[0]}
 			/>
-			<Input
+			<Select
 				label="Currency"
-				bind:value={giftCard.currentBalance.currency}
+				options={currencyOptions}
+				placeholder="Select a currency"
+				bind:value={giftCardInput.balance.currency}
 				required
-				inputDebounceOption={{ onInput: validate }}
+				onchange={validate}
 				onblur={validate}
 				variant={customerFormErrors.currency?.length ? 'error' : 'info'}
 				subText={customerFormErrors.currency?.[0]}
@@ -142,17 +211,49 @@
 
 		<Input
 			label="Tag"
-			bind:value={giftCard.tags}
+			bind:value={giftCardInput.addTags}
 			required
 			inputDebounceOption={{ onInput: validate }}
 			onblur={validate}
+			variant={customerFormErrors.addTags?.length ? 'error' : 'info'}
+			subText={customerFormErrors.addTags?.[0]}
 		/>
+		<Input label="Customer" value={userName} disabled />
+		<Select
+			label="Channel"
+			options={$queryChannel.data?.channels?.map<SelectOption>((channel) => ({
+				value: channel.id,
+				label: channel.name
+			})) ?? []}
+			placeholder="Select a channel"
+			bind:value={giftCardInput.channel as string | undefined}
+			required
+			onchange={validate}
+			onblur={validate}
+			variant={customerFormErrors.channel?.length ? 'error' : 'info'}
+			subText={customerFormErrors.channel?.[0]}
+		/>
+
 		<Input
-			label="Customer"
+			label="Note"
+			bind:value={giftCardInput.note}
 			required
 			inputDebounceOption={{ onInput: validate }}
 			onblur={validate}
+			variant={customerFormErrors.note?.length ? 'error' : 'info'}
+			subText={customerFormErrors.note?.[0]}
 		/>
-		<Checkbox label="Active" bind:checked={giftCard.isActive} />
+		<Checkbox label="Active" bind:checked={giftCardInput.isActive} />
 	</div>
+</Modal>
+
+<Modal
+	open={isNewCardModalOpen}
+	header="Issue gift card"
+	size="xs"
+	onCancel={() => (isNewCardModalOpen = false)}
+	onOk={() => (isNewCardModalOpen = false)}
+>
+	<p>This is the code of a created gift card:</p>
+	<p class="text-lg mt-2 text-gray-800 font-semibold">{newCardId}</p>
 </Modal>

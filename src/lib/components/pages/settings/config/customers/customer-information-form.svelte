@@ -21,6 +21,7 @@
 		metadata: MetadataInput[];
 		privateMetadata: MetadataInput[];
 		ok: boolean;
+		isCreatePage?: boolean;
 	};
 	let {
 		firstName = $bindable(''),
@@ -32,7 +33,8 @@
 		orders,
 		metadata = $bindable([]),
 		privateMetadata = $bindable([]),
-		ok = $bindable(false)
+		ok = $bindable(false),
+		isCreatePage = false
 	}: Props = $props();
 
 	$effect(() => {
@@ -110,7 +112,7 @@
 			label="First Name"
 			bind:value={firstName}
 			required
-			{disabled}
+			disabled={!isCreatePage}
 			class="flex-1"
 			inputDebounceOption={{ onInput: validate }}
 			onblur={validate}
@@ -121,7 +123,7 @@
 			label="Last Name"
 			bind:value={lastName}
 			required
-			{disabled}
+			disabled={!isCreatePage}
 			class="flex-1"
 			inputDebounceOption={{ onInput: validate }}
 			onblur={validate}
@@ -133,7 +135,7 @@
 		label="Email"
 		bind:value={email}
 		required
-		{disabled}
+		disabled={!isCreatePage}
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
 		variant={customerFormErrors.email?.length ? 'error' : 'info'}
@@ -145,7 +147,7 @@
 		placeholder="Note"
 		label="Note"
 		required
-		{disabled}
+		disabled={!isCreatePage}
 		inputClass="min-h-20"
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
