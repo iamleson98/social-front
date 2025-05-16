@@ -19,6 +19,7 @@
 	import { USER_UPDATE_MUTATION } from '$lib/api/account';
 	import { type MutationCustomerUpdateArgs } from '$lib/gql/graphql';
 	import CustomerExtraForm from '$lib/components/pages/settings/config/customers/customer-extra-form.svelte';
+
 	const userDetailQuery = operationStore<Pick<Query, 'user'>, QueryUserArgs>({
 		kind: 'query',
 		query: USER_DETAIL_QUERY,
@@ -27,6 +28,7 @@
 			id: page.params.id
 		}
 	});
+
 	let loading = $state(false);
 	let informationOk = $state(false);
 	let userInput = $state<CustomerInput>({
@@ -38,6 +40,7 @@
 		metadata: [],
 		privateMetadata: []
 	});
+	
 	$effect(() => {
 		if ($userDetailQuery.data?.user) {
 			const { firstName, lastName, email, isActive, note, metadata, privateMetadata } =
@@ -53,6 +56,7 @@
 			};
 		}
 	});
+	
 	const onUpdateClick = async () => {
 		loading = true;
 		const result = await GRAPHQL_CLIENT.mutation<

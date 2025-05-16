@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import dayjs from 'dayjs';
-	import { number, object, string, z } from 'zod';
+	import { array, number, object, string, z } from 'zod';
 
 	import UserAddress from '$lib/components/common/user-address/user-address.svelte';
 	import { Button } from '$lib/components/ui';
@@ -15,16 +15,17 @@
 		Channel,
 		GiftCard,
 		GiftCardCreateInput,
+		GiftCardTag,
 		Mutation,
 		MutationGiftCardCreateArgs,
 		Query
 	} from '$lib/gql/graphql';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { GIFT_CARD_CREATE_MUTATION } from '$lib/api/admin/users';
+	import { GIFT_CARD_CREATE_MUTATION, GIFT_CARD_TAGS_QUERY } from '$lib/api/admin/users';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { CHANNELS_QUERY } from '$lib/api/channels';
 	import { operationStore } from '$lib/api/operation';
-	import { Select, type SelectOption } from '$lib/components/ui/select';
+	import { MultiSelect, Select, type SelectOption } from '$lib/components/ui/select';
 	import { CHANNELS } from '$lib/utils/channels';
 	import { Badge } from '$lib/components/ui/Badge';
 
@@ -50,22 +51,23 @@
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 	const customerSchema = object({
-		amount: number().nonnegative(REQUIRED_ERROR),
+		amount: number(),
 		currency: string().nonempty(REQUIRED_ERROR),
 		channel: string().nonempty(REQUIRED_ERROR),
 		note: string().nonempty(REQUIRED_ERROR),
-		addTags: string().nonempty(REQUIRED_ERROR)
+		addTags: array(string()).nonempty(REQUIRED_ERROR)
 	});
 
 	type CustomerSchema = z.infer<typeof customerSchema>;
 	let customerFormErrors = $state.raw<Partial<Record<keyof CustomerSchema, string[]>>>({});
+	let selectedTagOptions = $state<SelectOption[]>([]);
 
 	let giftCardInput = $state<GiftCardCreateInput>({
 		addTags: [],
 		userEmail: userGmail,
 		channel: '',
 		balance: {
-			amount: '',
+			amount: 0,
 			currency: ''
 		},
 		isActive: false,
@@ -84,21 +86,24 @@
 	);
 
 	const validate = () => {
-		const result = customerSchema.safeParse({
-			amount: giftCardInput.balance.amount,
+		const parseResult = customerSchema.safeParse({
+			amount: Number(giftCardInput.balance.amount),
 			currency: giftCardInput.balance.currency,
+			addTags: giftCardInput.addTags,
 			channel: giftCardInput.channel,
-			note: giftCardInput.note,
-			addTags: giftCardInput.addTags
+			note: giftCardInput.note
 		});
-		customerFormErrors = result.success ? {} : result.error.formErrors.fieldErrors;
-		return result.success;
+		if (!parseResult.success) {
+			customerFormErrors = parseResult.error.formErrors.fieldErrors;
+			return false;
+		}
+		customerFormErrors = {};
+		return true;
 	};
 
 	const openAddCardModal = () => (isAddCardModalOpen = true);
 	const addNewCard = async () => {
 		if (!validate()) return;
-
 		loading = true;
 
 		const result = await GRAPHQL_CLIENT.mutation<
@@ -106,11 +111,11 @@
 			MutationGiftCardCreateArgs
 		>(GIFT_CARD_CREATE_MUTATION, {
 			input: {
-				addTags: giftCardInput.addTags || [],
+				addTags: giftCardInput.addTags,
 				userEmail: giftCardInput.userEmail,
 				channel: giftCardInput.channel,
 				balance: {
-					amount: parseFloat(giftCardInput.balance.amount),
+					amount: giftCardInput.balance.amount,
 					currency: giftCardInput.balance.currency
 				},
 				isActive: giftCardInput.isActive,
@@ -133,6 +138,23 @@
 		query: CHANNELS_QUERY,
 		requestPolicy: 'network-only'
 	});
+
+	const queryGiftCardTags = operationStore<Pick<Query, 'giftCardTags'>, GiftCardTag[]>({
+		kind: 'query',
+		query: GIFT_CARD_TAGS_QUERY,
+		requestPolicy: 'network-only',
+		variables: {
+			after: null,
+			query: '',
+			first: 20
+		}
+	});
+
+	const handleAddTags = (options: SelectOption[] | undefined) => {
+		if (!options) return;
+		const selectedIds = options.map((opt) => opt.label);
+		giftCardInput.addTags = selectedIds;
+	};
 </script>
 
 <div class="flex flex-col gap-3 flex-1 w-4/10">
@@ -157,8 +179,15 @@
 		</Accordion>
 	</div>
 
+	{#snippet badge()}
+		<div class="flex items-center gap-2">
+			Gift cards
+			<Badge variant="outline" size="xs" text="Preview" />
+		</div>
+	{/snippet}
+
 	<div class="bg-white rounded-lg border border-gray-200 p-3">
-		<Accordion header="Gift cards">
+		<Accordion header={badge}>
 			{#if giftCards.length}
 				{#each giftCards as card, idx (idx)}
 					<div class="flex flex-col gap-2">
@@ -171,7 +200,7 @@
 					There are no gift cards used by this customer
 				</Alert>
 			{/if}
-			<Badge variant="outline" size="xs" text="Preview" color="cyan" />
+
 			<Button size="xs" class="mt-3" onclick={openAddCardModal}>Issue new card</Button>
 		</Accordion>
 	</div>
@@ -182,6 +211,7 @@
 	header="Issue new gift card"
 	size="xs"
 	onCancel={() => (isAddCardModalOpen = false)}
+	onClose={() => (isAddCardModalOpen = false)}
 	onOk={addNewCard}
 >
 	<div class="flex flex-col gap-2">
@@ -201,38 +231,50 @@
 				options={currencyOptions}
 				placeholder="Select a currency"
 				bind:value={giftCardInput.balance.currency}
-				required
 				onchange={validate}
+				required
 				onblur={validate}
 				variant={customerFormErrors.currency?.length ? 'error' : 'info'}
 				subText={customerFormErrors.currency?.[0]}
 			/>
 		</div>
 
-		<Input
-			label="Tag"
-			bind:value={giftCardInput.addTags}
-			required
-			inputDebounceOption={{ onInput: validate }}
-			onblur={validate}
-			variant={customerFormErrors.addTags?.length ? 'error' : 'info'}
-			subText={customerFormErrors.addTags?.[0]}
-		/>
+		{#if $queryGiftCardTags.data?.giftCardTags?.edges?.length}
+			{@const tags = $queryGiftCardTags.data?.giftCardTags?.edges?.map<SelectOption>((tag) => ({
+				value: tag.node.id,
+				label: tag.node.name
+			}))}
+			<MultiSelect
+				size="sm"
+				options={tags}
+				onchange={handleAddTags}
+				label="Select tags"
+				bind:value={selectedTagOptions}
+				class="w-full"
+				required
+				onblur={validate}
+				variant={customerFormErrors.addTags?.length ? 'error' : 'info'}
+				subText={customerFormErrors.addTags?.[0]}
+			/>
+		{/if}
+
 		<Input label="Customer" value={userName} disabled />
-		<Select
-			label="Channel"
-			options={$queryChannel.data?.channels?.map<SelectOption>((channel) => ({
-				value: channel.id,
+		{#if $queryChannel.data?.channels?.length}
+			{@const channels = $queryChannel.data?.channels?.map<SelectOption>((channel) => ({
+				value: channel.name,
 				label: channel.name
-			})) ?? []}
-			placeholder="Select a channel"
-			bind:value={giftCardInput.channel as string | undefined}
-			required
-			onchange={validate}
-			onblur={validate}
-			variant={customerFormErrors.channel?.length ? 'error' : 'info'}
-			subText={customerFormErrors.channel?.[0]}
-		/>
+			}))}
+			<Select
+				label="Channel"
+				options={channels}
+				placeholder="Select a channel"
+				bind:value={giftCardInput.channel as string}
+				required
+				onblur={validate}
+				variant={customerFormErrors.channel?.length ? 'error' : 'info'}
+				subText={customerFormErrors.channel?.[0]}
+			/>
+		{/if}
 
 		<Input
 			label="Note"
@@ -251,6 +293,7 @@
 	open={isNewCardModalOpen}
 	header="Issue gift card"
 	size="xs"
+	onClose={() => (isNewCardModalOpen = false)}
 	onCancel={() => (isNewCardModalOpen = false)}
 	onOk={() => (isNewCardModalOpen = false)}
 >

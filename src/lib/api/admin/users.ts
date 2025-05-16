@@ -102,3 +102,22 @@ mutation GiftCardCreate($input: GiftCardCreateInput!) {
   }
 }
 `
+
+export const GIFT_CARD_TAGS_QUERY = gql`
+query SearchGiftCardTags($query: String!, $first: Int!, $after: String, $last: Int, $before: String) {
+  giftCardTags(filter: {search: $query}, first: $first, after: $after, last: $last, before: $before) {
+    totalCount
+    edges {
+      node {
+        id
+        name
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+  }
+}`
