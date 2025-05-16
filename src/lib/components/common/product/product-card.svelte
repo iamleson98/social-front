@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import { BurstSale, Heart, OpenEye } from '$lib/components/icons';
-	import { Badge } from '$lib/components/ui/Badge';
+	import { Badge } from '$lib/components/ui/badge';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { AppRoute } from '$lib/utils';
 	import { MAX_RATING, MIN_RATING } from '$lib/utils/consts';

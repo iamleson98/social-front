@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { QUERY_CUSTOMERS } from '$lib/api/admin/users';
-	import { Badge } from '$lib/components/ui/Badge';
+	import { Badge } from '$lib/components/ui/badge';
 	import { type TableColumnProps } from '$lib/components/ui/Table';
 	import {
 		UserSortField,

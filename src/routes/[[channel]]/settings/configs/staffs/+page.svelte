@@ -2,7 +2,7 @@
 	import { STAFFS_QUERY } from '$lib/api/admin/staff';
 	import { Search } from '$lib/components/icons';
 	import FilterButton from '$lib/components/pages/settings/config/staff/filter-button.svelte';
-	import { Badge } from '$lib/components/ui/Badge';
+	import { Badge } from '$lib/components/ui/badge';
 	import { Input } from '$lib/components/ui/Input';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { type QueryStaffUsersArgs, type User, UserSortField } from '$lib/gql/graphql';

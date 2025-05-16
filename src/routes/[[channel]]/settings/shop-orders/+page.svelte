@@ -5,7 +5,7 @@
 	import dayjs from 'dayjs';
 	import { tranFunc } from '$i18n';
 	import { SHOP_ORDERS_QUERY } from '$lib/api/admin/orders';
-	import { Badge } from '$lib/components/ui/Badge';
+	import { Badge } from '$lib/components/ui/badge';
 	import Filter from '$lib/components/pages/settings/orders/filter.svelte';
 	import { Search } from '$lib/components/icons';
 	import { Input } from '$lib/components/ui/Input';
