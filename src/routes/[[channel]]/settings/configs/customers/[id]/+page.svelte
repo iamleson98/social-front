@@ -30,6 +30,7 @@
 	});
 
 	let loading = $state(false);
+	let informationOk = $state(false);
 
 	let userInput = $state<CustomerInput>({
 		lastName: '',
@@ -38,7 +39,7 @@
 		isActive: false,
 		note: '',
 		metadata: [],
-		privateMetadata: []
+		privateMetadata: [],
 	});
 
 	$effect(() => {
@@ -96,7 +97,7 @@
 				note={userInput.note as string}
 				bind:metadata={userInput.metadata as MetadataInput[]}
 				bind:privateMetadata={userInput.privateMetadata as MetadataInput[]}
-				disabled
+				bind:ok={informationOk}
 			/>
 		</div>
 
@@ -104,6 +105,7 @@
 			addresses={$userDetailQuery.data?.user.addresses}
 			lastLoginTime={$userDetailQuery.data?.user.lastLogin}
 			lastOrderAt={orders.length > 0 ? orders[0].created : undefined}
+			giftCards={$userDetailQuery.data?.user.giftCards?.edges.map((edge) => edge.node) ?? []}
 		/>
 	</div>
 	<ActionBar backButtonUrl={AppRoute.SETTINGS_CONFIGS_USERS()} {onUpdateClick} disabled={loading}/>

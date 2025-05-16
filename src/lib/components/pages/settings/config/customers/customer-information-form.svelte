@@ -7,7 +7,7 @@
 	import MetadataEditor from '$lib/components/pages/settings/common/metadata-editor.svelte';
 	import dayjs from 'dayjs';
 	import { Badge } from '$lib/components/ui/Badge';
-	import { paymentStatusBadgeClass } from '$lib/utils/utils';
+	import { formatCurrency, paymentStatusBadgeClass } from '$lib/utils/utils';
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
 
@@ -21,6 +21,7 @@
 		orders: Order[];
 		metadata: MetadataInput[];
 		privateMetadata: MetadataInput[];
+		ok: boolean;
 	};
 
 	let {
@@ -32,8 +33,13 @@
 		disabled,
 		orders,
 		metadata = $bindable([]),
-		privateMetadata = $bindable([])
+		privateMetadata = $bindable([]),
+		ok = $bindable(false)
 	}: Props = $props();
+
+	$effect(() => {
+		ok = !Object.keys(customerFormErrors).length;
+	});
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 
@@ -47,6 +53,7 @@
 	type CustomerSchema = z.infer<typeof customerSchema>;
 
 	let customerFormErrors = $state.raw<Partial<Record<keyof CustomerSchema, string[]>>>({});
+	let metadataOk = $state(false);
 
 	const validate = () => {
 		const result = customerSchema.safeParse({
@@ -96,10 +103,15 @@
 {/snippet}
 
 {#snippet total({ item }: { item: Order })}
-	<span>{item.total.gross.currency} {item.total.gross.amount}</span>
+	<div class="flex items-center justify-between gap-1">
+		<span class="text-gray-500 text-xs">{item.total.gross.currency}</span>
+		<span class="font-semibold text-blue-600 text-right">
+			{formatCurrency(item.total.gross.amount)}
+		</span>
+	</div>
 {/snippet}
 
-<div class="bg-white rounded-lg border w-full border-gray-200 p-3 pb-6 flex flex-col gap-3">
+<div class="bg-white rounded-lg border border-gray-200 p-3 mb-3 flex flex-col gap-3">
 	<h3 class="font-semibold text-gray-700">Customer Information</h3>
 	<div class="flex flex-row gap-3 items-start">
 		<Input
@@ -152,17 +164,21 @@
 		variant={customerFormErrors.note?.length ? 'error' : 'info'}
 		subText={customerFormErrors.note?.length ? customerFormErrors.note[0] : undefined}
 	/>
+</div>
 
+<div class="bg-white rounded-lg border border-gray-200 p-3 mb-3">
+	<div class="flex justify-between items-center mb-3">
+		<h3 class="font-semibold text-gray-700">Recent Orders</h3>
+		<Button variant="light" size="xs">View all orders</Button>
+	</div>
 	{#if orders.length <= 0}
-		<Alert variant="info" size="sm" bordered={false}>This customer has no orders</Alert>
+		<Alert variant="info" size="sm" bordered>This customer has no orders</Alert>
 	{:else}
-		<div class="flex justify-between items-center">
-			<h3 class="font-semibold text-gray-700">Recent Orders</h3>
-			<Button variant="light" size="xs">View all orders</Button>
-		</div>
 		<Table columns={ORDER_TABLE_COLUMNS} items={orders} />
 	{/if}
+</div>
 
+<div class="bg-white rounded-lg border border-gray-200 p-3 flex flex-col gap-3">
 	<MetadataEditor title="Metadata" bind:data={metadata} />
 	<MetadataEditor title="Private Metadata" bind:data={privateMetadata} />
 </div>
