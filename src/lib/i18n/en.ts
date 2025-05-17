@@ -81,6 +81,7 @@ export default {
 		to: 'To',
 		prevPage: 'Previous page',
 		nextPage: 'Next page',
+		pic: 'Picture',
 	},
 	product: {
 		chooseAddress: 'Please choose address',
@@ -244,7 +245,7 @@ export default {
 		accountUpdated: 'Account updated successfully',
 		orders: 'Orders',
 		newOrder: 'New Order',
-		no: 'No',
+		no: 'No.',
 		date: 'Date',
 		payment: 'Payment',
 		status: 'Status',

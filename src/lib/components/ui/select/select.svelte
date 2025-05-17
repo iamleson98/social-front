@@ -2,17 +2,15 @@
 	import { clickOutside } from '$lib/actions/click-outside';
 	import { focusOutside } from '$lib/actions/focus-outside';
 	import { shortcuts } from '$lib/actions/shortcut';
-	import { ChevronSort, CloseX, Icon } from '$lib/components/icons';
-	import { randomID } from '$lib/utils/utils';
+	import { classNames, randomID } from '$lib/utils/utils';
 	import { fly } from 'svelte/transition';
 	import { Input } from '$lib/components/ui/Input';
-	import {
-		SELECT_CLASSES,
-		type SelectItemprops,
-		type SelectOption,
-		type SelectProps
-	} from './types';
+	import { SELECT_CLASSES, type SelectOption, type SelectProps } from './types';
 	import { INPUT_CLASSES } from '$lib/components/ui/Input/input.types';
+	import { scrollToEnd } from '$lib/actions/scroll-end';
+	import { noop } from 'es-toolkit';
+	import SelectOptionComponent from './select-option-component.svelte';
+	import SelectAction from './select-action.svelte';
 
 	let {
 		options,
@@ -21,6 +19,9 @@
 		class: className = '',
 		subText,
 		variant = 'info',
+		inputDebounceOption,
+		onScrollToEnd = noop,
+		isFetchingMore,
 		...rest
 	}: SelectProps = $props();
 
@@ -31,22 +32,25 @@
 	let searchQuery = $state('');
 	let openSelect = $state(false);
 	let selectedOption = $derived.by(() =>
-		value ? options.find((opt) => opt.value === value) : undefined
+		value ? options.find((opt) => opt.value === value) : undefined,
 	);
 	let input = $state<HTMLInputElement>();
-	let optionRefs: HTMLElement[] = [];
+	let optionRefs: HTMLLIElement[] = [];
 
 	/** list of options that match search query */
 	let filteredOptions = $derived.by(() =>
 		searchQuery
 			? options.filter((option) => option.label.toLowerCase().includes(searchQuery.toLowerCase()))
-			: options
+			: options,
 	);
 
-	const onInput = () => {
+	const onInput = (evt: Event) => {
 		toggleDropdown(true);
 		searchQuery = input?.value.trim() ?? '';
 		optionRefs[0]?.scrollIntoView({ block: 'nearest' });
+
+		// pass result to parent
+		inputDebounceOption?.onInput(evt);
 	};
 
 	const deactivate = () => {
@@ -62,7 +66,7 @@
 	const handleFocus = (
 		evt: FocusEvent & {
 			currentTarget: EventTarget & HTMLInputElement;
-		}
+		},
 	) => {
 		if (rest.onfocus) rest.onfocus(evt);
 		activate();
@@ -88,51 +92,8 @@
 	};
 </script>
 
-<!-- this common snippet is used for rendering select options -->
-{#snippet selectOption({
-	idx,
-	disabled,
-	optionClassName,
-	onclick,
-	value: _value,
-	label
-}: SelectItemprops)}
-	<li
-		id={`${LISTBOX_ID}-${idx}`}
-		aria-selected={_value === value}
-		role="option"
-		aria-disabled={disabled}
-		class={`${optionClassName} ${SELECT_CLASSES.selectOption} ${_value === value ? SELECT_CLASSES.activeSelectOption : ''}`}
-		bind:this={optionRefs[idx]}
-		{onclick}
-		onkeydown={(e) => e.key === 'Enter' && onclick?.()}
-		tabindex="0"
-		use:shortcuts={[
-			{
-				shortcut: { key: 'Enter' },
-				onShortcut: () => onclick?.()
-			}
-		]}
-	>
-		{label}
-	</li>
-{/snippet}
-
 {#snippet action()}
-	{#if !!value}
-		<span
-			onclick={onClear}
-			role="button"
-			tabindex="0"
-			onkeydown={(evt) => evt.key === 'Enter' && onClear()}
-			class="cursor-pointer select-none!"
-			title="Clear"
-		>
-			<Icon icon={CloseX} size="xs" />
-		</span>
-	{:else if !openSelect}
-		<Icon icon={ChevronSort} size="xs" />
-	{/if}
+	<SelectAction {value} {onClear} {openSelect} />
 {/snippet}
 
 <div
@@ -145,8 +106,8 @@
 			onShortcut: (event) => {
 				event.stopPropagation();
 				toggleDropdown(false);
-			}
-		}
+			},
+		},
 	]}
 >
 	<Input
@@ -164,7 +125,8 @@
 		type="text"
 		role="combobox"
 		inputDebounceOption={{
-			onInput
+			onInput,
+			debounceTime: inputDebounceOption?.debounceTime,
 		}}
 		{action}
 	/>
@@ -175,25 +137,35 @@
 			transition:fly={{ duration: 250, y: 10 }}
 			class={SELECT_CLASSES.selectMenu}
 			tabindex="0"
+			use:scrollToEnd={{ onScrollToEnd }}
 		>
 			{#if !filteredOptions.length}
-				{@render selectOption({
-					idx: 0,
-					disabled: true,
-					optionClassName: 'cursor-default',
-					onclick: () => toggleDropdown(false),
-					value: '',
-					label: 'No data'
-				})}
+				<SelectOptionComponent
+					idx={0}
+					optionClassName="cursor-default"
+					onclick={() => toggleDropdown(false)}
+					label="No data"
+					value=""
+					ref={optionRefs[0]}
+				/>
 			{/if}
 			{#each filteredOptions as option, idx (idx)}
-				{@render selectOption({
-					idx,
-					optionClassName: `${option.disabled ? 'cursor-not-allowed! text-gray-400!' : ''}`,
-					onclick: () => handleSelect(option),
-					...option
-				})}
+				<SelectOptionComponent
+					{idx}
+					optionClassName={classNames({
+						'cursor-not-allowed! text-gray-400!': !!option.disabled,
+						[SELECT_CLASSES.activeSelectOption]: option.value === value,
+					})}
+					onclick={() => handleSelect(option)}
+					ref={optionRefs[idx]}
+					{...option}
+				/>
 			{/each}
+			{#if isFetchingMore}
+				<li class={SELECT_CLASSES.selectOption}>
+					<span class="loading loading-spinner loading-xs"></span>
+				</li>
+			{/if}
 		</ul>
 	{/if}
 	{#if subText}

@@ -58,8 +58,8 @@ export const CATEGORIES_LIST_FOR_CREATE_PRODUCT = gql`
 `
 
 export const PRODUCT_TYPES_QUERY = gql`
-query ProductTypes($first: Int, $after: String, $last: Int, $before: String) {
-	productTypes(first: $first, after: $after, last: $last, before: $before) {
+query ProductTypes($first: Int, $after: String, $last: Int, $before: String, $sortBy: ProductTypeSortingInput, $filter: ProductTypeFilterInput) {
+	productTypes(first: $first, after: $after, last: $last, before: $before, sortBy: $sortBy, filter: $filter) {
 		edges {
 			node {
 				id

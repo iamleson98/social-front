@@ -105,7 +105,7 @@ export function operationStore<Data = unknown, Variables extends AnyVariables = 
 	const isPaused$ = writable(args.pause);
 
 	const result$ = writable(initialState, () => {
-		return pipe(
+		const { unsubscribe } = pipe(
 			fromStore(isPaused$),
 			switchMap((isPaused): Source<Partial<OperationResultState<Data, Variables>>> => {
 				if (isPaused) {
@@ -143,7 +143,9 @@ export function operationStore<Data = unknown, Variables extends AnyVariables = 
 			subscribe((result) => {
 				result$.set(result);
 			})
-		).unsubscribe;
+		);
+
+		return unsubscribe;
 	});
 
 	const reexecute = (args: ReexecuteProps<Variables>): void => {

@@ -81,6 +81,7 @@ export default {
 		to: 'Đến',
 		prevPage: 'Trang trước',
 		nextPage: 'Trang sau',
+		pic: 'Hình ảnh',
 	},
 	product: {
 		chooseAddress: 'Vui lòng chọn địa chỉ',

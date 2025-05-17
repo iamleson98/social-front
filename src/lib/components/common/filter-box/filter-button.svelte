@@ -19,11 +19,10 @@
 
 	type Props = {
 		filterOptions: FilterProps<T>[];
-		size?: SocialSize;
 		onApply?: (filters: FilterResult<T>) => void;
 	};
 
-	let { filterOptions, size = 'sm', onApply }: Props = $props();
+	let { filterOptions, onApply }: Props = $props();
 
 	const FILTER_RANGE_REGEX = /^\[([\w\d\.-]+)\,([\w\d\.-]+)\]$/;
 	const FILTER_KEYS_MAP = filterOptions.reduce(
@@ -136,7 +135,7 @@
 </script>
 
 {#snippet trigger(opts: DropdownTriggerInterface)}
-	<Button variant="light" {size} {...opts} class="indicator" endIcon={FilterCog}>
+	<Button variant="outline" size="sm" {...opts} class="indicator" endIcon={FilterCog}>
 		{#if filters.size}
 			<span class="indicator-item badge badge-xs text-white! bg-blue-500">{filters.size}</span>
 		{/if}

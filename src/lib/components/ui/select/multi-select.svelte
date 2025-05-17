@@ -11,7 +11,7 @@
 		type SelectItemprops,
 		type SelectOption,
 		type MultiSelectProps,
-		SIZE_REDUCE_MAP
+		SIZE_REDUCE_MAP,
 	} from './types';
 	import type { FocusEventHandler } from 'svelte/elements';
 	import { INPUT_CLASSES } from '$lib/components/ui/Input/input.types';
@@ -54,7 +54,7 @@
 		if (!searchQuery) return notSelectedOptions;
 
 		return notSelectedOptions.filter((opt) =>
-			opt.label.toLowerCase().includes(searchQuery.toLowerCase())
+			opt.label.toLowerCase().includes(searchQuery.toLowerCase()),
 		);
 	});
 
@@ -117,8 +117,8 @@
 		use:shortcuts={[
 			{
 				shortcut: { key: 'Enter' },
-				onShortcut: () => onclick?.()
-			}
+				onShortcut: () => onclick?.(),
+			},
 		]}
 	>
 		{label}
@@ -154,8 +154,8 @@
 			onShortcut: (event) => {
 				event.stopPropagation();
 				toggleDropdown(false);
-			}
-		}
+			},
+		},
 	]}
 	role="menu"
 	tabindex="0"
@@ -190,7 +190,7 @@
 			type="text"
 			role="combobox"
 			inputDebounceOption={{
-				onInput
+				onInput,
 			}}
 			{action}
 		/>
@@ -210,7 +210,7 @@
 					optionClassName: 'cursor-default',
 					onclick: () => toggleDropdown(false),
 					label: 'No data',
-					value: ''
+					value: '',
 				})}
 			{/if}
 			{#each searchFilteredOptions as option, idx (idx)}
@@ -218,7 +218,7 @@
 					idx,
 					optionClassName: `${option.disabled ? 'cursor-not-allowed! text-gray-400!' : ''}`,
 					onclick: () => handleSelect(option),
-					...option
+					...option,
 				})}
 			{/each}
 		</ul>

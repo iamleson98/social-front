@@ -6,7 +6,7 @@
 		UserSortField,
 		type CustomerFilterInput,
 		type QueryCustomersArgs,
-		type User
+		type User,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import dayjs from 'dayjs';
@@ -15,17 +15,18 @@
 	import { DebounceInput } from '$lib/components/ui/Input';
 	import { Search } from '$lib/components/icons';
 	import GraphqlPaginableTable from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 
 	let filterVariables = $state<QueryCustomersArgs>({
 		filter: {},
-		first: 10
+		first: 10,
 	});
 	let forceReExecuteGraphqlQuery = $state(true);
 
 	const onFilterChange = (newFilter: FilterResult<CustomerFilterInput>) => {
 		filterVariables = {
 			...filterVariables,
-			filter: newFilter as CustomerFilterInput
+			filter: newFilter as CustomerFilterInput,
 		};
 		forceReExecuteGraphqlQuery = true;
 	};
@@ -33,55 +34,49 @@
 	const USER_TABLE_COLUMNS: TableColumnProps<User, UserSortField>[] = [
 		{
 			title: 'Avatar',
-			child: avatar
+			child: avatar,
 		},
 		{
 			title: 'First Name',
 			child: firstName,
 			sortable: true,
-			key: UserSortField.FirstName
+			key: UserSortField.FirstName,
 		},
 		{
 			title: 'Last Name',
 			child: lastName,
 			sortable: true,
-			key: UserSortField.LastName
+			key: UserSortField.LastName,
 		},
 		{
 			title: 'Email',
 			child: email,
 			sortable: true,
-			key: UserSortField.Email
+			key: UserSortField.Email,
 		},
 		{
 			title: 'Status',
-			child: isActive
+			child: isActive,
 		},
 		{
 			title: 'Is Staff',
-			child: isStaff
+			child: isStaff,
 		},
 		{
 			title: 'Joined At',
 			child: dateJoined,
 			sortable: true,
-			key: UserSortField.CreatedAt
-		}
+			key: UserSortField.CreatedAt,
+		},
 	];
 </script>
 
 {#snippet avatar({ item }: { item: User })}
-	{#if item.avatar}
-		<div class="w-8 h-8 rounded-full overflow-hidden">
-			<img src={item.avatar?.url} alt={item.avatar?.alt} />
-		</div>
-	{:else}
-		<div class="w-8 h-8 justify-center items-center flex rounded-full overflow-hidden bg-blue-500">
-			<span class="text-xs font-medium text-white"
-				>{`${item.firstName[0] || item.email[0]}${item.lastName[0] || ''}`.toUpperCase()}</span
-			>
-		</div>
-	{/if}
+	<Thumbnail
+		size="sm"
+		src={item.avatar?.url}
+		alt={`${item.firstName[0] || item.email[0]}${item.lastName[0] || item.email[1]}`.toUpperCase()}
+	/>
 {/snippet}
 
 {#snippet firstName({ item }: { item: User })}
@@ -115,7 +110,7 @@
 {/snippet}
 
 {#snippet dateJoined({ item }: { item: User })}
-	<span>{dayjs(item.dateJoined).format('DD/MM/YYYY')}</span>
+	<span>{dayjs(item.dateJoined).format('DD/MM/YYYY HH:mm')}</span>
 {/snippet}
 
 <div class="flex items-center gap-2 mb-2">

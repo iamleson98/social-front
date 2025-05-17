@@ -6,10 +6,11 @@
 	import { object, string, z } from 'zod';
 	import MetadataEditor from '$lib/components/pages/settings/common/metadata-editor.svelte';
 	import dayjs from 'dayjs';
-	import { Badge } from '$lib/components/ui/Badge';
+	import { Badge } from '$lib/components/ui/badge';
 	import { formatCurrency, paymentStatusBadgeClass } from '$lib/utils/utils';
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
+
 	type Props = {
 		firstName: string;
 		lastName: string;
@@ -23,6 +24,7 @@
 		ok: boolean;
 		isCreatePage?: boolean;
 	};
+
 	let {
 		firstName = $bindable(''),
 		lastName = $bindable(''),
@@ -34,7 +36,7 @@
 		metadata = $bindable([]),
 		privateMetadata = $bindable([]),
 		ok = $bindable(false),
-		isCreatePage = false
+		isCreatePage = false,
 	}: Props = $props();
 
 	$effect(() => {
@@ -46,7 +48,7 @@
 		firstName: string().nonempty(REQUIRED_ERROR),
 		lastName: string().nonempty(REQUIRED_ERROR),
 		email: string().nonempty(REQUIRED_ERROR).email($tranFunc('error.invalidEmail')),
-		note: string().nonempty(REQUIRED_ERROR)
+		note: string().nonempty(REQUIRED_ERROR),
 	});
 
 	type CustomerSchema = z.infer<typeof customerSchema>;
@@ -57,7 +59,7 @@
 			firstName,
 			lastName,
 			email,
-			note
+			note,
 		});
 		if (!result.success) {
 			customerFormErrors = result.error.formErrors.fieldErrors;
@@ -66,32 +68,35 @@
 		customerFormErrors = {};
 		return true;
 	};
+
 	const ORDER_TABLE_COLUMNS: TableColumnProps<Order, OrderSortField>[] = [
 		{
 			title: 'Number',
-			child: number
+			child: number,
 		},
 		{
 			title: 'Date',
-			child: date
+			child: date,
 		},
 		{
 			title: 'Status',
-			child: status
+			child: status,
 		},
 		{
 			title: 'Total',
-			child: total
-		}
+			child: total,
+		},
 	];
 </script>
 
 {#snippet number({ item }: { item: Order })}
 	<span>{item.number}</span>
 {/snippet}
+
 {#snippet date({ item }: { item: Order })}
 	<span class="whitespace-nowrap">{dayjs(item.created).format('DD/MM/YYYY HH:mm')}</span>
 {/snippet}
+
 {#snippet status({ item }: { item: Order })}
 	<Badge {...paymentStatusBadgeClass(item.paymentStatus)} />
 {/snippet}
@@ -105,7 +110,7 @@
 	</div>
 {/snippet}
 
-<div class="bg-white rounded-lg border border-gray-200 p-3 mb-3 flex flex-col gap-3">
+<div class="bg-white rounded-lg border border-gray-200 p-3 mb-3 flex flex-col gap-2">
 	<h3 class="font-semibold text-gray-700">Customer Information</h3>
 	<div class="flex flex-row gap-3 items-start">
 		<Input
@@ -168,7 +173,7 @@
 	{/if}
 </div>
 
-<div class="bg-white rounded-lg border border-gray-200 p-3 flex flex-col gap-3">
+<div class="bg-white rounded-lg border border-gray-200 p-3">
 	<MetadataEditor title="Metadata" bind:data={metadata} />
-	<MetadataEditor title="Private Metadata" bind:data={privateMetadata} />
+	<MetadataEditor title="Private Metadata" bind:data={privateMetadata} class="mt-2" />
 </div>

@@ -79,4 +79,4 @@ export type GraphqlPaginationArgs = {
     field?: string | null;
     direction: OrderDirection;
   } | null;
-};
+} & Record<string, unknown>;

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import { PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
+	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { Icon, InforCircle, Search } from '$lib/components/icons';
 	import ProductFilterStateListener from '$lib/components/pages/home/product-filter-state-listener.svelte';
 	import Filter from '$lib/components/pages/settings/products/filter.svelte';
@@ -17,6 +18,10 @@
 	let forceReExecuteGraphqlQuery = $state(true);
 
 	const productColumns: TableColumnProps<Product, ProductOrderField>[] = $derived([
+		{
+			title: $tranFunc('common.pic'),
+			child: pic,
+		},
 		{
 			title: $tranFunc('settings.name'),
 			child: name,
@@ -42,14 +47,14 @@
 
 <ProductFilterStateListener />
 
-{#snippet name({ item }: { item: Product })}
-	<div class="flex gap-1 items-center">
-		<div
-			class="h-8 w-8 rounded-lg border border-gray-100 overflow-hidden bg-cover bg-center bg-no-repeat"
-			style="background-image: url({item.thumbnail?.url})"
-		></div>
-		<a class="link link-hover" href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.slug)}>{item.name}</a>
+{#snippet pic({ item }: { item: Product })}
+	<div class="text-center">
+		<Thumbnail size="sm" src={item.thumbnail?.url} alt={item.thumbnail?.alt || item.name} />
 	</div>
+{/snippet}
+
+{#snippet name({ item }: { item: Product })}
+	<a class="link link-hover" href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.slug)}>{item.name}</a>
 {/snippet}
 
 {#snippet availability({ item }: { item: Product })}
@@ -57,11 +62,9 @@
 		? item.channelListings.map((list) => list.channel.slug).join(', ')
 		: ''}
 	<div class="flex items-center gap-1">
-		<Icon
-			icon={InforCircle}
-			class="text-blue-500 cursor-help tooltip tooltip-top"
-			data-tip={tooltip}
-		/>
+		<span class="tooltip tooltip-top" data-tip={tooltip}>
+			<Icon icon={InforCircle} class="text-blue-500 cursor-help" />
+		</span>
 		<span class="whitespace-nowrap">{item.channelListings?.length || 0} channels</span>
 	</div>
 {/snippet}

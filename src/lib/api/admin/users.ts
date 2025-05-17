@@ -98,6 +98,7 @@ mutation GiftCardCreate($input: GiftCardCreateInput!) {
     }
     giftCard {
       id
+      code
     }
   }
 }

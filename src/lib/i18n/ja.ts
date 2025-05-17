@@ -81,6 +81,7 @@ export default {
 		to: 'To',
 		prevPage: 'Previous page',
 		nextPage: 'Next page',
+		pic: 'Picture',
 	},
 	product: {
 		chooseAddress: '住所を選択してください',

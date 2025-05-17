@@ -1,9 +1,11 @@
 <script lang="ts">
+	import { PRODUCT_TYPES_QUERY } from '$lib/api/admin/product';
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import { FilterButton } from '$lib/components/common/filter-box';
 	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box/types';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
-	import type { ProductFilterInput } from '$lib/gql/graphql';
+	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
+	import type { ProductFilterInput, QueryProductTypesArgs } from '$lib/gql/graphql';
 
 	const FILTER_OPTIONS: FilterProps<ProductFilterInput>[] = [
 		{
@@ -92,8 +94,36 @@
 				},
 			],
 		},
+		{
+			label: 'Product type',
+			key: 'productTypes',
+			operations: [
+				{
+					operator: 'eq',
+					component: productTypeCmp,
+				},
+			],
+		},
 	];
 </script>
+
+{#snippet productTypeCmp({ onValue, initialValue }: FilterComponentType)}
+	<GraphqlPaginableSelect
+		query={PRODUCT_TYPES_QUERY}
+		variables={{
+			first: 100,
+			filter: {
+				search: '',
+			},
+		} as QueryProductTypesArgs}
+		resultKey="productTypes"
+		optionValueKey="id"
+		optionLabelKey="name"
+		value={initialValue}
+		onchange={(value) => onValue(value?.value as string)}
+		size="xs"
+	/>
+{/snippet}
 
 {#snippet priceCmp({ onValue, initialValue }: FilterComponentType)}
 	<Input

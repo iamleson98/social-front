@@ -1,6 +1,7 @@
 import type { HTMLSelectAttributes } from "svelte/elements";
 import type { SocialSize } from "../common";
 import type { InputProps } from "../Input";
+import type { OnscrollToEndOpts } from "$lib/actions/scroll-end";
 
 export type SelectOption = {
   value: string | number;
@@ -9,16 +10,21 @@ export type SelectOption = {
   disabled?: boolean;
 };
 
-export type SelectItemprops<T extends SelectOption = SelectOption> = {
+export type SelectItemprops = {
   idx: number;
   optionClassName: string;
   onclick?: () => void;
-} & T;
+  ref?: HTMLLIElement;
+} & SelectOption;
 
 export type SelectProps<T extends SelectOption = SelectOption> = {
   options: T[];
   value?: SelectOption['value'];
   onchange?: (opt?: T) => void;
+  /** callback function to be called when the scroll reaches the end of the list */
+  onScrollToEnd?: OnscrollToEndOpts['onScrollToEnd'];
+  /** default `false` */
+  isFetchingMore?: boolean;
 } & Omit<InputProps, 'value' | 'onchange'> & Omit<HTMLSelectAttributes, 'size' | 'onchange' | 'onblur'>;
 
 export type MultiSelectSizeType = Exclude<SocialSize, 'xs'>;

@@ -1,10 +1,12 @@
 <script lang="ts">
-	import { MultiSelect, Select } from '$lib/components/ui/select';
+	import { GraphqlPaginableSelect, MultiSelect, Select } from '$lib/components/ui/select';
 	import { onMount } from 'svelte';
 	import { draggable, droppable, type DragDropState } from '@thisux/sveltednd';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import { ButtonSkeleton } from '$lib/components/ui/Button';
 	import SelectSkeleton from '$lib/components/ui/select/select-skeleton.svelte';
+	import { PRODUCT_LIST_QUERY_STORE } from '$lib/api';
+	import type { QueryProductsArgs } from '$lib/gql/graphql';
 	// import { Input } from '$lib/components/ui/Input';
 
 	// onMount(async () => {
@@ -78,3 +80,15 @@
 	<SelectSkeleton size="xs" />
 	<SelectSkeleton label size="xs" />
 </div>
+
+<GraphqlPaginableSelect
+	query={PRODUCT_LIST_QUERY_STORE}
+	variables={{ first: 10, search: '' } as QueryProductsArgs}
+	resultKey="products"
+	optionValueKey="id"
+	optionLabelKey="name"
+	label="Products"
+	variableSearchQueryPath="search"
+/>
+
+<li class="loading loading-spinner loading-xs"></li>

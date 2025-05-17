@@ -45,16 +45,16 @@
 	let {
 		query,
 		variables = $bindable({
-			first: 10
+			first: 10,
 		}),
-		requestPolicy = 'network-only',
+		requestPolicy = 'cache-and-network',
 		forceReExecuteGraphqlQuery = $bindable(false),
 		resultKey,
 		columns,
 		tableClass,
 		onDragEnd,
 		dragEffectType,
-		disabled
+		disabled,
 	}: Props = $props();
 
 	if ((dragEffectType && !onDragEnd) || (!dragEffectType && onDragEnd))
@@ -68,7 +68,7 @@
 		query,
 		variables,
 		requestPolicy,
-		pause: true // to prevent unnecessary network call, this operation will be paused by default
+		pause: true, // to prevent unnecessary network call, this operation will be paused by default
 	});
 
 	let sortState = $state.raw<SortState<K>>({} as SortState<K>);
@@ -88,7 +88,7 @@
 
 	$effect(() => {
 		if (forceReExecuteGraphqlQuery) {
-			queryOperationStore.reexecute({ variables });
+			queryOperationStore.reexecute({ variables, context: { requestPolicy: 'network-only' } });
 
 			tick().then(() => {
 				forceReExecuteGraphqlQuery = false;
@@ -102,7 +102,7 @@
 			after,
 			before: null,
 			first: variables.first || variables.last,
-			last: null
+			last: null,
 		};
 		forceReExecuteGraphqlQuery = true;
 	};
@@ -113,7 +113,7 @@
 			before,
 			after: null,
 			last: variables.last || variables.first,
-			first: null
+			first: null,
 		};
 		forceReExecuteGraphqlQuery = true;
 	};
@@ -124,7 +124,7 @@
 			first: num,
 			last: null,
 			before: null,
-			after: null
+			after: null,
 		};
 		forceReExecuteGraphqlQuery = true;
 	};
@@ -147,8 +147,8 @@
 			after: null,
 			sortBy: {
 				field: key,
-				direction
-			}
+				direction,
+			},
 		};
 		forceReExecuteGraphqlQuery = true;
 	};

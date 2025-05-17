@@ -12,9 +12,15 @@
 		title: string;
 		data: MetadataInput[];
 		disabled?: boolean;
+		class?: string;
 	};
 
-	let { title = $bindable(), data = $bindable([]), disabled }: Props = $props();
+	let {
+		title = $bindable(),
+		data = $bindable([]),
+		disabled,
+		class: className = '',
+	}: Props = $props();
 
 	let dataFormErrors = $state<Partial<Record<keyof DataSchema, string[]>>[]>([]);
 
@@ -22,7 +28,7 @@
 
 	const dataSchema = object({
 		key: string().nonempty(REQUIRED_ERROR),
-		value: string().nonempty(REQUIRED_ERROR)
+		value: string().nonempty(REQUIRED_ERROR),
 	});
 
 	type DataSchema = z.infer<typeof dataSchema>;
@@ -30,7 +36,7 @@
 	const validate = (item: MetadataInput, index: number) => {
 		const result = dataSchema.safeParse({
 			key: item.key,
-			value: item.value
+			value: item.value,
 		});
 
 		if (!result.success) {
@@ -53,7 +59,7 @@
 	};
 </script>
 
-<Accordion header={title}>
+<Accordion header={title} class={className}>
 	{#each data as item, idx (idx)}
 		<div class="flex gap-2 items-center mb-3">
 			<div class="flex items-start gap-2 w-4/5">

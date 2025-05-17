@@ -2081,8 +2081,15 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6
 
+  '@thisux/sveltednd@0.0.12':
+    resolution: {integrity: sha512-9edVcakYkoCzU6pNIwmJ6Cf+9anECod26Ue/rL3Ssf5LyuLaBLXtBx4H4U8YwQCkwtMeSGFf0OsiMpPpFjvCcg==}
+    peerDependencies:
+      svelte: ^5.0.0
+
   '@thisux/sveltednd@0.0.14':
     resolution: {integrity: sha512-Vbq69SU3HUomPg6oCXtb89OG89hka0YIkdaErYibn3waK7tYE66IcQxD/Fzg8YNW3EVsXoA9kc7kW5EUBCSQGg==}
+    peerDependencies:
+      svelte: ^5.0.0
 
   '@thisux/sveltednd@0.0.17':
     resolution: {integrity: sha512-lRninjw439phhA8xAHqCpMAX0hnwFMdbXW4M0XJgAdnGxeum+QsLiIC4P3HnkNXAygsVKUqxRcbS84CxDZ9hPw==}
@@ -8032,11 +8039,18 @@ snapshots:
       tailwindcss: 4.1.5
       vite: 5.4.19(@types/node@20.17.43)(lightningcss@1.29.3)
 
-  '@thisux/sveltednd@0.0.14': {}
+  '@thisux/sveltednd@0.0.12(svelte@5.25.7)':
+    dependencies:
+      svelte: 5.25.7
+
+  '@thisux/sveltednd@0.0.14(svelte@5.25.7)':
+    dependencies:
+      '@thisux/sveltednd': 0.0.12(svelte@5.25.7)
+      svelte: 5.25.7
 
   '@thisux/sveltednd@0.0.17(svelte@5.25.7)':
     dependencies:
-      '@thisux/sveltednd': 0.0.14
+      '@thisux/sveltednd': 0.0.14(svelte@5.25.7)
       svelte: 5.25.7
 
   '@thisux/sveltednd@0.0.18(svelte@5.25.7)':

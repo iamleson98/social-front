@@ -236,7 +236,7 @@ export const classNames = (classes: Record<string, boolean>): string => {
 
 	for (const key in classes) {
 		if (classes[key]) {
-			result += key + ' ';
+			result += `${key} `;
 		}
 	}
 
