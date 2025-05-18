@@ -1,8 +1,8 @@
 import { pageRequiresPermissions } from '$lib/api/client';
 import { PermissionEnum } from '$lib/gql/graphql';
 
-// export const prerender = true;
-export const ssr = false;
+export const prerender = true;
+// export const ssr = false;
 
 export const load = async (event) => {
   const user = await pageRequiresPermissions(event, PermissionEnum.ManageSettings);

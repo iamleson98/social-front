@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { shortcuts } from '$lib/actions/shortcut';
 	import Icon from '$lib/components/icons/icon.svelte';
-	import { randomID } from '$lib/utils/utils';
+	import { classNames, randomID } from '$lib/utils/utils';
 	import { debounceInput } from '$lib/actions/input-debounce';
 	import { tranFunc } from '$i18n';
 	import { INPUT_BUTTON_SIZE_MAP } from '$lib/components/ui/Button/button.types';
@@ -28,11 +28,15 @@
 	}: InputProps = $props();
 </script>
 
-<div class={`${className} ${rest.disabled ? 'text-gray-300! cursor-not-allowed!' : ''}`}>
+<div
+	class={classNames(className as string, {
+		'text-gray-300! cursor-not-allowed!': !!rest.disabled,
+	})}
+>
 	{#if label}
 		<Label {label} {id} {required} {size} {variant} requiredAtPos="end" />
 	{/if}
-	<div class={`relative mt-0 ${INPUT_CLASSES[variant].fg}`}>
+	<div class={`relative flex items-center ${INPUT_CLASSES[variant].fg}`}>
 		{#if startIcon}
 			<div class="absolute inset-y-0 start-0 flex items-center ps-2.5 pointer-events-none">
 				<Icon icon={startIcon} {size} />
@@ -46,7 +50,17 @@
 			bind:value
 			use:shortcuts={selectShortcutOptions}
 			use:debounceInput={inputDebounceOption}
-			class={`w-full text-sm rounded-lg placeholder:opacity-55 inline-block px-2 ${rest.disabled ? 'text-gray-400! cursor-not-allowed!' : ''} ${inputClass} ${INPUT_CLASSES[variant].bg} ${startIcon ? 'ps-8' : ''} ${action ? 'pe-9' : ''} ${INPUT_BUTTON_SIZE_MAP[size]}`}
+			class={classNames(
+				'w-full text-sm rounded-lg placeholder:opacity-55 inline-block px-2',
+				inputClass,
+				INPUT_BUTTON_SIZE_MAP[size],
+				INPUT_CLASSES[variant].bg,
+				{
+					'text-gray-400! cursor-not-allowed!': !!rest.disabled,
+					'ps-8': !!startIcon,
+					'pe-9': !!action,
+				},
+			)}
 			{...rest}
 		/>
 

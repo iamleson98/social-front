@@ -5,10 +5,9 @@
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
-	import { MultiSelect, type SelectOption } from '$lib/components/ui/select';
+	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import type { Query, QueryChannelArgs, QueryWarehousesArgs, Warehouse } from '$lib/gql/graphql';
-	import { differenceBy } from 'es-toolkit';
 	import { onMount } from 'svelte';
 
 	type Props = {
@@ -24,7 +23,7 @@
 		channelSlug,
 		addWarehouses = $bindable([]),
 		removeWarehouses = $bindable(),
-		disabled
+		disabled,
 	}: Props = $props();
 
 	const BATCH_FETCH = 100;
@@ -37,10 +36,10 @@
 		query: CHANNEL_WAREHOUSES_QUERY,
 		variables: {
 			slug: channelSlug,
-			first: BATCH_FETCH
+			first: BATCH_FETCH,
 		},
 		requestPolicy: 'network-only',
-		pause: true // don't call this when in channel creation page
+		pause: true, // don't call this when in channel creation page
 	});
 
 	const allWarehouses = operationStore<Pick<Query, 'warehouses'>, QueryWarehousesArgs>({
@@ -48,7 +47,7 @@
 		query: WAREHOUSES_QUERY,
 		variables: { first: BATCH_FETCH },
 		requestPolicy: 'network-only',
-		pause: true // only call when user want to add new warehouses
+		pause: true, // only call when user want to add new warehouses
 	});
 
 	const handleDeleteWarehouse = (id: string) => {
@@ -70,13 +69,8 @@
 		}
 	});
 
-	const handleClickAddWarehouseButton = () => {
-		showAddWarehouses = true;
-		allWarehouses.resume();
-	};
-
-	const handleAddWarehouses = (options: SelectOption[] | undefined) => {
-		if (!options) return;
+	const handleAddWarehouses = (options?: SelectOption[] | SelectOption) => {
+		if (!options || !Array.isArray(options)) return;
 		const selectedIds = options.map((opt) => opt.value as string);
 		addWarehouses = selectedIds;
 		removeWarehouses = removeWarehouses?.filter((id) => !selectedIds.includes(id));
@@ -121,36 +115,30 @@
 
 	<div class="pt-2 mt-2 border-t border-gray-200">
 		{#if showAddWarehouses}
-			{#if $allWarehouses.data?.warehouses}
-				{@const allWh = $allWarehouses.data?.warehouses?.edges.map((edge) => edge.node)}
-				{@const availableWarehouses = differenceBy(
-					allWh,
-					warehousesOfChannel,
-					(warehouse) => warehouse.id
-				).map((warehouse) => ({
-					label: warehouse.name,
-					value: warehouse.id
-				}))}
-				<MultiSelect
-					size="sm"
-					options={availableWarehouses}
-					{disabled}
-					label="Select Warehouse"
-					onchange={handleAddWarehouses}
-					class="w-full"
-				/>
-			{:else if $allWarehouses.fetching}
-				<SkeletonContainer>
-					<Skeleton class="h-4 w-full"></Skeleton>
-				</SkeletonContainer>
-			{:else if $allWarehouses.error}
-				<Alert variant="error" size="sm" bordered>
-					{$allWarehouses.error.message}
-				</Alert>
-			{/if}
+			<GraphqlPaginableSelect
+				query={WAREHOUSES_QUERY}
+				variables={{ first: BATCH_FETCH }}
+				resultKey="warehouses"
+				optionValueKey="id"
+				optionLabelKey="name"
+				requestPolicy="network-only"
+				size="sm"
+				{disabled}
+				label="Select Warehouse"
+				multiple
+				value={addWarehouses}
+				onchange={handleAddWarehouses}
+				bind:forceFetching={showAddWarehouses}
+			/>
 		{/if}
 
-		<Button {disabled} endIcon={Plus} size="xs" class="mt-2" onclick={handleClickAddWarehouseButton}>
+		<Button
+			{disabled}
+			endIcon={Plus}
+			size="xs"
+			class="mt-2"
+			onclick={() => (showAddWarehouses = true)}
+		>
 			Add Warehouse
 		</Button>
 	</div>

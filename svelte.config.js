@@ -33,6 +33,7 @@ const config = {
 		},
 		prerender: {
 			concurrency: 5,
+			handleHttpError: 'ignore', // for not showing error when building
 		},
 	},
 	compilerOptions: {

@@ -14,7 +14,7 @@
 		title?: string;
 		flipped?: boolean;
 		class?: string;
-		size?: SocialSize;
+		size?: SocialSize | 'xxs';
 	}
 
 	let {

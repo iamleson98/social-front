@@ -231,12 +231,21 @@ export const clamp = (value: number, min: number, max: number): number => {
 	return Math.min(Math.max(value, min), max);
 };
 
-export const classNames = (classes: Record<string, boolean>): string => {
+type ClassArgs = Record<string, boolean> | string;
+
+/** works like clsx for class names */
+export const classNames = (...classes: ClassArgs[]): string => {
 	let result = '';
 
-	for (const key in classes) {
-		if (classes[key]) {
-			result += `${key} `;
+	for (const cls of classes) {
+		if (typeof cls === 'string') {
+			result += `${cls} `;
+			continue;
+		}
+		for (const key in cls) {
+			if (cls[key]) {
+				result += `${key} `;
+			}
 		}
 	}
 

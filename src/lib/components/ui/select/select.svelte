@@ -53,7 +53,7 @@
 		inputDebounceOption?.onInput(evt);
 	};
 
-	const deactivate = () => {
+	const onOutclick = () => {
 		searchQuery = '';
 		toggleDropdown(false);
 	};
@@ -98,8 +98,8 @@
 
 <div
 	class="relative w-full text-gray-700 text-base {className}"
-	use:clickOutside={{ onOutclick: deactivate }}
-	use:focusOutside={{ onFocusOut: deactivate }}
+	use:clickOutside={{ onOutclick }}
+	use:focusOutside={{ onFocusOut: onOutclick }}
 	use:shortcuts={[
 		{
 			shortcut: { key: 'Escape' },
