@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import { PRODUCT_TYPES_QUERY } from '$lib/api/admin/product';
-	import { GraphqlPaginableSelect, type SelectProps } from '$lib/components/ui/select';
+	import { GraphqlPaginableSelect, type MultiSelectProps } from '$lib/components/ui/select';
 	import type { QueryProductTypesArgs } from '$lib/gql/graphql';
 
 	let {
@@ -10,7 +10,7 @@
 		class: className = '',
 		loading,
 		...rest
-	}: Omit<SelectProps, 'options' | 'label'> & { ok?: boolean; loading?: boolean } = $props();
+	}: Omit<MultiSelectProps, 'options' | 'label'> & { ok?: boolean; loading?: boolean } = $props();
 
 	let error = $state<string>();
 
@@ -27,7 +27,7 @@
 	<GraphqlPaginableSelect
 		query={PRODUCT_TYPES_QUERY}
 		variables={{
-			first: 100,
+			first: 20,
 			filter: {
 				search: '',
 			},
