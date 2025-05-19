@@ -1,8 +1,8 @@
 import { gql } from "@urql/core"
 
 export const TAX_CLASSES_QUERY = gql`
-query TaxClasses($first: Int!, $after: String) {
-  taxClasses(first: $first, after: $after) {
+query TaxClasses($first: Int, $after: String, $last: Int, $before: String, $sortBy: TaxClassSortingInput) {
+  taxClasses(first: $first, after: $after, before: $before, last: $last, sortBy: $sortBy) {
     edges {
       node {
         id
@@ -12,6 +12,8 @@ query TaxClasses($first: Int!, $after: String) {
     pageInfo {
       hasNextPage
       endCursor
+      hasPreviousPage
+      startCursor
     }
   }
 }`;

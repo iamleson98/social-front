@@ -1,6 +1,7 @@
 <script lang="ts" generics="T">
 	import { CloseX, Plus, Trash } from '$lib/components/icons';
 	import { Button, IconButton } from '$lib/components/ui/Button';
+	import { type SelectOption } from '$lib/components/ui/select';
 	import Select from '$lib/components/ui/select/select.svelte';
 	import type { FilterConditions, FilterItemValue, FilterOperator, FilterProps } from './types';
 	import { SvelteMap } from 'svelte/reactivity';
@@ -21,7 +22,7 @@
 			acc[cur.key] = cur;
 			return acc;
 		},
-		{} as Record<keyof T, FilterProps<T>>
+		{} as Record<keyof T, FilterProps<T>>,
 	);
 
 	let activeFilters = $state<FilterConditions<T>>(new SvelteMap(filters));
@@ -39,14 +40,14 @@
 		return options.map(({ key, label }) => ({
 			value: key as string | number,
 			label,
-			disabled: usedFilterMap[key]
+			disabled: usedFilterMap[key],
 		}));
 	});
 
 	let disableAddFilterBtn = $derived(
 		activeFilters
 			.entries()
-			.some(([key, value]) => !key || !value.operator || value.value === undefined)
+			.some(([key, value]) => !key || !value.operator || value.value === undefined),
 	);
 
 	const onClickAddFilter = () => {
@@ -81,7 +82,7 @@
 	const setFilterItemValue = (key: keyof T, operator: FilterOperator, value?: FilterItemValue) => {
 		activeFilters.set(key, {
 			operator,
-			value
+			value,
 		});
 	};
 </script>
@@ -97,7 +98,7 @@
 			{#each activeFilters.keys() as key, idx (idx)}
 				{@const filterOpt = activeFilters.get(key)}
 				{@const disableDelBtn = options.some(
-					(opt) => opt.mustPairWith === key && activeFilters.has(opt.key)
+					(opt) => opt.mustPairWith === key && activeFilters.has(opt.key),
 				)}
 				<div class="flex items-center gap-1 mt-1.5 justify-between">
 					<Select
@@ -105,7 +106,7 @@
 						size="xs"
 						class="flex-2"
 						value={key as string}
-						onchange={(vl) => handleItemKeyChange(key, vl?.value as keyof T)}
+						onchange={(vl) => vl && handleItemKeyChange(key, (vl as SelectOption).value as keyof T)}
 						placeholder="Select filter"
 					/>
 
@@ -114,7 +115,7 @@
 							{@const { operations } = FILTER_MAP[key]}
 							{@const operatorOpts = operations.map(({ operator }) => ({
 								label: operator,
-								value: operator
+								value: operator,
 							}))}
 
 							<Select
@@ -122,17 +123,18 @@
 								size="xs"
 								class="flex-1"
 								value={filterOpt.operator}
-								onchange={(vl) => setFilterItemValue(key, vl?.value as FilterOperator)}
+								onchange={(vl) =>
+									vl && setFilterItemValue(key, (vl as SelectOption).value as FilterOperator)}
 							/>
 							{#if filterOpt.operator}
 								{@const component = operations.find(
-									({ operator }) => operator === filterOpt.operator
+									({ operator }) => operator === filterOpt.operator,
 								)?.component}
 								<div class="flex-1">
 									{@render component?.({
 										onValue: (value) =>
 											setFilterItemValue(key, filterOpt.operator as FilterOperator, value),
-										initialValue: filterOpt.value
+										initialValue: filterOpt.value,
 									})}
 								</div>
 							{/if}

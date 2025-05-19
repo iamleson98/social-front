@@ -5,10 +5,9 @@
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
-	import { MultiSelect, type SelectOption } from '$lib/components/ui/select';
+	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import type { Query, QueryShippingZonesArgs, ShippingZone } from '$lib/gql/graphql';
-	import { differenceBy } from 'es-toolkit';
 	import { onMount } from 'svelte';
 
 	type Props = {
@@ -24,7 +23,7 @@
 		channelSlug,
 		addShippingZones = $bindable([]),
 		removeShippingZones = $bindable(),
-		disabled
+		disabled,
 	}: Props = $props();
 
 	const BATCH = 100;
@@ -37,19 +36,11 @@
 		query: SHIPPING_ZONES_QUERY,
 		variables: { channel: channelSlug, first: BATCH },
 		requestPolicy: 'network-only',
-		pause: true
+		pause: true,
 	});
 
 	let showAddShippingZones = $state(false);
 	let shippingZonesOfChannel = $state.raw<ShippingZone[]>([]);
-
-	const allShippingZones = operationStore<Pick<Query, 'shippingZones'>, QueryShippingZonesArgs>({
-		kind: 'query',
-		query: SHIPPING_ZONES_QUERY,
-		variables: { first: BATCH },
-		requestPolicy: 'network-only',
-		pause: true
-	});
 
 	onMount(() => {
 		if (channelSlug) {
@@ -70,13 +61,9 @@
 		}
 	};
 
-	const handleClickAddShippingZoneButton = () => {
-		showAddShippingZones = true;
-		allShippingZones.resume();
-	};
+	const handleAddShippingZones = (options?: SelectOption[] | SelectOption) => {
+		if (!options || !Array.isArray(options)) return;
 
-	const handleAddShippingZones = (options: SelectOption[] | undefined) => {
-		if (!options) return;
 		const selectedIds = options.map((opt) => opt.value as string);
 		addShippingZones = selectedIds;
 		removeShippingZones = removeShippingZones?.filter((id) => !selectedIds.includes(id));
@@ -121,36 +108,29 @@
 
 	<div class="pt-2 mt-2 border-t border-gray-200">
 		{#if showAddShippingZones}
-			{#if $allShippingZones.data?.shippingZones}
-				{@const allZones = $allShippingZones.data?.shippingZones?.edges.map((edge) => edge.node)}
-				{@const availableZones = differenceBy(
-					allZones,
-					shippingZonesOfChannel,
-					(zone) => zone.id
-				).map((zone) => ({
-					label: zone.name,
-					value: zone.id
-				}))}
-				<MultiSelect
-					{disabled}
-					size="sm"
-					options={availableZones}
-					label="Select Shipping Zone"
-					onchange={handleAddShippingZones}
-					class="w-full"
-				/>
-			{:else if $allShippingZones.error}
-				<Alert variant="error" size="xs" bordered>
-					{$allShippingZones.error.message}
-				</Alert>
-			{:else if $allShippingZones.fetching}
-				<SkeletonContainer>
-					<Skeleton class="h-4 w-full"></Skeleton>
-				</SkeletonContainer>
-			{/if}
+			<GraphqlPaginableSelect
+				query={SHIPPING_ZONES_QUERY}
+				variables={{ first: 20 }}
+				resultKey="shippingZones"
+				optionValueKey="id"
+				optionLabelKey="name"
+				requestPolicy="network-only"
+				size="sm"
+				{disabled}
+				label="Select Shipping Zone"
+				multiple
+				value={addShippingZones}
+				onchange={handleAddShippingZones}
+			/>
 		{/if}
 
-		<Button endIcon={Plus} size="xs" class="mt-2" {disabled} onclick={handleClickAddShippingZoneButton}>
+		<Button
+			endIcon={Plus}
+			size="xs"
+			class="mt-2"
+			{disabled}
+			onclick={() => (showAddShippingZones = true)}
+		>
 			Add Shipping Zone
 		</Button>
 	</div>

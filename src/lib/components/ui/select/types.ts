@@ -4,7 +4,7 @@ import type { InputProps } from "../Input";
 import type { OnscrollToEndOpts } from "$lib/actions/scroll-end";
 
 export type SelectOption = {
-  value: string | number;
+  value: Primitive;
   label: string;
   /** default `false` */
   disabled?: boolean;
@@ -20,26 +20,35 @@ export type SelectItemprops = {
 export type SelectProps<T extends SelectOption = SelectOption> = {
   options: T[];
   value?: SelectOption['value'];
-  onchange?: (opt?: T) => void;
+  onchange?: (opt?: T[] | T) => void;
   /** callback function to be called when the scroll reaches the end of the list */
   onScrollToEnd?: OnscrollToEndOpts['onScrollToEnd'];
   /** default `false` */
   isFetchingMore?: boolean;
 } & Omit<InputProps, 'value' | 'onchange'> & Omit<HTMLSelectAttributes, 'size' | 'onchange' | 'onblur'>;
 
-export type MultiSelectSizeType = Exclude<SocialSize, 'xs'>;
+export type Primitive = string | number;
 
 export type MultiSelectProps<T extends SelectOption = SelectOption> = {
   options: T[];
-  value?: T[];
-  size?: MultiSelectSizeType;
+  value?: Primitive[] | Primitive;
+  size?: SocialSize | 'xxs';
+  /** whether is multiple select or not. Default to `false` */
+  multiple?: boolean;
   /** number of items to fully display, the rest will be summaried as "+n". if <= 0, throw Error  */
   maxDisplay?: number;
-  onchange?: (opts?: T[]) => void;
+  onchange?: (opts?: T[] | T) => void;
+  /** for infinite loading, show loading more indicator when scroll to the end of the list */
+  showLoadingMore?: boolean;
+  /** callback function to be called when the scroll reaches the end of the list */
+  onScrollToEnd?: OnscrollToEndOpts['onScrollToEnd'];
+  onclearInputField?: () => void;
 } & Omit<InputProps, 'value' | 'size' | 'onchange'>;
 
 /** SIZE_REDUCE_MAP is useful you want your input and badge items to reasonably fit your multi select component */
-export const SIZE_REDUCE_MAP: Record<Exclude<SocialSize, 'xs'>, SocialSize> = {
+export const SIZE_REDUCE_MAP: Record<SocialSize | 'xxs', SocialSize | 'xxs'> = {
+  xxs: 'xxs',
+  xs: 'xxs',
   sm: 'xs',
   md: 'sm',
   lg: 'md',

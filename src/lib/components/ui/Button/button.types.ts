@@ -32,12 +32,13 @@ export const ICON_BTN_SIZE_MAP: Record<SocialSize, string> = {
   xl: 'w-14!',
 };
 
-export const INPUT_BUTTON_SIZE_MAP: Record<SocialSize, string> = {
-  xs: 'h-7 text-xs',
-  sm: 'h-9 text-sm',
-  md: 'h-10 text-base',
-  lg: 'h-12 text-lg',
-  xl: 'h-14 text-xl',
+export const INPUT_BUTTON_SIZE_MAP: Record<SocialSize | 'xxs', string> = {
+  xxs: 'min-h-4 text-[11px]', // special case, for `xs` sized multi select that embed `xxs` input
+  xs: 'min-h-7 text-xs',
+  sm: 'min-h-9 text-sm',
+  md: 'min-h-10 text-base',
+  lg: 'min-h-12 text-lg',
+  xl: 'min-h-14 text-xl',
 };
 
 export const buttonVariantColorsMap: Record<ButtonVariant, Record<SocialColor, string>> = {
@@ -107,7 +108,8 @@ export const buttonVariantColorsMap: Record<ButtonVariant, Record<SocialColor, s
   }
 };
 
-export const ICON_OF_BUTTON_SIZE_MAP: Record<SocialSize, string> = {
+export const ICON_OF_BUTTON_SIZE_MAP: Record<SocialSize | 'xxs', string> = {
+  xxs: 'size-2',
   xs: 'size-3',
   sm: 'size-4',
   md: 'size-5',

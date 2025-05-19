@@ -6,7 +6,7 @@
 
 	type Props = {
 		/**size of input skeleton*/
-		size?: SocialSize;
+		size?: SocialSize | 'xxs';
 		/**show label skeleton as well*/
 		label?: boolean;
 	};
@@ -17,7 +17,7 @@
 <SkeletonContainer>
 	<!-- label -->
 	{#if label}
-		<Skeleton class="h-3 w-1/3 mb-1" />
+		<Skeleton class="h-3 w-1/4 mb-1" />
 	{/if}
 
 	<!-- input -->

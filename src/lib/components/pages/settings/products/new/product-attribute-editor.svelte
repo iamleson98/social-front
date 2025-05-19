@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { MultiSelect, Select, type SelectOption } from '$lib/components/ui/select';
+	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import {
 		AttributeInputTypeEnum,
 		type AttributeValueInput,
 		type Query,
-		type QueryProductTypeArgs
+		type QueryProductTypeArgs,
 	} from '$lib/gql/graphql';
 	import { operationStore } from '$lib/api/operation';
 	import { slide } from 'svelte/transition';
@@ -114,7 +114,7 @@
 		ok = !attributeErrors.some(Boolean);
 		if (ok) {
 			attributes = innerAttributes.map<AttributeValueInput>((attr) =>
-				omit(attr, ['inputType', 'required'])
+				omit(attr, ['inputType', 'required']),
 			);
 		}
 	});
@@ -125,9 +125,9 @@
 		requestPolicy: 'cache-and-network',
 		variables: {
 			id: productTypeID,
-			attributeChoicesFirst: MAX_FETCHING_BATCH
+			attributeChoicesFirst: MAX_FETCHING_BATCH,
 		},
-		pause: !productTypeID
+		pause: !productTypeID,
 	});
 
 	onMount(() => {
@@ -139,7 +139,7 @@
 						const result: CustomAttributeInput = {
 							required: valueRequired,
 							inputType,
-							id
+							id,
 						};
 
 						if (inputType === AttributeInputTypeEnum.Dropdown) {
@@ -152,7 +152,7 @@
 							result.references = [];
 						}
 						return result;
-					}
+					},
 				);
 			}
 		});
@@ -167,8 +167,8 @@
 			productTypeQuery.reexecute({
 				variables: {
 					...$productTypeQuery.operation.variables,
-					id: productTypeID
-				}
+					id: productTypeID,
+				},
 			});
 		}
 	});
@@ -218,7 +218,7 @@
 								{#if node.inputType === AttributeInputTypeEnum.Dropdown && node.choices}
 									{@const options = node.choices.edges.map(({ node: { id, name } }) => ({
 										value: id,
-										label: name || id
+										label: name || id,
 									})) as SelectOption[]}
 									<Select
 										{options}
@@ -230,7 +230,7 @@
 
 												return {
 													...attr,
-													dropdown: opt ? { id: opt.value as string } : undefined
+													dropdown: opt ? { id: (opt as SelectOption).value as string } : undefined,
 												};
 											});
 										}}
@@ -246,7 +246,7 @@
 										disabled={loading}
 										onchange={(evt) => {
 											innerAttributes = innerAttributes.map((attr, i) =>
-												i === idx ? { ...attr, boolean: evt.currentTarget.checked } : attr
+												i === idx ? { ...attr, boolean: evt.currentTarget.checked } : attr,
 											);
 										}}
 									/>
@@ -256,7 +256,9 @@
 										disabled={loading}
 										onchange={(value) => {
 											innerAttributes = innerAttributes.map((attr, i) =>
-												i === idx ? { ...attr, date: Dayjs(value.date).format('YYYY-MM-DD') } : attr
+												i === idx
+													? { ...attr, date: Dayjs(value.date).format('YYYY-MM-DD') }
+													: attr,
 											);
 										}}
 										timeConfig={false}
@@ -272,7 +274,7 @@
 										disabled={loading}
 										onchange={(evt) => {
 											innerAttributes = innerAttributes.map((attr, i) =>
-												i === idx ? { ...attr, file: evt.currentTarget.files?.[0].name } : attr
+												i === idx ? { ...attr, file: evt.currentTarget.files?.[0].name } : attr,
 											);
 										}}
 									/>
@@ -284,7 +286,7 @@
 										disabled={loading}
 										onchange={(evt) => {
 											innerAttributes = innerAttributes.map((attr, i) =>
-												i === idx ? { ...attr, numeric: evt.currentTarget.value } : attr
+												i === idx ? { ...attr, numeric: evt.currentTarget.value } : attr,
 											);
 										}}
 										onblur={() => (blurTriggers[idx] = true)}
@@ -297,7 +299,7 @@
 										disabled={loading}
 										onchange={(value) => {
 											innerAttributes = innerAttributes.map((attr, i) =>
-												i === idx ? { ...attr, dateTime: value.date } : attr
+												i === idx ? { ...attr, dateTime: value.date } : attr,
 											);
 										}}
 										autoApply={false}
@@ -315,7 +317,7 @@
 											placeholder={$tranFunc('placeholders.valuePlaceholder')}
 											onchange={(data) => {
 												innerAttributes = innerAttributes.map((attr, i) =>
-													i === idx ? { ...attr, richText: JSON.stringify(data) } : attr
+													i === idx ? { ...attr, richText: JSON.stringify(data) } : attr,
 												);
 											}}
 										/>
@@ -326,7 +328,7 @@
 										type="text"
 										onchange={(evt) => {
 											innerAttributes = innerAttributes.map((attr, i) =>
-												i === idx ? { ...attr, plainText: evt.currentTarget.value } : attr
+												i === idx ? { ...attr, plainText: evt.currentTarget.value } : attr,
 											);
 										}}
 										onblur={() => (blurTriggers[idx] = true)}
@@ -337,20 +339,21 @@
 								{:else if node.inputType === AttributeInputTypeEnum.Multiselect && node.choices}
 									{@const options = node.choices.edges.map(({ node: { id, name } }) => ({
 										value: id,
-										label: name || id
+										label: name || id,
 									})) as SelectOption[]}
-									<MultiSelect
+									<Select
 										{options}
 										size="sm"
+										multiple
 										disabled={loading}
 										onchange={(values) => {
 											innerAttributes = innerAttributes.map((attr, i) => {
-												if (i !== idx || !values) return attr;
+												if (i !== idx || !Array.isArray(values)) return attr;
 												return {
 													...attr,
 													multiselect: values.map((vl) => ({
-														value: `${vl.value}`
-													}))
+														value: `${vl.value}`,
+													})),
 												};
 											});
 										}}
@@ -379,8 +382,8 @@
 																return {
 																	...attr,
 																	swatch: {
-																		value: evt.currentTarget.value
-																	}
+																		value: evt.currentTarget.value,
+																	},
 																};
 															});
 														}}

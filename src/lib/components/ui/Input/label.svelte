@@ -6,7 +6,7 @@
 	type Props = {
 		class?: string;
 		required?: boolean | null;
-		size?: SocialSize;
+		size?: SocialSize | 'xxs';
 		id?: string | null;
 		variant?: SocialVariant | 'ghost';
 		label: string;

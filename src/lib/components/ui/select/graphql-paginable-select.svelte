@@ -1,13 +1,13 @@
 <script lang="ts" generics="T">
 	import type { AnyVariables, RequestPolicy, TypedDocumentNode } from '@urql/core';
-	import Select from './select.svelte';
 	import type { CountableConnection, GraphqlPaginationArgs } from '../Table';
 	import type { PageInfo, Query } from '$lib/gql/graphql';
-	import type { SelectOption, SelectProps } from './types';
+	import type { MultiSelectProps, SelectOption, SelectProps } from './types';
 	import SelectSkeleton from './select-skeleton.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { get, has, set } from 'es-toolkit/compat';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import GeneralSelect from './general-select.svelte';
 
 	type Props = {
 		query: TypedDocumentNode<any, AnyVariables & GraphqlPaginationArgs>;
@@ -35,7 +35,7 @@
 		 * ```
 		 */
 		variableSearchQueryPath?: string;
-	} & Omit<SelectProps, 'options'>;
+	} & Omit<MultiSelectProps, 'options'>;
 
 	let {
 		query,
@@ -53,10 +53,10 @@
 	}: Props = $props();
 
 	let selectOptions = $state.raw<SelectOption[]>([]);
-	let isFetchingMore = $state(true);
 	let pageInfo = $state.raw<PageInfo>();
 	let errorMessage = $state();
 	let isInitialFetch = $state(true);
+	let forceFetching = $state(true);
 
 	const fetchData = async () => {
 		const result = await GRAPHQL_CLIENT.query<Pick<Query, typeof resultKey>>(query, variables, {
@@ -73,49 +73,37 @@
 		if (!connection) throw new Error(`invalid result key: ${resultKey}`);
 
 		pageInfo = connection.pageInfo;
+		const selections: SelectOption[] = [];
+		for (const edge of connection.edges) {
+			const value = get(edge.node, optionValueKey);
+			const label = get(edge.node, optionLabelKey);
+			if (!value || !label) continue;
 
-		const selections = connection.edges.reduce<SelectOption[]>((acc, { node }) => {
-			const value = get(node, optionValueKey);
-			const label = get(node, optionLabelKey);
-			if (!value || !label) return acc;
-
-			acc.push({ value, label });
-			return acc;
-		}, []);
+			selections.push({ value, label });
+		}
 
 		selectOptions = selectOptions.concat(selections);
 	};
 
 	$effect(() => {
-		if (isFetchingMore) {
+		if (forceFetching) {
 			fetchData().finally(() => {
-				isFetchingMore = false;
+				forceFetching = false;
 				isInitialFetch = false;
 			});
 		}
 	});
 
-	const onInput = (evt: Event) => {
-		if (!variableSearchQueryPath) return;
+	const onInput = (value: string = '') => {
+		if (!variableSearchQueryPath || !has(variables, variableSearchQueryPath)) return;
 
-		let value = '';
-
-		if (evt.target) {
-			value = (evt.target as HTMLInputElement).value.trim();
-		} else if (evt.currentTarget) {
-			value = (evt.currentTarget as HTMLInputElement).value.trim();
-		}
-
-		if (!has(variables, variableSearchQueryPath)) {
-			throw new Error(`variableSearchQueryPath ${variableSearchQueryPath} not found in variables`);
-		}
-
-		const newVariables = { ...variables, after: null };
+		const newVariables = { ...variables };
+		delete newVariables['after'];
 		set(newVariables, variableSearchQueryPath, value);
 
 		variables = newVariables;
 		selectOptions = [];
-		isFetchingMore = true;
+		forceFetching = true; // trigger fetch over again
 	};
 
 	const onScrollToEnd = () => {
@@ -125,7 +113,7 @@
 			...variables,
 			after: pageInfo.endCursor,
 		};
-		isFetchingMore = true;
+		forceFetching = true; // trigger fetch over again
 	};
 </script>
 
@@ -134,15 +122,18 @@
 {:else if errorMessage}
 	<Alert variant="error" {size} bordered>{errorMessage}</Alert>
 {:else}
-	<Select
-		{...rest}
+	<GeneralSelect
 		bind:value
 		options={selectOptions}
 		{onchange}
 		{size}
 		{label}
-		inputDebounceOption={{ onInput }}
+		inputDebounceOption={{
+			onInput: (evt) => onInput((evt.target as HTMLInputElement).value.trim()),
+		}}
 		{onScrollToEnd}
-		{isFetchingMore}
+		showLoadingMore={forceFetching}
+		onclearInputField={onInput}
+		{...rest}
 	/>
 {/if}

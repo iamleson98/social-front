@@ -22,7 +22,7 @@
 
 <span
 	bind:this={ref}
-	class={`inline-flex items-center whitespace-nowrap select-none! gap-2 ${roundClass} ${BADGE_SIZE_VARIANTS[size].badge} font-medium badge-${size} ${className} ${buttonVariantColorsMap[variant][color]}`}
+	class={`inline-flex items-center whitespace-nowrap select-none! gap-1 ${roundClass} ${BADGE_SIZE_VARIANTS[size].badge} font-medium badge-${size} ${className} ${buttonVariantColorsMap[variant][color]}`}
 	{...restProps}
 >
 	{#if startIcon}

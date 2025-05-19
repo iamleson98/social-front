@@ -11,7 +11,7 @@
 	type Props = {
 		variant?: SocialVariant;
 		children: Snippet;
-		size?: SocialSize;
+		size?: SocialSize | 'xxs';
 		bordered?: boolean;
 		dismissable?: boolean;
 	} & HTMLAttributes<HTMLDivElement>;
@@ -67,6 +67,9 @@
 
 	.alert-xs {
 		@apply p-1.5 text-xs;
+	}
+	.alert-xxs {
+		@apply p-1 text-[10px];
 	}
 	.alert-sm {
 		@apply p-2 text-sm;

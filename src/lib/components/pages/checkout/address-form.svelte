@@ -5,7 +5,7 @@
 		AddressInput,
 		CountryCode,
 		Query,
-		QueryAddressValidationRulesArgs
+		QueryAddressValidationRulesArgs,
 	} from '$lib/gql/graphql';
 	import { AddressTypeEnum } from '$lib/gql/graphql';
 	import { operationStore } from '$lib/api/operation';
@@ -18,7 +18,7 @@
 		addressFieldValidators,
 		defaultAddressFormValues,
 		addressToFieldValues,
-		type AddressFieldLabel
+		type AddressFieldLabel,
 	} from '$lib/utils/address';
 	import { Input, Label, RadioButton } from '$lib/components/ui/Input';
 	import { camelCase, uniqBy } from 'es-toolkit';
@@ -45,11 +45,11 @@
 		defaultValue,
 		onCancel,
 		channelSlug,
-		showSetAsDefaultAddressField = false
+		showSetAsDefaultAddressField = false,
 	}: Props = $props();
 
 	let formValues = $state(
-		defaultValue ? addressToFieldValues(defaultValue) : defaultAddressFormValues()
+		defaultValue ? addressToFieldValues(defaultValue) : defaultAddressFormValues(),
 	);
 	let addressType = $state<AddressTypeEnum>();
 	let requiredFields: Partial<Record<AddressField, boolean>> = {};
@@ -66,7 +66,7 @@
 		companyName: $tranFunc('common.companyName'),
 		streetAddress1: $tranFunc('common.streetAddress1'),
 		streetAddress2: $tranFunc('common.streetAddress2'),
-		phone: $tranFunc('common.phone')
+		phone: $tranFunc('common.phone'),
 	});
 
 	const ADDRESS_VALIDATION_RULES_STORE = operationStore<
@@ -76,14 +76,14 @@
 		kind: 'query',
 		query: ADDRESS_VALIDATION_RULES_QUERY,
 		context: { requestPolicy: 'cache-and-network' },
-		pause: true
+		pause: true,
 	});
 
 	$effect(() => {
 		if (!formValues.countryCode.value) return;
 
 		ADDRESS_VALIDATION_RULES_STORE.reexecute({
-			variables: { countryCode: formValues.countryCode.value as CountryCode }
+			variables: { countryCode: formValues.countryCode.value as CountryCode },
 		});
 	});
 
@@ -92,7 +92,7 @@
 
 		const required = isRequiredField(
 			field,
-			$ADDRESS_VALIDATION_RULES_STORE.data.addressValidationRules
+			$ADDRESS_VALIDATION_RULES_STORE.data.addressValidationRules,
 		);
 		return (requiredFields[field] = required); //
 	};
@@ -101,7 +101,7 @@
 		if (!$ADDRESS_VALIDATION_RULES_STORE.data?.addressValidationRules) {
 			toastStore.send({
 				variant: 'error',
-				message: 'Address validation rules are not available'
+				message: 'Address validation rules are not available',
 			});
 			return;
 		}
@@ -113,7 +113,7 @@
 			const error = addressFieldValidators[key](
 				!!requiredFields[key],
 				obj.value,
-				formValues.countryCode.value as CountryCode
+				formValues.countryCode.value as CountryCode,
 			);
 			if (error) isFormInvalid = true;
 			formValues[key].error = error;
@@ -121,7 +121,7 @@
 
 		if (!isFormInvalid) {
 			const addressInput: AddressInput = Object.fromEntries(
-				Object.entries(formValues).map(([key, obj]) => [key, obj.value])
+				Object.entries(formValues).map(([key, obj]) => [key, obj.value]),
 			);
 			addressInput.country = formValues.countryCode.value as CountryCode;
 			delete addressInput['countryCode' as never];
@@ -135,7 +135,7 @@
 		<CountryByChannelSelect
 			{channelSlug}
 			label={$tranFunc('settings.chooseCountry')}
-			bind:singleValue={formValues.countryCode.value as CountryCode}
+			bind:value={formValues.countryCode.value}
 			disabled={$ADDRESS_VALIDATION_RULES_STORE.fetching}
 			size="sm"
 		/>
@@ -160,8 +160,8 @@
 				{@const choiceOptions = uniqBy(countryAreaChoices, (item) => item.raw).map<SelectOption>(
 					({ verbose, raw }) => ({
 						value: raw as string,
-						label: verbose as string
-					})
+						label: verbose as string,
+					}),
 				)}
 				<Select
 					options={choiceOptions}

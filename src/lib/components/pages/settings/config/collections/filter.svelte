@@ -3,6 +3,7 @@
 	import { FilterButton } from '$lib/components/common/filter-box';
 	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box/types';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
+	import { type SelectOption } from '$lib/components/ui/select';
 	import type { CollectionFilterInput } from '$lib/gql/graphql';
 
 	const FILTER_OPTIONS: FilterProps<CollectionFilterInput>[] = [
@@ -12,10 +13,10 @@
 			operations: [
 				{
 					operator: 'eq',
-					component: publishedComponent
-				}
+					component: publishedComponent,
+				},
 			],
-			mustPairWith: 'channel'
+			mustPairWith: 'channel',
 		},
 		{
 			label: 'Channel',
@@ -23,9 +24,9 @@
 			operations: [
 				{
 					operator: 'eq',
-					component: channelComponent
-				}
-			]
+					component: channelComponent,
+				},
+			],
 		},
 		{
 			label: 'Metadata',
@@ -33,10 +34,10 @@
 			operations: [
 				{
 					operator: 'eq',
-					component: metadataComponent
-				}
-			]
-		}
+					component: metadataComponent,
+				},
+			],
+		},
 	];
 </script>
 
@@ -50,7 +51,11 @@
 {/snippet}
 
 {#snippet channelComponent({ onValue, initialValue = '' }: FilterComponentType)}
-	<ChannelSelect value={initialValue as string} size="xs" onchange={onValue} />
+	<ChannelSelect
+		value={initialValue as string}
+		size="xs"
+		onchange={(opt) => onValue((opt as SelectOption)?.value)}
+	/>
 {/snippet}
 
 {#snippet metadataComponent({ onValue, initialValue = [] }: FilterComponentType)}

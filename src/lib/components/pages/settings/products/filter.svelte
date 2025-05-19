@@ -4,7 +4,7 @@
 	import { FilterButton } from '$lib/components/common/filter-box';
 	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box/types';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
-	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
+	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
 	import type { ProductFilterInput, QueryProductTypesArgs } from '$lib/gql/graphql';
 
 	const FILTER_OPTIONS: FilterProps<ProductFilterInput>[] = [
@@ -107,7 +107,7 @@
 	];
 </script>
 
-{#snippet productTypeCmp({ onValue, initialValue }: FilterComponentType)}
+{#snippet productTypeCmp({ onValue, initialValue = '' }: FilterComponentType)}
 	<GraphqlPaginableSelect
 		query={PRODUCT_TYPES_QUERY}
 		variables={{
@@ -119,8 +119,8 @@
 		resultKey="productTypes"
 		optionValueKey="id"
 		optionLabelKey="name"
-		value={initialValue}
-		onchange={(value) => onValue(value?.value as string)}
+		value={initialValue as string}
+		onchange={(value) => value && onValue((value as SelectOption)?.value)}
 		size="xs"
 	/>
 {/snippet}
@@ -165,7 +165,11 @@
 {/snippet} -->
 
 {#snippet channelComp({ onValue, initialValue = '' }: FilterComponentType)}
-	<ChannelSelect size="xs" value={initialValue as string} onchange={onValue} values={undefined} />
+	<ChannelSelect
+		size="xs"
+		value={initialValue as string}
+		onchange={(opt) => opt && onValue((opt as SelectOption)?.value)}
+	/>
 {/snippet}
 
 {#snippet yesNo({ onValue, initialValue = false }: FilterComponentType)}

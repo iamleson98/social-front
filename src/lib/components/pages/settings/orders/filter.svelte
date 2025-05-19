@@ -4,7 +4,7 @@
 	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box/types';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
-	import { MultiSelect, Select, type SelectOption } from '$lib/components/ui/select';
+	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import {
 		OrderStatus,
 		OrderStatusFilter,
@@ -44,7 +44,7 @@
 				},
 				{
 					operator: 'oneOf',
-					component: paymentStatuss,
+					component: paymentStatuses,
 				},
 			],
 		},
@@ -137,7 +137,16 @@
 {/snippet}
 
 {#snippet channels({ onValue, initialValue = [] }: FilterComponentType)}
-	<ChannelSelect size="xs" multiple onchange={onValue} values={initialValue as string[]} />
+	<ChannelSelect
+		size="xs"
+		multiple
+		onchange={(opt) => {
+			if (opt && Array.isArray(opt)) {
+				onValue(opt.map((opt) => opt.value as string));
+			}
+		}}
+		value={initialValue as string[]}
+	/>
 {/snippet}
 
 {#snippet yesNo({ onValue, initialValue = false }: FilterComponentType)}
@@ -154,22 +163,23 @@
 		options={paymentStatusOptions}
 		placeholder="Charge status"
 		value={initialValue as string}
-		onchange={(opt) => opt && onValue(opt.value)}
+		onchange={(opt) => opt && onValue((opt as SelectOption).value)}
 		size="xs"
 	/>
 {/snippet}
 
-{#snippet paymentStatuss({ onValue, initialValue = [] }: FilterComponentType)}
-	{@const values = (initialValue as PaymentChargeStatusEnum[]).map((val) => ({
-		value: val,
-		label: paymentStatusBadgeClass(val).text as string,
-	}))}
-	<MultiSelect
+{#snippet paymentStatuses({ onValue, initialValue = [] }: FilterComponentType)}
+	<Select
 		options={paymentStatusOptions}
-		placeholder="Payment status"
-		value={values}
-		onchange={(opts) => opts && onValue(opts.map((opt) => opt.value as string))}
-		size="sm"
+		placeholder="Payment statuses"
+		multiple
+		value={initialValue as PaymentChargeStatusEnum[]}
+		onchange={(opts) => {
+			if (opts && Array.isArray(opts)) {
+				onValue(opts.map((opt) => opt.value as string));
+			}
+		}}
+		size="xs"
 	/>
 {/snippet}
 
@@ -178,22 +188,23 @@
 		options={fulfillmentStatuOptions}
 		placeholder="Fulfillment status"
 		value={initialValue as string}
-		onchange={(opt) => opt && onValue(opt.value)}
+		onchange={(opt) => opt && onValue((opt as SelectOption).value)}
 		size="xs"
 	/>
 {/snippet}
 
 {#snippet fulfillmentStatuses({ onValue, initialValue = [] }: FilterComponentType)}
-	{@const values = (initialValue as OrderStatus[]).map((val) => ({
-		value: val,
-		label: orderStatusBadgeClass(val).text as string,
-	}))}
-	<MultiSelect
+	<Select
 		options={fulfillmentStatuOptions}
+		multiple
 		placeholder="Fulfillment statuses"
-		value={values}
-		onchange={(opts) => opts && onValue(opts.map((opt) => opt.value as string))}
-		size="sm"
+		value={initialValue as OrderStatus[]}
+		onchange={(opts) => {
+			if (opts && Array.isArray(opts)) {
+				onValue(opts.map((opt) => opt.value as string));
+			}
+		}}
+		size="xs"
 	/>
 {/snippet}
 

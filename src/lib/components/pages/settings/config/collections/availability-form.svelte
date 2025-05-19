@@ -7,9 +7,7 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Checkbox } from '$lib/components/ui/Input';
-	import type { SelectOption } from '$lib/components/ui/select';
-	import MultiSelect from '$lib/components/ui/select/multi-select.svelte';
-	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
+	import { Select, SelectSkeleton, type SelectOption } from '$lib/components/ui/select';
 	import type { Channel, PublishableChannelListingInput, Query } from '$lib/gql/graphql';
 	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
@@ -25,13 +23,13 @@
 	let {
 		addChannelListings = $bindable([]),
 		removeChannels = $bindable([]),
-		disabled
+		disabled,
 	}: Props = $props();
 
 	const channelsQuery = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
 		query: CHANNELS_QUERY,
-		requestPolicy: 'network-only'
+		requestPolicy: 'network-only',
 	});
 
 	/**
@@ -42,7 +40,7 @@
 			acc[cur.channelId] = true;
 			return acc;
 		},
-		{} as Record<string, boolean>
+		{} as Record<string, boolean>,
 	);
 
 	/** keys are channel ids, values are channels themself */
@@ -55,8 +53,8 @@
 				acc[listing.channelId] = true;
 				return acc;
 			},
-			{} as Record<string, boolean>
-		)
+			{} as Record<string, boolean>,
+		),
 	);
 
 	onMount(() => {
@@ -69,7 +67,7 @@
 					newChannelMap[chan.id] = chan;
 					newChannelSelectOption.push({
 						value: chan.id,
-						label: chan.name
+						label: chan.name,
 					});
 				}
 
@@ -79,7 +77,7 @@
 				// display existing selected channel options
 				selectValues = addChannelListings.map((listing) => ({
 					value: listing.channelId,
-					label: channelsMap[listing.channelId].name
+					label: channelsMap[listing.channelId].name,
 				}));
 			}
 		});
@@ -110,7 +108,7 @@
 			if (!usedChanelsMap[opt.value]) {
 				newChannelListings.push({
 					channelId: opt.value as string,
-					isPublished: true // for default
+					isPublished: true, // for default
 				});
 			}
 		}
@@ -125,21 +123,20 @@
 
 <div>
 	{#if $channelsQuery.fetching}
-		<SkeletonContainer>
-			<Skeleton class="h-4" />
-		</SkeletonContainer>
+		<SelectSkeleton size="sm" />
 	{:else if $channelsQuery.error}
 		<Alert size="sm" bordered variant="error">{$channelsQuery.error.message}</Alert>
 	{:else if $channelsQuery.data}
 		<div class="bg-white rounded-lg border w-full border-gray-200 p-3 mb-3">
 			<SectionHeader title="Availability" />
 			<div class="text-xs text-gray-500">In {addChannelListings.length} channels</div>
-			<MultiSelect
+			<Select
 				size="sm"
 				options={channelSelectOptions}
 				class="w-full mt-2"
-				value={selectValues}
-				onchange={handleSelectionChange}
+				multiple
+				value={selectValues.map((opt) => opt.value)}
+				onchange={(opts) => handleSelectionChange(opts as SelectOption[])}
 				{disabled}
 			/>
 		</div>

@@ -14,12 +14,16 @@ export type BadgeProps = {
   ref?: HTMLSpanElement;
   startIcon?: IconContent;
   /** default to `sm` */
-  size?: SocialSize;
+  size?: SocialSize | 'xxs';
   rounded?: boolean;
   disabled?: boolean | null;
 } & HTMLAttributes<HTMLSpanElement>;
 
-export const BADGE_SIZE_VARIANTS: Record<SocialSize, Record<'btn' | 'badge', string>> = {
+export const BADGE_SIZE_VARIANTS: Record<SocialSize | 'xxs', Record<'btn' | 'badge', string>> = {
+  xxs: {
+    btn: 'p-[1px]',
+    badge: 'text-[9px] py-0.5 px-0.5'
+  },
   xs: {
     btn: 'p-[1px]',
     badge: 'text-[10px] py-0.5 px-1'

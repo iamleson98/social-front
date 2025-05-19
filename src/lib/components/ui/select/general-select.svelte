@@ -12,14 +12,17 @@
 		type SelectOption,
 		type MultiSelectProps,
 		SIZE_REDUCE_MAP,
+		type Primitive,
 	} from './types';
 	import type { FocusEventHandler } from 'svelte/elements';
 	import { INPUT_CLASSES } from '$lib/components/ui/Input/input.types';
 	import { Badge } from '$lib/components/ui/badge';
 	import { INPUT_BUTTON_SIZE_MAP } from '../Button';
+	import { difference, noop } from 'es-toolkit';
+	import { scrollToEnd } from '$lib/actions/scroll-end';
 
 	let {
-		value = $bindable<SelectOption[]>([]),
+		value = $bindable<Primitive | Primitive[] | undefined>(),
 		class: className = '',
 		maxDisplay,
 		size = 'md',
@@ -28,6 +31,11 @@
 		onchange,
 		options,
 		subText,
+		inputDebounceOption,
+		multiple = false,
+		showLoadingMore,
+		onScrollToEnd = noop,
+		onclearInputField,
 		...rest
 	}: MultiSelectProps = $props();
 
@@ -41,37 +49,66 @@
 	let openSelect = $state(false);
 	let input = $state<HTMLInputElement>();
 	let optionRefs: HTMLElement[] = [];
-	let selectMapper = $derived.by(() => {
-		const result: Record<string | number, boolean> = {};
-		for (const vl of value) {
-			result[vl.value] = true;
+	/** mapping for all options */
+	let optionsMap = $derived.by(() => {
+		const result: Record<Primitive, SelectOption> = {};
+		for (const opt of options) {
+			result[opt.value] = opt;
 		}
 		return result;
+	});
+	/** mapping for selected options */
+	let selectMapper = $state.raw<Record<Primitive, SelectOption>>({});
+
+	$effect(() => {
+		if (!value || !['string', 'number', 'object'].includes(typeof value)) {
+			selectMapper = {};
+			return;
+		} else if (!options.length || showLoadingMore)
+			return; // refetching, don't update
+		else if (multiple && Array.isArray(value)) {
+			// only recalculate when value changes
+			const diff = difference(value, Object.keys(selectMapper));
+			if (!diff.length) return;
+
+			const result: Record<Primitive, SelectOption> = { ...selectMapper };
+			for (const opt of diff) {
+				result[opt] = optionsMap[opt];
+			}
+			selectMapper = result;
+			return;
+		} else if (!selectMapper[value as Primitive]) {
+			selectMapper = { [value as Primitive]: optionsMap[value as Primitive] };
+		}
+	});
+	/** display text for input */
+	let inputDisplayText = $derived.by(() => {
+		if (multiple) return searchQuery;
+		return typeof value !== undefined ? optionsMap[value as Primitive]?.label : undefined;
 	});
 
 	/** list of options that match search query */
 	let searchFilteredOptions = $derived.by(() => {
-		const notSelectedOptions = options.filter((opt) => !selectMapper[opt.value]);
-		if (!searchQuery) return notSelectedOptions;
-
-		return notSelectedOptions.filter((opt) =>
-			opt.label.toLowerCase().includes(searchQuery.toLowerCase()),
-		);
+		if (!searchQuery) return options;
+		return options.filter((opt) => opt.label.toLowerCase().includes(searchQuery.toLowerCase()));
 	});
 
-	const onInput = () => {
+	const onInput = (evt: Event) => {
 		toggleDropdown(true);
 		searchQuery = input?.value.trim() ?? '';
 		optionRefs[0]?.scrollIntoView({ block: 'nearest' });
+
+		// pass result to parent
+		inputDebounceOption?.onInput(evt);
 	};
 
 	const onOutclick = () => {
-		searchQuery = '';
+		// searchQuery = '';
 		toggleDropdown(false);
 	};
 
 	const handleClick = () => {
-		searchQuery = '';
+		// searchQuery = '';
 		toggleDropdown(true);
 	};
 
@@ -85,21 +122,41 @@
 	const onClear = () => {
 		input?.focus();
 		searchQuery = '';
+
+		if (!multiple) {
+			value = undefined;
+			selectMapper = {};
+		}
+		onclearInputField?.();
 	};
 
 	const handleSelect = (option: SelectOption) => {
-		if (option.disabled) return; // disabled options cant be selected
+		if (option.disabled || selectMapper[option.value]) return; // disabled options cant be selected
 
-		value = value.concat(option);
-		searchQuery = '';
-		onchange?.(value);
+		if (multiple) {
+			if (value === undefined) {
+				value = [];
+			}
+			value = (value as Primitive[]).concat(option.value);
+		} else {
+			value = option.value;
+		}
+
+		// searchQuery = '';
+		if (!multiple) toggleDropdown(false);
+		onchange?.(multiple ? (value as Primitive[]).map((opt) => optionsMap[opt]) : option);
 	};
 
 	const handleDeselectOption = (option: SelectOption) => {
 		if (rest.disabled) return;
 
-		value = value.filter((opt) => opt.value !== option.value);
-		onchange?.(value);
+		if (multiple && Array.isArray(value)) {
+			value = value.filter((opt) => opt !== option.value);
+		} else {
+			value = undefined;
+		}
+
+		onchange?.(multiple ? (value as Primitive[]).map((opt) => optionsMap[opt]) : undefined);
 	};
 </script>
 
@@ -127,13 +184,18 @@
 {/snippet}
 
 {#snippet action()}
-	{#if !!searchQuery}
+	{#if searchQuery || (!multiple && value)}
 		<span
 			onclick={onClear}
 			role="button"
 			tabindex="0"
 			onkeydown={(evt) => evt.key === 'Enter' && onClear()}
-			class="cursor-pointer"
+			class={classNames({
+				'cursor-pointer': !rest.disabled,
+				'cursor-not-allowed!': !!rest.disabled,
+			})}
+			title="Clear"
+			aria-label="Clear"
 		>
 			<Icon icon={CloseX} size="xs" />
 		</span>
@@ -162,24 +224,27 @@
 		<Label {label} id={INPUT_ID} required={rest.required} {size} {variant} requiredAtPos="end" />
 	{/if}
 	<div
-		class={`flex items-center rounded-lg py-1 px-1.5 ${INPUT_CLASSES[variant].bg} ${INPUT_BUTTON_SIZE_MAP[size]}`}
+		class={`flex items-center rounded-lg py-1 pr-0.5 pl-1 ${INPUT_CLASSES[variant].bg} ${INPUT_BUTTON_SIZE_MAP[size]}`}
 	>
 		<div class="flex flex-wrap items-center gap-1 flex-1">
-			{#each value.slice(0, maxDisplay || value.length) as option, idx (idx)}
-				<Badge
-					text={`${option.label}`}
-					variant="light"
-					size={SIZE_REDUCE_MAP[size]}
-					onDismiss={() => handleDeselectOption(option)}
-					disabled={rest.disabled}
-				/>
-			{/each}
-			{#if maxDisplay && value.length > maxDisplay}
-				<Badge
-					text={`+${value.length - maxDisplay}`}
-					variant="light"
-					size={SIZE_REDUCE_MAP[size]}
-				/>
+			{#if multiple && Array.isArray(value)}
+				{@const list = value.slice(0, maxDisplay || value.length)}
+				{#each list as option, idx (idx)}
+					<Badge
+						text={`${selectMapper[option]?.label}`}
+						variant="light"
+						size={SIZE_REDUCE_MAP[size]}
+						onDismiss={() => handleDeselectOption(selectMapper[option])}
+						disabled={rest.disabled}
+					/>
+				{/each}
+				{#if maxDisplay && value.length > maxDisplay}
+					<Badge
+						text={`+${value.length - maxDisplay}`}
+						variant="light"
+						size={SIZE_REDUCE_MAP[size]}
+					/>
+				{/if}
 			{/if}
 			<Input
 				{...rest}
@@ -194,11 +259,12 @@
 				size={SIZE_REDUCE_MAP[size]}
 				onclick={handleClick}
 				onfocus={handleFocus}
-				value={searchQuery}
+				value={inputDisplayText}
 				type="text"
 				role="combobox"
 				inputDebounceOption={{
 					onInput,
+					debounceTime: inputDebounceOption?.debounceTime,
 				}}
 				{action}
 			/>
@@ -211,6 +277,7 @@
 			transition:fly={{ duration: 250, y: 10 }}
 			class={SELECT_CLASSES.selectMenu}
 			tabindex="0"
+			use:scrollToEnd={{ onScrollToEnd }}
 		>
 			{#if !searchFilteredOptions.length}
 				{@render selectOption({
@@ -225,11 +292,19 @@
 			{#each searchFilteredOptions as option, idx (idx)}
 				{@render selectOption({
 					idx,
-					optionClassName: `${option.disabled ? 'cursor-not-allowed! text-gray-400!' : ''}`,
+					optionClassName: classNames({
+						'cursor-not-allowed! text-gray-400!': !!option.disabled,
+						[SELECT_CLASSES.activeSelectOption]: selectMapper[option.value] !== undefined,
+					}),
 					onclick: () => handleSelect(option),
 					...option,
 				})}
 			{/each}
+			{#if showLoadingMore}
+				<li class={SELECT_CLASSES.selectOption}>
+					<span class="loading loading-spinner loading-xs"></span>
+				</li>
+			{/if}
 		</ul>
 	{/if}
 	{#if subText}

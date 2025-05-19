@@ -12,7 +12,7 @@ export type CustomInputProps = {
   subText?: string;
   startIcon?: IconContent;
   /** size of the input, default = `md` */
-  size?: SocialSize;
+  size?: SocialSize | 'xxs';
   /** a component to the end of input */
   action?: Snippet;
   ref?: HTMLInputElement | HTMLTextAreaElement;
@@ -54,7 +54,8 @@ export const INPUT_CLASSES: Record<SocialVariant | 'ghost', Record<'bg' | 'fg', 
   }
 }
 
-export const INPUT_LABEL_SIZE_STYLE_MAP: Record<SocialSize, string> = {
+export const INPUT_LABEL_SIZE_STYLE_MAP: Record<SocialSize | 'xxs', string> = {
+  xxs: 'text-[9px]',
   xs: 'text-[10px]',
   sm: 'text-xs',
   md: 'text-sm',
