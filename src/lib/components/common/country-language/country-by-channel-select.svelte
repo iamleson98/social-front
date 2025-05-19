@@ -18,7 +18,7 @@
 		channelSlug: string;
 	} & Omit<MultiSelectProps, 'options'>;
 
-	let { value, channelSlug: slug, ...rest }: Props = $props();
+	let { value = $bindable(), channelSlug: slug, ...rest }: Props = $props();
 
 	const CHANEL_STORE = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
 		kind: 'query',

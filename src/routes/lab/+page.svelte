@@ -100,7 +100,7 @@
 <!-- <li class="loading loading-spinner loading-xs"></li> -->
 
 <div class="flex items-start gap-2">
-	<MultiSelect
+	<!-- <MultiSelect
 		options={[
 			{ label: 'Option 1', value: '1' },
 			{ label: 'Option 2', value: '2' },
@@ -111,7 +111,7 @@
 		label="MultiSelect"
 		variant="error"
 		subText="subText"
-	/>
+	/> -->
 	<Input size="xs" label="Input" />
 
 	<Select
@@ -123,6 +123,7 @@
 		size="xs"
 		required
 		label="Select"
+		multiple
 	/>
 </div>
 

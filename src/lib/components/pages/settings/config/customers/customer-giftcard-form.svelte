@@ -1,8 +1,10 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import { GIFT_CARD_CREATE_MUTATION } from '$lib/api/admin/users';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
+	import { Select } from '$lib/components/ui/select';
 	import type { GiftCardCreateInput, Mutation, MutationGiftCardCreateArgs } from '$lib/gql/graphql';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { array, number, object, string } from 'zod';
@@ -165,4 +167,4 @@
 		/>
 		<Checkbox label="Active" bind:checked={giftCardInput.isActive} />
 	</div>
-</Modal>
+</Modal> -->

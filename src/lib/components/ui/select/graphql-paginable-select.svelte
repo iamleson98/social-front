@@ -35,11 +35,6 @@
 		 * ```
 		 */
 		variableSearchQueryPath?: string;
-		/**
-		 * allow parent to force the query inside this component to reexecute. must use with bind:forceFetching
-		 * default to `true`
-		 */
-		forceFetching?: boolean;
 	} & Omit<MultiSelectProps, 'options'>;
 
 	let {
@@ -54,7 +49,6 @@
 		optionValueKey,
 		optionLabelKey,
 		onchange,
-		forceFetching = $bindable(true),
 		...rest
 	}: Props = $props();
 
@@ -62,6 +56,7 @@
 	let pageInfo = $state.raw<PageInfo>();
 	let errorMessage = $state();
 	let isInitialFetch = $state(true);
+	let forceFetching = $state(true);
 
 	const fetchData = async () => {
 		const result = await GRAPHQL_CLIENT.query<Pick<Query, typeof resultKey>>(query, variables, {

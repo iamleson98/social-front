@@ -61,7 +61,7 @@
 	let selectMapper = $state.raw<Record<Primitive, SelectOption>>({});
 
 	$effect(() => {
-		if (!['string', 'number', 'object'].includes(typeof value)) {
+		if (!value || !['string', 'number', 'object'].includes(typeof value)) {
 			selectMapper = {};
 			return;
 		} else if (!options.length || showLoadingMore)
@@ -224,7 +224,7 @@
 		<Label {label} id={INPUT_ID} required={rest.required} {size} {variant} requiredAtPos="end" />
 	{/if}
 	<div
-		class={`flex items-center rounded-lg py-[6px] ${INPUT_CLASSES[variant].bg} ${INPUT_BUTTON_SIZE_MAP[size]}`}
+		class={`flex items-center rounded-lg py-1 pr-0.5 pl-1 ${INPUT_CLASSES[variant].bg} ${INPUT_BUTTON_SIZE_MAP[size]}`}
 	>
 		<div class="flex flex-wrap items-center gap-1 flex-1">
 			{#if multiple && Array.isArray(value)}

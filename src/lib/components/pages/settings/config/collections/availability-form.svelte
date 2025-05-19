@@ -8,8 +8,6 @@
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Checkbox } from '$lib/components/ui/Input';
 	import { Select, SelectSkeleton, type SelectOption } from '$lib/components/ui/select';
-	import MultiSelect from '$lib/components/ui/select/multi-select.svelte';
-	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import type { Channel, PublishableChannelListingInput, Query } from '$lib/gql/graphql';
 	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
@@ -138,8 +136,7 @@
 				class="w-full mt-2"
 				multiple
 				value={selectValues.map((opt) => opt.value)}
-				onchange={(opts) =>
-					handleSelectionChange(opts?.map((opt) => ({ value: opt, label: channelsMap[opt].name })))}
+				onchange={(opts) => handleSelectionChange(opts as SelectOption[])}
 				{disabled}
 			/>
 		</div>

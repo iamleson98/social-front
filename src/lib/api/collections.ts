@@ -1,13 +1,14 @@
 import { gql } from "@urql/core";
 
 export const COLLECTIONS_QUERY = gql`
-query Collections($after: String, $first: Int!, $channel: String, $sortBy: CollectionSortingInput, $filter: CollectionFilterInput) {
+query Collections($after: String, $first: Int!, $channel: String, $sortBy: CollectionSortingInput, $filter: CollectionFilterInput, $where: CollectionWhereInput) {
   collections(
     after: $after
     first: $first
     filter: $filter
     sortBy: $sortBy
     channel: $channel
+    where: $where
   ) {
     edges {
       node {

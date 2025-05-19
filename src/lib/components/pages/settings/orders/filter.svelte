@@ -44,7 +44,7 @@
 				},
 				{
 					operator: 'oneOf',
-					component: paymentStatuss,
+					component: paymentStatuses,
 				},
 			],
 		},
@@ -168,7 +168,7 @@
 	/>
 {/snippet}
 
-{#snippet paymentStatuss({ onValue, initialValue = [] }: FilterComponentType)}
+{#snippet paymentStatuses({ onValue, initialValue = [] }: FilterComponentType)}
 	<Select
 		options={paymentStatusOptions}
 		placeholder="Payment statuses"

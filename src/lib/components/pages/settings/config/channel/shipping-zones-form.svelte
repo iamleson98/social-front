@@ -121,7 +121,6 @@
 				multiple
 				value={addShippingZones}
 				onchange={handleAddShippingZones}
-				bind:forceFetching={showAddShippingZones}
 			/>
 		{/if}
 

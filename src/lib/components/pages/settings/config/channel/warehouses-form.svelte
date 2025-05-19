@@ -128,7 +128,6 @@
 				multiple
 				value={addWarehouses}
 				onchange={handleAddWarehouses}
-				bind:forceFetching={showAddWarehouses}
 			/>
 		{/if}
 
