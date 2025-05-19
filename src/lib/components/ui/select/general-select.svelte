@@ -18,7 +18,7 @@
 	import { INPUT_CLASSES } from '$lib/components/ui/Input/input.types';
 	import { Badge } from '$lib/components/ui/badge';
 	import { INPUT_BUTTON_SIZE_MAP } from '../Button';
-	import { difference, noop } from 'es-toolkit';
+	import { noop, omit } from 'es-toolkit';
 	import { scrollToEnd } from '$lib/actions/scroll-end';
 
 	let {
@@ -49,42 +49,13 @@
 	let openSelect = $state(false);
 	let input = $state<HTMLInputElement>();
 	let optionRefs: HTMLElement[] = [];
-	/** mapping for all options */
-	let optionsMap = $derived.by(() => {
-		const result: Record<Primitive, SelectOption> = {};
-		for (const opt of options) {
-			result[opt.value] = opt;
-		}
-		return result;
-	});
 	/** mapping for selected options */
 	let selectMapper = $state.raw<Record<Primitive, SelectOption>>({});
 
-	$effect(() => {
-		if (!value || !['string', 'number', 'object'].includes(typeof value)) {
-			selectMapper = {};
-			return;
-		} else if (!options.length || showLoadingMore)
-			return; // refetching, don't update
-		else if (multiple && Array.isArray(value)) {
-			// only recalculate when value changes
-			const diff = difference(value, Object.keys(selectMapper));
-			if (!diff.length) return;
-
-			const result: Record<Primitive, SelectOption> = { ...selectMapper };
-			for (const opt of diff) {
-				result[opt] = optionsMap[opt];
-			}
-			selectMapper = result;
-			return;
-		} else if (!selectMapper[value as Primitive]) {
-			selectMapper = { [value as Primitive]: optionsMap[value as Primitive] };
-		}
-	});
 	/** display text for input */
 	let inputDisplayText = $derived.by(() => {
 		if (multiple) return searchQuery;
-		return typeof value !== undefined ? optionsMap[value as Primitive]?.label : undefined;
+		return typeof value !== undefined ? selectMapper[value as Primitive]?.label : undefined;
 	});
 
 	/** list of options that match search query */
@@ -102,9 +73,10 @@
 		inputDebounceOption?.onInput(evt);
 	};
 
-	const onOutclick = () => {
+	const onOutclick = (evt: any) => {
 		// searchQuery = '';
 		toggleDropdown(false);
+		rest.onblur?.(evt);
 	};
 
 	const handleClick = () => {
@@ -124,6 +96,8 @@
 		searchQuery = '';
 
 		if (!multiple) {
+			// in multiple query we only clear the value and selectMapper
+			// the selected values will be kept
 			value = undefined;
 			selectMapper = {};
 		}
@@ -137,14 +111,18 @@
 			if (value === undefined) {
 				value = [];
 			}
-			value = (value as Primitive[]).concat(option.value);
+			if (!(value as Primitive[]).includes(option.value)) {
+				value = (value as Primitive[]).concat(option.value);
+			}
+			selectMapper = { ...selectMapper, [option.value]: option };
 		} else {
 			value = option.value;
+			selectMapper = { [option.value]: option };
 		}
 
 		// searchQuery = '';
 		if (!multiple) toggleDropdown(false);
-		onchange?.(multiple ? (value as Primitive[]).map((opt) => optionsMap[opt]) : option);
+		onchange?.(multiple ? Object.values(selectMapper) : option);
 	};
 
 	const handleDeselectOption = (option: SelectOption) => {
@@ -152,11 +130,13 @@
 
 		if (multiple && Array.isArray(value)) {
 			value = value.filter((opt) => opt !== option.value);
+			selectMapper = omit(selectMapper, [option.value]);
 		} else {
 			value = undefined;
+			selectMapper = {};
 		}
 
-		onchange?.(multiple ? (value as Primitive[]).map((opt) => optionsMap[opt]) : undefined);
+		onchange?.(multiple ? Object.values(selectMapper) : undefined);
 	};
 </script>
 

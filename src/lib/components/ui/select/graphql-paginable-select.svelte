@@ -8,9 +8,33 @@
 	import { get, has, set } from 'es-toolkit/compat';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import GeneralSelect from './general-select.svelte';
+	import { omit } from 'es-toolkit';
 
 	type Props = {
 		query: TypedDocumentNode<any, AnyVariables & GraphqlPaginationArgs>;
+		/**
+		 * graphql pagination variable style
+		 *
+		 * E.g:
+		 *
+		 * ```ts
+		 * type QueryVariables = {
+		 * 		filter?: {
+		 * 			search?: string;
+		 * 		}
+		 * 		first?: number;
+		 * };
+		 *
+		 * // then you must pass in initial value like below for it to work properly.
+		 *
+		 * variables = {
+		 * 	filter: {
+		 * 		search: '',
+		 * 	},
+		 * 	first: 10,
+		 * };
+		 * ```
+		 */
 		variables: AnyVariables & GraphqlPaginationArgs;
 		/** default to 'network-only' */
 		requestPolicy?: RequestPolicy;
@@ -54,9 +78,17 @@
 
 	let selectOptions = $state.raw<SelectOption[]>([]);
 	let pageInfo = $state.raw<PageInfo>();
+	let initialSelectOptions: SelectOption[] = [];
+	let initialPageInfo: PageInfo | undefined = undefined;
 	let errorMessage = $state();
 	let isInitialFetch = $state(true);
 	let forceFetching = $state(true);
+
+	const setInitialQueryResults = () => {
+		if (!isInitialFetch) return;
+		initialSelectOptions = selectOptions;
+		initialPageInfo = pageInfo;
+	};
 
 	const fetchData = async () => {
 		const result = await GRAPHQL_CLIENT.query<Pick<Query, typeof resultKey>>(query, variables, {
@@ -66,10 +98,10 @@
 			errorMessage = result.error.message;
 			return;
 		}
-
+		errorMessage = undefined; // inportant to unset
 		if (!result.data) return;
 
-		const connection: CountableConnection<T> = get(result.data, resultKey);
+		const connection: CountableConnection<T> = get(result.data, resultKey, undefined);
 		if (!connection) throw new Error(`invalid result key: ${resultKey}`);
 
 		pageInfo = connection.pageInfo;
@@ -77,7 +109,7 @@
 		for (const edge of connection.edges) {
 			const value = get(edge.node, optionValueKey);
 			const label = get(edge.node, optionLabelKey);
-			if (!value || !label) continue;
+			if (!value && !label) continue;
 
 			selections.push({ value, label });
 		}
@@ -89,20 +121,26 @@
 		if (forceFetching) {
 			fetchData().finally(() => {
 				forceFetching = false;
+				setInitialQueryResults();
 				isInitialFetch = false;
 			});
 		}
 	});
 
+	/**
+	 * when user types in the input field, we will fetch data from the beginning
+	 */
 	const onInput = (value: string = '') => {
-		if (!variableSearchQueryPath || !has(variables, variableSearchQueryPath)) return;
+		if (!variableSearchQueryPath) return;
+		if (!has(variables, variableSearchQueryPath))
+			throw new Error(`invalid variable search query path: ${variableSearchQueryPath}. Have you provided it in the "variables" argument ?`);
 
 		const newVariables = { ...variables };
-		delete newVariables['after'];
+		delete newVariables['after']; // we fetch from beginning, so no need after here
 		set(newVariables, variableSearchQueryPath, value);
 
 		variables = newVariables;
-		selectOptions = [];
+		selectOptions = []; // since we fetch from beginning, so no need to keep the old options
 		forceFetching = true; // trigger fetch over again
 	};
 
@@ -125,7 +163,6 @@
 	<GeneralSelect
 		bind:value
 		options={selectOptions}
-		{onchange}
 		{size}
 		{label}
 		inputDebounceOption={{

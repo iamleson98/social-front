@@ -42,7 +42,7 @@
 		console.log(state);
 	};
 
-	let value = $state<string>();
+	let value = $state<string[]>([]);
 </script>
 
 <div>lab</div>
@@ -85,6 +85,7 @@
 	size="sm"
 	variableSearchQueryPath="search"
 	bind:value
+	multiple
 />
 
 <!-- <li class="loading loading-spinner loading-xs"></li> -->
@@ -117,7 +118,7 @@
 	/>
 </div>
 
-<GeneralSelect
+<!-- <GeneralSelect
 	size="sm"
 	label="GeneralSelect"
 	variant="error"
@@ -133,4 +134,4 @@
 		{ label: 'Option 3', value: '3' },
 	]}
 	showLoadingMore
-/>
+/> -->
