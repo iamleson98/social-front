@@ -1,8 +1,7 @@
 <script lang="ts" generics="T">
 	import { CloseX, Plus, Trash } from '$lib/components/icons';
 	import { Button, IconButton } from '$lib/components/ui/Button';
-	import { type SelectOption } from '$lib/components/ui/select';
-	import Select from '$lib/components/ui/select/select.svelte';
+	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import type { FilterConditions, FilterItemValue, FilterOperator, FilterProps } from './types';
 	import { SvelteMap } from 'svelte/reactivity';
 

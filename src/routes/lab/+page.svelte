@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { GraphqlPaginableSelect, MultiSelect, Select } from '$lib/components/ui/select';
-	import { onMount } from 'svelte';
+	import { GraphqlPaginableSelect, Select } from '$lib/components/ui/select';
 	import { draggable, droppable, type DragDropState } from '@thisux/sveltednd';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import { ButtonSkeleton } from '$lib/components/ui/Button';
@@ -47,15 +46,6 @@
 </script>
 
 <div>lab</div>
-
-<MultiSelect
-	options={[
-		{ label: 'Option 1', value: '1' },
-		{ label: 'Option 2', value: '2' },
-		{ label: 'Option 3', value: '3' },
-	]}
-	variant="error"
-/>
 
 <table class="table">
 	<thead>

@@ -25,7 +25,7 @@
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { CHANNELS_QUERY } from '$lib/api/channels';
 	import { operationStore } from '$lib/api/operation';
-	import { MultiSelect, Select, type SelectOption } from '$lib/components/ui/select';
+	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { CHANNELS } from '$lib/utils/channels';
 	import { Badge } from '$lib/components/ui/badge';
 

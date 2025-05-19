@@ -4,7 +4,7 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { Checkbox, Input, Label } from '$lib/components/ui/Input';
-	import { MultiSelect, type SelectOption } from '$lib/components/ui/select';
+	import { Select, SelectSkeleton, type SelectOption } from '$lib/components/ui/select';
 	import {
 		type PreorderSettingsInput,
 		type ProductChannelListingAddInput,
@@ -12,14 +12,13 @@
 		type ProductVariantBulkCreateInput,
 		type ProductVariantChannelListingAddInput,
 		type Query,
-		type StockInput
+		type StockInput,
 	} from '$lib/gql/graphql';
 	import { CHANNELS_QUERY } from '$lib/api/channels';
 	import { operationStore } from '$lib/api/operation';
 	import { preHandleErrorOnGraphqlResult, randomString } from '$lib/utils/utils';
 	import { slide } from 'svelte/transition';
 	import { chunk, flatten, omit } from 'es-toolkit';
-	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 	import { CurrencyIconMap, type CurrencyCode } from '$lib/utils/consts';
 	import { onMount } from 'svelte';
 	import DAYJS from 'dayjs';
@@ -86,12 +85,12 @@
 	const DAYJS_NOW = DAYJS();
 
 	const DEFAULT_VARIANTS: VariantManifestProps[] = [
-		{ name: { value: 'color' }, values: [{ value: 'red' }] }
+		{ name: { value: 'color' }, values: [{ value: 'red' }] },
 	];
 
 	const SECOND_SAMPLE_VARIANT = {
 		name: { value: 'size' },
-		values: [{ value: 'm' }]
+		values: [{ value: 'm' }],
 	};
 
 	const VARIANT_ATTRIBUTE_HINTS = [
@@ -103,15 +102,15 @@
 		{ title: 'product.skuHint' },
 		{
 			title: 'product.preorderHint',
-			args: { min: MIN_DAYS_FOR_PREORDER, max: MAX_DAYS_FOR_PREORDER }
-		}
+			args: { min: MIN_DAYS_FOR_PREORDER, max: MAX_DAYS_FOR_PREORDER },
+		},
 	];
 
 	let {
 		productVariantsInput = $bindable([]),
 		channelsListing,
 		loading,
-		productMedias
+		productMedias,
 	}: Props = $props();
 	let variantsInputDetails = $state<ProductVariantBulkCreateInput[]>([]);
 	let quickFillingHighlightClass = $state<QuickFillHighlight>();
@@ -122,7 +121,7 @@
 		stocks: [],
 		preOrder: {},
 		weight: 0,
-		trackInventory: true
+		trackInventory: true,
 	});
 	/** contains channel select options, this list depends on the prop `channelsListing` */
 	let channelSelectOptions = $state.raw<ChannelSelectOptionProps[]>([]);
@@ -135,7 +134,7 @@
 
 		const {
 			preOrder: { globalThreshold, endDate },
-			quantityLimitPerCustomer
+			quantityLimitPerCustomer,
 		} = quickFillingValues;
 		if (typeof globalThreshold === 'number' && globalThreshold % 1 !== 0) return true;
 		if (typeof quantityLimitPerCustomer === 'number' && quantityLimitPerCustomer % 1 !== 0)
@@ -156,7 +155,7 @@
 		for (const inputItem of variantsInputDetails) {
 			if (
 				inputItem.channelListings?.some(
-					(chan) => typeof chan.preorderThreshold === 'number' && chan.preorderThreshold % 1 !== 0
+					(chan) => typeof chan.preorderThreshold === 'number' && chan.preorderThreshold % 1 !== 0,
 				)
 			)
 				return true;
@@ -184,13 +183,13 @@
 
 	/** hold errors of variant manifest form, quick filling form, detail form, if there is any error, display red border for user to know  */
 	let hasGeneralError = $derived(
-		variantManifestError || quickFillingError || variantInputDetailError
+		variantManifestError || quickFillingError || variantInputDetailError,
 	);
 
 	const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
 		query: CHANNELS_QUERY,
-		context: { requestPolicy: 'cache-and-network' }
+		context: { requestPolicy: 'cache-and-network' },
 	});
 
 	onMount(() => {
@@ -208,7 +207,7 @@
 						warehousesOfChannels.push({
 							warehouse: warehouse.id,
 							warehouseName: warehouse.name,
-							quantity: 0
+							quantity: 0,
 						});
 					}
 				}
@@ -216,7 +215,7 @@
 
 			quickFillingValues = {
 				...quickFillingValues,
-				stocks: warehousesOfChannels
+				stocks: warehousesOfChannels,
 			};
 		});
 	});
@@ -227,16 +226,16 @@
 			return {
 				...item,
 				stocks: item.stocks?.map(
-					(stock) => omit(stock, ['warehouseName' as keyof StockInput]) as StockInput
+					(stock) => omit(stock, ['warehouseName' as keyof StockInput]) as StockInput,
 				),
 				channelListings: item.channelListings?.map(
 					(listing) =>
 						omit(listing, [
 							'label' as keyof ProductVariantChannelListingAddInput,
 							'value' as keyof ProductVariantChannelListingAddInput,
-							'currency' as keyof ProductVariantChannelListingAddInput
-						]) as ProductVariantChannelListingAddInput
-				)
+							'currency' as keyof ProductVariantChannelListingAddInput,
+						]) as ProductVariantChannelListingAddInput,
+				),
 			};
 		});
 	});
@@ -250,7 +249,7 @@
 				label: channelListing['channelName' as keyof ProductChannelListingAddInput],
 				currency: channelListing['currency' as keyof ProductChannelListingAddInput],
 				channelId: channelListing.channelId,
-				price: undefined
+				price: undefined,
 			});
 		});
 
@@ -266,7 +265,7 @@
 		const valueTrimLower = newValue.trim().toLowerCase();
 
 		const valueDuplicate = variantManifests[variantIdx].values.some(
-			(value, idx) => idx !== valueIdx && valueTrimLower && valueTrimLower === value.value
+			(value, idx) => idx !== valueIdx && valueTrimLower && valueTrimLower === value.value,
 		);
 
 		variantManifestError = !valueTrimLower || valueDuplicate;
@@ -285,9 +284,9 @@
 							? $tranFunc('product.variantValueExist', { name: valueTrimLower })
 							: !newValue
 								? $tranFunc('product.variantValueEmpty')
-								: undefined
+								: undefined,
 					};
-				})
+				}),
 			};
 		});
 		if (variantManifestError) return;
@@ -300,7 +299,7 @@
 					...detail,
 					name: valueTrimLower,
 					// sku: `${randomString()}-${valueTrimLower}`
-					sku: randomString()
+					sku: randomString(),
 				};
 			});
 
@@ -322,7 +321,7 @@
 					...existingValue,
 					name: `${valueTrimLower}-${splitName[1]}`,
 					// sku: newSku
-					sku: randomString()
+					sku: randomString(),
 				};
 			}
 		} else {
@@ -339,7 +338,7 @@
 					...existingValue,
 					name: `${splitName[0]}-${valueTrimLower}`,
 					// sku: newSku
-					sku: randomString()
+					sku: randomString(),
 				};
 			}
 		}
@@ -356,7 +355,7 @@
 			(variant, idx) =>
 				idx !== variantIdx &&
 				nameTrimLower &&
-				nameTrimLower === variant.name.value.trim().toLocaleLowerCase()
+				nameTrimLower === variant.name.value.trim().toLocaleLowerCase(),
 		);
 
 		variantManifestError = nameDuplicate || !nameTrimLower;
@@ -370,9 +369,9 @@
 						? $tranFunc('product.variantNameExist', { name: nameTrimLower })
 						: !name
 							? $tranFunc('product.variantNameEmpty')
-							: undefined
+							: undefined,
 				},
-				values: variant.values
+				values: variant.values,
 			};
 		});
 
@@ -391,7 +390,7 @@
 				trackInventory: true,
 				channelListings: [],
 				weight: 0,
-				preorder: {}
+				preorder: {},
 			}));
 			return;
 		}
@@ -408,7 +407,7 @@
 					trackInventory: true,
 					channelListings: [],
 					weight: 0,
-					preorder: {}
+					preorder: {},
 				});
 			}
 		}
@@ -431,7 +430,7 @@
 			trackInventory: true,
 			channelListings: [],
 			weight: 0,
-			preorder: {}
+			preorder: {},
 		}));
 	};
 
@@ -445,7 +444,7 @@
 
 			return {
 				name: variant.name,
-				values: variant.values.concat({ value: '' })
+				values: variant.values.concat({ value: '' }),
 			};
 		});
 
@@ -456,9 +455,8 @@
 				sku: `${randomString()}-`,
 				trackInventory: true,
 				channelListings: [],
-				trackInventory: true,
 				weight: 0,
-				preorder: {}
+				preorder: {},
 			});
 		} else {
 			if (variantIdx === 1) {
@@ -475,7 +473,7 @@
 						trackInventory: true,
 						channelListings: [],
 						weight: 0,
-						preorder: {}
+						preorder: {},
 					});
 				}
 				variantsInputDetails = flatten(chunks);
@@ -487,7 +485,7 @@
 					trackInventory: true,
 					channelListings: [],
 					weight: 0,
-					preorder: {}
+					preorder: {},
 				}));
 				variantsInputDetails = variantsInputDetails.concat(addingVariants);
 			}
@@ -501,7 +499,7 @@
 
 			return {
 				name: variant.name,
-				values: variant.values.filter((_, idx) => idx !== valueIndex)
+				values: variant.values.filter((_, idx) => idx !== valueIndex),
 			};
 		});
 
@@ -513,7 +511,7 @@
 				const endIndex = (valueIndex + 1) * variantManifests[1].values.length;
 
 				variantsInputDetails = variantsInputDetails.filter(
-					(_, idx) => idx < beginIndex || idx >= endIndex
+					(_, idx) => idx < beginIndex || idx >= endIndex,
 				);
 			} else {
 				const chunks = chunk(variantsInputDetails, variantManifests[1].values.length);
@@ -543,15 +541,15 @@
 
 							label, // extra field
 							value, // extra field
-							currency // extra field
-						})
+							currency, // extra field
+						}),
 					);
 				}
 				if (canQuickFillingStocks) {
 					variantDetail.stocks = quickFillingValues.stocks.map((stock) => ({
 						warehouse: stock.warehouse,
 						quantity: stock.quantity,
-						warehouseName: stock.warehouseName // this field is needed for displaying
+						warehouseName: stock.warehouseName, // this field is needed for displaying
 					}));
 				}
 
@@ -595,7 +593,7 @@
 								class="w-full"
 								placeholder={$tranFunc('product.variantPlaceholder')}
 								inputDebounceOption={{
-									onInput: (evt) => handleVariantNameChange(variantIdx, evt)
+									onInput: (evt) => handleVariantNameChange(variantIdx, evt),
 								}}
 								value={variant.name.value}
 								size="md"
@@ -619,7 +617,7 @@
 									placeholder={$tranFunc('placeholders.valuePlaceholder')}
 									inputDebounceOption={{
 										onInput: (evt) => handleVariantValueChange(variantIdx, valueIdx, evt),
-										debounceTime: 500 // only fire after 0.5 sec after user stop typing
+										debounceTime: 500, // only fire after 0.5 sec after user stop typing
 									}}
 									value={value.value}
 									subText={value.error}
@@ -700,17 +698,19 @@
 							<div class="w-1/6">
 								<div class="text-xs">{$tranFunc('product.channel')}</div>
 								{#if !channelSelectOptions?.length}
-									<SkeletonContainer>
-										<Skeleton class="w-full h-4" rounded={false} />
-									</SkeletonContainer>
+									<SelectSkeleton size="sm" />
 								{:else}
-									<MultiSelect
+									<Select
 										size="sm"
 										options={channelSelectOptions}
 										onfocus={() => handleFocusHighlightQuickFilling('td-channel-hl')}
-										bind:value={quickFillingValues.channels}
+										value={quickFillingValues.channels.map((item) => item.channelId)}
 										class="w-full"
 										disabled={loading}
+										multiple
+										onchange={(opts) => {
+											quickFillingValues.channels = opts as ChannelSelectOptionProps[];
+										}}
 									/>
 								{/if}
 							</div>
@@ -812,12 +812,12 @@
 										label={$tranFunc('product.preOrderEndDate')}
 										allowSelectMonthYears={{
 											showMonths: true,
-											showYears: { min: 2020, max: DAYJS_NOW.year() + 1 }
+											showYears: { min: 2020, max: DAYJS_NOW.year() + 1 },
 										}}
 										timeConfig={false}
 										timeLock={{
 											minDate: DAYJS_NOW.add(MIN_DAYS_FOR_PREORDER, 'day').toDate(),
-											maxDate: DAYJS_NOW.add(MAX_DAYS_FOR_PREORDER, 'day').toDate()
+											maxDate: DAYJS_NOW.add(MAX_DAYS_FOR_PREORDER, 'day').toDate(),
 										}}
 									/>
 								</div>
@@ -826,9 +826,7 @@
 							<div class="w-1/6">
 								<div class="text-xs">{$tranFunc('product.stock')}</div>
 								{#if !quickFillingValues.stocks.length}
-									<SkeletonContainer>
-										<Skeleton class="w-full h-4" rounded={false} />
-									</SkeletonContainer>
+									<SelectSkeleton size="xs" />
 								{:else}
 									<div
 										class="max-h-32 overflow-y-auto border border-gray-200 bg-white p-1 rounded-lg"
@@ -968,15 +966,18 @@
 									<!-- CHANNELS -->
 									<td class="channel-td max-w-3xs min-w-28">
 										{#if !channelSelectOptions?.length}
-											<SkeletonContainer>
-												<Skeleton class="w-full h-4" rounded={false} />
-											</SkeletonContainer>
+											<SelectSkeleton size="sm" />
 										{:else}
-											<MultiSelect
+											<Select
 												size="sm"
 												disabled={loading}
 												options={channelSelectOptions}
-												bind:value={variantInputDetail.channelListings as unknown as SelectOption[]}
+												value={variantInputDetail.channelListings?.map((item) => item.channelId)}
+												multiple
+												onchange={(opts) => {
+													variantInputDetail.channelListings =
+														opts as unknown as ProductVariantChannelListingAddInput[];
+												}}
 											/>
 										{/if}
 									</td>
@@ -1083,7 +1084,7 @@
 												label={$tranFunc('product.preOrderEndDate')}
 												allowSelectMonthYears={{
 													showMonths: true,
-													showYears: { min: 2020, max: DAYJS_NOW.year() + 1 }
+													showYears: { min: 2020, max: DAYJS_NOW.year() + 1 },
 												}}
 												disabled={loading}
 												timeConfig={false}
@@ -1092,7 +1093,7 @@
 												class="mb-2"
 												timeLock={{
 													minDate: DAYJS_NOW.add(MIN_DAYS_FOR_PREORDER, 'day').toDate(),
-													maxDate: DAYJS_NOW.add(MAX_DAYS_FOR_PREORDER, 'day').toDate()
+													maxDate: DAYJS_NOW.add(MAX_DAYS_FOR_PREORDER, 'day').toDate(),
 												}}
 											/>
 										</div>
