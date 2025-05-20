@@ -205,9 +205,14 @@ export const flipDirection = (direction: OrderDirection): OrderDirection =>
 	direction === OrderDirection.Asc ? OrderDirection.Desc : OrderDirection.Asc;
 
 export const numberRegex = /^-?\d+(\.\d+)?$/;
+export const BOOL_REGEX = /(true|false)/;
+
+export const parseBoolean = (expr: string) => {
+	return expr.toLowerCase() === 'true';
+};
 
 export const parseUrlSearchParams = (url: URL) => {
-	const result: Record<string, number | string> = {};
+	const result: Record<string, number | string | boolean> = {};
 
 	for (const key of url.searchParams.keys()) {
 		const trimKey = key.trim();
@@ -219,6 +224,8 @@ export const parseUrlSearchParams = (url: URL) => {
 		value = value.trim();
 		if (value && numberRegex.test(value)) {
 			result[trimKey] = Number(value);
+		} else if (BOOL_REGEX.test(value)) {
+			result[trimKey] = parseBoolean(value);
 		} else {
 			result[trimKey] = value;
 		}

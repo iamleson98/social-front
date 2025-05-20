@@ -2,13 +2,12 @@
 	import type { AnyVariables, RequestPolicy, TypedDocumentNode } from '@urql/core';
 	import type { CountableConnection, GraphqlPaginationArgs } from '../Table';
 	import type { PageInfo, Query } from '$lib/gql/graphql';
-	import type { MultiSelectProps, SelectOption, SelectProps } from './types';
+	import type { SelectProps, SelectOption } from './types';
 	import SelectSkeleton from './select-skeleton.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { get, has, set } from 'es-toolkit/compat';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import GeneralSelect from './general-select.svelte';
-	import { omit } from 'es-toolkit';
 
 	type Props = {
 		query: TypedDocumentNode<any, AnyVariables & GraphqlPaginationArgs>;
@@ -59,7 +58,7 @@
 		 * ```
 		 */
 		variableSearchQueryPath?: string;
-	} & Omit<MultiSelectProps, 'options'>;
+	} & Omit<SelectProps, 'options'>;
 
 	let {
 		query,
@@ -72,23 +71,14 @@
 		value = $bindable<SelectProps['value']>(),
 		optionValueKey,
 		optionLabelKey,
-		onchange,
 		...rest
 	}: Props = $props();
 
 	let selectOptions = $state.raw<SelectOption[]>([]);
 	let pageInfo = $state.raw<PageInfo>();
-	let initialSelectOptions: SelectOption[] = [];
-	let initialPageInfo: PageInfo | undefined = undefined;
 	let errorMessage = $state();
 	let isInitialFetch = $state(true);
 	let forceFetching = $state(true);
-
-	const setInitialQueryResults = () => {
-		if (!isInitialFetch) return;
-		initialSelectOptions = selectOptions;
-		initialPageInfo = pageInfo;
-	};
 
 	const fetchData = async () => {
 		const result = await GRAPHQL_CLIENT.query<Pick<Query, typeof resultKey>>(query, variables, {
@@ -121,7 +111,6 @@
 		if (forceFetching) {
 			fetchData().finally(() => {
 				forceFetching = false;
-				setInitialQueryResults();
 				isInitialFetch = false;
 			});
 		}

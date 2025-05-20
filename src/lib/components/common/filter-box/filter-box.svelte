@@ -1,9 +1,9 @@
 <script lang="ts" generics="T">
 	import { CloseX, Plus, Trash } from '$lib/components/icons';
 	import { Button, IconButton } from '$lib/components/ui/Button';
-	import { Select, type SelectOption } from '$lib/components/ui/select';
+	import { Select, type Primitive, type SelectOption } from '$lib/components/ui/select';
 	import type { FilterConditions, FilterItemValue, FilterOperator, FilterProps } from './types';
-	import { SvelteMap } from 'svelte/reactivity';
+	import { omit } from 'es-toolkit';
 
 	type Props = {
 		options: FilterProps<T>[];
@@ -24,65 +24,71 @@
 		{} as Record<keyof T, FilterProps<T>>,
 	);
 
-	let activeFilters = $state<FilterConditions<T>>(new SvelteMap(filters));
+	let activeFilters = $state.raw<FilterConditions<T>>(filters);
 
-	let availableFilters = $derived.by(() => {
-		const usedFilterMap: Partial<Record<keyof T, boolean>> = {};
-
-		for (const key of activeFilters.keys()) {
-			const filterOpt = activeFilters.get(key);
-			if (filterOpt && filterOpt.operator && filterOpt.value !== undefined) {
-				usedFilterMap[key] = true;
-			}
-		}
-
-		return options.map(({ key, label }) => ({
-			value: key as string | number,
+	let availableFilters = $derived.by(() =>
+		options.map<SelectOption>(({ key, label }) => ({
+			value: key as Primitive,
 			label,
-			disabled: usedFilterMap[key],
-		}));
-	});
+			disabled: !!activeFilters[key],
+		})),
+	);
 
 	let disableAddFilterBtn = $derived(
-		activeFilters
-			.entries()
-			.some(([key, value]) => !key || !value.operator || value.value === undefined),
+		Object.entries<
+			Partial<{
+				operator: FilterOperator;
+				value: FilterItemValue;
+			}>
+		>(activeFilters).some(([key, value]) => !key || !value.operator || value.value === undefined),
 	);
 
 	const onClickAddFilter = () => {
-		activeFilters.set('' as keyof T, {});
+		activeFilters = { ...activeFilters, '': {} };
 	};
 
 	const handleDeleteFilter = (key: keyof T) => {
-		activeFilters.delete(key);
+		activeFilters = omit(activeFilters, [key]) as FilterConditions<T>;
 	};
 
 	const handleApplyClick = () => {
 		onApply(activeFilters);
 	};
 
-	const handleItemKeyChange = (oldKey: keyof T, newKey?: keyof T) => {
+	const handleResetClick = () => {
+		activeFilters = {} as FilterConditions<T>;
+		handleApplyClick();
+	};
+
+	const handleItemKeyChange = async (oldKey: keyof T, newKey?: keyof T) => {
 		if (oldKey === newKey) return;
 
-		if (newKey) {
-			activeFilters.set(newKey, {});
+		const newFilters = { ...activeFilters };
+		delete newFilters[oldKey];
 
-			// check if this filter requires another filter
+		if (newKey) {
+			newFilters[newKey] = {};
+
 			if (FILTER_MAP[newKey].mustPairWith) {
 				const { mustPairWith } = FILTER_MAP[newKey];
-				if (!activeFilters.has(mustPairWith) && FILTER_MAP[mustPairWith]) {
-					activeFilters.set(mustPairWith, {});
+
+				if (FILTER_MAP[mustPairWith]) {
+					newFilters[mustPairWith] = {};
 				}
 			}
 		}
-		activeFilters.delete(oldKey);
+
+		activeFilters = newFilters;
 	};
 
 	const setFilterItemValue = (key: keyof T, operator: FilterOperator, value?: FilterItemValue) => {
-		activeFilters.set(key, {
-			operator,
-			value,
-		});
+		activeFilters = {
+			...activeFilters,
+			[key]: {
+				operator,
+				value,
+			},
+		};
 	};
 </script>
 
@@ -93,25 +99,27 @@
 	</dir>
 
 	<div class="p-2">
-		{#if activeFilters.size}
-			{#each activeFilters.keys() as key, idx (idx)}
-				{@const filterOpt = activeFilters.get(key)}
+		{#if Object.keys(activeFilters).length}
+			{#each Object.keys(activeFilters) as key, idx (idx)}
+				{@const filterOpt = activeFilters[key as keyof T]}
 				{@const disableDelBtn = options.some(
-					(opt) => opt.mustPairWith === key && activeFilters.has(opt.key),
+					// if this filter is additional requirement to make a pair with another filter, then its delete button must be disabled
+					(opt) => opt.mustPairWith === key && activeFilters[opt.key],
 				)}
 				<div class="flex items-center gap-1 mt-1.5 justify-between">
 					<Select
 						options={availableFilters}
 						size="xs"
 						class="flex-2"
-						value={key as string}
-						onchange={(vl) => vl && handleItemKeyChange(key, (vl as SelectOption).value as keyof T)}
+						value={key}
+						onchange={(vl) =>
+							vl && handleItemKeyChange(key as keyof T, (vl as SelectOption).value as keyof T)}
 						placeholder="Select filter"
 					/>
 
 					<div class="flex-4 flex items-center gap-1">
 						{#if key && filterOpt}
-							{@const { operations } = FILTER_MAP[key]}
+							{@const { operations } = FILTER_MAP[key as keyof T]}
 							{@const operatorOpts = operations.map(({ operator }) => ({
 								label: operator,
 								value: operator,
@@ -123,16 +131,21 @@
 								class="flex-1"
 								value={filterOpt.operator}
 								onchange={(vl) =>
-									vl && setFilterItemValue(key, (vl as SelectOption).value as FilterOperator)}
+									vl &&
+									setFilterItemValue(key as keyof T, (vl as SelectOption).value as FilterOperator)}
 							/>
 							{#if filterOpt.operator}
-								{@const component = operations.find(
+								{@const { component } = operations.find(
 									({ operator }) => operator === filterOpt.operator,
-								)?.component}
+								)!}
 								<div class="flex-1">
-									{@render component?.({
+									{@render component({
 										onValue: (value) =>
-											setFilterItemValue(key, filterOpt.operator as FilterOperator, value),
+											setFilterItemValue(
+												key as keyof T,
+												filterOpt.operator as FilterOperator,
+												value,
+											),
 										initialValue: filterOpt.value,
 									})}
 								</div>
@@ -147,7 +160,7 @@
 							size="xs"
 							variant="light"
 							color="red"
-							onclick={() => handleDeleteFilter(key)}
+							onclick={() => handleDeleteFilter(key as keyof T)}
 							aria-label="Delete filter"
 							disabled={disableDelBtn}
 						/>
@@ -175,12 +188,7 @@
 				Add Filter
 			</Button>
 			<div class="gap-1">
-				<Button
-					size="xs"
-					variant="light"
-					color="gray"
-					onclick={() => (activeFilters = new SvelteMap())}>Reset</Button
-				>
+				<Button size="xs" variant="light" color="gray" onclick={handleResetClick}>Reset</Button>
 				<Button size="xs" disabled={disableAddFilterBtn} onclick={handleApplyClick}>Apply</Button>
 			</div>
 		</div>

@@ -6,12 +6,12 @@
 	import {
 		Select,
 		SelectSkeleton,
-		type MultiSelectProps,
+		type SelectProps,
 		type SelectOption,
 	} from '$lib/components/ui/select';
 	import type { Query } from '$lib/gql/graphql';
 
-	let { size = 'md', value, class: className = '' }: Omit<MultiSelectProps, 'options'> = $props();
+	let { size = 'md', value, class: className = '' }: Omit<SelectProps, 'options'> = $props();
 
 	const shopStore = operationStore<Pick<Query, 'shop'>>({
 		kind: 'query',

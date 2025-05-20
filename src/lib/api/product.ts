@@ -1,5 +1,4 @@
 import type {
-	CategoryCountableConnection,
 	CategoryFilterInput,
 	CategorySortingInput,
 	CategoryWhereInput,
@@ -95,7 +94,7 @@ export interface CategoryListInput {
 /**
  * `level` starts at 0
  */
-export const CATEGORIES_LIST_QUERY_STORE = gql<CategoryCountableConnection, CategoryListInput>`
+export const CATEGORIES_LIST_QUERY_STORE = gql`
 	query Categories(
 		$filter: CategoryFilterInput
 		$where: CategoryWhereInput

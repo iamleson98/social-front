@@ -6,7 +6,7 @@
 	import {
 		Select,
 		SelectSkeleton,
-		type MultiSelectProps,
+		type SelectProps,
 		type SelectOption,
 	} from '$lib/components/ui/select';
 	import type { Query, QueryChannelArgs } from '$lib/gql/graphql';
@@ -16,7 +16,7 @@
 		 * Channel slug
 		 */
 		channelSlug: string;
-	} & Omit<MultiSelectProps, 'options'>;
+	} & Omit<SelectProps, 'options'>;
 
 	let { value = $bindable(), channelSlug: slug, ...rest }: Props = $props();
 

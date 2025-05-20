@@ -17,24 +17,12 @@ export type SelectItemprops = {
   ref?: HTMLLIElement;
 } & SelectOption;
 
-export type SelectProps<T extends SelectOption = SelectOption> = {
-  options: T[];
-  value?: SelectOption['value'];
-  onchange?: (opt?: T[] | T) => void;
-  /** callback function to be called when the scroll reaches the end of the list */
-  onScrollToEnd?: OnscrollToEndOpts['onScrollToEnd'];
-  /** default `false` */
-  isFetchingMore?: boolean;
-} & Omit<InputProps, 'value' | 'onchange'> & Omit<HTMLSelectAttributes, 'size' | 'onchange' | 'onblur'>;
-
 export type Primitive = string | number;
 
-export type MultiSelectProps<T extends SelectOption = SelectOption> = {
+export type SelectProps<T extends SelectOption = SelectOption> = {
   options: T[];
   value?: Primitive[] | Primitive;
   size?: SocialSize | 'xxs';
-  /** whether is multiple select or not. Default to `false` */
-  multiple?: boolean;
   /** number of items to fully display, the rest will be summaried as "+n". if <= 0, throw Error  */
   maxDisplay?: number;
   onchange?: (opts?: T[] | T) => void;
@@ -43,7 +31,7 @@ export type MultiSelectProps<T extends SelectOption = SelectOption> = {
   /** callback function to be called when the scroll reaches the end of the list */
   onScrollToEnd?: OnscrollToEndOpts['onScrollToEnd'];
   onclearInputField?: () => void;
-} & Omit<InputProps, 'value' | 'size' | 'onchange'>;
+} & Omit<InputProps, 'value' | 'size' | 'onchange'> & Omit<HTMLSelectAttributes, 'size' | 'onchange' | 'onblur'>;
 
 /** SIZE_REDUCE_MAP is useful you want your input and badge items to reasonably fit your multi select component */
 export const SIZE_REDUCE_MAP: Record<SocialSize | 'xxs', SocialSize | 'xxs'> = {

@@ -5,15 +5,14 @@
 		FilterItemValue,
 		FilterOperator,
 		FilterProps,
-		FilterResult
+		FilterResult,
 	} from './types';
 	import { FilterCog } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { Popover } from '$lib/components/ui/Popover';
 	import { afterNavigate, goto } from '$app/navigation';
-	import { numberRegex, parseUrlSearchParams } from '$lib/utils/utils';
+	import { parseUrlSearchParams } from '$lib/utils/utils';
 	import { page } from '$app/state';
-	import { SvelteMap } from 'svelte/reactivity';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 
 	type Props = {
@@ -29,18 +28,23 @@
 			acc[key] = true;
 			return acc;
 		},
-		{} as Record<keyof T, boolean>
+		{} as Record<keyof T, boolean>,
 	);
 
 	let isFilterOpening = $state(false);
-
-	let filters = $state<FilterConditions<T>>(new SvelteMap());
+	/**
+	 * filter state for the filter button
+	 */
+	let filters = $state<FilterConditions<T>>({} as FilterConditions<T>);
+	let filtersCount = $derived(Object.keys(filters).length);
 
 	const handleApply = async (flts: FilterConditions<T>) => {
+		if (!Object.keys(flts)) return;
+
 		const params = new URLSearchParams();
 
-		for (const key of flts.keys()) {
-			const filterOpt = flts.get(key);
+		for (const key of Object.keys(flts)) {
+			const filterOpt = flts[key as keyof T];
 			if (!filterOpt) continue;
 
 			if (filterOpt.operator === 'lte') {
@@ -65,8 +69,8 @@
 		scrollTo({ top: 0, behavior: 'smooth' });
 
 		const queryParams = parseUrlSearchParams(page.url);
-		const filtersResult: FilterResult<T> = {};
-		const newFilters: FilterConditions<T> = new SvelteMap();
+		const filtersResult = {} as FilterResult<T>;
+		const newFilters = {} as FilterConditions<T>;
 
 		for (const key in queryParams) {
 			if (!FILTER_KEYS_MAP[key as keyof T]) continue;
@@ -80,14 +84,14 @@
 
 				const conditions: Partial<Record<FilterOperator, FilterItemValue>> = {
 					lte: value,
-					gte: value
+					gte: value,
 				};
 
-				filtersResult[key as keyof T] = conditions;
-				newFilters.set(key as keyof T, {
+				filtersResult[key] = conditions;
+				newFilters[key as keyof T] = {
 					operator: 'eq',
-					value
-				});
+					value,
+				};
 				continue;
 			}
 
@@ -102,28 +106,28 @@
 				if (gte !== 'null' && lte !== 'null') {
 					filtersResult[key as keyof T] = {
 						gte,
-						lte
+						lte,
 					};
-					newFilters.set(key as keyof T, {
+					newFilters[key as keyof T] = {
 						operator: 'range',
-						value: [gte, lte]
-					});
+						value: [gte, lte],
+					};
 				} else if (gte !== 'null') {
 					filtersResult[key as keyof T] = {
-						gte
+						gte,
 					};
-					newFilters.set(key as keyof T, {
+					newFilters[key as keyof T] = {
 						operator: 'gte',
-						value: gte
-					});
+						value: gte,
+					};
 				} else if (lte !== 'null') {
 					filtersResult[key as keyof T] = {
-						lte
+						lte,
 					};
-					newFilters.set(key as keyof T, {
+					newFilters[key as keyof T] = {
 						operator: 'lte',
-						value: lte
-					});
+						value: lte,
+					};
 				}
 			}
 		}
@@ -135,8 +139,8 @@
 
 {#snippet trigger(opts: DropdownTriggerInterface)}
 	<Button variant="outline" size="sm" {...opts} class="indicator" endIcon={FilterCog}>
-		{#if filters.size}
-			<span class="indicator-item badge badge-xs text-white! bg-blue-500">{filters.size}</span>
+		{#if filtersCount}
+			<span class="indicator-item badge badge-xs text-white! bg-blue-500">{filtersCount}</span>
 		{/if}
 		Filters
 	</Button>

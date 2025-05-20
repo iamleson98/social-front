@@ -1,17 +1,28 @@
 <script lang="ts">
+	import { CATEGORIES_LIST_QUERY_STORE } from '$lib/api';
 	import { PRODUCT_TYPES_QUERY } from '$lib/api/admin/product';
+	import { COLLECTIONS_QUERY } from '$lib/api/collections';
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import { FilterButton } from '$lib/components/common/filter-box';
-	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box/types';
+	import type {
+		FilterComponentType,
+		FilterItemValue,
+		FilterProps,
+	} from '$lib/components/common/filter-box/types';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
-	import type { ProductFilterInput, QueryProductTypesArgs } from '$lib/gql/graphql';
+	import type {
+		ProductFilterInput,
+		QueryCategoriesArgs,
+		QueryCollectionsArgs,
+		QueryProductTypesArgs,
+	} from '$lib/gql/graphql';
 
 	const FILTER_OPTIONS: FilterProps<ProductFilterInput>[] = [
 		{
 			label: 'Price',
 			key: 'price',
-			mustPairWith: 'channel',
+			mustPairWith: 'channel', //
 			operations: [
 				{
 					operator: 'eq',
@@ -104,8 +115,132 @@
 				},
 			],
 		},
+		{
+			label: 'Collection',
+			key: 'collections',
+			operations: [
+				{
+					operator: 'oneOf',
+					component: collectionOneOf,
+				},
+			],
+		},
+		{
+			label: 'Category',
+			key: 'categories',
+			operations: [
+				{
+					operator: 'eq',
+					component: categoryIs,
+				},
+				{
+					operator: 'oneOf',
+					component: categoryOneOf,
+				},
+			],
+		},
+		{
+			label: 'Product type',
+			key: 'productTypes',
+			operations: [
+				{
+					operator: 'eq',
+					component: productTypeIs,
+				},
+				{
+					operator: 'oneOf',
+					component: productTypeOneOf,
+				},
+			],
+		},
 	];
 </script>
+
+{#snippet categoryIs({ onValue, initialValue = '' }: FilterComponentType)}
+	<GraphqlPaginableSelect
+		placeholder="Enter category"
+		query={CATEGORIES_LIST_QUERY_STORE}
+		resultKey="categories"
+		optionValueKey="id"
+		optionLabelKey="name"
+		requestPolicy="cache-and-network"
+		variables={{ first: 20, filter: { search: '' } } as QueryCategoriesArgs}
+		variableSearchQueryPath="filter.search"
+		value={initialValue}
+		onchange={(opt) => opt && onValue((opt as SelectOption).value)}
+		size="xs"
+	/>
+{/snippet}
+
+{#snippet categoryOneOf({ onValue, initialValue = [] }: FilterComponentType)}
+	<GraphqlPaginableSelect
+		placeholder="Enter category"
+		query={CATEGORIES_LIST_QUERY_STORE}
+		resultKey="categories"
+		optionValueKey="id"
+		optionLabelKey="name"
+		requestPolicy="cache-and-network"
+		variables={{ first: 20, filter: { search: '' } } as QueryCategoriesArgs}
+		variableSearchQueryPath="filter.search"
+		value={initialValue}
+		onchange={(opt) =>
+			opt && onValue((opt as SelectOption[]).map((item) => item.value) as FilterItemValue)}
+		multiple
+		size="xs"
+	/>
+{/snippet}
+
+{#snippet productTypeIs({ onValue, initialValue = '' }: FilterComponentType)}
+	<GraphqlPaginableSelect
+		placeholder="Enter product type"
+		query={PRODUCT_TYPES_QUERY}
+		resultKey="productTypes"
+		optionValueKey="id"
+		optionLabelKey="name"
+		requestPolicy="cache-and-network"
+		variables={{ first: 20, filter: { search: '' } } as QueryProductTypesArgs}
+		variableSearchQueryPath="filter.search"
+		value={initialValue}
+		onchange={(opt) => opt && onValue((opt as SelectOption).value)}
+		size="xs"
+	/>
+{/snippet}
+
+{#snippet productTypeOneOf({ onValue, initialValue = [] }: FilterComponentType)}
+	<GraphqlPaginableSelect
+		placeholder="Enter product type"
+		query={PRODUCT_TYPES_QUERY}
+		resultKey="productTypes"
+		optionValueKey="id"
+		optionLabelKey="name"
+		requestPolicy="cache-and-network"
+		variables={{ first: 20, filter: { search: '' } } as QueryProductTypesArgs}
+		variableSearchQueryPath="filter.search"
+		value={initialValue}
+		onchange={(opt) =>
+			opt && onValue((opt as SelectOption[]).map((item) => item.value) as FilterItemValue)}
+		multiple
+		size="xs"
+	/>
+{/snippet}
+
+{#snippet collectionOneOf({ onValue, initialValue = [] }: FilterComponentType)}
+	<GraphqlPaginableSelect
+		placeholder="Enter collection"
+		query={COLLECTIONS_QUERY}
+		resultKey="collections"
+		optionValueKey="id"
+		optionLabelKey="name"
+		requestPolicy="cache-and-network"
+		variables={{ first: 20, filter: { search: '' } } as QueryCollectionsArgs}
+		variableSearchQueryPath="filter.search"
+		value={initialValue}
+		onchange={(opt) =>
+			opt && onValue((opt as SelectOption[]).map((item) => item.value) as FilterItemValue)}
+		multiple
+		size="xs"
+	/>
+{/snippet}
 
 {#snippet productTypeCmp({ onValue, initialValue = '' }: FilterComponentType)}
 	<GraphqlPaginableSelect
@@ -159,10 +294,6 @@
 		})}
 	</div>
 {/snippet}
-
-<!-- {#snippet categoryIs({ onValue }: FilterComponentType)}
-	<Select options={[]} size="xs" />
-{/snippet} -->
 
 {#snippet channelComp({ onValue, initialValue = '' }: FilterComponentType)}
 	<ChannelSelect

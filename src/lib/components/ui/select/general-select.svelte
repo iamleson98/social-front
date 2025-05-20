@@ -10,7 +10,7 @@
 		SELECT_CLASSES,
 		type SelectItemprops,
 		type SelectOption,
-		type MultiSelectProps,
+		type SelectProps,
 		SIZE_REDUCE_MAP,
 		type Primitive,
 	} from './types';
@@ -18,7 +18,7 @@
 	import { INPUT_CLASSES } from '$lib/components/ui/Input/input.types';
 	import { Badge } from '$lib/components/ui/badge';
 	import { INPUT_BUTTON_SIZE_MAP } from '../Button';
-	import { noop, omit } from 'es-toolkit';
+	import { noop } from 'es-toolkit';
 	import { scrollToEnd } from '$lib/actions/scroll-end';
 
 	let {
@@ -37,7 +37,7 @@
 		onScrollToEnd = noop,
 		onclearInputField,
 		...rest
-	}: MultiSelectProps = $props();
+	}: SelectProps = $props();
 
 	if (typeof maxDisplay === 'number' && maxDisplay <= 0) throw new Error('maxDisplay must be > 0');
 
@@ -50,7 +50,23 @@
 	let input = $state<HTMLInputElement>();
 	let optionRefs: HTMLElement[] = [];
 	/** mapping for selected options */
-	let selectMapper = $state.raw<Record<Primitive, SelectOption>>({});
+	let copySelectMapper = {} as Record<Primitive, SelectOption>;
+
+	let selectMapper = $derived.by(() => {
+		let res: Record<Primitive, SelectOption> = { ...copySelectMapper };
+
+		if (multiple && Array.isArray(value)) {
+			for (const val of value) {
+				if (!res[val]) delete res[val];
+				else res[val] = options.find((opt) => opt.value === val)!;
+			}
+		} else if (value) {
+			res = { [value]: options.find((opt) => opt.value === value)! };
+		}
+
+		copySelectMapper = { ...res };
+		return res;
+	});
 
 	/** display text for input */
 	let inputDisplayText = $derived.by(() => {
@@ -74,13 +90,11 @@
 	};
 
 	const onOutclick = (evt: any) => {
-		// searchQuery = '';
 		toggleDropdown(false);
 		rest.onblur?.(evt);
 	};
 
 	const handleClick = () => {
-		// searchQuery = '';
 		toggleDropdown(true);
 	};
 
@@ -99,7 +113,6 @@
 			// in multiple query we only clear the value and selectMapper
 			// the selected values will be kept
 			value = undefined;
-			selectMapper = {};
 		}
 		onclearInputField?.();
 	};
@@ -114,13 +127,10 @@
 			if (!(value as Primitive[]).includes(option.value)) {
 				value = (value as Primitive[]).concat(option.value);
 			}
-			selectMapper = { ...selectMapper, [option.value]: option };
 		} else {
 			value = option.value;
-			selectMapper = { [option.value]: option };
 		}
 
-		// searchQuery = '';
 		if (!multiple) toggleDropdown(false);
 		onchange?.(multiple ? Object.values(selectMapper) : option);
 	};
@@ -130,10 +140,8 @@
 
 		if (multiple && Array.isArray(value)) {
 			value = value.filter((opt) => opt !== option.value);
-			selectMapper = omit(selectMapper, [option.value]);
 		} else {
 			value = undefined;
-			selectMapper = {};
 		}
 
 		onchange?.(multiple ? Object.values(selectMapper) : undefined);

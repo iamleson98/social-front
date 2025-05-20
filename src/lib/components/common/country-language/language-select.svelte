@@ -6,7 +6,7 @@
 	import {
 		Select,
 		SelectSkeleton,
-		type MultiSelectProps,
+		type SelectProps,
 		type SelectOption,
 	} from '$lib/components/ui/select';
 	import { LanguageCodeEnum, type Query } from '$lib/gql/graphql';
@@ -20,7 +20,7 @@
 		autoDefault,
 		size = 'md',
 		...rest
-	}: Omit<MultiSelectProps, 'options'> & { autoDefault?: boolean } = $props();
+	}: Omit<SelectProps, 'options'> & { autoDefault?: boolean } = $props();
 
 	const shopStore = operationStore<Pick<Query, 'shop'>>({
 		kind: 'query',

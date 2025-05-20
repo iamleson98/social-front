@@ -42,7 +42,7 @@
 		console.log(state);
 	};
 
-	let value = $state<string[]>([]);
+	let value = $state<string>();
 </script>
 
 <div>lab</div>
@@ -85,7 +85,7 @@
 	size="sm"
 	variableSearchQueryPath="search"
 	bind:value
-	multiple
+	onchange={console.log}
 />
 
 <!-- <li class="loading loading-spinner loading-xs"></li> -->
@@ -114,7 +114,8 @@
 		size="xs"
 		required
 		label="Select"
-		multiple
+		bind:value
+		onchange={console.log}
 	/>
 </div>
 

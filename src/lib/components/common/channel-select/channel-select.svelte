@@ -2,10 +2,10 @@
 	import { CHANNELS_QUERY } from '$lib/api/channels';
 	import { operationStore } from '$lib/api/operation';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { Select, SelectSkeleton, type MultiSelectProps } from '$lib/components/ui/select';
+	import { Select, SelectSkeleton, type SelectProps } from '$lib/components/ui/select';
 	import type { Query } from '$lib/gql/graphql';
 
-	let { value = $bindable(), size = 'md', ...rest }: Omit<MultiSelectProps, 'options'> = $props();
+	let { value = $bindable(), size = 'md', ...rest }: Omit<SelectProps, 'options'> = $props();
 
 	const channelStore = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',

@@ -29,7 +29,7 @@
 </script>
 
 <Accordion {...rest}>
-	<ul class="list-none text-sm tablet:text-xs">
+	<ul class="list-none text-sm tablet:text-xs" role="menu">
 		{#each items.slice(0, numOfItemsToShow) as item, idx (idx)}
 			<li class="py-1 break-all">
 				{@render child(item)}
@@ -41,13 +41,12 @@
 					<span class="loading loading-spinner loading-xs"></span>
 				</li>
 			{:else}
-				<!-- svelte-ignore a11y_no_noninteractive_element_to_interactive_role -->
-				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<li
 					class="py-1 cursor-pointer flex items-center space-x-2 text-xs"
-					role="button"
+					role="menuitem"
 					tabindex="0"
 					onclick={handleShowMore}
+					onkeyup={(evt) => evt.key === 'Enter' && handleShowMore()}
 				>
 					<span>{$tranFunc('common.more')}</span>
 					<Icon icon={ChevronDown} />
