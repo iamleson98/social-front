@@ -26,6 +26,8 @@
 
 	let activeFilters = $state.raw<FilterConditions<T>>(filters);
 
+	$inspect(activeFilters);
+
 	let availableFilters = $derived.by(() =>
 		options.map<SelectOption>(({ key, label }) => ({
 			value: key as Primitive,
@@ -81,13 +83,16 @@
 		activeFilters = newFilters;
 	};
 
-	const setFilterItemValue = (key: keyof T, operator: FilterOperator, value?: FilterItemValue) => {
+	const setFilterItemValue = (key: keyof T, operator?: FilterOperator, value?: FilterItemValue) => {
+		debugger;
 		activeFilters = {
 			...activeFilters,
-			[key]: {
-				operator,
-				value,
-			},
+			[key]: operator
+				? {
+						operator,
+						value,
+					}
+				: {},
 		};
 	};
 </script>
@@ -113,8 +118,9 @@
 						class="flex-2"
 						value={key}
 						onchange={(vl) =>
-							vl && handleItemKeyChange(key as keyof T, (vl as SelectOption).value as keyof T)}
+							handleItemKeyChange(key as keyof T, (vl as SelectOption)?.value as keyof T)}
 						placeholder="Select filter"
+						disabled={disableDelBtn}
 					/>
 
 					<div class="flex-4 flex items-center gap-1">
@@ -130,9 +136,9 @@
 								size="xs"
 								class="flex-1"
 								value={filterOpt.operator}
-								onchange={(vl) =>
-									vl &&
-									setFilterItemValue(key as keyof T, (vl as SelectOption).value as FilterOperator)}
+								onchange={(vl) => {
+									setFilterItemValue(key as keyof T, (vl as SelectOption)?.value as FilterOperator);
+								}}
 							/>
 							{#if filterOpt.operator}
 								{@const { component } = operations.find(
@@ -140,12 +146,14 @@
 								)!}
 								<div class="flex-1">
 									{@render component({
-										onValue: (value) =>
+										onValue: (value) => {
+											console.log(value)
 											setFilterItemValue(
 												key as keyof T,
 												filterOpt.operator as FilterOperator,
 												value,
-											),
+											);
+										},
 										initialValue: filterOpt.value,
 									})}
 								</div>

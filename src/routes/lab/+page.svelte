@@ -43,6 +43,7 @@
 	};
 
 	let value = $state<string[]>([]);
+	let prds = $state([]);
 </script>
 
 <div>lab</div>
@@ -84,9 +85,9 @@
 	label="Products"
 	size="sm"
 	variableSearchQueryPath="search"
-	bind:value
+	bind:value={prds}
 	onchange={console.log}
-	multiple
+	multiple={false}
 />
 
 <!-- <li class="loading loading-spinner loading-xs"></li> -->

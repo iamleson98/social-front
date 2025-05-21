@@ -31,7 +31,7 @@ export function debounceInput(node: HTMLInputElement | HTMLTextAreaElement | HTM
   }
 
   const { unsubscribe: destroy } = pipe(
-    fromDomEvent(node, 'keyup'),
+    fromDomEvent(node, 'input'),
     debounce(() => opts.debounceTime || DEBOUNCE_INPUT_TIME),
     subscribe(opts.onInput),
   );

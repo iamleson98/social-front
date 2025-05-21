@@ -167,7 +167,7 @@
 		variables={{ first: 20, filter: { search: '' } } as QueryCategoriesArgs}
 		variableSearchQueryPath="filter.search"
 		value={initialValue}
-		onchange={(opt) => opt && onValue((opt as SelectOption).value)}
+		onchange={(opt) => onValue((opt as SelectOption).value)}
 		size="xs"
 	/>
 {/snippet}
@@ -184,7 +184,7 @@
 		variableSearchQueryPath="filter.search"
 		value={initialValue}
 		onchange={(opt) =>
-			opt && onValue((opt as SelectOption[]).map((item) => item.value) as FilterItemValue)}
+			onValue((opt as SelectOption[]).map((item) => item.value) as FilterItemValue)}
 		multiple
 		size="xs"
 	/>
@@ -201,7 +201,7 @@
 		variables={{ first: 20, filter: { search: '' } } as QueryProductTypesArgs}
 		variableSearchQueryPath="filter.search"
 		value={initialValue}
-		onchange={(opt) => opt && onValue((opt as SelectOption).value)}
+		onchange={(opt) => onValue((opt as SelectOption).value)}
 		size="xs"
 	/>
 {/snippet}
@@ -218,7 +218,7 @@
 		variableSearchQueryPath="filter.search"
 		value={initialValue}
 		onchange={(opt) =>
-			opt && onValue((opt as SelectOption[]).map((item) => item.value) as FilterItemValue)}
+			onValue((opt as SelectOption[]).map((item) => item.value) as FilterItemValue)}
 		multiple
 		size="xs"
 	/>
@@ -236,7 +236,7 @@
 		variableSearchQueryPath="filter.search"
 		value={initialValue}
 		onchange={(opt) =>
-			opt && onValue((opt as SelectOption[]).map((item) => item.value) as FilterItemValue)}
+			onValue((opt as SelectOption[]).map((item) => item.value) as FilterItemValue)}
 		multiple
 		size="xs"
 	/>
@@ -255,7 +255,7 @@
 		optionValueKey="id"
 		optionLabelKey="name"
 		value={initialValue as string}
-		onchange={(value) => value && onValue((value as SelectOption)?.value)}
+		onchange={(value) => onValue((value as SelectOption)?.value)}
 		size="xs"
 	/>
 {/snippet}
@@ -299,7 +299,7 @@
 	<ChannelSelect
 		size="xs"
 		value={initialValue as string}
-		onchange={(opt) => opt && onValue((opt as SelectOption)?.value)}
+		onchange={(opt) => onValue((opt as SelectOption)?.value)}
 	/>
 {/snippet}
 

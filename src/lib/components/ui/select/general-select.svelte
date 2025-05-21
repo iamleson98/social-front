@@ -18,7 +18,7 @@
 	import { INPUT_CLASSES } from '$lib/components/ui/Input/input.types';
 	import { Badge } from '$lib/components/ui/badge';
 	import { INPUT_BUTTON_SIZE_MAP } from '../Button';
-	import { noop } from 'es-toolkit';
+	import { difference, noop, omit } from 'es-toolkit';
 	import { scrollToEnd } from '$lib/actions/scroll-end';
 
 	let {
@@ -34,6 +34,7 @@
 		inputDebounceOption,
 		multiple = false,
 		showLoadingMore,
+		disabled,
 		onScrollToEnd = noop,
 		onclearInputField,
 		...rest
@@ -52,31 +53,39 @@
 	/** mapping for selected options */
 	let selectMapper: Record<Primitive, SelectOption> = $state.raw({});
 
-	const reCalculateSelectMapper = async (action: '+' | '-', option: SelectOption) => {
+	const reCalculateSelectMapper = async () => {
 		if (!value) {
 			selectMapper = {};
 			return;
 		}
 
 		if (multiple && Array.isArray(value)) {
-			const newMapper = { ...selectMapper };
+			let newMapper = { ...selectMapper };
 
-			if (action === '+') newMapper[option.value] = option;
-			else delete newMapper[option.value];
+			const existingKeys = Object.keys(selectMapper);
+			newMapper = omit(newMapper, difference(existingKeys, value)); // remove items that not selected
+
+			for (const val of value) {
+				if (!newMapper[val]) newMapper[val] = options.find((opt) => opt.value === val)!;
+			}
 
 			selectMapper = newMapper;
 			return;
 		}
 
-		if (action === '+') {
-			selectMapper = { [option.value]: option };
+		if (value) {
+			selectMapper = { [value]: options.find((opt) => opt.value === value)! };
 		} else selectMapper = {};
 	};
+
+	$effect(() => {
+		reCalculateSelectMapper();
+	});
 
 	/** display text for input */
 	let inputDisplayText = $derived.by(() => {
 		if (multiple) return searchQuery;
-		return typeof value !== undefined ? selectMapper[value as Primitive]?.label : undefined;
+		return value !== undefined ? selectMapper[value as Primitive]?.label : undefined;
 	});
 
 	/** list of options that match search query */
@@ -110,7 +119,9 @@
 
 	const toggleDropdown = (open: boolean) => (openSelect = open);
 
-	const onClear = () => {
+	const onClear = async () => {
+		if (disabled) return;
+
 		input?.focus();
 		searchQuery = '';
 
@@ -118,6 +129,8 @@
 			// in multiple query we only clear the value and selectMapper
 			// the selected values will be kept
 			value = undefined;
+			selectMapper = {};
+			onchange?.(undefined);
 		}
 		onclearInputField?.();
 	};
@@ -137,12 +150,12 @@
 		}
 
 		if (!multiple) toggleDropdown(false);
-		await reCalculateSelectMapper('+', option);
+		await reCalculateSelectMapper();
 		onchange?.(multiple ? Object.values(selectMapper) : option);
 	};
 
 	const handleDeselectOption = async (option: SelectOption) => {
-		if (rest.disabled) return;
+		if (disabled) return;
 
 		if (multiple && Array.isArray(value)) {
 			value = value.filter((opt) => opt !== option.value);
@@ -150,7 +163,7 @@
 			value = undefined;
 		}
 
-		await reCalculateSelectMapper('-', option);
+		await reCalculateSelectMapper();
 		onchange?.(multiple ? Object.values(selectMapper) : undefined);
 	};
 </script>
@@ -186,8 +199,8 @@
 			tabindex="0"
 			onkeydown={(evt) => evt.key === 'Enter' && onClear()}
 			class={classNames({
-				'cursor-pointer': !rest.disabled,
-				'cursor-not-allowed!': !!rest.disabled,
+				'cursor-pointer': !disabled,
+				'cursor-not-allowed!': !!disabled,
 			})}
 			title="Clear"
 			aria-label="Clear"
@@ -230,7 +243,7 @@
 						variant="light"
 						size={SIZE_REDUCE_MAP[size]}
 						onDismiss={() => handleDeselectOption(selectMapper[option])}
-						disabled={rest.disabled}
+						disabled={disabled}
 					/>
 				{/each}
 				{#if maxDisplay && value.length > maxDisplay}
@@ -256,6 +269,7 @@
 				onfocus={handleFocus}
 				value={inputDisplayText}
 				type="text"
+				{disabled}
 				role="combobox"
 				inputDebounceOption={{
 					onInput,
