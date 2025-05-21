@@ -1,6 +1,13 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { BuildingWarehouse, Category, Dimension, FolderCog, Icon } from '$lib/components/icons';
+	import {
+		BuildingWarehouse,
+		Category,
+		Dimension,
+		Discount,
+		FolderCog,
+		Icon,
+	} from '$lib/components/icons';
 	import { Globe, UsersGroup } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { AppRoute } from '$lib/utils';
@@ -10,44 +17,50 @@
 			title: $tranFunc('product.channel'),
 			description: $tranFunc('settings.channelLinkHelpTxt'),
 			href: AppRoute.SETTINGS_CONFIGS_CHANNELS(),
-			icon: Globe
+			icon: Globe,
 		},
 		{
 			title: $tranFunc('settings.staffs'),
 			description: $tranFunc('settings.staffLinkHelpTxt'),
 			href: AppRoute.SETTINGS_CONFIGS_STAFFS(),
-			icon: UsersGroup
+			icon: UsersGroup,
 		},
 		{
 			title: 'Users',
 			description: 'Users of shop',
 			href: AppRoute.SETTINGS_CONFIGS_USERS(),
-			icon: UsersGroup
+			icon: UsersGroup,
 		},
 		{
 			title: 'Categories',
 			description: 'Categories of shop',
 			href: AppRoute.SETTINGS_CONFIGS_CATEGORIES(),
-			icon: Category
+			icon: Category,
 		},
 		{
 			title: 'Collections',
 			description: 'Collections of shop',
 			href: AppRoute.SETTINGS_CONFIGS_COLLECTIONS(),
-			icon: FolderCog
+			icon: FolderCog,
 		},
 		{
 			title: 'Warehouses',
 			description: 'Warehouses of shop',
 			href: AppRoute.SETTINGS_CONFIGS_WAREHOUSES(),
-			icon: BuildingWarehouse
+			icon: BuildingWarehouse,
 		},
 		{
 			title: 'Attributes',
 			description: 'Attributes of shop',
 			href: AppRoute.SETTINGS_CONFIGS_ATTRIBUTES(),
-			icon: Dimension
-		}
+			icon: Dimension,
+		},
+		{
+			title: 'Giftcards',
+			description: 'Giftcards of shop',
+			href: AppRoute.SETTINGS_CONFIGS_GIFTCARDS(),
+			icon: Discount,
+		},
 	]);
 </script>
 

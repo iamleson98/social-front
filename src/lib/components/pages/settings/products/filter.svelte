@@ -43,6 +43,30 @@
 			],
 		},
 		{
+			label: 'Category',
+			key: 'categories',
+			operations: [
+				{
+					operator: 'eq',
+					component: categoryIs,
+				},
+				{
+					operator: 'oneOf',
+					component: categoryOneOf,
+				},
+			],
+		},
+		{
+			label: 'Collection',
+			key: 'collections',
+			operations: [
+				{
+					operator: 'oneOf',
+					component: collectionOneOf,
+				},
+			],
+		},
+		{
 			label: 'Channel',
 			key: 'channel',
 			operations: [
@@ -53,8 +77,33 @@
 			],
 		},
 		{
+			label: 'Product type',
+			key: 'productTypes',
+			operations: [
+				{
+					operator: 'eq',
+					component: productTypeIs,
+				},
+				{
+					operator: 'oneOf',
+					component: productTypeOneOf,
+				},
+			],
+		},
+		{
 			label: 'Is available',
 			key: 'isAvailable',
+			mustPairWith: 'channel',
+			operations: [
+				{
+					operator: 'eq',
+					component: yesNo,
+				},
+			],
+		},
+		{
+			label: 'Is published',
+			key: 'isPublished',
 			mustPairWith: 'channel',
 			operations: [
 				{
@@ -94,65 +143,6 @@
 				},
 			],
 		},
-		{
-			label: 'Is published',
-			key: 'isPublished',
-			mustPairWith: 'channel',
-			operations: [
-				{
-					operator: 'eq',
-					component: yesNo,
-				},
-			],
-		},
-		{
-			label: 'Product type',
-			key: 'productTypes',
-			operations: [
-				{
-					operator: 'eq',
-					component: productTypeCmp,
-				},
-			],
-		},
-		{
-			label: 'Collection',
-			key: 'collections',
-			operations: [
-				{
-					operator: 'oneOf',
-					component: collectionOneOf,
-				},
-			],
-		},
-		{
-			label: 'Category',
-			key: 'categories',
-			operations: [
-				{
-					operator: 'eq',
-					component: categoryIs,
-				},
-				{
-					operator: 'oneOf',
-					component: categoryOneOf,
-				},
-			],
-		},
-		{
-			label: 'Product type',
-			key: 'productTypes',
-			operations: [
-				{
-					operator: 'eq',
-					component: productTypeIs,
-				},
-				{
-					operator: 'oneOf',
-					component: productTypeOneOf,
-				},
-			],
-		},
 	];
 </script>
 
@@ -167,7 +157,7 @@
 		variables={{ first: 20, filter: { search: '' } } as QueryCategoriesArgs}
 		variableSearchQueryPath="filter.search"
 		value={initialValue}
-		onchange={(opt) => onValue((opt as SelectOption).value)}
+		onchange={(opt) => onValue((opt as SelectOption)?.value)}
 		size="xs"
 	/>
 {/snippet}
@@ -238,24 +228,6 @@
 		onchange={(opt) =>
 			onValue((opt as SelectOption[]).map((item) => item.value) as FilterItemValue)}
 		multiple
-		size="xs"
-	/>
-{/snippet}
-
-{#snippet productTypeCmp({ onValue, initialValue = '' }: FilterComponentType)}
-	<GraphqlPaginableSelect
-		query={PRODUCT_TYPES_QUERY}
-		variables={{
-			first: 100,
-			filter: {
-				search: '',
-			},
-		} as QueryProductTypesArgs}
-		resultKey="productTypes"
-		optionValueKey="id"
-		optionLabelKey="name"
-		value={initialValue as string}
-		onchange={(value) => onValue((value as SelectOption)?.value)}
 		size="xs"
 	/>
 {/snippet}

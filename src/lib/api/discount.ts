@@ -17,7 +17,7 @@ export const PROMOTIONS_QUERY = gql`
       sortBy: $sortBy
       where: $where
     ) {
-      totalCount
+      # totalCount
       edges {
         cursor
         node {

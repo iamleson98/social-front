@@ -8,6 +8,7 @@
 	import type { QueryProductsArgs } from '$lib/gql/graphql';
 	import { Input } from '$lib/components/ui/Input';
 	import GeneralSelect from '$lib/components/ui/select/general-select.svelte';
+	import ShopCurrenciesSelect from '$lib/components/common/shop-currencies-select.svelte';
 	// import { Input } from '$lib/components/ui/Input';
 
 	// onMount(async () => {
@@ -44,6 +45,7 @@
 
 	let value = $state<string[]>([]);
 	let prds = $state([]);
+	let currency = $state<string>();
 </script>
 
 <div>lab</div>
@@ -65,7 +67,7 @@
 	</tbody>
 </table>
 
-<SkeletonContainer>
+<!-- <SkeletonContainer>
 	<Skeleton class="w-2 h-8" />
 </SkeletonContainer>
 
@@ -88,12 +90,12 @@
 	bind:value={prds}
 	onchange={console.log}
 	multiple={false}
-/>
+/> -->
 
 <!-- <li class="loading loading-spinner loading-xs"></li> -->
 
-<div class="flex items-start gap-2">
-	<!-- <MultiSelect
+<!-- <div class="flex items-start gap-2">
+	<MultiSelect
 		options={[
 			{ label: 'Option 1', value: '1' },
 			{ label: 'Option 2', value: '2' },
@@ -104,7 +106,7 @@
 		label="MultiSelect"
 		variant="error"
 		subText="subText"
-	/> -->
+	/>
 	<Input size="xs" label="Input" />
 
 	<Select
@@ -120,7 +122,7 @@
 		onchange={console.log}
 		multiple
 	/>
-</div>
+</div> -->
 
 <!-- <GeneralSelect
 	size="sm"
@@ -139,3 +141,5 @@
 	]}
 	showLoadingMore
 /> -->
+
+<ShopCurrenciesSelect bind:value={currency} size="sm" />

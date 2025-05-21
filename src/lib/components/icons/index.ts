@@ -104,6 +104,8 @@ export {
   TablerGripVertical as GripVertical,
   TablerArrowMoveLeft as ArrowMoveLeft,
   TablerCircleArrowLeft as CircleArrowLeft,
+  TablerDiscount as Discount,
+  TablerAccessPoint as AccessPoint,
 } from './consts';
 
 export { default as Icon } from './icon.svelte';

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { QUERY_CUSTOMERS } from '$lib/api/admin/users';
+	import { CUSTOMER_LIST_QUERY } from '$lib/api/admin/users';
 	import { Badge } from '$lib/components/ui/badge';
 	import { type TableColumnProps } from '$lib/components/ui/Table';
 	import {
@@ -125,7 +125,7 @@
 </div>
 
 <GraphqlPaginableTable
-	query={QUERY_CUSTOMERS}
+	query={CUSTOMER_LIST_QUERY}
 	bind:variables={filterVariables}
 	resultKey="customers"
 	columns={USER_TABLE_COLUMNS}

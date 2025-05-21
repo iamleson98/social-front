@@ -1,7 +1,7 @@
 import { gql } from "@urql/core";
 
 export const SHOP_QUERY = gql`
-query Shop {
+query Shop($isStaffUser: Boolean = false) {
   shop {
     id
     countries {
@@ -12,5 +12,8 @@ query Shop {
       code
       language
     }
+    
+    # NOTE: this field requires authenticated staff user, so we must check for it
+    channelCurrencies @include(if: $isStaffUser)
   }
 }`

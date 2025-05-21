@@ -11,7 +11,7 @@
 		type RowOptions,
 		type SortState,
 		type TableColumnProps,
-		type TableProps
+		type TableProps,
 	} from './types';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { draggable, droppable, type DragDropState } from '@thisux/sveltednd';
@@ -31,7 +31,7 @@
 		sortMultiple = false,
 		defaultSortState = {} as SortState<K>,
 		disabled = false,
-		onDragEnd
+		onDragEnd,
 	}: TableProps<T, K> = $props();
 
 	if (columns.some((col) => col.sortable && !col.key)) {
@@ -99,7 +99,7 @@
 					? {
 							onclick: () => handleSortClick(column.key!),
 							onkeyup: (evt: KeyboardEvent) => evt.key === 'Enter' && handleSortClick(column.key!),
-							disabled
+							disabled,
 						}
 					: {}}
 				<th class="p-[unset]!">
@@ -110,16 +110,16 @@
 					>
 						<div class="flex items-center gap-1">
 							{#if column?.startIcon}
-								<Icon icon={column.startIcon} />
+								<Icon icon={column.startIcon} size="sm" />
 							{/if}
 							<span>{column.title}</span>
 							{#if column?.endIcon}
-								<Icon icon={column.endIcon} />
+								<Icon icon={column.endIcon} size="sm" />
 							{/if}
 						</div>
 						{#if column?.sortable}
 							<span>
-								<Icon icon={SortIconsMap[sortState[column.key!]]} />
+								<Icon icon={SortIconsMap[sortState[column.key!]]} size="sm" />
 							</span>
 						{/if}
 					</svelte:element>
@@ -133,12 +133,12 @@
 				<tr
 					use:droppable={{
 						container: idx.toString(),
-						callbacks: { onDrop: handleDrop }
+						callbacks: { onDrop: handleDrop },
 					}}
 					use:draggable={{
 						container: idx.toString(),
 						dragData: idx,
-						interactive: ['[data-interactive]'] // within cell definition, add `data-interactive` to the element if you want to exclude it from draggable
+						interactive: ['[data-interactive]'], // within cell definition, add `data-interactive` to the element if you want to exclude it from draggable
 					}}
 					animate:flip={{ duration: 200 }}
 					in:fade={{ duration: 150 }}
@@ -175,7 +175,7 @@
 {#if pagination}
 	{@const PAGIN_OPTIONS = ROW_OPTIONS.map<MenuItemProps>((num) => ({
 		children: `${num}`,
-		onclick: () => handleRowsPerPageChange(num)
+		onclick: () => handleRowsPerPageChange(num),
 	}))}
 	<div class="mt-4 flex items-center justify-between">
 		<div>

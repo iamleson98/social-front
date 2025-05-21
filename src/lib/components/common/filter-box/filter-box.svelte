@@ -26,8 +26,6 @@
 
 	let activeFilters = $state.raw<FilterConditions<T>>(filters);
 
-	$inspect(activeFilters);
-
 	let availableFilters = $derived.by(() =>
 		options.map<SelectOption>(({ key, label }) => ({
 			value: key as Primitive,
@@ -146,7 +144,6 @@
 								<div class="flex-1">
 									{@render component({
 										onValue: (value) => {
-											console.log(value)
 											setFilterItemValue(
 												key as keyof T,
 												filterOpt.operator as FilterOperator,

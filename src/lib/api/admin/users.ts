@@ -1,6 +1,6 @@
 import { gql } from "@urql/core";
 
-export const QUERY_CUSTOMERS = gql`
+export const CUSTOMER_LIST_QUERY = gql`
 query Customers($filter: CustomerFilterInput, $sortBy: UserSortingInput, $first: Int, $after: String, $last: Int, $before: String) {
   customers(filter: $filter, sortBy: $sortBy, first: $first, after: $after, last: $last, before: $before) {
     edges {
@@ -25,7 +25,7 @@ query Customers($filter: CustomerFilterInput, $sortBy: UserSortingInput, $first:
       startCursor
       endCursor
     }
-    totalCount
+    # totalCount
   }
 }`;
 
@@ -105,9 +105,8 @@ mutation GiftCardCreate($input: GiftCardCreateInput!) {
 `
 
 export const GIFT_CARD_TAGS_QUERY = gql`
-query SearchGiftCardTags($query: String!, $first: Int!, $after: String, $last: Int, $before: String) {
-  giftCardTags(filter: {search: $query}, first: $first, after: $after, last: $last, before: $before) {
-    totalCount
+query SearchGiftCardTags($first: Int!, $after: String, $last: Int, $before: String, $filter: GiftCardTagFilterInput) {
+  giftCardTags(filter: $filter, first: $first, after: $after, last: $last, before: $before) {
     edges {
       node {
         id
