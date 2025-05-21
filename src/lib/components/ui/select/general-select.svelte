@@ -50,23 +50,28 @@
 	let input = $state<HTMLInputElement>();
 	let optionRefs: HTMLElement[] = [];
 	/** mapping for selected options */
-	let copySelectMapper = {} as Record<Primitive, SelectOption>;
+	let selectMapper: Record<Primitive, SelectOption> = $state.raw({});
 
-	let selectMapper = $derived.by(() => {
-		let res: Record<Primitive, SelectOption> = { ...copySelectMapper };
-
-		if (multiple && Array.isArray(value)) {
-			for (const val of value) {
-				if (!res[val]) delete res[val];
-				else res[val] = options.find((opt) => opt.value === val)!;
-			}
-		} else if (value) {
-			res = { [value]: options.find((opt) => opt.value === value)! };
+	const reCalculateSelectMapper = async (action: '+' | '-', option: SelectOption) => {
+		if (!value) {
+			selectMapper = {};
+			return;
 		}
 
-		copySelectMapper = { ...res };
-		return res;
-	});
+		if (multiple && Array.isArray(value)) {
+			const newMapper = { ...selectMapper };
+
+			if (action === '+') newMapper[option.value] = option;
+			else delete newMapper[option.value];
+
+			selectMapper = newMapper;
+			return;
+		}
+
+		if (action === '+') {
+			selectMapper = { [option.value]: option };
+		} else selectMapper = {};
+	};
 
 	/** display text for input */
 	let inputDisplayText = $derived.by(() => {
@@ -117,7 +122,7 @@
 		onclearInputField?.();
 	};
 
-	const handleSelect = (option: SelectOption) => {
+	const handleSelect = async (option: SelectOption) => {
 		if (option.disabled || selectMapper[option.value]) return; // disabled options cant be selected
 
 		if (multiple) {
@@ -132,10 +137,11 @@
 		}
 
 		if (!multiple) toggleDropdown(false);
+		await reCalculateSelectMapper('+', option);
 		onchange?.(multiple ? Object.values(selectMapper) : option);
 	};
 
-	const handleDeselectOption = (option: SelectOption) => {
+	const handleDeselectOption = async (option: SelectOption) => {
 		if (rest.disabled) return;
 
 		if (multiple && Array.isArray(value)) {
@@ -144,6 +150,7 @@
 			value = undefined;
 		}
 
+		await reCalculateSelectMapper('-', option);
 		onchange?.(multiple ? Object.values(selectMapper) : undefined);
 	};
 </script>
@@ -282,7 +289,7 @@
 					idx,
 					optionClassName: classNames({
 						'cursor-not-allowed! text-gray-400!': !!option.disabled,
-						[SELECT_CLASSES.activeSelectOption]: selectMapper[option.value] !== undefined,
+						[SELECT_CLASSES.activeSelectOption]: !!selectMapper[option.value],
 					}),
 					onclick: () => handleSelect(option),
 					...option,
