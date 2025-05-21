@@ -84,7 +84,6 @@
 	};
 
 	const setFilterItemValue = (key: keyof T, operator?: FilterOperator, value?: FilterItemValue) => {
-		debugger;
 		activeFilters = {
 			...activeFilters,
 			[key]: operator
