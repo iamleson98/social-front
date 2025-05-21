@@ -10,6 +10,9 @@
 	let generalVariant = $state<'info' | 'error' | 'warning' | 'success'>('info');
 	let graphqlVariant = $state<'info' | 'error' | 'warning' | 'success'>('info');
 
+	let sizeGeneralSelect = $state<'xs' | 'sm' | 'md' | 'lg' | 'xl'>('md');
+	let sizeGraphqlPaginableSelect = $state<'xs' | 'sm' | 'md' | 'lg' | 'xl'>('md');
+
 	let value = $state<string[]>();
 	let disabled = $state(false);
 	let isMultiple = $state(false);
@@ -35,6 +38,7 @@
 			]}
 			showLoadingMore
 			bind:value
+			size="${sizeGeneralSelect}"
 			onchange={console.log}`;
 
 		codeContent = `<Select${commonProps}\n/>`;
@@ -66,6 +70,7 @@
 			subText="${graphqlVariant}"
 			variableSearchQueryPath="filter.search"
 			bind:value
+			size="${sizeGraphqlPaginableSelect}"
 		/>`;
 
 		navigator.clipboard.writeText(gqlContent).then(() => {
@@ -107,8 +112,31 @@
 		</label>
 	</div>
 
+	<div class="flex gap-4 flex-wrap mb-2">
+		<label>
+			<input type="radio" bind:group={sizeGeneralSelect} value="xs" />
+			<span class="ml-1">xs</span>
+		</label>
+		<label>
+			<input type="radio" bind:group={sizeGeneralSelect} value="sm" />
+			<span class="ml-1">sm</span>
+		</label>
+		<label>
+			<input type="radio" bind:group={sizeGeneralSelect} value="md" />
+			<span class="ml-1">md</span>
+		</label>
+		<label>
+			<input type="radio" bind:group={sizeGeneralSelect} value="l	g" />
+			<span class="ml-1">lg</span>
+		</label>
+		<label>
+			<input type="radio" bind:group={sizeGeneralSelect} value="xl" />
+			<span class="ml-1">xl</span>
+		</label>
+	</div>
+
 	<Select
-		size="sm"
+		size={sizeGeneralSelect}
 		label="GeneralSelect"
 		multiple={isMultiple}
 		variant={generalVariant}
@@ -151,6 +179,29 @@
 		</label>
 	</div>
 
+	<div class="flex gap-4 flex-wrap mb-2">
+		<label>
+			<input type="radio" bind:group={sizeGraphqlPaginableSelect} value="xs" />
+			<span class="ml-1">xs</span>
+		</label>
+		<label>
+			<input type="radio" bind:group={sizeGraphqlPaginableSelect} value="sm" />
+			<span class="ml-1">sm</span>
+		</label>
+		<label>
+			<input type="radio" bind:group={sizeGraphqlPaginableSelect} value="md" />
+			<span class="ml-1">md</span>
+		</label>
+		<label>
+			<input type="radio" bind:group={sizeGraphqlPaginableSelect} value="lg" />
+			<span class="ml-1">lg</span>
+		</label>
+		<label>
+			<input type="radio" bind:group={sizeGraphqlPaginableSelect} value="xl" />
+			<span class="ml-1">xl</span>
+		</label>
+	</div>
+
 	<GraphqlPaginableSelect
 		query={PRODUCT_LIST_QUERY_ADMIN}
 		variables={{
@@ -168,6 +219,7 @@
 		disabled={disabledGraphqlPaginableSelect}
 		multiple={isMultipleGraphqlPaginableSelect}
 		variableSearchQueryPath="filter.search"
+		size={sizeGraphqlPaginableSelect}
 	/>
 	<Button class="mt-2" onclick={handleCopyGraphqlPaginableSelect}
 		>Copy GraphqlPaginableSelect</Button
