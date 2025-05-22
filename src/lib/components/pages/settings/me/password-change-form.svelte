@@ -6,7 +6,7 @@
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Label, PasswordInput } from '$lib/components/ui/Input';
 	import type { Mutation, MutationPasswordChangeArgs } from '$lib/gql/graphql';
-	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { object, string, z } from 'zod';
 
 	const FIELD_REQUIRED = $tranFunc('helpText.fieldRequired');
@@ -64,7 +64,7 @@
 		loading = false;
 
 		if (
-			preHandleErrorOnGraphqlResult(result, 'passwordChange', $tranFunc('settings.accountUpdated'))
+			checkIfGraphqlResultHasError(result, 'passwordChange', $tranFunc('settings.accountUpdated'))
 		)
 			return;
 	};

@@ -23,7 +23,7 @@
 		QueryProductsArgs
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import ProductAssignModal from './product-assign-modal.svelte';
 
 	type Props = {
@@ -87,7 +87,7 @@
 		loading = false;
 
 		if (
-			preHandleErrorOnGraphqlResult(
+			checkIfGraphqlResultHasError(
 				result,
 				'collectionReorderProducts',
 				'Successfully reorderd products of collection'
@@ -112,7 +112,7 @@
 				collectionId: collectionID,
 				products: addProductIds
 			});
-			preHandleErrorOnGraphqlResult(
+			checkIfGraphqlResultHasError(
 				result,
 				'collectionAddProducts',
 				'Successfully assigned products to collection'
@@ -126,7 +126,7 @@
 				collectionId: collectionID,
 				products: removeProductIds
 			});
-			preHandleErrorOnGraphqlResult(
+			checkIfGraphqlResultHasError(
 				result,
 				'collectionRemoveProducts',
 				'Successfully unassigned products from collection'

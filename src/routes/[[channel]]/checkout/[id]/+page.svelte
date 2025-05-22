@@ -8,7 +8,7 @@
 	import { operationStore } from '$lib/api/operation';
 	import { CHECKOUT_DETAILS_QUERY } from '$lib/api/checkout';
 	import type { Checkout, Query, QueryCheckoutArgs } from '$lib/gql/graphql';
-	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 
 	afterNavigate(() => {
 		scrollTo({ top: 0, behavior: 'smooth' });
@@ -24,7 +24,7 @@
 
 	onMount(() => {
 		return checkoutQueryStore.subscribe((result) => {
-			if (preHandleErrorOnGraphqlResult(result)) return;
+			if (checkIfGraphqlResultHasError(result)) return;
 
 			checkoutStore.set(result.data?.checkout as Checkout);
 		});

@@ -25,7 +25,7 @@
 		ACCOUNT_ADDRESS_UPDATE_MUTATION,
 		ACCOUNT_SET_DEFAULT_ADDRESS_MUTATION
 	} from '$lib/api/account';
-	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { ME_PAGE_USER_STORE } from '$lib/stores/app/me';
 	import { tranFunc } from '$i18n';
@@ -54,7 +54,7 @@
 		loading = false; //
 
 		if (
-			preHandleErrorOnGraphqlResult(
+			checkIfGraphqlResultHasError(
 				result,
 				'accountAddressUpdate',
 				$tranFunc('settings.addrUpdated')
@@ -86,7 +86,7 @@
 		loading = false; //
 
 		if (
-			preHandleErrorOnGraphqlResult(
+			checkIfGraphqlResultHasError(
 				result,
 				'accountAddressCreate',
 				$tranFunc('settings.addrCreated')
@@ -114,7 +114,7 @@
 		loading = false; //
 
 		if (
-			preHandleErrorOnGraphqlResult(
+			checkIfGraphqlResultHasError(
 				result,
 				'accountAddressDelete',
 				$tranFunc('settings.addrDeleted')
@@ -142,7 +142,7 @@
 		loading = false; //
 
 		if (
-			preHandleErrorOnGraphqlResult(
+			checkIfGraphqlResultHasError(
 				result,
 				'accountSetDefaultAddress',
 				$tranFunc('settings.addrUpdated')

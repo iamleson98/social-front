@@ -4,7 +4,7 @@
 	import { Button } from '$lib/components/ui';
 	import { AppRoute } from '$lib/utils';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import StaffForm from '$lib/components/pages/settings/config/staff/staff-form.svelte';
 	import { goto } from '$app/navigation';
 
@@ -34,7 +34,7 @@
 
 		loading = false;
 
-		if (preHandleErrorOnGraphqlResult(result, 'staffCreate', 'Staff created successfully')) return;
+		if (checkIfGraphqlResultHasError(result, 'staffCreate', 'Staff created successfully')) return;
 
 		await goto(AppRoute.SETTINGS_CONFIGS_STAFFS());
 	};

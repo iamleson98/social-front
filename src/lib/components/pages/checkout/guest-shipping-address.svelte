@@ -24,7 +24,7 @@
 	import { operationStore } from '$lib/api/operation';
 	import { checkoutStore } from '$lib/stores/app';
 	import { getCountryName } from '$lib/utils/address';
-	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import AddressForm from './address-form.svelte';
 
 	let updatingCHeckoutAddresses = $state(false);
@@ -78,12 +78,12 @@
 		updatingCHeckoutAddresses = false; //
 
 		if (
-			preHandleErrorOnGraphqlResult(
+			checkIfGraphqlResultHasError(
 				updateResult[0],
 				'checkoutShippingAddressUpdate',
 				'Shipping address updated'
 			) ||
-			preHandleErrorOnGraphqlResult(
+			checkIfGraphqlResultHasError(
 				updateResult[1],
 				'checkoutBillingAddressUpdate',
 				'Billing address updated'

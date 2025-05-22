@@ -18,7 +18,7 @@
 		ProductVariant,
 	} from '$lib/gql/graphql';
 	import { HTTPStatusSuccess, MAX_RATING } from '$lib/utils/consts';
-	import { formatMoney, preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { formatMoney, checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { fade } from 'svelte/transition';
 	import { Rating } from '$lib/components/ui/rating';
 	import { checkoutStore } from '$lib/stores/app';
@@ -101,7 +101,7 @@
 		if (!checkoutAddLineStore) return;
 
 		return checkoutAddLineStore.subscribe((result) => {
-			if (preHandleErrorOnGraphqlResult(result, 'checkoutLinesAdd')) return;
+			if (checkIfGraphqlResultHasError(result, 'checkoutLinesAdd')) return;
 			checkoutStore.set(result.data?.checkoutLinesAdd?.checkout as Checkout);
 		});
 	});

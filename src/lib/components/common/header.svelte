@@ -18,7 +18,7 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { USER_ME_QUERY_STORE } from '$lib/api';
 	import type { Query, User } from '$lib/gql/graphql';
-	import { buildHomePageLink, preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { buildHomePageLink, checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { tranFunc } from '$i18n';
 	import { onMount } from 'svelte';
 	import { ACCESS_TOKEN_KEY, HTTPStatusSuccess } from '$lib/utils/consts';
@@ -52,7 +52,7 @@
 			{ requestPolicy: 'network-only' },
 		).toPromise();
 
-		if (preHandleErrorOnGraphqlResult(userResult)) return;
+		if (checkIfGraphqlResultHasError(userResult)) return;
 		setUserStoreValue(userResult.data?.me as User);
 	});
 

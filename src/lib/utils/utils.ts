@@ -135,7 +135,7 @@ export const getPrefersReducedMotion = () => {
  * @param successMessage Optional success toast message. If you provide this argument, you don't have to send success toast yourself
  * @returns `true` if there is an error, `false` otherwise.
  */
-export const preHandleErrorOnGraphqlResult = <T, K extends AnyVariables>(
+export const checkIfGraphqlResultHasError = <T, K extends AnyVariables>(
 	result: OperationResult<T, K>,
 	apiErrorKey?: keyof Mutation | keyof Query,
 	successMessage?: string,

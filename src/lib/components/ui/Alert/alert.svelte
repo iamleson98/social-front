@@ -7,9 +7,9 @@
 	import { ALERT_VARIANT_STYLE_MAP } from './types';
 	import type { SocialColor, SocialSize } from '$lib/components/ui/common';
 	import { IconButton } from '$lib/components/ui/Button';
-	import { classNames } from '$lib/utils/utils';
 
 	type Props = {
+		/** variant of Alert. Default to `info` */
 		variant?: SocialVariant;
 		children: Snippet;
 		size?: SocialSize | 'xxs';

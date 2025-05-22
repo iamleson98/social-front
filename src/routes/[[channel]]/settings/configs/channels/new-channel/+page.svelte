@@ -10,7 +10,7 @@
 		type Mutation,
 		type MutationChannelCreateArgs
 	} from '$lib/gql/graphql';
-	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { goto } from '$app/navigation';
 	import { AppRoute } from '$lib/utils';
@@ -60,7 +60,7 @@
 
 		loading = false;
 
-		if (preHandleErrorOnGraphqlResult(result, 'channelCreate')) return;
+		if (checkIfGraphqlResultHasError(result, 'channelCreate')) return;
 		toast.success('Channel created successfully');
 
 		await goto(AppRoute.SETTINGS_CONFIGS_CHANNELS());

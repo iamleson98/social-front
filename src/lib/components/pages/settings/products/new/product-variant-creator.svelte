@@ -16,7 +16,7 @@
 	} from '$lib/gql/graphql';
 	import { CHANNELS_QUERY } from '$lib/api/channels';
 	import { operationStore } from '$lib/api/operation';
-	import { preHandleErrorOnGraphqlResult, randomString } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, randomString } from '$lib/utils/utils';
 	import { slide } from 'svelte/transition';
 	import { chunk, flatten, omit } from 'es-toolkit';
 	import { CurrencyIconMap, type CurrencyCode } from '$lib/utils/consts';
@@ -194,7 +194,7 @@
 
 	onMount(() => {
 		return channelsQueryStore.subscribe((result) => {
-			if (preHandleErrorOnGraphqlResult(result)) return;
+			if (checkIfGraphqlResultHasError(result)) return;
 
 			const warehousesOfChannels: CustomStockInput[] = [];
 			const warehouseMeetMap: Record<string, boolean> = {};

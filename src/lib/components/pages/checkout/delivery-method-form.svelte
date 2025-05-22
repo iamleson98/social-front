@@ -4,7 +4,7 @@
 	import type { Maybe, Mutation, MutationCheckoutDeliveryMethodUpdateArgs } from '$lib/gql/graphql';
 	import { CHECKOUT_UPDATE_DELIVERY_METHOD_MUTATION } from '$lib/api/checkout';
 	import { checkoutStore } from '$lib/stores/app';
-	import { formatMoney, preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { formatMoney, checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { READ_ONLY_USER_STORE } from '$lib/stores/auth/user';
 
 	const getDeliveryMethodSubTitle = (
@@ -41,7 +41,7 @@
 
 		updating = false; //
 
-		if (preHandleErrorOnGraphqlResult(result, 'checkoutDeliveryMethodUpdate', "Delivery method updated")) return;
+		if (checkIfGraphqlResultHasError(result, 'checkoutDeliveryMethodUpdate', "Delivery method updated")) return;
 	};
 </script>
 

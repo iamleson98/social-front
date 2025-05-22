@@ -31,7 +31,7 @@
 		ProductCreateInput,
 		ProductVariantBulkCreateInput,
 	} from '$lib/gql/graphql';
-	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { omit } from 'es-toolkit';
 	import { toast } from 'svelte-sonner';
 
@@ -107,7 +107,7 @@
 		const results = await Promise.all(operations);
 		let numFails = 0;
 		for (const result of results) {
-			if (preHandleErrorOnGraphqlResult(result, 'productMediaCreate')) numFails++;
+			if (checkIfGraphqlResultHasError(result, 'productMediaCreate')) numFails++;
 		}
 
 		/**
@@ -144,7 +144,7 @@
 		>(CREATE_PRODUCT_MUTATION, {
 			input: productCreateBody,
 		});
-		if (preHandleErrorOnGraphqlResult(productCreateResult, 'productCreate')) {
+		if (checkIfGraphqlResultHasError(productCreateResult, 'productCreate')) {
 			setLoading(false);
 			return;
 		}
@@ -170,7 +170,7 @@
 			input: cleanChannelListingUpdateInput,
 		});
 		if (
-			preHandleErrorOnGraphqlResult(
+			checkIfGraphqlResultHasError(
 				updateProductChannelListingResult,
 				'productChannelListingUpdate',
 			)
@@ -187,7 +187,7 @@
 			product: productCreateResult.data?.productCreate?.product?.id as string,
 			variants: productVariantsInput,
 		});
-		if (preHandleErrorOnGraphqlResult(variantsBulkCreateResult, 'productVariantBulkCreate')) return;
+		if (checkIfGraphqlResultHasError(variantsBulkCreateResult, 'productVariantBulkCreate')) return;
 
 		let hasError = false;
 		for (const result of variantsBulkCreateResult.data?.productVariantBulkCreate?.results || []) {

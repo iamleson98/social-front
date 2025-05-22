@@ -19,7 +19,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { afterNavigate, goto } from '$app/navigation';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { Modal } from '$lib/components/ui/Modal';
 	import { tranFunc } from '$i18n';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
@@ -153,7 +153,7 @@
 
 		loading = false;
 
-		if (preHandleErrorOnGraphqlResult(result, 'channelDelete')) return;
+		if (checkIfGraphqlResultHasError(result, 'channelDelete')) return;
 		toast.success('Channel deleted successfully');
 		await goto(AppRoute.SETTINGS_CONFIGS_CHANNELS());
 	};
@@ -172,7 +172,7 @@
 
 		loading = false;
 
-		if (preHandleErrorOnGraphqlResult(result, 'channelUpdate')) return;
+		if (checkIfGraphqlResultHasError(result, 'channelUpdate')) return;
 		toast.success('Channel updated successfully');
 
 		await goto(AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(channelValues.slug as string), {

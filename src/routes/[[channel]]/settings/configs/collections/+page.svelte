@@ -18,7 +18,7 @@
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
-	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 
 	let filterVariables = $state<QueryCollectionsArgs>({
 		first: 10
@@ -56,7 +56,7 @@
 			id: id
 		});
 
-		if (preHandleErrorOnGraphqlResult(result, 'collectionDelete', 'Collection deleted successfully')) return;
+		if (checkIfGraphqlResultHasError(result, 'collectionDelete', 'Collection deleted successfully')) return;
 
 		forceReExecuteGraphqlQuery = true;
 	};

@@ -31,7 +31,7 @@
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
-	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { omit } from 'es-toolkit';
 	import { onMount } from 'svelte';
 
@@ -123,7 +123,7 @@
 				loading = false; //
 
 				if (
-					preHandleErrorOnGraphqlResult(
+					checkIfGraphqlResultHasError(
 						result,
 						'collectionDelete',
 						'Collection deleted successfully!'
@@ -153,7 +153,7 @@
 			}
 		});
 
-		hasError ||= preHandleErrorOnGraphqlResult(
+		hasError ||= checkIfGraphqlResultHasError(
 			result,
 			'collectionUpdate',
 			'Collection updated successfully'
@@ -170,7 +170,7 @@
 
 		loading = false; //
 
-		hasError ||= preHandleErrorOnGraphqlResult(
+		hasError ||= checkIfGraphqlResultHasError(
 			result2,
 			'collectionChannelListingUpdate',
 			'Collection channel listing updated successfully'

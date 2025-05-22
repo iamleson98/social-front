@@ -20,7 +20,7 @@
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { defaultSlideShowState } from '$lib/stores/ui/slideshow';
 	import { AppRoute } from '$lib/utils';
-	import { formatMoney, preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { formatMoney, checkIfGraphqlResultHasError } from '$lib/utils/utils';
 
 	type Props = {
 		line: CheckoutLine;
@@ -61,7 +61,7 @@
 
 		loading = false; //
 
-		if (preHandleErrorOnGraphqlResult(deleteResult, 'checkoutLinesDelete')) return;
+		if (checkIfGraphqlResultHasError(deleteResult, 'checkoutLinesDelete')) return;
 
 		checkoutStore.set(deleteResult.data?.checkoutLinesDelete?.checkout as Checkout);
 	};
@@ -90,7 +90,7 @@
 
 		loading = false; //
 
-		if (preHandleErrorOnGraphqlResult(updateResult, 'checkoutLinesUpdate')) return;
+		if (checkIfGraphqlResultHasError(updateResult, 'checkoutLinesUpdate')) return;
 
 		checkoutStore.set(updateResult.data?.checkoutLinesUpdate?.checkout as Checkout);
 	};

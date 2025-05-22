@@ -11,7 +11,7 @@
 	import { Trash } from '$lib/components/icons';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { CHECKOUT_REMOVE_PROMO_CODE_MUTATION } from '$lib/api/checkout';
-	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 
 	type Props = {
 		editable?: boolean;
@@ -48,7 +48,7 @@
 		loading = false;
 
 		if (
-			preHandleErrorOnGraphqlResult(removeResult, 'checkoutRemovePromoCode', 'Promo code removed')
+			checkIfGraphqlResultHasError(removeResult, 'checkoutRemovePromoCode', 'Promo code removed')
 		)
 			return;
 	};

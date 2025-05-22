@@ -87,7 +87,8 @@ export const TOGGLE_SIZES: Record<SocialSize, string> = {
   xl: 'toggle-xl',
 };
 
-export const TEXT_AREA_SIZE_MAP: Record<SocialSize, string> = {
+export const TEXT_AREA_SIZE_MAP: Record<SocialSize | 'xxs', string> = {
+  xxs: 'text-[10px]',
   xs: 'text-xs',
   sm: 'text-sm',
   md: 'text-base',

@@ -15,7 +15,7 @@
 		type QueryUserArgs
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { USER_UPDATE_MUTATION } from '$lib/api/account';
 	import { type MutationCustomerUpdateArgs } from '$lib/gql/graphql';
 	import CustomerExtraForm from '$lib/components/pages/settings/config/customers/customer-extra-form.svelte';
@@ -67,7 +67,7 @@
 			input: userInput
 		});
 		loading = false;
-		if (preHandleErrorOnGraphqlResult(result, 'customerUpdate', 'Customer updated successfully'))
+		if (checkIfGraphqlResultHasError(result, 'customerUpdate', 'Customer updated successfully'))
 			return;
 		userDetailQuery.reexecute({ variables: { id: page.params.id } });
 	};

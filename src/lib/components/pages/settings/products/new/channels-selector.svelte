@@ -13,7 +13,7 @@
 		Query
 	} from '$lib/gql/graphql';
 	import { tranFunc } from '$lib/i18n';
-	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import ErrorMsg from './error-msg.svelte';
@@ -91,7 +91,7 @@
 
 		// add not added channel(s) to the list for user to use
 		return CHANNELS_QUERY_STORE.subscribe((result) => {
-			if (preHandleErrorOnGraphqlResult(result)) return;
+			if (checkIfGraphqlResultHasError(result)) return;
 
 			const newChannelListings = productChannelListingUpdateInput.updateChannels;
 			for (const chan of result.data?.channels || []) {

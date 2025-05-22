@@ -19,7 +19,7 @@
 	} from '$lib/components/ui/Table';
 	import type { Channel, Mutation, MutationChannelDeleteArgs, Query } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 
@@ -112,7 +112,7 @@
 
 		loading = false;
 
-		if (preHandleErrorOnGraphqlResult(result, 'channelDelete', 'Channel deleted successfully'))
+		if (checkIfGraphqlResultHasError(result, 'channelDelete', 'Channel deleted successfully'))
 			return;
 
 		channelToDeleteId = '';
