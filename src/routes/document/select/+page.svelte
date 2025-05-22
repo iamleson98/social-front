@@ -5,7 +5,7 @@
 	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
 	import { Select } from '$lib/components/ui/select';
 	import { type QueryProductsArgs } from '$lib/gql/graphql';
-	import { toastStore } from '$lib/stores/ui/toast';
+	import { toast } from 'svelte-sonner';
 
 	const variants = ['info', 'success', 'warning', 'error'] as const;
 	const sizes = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
@@ -43,11 +43,7 @@
 			/>`;
 
 		navigator.clipboard.writeText(codeContent).then(() => {
-			toastStore.send({
-				variant: 'success',
-				message: `Copied code: ${codeContent}`,
-				timeout: 5000,
-			});
+			toast.success(`Copied code: ${codeContent}`);
 		});
 	};
 
@@ -73,11 +69,7 @@
 		/>`;
 
 		navigator.clipboard.writeText(gqlContent).then(() => {
-			toastStore.send({
-				variant: 'success',
-				message: `Copied code: ${gqlContent}`,
-				timeout: 5000,
-			});
+			toast.success(`Copied code: ${gqlContent}`);
 		});
 	};
 </script>

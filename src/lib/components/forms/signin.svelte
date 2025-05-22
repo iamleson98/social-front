@@ -6,10 +6,10 @@
 	import { tranFunc } from '$lib/i18n';
 	import { Checkbox, Input, PasswordInput } from '$lib/components/ui/Input';
 	import { HTTPStatusSuccess } from '$lib/utils/consts';
-	import { toastStore } from '$lib/stores/ui/toast';
 	import { Facebook, Twitter, Google } from '$lib/components/icons/SvgOuterIcon';
 	import { boolean, object, string, z } from 'zod';
 	import { setUserStoreValue } from '$lib/stores/auth/user';
+	import { toast } from 'svelte-sonner';
 
 	type Props = {
 		onSuccess: () => void;
@@ -29,8 +29,8 @@
 				message: $tranFunc('error.lengthInvalid', {
 					name: $tranFunc('common.email'),
 					min: 1,
-					max: EMAIL_MAX_LENGTH
-				})
+					max: EMAIL_MAX_LENGTH,
+				}),
 			}),
 		password: string()
 			.nonempty({ message: $tranFunc('helpText.fieldRequired') })
@@ -38,10 +38,10 @@
 				message: $tranFunc('error.lengthInvalid', {
 					name: $tranFunc('common.password'),
 					min: 1,
-					max: PASSWORD_MAX_LENGTH
-				})
+					max: PASSWORD_MAX_LENGTH,
+				}),
 			}),
-		rememberMe: boolean()
+		rememberMe: boolean(),
 	});
 
 	type SigninSchema = z.infer<typeof signinSchema>;
@@ -49,7 +49,7 @@
 	let signinValue = $state<SigninSchema>({
 		email: '',
 		password: '',
-		rememberMe: false
+		rememberMe: false,
 	});
 	let signinFormErrors = $state.raw<Partial<Record<keyof SigninSchema, string[]>>>({});
 
@@ -73,15 +73,10 @@
 
 		const loginResult = await fetch(AppRoute.AUTH_SIGNIN(), {
 			method: 'POST',
-			body: JSON.stringify(signinValue)
+			body: JSON.stringify(signinValue),
 		})
 			.then((res) => res.json())
-			.catch(() =>
-				toastStore.send({
-					variant: 'error',
-					message: $tranFunc('error.errorOccured')
-				})
-			);
+			.catch(() => toast.error($tranFunc('error.errorOccured')));
 
 		loading = false;
 
@@ -91,12 +86,11 @@
 		}
 
 		setUserStoreValue(loginResult.data);
-		toastStore.send({
-			message: $tranFunc('signin.welcomeBack', {
-				name: loginResult.data.firstName + ' ' + loginResult.data.lastName
+		toast.success(
+			$tranFunc('signin.welcomeBack', {
+				name: loginResult.data.firstName + ' ' + loginResult.data.lastName,
 			}),
-			variant: 'success'
-		});
+		);
 
 		onSuccess();
 	};
@@ -104,7 +98,7 @@
 	let socialIons = [
 		{ text: 'Facebook', icon: Facebook },
 		{ text: 'Twitter', icon: Twitter },
-		{ text: 'Google', icon: Google }
+		{ text: 'Google', icon: Google },
 	];
 </script>
 

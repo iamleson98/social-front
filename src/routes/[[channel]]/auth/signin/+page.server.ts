@@ -29,7 +29,7 @@ export const load = async (event) => {
 
 	return {
 		meta: {
-			title: await serverSideTranslate('signin.title', event),
+			title: await serverSideTranslate(event, 'signin.title'),
 		},
 	};
 };

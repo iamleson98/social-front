@@ -7,7 +7,7 @@
 	import { Checkbox } from '$lib/components/ui/Input';
 	import { GraphqlPaginableTable, Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import type { Product, ProductOrderField, Query } from '$lib/gql/graphql';
-	import { toastStore } from '$lib/stores/ui/toast';
+	import { toast } from 'svelte-sonner';
 
 	const PRODUCT_COLUMNS: TableColumnProps<Product, ProductOrderField>[] = [
 		{
@@ -66,7 +66,6 @@
 				message: `Copied code: ${code}`,
 				timeout: 5000,
 			});
-		});
 	};
 </script>
 

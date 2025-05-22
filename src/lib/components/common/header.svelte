@@ -10,7 +10,7 @@
 		MingcuteHome,
 		Search,
 		ShoppingBag,
-		UserCog
+		UserCog,
 	} from '$lib/components/icons';
 	import { scale } from 'svelte/transition';
 	import { Input } from '$lib/components/ui/Input';
@@ -22,13 +22,13 @@
 	import { tranFunc } from '$i18n';
 	import { onMount } from 'svelte';
 	import { ACCESS_TOKEN_KEY, HTTPStatusSuccess } from '$lib/utils/consts';
-	import { toastStore } from '$lib/stores/ui/toast';
 	import { afterNavigate, beforeNavigate, invalidateAll } from '$app/navigation';
 	import { DropDown } from '$lib/components/ui/Dropdown';
 	import { READ_ONLY_USER_STORE, setUserStoreValue } from '$lib/stores/auth/user';
 	import { Tween } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
+	import { toast } from 'svelte-sonner';
 
 	const { userDisplayName } = $derived.by(() => {
 		let userDisplayName;
@@ -49,7 +49,7 @@
 		const userResult = await GRAPHQL_CLIENT.query<Pick<Query, 'me'>>(
 			USER_ME_QUERY_STORE,
 			{},
-			{ requestPolicy: 'network-only' }
+			{ requestPolicy: 'network-only' },
 		).toPromise();
 
 		if (preHandleErrorOnGraphqlResult(userResult)) return;
@@ -61,10 +61,7 @@
 		const parsedResult = await result.json();
 
 		if (parsedResult.status !== HTTPStatusSuccess) {
-			toastStore.send({
-				variant: 'error',
-				message: $tranFunc('error.errorOccured')
-			});
+			toast.error($tranFunc('error.errorOccured'));
 			return;
 		}
 
@@ -80,10 +77,7 @@
 		const parsedResult = await fetchResult.json();
 
 		if (parsedResult.status !== HTTPStatusSuccess) {
-			toastStore.send({
-				variant: 'error',
-				message: parsedResult.message
-			});
+			toast.error(parsedResult.message);
 			return;
 		}
 
@@ -94,8 +88,8 @@
 	let timeout = $state<NodeJS.Timeout>();
 	const loadingProgress = new Tween(0, {
 		duration: 500,
-		easing: cubicOut
-	})
+		easing: cubicOut,
+	});
 
 	beforeNavigate(() => {
 		loading = true;
@@ -189,9 +183,9 @@
 						{
 							children: $tranFunc('common.settings'),
 							href: AppRoute.ME(),
-							startIcon: UserCog
+							startIcon: UserCog,
 						},
-						{ children: $tranFunc('common.logout'), onclick: handleLogout, startIcon: Logout }
+						{ children: $tranFunc('common.logout'), onclick: handleLogout, startIcon: Logout },
 					]}
 				/>
 			{:else if !$READ_ONLY_USER_STORE && !page.url.pathname.startsWith('/auth')}

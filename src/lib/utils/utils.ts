@@ -1,5 +1,4 @@
 import { type Mutation, type Query, type SelectedAttribute, type User, AttributeInputTypeEnum, OrderDirection, PermissionEnum } from '$lib/gql/graphql';
-import { toastStore } from '$lib/stores/ui/toast';
 import type { AnyVariables, OperationResult } from '@urql/core';
 import editorJsToHtml from 'editorjs-html';
 import { AppRoute } from './routes';
@@ -11,6 +10,7 @@ import { DEFAULT_CHANNEL } from './channels';
 import { OrderStatus, PaymentChargeStatusEnum } from "$lib/gql/graphql";
 import type { BadgeProps } from '$lib/components/ui/badge/types';
 import { lowerCase, startCase } from 'es-toolkit';
+import { toast } from 'svelte-sonner';
 
 
 export const editorJsParser = editorJsToHtml();
@@ -141,10 +141,7 @@ export const preHandleErrorOnGraphqlResult = <T, K extends AnyVariables>(
 	successMessage?: string,
 ): boolean => {
 	if (result.error) {
-		toastStore.send({
-			message: result.error.message,
-			variant: 'error'
-		});
+		toast.error(result.error.message);
 		return true;
 	}
 
@@ -153,19 +150,12 @@ export const preHandleErrorOnGraphqlResult = <T, K extends AnyVariables>(
 		if (!errors) throw new Error('No errors field. You MUST check your GraphQL query.');
 
 		if (errors && Array.isArray(errors) && errors.length > 0) {
-			toastStore.send({
-				message: errors[0].message,
-				variant: 'error'
-			});
+			toast.error(errors[0].message);
 			return true;
 		}
 	}
 
-	if (successMessage) toastStore.send({
-		variant: 'success',
-		message: successMessage,
-	});
-
+	if (successMessage) toast.success(successMessage);
 	return false;
 };
 
@@ -244,14 +234,15 @@ type ClassArgs = Record<string, boolean> | string;
 export const classNames = (...classes: ClassArgs[]): string => {
 	let result = '';
 
-	for (const cls of classes) {
+	for (let cls of classes) {
 		if (typeof cls === 'string') {
-			result += `${cls} `;
+			cls = cls.trim();
+			if (cls) result += `${cls} `;
 			continue;
 		}
 		for (const key in cls) {
 			if (cls[key]) {
-				result += `${key} `;
+				result += `${key.trim()} `;
 			}
 		}
 	}

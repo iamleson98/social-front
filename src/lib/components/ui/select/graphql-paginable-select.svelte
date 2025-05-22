@@ -155,7 +155,7 @@
 		{size}
 		{label}
 		inputDebounceOption={{
-			onInput: (evt) => onInput((evt.target as HTMLInputElement).value.trim()),
+			onInput: (evt) => onInput((evt.target as HTMLInputElement).value),
 		}}
 		{onScrollToEnd}
 		showLoadingMore={forceFetching}

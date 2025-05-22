@@ -4,7 +4,7 @@
 		CREATE_PRODUCT_MUTATION,
 		PRODUCT_MEDIA_CREATE_MUTATION,
 		PRODUCT_VARIANTS_BULK_CREATE_MUTATION,
-		UPDATE_PRODUCT_CHANNEL_LISTINGS_MUTATION
+		UPDATE_PRODUCT_CHANNEL_LISTINGS_MUTATION,
 	} from '$lib/api/admin/product';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import ProductType from '$lib/components/common/product-type-select/product-type.svelte';
@@ -29,11 +29,11 @@
 		ProductChannelListingAddInput,
 		ProductChannelListingUpdateInput,
 		ProductCreateInput,
-		ProductVariantBulkCreateInput
+		ProductVariantBulkCreateInput,
 	} from '$lib/gql/graphql';
-	import { toastStore } from '$lib/stores/ui/toast';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { omit } from 'es-toolkit';
+	import { toast } from 'svelte-sonner';
 
 	const NOW = new Date();
 
@@ -49,9 +49,9 @@
 			// NOTE: the order must be 'length', 'width', 'height', because child item binds values based on order
 			{ key: 'length', value: '0' },
 			{ key: 'width', value: '0' },
-			{ key: 'height', value: '0' }
+			{ key: 'height', value: '0' },
 		],
-		collections: []
+		collections: [],
 	});
 	let channelListingUpdateInput = $state.raw<ProductChannelListingUpdateInput>({});
 	let channelListingUpdateInputOk = $state(true);
@@ -74,7 +74,7 @@
 		attributes: false,
 		category: false,
 		name: false,
-		seo: false
+		seo: false,
 	});
 
 	let productVariantsInput = $state.raw<ProductVariantBulkCreateInput[]>([]);
@@ -95,12 +95,12 @@
 					input: {
 						product: productID,
 						alt: media.alt,
-						image: media.file
-					}
+						image: media.file,
+					},
 				},
 				{
-					requestPolicy: 'network-only'
-				}
+					requestPolicy: 'network-only',
+				},
 			).toPromise();
 		});
 
@@ -121,7 +121,7 @@
 		// validate:
 		if (
 			!channelListingUpdateInput.updateChannels?.some(
-				(item) => item['used' as keyof ProductChannelListingAddInput]
+				(item) => item['used' as keyof ProductChannelListingAddInput],
 			)
 		) {
 			channelListingUpdateInputOk = false;
@@ -135,14 +135,14 @@
 			...productCreateInput,
 			description: productCreateInput.description
 				? JSON.stringify(productCreateInput.description)
-				: null
+				: null,
 		};
 
 		const productCreateResult = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'productCreate'>,
 			MutationProductCreateArgs
 		>(CREATE_PRODUCT_MUTATION, {
-			input: productCreateBody
+			input: productCreateBody,
 		});
 		if (preHandleErrorOnGraphqlResult(productCreateResult, 'productCreate')) {
 			setLoading(false);
@@ -157,9 +157,9 @@
 				omit(item, [
 					'used' as keyof ProductChannelListingAddInput,
 					'channelName' as keyof ProductChannelListingAddInput,
-					'currency' as keyof ProductChannelListingAddInput
-				])
-			) as ProductChannelListingAddInput[]
+					'currency' as keyof ProductChannelListingAddInput,
+				]),
+			) as ProductChannelListingAddInput[],
 		};
 
 		const updateProductChannelListingResult = await GRAPHQL_CLIENT.mutation<
@@ -167,12 +167,12 @@
 			MutationProductChannelListingUpdateArgs
 		>(UPDATE_PRODUCT_CHANNEL_LISTINGS_MUTATION, {
 			id: productCreateResult.data?.productCreate?.product?.id as string,
-			input: cleanChannelListingUpdateInput
+			input: cleanChannelListingUpdateInput,
 		});
 		if (
 			preHandleErrorOnGraphqlResult(
 				updateProductChannelListingResult,
-				'productChannelListingUpdate'
+				'productChannelListingUpdate',
 			)
 		) {
 			setLoading(false);
@@ -185,17 +185,14 @@
 			MutationProductVariantBulkCreateArgs
 		>(PRODUCT_VARIANTS_BULK_CREATE_MUTATION, {
 			product: productCreateResult.data?.productCreate?.product?.id as string,
-			variants: productVariantsInput
+			variants: productVariantsInput,
 		});
 		if (preHandleErrorOnGraphqlResult(variantsBulkCreateResult, 'productVariantBulkCreate')) return;
 
 		let hasError = false;
 		for (const result of variantsBulkCreateResult.data?.productVariantBulkCreate?.results || []) {
 			if (result.errors?.length) {
-				toastStore.send({
-					variant: 'error',
-					message: result.errors[0].message as string
-				});
+				toast.error(result.errors[0].message as string);
 				hasError = true;
 			}
 		}
@@ -208,13 +205,9 @@
 		// 4) create product medias
 		await createProductMedias(productCreateResult.data?.productCreate?.product?.id as string);
 
-		toastStore.send({
-			variant: 'success',
-			message: $tranFunc('product.prdCreated')
-		});
+		toast.success($tranFunc('product.prdCreated'));
 	};
 </script>
-
 
 <div class="m-auto rounded-lg bg-white w-full p-5 text-gray-600 border border-gray-200">
 	<ProductName bind:name={productCreateInput.name} bind:ok={productInputError.name} {loading} />

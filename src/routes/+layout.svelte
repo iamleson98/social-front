@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { Header } from '$lib/components/common';
-	import { Toast } from '$lib/components/ui/Toast';
 	import { page } from '$app/state';
 	import { type Snippet } from 'svelte';
 	import Footer from '$lib/components/common/footer.svelte';
 	import { AlertListener } from '$lib/components/ui/Modal';
 	import '../app.css';
 	import Language from '$lib/components/plugins/language.svelte';
+	import { Toaster } from 'svelte-sonner';
 
 	interface Props {
 		children: Snippet;
@@ -46,5 +46,5 @@
 </main>
 
 <Footer />
-<Toast />
 <AlertListener />
+<Toaster richColors />

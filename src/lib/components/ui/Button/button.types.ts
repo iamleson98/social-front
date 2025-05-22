@@ -41,7 +41,7 @@ export const INPUT_BUTTON_SIZE_MAP: Record<SocialSize | 'xxs', string> = {
   xl: 'min-h-14 text-xl',
 };
 
-export const buttonVariantColorsMap: Record<ButtonVariant, Record<SocialColor, string>> = {
+export const BUTTON_VARIANT_COLORS_MAP: Record<ButtonVariant, Record<SocialColor, string>> = {
   filled: {
     dark: 'text-white bg-gray-900 focus:ring-gray-200',
     gray: 'text-white bg-gray-600 focus:ring-gray-200',

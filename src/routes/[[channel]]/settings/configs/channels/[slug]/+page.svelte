@@ -13,10 +13,9 @@
 		type Mutation,
 		type MutationChannelDeleteArgs,
 		type MutationChannelUpdateArgs,
-		type Query
+		type Query,
 	} from '$lib/gql/graphql';
 	import { Button } from '$lib/components/ui';
-	import { toastStore } from '$lib/stores/ui/toast';
 	import { AppRoute } from '$lib/utils';
 	import { afterNavigate, goto } from '$app/navigation';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
@@ -31,19 +30,20 @@
 	import ShippingZonesForm from '$lib/components/pages/settings/config/channel/shipping-zones-form.svelte';
 	import WarehousesForm from '$lib/components/pages/settings/config/channel/warehouses-form.svelte';
 	import ChannelForm from '$lib/components/pages/settings/config/channel/channel-form.svelte';
+	import { toast } from 'svelte-sonner';
 
 	const channelDetailQuery = operationStore<Pick<Query, 'channel'>>({
 		kind: 'query',
 		query: CHANNEL_DETAILS_QUERY_STORE,
 		variables: { slug: page.params.slug },
-		requestPolicy: 'network-only'
+		requestPolicy: 'network-only',
 	});
 
 	const channelsQuery = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
 		requestPolicy: 'network-only',
 		query: CHANNELS_QUERY,
-		pause: true
+		pause: true,
 	});
 
 	let channelToReplaceId = $state<string>();
@@ -62,19 +62,19 @@
 		removeWarehouses: [],
 		currencyCode: '',
 		checkoutSettings: {
-			automaticallyCompleteFullyPaidCheckouts: false
+			automaticallyCompleteFullyPaidCheckouts: false,
 		},
 		orderSettings: {
 			allowUnpaidOrders: false,
 			deleteExpiredOrdersAfter: 60,
-			markAsPaidStrategy: MarkAsPaidStrategyEnum.PaymentFlow
+			markAsPaidStrategy: MarkAsPaidStrategyEnum.PaymentFlow,
 		},
 		paymentSettings: {
-			defaultTransactionFlowStrategy: TransactionFlowStrategyEnum.Charge
+			defaultTransactionFlowStrategy: TransactionFlowStrategyEnum.Charge,
 		},
 		stockSettings: {
-			allocationStrategy: AllocationStrategyEnum.PrioritizeSortingOrder
-		}
+			allocationStrategy: AllocationStrategyEnum.PrioritizeSortingOrder,
+		},
 	});
 	/** the existing channel props, used for keeping track of changes */
 	let oldChannel = $state.raw<Channel>();
@@ -94,7 +94,7 @@
 					orderSettings: omit(oldChannel.orderSettings, ['__typename']),
 					checkoutSettings: omit(oldChannel.checkoutSettings, ['__typename']),
 					paymentSettings: omit(oldChannel.paymentSettings, ['__typename']),
-					stockSettings: omit(oldChannel.stockSettings, ['__typename'])
+					stockSettings: omit(oldChannel.stockSettings, ['__typename']),
 				};
 			}
 		});
@@ -132,32 +132,29 @@
 	});
 
 	const delModalHeader = $derived(
-		$tranFunc('settings.confirmDelChannel', { id: channelValues.name })
+		$tranFunc('settings.confirmDelChannel', { id: channelValues.name }),
 	);
 
 	const handleDeleteChannel = async () => {
 		const variable: MutationChannelDeleteArgs = {
-			id: $channelDetailQuery.data?.channel?.id as string
+			id: $channelDetailQuery.data?.channel?.id as string,
 		};
 		if (channelToReplaceId) {
 			variable.input = {
-				channelId: channelToReplaceId
+				channelId: channelToReplaceId,
 			};
 		}
 
 		loading = true;
 		const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'channelDelete'>>(
 			CHANNEL_DELETE_MUTATION,
-			variable
+			variable,
 		);
 
 		loading = false;
 
 		if (preHandleErrorOnGraphqlResult(result, 'channelDelete')) return;
-		toastStore.send({
-			variant: 'success',
-			message: 'Channel deleted successfully'
-		});
+		toast.success('Channel deleted successfully');
 		await goto(AppRoute.SETTINGS_CONFIGS_CHANNELS());
 	};
 
@@ -170,20 +167,17 @@
 			MutationChannelUpdateArgs
 		>(CHANNEL_UPDATE_MUTATION, {
 			id: $channelDetailQuery.data?.channel?.id as string,
-			input: omit(channelValues, ['currencyCode'])
+			input: omit(channelValues, ['currencyCode']),
 		});
 
 		loading = false;
 
 		if (preHandleErrorOnGraphqlResult(result, 'channelUpdate')) return;
-		toastStore.send({
-			variant: 'success',
-			message: 'Channel updated successfully'
-		});
+		toast.success('Channel updated successfully');
 
 		await goto(AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(channelValues.slug as string), {
 			replaceState: true,
-			invalidateAll: true
+			invalidateAll: true,
 		});
 	};
 
@@ -204,7 +198,7 @@
 			if (cur.id !== channel.id && cur.currencyCode === channel.currencyCode) {
 				return acc.concat({
 					value: cur.id,
-					label: cur.name
+					label: cur.name,
 				});
 			}
 			return acc;

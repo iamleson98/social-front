@@ -7,7 +7,7 @@
 		ShoppingBagPlus,
 		BurstSale,
 		Icon,
-		Check
+		Check,
 	} from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import type {
@@ -15,14 +15,13 @@
 		Mutation,
 		MutationCheckoutLinesAddArgs,
 		Product,
-		ProductVariant
+		ProductVariant,
 	} from '$lib/gql/graphql';
 	import { HTTPStatusSuccess, MAX_RATING } from '$lib/utils/consts';
 	import { formatMoney, preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { fade } from 'svelte/transition';
 	import { Rating } from '$lib/components/ui/rating';
 	import { checkoutStore } from '$lib/stores/app';
-	import { toastStore } from '$lib/stores/ui/toast';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Badge } from '$lib/components/ui/badge';
 	import { CHECKOUT_ADD_LINE_MUTATION } from '$lib/api/checkout';
@@ -35,6 +34,7 @@
 	import { operationStore, type OperationResultStore } from '$lib/api/operation';
 	import { CHANNELS } from '$lib/utils/channels';
 	import { READ_ONLY_USER_STORE } from '$lib/stores/auth/user';
+	import { toast } from 'svelte-sonner';
 
 	type Props = {
 		productInformation: Product;
@@ -64,20 +64,22 @@
 			return formatMoney(
 				productInformation.pricing?.priceRange?.start?.gross?.currency || prdChannel!.currency,
 				productInformation.pricing?.priceRange?.start?.gross?.amount || 0,
-				productInformation.pricing?.priceRange?.stop?.gross?.amount
+				productInformation.pricing?.priceRange?.stop?.gross?.amount,
 			);
 
 		return formatMoney(
 			selectedVariant.pricing?.price?.gross?.currency || prdChannel!.currency,
-			selectedVariant.pricing?.price?.gross?.amount || 0
+			selectedVariant.pricing?.price?.gross?.amount || 0,
 		);
 	});
 
 	let userShippingAddress = $derived.by(() => {
-		if (!$READ_ONLY_USER_STORE || !$READ_ONLY_USER_STORE?.addresses?.length) return $tranFunc('product.chooseAddress');
+		if (!$READ_ONLY_USER_STORE || !$READ_ONLY_USER_STORE?.addresses?.length)
+			return $tranFunc('product.chooseAddress');
 
 		const defaulShippingAddress =
-			$READ_ONLY_USER_STORE.addresses.find((addr) => addr.isDefaultShippingAddress) || $READ_ONLY_USER_STORE.addresses[0];
+			$READ_ONLY_USER_STORE.addresses.find((addr) => addr.isDefaultShippingAddress) ||
+			$READ_ONLY_USER_STORE.addresses[0];
 
 		return `${defaulShippingAddress.streetAddress1 || defaulShippingAddress.streetAddress2}, ${defaulShippingAddress.cityArea}, ${defaulShippingAddress.city}`;
 	});
@@ -118,10 +120,7 @@
 			const fetchResultParsed = await fetchResult.json();
 
 			if (fetchResultParsed.status !== HTTPStatusSuccess) {
-				toastStore.send({
-					variant: 'error',
-					message: fetchResultParsed.message
-				});
+				toast.error(fetchResultParsed.message);
 			}
 
 			checkoutStore.set(fetchResultParsed.checkout);
@@ -135,10 +134,10 @@
 				lines: [
 					{
 						variantId: selectedVariant.id,
-						quantity: quantitySelected
-					}
-				]
-			}
+						quantity: quantitySelected,
+					},
+				],
+			},
 		});
 	};
 </script>
@@ -170,9 +169,9 @@
 				{@const {
 					pricing: {
 						discount: {
-							gross: { amount, currency }
-						}
-					}
+							gross: { amount, currency },
+						},
+					},
 				} = productInformation}
 
 				<Badge
@@ -277,7 +276,7 @@
 			{#if selectedVariant}
 				<span class="text-gray-600 text-xs ml-2" transition:fade={{ duration: 100 }}>
 					{$tranFunc('product.variantAvailable', {
-						quantity: selectedVariant.quantityLimitPerCustomer || selectedVariant.quantityAvailable
+						quantity: selectedVariant.quantityLimitPerCustomer || selectedVariant.quantityAvailable,
 					})}
 				</span>
 			{/if}

@@ -3,8 +3,8 @@
 	import { Button } from '$lib/components/ui';
 	import type { SocialSize } from '$lib/components/ui/common';
 	import { Checkbox, Input, RadioButton } from '$lib/components/ui/Input';
-	import { toastStore } from '$lib/stores/ui/toast';
 	import type { SocialVariant } from '$lib/utils';
+	import { toast } from 'svelte-sonner';
 
 	let label = $state(true);
 	let placeholder = $state(false);
@@ -37,11 +37,7 @@
 		text += `/>`;
 
 		navigator.clipboard.writeText(text).then(() => {
-			toastStore.send({
-				variant: 'success',
-				message: `Copied code: ${text}`,
-				timeout: 5000
-			});
+			toast.success(`Copied code: ${text}`);
 		});
 	};
 </script>

@@ -1,13 +1,9 @@
 <script lang="ts">
-	import {
-		buttonVariantColorsMap,
-		ICON_OF_BUTTON_SIZE_MAP,
-		type ButtonProps
-	} from './button.types';
+	import { BUTTON_VARIANT_COLORS_MAP, type ButtonProps } from './button.types';
 	import { Icon, type IconContent } from '$lib/components/icons';
 	import { debounceClick } from '$lib/actions/input-debounce';
 	import { INPUT_BUTTON_SIZE_MAP } from './button.types';
-	import type { ActionReturn } from 'svelte/action';
+	import { classNames } from '$lib/utils/utils';
 
 	type IconProps = {
 		icon?: IconContent;
@@ -33,13 +29,6 @@
 		...restProps
 	}: ButtonProps = $props();
 
-	const bindAction = (node: HTMLButtonElement | HTMLAnchorElement): ActionReturn => {
-		ref = node;
-		return {
-			destroy: () => {}
-		};
-	};
-
 	let extraProps = $derived.by(() => {
 		const res: Record<string, unknown> = {};
 
@@ -49,7 +38,6 @@
 			if (disabled !== undefined) {
 				res['aria-disabled'] = disabled;
 			}
-			return res;
 		} else {
 			res.disabled = disabled;
 		}
@@ -72,11 +60,20 @@
 
 <svelte:element
 	this={href ? 'a' : 'button'}
-	class={`${buttonVariantColorsMap[variant][color]} button button-${size} ${INPUT_BUTTON_SIZE_MAP[size]} ${radius} ${className}`}
-	class:uppercase={upper}
-	class:w-full={fullWidth}
+	bind:this={ref}
+	class={classNames(
+		{
+			uppercase: upper,
+			'w-full': fullWidth,
+			'!text-gray-500 !bg-gray-200 !cursor-not-allowed !pointer-events-none !touch-none':
+				!!disabled || loading,
+			[BUTTON_VARIANT_COLORS_MAP[variant][color]]: !disabled && !loading,
+		},
+		`button button-${size} ${className}`,
+		INPUT_BUTTON_SIZE_MAP[size],
+		radius,
+	)}
 	{type}
-	use:bindAction
 	use:debounceClick={clickDebounceOptions}
 	{...restProps}
 	{...extraProps}
@@ -97,10 +94,6 @@
 	.button {
 		@apply cursor-pointer relative outline-hidden! !select-none gap-1.5 appearance-none text-center inline-flex justify-center items-center leading-none grow-0 font-medium focus:ring-4;
 		-webkit-tap-highlight-color: transparent;
-	}
-	.button[disabled],
-	.button[aria-disabled='true'] {
-		@apply !text-gray-500 !bg-gray-200 !cursor-not-allowed !pointer-events-none !touch-none !border-none;
 	}
 	.button-xs {
 		@apply px-3;

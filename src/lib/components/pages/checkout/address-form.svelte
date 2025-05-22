@@ -23,11 +23,11 @@
 	import { Input, Label, RadioButton } from '$lib/components/ui/Input';
 	import { camelCase, uniqBy } from 'es-toolkit';
 	import { Button } from '$lib/components/ui';
-	import { toastStore } from '$lib/stores/ui/toast';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import { Alert } from '$lib/components/ui/Alert';
 	import CountryByChannelSelect from '$lib/components/common/country-language/country-by-channel-select.svelte';
 	import { tranFunc } from '$i18n';
+	import { toast } from 'svelte-sonner';
 
 	type Props = {
 		countrySelectOptions?: SelectOption[];
@@ -99,10 +99,7 @@
 
 	const handleSubmit = () => {
 		if (!$ADDRESS_VALIDATION_RULES_STORE.data?.addressValidationRules) {
-			toastStore.send({
-				variant: 'error',
-				message: 'Address validation rules are not available',
-			});
+			toast.error('Address validation rules are not available');
 			return;
 		}
 

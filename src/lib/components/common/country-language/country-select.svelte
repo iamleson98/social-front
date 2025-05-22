@@ -11,7 +11,12 @@
 	} from '$lib/components/ui/select';
 	import type { Query } from '$lib/gql/graphql';
 
-	let { size = 'md', value, class: className = '' }: Omit<SelectProps, 'options'> = $props();
+	let {
+		size = 'md',
+		value = $bindable(),
+		class: className = '',
+		label,
+	}: Omit<SelectProps, 'options'> = $props();
 
 	const shopStore = operationStore<Pick<Query, 'shop'>>({
 		kind: 'query',
@@ -22,7 +27,7 @@
 
 <div class={className}>
 	{#if $shopStore.fetching}
-		<SelectSkeleton {size} label />
+		<SelectSkeleton {size} label={!!label} />
 	{:else if $shopStore.error}
 		<Alert variant="error" {size} bordered>{$shopStore.error.message}</Alert>
 	{:else if $shopStore.data?.shop}
@@ -30,6 +35,6 @@
 			label: item.country,
 			value: item.code,
 		}))}
-		<Select {options} {size} bind:value placeholder={$tranFunc('placeholders.valuePlaceholder')} />
+		<Select {options} {size} {label} bind:value placeholder={$tranFunc('placeholders.valuePlaceholder')} />
 	{/if}
 </div>

@@ -14,7 +14,7 @@ export const load = async (event) => {
 
   return {
     meta: {
-      title: await serverSideTranslate('signup.title', event),
+      title: await serverSideTranslate(event, 'signup.title'),
       description: "Sign up to create an account on our platform",
     },
   };

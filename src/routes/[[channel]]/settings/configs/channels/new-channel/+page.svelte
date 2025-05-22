@@ -10,7 +10,6 @@
 		type Mutation,
 		type MutationChannelCreateArgs
 	} from '$lib/gql/graphql';
-	import { toastStore } from '$lib/stores/ui/toast';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { goto } from '$app/navigation';
@@ -18,6 +17,7 @@
 	import ShippingZonesForm from '$lib/components/pages/settings/config/channel/shipping-zones-form.svelte';
 	import WarehousesForm from '$lib/components/pages/settings/config/channel/warehouses-form.svelte';
 	import ChannelForm from '$lib/components/pages/settings/config/channel/channel-form.svelte';
+	import { toast } from 'svelte-sonner';
 
 	let loading = $state(false);
 	let formOk = $state(false);
@@ -61,10 +61,7 @@
 		loading = false;
 
 		if (preHandleErrorOnGraphqlResult(result, 'channelCreate')) return;
-		toastStore.send({
-			variant: 'success',
-			message: 'Channel created successfully'
-		});
+		toast.success('Channel created successfully');
 
 		await goto(AppRoute.SETTINGS_CONFIGS_CHANNELS());
 	};

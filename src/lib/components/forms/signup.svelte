@@ -11,14 +11,13 @@
 		CountryCode,
 		LanguageCodeEnum,
 		type Mutation,
-		type MutationAccountRegisterArgs
+		type MutationAccountRegisterArgs,
 	} from '$lib/gql/graphql';
 	import { USER_SIGNUP_MUTATION_STORE } from '$lib/api';
 	import { clientSideGetCookieOrDefault, clientSideSetCookie } from '$lib/utils/cookies';
 	import { CHANNEL_KEY, COUNTRY_CODE_KEY, LANGUAGE_KEY } from '$lib/utils/consts';
 	import { PUBLIC_LOCAL_URL, PUBLIC_STORE_FRONT_URL } from '$env/static/public';
 	import { omit } from 'es-toolkit';
-	import { slide } from 'svelte/transition';
 	import { dev } from '$app/environment';
 	import LanguageSelect from '$lib/components/common/country-language/language-select.svelte';
 	import CountrySelect from '$lib/components/common/country-language/country-select.svelte';
@@ -31,35 +30,35 @@
 		DEFAULT_CHANNEL.defaultCountryCode;
 	const DEFAULT_LANGUAGE = clientSideGetCookieOrDefault(LANGUAGE_KEY, LanguageCodeEnum.En);
 
-	const FIELD_REQUIRED_MSG = $tranFunc('helpText.fieldRequired');
+	let FIELD_REQUIRED_MSG = $tranFunc('helpText.fieldRequired');
 
 	const SignupZodSchema = object({
 		email: string()
-			.nonempty({ message: FIELD_REQUIRED_MSG })
+			.nonempty(FIELD_REQUIRED_MSG)
 			.email({ message: $tranFunc('error.invalidEmail') })
 			.max(128, {
 				message: $tranFunc('error.lengthInvalid', {
 					name: $tranFunc('common.email'),
 					max: 128,
-					min: 1
-				})
+					min: 1,
+				}),
 			}),
-		password: string().nonempty({ message: FIELD_REQUIRED_MSG }),
-		firstName: string().nonempty({ message: FIELD_REQUIRED_MSG }),
-		lastName: string().nonempty({ message: FIELD_REQUIRED_MSG }),
-		confirmPassword: string().nonempty({ message: FIELD_REQUIRED_MSG }),
+		password: string().nonempty(FIELD_REQUIRED_MSG),
+		firstName: string().nonempty(FIELD_REQUIRED_MSG),
+		lastName: string().nonempty(FIELD_REQUIRED_MSG),
+		confirmPassword: string().nonempty(FIELD_REQUIRED_MSG),
 		termAndPoliciesAgree: boolean({ coerce: true }),
-		redirectUrl: string().min(1, { message: FIELD_REQUIRED_MSG }),
-		channel: string().min(1, { message: FIELD_REQUIRED_MSG }),
-		languageCode: string()
+		redirectUrl: string().min(1, FIELD_REQUIRED_MSG),
+		channel: string().min(1, FIELD_REQUIRED_MSG),
+		languageCode: string(),
 	})
 		.refine((data) => data.password === data.confirmPassword, {
 			message: $tranFunc('error.passwordsNotMatch'),
-			path: ['confirmPassword']
+			path: ['confirmPassword'],
 		})
 		.refine((data) => !!data.termAndPoliciesAgree, {
 			message: $tranFunc('error.doYouAgree'),
-			path: ['termAndPoliciesAgree']
+			path: ['termAndPoliciesAgree'],
 		});
 
 	type SignupProps = z.infer<typeof SignupZodSchema>;
@@ -73,7 +72,7 @@
 		lastName: '',
 		confirmPassword: '',
 		termAndPoliciesAgree: false,
-		languageCode: DEFAULT_LANGUAGE
+		languageCode: DEFAULT_LANGUAGE,
 	});
 	let countryCode = $state<CountryCode>(DEFAULT_COUNTRY);
 	let signupFormErrors = $state.raw<Partial<Record<keyof SignupProps, string[]>>>({});
@@ -89,12 +88,12 @@
 				clientSideSetCookie(CHANNEL_KEY, chan.slug, {
 					secure: true,
 					expires: new Date(3000, 1, 1),
-					path: '/'
+					path: '/',
 				});
 				clientSideSetCookie(COUNTRY_CODE_KEY, countryCode, {
 					secure: true,
 					expires: new Date(3000, 1, 1),
-					path: '/'
+					path: '/',
 				});
 				return;
 			}
@@ -109,7 +108,7 @@
 				clientSideSetCookie(LANGUAGE_KEY, signupInfo.languageCode, {
 					secure: true,
 					expires: new Date(3000, 1, 1),
-					path: '/'
+					path: '/',
 				});
 			}
 		}
@@ -137,11 +136,11 @@
 			kind: 'mutation',
 			query: USER_SIGNUP_MUTATION_STORE,
 			variables: {
-				input: omit(signupInfo, ['confirmPassword', 'termAndPoliciesAgree'])
+				input: omit(signupInfo, ['confirmPassword', 'termAndPoliciesAgree']),
 			},
 			context: {
-				requestPolicy: 'network-only'
-			}
+				requestPolicy: 'network-only',
+			},
 		});
 	};
 </script>
@@ -164,7 +163,8 @@
 			{$tranFunc('signup.signupSuccess')}
 		</Alert>
 	{/if}
-	<Alert class="mb-2" dismissable size="sm" bordered>{$tranFunc('signup.promtGeoAccessPerm')}</Alert>
+	<Alert class="mb-2" dismissable size="sm" bordered>{$tranFunc('signup.promtGeoAccessPerm')}</Alert
+	>
 	<div class="mb-4">
 		<div class="flex flex-row mobile-m:flex-col justify-between items-start gap-2 mb-2">
 			<div class="w-1/2">
@@ -240,7 +240,7 @@
 			<CountrySelect
 				size="sm"
 				class="w-1/2"
-				bind:singleValue={countryCode}
+				bind:value={countryCode}
 				label={$tranFunc('common.country')}
 			/>
 			<LanguageSelect
@@ -260,12 +260,11 @@
 				disabled={$signupQueryStore?.fetching}
 				onchange={validateForm}
 				size="sm"
+				variant={signupFormErrors.termAndPoliciesAgree?.length ? 'error' : 'info'}
+				subText={signupFormErrors.termAndPoliciesAgree?.length
+					? signupFormErrors.termAndPoliciesAgree[0]
+					: ''}
 			/>
-			{#if signupFormErrors?.termAndPoliciesAgree?.length}
-				<div class="text-xs text-red-600" transition:slide>
-					{signupFormErrors.termAndPoliciesAgree[0]}
-				</div>
-			{/if}
 		</div>
 
 		<Button

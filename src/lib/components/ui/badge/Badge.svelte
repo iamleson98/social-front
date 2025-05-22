@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { CloseX, Icon } from '$lib/components/icons';
-	import { buttonVariantColorsMap } from '$lib/components/ui/Button/button.types';
+	import { BUTTON_VARIANT_COLORS_MAP } from '$lib/components/ui/Button/button.types';
 	import { BADGE_SIZE_VARIANTS, type BadgeProps } from './types';
 
 	let {
@@ -22,7 +22,7 @@
 
 <span
 	bind:this={ref}
-	class={`inline-flex items-center whitespace-nowrap select-none! gap-1 ${roundClass} ${BADGE_SIZE_VARIANTS[size].badge} font-medium badge-${size} ${className} ${buttonVariantColorsMap[variant][color]}`}
+	class={`inline-flex items-center whitespace-nowrap select-none! gap-1 ${roundClass} ${BADGE_SIZE_VARIANTS[size].badge} font-medium badge-${size} ${className} ${BUTTON_VARIANT_COLORS_MAP[variant][color]}`}
 	{...restProps}
 >
 	{#if startIcon}

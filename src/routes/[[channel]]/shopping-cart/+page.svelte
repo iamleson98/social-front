@@ -12,13 +12,13 @@
 	import { onMount } from 'svelte';
 	import { checkoutStore } from '$lib/stores/app';
 	import { HTTPStatusSuccess } from '$lib/utils/consts';
-	import { toastStore } from '$lib/stores/ui/toast';
 	import { EmptyCart } from '$lib/components/icons/SvgOuterIcon';
+	import { toast } from 'svelte-sonner';
 
 	afterNavigate(() => {
 		scrollTo({
 			top: 0,
-			behavior: 'smooth'
+			behavior: 'smooth',
 		});
 	});
 
@@ -30,10 +30,7 @@
 		loading = false;
 
 		if (checkoutData.status !== HTTPStatusSuccess) {
-			toastStore.send({
-				variant: 'error',
-				message: checkoutData.message
-			});
+			toast.error(checkoutData.message);
 			return;
 		}
 
@@ -45,7 +42,7 @@
 	const moneyColorMap: Record<MoneyColor, string> = {
 		red: 'text-red-600',
 		green: 'text-green-700',
-		gray: 'text-gray-500 line-through'
+		gray: 'text-gray-500 line-through',
 	};
 </script>
 
@@ -54,7 +51,7 @@
 	amount: number,
 	title: string,
 	color: MoneyColor,
-	negative: boolean = false
+	negative: boolean = false,
 )}
 	{@const negate = negative ? '-' : ''}
 	<dl class="flex items-center justify-between gap-4 mb-1.5" aria-label={title}>
@@ -116,7 +113,7 @@
 							subtotalPrice.gross.currency,
 							originalTotalPrice,
 							$tranFunc('cart.oldTotalPrice'),
-							'gray'
+							'gray',
 						)}
 
 						{@render MoneyField(
@@ -124,7 +121,7 @@
 							originalTotalPrice - subtotalPrice.gross.amount,
 							$tranFunc('cart.savings'),
 							'green',
-							true
+							true,
 						)}
 
 						<div class="border-t mb-2"></div>
@@ -133,11 +130,16 @@
 							subtotalPrice.gross.currency,
 							subtotalPrice.gross.amount,
 							$tranFunc('cart.tempoTotalPrice'),
-							'red'
+							'red',
 						)}
 					</div>
 
-					<Button variant="filled" fullWidth size="sm" onclick={() => goto(`${AppRoute.CHECKOUT()}/${$checkoutStore.id}`)}>
+					<Button
+						variant="filled"
+						fullWidth
+						size="sm"
+						onclick={() => goto(`${AppRoute.CHECKOUT()}/${$checkoutStore.id}`)}
+					>
 						{$tranFunc('cart.proceedCheckout')}
 					</Button>
 

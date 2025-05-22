@@ -44,7 +44,7 @@
 	};
 
 	let value = $state<string[]>([]);
-	let prds = $state([]);
+	let prds = $state();
 	let currency = $state<string>();
 </script>
 
@@ -77,6 +77,7 @@
 	<SelectSkeleton size="xs" />
 	<SelectSkeleton label size="xs" />
 </div>
+-->
 
 <GraphqlPaginableSelect
 	query={PRODUCT_LIST_QUERY_STORE}
@@ -89,8 +90,8 @@
 	variableSearchQueryPath="search"
 	bind:value={prds}
 	onchange={console.log}
-	multiple={false}
-/> -->
+	multiple={true}
+/> 
 
 <!-- <li class="loading loading-spinner loading-xs"></li> -->
 
