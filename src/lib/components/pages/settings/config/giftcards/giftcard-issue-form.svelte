@@ -134,6 +134,7 @@
 			optionValueKey="id"
 			optionLabelKey="name"
 			size="sm"
+			requestPolicy="cache-and-network"
 			multiple
 			label="Giftcard Tags"
 			bind:value={giftCardInput.addTags}
@@ -150,6 +151,7 @@
 			optionValueKey="email"
 			size="sm"
 			label="To Customer"
+			requestPolicy="cache-and-network"
 			bind:value={giftCardInput.userEmail}
 			disabled={loading}
 		/>
