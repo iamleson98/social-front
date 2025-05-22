@@ -51,6 +51,7 @@
 			{...rest}
 			bind:value
 			placeholder={$tranFunc('placeholders.valuePlaceholder')}
+			{size}
 		/>
 	{/if}
 </div>

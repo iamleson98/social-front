@@ -5,7 +5,7 @@ export const load = async (event) => {
   return {
     status: HTTPStatusSuccess,
     meta: {
-      title: await serverSideTranslate('resetPassword.title', event),
+      title: await serverSideTranslate(event, 'resetPassword.title'),
       description: "Reset your password by providing your email address",
     }
   };

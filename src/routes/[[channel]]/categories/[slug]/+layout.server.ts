@@ -14,7 +14,7 @@ export const load = async (event) => {
 
   if (!slug || !validator.isSlug(slug)) {
     return error(HTTPStatusBadRequest, {
-      message: await serverSideTranslate('error.invalidSlug', event),
+      message: await serverSideTranslate(event, 'error.invalidSlug'),
     });
   }
 
@@ -32,7 +32,7 @@ export const load = async (event) => {
 
   if (categoryResult.error) {
     return error(HTTPStatusServerError, {
-      message: await serverSideTranslate('error.failedToLoad', event),
+      message: await serverSideTranslate(event, 'error.failedToLoad'),
     });
   }
 

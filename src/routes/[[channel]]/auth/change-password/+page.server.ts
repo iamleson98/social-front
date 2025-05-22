@@ -12,14 +12,14 @@ export const load = async (event) => {
 
 	if (!token || !email || !validator.isEmail(email)) {
 		return error(HTTPStatusBadRequest, {
-			message: await serverSideTranslate('changePassword.invalidUrl', event)
+			message: await serverSideTranslate(event, 'changePassword.invalidUrl')
 		})
 	}
 
 	return {
 		status: HTTPStatusSuccess,
 		meta: {
-			title: await serverSideTranslate('changePassword.title', event),
+			title: await serverSideTranslate(event, 'changePassword.title'),
 			description: 'Change your password by providing your new password',
 		},
 	};

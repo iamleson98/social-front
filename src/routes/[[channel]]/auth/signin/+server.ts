@@ -18,7 +18,7 @@ export const POST = async (event) => {
   const rememberMe = credentials.rememberMe || false;
 
   if (!email.trim() || !password) {
-    return json({ error: await serverSideTranslate('error.invalidEmailAndPassword', event), status: HTTPStatusBadRequest });
+    return json({ error: await serverSideTranslate(event, 'error.invalidEmailAndPassword'), status: HTTPStatusBadRequest });
   }
 
   const result = await performServerSideGraphqlRequest<Pick<Mutation, 'tokenCreate'>>(

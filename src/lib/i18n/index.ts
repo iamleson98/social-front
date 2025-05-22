@@ -64,62 +64,69 @@ export const languageSupportInfer = (language: LanguageCode | LanguageCodeEnum) 
       return LanguageCodeEnum.Ja;
 
     default:
-      return null;
+      return LanguageCodeEnum.En;
   }
 }
 
 const TRANS_MAP: Partial<Record<LanguageCodeEnum, Translation>> = {
   [LanguageCodeEnum.Vi]: parseTranslationObject(vietnamese, {}),
 };
+
 const innerStore = writable(TRANS_MAP.VI);
 
 export const switchTranslationLanguage = async (language: LanguageCode) => {
-  const lang = languageSupportInfer(language) || LanguageCodeEnum.Vi;
+  const lang = languageSupportInfer(language);
   const trans = await getTranslation(lang);
   innerStore.set(trans!);
 };
 
 const getTranslation = async (lang: LanguageCodeEnum) => {
-  if (!TRANS_MAP[lang]) {
-    const inferLang = languageSupportInfer(lang) || LanguageCodeEnum.Vi;
+  if (TRANS_MAP[lang]) return TRANS_MAP[lang];
 
-    if (inferLang === LanguageCodeEnum.Ko) {
-      const im = await import('./ko');
-      TRANS_MAP[lang] = parseTranslationObject(im.default, {});
-    } else if (inferLang === LanguageCodeEnum.Ja) {
-      const im = await import('./ja');
-      TRANS_MAP[lang] = parseTranslationObject(im.default, {});
-    } else if (inferLang === LanguageCodeEnum.En) {
-      const im = await import('./en');
-      TRANS_MAP[lang] = parseTranslationObject(im.default, {});
-    }
+  const inferLang = languageSupportInfer(lang);
+
+  let imp = undefined;
+
+  switch (inferLang) {
+    case LanguageCodeEnum.Ko:
+      imp = await import("./ko");
+      break;
+    case LanguageCodeEnum.Ja:
+      imp = await import("./ja");
+      break;
+    case LanguageCodeEnum.En:
+      imp = await import("./en");
+      break;
+    default:
+      return TRANS_MAP.VI;
   }
-  return TRANS_MAP[lang] || TRANS_MAP.EN;
+
+  TRANS_MAP[lang] = parseTranslationObject(imp.default, {});
+  return TRANS_MAP[lang];
 }
 
-export const serverSideTranslate = async <T extends RequestEvent>(key: string, event: T, args?: Record<string, unknown>) => {
+export const serverSideTranslate = async <T extends RequestEvent>(event: T, key: string, args?: Record<string, unknown>) => {
   const languageCookie = event.cookies.get(LANGUAGE_KEY) as LanguageCodeEnum || LanguageCodeEnum.Vi;
 
-  const inferLang = languageSupportInfer(languageCookie) || LanguageCodeEnum.Vi;
-  const trans = await getTranslation(inferLang);
+  const trans = await getTranslation(languageCookie);
   return buildTranslationText(trans!, key, args);
 };
 
 const buildTranslationText = (trans: Translation, key: string, args?: Record<string, unknown>) => {
   const tranObject = trans[key];
-    if (tranObject === undefined) {
-      throw new Error(`Translation key ${key} not found in translations`);
-    }
-    if (args && Object.keys(args).some(arg => !tranObject.args?.has(arg))) {
-      throw new Error(`Translation key ${key} has no placeholders for ${Object.keys(args).join(', ')}`);
-    }
+  if (tranObject === undefined) {
+    throw new Error(`Translation key ${key} not found in translations`);
+  }
+  if (args && Object.keys(args).some(arg => !tranObject.args?.has(arg))) {
+    throw new Error(`Translation key ${key} has no placeholders for ${Object.keys(args).join(', ')}`);
+  }
 
-    let result = tranObject.template;
-    for (const key in args) {
-      result = result.replace(`{{${key}}}`, args[key] as string);
-    }
+  let result = tranObject.template;
+  for (const key in args) {
+    result = result.replace(`{{${key}}}`, args[key] as string);
+  }
 
-    return result;
+  return result;
 }
 
 /**a svelte store for translation.
