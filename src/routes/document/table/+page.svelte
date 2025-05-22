@@ -4,76 +4,73 @@
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/badge';
 	import IconButton from '$lib/components/ui/Button/IconButton.svelte';
-	import { Checkbox, Input } from '$lib/components/ui/Input';
-	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
+	import { Checkbox } from '$lib/components/ui/Input';
 	import { GraphqlPaginableTable, Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import type { Product, ProductOrderField, Query } from '$lib/gql/graphql';
 	import { toastStore } from '$lib/stores/ui/toast';
 
-	let loading = $state(false);
-	let isNormalTable = $state(true);
-	let numFilter = $state(5);
-	let numColumn = $state(5);
-	let numRow = $state(3);
-
 	const PRODUCT_COLUMNS: TableColumnProps<Product, ProductOrderField>[] = [
 		{
 			title: 'First Column',
-			child: firstColumn
+			child: firstColumn,
 		},
 		{
 			title: 'Second Column',
-			child: secondColumn
+			child: secondColumn,
 		},
 		{
 			title: 'Third Column',
-			child: thirdColumn
+			child: thirdColumn,
 		},
 		{
 			title: 'Action Column',
-			child: actionColumn
-		}
+			child: actionColumn,
+		},
 	];
 
-	const handleCopyButton = () => {
-		let codeContent = '';
-		if (isNormalTable) {
-			if (loading) {
-				codeContent = `<SkeletonContainer>
-					{#each Array.from({ length: ${numRow} }) as _, idx (idx)}
-						<div class="flex gap-4">
-							{#each Array.from({ length: ${numColumn} }) as _, colIdx (colIdx)}
-								<Skeleton class="h-8 w-full flex-1" />
-							{/each}
-						</div>
-					{/each}
-				</SkeletonContainer>`;
-			} else {
-				codeContent = `<div class="rounded-md p-2 bg-white">
-					<Table items={[]} columns={PRODUCT_COLUMNS}/>
-				</div>`;
-			}
-		} else {
-			codeContent = `<GraphqlPaginableTable
-			query={PRODUCT_LIST_QUERY_STORE}
-			variables={{ first: ${numFilter} }}
-			resultKey={'products' as keyof Query}
-			columns={PRODUCT_COLUMNS}
-			forceReExecuteGraphqlQuery={true}
-			disabled={true}
-		/>`;
-		}
+	let disabledTable = $state(false);
+	let disabledGraphqlTable = $state(false);
 
-		navigator.clipboard.writeText(codeContent).then(() => {
+	let sortMultipleTable = $state(false);
+	let sortMultipleGraphqlTable = $state(false);
+
+	const handleCopyNormalTable = () => {
+		const code = `<Table
+			disabled={${disabledTable}}
+			items={[]}
+			columns={PRODUCT_COLUMNS}
+			sortMultiple={${sortMultipleTable}}
+		/>`;
+		navigator.clipboard.writeText(code).then(() => {
 			toastStore.send({
 				variant: 'success',
-				message: `Copied code: ${codeContent}`,
-				timeout: 5000
+				message: `Copied code: ${code}`,
+				timeout: 5000,
+			});
+		});
+	};
+
+	const handleCopyGraphqlTable = () => {
+		const code = `<GraphqlPaginableTable
+			query={PRODUCT_LIST_QUERY_STORE}
+			variables={{ first: 10 }}
+			resultKey={'products' as keyof Query}
+			columns={PRODUCT_COLUMNS}
+			disabled={${disabledGraphqlTable}}
+			sortMultiple={${sortMultipleGraphqlTable}}
+			forceReExecuteGraphqlQuery={true}
+		/>`;
+		navigator.clipboard.writeText(code).then(() => {
+			toastStore.send({
+				variant: 'success',
+				message: `Copied code: ${code}`,
+				timeout: 5000,
 			});
 		});
 	};
 </script>
 
+<!-- Snippets -->
 {#snippet firstColumn({ item }: { item: Product })}<div>{item.id}</div>{/snippet}
 {#snippet secondColumn({ item }: { item: Product })}<div>{item.name}</div>{/snippet}
 {#snippet thirdColumn({ item }: { item: Product })}
@@ -87,43 +84,37 @@
 	<IconButton variant="outline" size="xs" onclick={() => {}} icon={OpenEye} />
 {/snippet}
 
-<!-- Khi checkbox được bật/tắt, biến loading sẽ tự thay đổi -->
-<Checkbox bind:checked={loading} label={loading ? 'Loading' : 'Not loading'} />
-<Checkbox bind:checked={isNormalTable} label="Normal Table" />
-
-{#if isNormalTable}
-	<div class="flex">
-		<Input type="number" bind:value={numColumn} label="Number of columns" />
+<!-- Normal Table -->
+<div class="rounded-md p-4 bg-white border mb-4">
+	<h2 class="text-lg font-semibold mb-2">Normal Table</h2>
+	<div class="flex gap-4 mb-2">
+		<Checkbox bind:checked={disabledTable} label="Disabled" />
+		<Checkbox bind:checked={sortMultipleTable} label="Sort Multiple" />
 	</div>
-	{#if loading}
-		<SkeletonContainer class="space-y-2">
-			{#each Array.from({ length: numRow }) as _, rowIdx (rowIdx)}
-				<div class="flex gap-4">
-					{#each Array.from({ length: numColumn }) as _, colIdx (colIdx)}
-						<Skeleton class="h-8 w-full flex-1" />
-					{/each}
-				</div>
-			{/each}
-		</SkeletonContainer>
-	{:else}
-		<div class="rounded-md p-2 bg-white">
-			<Table items={[]} columns={PRODUCT_COLUMNS} />
-		</div>
-	{/if}
-{/if}
+	<Table
+		items={[]}
+		columns={PRODUCT_COLUMNS}
+		disabled={disabledTable}
+		sortMultiple={sortMultipleTable}
+	/>
+	<Button class="mt-2" onclick={handleCopyNormalTable}>Copy Normal Table</Button>
+</div>
 
-{#if !isNormalTable}
-	<Input type="number" bind:value={numFilter} />
-	<div class="rounded-md p-2">
-		<GraphqlPaginableTable
-			query={PRODUCT_LIST_QUERY_STORE}
-			variables={{ first: numFilter }}
-			resultKey={'products' as keyof Query}
-			columns={PRODUCT_COLUMNS}
-			forceReExecuteGraphqlQuery={true}
-			disabled={true}
-		/>
+<!-- GraphQL Table -->
+<div class="rounded-md p-4 bg-white border">
+	<h2 class="text-lg font-semibold mb-2">GraphQL Table</h2>
+	<div class="flex gap-4 mb-2">
+		<Checkbox bind:checked={disabledGraphqlTable} label="Disabled" />
+		<Checkbox bind:checked={sortMultipleGraphqlTable} label="Sort Multiple" />
 	</div>
-{/if}
-
-<Button onclick={handleCopyButton}>Copy</Button>
+	<GraphqlPaginableTable
+		query={PRODUCT_LIST_QUERY_STORE}
+		variables={{ first: 3 }}
+		resultKey={'products' as keyof Query}
+		columns={PRODUCT_COLUMNS}
+		disabled={disabledGraphqlTable}
+		sortMultiple={sortMultipleGraphqlTable}
+		forceReExecuteGraphqlQuery={true}
+	/>
+	<Button class="mt-2" onclick={handleCopyGraphqlTable}>Copy GraphQL Table</Button>
+</div>
