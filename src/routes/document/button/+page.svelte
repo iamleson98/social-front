@@ -3,7 +3,7 @@
 	import { Button, IconButton, type ButtonVariant } from '$lib/components/ui/Button';
 	import type { SocialColor, SocialSize } from '$lib/components/ui/common';
 	import { Checkbox, RadioButton } from '$lib/components/ui/Input';
-	import { toastStore } from '$lib/stores/ui/toast';
+	import { toast } from 'svelte-sonner';
 
 	const socialColors: SocialColor[] = [
 		'dark',
@@ -19,7 +19,7 @@
 		'green',
 		'lime',
 		'yellow',
-		'orange'
+		'orange',
 	];
 
 	const socialSizes: SocialSize[] = ['xs', 'sm', 'md', 'lg', 'xl'];
@@ -48,11 +48,7 @@
 		}
 
 		navigator.clipboard.writeText(codeContent).then(() => {
-			toastStore.send({
-				variant: 'success',
-				message: `Copied code: ${codeContent}`,
-				timeout: 5000
-			});
+			toast.success(`Copied code: ${codeContent}`);
 		});
 	};
 </script>
@@ -91,7 +87,7 @@
 				{disabled}
 				startIcon={startIcon ? Email : undefined}
 				endIcon={endIcon ? Email : undefined}
-				loading={loading}
+				{loading}
 				class={tooltip ? 'tooltip tooltip-top' : ''}
 				data-tip={tooltip ? `Button ${color} ${size}` : undefined}
 			>
@@ -114,7 +110,7 @@
 					{size}
 					icon={Email}
 					{disabled}
-					loading={loading}
+					{loading}
 					onclick={() => handleCopyButton('icon', color, size)}
 				/>
 				<div>{color} {size}</div>

@@ -6,7 +6,6 @@
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Label, PasswordInput } from '$lib/components/ui/Input';
 	import type { Mutation, MutationPasswordChangeArgs } from '$lib/gql/graphql';
-	import { toastStore } from '$lib/stores/ui/toast';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import { object, string, z } from 'zod';
 

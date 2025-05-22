@@ -8,7 +8,7 @@
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import { GraphqlPaginableTable, Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import type { Product, ProductOrderField, Query } from '$lib/gql/graphql';
-	import { toastStore } from '$lib/stores/ui/toast';
+	import { toast } from 'svelte-sonner';
 
 	let loading = $state(false);
 	let isNormalTable = $state(true);
@@ -19,20 +19,20 @@
 	const PRODUCT_COLUMNS: TableColumnProps<Product, ProductOrderField>[] = [
 		{
 			title: 'First Column',
-			child: firstColumn
+			child: firstColumn,
 		},
 		{
 			title: 'Second Column',
-			child: secondColumn
+			child: secondColumn,
 		},
 		{
 			title: 'Third Column',
-			child: thirdColumn
+			child: thirdColumn,
 		},
 		{
 			title: 'Action Column',
-			child: actionColumn
-		}
+			child: actionColumn,
+		},
 	];
 
 	const handleCopyButton = () => {
@@ -65,11 +65,7 @@
 		}
 
 		navigator.clipboard.writeText(codeContent).then(() => {
-			toastStore.send({
-				variant: 'success',
-				message: `Copied code: ${codeContent}`,
-				timeout: 5000
-			});
+			toast.success(`Copied code: ${codeContent}`);
 		});
 	};
 </script>

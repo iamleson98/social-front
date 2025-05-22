@@ -6,23 +6,23 @@
 		type Mutation,
 		type MutationCheckoutCompleteArgs,
 		type MutationPaymentGatewayInitializeArgs,
-		type PaymentGatewayToInitialize
+		type PaymentGatewayToInitialize,
 	} from '$lib/gql/graphql';
 	import {
 		CHECKOUT_COMPLETE_MUTATION,
-		PAYMENT_GATEWAYS_INITIALIZE_MUTATION
+		PAYMENT_GATEWAYS_INITIALIZE_MUTATION,
 	} from '$lib/api/checkout';
 	import { checkoutStore } from '$lib/stores/app';
-	import { toastStore } from '$lib/stores/ui/toast';
 	import {
 		adyenGatewayId,
 		paidStatuses,
 		supportedPaymentGateways,
 		type ParsedPaymentGateways,
-		type PaymentStatus
+		type PaymentStatus,
 	} from '$lib/utils/consts';
 	import { preHandleErrorOnGraphqlResult } from '$lib/utils/utils';
 	import AdyenComponent from './adyen-component.svelte';
+	import { toast } from 'svelte-sonner';
 
 	let availablePaymentGateways = $state<ParsedPaymentGateways>([]);
 
@@ -50,10 +50,10 @@
 					!!gateway && supportedPaymentGateways.includes(gateway.id)
 						? acc.concat({
 								id: gateway.id,
-								data: gateway.config
+								data: gateway.config,
 							})
 						: acc,
-				[]
+				[],
 			);
 
 			GRAPHQL_CLIENT.mutation<
@@ -64,9 +64,9 @@
 				{
 					id: $checkoutStore.id,
 					paymentGateways,
-					amount: $checkoutStore.totalPrice.gross.amount
+					amount: $checkoutStore.totalPrice.gross.amount,
 				},
-				{ requestPolicy: 'network-only' }
+				{ requestPolicy: 'network-only' },
 			)
 				.toPromise()
 				.then((result) => {
@@ -76,10 +76,7 @@
 						?.gatewayConfigs as ParsedPaymentGateways;
 				})
 				.catch((err) => {
-					toastStore.send({
-						message: err,
-						variant: 'error'
-					});
+					toast.error(err);
 				});
 		}
 	});
@@ -89,19 +86,16 @@
 			GRAPHQL_CLIENT.mutation<Pick<Mutation, 'checkoutComplete'>, MutationCheckoutCompleteArgs>(
 				CHECKOUT_COMPLETE_MUTATION,
 				{
-					id: $checkoutStore.id
+					id: $checkoutStore.id,
 				},
-				{ requestPolicy: 'network-only' }
+				{ requestPolicy: 'network-only' },
 			)
 				.toPromise()
 				.then((result) => {
 					if (preHandleErrorOnGraphqlResult(result, 'checkoutComplete')) return;
 				})
 				.catch((err) => {
-					toastStore.send({
-						message: err,
-						variant: 'error'
-					});
+					toast.error(err);
 				});
 		}
 	});
