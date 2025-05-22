@@ -122,7 +122,9 @@
 	const onInput = (value: string = '') => {
 		if (!variableSearchQueryPath) return;
 		if (!has(variables, variableSearchQueryPath))
-			throw new Error(`invalid variable search query path: ${variableSearchQueryPath}. Have you provided it in the "variables" argument ?`);
+			throw new Error(
+				`invalid variable search query path: ${variableSearchQueryPath}. Have you provided it in the "variables" argument ?`,
+			);
 
 		const newVariables = { ...variables };
 		delete newVariables['after']; // we fetch from beginning, so no need after here

@@ -139,7 +139,7 @@
 {:else}
 	<!-- MARK: Detail -->
 	<div class="flex flex-nowrap gap-2">
-		<div class="w-1/4 sticky top-16 h-full p-2">
+		<div class="w-1/4 sticky top-16 h-full p-2 flex flex-col gap-3">
 			<!-- MARK: Avatar -->
 			<div class="flex items-start gap-2 text-gray-700 p-3">
 				<div class="rounded-full h-16 w-16 overflow-hidden">
