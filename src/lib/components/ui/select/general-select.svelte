@@ -18,7 +18,7 @@
 	import { INPUT_CLASSES } from '$lib/components/ui/Input/input.types';
 	import { Badge } from '$lib/components/ui/badge';
 	import { INPUT_BUTTON_SIZE_MAP } from '../Button';
-	import { difference, noop, omit } from 'es-toolkit';
+	import { difference, noop } from 'es-toolkit';
 	import { scrollToEnd } from '$lib/actions/scroll-end';
 
 	let {
@@ -52,34 +52,56 @@
 	let optionRefs: HTMLElement[] = [];
 	/** mapping for selected options */
 	let selectMapper: Record<Primitive, SelectOption> = $state.raw({});
+	let selectMapperChanged = $state(false);
 
-	const reCalculateSelectMapper = async () => {
-		if (!value) {
-			selectMapper = {};
+	$effect(() => {
+		if (value === undefined) {
+			if (Object.keys(selectMapper).length) {
+				selectMapper = {};
+				selectMapperChanged = true;
+			}
 			return;
 		}
 
 		if (multiple && Array.isArray(value)) {
-			let newMapper = { ...selectMapper };
-
 			const existingKeys = Object.keys(selectMapper);
-			newMapper = omit(newMapper, difference(existingKeys, value)); // remove items that not selected
+			const diffs1 = difference(value, existingKeys);
+			const diffs2 = difference(existingKeys, value);
 
-			for (const val of value) {
-				if (!newMapper[val]) newMapper[val] = options.find((opt) => opt.value === val)!;
+			if (diffs1.length || diffs2.length) {
+				const newMapper = { ...selectMapper };
+
+				for (const diff of diffs1) {
+					newMapper[diff] = options.find((opt) => opt.value === diff)!;
+				}
+				for (const diff of diffs2) {
+					delete newMapper[diff];
+				}
+
+				selectMapper = newMapper;
+				selectMapperChanged = true;
 			}
-
-			selectMapper = newMapper;
 			return;
 		}
 
-		if (value) {
-			selectMapper = { [value]: options.find((opt) => opt.value === value)! };
-		} else selectMapper = {};
-	};
+		if (!multiple && value !== undefined) {
+			if (!(value in selectMapper)) {
+				const opt = options.find((opt) => opt.value === value);
+				selectMapper = { [value]: opt || ({ value, label: value } as SelectOption) };
+				selectMapperChanged = true;
+			}
+		}
+	});
 
 	$effect(() => {
-		reCalculateSelectMapper();
+		if (selectMapperChanged && onchange) {
+			if (multiple) {
+				onchange(Object.values(selectMapper));
+			} else {
+				onchange(Object.values(selectMapper)[0]);
+			}
+			selectMapperChanged = false;
+		}
 	});
 
 	/** display text for input */
@@ -129,14 +151,14 @@
 			// in multiple query we only clear the value and selectMapper
 			// the selected values will be kept
 			value = undefined;
-			selectMapper = {};
+			// selectMapper = {};
 			onchange?.(undefined);
 		}
 		onclearInputField?.();
 	};
 
 	const handleSelect = async (option: SelectOption) => {
-		if (option.disabled || selectMapper[option.value]) return; // disabled options cant be selected
+		if (disabled || option.disabled || selectMapper[option.value]) return; // disabled options cant be selected
 
 		if (multiple) {
 			if (value === undefined) {
@@ -150,8 +172,7 @@
 		}
 
 		if (!multiple) toggleDropdown(false);
-		await reCalculateSelectMapper();
-		onchange?.(multiple ? Object.values(selectMapper) : option);
+		// onchange?.(multiple ? Object.values(selectMapper) : option);
 	};
 
 	const handleDeselectOption = async (option: SelectOption) => {
@@ -163,8 +184,7 @@
 			value = undefined;
 		}
 
-		await reCalculateSelectMapper();
-		onchange?.(multiple ? Object.values(selectMapper) : undefined);
+		// onchange?.(multiple ? Object.values(selectMapper) : undefined);
 	};
 </script>
 
@@ -243,7 +263,7 @@
 						variant="light"
 						size={SIZE_REDUCE_MAP[size]}
 						onDismiss={() => handleDeselectOption(selectMapper[option])}
-						disabled={disabled}
+						{disabled}
 					/>
 				{/each}
 				{#if maxDisplay && value.length > maxDisplay}

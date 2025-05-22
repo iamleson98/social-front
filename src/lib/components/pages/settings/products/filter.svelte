@@ -174,7 +174,7 @@
 		variableSearchQueryPath="filter.search"
 		value={initialValue}
 		onchange={(opt) =>
-			onValue((opt as SelectOption[]).map((item) => item.value) as FilterItemValue)}
+			onValue((opt as SelectOption[])?.map((item) => item.value) as FilterItemValue)}
 		multiple
 		size="xs"
 	/>

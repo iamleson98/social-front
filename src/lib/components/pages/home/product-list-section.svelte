@@ -4,7 +4,7 @@
 	import ProductListPage from './product-list-page.svelte';
 	import { onMount, tick } from 'svelte';
 	import { Modal } from '$lib/components/ui/Modal';
-	import { pushState } from '$app/navigation';
+	import { pushState, replaceState } from '$app/navigation';
 	import ProductPreview from './product-preview.svelte';
 	import { PRODUCT_PREVIEW_STORE } from './common';
 	import { tranFunc } from '$i18n';
@@ -18,7 +18,7 @@
 		tick().then(() => {
 			productFilterParamStore.set({
 				...$productFilterParamStore,
-				reload: false
+				reload: false,
 			});
 			productLoadPageVariables = [$productFilterParamStore];
 		});
@@ -27,7 +27,7 @@
 	const handleLoadMore = (afterCursor: string) => {
 		productLoadPageVariables = productLoadPageVariables.concat({
 			...$productFilterParamStore,
-			after: afterCursor
+			after: afterCursor,
 		});
 	};
 
@@ -42,7 +42,7 @@
 	});
 
 	const handleCloseModal = () => {
-		history.back();
+		replaceState('', { productPreview: null });
 		PRODUCT_PREVIEW_STORE.set(null);
 	};
 </script>
