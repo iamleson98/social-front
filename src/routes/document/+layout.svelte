@@ -32,6 +32,10 @@
 		{
 			name: 'Table',
 			path: '/document/table'
+		},
+		{
+			name: 'Select',
+			path: '/document/select'
 		}
 	];
 </script>
