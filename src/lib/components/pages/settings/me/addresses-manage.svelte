@@ -12,7 +12,7 @@
 		MutationAccountAddressDeleteArgs,
 		MutationAccountAddressUpdateArgs,
 		MutationAccountSetDefaultAddressArgs,
-		User
+		User,
 	} from '$lib/gql/graphql';
 	import { AddressTypeEnum } from '$lib/gql/graphql';
 	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
@@ -23,7 +23,7 @@
 		ACCOUNT_ADDRESS_CREATE_MUTATION,
 		ACCOUNT_ADDRESS_DELETE_MUTATION,
 		ACCOUNT_ADDRESS_UPDATE_MUTATION,
-		ACCOUNT_SET_DEFAULT_ADDRESS_MUTATION
+		ACCOUNT_SET_DEFAULT_ADDRESS_MUTATION,
 	} from '$lib/api/account';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
@@ -48,8 +48,8 @@
 			MutationAccountAddressUpdateArgs
 		>(ACCOUNT_ADDRESS_UPDATE_MUTATION, {
 			id: addressUpdateInputInitValue?.id!,
-			input
-		}).toPromise();
+			input,
+		});
 
 		loading = false; //
 
@@ -57,7 +57,7 @@
 			checkIfGraphqlResultHasError(
 				result,
 				'accountAddressUpdate',
-				$tranFunc('settings.addrUpdated')
+				$tranFunc('settings.addrUpdated'),
 			)
 		)
 			return;
@@ -68,7 +68,7 @@
 		// update user state
 		$ME_PAGE_USER_STORE = {
 			...$ME_PAGE_USER_STORE,
-			addresses: result.data?.accountAddressUpdate?.user?.addresses || []
+			addresses: result.data?.accountAddressUpdate?.user?.addresses || [],
 		} as User;
 	};
 
@@ -80,8 +80,8 @@
 			MutationAccountAddressCreateArgs
 		>(ACCOUNT_ADDRESS_CREATE_MUTATION, {
 			input,
-			type
-		}).toPromise();
+			type,
+		});
 
 		loading = false; //
 
@@ -89,14 +89,14 @@
 			checkIfGraphqlResultHasError(
 				result,
 				'accountAddressCreate',
-				$tranFunc('settings.addrCreated')
+				$tranFunc('settings.addrCreated'),
 			)
 		)
 			return;
 
 		$ME_PAGE_USER_STORE = {
 			...$ME_PAGE_USER_STORE,
-			addresses: result.data?.accountAddressCreate?.user?.addresses || []
+			addresses: result.data?.accountAddressCreate?.user?.addresses || [],
 		} as User;
 		showAddressCreateForm = false;
 	};
@@ -108,8 +108,8 @@
 			Pick<Mutation, 'accountAddressDelete'>,
 			MutationAccountAddressDeleteArgs
 		>(ACCOUNT_ADDRESS_DELETE_MUTATION, {
-			id
-		}).toPromise();
+			id,
+		});
 
 		loading = false; //
 
@@ -117,14 +117,14 @@
 			checkIfGraphqlResultHasError(
 				result,
 				'accountAddressDelete',
-				$tranFunc('settings.addrDeleted')
+				$tranFunc('settings.addrDeleted'),
 			)
 		)
 			return;
 
 		$ME_PAGE_USER_STORE = {
 			...$ME_PAGE_USER_STORE,
-			addresses: ($ME_PAGE_USER_STORE?.addresses || []).filter((address) => address.id !== id)
+			addresses: ($ME_PAGE_USER_STORE?.addresses || []).filter((address) => address.id !== id),
 		} as User;
 	};
 
@@ -136,7 +136,7 @@
 			MutationAccountSetDefaultAddressArgs
 		>(ACCOUNT_SET_DEFAULT_ADDRESS_MUTATION, {
 			id,
-			type
+			type,
 		});
 
 		loading = false; //
@@ -145,14 +145,14 @@
 			checkIfGraphqlResultHasError(
 				result,
 				'accountSetDefaultAddress',
-				$tranFunc('settings.addrUpdated')
+				$tranFunc('settings.addrUpdated'),
 			)
 		)
 			return;
 
 		$ME_PAGE_USER_STORE = {
 			...$ME_PAGE_USER_STORE,
-			addresses: result.data?.accountSetDefaultAddress?.user?.addresses || []
+			addresses: result.data?.accountSetDefaultAddress?.user?.addresses || [],
 		} as User;
 	};
 </script>
@@ -194,7 +194,7 @@
 								onclick={() =>
 									ALERT_MODAL_STORE.openAlertModal({
 										content: $tranFunc('settings.confirmDelAddr'),
-										onOk: () => handleDeleteAddress(address.id)
+										onOk: () => handleDeleteAddress(address.id),
 									})}
 								disabled={loading}>{$tranFunc('btn.delete')}</Button
 							>

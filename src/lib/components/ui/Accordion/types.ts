@@ -7,7 +7,7 @@ export type AccordionProps = {
   class?: string;
   children: Snippet;
   open?: boolean;
-  /** if `true`, the `open` stays the same as passed in */
+  /** if `true`, the `open` stays the same as the current state */
   fixed?: boolean;
 };
 

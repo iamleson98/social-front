@@ -29,8 +29,8 @@ export const POST = async (event: RequestEvent) => {
         csrfToken,
       },
       { requestPolicy: 'network-only' }
-    )
-    .toPromise();
+    );
+
 
   if (result.error || result.data?.tokenRefresh?.errors.length) {
     event.cookies.delete(REFRESH_TOKEN_KEY, cookieOpts);

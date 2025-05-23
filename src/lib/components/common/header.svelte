@@ -29,6 +29,7 @@
 	import { cubicOut } from 'svelte/easing';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { toast } from 'svelte-sonner';
+	import { handleLogout } from '$lib/utils/auth.svelte';
 
 	const { userDisplayName } = $derived.by(() => {
 		let userDisplayName;
@@ -50,24 +51,11 @@
 			USER_ME_QUERY_STORE,
 			{},
 			{ requestPolicy: 'network-only' },
-		).toPromise();
+		);
 
 		if (checkIfGraphqlResultHasError(userResult)) return;
 		setUserStoreValue(userResult.data?.me as User);
 	});
-
-	const handleLogout = async () => {
-		const result = await fetch(AppRoute.AUTH_SIGNOUT(), { method: 'POST' });
-		const parsedResult = await result.json();
-
-		if (parsedResult.status !== HTTPStatusSuccess) {
-			toast.error($tranFunc('error.errorOccured'));
-			return;
-		}
-
-		setUserStoreValue(null);
-		await invalidateAll();
-	};
 
 	// load checkout when page load
 	onMount(async () => {

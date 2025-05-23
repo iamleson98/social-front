@@ -117,13 +117,8 @@
 	const validateForm = () => {
 		const parseResult = SignupZodSchema.safeParse(signupInfo);
 
-		if (!parseResult.success) {
-			signupFormErrors = parseResult.error.formErrors.fieldErrors;
-			return false;
-		}
-
-		signupFormErrors = {};
-		return true;
+		signupFormErrors = parseResult.success ? {} : parseResult.error.formErrors.fieldErrors;
+		return parseResult.success;
 	};
 
 	const handleSignup = async () => {
@@ -137,9 +132,6 @@
 			query: USER_SIGNUP_MUTATION_STORE,
 			variables: {
 				input: omit(signupInfo, ['confirmPassword', 'termAndPoliciesAgree']),
-			},
-			context: {
-				requestPolicy: 'network-only',
 			},
 		});
 	};
@@ -178,7 +170,8 @@
 					bind:value={signupInfo.firstName}
 					onblur={validateForm}
 					variant={signupFormErrors?.firstName?.length ? 'error' : 'info'}
-					subText={signupFormErrors?.firstName?.length ? signupFormErrors.firstName[0] : ''}
+					subText={signupFormErrors?.firstName?.[0]}
+					inputDebounceOption={{ onInput: validateForm }}
 				/>
 			</div>
 			<div class="w-1/2">
@@ -192,7 +185,8 @@
 					bind:value={signupInfo.lastName}
 					onblur={validateForm}
 					variant={signupFormErrors?.lastName?.length ? 'error' : 'info'}
-					subText={signupFormErrors?.lastName?.length ? signupFormErrors.lastName[0] : ''}
+					subText={signupFormErrors?.lastName?.[0]}
+					inputDebounceOption={{ onInput: validateForm }}
 				/>
 			</div>
 		</div>
@@ -207,8 +201,9 @@
 			bind:value={signupInfo.email}
 			startIcon={Email}
 			onblur={validateForm}
+			inputDebounceOption={{ onInput: validateForm }}
 			variant={signupFormErrors?.email?.length ? 'error' : 'info'}
-			subText={signupFormErrors?.email?.length ? signupFormErrors.email[0] : ''}
+			subText={signupFormErrors?.email?.[0]}
 		/>
 		<PasswordInput
 			size="sm"
@@ -218,9 +213,10 @@
 			disabled={$signupQueryStore?.fetching}
 			class="mb-2"
 			variant={signupFormErrors?.password?.length ? 'error' : 'info'}
-			subText={signupFormErrors?.password?.length ? signupFormErrors.password[0] : ''}
+			subText={signupFormErrors?.password?.[0]}
 			required
 			showAction
+			inputDebounceOption={{ onInput: validateForm }}
 			onblur={validateForm}
 		/>
 		<PasswordInput
@@ -230,9 +226,10 @@
 			disabled={$signupQueryStore?.fetching}
 			label={$tranFunc('common.confirmPwd')}
 			class="mb-2"
+			inputDebounceOption={{ onInput: validateForm }}
 			showAction={false}
 			variant={signupFormErrors?.confirmPassword?.length ? 'error' : 'info'}
-			subText={signupFormErrors?.confirmPassword?.length ? signupFormErrors.confirmPassword[0] : ''}
+			subText={signupFormErrors?.confirmPassword?.[0]}
 			required
 			onblur={validateForm}
 		/>
@@ -261,9 +258,7 @@
 				onchange={validateForm}
 				size="sm"
 				variant={signupFormErrors.termAndPoliciesAgree?.length ? 'error' : 'info'}
-				subText={signupFormErrors.termAndPoliciesAgree?.length
-					? signupFormErrors.termAndPoliciesAgree[0]
-					: ''}
+				subText={signupFormErrors.termAndPoliciesAgree?.[0]}
 			/>
 		</div>
 

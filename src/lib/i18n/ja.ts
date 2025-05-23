@@ -243,6 +243,7 @@ export default {
 		addrUpdated: 'Address updated successfully',
 		addrCreated: 'Address created successfully',
 		accountUpdated: 'Tài khoản đã được cập nhật',
+		passwordUpdated: 'パスワードが更新されました。新しいパスワードでログインしてください',
 		orders: 'Orders',
 		newOrder: 'New Order',
 		no: 'No',

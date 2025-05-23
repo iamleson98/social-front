@@ -8,7 +8,7 @@
 		required?: boolean | null;
 		size?: SocialSize | 'xxs';
 		id?: string | null;
-		variant?: SocialVariant;
+		variant?: SocialVariant | 'ghost';
 		label: string;
 		requiredAtPos?: 'start' | 'end';
 	};

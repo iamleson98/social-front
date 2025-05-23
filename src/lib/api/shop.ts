@@ -1,5 +1,7 @@
 import { gql } from "@urql/core";
 
+// NOTE: this query requires authenticated staff user to get channelCurrencies
+// so you must check for isStaffUser
 export const SHOP_QUERY = gql`
 query Shop($isStaffUser: Boolean = false) {
   shop {
@@ -12,8 +14,6 @@ query Shop($isStaffUser: Boolean = false) {
       code
       language
     }
-    
-    # NOTE: this field requires authenticated staff user, so we must check for it
     channelCurrencies @include(if: $isStaffUser)
   }
 }`

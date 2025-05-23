@@ -243,6 +243,7 @@ export default {
 		addrUpdated: 'Địa chỉ đã được cập nhật',
 		addrCreated: 'Địa chỉ đã được tạo',
 		accountUpdated: 'Tài khoản đã được cập nhật',
+		passwordUpdated: 'Mật khẩu đã được cập nhật. Vui lòng đăng nhập lại với mật khẩu mới',
 		orders: 'Đơn hàng',
 		newOrder: 'Đơn hàng mới',
 		no: 'Số',

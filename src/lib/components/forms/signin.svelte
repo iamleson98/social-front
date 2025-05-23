@@ -58,12 +58,8 @@
 
 	const validateForm = () => {
 		const parseResult = signinSchema.safeParse(signinValue);
-		if (!parseResult.success) {
-			signinFormErrors = parseResult.error.formErrors.fieldErrors;
-			return false;
-		}
-		signinFormErrors = {};
-		return true;
+		signinFormErrors = parseResult.success ? {} : parseResult.error.formErrors.fieldErrors;
+		return parseResult.success;
 	};
 
 	const handleLogin = async () => {
@@ -116,25 +112,27 @@
 			placeholder={$tranFunc('common.emailPlaceholder')}
 			label={$tranFunc('common.email')}
 			onblur={validateForm}
+			inputDebounceOption={{ onInput: validateForm }}
 			class="mb-2"
 			bind:value={signinValue.email}
 			required
 			disabled={loading}
 			startIcon={Email}
 			variant={signinFormErrors?.email?.length ? 'error' : 'info'}
-			subText={signinFormErrors?.email?.length ? signinFormErrors.email[0] : ''}
+			subText={signinFormErrors?.email?.[0]}
 		/>
 		<PasswordInput
 			placeholder={$tranFunc('common.passwordPlaceholder')}
 			label={$tranFunc('common.password')}
 			onblur={validateForm}
+			inputDebounceOption={{ onInput: validateForm }}
 			bind:value={signinValue.password}
 			class="mb-1"
 			disabled={loading}
 			variant={signinFormErrors?.password?.length ? 'error' : 'info'}
 			required
 			showAction
-			subText={signinFormErrors?.password?.length ? signinFormErrors.password[0] : ''}
+			subText={signinFormErrors?.password?.[0]}
 		/>
 		<a href={AppRoute.AUTH_RESET_PASSWORD()} class="text-xs text-right block text-blue-600 mb-4">
 			{$tranFunc('signin.forgotPassword')}
@@ -163,7 +161,7 @@
 	{#if !hideSocial}
 		<div class="flex flex-row justify-between items-center">
 			{#each socialIons as item, idx (idx)}
-				<Button variant="outline" size="sm">
+				<Button variant="outline" size="sm" disabled={loading}>
 					<item.icon />
 					{item.text}
 				</Button>

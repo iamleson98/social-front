@@ -6,6 +6,7 @@
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Label, PasswordInput } from '$lib/components/ui/Input';
 	import type { Mutation, MutationPasswordChangeArgs } from '$lib/gql/graphql';
+	import { handleLogout } from '$lib/utils/auth.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { object, string, z } from 'zod';
 
@@ -14,10 +15,10 @@
 	const PasswordSchema = object({
 		oldPassword: string().min(1, { message: FIELD_REQUIRED }),
 		newPassword: string().min(1, { message: FIELD_REQUIRED }),
-		confirmPassword: string().min(1, { message: FIELD_REQUIRED })
+		confirmPassword: string().min(1, { message: FIELD_REQUIRED }),
 	}).refine((data) => data.newPassword === data.confirmPassword, {
 		message: $tranFunc('error.passwordsNotMatch'),
-		path: ['confirmPassword']
+		path: ['confirmPassword'],
 	});
 
 	type PasswordProps = z.infer<typeof PasswordSchema>;
@@ -25,7 +26,7 @@
 	let passwordInputs = $state<PasswordProps>({
 		oldPassword: '',
 		newPassword: '',
-		confirmPassword: ''
+		confirmPassword: '',
 	});
 	let passwordFormErrors = $state.raw<Partial<Record<keyof PasswordProps, string[]>>>({});
 
@@ -41,9 +42,9 @@
 
 	const passwordValidate = () => {
 		const passwordInfoParse = PasswordSchema.safeParse(passwordInputs);
-		if (!passwordInfoParse.success) {
-			passwordFormErrors = passwordInfoParse.error.flatten().fieldErrors;
-		}
+		passwordFormErrors = passwordInfoParse.success
+			? {}
+			: passwordInfoParse.error.formErrors.fieldErrors;
 
 		return passwordInfoParse.success;
 	};
@@ -58,15 +59,18 @@
 			MutationPasswordChangeArgs
 		>(PASSWORD_UPDATE_MUTATION, {
 			oldPassword: passwordInputs.oldPassword,
-			newPassword: passwordInputs.newPassword
-		}).toPromise();
+			newPassword: passwordInputs.newPassword,
+		});
 
 		loading = false;
 
 		if (
-			checkIfGraphqlResultHasError(result, 'passwordChange', $tranFunc('settings.accountUpdated'))
+			checkIfGraphqlResultHasError(result, 'passwordChange', $tranFunc('settings.passwordUpdated'))
 		)
 			return;
+
+		// if success, we should logout user and redirect him to login
+		await handleLogout();
 	};
 </script>
 
@@ -83,9 +87,10 @@
 		bind:value={passwordInputs.oldPassword}
 		showAction
 		variant={passwordFormErrors.oldPassword?.length ? 'error' : 'info'}
-		subText={passwordFormErrors.oldPassword?.length ? passwordFormErrors.oldPassword[0] : ''}
+		subText={passwordFormErrors.oldPassword?.[0]}
 		onblur={passwordValidate}
 		disabled={loading}
+		inputDebounceOption={{ onInput: passwordValidate }}
 	/>
 	<PasswordInput
 		class="mt-2"
@@ -95,9 +100,10 @@
 		bind:value={passwordInputs.newPassword}
 		showAction
 		variant={passwordFormErrors.newPassword?.length ? 'error' : 'info'}
-		subText={passwordFormErrors.newPassword?.length ? passwordFormErrors.newPassword[0] : ''}
+		subText={passwordFormErrors.newPassword?.[0]}
 		onblur={passwordValidate}
 		disabled={loading}
+		inputDebounceOption={{ onInput: passwordValidate }}
 	/>
 	<PasswordInput
 		class="mt-2"
@@ -108,9 +114,8 @@
 		variant={passwordFormErrors.confirmPassword?.length ? 'error' : 'info'}
 		onblur={passwordValidate}
 		disabled={loading}
-		subText={passwordFormErrors.confirmPassword?.length
-			? passwordFormErrors.confirmPassword[0]
-			: ''}
+		inputDebounceOption={{ onInput: passwordValidate }}
+		subText={passwordFormErrors.confirmPassword?.[0]}
 	/>
 
 	<div class="text-right mt-4">

@@ -252,7 +252,7 @@ export const performServerSideGraphqlRequest = async <Data = never, Variables ex
 	const newContext = attachAuthorizationHeaderToRequestIfNeeded(event, context);
 	const request = createRequest(query, variables);
 	const operation = GRAPHQL_CLIENT.createRequestOperation(type, request, newContext);
-	const result = await GRAPHQL_CLIENT.executeRequestOperation(operation).toPromise();
+	const result = await GRAPHQL_CLIENT.executeRequestOperation(operation);
 	const mustRetryOperation = await checkIsAuthenAuthorErrorAndRedirectIfNeeded(result, event);
 	if (!mustRetryOperation) return result;
 
@@ -260,7 +260,7 @@ export const performServerSideGraphqlRequest = async <Data = never, Variables ex
 		...operation.context,
 		...attachAuthorizationHeaderToRequestIfNeeded(event, context),
 	};
-	return GRAPHQL_CLIENT.executeRequestOperation(operation).toPromise();
+	return GRAPHQL_CLIENT.executeRequestOperation(operation);
 };
 
 /**

@@ -243,6 +243,7 @@ export default {
 		addrUpdated: 'Address updated successfully',
 		addrCreated: 'Address created successfully',
 		accountUpdated: 'Tài khoản đã được cập nhật',
+		passwordUpdated: 'Password updated successfully. Please login again with your new password',
 		orders: 'Orders',
 		newOrder: 'New Order',
 		no: 'No',

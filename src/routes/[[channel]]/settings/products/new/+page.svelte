@@ -101,7 +101,7 @@
 				{
 					requestPolicy: 'network-only',
 				},
-			).toPromise();
+			);
 		});
 
 		const results = await Promise.all(operations);
@@ -170,10 +170,7 @@
 			input: cleanChannelListingUpdateInput,
 		});
 		if (
-			checkIfGraphqlResultHasError(
-				updateProductChannelListingResult,
-				'productChannelListingUpdate',
-			)
+			checkIfGraphqlResultHasError(updateProductChannelListingResult, 'productChannelListingUpdate')
 		) {
 			setLoading(false);
 			return;

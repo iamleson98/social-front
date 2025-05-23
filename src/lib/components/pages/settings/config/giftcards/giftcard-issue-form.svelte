@@ -14,7 +14,7 @@
 	import { Checkbox, Input, RadioButton } from '$lib/components/ui/Input';
 	import { TextArea } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
-	import { GraphqlPaginableSelect, Select, type SelectOption } from '$lib/components/ui/select';
+	import { GraphqlPaginableSelect, Select } from '$lib/components/ui/select';
 	import type {
 		GiftCard,
 		GiftCardCreateInput,
@@ -233,6 +233,7 @@
 			header="Set gift card expiry date"
 			bind:open={setExpiryDate}
 			class="rounded-lg border border-gray-200 p-3"
+			fixed={loading}
 		>
 			<div class="flex items-center gap-2">
 				{#each EXPIRY_TYPES as type, idx (idx)}
@@ -242,6 +243,7 @@
 						size="sm"
 						value={type}
 						bind:group={expiryType}
+						disabled={loading}
 					/>
 				{/each}
 			</div>
@@ -254,6 +256,7 @@
 						placeholder="Set expiry date"
 						label="Exact date"
 						size="sm"
+						disabled={loading}
 						value={{ date: giftCardInput.expiryDate }}
 						allowSelectMonthYears={{
 							showMonths: true,
@@ -274,6 +277,7 @@
 							label="Amount"
 							required
 							bind:value={expireInAmount}
+							disabled={loading}
 						/>
 						<Select
 							{options}
@@ -283,6 +287,7 @@
 							label="Unit"
 							required
 							bind:value={expireInUnit}
+							disabled={loading}
 						/>
 					</div>
 				{/if}

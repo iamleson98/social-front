@@ -9,7 +9,7 @@
 		type AccountInput,
 		type Mutation,
 		type MutationAccountUpdateArgs,
-		type User
+		type User,
 	} from '$lib/gql/graphql';
 	import { ME_PAGE_USER_STORE } from '$lib/stores/app/me';
 	import { setUserStoreValue } from '$lib/stores/auth';
@@ -24,14 +24,14 @@
 		languageCode: string()
 			.nonempty(FIELD_REQUIRED)
 			.optional()
-			.refine((val) => val !== undefined, FIELD_REQUIRED)
+			.refine((val) => val !== undefined, FIELD_REQUIRED),
 	});
 	type InfoProps = z.infer<typeof UserInfoSchema>;
 
 	let userInfoInputs = $state<InfoProps>({
 		firstName: '',
 		lastName: '',
-		languageCode: ''
+		languageCode: '',
 	});
 
 	let userInfoFormErrors = $state.raw<Partial<Record<keyof InfoProps, string[]>>>({});
@@ -42,7 +42,7 @@
 			userInfoInputs = {
 				firstName: $ME_PAGE_USER_STORE.firstName,
 				lastName: $ME_PAGE_USER_STORE.lastName,
-				languageCode: $ME_PAGE_USER_STORE.languageCode
+				languageCode: $ME_PAGE_USER_STORE.languageCode,
 			};
 		}
 	});
@@ -74,16 +74,17 @@
 			Pick<Mutation, 'accountUpdate'>,
 			MutationAccountUpdateArgs
 		>(ACCOUNT_UPDATE_MUTATION, {
-			input: userInfoInputs as AccountInput
-		}).toPromise();
+			input: userInfoInputs as AccountInput,
+		});
 
 		loading = false; //
 
-		if (checkIfGraphqlResultHasError(result, 'accountUpdate', $tranFunc('settings.accountUpdated'))) return;
+		if (checkIfGraphqlResultHasError(result, 'accountUpdate', $tranFunc('settings.accountUpdated')))
+			return;
 
 		$ME_PAGE_USER_STORE = {
 			...$ME_PAGE_USER_STORE,
-			...userInfoInputs
+			...userInfoInputs,
 		} as User;
 
 		// in case user update display language , we need to update it for the whole UI also
@@ -126,7 +127,7 @@
 		label={$tranFunc('footer.language')}
 		options={SUPPORTED_LANGUAGES.map((lang) => ({
 			value: lang.code,
-			label: lang.name
+			label: lang.name,
 		}))}
 		bind:value={userInfoInputs.languageCode}
 		variant={userInfoFormErrors.languageCode?.length ? 'error' : 'info'}
