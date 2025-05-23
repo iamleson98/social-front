@@ -69,17 +69,17 @@
 
 <!-- <SkeletonContainer>
 	<Skeleton class="w-2 h-8" />
-</SkeletonContainer>
+</SkeletonContainer> -->
 
 <ButtonSkeleton size="xl" />
 
-<div class="flex flex-row items-start gap-2 w-[500px]">
+<!-- <div class="flex flex-row items-start gap-2 w-[500px]">
 	<SelectSkeleton size="xs" />
 	<SelectSkeleton label size="xs" />
 </div>
 -->
 
-<GraphqlPaginableSelect
+<!-- <GraphqlPaginableSelect
 	query={PRODUCT_LIST_QUERY_STORE}
 	variables={{ first: 10, search: '' } as QueryProductsArgs}
 	resultKey="products"
@@ -125,11 +125,11 @@
 	/>
 </div> -->
 
-<!-- <GeneralSelect
+<GeneralSelect
 	size="sm"
 	label="GeneralSelect"
 	variant="error"
-	multiple
+	multiple={true}
 	subText="subText"
 	disabled={false}
 	onchange={console.log}
@@ -140,7 +140,6 @@
 		{ label: 'Option 2', value: '2' },
 		{ label: 'Option 3', value: '3' },
 	]}
-	showLoadingMore
-/> -->
+/>
 
-<ShopCurrenciesSelect bind:value={currency} size="sm" />
+<!-- <ShopCurrenciesSelect bind:value={currency} size="sm" /> -->

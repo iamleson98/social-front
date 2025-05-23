@@ -2,6 +2,7 @@ import type { HTMLSelectAttributes } from "svelte/elements";
 import type { SocialSize } from "../common";
 import type { InputProps } from "../Input";
 import type { OnscrollToEndOpts } from "$lib/actions/scroll-end";
+import type { SocialVariant } from "$lib/utils";
 
 export type SelectOption = {
   value: Primitive;
@@ -31,7 +32,8 @@ export type SelectProps<T extends SelectOption = SelectOption> = {
   /** callback function to be called when the scroll reaches the end of the list */
   onScrollToEnd?: OnscrollToEndOpts['onScrollToEnd'];
   onclearInputField?: () => void;
-} & Omit<InputProps, 'value' | 'size' | 'onchange'> & Omit<HTMLSelectAttributes, 'size' | 'onchange' | 'onblur'>;
+  variant?: SocialVariant;
+} & Omit<InputProps, 'value' | 'size' | 'onchange' | 'variant'> & Omit<HTMLSelectAttributes, 'size' | 'onchange' | 'onblur'>;
 
 /** SIZE_REDUCE_MAP is useful you want your input and badge items to reasonably fit your multi select component */
 export const SIZE_REDUCE_MAP: Record<SocialSize | 'xxs', SocialSize | 'xxs'> = {

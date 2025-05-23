@@ -151,7 +151,6 @@
 			// in multiple query we only clear the value and selectMapper
 			// the selected values will be kept
 			value = undefined;
-			// selectMapper = {};
 			onchange?.(undefined);
 		}
 		onclearInputField?.();
@@ -172,7 +171,6 @@
 		}
 
 		if (!multiple) toggleDropdown(false);
-		// onchange?.(multiple ? Object.values(selectMapper) : option);
 	};
 
 	const handleDeselectOption = async (option: SelectOption) => {
@@ -183,8 +181,6 @@
 		} else {
 			value = undefined;
 		}
-
-		// onchange?.(multiple ? Object.values(selectMapper) : undefined);
 	};
 </script>
 

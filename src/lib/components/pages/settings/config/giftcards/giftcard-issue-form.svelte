@@ -169,6 +169,7 @@
 			optionValueKey="id"
 			optionLabelKey="name"
 			size="sm"
+			requestPolicy="cache-and-network"
 			multiple
 			label="Giftcard Tags"
 			placeholder="Giftcard tags"
@@ -188,6 +189,7 @@
 			size="sm"
 			label="To Customer"
 			placeholder="Specify customer"
+			requestPolicy="cache-and-network"
 			bind:value={giftCardInput.userEmail}
 			disabled={loading}
 			variant={giftcardFormErrors.userEmail?.length ? 'error' : 'info'}
