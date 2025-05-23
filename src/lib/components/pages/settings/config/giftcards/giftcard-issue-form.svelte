@@ -8,7 +8,10 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import ShopCurrenciesSelect from '$lib/components/common/shop-currencies-select.svelte';
+	import { ClipboardCopy } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
+	import { Badge } from '$lib/components/ui/badge';
+	import { IconButton } from '$lib/components/ui/Button';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { TextArea } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
@@ -21,6 +24,7 @@
 		QueryGiftCardTagsArgs,
 	} from '$lib/gql/graphql';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { toast } from 'svelte-sonner';
 	import { array, number, object, string, z } from 'zod';
 
 	type Props = {
@@ -32,7 +36,7 @@
 
 	let giftCardInput = $state<GiftCardCreateInput>({
 		addTags: [],
-		userEmail: '',
+		userEmail: toCustomerEmail,
 		channel: '',
 		balance: {
 			amount: 0,
@@ -45,13 +49,17 @@
 	let issuedGiftcardCode = $state<string>();
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
+	const NOTE_MAX_LENGTH = 300;
 
 	const giftcardSchema = object({
-		amount: number(),
-		currency: string().nonempty(REQUIRED_ERROR),
 		channel: string().nonempty(REQUIRED_ERROR),
-		note: string().nonempty(REQUIRED_ERROR),
-		addTags: array(string()),
+		note: string()
+			.nonempty(REQUIRED_ERROR)
+			.max(NOTE_MAX_LENGTH, `Note must be at most ${NOTE_MAX_LENGTH} characters.`),
+		addTags: array(string().nonempty(REQUIRED_ERROR)),
+		amount: number().min(1, 'Please provide positive amount'),
+		currency: string().nonempty(REQUIRED_ERROR),
+		userEmail: string().email('Please provide valid email').optional(),
 	});
 
 	type GiftcardSchema = z.infer<typeof giftcardSchema>;
@@ -59,18 +67,16 @@
 
 	const validate = () => {
 		const parseResult = giftcardSchema.safeParse({
-			amount: Number(giftCardInput.balance.amount),
-			currency: giftCardInput.balance.currency,
-			addTags: giftCardInput.addTags,
 			channel: giftCardInput.channel,
 			note: giftCardInput.note,
+			addTags: giftCardInput.addTags,
+			amount: giftCardInput.balance.amount,
+			currency: giftCardInput.balance.currency,
+			userEmail: giftCardInput.userEmail,
 		});
-		if (!parseResult.success) {
-			giftcardFormErrors = parseResult.error.formErrors.fieldErrors;
-			return false;
-		}
-		giftcardFormErrors = {};
-		return true;
+
+		giftcardFormErrors = parseResult.success ? {} : parseResult.error?.formErrors.fieldErrors;
+		return parseResult.success;
 	};
 
 	const handleIssueGiftcard = async () => {
@@ -90,6 +96,13 @@
 
 		issuedGiftcardCode = result.data?.giftCardCreate?.giftCard?.code;
 	};
+
+	const handleClickCopyCOde = () => {
+		if (!issuedGiftcardCode) return;
+		navigator.clipboard
+			.writeText(issuedGiftcardCode)
+			.then(() => toast.success(`Copied giftcard code ${issuedGiftcardCode} to clipboard.`));
+	};
 </script>
 
 <Modal
@@ -99,13 +112,23 @@
 	onClose={() => (open = false)}
 	onOk={handleIssueGiftcard}
 	onCancel={() => (open = false)}
+	disableElements={loading}
 >
 	<div class="flex flex-col gap-3">
 		{#if issuedGiftcardCode}
 			<Alert variant="success" size="md" bordered>
-				<div class="flex items-center gap-2">
-					<span>Successfully issued giftcard with code:</span>
-					<span class="rounded-lg border border-green-200 px-2 py-1">{issuedGiftcardCode}</span>
+				<div class="">
+					<p>Successfully issued giftcard with code:</p>
+					<div class="flex items-center gap-2">
+						<Badge text={issuedGiftcardCode} color="green" />
+						<IconButton
+							size="xs"
+							icon={ClipboardCopy}
+							variant="light"
+							rounded
+							onclick={handleClickCopyCOde}
+						/>
+					</div>
 				</div>
 			</Alert>
 		{/if}
@@ -119,11 +142,23 @@
 				class="flex-1"
 				inputDebounceOption={{ onInput: validate }}
 				onblur={validate}
+				disabled={loading}
+				min={0}
 				variant={giftcardFormErrors.amount?.length ? 'error' : 'info'}
 				subText={giftcardFormErrors.amount?.[0]}
-				disabled={loading}
+				placeholder="Money amount"
 			/>
-			<ShopCurrenciesSelect size="sm" label="Currency" class="flex-1" />
+			<ShopCurrenciesSelect
+				size="sm"
+				label="Currency"
+				class="flex-1"
+				variant={giftcardFormErrors.currency?.length ? 'error' : 'info'}
+				subText={giftcardFormErrors.currency?.[0]}
+				required
+				placeholder="Currency"
+				onchange={validate}
+				bind:value={giftCardInput.balance.currency}
+			/>
 		</div>
 
 		<GraphqlPaginableSelect
@@ -136,11 +171,13 @@
 			size="sm"
 			multiple
 			label="Giftcard Tags"
+			placeholder="Giftcard tags"
 			bind:value={giftCardInput.addTags}
 			disabled={loading}
+			variant={giftcardFormErrors.addTags?.length ? 'error' : 'info'}
+			subText={giftcardFormErrors.addTags?.[0]}
+			onchange={validate}
 		/>
-
-		<!-- <Input label="Customer" value={userName} disabled size="sm" /> -->
 
 		<GraphqlPaginableSelect
 			query={CUSTOMER_LIST_QUERY}
@@ -150,8 +187,12 @@
 			optionValueKey="email"
 			size="sm"
 			label="To Customer"
+			placeholder="Specify customer"
 			bind:value={giftCardInput.userEmail}
 			disabled={loading}
+			variant={giftcardFormErrors.userEmail?.length ? 'error' : 'info'}
+			subText={giftcardFormErrors.userEmail?.[0]}
+			onchange={validate}
 		/>
 
 		<Alert size="sm" bordered>
@@ -163,8 +204,13 @@
 			label="Channel"
 			size="sm"
 			bind:value={giftCardInput.channel}
-			subText="Customer will be sent the gift card code via this channels email address"
 			disabled={loading}
+			variant={giftcardFormErrors.channel?.length ? 'error' : 'info'}
+			subText={giftcardFormErrors.channel?.[0] ??
+				'Customer will be sent the gift card code via this channels email address'}
+			placeholder="Please specify channel"
+			required
+			onchange={validate}
 		/>
 
 		<TextArea
@@ -176,7 +222,10 @@
 			onblur={validate}
 			inputClass="min-h-20"
 			disabled={loading}
+			variant={giftcardFormErrors.note?.length ? 'error' : 'info'}
+			subText={giftcardFormErrors.note?.[0]}
+			placeholder="Note for this giftcard"
 		/>
-		<Checkbox label="Active" bind:checked={giftCardInput.isActive} disabled={loading} />
+		<Checkbox label="Active" size="sm" bind:checked={giftCardInput.isActive} disabled={loading} />
 	</div>
 </Modal>

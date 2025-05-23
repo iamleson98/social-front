@@ -106,6 +106,7 @@ export {
   TablerCircleArrowLeft as CircleArrowLeft,
   TablerDiscount as Discount,
   TablerAccessPoint as AccessPoint,
+  TablerClipboardCopy as ClipboardCopy,
 } from './consts';
 
 export { default as Icon } from './icon.svelte';
