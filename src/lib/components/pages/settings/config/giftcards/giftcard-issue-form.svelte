@@ -312,7 +312,6 @@
 		<TextArea
 			label="Note"
 			bind:value={giftCardInput.note}
-			required
 			size="sm"
 			inputDebounceOption={{ onInput: validate }}
 			onblur={validate}
