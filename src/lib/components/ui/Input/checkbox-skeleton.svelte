@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { SkeletonContainer } from '../Skeleton';
-	import { Skeleton } from '$lib/components/ui/Skeleton';
+	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 
 	type Props = {
 		label?: boolean;
