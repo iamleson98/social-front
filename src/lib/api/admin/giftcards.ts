@@ -64,3 +64,54 @@ mutation DeleteGiftcard($id: ID!) {
   }
 }`;
 
+export const GIFTCARD_LIST_QUERY = gql`
+query Giftcards($first: Int, $last: Int, $before: String, $after: String, $sortBy: GiftCardSortingInput, $filter: GiftCardFilterInput, $search: String) {
+  giftCards(first: $first, last: $last, before: $before, after: $after, sortBy: $sortBy, search: $search, filter: $filter) {
+    edges {
+      node {
+        id
+        code
+        displayCode
+        isActive
+        created
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+  }
+}`;
+
+export const GIFT_CARD_DETAIL_QUERY = gql`
+query Giftcard($id: ID!) {
+  giftCard(id: $id) {
+    id
+    metadata {
+      key
+      value
+    }
+    privateMetadata {
+      key
+      value
+    }
+    displayCode
+    last4CodeChars
+    code
+    created
+    createdByEmail
+    lastUsedOn
+    expiryDate
+    tags {
+      id
+      name
+    }
+    isActive
+    initialBalance
+    currentBalance
+    # events
+  }
+}`;
+

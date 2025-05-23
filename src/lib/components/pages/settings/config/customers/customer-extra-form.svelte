@@ -15,11 +15,11 @@
 		lastLoginTime: string;
 		lastOrderAt?: string;
 		giftCards: GiftCard[];
-		userGmail: string;
+		userEmail: string;
 		userName: string;
 	};
 
-	let { addresses, lastLoginTime, lastOrderAt, giftCards, userGmail, userName }: Props = $props();
+	let { addresses, lastLoginTime, lastOrderAt, giftCards, userEmail, userName }: Props = $props();
 
 	const formatDate = (label: string, date?: string) =>
 		`${label}: ${date ? dayjs(date).format('DD/MM/YYYY HH:mm') : '_ _'}`;
@@ -87,4 +87,4 @@
 	</Accordion>
 </div>
 
-<GiftcardIssueForm bind:open={isAddCardModalOpen} />
+<GiftcardIssueForm bind:open={isAddCardModalOpen} toCustomerEmail={userEmail} />

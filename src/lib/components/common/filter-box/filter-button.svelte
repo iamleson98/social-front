@@ -11,7 +11,7 @@
 	import { Button } from '$lib/components/ui';
 	import { Popover } from '$lib/components/ui/Popover';
 	import { afterNavigate, goto } from '$app/navigation';
-	import { parseUrlSearchParams } from '$lib/utils/utils';
+	import { numberRegex, parseUrlSearchParams } from '$lib/utils/utils';
 	import { page } from '$app/state';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 
@@ -87,7 +87,7 @@
 					gte: value,
 				};
 
-				filtersResult[key] = conditions;
+				filtersResult[key as keyof T] = conditions;
 				newFilters[key as keyof T] = {
 					operator: 'eq',
 					value,

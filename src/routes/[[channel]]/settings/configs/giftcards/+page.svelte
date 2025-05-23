@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { GIFTCARD_LIST_QUERY } from '$lib/api/admin/discount';
+	import { GIFTCARD_LIST_QUERY } from '$lib/api/admin/giftcards';
 	import {
 		GIFT_CARD_ACTIVATE_MUTATION,
 		GIFT_CARD_DEACTIVATE_MUTATION,
@@ -26,6 +26,7 @@
 		type QueryGiftCardsArgs,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 
@@ -118,7 +119,9 @@
 </script>
 
 {#snippet code({ item }: { item: GiftCard })}
-	<span>{item.displayCode}</span>
+	<a href={AppRoute.SETTINGS_CONFIGS_GIFTCARD_DETAIL(item.id)} class="link"
+		>••••-{item.displayCode}</a
+	>
 {/snippet}
 
 {#snippet action({ item }: { item: GiftCard })}
@@ -172,4 +175,7 @@
 	disabled={loading}
 />
 
-<GiftcardIssueForm bind:open={openGiftcardIssueForm} />
+<GiftcardIssueForm
+	bind:open={openGiftcardIssueForm}
+	onSuccess={() => (forceReExecuteGraphqlQuery = true)}
+/>

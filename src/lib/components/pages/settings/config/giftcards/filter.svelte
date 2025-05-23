@@ -107,6 +107,16 @@
 				},
 			],
 		},
+		{
+			label: 'Is used',
+			key: 'used',
+			operations: [
+				{
+					operator: 'eq',
+					component: isUsed,
+				},
+			],
+		},
 	];
 </script>
 
@@ -121,6 +131,15 @@
 
 {#snippet balanceLte({ onValue, initialValue = '' }: FilterComponentType)}
 	{@render numberSnippet({ onValue, initialValue, placeholder: 'Lte' })}
+{/snippet}
+
+{#snippet isUsed({ onValue, initialValue = false }: FilterComponentType)}
+	<Checkbox
+		size="sm"
+		label="Yes"
+		checked={initialValue as boolean}
+		onchange={(evt) => onValue(evt.currentTarget.checked)}
+	/>
 {/snippet}
 
 {#snippet balanceGte({ onValue, initialValue = '' }: FilterComponentType)}

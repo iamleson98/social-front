@@ -12,21 +12,22 @@
 		type MetadataInput,
 		type Mutation,
 		type Query,
-		type QueryUserArgs
+		type QueryUserArgs,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { USER_UPDATE_MUTATION } from '$lib/api/account';
 	import { type MutationCustomerUpdateArgs } from '$lib/gql/graphql';
 	import CustomerExtraForm from '$lib/components/pages/settings/config/customers/customer-extra-form.svelte';
+	import { onMount } from 'svelte';
 
 	const userDetailQuery = operationStore<Pick<Query, 'user'>, QueryUserArgs>({
 		kind: 'query',
 		query: USER_DETAIL_QUERY,
 		requestPolicy: 'network-only',
 		variables: {
-			id: page.params.id
-		}
+			id: page.params.id,
+		},
 	});
 
 	let loading = $state(false);
@@ -38,25 +39,27 @@
 		isActive: false,
 		note: '',
 		metadata: [],
-		privateMetadata: []
+		privateMetadata: [],
 	});
-	
-	$effect(() => {
-		if ($userDetailQuery.data?.user) {
-			const { firstName, lastName, email, isActive, note, metadata, privateMetadata } =
-				$userDetailQuery.data.user;
-			userInput = {
-				firstName,
-				lastName,
-				email,
-				isActive,
-				note,
-				metadata,
-				privateMetadata
-			};
-		}
-	});
-	
+
+	onMount(() =>
+		userDetailQuery.subscribe((result) => {
+			if (result.data?.user) {
+				const { firstName, lastName, email, isActive, note, metadata, privateMetadata } =
+					result.data.user;
+				userInput = {
+					firstName,
+					lastName,
+					email,
+					isActive,
+					note,
+					metadata,
+					privateMetadata,
+				};
+			}
+		}),
+	);
+
 	const onUpdateClick = async () => {
 		loading = true;
 		const result = await GRAPHQL_CLIENT.mutation<
@@ -64,7 +67,7 @@
 			MutationCustomerUpdateArgs
 		>(USER_UPDATE_MUTATION, {
 			id: page.params.id,
-			input: userInput
+			input: userInput,
 		});
 		loading = false;
 		if (checkIfGraphqlResultHasError(result, 'customerUpdate', 'Customer updated successfully'))
@@ -78,7 +81,8 @@
 {:else if $userDetailQuery.error}
 	<Alert variant="error" size="sm" bordered>{$userDetailQuery.error.message}</Alert>
 {:else if $userDetailQuery.data?.user}
-	{@const orders = $userDetailQuery.data.user.orders?.edges.map((edge) => edge.node) ?? []}
+	{@const { user } = $userDetailQuery.data}
+	{@const orders = user.orders?.edges.map((edge) => edge.node) ?? []}
 	<div class="flex flex-row gap-2 w-full">
 		<div class="w-6/10">
 			<CustomerInformationForm
@@ -95,12 +99,12 @@
 		</div>
 
 		<CustomerExtraForm
-			addresses={$userDetailQuery.data?.user.addresses}
-			lastLoginTime={$userDetailQuery.data?.user.lastLogin}
+			addresses={user.addresses}
+			lastLoginTime={user.lastLogin}
 			lastOrderAt={orders.length > 0 ? orders[0].created : undefined}
-			giftCards={$userDetailQuery.data?.user.giftCards?.edges.map((edge) => edge.node) ?? []}
-			userGmail={$userDetailQuery.data?.user.email}
-			userName={$userDetailQuery.data?.user.firstName + ' ' + $userDetailQuery.data?.user.lastName}
+			giftCards={user.giftCards?.edges.map((edge) => edge.node) ?? []}
+			userEmail={user.email}
+			userName={user.firstName + ' ' + $userDetailQuery.data?.user.lastName}
 		/>
 	</div>
 	<ActionBar backButtonUrl={AppRoute.SETTINGS_CONFIGS_USERS()} {onUpdateClick} disabled={loading} />
