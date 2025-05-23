@@ -2,18 +2,37 @@
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { GIFTCARD_LIST_QUERY } from '$lib/api/admin/discount';
-	import { Search } from '$lib/components/icons';
+	import {
+		GIFT_CARD_ACTIVATE_MUTATION,
+		GIFT_CARD_DEACTIVATE_MUTATION,
+		GIFT_CARD_DELETE_MUTATION,
+	} from '$lib/api/admin/giftcards';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { Cancel, CircleCheck, Dots, Search, Trash } from '$lib/components/icons';
 	import Filter from '$lib/components/pages/settings/config/giftcards/filter.svelte';
 	import GiftcardIssueForm from '$lib/components/pages/settings/config/giftcards/giftcard-issue-form.svelte';
 	import { Badge } from '$lib/components/ui/badge';
+	import { IconButton } from '$lib/components/ui/Button';
+	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
 	import { Input } from '$lib/components/ui/Input';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
-	import { GiftCardSortField, type GiftCard, type QueryGiftCardsArgs } from '$lib/gql/graphql';
+	import {
+		GiftCardSortField,
+		type GiftCard,
+		type Mutation,
+		type MutationGiftCardActivateArgs,
+		type MutationGiftCardDeleteArgs,
+		type QueryGiftCardsArgs,
+	} from '$lib/gql/graphql';
+	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 
 	let forceReExecuteGraphqlQuery = $state(true);
 	let variables = $state<QueryGiftCardsArgs>({ first: 10 });
 	let openGiftcardIssueForm = $state(false);
+	let loading = $state(false);
 
 	const COLUMNS: TableColumnProps<GiftCard, GiftCardSortField>[] = [
 		{
@@ -30,16 +49,100 @@
 			key: GiftCardSortField.CreatedAt,
 			child: issueAt,
 		},
+		{
+			title: 'Action',
+			child: action,
+		},
 	];
 
 	afterNavigate(() => {
 		const action = page.url.searchParams.get('action');
 		openGiftcardIssueForm = action === 'create';
 	});
+
+	const handleDeleteGiftcard = (id: string) => {
+		ALERT_MODAL_STORE.openAlertModal({
+			content: `Are you sure to delete the gift card ${id}?`,
+			onOk: async () => {
+				loading = true; //
+				const result = await GRAPHQL_CLIENT.mutation<
+					Mutation['giftCardDelete'],
+					MutationGiftCardDeleteArgs
+				>(GIFT_CARD_DELETE_MUTATION, {
+					id,
+				});
+
+				loading = false; //
+
+				if (
+					checkIfGraphqlResultHasError(
+						result,
+						'giftCardDelete',
+						`Successfully deleted giftcard ${id}`,
+					)
+				)
+					return;
+
+				forceReExecuteGraphqlQuery = true; // trigger refetching table data
+			},
+		});
+	};
+
+	const handleToggleGiftcardStatus = async (id: string, active: boolean) => {
+		const [query, resultKey, successMessage] = active
+			? [
+					GIFT_CARD_ACTIVATE_MUTATION,
+					'giftCardActivate' as keyof Mutation,
+					`Successfully activated giftcard ${id}`,
+				]
+			: [
+					GIFT_CARD_DEACTIVATE_MUTATION,
+					'giftCardDeactivate' as keyof Mutation,
+					`Successfully deactivated giftcard ${id}`,
+				];
+
+		loading = true; //
+
+		const result = await GRAPHQL_CLIENT.mutation<
+			Mutation[typeof resultKey],
+			MutationGiftCardActivateArgs
+		>(query, {
+			id,
+		});
+		loading = false; //
+
+		if (checkIfGraphqlResultHasError(result, resultKey, successMessage)) return;
+
+		forceReExecuteGraphqlQuery = true; // trigger table refethcing data
+	};
 </script>
 
 {#snippet code({ item }: { item: GiftCard })}
 	<span>{item.displayCode}</span>
+{/snippet}
+
+{#snippet action({ item }: { item: GiftCard })}
+	{#snippet trigger({ onclick }: DropdownTriggerInterface)}
+		<IconButton icon={Dots} {onclick} size="xs" color="gray" variant="light" disabled={loading} />
+	{/snippet}
+	<DropDown {trigger}>
+		<MenuItem
+			startIcon={Trash}
+			onclick={() => handleDeleteGiftcard(item.id)}
+			class="text-red-600"
+			disabled={loading}
+		>
+			Delete
+		</MenuItem>
+		<MenuItem
+			disabled={loading}
+			startIcon={item.isActive ? Cancel : CircleCheck}
+			onclick={() => handleToggleGiftcardStatus(item.id, !item.isActive)}
+			class={item.isActive ? 'text-gray-600' : 'text-green-600'}
+		>
+			{item.isActive ? 'Deactivate' : 'Activate'}
+		</MenuItem>
+	</DropDown>
 {/snippet}
 
 {#snippet issueAt({ item }: { item: GiftCard })}
@@ -66,6 +169,7 @@
 	resultKey="giftCards"
 	bind:variables
 	columns={COLUMNS}
+	disabled={loading}
 />
 
 <GiftcardIssueForm bind:open={openGiftcardIssueForm} />

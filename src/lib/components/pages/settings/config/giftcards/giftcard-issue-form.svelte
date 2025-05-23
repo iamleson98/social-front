@@ -1,10 +1,7 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import {
-		CUSTOMER_LIST_QUERY,
-		GIFT_CARD_CREATE_MUTATION,
-		GIFT_CARD_TAGS_QUERY,
-	} from '$lib/api/admin/users';
+	import { GIFT_CARD_CREATE_MUTATION, GIFT_CARD_TAGS_QUERY } from '$lib/api/admin/giftcards';
+	import { CUSTOMER_LIST_QUERY } from '$lib/api/admin/users';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import ShopCurrenciesSelect from '$lib/components/common/shop-currencies-select.svelte';

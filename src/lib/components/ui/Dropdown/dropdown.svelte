@@ -3,7 +3,12 @@
 	import MenuItem from './menuItem.svelte';
 	import type { DropdownProps } from './types';
 
-	let { children, options, open = $bindable(false), ...rest }: DropdownProps = $props();
+	let {
+		children,
+		options,
+		open = $bindable(false),
+		...rest
+	}: DropdownProps = $props();
 </script>
 
 <Popover {...rest} bind:open>

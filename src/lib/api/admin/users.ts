@@ -86,38 +86,3 @@ query UserDetail($id: ID, $email: String) {
     }
   }
 }`
-
-export const GIFT_CARD_CREATE_MUTATION = gql`
-mutation GiftCardCreate($input: GiftCardCreateInput!) {
-  giftCardCreate(
-    input: $input
-  ) {
-    errors {
-      field
-      message
-    }
-    giftCard {
-      id
-      code
-    }
-  }
-}
-`
-
-export const GIFT_CARD_TAGS_QUERY = gql`
-query SearchGiftCardTags($first: Int!, $after: String, $last: Int, $before: String, $filter: GiftCardTagFilterInput) {
-  giftCardTags(filter: $filter, first: $first, after: $after, last: $last, before: $before) {
-    edges {
-      node {
-        id
-        name
-      }
-    }
-    pageInfo {
-      hasNextPage
-      hasPreviousPage
-      startCursor
-      endCursor
-    }
-  }
-}`

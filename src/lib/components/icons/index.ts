@@ -107,6 +107,8 @@ export {
   TablerDiscount as Discount,
   TablerAccessPoint as AccessPoint,
   TablerClipboardCopy as ClipboardCopy,
+  TablerCancel as Cancel,
+  TablerCircleCheck as CircleCheck,
 } from './consts';
 
 export { default as Icon } from './icon.svelte';

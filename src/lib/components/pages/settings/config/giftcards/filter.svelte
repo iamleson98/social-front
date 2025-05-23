@@ -1,6 +1,7 @@
 <script lang="ts">
+	import { GIFT_CARD_TAGS_QUERY } from '$lib/api/admin/giftcards';
 	import { PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
-	import { CUSTOMER_LIST_QUERY, GIFT_CARD_TAGS_QUERY } from '$lib/api/admin/users';
+	import { CUSTOMER_LIST_QUERY } from '$lib/api/admin/users';
 	import type {
 		FilterComponentType,
 		FilterItemValue,
