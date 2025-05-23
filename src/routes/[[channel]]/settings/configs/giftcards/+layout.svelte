@@ -14,7 +14,7 @@
 	listingPageHref={AppRoute.SETTINGS_CONFIGS_GIFTCARDS()}
 	listingPageLabel="Giftcards"
 	newPageHref={AppRoute.SETTINGS_CONFIGS_GIFTCARD_NEW()}
-	newPageLabel="New giftcard"
+	newPageLabel="Isue new giftcard"
 	detailRouteID="/[[channel]]/settings/configs/giftcards/[id]"
 	detailPageLabelGetter={(page) => page.params.id}
 	backLinkUrl={AppRoute.SETTINGS_CONFIGS()}

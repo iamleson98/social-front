@@ -1,7 +1,10 @@
 <script lang="ts">
+	import { afterNavigate } from '$app/navigation';
+	import { page } from '$app/state';
 	import { GIFTCARD_LIST_QUERY } from '$lib/api/admin/discount';
 	import { Search } from '$lib/components/icons';
 	import Filter from '$lib/components/pages/settings/config/giftcards/filter.svelte';
+	import GiftcardIssueForm from '$lib/components/pages/settings/config/giftcards/giftcard-issue-form.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Input } from '$lib/components/ui/Input';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
@@ -10,6 +13,7 @@
 
 	let forceReExecuteGraphqlQuery = $state(true);
 	let variables = $state<QueryGiftCardsArgs>({ first: 10 });
+	let openGiftcardIssueForm = $state(false);
 
 	const COLUMNS: TableColumnProps<GiftCard, GiftCardSortField>[] = [
 		{
@@ -27,6 +31,11 @@
 			child: issueAt,
 		},
 	];
+
+	afterNavigate(() => {
+		const action = page.url.searchParams.get('action');
+		openGiftcardIssueForm = action === 'create';
+	});
 </script>
 
 {#snippet code({ item }: { item: GiftCard })}
@@ -58,3 +67,5 @@
 	bind:variables
 	columns={COLUMNS}
 />
+
+<GiftcardIssueForm bind:open={openGiftcardIssueForm} />

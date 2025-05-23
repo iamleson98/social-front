@@ -69,7 +69,7 @@
 		if (newKey) {
 			newFilters[newKey] = {};
 
-			if (FILTER_MAP[newKey].mustPairWith) {
+			if (FILTER_MAP[newKey].mustPairWith && !activeFilters[FILTER_MAP[newKey].mustPairWith]) {
 				const { mustPairWith } = FILTER_MAP[newKey];
 
 				if (FILTER_MAP[mustPairWith]) {

@@ -10,7 +10,12 @@
 	import ShopCurrenciesSelect from '$lib/components/common/shop-currencies-select.svelte';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
-	import type { GiftCardFilterInput, QueryCustomersArgs, QueryGiftCardTagsArgs, QueryProductsArgs } from '$lib/gql/graphql';
+	import type {
+		GiftCardFilterInput,
+		QueryCustomersArgs,
+		QueryGiftCardTagsArgs,
+		QueryProductsArgs,
+	} from '$lib/gql/graphql';
 
 	const FILTER_OPTIONS: FilterProps<GiftCardFilterInput>[] = [
 		{
@@ -86,7 +91,7 @@
 			key: 'tags',
 			operations: [
 				{
-					operator: 'eq',
+					operator: 'oneOf',
 					component: tags,
 				},
 			],
@@ -96,7 +101,7 @@
 			key: 'usedBy',
 			operations: [
 				{
-					operator: 'eq',
+					operator: 'oneOf',
 					component: usedBy,
 				},
 			],
@@ -133,22 +138,24 @@
 
 {#snippet balanceRange({ onValue, initialValue = [] }: FilterComponentType)}
 	{@const range = (initialValue || []) as number[]}
-	{@render numberSnippet({
-		onValue: (value) => {
-			range[0] = value as number;
-			onValue(range);
-		},
-		initialValue,
-		placeholder: 'Lte',
-	})}
-	{@render numberSnippet({
-		onValue: (value) => {
-			range[1] = value as number;
-			onValue(range);
-		},
-		initialValue,
-		placeholder: 'Gte',
-	})}
+	<div class="flex flex-col gap-1">
+		{@render numberSnippet({
+			onValue: (value) => {
+				range[0] = value as number;
+				onValue(range);
+			},
+			initialValue,
+			placeholder: 'Lte',
+		})}
+		{@render numberSnippet({
+			onValue: (value) => {
+				range[1] = value as number;
+				onValue(range);
+			},
+			initialValue,
+			placeholder: 'Gte',
+		})}
+	</div>
 {/snippet}
 
 {#snippet products({ onValue, initialValue = [] }: FilterComponentType)}
@@ -210,13 +217,5 @@
 		onchange={(evt) => onValue(evt.currentTarget.checked)}
 	/>
 {/snippet}
-
-<!-- {#snippet initialBalanceLte({ onValue, initialValue = '' }: FilterComponentType)}
-	{@render numberSnippet({ onValue, initialValue, placeholder: 'Lte' })}
-{/snippet}
-
-{#snippet initialBalanceGte({ onValue, initialValue = '' }: FilterComponentType)}
-	{@render numberSnippet({ onValue, initialValue, placeholder: 'Gte' })}
-{/snippet} -->
 
 <FilterButton filterOptions={FILTER_OPTIONS} onApply={console.log} />

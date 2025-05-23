@@ -158,6 +158,7 @@
 				placeholder="Currency"
 				onchange={validate}
 				bind:value={giftCardInput.balance.currency}
+				disabled={loading}
 			/>
 		</div>
 

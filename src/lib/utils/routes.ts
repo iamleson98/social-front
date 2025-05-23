@@ -46,7 +46,7 @@ export const AppRoute = {
 	SETTINGS_CONFIGS_ATTRIBUTE_NEW: () => buildLinkWithRespectToChannel('settings/configs/attributes/new'),
 
 	SETTINGS_CONFIGS_GIFTCARDS: () => buildLinkWithRespectToChannel('settings/configs/giftcards'),
-	SETTINGS_CONFIGS_GIFTCARD_NEW: () => buildLinkWithRespectToChannel('settings/configs/giftcards/new'),
+	SETTINGS_CONFIGS_GIFTCARD_NEW: () => buildLinkWithRespectToChannel('settings/configs/giftcards/?action=create'),
 	SETTINGS_CONFIGS_GIFTCARD_DETAIL: (id: string) => buildLinkWithRespectToChannel(`settings/configs/giftcards/${id}`),
 
 	HOME: () => buildHomePageLink(),
