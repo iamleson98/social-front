@@ -109,8 +109,14 @@ query Giftcard($id: ID!) {
       name
     }
     isActive
-    initialBalance
-    currentBalance
+    initialBalance {
+      amount
+      currency
+    }
+    currentBalance {
+      amount
+      currency
+    }
     # events
   }
 }`;
