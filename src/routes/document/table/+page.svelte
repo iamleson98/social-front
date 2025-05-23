@@ -3,69 +3,65 @@
 	import { OpenEye } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/badge';
-	import IconButton from '$lib/components/ui/Button/IconButton.svelte';
-	import { Checkbox, Input } from '$lib/components/ui/Input';
-	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
+	import { IconButton } from '$lib/components/ui/Button';
+	import { Checkbox } from '$lib/components/ui/Input';
 	import { GraphqlPaginableTable, Table, type TableColumnProps } from '$lib/components/ui/Table';
-	import type { Product, ProductOrderField, Query } from '$lib/gql/graphql';
+	import { ProductOrderField, type Product, type Query } from '$lib/gql/graphql';
 	import { toast } from 'svelte-sonner';
 
-	let loading = $state(false);
-	let isNormalTable = $state(true);
-	let numFilter = $state(5);
-	let numColumn = $state(5);
-	let numRow = $state(3);
+	let disabledTable = $state(false);
+	let disabledGraphqlTable = $state(false);
+	let sortMultipleTable = $state(false);
+	let sortMultipleGraphqlTable = $state(false);
 
-	const PRODUCT_COLUMNS: TableColumnProps<Product, ProductOrderField>[] = [
-		{
-			title: 'First Column',
-			child: firstColumn,
-		},
-		{
-			title: 'Second Column',
-			child: secondColumn,
-		},
-		{
-			title: 'Third Column',
-			child: thirdColumn,
-		},
-		{
-			title: 'Action Column',
-			child: actionColumn,
-		},
-	];
+	let normalTableColumns = $state<TableColumnProps<Product, ProductOrderField>[]>([]);
+	let graphqlTableColumns = $state<TableColumnProps<Product, ProductOrderField>[]>([]);
 
-	const handleCopyButton = () => {
-		let codeContent = '';
-		if (isNormalTable) {
-			if (loading) {
-				codeContent = `<SkeletonContainer>
-					{#each Array.from({ length: ${numRow} }) as _, idx (idx)}
-						<div class="flex gap-4">
-							{#each Array.from({ length: ${numColumn} }) as _, colIdx (colIdx)}
-								<Skeleton class="h-8 w-full flex-1" />
-							{/each}
-						</div>
-					{/each}
-				</SkeletonContainer>`;
-			} else {
-				codeContent = `<div class="rounded-md p-2 bg-white">
-					<Table items={[]} columns={PRODUCT_COLUMNS}/>
-				</div>`;
-			}
-		} else {
-			codeContent = `<GraphqlPaginableTable
+	$effect(() => {
+		normalTableColumns = [
+			{ title: 'First Column', child: firstColumn },
+			{ title: 'Second Column', child: secondColumn, sortable: sortMultipleTable, key: ProductOrderField.Name },
+			{ title: 'Third Column', child: thirdColumn },
+			{ title: 'Action Column', child: actionColumn }
+		];
+	});
+
+	$effect(() => {
+		graphqlTableColumns = [
+			{ title: 'First Column', child: firstColumn },
+			{ title: 'Second Column', child: secondColumn, sortable: sortMultipleGraphqlTable, key: ProductOrderField.Name },
+			{ title: 'Third Column', child: thirdColumn },
+			{ title: 'Action Column', child: actionColumn }
+		];
+	});
+
+
+	const handleCopyNormalTable = () => {
+		const code = `<Table
+			disabled={${disabledTable}}
+			items={[]}
+			columns={PRODUCT_COLUMNS}
+			sortMultiple={${sortMultipleTable}}
+		/>`;
+
+		navigator.clipboard.writeText(code).then(() => {
+			toast.success(`Copied code: ${code}`);
+		});
+	};
+
+	const handleCopyGraphqlTable = () => {
+		const code = `<GraphqlPaginableTable
 			query={PRODUCT_LIST_QUERY_STORE}
-			variables={{ first: ${numFilter} }}
+			variables={{ first: 10 }}
 			resultKey={'products' as keyof Query}
 			columns={PRODUCT_COLUMNS}
+			disabled={${disabledGraphqlTable}}
+			sortMultiple={${sortMultipleGraphqlTable}}
 			forceReExecuteGraphqlQuery={true}
-			disabled={true}
 		/>`;
-		}
 
-		navigator.clipboard.writeText(codeContent).then(() => {
-			toast.success(`Copied code: ${codeContent}`);
+		navigator.clipboard.writeText(code).then(() => {
+			toast.success(`Copied code: ${code}`);
 		});
 	};
 </script>
@@ -83,43 +79,35 @@
 	<IconButton variant="outline" size="xs" onclick={() => {}} icon={OpenEye} />
 {/snippet}
 
-<!-- Khi checkbox được bật/tắt, biến loading sẽ tự thay đổi -->
-<Checkbox bind:checked={loading} label={loading ? 'Loading' : 'Not loading'} />
-<Checkbox bind:checked={isNormalTable} label="Normal Table" />
-
-{#if isNormalTable}
-	<div class="flex">
-		<Input type="number" bind:value={numColumn} label="Number of columns" />
+<div class="rounded-md p-4 bg-white border mb-4">
+	<h2 class="text-lg font-semibold mb-2">Normal Table</h2>
+	<div class="flex gap-4 mb-2">
+		<Checkbox bind:checked={disabledTable} label="Disabled" />
+		<Checkbox bind:checked={sortMultipleTable} label="Sort Multiple" />
 	</div>
-	{#if loading}
-		<SkeletonContainer class="space-y-2">
-			{#each Array.from({ length: numRow }) as _, rowIdx (rowIdx)}
-				<div class="flex gap-4">
-					{#each Array.from({ length: numColumn }) as _, colIdx (colIdx)}
-						<Skeleton class="h-8 w-full flex-1" />
-					{/each}
-				</div>
-			{/each}
-		</SkeletonContainer>
-	{:else}
-		<div class="rounded-md p-2 bg-white">
-			<Table items={[]} columns={PRODUCT_COLUMNS} />
-		</div>
-	{/if}
-{/if}
+	<Table
+		items={[]}
+		columns={normalTableColumns}
+		disabled={disabledTable}
+		sortMultiple={sortMultipleTable}
+	/>
+	<Button class="mt-2" onclick={handleCopyNormalTable}>Copy Normal Table</Button>
+</div>
 
-{#if !isNormalTable}
-	<Input type="number" bind:value={numFilter} />
-	<div class="rounded-md p-2">
-		<GraphqlPaginableTable
-			query={PRODUCT_LIST_QUERY_STORE}
-			variables={{ first: numFilter }}
-			resultKey={'products' as keyof Query}
-			columns={PRODUCT_COLUMNS}
-			forceReExecuteGraphqlQuery={true}
-			disabled={true}
-		/>
+<div class="rounded-md p-4 bg-white border">
+	<h2 class="text-lg font-semibold mb-2">GraphQL Table</h2>
+	<div class="flex gap-4 mb-2">
+		<Checkbox bind:checked={disabledGraphqlTable} label="Disabled" />
+		<Checkbox bind:checked={sortMultipleGraphqlTable} label="Sort Multiple" />
 	</div>
-{/if}
-
-<Button onclick={handleCopyButton}>Copy</Button>
+	<GraphqlPaginableTable
+		query={PRODUCT_LIST_QUERY_STORE}
+		variables={{ first: 3 }}
+		resultKey={'products' as keyof Query}
+		columns={graphqlTableColumns}
+		disabled={disabledGraphqlTable}
+		sortMultiple={sortMultipleGraphqlTable}
+		forceReExecuteGraphqlQuery={true}
+	/>
+	<Button class="mt-2" onclick={handleCopyGraphqlTable}>Copy GraphQL Table</Button>
+</div>
