@@ -31,7 +31,7 @@
 {:else if $giftcardQuery.data}
 	<div class="flex flex-row gap-2">
 		<GiftcardDetail giftcard={$giftcardQuery.data.giftCard!} />
-		<GiftcardExtraInformation />
+		<GiftcardExtraInformation giftcard={$giftcardQuery.data.giftCard!} />
 	</div>
 
 	<ActionBar

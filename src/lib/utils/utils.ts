@@ -11,6 +11,7 @@ import { OrderStatus, PaymentChargeStatusEnum } from "$lib/gql/graphql";
 import type { BadgeProps } from '$lib/components/ui/badge/types';
 import { lowerCase, startCase } from 'es-toolkit';
 import { toast } from 'svelte-sonner';
+import dayjs from 'dayjs';
 
 
 export const editorJsParser = editorJsToHtml();
@@ -360,3 +361,25 @@ export const orderStatusBadgeClass = (status: OrderStatus): BadgeAttr => {
 	}
 };
 
+/**
+ * both dayjs and Date's instances satisfy this interface
+ */
+export interface TimeObject {
+	valueOf(): number;
+};
+
+dayjs() satisfies TimeObject;
+(new Date()) satisfies TimeObject;
+
+/**
+ * Compare 2 date values
+ * @param day1 Date | dayjs
+ * @param day2 - Date | dayjs
+ */
+export const compareTime = (day1: TimeObject, day2: TimeObject) => {
+	const time1 = day1.valueOf();
+	const time2 = day2.valueOf();
+	if (time1 > time2) return 1;
+	if (time1 === time2) return 0;
+	return -1;
+};
