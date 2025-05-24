@@ -113,7 +113,7 @@
 	};
 </script>
 
-<SectionHeader title="General Information" />
+<SectionHeader>General Information</SectionHeader>
 
 <div class="flex gap-2 items-start">
 	<Input

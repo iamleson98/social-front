@@ -41,7 +41,7 @@
 {/snippet}
 
 <div class="w-3/10 p-3 rounded-lg border border-gray-200 bg-white h-fit">
-	<SectionHeader title="Card information" />
+	<SectionHeader>Card information</SectionHeader>
 
 	<div class="mt-3">
 		{#each SECTIONS as section, idx (idx)}

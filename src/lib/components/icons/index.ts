@@ -110,6 +110,7 @@ export {
   TablerCancel as Cancel,
   TablerCircleCheck as CircleCheck,
   TablerCalendarClock as CalendarClock,
+  TablerBan as Ban,
 } from './consts';
 
 export { default as Icon } from './icon.svelte';

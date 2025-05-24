@@ -132,7 +132,7 @@
 		<Alert size="sm" bordered variant="error">{$channelsQuery.error.message}</Alert>
 	{:else if $channelsQuery.data}
 		<div class="bg-white rounded-lg border w-full border-gray-200 p-3 mb-3">
-			<SectionHeader title="Availability" />
+			<SectionHeader>Availability</SectionHeader>
 			<div class="text-xs text-gray-500">In {addChannelListings.length} channels</div>
 			<Select
 				size="sm"

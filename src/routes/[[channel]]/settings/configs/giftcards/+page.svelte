@@ -2,15 +2,12 @@
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { GIFTCARD_LIST_QUERY } from '$lib/api/admin/giftcards';
-	import {
-		GIFT_CARD_ACTIVATE_MUTATION,
-		GIFT_CARD_DEACTIVATE_MUTATION,
-		GIFT_CARD_DELETE_MUTATION,
-	} from '$lib/api/admin/giftcards';
+	import { GIFT_CARD_DELETE_MUTATION } from '$lib/api/admin/giftcards';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { Cancel, CircleCheck, Dots, Search, Trash } from '$lib/components/icons';
 	import Filter from '$lib/components/pages/settings/config/giftcards/filter.svelte';
 	import GiftcardIssueForm from '$lib/components/pages/settings/config/giftcards/giftcard-issue-form.svelte';
+	import { GiftcardUtil } from '$lib/components/pages/settings/config/giftcards/utils.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
@@ -21,7 +18,6 @@
 		GiftCardSortField,
 		type GiftCard,
 		type Mutation,
-		type MutationGiftCardActivateArgs,
 		type MutationGiftCardDeleteArgs,
 		type QueryGiftCardsArgs,
 	} from '$lib/gql/graphql';
@@ -30,10 +26,12 @@
 	import { checkIfGraphqlResultHasError, formatCurrency } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 
+	const giftcardUtil = new GiftcardUtil();
 	let forceReExecuteGraphqlQuery = $state(true);
 	let variables = $state<QueryGiftCardsArgs>({ first: 10 });
 	let openGiftcardIssueForm = $state(false);
-	let loading = $state(false);
+	let internalLoading = $state(false);
+	let loading = $derived(internalLoading || giftcardUtil.loading);
 
 	const COLUMNS: TableColumnProps<GiftCard, GiftCardSortField>[] = [
 		{
@@ -77,7 +75,7 @@
 		ALERT_MODAL_STORE.openAlertModal({
 			content: `Are you sure to delete the gift card ${id}?`,
 			onOk: async () => {
-				loading = true; //
+				internalLoading = true; //
 				const result = await GRAPHQL_CLIENT.mutation<
 					Mutation['giftCardDelete'],
 					MutationGiftCardDeleteArgs
@@ -85,7 +83,7 @@
 					id,
 				});
 
-				loading = false; //
+				internalLoading = false; //
 
 				if (
 					checkIfGraphqlResultHasError(
@@ -102,31 +100,8 @@
 	};
 
 	const handleToggleGiftcardStatus = async (id: string, active: boolean) => {
-		const [query, resultKey, successMessage] = active
-			? [
-					GIFT_CARD_ACTIVATE_MUTATION,
-					'giftCardActivate' as keyof Mutation,
-					`Successfully activated giftcard ${id}`,
-				]
-			: [
-					GIFT_CARD_DEACTIVATE_MUTATION,
-					'giftCardDeactivate' as keyof Mutation,
-					`Successfully deactivated giftcard ${id}`,
-				];
-
-		loading = true; //
-
-		const result = await GRAPHQL_CLIENT.mutation<
-			Mutation[typeof resultKey],
-			MutationGiftCardActivateArgs
-		>(query, {
-			id,
-		});
-		loading = false; //
-
-		if (checkIfGraphqlResultHasError(result, resultKey, successMessage)) return;
-
-		forceReExecuteGraphqlQuery = true; // trigger table refethcing data
+		const hasErr = await giftcardUtil.handleToggleGiftcardStatus(id, active);
+		if (!hasErr) forceReExecuteGraphqlQuery = true;
 	};
 </script>
 

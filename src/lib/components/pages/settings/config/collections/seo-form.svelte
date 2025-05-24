@@ -70,7 +70,7 @@
 </script>
 
 <div class="bg-white rounded-lg border w-full border-gray-200 p-3">
-	<SectionHeader title="Search engine preview" />
+	<SectionHeader>Search engine preview</SectionHeader>
 	<Accordion header="Search engine preview" class="mt-2">
 		<Input
 			label="Slug"

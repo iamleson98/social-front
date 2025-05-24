@@ -101,7 +101,7 @@
 {/snippet}
 
 <div class="mb-4 flex items-center justify-between">
-	<SectionHeader title="Products in collection" />
+	<SectionHeader>Products in collection</SectionHeader>
 	<Button size="xs" onclick={handleClickOpenProductListModal} disabled={shouldDisable}>
 		Assign Product
 	</Button>

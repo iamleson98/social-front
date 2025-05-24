@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { GIFT_CARD_TAGS_QUERY } from '$lib/api/admin/giftcards';
-	import { Header } from '$lib/components/common';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import { Ban, CircleCheck, Send } from '$lib/components/icons';
+	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Input } from '$lib/components/ui/Input';
 	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
@@ -13,6 +14,7 @@
 	import MetadataEditor from '../../common/metadata-editor.svelte';
 	import GiftcardEvents from './giftcard-events.svelte';
 	import GiftcardExpirationForm from './giftcard-expiration-form.svelte';
+	import { GiftcardUtil } from './utils.svelte';
 
 	type Props = {
 		giftcard: GiftCard;
@@ -20,6 +22,9 @@
 	};
 
 	let { giftcard, disabled }: Props = $props();
+	const giftcardUtils = new GiftcardUtil();
+
+	let loading = $derived(giftcardUtils.loading);
 
 	let giftCardInput = $state<GiftCardUpdateInput>({
 		addTags: giftcard.tags.map((item) => item.id),
@@ -29,7 +34,31 @@
 
 <div class="w-7/10 flex flex-col gap-2">
 	<div class="rounded-lg border border-gray-200 bg-white flex flex-col gap-3 p-3">
-		<SectionHeader title="Giftcard details" />
+		<SectionHeader class="flex items-center justify-between">
+			<div>
+				<span>Giftcard details</span>
+				<Badge
+					text={giftcard.isActive ? 'Active' : 'Disabled'}
+					color={giftcard.isActive ? 'green' : 'red'}
+					rounded
+					variant="light"
+					size="sm"
+				/>
+			</div>
+			<div class="flex gap-1 items-center">
+				<Button
+					size="xs"
+					color={giftcard.isActive ? 'red' : 'green'}
+					variant="light"
+					startIcon={giftcard.isActive ? Ban : CircleCheck}
+					onclick={() => giftcardUtils.handleToggleGiftcardStatus(giftcard.id, !giftcard.isActive)}
+					disabled={loading}
+				>
+					{giftcard.isActive ? 'Deactivate' : 'Activate'}
+				</Button>
+				<Button size="xs" startIcon={Send} color="violet" disabled={loading}>Resend code</Button>
+			</div>
+		</SectionHeader>
 
 		<div class="flex items-center gap-2">
 			<Input
@@ -78,7 +107,7 @@
 	</div>
 
 	<div class="p-3 rounded-lg border border-gray-200 bg-white flex flex-col gap-3">
-		<SectionHeader title="Giftcard timeline" />
+		<SectionHeader>Giftcard timeline</SectionHeader>
 		<GiftcardEvents id={giftcard.id} />
 	</div>
 </div>

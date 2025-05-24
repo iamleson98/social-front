@@ -95,7 +95,7 @@
 </script>
 
 <div class="bg-white rounded-lg border w-full border-gray-200 p-3 pb-6 flex flex-col gap-3">
-	<SectionHeader title="General Information" />
+	<SectionHeader>General Information</SectionHeader>
 	<Input
 		label="Name"
 		bind:value={name}
