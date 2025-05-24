@@ -27,7 +27,7 @@
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, formatCurrency } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 
 	let forceReExecuteGraphqlQuery = $state(true);
@@ -43,6 +43,18 @@
 		{
 			title: 'Status',
 			child: status,
+		},
+		{
+			title: 'Tags',
+			child: tags,
+		},
+		{
+			title: 'Product',
+			child: product,
+		},
+		{
+			title: 'Balance',
+			child: balance,
 		},
 		{
 			title: 'Issued at',
@@ -122,6 +134,29 @@
 	<a href={AppRoute.SETTINGS_CONFIGS_GIFTCARD_DETAIL(item.id)} class="link"
 		>••••-{item.displayCode}</a
 	>
+{/snippet}
+
+{#snippet tags({ item }: { item: GiftCard })}
+	{#each item.tags as tag, idx (idx)}
+		<Badge text={tag.name} size="xs" variant="light" color="gray" /> <br />
+	{/each}
+{/snippet}
+
+{#snippet balance({ item }: { item: GiftCard })}
+	<div class="flex items-center justify-between gap-1">
+		<span class="text-gray-500 text-xs">{item.currentBalance.currency}</span>
+		<span class="font-semibold text-blue-600 text-right">
+			{formatCurrency(item.currentBalance.amount)}
+		</span>
+	</div>
+{/snippet}
+
+{#snippet product({ item }: { item: GiftCard })}
+	{#if item.product}
+		<a href={AppRoute.PRODUCT_DETAILS(item.product.slug)} class="link">{item.product.name}</a>
+	{:else}
+		<span>-</span>
+	{/if}
 {/snippet}
 
 {#snippet action({ item }: { item: GiftCard })}

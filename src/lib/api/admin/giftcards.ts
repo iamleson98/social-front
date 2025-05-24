@@ -74,6 +74,18 @@ query Giftcards($first: Int, $last: Int, $before: String, $after: String, $sortB
         displayCode
         isActive
         created
+        tags {
+          id
+          name
+        }
+        product {
+          name
+          slug
+        }
+        currentBalance {
+          amount
+          currency
+        }
       }
     }
     pageInfo {
