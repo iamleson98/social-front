@@ -7,7 +7,6 @@
 	import GiftcardDetail from '$lib/components/pages/settings/config/giftcards/giftcard-detail.svelte';
 	import GiftcardExtraInformation from '$lib/components/pages/settings/config/giftcards/giftcard-extra-information.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { SelectSkeleton } from '$lib/components/ui/select';
 	import type { Query, QueryGiftCardArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 
