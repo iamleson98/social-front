@@ -13,6 +13,7 @@
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import { Skeleton } from '$lib/components/ui/Skeleton';
 
 	type Props = {
 		addChannelListings?: PublishableChannelListingInput[];
@@ -123,7 +124,10 @@
 
 <div>
 	{#if $channelsQuery.fetching}
-		<SelectSkeleton size="sm" />
+		<div class="bg-white border border-gray-200 rounded-lg p-3">
+			<Skeleton class="h-8 w-28 mb-2" />
+			<SelectSkeleton label size="sm"/>
+		</div>
 	{:else if $channelsQuery.error}
 		<Alert size="sm" bordered variant="error">{$channelsQuery.error.message}</Alert>
 	{:else if $channelsQuery.data}
