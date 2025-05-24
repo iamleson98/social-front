@@ -22,7 +22,7 @@
 	import { tranFunc } from '$i18n';
 	import { onMount } from 'svelte';
 	import { ACCESS_TOKEN_KEY, HTTPStatusSuccess } from '$lib/utils/consts';
-	import { afterNavigate, beforeNavigate, invalidateAll } from '$app/navigation';
+	import { afterNavigate, beforeNavigate } from '$app/navigation';
 	import { DropDown } from '$lib/components/ui/Dropdown';
 	import { READ_ONLY_USER_STORE, setUserStoreValue } from '$lib/stores/auth/user';
 	import { Tween } from 'svelte/motion';
