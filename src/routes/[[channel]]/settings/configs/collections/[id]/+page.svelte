@@ -11,12 +11,12 @@
 	import { operationStore } from '$lib/api/operation';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import AvailabilityForm from '$lib/components/pages/settings/config/collections/availability-form.svelte';
+	import CollectionDetailSkeleton from '$lib/components/pages/settings/config/collections/collection-detail-skeleton.svelte';
 	import GeneralInformationForm from '$lib/components/pages/settings/config/collections/general-information-form.svelte';
 	import ProductListForm from '$lib/components/pages/settings/config/collections/product-list-form.svelte';
 	import SeoForm from '$lib/components/pages/settings/config/collections/seo-form.svelte';
 	import { type MediaObject } from '$lib/components/pages/settings/products/new/utils';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import type {
 		CollectionChannelListingUpdateInput,
 		CollectionInput,
@@ -187,9 +187,7 @@
 </script>
 
 {#if $collectionDetailQuery.fetching}
-	<SkeletonContainer>
-		<Skeleton class="h-10" />
-	</SkeletonContainer>
+	<CollectionDetailSkeleton />
 {:else if $collectionDetailQuery.error}
 	<Alert variant="error" size="sm" bordered>
 		{$collectionDetailQuery.error.message}
