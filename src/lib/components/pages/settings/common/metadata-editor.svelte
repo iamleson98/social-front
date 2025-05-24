@@ -16,7 +16,7 @@
 	};
 
 	let {
-		title = $bindable(),
+		title,
 		data = $bindable([]),
 		disabled,
 		class: className = '',

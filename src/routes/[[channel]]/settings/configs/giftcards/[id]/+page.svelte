@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { GIFT_CARD_DETAIL_QUERY, GIFTCARD_LIST_QUERY } from '$lib/api/admin/giftcards';
+	import { GIFT_CARD_DETAIL_QUERY } from '$lib/api/admin/giftcards';
 	import { operationStore } from '$lib/api/operation';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
+	import GiftcardDetail from '$lib/components/pages/settings/config/giftcards/giftcard-detail.svelte';
+	import GiftcardExtraInformation from '$lib/components/pages/settings/config/giftcards/giftcard-extra-information.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { SelectSkeleton } from '$lib/components/ui/select';
 	import type { Query, QueryGiftCardArgs } from '$lib/gql/graphql';
@@ -27,6 +29,11 @@
 {:else if $giftcardQuery.error}
 	<Alert variant="error" bordered size="sm">{$giftcardQuery.error.message}</Alert>
 {:else if $giftcardQuery.data}
+	<div class="flex flex-row gap-2">
+		<GiftcardDetail giftcard={$giftcardQuery.data.giftCard!} />
+		<GiftcardExtraInformation />
+	</div>
+
 	<ActionBar
 		backButtonUrl={AppRoute.SETTINGS_CONFIGS_GIFTCARDS()}
 		{onUpdateClick}

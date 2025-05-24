@@ -6,11 +6,11 @@
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import ShopCurrenciesSelect from '$lib/components/common/shop-currencies-select.svelte';
 	import { ClipboardCopy } from '$lib/components/icons';
-	import { Accordion } from '$lib/components/ui/Accordion';
+	// import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/badge';
 	import { IconButton } from '$lib/components/ui/Button';
-	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
+	// import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Checkbox, Input, RadioButton } from '$lib/components/ui/Input';
 	import { TextArea } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
@@ -24,9 +24,10 @@
 		QueryGiftCardTagsArgs,
 	} from '$lib/gql/graphql';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import dayjs from 'dayjs';
+	// import dayjs from 'dayjs';
 	import { toast } from 'svelte-sonner';
 	import { array, number, object, string, z } from 'zod';
+	import GiftcardExpirationForm from './giftcard-expiration-form.svelte';
 
 	type Props = {
 		open: boolean;
@@ -36,14 +37,13 @@
 
 	let { open = $bindable(), toCustomerEmail }: Props = $props();
 
-	type ExpiryType = 'in' | 'exact';
-	// type ExpiryInUnit = 'year' | 'month' | 'day';
+	// type ExpiryType = 'in' | 'exact';
 
-	const NOW = dayjs();
-	const EXPIRY_TYPES: ExpiryType[] = ['exact', 'in'];
+	// const NOW = dayjs();
+	// const EXPIRY_TYPES: ExpiryType[] = ['exact', 'in'];
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 	const NOTE_MAX_LENGTH = 300;
-	const EXPIRY_IN_OPTIONS: dayjs.ManipulateType[] = ['day', 'month', 'year'];
+	// const EXPIRY_IN_OPTIONS: dayjs.ManipulateType[] = ['day', 'month', 'year'];
 	const giftcardSchema = object({
 		channel: string().nonempty(REQUIRED_ERROR),
 		note: string()
@@ -72,24 +72,24 @@
 	});
 	let loading = $state(false);
 	let issuedGiftcardCode = $state<string>();
-	let expiryType = $state<ExpiryType>('in');
-	let expireInAmount = $state<number>(1);
-	let expireInUnit = $state<dayjs.ManipulateType>('month');
-	let setExpiryDate = $state(false);
+	// let expiryType = $state<ExpiryType>('in');
+	// let expireInAmount = $state<number>(1);
+	// let expireInUnit = $state<dayjs.ManipulateType>('month');
+	// let setExpiryDate = $state(false);
 
-	$effect(() => {
-		if (!setExpiryDate) {
-			if (giftCardInput.expiryDate !== undefined) giftCardInput.expiryDate = undefined;
-			return;
-		}
-		if (expiryType === 'in' && expireInAmount && expireInUnit) {
-			giftCardInput.expiryDate = NOW.add(expireInAmount, expireInUnit).format('YYYY-MM-DD');
-		}
-	});
+	// $effect(() => {
+	// 	if (!setExpiryDate) {
+	// 		if (giftCardInput.expiryDate !== undefined) giftCardInput.expiryDate = undefined;
+	// 		return;
+	// 	}
+	// 	if (expiryType === 'in' && expireInAmount && expireInUnit) {
+	// 		giftCardInput.expiryDate = NOW.add(expireInAmount, expireInUnit).format('YYYY-MM-DD');
+	// 	}
+	// });
 
-	$effect(() => {
-		if (expireInAmount < 0) expireInAmount = 1;
-	});
+	// $effect(() => {
+	// 	if (expireInAmount < 0) expireInAmount = 1;
+	// });
 
 	const validate = () => {
 		const parseResult = giftcardSchema.safeParse({
@@ -229,7 +229,9 @@
 			card code. Gift card will be assigned to account which redeemed the code.
 		</Alert>
 
-		<Accordion
+		<GiftcardExpirationForm disabled={loading} bind:expiryDate={giftCardInput.expiryDate} />
+
+		<!-- <Accordion
 			header="Set gift card expiry date"
 			bind:open={setExpiryDate}
 			class="rounded-lg border border-gray-200 p-3"
@@ -299,7 +301,7 @@
 					<Badge size="sm" text={giftCardInput.expiryDate} />
 				{/if}
 			</Alert>
-		</Accordion>
+		</Accordion> -->
 
 		<ChannelSelect
 			label="Channel"

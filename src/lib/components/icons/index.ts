@@ -109,6 +109,7 @@ export {
   TablerClipboardCopy as ClipboardCopy,
   TablerCancel as Cancel,
   TablerCircleCheck as CircleCheck,
+  TablerCalendarClock as CalendarClock,
 } from './consts';
 
 export { default as Icon } from './icon.svelte';

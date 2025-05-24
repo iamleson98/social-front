@@ -5,4 +5,4 @@
 	let { title }: Props = $props();
 </script>
 
-<div class="font-semibold text-gray-700 text-lg mb-2">{title}</div>
+<div class="font-semibold text-gray-700 text-base mb-2">{title}</div>

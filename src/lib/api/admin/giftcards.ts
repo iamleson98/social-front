@@ -129,7 +129,50 @@ query Giftcard($id: ID!) {
       amount
       currency
     }
-    # events
   }
 }`;
 
+export const GIFT_CARD_EVENTS_QUERY = gql`
+query GiftCardEvents($id: ID!, $filter: GiftCardEventFilterInput) {
+  giftCard(id: $id) {
+    events(filter: $filter) {
+      id
+      expiryDate
+      oldExpiryDate
+      date
+      type
+      message
+      email
+      orderId
+      orderNumber
+      tags
+      oldTags
+      balance {
+        initialBalance {
+          amount
+          currency
+        }
+        currentBalance {
+          amount
+          currency
+        }
+      }
+      user {
+        id
+        email
+        firstName
+        lastName
+      }
+    }
+  }
+}`;
+
+export const GIFT_CARD_ADD_NOTE_MUTATION = gql`
+mutation GiftcardAddNote($id: ID!, $input: GiftCardAddNoteInput!) {
+  giftCardAddNote(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;

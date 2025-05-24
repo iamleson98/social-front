@@ -1,18 +1,24 @@
 <script lang="ts">
 	import { Header } from '$lib/components/common';
 	import { page } from '$app/state';
-	import { type Snippet } from 'svelte';
+	import { onMount, type Snippet } from 'svelte';
 	import Footer from '$lib/components/common/footer.svelte';
 	import { AlertListener } from '$lib/components/ui/Modal';
 	import '../app.css';
 	import Language from '$lib/components/plugins/language.svelte';
 	import { Toaster } from 'svelte-sonner';
+	import dayjs from 'dayjs';
+	import relativeTime from 'dayjs/plugin/relativeTime';
 
 	interface Props {
 		children: Snippet;
 	}
 
 	let { children }: Props = $props();
+
+	onMount(async () => {
+		dayjs.extend(relativeTime);
+	});
 </script>
 
 <svelte:head>
