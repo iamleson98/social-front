@@ -5,7 +5,11 @@ import { checkIfGraphqlResultHasError } from "$lib/utils/utils";
 
 
 export class GiftcardUtil {
-  public loading = $state(false);
+  private _loading = $state(false);
+
+  get loading() {
+    return this._loading;
+  }
 
   async handleToggleGiftcardStatus(id: string, active: boolean) {
     const [query, resultKey, successMessage] = active
@@ -20,7 +24,7 @@ export class GiftcardUtil {
         `Successfully deactivated giftcard ${id}`,
       ];
 
-    this.loading = true; //
+    this._loading = true; //
 
     const result = await GRAPHQL_CLIENT.mutation<
       Mutation[typeof resultKey],
@@ -29,7 +33,7 @@ export class GiftcardUtil {
       id,
     });
 
-    this.loading = false; //
+    this._loading = false; //
 
     return (checkIfGraphqlResultHasError(result, resultKey, successMessage));
   };

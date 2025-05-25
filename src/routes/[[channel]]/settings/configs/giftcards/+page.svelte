@@ -23,6 +23,7 @@
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
+	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { checkIfGraphqlResultHasError, formatCurrency } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 
@@ -106,9 +107,9 @@
 </script>
 
 {#snippet code({ item }: { item: GiftCard })}
-	<a href={AppRoute.SETTINGS_CONFIGS_GIFTCARD_DETAIL(item.id)} class="link"
-		>••••-{item.displayCode}</a
-	>
+	<a href={AppRoute.SETTINGS_CONFIGS_GIFTCARD_DETAIL(item.id)} class="link">
+		••••-{item.displayCode}
+	</a>
 {/snippet}
 
 {#snippet tags({ item }: { item: GiftCard })}
@@ -159,7 +160,7 @@
 {/snippet}
 
 {#snippet issueAt({ item }: { item: GiftCard })}
-	<span>{dayjs(item.created).format('DD/MM/YYYY HH:mm')}</span>
+	<span>{dayjs(item.created).format(SitenameTimeFormat)}</span>
 {/snippet}
 
 {#snippet status({ item }: { item: GiftCard })}

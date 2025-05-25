@@ -20,10 +20,11 @@
 	const EXPIRY_TYPES: ExpiryType[] = ['exact', 'in'];
 	const EXPIRY_IN_OPTIONS: dayjs.ManipulateType[] = ['day', 'month', 'year'];
 
-	let expiryType = $state<ExpiryType>('in');
+	/* if there is existing value, it should be in `exact` option, initially */
+	let expiryType = $state<ExpiryType>(expiryDate ? 'exact' : 'in');
 	let expireInAmount = $state<number>(1);
 	let expireInUnit = $state<dayjs.ManipulateType>('month');
-	let setExpiryDate = $state(false);
+	let setExpiryDate = $state(!!expiryDate);
 
 	$effect(() => {
 		if (!setExpiryDate) {

@@ -5,31 +5,109 @@
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Input } from '$lib/components/ui/Input';
-	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
+	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
 	import {
-		type GiftCardUpdateInput,
-		type GiftCard,
 		type QueryGiftCardTagsArgs,
+		type MetadataInput,
+		type QueryCustomersArgs,
 	} from '$lib/gql/graphql';
-	import MetadataEditor from '../../common/metadata-editor.svelte';
+	import MetadataEditor from '$lib/components/pages/settings/common/metadata-editor.svelte';
 	import GiftcardEvents from './giftcard-events.svelte';
 	import GiftcardExpirationForm from './giftcard-expiration-form.svelte';
-	import { GiftcardUtil } from './utils.svelte';
+	import { array, number, object, string, z } from 'zod';
+	import { tranFunc } from '$i18n';
+	import { difference } from 'es-toolkit';
+	import { Modal } from '$lib/components/ui/Modal';
+	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
+	import { GiftcardChannelMetadataKey, GiftcardUserEmailMetadataKey } from '$lib/utils/consts';
+	import { CUSTOMER_LIST_QUERY } from '$lib/api/admin/users';
+	import { Alert } from '$lib/components/ui/Alert';
 
 	type Props = {
-		giftcard: GiftCard;
+		id: string;
+		balanceAmount: number;
+		expiryDate: string;
+		isActive: boolean;
+		addTags: string[];
 		disabled?: boolean;
+		removeTags: string[];
+		metadata: MetadataInput[];
+		privateMetadata: MetadataInput[];
+		balanceCurrency: string;
+		onActiveChange: (active: boolean) => void;
 	};
 
-	let { giftcard, disabled }: Props = $props();
-	const giftcardUtils = new GiftcardUtil();
+	let {
+		balanceAmount = $bindable(),
+		expiryDate = $bindable(),
+		isActive,
+		addTags = $bindable([]),
+		disabled,
+		removeTags = $bindable(),
+		id,
+		metadata = $bindable([]),
+		privateMetadata = $bindable([]),
+		balanceCurrency,
+		onActiveChange,
+	}: Props = $props();
 
-	let loading = $derived(giftcardUtils.loading);
+	let openResendModal = $state(false);
 
-	let giftCardInput = $state<GiftCardUpdateInput>({
-		addTags: giftcard.tags.map((item) => item.id),
-		expiryDate: giftcard.expiryDate,
+	let giftCardChannel = $state(
+		metadata?.find((item) => item.key === GiftcardChannelMetadataKey)?.value,
+	);
+	let customerEmailOfGiftcard = $state(
+		metadata?.find((item) => item.key === GiftcardUserEmailMetadataKey)?.value,
+	);
+
+	/** keeps track of initial add tags */
+	const oldGiftcardTagsMap = addTags.reduce(
+		(acc, cur) => {
+			acc[cur] = true;
+			return acc;
+		},
+		{} as Record<string, boolean>,
+	);
+
+	let loading = $state(false);
+
+	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
+
+	const GiftcardUpdateSchema = object({
+		balanceAmount: number().min(1, 'Amount must be greater than 0'),
+		expiryDate: string().optional(),
+		addTags: array(string().nonempty(REQUIRED_ERROR)).optional(),
+		removeTags: array(string().nonempty(REQUIRED_ERROR)).optional(),
 	});
+
+	type GiftcardUpdateSchema = z.infer<typeof GiftcardUpdateSchema>;
+
+	let giftcardFormErrors = $state.raw<Partial<Record<keyof GiftcardUpdateSchema, string[]>>>({});
+
+	// let giftCardInput = $state<GiftCardUpdateInput>({});
+
+	const validate = () => {
+		const result = GiftcardUpdateSchema.safeParse({
+			balanceAmount,
+			expiryDate,
+			addTags,
+			removeTags,
+		});
+		giftcardFormErrors = result.success ? {} : result.error.formErrors.fieldErrors;
+		return result.success;
+	};
+
+	const handleTagsChange = (opts?: SelectOption[] | SelectOption) => {
+		if (!opts) {
+			addTags = [];
+			removeTags = Object.keys(oldGiftcardTagsMap);
+			return;
+		}
+
+		addTags = (opts as SelectOption[]).map((opt) => opt.value as string);
+		removeTags = difference(Object.keys(oldGiftcardTagsMap), addTags);
+		validate();
+	};
 </script>
 
 <div class="w-7/10 flex flex-col gap-2">
@@ -38,8 +116,8 @@
 			<div>
 				<span>Giftcard details</span>
 				<Badge
-					text={giftcard.isActive ? 'Active' : 'Disabled'}
-					color={giftcard.isActive ? 'green' : 'red'}
+					text={isActive ? 'Active' : 'Disabled'}
+					color={isActive ? 'green' : 'red'}
 					rounded
 					variant="light"
 					size="sm"
@@ -48,32 +126,41 @@
 			<div class="flex gap-1 items-center">
 				<Button
 					size="xs"
-					color={giftcard.isActive ? 'red' : 'green'}
+					color={isActive ? 'red' : 'green'}
 					variant="light"
-					startIcon={giftcard.isActive ? Ban : CircleCheck}
-					onclick={() => giftcardUtils.handleToggleGiftcardStatus(giftcard.id, !giftcard.isActive)}
+					startIcon={isActive ? Ban : CircleCheck}
+					onclick={() => onActiveChange(!isActive)}
 					disabled={loading}
 				>
-					{giftcard.isActive ? 'Deactivate' : 'Activate'}
+					{isActive ? 'Deactivate' : 'Activate'}
 				</Button>
-				<Button size="xs" startIcon={Send} color="violet" disabled={loading}>Resend code</Button>
+				<Button
+					size="xs"
+					startIcon={Send}
+					color="violet"
+					disabled={loading}
+					onclick={() => (openResendModal = true)}>Resend code</Button
+				>
 			</div>
 		</SectionHeader>
 
-		<div class="flex items-center gap-2">
+		<div class="flex items-start gap-2">
 			<Input
 				size="sm"
 				type="number"
 				min={1}
-				placeholder="Amount"
-				label="Money amount"
+				placeholder="Set balance amount"
+				label="Balance amount"
 				class="flex-2/3"
-				value={giftcard.currentBalance.amount}
+				bind:value={balanceAmount}
 				required
+				inputDebounceOption={{ onInput: validate }}
+				variant={giftcardFormErrors.balanceAmount?.length ? 'error' : 'info'}
+				subText={giftcardFormErrors.balanceAmount?.[0]}
 			/>
 			<Input
 				readonly
-				value={giftcard.currentBalance.currency}
+				value={balanceCurrency}
 				label="Currency"
 				required
 				size="sm"
@@ -94,20 +181,61 @@
 			multiple
 			label="Giftcard Tags"
 			placeholder="Giftcard tags"
-			bind:value={giftCardInput.addTags}
+			bind:value={addTags}
+			onchange={handleTagsChange}
 			{disabled}
 		/>
 
-		<GiftcardExpirationForm {disabled} expiryDate={giftCardInput.expiryDate} />
+		<GiftcardExpirationForm {disabled} bind:expiryDate />
 	</div>
 
 	<div class="p-3 rounded-lg border border-gray-200 bg-white flex flex-col gap-3">
-		<MetadataEditor title="Metadata" data={giftcard.metadata} />
-		<MetadataEditor title="Private Metadata" data={giftcard.privateMetadata} />
+		<MetadataEditor title="Metadata" bind:data={metadata} />
+		<MetadataEditor title="Private Metadata" bind:data={privateMetadata} />
 	</div>
 
 	<div class="p-3 rounded-lg border border-gray-200 bg-white flex flex-col gap-3">
 		<SectionHeader>Giftcard timeline</SectionHeader>
-		<GiftcardEvents id={giftcard.id} />
+		<GiftcardEvents {id} />
 	</div>
 </div>
+
+<Modal
+	size="sm"
+	open={openResendModal}
+	header="Resend giftcard code"
+	onClose={() => (openResendModal = false)}
+	onCancel={() => (openResendModal = false)}
+	okText="Resend code to user"
+>
+	<Alert size="sm">
+		Gift Card Code will be resent to email provided during checkout. You can provide a different
+		email address if you want to:
+	</Alert>
+	<ChannelSelect
+		size="sm"
+		bind:value={giftCardChannel}
+		disabled={loading}
+		label="Channel to send from"
+		placeholder="Please specify channel"
+		required
+		class="mt-2"
+	/>
+	<GraphqlPaginableSelect
+		query={CUSTOMER_LIST_QUERY}
+		variables={{ first: 20, filter: { search: '' } } as QueryCustomersArgs}
+		resultKey="customers"
+		optionLabelKey="email"
+		optionValueKey="email"
+		size="sm"
+		required
+		class="mt-2"
+		label="To Customer"
+		placeholder="Specify customer"
+		requestPolicy="cache-and-network"
+		bind:value={customerEmailOfGiftcard}
+		disabled={loading}
+		subText="Email of customer who received this giftcard"
+		onchange={validate}
+	/>
+</Modal>

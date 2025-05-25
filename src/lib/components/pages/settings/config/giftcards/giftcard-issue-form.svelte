@@ -6,28 +6,29 @@
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import ShopCurrenciesSelect from '$lib/components/common/shop-currencies-select.svelte';
 	import { ClipboardCopy } from '$lib/components/icons';
-	// import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/badge';
 	import { IconButton } from '$lib/components/ui/Button';
-	// import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
-	import { Checkbox, Input, RadioButton } from '$lib/components/ui/Input';
+	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { TextArea } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
-	import { GraphqlPaginableSelect, Select } from '$lib/components/ui/select';
+	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
 	import type {
 		GiftCard,
 		GiftCardCreateInput,
+		MetadataInput,
 		Mutation,
 		MutationGiftCardCreateArgs,
+		MutationUpdateMetadataArgs,
 		QueryCustomersArgs,
 		QueryGiftCardTagsArgs,
 	} from '$lib/gql/graphql';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	// import dayjs from 'dayjs';
 	import { toast } from 'svelte-sonner';
 	import { array, number, object, string, z } from 'zod';
 	import GiftcardExpirationForm from './giftcard-expiration-form.svelte';
+	import { GiftcardChannelMetadataKey, GiftcardUserEmailMetadataKey } from '$lib/utils/consts';
+	import { METADATA_UPDATE_MUTATION } from '$lib/api/admin/metadata';
 
 	type Props = {
 		open: boolean;
@@ -37,13 +38,9 @@
 
 	let { open = $bindable(), toCustomerEmail }: Props = $props();
 
-	// type ExpiryType = 'in' | 'exact';
-
-	// const NOW = dayjs();
-	// const EXPIRY_TYPES: ExpiryType[] = ['exact', 'in'];
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 	const NOTE_MAX_LENGTH = 300;
-	// const EXPIRY_IN_OPTIONS: dayjs.ManipulateType[] = ['day', 'month', 'year'];
+
 	const giftcardSchema = object({
 		channel: string().nonempty(REQUIRED_ERROR),
 		note: string()
@@ -72,24 +69,6 @@
 	});
 	let loading = $state(false);
 	let issuedGiftcardCode = $state<string>();
-	// let expiryType = $state<ExpiryType>('in');
-	// let expireInAmount = $state<number>(1);
-	// let expireInUnit = $state<dayjs.ManipulateType>('month');
-	// let setExpiryDate = $state(false);
-
-	// $effect(() => {
-	// 	if (!setExpiryDate) {
-	// 		if (giftCardInput.expiryDate !== undefined) giftCardInput.expiryDate = undefined;
-	// 		return;
-	// 	}
-	// 	if (expiryType === 'in' && expireInAmount && expireInUnit) {
-	// 		giftCardInput.expiryDate = NOW.add(expireInAmount, expireInUnit).format('YYYY-MM-DD');
-	// 	}
-	// });
-
-	// $effect(() => {
-	// 	if (expireInAmount < 0) expireInAmount = 1;
-	// });
 
 	const validate = () => {
 		const parseResult = giftcardSchema.safeParse({
@@ -106,8 +85,10 @@
 	};
 
 	const handleIssueGiftcard = async () => {
+		// validate for error first
 		if (!validate()) return;
 
+		// perform creation
 		loading = true;
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'giftCardCreate'>,
@@ -120,7 +101,34 @@
 		if (checkIfGraphqlResultHasError(result, 'giftCardCreate', 'Giftcard issued successfully'))
 			return;
 
+		// post success handling
 		issuedGiftcardCode = result.data?.giftCardCreate?.giftCard?.code;
+
+		// create metadata for this giftcard
+		const metas: MetadataInput[] = [];
+		if (giftCardInput.userEmail) {
+			metas.push({
+				key: GiftcardUserEmailMetadataKey,
+				value: giftCardInput.userEmail,
+			});
+		}
+		if (giftCardInput.channel) {
+			metas.push({
+				key: GiftcardChannelMetadataKey,
+				value: giftCardInput.channel,
+			});
+		}
+
+		if (!metas.length) return;
+
+		const metaResult = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'updateMetadata'>,
+			MutationUpdateMetadataArgs
+		>(METADATA_UPDATE_MUTATION, {
+			id: result.data?.giftCardCreate?.giftCard?.id!,
+			input: metas,
+		});
+		checkIfGraphqlResultHasError(metaResult, 'updateMetadata');
 	};
 
 	const handleClickCopyCode = () => {
@@ -230,78 +238,6 @@
 		</Alert>
 
 		<GiftcardExpirationForm disabled={loading} bind:expiryDate={giftCardInput.expiryDate} />
-
-		<!-- <Accordion
-			header="Set gift card expiry date"
-			bind:open={setExpiryDate}
-			class="rounded-lg border border-gray-200 p-3"
-			fixed={loading}
-		>
-			<div class="flex items-center gap-2">
-				{#each EXPIRY_TYPES as type, idx (idx)}
-					<RadioButton
-						class="flex-1"
-						label={`Expires ${type}`}
-						size="sm"
-						value={type}
-						bind:group={expiryType}
-						disabled={loading}
-					/>
-				{/each}
-			</div>
-
-			<div class="mt-2">
-				{#if expiryType === 'exact'}
-					<EaseDatePicker
-						timeLock={{ minDate: NOW.toDate() }}
-						timeConfig={false}
-						placeholder="Set expiry date"
-						label="Exact date"
-						size="sm"
-						disabled={loading}
-						value={{ date: giftCardInput.expiryDate }}
-						allowSelectMonthYears={{
-							showMonths: true,
-							showYears: { min: NOW.year(), max: NOW.year() + 10 },
-						}}
-						onchange={(value) =>
-							value?.date && (giftCardInput.expiryDate = dayjs(value.date).format('YYYY-MM-DD'))}
-					/>
-				{:else}
-					{@const options = EXPIRY_IN_OPTIONS.map((item) => ({ value: item, label: item }))}
-					<div class="flex items-start gap-2">
-						<Input
-							size="sm"
-							placeholder="amount"
-							type="number"
-							min={1}
-							class="flex-2/3"
-							label="Amount"
-							required
-							bind:value={expireInAmount}
-							disabled={loading}
-						/>
-						<Select
-							{options}
-							placeholder="units"
-							size="sm"
-							class="flex-1/3"
-							label="Unit"
-							required
-							bind:value={expireInUnit}
-							disabled={loading}
-						/>
-					</div>
-				{/if}
-			</div>
-
-			<Alert size="sm" bordered class="mt-2">
-				<div>Will expire on:</div>
-				{#if giftCardInput.expiryDate}
-					<Badge size="sm" text={giftCardInput.expiryDate} />
-				{/if}
-			</Alert>
-		</Accordion> -->
 
 		<ChannelSelect
 			label="Channel"

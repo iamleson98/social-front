@@ -140,3 +140,8 @@ export type NominatimOsmProps = {
   };
   boundingbox: string[];
 };
+
+export const SitenameTimeFormat = 'MMM D, YYYY hh:mm';
+
+export const GiftcardUserEmailMetadataKey = 'customerEmail';
+export const GiftcardChannelMetadataKey = 'channel';

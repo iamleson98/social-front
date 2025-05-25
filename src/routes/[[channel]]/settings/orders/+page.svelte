@@ -17,6 +17,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import HeadBar from '$lib/components/pages/settings/config/head-bar.svelte';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
+	import { SitenameTimeFormat } from '$lib/utils/consts';
 
 	const BATCH_LOAD = 20;
 
@@ -58,7 +59,7 @@
 {/snippet}
 
 {#snippet date({ item }: { item: Order })}
-	{dayjs(item.created).format('DD/MM/YYYY h:mm A')}
+	{dayjs(item.created).format(SitenameTimeFormat)}
 {/snippet}
 
 {#snippet payment({ item }: { item: Order })}

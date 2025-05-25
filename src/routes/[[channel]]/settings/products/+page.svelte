@@ -9,6 +9,7 @@
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { ProductOrderField, type Product, type QueryProductsArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
+	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { formatCurrency } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 
@@ -83,7 +84,7 @@
 {/snippet}
 
 {#snippet createdAt({ item }: { item: Product })}
-	<span class="whitespace-nowrap">{dayjs(item.created).format('DD/MM/YYYY HH:mm')}</span>
+	<span class="whitespace-nowrap">{dayjs(item.created).format(SitenameTimeFormat)}</span>
 {/snippet}
 
 <div class="mb-2 flex items-center gap-2">

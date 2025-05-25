@@ -21,7 +21,7 @@
 		variant = 'info',
 		children,
 		size = 'md',
-		bordered = false,
+		bordered = true,
 		dismissable = false,
 		class: className = '',
 	}: Props = $props();
