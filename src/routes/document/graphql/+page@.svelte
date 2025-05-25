@@ -47,4 +47,4 @@
 	<link rel="stylesheet" href="https://unpkg.com/@graphiql/plugin-explorer/dist/style.css" />
 </svelte:head>
 
-<div id="graphiql" bind:this={container}>Loading...</div>
+<div class="fixed w-full left-0 right-0 bottom-0 h-full" bind:this={container}>Loading...</div>
