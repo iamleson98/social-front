@@ -162,7 +162,7 @@ export type CategoryDetailQueryArgs = {
  * @first default to 10
  * @last default to 10
  */
-export const CATEGORY_DETAIL_QUERY_STORE = gql`
+export const CATEGORY_DETAIL_QUERY = gql`
 	query Category(
 		$slug: String
 		$id: ID

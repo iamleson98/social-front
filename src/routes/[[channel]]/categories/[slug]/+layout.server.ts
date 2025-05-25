@@ -4,7 +4,7 @@ import validator from 'validator';
 import { serverSideTranslate } from "$i18n";
 import { performServerSideGraphqlRequest } from "$lib/api/client";
 import type { Query } from "$lib/gql/graphql";
-import { CATEGORY_DETAIL_QUERY_STORE } from "$lib/api";
+import { CATEGORY_DETAIL_QUERY } from "$lib/api";
 import type { CategoryDetailQueryArgs } from "$lib/api/product";
 import { DEFAULT_CHANNEL } from "$lib/utils/channels.js";
 
@@ -22,7 +22,7 @@ export const load = async (event) => {
 
   const categoryResult = await performServerSideGraphqlRequest<Pick<Query, 'category'>, CategoryDetailQueryArgs>(
     'query',
-    CATEGORY_DETAIL_QUERY_STORE,
+    CATEGORY_DETAIL_QUERY,
     {
       slug,
       productChannel: channelSlug,

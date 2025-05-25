@@ -11,37 +11,41 @@
 	const ELEMENTS = [
 		{
 			name: 'Break point',
-			path: '/document/break-point'
+			path: '/document/break-point',
 		},
 		{
 			name: 'Button',
-			path: '/document/button'
+			path: '/document/button',
 		},
 		{
 			name: 'Checkbox',
-			path: '/document/checkbox'
+			path: '/document/checkbox',
 		},
 		{
 			name: 'Radio',
-			path: '/document/radio'
+			path: '/document/radio',
 		},
 		{
 			name: 'Input',
-			path: '/document/input'
+			path: '/document/input',
 		},
 		{
 			name: 'Table',
-			path: '/document/table'
+			path: '/document/table',
 		},
 		{
 			name: 'Select',
-			path: '/document/select'
-		}
+			path: '/document/select',
+		},
+		{
+			name: 'GraphiQL',
+			path: '/document/graphql',
+		},
 	];
 </script>
 
 <div class="flex gap-2">
-	<div class="w-1/4">
+	<div class="w-1/5">
 		<ul class="menu bg-base-200 rounded-box w-56">
 			{#each ELEMENTS as element, idx (idx)}
 				<li>
@@ -55,7 +59,7 @@
 		</ul>
 	</div>
 
-	<div class="w-3/4">
+	<div class="w-4/5">
 		{@render children()}
 	</div>
 </div>

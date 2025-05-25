@@ -47,7 +47,7 @@
 
 <Language />
 
-<main class="pt-16 mx-auto min-h-screen max-w-6xl">
+<main class="pt-16 mx-auto min-h-screen max-w-7xl">
 	{@render children()}
 </main>
 
