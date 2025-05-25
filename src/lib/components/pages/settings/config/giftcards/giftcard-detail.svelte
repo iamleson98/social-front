@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { GIFT_CARD_TAGS_QUERY } from '$lib/api/admin/giftcards';
+	import { GIFT_CARD_RESEND_MUTATION, GIFT_CARD_TAGS_QUERY } from '$lib/api/admin/giftcards';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Ban, CircleCheck, Send } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
@@ -10,6 +10,8 @@
 		type QueryGiftCardTagsArgs,
 		type MetadataInput,
 		type QueryCustomersArgs,
+		type Mutation,
+		type MutationGiftCardResendArgs,
 	} from '$lib/gql/graphql';
 	import MetadataEditor from '$lib/components/pages/settings/common/metadata-editor.svelte';
 	import GiftcardEvents from './giftcard-events.svelte';
@@ -22,6 +24,9 @@
 	import { GiftcardChannelMetadataKey, GiftcardUserEmailMetadataKey } from '$lib/utils/consts';
 	import { CUSTOMER_LIST_QUERY } from '$lib/api/admin/users';
 	import { Alert } from '$lib/components/ui/Alert';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { toast } from 'svelte-sonner';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 
 	type Props = {
 		id: string;
@@ -108,6 +113,31 @@
 		removeTags = difference(Object.keys(oldGiftcardTagsMap), addTags);
 		validate();
 	};
+
+	const handleResendGiftcard = async () => {
+		if (!giftCardChannel) {
+			toast.warning('Please specify channel');
+			return;
+		}
+
+		loading = true;
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'giftCardResend'>,
+			MutationGiftCardResendArgs
+		>(GIFT_CARD_RESEND_MUTATION, {
+			input: {
+				id,
+				channel: giftCardChannel,
+				email: customerEmailOfGiftcard,
+			},
+		});
+		loading = false;
+
+		if (checkIfGraphqlResultHasError(result, 'giftCardResend', 'Successfully resent giftcard'))
+			return;
+
+		openResendModal = false;
+	};
 </script>
 
 <div class="w-7/10 flex flex-col gap-2">
@@ -130,7 +160,7 @@
 					variant="light"
 					startIcon={isActive ? Ban : CircleCheck}
 					onclick={() => onActiveChange(!isActive)}
-					disabled={loading}
+					disabled={loading || disabled}
 				>
 					{isActive ? 'Deactivate' : 'Activate'}
 				</Button>
@@ -138,7 +168,7 @@
 					size="xs"
 					startIcon={Send}
 					color="violet"
-					disabled={loading}
+					disabled={loading || disabled}
 					onclick={() => (openResendModal = true)}>Resend code</Button
 				>
 			</div>
@@ -153,6 +183,7 @@
 				label="Balance amount"
 				class="flex-2/3"
 				bind:value={balanceAmount}
+				disabled={loading || disabled}
 				required
 				inputDebounceOption={{ onInput: validate }}
 				variant={giftcardFormErrors.balanceAmount?.length ? 'error' : 'info'}
@@ -190,8 +221,12 @@
 	</div>
 
 	<div class="p-3 rounded-lg border border-gray-200 bg-white flex flex-col gap-3">
-		<MetadataEditor title="Metadata" bind:data={metadata} />
-		<MetadataEditor title="Private Metadata" bind:data={privateMetadata} />
+		<MetadataEditor title="Metadata" bind:data={metadata} disabled={loading || disabled} />
+		<MetadataEditor
+			title="Private Metadata"
+			bind:data={privateMetadata}
+			disabled={loading || disabled}
+		/>
 	</div>
 
 	<div class="p-3 rounded-lg border border-gray-200 bg-white flex flex-col gap-3">
@@ -207,35 +242,36 @@
 	onClose={() => (openResendModal = false)}
 	onCancel={() => (openResendModal = false)}
 	okText="Resend code to user"
+	onOk={handleResendGiftcard}
+	disableElements={loading || disabled}
 >
-	<Alert size="sm">
-		Gift Card Code will be resent to email provided during checkout. You can provide a different
-		email address if you want to:
-	</Alert>
-	<ChannelSelect
-		size="sm"
-		bind:value={giftCardChannel}
-		disabled={loading}
-		label="Channel to send from"
-		placeholder="Please specify channel"
-		required
-		class="mt-2"
-	/>
-	<GraphqlPaginableSelect
-		query={CUSTOMER_LIST_QUERY}
-		variables={{ first: 20, filter: { search: '' } } as QueryCustomersArgs}
-		resultKey="customers"
-		optionLabelKey="email"
-		optionValueKey="email"
-		size="sm"
-		required
-		class="mt-2"
-		label="To Customer"
-		placeholder="Specify customer"
-		requestPolicy="cache-and-network"
-		bind:value={customerEmailOfGiftcard}
-		disabled={loading}
-		subText="Email of customer who received this giftcard"
-		onchange={validate}
-	/>
+	<div class="flex flex-col gap-2">
+		<Alert size="sm">
+			Gift Card Code will be resent to email provided during checkout. You can provide a different
+			email address if you want to:
+		</Alert>
+		<ChannelSelect
+			size="sm"
+			bind:value={giftCardChannel}
+			disabled={loading || disabled}
+			label="Channel to send from"
+			placeholder="Please specify channel"
+			required
+		/>
+		<GraphqlPaginableSelect
+			query={CUSTOMER_LIST_QUERY}
+			variables={{ first: 20, filter: { search: '' } } as QueryCustomersArgs}
+			resultKey="customers"
+			optionLabelKey="email"
+			optionValueKey="email"
+			size="sm"
+			label="To Customer"
+			placeholder="Specify customer"
+			requestPolicy="cache-and-network"
+			bind:value={customerEmailOfGiftcard}
+			disabled={loading || disabled}
+			subText="Email of customer who received this giftcard"
+			onchange={validate}
+		/>
+	</div>
 </Modal>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import HeadBar from '$lib/components/pages/settings/config/head-bar.svelte';
 	import { AppRoute } from '$lib/utils';
 	import type { Snippet } from 'svelte';
@@ -13,7 +14,7 @@
 <HeadBar
 	listingPageHref={AppRoute.SETTINGS_CONFIGS_GIFTCARDS()}
 	listingPageLabel="Giftcards"
-	newPageHref={AppRoute.SETTINGS_CONFIGS_GIFTCARD_NEW()}
+	newPageHref={`${page.url.pathname}/?action=create`}
 	newPageLabel="Isue new giftcard"
 	detailRouteID="/[[channel]]/settings/configs/giftcards/[id]"
 	detailPageLabelGetter={(page) => page.params.id}
@@ -23,4 +24,3 @@
 <div>
 	{@render children()}
 </div>
-

@@ -176,3 +176,13 @@ mutation GiftcardAddNote($id: ID!, $input: GiftCardAddNoteInput!) {
     }
   }
 }`;
+
+export const GIFT_CARD_RESEND_MUTATION = gql`
+mutation GiftcardResend($input: GiftCardResendInput!) {
+  giftCardResend(input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;

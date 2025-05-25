@@ -31,8 +31,7 @@
 	let forceReExecuteGraphqlQuery = $state(true);
 	let variables = $state<QueryGiftCardsArgs>({ first: 10 });
 	let openGiftcardIssueForm = $state(false);
-	let internalLoading = $state(false);
-	let loading = $derived(internalLoading || giftcardUtil.loading);
+	let loading = $state(false);
 
 	const COLUMNS: TableColumnProps<GiftCard, GiftCardSortField>[] = [
 		{
@@ -76,7 +75,7 @@
 		ALERT_MODAL_STORE.openAlertModal({
 			content: `Are you sure to delete the gift card ${id}?`,
 			onOk: async () => {
-				internalLoading = true; //
+				loading = true; //
 				const result = await GRAPHQL_CLIENT.mutation<
 					Mutation['giftCardDelete'],
 					MutationGiftCardDeleteArgs
@@ -84,7 +83,7 @@
 					id,
 				});
 
-				internalLoading = false; //
+				loading = false; //
 
 				if (
 					checkIfGraphqlResultHasError(
@@ -101,7 +100,9 @@
 	};
 
 	const handleToggleGiftcardStatus = async (id: string, active: boolean) => {
+		loading = true;
 		const hasErr = await giftcardUtil.handleToggleGiftcardStatus(id, active);
+		loading = false;
 		if (!hasErr) forceReExecuteGraphqlQuery = true;
 	};
 </script>

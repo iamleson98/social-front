@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { GIFT_CARD_DETAIL_QUERY } from '$lib/api/admin/giftcards';
 	import { operationStore } from '$lib/api/operation';
@@ -9,13 +10,13 @@
 	import { GiftcardUtil } from '$lib/components/pages/settings/config/giftcards/utils.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { type GiftCardUpdateInput, type Query, type QueryGiftCardArgs } from '$lib/gql/graphql';
+	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { onMount } from 'svelte';
 
 	const giftcardUtils = new GiftcardUtil();
 
-	let internalLoading = $state(false);
-	let loading = $derived(internalLoading || giftcardUtils.loading);
+	let loading = $state(false);
 
 	const giftcardQuery = operationStore<Pick<Query, 'giftCard'>, QueryGiftCardArgs>({
 		kind: 'query',
@@ -48,8 +49,22 @@
 
 	const onUpdateClick = () => {};
 
+	const onDeleteClick = async () => {
+		ALERT_MODAL_STORE.openAlertModal({
+			content: `Are you sure to delete the gift card ${page.params.id}?`,
+			onOk: async () => {
+				loading = true;
+				const hasError = await giftcardUtils.handleDeleteGiftcard(page.params.id);
+				loading = false;
+				if (!hasError) await goto(AppRoute.SETTINGS_CONFIGS_GIFTCARDS());
+			},
+		});
+	};
+
 	const onActiveChange = async (active: boolean) => {
+		loading = true;
 		const hasError = await giftcardUtils.handleToggleGiftcardStatus(page.params.id, active);
+		loading = false;
 
 		if (!hasError)
 			giftcardQuery.reexecute({
@@ -86,5 +101,6 @@
 		backButtonUrl={AppRoute.SETTINGS_CONFIGS_GIFTCARDS()}
 		{onUpdateClick}
 		disabled={loading}
+		{onDeleteClick}
 	/>
 {/if}

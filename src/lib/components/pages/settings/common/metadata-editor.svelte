@@ -15,12 +15,7 @@
 		class?: string;
 	};
 
-	let {
-		title,
-		data = $bindable([]),
-		disabled,
-		class: className = '',
-	}: Props = $props();
+	let { title, data = $bindable([]), disabled, class: className = '' }: Props = $props();
 
 	let dataFormErrors = $state<Partial<Record<keyof DataSchema, string[]>>[]>([]);
 
@@ -62,7 +57,7 @@
 <Accordion header={title} class={className}>
 	{#each data as item, idx (idx)}
 		<div class="flex gap-2 items-center mb-3">
-			<div class="flex items-start gap-2 w-4/5">
+			<div class="flex items-start gap-2 flex-4/5">
 				<Input
 					placeholder="Key"
 					size="sm"
@@ -90,15 +85,18 @@
 				/>
 			</div>
 
-			<div class="w-1/5 text-right">
-				<IconButton
-					icon={Trash}
+			<div class="flex-1/5 text-right">
+				<Button
+					startIcon={Trash}
 					size="sm"
+					fullWidth
 					color="red"
 					variant="light"
 					onclick={() => handleRemoveData(idx)}
 					{disabled}
-				/>
+				>
+					Delete
+				</Button>
 			</div>
 		</div>
 	{/each}
