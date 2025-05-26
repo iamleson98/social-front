@@ -40,6 +40,8 @@
 		privateMetadata: MetadataInput[];
 		balanceCurrency: string;
 		onActiveChange: (active: boolean) => void;
+		metadataChanged: boolean;
+		privateMetadataChanged: boolean;
 	};
 
 	let {
@@ -54,6 +56,8 @@
 		privateMetadata = $bindable([]),
 		balanceCurrency,
 		onActiveChange,
+		metadataChanged = $bindable(false),
+		privateMetadataChanged = $bindable(false),
 	}: Props = $props();
 
 	let openResendModal = $state(false);
@@ -138,6 +142,14 @@
 
 		openResendModal = false;
 	};
+
+	let originalMetadata = $state(metadata);
+	let originalPrivateMetadata = $state(privateMetadata);
+
+	$effect(() => {
+		metadataChanged = JSON.stringify(metadata) !== JSON.stringify(originalMetadata);
+		privateMetadataChanged = JSON.stringify(privateMetadata) !== JSON.stringify(originalPrivateMetadata);
+	});
 </script>
 
 <div class="w-7/10 flex flex-col gap-2">
