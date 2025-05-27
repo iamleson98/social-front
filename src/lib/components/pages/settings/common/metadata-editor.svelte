@@ -13,9 +13,10 @@
 		data: MetadataInput[];
 		disabled?: boolean;
 		class?: string;
+		valueChanged?: (value: MetadataInput[]) => void;
 	};
 
-	let { title, data = $bindable([]), disabled, class: className = '' }: Props = $props();
+	let { title, data = $bindable([]), disabled, class: className = '', valueChanged }: Props = $props();
 
 	let dataFormErrors = $state<Partial<Record<keyof DataSchema, string[]>>[]>([]);
 
@@ -40,6 +41,7 @@
 		}
 
 		dataFormErrors[index] = {};
+		valueChanged?.(data);
 		return true;
 	};
 
@@ -51,6 +53,7 @@
 	const handleRemoveData = (idx: number) => {
 		data = data.filter((_, i) => i !== idx);
 		dataFormErrors = dataFormErrors.filter((_, i) => i !== idx);
+		valueChanged?.(data);
 	};
 </script>
 

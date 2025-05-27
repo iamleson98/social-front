@@ -142,14 +142,6 @@
 
 		openResendModal = false;
 	};
-
-	let originalMetadata = $state(metadata);
-	let originalPrivateMetadata = $state(privateMetadata);
-
-	$effect(() => {
-		metadataChanged = JSON.stringify(metadata) !== JSON.stringify(originalMetadata);
-		privateMetadataChanged = JSON.stringify(privateMetadata) !== JSON.stringify(originalPrivateMetadata);
-	});
 </script>
 
 <div class="w-7/10 flex flex-col gap-2">
@@ -233,11 +225,12 @@
 	</div>
 
 	<div class="p-3 rounded-lg border border-gray-200 bg-white flex flex-col gap-3">
-		<MetadataEditor title="Metadata" bind:data={metadata} disabled={loading || disabled} />
+		<MetadataEditor title="Metadata" bind:data={metadata} disabled={loading || disabled} valueChanged={(value) => {metadata = value; metadataChanged = true}}/>
 		<MetadataEditor
 			title="Private Metadata"
 			bind:data={privateMetadata}
 			disabled={loading || disabled}
+			valueChanged={(value) => {privateMetadata = value; privateMetadataChanged = true}}
 		/>
 	</div>
 
