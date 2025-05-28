@@ -82,7 +82,7 @@
 		const tasks = [
 			GRAPHQL_CLIENT.mutation<Pick<Mutation, 'giftCardUpdate'>, MutationGiftCardUpdateArgs>(
 				GIFT_CARD_UPDATE_MUTATION,
-				{ id: page.params.id, input: { ...giftcardUpdateInput } },
+				{ id: page.params.id, input: giftcardUpdateInput },
 			).then((res) => checkIfGraphqlResultHasError(res, 'giftCardUpdate')),
 		];
 
@@ -118,9 +118,10 @@
 		if (!hasError) {
 			metadataChanged = false;
 			privateMetadataChanged = false;
-			giftcardQuery.reexecute({ variables: { id: page.params.id } });
 			toast.success('Gift card updated successfully');
 		}
+
+		giftcardQuery.reexecute({ variables: { id: page.params.id } });
 
 		loading = false;
 	};
