@@ -13,7 +13,6 @@
 		type Mutation,
 		type MutationGiftCardResendArgs,
 	} from '$lib/gql/graphql';
-	import MetadataEditor from '$lib/components/pages/settings/common/metadata-editor.svelte';
 	import GiftcardEvents from './giftcard-events.svelte';
 	import GiftcardExpirationForm from './giftcard-expiration-form.svelte';
 	import { array, number, object, string, z } from 'zod';
@@ -27,6 +26,7 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { toast } from 'svelte-sonner';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import GeneralMetadataEditor from '../../common/general-metadata-editor.svelte';
 
 	type Props = {
 		id: string;
@@ -217,20 +217,12 @@
 		<GiftcardExpirationForm {disabled} bind:expiryDate />
 	</div>
 
-	<div class="p-3 rounded-lg border border-gray-200 bg-white flex flex-col gap-3">
-		<MetadataEditor
-			title="Metadata"
-			bind:data={metadata}
-			disabled={loading || disabled}
-			bind:valueChanged={metadataChanged}
-		/>
-		<MetadataEditor
-			title="Private Metadata"
-			bind:data={privateMetadata}
-			disabled={loading || disabled}
-			bind:valueChanged={privateMetadataChanged}
-		/>
-	</div>
+	<GeneralMetadataEditor
+		{metadata}
+		{privateMetadata}
+		disabled={loading || disabled}
+		objectId={id}
+	/>
 
 	<div class="p-3 rounded-lg border border-gray-200 bg-white flex flex-col gap-3">
 		<SectionHeader>Giftcard timeline</SectionHeader>

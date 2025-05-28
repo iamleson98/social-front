@@ -6,6 +6,7 @@
 	import type { MetadataInput } from '$lib/gql/graphql';
 	import { tranFunc } from '$i18n';
 	import { object, string, z } from 'zod';
+	import { difference } from 'es-toolkit';
 
 	type Props = {
 		title: string;
@@ -13,14 +14,18 @@
 		disabled?: boolean;
 		class?: string;
 		valueChanged?: boolean;
+		metadataItemsToAdd?: MetadataInput[];
+		metadataKeysToRemove?: string[];
 	};
 
 	let {
 		title,
-		data = $bindable([]),
+		data,
 		disabled,
 		class: className = '',
 		valueChanged = $bindable(false),
+		metadataItemsToAdd = $bindable([]),
+		metadataKeysToRemove = $bindable([]),
 	}: Props = $props();
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
@@ -30,35 +35,66 @@
 		value: string().nonempty(REQUIRED_ERROR),
 	});
 
+	/** to keep track of old data */
+	const oldMetadata = data.reduce(
+		(acc, cur) => ({ ...acc, [cur.key]: true }),
+		{} as Record<string, boolean>,
+	);
+	let activeMetadata = $state(data);
+
 	type DataSchema = z.infer<typeof dataSchema>;
 
 	let dataFormErrors = $state<Partial<Record<keyof DataSchema, string[]>>[]>([]);
 
-	const validate = (item: MetadataInput, index: number) => {
-		const result = dataSchema.safeParse({
-			key: item.key,
-			value: item.value,
-		});
+	const calculateResult = () => {
+		const itemsToAdd: MetadataInput[] = [];
 
-		dataFormErrors[index] = result.success ? {} : result.error?.formErrors.fieldErrors;
-		return result.success;
+		for (const item of activeMetadata) {
+			if (!oldMetadata[item.key]) itemsToAdd.push(item);
+		}
+
+		metadataItemsToAdd = itemsToAdd;
+		metadataKeysToRemove = difference(
+			Object.keys(oldMetadata),
+			activeMetadata.map((item) => item.key),
+		);
+	};
+
+	const validate = (index: number) => {
+		const item = activeMetadata[index];
+
+		const result = dataSchema.safeParse(item);
+
+		if (result.success) {
+			// check for duplicate
+			for (let i = 0; i < activeMetadata.length && i !== index; i++) {
+				if (item.key === activeMetadata[i].key) {
+					dataFormErrors[index] = { key: [`duplicate key ${item.key}`] };
+					return;
+				}
+			}
+			dataFormErrors[index] = {};
+			calculateResult();
+			return;
+		}
+
+		dataFormErrors[index] = result.error?.formErrors.fieldErrors;
 	};
 
 	const handleAddRecord = () => {
-		data = data.concat({ key: '', value: '' });
+		activeMetadata = activeMetadata.concat({ key: '', value: '' });
 		dataFormErrors = dataFormErrors.concat({});
-		valueChanged = true;
 	};
 
 	const handleRemoveData = (idx: number) => {
-		data = data.filter((_, i) => i !== idx);
 		dataFormErrors = dataFormErrors.filter((_, i) => i !== idx);
-		valueChanged = true;
+		activeMetadata = activeMetadata.filter((_, i) => i !== idx);
+		calculateResult();
 	};
 </script>
 
 <Accordion header={title} class={className}>
-	{#each data as item, idx (idx)}
+	{#each activeMetadata as item, idx (idx)}
 		<div class="flex gap-2 items-start mb-3">
 			<div class="flex items-start gap-2 flex-4/5">
 				<Input
@@ -68,8 +104,8 @@
 					{disabled}
 					required
 					class="flex-1"
-					onblur={() => validate(item, idx)}
-					inputDebounceOption={{ onInput: () => validate(item, idx) }}
+					onblur={() => validate(idx)}
+					inputDebounceOption={{ onInput: () => validate(idx) }}
 					variant={dataFormErrors[idx]?.key?.length ? 'error' : 'info'}
 					subText={dataFormErrors[idx]?.key?.[0]}
 				/>
@@ -81,8 +117,8 @@
 					{disabled}
 					required
 					class="flex-1"
-					onblur={() => validate(item, idx)}
-					inputDebounceOption={{ onInput: () => validate(item, idx) }}
+					onblur={() => validate(idx)}
+					inputDebounceOption={{ onInput: () => validate(idx) }}
 					variant={dataFormErrors[idx]?.value?.length ? 'error' : 'info'}
 					subText={dataFormErrors[idx]?.value?.[0]}
 				/>
@@ -96,10 +132,12 @@
 				onclick={() => handleRemoveData(idx)}
 				{disabled}
 			>
-				Delete
+				{$tranFunc('btn.delete')}
 			</Button>
 		</div>
 	{/each}
 
-	<Button variant="outline" size="xs" onclick={handleAddRecord} {disabled}>Add</Button>
+	<Button variant="outline" size="xs" onclick={handleAddRecord} {disabled}>
+		{$tranFunc('btn.add')}
+	</Button>
 </Accordion>

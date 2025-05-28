@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { Button } from '$lib/components/ui';
 
 	type Props = {
@@ -27,17 +28,17 @@
 >
 	<div>
 		{#if onDeleteClick}
-			<Button color="red" {disabled} onclick={onDeleteClick}>Delete</Button>
+			<Button color="red" {disabled} onclick={onDeleteClick}>{$tranFunc('btn.delete')}</Button>
 		{/if}
 	</div>
 	<div class="flex gap-2">
 		{#if backButtonUrl}
-			<Button variant="light" color="gray" {disabled} href={backButtonUrl}>Back</Button>
+			<Button variant="light" color="gray" {disabled} href={backButtonUrl}>{$tranFunc('btn.back')}</Button>
 		{/if}
 		{#if onUpdateClick}
-			<Button {disabled} onclick={onUpdateClick}>Update</Button>
+			<Button {disabled} onclick={onUpdateClick}>{$tranFunc('btn.update')}</Button>
 		{:else if onAddClick}
-			<Button {disabled} onclick={onAddClick}>Create</Button>
+			<Button {disabled} onclick={onAddClick}>{$tranFunc('btn.create')}</Button>
 		{/if}
 	</div>
 </div>

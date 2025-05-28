@@ -192,6 +192,8 @@ export default {
 		update: '타입 변경',
 		delete: 'Delete',
 		goto: 'Đi tới',
+		back: 'Back',
+		add: 'Add',
 	},
 	helpText: {
 		chooseDeliveryAddress: '배송지를 선택해주세요',
