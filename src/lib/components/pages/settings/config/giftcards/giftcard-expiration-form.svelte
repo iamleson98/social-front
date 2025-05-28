@@ -4,7 +4,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Input, RadioButton } from '$lib/components/ui/Input';
-	import { Select } from '$lib/components/ui/select';
+	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import dayjs from 'dayjs';
 
 	type Props = {
@@ -18,7 +18,10 @@
 
 	const NOW = dayjs();
 	const EXPIRY_TYPES: ExpiryType[] = ['exact', 'in'];
-	const EXPIRY_IN_OPTIONS: dayjs.ManipulateType[] = ['day', 'month', 'year'];
+	const EXPIRY_IN_OPTIONS = ['day', 'month', 'year'].map<SelectOption>((item) => ({
+		value: item,
+		label: item,
+	}));
 
 	/* if there is existing value, it should be in `exact` option, initially */
 	let expiryType = $state<ExpiryType>(expiryDate ? 'exact' : 'in');
@@ -77,7 +80,6 @@
 				onchange={(value) => value?.date && (expiryDate = dayjs(value.date).format('YYYY-MM-DD'))}
 			/>
 		{:else}
-			{@const options = EXPIRY_IN_OPTIONS.map((item) => ({ value: item, label: item }))}
 			<div class="flex items-start gap-2">
 				<Input
 					size="sm"
@@ -91,7 +93,7 @@
 					{disabled}
 				/>
 				<Select
-					{options}
+					options={EXPIRY_IN_OPTIONS}
 					placeholder="units"
 					size="sm"
 					class="flex-1/3"
