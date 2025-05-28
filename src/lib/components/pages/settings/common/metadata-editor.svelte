@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Input } from '$lib/components/ui/Input';
-	import { IconButton } from '$lib/components/ui/Button';
 	import { Trash } from '$lib/components/icons';
 	import Button from '$lib/components/ui/Button/Button.svelte';
 	import { Accordion } from '$lib/components/ui/Accordion';
@@ -13,12 +12,16 @@
 		data: MetadataInput[];
 		disabled?: boolean;
 		class?: string;
-		valueChanged?: (value: MetadataInput[]) => void;
+		valueChanged?: boolean;
 	};
 
-	let { title, data = $bindable([]), disabled, class: className = '', valueChanged }: Props = $props();
-
-	let dataFormErrors = $state<Partial<Record<keyof DataSchema, string[]>>[]>([]);
+	let {
+		title,
+		data = $bindable([]),
+		disabled,
+		class: className = '',
+		valueChanged = $bindable(false),
+	}: Props = $props();
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 
@@ -29,37 +32,34 @@
 
 	type DataSchema = z.infer<typeof dataSchema>;
 
+	let dataFormErrors = $state<Partial<Record<keyof DataSchema, string[]>>[]>([]);
+
 	const validate = (item: MetadataInput, index: number) => {
 		const result = dataSchema.safeParse({
 			key: item.key,
 			value: item.value,
 		});
 
-		if (!result.success) {
-			dataFormErrors[index] = result.error.formErrors.fieldErrors;
-			return false;
-		}
-
-		dataFormErrors[index] = {};
-		valueChanged?.(data);
-		return true;
+		dataFormErrors[index] = result.success ? {} : result.error?.formErrors.fieldErrors;
+		return result.success;
 	};
 
 	const handleAddRecord = () => {
 		data = data.concat({ key: '', value: '' });
 		dataFormErrors = dataFormErrors.concat({});
+		valueChanged = true;
 	};
 
 	const handleRemoveData = (idx: number) => {
 		data = data.filter((_, i) => i !== idx);
 		dataFormErrors = dataFormErrors.filter((_, i) => i !== idx);
-		valueChanged?.(data);
+		valueChanged = true;
 	};
 </script>
 
 <Accordion header={title} class={className}>
 	{#each data as item, idx (idx)}
-		<div class="flex gap-2 items-center mb-3">
+		<div class="flex gap-2 items-start mb-3">
 			<div class="flex items-start gap-2 flex-4/5">
 				<Input
 					placeholder="Key"
@@ -88,19 +88,16 @@
 				/>
 			</div>
 
-			<div class="flex-1/5 text-right">
-				<Button
-					startIcon={Trash}
-					size="sm"
-					fullWidth
-					color="red"
-					variant="light"
-					onclick={() => handleRemoveData(idx)}
-					{disabled}
-				>
-					Delete
-				</Button>
-			</div>
+			<Button
+				startIcon={Trash}
+				size="sm"
+				color="red"
+				variant="light"
+				onclick={() => handleRemoveData(idx)}
+				{disabled}
+			>
+				Delete
+			</Button>
 		</div>
 	{/each}
 

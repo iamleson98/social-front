@@ -20,12 +20,14 @@
 		type Mutation,
 		type MutationGiftCardUpdateArgs,
 		type MutationUpdateMetadataArgs,
+		type MutationUpdatePrivateMetadataArgs,
 		type Query,
 		type QueryGiftCardArgs,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { omit } from 'es-toolkit';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 
@@ -60,16 +62,15 @@
 				tags,
 				currentBalance,
 				expiryDate,
-				isActive: active,
 				metadata: md,
 				privateMetadata: pmd,
 			} = result.data.giftCard;
 
-			metadata = [...md];
-			privateMetadata = [...pmd];
+			metadata = md.map((item) => omit(item, ['__typename']));
+			privateMetadata = pmd.map((item) => omit(item, ['__typename']));
 
 			giftcardUpdateInput = {
-				addTags: tags.map((tag) => tag.name),
+				addTags: tags.map((tag) => tag.id),
 				balanceAmount: currentBalance.amount,
 				expiryDate: expiryDate,
 			};
@@ -77,62 +78,62 @@
 	);
 
 	const onUpdateClick = async () => {
-		loading = true;
+		const updateGiftcard = GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'giftCardUpdate'>,
+			MutationGiftCardUpdateArgs
+		>(GIFT_CARD_UPDATE_MUTATION, { id: page.params.id, input: giftcardUpdateInput }).toPromise();
 
-		const tasks = [
-			GRAPHQL_CLIENT.mutation<Pick<Mutation, 'giftCardUpdate'>, MutationGiftCardUpdateArgs>(
-				GIFT_CARD_UPDATE_MUTATION,
-				{ id: page.params.id, input: { ...giftcardUpdateInput } },
-			).then((res) => checkIfGraphqlResultHasError(res, 'giftCardUpdate')),
-		];
+		const tasks: Promise<any>[] = [updateGiftcard];
 
 		if (metadataChanged) {
-			metadata = deduplicateMetadata(metadata);
-			tasks.push(
-				GRAPHQL_CLIENT.mutation<Pick<Mutation, 'updateMetadata'>, MutationUpdateMetadataArgs>(
-					METADATA_UPDATE_MUTATION,
-					{
-						id: page.params.id,
-						input: metadata,
-					},
-				).then((res) => checkIfGraphqlResultHasError(res, 'updateMetadata')),
-			);
+			const updateMetadata = GRAPHQL_CLIENT.mutation<
+				Pick<Mutation, 'updateMetadata'>,
+				MutationUpdateMetadataArgs
+			>(METADATA_UPDATE_MUTATION, {
+				id: page.params.id,
+				input: deduplicateMetadata(metadata),
+			}).toPromise();
+
+			tasks.push(updateMetadata);
 		}
 
 		if (privateMetadataChanged) {
-			privateMetadata = deduplicateMetadata(privateMetadata);
-			tasks.push(
-				GRAPHQL_CLIENT.mutation<
-					Pick<Mutation, 'updatePrivateMetadata'>,
-					MutationUpdateMetadataArgs
-				>(PRIVATE_METADATA_UPDATE_MUTATION, {
-					id: page.params.id,
-					input: privateMetadata,
-				}).then((res) => checkIfGraphqlResultHasError(res, 'updatePrivateMetadata')),
-			);
+			const updatePrivateMetadata = GRAPHQL_CLIENT.mutation<
+				Pick<Mutation, 'updatePrivateMetadata'>,
+				MutationUpdatePrivateMetadataArgs
+			>(PRIVATE_METADATA_UPDATE_MUTATION, {
+				id: page.params.id,
+				input: deduplicateMetadata(privateMetadata),
+			}).toPromise();
+
+			tasks.push(updatePrivateMetadata);
 		}
 
+		loading = true;
 		const results = await Promise.all(tasks);
-		const hasError = results.some(Boolean);
-
-		if (!hasError) {
-			metadataChanged = false;
-			privateMetadataChanged = false;
-			giftcardQuery.reexecute({ variables: { id: page.params.id } });
-			toast.success('Gift card updated successfully');
-		}
-
 		loading = false;
+
+		let hasErr = checkIfGraphqlResultHasError(results[0], 'giftCardUpdate');
+		if (results[1]) hasErr ||= checkIfGraphqlResultHasError(results[1], 'updateMetadata');
+		if (results[2]) hasErr ||= checkIfGraphqlResultHasError(results[2], 'updatePrivateMetadata');
+
+		if (!hasErr) {
+			toast.success('Giftcard updated successfully');
+			giftcardQuery.reexecute({
+				variables: { id: page.params.id },
+				context: { requestPolicy: 'network-only' },
+			});
+		}
 	};
 
 	const deduplicateMetadata = (data: MetadataInput[]): MetadataInput[] => {
 		const meetMap: Record<string, boolean> = {};
 		const res: MetadataInput[] = [];
 
-		for (const { key, value } of data) {
-			if (!meetMap[key]) {
-				meetMap[key] = true;
-				res.push({ key, value });
+		for (const item of data) {
+			if (!meetMap[item.key]) {
+				meetMap[item.key] = true;
+				res.push(item);
 			}
 		}
 
@@ -177,6 +178,7 @@
 			bind:expiryDate={giftcardUpdateInput.expiryDate}
 			isActive={giftCard.isActive}
 			bind:addTags={giftcardUpdateInput.addTags!}
+			existingTags={giftCard.tags.map((item) => item.id)}
 			bind:removeTags={giftcardUpdateInput.removeTags!}
 			bind:metadata
 			bind:privateMetadata

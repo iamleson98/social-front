@@ -1,4 +1,4 @@
-<script lang="ts" generics="T">
+<script lang="ts" generics="T = Record<string, unknown>">
 	import type { AnyVariables, RequestPolicy, TypedDocumentNode } from '@urql/core';
 	import type { CountableConnection, GraphqlPaginationArgs } from '../Table';
 	import type { PageInfo, Query } from '$lib/gql/graphql';
