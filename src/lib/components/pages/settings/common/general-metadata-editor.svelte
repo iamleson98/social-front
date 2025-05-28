@@ -19,10 +19,10 @@
 		metadata: MetadataInput[];
 		privateMetadata: MetadataInput[];
 		disabled?: boolean;
-		/**id of the object that owns those metadatas */
+		/** id of the object that owns those metadatas */
 		objectId: string;
-		/***/
-		performUpdates?: boolean;
+		/** the lock for parent to trigger the updating of metadatas */
+		performUpdateMetadata?: boolean;
 	};
 
 	let {
@@ -30,14 +30,14 @@
 		privateMetadata,
 		disabled,
 		objectId,
-		performUpdates = $bindable(false),
+		performUpdateMetadata = $bindable(false),
 	}: Props = $props();
 
 	let metadataItemsToAdd = $state<MetadataInput[]>([]);
 	let metadataKeysToRemove = $state<string[]>([]);
 	let privateMetadataItemsToAdd = $state<MetadataInput[]>([]);
 	let privateMetadataKeysToRemove = $state<string[]>([]);
-	let loading = $derived(disabled || performUpdates);
+	let loading = $derived(disabled || performUpdateMetadata);
 
 	const handleUpdate = async () => {
 		const tasks: Promise<any>[] = [];
@@ -99,8 +99,8 @@
 	};
 
 	$effect(() => {
-		if (performUpdates) {
-			handleUpdate().finally(() => (performUpdates = false));
+		if (performUpdateMetadata) {
+			handleUpdate().finally(() => (performUpdateMetadata = false));
 		}
 	});
 </script>

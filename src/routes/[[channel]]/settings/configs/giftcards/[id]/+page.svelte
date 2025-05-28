@@ -2,15 +2,14 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { GIFT_CARD_DETAIL_QUERY, GIFT_CARD_UPDATE_MUTATION } from '$lib/api/admin/giftcards';
-	import {
-		METADATA_UPDATE_MUTATION,
-		PRIVATE_METADATA_UPDATE_MUTATION,
-	} from '$lib/api/admin/metadata';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
+	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import DetailGiftcardSkeleton from '$lib/components/pages/settings/config/giftcards/detail-giftcard-skeleton.svelte';
 	import GiftcardDetail from '$lib/components/pages/settings/config/giftcards/giftcard-detail.svelte';
+	import GiftcardEvents from '$lib/components/pages/settings/config/giftcards/giftcard-events.svelte';
 	import GiftcardExtraInformation from '$lib/components/pages/settings/config/giftcards/giftcard-extra-information.svelte';
 	import { GiftcardUtil } from '$lib/components/pages/settings/config/giftcards/utils.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
@@ -19,8 +18,6 @@
 		type MetadataInput,
 		type Mutation,
 		type MutationGiftCardUpdateArgs,
-		type MutationUpdateMetadataArgs,
-		type MutationUpdatePrivateMetadataArgs,
 		type Query,
 		type QueryGiftCardArgs,
 	} from '$lib/gql/graphql';
@@ -29,15 +26,13 @@
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { omit } from 'es-toolkit';
 	import { onMount } from 'svelte';
-	import { toast } from 'svelte-sonner';
 
 	const giftcardUtils = new GiftcardUtil();
 
 	let loading = $state(false);
 	let metadata = $state<MetadataInput[]>([]);
 	let privateMetadata = $state<MetadataInput[]>([]);
-	let metadataChanged = $state(false);
-	let privateMetadataChanged = $state(false);
+	let performUpdateMetadata = $state(false);
 
 	const giftcardQuery = operationStore<Pick<Query, 'giftCard'>, QueryGiftCardArgs>({
 		kind: 'query',
@@ -78,66 +73,22 @@
 	);
 
 	const onUpdateClick = async () => {
-		const updateGiftcard = GRAPHQL_CLIENT.mutation<
+		loading = true;
+		performUpdateMetadata = true; // trigger for metadata update
+
+		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'giftCardUpdate'>,
 			MutationGiftCardUpdateArgs
-		>(GIFT_CARD_UPDATE_MUTATION, { id: page.params.id, input: giftcardUpdateInput }).toPromise();
+		>(GIFT_CARD_UPDATE_MUTATION, { id: page.params.id, input: giftcardUpdateInput });
 
-		const tasks: Promise<any>[] = [updateGiftcard];
-
-		if (metadataChanged) {
-			const updateMetadata = GRAPHQL_CLIENT.mutation<
-				Pick<Mutation, 'updateMetadata'>,
-				MutationUpdateMetadataArgs
-			>(METADATA_UPDATE_MUTATION, {
-				id: page.params.id,
-				input: deduplicateMetadata(metadata),
-			}).toPromise();
-
-			tasks.push(updateMetadata);
-		}
-
-		if (privateMetadataChanged) {
-			const updatePrivateMetadata = GRAPHQL_CLIENT.mutation<
-				Pick<Mutation, 'updatePrivateMetadata'>,
-				MutationUpdatePrivateMetadataArgs
-			>(PRIVATE_METADATA_UPDATE_MUTATION, {
-				id: page.params.id,
-				input: deduplicateMetadata(privateMetadata),
-			}).toPromise();
-
-			tasks.push(updatePrivateMetadata);
-		}
-
-		loading = true;
-		const results = await Promise.all(tasks);
 		loading = false;
 
-		let hasErr = checkIfGraphqlResultHasError(results[0], 'giftCardUpdate');
-		if (results[1]) hasErr ||= checkIfGraphqlResultHasError(results[1], 'updateMetadata');
-		if (results[2]) hasErr ||= checkIfGraphqlResultHasError(results[2], 'updatePrivateMetadata');
-
-		if (!hasErr) {
-			toast.success('Giftcard updated successfully');
+		if (!checkIfGraphqlResultHasError(result, 'giftCardUpdate', 'Giftcard updated successfully')) {
 			giftcardQuery.reexecute({
 				variables: { id: page.params.id },
 				context: { requestPolicy: 'network-only' },
 			});
 		}
-	};
-
-	const deduplicateMetadata = (data: MetadataInput[]): MetadataInput[] => {
-		const meetMap: Record<string, boolean> = {};
-		const res: MetadataInput[] = [];
-
-		for (const item of data) {
-			if (!meetMap[item.key]) {
-				meetMap[item.key] = true;
-				res.push(item);
-			}
-		}
-
-		return res;
 	};
 
 	const onDeleteClick = async () => {
@@ -172,22 +123,32 @@
 {:else if $giftcardQuery.data?.giftCard}
 	{@const { giftCard } = $giftcardQuery.data}
 	<div class="flex flex-row gap-2">
-		<GiftcardDetail
-			bind:balanceAmount={giftcardUpdateInput.balanceAmount}
-			balanceCurrency={giftCard.currentBalance.currency || giftCard.initialBalance.currency}
-			bind:expiryDate={giftcardUpdateInput.expiryDate}
-			isActive={giftCard.isActive}
-			bind:addTags={giftcardUpdateInput.addTags!}
-			existingTags={giftCard.tags.map((item) => item.id)}
-			bind:removeTags={giftcardUpdateInput.removeTags!}
-			bind:metadata
-			bind:privateMetadata
-			id={giftCard.id}
-			{onActiveChange}
-			bind:metadataChanged
-			bind:privateMetadataChanged
-			disabled={loading}
-		/>
+		<div class="w-7/10 flex flex-col gap-2">
+			<GiftcardDetail
+				bind:balanceAmount={giftcardUpdateInput.balanceAmount}
+				bind:expiryDate={giftcardUpdateInput.expiryDate}
+				bind:addTags={giftcardUpdateInput.addTags!}
+				bind:removeTags={giftcardUpdateInput.removeTags!}
+				balanceCurrency={giftCard.currentBalance.currency || giftCard.initialBalance.currency}
+				isActive={giftCard.isActive}
+				existingTags={giftCard.tags.map((item) => item.id)}
+				id={giftCard.id}
+				disabled={loading}
+				{onActiveChange}
+				{metadata}
+			/>
+			<GeneralMetadataEditor
+				{metadata}
+				{privateMetadata}
+				disabled={loading}
+				objectId={giftCard.id}
+				bind:performUpdateMetadata
+			/>
+			<div class="p-3 rounded-lg border border-gray-200 bg-white flex flex-col gap-3">
+				<SectionHeader>Giftcard timeline</SectionHeader>
+				<GiftcardEvents id={giftCard.id} />
+			</div>
+		</div>
 		<GiftcardExtraInformation giftcard={$giftcardQuery.data.giftCard!} />
 	</div>
 

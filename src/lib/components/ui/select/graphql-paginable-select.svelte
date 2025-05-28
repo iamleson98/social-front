@@ -8,6 +8,7 @@
 	import { get, has, set } from 'es-toolkit/compat';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import GeneralSelect from './general-select.svelte';
+	import { omit } from 'es-toolkit';
 
 	type Props = {
 		query: TypedDocumentNode<any, AnyVariables & GraphqlPaginationArgs>;
@@ -126,8 +127,7 @@
 				`invalid variable search query path: ${variableSearchQueryPath}. Have you provided it in the "variables" argument ?`,
 			);
 
-		const newVariables = { ...variables };
-		delete newVariables['after']; // we fetch from beginning, so no need after here
+		const newVariables = omit(variables, ['after']);
 		set(newVariables, variableSearchQueryPath, value);
 
 		variables = newVariables;

@@ -5,7 +5,7 @@
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Input } from '$lib/components/ui/Input';
-	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
+	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
 	import {
 		type QueryGiftCardTagsArgs,
 		type MetadataInput,
@@ -13,7 +13,6 @@
 		type Mutation,
 		type MutationGiftCardResendArgs,
 	} from '$lib/gql/graphql';
-	import GiftcardEvents from './giftcard-events.svelte';
 	import GiftcardExpirationForm from './giftcard-expiration-form.svelte';
 	import { array, number, object, string, z } from 'zod';
 	import { tranFunc } from '$i18n';
@@ -26,7 +25,6 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { toast } from 'svelte-sonner';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import GeneralMetadataEditor from '../../common/general-metadata-editor.svelte';
 
 	type Props = {
 		id: string;
@@ -37,11 +35,9 @@
 		disabled?: boolean;
 		removeTags: string[];
 		metadata: MetadataInput[];
-		privateMetadata: MetadataInput[];
 		balanceCurrency: string;
 		onActiveChange: (active: boolean) => void;
-		metadataChanged: boolean;
-		privateMetadataChanged: boolean;
+		/** tag ids that already in use */
 		existingTags: string[];
 	};
 
@@ -53,16 +49,14 @@
 		disabled,
 		removeTags = $bindable(),
 		id,
-		metadata = $bindable([]),
-		privateMetadata = $bindable([]),
+		metadata = [],
 		balanceCurrency,
 		onActiveChange,
-		metadataChanged = $bindable(false),
-		privateMetadataChanged = $bindable(false),
 		existingTags = [],
 	}: Props = $props();
 
 	let openResendModal = $state(false);
+	let activeTags = $state([...existingTags]);
 
 	let giftCardChannel = $state(
 		metadata?.find((item) => item.key === GiftcardChannelMetadataKey)?.value,
@@ -97,17 +91,15 @@
 		return result.success;
 	};
 
-	const handleTagsChange = (opts?: SelectOption[] | SelectOption) => {
-		if (!opts) {
+	const handleTagsChange = () => {
+		if (!activeTags.length) {
 			addTags = [];
 			removeTags = existingTags;
 			return;
 		}
 
-		const newValues = (opts as SelectOption[]).map((opt) => opt.value as string);
-
-		addTags = difference(newValues, existingTags);
-		removeTags = difference(existingTags, newValues);
+		addTags = difference(activeTags, existingTags);
+		removeTags = difference(existingTags, activeTags);
 		validate();
 	};
 
@@ -137,97 +129,83 @@
 	};
 </script>
 
-<div class="w-7/10 flex flex-col gap-2">
-	<div class="rounded-lg border border-gray-200 bg-white flex flex-col gap-3 p-3">
-		<SectionHeader class="flex items-center justify-between">
-			<div>
-				<span>Giftcard details</span>
-				<Badge
-					text={isActive ? 'Active' : 'Disabled'}
-					color={isActive ? 'green' : 'red'}
-					rounded
-					variant="light"
-					size="sm"
-				/>
-			</div>
-			<div class="flex gap-1 items-center">
-				<Button
-					size="xs"
-					color={isActive ? 'red' : 'green'}
-					variant="light"
-					startIcon={isActive ? Ban : CircleCheck}
-					onclick={() => onActiveChange(!isActive)}
-					disabled={loading || disabled}
-				>
-					{isActive ? 'Deactivate' : 'Activate'}
-				</Button>
-				<Button
-					size="xs"
-					startIcon={Send}
-					color="violet"
-					disabled={loading || disabled}
-					onclick={() => (openResendModal = true)}>Resend code</Button
-				>
-			</div>
-		</SectionHeader>
-
-		<div class="flex items-start gap-2">
-			<Input
+<div class="rounded-lg border border-gray-200 bg-white flex flex-col gap-3 p-3">
+	<SectionHeader class="flex items-center justify-between">
+		<div>
+			<span>Giftcard details</span>
+			<Badge
+				text={isActive ? 'Active' : 'Disabled'}
+				color={isActive ? 'green' : 'red'}
+				rounded
+				variant="light"
 				size="sm"
-				type="number"
-				min={1}
-				placeholder="Set balance amount"
-				label="Balance amount"
-				class="flex-2/3"
-				bind:value={balanceAmount}
-				disabled={loading || disabled}
-				required
-				inputDebounceOption={{ onInput: validate }}
-				variant={giftcardFormErrors.balanceAmount?.length ? 'error' : 'info'}
-				subText={giftcardFormErrors.balanceAmount?.[0]}
-			/>
-			<Input
-				readonly
-				value={balanceCurrency}
-				label="Currency"
-				required
-				size="sm"
-				class="flex-1/3"
-				disabled
 			/>
 		</div>
+		<div class="flex gap-1 items-center">
+			<Button
+				size="xs"
+				color={isActive ? 'red' : 'green'}
+				variant="light"
+				startIcon={isActive ? Ban : CircleCheck}
+				onclick={() => onActiveChange(!isActive)}
+				disabled={loading || disabled}
+			>
+				{isActive ? 'Deactivate' : 'Activate'}
+			</Button>
+			<Button
+				size="xs"
+				startIcon={Send}
+				color="violet"
+				disabled={loading || disabled}
+				onclick={() => (openResendModal = true)}>Resend code</Button
+			>
+		</div>
+	</SectionHeader>
 
-		<GraphqlPaginableSelect
-			query={GIFT_CARD_TAGS_QUERY}
-			variables={{ first: 20, filter: { search: '' } } as QueryGiftCardTagsArgs}
-			resultKey="giftCardTags"
-			variableSearchQueryPath="filter.search"
-			optionValueKey="id"
-			optionLabelKey="name"
+	<div class="flex items-start gap-2">
+		<Input
 			size="sm"
-			requestPolicy="cache-and-network"
-			multiple
-			label="Giftcard Tags"
-			placeholder="Giftcard tags"
-			value={addTags}
-			onchange={handleTagsChange}
-			{disabled}
+			type="number"
+			min={1}
+			placeholder="Set balance amount"
+			label="Balance amount"
+			class="flex-2/3"
+			bind:value={balanceAmount}
+			disabled={loading || disabled}
+			required
+			inputDebounceOption={{ onInput: validate }}
+			variant={giftcardFormErrors.balanceAmount?.length ? 'error' : 'info'}
+			subText={giftcardFormErrors.balanceAmount?.[0]}
 		/>
-
-		<GiftcardExpirationForm {disabled} bind:expiryDate />
+		<Input
+			readonly
+			value={balanceCurrency}
+			label="Currency"
+			required
+			size="sm"
+			class="flex-1/3"
+			disabled
+		/>
 	</div>
 
-	<GeneralMetadataEditor
-		{metadata}
-		{privateMetadata}
-		disabled={loading || disabled}
-		objectId={id}
+	<GraphqlPaginableSelect
+		query={GIFT_CARD_TAGS_QUERY}
+		variables={{ first: 20, filter: { search: '' } } as QueryGiftCardTagsArgs}
+		resultKey="giftCardTags"
+		variableSearchQueryPath="filter.search"
+		optionValueKey="id"
+		optionLabelKey="name"
+		size="sm"
+		requestPolicy="cache-and-network"
+		multiple
+		label="Giftcard Tags"
+		placeholder="Giftcard tags"
+		bind:value={activeTags}
+		onchange={handleTagsChange}
+		{disabled}
 	/>
 
-	<div class="p-3 rounded-lg border border-gray-200 bg-white flex flex-col gap-3">
-		<SectionHeader>Giftcard timeline</SectionHeader>
-		<GiftcardEvents {id} />
-	</div>
+	<GiftcardExpirationForm {disabled} bind:expiryDate />
 </div>
 
 <Modal
