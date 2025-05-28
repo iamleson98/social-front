@@ -192,6 +192,8 @@ export default {
 		update: '型更新',
 		delete: 'Delete',
 		goto: 'Đi tới',
+		back: 'Back',
+		add: 'Add',
 	},
 	helpText: {
 		chooseDeliveryAddress: '配送先を選択してください',

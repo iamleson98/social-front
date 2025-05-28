@@ -192,6 +192,8 @@ export default {
 		update: 'Cập nhật',
 		delete: 'Xoá',
 		goto: 'Đi tới',
+		back: 'Quay lại',
+		add: 'Thêm',
 	},
 	helpText: {
 		chooseDeliveryAddress: 'Vui lòng chọn điểm giao hàng',

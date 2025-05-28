@@ -192,6 +192,8 @@ export default {
 		update: 'Update',
 		delete: 'Delete',
 		goto: 'Go to',
+		back: 'Back',
+		add: 'Add',
 	},
 	helpText: {
 		chooseDeliveryAddress: 'Please choose delivery address',

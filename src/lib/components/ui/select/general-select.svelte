@@ -72,7 +72,8 @@
 				const newMapper = { ...selectMapper };
 
 				for (const diff of diffs1) {
-					newMapper[diff] = options.find((opt) => opt.value === diff)!;
+					const opt = options.find((opt) => opt.value === diff);
+					newMapper[diff] = opt ? opt : {value: diff, label: diff};
 				}
 				for (const diff of diffs2) {
 					delete newMapper[diff];

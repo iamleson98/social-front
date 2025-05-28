@@ -13,7 +13,6 @@
 		type Mutation,
 		type MutationGiftCardResendArgs,
 	} from '$lib/gql/graphql';
-	import MetadataEditor from '$lib/components/pages/settings/common/metadata-editor.svelte';
 	import GiftcardEvents from './giftcard-events.svelte';
 	import GiftcardExpirationForm from './giftcard-expiration-form.svelte';
 	import { array, number, object, string, z } from 'zod';
@@ -27,6 +26,7 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { toast } from 'svelte-sonner';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import GeneralMetadataEditor from '../../common/general-metadata-editor.svelte';
 
 	type Props = {
 		id: string;
@@ -40,6 +40,9 @@
 		privateMetadata: MetadataInput[];
 		balanceCurrency: string;
 		onActiveChange: (active: boolean) => void;
+		metadataChanged: boolean;
+		privateMetadataChanged: boolean;
+		existingTags: string[];
 	};
 
 	let {
@@ -54,6 +57,9 @@
 		privateMetadata = $bindable([]),
 		balanceCurrency,
 		onActiveChange,
+		metadataChanged = $bindable(false),
+		privateMetadataChanged = $bindable(false),
+		existingTags = [],
 	}: Props = $props();
 
 	let openResendModal = $state(false);
@@ -63,15 +69,6 @@
 	);
 	let customerEmailOfGiftcard = $state(
 		metadata?.find((item) => item.key === GiftcardUserEmailMetadataKey)?.value,
-	);
-
-	/** keeps track of initial add tags */
-	const oldGiftcardTagsMap = addTags.reduce(
-		(acc, cur) => {
-			acc[cur] = true;
-			return acc;
-		},
-		{} as Record<string, boolean>,
 	);
 
 	let loading = $state(false);
@@ -89,8 +86,6 @@
 
 	let giftcardFormErrors = $state.raw<Partial<Record<keyof GiftcardUpdateSchema, string[]>>>({});
 
-	// let giftCardInput = $state<GiftCardUpdateInput>({});
-
 	const validate = () => {
 		const result = GiftcardUpdateSchema.safeParse({
 			balanceAmount,
@@ -105,12 +100,14 @@
 	const handleTagsChange = (opts?: SelectOption[] | SelectOption) => {
 		if (!opts) {
 			addTags = [];
-			removeTags = Object.keys(oldGiftcardTagsMap);
+			removeTags = existingTags;
 			return;
 		}
 
-		addTags = (opts as SelectOption[]).map((opt) => opt.value as string);
-		removeTags = difference(Object.keys(oldGiftcardTagsMap), addTags);
+		const newValues = (opts as SelectOption[]).map((opt) => opt.value as string);
+
+		addTags = difference(newValues, existingTags);
+		removeTags = difference(existingTags, newValues);
 		validate();
 	};
 
@@ -212,7 +209,7 @@
 			multiple
 			label="Giftcard Tags"
 			placeholder="Giftcard tags"
-			bind:value={addTags}
+			value={addTags}
 			onchange={handleTagsChange}
 			{disabled}
 		/>
@@ -220,14 +217,12 @@
 		<GiftcardExpirationForm {disabled} bind:expiryDate />
 	</div>
 
-	<div class="p-3 rounded-lg border border-gray-200 bg-white flex flex-col gap-3">
-		<MetadataEditor title="Metadata" bind:data={metadata} disabled={loading || disabled} />
-		<MetadataEditor
-			title="Private Metadata"
-			bind:data={privateMetadata}
-			disabled={loading || disabled}
-		/>
-	</div>
+	<GeneralMetadataEditor
+		{metadata}
+		{privateMetadata}
+		disabled={loading || disabled}
+		objectId={id}
+	/>
 
 	<div class="p-3 rounded-lg border border-gray-200 bg-white flex flex-col gap-3">
 		<SectionHeader>Giftcard timeline</SectionHeader>

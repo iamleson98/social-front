@@ -1,7 +1,12 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { GIFT_CARD_DETAIL_QUERY } from '$lib/api/admin/giftcards';
+	import { GIFT_CARD_DETAIL_QUERY, GIFT_CARD_UPDATE_MUTATION } from '$lib/api/admin/giftcards';
+	import {
+		METADATA_UPDATE_MUTATION,
+		PRIVATE_METADATA_UPDATE_MUTATION,
+	} from '$lib/api/admin/metadata';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import DetailGiftcardSkeleton from '$lib/components/pages/settings/config/giftcards/detail-giftcard-skeleton.svelte';
@@ -9,14 +14,30 @@
 	import GiftcardExtraInformation from '$lib/components/pages/settings/config/giftcards/giftcard-extra-information.svelte';
 	import { GiftcardUtil } from '$lib/components/pages/settings/config/giftcards/utils.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { type GiftCardUpdateInput, type Query, type QueryGiftCardArgs } from '$lib/gql/graphql';
+	import {
+		type GiftCardUpdateInput,
+		type MetadataInput,
+		type Mutation,
+		type MutationGiftCardUpdateArgs,
+		type MutationUpdateMetadataArgs,
+		type MutationUpdatePrivateMetadataArgs,
+		type Query,
+		type QueryGiftCardArgs,
+	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { omit } from 'es-toolkit';
 	import { onMount } from 'svelte';
+	import { toast } from 'svelte-sonner';
 
 	const giftcardUtils = new GiftcardUtil();
 
 	let loading = $state(false);
+	let metadata = $state<MetadataInput[]>([]);
+	let privateMetadata = $state<MetadataInput[]>([]);
+	let metadataChanged = $state(false);
+	let privateMetadataChanged = $state(false);
 
 	const giftcardQuery = operationStore<Pick<Query, 'giftCard'>, QueryGiftCardArgs>({
 		kind: 'query',
@@ -37,7 +58,16 @@
 		giftcardQuery.subscribe((result) => {
 			if (!result.data?.giftCard) return;
 
-			const { tags, currentBalance, expiryDate, isActive: active } = result.data.giftCard;
+			const {
+				tags,
+				currentBalance,
+				expiryDate,
+				metadata: md,
+				privateMetadata: pmd,
+			} = result.data.giftCard;
+
+			metadata = md.map((item) => omit(item, ['__typename']));
+			privateMetadata = pmd.map((item) => omit(item, ['__typename']));
 
 			giftcardUpdateInput = {
 				addTags: tags.map((tag) => tag.id),
@@ -47,7 +77,68 @@
 		}),
 	);
 
-	const onUpdateClick = () => {};
+	const onUpdateClick = async () => {
+		const updateGiftcard = GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'giftCardUpdate'>,
+			MutationGiftCardUpdateArgs
+		>(GIFT_CARD_UPDATE_MUTATION, { id: page.params.id, input: giftcardUpdateInput }).toPromise();
+
+		const tasks: Promise<any>[] = [updateGiftcard];
+
+		if (metadataChanged) {
+			const updateMetadata = GRAPHQL_CLIENT.mutation<
+				Pick<Mutation, 'updateMetadata'>,
+				MutationUpdateMetadataArgs
+			>(METADATA_UPDATE_MUTATION, {
+				id: page.params.id,
+				input: deduplicateMetadata(metadata),
+			}).toPromise();
+
+			tasks.push(updateMetadata);
+		}
+
+		if (privateMetadataChanged) {
+			const updatePrivateMetadata = GRAPHQL_CLIENT.mutation<
+				Pick<Mutation, 'updatePrivateMetadata'>,
+				MutationUpdatePrivateMetadataArgs
+			>(PRIVATE_METADATA_UPDATE_MUTATION, {
+				id: page.params.id,
+				input: deduplicateMetadata(privateMetadata),
+			}).toPromise();
+
+			tasks.push(updatePrivateMetadata);
+		}
+
+		loading = true;
+		const results = await Promise.all(tasks);
+		loading = false;
+
+		let hasErr = checkIfGraphqlResultHasError(results[0], 'giftCardUpdate');
+		if (results[1]) hasErr ||= checkIfGraphqlResultHasError(results[1], 'updateMetadata');
+		if (results[2]) hasErr ||= checkIfGraphqlResultHasError(results[2], 'updatePrivateMetadata');
+
+		if (!hasErr) {
+			toast.success('Giftcard updated successfully');
+			giftcardQuery.reexecute({
+				variables: { id: page.params.id },
+				context: { requestPolicy: 'network-only' },
+			});
+		}
+	};
+
+	const deduplicateMetadata = (data: MetadataInput[]): MetadataInput[] => {
+		const meetMap: Record<string, boolean> = {};
+		const res: MetadataInput[] = [];
+
+		for (const item of data) {
+			if (!meetMap[item.key]) {
+				meetMap[item.key] = true;
+				res.push(item);
+			}
+		}
+
+		return res;
+	};
 
 	const onDeleteClick = async () => {
 		ALERT_MODAL_STORE.openAlertModal({
@@ -87,11 +178,14 @@
 			bind:expiryDate={giftcardUpdateInput.expiryDate}
 			isActive={giftCard.isActive}
 			bind:addTags={giftcardUpdateInput.addTags!}
+			existingTags={giftCard.tags.map((item) => item.id)}
 			bind:removeTags={giftcardUpdateInput.removeTags!}
-			bind:metadata={giftCard.metadata}
-			bind:privateMetadata={giftCard.privateMetadata}
+			bind:metadata
+			bind:privateMetadata
 			id={giftCard.id}
 			{onActiveChange}
+			bind:metadataChanged
+			bind:privateMetadataChanged
 			disabled={loading}
 		/>
 		<GiftcardExtraInformation giftcard={$giftcardQuery.data.giftCard!} />
