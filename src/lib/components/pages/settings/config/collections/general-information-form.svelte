@@ -5,10 +5,8 @@
 	import ErrorMsg from '$lib/components/pages/settings/products/new/error-msg.svelte';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
 	import type { MediaObject } from '$lib/components/pages/settings/products/new/utils';
-	import type { MetadataInput } from '$lib/gql/graphql';
 	import { IMAGE_EXTENSION_REGEX } from '$lib/utils/consts';
 	import { object, string, z } from 'zod';
-	import MetadataEditor from '$lib/components/pages/settings/common/metadata-editor.svelte';
 	import { IconButton } from '$lib/components/ui/Button';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 
@@ -17,8 +15,6 @@
 		description?: any;
 		disabled?: boolean;
 		media?: MediaObject;
-		metadata: MetadataInput[];
-		privateMetadata: MetadataInput[];
 		ok?: boolean;
 	};
 
@@ -27,9 +23,7 @@
 		description = $bindable(),
 		disabled,
 		media = $bindable<MediaObject | undefined>(),
-		metadata = $bindable<MetadataInput[]>([]),
-		privateMetadata = $bindable<MetadataInput[]>([]),
-		ok = $bindable()
+		ok = $bindable(),
 	}: Props = $props();
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
@@ -47,8 +41,8 @@
 	const collectionSchema = object({
 		name: string().nonempty(REQUIRED_ERROR),
 		media: object({
-			alt: string().nonempty(REQUIRED_ERROR)
-		}).nullable()
+			alt: string().nonempty(REQUIRED_ERROR),
+		}).nullable(),
 	});
 	type CollectionSchema = z.infer<typeof collectionSchema>;
 
@@ -66,7 +60,7 @@
 				url,
 				alt,
 				width: img.width,
-				height: img.height
+				height: img.height,
 			};
 		};
 	};
@@ -81,7 +75,7 @@
 	const validate = () => {
 		const result = collectionSchema.safeParse({
 			name,
-			media
+			media,
 		});
 
 		if (!result.success) {
@@ -94,7 +88,7 @@
 	};
 </script>
 
-<div class="bg-white rounded-lg border w-full border-gray-200 p-3 pb-6 flex flex-col gap-3">
+<div class="bg-white rounded-lg border w-full border-gray-200 p-3 pb-6 flex flex-col gap-2">
 	<SectionHeader>General Information</SectionHeader>
 	<Input
 		label="Name"
@@ -199,7 +193,4 @@
 			error={collectionFormErrors.media?.length ? collectionFormErrors.media[0] : undefined}
 		/>
 	</div>
-
-	<MetadataEditor title="Metadata" bind:data={metadata} {disabled} />
-	<MetadataEditor title="Private Metadata" bind:data={privateMetadata} {disabled} />
 </div>

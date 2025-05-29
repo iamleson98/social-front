@@ -20,6 +20,8 @@
 	import { type MutationCustomerUpdateArgs } from '$lib/gql/graphql';
 	import CustomerExtraForm from '$lib/components/pages/settings/config/customers/customer-extra-form.svelte';
 	import { onMount } from 'svelte';
+	import CustomerOrders from '$lib/components/pages/settings/config/customers/customer-orders.svelte';
+	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 
 	const userDetailQuery = operationStore<Pick<Query, 'user'>, QueryUserArgs>({
 		kind: 'query',
@@ -38,23 +40,20 @@
 		email: '',
 		isActive: false,
 		note: '',
-		metadata: [],
-		privateMetadata: [],
 	});
+	/** keep track of when to update metadata */
+	let performUpdateMetadata = $state(false);
 
 	onMount(() =>
 		userDetailQuery.subscribe((result) => {
 			if (result.data?.user) {
-				const { firstName, lastName, email, isActive, note, metadata, privateMetadata } =
-					result.data.user;
+				const { firstName, lastName, email, isActive, note } = result.data.user;
 				userInput = {
 					firstName,
 					lastName,
 					email,
 					isActive,
 					note,
-					metadata,
-					privateMetadata,
 				};
 			}
 		}),
@@ -62,6 +61,8 @@
 
 	const onUpdateClick = async () => {
 		loading = true;
+		performUpdateMetadata = true; // trigger update metadatas
+
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'customerUpdate'>,
 			MutationCustomerUpdateArgs
@@ -69,7 +70,9 @@
 			id: page.params.id,
 			input: userInput,
 		});
+
 		loading = false;
+
 		if (checkIfGraphqlResultHasError(result, 'customerUpdate', 'Customer updated successfully'))
 			return;
 		userDetailQuery.reexecute({ variables: { id: page.params.id } });
@@ -84,17 +87,21 @@
 	{@const { user } = $userDetailQuery.data}
 	{@const orders = user.orders?.edges.map((edge) => edge.node) ?? []}
 	<div class="flex flex-row gap-2 w-full">
-		<div class="w-6/10">
+		<div class="w-6/10 flex flex-col gap-2">
 			<CustomerInformationForm
-				{orders}
 				firstName={userInput.firstName as string}
 				lastName={userInput.lastName as string}
 				email={userInput.email as string}
 				bind:isActive={userInput.isActive as boolean}
 				note={userInput.note as string}
-				bind:metadata={userInput.metadata as MetadataInput[]}
-				bind:privateMetadata={userInput.privateMetadata as MetadataInput[]}
 				bind:ok={informationOk}
+			/>
+			<CustomerOrders id={user.id} />
+			<GeneralMetadataEditor
+				metadata={user.metadata}
+				privateMetadata={user.privateMetadata}
+				objectId={user.id}
+				bind:performUpdateMetadata
 			/>
 		</div>
 

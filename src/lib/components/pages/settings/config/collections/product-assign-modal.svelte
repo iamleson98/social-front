@@ -19,16 +19,16 @@
 	const PRODUCT_MODAL_COLUMNS: TableColumnProps<Product, ProductOrderField>[] = [
 		{
 			title: '',
-			child: checkbox
+			child: checkbox,
 		},
 		{
 			title: '',
-			child: picture
+			child: picture,
 		},
 		{
 			title: '',
-			child: title
-		}
+			child: title,
+		},
 	];
 
 	let loading = $state(false);
@@ -37,8 +37,8 @@
 	let filterAllProductsVariables = $state<QueryProductsArgs>({
 		first: 10,
 		filter: {
-			search: ''
-		}
+			search: '',
+		},
 	});
 
 	let selectedProductIDs = $state.raw<Record<string, boolean>>({});
@@ -84,7 +84,7 @@
 
 			selectedProductIDs = {
 				...selectedProductIDs,
-				[item.id]: (evt.target as HTMLInputElement).checked
+				[item.id]: (evt.target as HTMLInputElement).checked,
 			};
 		}}
 	/>
@@ -100,12 +100,12 @@
 	<div>{item.name}</div>
 {/snippet}
 
-<div class="mb-4 flex items-center justify-between">
-	<SectionHeader>Products in collection</SectionHeader>
+<SectionHeader class="flex items-center justify-between mb-3">
+	<div>Products in collection</div>
 	<Button size="xs" onclick={handleClickOpenProductListModal} disabled={shouldDisable}>
 		Assign Product
 	</Button>
-</div>
+</SectionHeader>
 
 <Modal
 	header="Assign products to collection"
@@ -127,7 +127,7 @@
 			bind:value={filterAllProductsVariables.filter!.search}
 			inputDebounceOption={{
 				onInput: () => (forceReExecuteGraphqlQuery = true), // force the result table to re-execute the query
-				debounceTime: 800
+				debounceTime: 800,
 			}}
 			disabled={shouldDisable}
 		/>

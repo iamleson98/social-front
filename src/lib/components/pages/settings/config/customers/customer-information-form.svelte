@@ -1,15 +1,8 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Checkbox, Input, TextArea } from '$lib/components/ui/Input';
-	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
-	import { type MetadataInput, type Order, type OrderSortField } from '$lib/gql/graphql';
 	import { object, string, z } from 'zod';
-	import MetadataEditor from '$lib/components/pages/settings/common/metadata-editor.svelte';
-	import dayjs from 'dayjs';
-	import { Badge } from '$lib/components/ui/badge';
-	import { formatCurrency, paymentStatusBadgeClass } from '$lib/utils/utils';
-	import { Button } from '$lib/components/ui';
-	import { Alert } from '$lib/components/ui/Alert';
 
 	type Props = {
 		firstName: string;
@@ -18,9 +11,6 @@
 		isActive: boolean;
 		note: string;
 		disabled?: boolean;
-		orders: Order[];
-		metadata: MetadataInput[];
-		privateMetadata: MetadataInput[];
 		ok: boolean;
 		isCreatePage?: boolean;
 	};
@@ -32,9 +22,6 @@
 		isActive = $bindable(false),
 		note = $bindable(''),
 		disabled,
-		orders,
-		metadata = $bindable([]),
-		privateMetadata = $bindable([]),
 		ok = $bindable(false),
 		isCreatePage = false,
 	}: Props = $props();
@@ -43,6 +30,7 @@
 		ok = !Object.keys(customerFormErrors).length;
 	});
 
+	let shouldDisable = $derived(!isCreatePage || disabled);
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 	const customerSchema = object({
 		firstName: string().nonempty(REQUIRED_ERROR),
@@ -68,56 +56,16 @@
 		customerFormErrors = {};
 		return true;
 	};
-
-	const ORDER_TABLE_COLUMNS: TableColumnProps<Order, OrderSortField>[] = [
-		{
-			title: 'Number',
-			child: number,
-		},
-		{
-			title: 'Date',
-			child: date,
-		},
-		{
-			title: 'Status',
-			child: status,
-		},
-		{
-			title: 'Total',
-			child: total,
-		},
-	];
 </script>
 
-{#snippet number({ item }: { item: Order })}
-	<span>{item.number}</span>
-{/snippet}
-
-{#snippet date({ item }: { item: Order })}
-	<span class="whitespace-nowrap">{dayjs(item.created).format('DD/MM/YYYY HH:mm')}</span>
-{/snippet}
-
-{#snippet status({ item }: { item: Order })}
-	<Badge {...paymentStatusBadgeClass(item.paymentStatus)} />
-{/snippet}
-
-{#snippet total({ item }: { item: Order })}
-	<div class="flex items-center justify-between gap-1">
-		<span class="text-gray-500 text-xs">{item.total.gross.currency}</span>
-		<span class="font-semibold text-blue-600 text-right">
-			{formatCurrency(item.total.gross.amount)}
-		</span>
-	</div>
-{/snippet}
-
-<div class="bg-white rounded-lg border border-gray-200 p-3 mb-3 flex flex-col gap-2">
-	<h3 class="font-semibold text-gray-700">Customer Information</h3>
+<div class="bg-white rounded-lg border border-gray-200 p-3 flex flex-col gap-2">
+	<SectionHeader>Customer Information</SectionHeader>
 	<div class="flex flex-row gap-3 items-start">
 		<Input
 			label="First Name"
 			bind:value={firstName}
 			required
-			disabled={!isCreatePage}
+			disabled={shouldDisable}
 			class="flex-1"
 			inputDebounceOption={{ onInput: validate }}
 			onblur={validate}
@@ -128,7 +76,7 @@
 			label="Last Name"
 			bind:value={lastName}
 			required
-			disabled={!isCreatePage}
+			disabled={shouldDisable}
 			class="flex-1"
 			inputDebounceOption={{ onInput: validate }}
 			onblur={validate}
@@ -140,7 +88,7 @@
 		label="Email"
 		bind:value={email}
 		required
-		disabled={!isCreatePage}
+		disabled={shouldDisable}
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
 		variant={customerFormErrors.email?.length ? 'error' : 'info'}
@@ -152,28 +100,11 @@
 		placeholder="Note"
 		label="Note"
 		required
-		disabled={!isCreatePage}
+		disabled={shouldDisable}
 		inputClass="min-h-20"
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
 		variant={customerFormErrors.note?.length ? 'error' : 'info'}
 		subText={customerFormErrors.note?.length ? customerFormErrors.note[0] : undefined}
 	/>
-</div>
-
-<div class="bg-white rounded-lg border border-gray-200 p-3 mb-3">
-	<div class="flex justify-between items-center mb-3">
-		<h3 class="font-semibold text-gray-700">Recent Orders</h3>
-		<Button variant="light" size="xs">View all orders</Button>
-	</div>
-	{#if orders.length <= 0}
-		<Alert variant="info" size="sm" bordered>This customer has no orders</Alert>
-	{:else}
-		<Table columns={ORDER_TABLE_COLUMNS} items={orders} />
-	{/if}
-</div>
-
-<div class="bg-white rounded-lg border border-gray-200 p-3">
-	<MetadataEditor title="Metadata" bind:data={metadata} />
-	<MetadataEditor title="Private Metadata" bind:data={privateMetadata} class="mt-2" />
 </div>

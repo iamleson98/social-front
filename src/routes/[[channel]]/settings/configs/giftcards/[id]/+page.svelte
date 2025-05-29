@@ -24,14 +24,11 @@
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { omit } from 'es-toolkit';
 	import { onMount } from 'svelte';
 
 	const giftcardUtils = new GiftcardUtil();
 
 	let loading = $state(false);
-	let metadata = $state<MetadataInput[]>([]);
-	let privateMetadata = $state<MetadataInput[]>([]);
 	let performUpdateMetadata = $state(false);
 
 	const giftcardQuery = operationStore<Pick<Query, 'giftCard'>, QueryGiftCardArgs>({
@@ -53,16 +50,7 @@
 		giftcardQuery.subscribe((result) => {
 			if (!result.data?.giftCard) return;
 
-			const {
-				tags,
-				currentBalance,
-				expiryDate,
-				metadata: md,
-				privateMetadata: pmd,
-			} = result.data.giftCard;
-
-			metadata = md.map((item) => omit(item, ['__typename']));
-			privateMetadata = pmd.map((item) => omit(item, ['__typename']));
+			const { tags, currentBalance, expiryDate } = result.data.giftCard;
 
 			giftcardUpdateInput = {
 				addTags: tags.map((tag) => tag.id),
@@ -135,11 +123,11 @@
 				id={giftCard.id}
 				disabled={loading}
 				{onActiveChange}
-				{metadata}
+				metadata={giftCard.metadata}
 			/>
 			<GeneralMetadataEditor
-				{metadata}
-				{privateMetadata}
+				metadata={giftCard.metadata}
+				privateMetadata={giftCard.privateMetadata}
 				disabled={loading}
 				objectId={giftCard.id}
 				bind:performUpdateMetadata

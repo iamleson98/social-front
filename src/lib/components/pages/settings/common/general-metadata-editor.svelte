@@ -8,17 +8,19 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import type {
 		MetadataInput,
+		MetadataItem,
 		Mutation,
 		MutationDeleteMetadataArgs,
 		MutationUpdateMetadataArgs,
 		MutationUpdatePrivateMetadataArgs,
 	} from '$lib/gql/graphql';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { omit } from 'es-toolkit';
 	import MetadataEditor from './metadata-editor.svelte';
 
 	type Props = {
-		metadata: MetadataInput[];
-		privateMetadata: MetadataInput[];
+		metadata: MetadataItem[];
+		privateMetadata: MetadataItem[];
 		disabled?: boolean;
 		/** id of the object that owns those metadatas */
 		objectId: string;
@@ -109,7 +111,7 @@
 <div class="rounded-lg p-3 border bg-white border-gray-200">
 	<MetadataEditor
 		title="Metadata"
-		data={metadata}
+		data={metadata.map((item) => omit(item, ['__typename']))}
 		disabled={loading}
 		bind:metadataItemsToAdd
 		bind:metadataKeysToRemove
@@ -117,7 +119,7 @@
 
 	<MetadataEditor
 		title="Private Metadata"
-		data={privateMetadata}
+		data={privateMetadata.map((item) => omit(item, ['__typename']))}
 		disabled={loading}
 		bind:metadataItemsToAdd={privateMetadataItemsToAdd}
 		bind:metadataKeysToRemove={privateMetadataKeysToRemove}

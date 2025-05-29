@@ -4,12 +4,13 @@
 	import {
 		COLLECTION_CHANNEL_LISTING_UPDATE_MUTATION,
 		COLLECTION_DETAIL_QUERY,
-		COLLECTION_UPDATE_MUTATION
+		COLLECTION_UPDATE_MUTATION,
 	} from '$lib/api/admin/collections';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { COLLECTION_DELETE_MUTATION } from '$lib/api/collections';
 	import { operationStore } from '$lib/api/operation';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
+	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import AvailabilityForm from '$lib/components/pages/settings/config/collections/availability-form.svelte';
 	import CollectionDetailSkeleton from '$lib/components/pages/settings/config/collections/collection-detail-skeleton.svelte';
 	import GeneralInformationForm from '$lib/components/pages/settings/config/collections/general-information-form.svelte';
@@ -20,19 +21,17 @@
 	import type {
 		CollectionChannelListingUpdateInput,
 		CollectionInput,
-		MetadataInput,
 		Mutation,
 		MutationCollectionChannelListingUpdateArgs,
 		MutationCollectionDeleteArgs,
 		MutationCollectionUpdateArgs,
 		Query,
 		QueryCollectionArgs,
-		SeoInput
+		SeoInput,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { omit } from 'es-toolkit';
 	import { onMount } from 'svelte';
 
 	let collectionUpdateInput = $state<CollectionInput>({
@@ -41,28 +40,29 @@
 		slug: '',
 		seo: {
 			title: '',
-			description: ''
+			description: '',
 		},
 		metadata: [],
-		privateMetadata: []
+		privateMetadata: [],
 	});
 	let media = $state<MediaObject>();
 	let generalFormOk = $state(false);
 	let seoFormOk = $state(false);
 	let collectionChannelListingUpdateInput = $state<CollectionChannelListingUpdateInput>({
 		addChannels: [],
-		removeChannels: []
+		removeChannels: [],
 	});
 	let loading = $state(false);
+	let performUpdateMetadata = $state(false); // trigger update metadata
 
 	const collectionDetailQuery = operationStore<Pick<Query, 'collection'>, QueryCollectionArgs>({
 		kind: 'query',
 		query: COLLECTION_DETAIL_QUERY,
 		variables: {
-			id: page.params.id
+			id: page.params.id,
 		},
 		pause: !page.params.id,
-		requestPolicy: 'network-only'
+		requestPolicy: 'network-only',
 	});
 
 	onMount(() =>
@@ -75,9 +75,7 @@
 					backgroundImage,
 					seoTitle,
 					seoDescription,
-					metadata,
-					privateMetadata,
-					channelListings
+					channelListings,
 				} = result.data.collection;
 				collectionUpdateInput = {
 					name,
@@ -85,26 +83,24 @@
 					description: description ? JSON.parse(description) : undefined,
 					seo: {
 						title: seoTitle,
-						description: seoDescription
+						description: seoDescription,
 					},
-					metadata: metadata.map((item) => omit(item, ['__typename'])),
-					privateMetadata: privateMetadata.map((item) => omit(item, ['__typename']))
 				};
 				if (backgroundImage)
 					media = {
 						alt: backgroundImage.alt || '',
-						url: backgroundImage.url
+						url: backgroundImage.url,
 					};
 
 				if (channelListings?.length) {
 					collectionChannelListingUpdateInput.addChannels = channelListings.map((item) => ({
 						channelId: item.channel.id,
 						isPublished: item.isPublished,
-						publishedAt: item.publishedAt
+						publishedAt: item.publishedAt,
 					}));
 				}
 			}
-		})
+		}),
 	);
 
 	const onDeleteClick = () => {
@@ -117,7 +113,7 @@
 					Pick<Mutation, 'collectionDelete'>,
 					MutationCollectionDeleteArgs
 				>(COLLECTION_DELETE_MUTATION, {
-					id: page.params.id
+					id: page.params.id,
 				});
 
 				loading = false; //
@@ -126,13 +122,13 @@
 					checkIfGraphqlResultHasError(
 						result,
 						'collectionDelete',
-						'Collection deleted successfully!'
+						'Collection deleted successfully!',
 					)
 				)
 					return;
 
 				await goto(AppRoute.SETTINGS_CONFIGS_COLLECTIONS());
-			}
+			},
 		});
 	};
 
@@ -140,6 +136,7 @@
 		let hasError = false;
 
 		loading = true; //
+		performUpdateMetadata = true; // trigger update metadata
 
 		// 1) update general information of collection:
 		const result = await GRAPHQL_CLIENT.mutation<
@@ -149,14 +146,14 @@
 			id: page.params.id,
 			input: {
 				...collectionUpdateInput,
-				description: JSON.stringify(collectionUpdateInput.description) || null
-			}
+				description: JSON.stringify(collectionUpdateInput.description) || null,
+			},
 		});
 
 		hasError ||= checkIfGraphqlResultHasError(
 			result,
 			'collectionUpdate',
-			'Collection updated successfully'
+			'Collection updated successfully',
 		);
 
 		// 2) update channel listings
@@ -165,7 +162,7 @@
 			MutationCollectionChannelListingUpdateArgs
 		>(COLLECTION_CHANNEL_LISTING_UPDATE_MUTATION, {
 			id: page.params.id,
-			input: collectionChannelListingUpdateInput
+			input: collectionChannelListingUpdateInput,
 		});
 
 		loading = false; //
@@ -173,15 +170,15 @@
 		hasError ||= checkIfGraphqlResultHasError(
 			result2,
 			'collectionChannelListingUpdate',
-			'Collection channel listing updated successfully'
+			'Collection channel listing updated successfully',
 		);
 
 		if (hasError) return;
 
 		collectionDetailQuery.reexecute({
 			variables: {
-				id: page.params.id
-			}
+				id: page.params.id,
+			},
 		});
 	};
 </script>
@@ -192,17 +189,23 @@
 	<Alert variant="error" size="sm" bordered>
 		{$collectionDetailQuery.error.message}
 	</Alert>
-{:else if $collectionDetailQuery.data}
+{:else if $collectionDetailQuery.data?.collection}
+	{@const { metadata, privateMetadata, id } = $collectionDetailQuery.data.collection}
 	<div class="flex gap-2 flex-row">
 		<div class="w-7/10 flex flex-col gap-2">
 			<GeneralInformationForm
 				bind:name={collectionUpdateInput.name as string}
 				bind:description={collectionUpdateInput.description}
-				bind:metadata={collectionUpdateInput.metadata as MetadataInput[]}
-				bind:privateMetadata={collectionUpdateInput.privateMetadata as MetadataInput[]}
 				bind:media
 				bind:ok={generalFormOk}
 				disabled={loading}
+			/>
+			<GeneralMetadataEditor
+				{metadata}
+				{privateMetadata}
+				disabled={loading}
+				objectId={id}
+				bind:performUpdateMetadata
 			/>
 			<ProductListForm collectionID={page.params.id} disabled={loading} />
 			<SeoForm

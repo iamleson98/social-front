@@ -12,6 +12,7 @@
 		type QueryCustomersArgs,
 		type Mutation,
 		type MutationGiftCardResendArgs,
+		type MetadataItem,
 	} from '$lib/gql/graphql';
 	import GiftcardExpirationForm from './giftcard-expiration-form.svelte';
 	import { array, number, object, string, z } from 'zod';
@@ -34,7 +35,7 @@
 		addTags: string[];
 		disabled?: boolean;
 		removeTags: string[];
-		metadata: MetadataInput[];
+		metadata: MetadataItem[];
 		balanceCurrency: string;
 		onActiveChange: (active: boolean) => void;
 		/** tag ids that already in use */

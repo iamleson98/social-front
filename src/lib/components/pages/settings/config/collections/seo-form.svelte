@@ -5,7 +5,6 @@
 	import { z, object, string } from 'zod';
 	import type { SeoInput } from '$lib/gql/graphql';
 	import slugify from 'slugify';
-	import SectionHeader from '$lib/components/common/section-header.svelte';
 
 	type Props = {
 		name: string;
@@ -22,7 +21,7 @@
 		seo = $bindable(),
 		isCreatePage = false,
 		disabled,
-		ok = $bindable()
+		ok = $bindable(),
 	}: Props = $props();
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
@@ -35,8 +34,8 @@
 			.nonempty(REQUIRED_ERROR)
 			.max(
 				DESCRIPTION_MAX_LENGTH,
-				`Description must be at most ${DESCRIPTION_MAX_LENGTH} characters long`
-			)
+				`Description must be at most ${DESCRIPTION_MAX_LENGTH} characters long`,
+			),
 	});
 
 	type SeoSchema = z.infer<typeof seoSchema>;
@@ -51,7 +50,7 @@
 		const parseResult = seoSchema.safeParse({
 			slug,
 			title: seo.title,
-			description: seo.description
+			description: seo.description,
 		});
 		if (!parseResult.success) {
 			seoFormErrors = parseResult.error.formErrors.fieldErrors;
@@ -70,8 +69,7 @@
 </script>
 
 <div class="bg-white rounded-lg border w-full border-gray-200 p-3">
-	<SectionHeader>Search engine preview</SectionHeader>
-	<Accordion header="Search engine preview" class="mt-2">
+	<Accordion header="Search engine preview">
 		<Input
 			label="Slug"
 			bind:value={slug}
