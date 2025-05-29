@@ -68,8 +68,11 @@
 	});
 </script>
 
-<div class="bg-white rounded-lg border w-full border-gray-200 p-3">
-	<Accordion header="Search engine preview">
+<Accordion
+	header="Search engine preview"
+	class="bg-white rounded-lg border w-full border-gray-200 p-3"
+>
+	<div class="flex flex-col gap-2">
 		<Input
 			label="Slug"
 			bind:value={slug}
@@ -105,5 +108,5 @@
 				? seoFormErrors.description[0]
 				: `${seo?.description?.length || 0} / ${DESCRIPTION_MAX_LENGTH}`}
 		/>
-	</Accordion>
-</div>
+	</div>
+</Accordion>
