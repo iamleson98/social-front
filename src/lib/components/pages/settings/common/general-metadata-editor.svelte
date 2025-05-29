@@ -2,6 +2,7 @@
 	import {
 		METADATA_DELETE_MUTATION,
 		METADATA_UPDATE_MUTATION,
+		PRIVATE_METADATA_DELETE_MUTATION,
 		PRIVATE_METADATA_UPDATE_MUTATION,
 	} from '$lib/api/admin/metadata';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
@@ -83,7 +84,7 @@
 			const task = GRAPHQL_CLIENT.mutation<
 				Pick<Mutation, 'deletePrivateMetadata'>,
 				MutationDeleteMetadataArgs
-			>(METADATA_DELETE_MUTATION, {
+			>(PRIVATE_METADATA_DELETE_MUTATION, {
 				id: objectId,
 				keys: privateMetadataKeysToRemove,
 			}).toPromise();
@@ -115,7 +116,7 @@
 	/>
 
 	<MetadataEditor
-		title="Metadata"
+		title="Private Metadata"
 		data={privateMetadata}
 		disabled={loading}
 		bind:metadataItemsToAdd={privateMetadataItemsToAdd}
