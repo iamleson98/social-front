@@ -8,6 +8,7 @@
 	} from '$lib/api/admin/product';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import ProductType from '$lib/components/common/product-type-select/product-type.svelte';
+	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import CategorySelector from '$lib/components/pages/settings/products/new/category-selector.svelte';
 	import ChannelsSelector from '$lib/components/pages/settings/products/new/channels-selector.svelte';
 	import CollectionAndTax from '$lib/components/pages/settings/products/new/collections-and-tax.svelte';
@@ -51,6 +52,7 @@
 			{ key: 'width', value: '0' },
 			{ key: 'height', value: '0' },
 		],
+		privateMetadata: [],
 		collections: [],
 	});
 	let channelListingUpdateInput = $state.raw<ProductChannelListingUpdateInput>({});
@@ -253,6 +255,7 @@
 		bind:weight={productCreateInput.weight}
 		{loading}
 	/>
+	<!-- <GeneralMetadataEditor /> -->
 
 	<Button
 		size="md"

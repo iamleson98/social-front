@@ -3,7 +3,7 @@
 		ASSIGN_PRODUCTS_TO_COLLECTION_MUTATION,
 		COLLECTION_PRODUCTS_QUERY,
 		COLLECTION_REMOVE_PRODUCTS_MUTATION,
-		REORDER_PRODUCTS_IN_COLLECTION_MUTATION
+		REORDER_PRODUCTS_IN_COLLECTION_MUTATION,
 	} from '$lib/api/admin/collections';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { Trash } from '$lib/components/icons';
@@ -14,16 +14,15 @@
 	import GraphqlPaginableTable from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import type {
 		Mutation,
-		MutationCollectionAddProductsArgs,
-		MutationCollectionRemoveProductsArgs,
 		MutationCollectionReorderProductsArgs,
 		Product,
 		ProductOrderField,
 		Query,
-		QueryProductsArgs
+		QueryProductsArgs,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import type { AnyVariables, TypedDocumentNode } from '@urql/core';
 	import ProductAssignModal from './product-assign-modal.svelte';
 
 	type Props = {
@@ -36,7 +35,7 @@
 
 	let filterVariables = $state<QueryProductsArgs & { id?: string }>({
 		first: 10,
-		id: collectionID
+		id: collectionID,
 	});
 
 	let forceReExecuteGraphqlQuery = $state(collectionID ? true : false);
@@ -46,31 +45,31 @@
 	const PRODUCT_COLUMNS: TableColumnProps<Product, ProductOrderField>[] = [
 		{
 			title: 'Pic',
-			child: picture
+			child: picture,
 		},
 		{
 			title: 'Name',
-			child: name
+			child: name,
 		},
 		{
 			title: 'Category',
-			child: category
+			child: category,
 		},
 		{
 			title: 'Availability',
-			child: availability
+			child: availability,
 		},
 		{
 			title: 'Action',
-			child: action
-		}
+			child: action,
+		},
 	];
 
 	const handleReOrderProductsInCollection = async (
 		dragIndex: number,
 		dragItem: Product,
 		dropIndex: number,
-		_: Product
+		_: Product,
 	) => {
 		if (!collectionID) return;
 
@@ -81,7 +80,7 @@
 			MutationCollectionReorderProductsArgs
 		>(REORDER_PRODUCTS_IN_COLLECTION_MUTATION, {
 			collectionId: collectionID,
-			moves: [{ productId: dragItem.id, sortOrder: dropIndex - dragIndex }]
+			moves: [{ productId: dragItem.id, sortOrder: dropIndex - dragIndex }],
 		});
 
 		loading = false;
@@ -90,7 +89,7 @@
 			checkIfGraphqlResultHasError(
 				result,
 				'collectionReorderProducts',
-				'Successfully reorderd products of collection'
+				'Successfully reorderd products of collection',
 			)
 		)
 			return;
@@ -99,56 +98,73 @@
 		forceReExecuteGraphqlQuery = true;
 	};
 
-	const handleAssignProducts = async (addProductIds: string[], removeProductIds: string[]) => {
+	type TaskProps = {
+		query: TypedDocumentNode<any, AnyVariables>;
+		variables: Record<string, unknown>;
+	};
+
+	const handleAssignProducts = async (addProducts: Product[], removeProductIds: string[]) => {
 		if (!collectionID) return;
 
-		loading = true;
+		const tasks: TaskProps[] = [];
+		const keys: (keyof Mutation)[] = [];
+		const successMessages: string[] = [];
 
-		if (addProductIds.length) {
-			const result = await GRAPHQL_CLIENT.mutation<
-				Pick<Mutation, 'collectionAddProducts'>,
-				MutationCollectionAddProductsArgs
-			>(ASSIGN_PRODUCTS_TO_COLLECTION_MUTATION, {
-				collectionId: collectionID,
-				products: addProductIds
+		if (addProducts.length) {
+			tasks.push({
+				query: ASSIGN_PRODUCTS_TO_COLLECTION_MUTATION,
+				variables: {
+					collectionId: collectionID,
+					products: addProducts.map((item) => item.id),
+				},
 			});
-			checkIfGraphqlResultHasError(
-				result,
-				'collectionAddProducts',
-				'Successfully assigned products to collection'
-			);
+			keys.push('collectionAddProducts');
+			successMessages.push('Successfully assigned products to collection');
 		}
 		if (removeProductIds.length) {
-			const result = await GRAPHQL_CLIENT.mutation<
-				Pick<Mutation, 'collectionRemoveProducts'>,
-				MutationCollectionRemoveProductsArgs
-			>(COLLECTION_REMOVE_PRODUCTS_MUTATION, {
-				collectionId: collectionID,
-				products: removeProductIds
+			tasks.push({
+				query: COLLECTION_REMOVE_PRODUCTS_MUTATION,
+				variables: {
+					collectionId: collectionID,
+					products: removeProductIds,
+				},
 			});
-			checkIfGraphqlResultHasError(
-				result,
-				'collectionRemoveProducts',
-				'Successfully unassigned products from collection'
-			);
+			keys.push('collectionRemoveProducts');
+			successMessages.push('Successfully unassigned products from collection');
 		}
 
+		if (!tasks.length) return;
+
+		loading = true;
+		const promises = tasks.map(({ query, variables }) =>
+			GRAPHQL_CLIENT.mutation(query, variables).toPromise(),
+		);
+		const results = await Promise.all(promises);
+
 		loading = false;
+		let hasErr = false;
+
+		results.forEach(
+			(res, idx) => (hasErr ||= checkIfGraphqlResultHasError(res, keys[idx], successMessages[idx])),
+		);
+
 		// success, trigger refetching data
-		forceReExecuteGraphqlQuery = true;
+		if (!hasErr) forceReExecuteGraphqlQuery = true;
 	};
 </script>
 
 {#snippet action({ item }: { item: Product })}
-	<IconButton
-		icon={Trash}
-		variant="light"
-		size="xs"
-		color="red"
-		onclick={() => handleAssignProducts([], [item.id])}
-		disabled={shouldDisable}
-		data-interactive
-	/>
+	<div class="text-center">
+		<IconButton
+			icon={Trash}
+			variant="light"
+			size="xs"
+			color="red"
+			onclick={() => handleAssignProducts([], [item.id])}
+			disabled={shouldDisable}
+			data-interactive
+		/>
+	</div>
 {/snippet}
 
 {#snippet picture({ item }: { item: Product })}
@@ -158,9 +174,14 @@
 {/snippet}
 
 {#snippet name({ item }: { item: Product })}
-	<a href={AppRoute.PRODUCT_DETAILS(item.slug)} aria-label={item.name} data-interactive
-		>{item.name}</a
+	<a
+		href={AppRoute.PRODUCT_DETAILS(item.slug)}
+		aria-label={item.name}
+		data-interactive
+		class="link link-hover"
 	>
+		{item.name}
+	</a>
 {/snippet}
 
 {#snippet category({ item }: { item: Product })}
@@ -171,7 +192,7 @@
 	{@const channels =
 		item.channelListings?.map((item) => ({
 			channel: item.channel.name,
-			published: item.isPublished
+			published: item.isPublished,
 		})) || []}
 	{#snippet trigger({ onclick, onclose }: DropdownTriggerInterface)}
 		<Badge

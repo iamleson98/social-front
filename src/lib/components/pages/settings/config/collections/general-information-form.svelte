@@ -189,8 +189,6 @@
 				</div>
 			{/if}
 		</div>
-		<ErrorMsg
-			error={collectionFormErrors.media?.length ? collectionFormErrors.media[0] : undefined}
-		/>
+		<ErrorMsg error={collectionFormErrors.media?.[0]} />
 	</div>
 </div>

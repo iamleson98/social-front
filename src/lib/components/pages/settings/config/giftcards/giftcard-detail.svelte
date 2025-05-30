@@ -8,7 +8,6 @@
 	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
 	import {
 		type QueryGiftCardTagsArgs,
-		type MetadataInput,
 		type QueryCustomersArgs,
 		type Mutation,
 		type MutationGiftCardResendArgs,
@@ -131,7 +130,7 @@
 </script>
 
 <div class="rounded-lg border border-gray-200 bg-white flex flex-col gap-3 p-3">
-	<SectionHeader class="flex items-center justify-between">
+	<SectionHeader>
 		<div>
 			<span>Giftcard details</span>
 			<Badge

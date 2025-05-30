@@ -2,16 +2,20 @@
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import AvailabilityForm from '$lib/components/pages/settings/config/collections/availability-form.svelte';
 	import GeneralInformationForm from '$lib/components/pages/settings/config/collections/general-information-form.svelte';
-	import ProductListForm from '$lib/components/pages/settings/config/collections/product-list-form.svelte';
 	import SeoForm from '$lib/components/pages/settings/config/collections/seo-form.svelte';
-	import { type CollectionCreateInput, type MetadataInput, type SeoInput } from '$lib/gql/graphql';
+	import { type CollectionCreateInput, type SeoInput } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { type MediaObject } from '$lib/components/pages/settings/products/new/utils';
+	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
+	import ProductAssignForm from '$lib/components/pages/settings/config/collections/product-assign-form.svelte';
 
 	const onAddClick = () => {};
 
 	let generalFormOk = $state(false);
 	let seoFormOk = $state(false);
+	let createdCollectionId = $state<string>('');
+	let performUpdateMetadata = $state(false);
+	let loading = $state(false);
 
 	let collectionCreateinput = $state<CollectionCreateInput>({
 		name: '',
@@ -23,8 +27,8 @@
 		slug: '',
 		seo: {
 			title: '',
-			description: ''
-		}
+			description: '',
+		},
 	});
 	let media = $state<MediaObject>();
 </script>
@@ -35,17 +39,21 @@
 			bind:name={collectionCreateinput.name as string}
 			bind:description={collectionCreateinput.description as string}
 			bind:media
-			bind:metadata={collectionCreateinput.metadata as MetadataInput[]}
-			bind:privateMetadata={collectionCreateinput.privateMetadata as MetadataInput[]}
 			bind:ok={generalFormOk}
 		/>
-		<ProductListForm />
+		<ProductAssignForm />
 		<SeoForm
 			bind:slug={collectionCreateinput.slug as string}
 			seo={collectionCreateinput.seo as SeoInput}
 			name={collectionCreateinput.name as string}
 			isCreatePage
 			bind:ok={seoFormOk}
+		/>
+		<GeneralMetadataEditor
+			metadata={[]}
+			privateMetadata={[]}
+			objectId={createdCollectionId}
+			bind:performUpdateMetadata
 		/>
 	</div>
 

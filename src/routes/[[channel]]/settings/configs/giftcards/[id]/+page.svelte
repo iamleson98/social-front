@@ -15,7 +15,6 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import {
 		type GiftCardUpdateInput,
-		type MetadataInput,
 		type Mutation,
 		type MutationGiftCardUpdateArgs,
 		type Query,

@@ -72,7 +72,7 @@
 	header="Search engine preview"
 	class="bg-white rounded-lg border w-full border-gray-200 p-3"
 >
-	<div class="flex flex-col gap-2">
+	<div class="flex flex-col gap-1">
 		<Input
 			label="Slug"
 			bind:value={slug}

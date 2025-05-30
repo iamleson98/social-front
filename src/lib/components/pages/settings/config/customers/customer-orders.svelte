@@ -58,7 +58,7 @@
 {/snippet}
 
 <div class="bg-white rounded-lg border border-gray-200 p-3">
-	<SectionHeader class="flex items-center justify-between mb-3">
+	<SectionHeader class="mb-3">
 		<div>Recent Orders</div>
 		<Button variant="light" size="xs">View all orders</Button>
 	</SectionHeader>

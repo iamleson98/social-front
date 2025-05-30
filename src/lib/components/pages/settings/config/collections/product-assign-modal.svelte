@@ -10,7 +10,7 @@
 
 	type Props = {
 		collectionID?: string;
-		onApply: (addProductIds: string[], removeProductIds: string[]) => Promise<void>;
+		onApply: (addProducts: Product[], removeProductIds: string[]) => Promise<void>;
 		disabled?: boolean;
 	};
 
@@ -41,30 +41,30 @@
 		},
 	});
 
-	let selectedProductIDs = $state.raw<Record<string, boolean>>({});
+	let selectedProductsMap = $state.raw<Record<string, Product | undefined>>({});
 	let openAssignProductModal = $state(false);
 	let forceReExecuteGraphqlQuery = $state(false);
 
 	const handleClickOpenProductListModal = () => {
 		openAssignProductModal = true;
 		forceReExecuteGraphqlQuery = true;
-		selectedProductIDs = {};
+		selectedProductsMap = {};
 	};
 
 	const handleAssignproducts = async () => {
-		const addProductIds = [];
+		const addProducts = [];
 		const removeProductIds = [];
 
-		for (const id of Object.keys(selectedProductIDs)) {
-			if (selectedProductIDs[id]) {
-				addProductIds.push(id);
+		for (const id of Object.keys(selectedProductsMap)) {
+			if (selectedProductsMap[id]) {
+				addProducts.push(selectedProductsMap[id]);
 			} else {
 				removeProductIds.push(id);
 			}
 		}
 
 		loading = true;
-		await onApply(addProductIds, removeProductIds);
+		await onApply(addProducts, removeProductIds);
 		loading = false;
 		// openAssignProductModal = false;
 	};
@@ -74,7 +74,7 @@
 	{@const productAlreadyInCollection = item.collections?.some((col) => col.id === collectionID)}
 	<Checkbox
 		disabled={loading}
-		checked={productAlreadyInCollection || selectedProductIDs[item.id]}
+		checked={productAlreadyInCollection || !!selectedProductsMap[item.id]}
 		size="sm"
 		onchange={(evt) => {
 			const { checked } = evt.target as HTMLInputElement;
@@ -82,9 +82,9 @@
 			if (checked && productAlreadyInCollection) return;
 			else if (!checked && !productAlreadyInCollection) return;
 
-			selectedProductIDs = {
-				...selectedProductIDs,
-				[item.id]: (evt.target as HTMLInputElement).checked,
+			selectedProductsMap = {
+				...selectedProductsMap,
+				[item.id]: checked ? item : undefined,
 			};
 		}}
 	/>
@@ -100,7 +100,7 @@
 	<div>{item.name}</div>
 {/snippet}
 
-<SectionHeader class="flex items-center justify-between mb-3">
+<SectionHeader class="mb-3">
 	<div>Products in collection</div>
 	<Button size="xs" onclick={handleClickOpenProductListModal} disabled={shouldDisable}>
 		Assign Product
