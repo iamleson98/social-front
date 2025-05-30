@@ -10,12 +10,10 @@
 		MetadataInput,
 		MetadataItem,
 		Mutation,
-		MutationDeleteMetadataArgs,
-		MutationUpdateMetadataArgs,
-		MutationUpdatePrivateMetadataArgs,
 	} from '$lib/gql/graphql';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { omit } from 'es-toolkit';
+	import type { AnyVariables, TypedDocumentNode } from '@urql/core';
 	import MetadataEditor from './metadata-editor.svelte';
 
 	type Props = {
@@ -42,63 +40,51 @@
 	let privateMetadataKeysToRemove = $state<string[]>([]);
 	let loading = $derived(disabled || performUpdateMetadata);
 
+	type TaskProps = {
+		query: TypedDocumentNode<any, AnyVariables>;
+		variables: Record<string, unknown>;
+	};
+
 	const handleUpdate = async () => {
-		const tasks: Promise<any>[] = [];
 		const taskKeys: (keyof Mutation)[] = [];
+		const taskProps: TaskProps[] = [];
 
 		if (metadataItemsToAdd.length) {
-			const task = GRAPHQL_CLIENT.mutation<
-				Pick<Mutation, 'updateMetadata'>,
-				MutationUpdateMetadataArgs
-			>(METADATA_UPDATE_MUTATION, {
-				id: objectId,
-				input: metadataItemsToAdd,
-			}).toPromise();
-
-			tasks.push(task);
+			taskProps.push({
+				query: METADATA_UPDATE_MUTATION,
+				variables: { id: objectId, input: metadataItemsToAdd },
+			});
 			taskKeys.push('updateMetadata');
 		}
 		if (privateMetadataItemsToAdd.length) {
-			const task = GRAPHQL_CLIENT.mutation<
-				Pick<Mutation, 'updatePrivateMetadata'>,
-				MutationUpdatePrivateMetadataArgs
-			>(PRIVATE_METADATA_UPDATE_MUTATION, {
-				id: objectId,
-				input: privateMetadataItemsToAdd,
-			}).toPromise();
-
-			tasks.push(task);
+			taskProps.push({
+				query: PRIVATE_METADATA_UPDATE_MUTATION,
+				variables: { id: objectId, input: privateMetadataItemsToAdd },
+			});
 			taskKeys.push('updatePrivateMetadata');
 		}
 		if (metadataKeysToRemove.length) {
-			const task = GRAPHQL_CLIENT.mutation<
-				Pick<Mutation, 'deleteMetadata'>,
-				MutationDeleteMetadataArgs
-			>(METADATA_DELETE_MUTATION, {
-				id: objectId,
-				keys: metadataKeysToRemove,
-			}).toPromise();
-
-			tasks.push(task);
+			taskProps.push({
+				query: METADATA_DELETE_MUTATION,
+				variables: { id: objectId, keys: metadataKeysToRemove },
+			});
 			taskKeys.push('deleteMetadata');
 		}
 		if (privateMetadataKeysToRemove.length) {
-			const task = GRAPHQL_CLIENT.mutation<
-				Pick<Mutation, 'deletePrivateMetadata'>,
-				MutationDeleteMetadataArgs
-			>(PRIVATE_METADATA_DELETE_MUTATION, {
-				id: objectId,
-				keys: privateMetadataKeysToRemove,
-			}).toPromise();
-
-			tasks.push(task);
+			taskProps.push({
+				query: PRIVATE_METADATA_DELETE_MUTATION,
+				variables: { id: objectId, keys: privateMetadataKeysToRemove },
+			});
 			taskKeys.push('deletePrivateMetadata');
 		}
 
-		if (tasks.length) {
-			const results = await Promise.all(tasks);
-			results.forEach((result, idx) => checkIfGraphqlResultHasError(result, taskKeys[idx]));
-		}
+		if (!taskProps.length) return;
+
+		const tasks = taskProps.map((props) =>
+			GRAPHQL_CLIENT.mutation(props.query, props.variables).toPromise(),
+		);
+		const results = await Promise.all(tasks);
+		results.forEach((result, idx) => checkIfGraphqlResultHasError(result, taskKeys[idx]));
 	};
 
 	$effect(() => {
