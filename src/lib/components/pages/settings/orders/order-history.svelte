@@ -8,10 +8,9 @@
 	import { Input } from '$lib/components/ui/Input';
 	import { Select, SelectSkeleton, type SelectOption } from '$lib/components/ui/select';
 	import {
-	OrderEventsEnum,
+		OrderEventsEnum,
 		type Mutation,
 		type MutationOrderAddNoteArgs,
-		type OrderFilterInput,
 		type Query,
 		type QueryOrderArgs,
 	} from '$lib/gql/graphql';
@@ -34,15 +33,10 @@
 		label: key.toLowerCase().replace(/_/g, ' '),
 	}));
 
-	const eventsQuery = operationStore<
-		Pick<Query, 'order'>,
-		QueryOrderArgs & { filter: OrderFilterInput }
-	>({
+	const eventsQuery = operationStore<Pick<Query, 'order'>, QueryOrderArgs>({
 		kind: 'query',
 		query: ORDER_HISTORY_QUERY,
-		variables: {
-			id,
-		},
+		variables: { id },
 	});
 
 	const orderHistoryTypeToHumanize = (type?: OrderEventsEnum | null) => {
@@ -83,11 +77,7 @@
 		loading = false;
 
 		if (
-			checkIfGraphqlResultHasError(
-				result,
-				'orderAddNote',
-				'Successfully posted new note to order',
-			)
+			checkIfGraphqlResultHasError(result, 'orderAddNote', 'Successfully posted new note to order')
 		)
 			return;
 
@@ -107,7 +97,8 @@
 			.sort(
 				(a, b) => dayjs(b.date).valueOf() - dayjs(a.date).valueOf(), // latest first
 			) || []}
-	<!-- MARK: note form -->
+	<div class="bg-white rounded p-3">
+		<!-- MARK: note form -->
 	<div class="flex gap-2 items-center">
 		<div class="flex-3/4 flex items-center gap-2">
 			<div class="avatar">
@@ -117,7 +108,7 @@
 			</div>
 			<Input
 				size="sm"
-				placeholder="Add giftcard note"
+				placeholder="Add note"
 				class="w-full"
 				bind:value={newNote}
 				disabled={loading}
@@ -128,27 +119,15 @@
 				size="sm"
 				endIcon={Send}
 				fullWidth
-				variant="light"
 				disabled={!newNote?.trim() || loading}
-				onclick={handleAddNote}>Submit</Button
+				onclick={handleAddNote}>Send</Button
 			>
 		</div>
 	</div>
 
 	<!-- MARK: event history -->
-	<div class="relative w-full mx-auto px-4 bg-white dark:bg-gray-900">
-		<!-- MARK: filter -->
-		<div class="flex justify-end">
-			<Select
-				size="xs"
-				bind:value={filterType}
-				placeholder="Filter type"
-				label="Filter by type"
-				options={filterTypeOptions}
-				class="w-1/3"
-			/>
-		</div>
-		<ol class="relative border-s border-gray-200 dark:border-gray-700 mt-2">
+	<div class="relative w-full mx-auto dark:bg-gray-900 mt-5">
+		<ol class="relative mt-2 ml-5 border-s border-gray-200 dark:border-gray-700">
 			{#each events as event, idx (idx)}
 				{@const byName =
 					event.user?.firstName || event.user?.lastName
@@ -183,5 +162,6 @@
 				</li>
 			{/each}
 		</ol>
+	</div>
 	</div>
 {/if}

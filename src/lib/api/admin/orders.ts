@@ -67,28 +67,24 @@ query User($id: ID!, $first: Int, $after: String, $last: Int, $before: String) {
 }`;
 
 export const ORDER_HISTORY_QUERY = gql`
-query OrderHistory($id: ID!, $filter: OrderHistoryFilterInput) {
-  order(id: $id) {
-    events(filter: $filter) {
-      id
-      expiryDate
-      oldExpiryDate
-      date
-      type
-      message
-      email
-      orderId
-      orderNumber
-      tags
-      user {
+  query OrderHistory($id: ID!) {
+    order(id: $id) {
+      events {
         id
-        firstName
-        lastName
-        email
+        date
+        type
+        message
+        user {
+          id
+          firstName
+          lastName
+          email
+        }
       }
     }
   }
-}`;
+`;
+
 
 export const ORDER_ADD_NOTE_MUTATION = gql`
 mutation OrderAddNote($id: ID!, $input: OrderAddNoteInput!) {
