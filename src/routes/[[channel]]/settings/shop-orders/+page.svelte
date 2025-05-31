@@ -9,6 +9,7 @@
 	import Filter from '$lib/components/pages/settings/orders/filter.svelte';
 	import { Search } from '$lib/components/icons';
 	import { Input } from '$lib/components/ui/Input';
+	import { AppRoute } from '$lib/utils';
 
 	const BATCH_LOAD = 20;
 
@@ -90,7 +91,9 @@
 {/snippet} -->
 
 {#snippet email({ item }: { item: Order })}
-	{item.userEmail}
+	<a href={AppRoute.SETTINGS_ORDERS_DETAILS(item.id)} class="link">
+		{item.userEmail}
+	</a>
 {/snippet}
 
 <div class="flex mb-2 items-center gap-2">
