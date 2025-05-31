@@ -11,6 +11,8 @@
 	import ShopCurrenciesSelect from '$lib/components/common/shop-currencies-select.svelte';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
 	import type { OutputData } from '@editorjs/editorjs';
+	import FileInputContainer from '$lib/components/common/file-input-container.svelte';
+	import { type MediaObject } from '$lib/utils/types';
 	// import { Input } from '$lib/components/ui/Input';
 
 	// onMount(async () => {
@@ -50,8 +52,7 @@
 	let currency = $state<string>();
 
 	let editorValue = $state<OutputData>();
-
-	$inspect(editorValue);
+	let medias = $state<MediaObject[]>([]);
 </script>
 
 <div>lab</div>
@@ -156,5 +157,7 @@
 	subText="hello world"
 	bind:value={editorValue}
 />
+
+<FileInputContainer accept="*" max={5} bind:medias required label="EditorJS" subText="subText" />
 
 <!-- <ShopCurrenciesSelect bind:value={currency} size="sm" /> -->

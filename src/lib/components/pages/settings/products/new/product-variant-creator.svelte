@@ -26,7 +26,7 @@
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import ErrorMsg from './error-msg.svelte';
 	import { Modal } from '$lib/components/ui/Modal';
-	import type { MediaObject } from './utils';
+	import type { MediaObject } from '$lib/utils/types';
 
 	type VariantManifestProps = {
 		name: {

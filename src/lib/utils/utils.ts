@@ -3,7 +3,7 @@ import type { AnyVariables, OperationResult } from '@urql/core';
 import editorJsToHtml from 'editorjs-html';
 import { AppRoute } from './routes';
 import xss from 'xss';
-import type { ServerLoadEvent } from '@sveltejs/kit';
+import { text, type ServerLoadEvent } from '@sveltejs/kit';
 import { CHANNEL_KEY } from './consts';
 import { getCookieByKey } from './cookies';
 import { DEFAULT_CHANNEL } from './channels';
@@ -12,6 +12,7 @@ import type { BadgeProps } from '$lib/components/ui/badge/types';
 import { lowerCase, startCase } from 'es-toolkit';
 import { toast } from 'svelte-sonner';
 import dayjs from 'dayjs';
+import type { SupportTicketStatus, SupportTicketTag } from './types';
 
 
 export const editorJsParser = editorJsToHtml();
@@ -361,6 +362,30 @@ export const orderStatusBadgeClass = (status: OrderStatus): BadgeAttr => {
 	}
 };
 
+export const supportTicketTagToBadgeClass = (tag: SupportTicketTag): BadgeAttr => {
+	switch (tag) {
+		case 'WARRANTY':
+			return { text: 'Warranty', color: 'orange', variant: 'filled' };
+		case 'CONSULT':
+			return { text: 'Consult', color: 'blue', variant: 'filled' };
+		default:
+			return { text: 'Unknown', color: 'blue', variant: 'filled' };
+	}
+};
+
+export const supportTicketStatusToBadgeClass = (status: SupportTicketStatus): BadgeAttr => {
+	switch (status) {
+		case 'PENDING':
+			return { text: 'Pending', color: 'blue', variant: 'light' };
+		case 'IN_PROGRESS':
+			return { text: 'In Progress', color: 'green', variant: 'light' };
+		case 'CLOSED':
+			return { text: 'Closed', color: 'green', variant: 'filled' };
+		default:
+			return { text: 'Unknown', color: 'blue', variant: 'filled' };
+	}
+};
+
 /**
  * both dayjs and Date's instances satisfy this interface
  */
@@ -383,3 +408,11 @@ export const compareTime = (day1: TimeObject, day2: TimeObject) => {
 	if (time1 === time2) return 0;
 	return -1;
 };
+
+export function formatBytes(bytes: number): string {
+	if (bytes === 0) return '0 Bytes';
+	const sizes: string[] = ['Bytes', 'KB', 'MB', 'GB'];
+	const i: number = Math.floor(Math.log(bytes) / Math.log(1024));
+	const formattedSize: string = (bytes / Math.pow(1024, i)).toFixed(2);
+	return `${formattedSize} ${sizes[i]}`;
+}

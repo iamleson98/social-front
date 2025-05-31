@@ -4,18 +4,19 @@
 	import { PhotoUp, Trash } from '$lib/components/icons';
 	import ErrorMsg from '$lib/components/pages/settings/products/new/error-msg.svelte';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
-	import type { MediaObject } from '$lib/components/pages/settings/products/new/utils';
 	import { IMAGE_EXTENSION_REGEX } from '$lib/utils/consts';
 	import { object, string, z } from 'zod';
 	import { IconButton } from '$lib/components/ui/Button';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import type { OutputData } from '@editorjs/editorjs';
+	import type { MediaObject } from '$lib/utils/types';
+	import FileInputContainer from '$lib/components/common/file-input-container.svelte';
 
 	type Props = {
 		name: string;
 		description?: OutputData;
 		disabled?: boolean;
-		media?: MediaObject;
+		media?: MediaObject[];
 		ok?: boolean;
 	};
 
@@ -23,7 +24,7 @@
 		name = $bindable(),
 		description = $bindable(),
 		disabled,
-		media = $bindable<MediaObject | undefined>(),
+		media = $bindable<MediaObject[] | undefined>(),
 		ok = $bindable(),
 	}: Props = $props();
 
@@ -46,32 +47,6 @@
 		}).nullable(),
 	});
 	type CollectionSchema = z.infer<typeof collectionSchema>;
-
-	const handleFileSelect = async (fileList: FileList) => {
-		if (!fileList.length || media) return;
-
-		const file = fileList[0];
-		const url = URL.createObjectURL(file);
-		const alt = file.name.replace(IMAGE_EXTENSION_REGEX, '');
-		const img = new Image();
-		img.src = url;
-		img.onload = () => {
-			media = {
-				file,
-				url,
-				alt,
-				width: img.width,
-				height: img.height,
-			};
-		};
-	};
-
-	const handleDeleteImage = () => {
-		if (media) {
-			URL.revokeObjectURL(media.url);
-			media = undefined;
-		}
-	};
 
 	const validate = () => {
 		const result = collectionSchema.safeParse({
@@ -116,8 +91,18 @@
 		label="Collection description"
 	/>
 
+	<FileInputContainer
+		accept="image/*"
+		max={1}
+		bind:medias={media}
+		required
+		label="Collection Image"
+		variant={collectionFormErrors.media?.length ? 'error' : 'info'}
+		subText={collectionFormErrors.media?.length ? collectionFormErrors.media[0] : undefined}
+	/>
+
 	<!-- Media Upload -->
-	<div>
+	<!-- <div>
 		<Label label="Collection Image" required requiredAtPos="end" />
 		<div
 			class="rounded-lg border flex gap-1 flex-wrap p-3 {collectionFormErrors.media?.length
@@ -184,5 +169,5 @@
 			{/if}
 		</div>
 		<ErrorMsg error={collectionFormErrors.media?.[0]} />
-	</div>
+	</div> -->
 </div>

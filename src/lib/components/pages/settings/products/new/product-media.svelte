@@ -4,8 +4,8 @@
 	import { IconButton } from '$lib/components/ui/Button';
 	import { FileInput, Input, Label } from '$lib/components/ui/Input';
 	import { IMAGE_EXTENSION_REGEX } from '$lib/utils/consts';
+	import type { MediaObject } from '$lib/utils/types';
 	import ErrorMsg from './error-msg.svelte';
-	import type { MediaObject } from './utils';
 
 	const MAX_MEDIAS = 9;
 

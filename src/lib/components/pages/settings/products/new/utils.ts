@@ -21,12 +21,3 @@ export const convertCategoryEdgesToMenuSelect = (connection: CategoryCountableCo
 
 export const PRODUCT_NAME_MAX_LENGTH = 250;
 export const PRODUCT_SLUG_MAX_LENGTH = 255;
-
-export type MediaObject = {
-  id?: string;
-  file?: File;
-  url: string;
-  alt: string;
-  width?: number;
-  height?: number;
-};
