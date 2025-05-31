@@ -1,8 +1,11 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import Alert from '$lib/components/ui/Alert/alert.svelte';
+	import type { SocialSize } from '$lib/components/ui/common';
+	import { INPUT_CLASSES, Label } from '$lib/components/ui/Input';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
-	import { noop } from 'es-toolkit';
+	import type { SocialVariant } from '$lib/utils';
+	import type { OutputData } from '@editorjs/editorjs';
 	import { onMount } from 'svelte';
 
 	type Props = {
@@ -34,9 +37,16 @@
 			quotePlaceholder?: string;
 			captionPlaceholder?: string;
 		};
-		onchange?: (data: any) => void;
+		onchange?: (data: OutputData) => void;
 		placeholder?: string;
-		defaultValue?: any;
+		// defaultValue?: any;
+		class?: string;
+		value?: OutputData;
+		label?: string;
+		required?: boolean;
+		size?: SocialSize | 'xxs';
+		variant?: SocialVariant | 'ghost';
+		subText?: string;
 	};
 
 	let {
@@ -47,9 +57,15 @@
 		list,
 		embed,
 		quote,
-		onchange = noop,
+		onchange,
 		placeholder,
-		defaultValue
+		value = $bindable(),
+		class: className = '',
+		label,
+		required,
+		size = 'md',
+		variant = 'info',
+		subText,
 	}: Props = $props();
 
 	let editor = $state<any>();
@@ -64,14 +80,14 @@
 			const headerImport = await import('@editorjs/header');
 			toolsConfig.header = {
 				class: headerImport.default,
-				config: header
+				config: header,
 			};
 		}
 		if (link) {
 			const linkImport = await import('@editorjs/link');
 			toolsConfig.linkTool = {
 				class: linkImport.default,
-				config: link
+				config: link,
 			};
 		}
 		if (simpleImage) {
@@ -82,7 +98,7 @@
 			const checkListImport = await import('@editorjs/checklist');
 			toolsConfig.checklist = {
 				class: checkListImport.default,
-				inlineToolbar: checklist.inlineToolbar
+				inlineToolbar: checklist.inlineToolbar,
 			};
 		}
 		if (list) {
@@ -92,8 +108,8 @@
 				inlineToolbar: list.inlineToolbar,
 				config: {
 					defaultStyle: list.defaultStyle,
-					maxLevel: list.maxLevel
-				}
+					maxLevel: list.maxLevel,
+				},
 			};
 		}
 		if (embed) {
@@ -101,8 +117,8 @@
 			toolsConfig.embed = {
 				class: embedImport.default,
 				config: {
-					services: embed.services
-				}
+					services: embed.services,
+				},
 			};
 		}
 		if (quote) {
@@ -112,8 +128,8 @@
 				inlineToolbar: quote.inlineToolbar,
 				config: {
 					quotePlaceholder: quote.quotePlaceholder,
-					captionPlaceholder: quote.captionPlaceholder
-				}
+					captionPlaceholder: quote.captionPlaceholder,
+				},
 			};
 		}
 
@@ -123,11 +139,14 @@
 			hideToolbar: false,
 			tools: toolsConfig as { [toolName: string]: any },
 			placeholder,
-			data: defaultValue,
+			data: value,
 
 			onChange(api, _event) {
-				api.saver.save().then(onchange);
-			}
+				api.saver.save().then((dt) => {
+					value = dt;
+					onchange?.(dt);
+				});
+			},
 		});
 
 		editor.isReady
@@ -135,17 +154,29 @@
 			.finally(() => {
 				editorInitializing = false;
 			});
-	});
 
-	onMount(() => editor?.destroy);
+		return editor.destroy;
+	});
 </script>
 
-<div id="editorjs" bind:this={editorElem}>
-	{#if editorInitError}
-		<Alert size="md" variant="error">{editorInitError}</Alert>
-	{:else if editorInitializing}
-		<SkeletonContainer class="w-full">
-			<Skeleton class="h-6 w-full" />
-		</SkeletonContainer>
+<div class={className}>
+	{#if label}
+		<Label {required} {label} {size} {variant} requiredAtPos="end" />
+	{/if}
+	<div
+		id="editorjs"
+		bind:this={editorElem}
+		class="text-sm p-1 rounded-lg placeholder:opacity-55 {INPUT_CLASSES[variant].bg}"
+	>
+		{#if editorInitError}
+			<Alert size="md" variant="error">{editorInitError}</Alert>
+		{:else if editorInitializing}
+			<SkeletonContainer class="w-full">
+				<Skeleton class="h-6 w-full" />
+			</SkeletonContainer>
+		{/if}
+	</div>
+	{#if subText}
+		<div class={`text-[10px] mt-0.5 text-right! ${INPUT_CLASSES[variant].fg}`}>{subText}</div>
 	{/if}
 </div>

@@ -9,6 +9,8 @@
 	import { Input } from '$lib/components/ui/Input';
 	import GeneralSelect from '$lib/components/ui/select/general-select.svelte';
 	import ShopCurrenciesSelect from '$lib/components/common/shop-currencies-select.svelte';
+	import { EditorJSComponent } from '$lib/components/common/editorjs';
+	import type { OutputData } from '@editorjs/editorjs';
 	// import { Input } from '$lib/components/ui/Input';
 
 	// onMount(async () => {
@@ -46,6 +48,10 @@
 	let value = $state<string[]>([]);
 	let prds = $state();
 	let currency = $state<string>();
+
+	let editorValue = $state<OutputData>();
+
+	$inspect(editorValue);
 </script>
 
 <div>lab</div>
@@ -140,6 +146,15 @@
 		{ label: 'Option 2', value: '2' },
 		{ label: 'Option 3', value: '3' },
 	]}
+/>
+
+<EditorJSComponent
+	placeholder="Enter description"
+	onchange={console.log}
+	label="lol"
+	variant="error"
+	subText="hello world"
+	bind:value={editorValue}
 />
 
 <!-- <ShopCurrenciesSelect bind:value={currency} size="sm" /> -->

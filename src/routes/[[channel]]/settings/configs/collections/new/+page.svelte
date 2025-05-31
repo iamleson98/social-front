@@ -37,7 +37,7 @@
 	<div class="w-7/10 flex flex-col gap-2">
 		<GeneralInformationForm
 			bind:name={collectionCreateinput.name as string}
-			bind:description={collectionCreateinput.description as string}
+			bind:description={collectionCreateinput.description}
 			bind:media
 			bind:ok={generalFormOk}
 		/>

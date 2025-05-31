@@ -9,10 +9,11 @@
 	import { object, string, z } from 'zod';
 	import { IconButton } from '$lib/components/ui/Button';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import type { OutputData } from '@editorjs/editorjs';
 
 	type Props = {
 		name: string;
-		description?: any;
+		description?: OutputData;
 		disabled?: boolean;
 		media?: MediaObject;
 		ok?: boolean;
@@ -100,27 +101,20 @@
 		variant={collectionFormErrors.name?.length ? 'error' : 'info'}
 		subText={collectionFormErrors.name?.length ? collectionFormErrors.name[0] : undefined}
 	/>
-
-	<div>
-		<Label required requiredAtPos="end" label="Collection description" />
-		<div
-			class="rounded-lg border px-3 {descriptionError
-				? 'border-red-200 bg-red-50'
-				: 'border-gray-200 bg-gray-50'}"
-		>
-			<EditorJSComponent
-				header={{ placeholder: 'Heading 2', levels: [2, 3, 4], defaultLevel: 2 }}
-				simpleImage
-				list={{ defaultStyle: 'unordered', maxLevel: 3, inlineToolbar: true }}
-				embed={{ services: { youtube: true } }}
-				quote={{ inlineToolbar: true }}
-				onchange={(data) => (description = data)}
-				placeholder={$tranFunc('placeholders.valuePlaceholder')}
-				defaultValue={description}
-			/>
-		</div>
-		<ErrorMsg error={descriptionError} />
-	</div>
+	<EditorJSComponent
+		header={{ placeholder: 'Heading 2', levels: [2, 3, 4], defaultLevel: 2 }}
+		simpleImage
+		list={{ defaultStyle: 'unordered', maxLevel: 3, inlineToolbar: true }}
+		embed={{ services: { youtube: true } }}
+		quote={{ inlineToolbar: true }}
+		onchange={(data) => (description = data)}
+		placeholder={$tranFunc('placeholders.valuePlaceholder')}
+		bind:value={description}
+		variant={descriptionError ? 'error' : 'info'}
+		subText={descriptionError}
+		required
+		label="Collection description"
+	/>
 
 	<!-- Media Upload -->
 	<div>
