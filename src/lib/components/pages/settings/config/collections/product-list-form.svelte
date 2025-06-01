@@ -11,7 +11,7 @@
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Popover, type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import type { TableColumnProps } from '$lib/components/ui/Table';
-	import GraphqlPaginableTable from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import { GraphqlPaginableTable } from '$lib/components/ui/Table';
 	import type {
 		Mutation,
 		MutationCollectionReorderProductsArgs,
