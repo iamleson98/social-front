@@ -12,9 +12,10 @@
 		collectionID?: string;
 		onApply: (addProducts: Product[], removeProductIds: string[]) => Promise<void>;
 		disabled?: boolean;
+		selectedProductsMap?: Record<string, Product | undefined>;
 	};
 
-	let { collectionID, onApply, disabled }: Props = $props();
+	let { collectionID, onApply, disabled, selectedProductsMap = $bindable({}) }: Props = $props();
 
 	const PRODUCT_MODAL_COLUMNS: TableColumnProps<Product, ProductOrderField>[] = [
 		{
@@ -41,14 +42,12 @@
 		},
 	});
 
-	let selectedProductsMap = $state.raw<Record<string, Product | undefined>>({});
 	let openAssignProductModal = $state(false);
 	let forceReExecuteGraphqlQuery = $state(false);
 
 	const handleClickOpenProductListModal = () => {
 		openAssignProductModal = true;
 		forceReExecuteGraphqlQuery = true;
-		selectedProductsMap = {};
 	};
 
 	const handleAssignproducts = async () => {
@@ -66,7 +65,6 @@
 		loading = true;
 		await onApply(addProducts, removeProductIds);
 		loading = false;
-		// openAssignProductModal = false;
 	};
 </script>
 

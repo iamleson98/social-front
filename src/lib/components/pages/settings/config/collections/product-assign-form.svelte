@@ -17,6 +17,7 @@
 	let { collectionID, disabled }: Props = $props();
 
 	let productsToAssign = $state<Product[]>([]);
+	let selectedProductsMap = $state<Record<string, Product | undefined>>({});
 
 	const PRODUCT_COLUMNS: TableColumnProps<Product, ProductOrderField>[] = [
 		{
@@ -44,6 +45,8 @@
 	const handleAssignProducts = async (addProducts: Product[], _removeProductIds: string[]) => {
 		productsToAssign = addProducts;
 	};
+
+	$inspect(selectedProductsMap);
 </script>
 
 {#snippet action({ item }: { item: Product })}
@@ -120,6 +123,15 @@
 {/snippet}
 
 <div class="bg-white rounded-lg border w-full border-gray-200 p-3">
-	<ProductAssignModal onApply={handleAssignProducts} {collectionID} {disabled} />
-	<Table columns={PRODUCT_COLUMNS} {disabled} items={productsToAssign} />
+	<ProductAssignModal
+		onApply={handleAssignProducts}
+		{collectionID}
+		{disabled}
+		bind:selectedProductsMap
+	/>
+	{#if productsToAssign.length}
+		<Table columns={PRODUCT_COLUMNS} {disabled} items={productsToAssign} />
+	{:else}
+		<div class="text-center py-3 text-gray-600">No products assigned</div>
+	{/if}
 </div>

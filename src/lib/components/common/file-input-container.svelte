@@ -56,7 +56,7 @@
 	const FILE_MAP = $derived(
 		medias.reduce(
 			(acc, file) => {
-				acc[`${file.file.name}-${file.file.size}`] = true;
+				acc[`${file.file?.name}-${file.file?.size}`] = true;
 				return acc;
 			},
 			{} as Record<string, boolean>,
@@ -144,10 +144,12 @@
 							subText={mediaErrors?.[idx]?.[0]}
 						/>
 					</div>
-					<div class="text-gray-700 flex items-center text-xs">
-						<span class="font-semibold w-1/4">Size:</span>
-						<span>{formatBytes(media.file.size)}</span>
-					</div>
+					{#if media.file}
+						<div class="text-gray-700 flex items-center text-xs">
+							<span class="font-semibold w-1/4">Size:</span>
+							<span>{formatBytes(media.file.size)}</span>
+						</div>
+					{/if}
 					{#if typeof media.width === 'number' && typeof media.height === 'number'}
 						<div class="text-gray-700 flex items-center text-xs">
 							<span class="font-semibold w-1/4">W x H:</span>
@@ -183,5 +185,7 @@
 			</div>
 		{/if}
 	</div>
-	<div class={`text-[10px] mt-0.5 text-right! ${INPUT_CLASSES[variant].fg}`}>{subText}</div>
+	{#if subText}
+		<div class={`text-[10px] mt-0.5 text-right! ${INPUT_CLASSES[variant].fg}`}>{subText}</div>
+	{/if}
 </div>

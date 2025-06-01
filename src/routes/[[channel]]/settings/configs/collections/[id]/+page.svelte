@@ -45,7 +45,7 @@
 		metadata: [],
 		privateMetadata: [],
 	});
-	let media = $state<MediaObject>();
+	let media = $state<MediaObject[]>([]);
 	let generalFormOk = $state(false);
 	let seoFormOk = $state(false);
 	let collectionChannelListingUpdateInput = $state<CollectionChannelListingUpdateInput>({
@@ -87,10 +87,13 @@
 					},
 				};
 				if (backgroundImage)
-					media = {
-						alt: backgroundImage.alt || '',
-						url: backgroundImage.url,
-					};
+					media = [
+						{
+							alt: backgroundImage.alt || '',
+							url: backgroundImage.url,
+							type: 'image',
+						},
+					];
 
 				if (channelListings?.length) {
 					collectionChannelListingUpdateInput.addChannels = channelListings.map((item) => ({

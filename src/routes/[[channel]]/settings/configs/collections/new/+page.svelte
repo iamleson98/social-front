@@ -30,7 +30,7 @@
 			description: '',
 		},
 	});
-	let media = $state<MediaObject>();
+	let media = $state<MediaObject[]>([]);
 </script>
 
 <div class="flex gap-2 flex-row">

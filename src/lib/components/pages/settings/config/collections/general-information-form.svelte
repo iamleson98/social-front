@@ -16,7 +16,7 @@
 		name: string;
 		description?: OutputData;
 		disabled?: boolean;
-		media?: MediaObject[];
+		media: MediaObject[];
 		ok?: boolean;
 	};
 
@@ -24,7 +24,7 @@
 		name = $bindable(),
 		description = $bindable(),
 		disabled,
-		media = $bindable<MediaObject[] | undefined>(),
+		media = $bindable<MediaObject[]>(),
 		ok = $bindable(),
 	}: Props = $props();
 
@@ -42,25 +42,16 @@
 
 	const collectionSchema = object({
 		name: string().nonempty(REQUIRED_ERROR),
-		media: object({
-			alt: string().nonempty(REQUIRED_ERROR),
-		}).nullable(),
 	});
 	type CollectionSchema = z.infer<typeof collectionSchema>;
 
 	const validate = () => {
 		const result = collectionSchema.safeParse({
 			name,
-			media,
 		});
 
-		if (!result.success) {
-			collectionFormErrors = result.error.formErrors.fieldErrors;
-			return false;
-		}
-
-		collectionFormErrors = {};
-		return true;
+		collectionFormErrors = result.success ? {} : result.error.formErrors.fieldErrors;
+		return result.success;
 	};
 </script>
 
@@ -74,7 +65,7 @@
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
 		variant={collectionFormErrors.name?.length ? 'error' : 'info'}
-		subText={collectionFormErrors.name?.length ? collectionFormErrors.name[0] : undefined}
+		subText={collectionFormErrors.name?.[0]}
 	/>
 	<EditorJSComponent
 		header={{ placeholder: 'Heading 2', levels: [2, 3, 4], defaultLevel: 2 }}
@@ -97,8 +88,6 @@
 		bind:medias={media}
 		required
 		label="Collection Image"
-		variant={collectionFormErrors.media?.length ? 'error' : 'info'}
-		subText={collectionFormErrors.media?.length ? collectionFormErrors.media[0] : undefined}
 	/>
 
 	<!-- Media Upload -->

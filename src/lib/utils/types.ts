@@ -11,7 +11,7 @@ export type SupportTicketTag = 'WARRANTY' | 'CONSULT';
 
 export type MediaObject = {
   id?: string;
-  file: File;
+  file?: File;
   url: string;
   alt: string;
   width?: number;
