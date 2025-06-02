@@ -3,6 +3,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import Button from '$lib/components/ui/Button/Button.svelte';
 	import type { Order } from '$lib/gql/graphql';
+	import { paymentStatusBadgeClass } from '$lib/utils/utils';
 
 	type Props = {
 		order: Order;
@@ -15,7 +16,7 @@
 	<SectionHeader>
 		<div>
 			Payment balance
-			<Badge variant="light" color="green" text={order.paymentStatus} />
+			<Badge {...paymentStatusBadgeClass(order.paymentStatus)} rounded />
 		</div>
 		<Button size="xs" variant="light">refund</Button>
 	</SectionHeader>
@@ -31,7 +32,10 @@
 		</div>
 		<div class="flex justify-between">
 			<span>Taxes</span>
-			<span>{order.total.gross.amount - order.subtotal.gross.amount - order.shippingPrice.gross.amount} {order.total.gross.currency}</span>
+			<span
+				>{order.total.gross.amount - order.subtotal.gross.amount - order.shippingPrice.gross.amount}
+				{order.total.gross.currency}</span
+			>
 		</div>
 		<div class="flex justify-between font-semibold">
 			<span>Total</span>

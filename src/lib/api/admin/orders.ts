@@ -111,6 +111,7 @@ export const ORDER_DETAIL_QUERY = gql`
       chargeStatus
       status
       paymentStatus
+      statusDisplay
       userEmail
       customerNote
       billingAddress {
@@ -176,6 +177,7 @@ export const ORDER_DETAIL_QUERY = gql`
         variantName
         thumbnail {
           url
+          alt
         }
       }
     }

@@ -1,15 +1,21 @@
 <script lang="ts">
+	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Button } from '$lib/components/ui';
+	import { Badge } from '$lib/components/ui/badge';
 	import { Checkbox } from '$lib/components/ui/Input';
 	import type { TableColumnProps } from '$lib/components/ui/Table';
 	import Table from '$lib/components/ui/Table/table.svelte';
 	import type { OrderLine, ProductOrderField } from '$lib/gql/graphql';
+	import type { Order } from '$lib/gql/graphql';
+	import { SitenameTimeFormat } from '$lib/utils/consts';
+	import { orderStatusBadgeClass } from '$lib/utils/utils';
+	import dayjs from 'dayjs';
 
 	type Props = {
-		orderLines?: OrderLine[];
+		order: Order;
 	};
 
-	let { orderLines }: Props = $props();
+	let { order }: Props = $props();
 
 	const PRODUCT_MODAL_COLUMNS: TableColumnProps<OrderLine, ProductOrderField>[] = [
 		{
@@ -52,8 +58,10 @@
 </script>
 
 {#snippet image({ item }: { item: OrderLine })}
-	<div class="flex items-center gap-2">
-		<img class="w-12 h-12" src={item.thumbnail?.url} alt={item.productName} />
+	<div class="avatar">
+		<div class="w-9 rounded border border-gray-200">
+			<img src={item.thumbnail?.url} alt={item.thumbnail?.alt} />
+		</div>
 	</div>
 {/snippet}
 
@@ -82,14 +90,24 @@
 {/snippet}
 
 {#snippet isGift({ item }: { item: OrderLine })}
-	<Checkbox checked={item.isGift} />
+	<Checkbox checked={item.isGift} disabled />
 {/snippet}
 
 {#snippet metadata()}
-	<Button size="xs" variant="light">View Metadata</Button>
+	<Button size="sm" color="gray" variant="outline">View Metadata</Button>
 {/snippet}
 
-<div class="bg-white rounded-lg border border-gray-200 p-3 overflow-x-auto">
-	<Table columns={PRODUCT_MODAL_COLUMNS} items={orderLines ?? []} />
-	<Button size="xs" class="mt-2">Fulfill</Button>
+<div class="bg-white rounded-lg border border-gray-200 p-3 flex flex-col gap-3">
+	<SectionHeader>
+		<div class="flex items-center gap-2">
+			<div class="text-base font-medium">Order #{order.number}</div>
+			<Badge {...orderStatusBadgeClass(order.status)} rounded />
+			<div class="text-xs text-gray-500 font-medium">{dayjs(order.created).format(SitenameTimeFormat)}</div>
+		</div>
+	</SectionHeader>
+	<Table columns={PRODUCT_MODAL_COLUMNS} items={order.lines} />
+
+	<div class="text-right">
+		<Button size="sm">Fulfill</Button>
+	</div>
 </div>
