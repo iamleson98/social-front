@@ -55,9 +55,7 @@
 </script>
 
 {#snippet no({ item }: { item: Order })}
-	<a href={AppRoute.SETTINGS_ORDERS_DETAILS(item.id)} class="link">
-		{item.number}
-	</a>
+	{item.number}
 {/snippet}
 
 {#snippet date({ item }: { item: Order })}

@@ -51,7 +51,9 @@
 </script>
 
 {#snippet no({ item }: { item: Order })}
-	{item.number}
+	<a href={AppRoute.SETTINGS_ORDERS_DETAILS(item.id)} class="link">
+		{item.number}
+	</a>
 {/snippet}
 
 {#snippet date({ item }: { item: Order })}
@@ -91,9 +93,7 @@
 {/snippet} -->
 
 {#snippet email({ item }: { item: Order })}
-	<a href={AppRoute.SETTINGS_ORDERS_DETAILS(item.id)} class="link">
-		{item.userEmail}
-	</a>
+	{item.userEmail}
 {/snippet}
 
 <div class="flex mb-2 items-center gap-2">

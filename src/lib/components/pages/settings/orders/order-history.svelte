@@ -6,7 +6,7 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
-	import { Select, SelectSkeleton, type SelectOption } from '$lib/components/ui/select';
+	import { SelectSkeleton } from '$lib/components/ui/select';
 	import {
 		OrderEventsEnum,
 		type Mutation,
@@ -36,27 +36,61 @@
 		variables: { id },
 	});
 
-	const orderHistoryTypeToHumanize = (type?: OrderEventsEnum | null) => {
-		switch (type) {
-			case OrderEventsEnum.AddedProducts:
-				return 'Products were added to the order';
-			case OrderEventsEnum.Canceled:
-				return 'The order was canceled';
-			case OrderEventsEnum.Confirmed:
-				return 'The order was confirmed';
-			case OrderEventsEnum.DraftCreated:
-				return 'A draft order was created';
-			case OrderEventsEnum.Expired:
-				return 'The order has expired';
-			case OrderEventsEnum.NoteAdded:
-				return 'A note was added to the order';
-			case OrderEventsEnum.NoteUpdated:
-				return 'A note on the order was updated';
-			case OrderEventsEnum.OrderDiscountAdded:
-				return 'Order was discounted';
-			default:
-				return '';
-		}
+	export const orderHistoryTypeToHumanize = (type?: OrderEventsEnum | null): string => {
+		const map: Record<OrderEventsEnum, string> = {
+			[OrderEventsEnum.AddedProducts]: 'Products were added to the order',
+			[OrderEventsEnum.Canceled]: 'The order was canceled',
+			[OrderEventsEnum.Confirmed]: 'The order was confirmed',
+			[OrderEventsEnum.DraftCreated]: 'A draft order was created',
+			[OrderEventsEnum.DraftCreatedFromReplace]: 'A draft order was created from a replacement',
+			[OrderEventsEnum.EmailSent]: 'An email was sent to the customer',
+			[OrderEventsEnum.Expired]: 'The order has expired',
+			[OrderEventsEnum.ExternalServiceNotification]: 'Notified an external service',
+			[OrderEventsEnum.FulfillmentAwaitsApproval]: 'Fulfillment is awaiting approval',
+			[OrderEventsEnum.FulfillmentCanceled]: 'A fulfillment was canceled',
+			[OrderEventsEnum.FulfillmentFulfilledItems]: 'Items were fulfilled',
+			[OrderEventsEnum.FulfillmentRefunded]: 'Fulfillment was refunded',
+			[OrderEventsEnum.FulfillmentReplaced]: 'Items were replaced',
+			[OrderEventsEnum.FulfillmentRestockedItems]: 'Items were restocked',
+			[OrderEventsEnum.FulfillmentReturned]: 'Items were returned',
+			[OrderEventsEnum.InvoiceGenerated]: 'Invoice was generated',
+			[OrderEventsEnum.InvoiceRequested]: 'Invoice was requested',
+			[OrderEventsEnum.InvoiceSent]: 'Invoice was sent',
+			[OrderEventsEnum.InvoiceUpdated]: 'Invoice was updated',
+			[OrderEventsEnum.NoteAdded]: 'A note was added to the order',
+			[OrderEventsEnum.NoteUpdated]: 'A note on the order was updated',
+			[OrderEventsEnum.OrderDiscountAdded]: 'A discount was added to the order',
+			[OrderEventsEnum.OrderDiscountAutomaticallyUpdated]: 'Order discount was updated automatically',
+			[OrderEventsEnum.OrderDiscountDeleted]: 'Order discount was removed',
+			[OrderEventsEnum.OrderDiscountUpdated]: 'Order discount was updated',
+			[OrderEventsEnum.OrderFullyPaid]: 'The order was fully paid',
+			[OrderEventsEnum.OrderLineDiscountRemoved]: 'Discount on an order line was removed',
+			[OrderEventsEnum.OrderLineDiscountUpdated]: 'Discount on an order line was updated',
+			[OrderEventsEnum.OrderLineProductDeleted]: 'A product in the order was deleted',
+			[OrderEventsEnum.OrderLineVariantDeleted]: 'A product variant in the order was deleted',
+			[OrderEventsEnum.OrderMarkedAsPaid]: 'Order was marked as paid',
+			[OrderEventsEnum.OrderReplacementCreated]: 'A replacement order was created',
+			[OrderEventsEnum.Other]: 'Other event',
+			[OrderEventsEnum.OversoldItems]: 'Oversold items in order',
+			[OrderEventsEnum.PaymentAuthorized]: 'Payment was authorized',
+			[OrderEventsEnum.PaymentCaptured]: 'Payment was captured',
+			[OrderEventsEnum.PaymentFailed]: 'Payment failed',
+			[OrderEventsEnum.PaymentRefunded]: 'Payment was refunded',
+			[OrderEventsEnum.PaymentVoided]: 'Payment was voided',
+			[OrderEventsEnum.Placed]: 'Order was placed',
+			[OrderEventsEnum.PlacedAutomaticallyFromPaidCheckout]: 'Order was automatically placed after paid checkout',
+			[OrderEventsEnum.PlacedFromDraft]: 'Order was placed from a draft',
+			[OrderEventsEnum.RemovedProducts]: 'Products were removed from the order',
+			[OrderEventsEnum.TrackingUpdated]: 'Tracking number was updated',
+			[OrderEventsEnum.TransactionCancelRequested]: 'Transaction cancel was requested',
+			[OrderEventsEnum.TransactionChargeRequested]: 'Transaction charge was requested',
+			[OrderEventsEnum.TransactionEvent]: 'Transaction event occurred',
+			[OrderEventsEnum.TransactionMarkAsPaidFailed]: 'Marking transaction as paid failed',
+			[OrderEventsEnum.TransactionRefundRequested]: 'Transaction refund was requested',
+			[OrderEventsEnum.UpdatedAddress]: 'The shipping or billing address was updated',
+		};
+
+		return type ? (map[type] ?? '') : '';
 	};
 
 	const handleAddNote = async () => {
@@ -96,7 +130,7 @@
 			.sort(
 				(a, b) => dayjs(b.date).valueOf() - dayjs(a.date).valueOf(), // latest first
 			) || []}
-	<div class="bg-white rounded p-3">
+	<div class="bg-white rounded-lg border border-gray-200 p-3">
 		<!-- MARK: note form -->
 		<div class="flex gap-2 items-center">
 			<div class="flex-3/4 flex items-center gap-2">

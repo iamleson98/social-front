@@ -5,17 +5,17 @@
 	import type { Address } from '$lib/gql/graphql';
 
 	type Props = {
-		addresses: Address[];
+		shippingAddresses: Address[];
 		billingAddress: Address[];
 	};
 
-	let { addresses, billingAddress }: Props = $props();
+	let { shippingAddresses, billingAddress }: Props = $props();
 </script>
 
 <div class="bg-white rounded-lg border border-gray-200 p-3">
-	<Accordion header="Address information">
-		{#if addresses.length}
-			{#each addresses as address, idx (idx)}
+	<Accordion header="Shipping address">
+		{#if shippingAddresses.length}
+			{#each shippingAddresses as address, idx (idx)}
 				<UserAddress {address} class="w-full mb-2" />
 			{/each}
 		{:else}

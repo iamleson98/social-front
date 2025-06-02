@@ -24,6 +24,7 @@
 	import UserAddressOrder from '$lib/components/pages/settings/orders/user-address-order.svelte';
 	import OrderHistory from '$lib/components/pages/settings/orders/order-history.svelte';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
 	
 	let loading = $state(false);
 	let performUpdateMetadata = $state(false);
@@ -72,10 +73,10 @@
 
 {#if $orderQuery.fetching}
 	<DetailOrderSkeleton />
+{:else if $orderQuery.error}
+	<Alert variant="error" size="sm" bordered>{$orderQuery.error?.message}</Alert>
 {:else if $orderQuery.data?.order}
 	{@const order = $orderQuery.data.order}
-	{@const addresses = order.shippingAddress ? [order.shippingAddress] : []}
-	{@const billingAddress = order.billingAddress ? [order.billingAddress] : []}
 	<div class="flex flex-row gap-3">
 		<div class="flex flex-col gap-3 w-7/10">
 			<UnfulfilledOrder orderLines={order.lines} />
@@ -94,13 +95,13 @@
 		</div>
 
 		<div class="flex flex-col gap-3 w-3/10">
-			<div class="bg-white shadow rounded p-4">
-				<h2 class="font-bold mb-2">Customer</h2>
+			<div class="bg-white rounded-lg border border-gray-200 p-3">
+				<SectionHeader>Customer</SectionHeader>
 				<p>{order.userEmail}</p>
 				<p class="text-blue-500 text-sm underline cursor-pointer">View profile</p>
 			</div>
 
-			<UserAddressOrder addresses={addresses} billingAddress={billingAddress} />
+			<UserAddressOrder shippingAddresses={order.shippingAddress ? [order.shippingAddress] : []} billingAddress={order.billingAddress ? [order.billingAddress] : []} />
 		</div>
 	</div>
 
@@ -109,6 +110,4 @@
 		onUpdateClick={onUpdateClick}
 		disabled={loading}
 	/>
-{:else if $orderQuery.error}
-	<Alert variant="error" size="sm" bordered>{$orderQuery.error?.message}</Alert>
 {/if}

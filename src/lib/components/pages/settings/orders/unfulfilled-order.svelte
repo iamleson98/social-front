@@ -13,6 +13,10 @@
 
 	const PRODUCT_MODAL_COLUMNS: TableColumnProps<OrderLine, ProductOrderField>[] = [
 		{
+			title: 'Image',
+			child: image,
+		},
+		{
 			title: 'Product',
 			child: product,
 		},
@@ -47,11 +51,14 @@
 	];
 </script>
 
-{#snippet product({ item }: { item: OrderLine })}
+{#snippet image({ item }: { item: OrderLine })}
 	<div class="flex items-center gap-2">
 		<img class="w-12 h-12" src={item.thumbnail?.url} alt={item.productName} />
-		{item.productName}
 	</div>
+{/snippet}
+
+{#snippet product({ item }: { item: OrderLine })}
+	{item.productName}
 {/snippet}
 
 {#snippet sku({ item }: { item: OrderLine })}
@@ -75,14 +82,14 @@
 {/snippet}
 
 {#snippet isGift({ item }: { item: OrderLine })}
-	<Checkbox bind:checked={item.isGift} />
+	<Checkbox checked={item.isGift} />
 {/snippet}
 
 {#snippet metadata()}
 	<Button size="xs" variant="light">View Metadata</Button>
 {/snippet}
 
-<div class="rounded-md p-4 bg-white border overflow-x-auto">
+<div class="bg-white rounded-lg border border-gray-200 p-3 overflow-x-auto">
 	<Table columns={PRODUCT_MODAL_COLUMNS} items={orderLines ?? []} />
 	<Button size="xs" class="mt-2">Fulfill</Button>
 </div>
