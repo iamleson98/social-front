@@ -6,14 +6,12 @@
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
-	import {
-		supportTicketStatusToBadgeClass,
-		supportTicketTagToBadgeClass,
-		type SupportTicketStatus,
-		type SupportTicketTag
-	} from '$lib/utils/types';
+	import { type SupportTicketStatus, type SupportTicketTag } from '$lib/utils/types';
 	import dayjs from 'dayjs';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
+	import { supportTicketStatusToBadgeClass, supportTicketTagToBadgeClass } from '$lib/utils/utils';
+	import { Badge } from '$lib/components/ui/badge';
+	import { SitenameTimeFormat } from '$lib/utils/consts';
 
 	type SupportTicket = {
 		id: string;
@@ -33,7 +31,7 @@
 			status: 'PENDING',
 			createdAt: '2023-01-01',
 			updatedAt: '2023-01-01',
-			tag: 'WARRANTY'
+			tag: 'WARRANTY',
 		},
 		{
 			id: '2',
@@ -42,40 +40,40 @@
 			status: 'IN_PROGRESS',
 			createdAt: '2023-01-01',
 			updatedAt: '2023-01-01',
-			tag: 'CONSULT'
-		}
+			tag: 'CONSULT',
+		},
 	];
 
 	const ORDER_TABLE_COLUMNS: TableColumnProps<SupportTicket, string>[] = $derived([
 		{
 			title: $tranFunc('settings.title'),
-			child: title
+			child: title,
 		},
 		{
 			title: $tranFunc('settings.tag'),
-			child: tag
+			child: tag,
 		},
 		{
 			title: $tranFunc('settings.status'),
-			child: status
+			child: status,
 		},
 		{
 			title: $tranFunc('settings.date'),
 			child: date,
 			sortable: true,
-			key: 'createdAt'
+			key: 'createdAt',
 		},
 		{
 			title: $tranFunc('settings.action'),
-			child: action
-		}
+			child: action,
+		},
 	]);
 
 	const handleConfirmDeleteTicket = (id: string) => {
 		ALERT_MODAL_STORE.openAlertModal({
 			content: $tranFunc('settings.confirmDelRequest', { id }),
 			onOk: () => {},
-			onCancel: () => {}
+			onCancel: () => {},
 		});
 	};
 </script>
@@ -87,20 +85,15 @@
 {/snippet}
 
 {#snippet date({ item }: { item: SupportTicket })}
-	{dayjs(item.createdAt).format('MM/DD/YYYY h:mm A')}
+	{dayjs(item.createdAt).format(SitenameTimeFormat)}
 {/snippet}
 
 {#snippet status({ item }: { item: SupportTicket })}
-	<span class="{supportTicketStatusToBadgeClass(item.status)} badge badge-sm badge-outline"
-		>{item.status}</span
-	>
+	<Badge {...supportTicketStatusToBadgeClass(item.status)}>{item.status}</Badge>
 {/snippet}
 
 {#snippet tag({ item }: { item: SupportTicket })}
-	<span class="{supportTicketTagToBadgeClass(item.tag)} badge badge-sm badge-outline">
-		<Icon icon={TagFilled} size="sm" />
-		{item.tag}
-	</span>
+	<Badge {...supportTicketTagToBadgeClass(item.tag)}>{item.tag}</Badge>
 {/snippet}
 
 {#snippet action({ item }: { item: SupportTicket })}
@@ -113,14 +106,14 @@
 			{
 				children: $tranFunc('settings.editTicket'),
 				href: `${AppRoute.ME_SUPPORT()}/${item.id}`,
-				startIcon: Edit
+				startIcon: Edit,
 			},
 			{
 				children: $tranFunc('settings.deleteTicket'),
 				startIcon: Trash,
 				class: 'text-red-600',
-				onclick: () => handleConfirmDeleteTicket(item.id)
-			}
+				onclick: () => handleConfirmDeleteTicket(item.id),
+			},
 		]}
 	/>
 {/snippet}

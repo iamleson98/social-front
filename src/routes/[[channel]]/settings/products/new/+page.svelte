@@ -19,7 +19,6 @@
 	import ProductName from '$lib/components/pages/settings/products/new/product-name.svelte';
 	import ProductSeo from '$lib/components/pages/settings/products/new/product-seo.svelte';
 	import ProductVariantCreator from '$lib/components/pages/settings/products/new/product-variant-creator.svelte';
-	import type { MediaObject } from '$lib/components/pages/settings/products/new/utils';
 	import { Button } from '$lib/components/ui';
 	import type {
 		Mutation,
@@ -32,6 +31,7 @@
 		ProductCreateInput,
 		ProductVariantBulkCreateInput,
 	} from '$lib/gql/graphql';
+	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { omit } from 'es-toolkit';
 	import { toast } from 'svelte-sonner';

@@ -16,7 +16,6 @@
 	import GeneralInformationForm from '$lib/components/pages/settings/config/collections/general-information-form.svelte';
 	import ProductListForm from '$lib/components/pages/settings/config/collections/product-list-form.svelte';
 	import SeoForm from '$lib/components/pages/settings/config/collections/seo-form.svelte';
-	import { type MediaObject } from '$lib/components/pages/settings/products/new/utils';
 	import { Alert } from '$lib/components/ui/Alert';
 	import type {
 		CollectionChannelListingUpdateInput,
@@ -31,6 +30,7 @@
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
+	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 
@@ -45,7 +45,7 @@
 		metadata: [],
 		privateMetadata: [],
 	});
-	let media = $state<MediaObject>();
+	let media = $state<MediaObject[]>([]);
 	let generalFormOk = $state(false);
 	let seoFormOk = $state(false);
 	let collectionChannelListingUpdateInput = $state<CollectionChannelListingUpdateInput>({
@@ -87,10 +87,13 @@
 					},
 				};
 				if (backgroundImage)
-					media = {
-						alt: backgroundImage.alt || '',
-						url: backgroundImage.url,
-					};
+					media = [
+						{
+							alt: backgroundImage.alt || '',
+							url: backgroundImage.url,
+							type: 'image',
+						},
+					];
 
 				if (channelListings?.length) {
 					collectionChannelListingUpdateInput.addChannels = channelListings.map((item) => ({

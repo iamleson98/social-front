@@ -5,9 +5,9 @@
 	import SeoForm from '$lib/components/pages/settings/config/collections/seo-form.svelte';
 	import { type CollectionCreateInput, type SeoInput } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { type MediaObject } from '$lib/components/pages/settings/products/new/utils';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import ProductAssignForm from '$lib/components/pages/settings/config/collections/product-assign-form.svelte';
+	import type { MediaObject } from '$lib/utils/types';
 
 	const onAddClick = () => {};
 
@@ -30,14 +30,14 @@
 			description: '',
 		},
 	});
-	let media = $state<MediaObject>();
+	let media = $state<MediaObject[]>([]);
 </script>
 
 <div class="flex gap-2 flex-row">
 	<div class="w-7/10 flex flex-col gap-2">
 		<GeneralInformationForm
 			bind:name={collectionCreateinput.name as string}
-			bind:description={collectionCreateinput.description as string}
+			bind:description={collectionCreateinput.description}
 			bind:media
 			bind:ok={generalFormOk}
 		/>

@@ -4,17 +4,19 @@
 	import { PhotoUp, Trash } from '$lib/components/icons';
 	import ErrorMsg from '$lib/components/pages/settings/products/new/error-msg.svelte';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
-	import type { MediaObject } from '$lib/components/pages/settings/products/new/utils';
 	import { IMAGE_EXTENSION_REGEX } from '$lib/utils/consts';
 	import { object, string, z } from 'zod';
 	import { IconButton } from '$lib/components/ui/Button';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import type { OutputData } from '@editorjs/editorjs';
+	import type { MediaObject } from '$lib/utils/types';
+	import FileInputContainer from '$lib/components/common/file-input-container.svelte';
 
 	type Props = {
 		name: string;
-		description?: any;
+		description?: OutputData;
 		disabled?: boolean;
-		media?: MediaObject;
+		media: MediaObject[];
 		ok?: boolean;
 	};
 
@@ -22,7 +24,7 @@
 		name = $bindable(),
 		description = $bindable(),
 		disabled,
-		media = $bindable<MediaObject | undefined>(),
+		media = $bindable<MediaObject[]>(),
 		ok = $bindable(),
 	}: Props = $props();
 
@@ -40,51 +42,16 @@
 
 	const collectionSchema = object({
 		name: string().nonempty(REQUIRED_ERROR),
-		media: object({
-			alt: string().nonempty(REQUIRED_ERROR),
-		}).nullable(),
 	});
 	type CollectionSchema = z.infer<typeof collectionSchema>;
-
-	const handleFileSelect = async (fileList: FileList) => {
-		if (!fileList.length || media) return;
-
-		const file = fileList[0];
-		const url = URL.createObjectURL(file);
-		const alt = file.name.replace(IMAGE_EXTENSION_REGEX, '');
-		const img = new Image();
-		img.src = url;
-		img.onload = () => {
-			media = {
-				file,
-				url,
-				alt,
-				width: img.width,
-				height: img.height,
-			};
-		};
-	};
-
-	const handleDeleteImage = () => {
-		if (media) {
-			URL.revokeObjectURL(media.url);
-			media = undefined;
-		}
-	};
 
 	const validate = () => {
 		const result = collectionSchema.safeParse({
 			name,
-			media,
 		});
 
-		if (!result.success) {
-			collectionFormErrors = result.error.formErrors.fieldErrors;
-			return false;
-		}
-
-		collectionFormErrors = {};
-		return true;
+		collectionFormErrors = result.success ? {} : result.error.formErrors.fieldErrors;
+		return result.success;
 	};
 </script>
 
@@ -98,32 +65,33 @@
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
 		variant={collectionFormErrors.name?.length ? 'error' : 'info'}
-		subText={collectionFormErrors.name?.length ? collectionFormErrors.name[0] : undefined}
+		subText={collectionFormErrors.name?.[0]}
+	/>
+	<EditorJSComponent
+		header={{ placeholder: 'Heading 2', levels: [2, 3, 4], defaultLevel: 2 }}
+		simpleImage
+		list={{ defaultStyle: 'unordered', maxLevel: 3, inlineToolbar: true }}
+		embed={{ services: { youtube: true } }}
+		quote={{ inlineToolbar: true }}
+		onchange={(data) => (description = data)}
+		placeholder={$tranFunc('placeholders.valuePlaceholder')}
+		bind:value={description}
+		variant={descriptionError ? 'error' : 'info'}
+		subText={descriptionError}
+		required
+		label="Collection description"
 	/>
 
-	<div>
-		<Label required requiredAtPos="end" label="Collection description" />
-		<div
-			class="rounded-lg border px-3 {descriptionError
-				? 'border-red-200 bg-red-50'
-				: 'border-gray-200 bg-gray-50'}"
-		>
-			<EditorJSComponent
-				header={{ placeholder: 'Heading 2', levels: [2, 3, 4], defaultLevel: 2 }}
-				simpleImage
-				list={{ defaultStyle: 'unordered', maxLevel: 3, inlineToolbar: true }}
-				embed={{ services: { youtube: true } }}
-				quote={{ inlineToolbar: true }}
-				onchange={(data) => (description = data)}
-				placeholder={$tranFunc('placeholders.valuePlaceholder')}
-				defaultValue={description}
-			/>
-		</div>
-		<ErrorMsg error={descriptionError} />
-	</div>
+	<FileInputContainer
+		accept="image/*"
+		max={1}
+		bind:medias={media}
+		required
+		label="Collection Image"
+	/>
 
 	<!-- Media Upload -->
-	<div>
+	<!-- <div>
 		<Label label="Collection Image" required requiredAtPos="end" />
 		<div
 			class="rounded-lg border flex gap-1 flex-wrap p-3 {collectionFormErrors.media?.length
@@ -190,5 +158,5 @@
 			{/if}
 		</div>
 		<ErrorMsg error={collectionFormErrors.media?.[0]} />
-	</div>
+	</div> -->
 </div>
