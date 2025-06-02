@@ -8,6 +8,8 @@
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import ProductAssignForm from '$lib/components/pages/settings/config/collections/product-assign-form.svelte';
 	import type { MediaObject } from '$lib/utils/types';
+	import { object, string, z } from 'zod';
+	import { tranFunc } from '$i18n';
 
 	const onAddClick = () => {};
 
@@ -17,13 +19,26 @@
 	let performUpdateMetadata = $state(false);
 	let loading = $state(false);
 
+	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
+
+	const collectionSchema = object({
+		name: string().nonempty(REQUIRED_ERROR),
+		backgroundImageAlt: string().nonempty(REQUIRED_ERROR),
+		slug: string().nonempty(REQUIRED_ERROR),
+		seo: object({
+			title: string().nonempty(REQUIRED_ERROR),
+			description: string().nonempty(REQUIRED_ERROR),
+		}),
+	});
+	type CollectionSchema = z.infer<typeof collectionSchema>;
+	let collectionFormErrors = $state.raw<Partial<Record<keyof CollectionSchema, string[]>>>({});
+
 	let collectionCreateinput = $state<CollectionCreateInput>({
 		name: '',
 		description: '',
 		backgroundImage: '',
-		metadata: [],
-		privateMetadata: [],
 		backgroundImageAlt: '',
+		products: [],
 		slug: '',
 		seo: {
 			title: '',
@@ -41,10 +56,10 @@
 			bind:media
 			bind:ok={generalFormOk}
 		/>
-		<ProductAssignForm />
+		<ProductAssignForm bind:productsToAssign={collectionCreateinput.products!} />
 		<SeoForm
 			bind:slug={collectionCreateinput.slug as string}
-			seo={collectionCreateinput.seo as SeoInput}
+			bind:seo={collectionCreateinput.seo as SeoInput}
 			name={collectionCreateinput.name as string}
 			isCreatePage
 			bind:ok={seoFormOk}

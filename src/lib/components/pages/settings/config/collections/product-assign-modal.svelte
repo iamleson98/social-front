@@ -7,8 +7,10 @@
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import type { Product, ProductOrderField, QueryProductsArgs } from '$lib/gql/graphql';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import { omit } from 'es-toolkit';
 
 	type Props = {
+		/** if provided, meaning it is update page */
 		collectionID?: string;
 		onApply: (addProducts: Product[], removeProductIds: string[]) => Promise<void>;
 		disabled?: boolean;
@@ -78,12 +80,13 @@
 			const { checked } = evt.target as HTMLInputElement;
 			// prevent adding or removing already items
 			if (checked && productAlreadyInCollection) return;
-			else if (!checked && !productAlreadyInCollection) return;
+			else if (!checked && !productAlreadyInCollection && collectionID) return;
 
-			selectedProductsMap = {
-				...selectedProductsMap,
-				[item.id]: checked ? item : undefined,
-			};
+			if (checked) {
+				selectedProductsMap = { ...selectedProductsMap, [item.id]: item };
+			} else {
+				selectedProductsMap = omit(selectedProductsMap, [item.id]);
+			}
 		}}
 	/>
 {/snippet}

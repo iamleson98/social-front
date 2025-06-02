@@ -6,17 +6,16 @@
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import type { Product, ProductOrderField } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
+	import { omit } from 'es-toolkit';
 	import ProductAssignModal from './product-assign-modal.svelte';
 
 	type Props = {
-		/**if not provided, meaning this is create page*/
-		collectionID?: string;
 		disabled?: boolean;
+		productsToAssign: string[];
 	};
 
-	let { collectionID, disabled }: Props = $props();
+	let { disabled, productsToAssign = $bindable([]) }: Props = $props();
 
-	let productsToAssign = $state<Product[]>([]);
 	let selectedProductsMap = $state<Record<string, Product | undefined>>({});
 
 	const PRODUCT_COLUMNS: TableColumnProps<Product, ProductOrderField>[] = [
@@ -42,11 +41,16 @@
 		},
 	];
 
-	const handleAssignProducts = async (addProducts: Product[], _removeProductIds: string[]) => {
-		productsToAssign = addProducts;
+	const handleAssignProducts = async (_addProducts: Product[], _removeProductIds: string[]) => {
+		productsToAssign = Object.values(selectedProductsMap)
+			.filter(Boolean)
+			.map((item) => item?.id) as string[];
 	};
 
-	$inspect(selectedProductsMap);
+	const handleClickDelBtn = (item: Product) => {
+		selectedProductsMap = omit(selectedProductsMap, [item.id]);
+		handleAssignProducts([], []);
+	};
 </script>
 
 {#snippet action({ item }: { item: Product })}
@@ -56,7 +60,7 @@
 			variant="light"
 			size="xs"
 			color="red"
-			onclick={() => handleAssignProducts([], [item.id])}
+			onclick={() => handleClickDelBtn(item)}
 			{disabled}
 			data-interactive
 		/>
@@ -123,14 +127,13 @@
 {/snippet}
 
 <div class="bg-white rounded-lg border w-full border-gray-200 p-3">
-	<ProductAssignModal
-		onApply={handleAssignProducts}
-		{collectionID}
-		{disabled}
-		bind:selectedProductsMap
-	/>
+	<ProductAssignModal onApply={handleAssignProducts} {disabled} bind:selectedProductsMap />
 	{#if productsToAssign.length}
-		<Table columns={PRODUCT_COLUMNS} {disabled} items={productsToAssign} />
+		<Table
+			columns={PRODUCT_COLUMNS}
+			{disabled}
+			items={Object.values(selectedProductsMap) as Product[]}
+		/>
 	{:else}
 		<div class="text-center py-3 text-gray-600">No products assigned</div>
 	{/if}

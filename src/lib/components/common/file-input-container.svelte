@@ -6,7 +6,7 @@
 	import { IconButton } from '../ui/Button';
 	import type { SocialSize } from '../ui/common';
 	import { FileInput, Input, INPUT_CLASSES, Label } from '../ui/Input';
-	import { formatBytes } from '$lib/utils/utils';
+	import { classNames, formatBytes } from '$lib/utils/utils';
 
 	type Props = {
 		accept: string;
@@ -14,7 +14,6 @@
 		max?: number;
 		label?: string;
 		variant?: SocialVariant;
-		subText?: string;
 		required?: boolean;
 		labelSize?: SocialSize;
 		medias: MediaObject[];
@@ -26,7 +25,6 @@
 		max = 1,
 		label,
 		variant = 'info',
-		subText,
 		required,
 		labelSize,
 		medias = $bindable([]),
@@ -45,12 +43,8 @@
 
 	const validate = () => {
 		const result = Schema.safeParse(medias);
-		if (!result.success) {
-			mediaErrors = result.error.formErrors.fieldErrors;
-			return false;
-		}
-		mediaErrors = {};
-		return true;
+		mediaErrors = result.success ? {} : result.error.formErrors.fieldErrors;
+		return result.success;
 	};
 
 	const FILE_MAP = $derived(
@@ -109,10 +103,12 @@
 
 		const results = await Promise.all(promises);
 		medias = medias.concat(results);
+		validate();
 	};
 
 	const deleteFileItem = (idx: number) => {
 		medias = medias.filter((_, i) => i !== idx);
+		validate();
 	};
 </script>
 
@@ -126,7 +122,12 @@
 				style: `background-image: url('${media.type === 'image' ? media.url : SVG}')`,
 			}}
 			<div
-				class="h-50 w-50 relative border border-gray-200 flex rounded-lg bg-white bg-cover bg-center bg-no-repeat"
+				class={classNames(
+					'h-50 w-50 relative border border-gray-200 flex rounded-lg bg-white bg-cover bg-center bg-no-repeat',
+					{
+						[INPUT_CLASSES['error'].bg]: !!mediaErrors?.[idx]?.length,
+					},
+				)}
 				{...props}
 			>
 				<div
@@ -185,7 +186,7 @@
 			</div>
 		{/if}
 	</div>
-	{#if subText}
-		<div class={`text-[10px] mt-0.5 text-right! ${INPUT_CLASSES[variant].fg}`}>{subText}</div>
-	{/if}
+	<div class={`text-[10px] mt-0.5 text-right!`}>
+		{medias.length} / {max}
+	</div>
 </div>
