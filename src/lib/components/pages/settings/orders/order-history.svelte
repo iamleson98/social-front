@@ -2,7 +2,7 @@
 	import { ORDER_ADD_NOTE_MUTATION, ORDER_HISTORY_QUERY } from '$lib/api/admin/orders';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
-	import { CalendarClock, Send } from '$lib/components/icons';
+	import { ArrowDown, CalendarClock, Send } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
@@ -26,12 +26,9 @@
 	let { id }: Props = $props();
 
 	let newNote = $state<string>();
+	let showDiscount = $state(false);
 	let loading = $state(false);
 	let filterType = $state<OrderEventsEnum>();
-	const filterTypeOptions = Object.values(OrderEventsEnum).map<SelectOption>((key) => ({
-		value: key,
-		label: key.toLowerCase().replace(/_/g, ' '),
-	}));
 
 	const eventsQuery = operationStore<Pick<Query, 'order'>, QueryOrderArgs>({
 		kind: 'query',
@@ -42,19 +39,21 @@
 	const orderHistoryTypeToHumanize = (type?: OrderEventsEnum | null) => {
 		switch (type) {
 			case OrderEventsEnum.AddedProducts:
-				return 'Order was added products';
+				return 'Products were added to the order';
 			case OrderEventsEnum.Canceled:
-				return 'Order was canceled';
+				return 'The order was canceled';
 			case OrderEventsEnum.Confirmed:
-				return 'Order was confirmed';
+				return 'The order was confirmed';
 			case OrderEventsEnum.DraftCreated:
-				return 'Order was draft created';
+				return 'A draft order was created';
 			case OrderEventsEnum.Expired:
-				return 'Order was expired';
+				return 'The order has expired';
 			case OrderEventsEnum.NoteAdded:
-				return 'Order note was added';
+				return 'A note was added to the order';
 			case OrderEventsEnum.NoteUpdated:
-				return 'Order note was updated';
+				return 'A note on the order was updated';
+			case OrderEventsEnum.OrderDiscountAdded:
+				return 'Order was discounted';
 			default:
 				return '';
 		}
@@ -99,69 +98,95 @@
 			) || []}
 	<div class="bg-white rounded p-3">
 		<!-- MARK: note form -->
-	<div class="flex gap-2 items-center">
-		<div class="flex-3/4 flex items-center gap-2">
-			<div class="avatar">
-				<div class="w-9 rounded-lg">
-					<img src={$READ_ONLY_USER_STORE?.avatar?.url} alt={$READ_ONLY_USER_STORE?.avatar?.alt} />
+		<div class="flex gap-2 items-center">
+			<div class="flex-3/4 flex items-center gap-2">
+				<div class="avatar">
+					<div class="w-9 rounded-lg">
+						<img
+							src={$READ_ONLY_USER_STORE?.avatar?.url}
+							alt={$READ_ONLY_USER_STORE?.avatar?.alt}
+						/>
+					</div>
 				</div>
+				<Input
+					size="sm"
+					placeholder="Add note"
+					class="w-full"
+					bind:value={newNote}
+					disabled={loading}
+				/>
 			</div>
-			<Input
-				size="sm"
-				placeholder="Add note"
-				class="w-full"
-				bind:value={newNote}
-				disabled={loading}
-			/>
+			<div class="flex-1/4">
+				<Button
+					size="sm"
+					endIcon={Send}
+					fullWidth
+					disabled={!newNote?.trim() || loading}
+					onclick={handleAddNote}>Send</Button
+				>
+			</div>
 		</div>
-		<div class="flex-1/4">
-			<Button
-				size="sm"
-				endIcon={Send}
-				fullWidth
-				disabled={!newNote?.trim() || loading}
-				onclick={handleAddNote}>Send</Button
-			>
-		</div>
-	</div>
 
-	<!-- MARK: event history -->
-	<div class="relative w-full mx-auto dark:bg-gray-900 mt-5">
-		<ol class="relative mt-2 ml-5 border-s border-gray-200 dark:border-gray-700">
-			{#each events as event, idx (idx)}
-				{@const byName =
-					event.user?.firstName || event.user?.lastName
-						? `${event.user.firstName || ''} ${event.user.lastName || ''}`
-						: event.user?.email}
-				<li class="mb-4 ms-6">
-					<IconButton
-						icon={CalendarClock}
-						size="xs"
-						variant="light"
-						color="orange"
-						class="absolute! -start-3.5 ring-4 ring-white"
-						rounded
-					/>
-					<div class="mb-1 font-medium text-sm dark:text-white text-gray-700">
-						{orderHistoryTypeToHumanize()}
-					</div>
-					<div class="text-xs font-normal leading-none text-gray-400 dark:text-gray-500 mb-1">
-						{dayjs(event.date).fromNow()}
-					</div>
-					{#if event.type === OrderEventsEnum.NoteAdded}
-						<div class="border-l-4 border-gray-200 p-2 bg-gray-50 text-gray-600 text-sm mb-1">
-							<span>{event.message}</span>
+		<!-- MARK: event history -->
+		<div class="relative w-full mx-auto dark:bg-gray-900 mt-5">
+			<ol class="relative mt-2 ml-5 border-s border-gray-200 dark:border-gray-700">
+				{#each events as event, idx (idx)}
+					{@const discount = event.discount}
+					{@const byName =
+						event.user?.firstName || event.user?.lastName
+							? `${event.user.firstName || ''} ${event.user.lastName || ''}`
+							: event.user?.email}
+					<li class="mb-4 ms-6 flex flex-row gap-7">
+						<IconButton
+							icon={CalendarClock}
+							size="xs"
+							variant="light"
+							color="orange"
+							class="absolute! -start-3.5 ring-4 ring-white"
+							rounded
+						/>
+						<div>
+							<div class="mb-1 font-medium text-sm dark:text-white text-gray-700">
+								{orderHistoryTypeToHumanize(event.type)}
+							</div>
+							<div class="text-xs font-normal leading-none text-gray-400 dark:text-gray-500 mb-1">
+								{dayjs(event.date).fromNow()}
+							</div>
+							{#if event.type === OrderEventsEnum.NoteAdded}
+								<div class="border-l-4 border-gray-200 p-2 bg-gray-50 text-gray-600 text-sm mb-1">
+									<span>{event.message}</span>
+								</div>
+							{/if}
+							<div class="text-xs text-gray-600">
+								By <a
+									class="text-blue-600 text-sm font-semibold"
+									href={AppRoute.SETTINGS_ORDERS_DETAILS(id)}>{byName}</a
+								>
+							</div>
+							{#if showDiscount && discount}
+								<div class="mt-2 text-sm">
+									{#if discount?.amount}
+										<p>Discount value: {discount.amount.amount} {discount.amount.currency}</p>
+									{/if}
+									{#if discount?.reason}
+										<p>Reason for discount: {discount.reason}</p>
+									{/if}
+								</div>
+							{/if}
 						</div>
-					{/if}
-					<div class="text-xs text-gray-600">
-						By <a
-							class="text-blue-600 text-sm font-semibold"
-							href={AppRoute.SETTINGS_ORDERS_DETAILS(id)}>{byName}</a
-						>
-					</div>
-				</li>
-			{/each}
-		</ol>
-	</div>
+						{#if event.type === OrderEventsEnum.OrderDiscountAdded}
+							<IconButton
+								size="xs"
+								variant="light"
+								color="orange"
+								icon={ArrowDown}
+								class="w-3 h-3"
+								onclick={() => (showDiscount = !showDiscount)}
+							/>
+						{/if}
+					</li>
+				{/each}
+			</ol>
+		</div>
 	</div>
 {/if}

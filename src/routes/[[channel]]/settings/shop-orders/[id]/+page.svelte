@@ -15,8 +15,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
-	import { ORDER_DETAIL_QUERY, ORDER_UPDATE_MUTATION } from '$lib/api/orders';
-	import { OrderUtil } from '$lib/components/pages/settings/orders/utils.svelte';
+	import { ORDER_DETAIL_QUERY, ORDER_UPDATE_MUTATION } from '$lib/api/admin/orders';
 	import DetailOrderSkeleton from '$lib/components/pages/settings/orders/detail-order-skeleton.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import UnfulfilledOrder from '$lib/components/pages/settings/orders/unfulfilled-order.svelte';
@@ -26,8 +25,6 @@
 	import OrderHistory from '$lib/components/pages/settings/orders/order-history.svelte';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	
-	const orderUtils = new OrderUtil();
-
 	let loading = $state(false);
 	let performUpdateMetadata = $state(false);
 
@@ -71,18 +68,6 @@
 			});
 		}
 	};
-
-	const onDeleteClick = async () => {
-		ALERT_MODAL_STORE.openAlertModal({
-			content: `Are you sure to delete the order ${page.params.id}?`,
-			onOk: async () => {
-				loading = true;
-				const hasError = await orderUtils.handleDeleteOrder(page.params.id);
-				loading = false;
-				if (!hasError) await goto(AppRoute.SETTINGS_ORDERS());
-			},
-		});
-	};
 </script>
 
 {#if $orderQuery.fetching}
@@ -124,6 +109,6 @@
 		onUpdateClick={onUpdateClick}
 		disabled={loading}
 	/>
-{:else}
-	<Alert variant="error">Order not found</Alert>
+{:else if $orderQuery.error}
+	<Alert variant="error" size="sm" bordered>{$orderQuery.error?.message}</Alert>
 {/if}
