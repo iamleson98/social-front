@@ -395,7 +395,15 @@ export const PRODUCT_LIST_QUERY_ADMIN = gql`
 						alt
 					}
           channelListings {
+            id
+            isPublished
+            publishedAt
+            isAvailableForPurchase
+            availableForPurchaseAt
+            visibleInListings
             channel {
+              id
+              name
               slug
               currencyCode
             }

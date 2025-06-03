@@ -52,12 +52,8 @@
 			title: seo.title,
 			description: seo.description,
 		});
-		if (!parseResult.success) {
-			seoFormErrors = parseResult.error.formErrors.fieldErrors;
-			return false;
-		}
-		seoFormErrors = {};
-		return true;
+		seoFormErrors = parseResult.success ? {} : parseResult.error.formErrors.fieldErrors;
+		return parseResult.success;
 	};
 
 	$effect(() => {
