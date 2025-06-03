@@ -2,11 +2,12 @@
 	import { ORDER_ADD_NOTE_MUTATION, ORDER_HISTORY_QUERY } from '$lib/api/admin/orders';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { ArrowDown, CalendarClock, Send } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
-	import { SelectSkeleton } from '$lib/components/ui/select';
+	import { SelectSkeleton, type SelectOption } from '$lib/components/ui/select';
 	import {
 		OrderEventsEnum,
 		type Mutation,
@@ -29,6 +30,11 @@
 	let showDiscount = $state(false);
 	let loading = $state(false);
 	let filterType = $state<OrderEventsEnum>();
+
+	const filterTypeOptions = Object.values(OrderEventsEnum).map<SelectOption>((key) => ({
+		value: key,
+		label: key.toLowerCase().replace(/_/g, ' '),
+	}));
 
 	const eventsQuery = operationStore<Pick<Query, 'order'>, QueryOrderArgs>({
 		kind: 'query',
@@ -60,7 +66,8 @@
 			[OrderEventsEnum.NoteAdded]: 'A note was added to the order',
 			[OrderEventsEnum.NoteUpdated]: 'A note on the order was updated',
 			[OrderEventsEnum.OrderDiscountAdded]: 'A discount was added to the order',
-			[OrderEventsEnum.OrderDiscountAutomaticallyUpdated]: 'Order discount was updated automatically',
+			[OrderEventsEnum.OrderDiscountAutomaticallyUpdated]:
+				'Order discount was updated automatically',
 			[OrderEventsEnum.OrderDiscountDeleted]: 'Order discount was removed',
 			[OrderEventsEnum.OrderDiscountUpdated]: 'Order discount was updated',
 			[OrderEventsEnum.OrderFullyPaid]: 'The order was fully paid',
@@ -78,7 +85,8 @@
 			[OrderEventsEnum.PaymentRefunded]: 'Payment was refunded',
 			[OrderEventsEnum.PaymentVoided]: 'Payment was voided',
 			[OrderEventsEnum.Placed]: 'Order was placed',
-			[OrderEventsEnum.PlacedAutomaticallyFromPaidCheckout]: 'Order was automatically placed after paid checkout',
+			[OrderEventsEnum.PlacedAutomaticallyFromPaidCheckout]:
+				'Order was automatically placed after paid checkout',
 			[OrderEventsEnum.PlacedFromDraft]: 'Order was placed from a draft',
 			[OrderEventsEnum.RemovedProducts]: 'Products were removed from the order',
 			[OrderEventsEnum.TrackingUpdated]: 'Tracking number was updated',
@@ -90,7 +98,7 @@
 			[OrderEventsEnum.UpdatedAddress]: 'The shipping or billing address was updated',
 		};
 
-		return type ? (map[type] ?? '') : '';
+		return type ? map[type] : '';
 	};
 
 	const handleAddNote = async () => {
@@ -119,18 +127,20 @@
 	};
 </script>
 
-{#if $eventsQuery.fetching}
-	<SelectSkeleton size="sm" label />
-{:else if $eventsQuery.error}
-	<Alert size="sm" variant="error" bordered>{$eventsQuery.error.message}</Alert>
-{:else if $eventsQuery.data}
-	{@const events =
-		$eventsQuery.data.order?.events
-			.filter((event) => (filterType ? event.type === filterType : true))
-			.sort(
-				(a, b) => dayjs(b.date).valueOf() - dayjs(a.date).valueOf(), // latest first
-			) || []}
-	<div class="bg-white rounded-lg border border-gray-200 p-3">
+<div class="p-3 rounded-lg border border-gray-200 bg-white flex flex-col gap-3">
+	<SectionHeader>Order timeline</SectionHeader>
+
+	{#if $eventsQuery.fetching}
+		<SelectSkeleton size="sm" label />
+	{:else if $eventsQuery.error}
+		<Alert size="sm" variant="error" bordered>{$eventsQuery.error.message}</Alert>
+	{:else if $eventsQuery.data}
+		{@const events =
+			$eventsQuery.data.order?.events
+				.filter((event) => (filterType ? event.type === filterType : true))
+				.sort(
+					(a, b) => dayjs(b.date).valueOf() - dayjs(a.date).valueOf(), // latest first
+				) || []}
 		<!-- MARK: note form -->
 		<div class="flex gap-2 items-center">
 			<div class="flex-3/4 flex items-center gap-2">
@@ -194,8 +204,10 @@
 							<div class="text-xs text-gray-600">
 								By <a
 									class="text-blue-600 text-sm font-semibold"
-									href={AppRoute.SETTINGS_ORDERS_DETAILS(id)}>{byName}</a
+									href={AppRoute.SETTINGS_CONFIGS_STAFF_DETAILS(event.user?.id!)}
 								>
+									{byName}
+								</a>
 							</div>
 							{#if showDiscount && discount}
 								<div class="mt-2 text-sm">
@@ -222,5 +234,5 @@
 				{/each}
 			</ol>
 		</div>
-	</div>
-{/if}
+	{/if}
+</div>
