@@ -42,7 +42,13 @@
 			`invalid key provided "${searchKey}" or you forget to initialize the path ${searchKey} for your variable?`,
 		);
 
+	/**
+	 * regex for range like: [<gte>,null], [nul,<lte>] or [<gte>,<lte>]
+	 */
 	const FILTER_RANGE_REGEX = /^\[([\w\d\.-]+)\,([\w\d\.-]+)\]$/;
+	/**
+	 * regex for `key-value` pair equality: {<key>,<value>}
+	 */
 	const FILTER_KEYS_MAP = filterOptions.reduce(
 		(acc, { key }) => {
 			acc[key] = true;
@@ -96,7 +102,7 @@
 		let hasSomethingChanged = false;
 
 		params.forEach((value, key) => {
-			hasSomethingChanged ||= page.url.searchParams.get(key) !== `${value}`;
+			hasSomethingChanged ||= page.url.searchParams.get(key) != value;
 		});
 
 		if (hasSomethingChanged) {
@@ -181,6 +187,11 @@
 			} else if (filterOpt.operator === 'range' && Array.isArray(filterOpt.value)) {
 				params.append(key as string, `[${filterOpt.value[0]},${filterOpt.value[1]}]`);
 			} else if (filterOpt.operator === 'eq') {
+				/**
+				 * There are a few cases for `eq` operator:
+				 * 1) equal to primitives, E.g: slug='hello-world';
+				 * 2) equal to a pair of `key-value` record,
+				 */
 				params.append(key as string, filterOpt.value as string);
 			}
 		}
