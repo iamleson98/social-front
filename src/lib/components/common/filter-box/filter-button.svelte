@@ -39,7 +39,7 @@
 	let filtersCount = $derived(Object.keys(filters).length);
 
 	const handleApply = async (flts: FilterConditions<T>) => {
-		if (!Object.keys(flts)) return;
+		if (!Object.keys(flts).length) return;
 
 		const params = new URLSearchParams();
 

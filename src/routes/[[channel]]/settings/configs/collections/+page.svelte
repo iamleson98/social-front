@@ -6,7 +6,6 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown, type MenuItemProps } from '$lib/components/ui/Dropdown';
-	import { Input } from '$lib/components/ui/Input';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
@@ -14,38 +13,39 @@
 		CollectionSortField,
 		type Mutation,
 		type MutationCollectionDeleteArgs,
-		type QueryCollectionsArgs
+		type QueryCollectionsArgs,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 
 	let filterVariables = $state<QueryCollectionsArgs>({
-		first: 10
+		first: 10,
+		filter: { search: '' },
 	});
 	let forceReExecuteGraphqlQuery = $state(true);
 
 	const COLLECTION_COLUMNS: TableColumnProps<Collection, CollectionSortField>[] = [
 		{
 			title: 'Availability',
-			child: availability
+			child: availability,
 		},
 		{
 			title: 'Collection Name',
 			key: CollectionSortField.Name,
 			child: collectionName,
-			sortable: true
+			sortable: true,
 		},
 		{
 			title: 'No. of Products',
 			child: noOfProducts,
 			sortable: true,
-			key: CollectionSortField.ProductCount
+			key: CollectionSortField.ProductCount,
 		},
 		{
 			title: 'Action',
-			child: action
-		}
+			child: action,
+		},
 	];
 
 	const handleDeleteCollection = async (id: string) => {
@@ -53,10 +53,11 @@
 			Pick<Mutation, 'collectionDelete'>,
 			MutationCollectionDeleteArgs
 		>(COLLECTION_DELETE_MUTATION, {
-			id: id
+			id: id,
 		});
 
-		if (checkIfGraphqlResultHasError(result, 'collectionDelete', 'Collection deleted successfully')) return;
+		if (checkIfGraphqlResultHasError(result, 'collectionDelete', 'Collection deleted successfully'))
+			return;
 
 		forceReExecuteGraphqlQuery = true;
 	};
@@ -108,10 +109,7 @@
 	</div>
 {/snippet}
 
-<div class="mb-2 flex items-center gap-2">
-	<Filter />
-	<Input size="sm" placeholder="Enter your query" />
-</div>
+<Filter bind:variables={filterVariables} bind:forceReExecuteGraphqlQuery />
 
 <GraphqlPaginableTable
 	query={COLLECTIONS_QUERY}
