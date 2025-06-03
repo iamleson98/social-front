@@ -55,7 +55,7 @@
 </script>
 
 {#snippet no({ item }: { item: Order })}
-	<span>{item.number}</span>
+	{item.number}
 {/snippet}
 
 {#snippet date({ item }: { item: Order })}

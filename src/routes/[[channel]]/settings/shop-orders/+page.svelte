@@ -9,6 +9,7 @@
 	import Filter from '$lib/components/pages/settings/orders/filter.svelte';
 	import { Search } from '$lib/components/icons';
 	import { Input } from '$lib/components/ui/Input';
+	import { AppRoute } from '$lib/utils';
 
 	const BATCH_LOAD = 20;
 
@@ -50,7 +51,9 @@
 </script>
 
 {#snippet no({ item }: { item: Order })}
-	{item.number}
+	<a href={AppRoute.SETTINGS_ORDERS_DETAILS(item.id)} class="link">
+		{item.number}
+	</a>
 {/snippet}
 
 {#snippet date({ item }: { item: Order })}
