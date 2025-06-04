@@ -21,7 +21,6 @@
 	import { Button } from '$lib/components/ui';
 	import FilterBox from './filter-box.svelte';
 	import { FilterCog } from '$lib/components/icons';
-	import { untrack } from 'svelte';
 
 	type Props = {
 		filterOptions: FilterProps<T>[];
@@ -55,10 +54,6 @@
 	let filters = $state<FilterConditions<T>>({} as FilterConditions<T>);
 	let filtersCount = $derived(Object.keys(filters).length);
 
-	// $inspect(filters);
-
-	// $inspect(filters);
-
 	const onInput = (evt: Event) => {
 		if (!searchKey) return;
 
@@ -69,6 +64,7 @@
 
 	const handlePaginationNavigation = async () => {
 		const params = page.url.searchParams;
+		const oldSearchParams = new URLSearchParams(params);
 
 		if (variables.first) {
 			params.set(FIRST, variables.first.toString());
@@ -100,7 +96,7 @@
 		let hasSomethingChanged = false;
 
 		params.forEach((value, key) => {
-			hasSomethingChanged ||= page.url.searchParams.get(key) != value;
+			hasSomethingChanged ||= oldSearchParams.get(key) != value;
 		});
 
 		if (hasSomethingChanged) {
@@ -117,8 +113,6 @@
 	// listener for variables changed have been applied on the URL bar
 	afterNavigate(async () => {
 		scrollTo({ top: 0, behavior: 'smooth' });
-
-		// debugger;
 
 		const queryParams = parseUrlSearchParams(page.url);
 		const newVariables = { ...variables };
@@ -150,14 +144,11 @@
 						newVariables.before = queryParams[BEFORE];
 					}
 					continue;
-				case ORDER_BY_FIELD:
+				case ORDER_BY_FIELD:					
 					if (typeof queryParams[ORDER_BY_FIELD] === 'string') {
-						const direction =
-							(queryParams[ORDER_DIRECTION] as OrderDirection) || OrderDirection.Asc;
-
 						newVariables.sortBy = {
 							field: queryParams[ORDER_BY_FIELD],
-							direction,
+							direction: (queryParams[ORDER_DIRECTION] as OrderDirection) || OrderDirection.Asc,
 						};
 					}
 				case ORDER_DIRECTION:

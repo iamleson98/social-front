@@ -3,7 +3,7 @@
 	import Table from './table.svelte';
 	import type { GraphqlPaginationArgs, RowOptions, SortState, TableProps } from './types';
 	import { operationStore } from '$lib/api/operation';
-	import { type PageInfo, type Query } from '$lib/gql/graphql';
+	import { OrderDirection, type PageInfo, type Query } from '$lib/gql/graphql';
 	import TableSkeleton from './table-skeleton.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { tick } from 'svelte';
@@ -71,7 +71,14 @@
 		pause: true, // to prevent unnecessary network call, this operation will be paused by default
 	});
 
-	let sortState = $state.raw<SortState<K>>({} as SortState<K>);
+	let sortState = $derived.by(() => {
+		if (variables.sortBy?.field)
+			return {
+				[variables.sortBy.field]: variables.sortBy.direction,
+			};
+
+		return {};
+	});
 	let items = $state.raw<T[]>([]);
 	let pagination = $state.raw<PageInfo>();
 
@@ -137,7 +144,7 @@
 		const direction = sort[key as K];
 		if (direction === 'NEUTRAL') return;
 
-		sortState = sort;
+		// sortState = sort;
 
 		variables = {
 			...variables,
@@ -190,7 +197,7 @@
 			onChangeRowsPerPage={handleRowsPerPageChange}
 			onSortChange={handleSortChange}
 			rowsPerPage={(variables.first || variables.last) as RowOptions}
-			defaultSortState={sortState}
+			defaultSortState={sortState as SortState<K>}
 			{tableClass}
 			disabled={$queryOperationStore.fetching || disabled}
 			onDragEnd={onDragEnd ? innerHandleDragEnd : undefined}
