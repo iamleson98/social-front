@@ -16,11 +16,12 @@
 	import { afterNavigate, goto } from '$app/navigation';
 	import { OrderDirection } from '$lib/gql/graphql';
 	import { page } from '$app/state';
-	import { parseUrlSearchParams } from '$lib/utils/utils';
+	import { FILTER_RANGE_REGEX, METADATA_PAIR_REGEX, parseUrlSearchParams } from '$lib/utils/utils';
 	import { type DropdownTriggerInterface, Popover } from '$lib/components/ui/Popover';
 	import { Button } from '$lib/components/ui';
 	import FilterBox from './filter-box.svelte';
 	import { FilterCog } from '$lib/components/icons';
+	import { untrack } from 'svelte';
 
 	type Props = {
 		filterOptions: FilterProps<T>[];
@@ -42,24 +43,21 @@
 			`invalid key provided "${searchKey}" or you forget to initialize the path ${searchKey} for your variable?`,
 		);
 
-	/**
-	 * regex for range like: [<gte>,null], [nul,<lte>] or [<gte>,<lte>]
-	 */
-	const FILTER_RANGE_REGEX = /^\[([\w\d\.-]+)\,([\w\d\.-]+)\]$/;
-	/**
-	 * regex for `key-value` pair equality: {<key>,<value>}
-	 */
 	const FILTER_KEYS_MAP = filterOptions.reduce(
 		(acc, { key }) => {
-			acc[key] = true;
+			acc[key as string] = true;
 			return acc;
 		},
-		{} as Record<keyof T, boolean>,
+		{} as Record<string, boolean>,
 	);
 
-	let isFilterOpening = $state(false);
+	let openFilterBox = $state(false);
 	let filters = $state<FilterConditions<T>>({} as FilterConditions<T>);
 	let filtersCount = $derived(Object.keys(filters).length);
+
+	// $inspect(filters);
+
+	// $inspect(filters);
 
 	const onInput = (evt: Event) => {
 		if (!searchKey) return;
@@ -69,34 +67,34 @@
 		variables = newVariables;
 	};
 
-	const handleNavigate = async () => {
-		const params = new URLSearchParams();
+	const handlePaginationNavigation = async () => {
+		const params = page.url.searchParams;
 
 		if (variables.first) {
-			params.append(FIRST, variables.first.toString());
+			params.set(FIRST, variables.first.toString());
 
 			if (variables.after) {
-				params.append(AFTER, variables.after);
+				params.set(AFTER, variables.after);
 			}
 		} else if (variables.last) {
-			params.append(LAST, variables.last.toString());
+			params.set(LAST, variables.last.toString());
 
 			if (variables.before) {
-				params.append(BEFORE, variables.before);
+				params.set(BEFORE, variables.before);
 			}
 		}
 
 		// sorting
 		if (variables.sortBy?.field) {
-			params.append(ORDER_BY_FIELD, variables.sortBy.field);
+			params.set(ORDER_BY_FIELD, variables.sortBy.field);
 			const direction = variables.sortBy.direction || OrderDirection.Asc; // if not set, default to ascending;
-			params.append(ORDER_DIRECTION, direction);
+			params.set(ORDER_DIRECTION, direction);
 		}
 
 		// check for search query string change
 		if (searchKey) {
 			const query = get(variables, searchKey);
-			if (query) params.append(SEARCH_QUERY, query);
+			if (query) params.set(SEARCH_QUERY, query);
 		}
 
 		let hasSomethingChanged = false;
@@ -113,48 +111,130 @@
 
 	// listener for variable changes
 	$effect(() => {
-		handleNavigate();
+		handlePaginationNavigation();
 	});
 
 	// listener for variables changed have been applied on the URL bar
 	afterNavigate(async () => {
 		scrollTo({ top: 0, behavior: 'smooth' });
 
+		// debugger;
+
 		const queryParams = parseUrlSearchParams(page.url);
 		const newVariables = { ...variables };
+		const newFilters = {} as FilterConditions<T>;
 
-		if (typeof queryParams[FIRST] === 'number') {
-			newVariables.first = queryParams[FIRST];
-			newVariables.last = null;
-			newVariables.before = null;
+		for (const key in queryParams) {
+			switch (key) {
+				case FIRST:
+					if (typeof queryParams[FIRST] === 'number') {
+						newVariables.first = queryParams[FIRST];
+						newVariables.last = null;
+						newVariables.before = null;
+					}
+					continue;
+				case AFTER:
+					if (typeof queryParams[AFTER] === 'string') {
+						newVariables.after = queryParams[AFTER];
+					}
+					continue;
+				case LAST:
+					if (typeof queryParams[LAST] === 'number') {
+						newVariables.last = queryParams[LAST];
+						newVariables.first = null;
+						newVariables.after = null;
+					}
+					continue;
+				case BEFORE:
+					if (typeof queryParams[BEFORE] === 'string') {
+						newVariables.before = queryParams[BEFORE];
+					}
+					continue;
+				case ORDER_BY_FIELD:
+					if (typeof queryParams[ORDER_BY_FIELD] === 'string') {
+						const direction =
+							(queryParams[ORDER_DIRECTION] as OrderDirection) || OrderDirection.Asc;
 
-			if (typeof queryParams[AFTER] === 'string') {
-				newVariables.after = queryParams[AFTER];
+						newVariables.sortBy = {
+							field: queryParams[ORDER_BY_FIELD],
+							direction,
+						};
+					}
+				case ORDER_DIRECTION:
+					continue;
+				case SEARCH_QUERY:
+					if (searchKey) {
+						set(newVariables, searchKey, queryParams[SEARCH_QUERY]);
+					}
+
+				default:
+					// all the custom filter cases:
+					if (!FILTER_KEYS_MAP[key]) continue;
+
+					const value = queryParams[key];
+
+					if (
+						typeof value === 'number' ||
+						typeof value === 'boolean' ||
+						(!FILTER_RANGE_REGEX.test(value) && !METADATA_PAIR_REGEX.test(value))
+					) {
+						newFilters[key as keyof T] = {
+							operator: 'eq',
+							value,
+						};
+						continue;
+					}
+
+					const rangeMatches = FILTER_RANGE_REGEX.exec(value);
+					if (rangeMatches) {
+						const gte = rangeMatches[1].trim();
+						const lte = rangeMatches[2].trim();
+
+						if (gte || lte) {
+							if (gte !== 'null' && lte !== 'null') {
+								// filtersResult[key as keyof T] = {
+								// 	gte,
+								// 	lte,
+								// };
+								newFilters[key as keyof T] = {
+									operator: 'range',
+									value: [gte, lte],
+								};
+							} else if (gte !== 'null') {
+								// filtersResult[key as keyof T] = {
+								// 	gte,
+								// };
+								newFilters[key as keyof T] = {
+									operator: 'gte',
+									value: gte,
+								};
+							} else if (lte !== 'null') {
+								// filtersResult[key as keyof T] = {
+								// 	lte,
+								// };
+								newFilters[key as keyof T] = {
+									operator: 'lte',
+									value: lte,
+								};
+							}
+						}
+						continue;
+					}
+
+					const metadataMatches = METADATA_PAIR_REGEX.exec(value);
+					if (metadataMatches) {
+						const key = metadataMatches[1].trim();
+						const value = metadataMatches[2].trim();
+
+						newFilters[key as keyof T] = {
+							operator: 'eq',
+							value: [key, value],
+						};
+					}
 			}
-		} else if (typeof queryParams[LAST] === 'number') {
-			newVariables.last = queryParams[LAST];
-			newVariables.first = null;
-			newVariables.after = null;
-
-			if (typeof queryParams[BEFORE] === 'string') {
-				newVariables.before = queryParams[BEFORE];
-			}
 		}
 
-		// sorting by
-		if (typeof queryParams[ORDER_BY_FIELD] === 'string') {
-			const direction = (queryParams[ORDER_DIRECTION] as OrderDirection) || OrderDirection.Asc;
-
-			newVariables.sortBy = {
-				field: queryParams[ORDER_BY_FIELD],
-				direction,
-			};
-		}
-
-		// if search query
-		if (searchKey && queryParams[SEARCH_QUERY]) {
-			set(newVariables, searchKey, queryParams[SEARCH_QUERY]);
-		}
+		filters = newFilters;
 
 		// if (
 		// 	newVariables.first !== variables.first ||
@@ -168,7 +248,7 @@
 		variables = newVariables;
 	});
 
-	const onApply = async (filters: FilterConditions<T>) => {
+	const handleApplyCustomFilter = async (filters: FilterConditions<T>) => {
 		const keys = Object.keys(filters);
 		if (!keys.length) return;
 
@@ -179,24 +259,28 @@
 			if (!filterOpt) continue;
 
 			if (filterOpt.operator === 'lte') {
-				params.append(key as string, `[null,${filterOpt.value}]`);
+				params.set(key, `[null,${filterOpt.value}]`);
 			} else if (filterOpt.operator === 'gte') {
-				params.append(key as string, `[${filterOpt.value},null]`);
+				params.set(key, `[${filterOpt.value},null]`);
 			} else if (filterOpt.operator === 'oneOf') {
-				params.append(key as string, `[${filterOpt.value}]`);
+				params.set(key, JSON.stringify(filterOpt.value));
 			} else if (filterOpt.operator === 'range' && Array.isArray(filterOpt.value)) {
-				params.append(key as string, `[${filterOpt.value[0]},${filterOpt.value[1]}]`);
+				params.set(key, `[${filterOpt.value[0]},${filterOpt.value[1]}]`);
 			} else if (filterOpt.operator === 'eq') {
 				/**
 				 * There are a few cases for `eq` operator:
-				 * 1) equal to primitives, E.g: slug='hello-world';
-				 * 2) equal to a pair of `key-value` record,
+				 * 1) equal to a pair of `key-value` record,
 				 */
-				params.append(key as string, filterOpt.value as string);
+				if (Array.isArray(filterOpt.value)) {
+					params.set(key, `{${filterOpt.value[0]},${filterOpt.value[1]}}`);
+				} else {
+					// 2) equal to primitives, E.g: slug='hello-world';
+					params.set(key, `${filterOpt.value}`);
+				}
 			}
 		}
 
-		isFilterOpening = false;
+		openFilterBox = false; //
 
 		await goto(`${page.url.pathname}?${params.toString()}`);
 	};
@@ -212,14 +296,14 @@
 		</Button>
 	{/snippet}
 
-	<Popover {trigger} placement="bottom-start" bind:open={isFilterOpening}>
+	<Popover {trigger} placement="bottom-start" bind:open={openFilterBox}>
 		<FilterBox
 			header="Filters"
 			options={filterOptions}
-			{onApply}
+			onApply={handleApplyCustomFilter}
 			{filters}
 			class="min-w-96"
-			onClose={() => (isFilterOpening = false)}
+			onClose={() => (openFilterBox = false)}
 		/>
 	</Popover>
 	{#if searchKey}

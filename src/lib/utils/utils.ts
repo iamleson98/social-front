@@ -3,7 +3,7 @@ import type { AnyVariables, OperationResult } from '@urql/core';
 import editorJsToHtml from 'editorjs-html';
 import { AppRoute } from './routes';
 import xss from 'xss';
-import { text, type ServerLoadEvent } from '@sveltejs/kit';
+import { type ServerLoadEvent } from '@sveltejs/kit';
 import { CHANNEL_KEY } from './consts';
 import { getCookieByKey } from './cookies';
 import { DEFAULT_CHANNEL } from './channels';
@@ -198,28 +198,39 @@ export const flipDirection = (direction: OrderDirection): OrderDirection =>
 
 export const numberRegex = /^-?\d+(\.\d+)?$/;
 export const BOOL_REGEX = /(true|false)/;
+/**
+ * regex for range like:` [gte,null]`, `[nul,lte]` or `[gte,lte]`.
+ */
+// eslint-disable-next-line no-useless-escape
+export const FILTER_RANGE_REGEX = /^\[([\w\d\.-]+)\,([\w\d\.-]+)\]$/;
+/**
+ * regex for `key-value` pair matching: `{key,value}`
+ */
+// eslint-disable-next-line no-useless-escape
+export const METADATA_PAIR_REGEX = /^\{([\w\d\.-]+)\,([\w\d\.-]+)\}$/;
 
 export const parseBoolean = (expr: string) => {
 	return expr.toLowerCase() === 'true';
 };
 
+/**
+ * parse search query params, and auto performs type casting when the query param value is boolean or number
+ */
 export const parseUrlSearchParams = (url: URL) => {
 	const result: Record<string, number | string | boolean> = {};
 
 	for (const key of url.searchParams.keys()) {
-		const trimKey = key.trim();
-		if (!trimKey) continue;
+		if (!key) continue;
 
-		let value = url.searchParams.get(key);
+		const value = url.searchParams.get(key)?.trim();
 		if (!value) continue;
 
-		value = value.trim();
-		if (value && numberRegex.test(value)) {
-			result[trimKey] = Number(value);
-		} else if (BOOL_REGEX.test(value)) {
-			result[trimKey] = parseBoolean(value);
+		if (numberRegex.test(value)) {
+			result[key] = Number(value);
+		} else if (BOOL_REGEX.test(value.toLowerCase())) {
+			result[key] = parseBoolean(value);
 		} else {
-			result[trimKey] = value;
+			result[key] = value;
 		}
 	}
 
