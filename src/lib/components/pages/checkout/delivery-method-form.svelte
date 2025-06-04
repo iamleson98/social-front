@@ -1,31 +1,36 @@
 <script lang="ts">
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { RadioButton } from '$lib/components/ui/Input';
-	import type { Maybe, Mutation, MutationCheckoutDeliveryMethodUpdateArgs } from '$lib/gql/graphql';
+	import type {
+		Checkout,
+		Maybe,
+		Mutation,
+		MutationCheckoutDeliveryMethodUpdateArgs,
+	} from '$lib/gql/graphql';
 	import { CHECKOUT_UPDATE_DELIVERY_METHOD_MUTATION } from '$lib/api/checkout';
-	import { checkoutStore } from '$lib/stores/app';
 	import { formatMoney, checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { READ_ONLY_USER_STORE } from '$lib/stores/auth/user';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
+
+	type Props = {
+		checkout: Checkout;
+	};
+
+	let { checkout }: Props = $props();
 
 	const getDeliveryMethodSubTitle = (
 		minDays: Maybe<number> | undefined,
-		maxDays: Maybe<number> | undefined
+		maxDays: Maybe<number> | undefined,
 	) => {
 		if (typeof minDays !== 'number' && typeof maxDays !== 'number') return '';
 		return `${minDays || '_'} - ${maxDays || '_'} business days`;
 	};
 
 	let selectedShippingMethodId = $state<string>();
-	let updating = $state(false);
-
-	$effect(() => {
-		if (!selectedShippingMethodId || !$checkoutStore) return;
-
-		updateDeliveryMethod();
-	});
+	let loading = $state(false);
 
 	const updateDeliveryMethod = async () => {
-		updating = true; //
+		loading = true; //
 
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'checkoutDeliveryMethodUpdate'>,
@@ -33,37 +38,50 @@
 		>(
 			CHECKOUT_UPDATE_DELIVERY_METHOD_MUTATION,
 			{
-				id: $checkoutStore?.id,
-				deliveryMethodId: selectedShippingMethodId
+				id: checkout.id,
+				deliveryMethodId: selectedShippingMethodId,
 			},
-			{ requestPolicy: 'network-only' }
+			{ requestPolicy: 'network-only' },
 		);
 
-		updating = false; //
+		loading = false; //
 
-		if (checkIfGraphqlResultHasError(result, 'checkoutDeliveryMethodUpdate', "Delivery method updated")) return;
+		if (
+			checkIfGraphqlResultHasError(
+				result,
+				'checkoutDeliveryMethodUpdate',
+				'Delivery method updated',
+			)
+		)
+			return;
 	};
+
+	$effect(() => {
+		if (!selectedShippingMethodId) return;
+
+		updateDeliveryMethod();
+	});
 </script>
 
 <div class="mt-2 bg-white p-3 rounded-lg border">
-	<div class="text-sm font-semibold mb-2 text-gray-800">Shipping method</div>
+	<SectionHeader>Shipping method</SectionHeader>
 
 	<div class="flex flex-row flex-wrap">
-		{#if !$READ_ONLY_USER_STORE && !$checkoutStore?.shippingAddress}
+		{#if !$READ_ONLY_USER_STORE && !checkout.shippingAddress}
 			<p>Please provide shipping address first to see available shipping methods</p>
 		{/if}
-		{#if $READ_ONLY_USER_STORE && !$checkoutStore?.shippingAddress}
+		{#if $READ_ONLY_USER_STORE && !checkout.shippingAddress}
 			<p>Loading...</p>
-		{:else if $checkoutStore?.shippingMethods.length}
-			{#each $checkoutStore?.shippingMethods as method, idx (idx)}
+		{:else if checkout.shippingMethods.length}
+			{#each checkout.shippingMethods as method, idx (idx)}
 				<div class="p-1 w-1/2 text-sm">
 					<label class="flex items-center gap-2 rounded-lg border p-3 cursor-pointer">
 						<RadioButton
 							value={method.id}
 							name="shipping-method"
 							bind:group={selectedShippingMethodId}
-							disabled={updating}
-							checked={$checkoutStore.deliveryMethod?.id === method.id}
+							disabled={loading}
+							checked={checkout.deliveryMethod?.id === method.id}
 						/>
 						<div>
 							<div>
