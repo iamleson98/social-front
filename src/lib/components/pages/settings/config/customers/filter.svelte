@@ -1,22 +1,24 @@
 <script lang="ts">
 	import FilterButton from '$lib/components/common/filter-box/filter-button.svelte';
+	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
 	import type {
 		FilterComponentType,
 		FilterProps,
-		FilterResult
+		FilterResult,
 	} from '$lib/components/common/filter-box/types';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Input } from '$lib/components/ui/Input';
-	import type { CustomerFilterInput } from '$lib/gql/graphql';
+	import type { CustomerFilterInput, QueryCustomersArgs } from '$lib/gql/graphql';
 	import dayjs from 'dayjs';
 
 	type Props = {
-		onFilterChange: (filter: FilterResult<CustomerFilterInput>) => void;
+		variables: QueryCustomersArgs;
+		forceReExecuteGraphqlQuery: boolean;
 	};
 
-	const THIS_YEAR = new Date().getFullYear();
+	let { variables = $bindable(), forceReExecuteGraphqlQuery = $bindable() }: Props = $props();
 
-	let { onFilterChange }: Props = $props();
+	const THIS_YEAR = new Date().getFullYear();
 
 	const FILTER_OPTIONS: FilterProps<CustomerFilterInput>[] = [
 		{
@@ -25,17 +27,17 @@
 			operations: [
 				{
 					operator: 'lte',
-					component: joinDateSingle
+					component: joinDateSingle,
 				},
 				{
 					operator: 'gte',
-					component: joinDateSingle
+					component: joinDateSingle,
 				},
 				{
 					operator: 'range',
-					component: joinDateBetween
-				}
-			]
+					component: joinDateBetween,
+				},
+			],
 		},
 		{
 			label: 'Number of orders',
@@ -43,22 +45,32 @@
 			operations: [
 				{
 					operator: 'eq',
-					component: numberOfOrdersSingle
+					component: numberOfOrdersSingle,
 				},
 				{
 					operator: 'gte',
-					component: numberOfOrdersSingle
+					component: numberOfOrdersSingle,
 				},
 				{
 					operator: 'lte',
-					component: numberOfOrdersSingle
+					component: numberOfOrdersSingle,
 				},
 				{
 					operator: 'range',
-					component: numberOfOrdersBetween
-				}
-			]
-		}
+					component: numberOfOrdersBetween,
+				},
+			],
+		},
+		{
+			label: 'Metadata',
+			key: 'metadata',
+			operations: [
+				{
+					operator: 'eq',
+					component: metadataComponent,
+				},
+			],
+		},
 	];
 </script>
 
@@ -76,8 +88,8 @@
 			showMonths: true,
 			showYears: {
 				min: 2010,
-				max: THIS_YEAR
-			}
+				max: THIS_YEAR,
+			},
 		}}
 	/>
 {/snippet}
@@ -91,7 +103,7 @@
 				onValue(range);
 			},
 			initialValue: range[0],
-			placeholder: 'Start date'
+			placeholder: 'Start date',
 		})}
 		{@render joinDateSingle({
 			onValue: (value) => {
@@ -99,7 +111,7 @@
 				onValue(range);
 			},
 			initialValue: range[1],
-			placeholder: 'End date'
+			placeholder: 'End date',
 		})}
 	</div>
 {/snippet}
@@ -124,7 +136,7 @@
 				onValue(range);
 			},
 			initialValue: range[0],
-			placeholder: 'From'
+			placeholder: 'From',
 		})}
 		{@render numberOfOrdersSingle({
 			onValue: (value) => {
@@ -132,9 +144,40 @@
 				onValue(range);
 			},
 			initialValue: range[1],
-			placeholder: 'To'
+			placeholder: 'To',
 		})}
 	</div>
 {/snippet}
 
-<FilterButton filterOptions={FILTER_OPTIONS} onApply={onFilterChange} />
+{#snippet metadataComponent({ onValue, initialValue = [] }: FilterComponentType)}
+	{@const keyValue = [(initialValue as string[])[0] || '', (initialValue as string[])[1] || '']}
+	<div class="flex flex-col gap-1.5">
+		<Input
+			size="xs"
+			placeholder="key"
+			value={keyValue[0]}
+			onchange={(evt) => {
+				const { value } = evt.target as HTMLInputElement;
+				keyValue[0] = value;
+				onValue(keyValue);
+			}}
+		/>
+		<Input
+			size="xs"
+			placeholder="value"
+			value={keyValue[1]}
+			onchange={(evt) => {
+				const { value } = evt.target as HTMLInputElement;
+				keyValue[1] = value;
+				onValue(keyValue);
+			}}
+		/>
+	</div>
+{/snippet}
+
+<FilterManager
+	filterOptions={FILTER_OPTIONS}
+	bind:forceReExecuteGraphqlQuery
+	bind:variables
+	searchKey={'filter.search' as keyof QueryCustomersArgs}
+/>

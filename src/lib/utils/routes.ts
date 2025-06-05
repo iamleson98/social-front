@@ -48,6 +48,12 @@ export const AppRoute = {
 	SETTINGS_CONFIGS_GIFTCARDS: () => buildLinkWithRespectToChannel('settings/configs/giftcards'),
 	SETTINGS_CONFIGS_GIFTCARD_NEW: () => buildLinkWithRespectToChannel('settings/configs/giftcards/?action=create'),
 	SETTINGS_CONFIGS_GIFTCARD_DETAIL: (id: string) => buildLinkWithRespectToChannel(`settings/configs/giftcards/${id}`),
+	SETTINGS_CONFIGS_PROMOTIONS: () => buildLinkWithRespectToChannel('settings/configs/promotions'),
+	SETTINGS_CONFIGS_PROMOTION_NEW: () => buildLinkWithRespectToChannel('settings/configs/promotions/new'),
+	SETTINGS_CONFIGS_PROMOTION_DETAIL: (id: string) => buildLinkWithRespectToChannel(`settings/configs/promotions/${id}`),
+	SETTINGS_CONFIGS_VOUCHERS: () => buildLinkWithRespectToChannel('settings/configs/vouchers'),
+	SETTINGS_CONFIGS_VOUCHER_NEW: () => buildLinkWithRespectToChannel('settings/configs/vouchers/new'),
+	SETTINGS_CONFIGS_VOUCHER_DETAIL: (id: string) => buildLinkWithRespectToChannel(`settings/configs/vouchers/${id}`),
 
 	HOME: () => buildHomePageLink(),
 	TRENDING: () => buildLinkWithRespectToChannel('trending'),
