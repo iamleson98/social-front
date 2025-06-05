@@ -1,7 +1,7 @@
-<script lang="ts" generics="T">
+<script lang="ts" generics="T, Var extends AnyVariables & GraphqlPaginationArgs">
 	import type { GraphqlPaginationArgs } from '$lib/components/ui/Table';
 	import type { AnyVariables } from '@urql/core';
-	import type { FilterConditions, FilterProps } from './types';
+	import type { FilterConditions, FilterItemValue, FilterOperator, FilterProps } from './types';
 	import { Input } from '$lib/components/ui/Input';
 	import { get, has, set } from 'es-toolkit/compat';
 	import {
@@ -19,14 +19,17 @@
 	import { FILTER_RANGE_REGEX, METADATA_PAIR_REGEX, parseUrlSearchParams } from '$lib/utils/utils';
 	import { type DropdownTriggerInterface, Popover } from '$lib/components/ui/Popover';
 	import { Button } from '$lib/components/ui';
-	import FilterBox from './filter-box.svelte';
-	import { FilterCog } from '$lib/components/icons';
+	import { CloseX, FilterCog, Plus, Search, Trash } from '$lib/components/icons';
+	import { omit } from 'es-toolkit';
+	import { Select, type Primitive, type SelectOption } from '$lib/components/ui/select';
+	import { IconButton } from '$lib/components/ui/Button';
 
 	type Props = {
+		/** if not provided, will not show filter button */
 		filterOptions: FilterProps<T>[];
-		variables: AnyVariables & GraphqlPaginationArgs;
+		variables: Var;
 		/** if provided, will display the text box for search query input as well */
-		searchKey?: string;
+		searchKey?: keyof Var;
 		forceReExecuteGraphqlQuery: boolean;
 	};
 
@@ -39,22 +42,72 @@
 
 	if (searchKey && !has(variables, searchKey))
 		throw new Error(
-			`invalid key provided "${searchKey}" or you forget to initialize the path ${searchKey} for your variable?`,
+			`invalid key provided "${String(searchKey)}" or you forget to initialize the path "${String(searchKey)}"" for your variable?`,
 		);
 
-	const FILTER_KEYS_MAP = filterOptions.reduce(
-		(acc, { key }) => {
-			acc[key as string] = true;
-			return acc;
-		},
-		{} as Record<string, boolean>,
-	);
-
 	let openFilterBox = $state(false);
-	let filters = $state<FilterConditions<T>>({} as FilterConditions<T>);
+	let filters = $state.raw({} as FilterConditions<T>);
 	let filtersCount = $derived(Object.keys(filters).length);
 
-	const onInput = (evt: Event) => {
+	const FILTER_MAP = filterOptions.reduce(
+		(acc, cur) => {
+			acc[cur.key] = cur;
+			return acc;
+		},
+		{} as Record<keyof T, FilterProps<T>>,
+	);
+
+	let availableFilters = $derived.by(() =>
+		filterOptions.map<SelectOption>(({ key, label }) => ({
+			value: key as Primitive,
+			label,
+			disabled: !!filters[key],
+		})),
+	);
+
+	let disableAddFilterBtn = $derived(
+		Object.entries<
+			Partial<{
+				operator: FilterOperator;
+				value: FilterItemValue;
+			}>
+		>(filters).some(([key, value]) => !key || !value.operator || value.value === undefined),
+	);
+
+	const handleFilterItemKeyChange = async (oldKey: keyof T, newKey?: keyof T) => {
+		if (oldKey === newKey) return;
+
+		const newFilters = { ...filters };
+		delete newFilters[oldKey];
+
+		if (newKey) {
+			newFilters[newKey] = {};
+
+			if (FILTER_MAP[newKey].mustPairWith && !filters[FILTER_MAP[newKey].mustPairWith]) {
+				const { mustPairWith } = FILTER_MAP[newKey];
+
+				if (FILTER_MAP[mustPairWith]) {
+					newFilters[mustPairWith] = {};
+				}
+			}
+		}
+
+		filters = newFilters;
+	};
+
+	const setFilterItemValue = (key: keyof T, operator?: FilterOperator, value?: FilterItemValue) => {
+		filters = {
+			...filters,
+			[key]: operator
+				? {
+						operator,
+						value,
+					}
+				: {},
+		};
+	};
+
+	const handleSearchValueChange = (evt: Event) => {
 		if (!searchKey) return;
 
 		const newVariables = { ...variables };
@@ -144,23 +197,25 @@
 						newVariables.before = queryParams[BEFORE];
 					}
 					continue;
-				case ORDER_BY_FIELD:					
+				case ORDER_BY_FIELD:
 					if (typeof queryParams[ORDER_BY_FIELD] === 'string') {
 						newVariables.sortBy = {
 							field: queryParams[ORDER_BY_FIELD],
 							direction: (queryParams[ORDER_DIRECTION] as OrderDirection) || OrderDirection.Asc,
 						};
 					}
+					continue;
 				case ORDER_DIRECTION:
 					continue;
 				case SEARCH_QUERY:
 					if (searchKey) {
 						set(newVariables, searchKey, queryParams[SEARCH_QUERY]);
 					}
+					continue;
 
 				default:
 					// all the custom filter cases:
-					if (!FILTER_KEYS_MAP[key]) continue;
+					if (!FILTER_MAP[key as keyof T]) continue;
 
 					const value = queryParams[key];
 
@@ -226,20 +281,10 @@
 		}
 
 		filters = newFilters;
-
-		// if (
-		// 	newVariables.first !== variables.first ||
-		// 	newVariables.last !== variables.last ||
-		// 	newVariables.after !== variables.after ||
-		// 	newVariables.before !== variables.before ||
-		// 	newVariables.sortBy?.field !== variables.sortBy?.field ||
-		// 	newVariables.sortBy?.direction !== variables.sortBy?.direction ||
-		// 	(searchKey && get(variables, searchKey) !== get(newVariables, searchKey))
-		// )
 		variables = newVariables;
 	});
 
-	const handleApplyCustomFilter = async (filters: FilterConditions<T>) => {
+	const handleApplyCustomFilter = async () => {
 		const keys = Object.keys(filters);
 		if (!keys.length) return;
 
@@ -278,31 +323,152 @@
 </script>
 
 <div class="flex items-center gap-2 mb-2">
-	{#snippet trigger(opts: DropdownTriggerInterface)}
-		<Button variant="outline" size="sm" {...opts} class="indicator" endIcon={FilterCog}>
-			{#if filtersCount}
-				<span class="indicator-item badge badge-xs text-white! bg-blue-500">{filtersCount}</span>
-			{/if}
-			Filters
-		</Button>
-	{/snippet}
+	{#if filterOptions.length}
+		{#snippet trigger(opts: DropdownTriggerInterface)}
+			<Button variant="outline" size="sm" {...opts} class="indicator" endIcon={FilterCog}>
+				{#if filtersCount}
+					<span class="indicator-item badge badge-xs text-white! bg-blue-500">{filtersCount}</span>
+				{/if}
+				Filters
+			</Button>
+		{/snippet}
 
-	<Popover {trigger} placement="bottom-start" bind:open={openFilterBox}>
-		<FilterBox
-			header="Filters"
-			options={filterOptions}
-			onApply={handleApplyCustomFilter}
-			{filters}
-			class="min-w-96"
-			onClose={() => (openFilterBox = false)}
-		/>
-	</Popover>
+		<Popover {trigger} placement="bottom-start" bind:open={openFilterBox}>
+			<div class="bg-white rounded-lg p-2 shadow-md border border-gray-200 min-w-110">
+				<dir class="flex items-center justify-between">
+					<span class="text-sm font-medium">Filters</span>
+					<IconButton
+						icon={CloseX}
+						color="gray"
+						size="xs"
+						variant="light"
+						onclick={() => (openFilterBox = false)}
+					/>
+				</dir>
+
+				<div class="p-2">
+					{#if Object.keys(filters).length}
+						{#each Object.keys(filters) as key, idx (idx)}
+							{@const filterOpt = filters[key as keyof T]}
+							{@const disableDelBtn = filterOptions.some(
+								// if this filter is additional requirement to make a pair with another filter, then its delete button must be disabled
+								(opt) => opt.mustPairWith === key && filters[opt.key],
+							)}
+							<div class="flex items-center gap-1 mt-1.5 justify-between">
+								<Select
+									options={availableFilters}
+									size="xs"
+									class="flex-2"
+									value={key}
+									onchange={(vl) =>
+										handleFilterItemKeyChange(
+											key as keyof T,
+											(vl as SelectOption)?.value as keyof T,
+										)}
+									placeholder="Select filter"
+									disabled={disableDelBtn}
+								/>
+
+								<div class="flex-4 flex items-center gap-1">
+									{#if key && filterOpt}
+										{@const { operations } = FILTER_MAP[key as keyof T]}
+										{@const operatorOpts = operations.map(({ operator }) => ({
+											label: operator,
+											value: operator,
+										}))}
+
+										<Select
+											options={operatorOpts}
+											size="xs"
+											class="flex-1"
+											value={filterOpt.operator}
+											onchange={(vl) => {
+												setFilterItemValue(
+													key as keyof T,
+													(vl as SelectOption)?.value as FilterOperator,
+												);
+											}}
+										/>
+										{#if filterOpt.operator}
+											{@const { component } = operations.find(
+												({ operator }) => operator === filterOpt.operator,
+											)!}
+											<div class="flex-1">
+												{@render component({
+													onValue: (value) => {
+														setFilterItemValue(
+															key as keyof T,
+															filterOpt.operator as FilterOperator,
+															value,
+														);
+													},
+													initialValue: filterOpt.value,
+												})}
+											</div>
+										{/if}
+									{/if}
+								</div>
+
+								<div class="flex-1 text-right">
+									<IconButton
+										icon={Trash}
+										rounded
+										size="xs"
+										variant="light"
+										color="red"
+										onclick={() =>
+											(filters = omit(filters, [key as keyof T]) as FilterConditions<T>)}
+										aria-label="Delete filter"
+										disabled={disableDelBtn}
+									/>
+								</div>
+							</div>
+						{/each}
+					{:else}
+						<div class="flex items-center justify-center text-sm text-gray-500">
+							<span>Add filter</span>
+						</div>
+					{/if}
+				</div>
+
+				<div>
+					<div class="border-t border-gray-200"></div>
+					<div class="flex items-center justify-between mt-2">
+						<Button
+							startIcon={Plus}
+							size="xs"
+							variant="light"
+							color="gray"
+							onclick={() => (filters = { ...filters, '': {} })}
+							disabled={disableAddFilterBtn}
+						>
+							Add Filter
+						</Button>
+						<div class="gap-1">
+							<Button
+								size="xs"
+								variant="light"
+								color="gray"
+								onclick={() => (filters = {} as FilterConditions<T>)}
+							>
+								Reset
+							</Button>
+							<Button size="xs" disabled={disableAddFilterBtn} onclick={handleApplyCustomFilter}>
+								Apply
+							</Button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</Popover>
+	{/if}
 	{#if searchKey}
 		<Input
 			placeholder="Enter your query"
 			size="sm"
 			value={get(variables, searchKey)}
-			inputDebounceOption={{ onInput, debounceTime: 888 }}
+			inputDebounceOption={{ onInput: handleSearchValueChange, debounceTime: 888 }}
+			startIcon={Search}
 		/>
 	{/if}
 </div>

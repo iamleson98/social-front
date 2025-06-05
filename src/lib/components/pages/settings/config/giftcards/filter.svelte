@@ -7,16 +7,24 @@
 		FilterItemValue,
 		FilterProps,
 	} from '$lib/components/common/filter-box';
-	import FilterButton from '$lib/components/common/filter-box/filter-button.svelte';
+	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
 	import ShopCurrenciesSelect from '$lib/components/common/shop-currencies-select.svelte';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
 	import type {
 		GiftCardFilterInput,
 		QueryCustomersArgs,
+		QueryGiftCardsArgs,
 		QueryGiftCardTagsArgs,
 		QueryProductsArgs,
 	} from '$lib/gql/graphql';
+
+	type Props = {
+		variables: QueryGiftCardsArgs;
+		forceReExecuteGraphqlQuery: boolean;
+	};
+
+	let { variables = $bindable(), forceReExecuteGraphqlQuery = $bindable(false) }: Props = $props();
 
 	const FILTER_OPTIONS: FilterProps<GiftCardFilterInput>[] = [
 		{
@@ -238,4 +246,9 @@
 	/>
 {/snippet}
 
-<FilterButton filterOptions={FILTER_OPTIONS} onApply={console.log} />
+<FilterManager
+	filterOptions={FILTER_OPTIONS}
+	bind:variables
+	bind:forceReExecuteGraphqlQuery
+	searchKey="search"
+/>

@@ -4,14 +4,13 @@
 	import { GIFTCARD_LIST_QUERY } from '$lib/api/admin/giftcards';
 	import { GIFT_CARD_DELETE_MUTATION } from '$lib/api/admin/giftcards';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { Cancel, CircleCheck, Dots, Search, Trash } from '$lib/components/icons';
+	import { Cancel, CircleCheck, Dots, Trash } from '$lib/components/icons';
 	import Filter from '$lib/components/pages/settings/config/giftcards/filter.svelte';
 	import GiftcardIssueForm from '$lib/components/pages/settings/config/giftcards/giftcard-issue-form.svelte';
 	import { GiftcardUtil } from '$lib/components/pages/settings/config/giftcards/utils.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
-	import { Input } from '$lib/components/ui/Input';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
@@ -29,7 +28,7 @@
 
 	const giftcardUtil = new GiftcardUtil();
 	let forceReExecuteGraphqlQuery = $state(true);
-	let variables = $state<QueryGiftCardsArgs>({ first: 10 });
+	let variables = $state<QueryGiftCardsArgs>({ first: 10, search: '' });
 	let openGiftcardIssueForm = $state(false);
 	let loading = $state(false);
 
@@ -173,10 +172,7 @@
 	/>
 {/snippet}
 
-<div class="flex items-center gap-2 mb-2">
-	<Filter />
-	<Input placeholder="Enter query" size="sm" startIcon={Search} />
-</div>
+<Filter bind:variables bind:forceReExecuteGraphqlQuery />
 
 <GraphqlPaginableTable
 	query={GIFTCARD_LIST_QUERY}

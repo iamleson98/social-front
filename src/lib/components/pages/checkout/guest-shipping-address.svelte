@@ -14,42 +14,46 @@
 		MutationCheckoutBillingAddressUpdateArgs,
 		MutationCheckoutShippingAddressUpdateArgs,
 		Query,
-		QueryChannelArgs
+		QueryChannelArgs,
 	} from '$lib/gql/graphql';
 	import { CHANNEL_DETAILS_QUERY_STORE } from '$lib/api/channels';
 	import {
 		CHECKOUT_BILLING_ADDRESS_UPDATE_MUTATION,
-		CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION
+		CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION,
 	} from '$lib/api/checkout';
 	import { operationStore } from '$lib/api/operation';
-	import { checkoutStore } from '$lib/stores/app';
 	import { getCountryName } from '$lib/utils/address';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import AddressForm from './address-form.svelte';
 
+	type Props = {
+		checkout: Checkout;
+	};
+
+	let { checkout }: Props = $props();
+
 	let updatingCHeckoutAddresses = $state(false);
 	let showAddressEdit = $state(false);
-	let currentAddress = $derived($checkoutStore?.shippingAddress);
 
 	const channelStore = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
 		kind: 'query',
 		query: CHANNEL_DETAILS_QUERY_STORE,
 		variables: {
-			slug: $checkoutStore?.channel.slug
+			slug: checkout.channel.slug,
 		},
 		context: { requestPolicy: 'cache-and-network' },
-		// pause if no channel or $checkoutStore? already has shipping address
-		pause: !$checkoutStore?.channel.slug || !!$checkoutStore?.shippingAddress
+		// pause if no channel or checkout already has shipping address
+		pause: !checkout.channel.slug || !!checkout.shippingAddress,
 	});
 
 	const handleAttachAddressToCheckout = async (
 		addressInput: AddressInput,
-		type?: AddressTypeEnum
+		type?: AddressTypeEnum,
 	) => {
 		const validationRules: CheckoutAddressValidationRules = {
 			checkFieldsFormat: true,
 			checkRequiredFields: true,
-			enableFieldsNormalization: true
+			enableFieldsNormalization: true,
 		};
 
 		const updateShippingAddressMutation = GRAPHQL_CLIENT.mutation<
@@ -57,8 +61,8 @@
 			MutationCheckoutShippingAddressUpdateArgs
 		>(CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION, {
 			shippingAddress: addressInput,
-			id: $checkoutStore?.id,
-			validationRules
+			id: checkout.id,
+			validationRules,
 		});
 
 		const updateBillingAddressMutation = GRAPHQL_CLIENT.mutation<
@@ -66,14 +70,14 @@
 			MutationCheckoutBillingAddressUpdateArgs
 		>(CHECKOUT_BILLING_ADDRESS_UPDATE_MUTATION, {
 			billingAddress: addressInput,
-			id: $checkoutStore?.id,
-			validationRules
+			id: checkout.id,
+			validationRules,
 		});
 
 		updatingCHeckoutAddresses = true; //
 		const updateResult = await Promise.all([
 			updateShippingAddressMutation,
-			updateBillingAddressMutation
+			updateBillingAddressMutation,
 		]);
 		updatingCHeckoutAddresses = false; //
 
@@ -81,23 +85,22 @@
 			checkIfGraphqlResultHasError(
 				updateResult[0],
 				'checkoutShippingAddressUpdate',
-				'Shipping address updated'
+				'Shipping address updated',
 			) ||
 			checkIfGraphqlResultHasError(
 				updateResult[1],
 				'checkoutBillingAddressUpdate',
-				'Billing address updated'
+				'Billing address updated',
 			)
 		)
 			return;
 
-		checkoutStore.set(updateResult[0].data?.checkoutShippingAddressUpdate?.checkout as Checkout);
 		showAddressEdit = false;
 		scrollTo({ top: 0, behavior: 'smooth' });
 	};
 
 	const handleClickEditAddress = () => {
-		if ($checkoutStore?.channel.slug) {
+		if (checkout.channel.slug) {
 			channelStore.resume();
 			showAddressEdit = true;
 		}
@@ -109,8 +112,8 @@
 	};
 </script>
 
-{#if currentAddress && !showAddressEdit}
-	<UserAddress address={currentAddress}>
+{#if checkout.shippingAddress && !showAddressEdit}
+	<UserAddress address={checkout.shippingAddress}>
 		<div class="text-right">
 			<Button size="xs" startIcon={Edit} variant="light" onclick={handleClickEditAddress}
 				>Edit</Button
@@ -125,14 +128,14 @@
 	{@const countrySelectOptions =
 		$channelStore.data?.channel?.countries?.map<SelectOption>(({ code }) => ({
 			value: code,
-			label: getCountryName(code)
+			label: getCountryName(code),
 		})) || []}
 	<AddressForm
 		{updatingCHeckoutAddresses}
 		{countrySelectOptions}
-		channelSlug={$checkoutStore?.channel.slug!}
+		channelSlug={checkout.channel.slug!}
 		onSubmit={handleAttachAddressToCheckout}
-		defaultValue={currentAddress as Address}
+		defaultValue={checkout.shippingAddress as Address}
 		onCancel={handleCancelEditAddress}
 	/>
 {/if}

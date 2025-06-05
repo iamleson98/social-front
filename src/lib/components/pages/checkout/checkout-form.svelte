@@ -59,7 +59,7 @@
 			{#if $READ_ONLY_USER_STORE}
 				<UserShippingAddress {checkout} />
 			{:else}
-				<GuestShippingAddress />
+				<GuestShippingAddress {checkout} />
 			{/if}
 		</div>
 

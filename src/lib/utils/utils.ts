@@ -286,25 +286,20 @@ export const buildLinkWithRespectToChannel = (uri: string, event?: ServerLoadEve
 	return `${buildHomePageLink(event)}/${uri}`;
 };
 
-
+/**
+* Checks if given user has 3 perms: manage settings, manage staff, manage users.
+ */
 export const userIsShopAdmin = (user: User) => {
-	let canManageSettings: boolean = false, canManageStaff: boolean = false, canManageUsers: boolean = false;
+	let count = 0;
 
 	for (const perm of user.userPermissions || []) {
-		switch (perm.code) {
-			case PermissionEnum.ManageSettings:
-				canManageSettings = true;
-				break;
-			case PermissionEnum.ManageStaff:
-				canManageStaff = true;
-				break;
-			case PermissionEnum.ManageUsers:
-				canManageUsers = true;
-				break;
-		}
+		if (
+			perm.code === PermissionEnum.ManageSettings ||
+			perm.code === PermissionEnum.ManageStaff ||
+			perm.code === PermissionEnum.ManageUsers) count++;
 	}
 
-	return canManageUsers && canManageSettings && canManageStaff;
+	return count === 3;
 };
 
 export function formatCurrency(value: number): string {

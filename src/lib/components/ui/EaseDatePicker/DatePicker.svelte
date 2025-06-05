@@ -209,7 +209,6 @@
 		<Input
 			{...rest}
 			bind:ref={inputRef}
-			label="from"
 			bind:value={inputReprValue.start}
 			readonly
 			placeholder={rest.placeholder || ACTUAL_TIME_FORMAT}
@@ -217,7 +216,6 @@
 		<Input
 			{...rest}
 			bind:ref={inputEndRef}
-			label="to"
 			bind:value={inputReprValue.end}
 			readonly
 			placeholder={rest.placeholder || ACTUAL_TIME_FORMAT}

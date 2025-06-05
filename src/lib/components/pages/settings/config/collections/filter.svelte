@@ -102,6 +102,6 @@
 <FilterManager
 	filterOptions={FILTER_OPTIONS}
 	bind:variables
-	searchKey="filter.search"
+	searchKey={'filter.search' as keyof QueryCollectionsArgs}
 	bind:forceReExecuteGraphqlQuery
 />
