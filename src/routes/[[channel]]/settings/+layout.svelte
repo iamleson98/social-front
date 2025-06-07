@@ -188,7 +188,7 @@
 					header={$tranFunc('settings.shopManage')}
 					child={sidebarItem}
 					items={SHOP_TAB_ITEMS}
-					class="bg-white p-3 border-gray-200 border"
+					class="w-full"
 				/>
 			{/if}
 		</div>

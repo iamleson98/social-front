@@ -18,9 +18,7 @@ import type { SupportTicketStatus, SupportTicketTag } from './types';
 export const editorJsParser = editorJsToHtml();
 
 let _counter = 0;
-export const randomID = () => {
-	return (++_counter).toString(36);
-};
+export const randomID = () => (++_counter).toString(36);
 
 /**
  * @param length default to 10

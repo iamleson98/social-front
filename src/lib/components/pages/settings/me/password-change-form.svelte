@@ -70,7 +70,7 @@
 			return;
 
 		// if success, we should logout user and redirect him to login
-		await handleLogout();
+		await handleLogout($tranFunc);
 	};
 </script>
 

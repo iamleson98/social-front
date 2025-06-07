@@ -173,7 +173,11 @@
 							href: AppRoute.ME(),
 							startIcon: UserCog,
 						},
-						{ children: $tranFunc('common.logout'), onclick: handleLogout, startIcon: Logout },
+						{
+							children: $tranFunc('common.logout'),
+							onclick: () => handleLogout($tranFunc),
+							startIcon: Logout,
+						},
 					]}
 				/>
 			{:else if !$READ_ONLY_USER_STORE && !page.url.pathname.startsWith('/auth')}

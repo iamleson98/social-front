@@ -75,21 +75,17 @@
 	);
 
 	const handleFilterItemKeyChange = async (oldKey: keyof T, newKey?: keyof T) => {
-		if (oldKey === newKey) return;
+		if (!newKey || oldKey === newKey) return;
 
 		const newFilters = { ...filters };
 		delete newFilters[oldKey];
 
-		if (newKey) {
-			newFilters[newKey] = {};
+		newFilters[newKey] = {};
 
-			if (FILTER_MAP[newKey].mustPairWith && !filters[FILTER_MAP[newKey].mustPairWith]) {
-				const { mustPairWith } = FILTER_MAP[newKey];
+		const pairWith = FILTER_MAP[newKey].mustPairWith;
 
-				if (FILTER_MAP[mustPairWith]) {
-					newFilters[mustPairWith] = {};
-				}
-			}
+		if (pairWith && !filters[pairWith] && FILTER_MAP[pairWith]) {
+			newFilters[pairWith] = {};
 		}
 
 		filters = newFilters;
@@ -107,42 +103,44 @@
 		};
 	};
 
-	const handleSearchValueChange = (evt: Event) => {
+	const handleSearchValueChange = async (evt: Event) => {
 		if (!searchKey) return;
 
-		const newVariables = { ...variables };
-		set(newVariables, searchKey, (evt.target as HTMLInputElement).value.trim());
-		variables = newVariables;
+		const value = (evt.target as HTMLInputElement).value.trim();
+		if (value) page.url.searchParams.set(SEARCH_QUERY, value);
+		else page.url.searchParams.delete(SEARCH_QUERY);
+
+		await goto(`${page.url.pathname}?${page.url.searchParams.toString()}`);
 	};
 
-	const handlePaginationNavigation = async () => {
+	const handlePaginationNavigation = async (newVariables: Var) => {
 		const params = page.url.searchParams;
 		const oldSearchParams = new URLSearchParams(params);
 
-		if (variables.first) {
-			params.set(FIRST, variables.first.toString());
+		if (newVariables.first) {
+			params.set(FIRST, newVariables.first.toString());
 
-			if (variables.after) {
-				params.set(AFTER, variables.after);
+			if (newVariables.after) {
+				params.set(AFTER, newVariables.after);
 			}
-		} else if (variables.last) {
-			params.set(LAST, variables.last.toString());
+		} else if (newVariables.last) {
+			params.set(LAST, newVariables.last.toString());
 
-			if (variables.before) {
-				params.set(BEFORE, variables.before);
+			if (newVariables.before) {
+				params.set(BEFORE, newVariables.before);
 			}
 		}
 
 		// sorting
-		if (variables.sortBy?.field) {
-			params.set(ORDER_BY_FIELD, variables.sortBy.field);
-			const direction = variables.sortBy.direction || OrderDirection.Asc; // if not set, default to ascending;
+		if (newVariables.sortBy?.field) {
+			params.set(ORDER_BY_FIELD, newVariables.sortBy.field);
+			const direction = newVariables.sortBy.direction || OrderDirection.Asc; // if not set, default to ascending;
 			params.set(ORDER_DIRECTION, direction);
 		}
 
 		// check for search query string change
 		if (searchKey) {
-			const query = get(variables, searchKey);
+			const query = get(newVariables, searchKey);
 			if (query) params.set(SEARCH_QUERY, query);
 		}
 
@@ -160,7 +158,7 @@
 
 	// listener for variable changes
 	$effect(() => {
-		handlePaginationNavigation();
+		handlePaginationNavigation(variables);
 	});
 
 	// listener for variables changed have been applied on the URL bar
@@ -396,11 +394,7 @@
 											<div class="flex-1">
 												{@render component({
 													onValue: (value) => {
-														setFilterItemValue(
-															key as keyof T,
-															filterOpt.operator as FilterOperator,
-															value,
-														);
+														setFilterItemValue(key as keyof T, filterOpt.operator, value);
 													},
 													initialValue: filterOpt.value,
 												})}
@@ -431,8 +425,7 @@
 					{/if}
 				</div>
 
-				<div>
-					<div class="border-t border-gray-200"></div>
+				<div class="border-t border-gray-200">
 					<div class="flex items-center justify-between mt-2">
 						<Button
 							startIcon={Plus}
