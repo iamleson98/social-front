@@ -10,6 +10,7 @@
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { orderStatusBadgeClass } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
+	import OrderLineMetadataModal from './order-line-metadata-modal.svelte';
 
 	type Props = {
 		order: Order;
@@ -55,6 +56,8 @@
 			child: metadata,
 		},
 	];
+
+	let orderLineIDForMetadataView = $state<string>();
 </script>
 
 {#snippet image({ item }: { item: OrderLine })}
@@ -90,11 +93,16 @@
 {/snippet}
 
 {#snippet isGift({ item }: { item: OrderLine })}
-	<Checkbox checked={item.isGift} disabled />
+	<Checkbox checked={item.isGift} size="sm" />
 {/snippet}
 
-{#snippet metadata()}
-	<Button size="sm" color="gray" variant="outline">View Metadata</Button>
+{#snippet metadata({ item }: { item: OrderLine })}
+	<Button
+		size="sm"
+		color="gray"
+		variant="outline"
+		onclick={() => (orderLineIDForMetadataView = item.id)}>View Metadata</Button
+	>
 {/snippet}
 
 <div class="bg-white rounded-lg border border-gray-200 p-3 flex flex-col gap-3">
@@ -102,12 +110,22 @@
 		<div class="flex items-center gap-2">
 			<div class="text-base font-medium">Order #{order.number}</div>
 			<Badge {...orderStatusBadgeClass(order.status)} rounded />
-			<div class="text-xs text-gray-500 font-medium">{dayjs(order.created).format(SitenameTimeFormat)}</div>
+			<div class="text-xs text-gray-500 font-medium">
+				{dayjs(order.created).format(SitenameTimeFormat)}
+			</div>
 		</div>
 	</SectionHeader>
-	<Table columns={PRODUCT_MODAL_COLUMNS} items={order.lines} />
+	<div class="overflow-x-auto">
+		<Table columns={PRODUCT_MODAL_COLUMNS} items={order.lines} />
+	</div>
 
 	<div class="text-right">
 		<Button size="sm">Fulfill</Button>
 	</div>
 </div>
+
+<OrderLineMetadataModal
+	orderID={order.id}
+	orderLineID={orderLineIDForMetadataView}
+	onClose={() => (orderLineIDForMetadataView = undefined)}
+/>

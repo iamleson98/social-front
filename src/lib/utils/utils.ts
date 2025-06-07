@@ -286,20 +286,23 @@ export const buildLinkWithRespectToChannel = (uri: string, event?: ServerLoadEve
 	return `${buildHomePageLink(event)}/${uri}`;
 };
 
+/** Checks if given user has all given permission codes */
+export const checkUserHasPermissions = (user: User, ...perms: PermissionEnum[]) => {
+	if (!perms.length) return true;
+
+	let count = 0;
+	for (const perm of user.userPermissions || []) {
+		if (perms.includes(perm.code)) count++;
+	}
+
+	return count === perms.length;
+}
+
 /**
 * Checks if given user has 3 perms: manage settings, manage staff, manage users.
  */
 export const userIsShopAdmin = (user: User) => {
-	let count = 0;
-
-	for (const perm of user.userPermissions || []) {
-		if (
-			perm.code === PermissionEnum.ManageSettings ||
-			perm.code === PermissionEnum.ManageStaff ||
-			perm.code === PermissionEnum.ManageUsers) count++;
-	}
-
-	return count === 3;
+	return checkUserHasPermissions(user, PermissionEnum.ManageSettings, PermissionEnum.ManageStaff, PermissionEnum.ManageUsers)
 };
 
 export function formatCurrency(value: number): string {

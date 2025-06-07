@@ -114,33 +114,119 @@ export const ORDER_DETAIL_QUERY = gql`
       statusDisplay
       userEmail
       customerNote
+      channel {
+        id
+        name
+        currencyCode
+        slug
+        defaultCountry {
+          code
+        }
+        orderSettings {
+          markAsPaidStrategy
+        }
+        isActive
+      }
       billingAddress {
+        id
         firstName
         lastName
         streetAddress1
+        streetAddress2
         city
         postalCode
         country {
+          code
           country
         }
+        countryArea
         phone
         companyName
+        cityArea
       }
       shippingAddress {
+        id
         firstName
         lastName
         streetAddress1
+        streetAddress2
         city
         postalCode
+        countryArea
         country {
+          code
           country
         }
         phone
         companyName
+        cityArea
       }
+      totalRemainingGrant {
+        amount
+        currency
+      }
+      totalGrantedRefund {
+        amount
+        currency
+      }
+      totalRefundPending {
+        amount
+        currency
+      }
+      totalRefunded {
+        amount
+        currency
+      }
+      totalAuthorizePending {
+        amount
+        currency
+      }
+      totalAuthorized {
+        amount
+        currency
+      }
+      totalCaptured {
+        amount
+        currency
+      }
+      totalCharged {
+        amount
+        currency
+      }
+      totalChargePending {
+        amount
+        currency
+      }
+      totalCancelPending {
+        amount
+        currency
+      }
+      totalBalance {
+        amount
+        currency
+      }
+      undiscountedTotal {
+        gross {
+          amount
+          currency
+        }
+        net {
+          amount
+          currency
+        }
+      }
+      totalCanceled {
+        amount
+        currency
+      }
+      actions
       shippingMethodName
       subtotal {
         gross {
+          amount
+          currency
+        }
+        net {
           amount
           currency
         }
@@ -156,18 +242,56 @@ export const ORDER_DETAIL_QUERY = gql`
           amount
           currency
         }
+        net {
+          amount
+          currency
+        }
+        tax {
+          amount
+          currency
+        }
       }
       lines {
         id
+        isShippingRequired
         quantity
+        isGift
+        quantityFulfilled
+        quantityToFulfill
         unitPrice {
           gross {
+            amount
+            currency
+          }
+          net {
+            amount
+            currency
+          }
+        }
+        unitDiscount {
+          amount
+          currency
+        }
+        unitDiscountValue
+        unitDiscountReason
+        unitDiscountType
+        undiscountedUnitPrice {
+          currency
+          gross {
+            amount
+            currency
+          }
+          net {
             amount
             currency
           }
         }
         totalPrice {
           gross {
+            amount
+            currency
+          }
+          net {
             amount
             currency
           }
@@ -189,10 +313,13 @@ export const ORDER_DETAIL_QUERY = gql`
       defaultWeightUnit
       fulfillmentAllowUnpaid
       fulfillmentAutoApprove
+      availablePaymentGateways {
+        name
+        id
+      }
     }
   }
 `;
-
 
 export const ORDER_UPDATE_MUTATION = gql`
 mutation OrderUpdate($id: ID!, $input: OrderUpdateInput!) {
@@ -200,6 +327,42 @@ mutation OrderUpdate($id: ID!, $input: OrderUpdateInput!) {
     errors {
       field
       message
+    }
+  }
+}`;
+
+export const ORDER_LINES_METADATA_QUERY = gql`
+query OrderLinesMetadata($id: ID!, $hasManageProducts: Boolean!) {
+  order(id: $id) {
+    lines {
+      id
+      productName
+      productSku
+      quantity
+      thumbnail {
+        url
+        alt
+      }
+      variant {
+        id
+        name
+        metadata {
+          key
+          value
+        }
+        privateMetadata @include(if: $hasManageProducts) {
+          key
+          value
+        }
+      }
+      metadata {
+        key
+        value
+      }
+      privateMetadata {
+        key
+        value
+      }
     }
   }
 }`;

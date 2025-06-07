@@ -129,6 +129,7 @@
 
 <div class="p-3 rounded-lg border border-gray-200 bg-white flex flex-col gap-3">
 	<SectionHeader>Order timeline</SectionHeader>
+	<Alert size="sm" bordered>The timeline below shows the history of all events related to this order. Each entry represents a single event along with its content or readable description.</Alert>
 
 	{#if $eventsQuery.fetching}
 		<SelectSkeleton size="sm" label />
