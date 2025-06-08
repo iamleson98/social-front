@@ -102,6 +102,105 @@ mutation OrderAddNote($id: ID!, $input: OrderAddNoteInput!) {
   }
 }`;
 
+export const PRODUCT_VARIANT_FRAGMENT = gql`
+fragment ProductVariantFragment on ProductVariant {
+  id
+  name
+  quantityAvailable
+  preorder {
+    endDate
+  }
+  stocks {
+    id
+    quantity
+    quantityAllocated
+    warehouse {
+      id
+      name
+    }
+  }
+  product {
+    id
+    isAvailableForPurchase
+  }
+}
+`;
+
+export const ORDER_LINE_FRAGMENT = gql`
+fragment OrderLineFragment on OrderLine {
+  metadata {
+    key
+    value
+  }
+  privateMetadata {
+    key
+    value
+  }
+  id
+  isShippingRequired
+  productName
+  productSku
+  isGift
+  quantity
+  quantityFulfilled
+  quantityToFulfill
+  totalPrice {
+    net {
+      amount
+      currency
+    }
+    gross {
+      amount
+      currency
+    }
+  }
+  unitDiscount {
+    amount
+    currency
+  }
+  unitDiscountValue
+  unitDiscountReason
+  unitDiscountType
+  undiscountedUnitPrice {
+    currency
+    gross {
+      amount
+      currency
+    }
+    net {
+      amount
+      currency
+    }
+  }
+  unitPrice {
+    gross {
+      amount
+      currency
+    }
+    net {
+      amount
+      currency
+    }
+  }
+  thumbnail {
+    url
+    alt
+  }
+  variant {
+    ...ProductVariantFragment
+  }
+  allocations {
+    id
+    quantity
+    warehouse {
+      id
+      name
+    }
+  }
+}
+${PRODUCT_VARIANT_FRAGMENT}
+`;
+
 export const ORDER_DETAIL_QUERY = gql`
   query OrderDetail($id: ID!) {
     order(id: $id) {
@@ -114,6 +213,31 @@ export const ORDER_DETAIL_QUERY = gql`
       statusDisplay
       userEmail
       customerNote
+      fulfillments {
+        id
+        metadata {
+          key
+          value
+        }
+        privateMetadata {
+          key
+          value
+        }
+        fulfillmentOrder
+        status
+        trackingNumber
+        warehouse {
+          id
+          name
+        }
+        lines {
+          id
+          quantity
+          orderLine {
+            ...OrderLineFragment
+          }
+        }
+      }
       channel {
         id
         name
@@ -252,57 +376,7 @@ export const ORDER_DETAIL_QUERY = gql`
         }
       }
       lines {
-        id
-        isShippingRequired
-        quantity
-        isGift
-        quantityFulfilled
-        quantityToFulfill
-        unitPrice {
-          gross {
-            amount
-            currency
-          }
-          net {
-            amount
-            currency
-          }
-        }
-        unitDiscount {
-          amount
-          currency
-        }
-        unitDiscountValue
-        unitDiscountReason
-        unitDiscountType
-        undiscountedUnitPrice {
-          currency
-          gross {
-            amount
-            currency
-          }
-          net {
-            amount
-            currency
-          }
-        }
-        totalPrice {
-          gross {
-            amount
-            currency
-          }
-          net {
-            amount
-            currency
-          }
-        }
-        productName
-        productSku
-        variantName
-        thumbnail {
-          url
-          alt
-        }
+        ...OrderLineFragment
       }
     }
     shop {
@@ -319,6 +393,7 @@ export const ORDER_DETAIL_QUERY = gql`
       }
     }
   }
+  ${ORDER_LINE_FRAGMENT}
 `;
 
 export const ORDER_UPDATE_MUTATION = gql`
@@ -363,6 +438,16 @@ query OrderLinesMetadata($id: ID!, $hasManageProducts: Boolean!) {
         key
         value
       }
+    }
+  }
+}`;
+
+export const ORDER_CANCEL_FULFILLMENT_MUTATION = gql`
+mutation OrderCancelFulfillment($id: ID!, $input: FulfillmentCancelInput!) {
+  orderFulfillmentCancel(id: $id, input: $input) {
+    errors {
+      field
+      message
     }
   }
 }`;

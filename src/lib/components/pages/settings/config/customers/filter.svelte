@@ -1,11 +1,6 @@
 <script lang="ts">
-	import FilterButton from '$lib/components/common/filter-box/filter-button.svelte';
 	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
-	import type {
-		FilterComponentType,
-		FilterProps,
-		FilterResult,
-	} from '$lib/components/common/filter-box/types';
+	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box/types';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Input } from '$lib/components/ui/Input';
 	import type { CustomerFilterInput, QueryCustomersArgs } from '$lib/gql/graphql';

@@ -4,7 +4,6 @@
 	import { page } from '$app/state';
 	import { checkoutStore } from '$lib/stores/app';
 	import {
-		Icon,
 		IonFlame,
 		Logout,
 		MingcuteHome,
@@ -111,12 +110,7 @@
 
 		<!-- search -->
 		<div>
-			<label class="input flex items-center gap-2 input-sm">
-				<Input placeholder="type something" size="sm" />
-				<span>
-					<Icon icon={Search} />
-				</span>
-			</label>
+			<Input placeholder="type something" startIcon={Search} size="sm" />
 		</div>
 	</div>
 	<div class="w-1/2 flex justify-between">

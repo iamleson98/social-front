@@ -8,6 +8,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import Filter from '$lib/components/pages/settings/orders/filter.svelte';
 	import { AppRoute } from '$lib/utils';
+	import PriceDisplay from '$lib/components/common/price-display.svelte';
 
 	const BATCH_LOAD = 20;
 
@@ -70,12 +71,7 @@
 {/snippet}
 
 {#snippet total({ item }: { item: Order })}
-	<div class="flex items-center justify-between gap-1">
-		<span class="text-gray-500 text-xs">{item.total.gross.currency}</span>
-		<span class="font-semibold text-blue-600 text-right">
-			{formatCurrency(item.total.gross.amount)}
-		</span>
-	</div>
+	<PriceDisplay amount={item.total.gross.amount} currency={item.total.gross.currency} />
 {/snippet}
 
 {#snippet email({ item }: { item: Order })}

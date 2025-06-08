@@ -1,4 +1,4 @@
-import { type Mutation, type Query, type SelectedAttribute, type User, AttributeInputTypeEnum, OrderDirection, PermissionEnum } from '$lib/gql/graphql';
+import { type Mutation, type Query, type SelectedAttribute, type User, AttributeInputTypeEnum, FulfillmentStatus, OrderDirection, PermissionEnum } from '$lib/gql/graphql';
 import type { AnyVariables, OperationResult } from '@urql/core';
 import editorJsToHtml from 'editorjs-html';
 import { AppRoute } from './routes';
@@ -366,6 +366,28 @@ export const orderStatusBadgeClass = (status: OrderStatus): BadgeAttr => {
 			return { text, color: 'orange', variant: 'light' };
 		default:
 			return { text, color: 'blue', variant: 'filled' };
+	}
+};
+
+export const fulfillmentStatusBadgeClass = (status: FulfillmentStatus): BadgeAttr => {
+	const text = startCase(lowerCase(status.replace(/_/g, ' ')));
+	switch (status) {
+		case FulfillmentStatus.Canceled:
+			return { text, color: 'red', variant: 'filled' };
+		case FulfillmentStatus.Fulfilled:
+			return { text, color: 'green', variant: 'filled' };
+		case FulfillmentStatus.Returned:
+			return { text, color: 'blue', variant: 'light' };
+		case FulfillmentStatus.Refunded:
+			return { text, color: 'green', variant: 'light' };
+		case FulfillmentStatus.RefundedAndReturned:
+			return { text, color: 'blue', variant: 'light' };
+		case FulfillmentStatus.Replaced:
+			return { text, color: 'orange', variant: 'filled' };
+		case FulfillmentStatus.WaitingForApproval:
+			return { text, color: 'blue', variant: 'light' };
+		default:
+			return { text, color: 'gray', variant: 'outline' };
 	}
 };
 

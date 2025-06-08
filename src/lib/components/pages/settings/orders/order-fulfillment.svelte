@@ -5,12 +5,22 @@
 	import { Checkbox } from '$lib/components/ui/Input';
 	import type { TableColumnProps } from '$lib/components/ui/Table';
 	import Table from '$lib/components/ui/Table/table.svelte';
-	import type { OrderLine, ProductOrderField } from '$lib/gql/graphql';
-	import type { Order } from '$lib/gql/graphql';
+	import {
+		FulfillmentStatus,
+		PaymentChargeStatusEnum,
+		type OrderLine,
+		type ProductOrderField,
+	} from '$lib/gql/graphql';
+	import type { FulfillmentLine, Order } from '$lib/gql/graphql';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
-	import { orderStatusBadgeClass } from '$lib/utils/utils';
+	import { fulfillmentStatusBadgeClass, orderStatusBadgeClass } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 	import OrderLineMetadataModal from './order-line-metadata-modal.svelte';
+	import PriceDisplay from '$lib/components/common/price-display.svelte';
+	import GeneralMetadataEditor from '../common/general-metadata-editor.svelte';
+	import { IconButton } from '$lib/components/ui/Button';
+	import { Trash } from '$lib/components/icons';
+	import FulfillmentCancelModal from './fulfillment-cancel-modal.svelte';
 
 	type Props = {
 		order: Order;
@@ -18,7 +28,7 @@
 
 	let { order }: Props = $props();
 
-	const PRODUCT_MODAL_COLUMNS: TableColumnProps<OrderLine, ProductOrderField>[] = [
+	const PRODUCT_MODAL_COLUMNS: TableColumnProps<FulfillmentLine, any>[] = [
 		{
 			title: 'Image',
 			child: image,
@@ -58,45 +68,54 @@
 	];
 
 	let orderLineIDForMetadataView = $state<string>();
+	let fulfillmentToCancelWarehouseID = $state<string>();
 </script>
 
-{#snippet image({ item }: { item: OrderLine })}
+{#snippet image({ item }: { item: FulfillmentLine })}
 	<div class="avatar">
 		<div class="w-9 rounded border border-gray-200">
-			<img src={item.thumbnail?.url} alt={item.thumbnail?.alt} />
+			<img src={item.orderLine?.thumbnail?.url} alt={item.orderLine?.thumbnail?.alt} />
 		</div>
 	</div>
 {/snippet}
 
-{#snippet product({ item }: { item: OrderLine })}
-	{item.productName}
+{#snippet product({ item }: { item: FulfillmentLine })}
+	{item.orderLine?.productName}
 {/snippet}
 
-{#snippet sku({ item }: { item: OrderLine })}
-	{item.productSku}
+{#snippet sku({ item }: { item: FulfillmentLine })}
+	{item.orderLine?.productSku}
 {/snippet}
 
-{#snippet variant({ item }: { item: OrderLine })}
-	{item.variantName}
+{#snippet variant({ item }: { item: FulfillmentLine })}
+	{item.orderLine?.variant?.name}
 {/snippet}
 
-{#snippet quantity({ item }: { item: OrderLine })}
-	{item.quantity}
+{#snippet quantity({ item }: { item: FulfillmentLine })}
+	<div class="text-center">{item.quantity}</div>
 {/snippet}
 
-{#snippet price({ item }: { item: OrderLine })}
-	{item.unitPrice.gross.amount}
+{#snippet price({ item }: { item: FulfillmentLine })}
+	<!-- {item.orderLine?.unitPrice.gross.amount} -->
+	<PriceDisplay
+		amount={item.orderLine?.unitPrice.gross.amount || 0}
+		currency={item.orderLine?.unitPrice.gross.currency || ''}
+	/>
 {/snippet}
 
-{#snippet total({ item }: { item: OrderLine })}
-	{item.totalPrice.gross.amount}
+{#snippet total({ item }: { item: FulfillmentLine })}
+	<!-- {item.orderLine?.totalPrice.gross.amount} -->
+	<PriceDisplay
+		amount={item.orderLine?.totalPrice.gross.amount || 0}
+		currency={item.orderLine?.totalPrice.gross.currency || ''}
+	/>
 {/snippet}
 
-{#snippet isGift({ item }: { item: OrderLine })}
-	<Checkbox checked={item.isGift} size="sm" />
+{#snippet isGift({ item }: { item: FulfillmentLine })}
+	<Checkbox checked={item.orderLine?.isGift} size="sm" disabled />
 {/snippet}
 
-{#snippet metadata({ item }: { item: OrderLine })}
+{#snippet metadata({ item }: { item: FulfillmentLine })}
 	<Button
 		size="sm"
 		color="gray"
@@ -115,17 +134,53 @@
 			</div>
 		</div>
 	</SectionHeader>
-	<div class="overflow-x-auto">
+	<!--<div class="overflow-x-auto">
 		<Table columns={PRODUCT_MODAL_COLUMNS} items={order.lines} />
 	</div>
 
 	<div class="text-right">
 		<Button size="sm">Fulfill</Button>
-	</div>
+	</div> -->
+	{#each order.fulfillments as fulfillment, idx (idx)}
+		<div class="border-b border-gray-200 flex flex-col gap-2 pb-2">
+			<SectionHeader>
+				<Badge {...fulfillmentStatusBadgeClass(fulfillment.status)} rounded />
+				<div class="flex items-center gap-2">
+					<span class="text-xs text-gray-500 font-medium">
+						Fulfilled from {fulfillment.warehouse?.name}
+					</span>
+					{#if fulfillment.status === FulfillmentStatus.Fulfilled}
+						<IconButton
+							icon={Trash}
+							size="xs"
+							variant="light"
+							color="red"
+							onclick={() => (fulfillmentToCancelWarehouseID = fulfillment.id)}
+						/>
+					{/if}
+				</div>
+			</SectionHeader>
+
+			<div class="overflow-x-auto">
+				<Table columns={PRODUCT_MODAL_COLUMNS} items={fulfillment.lines || []} />
+			</div>
+
+			<GeneralMetadataEditor
+				metadata={fulfillment.metadata}
+				privateMetadata={fulfillment.privateMetadata}
+				objectId={fulfillment.id}
+			/>
+		</div>
+	{/each}
 </div>
 
 <OrderLineMetadataModal
 	orderID={order.id}
 	orderLineID={orderLineIDForMetadataView}
 	onClose={() => (orderLineIDForMetadataView = undefined)}
+/>
+
+<FulfillmentCancelModal
+	fulfillmentID={fulfillmentToCancelWarehouseID}
+	onClose={() => (fulfillmentToCancelWarehouseID = undefined)}
 />
