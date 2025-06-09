@@ -53,13 +53,14 @@
 	onCancel={onClose}
 	{onClose}
 	onOk={() => (performUpdateMetadata = true)}
+	closeOnOutsideClick
 >
 	{#if $lineMetaQuery.fetching}
 		<SelectSkeleton label />
 	{:else if $lineMetaQuery.error}
 		<Alert variant="error" size="sm" bordered>{$lineMetaQuery.error.message}</Alert>
-	{:else if $lineMetaQuery.data}
-		{@const orderLine = $lineMetaQuery.data.order?.lines.find((line) => line.id === orderLineID)!}
+	{:else if $lineMetaQuery.data?.order}
+		{@const orderLine = $lineMetaQuery.data.order.lines.find((line) => line.id === orderLineID)!}
 		<div class="flex flex-col gap-2">
 			<div class="flex items-center gap-2">
 				<div class="avatar">

@@ -8,12 +8,16 @@
 	import { OrderStatus, type OrderLine } from '$lib/gql/graphql';
 	import { orderStatusBadgeClass } from '$lib/utils/utils';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
+	import { AppRoute } from '$lib/utils';
+	import { ExternalLink, Icon } from '$lib/components/icons';
+	import OrderLineMetadataModal from './order-line-metadata-modal.svelte';
 
 	type Props = {
 		orderLines: OrderLine[];
+		orderID: string;
 	};
 
-	let { orderLines }: Props = $props();
+	let { orderLines, orderID }: Props = $props();
 
 	const PRODUCT_MODAL_COLUMNS: TableColumnProps<OrderLine, any>[] = [
 		{
@@ -52,10 +56,13 @@
 			title: 'Metadata',
 			child: metadata,
 		},
+		{
+			title: 'Actions',
+			child: actions,
+		},
 	];
 
 	let orderLineIDForMetadataView = $state<string>();
-	// let fulfillmentToCancelWarehouseID = $state<string>();
 </script>
 
 {#snippet image({ item }: { item: OrderLine })}
@@ -64,6 +71,15 @@
 			<img src={item?.thumbnail?.url} alt={item?.thumbnail?.alt} />
 		</div>
 	</div>
+{/snippet}
+
+{#snippet actions({ item }: { item: OrderLine })}
+	<a
+		href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.variant!.product.id)}
+		class="flex justify-center text-blue-600"
+	>
+		<Icon icon={ExternalLink} />
+	</a>
 {/snippet}
 
 {#snippet product({ item }: { item: OrderLine })}
@@ -123,13 +139,8 @@
 	</div>
 </div>
 
-<!-- <OrderLineMetadataModal
-	orderID={order.id}
+<OrderLineMetadataModal
+	{orderID}
 	orderLineID={orderLineIDForMetadataView}
 	onClose={() => (orderLineIDForMetadataView = undefined)}
-/> -->
-
-<!-- <FulfillmentCancelModal
-	fulfillmentID={fulfillmentToCancelWarehouseID}
-	onClose={() => (fulfillmentToCancelWarehouseID = undefined)}
-/> -->
+/>

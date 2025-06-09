@@ -18,6 +18,7 @@
 	import FulfillmentCancelModal from './fulfillment-cancel-modal.svelte';
 	import OrderLines from './order-lines.svelte';
 	import { AppRoute } from '$lib/utils';
+	import { differenceBy } from 'es-toolkit';
 
 	type Props = {
 		order: Order;
@@ -70,6 +71,16 @@
 
 	let orderLineIDForMetadataView = $state<string>();
 	let fulfillmentToCancelWarehouseID = $state<string>();
+
+	let unfulfilledOrderLines = $derived.by(() => {
+		const fulfilledOrderLines = order.fulfillments
+			.filter((item) => item.status === FulfillmentStatus.Fulfilled)
+			.flatMap((item) => item.lines || [])
+			.map((item) => item.orderLine)
+			.filter(Boolean);
+
+		return differenceBy(order.lines, fulfilledOrderLines, (item) => item?.id);
+	});
 </script>
 
 {#snippet image({ item }: { item: FulfillmentLine })}
@@ -128,7 +139,7 @@
 		size="sm"
 		color="gray"
 		variant="outline"
-		onclick={() => (orderLineIDForMetadataView = item.id)}>View Metadata</Button
+		onclick={() => (orderLineIDForMetadataView = item.orderLine!.id)}>View Metadata</Button
 	>
 {/snippet}
 
@@ -143,8 +154,8 @@
 		</div>
 	</SectionHeader>
 
-	{#if order.lines.length}
-		<OrderLines orderLines={order.lines} />
+	{#if unfulfilledOrderLines.length}
+		<OrderLines orderLines={unfulfilledOrderLines} orderID={order.id} />
 	{/if}
 
 	{#each order.fulfillments as fulfillment, idx (idx)}
