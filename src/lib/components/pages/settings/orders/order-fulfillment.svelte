@@ -5,12 +5,7 @@
 	import { Checkbox } from '$lib/components/ui/Input';
 	import type { TableColumnProps } from '$lib/components/ui/Table';
 	import Table from '$lib/components/ui/Table/table.svelte';
-	import {
-		FulfillmentStatus,
-		PaymentChargeStatusEnum,
-		type OrderLine,
-		type ProductOrderField,
-	} from '$lib/gql/graphql';
+	import { FulfillmentStatus } from '$lib/gql/graphql';
 	import type { FulfillmentLine, Order } from '$lib/gql/graphql';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { fulfillmentStatusBadgeClass, orderStatusBadgeClass } from '$lib/utils/utils';
@@ -19,8 +14,10 @@
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import GeneralMetadataEditor from '../common/general-metadata-editor.svelte';
 	import { IconButton } from '$lib/components/ui/Button';
-	import { Trash } from '$lib/components/icons';
+	import { ExternalLink, Icon, Trash } from '$lib/components/icons';
 	import FulfillmentCancelModal from './fulfillment-cancel-modal.svelte';
+	import OrderLines from './order-lines.svelte';
+	import { AppRoute } from '$lib/utils';
 
 	type Props = {
 		order: Order;
@@ -65,6 +62,10 @@
 			title: 'Metadata',
 			child: metadata,
 		},
+		{
+			title: 'Actions',
+			child: actions,
+		},
 	];
 
 	let orderLineIDForMetadataView = $state<string>();
@@ -91,12 +92,20 @@
 	{item.orderLine?.variant?.name}
 {/snippet}
 
+{#snippet actions({ item }: { item: FulfillmentLine })}
+	<a
+		href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.orderLine!.variant!.product.id)}
+		class="flex justify-center text-blue-600"
+	>
+		<Icon icon={ExternalLink} />
+	</a>
+{/snippet}
+
 {#snippet quantity({ item }: { item: FulfillmentLine })}
 	<div class="text-center">{item.quantity}</div>
 {/snippet}
 
 {#snippet price({ item }: { item: FulfillmentLine })}
-	<!-- {item.orderLine?.unitPrice.gross.amount} -->
 	<PriceDisplay
 		amount={item.orderLine?.unitPrice.gross.amount || 0}
 		currency={item.orderLine?.unitPrice.gross.currency || ''}
@@ -104,7 +113,6 @@
 {/snippet}
 
 {#snippet total({ item }: { item: FulfillmentLine })}
-	<!-- {item.orderLine?.totalPrice.gross.amount} -->
 	<PriceDisplay
 		amount={item.orderLine?.totalPrice.gross.amount || 0}
 		currency={item.orderLine?.totalPrice.gross.currency || ''}
@@ -134,13 +142,11 @@
 			</div>
 		</div>
 	</SectionHeader>
-	<!--<div class="overflow-x-auto">
-		<Table columns={PRODUCT_MODAL_COLUMNS} items={order.lines} />
-	</div>
 
-	<div class="text-right">
-		<Button size="sm">Fulfill</Button>
-	</div> -->
+	{#if order.lines.length}
+		<OrderLines orderLines={order.lines} />
+	{/if}
+
 	{#each order.fulfillments as fulfillment, idx (idx)}
 		<div class="border-b border-gray-200 flex flex-col gap-2 pb-2">
 			<SectionHeader>

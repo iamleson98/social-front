@@ -112,7 +112,11 @@
 							{#if column?.startIcon}
 								<Icon icon={column.startIcon} size="sm" />
 							{/if}
-							<span>{column.title}</span>
+							{#if typeof column.title === 'string'}
+								<span>{column.title}</span>
+							{:else}
+								{@render column.title()}
+							{/if}
 							{#if column?.endIcon}
 								<Icon icon={column.endIcon} size="sm" />
 							{/if}

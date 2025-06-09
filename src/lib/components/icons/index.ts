@@ -112,6 +112,7 @@ export {
   TablerCalendarClock as CalendarClock,
   TablerBan as Ban,
   TablerTicket as Ticket,
+  TablerExternalLink as ExternalLink,
 } from './consts';
 
 export { default as Icon } from './icon.svelte';
