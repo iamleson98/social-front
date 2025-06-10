@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { operationStore } from '$lib/api/operation';
-	import type {
-		Mutation,
-		MutationOrderUpdateArgs,
-		OrderUpdateInput,
-		Query,
-		QueryOrderArgs,
+	import {
+		FulfillmentStatus,
+		type Mutation,
+		type MutationOrderUpdateArgs,
+		type OrderUpdateInput,
+		type Query,
+		type QueryOrderArgs,
 	} from '$lib/gql/graphql';
 	import { page } from '$app/state';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
@@ -79,8 +80,8 @@
 			<OrderFulfillment {order} />
 			<OrderPaymentBalance {order} />
 			<GeneralMetadataEditor
-				metadata={[]}
-				privateMetadata={[]}
+				metadata={order.metadata}
+				privateMetadata={order.privateMetadata}
 				objectId={order.id}
 				disabled={loading}
 				bind:performUpdateMetadata

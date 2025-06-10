@@ -213,6 +213,14 @@ export const ORDER_DETAIL_QUERY = gql`
       statusDisplay
       userEmail
       customerNote
+      metadata {
+        key
+        value
+      }
+      privateMetadata {
+        key
+        value
+      }
       fulfillments {
         id
         metadata {
@@ -445,6 +453,16 @@ query OrderLinesMetadata($id: ID!, $hasManageProducts: Boolean!) {
 export const ORDER_CANCEL_FULFILLMENT_MUTATION = gql`
 mutation OrderCancelFulfillment($id: ID!, $input: FulfillmentCancelInput!) {
   orderFulfillmentCancel(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const ORDER_FULFILL_MUTATION = gql`
+mutation OrderFulfill($id: ID!, $input: OrderFulfillInput!) {
+  orderFulfill(id: $id, input: $input) {
     errors {
       field
       message

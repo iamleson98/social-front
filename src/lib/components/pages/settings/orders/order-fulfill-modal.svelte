@@ -3,7 +3,12 @@
 	import { Modal } from '$lib/components/ui/Modal';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
-	import type { OrderLine } from '$lib/gql/graphql';
+	import type {
+		OrderFulfillInput,
+		OrderFulfillLineInput,
+		OrderFulfillStockInput,
+		OrderLine,
+	} from '$lib/gql/graphql';
 
 	type Props = {
 		orderLines: OrderLine[];
@@ -35,6 +40,18 @@
 			child: warehouse,
 		},
 	];
+
+	let orderFulfillInput = $state<OrderFulfillInput>({
+		lines: orderLines.map<OrderFulfillLineInput>((item) => ({
+			orderLineId: item.id,
+			stocks: item.allocations?.length
+				? item.allocations.map<OrderFulfillStockInput>((allocation) => ({
+						quantity: allocation.quantity,
+						warehouse: allocation.warehouse.id,
+					}))
+				: [],
+		})),
+	});
 </script>
 
 {#snippet image({ item }: { item: OrderLine })}
@@ -50,8 +67,7 @@
 {/snippet}
 
 {#snippet stock({ item }: { item: OrderLine })}
-	<!-- {item.allocations} -->
-   <span></span>
+	<span></span>
 {/snippet}
 
 {#snippet warehouse({ item }: { item: OrderLine })}
@@ -65,13 +81,18 @@
 {/snippet}
 
 {#snippet quantity({ item }: { item: OrderLine })}
-	<Input
-		placeholder="Set order line quantity"
-		type="number"
-		value={item.quantity}
-		min={item.quantity}
-		size="sm"
-	/>
+	<div class="flex items-center gap-1">
+		<Input
+			placeholder="Set order line quantity"
+			type="number"
+			value={item.quantity}
+			min={item.quantity}
+			size="sm"
+		/>
+		<div class="">
+			/{item.quantity}
+		</div>
+	</div>
 {/snippet}
 
 <Modal
