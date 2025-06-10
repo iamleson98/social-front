@@ -6,11 +6,12 @@
 	import type { TableColumnProps } from '$lib/components/ui/Table';
 	import Table from '$lib/components/ui/Table/table.svelte';
 	import { OrderStatus, type OrderLine } from '$lib/gql/graphql';
-	import { orderStatusBadgeClass } from '$lib/utils/utils';
+	import { orderStatusBadgeClass, stringSlicer } from '$lib/utils/utils';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import { AppRoute } from '$lib/utils';
 	import { ExternalLink, Icon } from '$lib/components/icons';
 	import OrderLineMetadataModal from './order-line-metadata-modal.svelte';
+	import OrderFulfillModal from './order-fulfill-modal.svelte';
 
 	type Props = {
 		orderLines: OrderLine[];
@@ -63,6 +64,8 @@
 	];
 
 	let orderLineIDForMetadataView = $state<string>();
+
+	let openFulfillModal = $state(false);
 </script>
 
 {#snippet image({ item }: { item: OrderLine })}
@@ -83,15 +86,15 @@
 {/snippet}
 
 {#snippet product({ item }: { item: OrderLine })}
-	{item?.productName}
+	<span title={item.productName}>{stringSlicer(item.productName, 60)}</span>
 {/snippet}
 
 {#snippet sku({ item }: { item: OrderLine })}
-	{item?.productSku}
+	{item.productSku || '-'}
 {/snippet}
 
 {#snippet variant({ item }: { item: OrderLine })}
-	{item?.variant?.name}
+	{item.variant?.name}
 {/snippet}
 
 {#snippet quantity({ item }: { item: OrderLine })}
@@ -135,7 +138,7 @@
 	</div>
 
 	<div class="text-right">
-		<Button size="sm">Fulfill</Button>
+		<Button size="sm" onclick={() => (openFulfillModal = true)}>Fulfill</Button>
 	</div>
 </div>
 
@@ -143,4 +146,10 @@
 	{orderID}
 	orderLineID={orderLineIDForMetadataView}
 	onClose={() => (orderLineIDForMetadataView = undefined)}
+/>
+
+<OrderFulfillModal
+	open={openFulfillModal}
+	onClose={() => (openFulfillModal = false)}
+	{orderLines}
 />

@@ -154,23 +154,23 @@
 							<IconButton icon={GripVertical} size="xs" color="gray" variant="light" {disabled} />
 						</div>
 					</td>
-					{@render customTr(item, columns)}
+					{@render customTr(item, columns, idx)}
 				</tr>
 			{/each}
 		{:else}
 			{#each items as item, idx (idx)}
 				<tr>
-					{@render customTr(item, columns)}
+					{@render customTr(item, columns, idx)}
 				</tr>
 			{/each}
 		{/if}
 	</tbody>
 </table>
 
-{#snippet customTr(item: T, columns: TableColumnProps<T, K>[])}
+{#snippet customTr(item: T, columns: TableColumnProps<T, K>[], itemIdx: number)}
 	{#each columns as column, idx (idx)}
 		<td class="px-1! py-2!">
-			{@render column.child({ item })}
+			{@render column.child({ item, idx: itemIdx })}
 		</td>
 	{/each}
 {/snippet}

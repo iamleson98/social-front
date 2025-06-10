@@ -32,10 +32,10 @@
 		</div>
 		<div class="flex justify-between">
 			<span>Taxes</span>
-			<span
-				>{order.total.gross.amount - order.subtotal.gross.amount - order.shippingPrice.gross.amount}
-				{order.total.gross.currency}</span
-			>
+			<span>
+				{order.total.gross.amount - order.subtotal.gross.amount - order.shippingPrice.gross.amount}
+				{order.total.gross.currency}
+			</span>
 		</div>
 		<div class="flex justify-between font-semibold">
 			<span>Total</span>

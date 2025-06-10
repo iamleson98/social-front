@@ -47,7 +47,7 @@ export type TableColumnProps<T extends Record<string, unknown>, K extends string
    * The content of each row in the column.
    * @param item the item of the row
    */
-  child: Snippet<[{ item: T }]>;
+  child: Snippet<[{ item: T, idx: number }]>;
 };
 
 export type SortDirection = OrderDirection | 'NEUTRAL';

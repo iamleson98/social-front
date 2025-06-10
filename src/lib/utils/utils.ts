@@ -444,4 +444,10 @@ export function formatBytes(bytes: number): string {
 	const i: number = Math.floor(Math.log(bytes) / Math.log(1024));
 	const formattedSize: string = (bytes / Math.pow(1024, i)).toFixed(2);
 	return `${formattedSize} ${sizes[i]}`;
-}
+};
+
+export const stringSlicer = (str?: string, len: number = 100) => {
+	if (len === 0 || !str) return '-';
+
+	return str.slice(0, len) + "...";
+};

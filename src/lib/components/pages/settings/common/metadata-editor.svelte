@@ -93,7 +93,7 @@
 	};
 </script>
 
-<Accordion header={title} class={className}>
+<Accordion header={`${title} (${data.length})`} class={className}>
 	{#each activeMetadata as item, idx (idx)}
 		<div class="flex gap-2 items-start mb-3">
 			<div class="flex items-start gap-2 flex-4/5">

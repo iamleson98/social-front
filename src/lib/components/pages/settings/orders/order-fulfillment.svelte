@@ -8,7 +8,7 @@
 	import { FulfillmentStatus } from '$lib/gql/graphql';
 	import type { FulfillmentLine, Order } from '$lib/gql/graphql';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
-	import { fulfillmentStatusBadgeClass, orderStatusBadgeClass } from '$lib/utils/utils';
+	import { fulfillmentStatusBadgeClass, orderStatusBadgeClass, stringSlicer } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 	import OrderLineMetadataModal from './order-line-metadata-modal.svelte';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
@@ -92,7 +92,7 @@
 {/snippet}
 
 {#snippet product({ item }: { item: FulfillmentLine })}
-	{item.orderLine?.productName}
+	<span title={item.orderLine?.productName}>{stringSlicer(item.orderLine?.productName, 60)}</span>
 {/snippet}
 
 {#snippet sku({ item }: { item: FulfillmentLine })}
