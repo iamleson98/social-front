@@ -2,13 +2,20 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Checkbox } from '$lib/components/ui/Input';
+	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import type { TableColumnProps } from '$lib/components/ui/Table';
 	import Table from '$lib/components/ui/Table/table.svelte';
 	import { FulfillmentStatus } from '$lib/gql/graphql';
-	import type { FulfillmentLine, Order } from '$lib/gql/graphql';
+	import type {
+		FulfillmentLine,
+		Mutation,
+		MutationOrderFulfillArgs,
+		MutationOrderFulfillmentUpdateTrackingArgs,
+		Order,
+	} from '$lib/gql/graphql';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import {
+		checkIfGraphqlResultHasError,
 		fulfillmentStatusBadgeClass,
 		orderStatusBadgeClass,
 		stringSlicer,
@@ -23,12 +30,19 @@
 	import OrderLines from './order-lines.svelte';
 	import { AppRoute } from '$lib/utils';
 	import { differenceBy } from 'es-toolkit';
+	import { Modal } from '$lib/components/ui/Modal';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { ORDER_FULFILLMENT_UPDATE_TRACKING_MUTATION } from '$lib/api/admin/orders';
 
 	type Props = {
 		order: Order;
 	};
 
 	let { order }: Props = $props();
+
+	let openModal = $state(false);
+	let loading = $state(false);
+	let trackingNumber = $state('');
 
 	const PRODUCT_MODAL_COLUMNS: TableColumnProps<FulfillmentLine, any>[] = [
 		{
@@ -75,6 +89,7 @@
 
 	let orderLineIDForMetadataView = $state<string>();
 	let fulfillmentToCancelWarehouseID = $state<string>();
+	let selectedFulfillment = $state<(typeof order.fulfillments)[0]>();
 
 	let unfulfilledOrderLines = $derived.by(() => {
 		const fulfilledOrderLines = order.fulfillments
@@ -85,6 +100,34 @@
 
 		return differenceBy(order.lines, fulfilledOrderLines, (item) => item?.id);
 	});
+
+	const editTracking = async () => {
+		loading = true;
+
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'orderFulfillmentUpdateTracking'>,
+			MutationOrderFulfillmentUpdateTrackingArgs
+		>(ORDER_FULFILLMENT_UPDATE_TRACKING_MUTATION, {
+			id: order.fulfillments[0].id as string,
+			input: {
+				trackingNumber: trackingNumber,
+				notifyCustomer: true,
+			},
+		});
+
+		loading = false;
+
+		if (
+			!checkIfGraphqlResultHasError(
+				result,
+				'orderFulfillmentUpdateTracking',
+				'Fulfillment added successfully',
+			)
+		) {
+			openModal = false;
+			trackingNumber = '';
+		}
+	};
 </script>
 
 {#snippet image({ item }: { item: FulfillmentLine })}
@@ -179,12 +222,26 @@
 							onclick={() => (fulfillmentToCancelWarehouseID = fulfillment.id)}
 						/>
 					{/if}
+					<Button
+						size="xs"
+						onclick={() => {
+							selectedFulfillment = fulfillment;
+							trackingNumber = fulfillment.trackingNumber as string;
+							openModal = true;
+						}}>{fulfillment.trackingNumber ? 'Edit tracking' : 'Add tracking'}</Button
+					>
 				</div>
 			</SectionHeader>
 
 			<div class="overflow-x-auto">
 				<Table columns={PRODUCT_MODAL_COLUMNS} items={fulfillment.lines || []} />
 			</div>
+			{#if fulfillment.trackingNumber}
+				<div class="text-xs text-gray-500 font-medium flex flex-col gap-2">
+					<div>Fulfilled from: {fulfillment.warehouse?.name}</div>
+					<div>Tracking number: {fulfillment.trackingNumber}</div>
+				</div>
+			{/if}
 
 			<GeneralMetadataEditor
 				metadata={fulfillment.metadata}
@@ -205,3 +262,18 @@
 	fulfillmentID={fulfillmentToCancelWarehouseID}
 	onClose={() => (fulfillmentToCancelWarehouseID = undefined)}
 />
+
+<Modal
+	open={openModal}
+	size="md"
+	onClose={() => (openModal = false)}
+	onCancel={() => (openModal = false)}
+	onOk={() => editTracking()}
+	closeOnOutsideClick
+	closeOnEscape
+	header="Add/Update tracking"
+>
+	<div>
+		<Input placeholder="Tracking number" bind:value={trackingNumber} />
+	</div>
+</Modal>

@@ -469,3 +469,13 @@ mutation OrderFulfill($id: ID!, $input: OrderFulfillInput!) {
     }
   }
 }`;
+
+export const ORDER_FULFILLMENT_UPDATE_TRACKING_MUTATION = gql`
+mutation OrderFulfillmentUpdateTracking($id: ID!, $input: FulfillmentUpdateTrackingInput!) {
+  orderFulfillmentUpdateTracking(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
