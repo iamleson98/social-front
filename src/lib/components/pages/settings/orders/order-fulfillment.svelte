@@ -2,13 +2,20 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Checkbox } from '$lib/components/ui/Input';
+	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import type { TableColumnProps } from '$lib/components/ui/Table';
 	import Table from '$lib/components/ui/Table/table.svelte';
 	import { FulfillmentStatus } from '$lib/gql/graphql';
-	import type { FulfillmentLine, Order } from '$lib/gql/graphql';
+	import type {
+		Fulfillment,
+		FulfillmentLine,
+		Mutation,
+		MutationOrderFulfillmentUpdateTrackingArgs,
+		Order,
+	} from '$lib/gql/graphql';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import {
+		checkIfGraphqlResultHasError,
 		fulfillmentStatusBadgeClass,
 		orderStatusBadgeClass,
 		stringSlicer,
@@ -23,12 +30,20 @@
 	import OrderLines from './order-lines.svelte';
 	import { AppRoute } from '$lib/utils';
 	import { differenceBy } from 'es-toolkit';
+	import { Modal } from '$lib/components/ui/Modal';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { ORDER_FULFILLMENT_UPDATE_TRACKING_MUTATION } from '$lib/api/admin/orders';
 
 	type Props = {
 		order: Order;
+		onUpdateTrackingCode: () => void;
 	};
 
-	let { order }: Props = $props();
+	let { order, onUpdateTrackingCode }: Props = $props();
+
+	let openTrackingModal = $state(false);
+	let loading = $state(false);
+	let trackingCode = $state('');
 
 	const PRODUCT_MODAL_COLUMNS: TableColumnProps<FulfillmentLine, any>[] = [
 		{
@@ -75,6 +90,7 @@
 
 	let orderLineIDForMetadataView = $state<string>();
 	let fulfillmentToCancelWarehouseID = $state<string>();
+	let selectedFulfillment = $state<Fulfillment>();
 
 	let unfulfilledOrderLines = $derived.by(() => {
 		const fulfilledOrderLines = order.fulfillments
@@ -85,6 +101,37 @@
 
 		return differenceBy(order.lines, fulfilledOrderLines, (item) => item?.id);
 	});
+
+	const editTrackingCode = async () => {
+		if (!selectedFulfillment) return;
+
+		loading = true;
+
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'orderFulfillmentUpdateTracking'>,
+			MutationOrderFulfillmentUpdateTrackingArgs
+		>(ORDER_FULFILLMENT_UPDATE_TRACKING_MUTATION, {
+			id: selectedFulfillment.id,
+			input: {
+				trackingNumber: trackingCode,
+				notifyCustomer: false,
+			},
+		});
+
+		loading = false;
+
+		if (
+			!checkIfGraphqlResultHasError(
+				result,
+				'orderFulfillmentUpdateTracking',
+				'Tracking code updated successfully',
+			)
+		) {
+			openTrackingModal = false;
+			trackingCode = '';
+			onUpdateTrackingCode();
+		}
+	};
 </script>
 
 {#snippet image({ item }: { item: FulfillmentLine })}
@@ -179,6 +226,14 @@
 							color="red"
 							onclick={() => (fulfillmentToCancelWarehouseID = fulfillment.id)}
 						/>
+						<Button
+							size="xs"
+							onclick={() => {
+								selectedFulfillment = fulfillment;
+								trackingCode = fulfillment.trackingNumber as string;
+								openTrackingModal = true;
+							}}>{fulfillment.trackingNumber ? 'Edit tracking' : 'Add tracking'}</Button
+						>
 					{/if}
 				</div>
 			</SectionHeader>
@@ -186,6 +241,12 @@
 			<div class="overflow-x-auto">
 				<Table columns={PRODUCT_MODAL_COLUMNS} items={fulfillment.lines || []} />
 			</div>
+			{#if fulfillment.trackingNumber}
+				<div class="text-xs text-gray-500">
+					<div class="mb-1">Fulfilled from: {fulfillment.warehouse?.name}</div>
+					<div>Tracking code: {fulfillment.trackingNumber}</div>
+				</div>
+			{/if}
 
 			<GeneralMetadataEditor
 				metadata={fulfillment.metadata}
@@ -206,3 +267,24 @@
 	fulfillmentID={fulfillmentToCancelWarehouseID}
 	onClose={() => (fulfillmentToCancelWarehouseID = undefined)}
 />
+
+<Modal
+	open={openTrackingModal}
+	size="sm"
+	onClose={() => (openTrackingModal = false)}
+	onCancel={() => (openTrackingModal = false)}
+	onOk={editTrackingCode}
+	closeOnOutsideClick
+	closeOnEscape
+	disableElements={loading}
+	header="Add/Update tracking code"
+>
+	<div>
+		<Input
+			disabled={loading}
+			placeholder="Tracking code"
+			bind:value={trackingCode}
+			label="Tracking code"
+		/>
+	</div>
+</Modal>
