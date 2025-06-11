@@ -3,7 +3,7 @@
 	import Table from './table.svelte';
 	import type { GraphqlPaginationArgs, RowOptions, SortState, TableProps } from './types';
 	import { operationStore } from '$lib/api/operation';
-	import { OrderDirection, type PageInfo, type Query } from '$lib/gql/graphql';
+	import { type PageInfo, type Query } from '$lib/gql/graphql';
 	import TableSkeleton from './table-skeleton.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { tick } from 'svelte';

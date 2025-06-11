@@ -122,6 +122,10 @@ fragment ProductVariantFragment on ProductVariant {
   product {
     id
     isAvailableForPurchase
+    slug
+  }
+  preorder {
+    globalThreshold
   }
 }
 `;
@@ -415,7 +419,7 @@ mutation OrderUpdate($id: ID!, $input: OrderUpdateInput!) {
 }`;
 
 export const ORDER_LINES_METADATA_QUERY = gql`
-query OrderLinesMetadata($id: ID!, $hasManageProducts: Boolean!) {
+query OrderLinesMetadata($id: ID!, $hasManageProductPerms: Boolean!) {
   order(id: $id) {
     lines {
       id
@@ -433,7 +437,7 @@ query OrderLinesMetadata($id: ID!, $hasManageProducts: Boolean!) {
           key
           value
         }
-        privateMetadata @include(if: $hasManageProducts) {
+        privateMetadata @include(if: $hasManageProductPerms) {
           key
           value
         }

@@ -20,8 +20,6 @@
 		QueryProductArgs,
 		ProductType
 	} from '$lib/gql/graphql';
-	import { CHANNEL_KEY } from '$lib/utils/consts';
-	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import { onMount } from 'svelte';
 
 	const NOW = new Date();
@@ -31,7 +29,6 @@
 		query: PRODUCT_DETAIL_QUERY,
 		variables: {
 			slug: page.params.slug,
-			channel: clientSideGetCookieOrDefault(CHANNEL_KEY)
 		},
 		requestPolicy: 'cache-and-network'
 	});

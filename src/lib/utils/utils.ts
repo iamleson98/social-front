@@ -448,6 +448,7 @@ export function formatBytes(bytes: number): string {
 
 export const stringSlicer = (str?: string, len: number = 100) => {
 	if (len === 0 || !str) return '-';
+	if (str.length < len) return str;
 
 	return str.slice(0, len) + "...";
 };

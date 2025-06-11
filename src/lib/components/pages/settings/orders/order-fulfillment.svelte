@@ -109,8 +109,9 @@
 
 {#snippet actions({ item }: { item: FulfillmentLine })}
 	<a
-		href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.orderLine!.variant!.product.id)}
+		href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.orderLine!.variant!.product.slug)}
 		class="flex justify-center text-blue-600"
+		target="_blank"
 	>
 		<Icon icon={ExternalLink} />
 	</a>
@@ -150,7 +151,7 @@
 <div class="bg-white rounded-lg border border-gray-200 p-3 flex flex-col gap-3">
 	<SectionHeader>
 		<div class="flex items-center gap-2">
-			<div class="text-base font-medium">Order #{order.number}</div>
+			<div>Order #{order.number}</div>
 			<Badge {...orderStatusBadgeClass(order.status)} rounded />
 			<div class="text-xs text-gray-500 font-medium">
 				{dayjs(order.created).format(SitenameTimeFormat)}

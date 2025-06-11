@@ -22,7 +22,7 @@
 
 	const lineMetaQuery = operationStore<
 		Pick<Query, 'order'>,
-		QueryOrderArgs & { hasManageProducts: boolean }
+		QueryOrderArgs & { hasManageProductPerms: boolean }
 	>({
 		kind: 'query',
 		query: ORDER_LINES_METADATA_QUERY,
@@ -32,14 +32,14 @@
 
 	$effect(() => {
 		if (orderID && orderLineID && $READ_ONLY_USER_STORE) {
-			const hasManageProducts = checkUserHasPermissions(
+			const hasManageProductPerms = checkUserHasPermissions(
 				$READ_ONLY_USER_STORE,
 				PermissionEnum.ManageProducts,
 			);
 			lineMetaQuery.reexecute({
 				variables: {
 					id: orderID,
-					hasManageProducts,
+					hasManageProductPerms,
 				},
 			});
 		}
@@ -95,9 +95,9 @@
 
 				<div>
 					<div class="text-sm font-medium text-gray-800">Product variant metadata</div>
-					<Alert size="sm" bordered
-						>This is a metadata of the variant that is being used in this ordered item</Alert
-					>
+					<Alert size="sm" bordered>
+						This is a metadata of the variant that is being used in this ordered item
+					</Alert>
 				</div>
 
 				<GeneralMetadataEditor

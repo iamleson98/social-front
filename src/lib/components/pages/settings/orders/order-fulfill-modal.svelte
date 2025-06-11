@@ -28,6 +28,10 @@
 			child: name,
 		},
 		{
+			title: 'SKU',
+			child: sku,
+		},
+		{
 			title: 'Quantity',
 			child: quantity,
 		},
@@ -42,16 +46,41 @@
 	];
 
 	let orderFulfillInput = $state<OrderFulfillInput>({
-		lines: orderLines.map<OrderFulfillLineInput>((item) => ({
-			orderLineId: item.id,
-			stocks: item.allocations?.length
-				? item.allocations.map<OrderFulfillStockInput>((allocation) => ({
-						quantity: allocation.quantity,
-						warehouse: allocation.warehouse.id,
-					}))
-				: [],
-		})),
+		lines: orderLines.map<OrderFulfillLineInput>((item) => {
+			let stocks: Partial<OrderFulfillStockInput>[] = [];
+
+			if (!item.variant?.preorder) {
+				const highestAllocationWarehouse = item.allocations?.reduce(
+					(acc, cur) => (!acc || acc.quantity < cur.quantity ? cur : acc),
+					null as any,
+				);
+
+				stocks = [
+					{
+						quantity: item.quantityToFulfill,
+						warehouse: highestAllocationWarehouse?.warehouse?.id,
+					},
+				];
+			}
+
+			return {
+				orderLineId: item.id,
+				stocks: stocks as OrderFulfillStockInput[],
+			};
+		}),
 	});
+
+	const handleWarehouseChange = (lineIndex: number, warehouseId?: string) => {
+		if (orderFulfillInput.lines[lineIndex].stocks.length)
+			orderFulfillInput.lines[lineIndex].stocks[0].warehouse = warehouseId as string;
+	};
+
+	const handleQuantityChange = (lineIndex: number, evt: Event) => {
+		if (orderFulfillInput.lines[lineIndex].stocks.length)
+			orderFulfillInput.lines[lineIndex].stocks[0].quantity = Math.floor(
+				Number((evt.target as HTMLInputElement).value),
+			);
+	};
 </script>
 
 {#snippet image({ item }: { item: OrderLine })}
@@ -66,28 +95,58 @@
 	<span>{item.productName}</span>
 {/snippet}
 
-{#snippet stock({ item }: { item: OrderLine })}
-	<span></span>
+{#snippet sku({ item }: { item: OrderLine })}
+	<span>{item.productSku}</span>
 {/snippet}
 
-{#snippet warehouse({ item }: { item: OrderLine })}
-	{@const selectOptions =
-		item.variant?.stocks?.map<SelectOption>((item) => ({
-			label: item.warehouse.name,
-			value: item.warehouse.id,
-		})) || []}
-	{@const defaultWh = item.allocations?.length ? item.allocations[0].warehouse.id : undefined}
-	<Select options={selectOptions} placeholder="Choose warehouse" size="sm" value={defaultWh} />
+{#snippet stock({ item, idx }: { item: OrderLine; idx: number })}
+	{@const defaultWarehouseID = orderFulfillInput.lines[idx].stocks[0]?.warehouse}
+	{@const stockOfGivenWarehouse =
+		defaultWarehouseID && item.variant
+			? item.variant?.stocks?.find((stock) => stock.warehouse.id === defaultWarehouseID)
+			: undefined}
+
+	<span class="font-medium text-blue-600">
+		{defaultWarehouseID
+			? item.variant?.preorder || !item.variant
+				? undefined
+				: stockOfGivenWarehouse?.quantity
+			: '-'}
+	</span>
 {/snippet}
 
-{#snippet quantity({ item }: { item: OrderLine })}
+{#snippet warehouse({ item, idx }: { item: OrderLine; idx: number })}
+	{#if item.variant?.preorder}
+		<span>-</span>
+	{:else}
+		{@const selectOptions =
+			item.variant?.stocks?.map<SelectOption>((item) => ({
+				label: item.warehouse.name,
+				value: item.warehouse.id,
+			})) || []}
+		{@const defaultWarehouseID = orderFulfillInput.lines[idx].stocks[0]?.warehouse}
+		<Select
+			options={selectOptions}
+			placeholder="Choose warehouse"
+			size="sm"
+			value={defaultWarehouseID}
+			onchange={(opt) => handleWarehouseChange(idx, (opt as SelectOption)?.value as string)}
+		/>
+	{/if}
+{/snippet}
+
+{#snippet quantity({ item, idx }: { item: OrderLine; idx: number })}
 	<div class="flex items-center gap-1">
 		<Input
 			placeholder="Set order line quantity"
 			type="number"
-			value={item.quantity}
-			min={item.quantity}
+			value={item.quantityToFulfill}
+			min={0}
+			max={item.quantityToFulfill}
 			size="sm"
+			inputDebounceOption={{
+				onInput: (evt) => handleQuantityChange(idx, evt),
+			}}
 		/>
 		<div class="">
 			/{item.quantity}
@@ -97,7 +156,7 @@
 
 <Modal
 	{open}
-	size="md"
+	size="lg"
 	{onClose}
 	onCancel={onClose}
 	closeOnOutsideClick

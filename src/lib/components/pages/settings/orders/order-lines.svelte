@@ -78,8 +78,9 @@
 
 {#snippet actions({ item }: { item: OrderLine })}
 	<a
-		href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.variant!.product.id)}
+		href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.variant!.product.slug)}
 		class="flex justify-center text-blue-600"
+		target="_blank"
 	>
 		<Icon icon={ExternalLink} />
 	</a>
@@ -124,8 +125,10 @@
 		size="sm"
 		color="gray"
 		variant="outline"
-		onclick={() => (orderLineIDForMetadataView = item.id)}>View Metadata</Button
+		onclick={() => (orderLineIDForMetadataView = item.id)}
 	>
+		View Metadata
+	</Button>
 {/snippet}
 
 <div class="border-b border-gray-200 flex flex-col gap-2 pb-2">
