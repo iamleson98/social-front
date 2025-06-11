@@ -77,7 +77,14 @@
 	{@const { order } = $orderQuery.data}
 	<div class="flex flex-row gap-2">
 		<div class="flex flex-col gap-2 w-7/10">
-			<OrderFulfillment {order} />
+			<OrderFulfillment
+				{order}
+				onUpdateTrackingCode={() =>
+					orderQuery.reexecute({
+						variables: { id: page.params.id },
+						context: { requestPolicy: 'network-only' },
+					})}
+			/>
 			<OrderPaymentBalance {order} />
 			<GeneralMetadataEditor
 				metadata={order.metadata}

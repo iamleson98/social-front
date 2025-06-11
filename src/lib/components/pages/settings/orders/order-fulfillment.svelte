@@ -7,9 +7,9 @@
 	import Table from '$lib/components/ui/Table/table.svelte';
 	import { FulfillmentStatus } from '$lib/gql/graphql';
 	import type {
+		Fulfillment,
 		FulfillmentLine,
 		Mutation,
-		MutationOrderFulfillArgs,
 		MutationOrderFulfillmentUpdateTrackingArgs,
 		Order,
 	} from '$lib/gql/graphql';
@@ -36,13 +36,14 @@
 
 	type Props = {
 		order: Order;
+		onUpdateTrackingCode: () => void;
 	};
 
-	let { order }: Props = $props();
+	let { order, onUpdateTrackingCode }: Props = $props();
 
-	let openModal = $state(false);
+	let openTrackingModal = $state(false);
 	let loading = $state(false);
-	let trackingNumber = $state('');
+	let trackingCode = $state('');
 
 	const PRODUCT_MODAL_COLUMNS: TableColumnProps<FulfillmentLine, any>[] = [
 		{
@@ -89,7 +90,7 @@
 
 	let orderLineIDForMetadataView = $state<string>();
 	let fulfillmentToCancelWarehouseID = $state<string>();
-	let selectedFulfillment = $state<(typeof order.fulfillments)[0]>();
+	let selectedFulfillment = $state<Fulfillment>();
 
 	let unfulfilledOrderLines = $derived.by(() => {
 		const fulfilledOrderLines = order.fulfillments
@@ -101,17 +102,19 @@
 		return differenceBy(order.lines, fulfilledOrderLines, (item) => item?.id);
 	});
 
-	const editTracking = async () => {
+	const editTrackingCode = async () => {
+		if (!selectedFulfillment) return;
+
 		loading = true;
 
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'orderFulfillmentUpdateTracking'>,
 			MutationOrderFulfillmentUpdateTrackingArgs
 		>(ORDER_FULFILLMENT_UPDATE_TRACKING_MUTATION, {
-			id: order.fulfillments[0].id as string,
+			id: selectedFulfillment.id,
 			input: {
-				trackingNumber: trackingNumber,
-				notifyCustomer: true,
+				trackingNumber: trackingCode,
+				notifyCustomer: false,
 			},
 		});
 
@@ -121,11 +124,12 @@
 			!checkIfGraphqlResultHasError(
 				result,
 				'orderFulfillmentUpdateTracking',
-				'Fulfillment added successfully',
+				'Tracking code updated successfully',
 			)
 		) {
-			openModal = false;
-			trackingNumber = '';
+			openTrackingModal = false;
+			trackingCode = '';
+			onUpdateTrackingCode();
 		}
 	};
 </script>
@@ -221,15 +225,15 @@
 							color="red"
 							onclick={() => (fulfillmentToCancelWarehouseID = fulfillment.id)}
 						/>
+						<Button
+							size="xs"
+							onclick={() => {
+								selectedFulfillment = fulfillment;
+								trackingCode = fulfillment.trackingNumber as string;
+								openTrackingModal = true;
+							}}>{fulfillment.trackingNumber ? 'Edit tracking' : 'Add tracking'}</Button
+						>
 					{/if}
-					<Button
-						size="xs"
-						onclick={() => {
-							selectedFulfillment = fulfillment;
-							trackingNumber = fulfillment.trackingNumber as string;
-							openModal = true;
-						}}>{fulfillment.trackingNumber ? 'Edit tracking' : 'Add tracking'}</Button
-					>
 				</div>
 			</SectionHeader>
 
@@ -237,9 +241,9 @@
 				<Table columns={PRODUCT_MODAL_COLUMNS} items={fulfillment.lines || []} />
 			</div>
 			{#if fulfillment.trackingNumber}
-				<div class="text-xs text-gray-500 font-medium flex flex-col gap-2">
-					<div>Fulfilled from: {fulfillment.warehouse?.name}</div>
-					<div>Tracking number: {fulfillment.trackingNumber}</div>
+				<div class="text-xs text-gray-500">
+					<div class="mb-1">Fulfilled from: {fulfillment.warehouse?.name}</div>
+					<div>Tracking code: {fulfillment.trackingNumber}</div>
 				</div>
 			{/if}
 
@@ -264,16 +268,22 @@
 />
 
 <Modal
-	open={openModal}
-	size="md"
-	onClose={() => (openModal = false)}
-	onCancel={() => (openModal = false)}
-	onOk={() => editTracking()}
+	open={openTrackingModal}
+	size="sm"
+	onClose={() => (openTrackingModal = false)}
+	onCancel={() => (openTrackingModal = false)}
+	onOk={editTrackingCode}
 	closeOnOutsideClick
 	closeOnEscape
-	header="Add/Update tracking"
+	disableElements={loading}
+	header="Add/Update tracking code"
 >
 	<div>
-		<Input placeholder="Tracking number" bind:value={trackingNumber} />
+		<Input
+			disabled={loading}
+			placeholder="Tracking code"
+			bind:value={trackingCode}
+			label="Tracking code"
+		/>
 	</div>
 </Modal>
