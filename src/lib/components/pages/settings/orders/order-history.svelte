@@ -90,7 +90,7 @@
 			[OrderEventsEnum.UpdatedAddress]: 'The shipping or billing address was updated',
 		};
 
-		return type ? (map[type] ?? '') : '';
+		return type ? map[type] : '';
 	};
 
 	const handleAddNote = async () => {

@@ -1,15 +1,16 @@
 <script lang="ts">
+	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Checkbox } from '$lib/components/ui/Input';
-	import type { TableColumnProps } from '$lib/components/ui/Table';
-	import Table from '$lib/components/ui/Table/table.svelte';
+	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import type { OrderLine, ProductOrderField } from '$lib/gql/graphql';
 
 	type Props = {
 		orderLines?: OrderLine[];
+		orderStatus?: string;
 	};
 
-	let { orderLines }: Props = $props();
+	let { orderLines, orderStatus }: Props = $props();
 
 	const PRODUCT_MODAL_COLUMNS: TableColumnProps<OrderLine, ProductOrderField>[] = [
 		{
@@ -53,7 +54,7 @@
 
 {#snippet image({ item }: { item: OrderLine })}
 	<div class="flex items-center gap-2">
-		<img class="w-12 h-12" src={item.thumbnail?.url} alt={item.productName} />
+		<img class="w-12 h-12 rounded-lg" src={item.thumbnail?.url} alt={item.productName} />
 	</div>
 {/snippet}
 
@@ -90,6 +91,12 @@
 {/snippet}
 
 <div class="bg-white rounded-lg border border-gray-200 p-3 overflow-x-auto">
+	<SectionHeader>
+		<div class="flex items-center gap-2">
+			<div class="w-4 h-4 border-3 border-red-300 rounded-full"></div>
+			Unfulfilled
+		</div>
+	</SectionHeader>
 	<Table columns={PRODUCT_MODAL_COLUMNS} items={orderLines ?? []} />
 	<Button size="xs" class="mt-2">Fulfill</Button>
 </div>

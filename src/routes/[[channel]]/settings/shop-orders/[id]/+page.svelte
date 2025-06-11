@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { operationStore } from '$lib/api/operation';
 	import type {
+	Address,
 		Mutation,
 		MutationOrderUpdateArgs,
 		OrderUpdateInput,
@@ -79,7 +80,7 @@
 	{@const order = $orderQuery.data.order}
 	<div class="flex flex-row gap-3">
 		<div class="flex flex-col gap-3 w-7/10">
-			<UnfulfilledOrder orderLines={order.lines} />
+			<UnfulfilledOrder orderLines={order.lines} orderStatus={order.status}/>
 
 			<PaymentBalanceOrder {order} />
 
@@ -101,7 +102,7 @@
 				<p class="text-blue-500 text-sm underline cursor-pointer">View profile</p>
 			</div>
 
-			<UserAddressOrder shippingAddresses={order.shippingAddress ? [order.shippingAddress] : []} billingAddress={order.billingAddress ? [order.billingAddress] : []} />
+			<UserAddressOrder shippingAddress={order.shippingAddress as Address} billingAddress={order.billingAddress as Address} />
 		</div>
 	</div>
 

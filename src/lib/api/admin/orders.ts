@@ -113,6 +113,14 @@ export const ORDER_DETAIL_QUERY = gql`
       paymentStatus
       userEmail
       customerNote
+      totalAuthorized {
+        amount
+        currency
+      }
+      totalCaptured {
+        amount
+        currency
+      }
       billingAddress {
         firstName
         lastName
