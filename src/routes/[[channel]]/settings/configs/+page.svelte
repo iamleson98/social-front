@@ -7,6 +7,7 @@
 		Discount,
 		FolderCog,
 		Icon,
+		Ticket,
 	} from '$lib/components/icons';
 	import { Globe, UsersGroup } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
@@ -60,6 +61,18 @@
 			description: 'Giftcards of shop',
 			href: AppRoute.SETTINGS_CONFIGS_GIFTCARDS(),
 			icon: Discount,
+		},
+		{
+			title: 'Promotions',
+			description: 'Promotions of shop',
+			href: AppRoute.SETTINGS_CONFIGS_PROMOTIONS(),
+			icon: Ticket,
+		},
+		{
+			title: 'Vouchers',
+			description: 'Vouchers of shop',
+			href: AppRoute.SETTINGS_CONFIGS_VOUCHERS(),
+			icon: Ticket,
 		},
 	]);
 </script>

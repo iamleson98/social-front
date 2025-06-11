@@ -10,5 +10,6 @@ export const BEFORE = 'before';
 export const AFTER = 'after';
 export const FIRST = 'first';
 export const LAST = 'last';
+export const SEARCH_QUERY = 'search';
 
 export const PRODUCT_PREVIEW_STORE = writable<Product | null>(null);

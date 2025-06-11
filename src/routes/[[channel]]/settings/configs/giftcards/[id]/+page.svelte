@@ -131,10 +131,7 @@
 				objectId={giftCard.id}
 				bind:performUpdateMetadata
 			/>
-			<div class="p-3 rounded-lg border border-gray-200 bg-white flex flex-col gap-3">
-				<SectionHeader>Giftcard timeline</SectionHeader>
-				<GiftcardEvents id={giftCard.id} />
-			</div>
+			<GiftcardEvents id={giftCard.id} />
 		</div>
 		<GiftcardExtraInformation giftcard={$giftcardQuery.data.giftCard!} />
 	</div>

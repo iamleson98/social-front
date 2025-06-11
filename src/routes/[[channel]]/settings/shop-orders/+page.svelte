@@ -7,14 +7,16 @@
 	import { SHOP_ORDERS_QUERY } from '$lib/api/admin/orders';
 	import { Badge } from '$lib/components/ui/badge';
 	import Filter from '$lib/components/pages/settings/orders/filter.svelte';
-	import { Search } from '$lib/components/icons';
-	import { Input } from '$lib/components/ui/Input';
 	import { AppRoute } from '$lib/utils';
+	import PriceDisplay from '$lib/components/common/price-display.svelte';
 
 	const BATCH_LOAD = 20;
 
 	let filterVariables = $state<QueryOrdersArgs>({
 		first: BATCH_LOAD,
+		filter: {
+			search: '',
+		},
 	});
 	let forceReExecuteGraphqlQuery = $state(true);
 
@@ -69,37 +71,14 @@
 {/snippet}
 
 {#snippet total({ item }: { item: Order })}
-	<div class="flex items-center justify-between gap-1">
-		<span class="text-gray-500 text-xs">{item.total.gross.currency}</span>
-		<span class="font-semibold text-blue-600 text-right">
-			{formatCurrency(item.total.gross.amount)}
-		</span>
-	</div>
+	<PriceDisplay amount={item.total.gross.amount} currency={item.total.gross.currency} />
 {/snippet}
-
-<!-- {#snippet action({ item }: { item: Order })}
-	{#snippet trigger({ ...rest }: DropdownTriggerInterface)}
-		<IconButton icon={Dots} {...rest} size="xs" variant="light" color="gray" />
-	{/snippet}
-	<DropDown
-		{trigger}
-		options={[
-			{
-				children: $tranFunc('settings.reqSupport'),
-				href: `${AppRoute.ME_SUPPORT_NEW()}?order_number=${item.number}`
-			}
-		]}
-	/>
-{/snippet} -->
 
 {#snippet email({ item }: { item: Order })}
 	{item.userEmail}
 {/snippet}
 
-<div class="flex mb-2 items-center gap-2">
-	<Filter />
-	<Input size="sm" placeholder="Enter query" startIcon={Search} />
-</div>
+<Filter bind:variables={filterVariables} bind:forceReExecuteGraphqlQuery />
 
 <GraphqlPaginableTable
 	query={SHOP_ORDERS_QUERY}

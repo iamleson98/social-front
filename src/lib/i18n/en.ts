@@ -246,7 +246,7 @@ export default {
 		addrCreated: 'Address created successfully',
 		accountUpdated: 'Account updated successfully',
 		passwordUpdated: 'Password updated successfully. Please login again with your new password',
-		orders: 'Orders',
+		orders: 'Shop Orders',
 		newOrder: 'New Order',
 		no: 'No.',
 		date: 'Date',

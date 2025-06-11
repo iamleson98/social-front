@@ -2,8 +2,7 @@
 	import { Button } from '$lib/components/ui';
 	import { AccordionList } from '$lib/components/ui/Accordion';
 	import { Input } from '$lib/components/ui/Input';
-	import type { CheckoutLine, Money, OrderLine } from '$lib/gql/graphql';
-	import { checkoutStore } from '$lib/stores/app';
+	import type { Checkout, CheckoutLine, Money, OrderLine } from '$lib/gql/graphql';
 	import { defaultSlideShowState } from '$lib/stores/ui/slideshow';
 	import { classNames, formatMoney } from '$lib/utils/utils';
 	import MoneyComponent from './money.svelte';
@@ -11,19 +10,18 @@
 	import {
 		getSummaryLineProps,
 		PRODUCT_NAME_MAX_LENGTH,
-		useSummaryLineLineAttributesText
+		useSummaryLineLineAttributesText,
 	} from './utils';
 
 	type Props = {
 		editable?: boolean;
+		checkout: Checkout;
 	};
 
-	let { editable = false }: Props = $props();
+	let { editable = false, checkout }: Props = $props();
 
 	let discountCode = $state('');
 </script>
-
-<!-- checkout summary form -->
 
 {#snippet lineSummary(line: CheckoutLine | OrderLine)}
 	{@const { productImage, productName } = getSummaryLineProps(line)}
@@ -88,7 +86,7 @@
 				ariaLabel="undiscounted price"
 				money={{
 					currency: line.undiscountedUnitPrice.currency,
-					amount: (line.undiscountedUnitPrice as Money).amount * line.quantity
+					amount: (line.undiscountedUnitPrice as Money).amount * line.quantity,
 				}}
 				class="line-through text-gray-500"
 			/>
@@ -97,7 +95,7 @@
 			ariaLabel="total price"
 			money={{
 				currency: line.unitPrice.gross.currency,
-				amount: line.unitPrice.gross.amount * line.quantity
+				amount: line.unitPrice.gross.amount * line.quantity,
 			}}
 			class={classNames({ 'text-red-600!': onSale })}
 		/>
@@ -106,7 +104,7 @@
 
 <div class="w-1/2 tablet:w-full">
 	<div class="bg-white rounded-lg border p-4">
-		<AccordionList header="Summary" items={$checkoutStore?.lines || []} child={lineSummary} />
+		<AccordionList header="Summary" items={checkout.lines} child={lineSummary} />
 
 		<!-- discount code -->
 		{#if editable}
@@ -124,22 +122,22 @@
 		<!-- price -->
 		<div class="flex items-center justify-between">
 			<div>Subtotal</div>
-			<MoneyComponent ariaLabel="subtotal price" money={$checkoutStore?.subtotalPrice.gross} />
+			<MoneyComponent ariaLabel="subtotal price" money={checkout.subtotalPrice.gross} />
 		</div>
 
-		{#if $checkoutStore?.voucherCode}
+		{#if checkout.voucherCode}
 			<SummaryPromocodeRow
 				{editable}
-				promoCode={$checkoutStore?.voucherCode}
-				money={$checkoutStore?.discount}
+				promoCode={checkout.voucherCode}
+				money={checkout.discount}
 				negative
 				ariaLabel="Voucher"
-				label={`Voucher code: ${$checkoutStore?.voucherCode}`}
-				checkoutId={$checkoutStore?.id}
+				label={`Voucher code: ${checkout.voucherCode}`}
+				checkoutId={checkout.id}
 			/>
 		{/if}
 
-		{#each $checkoutStore?.giftCards || [] as giftcard, idx (idx)}
+		{#each checkout.giftCards as giftcard, idx (idx)}
 			<SummaryPromocodeRow
 				{editable}
 				promoCodeId={giftcard.id}
@@ -147,13 +145,13 @@
 				label={`Gift Card: •••• •••• ${giftcard.displayCode}`}
 				money={giftcard.currentBalance}
 				negative
-				checkoutId={$checkoutStore?.id as string}
+				checkoutId={checkout.id}
 			/>
 		{/each}
 
 		<div class="flex items-center justify-between">
 			<div>Shipping cost</div>
-			<MoneyComponent ariaLabel="shipping cost" money={$checkoutStore?.shippingPrice.gross} />
+			<MoneyComponent ariaLabel="shipping cost" money={checkout.shippingPrice.gross} />
 		</div>
 
 		<div class="flex flex-row items-baseline justify-between pb-4">
@@ -161,12 +159,12 @@
 				<p class="font-bold">Total price</p>
 				<p class="ml-2 font-black">
 					includes {formatMoney(
-						$checkoutStore?.totalPrice.tax.currency as string,
-						$checkoutStore?.totalPrice.tax.amount as number
+						checkout.totalPrice.tax.currency as string,
+						checkout.totalPrice.tax.amount as number,
 					)} tax
 				</p>
 			</div>
-			<MoneyComponent ariaLabel="total price" money={$checkoutStore?.totalPrice.gross} />
+			<MoneyComponent ariaLabel="total price" money={checkout.totalPrice.gross} />
 		</div>
 	</div>
 </div>

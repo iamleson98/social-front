@@ -1,9 +1,9 @@
-import { type Mutation, type Query, type SelectedAttribute, type User, AttributeInputTypeEnum, OrderDirection, PermissionEnum } from '$lib/gql/graphql';
+import { type Mutation, type Query, type SelectedAttribute, type User, AttributeInputTypeEnum, FulfillmentStatus, OrderDirection, PermissionEnum } from '$lib/gql/graphql';
 import type { AnyVariables, OperationResult } from '@urql/core';
 import editorJsToHtml from 'editorjs-html';
 import { AppRoute } from './routes';
 import xss from 'xss';
-import { text, type ServerLoadEvent } from '@sveltejs/kit';
+import { type ServerLoadEvent } from '@sveltejs/kit';
 import { CHANNEL_KEY } from './consts';
 import { getCookieByKey } from './cookies';
 import { DEFAULT_CHANNEL } from './channels';
@@ -18,9 +18,7 @@ import type { SupportTicketStatus, SupportTicketTag } from './types';
 export const editorJsParser = editorJsToHtml();
 
 let _counter = 0;
-export const randomID = () => {
-	return (++_counter).toString(36);
-};
+export const randomID = () => (++_counter).toString(36);
 
 /**
  * @param length default to 10
@@ -198,28 +196,39 @@ export const flipDirection = (direction: OrderDirection): OrderDirection =>
 
 export const numberRegex = /^-?\d+(\.\d+)?$/;
 export const BOOL_REGEX = /(true|false)/;
+/**
+ * regex for range like:` [gte,null]`, `[nul,lte]` or `[gte,lte]`.
+ */
+// eslint-disable-next-line no-useless-escape
+export const FILTER_RANGE_REGEX = /^\[([\w\d\.-]+)\,([\w\d\.-]+)\]$/;
+/**
+ * regex for `key-value` pair matching: `{key,value}`
+ */
+// eslint-disable-next-line no-useless-escape
+export const METADATA_PAIR_REGEX = /^\{([\w\d\.-]+)\,([\w\d\.-]+)\}$/;
 
 export const parseBoolean = (expr: string) => {
 	return expr.toLowerCase() === 'true';
 };
 
+/**
+ * parse search query params, and auto performs type casting when the query param value is boolean or number
+ */
 export const parseUrlSearchParams = (url: URL) => {
 	const result: Record<string, number | string | boolean> = {};
 
 	for (const key of url.searchParams.keys()) {
-		const trimKey = key.trim();
-		if (!trimKey) continue;
+		if (!key) continue;
 
-		let value = url.searchParams.get(key);
+		const value = url.searchParams.get(key)?.trim();
 		if (!value) continue;
 
-		value = value.trim();
-		if (value && numberRegex.test(value)) {
-			result[trimKey] = Number(value);
-		} else if (BOOL_REGEX.test(value)) {
-			result[trimKey] = parseBoolean(value);
+		if (numberRegex.test(value)) {
+			result[key] = Number(value);
+		} else if (BOOL_REGEX.test(value.toLowerCase())) {
+			result[key] = parseBoolean(value);
 		} else {
-			result[trimKey] = value;
+			result[key] = value;
 		}
 	}
 
@@ -275,25 +284,23 @@ export const buildLinkWithRespectToChannel = (uri: string, event?: ServerLoadEve
 	return `${buildHomePageLink(event)}/${uri}`;
 };
 
+/** Checks if given user has all given permission codes */
+export const checkUserHasPermissions = (user: User, ...perms: PermissionEnum[]) => {
+	if (!perms.length) return true;
 
-export const userIsShopAdmin = (user: User) => {
-	let canManageSettings: boolean = false, canManageStaff: boolean = false, canManageUsers: boolean = false;
-
+	let count = 0;
 	for (const perm of user.userPermissions || []) {
-		switch (perm.code) {
-			case PermissionEnum.ManageSettings:
-				canManageSettings = true;
-				break;
-			case PermissionEnum.ManageStaff:
-				canManageStaff = true;
-				break;
-			case PermissionEnum.ManageUsers:
-				canManageUsers = true;
-				break;
-		}
+		if (perms.includes(perm.code)) count++;
 	}
 
-	return canManageUsers && canManageSettings && canManageStaff;
+	return count === perms.length;
+}
+
+/**
+* Checks if given user has 3 perms: manage settings, manage staff, manage users.
+ */
+export const userIsShopAdmin = (user: User) => {
+	return checkUserHasPermissions(user, PermissionEnum.ManageSettings, PermissionEnum.ManageStaff, PermissionEnum.ManageUsers)
 };
 
 export function formatCurrency(value: number): string {
@@ -362,6 +369,28 @@ export const orderStatusBadgeClass = (status: OrderStatus): BadgeAttr => {
 	}
 };
 
+export const fulfillmentStatusBadgeClass = (status: FulfillmentStatus): BadgeAttr => {
+	const text = startCase(lowerCase(status.replace(/_/g, ' ')));
+	switch (status) {
+		case FulfillmentStatus.Canceled:
+			return { text, color: 'red', variant: 'filled' };
+		case FulfillmentStatus.Fulfilled:
+			return { text, color: 'green', variant: 'filled' };
+		case FulfillmentStatus.Returned:
+			return { text, color: 'blue', variant: 'light' };
+		case FulfillmentStatus.Refunded:
+			return { text, color: 'green', variant: 'light' };
+		case FulfillmentStatus.RefundedAndReturned:
+			return { text, color: 'blue', variant: 'light' };
+		case FulfillmentStatus.Replaced:
+			return { text, color: 'orange', variant: 'filled' };
+		case FulfillmentStatus.WaitingForApproval:
+			return { text, color: 'blue', variant: 'light' };
+		default:
+			return { text, color: 'gray', variant: 'outline' };
+	}
+};
+
 export const supportTicketTagToBadgeClass = (tag: SupportTicketTag): BadgeAttr => {
 	switch (tag) {
 		case 'WARRANTY':
@@ -415,4 +444,10 @@ export function formatBytes(bytes: number): string {
 	const i: number = Math.floor(Math.log(bytes) / Math.log(1024));
 	const formattedSize: string = (bytes / Math.pow(1024, i)).toFixed(2);
 	return `${formattedSize} ${sizes[i]}`;
-}
+};
+
+export const stringSlicer = (str?: string, len: number = 100) => {
+	if (len === 0 || !str) return '-';
+
+	return str.slice(0, len) + "...";
+};

@@ -10,7 +10,7 @@
 		RosetteDiscountChecked,
 		SettingCog,
 		UserCog,
-		type IconContent
+		type IconContent,
 	} from '$lib/components/icons';
 	import { onMount, type Snippet } from 'svelte';
 	import type { LayoutServerData } from './$types';
@@ -20,7 +20,7 @@
 	import { tranFunc } from '$i18n';
 	import { AppRoute } from '$lib/utils';
 	import { page } from '$app/state';
-	import { userIsShopAdmin } from '$lib/utils/utils';
+	import { classNames, userIsShopAdmin } from '$lib/utils/utils';
 	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
 
 	type Props = {
@@ -53,20 +53,20 @@
 		{
 			icon: UserCog,
 			name: $tranFunc('settings.account'),
-			href: AppRoute.ME()
+			href: AppRoute.ME(),
 		},
 		{
 			icon: AdjustmentHorizontal,
 			name: $tranFunc('settings.preference'),
-			href: AppRoute.ME_PREFERENCES()
-		}
+			href: AppRoute.ME_PREFERENCES(),
+		},
 	]);
 
 	const SHOPPING_TAB_ITEMS: TabItem[] = $derived([
 		{
 			icon: Box,
 			name: $tranFunc('settings.myOrders'),
-			href: AppRoute.MY_ORDERS()
+			href: AppRoute.MY_ORDERS(),
 		},
 		{
 			icon: MailQuestion,
@@ -74,8 +74,8 @@
 			href: AppRoute.ME_SUPPORT(),
 			shouldActive: () =>
 				page.url.pathname === AppRoute.ME_SUPPORT_NEW() ||
-				page.route.id === '/[[channel]]/settings/supports/[id]'
-		}
+				page.route.id === '/[[channel]]/settings/supports/[id]',
+		},
 	]);
 
 	const SHOP_TAB_ITEMS: TabItem[] = $derived([
@@ -83,7 +83,7 @@
 			icon: Box,
 			name: $tranFunc('settings.orders'),
 			href: AppRoute.SETTINGS_ORDERS(),
-			shouldActive: () => page.url.pathname.startsWith(AppRoute.SETTINGS_ORDERS())
+			shouldActive: () => page.url.pathname.startsWith(AppRoute.SETTINGS_ORDERS()),
 		},
 		{
 			icon: Parking,
@@ -91,13 +91,13 @@
 			href: AppRoute.SETTINGS_PRODUCTS(),
 			shouldActive: () =>
 				page.url.pathname === AppRoute.SETTINGS_PRODUCTS_NEW() ||
-				page.route.id === '/[[channel]]/settings/products/[slug]'
+				page.route.id === '/[[channel]]/settings/products/[slug]',
 		},
 		{
 			icon: Order,
 			name: $tranFunc('settings.contracts'),
 			href: AppRoute.SETTINGS_CONTRACTS(),
-			shouldActive: () => page.url.pathname === AppRoute.SETTINGS_CONTRACTS_NEW()
+			shouldActive: () => page.url.pathname === AppRoute.SETTINGS_CONTRACTS_NEW(),
 		},
 		{
 			icon: SettingCog,
@@ -110,8 +110,8 @@
 				// page.route.id === '/[[channel]]/settings/configs/channels/[id]' ||
 				// page.route.id === '/[[channel]]/settings/configs/staffs/[id]' ||
 				// page.route.id === '/[[channel]]/settings/configs/customers/[id]'
-				page.url.pathname.startsWith(AppRoute.SETTINGS_CONFIGS())
-		}
+				page.url.pathname.startsWith(AppRoute.SETTINGS_CONFIGS()),
+		},
 	]);
 </script>
 
@@ -121,9 +121,13 @@
 	<svelte:element
 		this={item.href ? 'a' : 'div'}
 		{...attrs}
-		class="flex items-center gap-2 rounded-md p-2 py-2.5 {active
-			? 'bg-blue-100 text-blue-700 font-semibold before:content-[" "] before:h-full before:w-2 before:rounded-sm before:bg-blue-500 before:absolute before:right-[calc(100%+4px)]'
-			: ''} hover:bg-blue-100 hover:text-blue-700 cursor-pointer relative"
+		class={classNames(
+			'flex items-center gap-2 rounded-md p-2 py-2.5 hover:bg-blue-100 hover:text-blue-700 cursor-pointer relative',
+			{
+				[`bg-blue-100 text-blue-700 font-semibold before:content-[" "] before:h-full before:w-2 before:rounded-sm before:bg-blue-500 before:absolute before:right-[calc(100%+4px)]`]:
+					!!active,
+			},
+		)}
 	>
 		{#if item.icon}
 			<Icon icon={item.icon} />
@@ -179,7 +183,7 @@
 				class="w-full"
 			/>
 
-			{#if !!$READ_ONLY_USER_STORE && userIsShopAdmin($READ_ONLY_USER_STORE)}
+			{#if $READ_ONLY_USER_STORE && userIsShopAdmin($READ_ONLY_USER_STORE)}
 				<AccordionList
 					header={$tranFunc('settings.shopManage')}
 					child={sidebarItem}

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import {
-		FilterButton,
+		FilterManager,
 		type FilterComponentType,
 		type FilterProps,
 	} from '$lib/components/common/filter-box';
@@ -36,4 +36,8 @@
 	/>
 {/snippet}
 
-<FilterButton filterOptions={FILTER_OPTIONS} onApply={console.log} />
+<FilterManager
+	filterOptions={FILTER_OPTIONS}
+	variables={{}}
+	forceReExecuteGraphqlQuery={false}
+/>

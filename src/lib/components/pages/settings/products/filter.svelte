@@ -3,7 +3,7 @@
 	import { PRODUCT_TYPES_QUERY } from '$lib/api/admin/product';
 	import { COLLECTIONS_QUERY } from '$lib/api/collections';
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
-	import { FilterButton } from '$lib/components/common/filter-box';
+	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
 	import type {
 		FilterComponentType,
 		FilterItemValue,
@@ -15,8 +15,16 @@
 		ProductFilterInput,
 		QueryCategoriesArgs,
 		QueryCollectionsArgs,
+		QueryProductsArgs,
 		QueryProductTypesArgs,
 	} from '$lib/gql/graphql';
+
+	type Props = {
+		forceReExecuteGraphqlQuery: boolean;
+		variables: QueryProductsArgs;
+	};
+
+	let { forceReExecuteGraphqlQuery = $bindable(), variables = $bindable() }: Props = $props();
 
 	const FILTER_OPTIONS: FilterProps<ProductFilterInput>[] = [
 		{
@@ -284,4 +292,9 @@
 	/>
 {/snippet}
 
-<FilterButton filterOptions={FILTER_OPTIONS} />
+<FilterManager
+	filterOptions={FILTER_OPTIONS}
+	bind:forceReExecuteGraphqlQuery
+	bind:variables
+	searchKey="search"
+/>

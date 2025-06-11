@@ -16,7 +16,7 @@
 	listingPageLabel={$tranFunc('settings.orders')}
 	newPageHref={AppRoute.SETTINGS_ORDERS_NEW()}
 	newPageLabel={$tranFunc('settings.newOrder')}
-	detailRouteID="/[[channel]]/settings/orders/[id]"
+	detailRouteID="/[[channel]]/settings/shop-orders/[id]"
 	detailPageLabelGetter={(page) => page.params.id}
 />
 

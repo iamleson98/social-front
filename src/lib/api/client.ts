@@ -22,6 +22,7 @@ import { retryExchange } from '@urql/exchange-retry';
 import { PUBLIC_GRAPHQL_API_END_POINT } from '$env/static/public';
 import { USER_ME_QUERY_STORE } from '.';
 import { setUserStoreValue } from '$lib/stores/auth/user';
+import { checkUserHasPermissions } from '$lib/utils/utils';
 
 export const MAX_REFRESH_TOKEN_TRIES = 3;
 export const cookieOpts: Readonly<CookieSerializeOptions & { path: string }> = Object.freeze({
@@ -286,21 +287,12 @@ export const pageRequiresAuthentication = async (event: RequestEvent<Partial<Rec
 export const pageRequiresPermissions = async (event: RequestEvent<Partial<Record<string, string>>, string | null>, ...permissions: PermissionEnum[]) => {
 	const authenticatedUser = await pageRequiresAuthentication(event);
 
-	if (!permissions.length) return authenticatedUser;
 	if (!authenticatedUser.userPermissions?.length) {
 		return error(HTTPStatusUnauthorized, 'Unauthorized');
 	}
 
-	const userPermMap: Partial<Record<PermissionEnum, boolean>> = {};
-	for (const perm of authenticatedUser.userPermissions) {
-		userPermMap[perm.code] = true;
-	}
-
-	for (const perm of permissions) {
-		if (!userPermMap[perm]) {
-			return error(HTTPStatusUnauthorized, 'Unauthorized');
-		}
-	}
+	if (!checkUserHasPermissions(authenticatedUser, ...permissions))
+		return error(HTTPStatusUnauthorized, 'Unauthorized');
 
 	return authenticatedUser;
 };

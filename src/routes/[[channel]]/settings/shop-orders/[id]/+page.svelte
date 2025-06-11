@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { operationStore } from '$lib/api/operation';
+<<<<<<< HEAD
 	import type {
 	Address,
 		Mutation,
@@ -7,26 +8,32 @@
 		OrderUpdateInput,
 		Query,
 		QueryOrderArgs,
+=======
+	import {
+		FulfillmentStatus,
+		type Mutation,
+		type MutationOrderUpdateArgs,
+		type OrderUpdateInput,
+		type Query,
+		type QueryOrderArgs,
+>>>>>>> 3ff1636be42144baac7feec452fc3f6015516b29
 	} from '$lib/gql/graphql';
-
-	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import { ORDER_DETAIL_QUERY, ORDER_UPDATE_MUTATION } from '$lib/api/admin/orders';
 	import DetailOrderSkeleton from '$lib/components/pages/settings/orders/detail-order-skeleton.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
-	import UnfulfilledOrder from '$lib/components/pages/settings/orders/unfulfilled-order.svelte';
+	import OrderFulfillment from '$lib/components/pages/settings/orders/order-fulfillment.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
-	import PaymentBalanceOrder from '$lib/components/pages/settings/orders/payment-balance-order.svelte';
+	import OrderPaymentBalance from '$lib/components/pages/settings/orders/order-payment-balance.svelte';
 	import UserAddressOrder from '$lib/components/pages/settings/orders/user-address-order.svelte';
 	import OrderHistory from '$lib/components/pages/settings/orders/order-history.svelte';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	
+
 	let loading = $state(false);
 	let performUpdateMetadata = $state(false);
 
@@ -77,6 +84,7 @@
 {:else if $orderQuery.error}
 	<Alert variant="error" size="sm" bordered>{$orderQuery.error?.message}</Alert>
 {:else if $orderQuery.data?.order}
+<<<<<<< HEAD
 	{@const order = $orderQuery.data.order}
 	<div class="flex flex-row gap-3">
 		<div class="flex flex-col gap-3 w-7/10">
@@ -84,31 +92,40 @@
 
 			<PaymentBalanceOrder {order} />
 
+=======
+	{@const { order } = $orderQuery.data}
+	<div class="flex flex-row gap-2">
+		<div class="flex flex-col gap-2 w-7/10">
+			<OrderFulfillment {order} />
+			<OrderPaymentBalance {order} />
+>>>>>>> 3ff1636be42144baac7feec452fc3f6015516b29
 			<GeneralMetadataEditor
-				metadata={[]}
-				privateMetadata={[]}
+				metadata={order.metadata}
+				privateMetadata={order.privateMetadata}
 				objectId={order.id}
 				disabled={loading}
 				bind:performUpdateMetadata
 			/>
-
 			<OrderHistory id={order.id} />
 		</div>
 
-		<div class="flex flex-col gap-3 w-3/10">
+		<div class="flex flex-col gap-2 w-3/10">
 			<div class="bg-white rounded-lg border border-gray-200 p-3">
 				<SectionHeader>Customer</SectionHeader>
 				<p>{order.userEmail}</p>
 				<p class="text-blue-500 text-sm underline cursor-pointer">View profile</p>
 			</div>
 
+<<<<<<< HEAD
 			<UserAddressOrder shippingAddress={order.shippingAddress as Address} billingAddress={order.billingAddress as Address} />
+=======
+			<UserAddressOrder
+				shippingAddresses={order.shippingAddress ? [order.shippingAddress] : []}
+				billingAddress={order.billingAddress ? [order.billingAddress] : []}
+			/>
+>>>>>>> 3ff1636be42144baac7feec452fc3f6015516b29
 		</div>
 	</div>
 
-	<ActionBar
-		backButtonUrl={AppRoute.SETTINGS_ORDERS()}
-		onUpdateClick={onUpdateClick}
-		disabled={loading}
-	/>
+	<ActionBar backButtonUrl={AppRoute.SETTINGS_ORDERS()} {onUpdateClick} disabled={loading} />
 {/if}

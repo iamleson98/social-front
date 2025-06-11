@@ -3,6 +3,7 @@
 	import {
 		CheckoutAuthorizeStatusEnum,
 		CheckoutChargeStatusEnum,
+		type Checkout,
 		type Mutation,
 		type MutationCheckoutCompleteArgs,
 		type MutationPaymentGatewayInitializeArgs,
@@ -12,7 +13,6 @@
 		CHECKOUT_COMPLETE_MUTATION,
 		PAYMENT_GATEWAYS_INITIALIZE_MUTATION,
 	} from '$lib/api/checkout';
-	import { checkoutStore } from '$lib/stores/app';
 	import {
 		adyenGatewayId,
 		paidStatuses,
@@ -22,14 +22,20 @@
 	} from '$lib/utils/consts';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import AdyenComponent from './adyen-component.svelte';
-	import { toast } from 'svelte-sonner';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
+
+	type Props = {
+		checkout: Checkout;
+	};
+
+	let { checkout }: Props = $props();
 
 	let availablePaymentGateways = $state<ParsedPaymentGateways>([]);
 
 	let paymentStatus = $derived.by<PaymentStatus>(() => {
-		if (!$checkoutStore) return 'none';
+		if (!checkout) return 'none';
 
-		const { chargeStatus, authorizeStatus } = $checkoutStore;
+		const { chargeStatus, authorizeStatus } = checkout;
 
 		if (
 			chargeStatus === CheckoutChargeStatusEnum.None &&
@@ -41,67 +47,58 @@
 		return 'none';
 	});
 
-	$effect(() => {
-		if ($checkoutStore && $checkoutStore?.availablePaymentGateways?.length) {
-			const paymentGateways = $checkoutStore.availablePaymentGateways.reduce<
-				PaymentGatewayToInitialize[]
-			>(
-				(acc, gateway) =>
-					!!gateway && supportedPaymentGateways.includes(gateway.id)
-						? acc.concat({
-								id: gateway.id,
-								data: gateway.config,
-							})
-						: acc,
-				[],
-			);
-
-			GRAPHQL_CLIENT.mutation<
-				Pick<Mutation, 'paymentGatewayInitialize'>,
-				MutationPaymentGatewayInitializeArgs
-			>(
-				PAYMENT_GATEWAYS_INITIALIZE_MUTATION,
-				{
-					id: $checkoutStore.id,
-					paymentGateways,
-					amount: $checkoutStore.totalPrice.gross.amount,
-				},
-				{ requestPolicy: 'network-only' },
-			)
-				.toPromise()
-				.then((result) => {
-					if (checkIfGraphqlResultHasError(result, 'paymentGatewayInitialize')) return;
-
-					availablePaymentGateways = result.data?.paymentGatewayInitialize
-						?.gatewayConfigs as ParsedPaymentGateways;
-				})
-				.catch((err) => {
-					toast.error(err);
+	const fetchAvailablePaymentGateways = async () => {
+		const paymentGateways: PaymentGatewayToInitialize[] = [];
+		for (const gateway of checkout.availablePaymentGateways) {
+			if (gateway && supportedPaymentGateways.includes(gateway.id))
+				paymentGateways.push({
+					id: gateway.id,
+					data: gateway.config,
 				});
 		}
+
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'paymentGatewayInitialize'>,
+			MutationPaymentGatewayInitializeArgs
+		>(
+			PAYMENT_GATEWAYS_INITIALIZE_MUTATION,
+			{
+				id: checkout.id,
+				paymentGateways,
+				amount: checkout.totalPrice.gross.amount,
+			},
+			{ requestPolicy: 'network-only' },
+		);
+
+		if (checkIfGraphqlResultHasError(result, 'paymentGatewayInitialize')) return;
+
+		if (result.data?.paymentGatewayInitialize?.gatewayConfigs)
+			availablePaymentGateways = result.data?.paymentGatewayInitialize
+				?.gatewayConfigs as ParsedPaymentGateways;
+	};
+
+	const completeCheckout = async () => {
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'checkoutComplete'>,
+			MutationCheckoutCompleteArgs
+		>(CHECKOUT_COMPLETE_MUTATION, {
+			id: checkout.id,
+		});
+
+		if (checkIfGraphqlResultHasError(result, 'checkoutComplete')) return;
+	};
+
+	$effect(() => {
+		if (checkout.availablePaymentGateways.length) fetchAvailablePaymentGateways();
 	});
 
 	$effect(() => {
-		if ($checkoutStore && paidStatuses.includes(paymentStatus)) {
-			GRAPHQL_CLIENT.mutation<Pick<Mutation, 'checkoutComplete'>, MutationCheckoutCompleteArgs>(
-				CHECKOUT_COMPLETE_MUTATION,
-				{
-					id: $checkoutStore.id,
-				},
-				{ requestPolicy: 'network-only' },
-			)
-				.toPromise()
-				.then((result) => {
-					if (checkIfGraphqlResultHasError(result, 'checkoutComplete')) return;
-				})
-				.catch((err) => {
-					toast.error(err);
-				});
-		}
+		if (checkout && paidStatuses.includes(paymentStatus)) completeCheckout();
 	});
 </script>
 
-<div class="rounded-lg bg-white p-3 border">
+<div class="rounded-lg bg-white p-3 border border-gray-200">
+	<SectionHeader>Payment method</SectionHeader>
 	{#each availablePaymentGateways as gateway, idx (idx)}
 		{#if gateway.id === adyenGatewayId}
 			<AdyenComponent config={gateway} />

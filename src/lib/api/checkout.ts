@@ -161,15 +161,15 @@ query CheckoutDetails(
     authorizeStatus
     chargeStatus
     isShippingRequired
-    # availablePaymentGateways {
-    #   id
-    #   name
-    #   currencies
-    #   config {
-    #     field
-    #     value
-    #   }
-    # }
+    availablePaymentGateways {
+      id
+      name
+      currencies
+      config {
+        field
+        value
+      }
+    }
     deliveryMethod {
       __typename
     }

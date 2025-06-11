@@ -1,11 +1,18 @@
 <script lang="ts">
-	import type { CountryCode, Query, QueryChannelArgs } from '$lib/gql/graphql';
+	import type { Checkout, CountryCode, Query, QueryChannelArgs } from '$lib/gql/graphql';
 	import { operationStore } from '$lib/api/operation';
 	import { CHANNEL_DETAILS_QUERY_STORE } from '$lib/api/channels';
 	import AddressCreateForm from './address-create-form.svelte';
 	import AddressEditForm from './address-edit-form.svelte';
 	import AddressList from './address-list.svelte';
-	import { checkoutStore } from '$lib/stores/app';
+	import { Alert } from '$lib/components/ui/Alert';
+	// import { checkoutStore } from '$lib/stores/app';
+
+	type Props = {
+		checkout: Checkout;
+	};
+
+	let { checkout }: Props = $props();
 
 	let displayAddressCreate = $state(false);
 	let editedAddressId = $state<string>();
@@ -16,16 +23,15 @@
 		kind: 'query',
 		query: CHANNEL_DETAILS_QUERY_STORE,
 		variables: {
-			slug: $checkoutStore?.channel.slug
+			slug: checkout.channel.slug,
 		},
-		pause: !$checkoutStore?.channel.slug
 	});
 </script>
 
 {#if $channelStore.fetching}
-	<div>Loading...</div>
+	<div>Loading..</div>
 {:else if $channelStore.error}
-	<div>{$channelStore.error.message}</div>
+	<Alert variant="error" size="sm" bordered>{$channelStore.error.message}</Alert>
 {:else}
 	{@const availableCountries =
 		$channelStore.data?.channel?.countries?.map(({ code }) => code as CountryCode) || []}

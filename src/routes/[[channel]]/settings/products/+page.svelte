@@ -2,10 +2,9 @@
 	import { tranFunc } from '$i18n';
 	import { PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
-	import { Icon, InforCircle, Search } from '$lib/components/icons';
+	import { Icon, InforCircle } from '$lib/components/icons';
 	import ProductFilterStateListener from '$lib/components/pages/home/product-filter-state-listener.svelte';
 	import Filter from '$lib/components/pages/settings/products/filter.svelte';
-	import { Input } from '$lib/components/ui/Input';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { ProductOrderField, type Product, type QueryProductsArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
@@ -15,6 +14,7 @@
 
 	let productsFilterVariables = $state<QueryProductsArgs>({
 		first: 10,
+		search: '',
 	});
 	let forceReExecuteGraphqlQuery = $state(true);
 
@@ -87,10 +87,7 @@
 	<span class="whitespace-nowrap">{dayjs(item.created).format(SitenameTimeFormat)}</span>
 {/snippet}
 
-<div class="mb-2 flex items-center gap-2">
-	<Filter />
-	<Input size="sm" placeholder="Enter query" startIcon={Search} />
-</div>
+<Filter bind:variables={productsFilterVariables} bind:forceReExecuteGraphqlQuery />
 
 <GraphqlPaginableTable
 	query={PRODUCT_LIST_QUERY_ADMIN}

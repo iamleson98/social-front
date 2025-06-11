@@ -1,13 +1,20 @@
 <script lang="ts">
+	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import Signin from '$lib/components/forms/signin.svelte';
 	import { Email } from '$lib/components/icons';
 	import { Input } from '$lib/components/ui/Input';
-	import { checkoutStore } from '$lib/stores/app';
+	import type { Checkout } from '$lib/gql/graphql';
 	import { READ_ONLY_USER_STORE } from '$lib/stores/auth/user';
 	import DeliveryMethodForm from './delivery-method-form.svelte';
 	import GuestShippingAddress from './guest-shipping-address.svelte';
 	import PaymentForm from './payment-form.svelte';
 	import UserShippingAddress from './user-shipping-address.svelte';
+
+	type Props = {
+		checkout: Checkout;
+	};
+
+	let { checkout }: Props = $props();
 
 	let showLoginForm = $state(false);
 
@@ -16,9 +23,10 @@
 	};
 </script>
 
-<div class="w-1/2 tablet:w-full">
-	<div class="bg-white rounded-lg p-4 border">
-		<div class="text-sm font-semibold mb-2 text-gray-800">Account</div>
+<div class="w-1/2 tablet:w-full flex flex-col gap-2">
+	<div class="bg-white rounded-lg p-3 border border-gray-200">
+		<SectionHeader>Account</SectionHeader>
+
 		{#if $READ_ONLY_USER_STORE}
 			<div>{$READ_ONLY_USER_STORE.email}</div>
 		{:else}
@@ -44,18 +52,19 @@
 		{/if}
 	</div>
 
-	<div class="mt-2 bg-white p-4 rounded-lg border">
-		<div class="text-sm font-semibold mb-2 text-gray-800">Delivery address</div>
+	{#if checkout.isShippingRequired}
+		<div class="mt-2 bg-white p-3 rounded-lg border border-gray-200">
+			<SectionHeader>Delivery address</SectionHeader>
 
-		{#if $checkoutStore?.isShippingRequired}
 			{#if $READ_ONLY_USER_STORE}
-				<UserShippingAddress />
+				<UserShippingAddress {checkout} />
 			{:else}
-				<GuestShippingAddress />
+				<GuestShippingAddress {checkout} />
 			{/if}
-		{/if}
-	</div>
+		</div>
 
-	<DeliveryMethodForm />
-	<PaymentForm />
+		<DeliveryMethodForm {checkout} />
+	{/if}
+
+	<PaymentForm {checkout} />
 </div>

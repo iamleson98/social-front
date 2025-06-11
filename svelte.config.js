@@ -1,5 +1,5 @@
-// import adapter from '@sveltejs/adapter-auto';
-import adapter from '@sveltejs/adapter-node';
+import adapter from '@sveltejs/adapter-auto';
+// import adapter from '@sveltejs/adapter-node';
 // import adapter from '@sveltejs/adapter-vercel';
 // import adapter from 'svelte-adapter-bun';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
@@ -20,11 +20,11 @@ const config = {
 			// envPrefix: "MY_CUSTOM_",
 			// development: true,
 			// precompress: true,
-			// precompress: {
-			// 	brotli: true,
-			// 	gzip: true,
-			// 	files: ["htm", "html"],
-			// },
+			precompress: {
+				brotli: true,
+				gzip: true,
+				files: ["htm", "html"],
+			},
 			// dynamic_origin: true,
 			// xff_depth: 1,
 		}),

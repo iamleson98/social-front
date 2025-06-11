@@ -2,34 +2,20 @@
 	import { CUSTOMER_LIST_QUERY } from '$lib/api/admin/users';
 	import { Badge } from '$lib/components/ui/badge';
 	import { type TableColumnProps } from '$lib/components/ui/Table';
-	import {
-		UserSortField,
-		type CustomerFilterInput,
-		type QueryCustomersArgs,
-		type User,
-	} from '$lib/gql/graphql';
+	import { UserSortField, type QueryCustomersArgs, type User } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import dayjs from 'dayjs';
 	import CustomerFilter from '$lib/components/pages/settings/config/customers/filter.svelte';
-	import type { FilterResult } from '$lib/components/common/filter-box';
-	import { DebounceInput } from '$lib/components/ui/Input';
-	import { Search } from '$lib/components/icons';
 	import GraphqlPaginableTable from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 
 	let filterVariables = $state<QueryCustomersArgs>({
-		filter: {},
+		filter: {
+			search: '',
+		},
 		first: 10,
 	});
 	let forceReExecuteGraphqlQuery = $state(true);
-
-	const onFilterChange = (newFilter: FilterResult<CustomerFilterInput>) => {
-		filterVariables = {
-			...filterVariables,
-			filter: newFilter as CustomerFilterInput,
-		};
-		forceReExecuteGraphqlQuery = true;
-	};
 
 	const USER_TABLE_COLUMNS: TableColumnProps<User, UserSortField>[] = [
 		{
@@ -113,16 +99,7 @@
 	<span>{dayjs(item.dateJoined).format('DD/MM/YYYY HH:mm')}</span>
 {/snippet}
 
-<div class="flex items-center gap-2 mb-2">
-	<CustomerFilter {onFilterChange} />
-	<DebounceInput
-		debounceTime={500}
-		bind:value={filterVariables.filter!.search}
-		placeholder="Search"
-		size="sm"
-		startIcon={Search}
-	/>
-</div>
+<CustomerFilter bind:variables={filterVariables} bind:forceReExecuteGraphqlQuery />
 
 <GraphqlPaginableTable
 	query={CUSTOMER_LIST_QUERY}

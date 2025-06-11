@@ -7,7 +7,7 @@
 		EASEPICK_CORE_STYLE_v1_2_1,
 		EASEPICK_LOCK_STYLE_v1_2_1,
 		EASEPICK_RANGE_STYLE_v1_2_1,
-		EASEPICK_TIME_STYLE_v1_2_1
+		EASEPICK_TIME_STYLE_v1_2_1,
 	} from '$lib/utils/consts';
 	import type { IPickerConfig } from '@easepick/core/dist/types';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
@@ -72,7 +72,7 @@
 		timeConfig = {
 			stepHours: 1,
 			stepMinutes: 5,
-			format: 24
+			format: 24,
 		},
 		autoApply = timeConfig ? false : true,
 		value: REAL_VALUE = $bindable({}),
@@ -109,7 +109,7 @@
 		const { start, end, date } = REAL_VALUE;
 		if (date) {
 			inputReprValue = {
-				date: dayjs(date).format(ACTUAL_TIME_FORMAT)
+				date: dayjs(date).format(ACTUAL_TIME_FORMAT),
 			};
 			return;
 		}
@@ -120,7 +120,7 @@
 
 			inputReprValue = {
 				start: startStr,
-				end: endStr
+				end: endStr,
 			};
 		}
 	});
@@ -132,7 +132,7 @@
 			css: [EASEPICK_CORE_STYLE_v1_2_1],
 			plugins: [],
 			autoApply,
-			format
+			format,
 		};
 
 		if (allowSelectMonthYears !== undefined || theme === 'dark') {
@@ -145,10 +145,10 @@
 					months: allowSelectMonthYears?.showMonths,
 					years: !!allowSelectMonthYears?.showYears,
 					minYear: allowSelectMonthYears?.showYears?.min || 2020,
-					maxYear: allowSelectMonthYears?.showYears?.max || NOW.getFullYear()
+					maxYear: allowSelectMonthYears?.showYears?.max || NOW.getFullYear(),
 				},
 				resetButton: allowSelectMonthYears?.showResetBtn,
-				darkMode: theme === 'dark'
+				darkMode: theme === 'dark',
 			};
 		}
 
@@ -165,7 +165,7 @@
 			(pickerConfig.css as string[]).push(EASEPICK_RANGE_STYLE_v1_2_1);
 			pickerConfig.plugins!.push(rangePlugin.RangePlugin);
 			pickerConfig['RangePlugin'] = {
-				elementEnd: inputEndRef
+				elementEnd: inputEndRef,
 			};
 		}
 
@@ -179,7 +179,7 @@
 				stepMinutes: timeConfig.stepMinutes,
 				seconds: !!timeConfig.stepSeconds,
 				stepSeconds: timeConfig.stepSeconds,
-				format12: timeConfig.format === 12
+				format12: timeConfig.format === 12,
 			};
 		}
 
@@ -209,7 +209,6 @@
 		<Input
 			{...rest}
 			bind:ref={inputRef}
-			label="from"
 			bind:value={inputReprValue.start}
 			readonly
 			placeholder={rest.placeholder || ACTUAL_TIME_FORMAT}
@@ -217,7 +216,6 @@
 		<Input
 			{...rest}
 			bind:ref={inputEndRef}
-			label="to"
 			bind:value={inputReprValue.end}
 			readonly
 			placeholder={rest.placeholder || ACTUAL_TIME_FORMAT}

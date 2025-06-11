@@ -1,5 +1,8 @@
 <script lang="ts">
 	import { CATEGORIES_LIST_QUERY } from '$lib/api/admin/category';
+	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
+	import { Search } from '$lib/components/icons';
+	import { DebounceInput } from '$lib/components/ui/Input';
 	import type { TableColumnProps } from '$lib/components/ui/Table';
 	import GraphqlPaginableTable from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { CategorySortField, type Category, type QueryCategoriesArgs } from '$lib/gql/graphql';
@@ -8,32 +11,35 @@
 	const COLUMNS: TableColumnProps<Category, CategorySortField>[] = [
 		{
 			title: 'Pic',
-			child: picture
+			child: picture,
 		},
 		{
 			title: 'Name',
 			child: name,
 			sortable: true,
-			key: CategorySortField.Name
+			key: CategorySortField.Name,
 		},
 		{
 			title: 'Number of products',
 			child: products,
 			sortable: true,
-			key: CategorySortField.ProductCount
+			key: CategorySortField.ProductCount,
 		},
 		{
 			title: 'Number of children',
 			child: children,
 			sortable: true,
-			key: CategorySortField.SubcategoryCount
-		}
+			key: CategorySortField.SubcategoryCount,
+		},
 	];
 
 	let forceReExecuteGraphqlQuery = $state(true);
 	let queryVariables = $state<QueryCategoriesArgs>({
 		first: 10,
-		level: 0
+		level: 0,
+		filter: {
+			search: '',
+		},
 	});
 </script>
 
@@ -54,6 +60,13 @@
 {#snippet children({ item }: { item: Category })}
 	<div>{item.children?.totalCount || '-'}</div>
 {/snippet}
+
+<FilterManager
+	filterOptions={[]}
+	searchKey="filter.search"
+	bind:variables={queryVariables}
+	bind:forceReExecuteGraphqlQuery
+/>
 
 <GraphqlPaginableTable
 	query={CATEGORIES_LIST_QUERY}

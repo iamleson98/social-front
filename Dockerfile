@@ -40,7 +40,8 @@
 FROM docker.io/library/node:22.15.0-alpine3.21 AS builder
 
 # Install build dependencies
-RUN apk --no-cache add build-base python3
+RUN apk --no-cache add build-base && \
+  rm -rf /var/cache/apk/*
 
 # Enable pnpm
 RUN corepack enable pnpm
@@ -55,7 +56,6 @@ RUN pnpm install --frozen-lockfile
 
 # Copy source code
 COPY . .
-
 
 # Build the app
 RUN pnpm run build
