@@ -8,7 +8,7 @@
 	import type { Snippet } from 'svelte';
 
 	type Props = {
-		label?: string;
+		label?: Snippet | string;
 		size?: SocialSize;
 		subText?: string | Snippet;
 		variant?: SocialVariant;

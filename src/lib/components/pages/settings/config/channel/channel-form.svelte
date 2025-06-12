@@ -1,18 +1,14 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { operationStore } from '$lib/api/operation';
-	import { SHOP_QUERY } from '$lib/api/shop';
+	import CountrySelect from '$lib/components/common/country-language/country-select.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Alert } from '$lib/components/ui/Alert';
+	import { Badge } from '$lib/components/ui/badge';
 	import { Checkbox, Input, Label, RadioButton } from '$lib/components/ui/Input';
-	import { Select, type SelectOption } from '$lib/components/ui/select';
-	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import {
 		AllocationStrategyEnum,
 		MarkAsPaidStrategyEnum,
 		TransactionFlowStrategyEnum,
 		type CountryCode,
-		type Query
 	} from '$lib/gql/graphql';
 	import slugify from 'slugify';
 	import { boolean, number, object, string, z } from 'zod';
@@ -49,7 +45,7 @@
 		transactionFlowStrategy = $bindable(TransactionFlowStrategyEnum.Authorization),
 		allocationStrategy = $bindable(AllocationStrategyEnum.PrioritizeSortingOrder),
 		formOk = $bindable(false),
-		isCreatePage = false
+		isCreatePage = false,
 	}: Props = $props();
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
@@ -67,9 +63,9 @@
 		orderSettings: object({
 			deleteExpiredOrdersAfter: number()
 				.min(MIN_EXPIRE_DAY, `Must be >= ${MIN_EXPIRE_DAY}`)
-				.max(MAX_EXPIRE_DAY, `Must be <= ${MAX_EXPIRE_DAY}`)
+				.max(MAX_EXPIRE_DAY, `Must be <= ${MAX_EXPIRE_DAY}`),
 		}),
-		currencyCode: string().nonempty(REQUIRED_ERROR)
+		currencyCode: string().nonempty(REQUIRED_ERROR),
 	});
 
 	type ChannelSchema = z.infer<typeof channelSchema>;
@@ -80,12 +76,6 @@
 		formOk = !Object.keys(channelFormErrors).length;
 	});
 
-	const shopQuery = operationStore<Pick<Query, 'shop'>>({
-		kind: 'query',
-		query: SHOP_QUERY,
-		requestPolicy: 'cache-and-network'
-	});
-
 	const validate = () => {
 		const parseResult = channelSchema.safeParse({
 			name,
@@ -93,9 +83,9 @@
 			isActive,
 			defaultCountry,
 			orderSettings: {
-				deleteExpiredOrdersAfter
+				deleteExpiredOrdersAfter,
 			},
-			currencyCode
+			currencyCode,
 		});
 		if (!parseResult.success) {
 			channelFormErrors = parseResult.error.formErrors.fieldErrors;
@@ -171,48 +161,41 @@
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
 	/>
-	<div class="flex-1">
-		{#if $shopQuery.fetching}
-			<SkeletonContainer class="flex gap-3">
-				<Skeleton class="h-5 flex-1" />
-				<Skeleton class="h-5 flex-1" />
-			</SkeletonContainer>
-		{:else if $shopQuery.error}
-			<Alert variant="error" size="sm" bordered>{$shopQuery.error.message}</Alert>
-		{:else if $shopQuery.data?.shop}
-			{@const countriesOpts = $shopQuery.data.shop.countries.map<SelectOption>((country) => ({
-				value: country.code,
-				label: country.country
-			}))}
-			<Select
-				label="Country"
-				options={countriesOpts}
-				placeholder="Select a country"
-				bind:value={defaultCountry}
-				required
-				variant={channelFormErrors?.defaultCountry?.length ? 'error' : 'info'}
-				subText={channelFormErrors?.defaultCountry?.length
-					? channelFormErrors.defaultCountry[0]
-					: ''}
-				{disabled}
-				onchange={validate}
-				onblur={validate}
-			/>
-		{/if}
-	</div>
+
+	<CountrySelect
+		label="Country"
+		placeholder="Select a country"
+		bind:value={defaultCountry}
+		required
+		variant={channelFormErrors?.defaultCountry?.length ? 'error' : 'info'}
+		subText={channelFormErrors?.defaultCountry?.length ? channelFormErrors.defaultCountry[0] : ''}
+		{disabled}
+		class="flex-1"
+		onchange={validate}
+		onblur={validate}
+	/>
 </div>
+
+{#snippet previewLabel(label: string)}
+	<div class="flex items-center gap-1">
+		<span>{label}</span>
+		<Badge size="xs" text="Preview" variant="outline" rounded />
+	</div>
+{/snippet}
 
 <div class="mt-3 flex flex-col gap-1">
 	<Checkbox
-		label="Allow unpaid orders"
 		bind:checked={allowUnpaidOrders}
 		{disabled}
 		size="sm"
-		subText={`Enables completing checkout with order before a successful payment. <div class="badge badge-outline badge-xs badge-info">Preview</div>`}
+		subText={`Enables completing checkout with order before a successful payment.`}
 		class="mb-3"
-	/>
+	>
+		{#snippet label()}
+			{@render previewLabel('Allow unpaid orders')}
+		{/snippet}
+	</Checkbox>
 	<Checkbox
-		label="Use Transaction flow when marking order as paid"
 		{disabled}
 		size="sm"
 		class="mb-3"
@@ -222,8 +205,12 @@
 				? MarkAsPaidStrategyEnum.TransactionFlow
 				: MarkAsPaidStrategyEnum.PaymentFlow;
 		}}
-		subText={`"Mark as paid" feature creates a Transaction - used by Payment Apps. <br /> If left unchecked it creates a Payment - used by Payment Plugins. <div class="badge badge-outline badge-xs badge-info">Preview</div>`}
-	/>
+		subText={`"Mark as paid" feature creates a Transaction - used by Payment Apps. <br /> If left unchecked it creates a Payment - used by Payment Plugins.`}
+	>
+		{#snippet label()}
+			{@render previewLabel('Use Transaction flow when marking order as paid')}
+		{/snippet}
+	</Checkbox>
 	<Checkbox
 		label="Automatically complete checkouts when fully paid"
 		bind:checked={automaticallyCompleteFullyPaidCheckouts}
@@ -231,9 +218,8 @@
 		size="sm"
 		class="mb-3"
 		subText="When enabled, checkouts detected as fully paid will be completed automatically, without checkoutComplete mutation."
-	/>
+	></Checkbox>
 	<Checkbox
-		label="Authorize transaction instead of charging"
 		checked={transactionFlowStrategy === TransactionFlowStrategyEnum.Authorization}
 		onchange={(evt) => {
 			transactionFlowStrategy = evt.currentTarget.checked
@@ -242,8 +228,12 @@
 		}}
 		{disabled}
 		size="sm"
-		subText={`When enabled, all transactions would require an additional step to be charged. <div class="badge badge-outline badge-xs badge-info">Preview</div>`}
-	/>
+		subText={`When enabled, all transactions would require an additional step to be charged.`}
+	>
+		{#snippet label()}
+			{@render previewLabel('Authorize transaction instead of charging')}
+		{/snippet}
+	</Checkbox>
 </div>
 
 <div class="mt-3">

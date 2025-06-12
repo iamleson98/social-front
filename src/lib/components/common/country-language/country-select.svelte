@@ -16,6 +16,7 @@
 		value = $bindable(),
 		class: className = '',
 		label,
+		...rest
 	}: Omit<SelectProps, 'options'> = $props();
 
 	const shopStore = operationStore<Pick<Query, 'shop'>>({
@@ -35,6 +36,13 @@
 			label: item.country,
 			value: item.code,
 		}))}
-		<Select {options} {size} {label} bind:value placeholder={$tranFunc('placeholders.valuePlaceholder')} />
+		<Select
+			{options}
+			{size}
+			{label}
+			bind:value
+			placeholder={$tranFunc('placeholders.valuePlaceholder')}
+			{...rest}
+		/>
 	{/if}
 </div>
