@@ -2,25 +2,22 @@
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { tranFunc } from '$i18n';
-	import { operationStore } from '$lib/api/operation';
 	import { USER_ORDERS_QUERY } from '$lib/api/orders';
-	import {  PhotoUp, Send } from '$lib/components/icons';
+	import { PhotoUp, Send } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import { Alert } from '$lib/components/ui/Alert';
 	import { FileInput, Input, TextArea } from '$lib/components/ui/Input';
-	import { Select, type SelectOption } from '$lib/components/ui/select';
-	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
+	import { GraphqlPaginableSelect, Select } from '$lib/components/ui/select';
 	import type { Query } from '$lib/gql/graphql';
-	import { numberRegex, type PaginationOptions } from '$lib/utils/utils';
+	import { numberRegex } from '$lib/utils/utils';
 	import { object, string, z } from 'zod';
 
-  const fieldRequired = $tranFunc('helpText.fieldRequired');
+	const fieldRequired = $tranFunc('helpText.fieldRequired');
 
 	const TicketSchema = object({
 		title: string().min(1, fieldRequired),
 		tag: string().min(1, fieldRequired),
 		description: string().min(1, fieldRequired),
-		orderNo: string().min(1, fieldRequired)
+		orderNo: string().min(1, fieldRequired),
 	});
 
 	type TicketInput = z.infer<typeof TicketSchema>;
@@ -29,19 +26,10 @@
 		title: '',
 		tag: '',
 		description: '',
-		orderNo: ''
+		orderNo: '',
 	});
 
 	const BATCH_LOAD = 20;
-
-	const userOrdersStore = operationStore<Pick<Query, 'me'>, PaginationOptions>({
-		kind: 'query',
-		requestPolicy: 'cache-and-network',
-		query: USER_ORDERS_QUERY,
-		variables: {
-			first: BATCH_LOAD
-		}
-	});
 
 	afterNavigate(() => {
 		const orderNumber = page.url.searchParams.get('order_number');
@@ -85,12 +73,12 @@
 				options={[
 					{
 						value: 'CONSULT',
-						label: $tranFunc('settings.consult')
+						label: $tranFunc('settings.consult'),
 					},
 					{
 						value: 'WARRANTY',
-						label: $tranFunc('settings.warranty')
-					}
+						label: $tranFunc('settings.warranty'),
+					},
 				]}
 				label={$tranFunc('settings.tag')}
 				required
@@ -100,34 +88,29 @@
 			/>
 		</div>
 		<div class="w-1/2">
-			{#if $userOrdersStore.fetching}
-				<SkeletonContainer>
-					<Skeleton class="h-4 w-full" />
-				</SkeletonContainer>
-			{:else if $userOrdersStore.error}
-				<Alert size="sm" variant="error" class="mb-3" bordered>
-					{$userOrdersStore.error.message}
-				</Alert>
-			{:else if $userOrdersStore.data?.me}
-				{@const items =
-					$userOrdersStore.data.me.orders?.edges.map<SelectOption>((item) => ({
-						value: item.node.number,
-						label: item.node.number
-					})) || []}
-
-				<Select
-					options={items}
-					label={$tranFunc('settings.orderNo')}
-					required
-					bind:value={ticketInput.orderNo}
-					variant={ticketErrors.orderNo?.length ? 'error' : 'info'}
-					subText={ticketErrors.orderNo?.length ? ticketErrors.orderNo[0] : ''}
-				/>
-			{/if}
+			<GraphqlPaginableSelect
+				query={USER_ORDERS_QUERY}
+				variables={{ first: BATCH_LOAD }}
+				resultKey={'me.orders' as keyof Query}
+				optionLabelKey="number"
+				optionValueKey="number"
+				bind:value={ticketInput.orderNo}
+				required
+				label={$tranFunc('settings.orderNo')}
+				variant={ticketErrors.orderNo?.length ? 'error' : 'info'}
+				subText={ticketErrors.orderNo?.length ? ticketErrors.orderNo[0] : ''}
+			/>
 		</div>
 	</div>
 
-	<FileInput class="mt-2" size="md" icon={PhotoUp} accept="image/*" onChange={(files) => {}} label={$tranFunc('settings.attachments')} />
+	<FileInput
+		class="mt-2"
+		size="md"
+		icon={PhotoUp}
+		accept="image/*"
+		onChange={(files) => {}}
+		label={$tranFunc('settings.attachments')}
+	/>
 
 	<TextArea
 		class="mt-2"
