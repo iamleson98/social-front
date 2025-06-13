@@ -1,35 +1,26 @@
-import { type GiftCardEvent, type GiftCard, type Order, type Money, PaymentChargeStatusEnum } from '$lib/gql/graphql';
-
-export function obtainUsedGiftcards(order?: Order): GiftCard[] | null {
-  if (!order) return null;
-  const giftCards = order.giftCards || [];
-  return giftCards.length > 0 ? giftCards : null;
-}
+import { type GiftCardEvent, type Order, type Money, PaymentChargeStatusEnum, GiftCardEventsEnum } from '$lib/gql/graphql';
 
 export function extractOrderGiftCardUsedAmount(order?: Order): number | undefined {
-  if (!order || !order.giftCards || !Array.isArray(order.giftCards)) return undefined;
+  if (!order || !order.giftCards) return undefined;
 
-  const orderId = order.id;
   const usedInOrderEvents = order.giftCards
-    .flatMap(giftCard => giftCard?.events || [])
-    .filter((e): e is GiftCardEvent => e?.type === 'USED_IN_ORDER' && e.orderId === orderId);
+    .flatMap(giftCard => giftCard?.events)
+    .filter((e: GiftCardEvent) => e.type === GiftCardEventsEnum.UsedInOrder && e.orderId === order.id);
 
   if (!usedInOrderEvents.length) return undefined;
 
   return usedInOrderEvents.reduce((sum, e) => {
-    const balance = e.balance!;
-    const diff = balance.oldCurrentBalance!.amount - balance.currentBalance!.amount;
+    const diff = e.balance!.oldCurrentBalance!.amount - e.balance!.currentBalance!.amount;
     return sum + diff;
   }, 0);
 }
 
 export function extractOutstandingBalance(order: Order): Money {
   const total = order.total?.gross;
-  const captured = order.totalCaptured;
-  if (!total || !captured) return { amount: 0, currency: total?.currency ?? 'USD' };
+  if (!total || !order.totalCharged) return { amount: 0, currency: total?.currency ?? "VND" };
 
   return {
-    amount: total.amount - captured.amount,
+    amount: total.amount - order.totalCharged.amount,
     currency: total.currency
   };
 }
@@ -37,7 +28,7 @@ export function extractOutstandingBalance(order: Order): Money {
 export function extractRefundedAmount(order: Order): Money {
   const total = order.total?.gross;
 
-  if (!total) return { amount: 0, currency: 'USD' };
+  if (!total) return { amount: 0, currency: 'VND' };
 
   switch (order.paymentStatus) {
     case PaymentChargeStatusEnum.FullyRefunded:
