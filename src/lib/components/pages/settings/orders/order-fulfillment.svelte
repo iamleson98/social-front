@@ -217,7 +217,10 @@
 	{/if} -->
 
 	{#each order.fulfillments as fulfillment, idx (idx)}
-		<div class="border-b border-gray-200 flex flex-col gap-2 pb-2">
+		<div
+			class="border-gray-200 flex flex-col gap-2 pb-2"
+			class:border-b={idx !== order.fulfillments.length - 1}
+		>
 			<SectionHeader>
 				<Badge {...fulfillmentStatusBadgeClass(fulfillment.status)} rounded />
 				<div class="flex items-center gap-2">

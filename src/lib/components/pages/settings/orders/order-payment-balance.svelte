@@ -18,7 +18,6 @@
 	import {
 		extractRefundedAmount,
 		extractOrderGiftCardUsedAmount,
-		obtainUsedGiftcards,
 		getDiscountAmount,
 	} from '$lib/components/pages/settings/orders/utils';
 	import { paymentStatusBadgeClass } from '$lib/utils/utils';
@@ -40,15 +39,14 @@
 
 	const refundedAmount = extractRefundedAmount(order);
 	const usedGiftCardAmount = extractOrderGiftCardUsedAmount(order);
-	const usedGiftcards = obtainUsedGiftcards(order);
 
 	const getDeliveryMethodName = () => {
 		if (!order.shippingMethodName && !order.shippingPrice && !order.collectionPointName) {
 			return '';
 		}
 
-		if (order.shippingMethodName === null) {
-			if (order.collectionPointName === null) {
+		if (!order.shippingMethodName) {
+			if (!order.collectionPointName) {
 				return orderPaymentMessages.shippingDoesNotApply;
 			}
 			return orderPaymentMessages.clickAndCollectShippingMethod;
@@ -65,14 +63,14 @@
 	}
 </script>
 
-<div class="bg-white rounded-lg border border-gray-200 p-4 space-y-4">
+<div class="bg-white rounded-lg border border-gray-200 p-3 space-y-4">
 	<SectionHeader>
 		<div class="flex items-center gap-2">
 			<span>{orderPaymentMessages.paymentTitle}</span>
 			<Badge {...paymentStatusBadgeClass(order.paymentStatus)} />
 		</div>
 		<div
-			class="flex gap-2 ml-auto"
+			class="flex gap-2"
 			class:invisible={!order.paymentStatus || order.status === OrderStatus.Canceled}
 		>
 			{#if canCapture}
@@ -91,7 +89,7 @@
 	</SectionHeader>
 
 	<!-- Discount -->
-	{#each order.discounts ?? [] as discount (discount.id)}
+	{#each order.discounts as discount (discount.id)}
 		<div class="flex justify-between text-sm text-gray-500">
 			<div class="flex gap-2">
 				<span>{orderPaymentMessages.discount}</span>
@@ -103,17 +101,17 @@
 	{/each}
 
 	<!-- Subtotal -->
-	<div class="flex justify-between">
+	<div class="flex justify-between items-center">
 		<span>{orderPaymentMessages.subtotal}</span>
 		{#if order.subtotal?.gross}
 			<Money money={order.subtotal.gross} ariaLabel="Subtotal" />
 		{:else}
-			<InputSkeleton />
+			<span>-</span>
 		{/if}
 	</div>
 
 	<!-- Shipping -->
-	<div class="flex justify-between">
+	<div class="flex justify-between items-center">
 		<div class="flex flex-row gap-5 items-center">
 			<span>{orderPaymentMessages.shipping}</span>
 			<small class="text-gray-500">{getDeliveryMethodName()}</small>
@@ -121,12 +119,12 @@
 		{#if order.shippingPrice?.gross}
 			<Money money={order.shippingPrice.gross} ariaLabel="Shipping" />
 		{:else}
-			<InputSkeleton />
+			<span>-</span>
 		{/if}
 	</div>
 
 	<!-- Taxes -->
-	<div class="flex justify-between">
+	<div class="flex justify-between items-center">
 		<div>
 			<span>{orderPaymentMessages.taxes}</span>
 			{#if order.total.tax.amount > 0}
@@ -136,28 +134,25 @@
 		{#if order.total.tax}
 			<Money money={order.total.tax} ariaLabel="Taxes" />
 		{:else}
-			<InputSkeleton />
+			<span>-</span>
 		{/if}
 	</div>
 
 	<!-- Total -->
-	<div class="flex justify-between font-semibold border-t pt-2">
+	<div class="flex justify-between items-center font-semibold border-t pt-2">
 		<span>{orderPaymentMessages.total}</span>
 		{#if order.total?.gross}
 			<Money money={order.total.gross} ariaLabel="Total" />
 		{:else}
-			<InputSkeleton />
+			<span>-</span>
 		{/if}
 	</div>
 
-	<!-- Divider -->
-	<hr class="my-4" />
-
 	<!-- Gift cards -->
-	{#if usedGiftCardAmount && usedGiftcards}
-		<div class="flex justify-between text-sm">
+	{#if usedGiftCardAmount && order.giftCards}
+		<div class="flex justify-between items-center mt-4">
 			<div>
-				{#each usedGiftcards as card}
+				{#each order.giftCards as card}
 					<div>Gift card: {card.displayCode}</div>
 				{/each}
 			</div>
@@ -169,28 +164,28 @@
 	{/if}
 
 	<!-- Total Authorized -->
-	<div class="flex justify-between">
+	<div class="flex justify-between items-center">
 		<span>{orderPaymentMessages.preauthorized}</span>
 		{#if order.totalAuthorized}
 			<Money money={order.totalAuthorized} ariaLabel="Total authorized" />
 		{:else}
-			<InputSkeleton />
+			<span>-</span>
 		{/if}
 	</div>
 
 	<!-- Captured -->
-	<div class="flex justify-between">
+	<div class="flex justify-between items-center">
 		<span>{orderPaymentMessages.captured}</span>
-		{#if order.totalCaptured}
-			<Money money={order.totalCaptured} ariaLabel="Total captured" />
+		{#if order.totalCharged}
+			<Money money={order.totalCharged} ariaLabel="Total captured" />
 		{:else}
-			<InputSkeleton />
+			<span>-</span>
 		{/if}
 	</div>
 
 	<!-- Refunded -->
 	{#if refundedAmount?.amount}
-		<div class="flex justify-between">
+		<div class="flex justify-between items-center">
 			<span>{orderPaymentMessages.refunded}</span>
 			<Money money={refundedAmount} ariaLabel="Refunded" />
 		</div>
@@ -198,7 +193,7 @@
 
 	<!-- Outstanding -->
 	<div
-		class="flex justify-between font-semibold border-t pt-2"
+		class="flex justify-between items-center font-semibold border-t pt-2"
 		class:text-green-600={order.totalBalance?.amount === 0}
 	>
 		<span>{orderPaymentMessages.outstanding}</span>
