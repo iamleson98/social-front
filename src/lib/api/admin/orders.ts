@@ -218,6 +218,15 @@ export const ORDER_DETAIL_QUERY = gql`
       userEmail
       customerNote
       isPaid
+      user {
+        id
+      }
+      invoices {
+        id
+        number
+        message
+        url
+      }
       metadata {
         key
         value

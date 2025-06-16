@@ -28,6 +28,8 @@
 	import OrderLines from '$lib/components/pages/settings/orders/order-lines.svelte';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { differenceBy } from 'es-toolkit/compat';
+	import { Button } from '$lib/components/ui';
+	import { TextArea } from '$lib/components/ui/Input';
 
 	let loading = $state(false);
 	let performUpdateMetadata = $state(false);
@@ -123,14 +125,53 @@
 		<div class="flex flex-col gap-2 w-3/10">
 			<div class="bg-white rounded-lg border border-gray-200 p-3">
 				<SectionHeader>Customer</SectionHeader>
-				<p>{order.userEmail}</p>
-				<p class="text-blue-500 text-sm underline cursor-pointer">View profile</p>
+				<p class="text-sm">{order.userEmail || '-'}</p>
+				{#if order.user}
+					<a
+						class="link text-sm text-blue-500"
+						href={AppRoute.SETTINGS_CONFIGS_USER_DETAILS(order.user?.id)}>View profile</a
+					>
+				{/if}
 			</div>
 
 			<UserAddressOrder
-				shippingAddresses={order.shippingAddress ? [order.shippingAddress] : []}
-				billingAddress={order.billingAddress ? [order.billingAddress] : []}
+				shippingAddress={order.shippingAddress}
+				billingAddress={order.billingAddress}
 			/>
+
+			<div class="bg-white rounded-lg border border-gray-200 p-3">
+				<SectionHeader>Sales channel</SectionHeader>
+				<a
+					class="link text-blue-500 text-sm"
+					href={AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(order.channel.slug)}
+				>
+					<span>{order.channel.name}</span>
+					<span class="text-xs">({order.channel.currencyCode})</span>
+				</a>
+			</div>
+
+			<div class="bg-white rounded-lg border border-gray-200 p-3">
+				<SectionHeader>
+					<span>Invoices</span>
+					<Button size="xs" variant="light">Generate</Button>
+				</SectionHeader>
+				{#if order.invoices.length}
+					{#each order.invoices as invoice, idx (idx)}
+						<div>{invoice.number}</div>
+					{/each}
+				{:else}
+					<Alert size="xs" bordered>No invoice to show</Alert>
+				{/if}
+			</div>
+
+			<div class="bg-white rounded-lg border border-gray-200 p-3">
+				<SectionHeader>Customer note</SectionHeader>
+				{#if order.customerNote}
+					<TextArea readonly value={order.customerNote} />
+				{:else}
+					<Alert size="xs" bordered>This order has no customer note</Alert>
+				{/if}
+			</div>
 		</div>
 	</div>
 

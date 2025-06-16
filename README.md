@@ -14,11 +14,7 @@
 <h3>I) DEVELOPMENT DOC</h3>
 
 # NOTE: every conventions, specifications below are for a better developer yourself.
-If you have any idea or contributions, do research first then tell me advantages and drawbacks of your solutions.
-If you have good ideas and I find that hepful, there will be $ money award.
-- potentional bug: 50k
-- Small helpful idea: 50k
-- Big idea - 100k
+If you have any idea or contributions, do research first then tell me advantages and drawbacks of your solutions. That would be invaluable to me, and I may reward you for that.
 
 
 ## Table of contents
@@ -45,6 +41,7 @@ Below is a brief on project files/folder structure
 ### NOTE: If you have any confusion or question, directly ask (iamleson98) for more.
 
 ## Coding conventions
+- If you don't trully believe in your ability of writing clean `js/ts`, please read this style guide first: https://github.com/airbnb/javascript
 - For js code always try to use `typescript` whenever possible. This helps you to be good developer.
 - `importing` - import `$lib/...` for library, custom component import
 - Consider to export functions, consts, in the `index.ts` file of folder. This helps reduce typing efforts when importing.
