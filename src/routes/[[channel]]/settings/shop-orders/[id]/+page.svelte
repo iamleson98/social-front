@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { operationStore } from '$lib/api/operation';
 	import {
-		FulfillmentStatus,
+	FulfillmentStatus,
 		type Mutation,
 		type MutationOrderUpdateArgs,
 		type OrderUpdateInput,
@@ -30,9 +30,14 @@
 	import { differenceBy } from 'es-toolkit/compat';
 	import { Button } from '$lib/components/ui';
 	import { TextArea } from '$lib/components/ui/Input';
+	import { Modal } from '$lib/components/ui/Modal';
+	import OrderRefundFulfilledProduct from '$lib/components/pages/settings/orders/refund/order-refund-fulfilled_product.svelte';
+	import OrderRefundUnfulfilledProduct from '$lib/components/pages/settings/orders/refund/order-refund-unfulfilled_product.svelte';
+	import RefundAmount from '$lib/components/pages/settings/orders/refund/refund-amount.svelte';
 
 	let loading = $state(false);
 	let performUpdateMetadata = $state(false);
+	let openRefundModal = $state(false);
 
 	const orderQuery = operationStore<Pick<Query, 'order'>, QueryOrderArgs>({
 		kind: 'query',
@@ -174,6 +179,19 @@
 			</div>
 		</div>
 	</div>
+
+	<Modal open={openRefundModal} onClose={() => (openRefundModal = false)} header="Refund">
+		{#if hasFulfillmentLines}
+			<OrderRefundFulfilledProduct {order} />
+		{/if}
+		{#if hasUnfulfilledLines}
+			<OrderRefundUnfulfilledProduct {order} />
+		{/if}
+		{#if !hasFulfillmentLines && !hasUnfulfilledLines}
+			<p class="text-sm text-gray-500">No items available for refund.</p>
+		{/if}
+		<RefundAmount {order} />
+	</Modal>
 
 	<ActionBar backButtonUrl={AppRoute.SETTINGS_ORDERS()} {onUpdateClick} disabled={loading} />
 {/if}
