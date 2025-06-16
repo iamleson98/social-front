@@ -1,7 +1,5 @@
-import { checkoutStore } from './cart';
+export { checkoutStore } from './cart';
 export type { CartItemProps } from './cart';
-
-export { checkoutStore };
 
 /**
  * @description keys for local storage items

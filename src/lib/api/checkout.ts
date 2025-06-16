@@ -18,6 +18,160 @@ export const CHECKOUT_CREATE_MUTATION = gql`
   }
 `;
 
+export const CHECKOUT_DETAIL_FRAGMENT = gql`
+fragment CheckoutDetailFragment on Checkout {
+  id
+  email
+  discount {
+    amount
+    currency
+  }
+  voucherCode
+  discountName
+  translatedDiscountName
+  giftCards {
+    displayCode
+    id
+    currentBalance {
+      currency
+      amount
+    }
+  }
+  channel {
+    id
+    slug
+  }
+  shippingAddress {
+    id
+    firstName
+    lastName
+    city
+    phone
+    postalCode
+    companyName
+    cityArea
+    streetAddress1
+    streetAddress2
+    countryArea
+    country {
+      country
+      code
+    }
+  }
+  billingAddress {
+    id
+    firstName
+    lastName
+    city
+    phone
+    postalCode
+    companyName
+    cityArea
+    streetAddress1
+    streetAddress2
+    countryArea
+    country {
+      country
+      code
+    }
+  }
+  authorizeStatus
+  chargeStatus
+  isShippingRequired
+  availablePaymentGateways {
+    id
+    name
+    currencies
+    config {
+      field
+      value
+    }
+  }
+  deliveryMethod {
+    __typename
+  }
+  shippingMethods {
+    id
+    name
+    price {
+      amount
+      currency
+    }
+    maximumDeliveryDays
+    minimumDeliveryDays
+  }
+  totalPrice {
+    gross {
+      currency
+      amount
+    }
+    tax {
+      currency
+      amount
+    }
+  }
+  shippingPrice {
+    gross {
+      currency
+      amount
+    }
+  }
+  subtotalPrice {
+    gross {
+      currency
+      amount
+    }
+  }
+  lines {
+    id
+    quantity
+    totalPrice {
+      gross {
+        currency
+        amount
+      }
+    }
+    undiscountedTotalPrice {
+      currency
+      amount
+    }
+    unitPrice {
+      gross {
+        currency
+        amount
+      }
+    }
+    undiscountedUnitPrice {
+      currency
+      amount
+    }
+    variant {
+      id
+      name
+      attributes(variantSelection: ALL) {
+        values {
+          name
+          dateTime
+          boolean
+        }
+      }
+      product {
+        name
+        media {
+          alt
+          type
+          url(size: 100, format: WEBP)
+        }
+      }
+      media {
+        alt
+        type
+        url(size: 100, format: WEBP)
+      }
+    }
+  }
+}`;
+
 
 /** this query should be used by shopping-cart page */
 export const CHECKOUT_PREVIEW_QUERY = gql`
@@ -103,158 +257,10 @@ query CheckoutDetails(
   $id: ID!, 
 ) {
   checkout(id: $id) {
-    id
-    email
-    discount {
-      amount
-      currency
-    }
-    voucherCode
-    discountName
-    translatedDiscountName
-    giftCards {
-      displayCode
-      id
-      currentBalance {
-        currency
-        amount
-      }
-    }
-    channel {
-      id
-      slug
-    }
-    shippingAddress {
-      id
-      firstName
-      lastName
-      city
-      phone
-      postalCode
-      companyName
-      cityArea
-      streetAddress1
-      streetAddress2
-      countryArea
-      country {
-        country
-        code
-      }
-    }
-    billingAddress {
-      id
-      firstName
-      lastName
-      city
-      phone
-      postalCode
-      companyName
-      cityArea
-      streetAddress1
-      streetAddress2
-      countryArea
-      country {
-        country
-        code
-      }
-    }
-    authorizeStatus
-    chargeStatus
-    isShippingRequired
-    availablePaymentGateways {
-      id
-      name
-      currencies
-      config {
-        field
-        value
-      }
-    }
-    deliveryMethod {
-      __typename
-    }
-    shippingMethods {
-      id
-      name
-      price {
-        amount
-        currency
-      }
-      maximumDeliveryDays
-      minimumDeliveryDays
-    }
-    totalPrice {
-      gross {
-        currency
-        amount
-      }
-      tax {
-        currency
-        amount
-      }
-    }
-    shippingPrice {
-      gross {
-        currency
-        amount
-      }
-    }
-    subtotalPrice {
-      gross {
-        currency
-        amount
-      }
-    }
-    lines {
-      id
-      quantity
-      totalPrice {
-        gross {
-          currency
-          amount
-        }
-      }
-      undiscountedTotalPrice {
-        currency
-        amount
-      }
-      unitPrice {
-        gross {
-          currency
-          amount
-        }
-      }
-      undiscountedUnitPrice {
-        currency
-        amount
-      }
-      variant {
-        id
-        name
-        attributes(variantSelection: ALL) {
-          values {
-            name
-            dateTime
-            boolean
-          }
-        }
-        product {
-          name
-          media {
-            alt
-            type
-            url(size: 100, format: WEBP)
-          }
-        }
-        media {
-          alt
-          type
-          url(size: 100, format: WEBP)
-        }
-      }
-    }
+    ...CheckoutDetailFragment
   }
 }
+${CHECKOUT_DETAIL_FRAGMENT}
 `;
 
 /** Chould be used in product detail page, when user click `Add to cart` button  */
@@ -286,158 +292,11 @@ mutation CheckoutRemovePromoCode(
       code
     }
     checkout {
-      id
-      email
-      discount {
-        amount
-        currency
-      }
-      voucherCode
-      discountName
-      translatedDiscountName
-      giftCards {
-        displayCode
-        id
-        currentBalance {
-          currency
-          amount
-        }
-      }
-      channel {
-        id
-        slug
-      }
-      shippingAddress {
-        id
-        firstName
-        lastName
-        city
-        phone
-        postalCode
-        companyName
-        cityArea
-        streetAddress1
-        streetAddress2
-        countryArea
-        country {
-          country
-          code
-        }
-      }
-      billingAddress {
-        id
-        firstName
-        lastName
-        city
-        phone
-        postalCode
-        companyName
-        cityArea
-        streetAddress1
-        streetAddress2
-        countryArea
-        country {
-          country
-          code
-        }
-      }
-      authorizeStatus
-      chargeStatus
-      isShippingRequired
-      availablePaymentGateways {
-        id
-        name
-        currencies
-        config {
-          field
-          value
-        }
-      }
-      deliveryMethod {
-        __typename
-      }
-      shippingMethods {
-        id
-        name
-        price {
-          amount
-          currency
-        }
-        maximumDeliveryDays
-        minimumDeliveryDays
-      }
-      totalPrice {
-        gross {
-          currency
-          amount
-        }
-        tax {
-          currency
-          amount
-        }
-      }
-      shippingPrice {
-        gross {
-          currency
-          amount
-        }
-      }
-      subtotalPrice {
-        gross {
-          currency
-          amount
-        }
-      }
-      lines {
-        id
-        quantity
-        totalPrice {
-          gross {
-            currency
-            amount
-          }
-        }
-        unitPrice {
-          gross {
-            currency
-            amount
-          }
-        }
-        undiscountedUnitPrice {
-          currency
-          amount
-        }
-        variant {
-          id
-          name
-          quantityLimitPerCustomer
-          quantityAvailable
-          attributes(variantSelection: ALL) {
-            values {
-              name
-              dateTime
-              boolean
-            }
-          }
-          product {
-            name
-            slug
-            media {
-              alt
-              type
-              url(size: 100, format: WEBP)
-            }
-          }
-          media {
-            alt
-            type
-            url(size: 100, format: WEBP)
-          }
-        }
-      }
+      ...CheckoutDetailFragment
     }
   }
 }
+${CHECKOUT_DETAIL_FRAGMENT}
 `;
 
 export const CHECKOUT_LINES_UPDATE_MUTATION = gql`
@@ -626,142 +485,16 @@ mutation CheckoutShippingAddressUpdate(
 		validationRules: $validationRules
   ) {
     checkout {
-      id
-      email
-      discount {
-        amount
-        currency
-      }
-      voucherCode
-      discountName
-      translatedDiscountName
-      giftCards {
-        displayCode
-        id
-        currentBalance {
-          currency
-          amount
-        }
-      }
-      channel {
-        id
-        slug
-      }
-      shippingAddress {
-        id
-        firstName
-        lastName
-        city
-        phone
-        postalCode
-        companyName
-        cityArea
-        streetAddress1
-        streetAddress2
-        countryArea
-        country {
-          country
-          code
-        }
-      }
-      authorizeStatus
-      chargeStatus
-      isShippingRequired
-      availablePaymentGateways {
-        id
-        name
-        currencies
-        config {
-          field
-          value
-        }
-      }
-      deliveryMethod {
-        __typename
-      }
-      shippingMethods {
-        id
-        name
-        price {
-          amount
-          currency
-        }
-        maximumDeliveryDays
-        minimumDeliveryDays
-      }
-      totalPrice {
-        gross {
-          currency
-          amount
-        }
-        tax {
-          currency
-          amount
-        }
-      }
-      shippingPrice {
-        gross {
-          currency
-          amount
-        }
-      }
-      subtotalPrice {
-        gross {
-          currency
-          amount
-        }
-      }
-      lines {
-        id
-        quantity
-        totalPrice {
-          gross {
-            currency
-            amount
-          }
-        }
-        unitPrice {
-          gross {
-            currency
-            amount
-          }
-        }
-        undiscountedUnitPrice {
-          currency
-          amount
-        }
-        variant {
-          id
-          name
-          attributes(variantSelection: ALL) {
-            values {
-              name
-              dateTime
-              boolean
-            }
-          }
-          product {
-            name
-            media {
-              alt
-              type
-              url(size: 100, format: WEBP)
-            }
-          }
-          media {
-            alt
-            type
-            url(size: 100, format: WEBP)
-          }
-        }
-      }
+      ...CheckoutDetailFragment
     }
     errors {
       field
       code
     }
   }
-}`;
+}
+${CHECKOUT_DETAIL_FRAGMENT}
+`;
 
 export const CHECKOUT_BILLING_ADDRESS_UPDATE_MUTATION = gql`
 mutation CheckoutBillingAddressUpdate(
@@ -775,142 +508,16 @@ mutation CheckoutBillingAddressUpdate(
 		validationRules: $validationRules
   ) {
     checkout {
-      id
-      email
-      discount {
-        amount
-        currency
-      }
-      voucherCode
-      discountName
-      translatedDiscountName
-      giftCards {
-        displayCode
-        id
-        currentBalance {
-          currency
-          amount
-        }
-      }
-      channel {
-        id
-        slug
-      }
-      billingAddress {
-        id
-        firstName
-        lastName
-        city
-        phone
-        postalCode
-        companyName
-        cityArea
-        streetAddress1
-        streetAddress2
-        countryArea
-        country {
-          country
-          code
-        }
-      }
-      authorizeStatus
-      chargeStatus
-      isShippingRequired
-      availablePaymentGateways {
-        id
-        name
-        currencies
-        config {
-          field
-          value
-        }
-      }
-      deliveryMethod {
-        __typename
-      }
-      shippingMethods {
-        id
-        name
-        price {
-          amount
-          currency
-        }
-        maximumDeliveryDays
-        minimumDeliveryDays
-      }
-      totalPrice {
-        gross {
-          currency
-          amount
-        }
-        tax {
-          currency
-          amount
-        }
-      }
-      shippingPrice {
-        gross {
-          currency
-          amount
-        }
-      }
-      subtotalPrice {
-        gross {
-          currency
-          amount
-        }
-      }
-      lines {
-        id
-        quantity
-        totalPrice {
-          gross {
-            currency
-            amount
-          }
-        }
-        unitPrice {
-          gross {
-            currency
-            amount
-          }
-        }
-        undiscountedUnitPrice {
-          currency
-          amount
-        }
-        variant {
-          id
-          name
-          attributes(variantSelection: ALL) {
-            values {
-              name
-              dateTime
-              boolean
-            }
-          }
-          product {
-            name
-            media {
-              alt
-              type
-              url(size: 100, format: WEBP)
-            }
-          }
-          media {
-            alt
-            type
-            url(size: 100, format: WEBP)
-          }
-        }
-      }
+      ...CheckoutDetailFragment
     }
     errors {
       field
       code
     }
   }
-}`;
+}
+${CHECKOUT_DETAIL_FRAGMENT}
+`;
 
 export const PAYMENT_GATEWAYS_INITIALIZE_MUTATION = gql`
 mutation PaymentGatewaysInitialize($id: ID!, $paymentGateways: [PaymentGatewayToInitialize!], $amount: PositiveDecimal) {

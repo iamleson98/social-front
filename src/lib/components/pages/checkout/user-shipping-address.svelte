@@ -6,7 +6,6 @@
 	import AddressEditForm from './address-edit-form.svelte';
 	import AddressList from './address-list.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
-	// import { checkoutStore } from '$lib/stores/app';
 
 	type Props = {
 		checkout: Checkout;
@@ -36,7 +35,11 @@
 	{@const availableCountries =
 		$channelStore.data?.channel?.countries?.map(({ code }) => code as CountryCode) || []}
 	{#if displayAddressCreate}
-		<AddressCreateForm {availableCountries} onCancel={() => (displayAddressCreate = false)} />
+		<AddressCreateForm
+			{checkout}
+			{availableCountries}
+			onCancel={() => (displayAddressCreate = false)}
+		/>
 	{:else if displayAddressEdit}
 		<AddressEditForm />
 	{:else if displayAddressList}
