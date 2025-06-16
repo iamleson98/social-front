@@ -72,9 +72,9 @@
 			icon: MailQuestion,
 			name: $tranFunc('settings.supports'),
 			href: AppRoute.ME_SUPPORT(),
-			shouldActive: () =>
-				page.url.pathname === AppRoute.ME_SUPPORT_NEW() ||
-				page.route.id === '/[[channel]]/settings/supports/[id]',
+			shouldActive: () => page.url.pathname.startsWith(AppRoute.ME_SUPPORT()),
+			// === AppRoute.ME_SUPPORT_NEW() ||
+			// page.route.id === '/[[channel]]/settings/supports/[id]',
 		},
 	]);
 
@@ -89,28 +89,22 @@
 			icon: Parking,
 			name: $tranFunc('product.products'),
 			href: AppRoute.SETTINGS_PRODUCTS(),
-			shouldActive: () =>
-				page.url.pathname === AppRoute.SETTINGS_PRODUCTS_NEW() ||
-				page.route.id === '/[[channel]]/settings/products/[slug]',
+			shouldActive: () => page.url.pathname.startsWith(AppRoute.SETTINGS_PRODUCTS()),
+			// === AppRoute.SETTINGS_PRODUCTS_NEW() ||
+			// page.route.id === '/[[channel]]/settings/products/[slug]',
 		},
 		{
 			icon: Order,
 			name: $tranFunc('settings.contracts'),
 			href: AppRoute.SETTINGS_CONTRACTS(),
-			shouldActive: () => page.url.pathname === AppRoute.SETTINGS_CONTRACTS_NEW(),
+			shouldActive: () => page.url.pathname.startsWith(AppRoute.SETTINGS_CONTRACTS()),
+			// === AppRoute.SETTINGS_CONTRACTS_NEW(),
 		},
 		{
 			icon: SettingCog,
 			name: $tranFunc('settings.configs'),
 			href: AppRoute.SETTINGS_CONFIGS(),
-			shouldActive: () =>
-				// page.url.pathname === AppRoute.SETTINGS_CONFIGS_CHANNELS() ||
-				// page.url.pathname === AppRoute.SETTINGS_CONFIGS_STAFFS() ||
-				// page.url.pathname === AppRoute.SETTINGS_CONFIGS_USERS() ||
-				// page.route.id === '/[[channel]]/settings/configs/channels/[id]' ||
-				// page.route.id === '/[[channel]]/settings/configs/staffs/[id]' ||
-				// page.route.id === '/[[channel]]/settings/configs/customers/[id]'
-				page.url.pathname.startsWith(AppRoute.SETTINGS_CONFIGS()),
+			shouldActive: () => page.url.pathname.startsWith(AppRoute.SETTINGS_CONFIGS()),
 		},
 	]);
 </script>

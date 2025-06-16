@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { Dots, Edit, Icon, TagFilled, Trash } from '$lib/components/icons';
+	import { Dots, Edit, Trash } from '$lib/components/icons';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown } from '$lib/components/ui/Dropdown';
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';

@@ -1,22 +1,34 @@
 <script lang="ts">
+	import { ORDER_FULFILL_MUTATION } from '$lib/api/admin/orders';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { operationStore } from '$lib/api/operation';
+	import { SHOP_QUERY } from '$lib/api/shop';
+	import { Button } from '$lib/components/ui';
 	import { Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import type {
+		Mutation,
+		MutationOrderFulfillArgs,
+		Order,
 		OrderFulfillInput,
 		OrderFulfillLineInput,
 		OrderFulfillStockInput,
 		OrderLine,
+		Query,
 	} from '$lib/gql/graphql';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { onMount } from 'svelte';
 
 	type Props = {
 		orderLines: OrderLine[];
 		open: boolean;
-		onClose: () => void;
+		order: Order;
+		onFulfillSuccess: () => void;
 	};
 
-	let { orderLines, open, onClose }: Props = $props();
+	let { orderLines, open = $bindable(), order, onFulfillSuccess }: Props = $props();
 
 	const TABLE_COLUMNS: TableColumnProps<OrderLine, any>[] = [
 		{
@@ -45,6 +57,15 @@
 		},
 	];
 
+	let loading = $state(false);
+
+	const shopQuery = operationStore<Pick<Query, 'shop'>>({
+		kind: 'query',
+		query: SHOP_QUERY,
+	});
+
+	onMount(() => shopQuery.subscribe((result) => checkIfGraphqlResultHasError(result, 'shop')));
+
 	let orderFulfillInput = $state<OrderFulfillInput>({
 		lines: orderLines.map<OrderFulfillLineInput>((item) => {
 			let stocks: Partial<OrderFulfillStockInput>[] = [];
@@ -70,6 +91,38 @@
 		}),
 	});
 
+	let notAllowedToFulfillUnpaid = $derived(
+		$shopQuery.data?.shop.fulfillmentAutoApprove &&
+			!$shopQuery.data.shop.fulfillmentAllowUnpaid &&
+			!order.isPaid,
+	);
+	let areWarehouseSet = $derived(
+		orderFulfillInput.lines
+			.filter((item) => !!item.stocks)
+			.every((item) => item.stocks.every((stock) => stock.warehouse)),
+	);
+
+	let shouldEnableSaveBtn = $derived.by(() => {
+		if (loading || !order || $shopQuery.fetching) return false;
+		if (notAllowedToFulfillUnpaid) return false;
+
+		const isAtleastOneFulfilled = orderFulfillInput.lines.some(
+			(item) => item?.stocks?.[0]?.quantity > 0,
+		);
+		const overFulfill = orderFulfillInput.lines
+			.filter((item) => !!item.stocks)
+			.some((item) => {
+				const quantityFulfilled = item.stocks[0].quantity;
+				const quantityToFulfill = order.lines.find(
+					(line) => line.id === item.orderLineId,
+				)?.quantityToFulfill;
+
+				return typeof quantityToFulfill === 'number' && quantityFulfilled > quantityToFulfill;
+			});
+
+		return !overFulfill && isAtleastOneFulfilled && areWarehouseSet;
+	});
+
 	const handleWarehouseChange = (lineIndex: number, warehouseId?: string) => {
 		if (orderFulfillInput.lines[lineIndex].stocks.length)
 			orderFulfillInput.lines[lineIndex].stocks[0].warehouse = warehouseId as string;
@@ -80,6 +133,26 @@
 			orderFulfillInput.lines[lineIndex].stocks[0].quantity = Math.floor(
 				Number((evt.target as HTMLInputElement).value),
 			);
+	};
+
+	const handleFulfill = async () => {
+		loading = true;
+
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'orderFulfill'>,
+			MutationOrderFulfillArgs
+		>(ORDER_FULFILL_MUTATION, {
+			order: order.id,
+			input: orderFulfillInput,
+		});
+
+		loading = false;
+
+		if (checkIfGraphqlResultHasError(result, 'orderFulfill', 'Successfully fulfilled order lines'))
+			return;
+
+		open = false;
+		onFulfillSuccess();
 	};
 </script>
 
@@ -131,6 +204,7 @@
 			size="sm"
 			value={defaultWarehouseID}
 			onchange={(opt) => handleWarehouseChange(idx, (opt as SelectOption)?.value as string)}
+			disabled={loading}
 		/>
 	{/if}
 {/snippet}
@@ -144,6 +218,7 @@
 			min={0}
 			max={item.quantityToFulfill}
 			size="sm"
+			disabled={loading}
 			inputDebounceOption={{
 				onInput: (evt) => handleQuantityChange(idx, evt),
 			}}
@@ -157,13 +232,21 @@
 <Modal
 	{open}
 	size="lg"
-	{onClose}
-	onCancel={onClose}
+	onClose={() => (open = false)}
+	onCancel={() => (open = false)}
 	closeOnOutsideClick
 	closeOnEscape
 	header="Items ready to ship"
+	hideFooter
 >
-	<div>
-		<Table columns={TABLE_COLUMNS} items={orderLines} />
+	<Table columns={TABLE_COLUMNS} items={orderLines} />
+
+	<div class="flex items-center gap-2 justify-end">
+		<Button size="sm" disabled={!shouldEnableSaveBtn || loading} onclick={handleFulfill} {loading}>
+			Save
+		</Button>
+		<Button size="sm" variant="light" onclick={() => (open = false)} color="red" disabled={loading}>
+			Cancel
+		</Button>
 	</div>
 </Modal>

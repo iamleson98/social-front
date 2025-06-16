@@ -46,7 +46,7 @@ const parseTranslationObject = (obj: Record<string, unknown>, trans: Translation
   }
 
   return trans;
-}
+};
 
 export type LanguageCode = LanguageCodeEnum.Vi | LanguageCodeEnum.Ja | LanguageCodeEnum.Ko | LanguageCodeEnum.En | 'vi-VN' | 'en-US';
 
@@ -66,7 +66,7 @@ export const languageSupportInfer = (language: LanguageCode | LanguageCodeEnum) 
     default:
       return LanguageCodeEnum.En;
   }
-}
+};
 
 const TRANS_MAP: Partial<Record<LanguageCodeEnum, Translation>> = {
   [LanguageCodeEnum.Vi]: parseTranslationObject(vietnamese, {}),
@@ -103,7 +103,7 @@ const getTranslation = async (lang: LanguageCodeEnum) => {
 
   TRANS_MAP[lang] = parseTranslationObject(imp.default, {});
   return TRANS_MAP[lang];
-}
+};
 
 export const serverSideTranslate = async <T extends RequestEvent>(event: T, key: string, args?: Record<string, unknown>) => {
   const languageCookie = event.cookies.get(LANGUAGE_KEY) as LanguageCodeEnum || LanguageCodeEnum.Vi;
@@ -127,7 +127,7 @@ const buildTranslationText = (trans: Translation, key: string, args?: Record<str
   }
 
   return result;
-}
+};
 
 /**a svelte store for translation.
  * On client side (in .svelte files), use it like: const result = $tranFunc('`<your_key>`').
@@ -154,4 +154,4 @@ type Translation = {
     template: string;
     args: Set<string> | null;
   };
-}
+};

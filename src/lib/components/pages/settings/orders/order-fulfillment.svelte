@@ -92,15 +92,15 @@
 	let fulfillmentToCancelWarehouseID = $state<string>();
 	let selectedFulfillment = $state<Fulfillment>();
 
-	let unfulfilledOrderLines = $derived.by(() => {
-		const fulfilledOrderLines = order.fulfillments
-			.filter((item) => item.status === FulfillmentStatus.Fulfilled)
-			.flatMap((item) => item.lines || [])
-			.map((item) => item.orderLine)
-			.filter(Boolean);
+	// let unfulfilledOrderLines = $derived.by(() => {
+	// 	const fulfilledOrderLines = order.fulfillments
+	// 		.filter((item) => item.status === FulfillmentStatus.Fulfilled)
+	// 		.flatMap((item) => item.lines || [])
+	// 		.map((item) => item.orderLine)
+	// 		.filter(Boolean);
 
-		return differenceBy(order.lines, fulfilledOrderLines, (item) => item?.id);
-	});
+	// 	return differenceBy(order.lines, fulfilledOrderLines, (item) => item?.id);
+	// });
 
 	const editTrackingCode = async () => {
 		if (!selectedFulfillment) return;
@@ -147,11 +147,11 @@
 {/snippet}
 
 {#snippet sku({ item }: { item: FulfillmentLine })}
-	{item.orderLine?.productSku}
+	<span>{item.orderLine?.productSku}</span>
 {/snippet}
 
 {#snippet variant({ item }: { item: FulfillmentLine })}
-	{item.orderLine?.variant?.name}
+	<span>{item.orderLine?.variant?.name}</span>
 {/snippet}
 
 {#snippet actions({ item }: { item: FulfillmentLine })}
@@ -183,7 +183,13 @@
 {/snippet}
 
 {#snippet isGift({ item }: { item: FulfillmentLine })}
-	<Checkbox checked={item.orderLine?.isGift} size="sm" disabled />
+	<div class="text-center">
+		<Badge
+			size="xs"
+			color={item.orderLine?.isGift ? 'green' : 'red'}
+			text={item.orderLine?.isGift ? 'yes' : 'no'}
+		/>
+	</div>
 {/snippet}
 
 {#snippet metadata({ item }: { item: FulfillmentLine })}
@@ -196,7 +202,7 @@
 {/snippet}
 
 <div class="bg-white rounded-lg border border-gray-200 p-3 flex flex-col gap-3">
-	<SectionHeader>
+	<!-- <SectionHeader>
 		<div class="flex items-center gap-2">
 			<div>Order #{order.number}</div>
 			<Badge {...orderStatusBadgeClass(order.status)} rounded />
@@ -207,8 +213,8 @@
 	</SectionHeader>
 
 	{#if unfulfilledOrderLines.length}
-		<OrderLines orderLines={unfulfilledOrderLines} orderID={order.id} />
-	{/if}
+		<OrderLines orderLines={unfulfilledOrderLines} {order} />
+	{/if} -->
 
 	{#each order.fulfillments as fulfillment, idx (idx)}
 		<div class="border-b border-gray-200 flex flex-col gap-2 pb-2">
@@ -279,12 +285,10 @@
 	disableElements={loading}
 	header="Add/Update tracking code"
 >
-	<div>
-		<Input
-			disabled={loading}
-			placeholder="Tracking code"
-			bind:value={trackingCode}
-			label="Tracking code"
-		/>
-	</div>
+	<Input
+		disabled={loading}
+		placeholder="Tracking code"
+		bind:value={trackingCode}
+		label="Tracking code"
+	/>
 </Modal>

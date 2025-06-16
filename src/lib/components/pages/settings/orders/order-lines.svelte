@@ -2,10 +2,9 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Checkbox } from '$lib/components/ui/Input';
 	import type { TableColumnProps } from '$lib/components/ui/Table';
 	import Table from '$lib/components/ui/Table/table.svelte';
-	import { OrderStatus, type OrderLine } from '$lib/gql/graphql';
+	import { OrderStatus, type Order, type OrderLine } from '$lib/gql/graphql';
 	import { orderStatusBadgeClass, stringSlicer } from '$lib/utils/utils';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import { AppRoute } from '$lib/utils';
@@ -15,10 +14,11 @@
 
 	type Props = {
 		orderLines: OrderLine[];
-		orderID: string;
+		order: Order;
+		onFulfillSuccess: () => void;
 	};
 
-	let { orderLines, orderID }: Props = $props();
+	let { orderLines, order, onFulfillSuccess }: Props = $props();
 
 	const PRODUCT_MODAL_COLUMNS: TableColumnProps<OrderLine, any>[] = [
 		{
@@ -117,7 +117,9 @@
 {/snippet}
 
 {#snippet isGift({ item }: { item: OrderLine })}
-	<Checkbox checked={item?.isGift} size="sm" disabled />
+	<div class="text-center">
+		<Badge size="xs" color={item.isGift ? 'green' : 'red'} text={item.isGift ? 'yes' : 'no'} />
+	</div>
 {/snippet}
 
 {#snippet metadata({ item }: { item: OrderLine })}
@@ -131,7 +133,7 @@
 	</Button>
 {/snippet}
 
-<div class="border-b border-gray-200 flex flex-col gap-2 pb-2">
+<div class="border border-gray-200 flex flex-col gap-2 p-3 bg-white rounded-lg">
 	<SectionHeader>
 		<Badge {...orderStatusBadgeClass(OrderStatus.Unfulfilled)} rounded />
 	</SectionHeader>
@@ -146,13 +148,9 @@
 </div>
 
 <OrderLineMetadataModal
-	{orderID}
+	orderID={order.id}
 	orderLineID={orderLineIDForMetadataView}
 	onClose={() => (orderLineIDForMetadataView = undefined)}
 />
 
-<OrderFulfillModal
-	open={openFulfillModal}
-	onClose={() => (openFulfillModal = false)}
-	{orderLines}
-/>
+<OrderFulfillModal bind:open={openFulfillModal} {onFulfillSuccess} {orderLines} {order} />

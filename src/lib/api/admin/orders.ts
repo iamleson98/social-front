@@ -217,6 +217,7 @@ export const ORDER_DETAIL_QUERY = gql`
       statusDisplay
       userEmail
       customerNote
+      isPaid
       metadata {
         key
         value
@@ -465,8 +466,8 @@ mutation OrderCancelFulfillment($id: ID!, $input: FulfillmentCancelInput!) {
 }`;
 
 export const ORDER_FULFILL_MUTATION = gql`
-mutation OrderFulfill($id: ID!, $input: OrderFulfillInput!) {
-  orderFulfill(id: $id, input: $input) {
+mutation OrderFulfill($order: ID!, $input: OrderFulfillInput!) {
+  orderFulfill(order: $order, input: $input) {
     errors {
       field
       message

@@ -11,7 +11,7 @@
 	import { page } from '$app/state';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { AppRoute } from '$lib/utils';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, orderStatusBadgeClass } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import { ORDER_DETAIL_QUERY, ORDER_UPDATE_MUTATION } from '$lib/api/admin/orders';
 	import DetailOrderSkeleton from '$lib/components/pages/settings/orders/detail-order-skeleton.svelte';
@@ -23,6 +23,11 @@
 	import OrderHistory from '$lib/components/pages/settings/orders/order-history.svelte';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import { Badge } from '$lib/components/ui/badge';
+	import dayjs from 'dayjs';
+	import OrderLines from '$lib/components/pages/settings/orders/order-lines.svelte';
+	import { SitenameTimeFormat } from '$lib/utils/consts';
+	import { differenceBy } from 'es-toolkit/compat';
 
 	let loading = $state(false);
 	let performUpdateMetadata = $state(false);
@@ -49,6 +54,12 @@
 		}),
 	);
 
+	const reexecuteQuery = () =>
+		orderQuery.reexecute({
+			variables: { id: page.params.id },
+			context: { requestPolicy: 'network-only' },
+		});
+
 	const onUpdateClick = async () => {
 		loading = true;
 		performUpdateMetadata = true;
@@ -61,10 +72,7 @@
 		loading = false;
 
 		if (!checkIfGraphqlResultHasError(result, 'orderUpdate', 'Order updated successfully')) {
-			orderQuery.reexecute({
-				variables: { id: page.params.id },
-				context: { requestPolicy: 'network-only' },
-			});
+			reexecuteQuery();
 		}
 	};
 </script>
@@ -75,16 +83,32 @@
 	<Alert variant="error" size="sm" bordered>{$orderQuery.error?.message}</Alert>
 {:else if $orderQuery.data?.order}
 	{@const { order } = $orderQuery.data}
+	{@const unfulfilledOrderLines = differenceBy(
+		order.lines,
+		order.fulfillments
+			.filter((item) => item.status === FulfillmentStatus.Fulfilled)
+			.flatMap((item) => item.lines || [])
+			.map((item) => item.orderLine)
+			.filter(Boolean),
+		(item) => item?.id,
+	)}
 	<div class="flex flex-row gap-2">
 		<div class="flex flex-col gap-2 w-7/10">
-			<OrderFulfillment
-				{order}
-				onUpdateTrackingCode={() =>
-					orderQuery.reexecute({
-						variables: { id: page.params.id },
-						context: { requestPolicy: 'network-only' },
-					})}
-			/>
+			<SectionHeader>
+				<div class="flex items-center gap-2">
+					<div>Order #{order.number}</div>
+					<Badge {...orderStatusBadgeClass(order.status)} rounded />
+					<div class="text-xs text-gray-500 font-medium">
+						{dayjs(order.created).format(SitenameTimeFormat)}
+					</div>
+				</div>
+			</SectionHeader>
+
+			{#if unfulfilledOrderLines.length}
+				<OrderLines orderLines={unfulfilledOrderLines} {order} onFulfillSuccess={reexecuteQuery} />
+			{/if}
+
+			<OrderFulfillment {order} onUpdateTrackingCode={reexecuteQuery} />
 			<OrderPaymentBalance {order} />
 			<GeneralMetadataEditor
 				metadata={order.metadata}
