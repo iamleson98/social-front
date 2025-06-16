@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { operationStore } from '$lib/api/operation';
 	import {
-		FulfillmentStatus,
 		type Mutation,
 		type MutationOrderUpdateArgs,
 		type OrderUpdateInput,
@@ -23,9 +22,14 @@
 	import OrderHistory from '$lib/components/pages/settings/orders/order-history.svelte';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import { Modal } from '$lib/components/ui/Modal';
+	import OrderRefundFulfilledProduct from '$lib/components/pages/settings/orders/refund/order-refund-fulfilled_product.svelte';
+	import OrderRefundUnfulfilledProduct from '$lib/components/pages/settings/orders/refund/order-refund-unfulfilled_product.svelte';
+	import RefundAmount from '$lib/components/pages/settings/orders/refund/refund-amount.svelte';
 
 	let loading = $state(false);
 	let performUpdateMetadata = $state(false);
+	let openRefundModal = $state(false);
 
 	const orderQuery = operationStore<Pick<Query, 'order'>, QueryOrderArgs>({
 		kind: 'query',
@@ -75,6 +79,13 @@
 	<Alert variant="error" size="sm" bordered>{$orderQuery.error?.message}</Alert>
 {:else if $orderQuery.data?.order}
 	{@const { order } = $orderQuery.data}
+	{@const hasFulfillmentLines = order.fulfillments?.some((f) => f?.lines && f.lines.length > 0)}
+	{@const hasUnfulfilledLines = order.lines?.some(
+		(line) =>
+			!order.fulfillments?.some(
+				(f) => f?.lines && f.lines.some((fl) => fl.orderLine?.id === line.id),
+			),
+	)}
 	<div class="flex flex-row gap-2">
 		<div class="flex flex-col gap-2 w-7/10">
 			<OrderFulfillment
@@ -85,7 +96,12 @@
 						context: { requestPolicy: 'network-only' },
 					})}
 			/>
-			<OrderPaymentBalance {order} />
+			<OrderPaymentBalance
+				{order}
+				onRefund={() => {
+					openRefundModal = true;
+				}}
+			/>
 			<GeneralMetadataEditor
 				metadata={order.metadata}
 				privateMetadata={order.privateMetadata}
@@ -109,6 +125,19 @@
 			/>
 		</div>
 	</div>
+
+	<Modal open={openRefundModal} onClose={() => (openRefundModal = false)} header="Refund">
+		{#if hasFulfillmentLines}
+			<OrderRefundFulfilledProduct {order} />
+		{/if}
+		{#if hasUnfulfilledLines}
+			<OrderRefundUnfulfilledProduct {order} />
+		{/if}
+		{#if !hasFulfillmentLines && !hasUnfulfilledLines}
+			<p class="text-sm text-gray-500">No items available for refund.</p>
+		{/if}
+		<RefundAmount {order} />
+	</Modal>
 
 	<ActionBar backButtonUrl={AppRoute.SETTINGS_ORDERS()} {onUpdateClick} disabled={loading} />
 {/if}
