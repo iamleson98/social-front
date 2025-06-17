@@ -493,3 +493,13 @@ mutation OrderFulfillmentUpdateTracking($id: ID!, $input: FulfillmentUpdateTrack
     }
   }
 }`;
+
+export const ORDER_INVOICE_CREATE_MUTATION = gql`
+mutation InvoiceCreate($orderId: ID!, $input: InvoiceCreateInput!) {
+  invoiceCreate(orderId: $orderId, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;

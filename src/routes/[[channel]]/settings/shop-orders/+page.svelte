@@ -53,9 +53,11 @@
 </script>
 
 {#snippet no({ item }: { item: Order })}
-	<a href={AppRoute.SETTINGS_ORDERS_DETAILS(item.id)} class="link">
-		{item.number}
-	</a>
+	<div class="text-center">
+		<a href={AppRoute.SETTINGS_ORDERS_DETAILS(item.id)} class="link inline">
+			{item.number}
+		</a>
+	</div>
 {/snippet}
 
 {#snippet date({ item }: { item: Order })}

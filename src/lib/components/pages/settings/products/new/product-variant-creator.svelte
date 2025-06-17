@@ -4,9 +4,8 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { Checkbox, Input, Label } from '$lib/components/ui/Input';
-	import { Select, SelectSkeleton, type SelectOption } from '$lib/components/ui/select';
+	import { Select, SelectSkeleton } from '$lib/components/ui/select';
 	import {
-		type PreorderSettingsInput,
 		type ProductChannelListingAddInput,
 		type ProductChannelListingUpdateInput,
 		type ProductVariantBulkCreateInput,
@@ -26,18 +25,14 @@
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import ErrorMsg from './error-msg.svelte';
 	import { Modal } from '$lib/components/ui/Modal';
+	import type {
+		ChannelSelectOptionProps,
+		CustomStockInput,
+		QuickFillHighlight,
+		QuickFillingProps,
+		VariantManifestProps,
+	} from './utils';
 	import type { MediaObject } from '$lib/utils/types';
-
-	type VariantManifestProps = {
-		name: {
-			value: string;
-			error?: string;
-		};
-		values: {
-			value: string;
-			error?: string;
-		}[];
-	};
 
 	type Props = {
 		productVariantsInput: ProductVariantBulkCreateInput[];
@@ -49,31 +44,6 @@
 		 * parent product's media, use for assigning to variants
 		 */
 		productMedias: MediaObject[];
-	};
-
-	type CustomStockInput = StockInput & { warehouseName: string };
-	type ChannelSelectOptionProps = SelectOption &
-		ProductVariantChannelListingAddInput & { currency: string };
-	type QuickFillHighlight =
-		| 'td-channel-hl'
-		| 'td-price-hl'
-		| 'td-stock-hl'
-		| 'td-sku-hl'
-		| 'td-cost-price-hl'
-		| 'td-weight-hl'
-		| 'td-preorder-hl';
-
-	type QuickFillingProps = {
-		channels: ChannelSelectOptionProps[];
-		/**
-		 * Since channels have associated warehouses, so when channels are updated, we need to update the warehouses
-		 */
-		stocks: CustomStockInput[];
-		sku?: string;
-		weight?: number;
-		preOrder: PreorderSettingsInput;
-		trackInventory: boolean;
-		quantityLimitPerCustomer?: number;
 	};
 
 	const MAX_VARIANT_TYPES = 2;
@@ -1191,25 +1161,13 @@
 	}
 
 	/** price highlight */
-	.variant-table-row.td-price-hl > .price-td {
-		@apply border-blue-500!;
-	}
-	.variant-table-row.td-channel-hl > .channel-td {
-		@apply border-blue-500!;
-	}
-	.variant-table-row.td-stock-hl > .stock-td {
-		@apply border-blue-500!;
-	}
-	.variant-table-row.td-sku-hl > .sku-td {
-		@apply border-blue-500!;
-	}
-	.variant-table-row.td-cost-price-hl > .cost-price-td {
-		@apply border-blue-500!;
-	}
-	.variant-table-row.td-weight-hl > .weight-td {
-		@apply border-blue-500!;
-	}
-	.variant-table-row.td-preorder-hl > .preorder-td {
+	.td-price-hl > .price-td,
+	.td-channel-hl > .channel-td,
+	.td-stock-hl > .stock-td,
+	.td-sku-hl > .sku-td,
+	.td-cost-price-hl > .cost-price-td,
+	.td-weight-hl > .weight-td,
+	.td-preorder-hl > .preorder-td {
 		@apply border-blue-500!;
 	}
 

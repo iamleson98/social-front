@@ -23,16 +23,10 @@
 			child: avatar,
 		},
 		{
-			title: 'First Name',
-			child: firstName,
+			title: 'Customer name',
+			child: customerName,
 			sortable: true,
 			key: UserSortField.FirstName,
-		},
-		{
-			title: 'Last Name',
-			child: lastName,
-			sortable: true,
-			key: UserSortField.LastName,
 		},
 		{
 			title: 'Email',
@@ -65,12 +59,14 @@
 	/>
 {/snippet}
 
-{#snippet firstName({ item }: { item: User })}
-	<a href={AppRoute.SETTINGS_CONFIGS_USER_DETAILS(item.id)} class="link">{item.firstName}</a>
-{/snippet}
-
-{#snippet lastName({ item }: { item: User })}
-	<span>{item.lastName}</span>
+{#snippet customerName({ item }: { item: User })}
+	<a href={AppRoute.SETTINGS_CONFIGS_USER_DETAILS(item.id)} class="link">
+		{#if item.firstName || item.lastName}
+			<span>{item.firstName} {item.lastName}</span>
+		{:else}
+			<span>{item.email.split('@')[0]}</span>
+		{/if}
+	</a>
 {/snippet}
 
 {#snippet email({ item }: { item: User })}

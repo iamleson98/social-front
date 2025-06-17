@@ -27,14 +27,14 @@
 
 	const COLLECTION_COLUMNS: TableColumnProps<Collection, CollectionSortField>[] = [
 		{
-			title: 'Availability',
-			child: availability,
-		},
-		{
 			title: 'Collection Name',
 			key: CollectionSortField.Name,
 			child: collectionName,
 			sortable: true,
+		},
+		{
+			title: 'Availability',
+			child: availability,
 		},
 		{
 			title: 'No. of Products',
