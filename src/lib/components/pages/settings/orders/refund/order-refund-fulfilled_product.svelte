@@ -8,9 +8,8 @@
 	import { orderStatusBadgeClass, stringSlicer } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
-	import Button from '$lib/components/ui/Button/Button.svelte';
+	import { Button } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
-	import { onMount } from 'svelte';
 
 	type Props = {
 		order: Order;
@@ -20,15 +19,7 @@
 
 	let refundedLines = $state<{ id: string; value: number }[]>([]);
 
-	onMount(() => {
-		refundedLines =
-			order.fulfillments[0]?.lines?.map((line) => ({
-				id: line.id,
-				value: line.quantity,
-			})) || [];
-	});
-
-	function handleChange(id: string, value: number) {
+	function handleRefundChange(id: string, value: number) {
 		refundedLines = refundedLines.map((line) => (line.id === id ? { ...line, value } : line));
 	}
 
@@ -86,7 +77,7 @@
 		max={item.quantity}
 		class="w-20 px-2 py-1 rounded text-right"
 		value={getQuantity(item.id)}
-		onchange={(e) => handleChange(item.id, parseInt(e.currentTarget.value || '0'))}
+		onchange={(e) => handleRefundChange(item.id, parseInt(e.currentTarget.value || '0'))}
 	/>
 	{#if isError(item.id, item.quantity)}
 		<div class="text-xs text-red-500 mt-1">Max: {item.quantity}</div>

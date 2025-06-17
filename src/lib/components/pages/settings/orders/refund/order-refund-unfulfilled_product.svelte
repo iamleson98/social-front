@@ -8,7 +8,7 @@
 	import { orderStatusBadgeClass, stringSlicer } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
-	import Button from '$lib/components/ui/Button/Button.svelte';
+	import { Button } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
 	import { onMount } from 'svelte';
 
