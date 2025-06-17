@@ -194,18 +194,36 @@ export const getHrefForVariant = (productSlug: string, variantID: string): strin
 export const flipDirection = (direction: OrderDirection): OrderDirection =>
 	direction === OrderDirection.Asc ? OrderDirection.Desc : OrderDirection.Asc;
 
-export const numberRegex = /^-?\d+(\.\d+)?$/;
+export const NUMBER_REGEX = /^-?\d+(\.\d+)?$/;
 export const BOOL_REGEX = /(true|false)/;
 /**
- * regex for range like:` [gte,null]`, `[nul,lte]` or `[gte,lte]`.
+ * regex for range like: `<gte,nul>]`, `<nul,lte>` or `<gte,lte>`.
  */
 // eslint-disable-next-line no-useless-escape
-export const FILTER_RANGE_REGEX = /^\[([\w\d\.-]+)\,([\w\d\.-]+)\]$/;
+export const FILTER_COMPARE_RANGE_REGEX = /^\<([\w\d\.-]+)\,([\w\d\.-]+)\>$/;
 /**
  * regex for `key-value` pair matching: `{key,value}`
  */
 // eslint-disable-next-line no-useless-escape
-export const METADATA_PAIR_REGEX = /^\{([\w\d\.-]+)\,([\w\d\.-]+)\}$/;
+export const FILTER_KEY_VALUE_PAIR_REGEX = /^\{([\w\d\.-]+)\,([\w\d\.-]+)\}$/;
+/**
+ * regex for include matching: `[1,2,3]`, `[one,two,3,efrstr=]`
+ */
+// eslint-disable-next-line no-useless-escape
+export const FILTER_ONE_OF_RANGE_REGEX = /^\[(["'\w\d=,\s.]+)]$/;
+
+// /** If you have a string like `"[1,2,helo=,4,lol]"`, then it will return `[1, 2, "helo=", 4, "lol"]` */
+// export const parseArrayFromIncludeRangeRegexString = (str: string) => {
+// 	const matches = FILTER_ONE_OF_RANGE_REGEX.exec(str);
+
+// 	if (!matches) return [];
+
+// 	return matches[1].split(',').filter(Boolean).map(item => {
+// 		if (BOOL_REGEX.test(item)) return parseBoolean(item);
+// 		if (NUMBER_REGEX.test(item)) return Number(item);
+// 		return item;
+// 	});
+// }
 
 export const parseBoolean = (expr: string) => {
 	return expr.toLowerCase() === 'true';
@@ -223,7 +241,7 @@ export const parseUrlSearchParams = (url: URL) => {
 		const value = url.searchParams.get(key)?.trim();
 		if (!value) continue;
 
-		if (numberRegex.test(value)) {
+		if (NUMBER_REGEX.test(value)) {
 			result[key] = Number(value);
 		} else if (BOOL_REGEX.test(value.toLowerCase())) {
 			result[key] = parseBoolean(value);

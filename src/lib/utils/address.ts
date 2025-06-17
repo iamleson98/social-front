@@ -1,6 +1,6 @@
 import { CountryCode, type Address, type AddressValidationData, type Maybe } from "$lib/gql/graphql";
 import { uniq } from "es-toolkit";
-import { numberRegex } from "./utils";
+import { NUMBER_REGEX } from "./utils";
 import { parsePhoneNumberWithError, type CountryCode as PhoneCountryCode } from "libphonenumber-js/max";
 
 export type LocalizedAddressFieldLabel =
@@ -84,11 +84,11 @@ export const addressFieldValidators: Record<AddressField, AddressFieldValidator>
   city: (required: boolean, value?: string | number) => {
     if (!required) {
       if (!value) return null;
-      if (typeof value !== 'string' || numberRegex.test(value)) return "Invalid city";
+      if (typeof value !== 'string' || NUMBER_REGEX.test(value)) return "Invalid city";
       return null;
     }
 
-    if (!value || numberRegex.test(value as string)) return "City is required";
+    if (!value || NUMBER_REGEX.test(value as string)) return "City is required";
     return null;
   },
   firstName: (required: boolean, value?: string | number) => {
@@ -114,7 +114,7 @@ export const addressFieldValidators: Record<AddressField, AddressFieldValidator>
   countryArea: (required: boolean, value?: string | number) => {
     if (!required) {
       if (!value) return null;
-      if (typeof value !== 'string' || numberRegex.test(value)) return "Invalid country area";
+      if (typeof value !== 'string' || NUMBER_REGEX.test(value)) return "Invalid country area";
       return null;
     }
 
@@ -148,7 +148,7 @@ export const addressFieldValidators: Record<AddressField, AddressFieldValidator>
       return null;
     }
 
-    if (!value || typeof value === 'number' || numberRegex.test(value) || !(value.toUpperCase() in CountryCode)) return "Country code is required";
+    if (!value || typeof value === 'number' || NUMBER_REGEX.test(value) || !(value.toUpperCase() in CountryCode)) return "Country code is required";
     return null;
   },
   companyName: (required: boolean, value?: string | number) => {

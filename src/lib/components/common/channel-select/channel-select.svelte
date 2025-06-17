@@ -5,7 +5,15 @@
 	import { Select, SelectSkeleton, type SelectProps } from '$lib/components/ui/select';
 	import type { Query } from '$lib/gql/graphql';
 
-	let { value = $bindable(), size = 'md', ...rest }: Omit<SelectProps, 'options'> = $props();
+	let {
+		value = $bindable(),
+		size = 'md',
+		valueType = 'slug',
+		...rest
+	}: Omit<SelectProps, 'options'> & {
+		/** thr returned values should be channel ids or channel slugs */
+		valueType?: 'id' | 'slug';
+	} = $props();
 
 	const channelStore = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
@@ -24,7 +32,7 @@
 	{@const options =
 		$channelStore.data?.channels?.map((channel) => ({
 			label: channel.name,
-			value: channel.slug,
+			value: valueType === 'slug' ? channel.slug : channel.id,
 		})) ?? []}
 	<Select {options} {size} bind:value {...rest} />
 {/if}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { SHOP_ORDERS_QUERY } from '$lib/api/admin/orders';
 	import { CUSTOMER_LIST_QUERY } from '$lib/api/admin/users';
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
@@ -17,6 +18,7 @@
 	} from '$lib/gql/graphql';
 	import { orderStatusBadgeClass, paymentStatusBadgeClass } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
+	import { set } from 'es-toolkit/compat';
 
 	type Props = {
 		variables: QueryOrdersArgs;
@@ -41,8 +43,11 @@
 			key: 'ids',
 			operations: [
 				{
-					operator: 'eq',
-					component: orderId,
+					operator: 'oneOf',
+					component: orderIds,
+					setBackValue: (ent, value) => {
+						set(ent, 'filter.ids', value);
+					},
 				},
 			],
 		},
@@ -229,16 +234,19 @@
 	});
 </script>
 
-{#snippet orderId({ onValue, initialValue }: FilterComponentType)}
-	<Input
+{#snippet orderIds({ onValue, initialValue = [] }: FilterComponentType)}
+	<GraphqlPaginableSelect
+		placeholder="Select orders"
+		query={SHOP_ORDERS_QUERY}
+		resultKey="orders"
 		size="xs"
-		placeholder="Enter price"
-		type="number"
-		min="0"
+		optionLabelKey="number"
+		optionValueKey="id"
+		variables={{ first: 20, filter: { search: '' } } as QueryOrdersArgs}
+		variableSearchQueryPath="filter.search"
 		value={initialValue}
-		inputDebounceOption={{
-			onInput: (evt) => onValue(((evt as Event).target as HTMLInputElement).value),
-		}}
+		multiple
+		onchange={(opts) => onValue((opts as SelectOption[]).map((opt) => opt.value) as string[])}
 	/>
 {/snippet}
 
@@ -356,6 +364,7 @@
 			}
 		}}
 		value={initialValue as string[]}
+		valueType="id"
 	/>
 {/snippet}
 

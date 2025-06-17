@@ -8,7 +8,7 @@
 	import { FileInput, Input, TextArea } from '$lib/components/ui/Input';
 	import { GraphqlPaginableSelect, Select } from '$lib/components/ui/select';
 	import type { Query } from '$lib/gql/graphql';
-	import { numberRegex } from '$lib/utils/utils';
+	import { NUMBER_REGEX } from '$lib/utils/utils';
 	import { object, string, z } from 'zod';
 
 	const fieldRequired = $tranFunc('helpText.fieldRequired');
@@ -33,7 +33,7 @@
 
 	afterNavigate(() => {
 		const orderNumber = page.url.searchParams.get('order_number');
-		if (orderNumber && numberRegex.test(orderNumber)) {
+		if (orderNumber && NUMBER_REGEX.test(orderNumber)) {
 			ticketInput.orderNo = orderNumber;
 		} else {
 			ticketInput.orderNo = '';

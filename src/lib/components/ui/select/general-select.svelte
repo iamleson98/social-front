@@ -53,6 +53,7 @@
 	/** mapping for selected options */
 	let selectMapper: Record<Primitive, SelectOption> = $state.raw({});
 	let selectMapperChanged = $state(false);
+	let initialRender = $state(true);
 
 	$effect(() => {
 		if (value === undefined) {
@@ -73,7 +74,7 @@
 
 				for (const diff of diffs1) {
 					const opt = options.find((opt) => opt.value === diff);
-					newMapper[diff] = opt ? opt : {value: diff, label: diff};
+					newMapper[diff] = opt ? opt : { value: diff, label: diff };
 				}
 				for (const diff of diffs2) {
 					delete newMapper[diff];
@@ -95,6 +96,7 @@
 	});
 
 	$effect(() => {
+		if (initialRender) return;
 		if (selectMapperChanged && onchange) {
 			if (multiple) {
 				onchange(Object.values(selectMapper));
@@ -155,6 +157,7 @@
 			onchange?.(undefined);
 		}
 		onclearInputField?.();
+		initialRender = false;
 	};
 
 	const handleSelect = async (option: SelectOption) => {
@@ -172,6 +175,7 @@
 		}
 
 		if (!multiple) toggleDropdown(false);
+		initialRender = false;
 	};
 
 	const handleDeselectOption = async (option: SelectOption) => {
@@ -182,6 +186,7 @@
 		} else {
 			value = undefined;
 		}
+		initialRender = false;
 	};
 </script>
 

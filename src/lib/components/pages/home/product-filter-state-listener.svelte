@@ -2,7 +2,7 @@
 	import { afterNavigate } from '$app/navigation';
 	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
 	import { page } from '$app/state';
-	import { numberRegex, parseUrlSearchParams } from '$lib/utils/utils';
+	import { NUMBER_REGEX, parseUrlSearchParams } from '$lib/utils/utils';
 	import { AFTER, BEFORE, FIRST, LAST, ORDER_BY_FIELD, PRICE_RANGE, ORDER_DIRECTION } from './common';
 	import { OrderDirection, ProductOrderField } from '$lib/gql/graphql';
 	import { get } from 'svelte/store';
@@ -38,7 +38,7 @@
 				.split(',')
 				.filter(Boolean);
 
-			if (priceRangeSplit.every((item) => numberRegex.test(item))) {
+			if (priceRangeSplit.every((item) => NUMBER_REGEX.test(item))) {
 				newProductQueryArgs.filter = {
 					price: {
 						gte: Number(priceRangeSplit[0]),
