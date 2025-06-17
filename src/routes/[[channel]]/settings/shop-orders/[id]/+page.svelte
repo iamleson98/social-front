@@ -127,15 +127,11 @@
 	</div>
 
 	<Modal open={openRefundModal} onClose={() => (openRefundModal = false)} header="Refund">
-		{#if hasFulfillmentLines}
-			<OrderRefundFulfilledProduct {order} />
-		{/if}
-		{#if hasUnfulfilledLines}
-			<OrderRefundUnfulfilledProduct {order} />
-		{/if}
-		{#if !hasFulfillmentLines && !hasUnfulfilledLines}
-			<p class="text-sm text-gray-500">No items available for refund.</p>
-		{/if}
+		<div>
+			{#if hasFulfillmentLines}
+				<OrderRefundFulfilledProduct {order} />
+			{/if}
+		</div>
 		<RefundAmount {order} />
 	</Modal>
 
