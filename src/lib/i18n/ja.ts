@@ -199,6 +199,7 @@ export default {
 		chooseDeliveryAddress: '配送先を選択してください',
 		selectDate: 'Select date',
 		fieldRequired: 'This field is required',
+		noData: 'There is no data',
 	},
 	footer: {
 		socialMedia: 'Mạng xã hội',

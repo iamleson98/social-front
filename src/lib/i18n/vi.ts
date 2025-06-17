@@ -199,6 +199,7 @@ export default {
 		chooseDeliveryAddress: 'Vui lòng chọn điểm giao hàng',
 		selectDate: 'Chọn ngày',
 		fieldRequired: 'Vui lòng nhập thông tin',
+		noData: 'Không có dữ liệu',
 	},
 	footer: {
 		socialMedia: 'Mạng xã hội',

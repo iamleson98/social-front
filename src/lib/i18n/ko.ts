@@ -199,6 +199,7 @@ export default {
 		chooseDeliveryAddress: '배송지를 선택해주세요',
 		selectDate: '날짜를 선택해주세요',
 		fieldRequired: '이 필드는 필요합니다',
+		noData: 'There is no data',
 	},
 	footer: {
 		socialMedia: 'Mạng xã hội',

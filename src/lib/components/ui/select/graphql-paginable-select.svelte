@@ -64,7 +64,7 @@
 	let {
 		query,
 		variables = $bindable(),
-		requestPolicy = 'network-only',
+		requestPolicy = 'cache-and-network',
 		resultKey,
 		variableSearchQueryPath,
 		size = 'md',

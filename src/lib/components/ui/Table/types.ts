@@ -7,7 +7,7 @@ export const ROW_OPTIONS = [10, 20, 30, 50, 100] as const;
 
 export type RowOptions = typeof ROW_OPTIONS[number];
 
-export type TableProps<T extends Record<string, unknown>, K extends string> = {
+export type TableProps<T extends Record<string, unknown>, K extends string = string> = {
   items: T[];
   columns: TableColumnProps<T, K>[];
   tableClass?: string;

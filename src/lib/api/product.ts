@@ -182,6 +182,14 @@ export const CATEGORY_DETAIL_QUERY = gql`
 			id
 			name
 			description
+			metadata {
+				key
+				value
+			}
+			privateMetadata {
+				key
+				value
+			}
 			backgroundImage(size: $backgroundSize, format: $imageFormat) {
 				url
 				alt

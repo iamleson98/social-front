@@ -131,40 +131,50 @@
 			{/each}
 		</tr>
 	</thead>
-	<tbody>
-		{#if onDragEnd}
-			{#each items as item, idx (idx)}
-				<tr
-					use:droppable={{
-						container: idx.toString(),
-						callbacks: { onDrop: handleDrop },
-					}}
-					use:draggable={{
-						container: idx.toString(),
-						dragData: idx,
-						interactive: ['[data-interactive]'], // within cell definition, add `data-interactive` to the element if you want to exclude it from draggable
-					}}
-					animate:flip={{ duration: 200 }}
-					in:fade={{ duration: 150 }}
-					out:fade={{ duration: 150 }}
-					class="svelte-dnd-touch-feedback"
-				>
-					<td class="px-1! py-2!">
-						<div>
-							<IconButton icon={GripVertical} size="xs" color="gray" variant="light" {disabled} />
-						</div>
-					</td>
-					{@render customTr(item, columns, idx)}
-				</tr>
-			{/each}
-		{:else}
-			{#each items as item, idx (idx)}
-				<tr>
-					{@render customTr(item, columns, idx)}
-				</tr>
-			{/each}
-		{/if}
-	</tbody>
+	{#if items.length}
+		<tbody>
+			{#if onDragEnd}
+				{#each items as item, idx (idx)}
+					<tr
+						use:droppable={{
+							container: idx.toString(),
+							callbacks: { onDrop: handleDrop },
+						}}
+						use:draggable={{
+							container: idx.toString(),
+							dragData: idx,
+							interactive: ['[data-interactive]'], // within cell definition, add `data-interactive` to the element if you want to exclude it from draggable
+						}}
+						animate:flip={{ duration: 200 }}
+						in:fade={{ duration: 150 }}
+						out:fade={{ duration: 150 }}
+						class="svelte-dnd-touch-feedback"
+					>
+						<td class="px-1! py-2!">
+							<div>
+								<IconButton icon={GripVertical} size="xs" color="gray" variant="light" {disabled} />
+							</div>
+						</td>
+						{@render customTr(item, columns, idx)}
+					</tr>
+				{/each}
+			{:else}
+				{#each items as item, idx (idx)}
+					<tr>
+						{@render customTr(item, columns, idx)}
+					</tr>
+				{/each}
+			{/if}
+		</tbody>
+	{:else}
+		<tbody>
+			<tr
+				><td class="text-xs text-gray-400 text-center" colspan={columns.length}
+					>{$tranFunc('helpText.noData')}</td
+				></tr
+			>
+		</tbody>
+	{/if}
 </table>
 
 {#snippet customTr(item: T, columns: TableColumnProps<T, K>[], itemIdx: number)}

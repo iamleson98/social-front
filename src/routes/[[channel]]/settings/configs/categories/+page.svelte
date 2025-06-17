@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { CATEGORIES_LIST_QUERY } from '$lib/api/admin/category';
 	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
-	import { Search } from '$lib/components/icons';
-	import { DebounceInput } from '$lib/components/ui/Input';
 	import type { TableColumnProps } from '$lib/components/ui/Table';
 	import GraphqlPaginableTable from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { CategorySortField, type Category, type QueryCategoriesArgs } from '$lib/gql/graphql';
@@ -63,7 +61,7 @@
 
 <FilterManager
 	filterOptions={[]}
-	searchKey="filter.search"
+	searchKey={'filter.search' as keyof QueryCategoriesArgs}
 	bind:variables={queryVariables}
 	bind:forceReExecuteGraphqlQuery
 />

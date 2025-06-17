@@ -180,7 +180,7 @@
 	};
 </script>
 
-<div class="bg-white rounded-lg p-4 border border-gray-200">
+<div class="bg-white rounded-lg p-3 border border-gray-200">
 	{#if $queryOperationStore.fetching}
 		<TableSkeleton numColumns={columns.length} showPagination />
 	{:else if $queryOperationStore.error}

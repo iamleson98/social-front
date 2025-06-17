@@ -199,6 +199,7 @@ export default {
 		chooseDeliveryAddress: 'Please choose delivery address',
 		selectDate: 'Select date',
 		fieldRequired: 'This field is required',
+		noData: 'There is no data',
 	},
 	footer: {
 		socialMedia: 'Social Media',
