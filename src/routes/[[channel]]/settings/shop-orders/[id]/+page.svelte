@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { operationStore } from '$lib/api/operation';
 	import {
-		FulfillmentStatus,
+	FulfillmentStatus,
 		type Mutation,
 		type MutationOrderUpdateArgs,
 		type OrderUpdateInput,
