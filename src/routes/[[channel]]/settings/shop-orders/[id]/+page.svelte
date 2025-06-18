@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { operationStore } from '$lib/api/operation';
 	import {
-	FulfillmentStatus,
+		FulfillmentStatus,
 		type Mutation,
 		type MutationOrderUpdateArgs,
 		type OrderUpdateInput,
@@ -115,7 +115,9 @@
 				<OrderLines orderLines={unfulfilledOrderLines} {order} onFulfillSuccess={reexecuteQuery} />
 			{/if}
 
-			<OrderFulfillment {order} onUpdateTrackingCode={reexecuteQuery} />
+			{#if order.fulfillments.length}
+				<OrderFulfillment {order} onUpdateTrackingCode={reexecuteQuery} />
+			{/if}
 			<OrderPaymentBalance {order} />
 			<GeneralMetadataEditor
 				metadata={order.metadata}

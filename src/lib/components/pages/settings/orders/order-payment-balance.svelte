@@ -17,6 +17,7 @@
 	} from '$lib/components/pages/settings/orders/utils';
 	import { paymentStatusBadgeClass } from '$lib/utils/utils';
 	import { tranFunc } from '$i18n';
+	import PriceDisplay from '$lib/components/common/price-display.svelte';
 
 	type Props = {
 		order: Order;
@@ -28,10 +29,10 @@
 
 	let { order, onCapture, onMarkAsPaid, onRefund, onVoid }: Props = $props();
 
-	const canCapture = order.actions?.includes(OrderAction.Capture);
-	const canVoid = order.actions?.includes(OrderAction.Void);
-	const canRefund = order.actions?.includes(OrderAction.Refund);
-	const canMarkAsPaid = order.actions?.includes(OrderAction.MarkAsPaid);
+	const canCapture = order.actions.includes(OrderAction.Capture);
+	const canVoid = order.actions.includes(OrderAction.Void);
+	const canRefund = order.actions.includes(OrderAction.Refund);
+	const canMarkAsPaid = order.actions.includes(OrderAction.MarkAsPaid);
 
 	const refundedAmount = extractRefundedAmount(order);
 	const usedGiftCardAmount = extractOrderGiftCardUsedAmount(order);
@@ -50,20 +51,13 @@
 
 		return order.shippingMethodName;
 	};
-
-	function getDiscountTypeLabel(discount: OrderDiscount) {
-		if (discount.type === OrderDiscountType.Manual) {
-			return $tranFunc('payment.includedInPrices');
-		}
-		return $tranFunc('payment.includedInSubtotal');
-	}
 </script>
 
-<div class="bg-white rounded-lg border border-gray-200 p-3 space-y-4">
+<div class="bg-white rounded-lg border border-gray-200 p-3 space-y-3">
 	<SectionHeader>
 		<div class="flex items-center gap-2">
 			<span>{$tranFunc('payment.paymentTitle')}</span>
-			<Badge {...paymentStatusBadgeClass(order.paymentStatus)} />
+			<Badge {...paymentStatusBadgeClass(order.paymentStatus)} rounded />
 		</div>
 		<div
 			class="flex gap-2"
@@ -89,10 +83,15 @@
 		<div class="flex justify-between text-sm text-gray-500">
 			<div class="flex gap-2">
 				<span>{$tranFunc('payment.discount')}</span>
-				<span>{$tranFunc(getDiscountTypeLabel(discount))}</span>
-				<span>({$tranFunc('payment.includedInSubtotal')})</span>
+				<span>
+					{$tranFunc(
+						discount.type === OrderDiscountType.Manual
+							? 'payment.includedInPrices'
+							: 'payment.includedInSubtotal',
+					)}
+				</span>
 			</div>
-			<Money money={getDiscountAmount(discount.amount)} ariaLabel="Discount" />
+			<PriceDisplay {...discount.amount} />
 		</div>
 	{/each}
 
@@ -100,7 +99,7 @@
 	<div class="flex justify-between items-center">
 		<span>{$tranFunc('payment.subtotal')}</span>
 		{#if order.subtotal?.gross}
-			<Money money={order.subtotal.gross} ariaLabel="Subtotal" />
+			<PriceDisplay {...order.subtotal.gross} />
 		{:else}
 			<span>-</span>
 		{/if}
@@ -113,7 +112,7 @@
 			<small class="text-gray-500">{getDeliveryMethodName()}</small>
 		</div>
 		{#if order.shippingPrice?.gross}
-			<Money money={order.shippingPrice.gross} ariaLabel="Shipping" />
+			<PriceDisplay {...order.shippingPrice.gross} />
 		{:else}
 			<span>-</span>
 		{/if}
@@ -128,7 +127,7 @@
 			{/if}
 		</div>
 		{#if order.total.tax}
-			<Money money={order.total.tax} ariaLabel="Taxes" />
+			<PriceDisplay {...order.total.tax} />
 		{:else}
 			<span>-</span>
 		{/if}
@@ -138,7 +137,7 @@
 	<div class="flex justify-between items-center font-semibold border-t pt-2">
 		<span>{$tranFunc('payment.total')}</span>
 		{#if order.total?.gross}
-			<Money money={order.total.gross} ariaLabel="Total" />
+			<PriceDisplay {...order.total.gross} />
 		{:else}
 			<span>-</span>
 		{/if}
@@ -152,10 +151,7 @@
 					<div>Gift card: {card.displayCode}</div>
 				{/each}
 			</div>
-			<Money
-				money={{ amount: usedGiftCardAmount, currency: order.total?.gross?.currency }}
-				ariaLabel="Gift card"
-			/>
+			<PriceDisplay {...order.total.gross} />
 		</div>
 	{/if}
 
@@ -163,7 +159,7 @@
 	<div class="flex justify-between items-center">
 		<span>{$tranFunc('payment.preauthorized')}</span>
 		{#if order.totalAuthorized}
-			<Money money={order.totalAuthorized} ariaLabel="Total authorized" />
+			<PriceDisplay {...order.totalAuthorized} />
 		{:else}
 			<span>-</span>
 		{/if}
@@ -173,7 +169,7 @@
 	<div class="flex justify-between items-center">
 		<span>{$tranFunc('payment.captured')}</span>
 		{#if order.totalCharged}
-			<Money money={order.totalCharged} ariaLabel="Total captured" />
+			<PriceDisplay {...order.totalCharged} />
 		{:else}
 			<span>-</span>
 		{/if}
@@ -183,7 +179,7 @@
 	{#if refundedAmount?.amount}
 		<div class="flex justify-between items-center">
 			<span>{$tranFunc('payment.refunded')}</span>
-			<Money money={refundedAmount} ariaLabel="Refunded" />
+			<PriceDisplay {...refundedAmount} />
 		</div>
 	{/if}
 
@@ -196,7 +192,7 @@
 		{#if order.totalBalance?.amount === 0}
 			<span>{$tranFunc('payment.settled')}</span>
 		{:else}
-			<Money money={order.totalBalance} ariaLabel="Total balance" />
+			<PriceDisplay {...order.totalBalance} />
 		{/if}
 	</div>
 </div>

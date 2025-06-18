@@ -2,7 +2,7 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Checkbox, Input } from '$lib/components/ui/Input';
+	import { Input } from '$lib/components/ui/Input';
 	import type { TableColumnProps } from '$lib/components/ui/Table';
 	import Table from '$lib/components/ui/Table/table.svelte';
 	import { FulfillmentStatus } from '$lib/gql/graphql';
@@ -13,23 +13,18 @@
 		MutationOrderFulfillmentUpdateTrackingArgs,
 		Order,
 	} from '$lib/gql/graphql';
-	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import {
 		checkIfGraphqlResultHasError,
 		fulfillmentStatusBadgeClass,
-		orderStatusBadgeClass,
 		stringSlicer,
 	} from '$lib/utils/utils';
-	import dayjs from 'dayjs';
 	import OrderLineMetadataModal from './order-line-metadata-modal.svelte';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import GeneralMetadataEditor from '../common/general-metadata-editor.svelte';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { ExternalLink, Icon, Trash } from '$lib/components/icons';
 	import FulfillmentCancelModal from './fulfillment-cancel-modal.svelte';
-	import OrderLines from './order-lines.svelte';
 	import { AppRoute } from '$lib/utils';
-	import { differenceBy } from 'es-toolkit';
 	import { Modal } from '$lib/components/ui/Modal';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { ORDER_FULFILLMENT_UPDATE_TRACKING_MUTATION } from '$lib/api/admin/orders';
@@ -91,16 +86,6 @@
 	let orderLineIDForMetadataView = $state<string>();
 	let fulfillmentToCancelWarehouseID = $state<string>();
 	let selectedFulfillment = $state<Fulfillment>();
-
-	// let unfulfilledOrderLines = $derived.by(() => {
-	// 	const fulfilledOrderLines = order.fulfillments
-	// 		.filter((item) => item.status === FulfillmentStatus.Fulfilled)
-	// 		.flatMap((item) => item.lines || [])
-	// 		.map((item) => item.orderLine)
-	// 		.filter(Boolean);
-
-	// 	return differenceBy(order.lines, fulfilledOrderLines, (item) => item?.id);
-	// });
 
 	const editTrackingCode = async () => {
 		if (!selectedFulfillment) return;
@@ -202,20 +187,6 @@
 {/snippet}
 
 <div class="bg-white rounded-lg border border-gray-200 p-3 flex flex-col gap-3">
-	<!-- <SectionHeader>
-		<div class="flex items-center gap-2">
-			<div>Order #{order.number}</div>
-			<Badge {...orderStatusBadgeClass(order.status)} rounded />
-			<div class="text-xs text-gray-500 font-medium">
-				{dayjs(order.created).format(SitenameTimeFormat)}
-			</div>
-		</div>
-	</SectionHeader>
-
-	{#if unfulfilledOrderLines.length}
-		<OrderLines orderLines={unfulfilledOrderLines} {order} />
-	{/if} -->
-
 	{#each order.fulfillments as fulfillment, idx (idx)}
 		<div
 			class="border-gray-200 flex flex-col gap-2 pb-2"
