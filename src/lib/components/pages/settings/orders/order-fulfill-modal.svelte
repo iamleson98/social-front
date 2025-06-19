@@ -19,7 +19,6 @@
 		Query,
 	} from '$lib/gql/graphql';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { onMount } from 'svelte';
 
 	type Props = {
 		orderLines: OrderLine[];
@@ -63,8 +62,6 @@
 		kind: 'query',
 		query: SHOP_QUERY,
 	});
-
-	onMount(() => shopQuery.subscribe((result) => checkIfGraphqlResultHasError(result, 'shop')));
 
 	let orderFulfillInput = $state<OrderFulfillInput>({
 		lines: orderLines.map<OrderFulfillLineInput>((item) => {
