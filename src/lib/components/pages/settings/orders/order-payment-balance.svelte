@@ -2,22 +2,18 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import Button from '$lib/components/ui/Button/Button.svelte';
-	import {
-		OrderAction,
-		OrderDiscountType,
-		OrderStatus,
-		type Order,
-		type OrderDiscount,
-	} from '$lib/gql/graphql';
-	import Money from '$lib/components/pages/checkout/money.svelte';
+	import { OrderAction, OrderDiscountType, OrderStatus, type Order } from '$lib/gql/graphql';
 	import {
 		extractRefundedAmount,
 		extractOrderGiftCardUsedAmount,
-		getDiscountAmount,
 	} from '$lib/components/pages/settings/orders/utils';
 	import { paymentStatusBadgeClass } from '$lib/utils/utils';
 	import { tranFunc } from '$i18n';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
+	import { Modal } from '$lib/components/ui/Modal';
+	import RefundAmount from './refund/refund-amount.svelte';
+	import OrderRefundFulfilledProduct from './refund/order-refund-fulfilled-product.svelte';
+	import OrderRefundModal from './refund/order-refund-modal.svelte';
 
 	type Props = {
 		order: Order;
@@ -37,7 +33,9 @@
 	const refundedAmount = extractRefundedAmount(order);
 	const usedGiftCardAmount = extractOrderGiftCardUsedAmount(order);
 
-	const getDeliveryMethodName = () => {
+	let openRefundModal = $state(false);
+
+	let deliveryMethodName = $derived.by(() => {
 		if (!order.shippingMethodName && !order.shippingPrice && !order.collectionPointName) {
 			return '';
 		}
@@ -50,7 +48,7 @@
 		}
 
 		return order.shippingMethodName;
-	};
+	});
 </script>
 
 <div class="bg-white rounded-lg border border-gray-200 p-3 space-y-3">
@@ -67,7 +65,9 @@
 				<Button size="sm" onclick={onCapture}>{$tranFunc('payment.capture')}</Button>
 			{/if}
 			{#if canRefund}
-				<Button size="sm" onclick={onRefund}>{$tranFunc('payment.refund')}</Button>
+				<Button size="sm" onclick={() => (openRefundModal = true)}>
+					{$tranFunc('payment.refund')}
+				</Button>
 			{/if}
 			{#if canVoid}
 				<Button size="sm" onclick={onVoid}>{$tranFunc('payment.void')}</Button>
@@ -109,7 +109,7 @@
 	<div class="flex justify-between items-center">
 		<div class="flex flex-row gap-5 items-center">
 			<span>{$tranFunc('payment.shipping')}</span>
-			<small class="text-gray-500">{getDeliveryMethodName()}</small>
+			<small class="text-gray-500">{deliveryMethodName}</small>
 		</div>
 		{#if order.shippingPrice?.gross}
 			<PriceDisplay {...order.shippingPrice.gross} />
@@ -196,3 +196,5 @@
 		{/if}
 	</div>
 </div>
+
+<OrderRefundModal bind:open={openRefundModal} {order} />
