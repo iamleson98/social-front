@@ -166,7 +166,7 @@
 {/snippet}
 
 {#snippet sku({ item }: { item: OrderLine })}
-	<span>{item.productSku}</span>
+	<span>{item.productSku || '-'}</span>
 {/snippet}
 
 {#snippet stock({ item, idx }: { item: OrderLine; idx: number })}
@@ -219,10 +219,11 @@
 			inputDebounceOption={{
 				onInput: (evt) => handleQuantityChange(idx, evt),
 			}}
-		/>
-		<div class="">
-			/{item.quantity}
-		</div>
+		>
+			{#snippet action()}
+				<span>/ {item.quantity}</span>
+			{/snippet}
+		</Input>
 	</div>
 {/snippet}
 
