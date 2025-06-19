@@ -182,6 +182,9 @@ export const CATEGORY_DETAIL_QUERY = gql`
 			id
 			name
 			description
+			seoTitle
+			seoDescription
+			slug
 			metadata {
 				key
 				value
