@@ -379,7 +379,7 @@ export const orderStatusBadgeClass = (status: OrderStatus): BadgeAttr => {
 		case OrderStatus.Returned:
 			return { text, color: 'yellow', variant: 'filled' };
 		case OrderStatus.Unconfirmed:
-			return { text, color: 'gray', variant: 'light' };
+			return { text, color: 'gray', variant: 'outline' };
 		case OrderStatus.Unfulfilled:
 			return { text, color: 'orange', variant: 'light' };
 		default:

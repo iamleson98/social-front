@@ -19,7 +19,6 @@
 		Query,
 	} from '$lib/gql/graphql';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { onMount } from 'svelte';
 
 	type Props = {
 		orderLines: OrderLine[];
@@ -63,8 +62,6 @@
 		kind: 'query',
 		query: SHOP_QUERY,
 	});
-
-	onMount(() => shopQuery.subscribe((result) => checkIfGraphqlResultHasError(result, 'shop')));
 
 	let orderFulfillInput = $state<OrderFulfillInput>({
 		lines: orderLines.map<OrderFulfillLineInput>((item) => {
@@ -169,7 +166,7 @@
 {/snippet}
 
 {#snippet sku({ item }: { item: OrderLine })}
-	<span>{item.productSku}</span>
+	<span>{item.productSku || '-'}</span>
 {/snippet}
 
 {#snippet stock({ item, idx }: { item: OrderLine; idx: number })}
@@ -222,10 +219,11 @@
 			inputDebounceOption={{
 				onInput: (evt) => handleQuantityChange(idx, evt),
 			}}
-		/>
-		<div class="">
-			/{item.quantity}
-		</div>
+		>
+			{#snippet action()}
+				<span>/ {item.quantity}</span>
+			{/snippet}
+		</Input>
 	</div>
 {/snippet}
 
