@@ -89,7 +89,7 @@
 	{/if}
 {/snippet}
 
-<div class="bg-white rounded-lg border border-gray-200 p-3">
+<div class="bg-white rounded-lg border border-gray-200 p-3 space-y-2">
 	<!-- <SectionHeader>
 		<div class="flex items-center gap-2">
 			<div class="text-base font-medium">Order #{order.number}</div>

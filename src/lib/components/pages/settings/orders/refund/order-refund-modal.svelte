@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { RadioButton } from '$lib/components/ui/Input';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import { Checkbox, RadioButton } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
 	import type { Order } from '$lib/gql/graphql';
 	import { refundFulfilledStatuses, type RefundQuantityProps } from '../utils';
@@ -17,6 +18,32 @@
 		MISCELLANEOUS = 'miscellaneous',
 		PRODUCTS = 'products',
 	}
+
+	type AmountInputType = 'no-refund' | 'automatic-amount' | 'manual-amount';
+
+	type RefundProps = {
+		label: string;
+		amountType: AmountInputType;
+		disabled?: boolean;
+	};
+
+	const REFUND_AMOUNT_OPTIONS: RefundProps[] = [
+		{
+			label: 'No refund',
+			amountType: 'no-refund',
+			disabled: true,
+		},
+		{
+			label: 'Automatic amount',
+			amountType: 'automatic-amount',
+		},
+		{
+			label: 'Manual amount',
+			amountType: 'manual-amount',
+		},
+	];
+
+	let amountType = $state<AmountInputType>('automatic-amount');
 
 	const refundTypes = [OrderRefundType.PRODUCTS, OrderRefundType.MISCELLANEOUS];
 
@@ -54,8 +81,8 @@
 
 <Modal {open} onClose={() => (open = false)} header="Refund" size="lg">
 	<div class="flex gap-2">
-		<div class="w-3/4">
-			<div class="mb-2">
+		<div class="w-3/4 space-y-2">
+			<div>
 				<div class="text-sm mb-1">Refund order</div>
 				<div class="space-y-1">
 					{#each refundTypes as type, idx (idx)}
@@ -80,6 +107,24 @@
 			{/if}
 		</div>
 
-		<div class="w-1/4"></div>
+		<div class="w-1/4">
+			<SectionHeader>Refunded Amount</SectionHeader>
+
+			{#each REFUND_AMOUNT_OPTIONS as type, idx (idx)}
+				<RadioButton
+					value={type}
+					bind:group={amountType}
+					disabled={type.disabled}
+					label={type.label}
+					size="xs"
+				/>
+			{/each}
+
+			<div class="mt-2">
+				<Checkbox label="Refund shippent costs" size="sm" />
+			</div>
+
+      <hr>
+		</div>
 	</div>
 </Modal>

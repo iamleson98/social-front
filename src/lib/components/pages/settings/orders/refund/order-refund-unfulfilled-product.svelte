@@ -8,6 +8,7 @@
 	import { Input } from '$lib/components/ui/Input';
 	import type { RefundQuantityProps } from '../utils';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
 
 	type Props = {
 		unfulfilledOrderLines: OrderLine[];
@@ -76,17 +77,9 @@
 	{/if}
 {/snippet}
 
-<div class="bg-white rounded-lg border border-gray-200 p-3 flex flex-col gap-3">
-	<!-- <SectionHeader>
-		<div class="flex items-center gap-2">
-			<div class="text-base font-medium">Order #{order.number}</div>
-			<Badge {...orderStatusBadgeClass(order.status)} rounded />
-			<div class="text-xs text-gray-500 font-medium">
-				{dayjs(order.created).format(SitenameTimeFormat)}
-			</div>
-		</div>
-	</SectionHeader> -->
-
+<div class="bg-white rounded-lg border border-gray-200 p-3 space-y-1">
+	<SectionHeader>Unfulfilled Products</SectionHeader>
+	<p class="text-xs">Unfulfilled products will be restocked</p>
 	<Button size="xs" variant="outline" color="gray" onclick={handleSetMax}>
 		Set maximal quantities
 	</Button>
