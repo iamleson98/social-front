@@ -50,7 +50,7 @@ Below is a brief on project files/folder structure
 - Function names MUST be in `camelCase` only.
 - Constant names is RECOMMENDED to be in `UPPER_SNAKE_CASE`.
 - Always apply the rule `Don't repeat yourself (DRY)` by making reusable code, when possible.
-- Note: @iamleson98 is responsible for those conventions, make sure to follow them, otherwise there won't be code merge, and of couse critisim will happens.
+- Note: @iamleson98 is responsible for those conventions, make sure to follow them, otherwise there won't be code merge, and of course criticism will happens.
 
 ## Dependencies Management
 
