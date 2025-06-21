@@ -9,6 +9,7 @@ query Categories($first: Int, $after: String, $last: Int, $before: String, $leve
         name
         slug
         level
+        updatedAt
         backgroundImage(size: 100, format: WEBP) {
           url
           alt

@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { CATEGORIES_LIST_QUERY } from '$lib/api/admin/category';
 	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
+	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import type { TableColumnProps } from '$lib/components/ui/Table';
 	import GraphqlPaginableTable from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { CategorySortField, type Category, type QueryCategoriesArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
+	import { SitenameTimeFormat } from '$lib/utils/consts';
+	import dayjs from 'dayjs';
 
 	const COLUMNS: TableColumnProps<Category, CategorySortField>[] = [
 		{
@@ -29,6 +32,10 @@
 			sortable: true,
 			key: CategorySortField.SubcategoryCount,
 		},
+		{
+			title: 'Updated at',
+			child: updatedAt,
+		},
 	];
 
 	let forceReExecuteGraphqlQuery = $state(true);
@@ -42,9 +49,7 @@
 </script>
 
 {#snippet picture({ item }: { item: Category })}
-	<div class="rounded-lg border border-gray-200 w-9 h-9 overflow-hidden">
-		<img src={item.backgroundImage?.url} alt={item.backgroundImage?.alt} class="w-full h-full" />
-	</div>
+	<Thumbnail src={item.backgroundImage?.url} alt={item.backgroundImage?.alt || item.name} size="sm" />
 {/snippet}
 
 {#snippet name({ item }: { item: Category })}
@@ -52,15 +57,18 @@
 {/snippet}
 
 {#snippet products({ item }: { item: Category })}
-	<div>{item.products?.totalCount || '-'}</div>
+	<div class="text-center">{item.products?.totalCount || '-'}</div>
 {/snippet}
 
 {#snippet children({ item }: { item: Category })}
-	<div>{item.children?.totalCount || '-'}</div>
+	<div class="text-center">{item.children?.totalCount || '-'}</div>
+{/snippet}
+
+{#snippet updatedAt({ item }: { item: Category })}
+	<div>{dayjs(item.updatedAt).format(SitenameTimeFormat)}</div>
 {/snippet}
 
 <FilterManager
-	filterOptions={[]}
 	searchKey={'filter.search' as keyof QueryCategoriesArgs}
 	bind:variables={queryVariables}
 	bind:forceReExecuteGraphqlQuery

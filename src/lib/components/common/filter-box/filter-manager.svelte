@@ -29,7 +29,7 @@
 
 	type Props = {
 		/** if not provided, will not show filter button */
-		filterOptions: FilterProps<T>[];
+		filterOptions?: FilterProps<T>[];
 		variables: Var;
 		/** if provided, will display the text box for search query input as well */
 		searchKey?: keyof Var;
@@ -37,7 +37,7 @@
 	};
 
 	let {
-		filterOptions,
+		filterOptions = [],
 		variables = $bindable(),
 		searchKey,
 		forceReExecuteGraphqlQuery = $bindable(false),
@@ -64,11 +64,28 @@
 		if (!searchKey) return;
 
 		const value = (evt.target as HTMLInputElement).value.trim();
-		if (value) page.url.searchParams.set(SEARCH_QUERY, value);
-		else page.url.searchParams.delete(SEARCH_QUERY);
+		page.url.searchParams.set(SEARCH_QUERY, value);
 
-		await goto(`${page.url.pathname}?${page.url.searchParams.toString()}`);
+		await goto(`${page.url.pathname}?${page.url.searchParams.toString()}`, { keepFocus: true });
 	};
+
+	// listener for sorting changes
+	$effect(() => {
+		const pageSortField = page.url.searchParams.get(ORDER_BY_FIELD);
+		const pageSortDirection = page.url.searchParams.get(ORDER_DIRECTION);
+
+		const variableSortField = variables.sortBy?.field;
+
+		if (typeof variableSortField === 'string') {
+			const variableSortDirection = variables.sortBy?.direction || OrderDirection.Asc;
+
+			if (pageSortField !== variableSortField || pageSortDirection !== variableSortDirection) {
+				page.url.searchParams.set(ORDER_BY_FIELD, variableSortField);
+				page.url.searchParams.set(ORDER_DIRECTION, variableSortDirection);
+				goto(`${page.url.pathname}?${page.url.searchParams.toString()}`, { keepFocus: true });
+			}
+		}
+	});
 
 	// listener for variables changed have been applied on the URL bar
 	afterNavigate(async () => {
@@ -201,6 +218,7 @@
 
 		filters = newFilters;
 		variables = newVariables;
+		forceReExecuteGraphqlQuery = true;
 	});
 </script>
 

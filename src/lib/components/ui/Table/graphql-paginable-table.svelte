@@ -144,8 +144,6 @@
 		const direction = sort[key as K];
 		if (direction === 'NEUTRAL') return;
 
-		// sortState = sort;
-
 		variables = {
 			...variables,
 			first: 10,

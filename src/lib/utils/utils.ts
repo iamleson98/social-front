@@ -239,7 +239,7 @@ export const parseUrlSearchParams = (url: URL) => {
 		if (!key) continue;
 
 		const value = url.searchParams.get(key)?.trim();
-		if (!value) continue;
+		if (value === undefined) continue;
 
 		if (NUMBER_REGEX.test(value)) {
 			result[key] = Number(value);
