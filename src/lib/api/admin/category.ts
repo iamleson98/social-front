@@ -30,6 +30,19 @@ query Categories($first: Int, $after: String, $last: Int, $before: String, $leve
   }
 }`;
 
+export const CATEGORY_CREATE_MUTATION = gql`
+mutation CreateCategory($input: CategoryInput!) {
+  categoryCreate(input: $input) {
+    errors {
+      field
+      message
+    }
+    category {
+      id
+    }
+  }
+}`;
+
 export const CATEGORY_DELETE_MUTATION = gql`
 mutation DeleteCategory($id: ID!) {
   categoryDelete(id: $id) {

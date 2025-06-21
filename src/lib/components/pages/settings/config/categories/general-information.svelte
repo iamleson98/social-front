@@ -7,6 +7,7 @@
 	import type { MediaObject } from '$lib/utils/types';
 	import { tranFunc } from '$i18n';
 	import { object, string, z } from 'zod';
+	import slugify from 'slugify';
 
 	type Props = {
 		// category: Category;
@@ -18,6 +19,7 @@
 		seoDescription: string;
 		media: MediaObject[];
 		ok?: boolean;
+		isCreatePage?: boolean;
 	};
 
 	let {
@@ -29,6 +31,7 @@
 		seoDescription = $bindable(),
 		media = $bindable<MediaObject[]>(),
 		ok = $bindable(),
+		isCreatePage = false,
 	}: Props = $props();
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
@@ -41,6 +44,13 @@
 
 	$effect(() => {
 		ok = !Object.keys(categoryFormErrors).length && !descriptionError;
+	});
+
+	$effect(() => {
+		if (name && isCreatePage) {
+			slug = slugify(name, { lower: true, strict: true });
+			seoTitle = name;
+		}
 	});
 
 	const categorySchema = object({
