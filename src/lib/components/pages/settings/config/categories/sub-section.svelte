@@ -94,7 +94,7 @@
 	<SectionHeader>Products</SectionHeader>
 	<GraphqlPaginableTable
 		query={PRODUCT_LIST_QUERY_ADMIN}
-		resultKey={'category.children' as keyof Query}
+		resultKey={'products' as keyof Query}
 		variables={{ first: 10, filter: { categories: [categoryId] } } as QueryProductsArgs}
 		bind:forceReExecuteGraphqlQuery
 		columns={PRODUCTS_COLUMNS}
