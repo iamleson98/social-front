@@ -6,7 +6,7 @@
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import { Button } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
-	import type { RefundQuantityProps } from '../utils';
+	import type { RefundQuantityProps } from './utils';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 
@@ -16,7 +16,11 @@
 		orderNumber: string;
 	};
 
-	let { fulfilledFulfillments, refundedFulfilledProductQuantities, orderNumber }: Props = $props();
+	let {
+		fulfilledFulfillments,
+		refundedFulfilledProductQuantities = $bindable([]),
+		orderNumber,
+	}: Props = $props();
 
 	const PRODUCT_MODAL_COLUMNS: TableColumnProps<FulfillmentLine, any>[] = [
 		{ title: 'Image', child: image },
@@ -26,7 +30,17 @@
 		{ title: 'Total', child: total },
 	];
 
-	const handleSetMax = () => {};
+	const handleSetMaxRefundQuantity = (fulfillmentId: string) => {
+		const fulfillment = fulfilledFulfillments.find((line) => line.id === fulfillmentId);
+		refundedFulfilledProductQuantities = refundedFulfilledProductQuantities.map((selectedLine) => {
+			const line = fulfillment?.lines?.find((line) => line.id === selectedLine.id);
+			if (!line) return selectedLine;
+			return {
+				...selectedLine,
+				value: line.quantity,
+			};
+		});
+	};
 </script>
 
 {#snippet image({ item }: { item: FulfillmentLine })}
@@ -81,7 +95,7 @@
 	)}
 	{#if item.quantity && item.orderLine?.unitPrice.gross}
 		<PriceDisplay
-			amount={item.orderLine.unitPrice.gross.amount * (selectedLineQuantity?.value || 1)}
+			amount={item.orderLine.unitPrice.gross.amount * (selectedLineQuantity?.value || 0)}
 			currency={item.orderLine?.unitPrice.gross.currency}
 		/>
 	{:else}
@@ -89,21 +103,16 @@
 	{/if}
 {/snippet}
 
-<div class="bg-white rounded-lg border border-gray-200 p-3 space-y-2">
-	<!-- <SectionHeader>
-		<div class="flex items-center gap-2">
-			<div class="text-base font-medium">Order #{order.number}</div>
-			<Badge {...orderStatusBadgeClass(order.status)} rounded />
-			<div class="text-xs text-gray-500 font-medium">
-				{dayjs(order.created).format(SitenameTimeFormat)}
-			</div>
-		</div>
-	</SectionHeader> -->
-
+<div class="bg-white rounded-lg border border-gray-200 p-3 space-y-3">
 	{#each fulfilledFulfillments as fulfillment, idx (idx)}
 		<div>
 			<SectionHeader>Fulfillment #{orderNumber}-{fulfillment.fulfillmentOrder}</SectionHeader>
-			<Button size="xs" variant="outline" color="gray" onclick={handleSetMax}>
+			<Button
+				size="xs"
+				variant="outline"
+				color="gray"
+				onclick={() => handleSetMaxRefundQuantity(fulfillment.id)}
+			>
 				Set maximal quantities
 			</Button>
 			<Table columns={PRODUCT_MODAL_COLUMNS} items={fulfillment.lines || []} />

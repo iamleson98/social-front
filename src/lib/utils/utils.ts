@@ -1,4 +1,4 @@
-import { type Mutation, type Query, type SelectedAttribute, type User, AttributeInputTypeEnum, FulfillmentStatus, OrderDirection, PermissionEnum } from '$lib/gql/graphql';
+import { type Money, type Mutation, type Query, type SelectedAttribute, type User, AttributeInputTypeEnum, FulfillmentStatus, OrderDirection, PermissionEnum } from '$lib/gql/graphql';
 import type { AnyVariables, OperationResult } from '@urql/core';
 import editorJsToHtml from 'editorjs-html';
 import { AppRoute } from './routes';
@@ -470,3 +470,10 @@ export const stringSlicer = (str?: string, len: number = 100) => {
 
 	return str.slice(0, len) + "...";
 };
+
+export function subtractMoney(init: Money, ...args: Money[]): Money {
+  return {
+    amount: args.reduce((acc, curr) => acc - curr.amount, init.amount),
+    currency: init.currency,
+  };
+}

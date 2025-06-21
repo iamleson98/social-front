@@ -10,10 +10,7 @@
 	import { paymentStatusBadgeClass } from '$lib/utils/utils';
 	import { tranFunc } from '$i18n';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
-	import { Modal } from '$lib/components/ui/Modal';
-	import RefundAmount from './refund/refund-amount.svelte';
-	import OrderRefundFulfilledProduct from './refund/order-refund-fulfilled-product.svelte';
-	import OrderRefundModal from './refund/order-refund-modal.svelte';
+	import OrderRefundModal from './order-refund-modal.svelte';
 
 	type Props = {
 		order: Order;

@@ -49,7 +49,11 @@
 </script>
 
 {#snippet picture({ item }: { item: Category })}
-	<Thumbnail src={item.backgroundImage?.url} alt={item.backgroundImage?.alt || item.name} size="sm" />
+	<Thumbnail
+		src={item.backgroundImage?.url}
+		alt={item.backgroundImage?.alt || item.name}
+		size="sm"
+	/>
 {/snippet}
 
 {#snippet name({ item }: { item: Category })}
@@ -57,11 +61,11 @@
 {/snippet}
 
 {#snippet products({ item }: { item: Category })}
-	<div class="text-center">{item.products?.totalCount || '-'}</div>
+	<div class="text-center">{item.products?.totalCount}</div>
 {/snippet}
 
 {#snippet children({ item }: { item: Category })}
-	<div class="text-center">{item.children?.totalCount || '-'}</div>
+	<div class="text-center">{item.children?.totalCount}</div>
 {/snippet}
 
 {#snippet updatedAt({ item }: { item: Category })}
@@ -80,4 +84,5 @@
 	bind:variables={queryVariables}
 	resultKey="categories"
 	bind:forceReExecuteGraphqlQuery
+	autoRefetchOnVariableChange={false}
 />

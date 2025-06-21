@@ -30,6 +30,11 @@
 		 */
 		dragEffectType?: 'swap-position' | 'move-position';
 		onDragEnd?: (dragIndex: number, dragItem: T, dropIndex: number, dropItem: T) => void;
+
+		/**
+		 * if true, then the query will be re-executed when variable changes. Default to `true`
+		 */
+		autoRefetchOnVariableChange?: boolean;
 	} & Omit<
 		TableProps<T, K>,
 		| 'items'
@@ -55,6 +60,7 @@
 		onDragEnd,
 		dragEffectType,
 		disabled,
+		autoRefetchOnVariableChange = true,
 	}: Props = $props();
 
 	if ((dragEffectType && !onDragEnd) || (!dragEffectType && onDragEnd))
@@ -111,7 +117,7 @@
 			first: variables.first || variables.last,
 			last: null,
 		};
-		forceReExecuteGraphqlQuery = true;
+		if (autoRefetchOnVariableChange) forceReExecuteGraphqlQuery = true;
 	};
 
 	const handlePreviousPagelick = (before: string) => {
@@ -122,7 +128,7 @@
 			last: variables.last || variables.first,
 			first: null,
 		};
-		forceReExecuteGraphqlQuery = true;
+		if (autoRefetchOnVariableChange) forceReExecuteGraphqlQuery = true;
 	};
 
 	const handleRowsPerPageChange = (num: RowOptions) => {
@@ -133,7 +139,7 @@
 			before: null,
 			after: null,
 		};
-		forceReExecuteGraphqlQuery = true;
+		if (autoRefetchOnVariableChange) forceReExecuteGraphqlQuery = true;
 	};
 
 	const handleSortChange = (sort: SortState<K>) => {
@@ -155,7 +161,7 @@
 				direction,
 			},
 		};
-		forceReExecuteGraphqlQuery = true;
+		if (autoRefetchOnVariableChange) forceReExecuteGraphqlQuery = true;
 	};
 
 	const innerHandleDragEnd = (dragIdx: number, dropIdx: number) => {

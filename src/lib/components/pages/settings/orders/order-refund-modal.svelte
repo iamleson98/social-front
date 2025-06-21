@@ -2,10 +2,18 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Checkbox, RadioButton } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
-	import type { Order } from '$lib/gql/graphql';
-	import { refundFulfilledStatuses, type RefundQuantityProps } from '../utils';
+	import type { Money, Order } from '$lib/gql/graphql';
+	import {
+		getOrderCharged,
+		getPreviouslyRefundedPrice,
+		getShipmentCost,
+		OrderRefundType,
+		refundFulfilledStatuses,
+		type RefundQuantityProps,
+	} from './utils';
 	import OrderRefundFulfilledProduct from './order-refund-fulfilled-product.svelte';
 	import OrderRefundUnfulfilledProduct from './order-refund-unfulfilled-product.svelte';
+	import PaymentSubmitCardValues from './payment-submit-card-values.svelte';
 
 	type Props = {
 		open: boolean;
@@ -13,11 +21,6 @@
 	};
 
 	let { open = $bindable(), order }: Props = $props();
-
-	enum OrderRefundType {
-		MISCELLANEOUS = 'miscellaneous',
-		PRODUCTS = 'products',
-	}
 
 	type AmountInputType = 'no-refund' | 'automatic-amount' | 'manual-amount';
 
@@ -42,11 +45,10 @@
 			amountType: 'manual-amount',
 		},
 	];
-
-	let amountType = $state<AmountInputType>('automatic-amount');
-
 	const refundTypes = [OrderRefundType.PRODUCTS, OrderRefundType.MISCELLANEOUS];
 
+	let amountType = $state<AmountInputType>('automatic-amount');
+	let refundShipmentCosts = $state(false);
 	let refundType = $state(OrderRefundType.PRODUCTS);
 
 	const refundedProductQuantities: RefundQuantityProps[] = order.lines
@@ -79,11 +81,11 @@
 	);
 </script>
 
-<Modal {open} onClose={() => (open = false)} header="Refund" size="lg">
+<Modal {open} onClose={() => (open = false)} header="Refund" size="xl">
 	<div class="flex gap-2">
-		<div class="w-3/4 space-y-2">
-			<div>
-				<div class="text-sm mb-1">Refund order</div>
+		<div class="w-7/10 space-y-2">
+			<div class="rounded-lg border border-gray-200 p-3 space-y-2">
+				<SectionHeader>Refund order</SectionHeader>
 				<div class="space-y-1">
 					{#each refundTypes as type, idx (idx)}
 						<RadioButton value={type} label={type} bind:group={refundType} size="sm" />
@@ -107,7 +109,7 @@
 			{/if}
 		</div>
 
-		<div class="w-1/4">
+		<div class="w-3/10 rounded-lg border border-gray-200 p-3 space-y-2">
 			<SectionHeader>Refunded Amount</SectionHeader>
 
 			{#each REFUND_AMOUNT_OPTIONS as type, idx (idx)}
@@ -116,15 +118,34 @@
 					bind:group={amountType}
 					disabled={type.disabled}
 					label={type.label}
-					size="xs"
+					size="sm"
 				/>
 			{/each}
 
-			<div class="mt-2">
-				<Checkbox label="Refund shippent costs" size="sm" />
-			</div>
+			{#if amountType !== 'no-refund'}
+				<Checkbox label="Refund shippent costs" size="sm" bind:checked={refundShipmentCosts} />
+			{/if}
 
-      <hr>
+			{#if refundType === OrderRefundType.PRODUCTS}
+				{#if amountType === 'no-refund'}
+					<PaymentSubmitCardValues
+						authorizedAmount={order.total.gross}
+						previouslyRefunded={getPreviouslyRefundedPrice(order)}
+						maxRefund={getOrderCharged(order)}
+						shipmentCost={getShipmentCost(order) as Money}
+					/>
+				{:else if amountType === 'automatic-amount'}
+					<PaymentSubmitCardValues
+						authorizedAmount={order.total.gross}
+						previouslyRefunded={getPreviouslyRefundedPrice(order)}
+						maxRefund={getOrderCharged(order)}
+						shipmentCost={getShipmentCost(order) as Money}
+					
+					/>
+				{/if}
+			{/if}
+
+			<hr />
 		</div>
 	</div>
 </Modal>

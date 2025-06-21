@@ -69,21 +69,50 @@
 		await goto(`${page.url.pathname}?${page.url.searchParams.toString()}`, { keepFocus: true });
 	};
 
-	// listener for sorting changes
+	// listener for pagination, sorting changes
 	$effect(() => {
 		const pageSortField = page.url.searchParams.get(ORDER_BY_FIELD);
 		const pageSortDirection = page.url.searchParams.get(ORDER_DIRECTION);
+		const pageFirst = page.url.searchParams.get(FIRST);
+		const pageLast = page.url.searchParams.get(LAST);
+		const pageAfter = page.url.searchParams.get(AFTER);
+		const pageBefore = page.url.searchParams.get(BEFORE);
 
 		const variableSortField = variables.sortBy?.field;
+		const variableSortDirection = variables.sortBy?.direction || OrderDirection.Asc;
+		const variableFirst = variables.first;
+		const variableLast = variables.last;
+		const variableAfter = variables.after;
+		const variableBefore = variables.before;
+
+		let shouldNavigate = false;
 
 		if (typeof variableSortField === 'string') {
-			const variableSortDirection = variables.sortBy?.direction || OrderDirection.Asc;
-
 			if (pageSortField !== variableSortField || pageSortDirection !== variableSortDirection) {
 				page.url.searchParams.set(ORDER_BY_FIELD, variableSortField);
 				page.url.searchParams.set(ORDER_DIRECTION, variableSortDirection);
-				goto(`${page.url.pathname}?${page.url.searchParams.toString()}`, { keepFocus: true });
+				shouldNavigate = true;
 			}
+		}
+
+		if (pageFirst != variableFirst || pageAfter != variableAfter) {
+			page.url.searchParams.set(FIRST, String(variableFirst));
+			page.url.searchParams.delete(LAST);
+			page.url.searchParams.delete(BEFORE);
+			if (variableAfter) page.url.searchParams.set(AFTER, variableAfter);
+			shouldNavigate = true;
+		}
+
+		if (pageLast != variableLast || pageBefore != variableBefore) {
+			page.url.searchParams.set(LAST, String(variableLast));
+			page.url.searchParams.delete(FIRST);
+			page.url.searchParams.delete(AFTER);
+			if (variableBefore) page.url.searchParams.set(BEFORE, variableBefore);
+			shouldNavigate = true;
+		}
+
+		if (shouldNavigate) {
+			goto(`${page.url.pathname}?${page.url.searchParams.toString()}`);
 		}
 	});
 

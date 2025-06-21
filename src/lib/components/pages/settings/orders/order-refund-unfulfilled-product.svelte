@@ -6,7 +6,7 @@
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import { Button } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
-	import type { RefundQuantityProps } from '../utils';
+	import type { RefundQuantityProps } from './utils';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 
@@ -15,7 +15,7 @@
 		refundedProductQuantities: RefundQuantityProps[];
 	};
 
-	let { unfulfilledOrderLines, refundedProductQuantities }: Props = $props();
+	let { unfulfilledOrderLines, refundedProductQuantities = $bindable([]) }: Props = $props();
 
 	const PRODUCT_MODAL_COLUMNS: TableColumnProps<OrderLine, any>[] = [
 		{ title: 'Image', child: image },
@@ -25,7 +25,16 @@
 		{ title: 'Total', child: total },
 	];
 
-	const handleSetMax = () => {};
+	const handleSetMaxRefundQuantity = () => {
+		refundedProductQuantities = refundedProductQuantities.map((selectedLine) => {
+			const line = unfulfilledOrderLines.find((line) => line.id === selectedLine.id);
+			if (!line) return selectedLine;
+			return {
+				...selectedLine,
+				value: line.quantityToFulfill,
+			};
+		});
+	};
 </script>
 
 {#snippet image({ item }: { item: OrderLine })}
@@ -69,7 +78,7 @@
 	{@const selectedLineQuantity = refundedProductQuantities.find((line) => line.id === item.id)}
 	{#if item.unitPrice.gross}
 		<PriceDisplay
-			amount={item.unitPrice.gross.amount * (selectedLineQuantity?.value || 1)}
+			amount={item.unitPrice.gross.amount * (selectedLineQuantity?.value || 0)}
 			currency={item.unitPrice.gross.currency}
 		/>
 	{:else}
@@ -80,7 +89,7 @@
 <div class="bg-white rounded-lg border border-gray-200 p-3 space-y-1">
 	<SectionHeader>Unfulfilled Products</SectionHeader>
 	<p class="text-xs">Unfulfilled products will be restocked</p>
-	<Button size="xs" variant="outline" color="gray" onclick={handleSetMax}>
+	<Button size="xs" variant="outline" color="gray" onclick={handleSetMaxRefundQuantity}>
 		Set maximal quantities
 	</Button>
 

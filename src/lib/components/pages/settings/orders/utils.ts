@@ -1,4 +1,10 @@
 import { type GiftCardEvent, type Order, type Money, PaymentChargeStatusEnum, GiftCardEventsEnum, FulfillmentStatus } from '$lib/gql/graphql';
+import { subtractMoney } from '$lib/utils/utils';
+
+export enum OrderRefundType {
+  MISCELLANEOUS = 'miscellaneous',
+  PRODUCTS = 'products',
+}
 
 export function extractOrderGiftCardUsedAmount(order?: Order): number | undefined {
   if (!order || !order.giftCards) return undefined;
@@ -43,6 +49,14 @@ export function extractRefundedAmount(order: Order): Money {
   }
 };
 
+export const getAuthorizedAmount = (order: Order) => order?.total?.gross;
+export const getShipmentCost = (order: Order) =>
+  getAuthorizedAmount(order)?.currency &&
+  (order?.shippingPrice?.gross || {
+    amount: 0,
+    currency: getAuthorizedAmount(order)?.currency,
+  });
+
 export function getDiscountAmount(amount: Money): Money {
   if (amount.amount <= 0) return amount;
   return {
@@ -50,6 +64,22 @@ export function getDiscountAmount(amount: Money): Money {
     amount: -amount.amount
   };
 };
+
+export function getOrderCharged(order: Order) {
+  if (order?.totalCharged) {
+    return order.totalCharged;
+  }
+
+  return order?.totalCharged;
+}
+
+export function getPreviouslyRefundedPrice(order: Order): Money {
+  return (
+    getOrderCharged(order) &&
+    order?.total?.gross &&
+    subtractMoney(getOrderCharged(order), order?.total?.gross)
+  );
+}
 
 export const refundFulfilledStatuses = [
   FulfillmentStatus.Fulfilled,
@@ -62,4 +92,15 @@ export type RefundQuantityProps = {
   id: string;
   label: null;
   value: number;
+};
+
+export interface PaymentSubmitCardValuesProps {
+  authorizedAmount: Money;
+  shipmentCost?: Money;
+  selectedProductsValue?: Money;
+  previouslyRefunded: Money;
+  maxRefund: Money;
+  proposedRefundAmount?: Money;
+  replacedProductsValue?: Money;
+  refundTotalAmount?: Money;
 };
