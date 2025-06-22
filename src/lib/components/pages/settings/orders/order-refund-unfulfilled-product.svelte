@@ -35,6 +35,20 @@
 			};
 		});
 	};
+
+	const handleInputChange = (e: Event) => {
+		const target = e.target as HTMLInputElement;
+		const value = parseInt(target.value);
+		const line = unfulfilledOrderLines.find((line) => line.id === target.id);
+		if (!line) return;
+		refundedProductQuantities = refundedProductQuantities.map((selectedLine) => {
+			if (selectedLine.id !== line.id) return selectedLine;
+			return {
+				...selectedLine,
+				value,
+			};
+		});
+	};
 </script>
 
 {#snippet image({ item }: { item: OrderLine })}
@@ -64,6 +78,8 @@
 			value={selectedLineQuantity?.value}
 			disabled={item.quantityToFulfill === 0}
 			variant={error ? 'error' : 'info'}
+			subText={error ? 'Quantity is out of range' : undefined}
+			inputDebounceOption={{ onInput: handleInputChange }}
 		>
 			{#snippet action()}
 				<span>/ {item.quantityToFulfill}</span>

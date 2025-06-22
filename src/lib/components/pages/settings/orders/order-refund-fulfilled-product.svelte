@@ -41,6 +41,28 @@
 			};
 		});
 	};
+
+	const handleInputChange = (e: Event, idx: number, lineId: string) => {
+		const target = e.target as HTMLInputElement;
+		const value = parseInt(target.value || '0');
+
+		const fulfillment = fulfilledFulfillments.find((fulfillment) =>
+			fulfillment.lines?.some((line) => line.id === lineId),
+		);
+
+		if (!fulfillment || !fulfillment.lines?.length) return;
+
+		const line = fulfillment?.lines[idx];
+		if (!line) return;
+
+		refundedFulfilledProductQuantities = refundedFulfilledProductQuantities.map((selectedLine) => {
+			if (selectedLine.id !== line.id) return selectedLine;
+			return {
+				...selectedLine,
+				value,
+			};
+		});
+	};
 </script>
 
 {#snippet image({ item }: { item: FulfillmentLine })}
@@ -64,7 +86,7 @@
 	{/if}
 {/snippet}
 
-{#snippet refundedQuantity({ item }: { item: FulfillmentLine })}
+{#snippet refundedQuantity({ item, idx }: { item: FulfillmentLine; idx: number })}
 	{@const selectedLineQuantity = refundedFulfilledProductQuantities.find(
 		(refundedLine) => refundedLine.id === item.id,
 	)}
@@ -77,8 +99,9 @@
 			min={0}
 			max={item.quantity}
 			value={selectedLineQuantity?.value}
-			onchange={console.log}
 			variant={error ? 'error' : 'info'}
+			subText={error ? 'Quantity is out of range' : undefined}
+			inputDebounceOption={{ onInput: (e) => handleInputChange(e, idx, item.id) }}
 		>
 			{#snippet action()}
 				<span>/ {item.quantity}</span>
