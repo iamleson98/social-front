@@ -36,11 +36,12 @@
 		});
 	};
 
-	const handleInputChange = (e: Event) => {
+	const handleInputChange = (e: Event, idx: number) => {
 		const target = e.target as HTMLInputElement;
-		const value = parseInt(target.value);
-		const line = unfulfilledOrderLines.find((line) => line.id === target.id);
+		const value = parseInt(target.value || '0');
+		const line = unfulfilledOrderLines[idx];
 		if (!line) return;
+
 		refundedProductQuantities = refundedProductQuantities.map((selectedLine) => {
 			if (selectedLine.id !== line.id) return selectedLine;
 			return {
@@ -65,7 +66,7 @@
 	<PriceDisplay {...item.unitPrice.gross} />
 {/snippet}
 
-{#snippet refundedQuantity({ item }: { item: OrderLine })}
+{#snippet refundedQuantity({ item, idx }: { item: OrderLine; idx: number })}
 	{#if item.quantityToFulfill || item.quantityToFulfill === 0}
 		{@const selectedLineQuantity = refundedProductQuantities.find((line) => line.id === item.id)}
 		{@const error =
@@ -79,7 +80,7 @@
 			disabled={item.quantityToFulfill === 0}
 			variant={error ? 'error' : 'info'}
 			subText={error ? 'Quantity is out of range' : undefined}
-			inputDebounceOption={{ onInput: handleInputChange }}
+			inputDebounceOption={{ onInput: (e) => handleInputChange(e, idx) }}
 		>
 			{#snippet action()}
 				<span>/ {item.quantityToFulfill}</span>
