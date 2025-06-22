@@ -11,6 +11,7 @@
 	import { ExternalLink, Icon } from '$lib/components/icons';
 	import OrderLineMetadataModal from './order-line-metadata-modal.svelte';
 	import OrderFulfillModal from './order-fulfill-modal.svelte';
+	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 
 	type Props = {
 		orderLines: OrderLine[];
@@ -69,11 +70,7 @@
 </script>
 
 {#snippet image({ item }: { item: OrderLine })}
-	<div class="avatar">
-		<div class="w-9 rounded border border-gray-200">
-			<img src={item?.thumbnail?.url} alt={item?.thumbnail?.alt} />
-		</div>
-	</div>
+	<Thumbnail src={item?.thumbnail?.url} alt={item?.thumbnail?.alt || item.productName} size="sm" />
 {/snippet}
 
 {#snippet actions({ item }: { item: OrderLine })}
@@ -95,7 +92,7 @@
 {/snippet}
 
 {#snippet variant({ item }: { item: OrderLine })}
-	{item.variant?.name}
+	{item.variant?.name || '-'}
 {/snippet}
 
 {#snippet quantity({ item }: { item: OrderLine })}
@@ -103,17 +100,11 @@
 {/snippet}
 
 {#snippet price({ item }: { item: OrderLine })}
-	<PriceDisplay
-		amount={item?.unitPrice.gross.amount || 0}
-		currency={item?.unitPrice.gross.currency || ''}
-	/>
+	<PriceDisplay {...item.unitPrice.gross} />
 {/snippet}
 
 {#snippet total({ item }: { item: OrderLine })}
-	<PriceDisplay
-		amount={item?.totalPrice.gross.amount || 0}
-		currency={item?.totalPrice.gross.currency || ''}
-	/>
+	<PriceDisplay {...item.totalPrice.gross} />
 {/snippet}
 
 {#snippet isGift({ item }: { item: OrderLine })}

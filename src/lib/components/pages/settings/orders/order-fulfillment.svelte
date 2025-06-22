@@ -132,11 +132,11 @@
 {/snippet}
 
 {#snippet sku({ item }: { item: FulfillmentLine })}
-	<span>{item.orderLine?.productSku}</span>
+	<span>{item.orderLine?.productSku || '-'}</span>
 {/snippet}
 
 {#snippet variant({ item }: { item: FulfillmentLine })}
-	<span>{item.orderLine?.variant?.name}</span>
+	<span>{item.orderLine?.variant?.name || '-'}</span>
 {/snippet}
 
 {#snippet actions({ item }: { item: FulfillmentLine })}
@@ -193,7 +193,10 @@
 			class:border-b={idx !== order.fulfillments.length - 1}
 		>
 			<SectionHeader>
-				<Badge {...fulfillmentStatusBadgeClass(fulfillment.status)} rounded />
+				<div class="flex items-center gap-2">
+					<span>#{order.number}-{fulfillment.fulfillmentOrder}</span>
+					<Badge {...fulfillmentStatusBadgeClass(fulfillment.status)} rounded />
+				</div>
 				<div class="flex items-center gap-2">
 					<span class="text-xs text-gray-500 font-medium">
 						Fulfilled from {fulfillment.warehouse?.name}

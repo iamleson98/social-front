@@ -8,6 +8,7 @@
 	import { PermissionEnum, type Query, type QueryOrderArgs } from '$lib/gql/graphql';
 	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
 	import { checkUserHasPermissions } from '$lib/utils/utils';
+	import { onMount } from 'svelte';
 	import GeneralMetadataEditor from '../common/general-metadata-editor.svelte';
 
 	type Props = {
@@ -30,20 +31,19 @@
 		pause: true,
 	});
 
-	$effect(() => {
-		if (orderID && orderLineID && $READ_ONLY_USER_STORE) {
-			const hasManageProductPerms = checkUserHasPermissions(
-				$READ_ONLY_USER_STORE,
-				PermissionEnum.ManageProducts,
-			);
+	onMount(() =>
+		READ_ONLY_USER_STORE.subscribe((user) => {
+			const hasManageProductPerms = user
+				? checkUserHasPermissions(user, PermissionEnum.ManageProducts)
+				: false;
 			lineMetaQuery.reexecute({
 				variables: {
 					id: orderID,
 					hasManageProductPerms,
 				},
 			});
-		}
-	});
+		}),
+	);
 </script>
 
 <Modal

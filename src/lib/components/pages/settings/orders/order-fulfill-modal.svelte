@@ -3,6 +3,7 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
 	import { SHOP_QUERY } from '$lib/api/shop';
+	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
@@ -154,11 +155,7 @@
 </script>
 
 {#snippet image({ item }: { item: OrderLine })}
-	<div class="avatar">
-		<div class="w-9 rounded-lg border border-gray-200">
-			<img src={item.thumbnail?.url} alt={item.thumbnail?.alt} />
-		</div>
-	</div>
+	<Thumbnail src={item.thumbnail?.url} alt={item.thumbnail?.alt || item.productName} size="sm" />
 {/snippet}
 
 {#snippet name({ item }: { item: OrderLine })}

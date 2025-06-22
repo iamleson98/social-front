@@ -44,7 +44,9 @@
 		pause: !page.params.id,
 	});
 
-	let orderUpdateInput = $state<OrderUpdateInput>({});
+	let orderUpdateInput = $state<OrderUpdateInput>({
+		
+	});
 
 	onMount(() =>
 		orderQuery.subscribe((result) => {

@@ -131,7 +131,7 @@
 	</div>
 
 	<!-- Total -->
-	<div class="flex justify-between items-center font-semibold border-t pt-2">
+	<div class="flex justify-between items-center font-semibold">
 		<span>{$tranFunc('payment.total')}</span>
 		{#if order.total?.gross}
 			<PriceDisplay {...order.total.gross} />
@@ -139,6 +139,8 @@
 			<span>-</span>
 		{/if}
 	</div>
+
+	<hr>
 
 	<!-- Gift cards -->
 	{#if usedGiftCardAmount && order.giftCards}
@@ -182,7 +184,7 @@
 
 	<!-- Outstanding -->
 	<div
-		class="flex justify-between items-center font-semibold border-t pt-2"
+		class="flex justify-between items-center font-semibold"
 		class:text-green-600={order.totalBalance?.amount === 0}
 	>
 		<span>{$tranFunc('payment.outstanding')}</span>

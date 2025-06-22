@@ -81,7 +81,14 @@
 	);
 </script>
 
-<Modal {open} onClose={() => (open = false)} header="Refund" size="xl">
+<Modal
+	{open}
+	onClose={() => (open = false)}
+	header="Refund"
+	size="xl"
+	closeOnEscape
+	closeOnOutsideClick
+>
 	<div class="flex gap-2">
 		<div class="w-7/10 space-y-2">
 			<div class="rounded-lg border border-gray-200 p-3 space-y-2">
@@ -114,7 +121,7 @@
 
 			{#each REFUND_AMOUNT_OPTIONS as type, idx (idx)}
 				<RadioButton
-					value={type}
+					value={type.amountType}
 					bind:group={amountType}
 					disabled={type.disabled}
 					label={type.label}
@@ -140,7 +147,6 @@
 						previouslyRefunded={getPreviouslyRefundedPrice(order)}
 						maxRefund={getOrderCharged(order)}
 						shipmentCost={getShipmentCost(order) as Money}
-					
 					/>
 				{/if}
 			{/if}

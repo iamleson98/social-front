@@ -22,7 +22,7 @@
 		disabled?: boolean;
 		/** id of the object that owns those metadatas */
 		objectId: string;
-		/** the lock for parent to trigger the updating of metadatas */
+		/** the lock for parent to trigger the updating of metadatas. MUST provided as `bind:performUpdateMetadata` */
 		performUpdateMetadata?: boolean;
 	};
 

@@ -93,8 +93,8 @@ export const ORDER_HISTORY_QUERY = gql`
 `;
 
 export const ORDER_ADD_NOTE_MUTATION = gql`
-mutation OrderAddNote($id: ID!, $input: OrderAddNoteInput!) {
-  orderAddNote(id: $id, input: $input) {
+mutation OrderAddNote($order: ID!, $input: OrderAddNoteInput!) {
+  orderAddNote(order: $order, input: $input) {
     errors {
       field
       message

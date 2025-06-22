@@ -3,6 +3,7 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { ArrowDown, CalendarClock, Send } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
@@ -26,6 +27,60 @@
 
 	let { id }: Props = $props();
 
+	const ORDER_EVENTS_MAPPING: Record<OrderEventsEnum, string> = {
+		[OrderEventsEnum.AddedProducts]: 'Products were added to the order',
+		[OrderEventsEnum.Canceled]: 'The order was canceled',
+		[OrderEventsEnum.Confirmed]: 'The order was confirmed',
+		[OrderEventsEnum.DraftCreated]: 'A draft order was created',
+		[OrderEventsEnum.DraftCreatedFromReplace]: 'A draft order was created from a replacement',
+		[OrderEventsEnum.EmailSent]: 'An email was sent to the customer',
+		[OrderEventsEnum.Expired]: 'The order has expired',
+		[OrderEventsEnum.ExternalServiceNotification]: 'Notified an external service',
+		[OrderEventsEnum.FulfillmentAwaitsApproval]: 'Fulfillment is awaiting approval',
+		[OrderEventsEnum.FulfillmentCanceled]: 'A fulfillment was canceled',
+		[OrderEventsEnum.FulfillmentFulfilledItems]: 'Items were fulfilled',
+		[OrderEventsEnum.FulfillmentRefunded]: 'Fulfillment was refunded',
+		[OrderEventsEnum.FulfillmentReplaced]: 'Items were replaced',
+		[OrderEventsEnum.FulfillmentRestockedItems]: 'Items were restocked',
+		[OrderEventsEnum.FulfillmentReturned]: 'Items were returned',
+		[OrderEventsEnum.InvoiceGenerated]: 'Invoice was generated',
+		[OrderEventsEnum.InvoiceRequested]: 'Invoice was requested',
+		[OrderEventsEnum.InvoiceSent]: 'Invoice was sent',
+		[OrderEventsEnum.InvoiceUpdated]: 'Invoice was updated',
+		[OrderEventsEnum.NoteAdded]: 'A note was added to the order',
+		[OrderEventsEnum.NoteUpdated]: 'A note on the order was updated',
+		[OrderEventsEnum.OrderDiscountAdded]: 'A discount was added to the order',
+		[OrderEventsEnum.OrderDiscountAutomaticallyUpdated]: 'Order discount was updated automatically',
+		[OrderEventsEnum.OrderDiscountDeleted]: 'Order discount was removed',
+		[OrderEventsEnum.OrderDiscountUpdated]: 'Order discount was updated',
+		[OrderEventsEnum.OrderFullyPaid]: 'The order was fully paid',
+		[OrderEventsEnum.OrderLineDiscountRemoved]: 'Discount on an order line was removed',
+		[OrderEventsEnum.OrderLineDiscountUpdated]: 'Discount on an order line was updated',
+		[OrderEventsEnum.OrderLineProductDeleted]: 'A product in the order was deleted',
+		[OrderEventsEnum.OrderLineVariantDeleted]: 'A product variant in the order was deleted',
+		[OrderEventsEnum.OrderMarkedAsPaid]: 'Order was marked as paid',
+		[OrderEventsEnum.OrderReplacementCreated]: 'A replacement order was created',
+		[OrderEventsEnum.Other]: 'Other event',
+		[OrderEventsEnum.OversoldItems]: 'Oversold items in order',
+		[OrderEventsEnum.PaymentAuthorized]: 'Payment was authorized',
+		[OrderEventsEnum.PaymentCaptured]: 'Payment was captured',
+		[OrderEventsEnum.PaymentFailed]: 'Payment failed',
+		[OrderEventsEnum.PaymentRefunded]: 'Payment was refunded',
+		[OrderEventsEnum.PaymentVoided]: 'Payment was voided',
+		[OrderEventsEnum.Placed]: 'Order was placed',
+		[OrderEventsEnum.PlacedAutomaticallyFromPaidCheckout]:
+			'Order was automatically placed after paid checkout',
+		[OrderEventsEnum.PlacedFromDraft]: 'Order was placed from a draft',
+		[OrderEventsEnum.RemovedProducts]: 'Products were removed from the order',
+		[OrderEventsEnum.TrackingUpdated]: 'Tracking number was updated',
+		[OrderEventsEnum.TransactionCancelRequested]: 'Transaction cancel was requested',
+		[OrderEventsEnum.TransactionChargeRequested]: 'Transaction charge was requested',
+		[OrderEventsEnum.TransactionEvent]: 'Transaction event occurred',
+		[OrderEventsEnum.TransactionMarkAsPaidFailed]: 'Marking transaction as paid failed',
+		[OrderEventsEnum.TransactionRefundRequested]: 'Transaction refund was requested',
+		[OrderEventsEnum.UpdatedAddress]: 'The shipping or billing address was updated',
+	};
+
 	let newNote = $state<string>();
 	let showDiscount = $state(false);
 	let loading = $state(false);
@@ -41,65 +96,6 @@
 		query: ORDER_HISTORY_QUERY,
 		variables: { id },
 	});
-
-	export const orderHistoryTypeToHumanize = (type?: OrderEventsEnum | null): string => {
-		const map: Record<OrderEventsEnum, string> = {
-			[OrderEventsEnum.AddedProducts]: 'Products were added to the order',
-			[OrderEventsEnum.Canceled]: 'The order was canceled',
-			[OrderEventsEnum.Confirmed]: 'The order was confirmed',
-			[OrderEventsEnum.DraftCreated]: 'A draft order was created',
-			[OrderEventsEnum.DraftCreatedFromReplace]: 'A draft order was created from a replacement',
-			[OrderEventsEnum.EmailSent]: 'An email was sent to the customer',
-			[OrderEventsEnum.Expired]: 'The order has expired',
-			[OrderEventsEnum.ExternalServiceNotification]: 'Notified an external service',
-			[OrderEventsEnum.FulfillmentAwaitsApproval]: 'Fulfillment is awaiting approval',
-			[OrderEventsEnum.FulfillmentCanceled]: 'A fulfillment was canceled',
-			[OrderEventsEnum.FulfillmentFulfilledItems]: 'Items were fulfilled',
-			[OrderEventsEnum.FulfillmentRefunded]: 'Fulfillment was refunded',
-			[OrderEventsEnum.FulfillmentReplaced]: 'Items were replaced',
-			[OrderEventsEnum.FulfillmentRestockedItems]: 'Items were restocked',
-			[OrderEventsEnum.FulfillmentReturned]: 'Items were returned',
-			[OrderEventsEnum.InvoiceGenerated]: 'Invoice was generated',
-			[OrderEventsEnum.InvoiceRequested]: 'Invoice was requested',
-			[OrderEventsEnum.InvoiceSent]: 'Invoice was sent',
-			[OrderEventsEnum.InvoiceUpdated]: 'Invoice was updated',
-			[OrderEventsEnum.NoteAdded]: 'A note was added to the order',
-			[OrderEventsEnum.NoteUpdated]: 'A note on the order was updated',
-			[OrderEventsEnum.OrderDiscountAdded]: 'A discount was added to the order',
-			[OrderEventsEnum.OrderDiscountAutomaticallyUpdated]:
-				'Order discount was updated automatically',
-			[OrderEventsEnum.OrderDiscountDeleted]: 'Order discount was removed',
-			[OrderEventsEnum.OrderDiscountUpdated]: 'Order discount was updated',
-			[OrderEventsEnum.OrderFullyPaid]: 'The order was fully paid',
-			[OrderEventsEnum.OrderLineDiscountRemoved]: 'Discount on an order line was removed',
-			[OrderEventsEnum.OrderLineDiscountUpdated]: 'Discount on an order line was updated',
-			[OrderEventsEnum.OrderLineProductDeleted]: 'A product in the order was deleted',
-			[OrderEventsEnum.OrderLineVariantDeleted]: 'A product variant in the order was deleted',
-			[OrderEventsEnum.OrderMarkedAsPaid]: 'Order was marked as paid',
-			[OrderEventsEnum.OrderReplacementCreated]: 'A replacement order was created',
-			[OrderEventsEnum.Other]: 'Other event',
-			[OrderEventsEnum.OversoldItems]: 'Oversold items in order',
-			[OrderEventsEnum.PaymentAuthorized]: 'Payment was authorized',
-			[OrderEventsEnum.PaymentCaptured]: 'Payment was captured',
-			[OrderEventsEnum.PaymentFailed]: 'Payment failed',
-			[OrderEventsEnum.PaymentRefunded]: 'Payment was refunded',
-			[OrderEventsEnum.PaymentVoided]: 'Payment was voided',
-			[OrderEventsEnum.Placed]: 'Order was placed',
-			[OrderEventsEnum.PlacedAutomaticallyFromPaidCheckout]:
-				'Order was automatically placed after paid checkout',
-			[OrderEventsEnum.PlacedFromDraft]: 'Order was placed from a draft',
-			[OrderEventsEnum.RemovedProducts]: 'Products were removed from the order',
-			[OrderEventsEnum.TrackingUpdated]: 'Tracking number was updated',
-			[OrderEventsEnum.TransactionCancelRequested]: 'Transaction cancel was requested',
-			[OrderEventsEnum.TransactionChargeRequested]: 'Transaction charge was requested',
-			[OrderEventsEnum.TransactionEvent]: 'Transaction event occurred',
-			[OrderEventsEnum.TransactionMarkAsPaidFailed]: 'Marking transaction as paid failed',
-			[OrderEventsEnum.TransactionRefundRequested]: 'Transaction refund was requested',
-			[OrderEventsEnum.UpdatedAddress]: 'The shipping or billing address was updated',
-		};
-
-		return type ? map[type] : '';
-	};
 
 	const handleAddNote = async () => {
 		if (!newNote) return;
@@ -118,7 +114,7 @@
 		loading = false;
 
 		if (
-			checkIfGraphqlResultHasError(result, 'orderAddNote', 'Successfully posted new note to order')
+			checkIfGraphqlResultHasError(result, 'orderAddNote', 'Successfully added new note to order')
 		)
 			return;
 
@@ -129,7 +125,10 @@
 
 <div class="p-3 rounded-lg border border-gray-200 bg-white flex flex-col gap-3">
 	<SectionHeader>Order timeline</SectionHeader>
-	<Alert size="sm" bordered>The timeline below shows the history of all events related to this order. Each entry represents a single event along with its content or readable description.</Alert>
+	<Alert size="sm" bordered
+		>The timeline below shows the history of all events related to this order. Each entry represents
+		a single event along with its content or readable description.</Alert
+	>
 
 	{#if $eventsQuery.fetching}
 		<SelectSkeleton size="sm" label />
@@ -145,14 +144,11 @@
 		<!-- MARK: note form -->
 		<div class="flex gap-2 items-center">
 			<div class="flex-3/4 flex items-center gap-2">
-				<div class="avatar">
-					<div class="w-9 rounded-lg">
-						<img
-							src={$READ_ONLY_USER_STORE?.avatar?.url}
-							alt={$READ_ONLY_USER_STORE?.avatar?.alt}
-						/>
-					</div>
-				</div>
+				<Thumbnail
+					size="sm"
+					src={$READ_ONLY_USER_STORE?.avatar?.url}
+					alt={$READ_ONLY_USER_STORE?.avatar?.alt || $READ_ONLY_USER_STORE?.email || 'User'}
+				/>
 				<Input
 					size="sm"
 					placeholder="Add note"
@@ -192,7 +188,7 @@
 						/>
 						<div>
 							<div class="mb-1 font-medium text-sm dark:text-white text-gray-700">
-								{orderHistoryTypeToHumanize(event.type)}
+								{event.type ? ORDER_EVENTS_MAPPING[event.type] : '-'}
 							</div>
 							<div class="text-xs font-normal leading-none text-gray-400 dark:text-gray-500 mb-1">
 								{dayjs(event.date).fromNow()}
@@ -205,7 +201,7 @@
 							<div class="text-xs text-gray-600">
 								By <a
 									class="text-blue-600 text-sm font-semibold"
-									href={AppRoute.SETTINGS_CONFIGS_STAFF_DETAILS(event.user?.id!)}
+									href={event.user ? AppRoute.SETTINGS_CONFIGS_STAFF_DETAILS(event.user.id) : '#'}
 								>
 									{byName}
 								</a>
