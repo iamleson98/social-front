@@ -38,15 +38,17 @@
 		key: keyof PaymentSubmitCardValuesProps;
 	};
 
-	const items = orderedKeys.reduce((acc, cur) => {
-		const value = props[cur];
+	const items = $derived(
+		orderedKeys.reduce((acc, cur) => {
+			const value = props[cur];
 
-		if (!value) {
-			return acc;
-		}
+			if (!value) {
+				return acc;
+			}
 
-		return acc.concat({ data: value, highlighted: highlightedItems.includes(cur), key: cur });
-	}, [] as Item[]);
+			return acc.concat({ data: value, highlighted: highlightedItems.includes(cur), key: cur });
+		}, [] as Item[]),
+	);
 </script>
 
 <div class="text-sm space-y-1">

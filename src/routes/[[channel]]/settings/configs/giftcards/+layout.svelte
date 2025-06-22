@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import HeadBar from '$lib/components/pages/settings/config/head-bar.svelte';
+	import HeadBar from '$lib/components/pages/settings/common/head-bar.svelte';
 	import { AppRoute } from '$lib/utils';
 	import type { Snippet } from 'svelte';
 

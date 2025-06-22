@@ -65,7 +65,7 @@
 		/>
 
 		{#if action}
-			<div class="absolute end-2 top-1/2 transform -translate-y-1/2 input-action">
+			<div class="absolute end-2 top-1/2 transform -translate-y-1/2 input-action flex items-center">
 				{@render action()}
 			</div>
 		{/if}

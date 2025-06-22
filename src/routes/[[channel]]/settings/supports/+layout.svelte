@@ -2,7 +2,7 @@
 	import { tranFunc } from '$i18n';
 	import { AppRoute } from '$lib/utils';
 	import type { Snippet } from 'svelte';
-	import HeadBar from '$lib/components/pages/settings/config/head-bar.svelte';
+	import HeadBar from '$lib/components/pages/settings/common/head-bar.svelte';
 
 	type Props = {
 		children: Snippet;

@@ -22,11 +22,6 @@
 
 	let { order, onCapture, onMarkAsPaid, onRefund, onVoid }: Props = $props();
 
-	const canCapture = order.actions.includes(OrderAction.Capture);
-	const canVoid = order.actions.includes(OrderAction.Void);
-	const canRefund = order.actions.includes(OrderAction.Refund);
-	const canMarkAsPaid = order.actions.includes(OrderAction.MarkAsPaid);
-
 	const refundedAmount = extractRefundedAmount(order);
 	const usedGiftCardAmount = extractOrderGiftCardUsedAmount(order);
 
@@ -58,18 +53,18 @@
 			class="flex gap-2"
 			class:invisible={!order.paymentStatus || order.status === OrderStatus.Canceled}
 		>
-			{#if canCapture}
+			{#if order.actions.includes(OrderAction.Capture)}
 				<Button size="sm" onclick={onCapture}>{$tranFunc('payment.capture')}</Button>
 			{/if}
-			{#if canRefund}
+			{#if order.actions.includes(OrderAction.Refund)}
 				<Button size="sm" onclick={() => (openRefundModal = true)}>
 					{$tranFunc('payment.refund')}
 				</Button>
 			{/if}
-			{#if canVoid}
+			{#if order.actions.includes(OrderAction.Void)}
 				<Button size="sm" onclick={onVoid}>{$tranFunc('payment.void')}</Button>
 			{/if}
-			{#if canMarkAsPaid}
+			{#if order.actions.includes(OrderAction.MarkAsPaid)}
 				<Button size="sm" onclick={onMarkAsPaid}>{$tranFunc('payment.markAsPaid')}</Button>
 			{/if}
 		</div>
@@ -140,7 +135,7 @@
 		{/if}
 	</div>
 
-	<hr>
+	<hr />
 
 	<!-- Gift cards -->
 	{#if usedGiftCardAmount && order.giftCards}
