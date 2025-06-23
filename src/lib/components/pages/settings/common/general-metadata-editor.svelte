@@ -8,26 +8,29 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import type { MetadataInput, MetadataItem, Mutation } from '$lib/gql/graphql';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { omit } from 'es-toolkit';
+	import { noop, omit } from 'es-toolkit';
 	import type { AnyVariables, TypedDocumentNode } from '@urql/core';
 	import MetadataEditor from './metadata-editor.svelte';
 
 	type Props = {
-		metadata: MetadataItem[];
-		privateMetadata: MetadataItem[];
+		metadata?: MetadataItem[];
+		privateMetadata?: MetadataItem[];
 		disabled?: boolean;
 		/** id of the object that owns those metadatas */
 		objectId: string;
 		/** the lock for parent to trigger the updating of metadatas. MUST provided as `bind:performUpdateMetadata` */
 		performUpdateMetadata?: boolean;
+		/** callback when update is done */
+		onDoneUpdate?: () => void;
 	};
 
 	let {
-		metadata,
-		privateMetadata,
+		metadata = [],
+		privateMetadata = [],
 		disabled,
 		objectId,
 		performUpdateMetadata = $bindable(false),
+		onDoneUpdate = noop,
 	}: Props = $props();
 
 	let metadataItemsToAdd = $state<MetadataInput[]>([]);
@@ -85,7 +88,11 @@
 
 	$effect(() => {
 		if (performUpdateMetadata) {
-			handleUpdate().finally(() => (performUpdateMetadata = false));
+			handleUpdate()
+				.then(onDoneUpdate)
+				.finally(() => {
+					performUpdateMetadata = false;
+				});
 		}
 	});
 </script>

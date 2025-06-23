@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { afterNavigate, goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { CATEGORY_DETAIL_QUERY } from '$lib/api';
 	import { CATEGORY_DELETE_MUTATION, CATEGORY_UPDATE_MUTATION } from '$lib/api/admin/category';
@@ -22,7 +22,7 @@
 	import { AppRoute } from '$lib/utils';
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { onMount, tick } from 'svelte';
+	import { onMount } from 'svelte';
 
 	let media = $state<MediaObject[]>([]);
 	let generalFormOk = $state(false);
@@ -49,6 +49,15 @@
 	let performUpdateMetadata = $state(false);
 	let loading = $state(false);
 
+	afterNavigate(() => {
+		categoryQuery.reexecute({
+			variables: {
+				id: page.params.id,
+			},
+			context: { requestPolicy: 'network-only' },
+		});
+	});
+
 	onMount(() =>
 		categoryQuery.subscribe((result) => {
 			if (result.data?.category) {
@@ -68,13 +77,11 @@
 				if (backgroundImage) {
 					media = [
 						{
-							alt: backgroundImage.alt || '',
-							url: `${backgroundImage.url}?v=${Date.now()}`,
+							alt: backgroundImage.alt || name,
+							url: backgroundImage.url,
 							type: 'image',
 						},
 					];
-				} else {
-					media = [];
 				}
 			}
 		}),
@@ -100,10 +107,9 @@
 	};
 
 	const handleUpdate = async () => {
+		if (!generalFormOk) return;
 		loading = true;
 
-		performUpdateMetadata = false;
-		await tick();
 		performUpdateMetadata = true;
 
 		const result = await GRAPHQL_CLIENT.mutation(CATEGORY_UPDATE_MUTATION, {
@@ -143,15 +149,15 @@
 				bind:seoTitle={categoryInput.seo!.title!}
 				bind:media
 				bind:seoDescription={categoryInput.seo!.description!}
-				{loading}
 				bind:ok={generalFormOk}
+				{loading}
 			/>
 
 			<GeneralMetadataEditor
 				{metadata}
 				{privateMetadata}
 				objectId={id}
-				{performUpdateMetadata}
+				bind:performUpdateMetadata
 				disabled={loading}
 			/>
 		</div>
@@ -166,5 +172,6 @@
 		onDeleteClick={handleDeleteClick}
 		disabled={loading}
 		backButtonUrl={AppRoute.SETTINGS_CONFIGS_CATEGORIES()}
+		disableUpdateButton={loading || !generalFormOk}
 	/>
 {/if}

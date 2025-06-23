@@ -5,13 +5,15 @@
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import GeneralInformation from '$lib/components/pages/settings/config/categories/general-information.svelte';
-	import type { CategoryInput } from '$lib/gql/graphql';
+	import type { CategoryInput, Mutation, MutationCategoryCreateArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 
 	let media = $state<MediaObject[]>([]);
 	let generalFormOk = $state(false);
+	let performUpdateMetadata = $state(false);
+	let createdCategoryId = $state<string>('');
 
 	let categoryInput = $state<CategoryInput>({
 		name: '',
@@ -25,9 +27,14 @@
 	let loading = $state(false);
 
 	const handleCreate = async () => {
+		if (!generalFormOk) return;
+
 		loading = true;
 
-		const result = await GRAPHQL_CLIENT.mutation(CATEGORY_CREATE_MUTATION, {
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'categoryCreate'>,
+			MutationCategoryCreateArgs
+		>(CATEGORY_CREATE_MUTATION, {
 			input: {
 				...categoryInput,
 				description: JSON.stringify(categoryInput.description),
@@ -41,9 +48,11 @@
 		if (checkIfGraphqlResultHasError(result, 'categoryCreate', 'Category created successfully'))
 			return;
 
-		await goto(
-			AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(result.data?.categoryCreate?.category.id!),
-		);
+		createdCategoryId = result.data?.categoryCreate?.category?.id!;
+
+		if (createdCategoryId) {
+			performUpdateMetadata = true;
+		}
 	};
 </script>
 
@@ -56,12 +65,17 @@
 			bind:seoTitle={categoryInput.seo!.title!}
 			bind:media
 			bind:seoDescription={categoryInput.seo!.description!}
+			bind:ok={generalFormOk}
 			{loading}
 			isCreatePage
-			bind:ok={generalFormOk}
 		/>
 
-		<GeneralMetadataEditor metadata={[]} privateMetadata={[]} objectId={''} disabled={loading} />
+		<GeneralMetadataEditor
+			objectId={createdCategoryId}
+			disabled={loading}
+			bind:performUpdateMetadata
+			onDoneUpdate={() => goto(AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(createdCategoryId))}
+		/>
 	</div>
 </div>
 
@@ -69,4 +83,5 @@
 	onAddClick={handleCreate}
 	disabled={loading}
 	backButtonUrl={AppRoute.SETTINGS_CONFIGS_CATEGORIES()}
+	disableCreateButton={loading || !generalFormOk}
 />

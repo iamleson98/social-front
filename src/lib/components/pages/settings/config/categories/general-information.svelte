@@ -10,7 +10,6 @@
 	import slugify from 'slugify';
 
 	type Props = {
-		// category: Category;
 		name: string;
 		loading?: boolean;
 		description: OutputData;
@@ -24,7 +23,6 @@
 
 	let {
 		name = $bindable(),
-		loading,
 		description = $bindable(),
 		slug = $bindable(),
 		seoTitle = $bindable(),
@@ -32,6 +30,7 @@
 		media = $bindable<MediaObject[]>(),
 		ok = $bindable(),
 		isCreatePage = false,
+		loading,
 	}: Props = $props();
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
@@ -47,7 +46,7 @@
 	});
 
 	$effect(() => {
-		if (name && isCreatePage) {
+		if (isCreatePage) {
 			slug = slugify(name, { lower: true, strict: true });
 			seoTitle = name;
 		}
@@ -74,7 +73,7 @@
 	};
 </script>
 
-<div class="bg-white border border-gray-200 p-3 rounded-lg space-y-3">
+<div class="bg-white border border-gray-200 p-3 rounded-lg space-y-2">
 	<SectionHeader>General information</SectionHeader>
 
 	<Input
@@ -96,6 +95,7 @@
 		bind:value={description}
 		variant={descriptionError ? 'error' : 'info'}
 		subText={descriptionError}
+		disabled={loading}
 	/>
 
 	<FileInputContainer
@@ -104,6 +104,7 @@
 		label="Background image"
 		required
 		bind:medias={media}
+		disabled={loading}
 	/>
 
 	<SectionHeader>Seo Information</SectionHeader>
@@ -116,6 +117,7 @@
 		onblur={validate}
 		variant={categoryFormErrors.slug?.length ? 'error' : 'info'}
 		subText={categoryFormErrors.slug?.[0]}
+		disabled={loading}
 	/>
 	<Input
 		placeholder="Seo title"
@@ -126,6 +128,7 @@
 		onblur={validate}
 		variant={categoryFormErrors.seoTitle?.length ? 'error' : 'info'}
 		subText={categoryFormErrors.seoTitle?.[0]}
+		disabled={loading}
 	/>
 
 	<TextArea
@@ -138,5 +141,6 @@
 		variant={categoryFormErrors.seoDescription?.length ? 'error' : 'info'}
 		subText={categoryFormErrors.seoDescription?.[0]}
 		inputClass="min-h-20"
+		disabled={loading}
 	/>
 </div>

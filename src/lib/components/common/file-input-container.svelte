@@ -19,6 +19,8 @@
 		labelSize?: SocialSize;
 		medias: MediaObject[];
 		class?: string;
+		disabled?: boolean;
+		subText?: string;
 	};
 
 	let {
@@ -30,6 +32,8 @@
 		labelSize,
 		medias = $bindable([]),
 		class: className = '',
+		disabled,
+		subText,
 	}: Props = $props();
 
 	const documentIcon = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2m-8-4h6m-6-4h6"/></g></svg>')}`;
@@ -145,6 +149,7 @@
 							inputDebounceOption={{ onInput: validate }}
 							variant={mediaErrors?.[idx]?.length ? 'error' : 'info'}
 							subText={mediaErrors?.[idx]?.[0]}
+							{disabled}
 						/>
 					</div>
 					{#if media.file}
@@ -168,6 +173,7 @@
 							class="tooltip tooltip-left"
 							data-tip="Remove"
 							onclick={() => deleteFileItem(idx)}
+							{disabled}
 						/>
 					</div>
 				</div>
@@ -184,11 +190,12 @@
 					multiple
 					onChange={handleFileSelect}
 					icon={FileUpload}
+					{disabled}
 				/>
 			</div>
 		{/if}
 	</div>
 	<div class={`text-[10px] mt-0.5 text-right!`}>
-		{medias.length} / {max}
+		{subText ? subText : `${medias.length} / ${max}`}
 	</div>
 </div>
