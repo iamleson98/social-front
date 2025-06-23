@@ -6,11 +6,7 @@
 		PRIVATE_METADATA_UPDATE_MUTATION,
 	} from '$lib/api/admin/metadata';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import type {
-		MetadataInput,
-		MetadataItem,
-		Mutation,
-	} from '$lib/gql/graphql';
+	import type { MetadataInput, MetadataItem, Mutation } from '$lib/gql/graphql';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { omit } from 'es-toolkit';
 	import type { AnyVariables, TypedDocumentNode } from '@urql/core';

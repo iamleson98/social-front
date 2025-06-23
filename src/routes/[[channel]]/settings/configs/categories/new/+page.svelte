@@ -22,12 +22,10 @@
 			description: '',
 		},
 	});
-	let performUpdateMetadata = $state(false);
 	let loading = $state(false);
 
 	const handleCreate = async () => {
 		loading = true;
-		performUpdateMetadata = true;
 
 		const result = await GRAPHQL_CLIENT.mutation(CATEGORY_CREATE_MUTATION, {
 			input: {
@@ -43,7 +41,9 @@
 		if (checkIfGraphqlResultHasError(result, 'categoryCreate', 'Category created successfully'))
 			return;
 
-		await goto(AppRoute.SETTINGS_CONFIGS_CATEGORIES());
+		await goto(
+			AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(result.data?.categoryCreate?.category.id!),
+		);
 	};
 </script>
 
@@ -61,13 +61,7 @@
 			bind:ok={generalFormOk}
 		/>
 
-		<GeneralMetadataEditor
-			metadata={[]}
-			privateMetadata={[]}
-			objectId={''}
-			{performUpdateMetadata}
-			disabled={loading}
-		/>
+		<GeneralMetadataEditor metadata={[]} privateMetadata={[]} objectId={''} disabled={loading} />
 	</div>
 </div>
 

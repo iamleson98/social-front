@@ -22,7 +22,7 @@
 	import { AppRoute } from '$lib/utils';
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 
 	let media = $state<MediaObject[]>([]);
 	let generalFormOk = $state(false);
@@ -64,14 +64,18 @@
 						description: seoDescription,
 					},
 				};
-				if (backgroundImage)
+
+				if (backgroundImage) {
 					media = [
 						{
 							alt: backgroundImage.alt || '',
-							url: backgroundImage.url,
+							url: `${backgroundImage.url}?v=${Date.now()}`,
 							type: 'image',
 						},
 					];
+				} else {
+					media = [];
+				}
 			}
 		}),
 	);
@@ -87,7 +91,7 @@
 				>(CATEGORY_DELETE_MUTATION, { id: page.params.id });
 				loading = false;
 
-				if (checkIfGraphqlResultHasError(result, 'categoryDelete', 'Successfully deleted cateory'))
+				if (checkIfGraphqlResultHasError(result, 'categoryDelete', 'Successfully deleted category'))
 					return;
 
 				await goto(AppRoute.SETTINGS_CONFIGS_CATEGORIES());
@@ -97,6 +101,9 @@
 
 	const handleUpdate = async () => {
 		loading = true;
+
+		performUpdateMetadata = false;
+		await tick();
 		performUpdateMetadata = true;
 
 		const result = await GRAPHQL_CLIENT.mutation(CATEGORY_UPDATE_MUTATION, {
@@ -126,7 +133,7 @@
 {:else if $categoryQuery.error}
 	<Alert size="sm" bordered variant="error">{$categoryQuery.error.message}</Alert>
 {:else if $categoryQuery.data?.category}
-	{@const { category } = $categoryQuery.data}
+	{@const { metadata, privateMetadata, id } = $categoryQuery.data.category}
 	<div class="flex flex-row gap-2">
 		<div class="w-6/10 space-y-2">
 			<GeneralInformation
@@ -141,16 +148,16 @@
 			/>
 
 			<GeneralMetadataEditor
-				metadata={category.metadata}
-				privateMetadata={category.privateMetadata}
-				objectId={category.id}
+				{metadata}
+				{privateMetadata}
+				objectId={id}
 				{performUpdateMetadata}
 				disabled={loading}
 			/>
 		</div>
 
 		<div class="w-4/10">
-			<SubSection categoryId={category.id} />
+			<SubSection categoryId={id} />
 		</div>
 	</div>
 
