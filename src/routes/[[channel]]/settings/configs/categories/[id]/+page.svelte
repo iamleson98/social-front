@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { CATEGORY_DETAIL_QUERY } from '$lib/api';
-	import { CATEGORY_DELETE_MUTATION } from '$lib/api/admin/category';
+	import { CATEGORY_DELETE_MUTATION, CATEGORY_UPDATE_MUTATION } from '$lib/api/admin/category';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
@@ -20,8 +20,12 @@
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
+	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
+
+	let media = $state<MediaObject[]>([]);
+	let generalFormOk = $state(false);
 
 	const categoryQuery = operationStore<Pick<Query, 'category'>, QueryCategoryArgs>({
 		kind: 'query',
@@ -29,6 +33,7 @@
 		variables: {
 			id: page.params.id,
 		},
+		requestPolicy: 'cache-and-network',
 		pause: !page.params.id,
 	});
 
@@ -59,6 +64,18 @@
 						description: seoDescription,
 					},
 				};
+
+				if (backgroundImage) {
+					media = [
+						{
+							alt: backgroundImage.alt || '',
+							url: `${backgroundImage.url}?v=${Date.now()}`,
+							type: 'image',
+						},
+					];
+				} else {
+					media = [];
+				}
 			}
 		}),
 	);
@@ -74,7 +91,7 @@
 				>(CATEGORY_DELETE_MUTATION, { id: page.params.id });
 				loading = false;
 
-				if (checkIfGraphqlResultHasError(result, 'categoryDelete', 'Successfully deleted cateory'))
+				if (checkIfGraphqlResultHasError(result, 'categoryDelete', 'Successfully deleted category'))
 					return;
 
 				await goto(AppRoute.SETTINGS_CONFIGS_CATEGORIES());
@@ -82,7 +99,33 @@
 		});
 	};
 
-	const handleUpdate = async () => {};
+	const handleUpdate = async () => {
+		loading = true;
+
+		performUpdateMetadata = false;
+		await tick();
+		performUpdateMetadata = true;
+
+		const result = await GRAPHQL_CLIENT.mutation(CATEGORY_UPDATE_MUTATION, {
+			id: page.params.id,
+			input: {
+				...categoryInput,
+				description: JSON.stringify(categoryInput.description),
+				backgroundImage: media[0]?.file,
+				backgroundImageAlt: media[0]?.alt,
+			},
+		});
+
+		loading = false;
+
+		if (checkIfGraphqlResultHasError(result, 'categoryUpdate', 'Category updated successfully'))
+			return;
+
+		categoryQuery.reexecute({
+			variables: { id: page.params.id },
+			context: { requestPolicy: 'network-only' },
+		});
+	};
 </script>
 
 {#if $categoryQuery.fetching}
@@ -90,7 +133,7 @@
 {:else if $categoryQuery.error}
 	<Alert size="sm" bordered variant="error">{$categoryQuery.error.message}</Alert>
 {:else if $categoryQuery.data?.category}
-	{@const { category } = $categoryQuery.data}
+	{@const { metadata, privateMetadata, id } = $categoryQuery.data.category}
 	<div class="flex flex-row gap-2">
 		<div class="w-6/10 space-y-2">
 			<GeneralInformation
@@ -98,21 +141,23 @@
 				bind:description={categoryInput.description}
 				bind:slug={categoryInput.slug!}
 				bind:seoTitle={categoryInput.seo!.title!}
+				bind:media
 				bind:seoDescription={categoryInput.seo!.description!}
 				{loading}
+				bind:ok={generalFormOk}
 			/>
 
 			<GeneralMetadataEditor
-				metadata={category.metadata}
-				privateMetadata={category.privateMetadata}
-				objectId={category.id}
+				{metadata}
+				{privateMetadata}
+				objectId={id}
 				{performUpdateMetadata}
 				disabled={loading}
 			/>
 		</div>
 
 		<div class="w-4/10">
-			<SubSection categoryId={category.id} />
+			<SubSection categoryId={id} />
 		</div>
 	</div>
 
