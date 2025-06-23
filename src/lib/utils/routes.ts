@@ -77,6 +77,5 @@ export const AppRoute = {
 	 * uris below are for API calls
 	 */
 	CHECKOUT_GET_OR_CREATE: '/checkout/get-or-create',
-	CHECKOUT_ADD_LINES_TO_CART: '/checkout/add-lines-to-cart',
 	GRAPHQL_API: '/api/graphql'
 };

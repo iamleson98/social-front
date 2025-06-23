@@ -1,36 +1,11 @@
 <script lang="ts">
-	import { GraphqlPaginableSelect, Select } from '$lib/components/ui/select';
 	import { draggable, droppable, type DragDropState } from '@thisux/sveltednd';
-	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import { ButtonSkeleton } from '$lib/components/ui/Button';
-	import SelectSkeleton from '$lib/components/ui/select/select-skeleton.svelte';
-	import { PRODUCT_LIST_QUERY_STORE } from '$lib/api';
-	import type { QueryProductsArgs } from '$lib/gql/graphql';
-	import { Input } from '$lib/components/ui/Input';
 	import GeneralSelect from '$lib/components/ui/select/general-select.svelte';
-	import ShopCurrenciesSelect from '$lib/components/common/shop-currencies-select.svelte';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
 	import type { OutputData } from '@editorjs/editorjs';
 	import FileInputContainer from '$lib/components/common/file-input-container.svelte';
 	import { type MediaObject } from '$lib/utils/types';
-	// import { Input } from '$lib/components/ui/Input';
-
-	// onMount(async () => {
-	// 	const result = fetch('/figma.wasm', {
-	// 		headers: {
-	// 			'Accept-Encoding': 'gzip, deflate, br, zstd'
-	// 		}
-	// 	})
-	// 		.then((res) => res.arrayBuffer())
-	// 		.then((buffer) => WebAssembly.compile(buffer))
-	// 		.then((module) => WebAssembly.instantiate(module))
-	// 		.catch(console.error)
-	// 		.then(() => console.log('done'));
-
-	// 	// console.log(instance);
-	// });
-
-	// let value = $state('');
 
 	let items = $state([
 		{
@@ -48,8 +23,8 @@
 	};
 
 	let value = $state<string[]>([]);
-	let prds = $state();
-	let currency = $state<string>();
+	// let prds = $state();
+	// let currency = $state<string>();
 
 	let editorValue = $state<OutputData>();
 	let medias = $state<MediaObject[]>([]);
@@ -74,63 +49,7 @@
 	</tbody>
 </table>
 
-<!-- <SkeletonContainer>
-	<Skeleton class="w-2 h-8" />
-</SkeletonContainer> -->
-
 <ButtonSkeleton size="xl" />
-
-<!-- <div class="flex flex-row items-start gap-2 w-[500px]">
-	<SelectSkeleton size="xs" />
-	<SelectSkeleton label size="xs" />
-</div>
--->
-
-<!-- <GraphqlPaginableSelect
-	query={PRODUCT_LIST_QUERY_STORE}
-	variables={{ first: 10, search: '' } as QueryProductsArgs}
-	resultKey="products"
-	optionValueKey="id"
-	optionLabelKey="name"
-	label="Products"
-	size="sm"
-	variableSearchQueryPath="search"
-	bind:value={prds}
-	onchange={console.log}
-	multiple={true}
-/> 
-
-<!-- <li class="loading loading-spinner loading-xs"></li> -->
-
-<!-- <div class="flex items-start gap-2">
-	<MultiSelect
-		options={[
-			{ label: 'Option 1', value: '1' },
-			{ label: 'Option 2', value: '2' },
-			{ label: 'Option 3', value: '3' },
-		]}
-		size="xs"
-		required
-		label="MultiSelect"
-		variant="error"
-		subText="subText"
-	/>
-	<Input size="xs" label="Input" />
-
-	<Select
-		options={[
-			{ label: 'Option 1', value: '1' },
-			{ label: 'Option 2', value: '2' },
-			{ label: 'Option 3', value: '3' },
-		]}
-		size="xs"
-		required
-		label="Select"
-		bind:value
-		onchange={console.log}
-		multiple
-	/>
-</div> -->
 
 <GeneralSelect
 	size="sm"
@@ -158,6 +77,4 @@
 	bind:value={editorValue}
 />
 
-<FileInputContainer accept="*" max={5} bind:medias required label="EditorJS" subText="subText" />
-
-<!-- <ShopCurrenciesSelect bind:value={currency} size="sm" /> -->
+<FileInputContainer accept="*" max={5} bind:medias required label="EditorJS" />

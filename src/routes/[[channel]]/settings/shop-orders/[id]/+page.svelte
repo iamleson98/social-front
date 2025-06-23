@@ -97,7 +97,7 @@
 		(item) => item?.id,
 	)}
 	<div class="flex flex-row gap-2">
-		<div class="flex flex-col gap-2 w-7/10">
+		<div class="space-y-2 w-7/10">
 			<SectionHeader>
 				<div class="flex items-center gap-2">
 					<div>Order #{order.number}</div>
@@ -126,7 +126,7 @@
 			<OrderHistory id={order.id} />
 		</div>
 
-		<div class="flex flex-col gap-2 w-3/10">
+		<div class="space-y-2 w-3/10">
 			<div class="bg-white rounded-lg border border-gray-200 p-3">
 				<SectionHeader>Customer</SectionHeader>
 				<p class="text-sm">{order.userEmail || '-'}</p>
