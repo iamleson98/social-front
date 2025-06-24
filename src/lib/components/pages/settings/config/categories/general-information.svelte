@@ -39,10 +39,16 @@
 		if (!description?.blocks?.length) return REQUIRED_ERROR;
 		return undefined;
 	});
+
+	let mediaError = $derived.by(() => {
+		if (!media?.length) return REQUIRED_ERROR;
+		return undefined;
+	});
+
 	let categoryFormErrors = $state.raw<Partial<Record<keyof CategorySchema, string[]>>>({});
 
 	$effect(() => {
-		ok = !Object.keys(categoryFormErrors).length && !descriptionError;
+		ok = !Object.keys(categoryFormErrors).length && !descriptionError && !mediaError;
 	});
 
 	$effect(() => {
@@ -67,9 +73,8 @@
 			seoTitle,
 			seoDescription,
 		});
-
 		categoryFormErrors = result.success ? {} : result.error.formErrors.fieldErrors;
-		return result.success;
+		return result.success && !descriptionError && !mediaError;
 	};
 </script>
 
@@ -105,9 +110,12 @@
 		required
 		bind:medias={media}
 		disabled={loading}
+		variant={mediaError ? 'error' : 'info'}
+		subText={mediaError}
 	/>
 
 	<SectionHeader>Seo Information</SectionHeader>
+
 	<Input
 		placeholder="Category slug"
 		label="Category slug"
@@ -119,6 +127,7 @@
 		subText={categoryFormErrors.slug?.[0]}
 		disabled={loading}
 	/>
+
 	<Input
 		placeholder="Seo title"
 		label="SEO title"

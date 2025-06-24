@@ -41,6 +41,14 @@
 			name: 'GraphiQL',
 			path: '/document/graphql',
 		},
+		{
+			name: 'Image select',
+			path: '/document/image-select',
+		},
+		{
+			name: 'Metadata',
+			path: '/document/metadata',
+		},
 	];
 </script>
 
