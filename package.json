@@ -99,7 +99,7 @@
 		"dayjs": "^1.11.13",
 		"dotenv": "^16.5.0",
 		"editorjs-html": "^3.4.3",
-		"es-toolkit": "^1.39.3",
+		"es-toolkit": "^1.39.4",
 		"graphql-yoga": "^5.13.5",
 		"ioredis": "^5.6.1",
 		"jsonwebtoken": "^9.0.2",

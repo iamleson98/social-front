@@ -11,6 +11,7 @@
 		type QueryCategoriesArgs,
 		type QueryProductsArgs,
 	} from '$lib/gql/graphql';
+	import { AppRoute } from '$lib/utils';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import dayjs from 'dayjs';
 
@@ -54,7 +55,9 @@
 </script>
 
 {#snippet categoryName({ item }: { item: Category })}
-	<span>{item.name}</span>
+	<a class="link link-hover" href={AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(item.id)}
+		>{item.name}</a
+	>
 {/snippet}
 
 {#snippet noOfProducts({ item }: { item: Category })}
@@ -72,7 +75,7 @@
 {/snippet}
 
 {#snippet productName({ item }: { item: Product })}
-	<span>{item.name}</span>
+	<a class="link link-hover" href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.slug)}>{item.name}</a>
 {/snippet}
 
 {#snippet productUpdatedAt({ item }: { item: Product })}
@@ -94,7 +97,7 @@
 	<SectionHeader>Products</SectionHeader>
 	<GraphqlPaginableTable
 		query={PRODUCT_LIST_QUERY_ADMIN}
-		resultKey={'category.children' as keyof Query}
+		resultKey={'products' as keyof Query}
 		variables={{ first: 10, filter: { categories: [categoryId] } } as QueryProductsArgs}
 		bind:forceReExecuteGraphqlQuery
 		columns={PRODUCTS_COLUMNS}

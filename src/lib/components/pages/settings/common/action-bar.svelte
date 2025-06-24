@@ -11,6 +11,8 @@
 		onUpdateClick?: () => void;
 		class?: string;
 		onAddClick?: () => void;
+		disableCreateButton?: boolean;
+		disableUpdateButton?: boolean;
 	};
 
 	let {
@@ -19,7 +21,9 @@
 		onDeleteClick,
 		backButtonUrl,
 		onUpdateClick,
-		onAddClick
+		onAddClick,
+		disableCreateButton,
+		disableUpdateButton,
 	}: Props = $props();
 </script>
 
@@ -33,12 +37,16 @@
 	</div>
 	<div class="flex gap-2">
 		{#if backButtonUrl}
-			<Button variant="light" color="gray" {disabled} href={backButtonUrl}>{$tranFunc('btn.back')}</Button>
+			<Button variant="light" color="gray" {disabled} href={backButtonUrl}>
+				{$tranFunc('btn.back')}
+			</Button>
 		{/if}
 		{#if onUpdateClick}
-			<Button {disabled} onclick={onUpdateClick}>{$tranFunc('btn.update')}</Button>
+			<Button disabled={disableUpdateButton} onclick={onUpdateClick}>
+				{$tranFunc('btn.update')}
+			</Button>
 		{:else if onAddClick}
-			<Button {disabled} onclick={onAddClick}>{$tranFunc('btn.create')}</Button>
+			<Button disabled={disableCreateButton} onclick={onAddClick}>{$tranFunc('btn.create')}</Button>
 		{/if}
 	</div>
 </div>

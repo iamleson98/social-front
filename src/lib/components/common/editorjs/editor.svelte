@@ -47,6 +47,7 @@
 		size?: SocialSize | 'xxs';
 		variant?: SocialVariant | 'ghost';
 		subText?: string;
+		disabled?: boolean;
 	};
 
 	let {
@@ -66,6 +67,7 @@
 		size = 'md',
 		variant = 'info',
 		subText,
+		disabled,
 	}: Props = $props();
 
 	let editor = $state<any>();
@@ -167,6 +169,9 @@
 		id="editorjs"
 		bind:this={editorElem}
 		class="text-sm p-1 rounded-lg placeholder:opacity-55 {INPUT_CLASSES[variant].bg}"
+		class:pointer-events-none!={disabled}
+		class:cursor-not-allowed!={disabled}
+		class:text-gray-400!={disabled}
 	>
 		{#if editorInitError}
 			<Alert size="md" variant="error">{editorInitError}</Alert>

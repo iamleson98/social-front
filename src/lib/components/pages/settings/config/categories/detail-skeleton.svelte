@@ -1,14 +1,24 @@
-<script>
+<script lang="ts">
 	import { SelectSkeleton } from '$lib/components/ui/select';
-	import { Skeleton } from '$lib/components/ui/Skeleton';
+	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 </script>
 
-<div class="flex flex-row gap-2">
-	<div class="p-3 rounded-lg bg-white border border-gray-200 space-y-3 w-6/10">
-    <Skeleton class="w-1/2 h-4" />
-		<SelectSkeleton label />
-		<SelectSkeleton label />
+<div class="flex gap-2 flex-row">
+	<div class="flex gap-4 flex-col w-6/10 h-full bg-white border border-gray-200 rounded-lg p-3">
+		<Skeleton class="h-8 w-38 mb-3" />
+		<SelectSkeleton label size="sm" />
+		<SelectSkeleton label size="sm" />
+		<SkeletonContainer>
+			<Skeleton class="h-4 w-18 mb-2" />
+			<Skeleton class="h-50 w-50 ml-3" />
+		</SkeletonContainer>
+		<SelectSkeleton label size="sm" />
 	</div>
 
-	<div class="p-3 rounded-lg bg-white border border-gray-200 space-y-3 w-4/10"></div>
+	<div class="w-4/10">
+		<div class="bg-white border border-gray-200 rounded-lg p-3">
+			<Skeleton class="h-8 w-28 mb-2" />
+			<SelectSkeleton label size="sm" />
+		</div>
+	</div>
 </div>
