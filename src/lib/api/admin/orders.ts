@@ -503,3 +503,56 @@ mutation InvoiceCreate($orderId: ID!, $input: InvoiceCreateInput!) {
     }
   }
 }`;
+
+export const VARIANTS_FOR_ORDER_QUERY = gql`
+query products($channel: String!, $first: Int, $after: String, $last: Int, $before: String, $filter: ProductFilterInput, $address: AddressInput) {
+  products(first: $first, after: $after, last: $last, before: $before, channel: $channel, filter: $filter) {
+    edges {
+      node {
+        id
+        name
+        slug
+        thumbnail {
+          url
+          alt
+        }
+        variants {
+          id
+          name
+          sku
+          pricing(address: $address) {
+            priceUndiscounted {
+              gross {
+                amount
+                currency
+              }
+            }
+            price {
+              gross {
+                amount
+                currency
+              }
+            }
+            onSale
+          }
+        }
+      }
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+      hasPreviousPage
+      startCursor
+    }
+  }
+}`;
+
+export const CREATE_DRAFT_ORDER_MUTATION = gql`
+mutation CreateDraftOrder($input: DraftOrderCreateInput!) {
+  draftOrderCreate(input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;

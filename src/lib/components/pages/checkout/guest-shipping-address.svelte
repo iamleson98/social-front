@@ -16,7 +16,7 @@
 		Query,
 		QueryChannelArgs,
 	} from '$lib/gql/graphql';
-	import { CHANNEL_DETAILS_QUERY_STORE } from '$lib/api/channels';
+	import { CHANNEL_DETAILS_QUERY } from '$lib/api/channels';
 	import {
 		CHECKOUT_BILLING_ADDRESS_UPDATE_MUTATION,
 		CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION,
@@ -37,7 +37,7 @@
 
 	const channelStore = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
 		kind: 'query',
-		query: CHANNEL_DETAILS_QUERY_STORE,
+		query: CHANNEL_DETAILS_QUERY,
 		variables: {
 			slug: checkout.channel.slug,
 		},

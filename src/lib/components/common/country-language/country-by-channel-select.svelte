@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { CHANNEL_DETAILS_QUERY_STORE } from '$lib/api/channels';
+	import { CHANNEL_DETAILS_QUERY } from '$lib/api/channels';
 	import { operationStore } from '$lib/api/operation';
 	import { Alert } from '$lib/components/ui/Alert';
 	import {
@@ -22,7 +22,7 @@
 
 	const CHANEL_STORE = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
 		kind: 'query',
-		query: CHANNEL_DETAILS_QUERY_STORE,
+		query: CHANNEL_DETAILS_QUERY,
 		variables: {
 			slug,
 		},
