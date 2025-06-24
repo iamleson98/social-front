@@ -3,7 +3,7 @@ import { AppRoute } from "$lib/utils";
 import { HTTPStatusPermanentRedirect } from "$lib/utils/consts";
 import { redirect } from "@sveltejs/kit";
 
-export const prerender = true;
+// export const prerender = true;
 
 export const load = async () => {
   if (!dev) {
