@@ -554,5 +554,28 @@ mutation CreateDraftOrder($input: DraftOrderCreateInput!) {
       field
       message
     }
+    order {
+      id
+    }
+  }
+}`;
+
+export const ORDER_LINES_CREATE_MUTATION = gql`
+mutation CreateOrderLines($id: ID!, $input: [OrderLineCreateInput!]!) {
+  orderLinesCreate(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const DRAFT_ORDER_UPDATE_MUTATION = gql`
+mutation UpdateDraftOrder($id: ID!, $input: DraftOrderInput!) {
+  draftOrderUpdate(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
   }
 }`;

@@ -4,7 +4,7 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Plus } from '$lib/components/icons';
 	import GeneralSection from '$lib/components/pages/settings/orders/new/general-section.svelte';
-	import Sidebar from '$lib/components/pages/settings/orders/new/sidebar.svelte';
+	// import Sidebar from '$lib/components/pages/settings/orders/new/sidebar.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/badge';
 	import { OrderStatus } from '$lib/gql/graphql';
@@ -31,5 +31,5 @@
 
 <div class="flex gap-2">
 	<GeneralSection {channelSlug} bind:showChannelNotSetError />
-	<Sidebar bind:channelSlug {showChannelNotSetError} />
+	<!-- <Sidebar bind:channelSlug {showChannelNotSetError} /> -->
 </div>

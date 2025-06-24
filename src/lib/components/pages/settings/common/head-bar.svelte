@@ -3,8 +3,7 @@
 	import { Button } from '$lib/components/ui';
 	import type { Page } from '@sveltejs/kit';
 	import { Plus } from '$lib/components/icons';
-	import type { FocusEventHandler, MouseEventHandler } from 'svelte/elements';
-	// import { noop } from 'es-toolkit';
+	import type { MouseEventHandler } from 'svelte/elements';
 
 	type Props = {
 		listingPageHref: string;
@@ -32,9 +31,6 @@
 		onNewPageBtnClick,
 		disabled,
 	}: Props = $props();
-
-	if ((newPageHref && !newPageLabel) || (!newPageHref && newPageLabel))
-		throw new Error('newPageHref and newPageLabel must be provided together');
 </script>
 
 <div
@@ -55,18 +51,11 @@
 			{/if}
 		</ul>
 	</div>
-	<!-- {#if newPageHref && page.url.pathname !== newPageHref}
-		<Button size="xs" endIcon={Plus} href={newPageHref}>{newPageLabel}</Button>
-	{/if} -->
+
 	{#if newPageLabel && page.url.pathname !== newPageHref}
 		{@const props = newPageHref ? { href: newPageHref } : {}}
-		<Button
-			size="xs"
-			endIcon={Plus}
-			{...props}
-			onclick={onNewPageBtnClick}
-			onfocus={onNewPageBtnClick as FocusEventHandler<HTMLButtonElement>}
-			{disabled}>{newPageLabel}</Button
-		>
+		<Button size="xs" endIcon={Plus} {...props} onclick={onNewPageBtnClick} {disabled}>
+			{newPageLabel}
+		</Button>
 	{/if}
 </div>

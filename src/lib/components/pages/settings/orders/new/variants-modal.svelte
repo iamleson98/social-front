@@ -22,29 +22,27 @@
 		type QueryProductsArgs,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { classNames } from '$lib/utils/utils';
-	import { set } from 'es-toolkit/compat';
+	import { classNames, stringSlicer } from '$lib/utils/utils';
+	import { get, set } from 'es-toolkit/compat';
 
 	type Props = {
-		channelSlug: string;
 		open: boolean;
+		channelSlug: string;
 	};
 
-	let { channelSlug, open = $bindable() }: Props = $props();
+	let { open = $bindable(), channelSlug }: Props = $props();
 
 	const BATCH = 15;
-
-	const channelQuery = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
-		kind: 'query',
-		query: CHANNEL_DETAILS_QUERY,
-		pause: true,
-	});
 
 	type Variables = QueryProductsArgs & {
 		address?: AddressInput;
 	};
 
-	let variables = $state.raw<Variables>({ first: BATCH, filter: { search: '' } });
+	let variables = $state.raw<Variables>({
+		first: BATCH,
+		channel: channelSlug,
+		filter: { search: '' },
+	});
 	let searchProductsQuery = $state('');
 	let forceReExecuteGraphqlQuery = $state(true);
 
@@ -61,33 +59,18 @@
 			title: 'Name',
 			child: name,
 		},
+		{
+			title: 'Variants',
+			child: variants,
+		},
 	];
 
 	$effect(() => {
-		if (channelSlug !== variables.channel) {
-			variables = {
-				...variables,
-				channel: channelSlug,
-			};
-			forceReExecuteGraphqlQuery = true;
-		}
-	});
-
-	$effect(() => {
-		if (searchProductsQuery) {
+		if (searchProductsQuery !== get(variables, 'filter.search')) {
 			const newVariables = { ...variables };
 			set(newVariables, 'filter.search', searchProductsQuery);
 			variables = newVariables;
-		}
-	});
-
-	$effect(() => {
-		if (!!channelSlug && open) {
-			channelQuery.reexecute({
-				variables: {
-					slug: channelSlug,
-				},
-			});
+			forceReExecuteGraphqlQuery = true;
 		}
 	});
 </script>
@@ -101,27 +84,26 @@
 {/snippet}
 
 {#snippet name({ item }: { item: Product })}
-	<div class="mb-1">
-		<a href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.slug)} class="link link-hover">
-			{item.name}
-		</a>
-	</div>
+	<a href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.slug)} class="link link-hover" title={item.name}>
+		{stringSlicer(item.name, 50)}
+	</a>
+{/snippet}
+
+{#snippet variants({ item }: { item: Product })}
 	{#if item.variants?.length}
-		<div class="py-1 px-2 border border-gray-200 rounded-lg">
-			{#each item.variants as variant, idx (idx)}
-				<div
-					class={classNames('flex justify-between items-center py-1', {
-						'border-b border-gray-200': idx < item.variants.length - 1,
-					})}
-				>
-					<Checkbox size="sm" label={variant.name} subText={`SKU: ${variant.sku}`} />
-					<PriceDisplay
-						amount={variant.pricing?.price?.gross.amount || 0}
-						currency={variant.pricing?.price?.gross.currency || '-'}
-					/>
-				</div>
-			{/each}
-		</div>
+		{#each item.variants as variant, idx (idx)}
+			<div
+				class={classNames('flex justify-between items-center py-1', {
+					'border-b border-gray-200': idx < item.variants.length - 1,
+				})}
+			>
+				<Checkbox size="sm" label={variant.name} subText={`SKU: ${variant.sku}`} />
+				<PriceDisplay
+					amount={variant.pricing?.price?.gross.amount || 0}
+					currency={variant.pricing?.price?.gross.currency || '-'}
+				/>
+			</div>
+		{/each}
 	{/if}
 {/snippet}
 
@@ -132,28 +114,23 @@
 	{open}
 	header="Select product variants"
 	onClose={() => (open = false)}
+	onCancel={() => (open = false)}
 >
-	{#if $channelQuery.fetching}
-		<TableSkeleton numColumns={3} />
-	{:else if $channelQuery.error}
-		<Alert size="sm" bordered variant="error">{$channelQuery.error.message}</Alert>
-	{:else if $channelQuery.data?.channel}
-		<Alert size="xs" bordered class="mb-1.5">
-			You can only add products available for the order's channel
-		</Alert>
-		<DebounceInput
-			startIcon={Search}
-			placeholder="Enter your query"
-			class="mb-1.5"
-			debounceTime={888}
-			bind:value={searchProductsQuery}
-		/>
-		<GraphqlPaginableTable
-			columns={COLUMNS}
-			query={VARIANTS_FOR_ORDER_QUERY}
-			resultKey="products"
-			bind:variables
-			bind:forceReExecuteGraphqlQuery
-		/>
-	{/if}
+	<Alert size="xs" bordered class="mb-1.5">
+		You can only add products available for the order's channel
+	</Alert>
+	<DebounceInput
+		startIcon={Search}
+		placeholder="Enter your query"
+		class="mb-1.5"
+		debounceTime={888}
+		bind:value={searchProductsQuery}
+	/>
+	<GraphqlPaginableTable
+		columns={COLUMNS}
+		query={VARIANTS_FOR_ORDER_QUERY}
+		resultKey="products"
+		bind:variables
+		bind:forceReExecuteGraphqlQuery
+	/>
 </Modal>

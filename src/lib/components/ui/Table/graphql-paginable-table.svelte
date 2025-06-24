@@ -20,7 +20,6 @@
 		 * Please note that your query will be paused by default, so you should set this prop to true when you want to re-execute the query.
 		 */
 		forceReExecuteGraphqlQuery: boolean;
-
 		/**
 		 * tell the component how to reposition the items within the array list.
 		 *
@@ -30,7 +29,6 @@
 		 */
 		dragEffectType?: 'swap-position' | 'move-position';
 		onDragEnd?: (dragIndex: number, dragItem: T, dropIndex: number, dropItem: T) => void;
-
 		/**
 		 * if true, then the query will be re-executed when variable changes. Default to `true`
 		 */

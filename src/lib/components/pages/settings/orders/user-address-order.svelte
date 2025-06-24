@@ -17,7 +17,7 @@
 		{#if shippingAddress}
 			<UserAddress address={shippingAddress} class="w-full mb-2" />
 		{:else}
-			<Alert variant="info" size="sm" bordered>This customer has no shipping address</Alert>
+			<Alert variant="info" size="sm" bordered>This order has no shipping address</Alert>
 		{/if}
 	</Accordion>
 
@@ -25,7 +25,7 @@
 		{#if billingAddress}
 			<UserAddress address={billingAddress} class="w-full mb-2" />
 		{:else}
-			<Alert variant="info" size="sm" bordered>This customer has no billing address</Alert>
+			<Alert variant="info" size="sm" bordered>This order has no billing address</Alert>
 		{/if}
 	</Accordion>
 </div>

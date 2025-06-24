@@ -46,6 +46,13 @@ query UserDetail($id: ID, $email: String) {
       postalCode
       isDefaultShippingAddress
       isDefaultBillingAddress
+      countryArea
+      firstName
+      lastName
+      metadata {
+        key
+        value
+      }
       country {
         code
         country
