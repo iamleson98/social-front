@@ -579,3 +579,34 @@ mutation UpdateDraftOrder($id: ID!, $input: DraftOrderInput!) {
     }
   }
 }`;
+
+export const DRAFT_ORDER_LIST_QUERY = gql`
+query DraftOrders($first: Int, $after: String, $last: Int, $before: String, $sortBy: OrderSortingInput, $filter: OrderDraftFilterInput) {
+  draftOrders(first: $first, after: $after, last: $last, before: $before, sortBy: $sortBy, filter: $filter) {
+    edges {
+      node {
+        id
+        created
+        number
+        userEmail
+        total {
+          gross {
+            amount
+            currency
+          }
+        }
+        user {
+          email
+          firstName
+          lastName
+        }
+      }
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+      hasPreviousPage
+      startCursor
+    }
+  }
+}`;

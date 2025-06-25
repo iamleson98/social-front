@@ -13,34 +13,46 @@ export const AppRoute = {
 	ME_PREFERENCES: () => buildLinkWithRespectToChannel('settings/preferences'),
 	ME_SUPPORT: () => buildLinkWithRespectToChannel('settings/supports'),
 	ME_SUPPORT_NEW: () => buildLinkWithRespectToChannel('settings/supports/new-ticket'),
+
 	SETTINGS_PRODUCTS: () => buildLinkWithRespectToChannel('settings/products'),
 	SETTINGS_PRODUCTS_EDIT: (id: string) => buildLinkWithRespectToChannel(`settings/products/${id}`),
 	SETTINGS_PRODUCTS_NEW: () => buildLinkWithRespectToChannel('settings/products/new'),
+
 	SETTINGS_CONTRACTS: () => buildLinkWithRespectToChannel('settings/contracts'),
 	SETTINGS_CONTRACTS_NEW: () => buildLinkWithRespectToChannel('settings/contracts/new'),
+
 	SETTINGS_CONFIGS: () => buildLinkWithRespectToChannel('settings/configs'),
+
 	SETTINGS_CONFIGS_CHANNELS: () => buildLinkWithRespectToChannel('settings/configs/channels'),
 	SETTINGS_CONFIGS_CHANNEL_DETAILS: (slug: string) => buildLinkWithRespectToChannel(`settings/configs/channels/${slug}`),
 	SETTINGS_CONFIGS_CHANNEL_NEW: () => buildLinkWithRespectToChannel('settings/configs/channels/new-channel'),
+
 	SETTINGS_CONFIGS_STAFFS: () => buildLinkWithRespectToChannel('settings/configs/staffs'),
 	SETTINGS_CONFIGS_STAFF_DETAILS: (id: string) => buildLinkWithRespectToChannel(`settings/configs/staffs/${id}`),
 	SETTINGS_CONFIGS_STAFF_NEW: () => buildLinkWithRespectToChannel('settings/configs/staffs/new'),
+
 	SETTINGS_CONFIGS_USERS: () => buildLinkWithRespectToChannel('settings/configs/customers'),
 	SETTINGS_CONFIGS_USER_DETAILS: (id: string) => buildLinkWithRespectToChannel(`settings/configs/customers/${id}`),
 	SETTINGS_CONFIGS_USER_NEW: () => buildLinkWithRespectToChannel('settings/configs/customers/new'),
+
 	SETTINGS_ORDERS: () => buildLinkWithRespectToChannel('settings/shop-orders'),
 	SETTINGS_ORDERS_NEW: () => buildLinkWithRespectToChannel('settings/shop-orders/new'),
-	SETTINGS_ORDERS_EDIT: (id: string) => buildLinkWithRespectToChannel(`settings/shop-orders/${id}`),
 	SETTINGS_ORDERS_DETAILS: (id: string) => buildLinkWithRespectToChannel(`settings/shop-orders/${id}`),
+
+	SETTINGS_SHOP_DRAFT_ORDERS: () => buildLinkWithRespectToChannel('settings/configs/draft-orders'),
+
 	SETTINGS_CONFIGS_CATEGORIES: () => buildLinkWithRespectToChannel('settings/configs/categories'),
 	SETTINGS_CONFIGS_CATEGORY_DETAILS: (id: string) => buildLinkWithRespectToChannel(`settings/configs/categories/${id}`),
 	SETTINGS_CONFIGS_CATEGORY_NEW: () => buildLinkWithRespectToChannel('settings/configs/categories/new'),
+
 	SETTINGS_CONFIGS_COLLECTIONS: () => buildLinkWithRespectToChannel('settings/configs/collections'),
 	SETTINGS_CONFIGS_COLLECTION_DETAILS: (id: string) => buildLinkWithRespectToChannel(`settings/configs/collections/${id}`),
 	SETTINGS_CONFIGS_COLLECTION_NEW: () => buildLinkWithRespectToChannel('settings/configs/collections/new'),
+
 	SETTINGS_CONFIGS_WAREHOUSES: () => buildLinkWithRespectToChannel('settings/configs/warehouses'),
 	SETTINGS_CONFIGS_WAREHOUSE_DETAILS: (id: string) => buildLinkWithRespectToChannel(`settings/configs/warehouses/${id}`),
 	SETTINGS_CONFIGS_WAREHOUSE_NEW: () => buildLinkWithRespectToChannel('settings/configs/warehouses/new'),
+
 	SETTINGS_CONFIGS_ATTRIBUTES: () => buildLinkWithRespectToChannel('settings/configs/attributes'),
 	SETTINGS_CONFIGS_ATTRIBUTE_DETAILS: (id: string) => buildLinkWithRespectToChannel(`settings/configs/attributes/${id}`),
 	SETTINGS_CONFIGS_ATTRIBUTE_NEW: () => buildLinkWithRespectToChannel('settings/configs/attributes/new'),
@@ -48,9 +60,11 @@ export const AppRoute = {
 	SETTINGS_CONFIGS_GIFTCARDS: () => buildLinkWithRespectToChannel('settings/configs/giftcards'),
 	SETTINGS_CONFIGS_GIFTCARD_NEW: () => buildLinkWithRespectToChannel('settings/configs/giftcards/?action=create'),
 	SETTINGS_CONFIGS_GIFTCARD_DETAIL: (id: string) => buildLinkWithRespectToChannel(`settings/configs/giftcards/${id}`),
+
 	SETTINGS_CONFIGS_PROMOTIONS: () => buildLinkWithRespectToChannel('settings/configs/promotions'),
 	SETTINGS_CONFIGS_PROMOTION_NEW: () => buildLinkWithRespectToChannel('settings/configs/promotions/new'),
 	SETTINGS_CONFIGS_PROMOTION_DETAIL: (id: string) => buildLinkWithRespectToChannel(`settings/configs/promotions/${id}`),
+
 	SETTINGS_CONFIGS_VOUCHERS: () => buildLinkWithRespectToChannel('settings/configs/vouchers'),
 	SETTINGS_CONFIGS_VOUCHER_NEW: () => buildLinkWithRespectToChannel('settings/configs/vouchers/new'),
 	SETTINGS_CONFIGS_VOUCHER_DETAIL: (id: string) => buildLinkWithRespectToChannel(`settings/configs/vouchers/${id}`),

@@ -57,7 +57,7 @@
 			return;
 
 		await goto(
-			`${AppRoute.SETTINGS_ORDERS_EDIT(result.data?.draftOrderCreate?.order?.id!)}?new=${true}`,
+			`${AppRoute.SETTINGS_ORDERS_DETAILS(result.data?.draftOrderCreate?.order?.id!)}?new=${true}`,
 		);
 	};
 </script>
