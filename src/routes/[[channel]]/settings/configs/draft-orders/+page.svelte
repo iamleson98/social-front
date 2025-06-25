@@ -14,6 +14,7 @@
 		type QueryCustomersArgs,
 		type QueryDraftOrdersArgs,
 	} from '$lib/gql/graphql';
+	import { AppRoute } from '$lib/utils';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import dayjs from 'dayjs';
 
@@ -99,7 +100,7 @@
 		{placeholder}
 		value={{ date: initialValue ? dayjs(initialValue as string).toDate() : undefined }}
 		onchange={(value) => onValue(dayjs(value.date).format())}
-    timeConfig={false}
+		timeConfig={false}
 	/>
 {/snippet}
 
@@ -109,12 +110,12 @@
 		{placeholder}
 		value={{ date: initialValue ? dayjs(initialValue as string).toDate() : undefined }}
 		onchange={(value) => onValue(dayjs(value.date).format())}
-    timeConfig={false}
+		timeConfig={false}
 	/>
 {/snippet}
 
 {#snippet number({ item }: { item: Order })}
-	<span># {item.number}</span>
+	<a href={AppRoute.SETTINGS_ORDERS_DETAILS(item.id)} class="link link-hover"># {item.number}</a>
 {/snippet}
 
 {#snippet date({ item }: { item: Order })}
