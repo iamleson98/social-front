@@ -40,6 +40,10 @@
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 	let mediaErrors = $state<Partial<Record<number, string[]>>>();
+	let mediaError = $derived.by(() => {
+		if (!medias?.length && required) return REQUIRED_ERROR;
+		return undefined;
+	});
 
 	const Schema = array(
 		object({
@@ -48,8 +52,10 @@
 	);
 
 	const validate = () => {
+		if (!required) return;
 		const result = Schema.safeParse(medias);
 		mediaErrors = result.success ? {} : result.error.formErrors.fieldErrors;
+
 		return result.success;
 	};
 
@@ -122,7 +128,12 @@
 	{#if label}
 		<Label {label} requiredAtPos="end" {variant} size={labelSize} {required} />
 	{/if}
-	<div class="flex flex-wrap gap-1.5 p-2 rounded-lg {INPUT_CLASSES[variant].bg}">
+	<div
+		class={classNames(
+			'flex flex-wrap gap-1.5 p-2 rounded-lg',
+			mediaError ? INPUT_CLASSES['error'].bg : INPUT_CLASSES[variant].bg,
+		)}
+	>
 		{#each medias as media, idx (idx)}
 			{@const props = {
 				style: `background-image: url('${media.type === 'image' ? media.url : documentIcon}')`,
@@ -195,7 +206,10 @@
 			</div>
 		{/if}
 	</div>
-	<div class={`text-[10px] mt-0.5 text-right!`}>
+	<div
+		class={`text-[10px] mt-0.5 text-right ${mediaError ? 'text-red-500' : 'text-gray-500'} justify-between`}
+	>
+		{mediaError}
 		{subText ? subText : `${medias.length} / ${max}`}
 	</div>
 </div>
