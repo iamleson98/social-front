@@ -76,6 +76,7 @@
 		subText={descriptionError}
 		required
 		label="Collection description"
+		{disabled}
 	/>
 
 	<FileInputContainer
@@ -84,5 +85,6 @@
 		bind:medias={media}
 		required
 		label="Collection Image"
+		{disabled}
 	/>
 </div>

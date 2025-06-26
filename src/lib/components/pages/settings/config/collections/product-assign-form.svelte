@@ -8,6 +8,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { omit } from 'es-toolkit';
 	import ProductAssignModal from './product-assign-modal.svelte';
+	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 
 	type Props = {
 		disabled?: boolean;
@@ -68,9 +69,7 @@
 {/snippet}
 
 {#snippet picture({ item }: { item: Product })}
-	<div class="rounded-lg border border-gray-200 w-9 h-9 overflow-hidden">
-		<img src={item.thumbnail?.url} alt={item.thumbnail?.alt} class="w-full h-full" />
-	</div>
+	<Thumbnail src={item.thumbnail?.url} alt={item.thumbnail?.alt || item.name} size="sm" />
 {/snippet}
 
 {#snippet name({ item }: { item: Product })}
@@ -94,17 +93,17 @@
 			channel: item.channel.name,
 			published: item.isPublished,
 		})) || []}
-	{#snippet trigger({ onclick, onclose }: DropdownTriggerInterface)}
-		<Badge
-			text={`${channels.length} channels`}
-			color={channels.length ? 'green' : 'orange'}
-			variant={channels.length ? 'filled' : 'light'}
-			onmouseenter={onclick}
-			ontouchstart={onclick}
-			onmouseleave={onclose}
-		/>
-	{/snippet}
-	<Popover {trigger} placement="left" noReCalculateOnWindowResize>
+	<Popover placement="left" noReCalculateOnWindowResize>
+		{#snippet trigger({ onclick, onclose }: DropdownTriggerInterface)}
+			<Badge
+				text={`${channels.length} channels`}
+				color={channels.length ? 'green' : 'orange'}
+				variant={channels.length ? 'filled' : 'light'}
+				onmouseenter={onclick}
+				ontouchstart={onclick}
+				onmouseleave={onclose}
+			/>
+		{/snippet}
 		<div class="py-1 px-2 rounded-lg border border-gray-200 bg-white w-fit shadow-sm">
 			<div class="flex flex-nowrap font-medium gap-1 text-sm">
 				<span class="flex-1">channel</span>
