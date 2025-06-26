@@ -503,3 +503,110 @@ mutation InvoiceCreate($orderId: ID!, $input: InvoiceCreateInput!) {
     }
   }
 }`;
+
+export const VARIANTS_FOR_ORDER_QUERY = gql`
+query products($channel: String!, $first: Int, $after: String, $last: Int, $before: String, $filter: ProductFilterInput, $address: AddressInput) {
+  products(first: $first, after: $after, last: $last, before: $before, channel: $channel, filter: $filter) {
+    edges {
+      node {
+        id
+        name
+        slug
+        thumbnail {
+          url
+          alt
+        }
+        variants {
+          id
+          name
+          sku
+          pricing(address: $address) {
+            priceUndiscounted {
+              gross {
+                amount
+                currency
+              }
+            }
+            price {
+              gross {
+                amount
+                currency
+              }
+            }
+            onSale
+          }
+        }
+      }
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+      hasPreviousPage
+      startCursor
+    }
+  }
+}`;
+
+export const CREATE_DRAFT_ORDER_MUTATION = gql`
+mutation CreateDraftOrder($input: DraftOrderCreateInput!) {
+  draftOrderCreate(input: $input) {
+    errors {
+      field
+      message
+    }
+    order {
+      id
+    }
+  }
+}`;
+
+export const ORDER_LINES_CREATE_MUTATION = gql`
+mutation CreateOrderLines($id: ID!, $input: [OrderLineCreateInput!]!) {
+  orderLinesCreate(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const DRAFT_ORDER_UPDATE_MUTATION = gql`
+mutation UpdateDraftOrder($id: ID!, $input: DraftOrderInput!) {
+  draftOrderUpdate(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const DRAFT_ORDER_LIST_QUERY = gql`
+query DraftOrders($first: Int, $after: String, $last: Int, $before: String, $sortBy: OrderSortingInput, $filter: OrderDraftFilterInput) {
+  draftOrders(first: $first, after: $after, last: $last, before: $before, sortBy: $sortBy, filter: $filter) {
+    edges {
+      node {
+        id
+        created
+        number
+        userEmail
+        total {
+          gross {
+            amount
+            currency
+          }
+        }
+        user {
+          email
+          firstName
+          lastName
+        }
+      }
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+      hasPreviousPage
+      startCursor
+    }
+  }
+}`;

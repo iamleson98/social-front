@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import {
+	BoxOff,
 		BuildingWarehouse,
 		Category,
 		Dimension,
@@ -73,6 +74,12 @@
 			description: 'Vouchers of shop',
 			href: AppRoute.SETTINGS_CONFIGS_VOUCHERS(),
 			icon: Ticket,
+		},
+		{
+			title: 'Draft orders',
+			description: 'Draft order',
+			href: AppRoute.SETTINGS_SHOP_DRAFT_ORDERS(),
+			icon: BoxOff,
 		},
 	]);
 </script>

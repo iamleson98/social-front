@@ -28,7 +28,7 @@
 </script>
 
 <div class={`${className} ${INPUT_CLASSES[variant].fg}`}>
-	<div class={`flex items-center gap-2`}>
+	<div class={`flex items-start gap-2`}>
 		<input
 			{...rest}
 			{required}
@@ -37,13 +37,15 @@
 			{id}
 			class={`checkbox ${CHECKBOX_SIZES[size]}`}
 		/>
-		{#if label}
-			<Label {id} {label} {required} {size} requiredAtPos="end" />
-		{/if}
+		<div>
+			{#if label}
+				<Label {id} {label} {required} {size} requiredAtPos="end" />
+			{/if}
+			{#if typeof subText === 'string'}
+				<div class={`text-[10px] mt-0.5`}>{@html subText}</div>
+			{:else}
+				{@render subText?.()}
+			{/if}
+		</div>
 	</div>
-	{#if typeof subText === 'string'}
-		<div class={`text-[10px] mt-0.5`}>{@html subText}</div>
-	{:else}
-		{@render subText?.()}
-	{/if}
 </div>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { OrderSortField, type Order, type QueryOrdersArgs } from '$lib/gql/graphql';
-	import { formatCurrency, orderStatusBadgeClass, paymentStatusBadgeClass } from '$lib/utils/utils';
+	import { orderStatusBadgeClass, paymentStatusBadgeClass } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 	import { tranFunc } from '$i18n';
 	import { SHOP_ORDERS_QUERY } from '$lib/api/admin/orders';
@@ -54,8 +54,8 @@
 
 {#snippet no({ item }: { item: Order })}
 	<div class="text-center">
-		<a href={AppRoute.SETTINGS_ORDERS_DETAILS(item.id)} class="link inline">
-			{item.number}
+		<a href={AppRoute.SETTINGS_ORDERS_DETAILS(item.id)} class="link link-hover">
+			# {item.number}
 		</a>
 	</div>
 {/snippet}

@@ -3,6 +3,7 @@
 	import { Button } from '$lib/components/ui';
 	import type { Page } from '@sveltejs/kit';
 	import { Plus } from '$lib/components/icons';
+	import type { MouseEventHandler } from 'svelte/elements';
 
 	type Props = {
 		listingPageHref: string;
@@ -15,6 +16,8 @@
 		detailPageLabelGetter: (page: Page<Record<string, string>, string | null>) => string;
 		/** Optional url, for the convenient `back` link */
 		backLinkUrl?: string;
+		onNewPageBtnClick?: MouseEventHandler<HTMLButtonElement>;
+		disabled?: boolean;
 	};
 
 	let {
@@ -24,11 +27,10 @@
 		newPageLabel,
 		detailRouteID,
 		detailPageLabelGetter,
-		backLinkUrl
+		backLinkUrl,
+		onNewPageBtnClick,
+		disabled,
 	}: Props = $props();
-
-	if ((newPageHref && !newPageLabel) || (!newPageHref && newPageLabel))
-		throw new Error('newPageHref and newPageLabel must be provided together');
 </script>
 
 <div
@@ -49,7 +51,11 @@
 			{/if}
 		</ul>
 	</div>
-	{#if newPageHref}
-		<Button size="xs" endIcon={Plus} href={newPageHref}>{newPageLabel}</Button>
+
+	{#if newPageLabel && page.url.pathname !== newPageHref}
+		{@const props = newPageHref ? { href: newPageHref } : {}}
+		<Button size="xs" endIcon={Plus} {...props} onclick={onNewPageBtnClick} {disabled}>
+			{newPageLabel}
+		</Button>
 	{/if}
 </div>

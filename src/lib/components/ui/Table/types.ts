@@ -29,7 +29,7 @@ export type TableProps<T extends Record<string, unknown>, K extends string = str
   onDragEnd?: (dragIndex: number, dropIndex: number) => void;
 };
 
-export type TableColumnProps<T extends Record<string, unknown>, K extends string> = {
+export type TableColumnProps<T extends Record<string, unknown>, K extends string = string> = {
   /** the head title of each column */
   title: string | Snippet;
   /**

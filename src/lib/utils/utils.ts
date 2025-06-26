@@ -1,4 +1,4 @@
-import { type Money, type Mutation, type Query, type SelectedAttribute, type User, AttributeInputTypeEnum, FulfillmentStatus, OrderDirection, PermissionEnum } from '$lib/gql/graphql';
+import { type Address, type AddressInput, type Money, type Mutation, type Query, type SelectedAttribute, type User, AttributeInputTypeEnum, CountryCode, FulfillmentStatus, OrderDirection, PermissionEnum } from '$lib/gql/graphql';
 import type { AnyVariables, OperationResult } from '@urql/core';
 import editorJsToHtml from 'editorjs-html';
 import { AppRoute } from './routes';
@@ -9,7 +9,7 @@ import { getCookieByKey } from './cookies';
 import { DEFAULT_CHANNEL } from './channels';
 import { OrderStatus, PaymentChargeStatusEnum } from "$lib/gql/graphql";
 import type { BadgeProps } from '$lib/components/ui/badge/types';
-import { lowerCase, startCase } from 'es-toolkit';
+import { lowerCase, pick, startCase } from 'es-toolkit';
 import { toast } from 'svelte-sonner';
 import dayjs from 'dayjs';
 import type { SupportTicketStatus, SupportTicketTag } from './types';
@@ -464,6 +464,9 @@ export function formatBytes(bytes: number): string {
 	return `${formattedSize} ${sizes[i]}`;
 };
 
+/**
+	If the given `str` is longer than given len, cut the first len chars, append ... to the end
+ */
 export const stringSlicer = (str?: string, len: number = 100) => {
 	if (len === 0 || !str) return '-';
 	if (str.length < len) return str;
@@ -472,8 +475,26 @@ export const stringSlicer = (str?: string, len: number = 100) => {
 };
 
 export function subtractMoney(init: Money, ...args: Money[]): Money {
-  return {
-    amount: args.reduce((acc, curr) => acc - curr.amount, init.amount),
-    currency: init.currency,
-  };
+	return {
+		amount: args.reduce((acc, curr) => acc - curr.amount, init.amount),
+		currency: init.currency,
+	};
 }
+
+export const convertAddressToAddressInput = (addr: Address): AddressInput => {
+	return {
+		city: addr.city,
+		cityArea: addr.cityArea,
+		companyName: addr.companyName,
+		country: addr.country.code.toUpperCase() as CountryCode,
+		countryArea: addr.countryArea,
+		firstName: addr.firstName,
+		lastName: addr.lastName,
+		metadata: addr.metadata.map(item => pick(item, ['key', 'value'])),
+		phone: addr.phone,
+		postalCode: addr.postalCode,
+		streetAddress1: addr.streetAddress1,
+		streetAddress2: addr.streetAddress2,
+		skipValidation: false,
+	};
+};

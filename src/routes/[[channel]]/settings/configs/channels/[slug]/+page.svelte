@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import { operationStore } from '$lib/api/operation';
 	import { CHANNEL_DELETE_MUTATION, CHANNEL_UPDATE_MUTATION } from '$lib/api/admin/channels';
-	import { CHANNEL_DETAILS_QUERY_STORE, CHANNELS_QUERY } from '$lib/api/channels';
+	import { CHANNEL_DETAILS_QUERY, CHANNELS_QUERY } from '$lib/api/channels';
 	import {
 		AllocationStrategyEnum,
 		MarkAsPaidStrategyEnum,
@@ -34,7 +34,7 @@
 
 	const channelDetailQuery = operationStore<Pick<Query, 'channel'>>({
 		kind: 'query',
-		query: CHANNEL_DETAILS_QUERY_STORE,
+		query: CHANNEL_DETAILS_QUERY,
 		variables: { slug: page.params.slug },
 		requestPolicy: 'network-only',
 	});

@@ -2,6 +2,7 @@
 	import { operationStore } from '$lib/api/operation';
 	import {
 		FulfillmentStatus,
+		OrderStatus,
 		type Mutation,
 		type MutationOrderUpdateArgs,
 		type OrderUpdateInput,
@@ -19,7 +20,6 @@
 	import OrderFulfillment from '$lib/components/pages/settings/orders/order-fulfillment.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import OrderPaymentBalance from '$lib/components/pages/settings/orders/order-payment-balance.svelte';
-	import UserAddressOrder from '$lib/components/pages/settings/orders/user-address-order.svelte';
 	import OrderHistory from '$lib/components/pages/settings/orders/order-history.svelte';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
@@ -28,8 +28,8 @@
 	import OrderLines from '$lib/components/pages/settings/orders/order-lines.svelte';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { differenceBy } from 'es-toolkit/compat';
-	import { Button } from '$lib/components/ui';
-	import { TextArea } from '$lib/components/ui/Input';
+	import OrderLinesAssignSection from '$lib/components/pages/settings/orders/new/order-lines-assign-section.svelte';
+	import Sidebar from '$lib/components/pages/settings/orders/sidebar.svelte';
 
 	let loading = $state(false);
 	let performUpdateMetadata = $state(false);
@@ -44,9 +44,7 @@
 		pause: !page.params.id,
 	});
 
-	let orderUpdateInput = $state<OrderUpdateInput>({
-		
-	});
+	let orderUpdateInput = $state<OrderUpdateInput>({});
 
 	onMount(() =>
 		orderQuery.subscribe((result) => {
@@ -108,13 +106,16 @@
 				</div>
 			</SectionHeader>
 
+			{#if order.status === OrderStatus.Draft}
+				<OrderLinesAssignSection {order} onAddedVariants={reexecuteQuery} />
+			{/if}
 			{#if unfulfilledOrderLines.length}
 				<OrderLines orderLines={unfulfilledOrderLines} {order} onFulfillSuccess={reexecuteQuery} />
 			{/if}
-
 			{#if order.fulfillments.length}
 				<OrderFulfillment {order} onUpdateTrackingCode={reexecuteQuery} />
 			{/if}
+
 			<OrderPaymentBalance {order} />
 			<GeneralMetadataEditor
 				metadata={order.metadata}
@@ -126,57 +127,7 @@
 			<OrderHistory id={order.id} />
 		</div>
 
-		<div class="space-y-2 w-3/10">
-			<div class="bg-white rounded-lg border border-gray-200 p-3">
-				<SectionHeader>Customer</SectionHeader>
-				<p class="text-sm">{order.userEmail || '-'}</p>
-				{#if order.user}
-					<a
-						class="link text-sm text-blue-500"
-						href={AppRoute.SETTINGS_CONFIGS_USER_DETAILS(order.user?.id)}>View profile</a
-					>
-				{/if}
-			</div>
-
-			<UserAddressOrder
-				shippingAddress={order.shippingAddress}
-				billingAddress={order.billingAddress}
-			/>
-
-			<div class="bg-white rounded-lg border border-gray-200 p-3">
-				<SectionHeader>Sales channel</SectionHeader>
-				<a
-					class="link text-blue-500 text-sm"
-					href={AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(order.channel.slug)}
-				>
-					<span>{order.channel.name}</span>
-					<span class="text-xs">({order.channel.currencyCode})</span>
-				</a>
-			</div>
-
-			<div class="bg-white rounded-lg border border-gray-200 p-3">
-				<SectionHeader>
-					<span>Invoices</span>
-					<Button size="xs" variant="light">Generate</Button>
-				</SectionHeader>
-				{#if order.invoices.length}
-					{#each order.invoices as invoice, idx (idx)}
-						<div>{invoice.number}</div>
-					{/each}
-				{:else}
-					<Alert size="xs" bordered>No invoice to show</Alert>
-				{/if}
-			</div>
-
-			<div class="bg-white rounded-lg border border-gray-200 p-3">
-				<SectionHeader>Customer note</SectionHeader>
-				{#if order.customerNote}
-					<TextArea readonly value={order.customerNote} />
-				{:else}
-					<Alert size="xs" bordered>This order has no customer note</Alert>
-				{/if}
-			</div>
-		</div>
+		<Sidebar {order} onDoneCustomerUpdate={reexecuteQuery} />
 	</div>
 
 	<ActionBar backButtonUrl={AppRoute.SETTINGS_ORDERS()} {onUpdateClick} disabled={loading} />

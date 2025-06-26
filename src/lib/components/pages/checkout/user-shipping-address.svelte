@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Checkout, CountryCode, Query, QueryChannelArgs } from '$lib/gql/graphql';
 	import { operationStore } from '$lib/api/operation';
-	import { CHANNEL_DETAILS_QUERY_STORE } from '$lib/api/channels';
+	import { CHANNEL_DETAILS_QUERY } from '$lib/api/channels';
 	import AddressCreateForm from './address-create-form.svelte';
 	import AddressEditForm from './address-edit-form.svelte';
 	import AddressList from './address-list.svelte';
@@ -20,7 +20,7 @@
 
 	const channelStore = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
 		kind: 'query',
-		query: CHANNEL_DETAILS_QUERY_STORE,
+		query: CHANNEL_DETAILS_QUERY,
 		variables: {
 			slug: checkout.channel.slug,
 		},

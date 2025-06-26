@@ -24,9 +24,9 @@ query Channels {
   }
 }`;
 
-export const CHANNEL_DETAILS_QUERY_STORE = gql`
-query Channel($slug: String!) {
-  channel(slug: $slug) {
+export const CHANNEL_DETAILS_QUERY = gql`
+query Channel($slug: String, $id: ID) {
+  channel(slug: $slug, id: $id) {
     countries {
       code
       country

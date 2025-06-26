@@ -78,7 +78,6 @@
 					</div>
 				</div>
 			</div>
-			<!--  -->
 			{#if orderLine.variant}
 				<div>
 					<div class="text-sm font-medium text-gray-800">Order line metadata</div>
@@ -88,7 +87,7 @@
 					metadata={orderLine.metadata}
 					privateMetadata={orderLine.privateMetadata || []}
 					objectId={orderLine.id}
-					{performUpdateMetadata}
+					bind:performUpdateMetadata
 				/>
 
 				<div class="border-t border-gray-200"></div>
@@ -104,7 +103,7 @@
 					metadata={orderLine.variant.metadata}
 					privateMetadata={orderLine.variant.privateMetadata}
 					objectId={orderLine.variant.id}
-					{performUpdateMetadata}
+					bind:performUpdateMetadata
 				/>
 			{/if}
 		</div>
