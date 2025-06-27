@@ -15,7 +15,7 @@
 	listingPageLabel="Promotions"
 	newPageHref={AppRoute.SETTINGS_CONFIGS_PROMOTION_NEW()}
 	newPageLabel="New promotion"
-	detailRouteID="/[[channel]]/settings/configs/promotions/[id]"
+	detailRouteID="/[[channel]]/settings/promotions/[id]"
 	detailPageLabelGetter={(page) => page.params.id}
 	backLinkUrl={AppRoute.SETTINGS_CONFIGS()}
 />

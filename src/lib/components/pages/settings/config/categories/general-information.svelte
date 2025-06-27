@@ -6,7 +6,7 @@
 	import type { OutputData } from '@editorjs/editorjs';
 	import type { MediaObject } from '$lib/utils/types';
 	import { tranFunc } from '$i18n';
-	import { object, string, z } from 'zod';
+	import { any, array, object, string, z } from 'zod';
 	import slugify from 'slugify';
 
 	type Props = {
@@ -34,15 +34,16 @@
 	}: Props = $props();
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
+	const MAX_ERROR = $tranFunc('error.itemsExceed', { max: 1 });
 
-	let descriptionError = $derived.by(() => {
-		if (!description?.blocks?.length) return REQUIRED_ERROR;
-		return undefined;
-	});
+	// let descriptionError = $derived.by(() => {
+	// 	if (!description?.blocks?.length) return REQUIRED_ERROR;
+	// 	return undefined;
+	// });
 	let categoryFormErrors = $state.raw<Partial<Record<keyof CategorySchema, string[]>>>({});
 
 	$effect(() => {
-		ok = !Object.keys(categoryFormErrors).length && !descriptionError;
+		ok = !Object.keys(categoryFormErrors).length;
 	});
 
 	$effect(() => {
@@ -57,6 +58,10 @@
 		slug: string().nonempty(REQUIRED_ERROR),
 		seoTitle: string().nonempty(REQUIRED_ERROR),
 		seoDescription: string().nonempty(REQUIRED_ERROR),
+		media: array(any()).max(1, MAX_ERROR).min(1, REQUIRED_ERROR),
+		description: object({
+			blocks: array(any()).min(1, REQUIRED_ERROR),
+		}),
 	});
 	type CategorySchema = z.infer<typeof categorySchema>;
 
@@ -66,6 +71,8 @@
 			slug,
 			seoTitle,
 			seoDescription,
+			media,
+			description,
 		});
 
 		categoryFormErrors = result.success ? {} : result.error.formErrors.fieldErrors;
@@ -93,8 +100,9 @@
 		required
 		placeholder="Category description"
 		bind:value={description}
-		variant={descriptionError ? 'error' : 'info'}
-		subText={descriptionError}
+		onchange={validate}
+		variant={categoryFormErrors.description?.length ? 'error' : 'info'}
+		subText={categoryFormErrors.description?.[0]}
 		disabled={loading}
 	/>
 
@@ -104,7 +112,10 @@
 		label="Background image"
 		required
 		bind:medias={media}
+		onchange={validate}
 		disabled={loading}
+		variant={categoryFormErrors.media?.length ? 'error' : 'info'}
+		subText={categoryFormErrors.media?.[0]}
 	/>
 
 	<SectionHeader>Seo Information</SectionHeader>

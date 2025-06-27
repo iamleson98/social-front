@@ -16,7 +16,7 @@
 	newPageHref={AppRoute.SETTINGS_CONFIGS_CHANNEL_NEW()}
 	newPageLabel="New channel"
 	detailPageLabelGetter={(page) => page.params.slug}
-	detailRouteID="/[[channel]]/settings/configs/channels/[slug]"
+	detailRouteID="/[[channel]]/settings/channels/[slug]"
 	backLinkUrl={AppRoute.SETTINGS_CONFIGS()}
 />
 

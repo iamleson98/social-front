@@ -2,14 +2,21 @@
 	import {
 		AdjustmentHorizontal,
 		Box,
+		BoxOff,
+		BuildingWarehouse,
+		Category,
 		CheckOff,
+		Dimension,
+		FolderHeart,
+		Giftcard,
+		Globe,
 		Icon,
 		MailQuestion,
-		Order,
 		Parking,
 		RosetteDiscountChecked,
-		SettingCog,
+		Ticket,
 		UserCog,
+		UsersGroup,
 		type IconContent,
 	} from '$lib/components/icons';
 	import { onMount, type Snippet } from 'svelte';
@@ -46,7 +53,7 @@
 		icon?: IconContent;
 		name?: string;
 		href: string;
-		shouldActive?: () => boolean;
+		shouldActive: () => boolean;
 	};
 
 	const ACCOUNT_TAB_ITEMS: TabItem[] = $derived([
@@ -54,11 +61,13 @@
 			icon: UserCog,
 			name: $tranFunc('settings.account'),
 			href: AppRoute.ME(),
+			shouldActive: () => page.url.pathname === AppRoute.ME(),
 		},
 		{
 			icon: AdjustmentHorizontal,
 			name: $tranFunc('settings.preference'),
 			href: AppRoute.ME_PREFERENCES(),
+			shouldActive: () => page.url.pathname === AppRoute.ME_PREFERENCES(),
 		},
 	]);
 
@@ -67,51 +76,170 @@
 			icon: Box,
 			name: $tranFunc('settings.myOrders'),
 			href: AppRoute.MY_ORDERS(),
+			shouldActive: () => page.url.pathname === AppRoute.MY_ORDERS(),
 		},
 		{
 			icon: MailQuestion,
 			name: $tranFunc('settings.supports'),
 			href: AppRoute.ME_SUPPORT(),
-			shouldActive: () => page.url.pathname.startsWith(AppRoute.ME_SUPPORT()),
-			// === AppRoute.ME_SUPPORT_NEW() ||
-			// page.route.id === '/[[channel]]/settings/supports/[id]',
+			shouldActive: () => page.url.pathname === AppRoute.ME_SUPPORT(),
 		},
 	]);
 
-	const SHOP_TAB_ITEMS: TabItem[] = $derived([
+	const SHOP_ORDERS_TAB_ITEMS: TabItem[] = $derived([
 		{
 			icon: Box,
 			name: $tranFunc('settings.orders'),
 			href: AppRoute.SETTINGS_ORDERS(),
-			shouldActive: () => page.url.pathname.startsWith(AppRoute.SETTINGS_ORDERS()),
+			shouldActive: () =>
+				[
+					AppRoute.SETTINGS_ORDERS(),
+					AppRoute.SETTINGS_ORDERS_NEW(),
+					AppRoute.SETTINGS_ORDERS_DETAILS(page.params.id),
+				].includes(page.url.pathname),
 		},
+		{
+			icon: BoxOff,
+			name: 'Draft orders',
+			href: AppRoute.SETTINGS_SHOP_DRAFT_ORDERS(),
+			shouldActive: () => page.url.pathname === AppRoute.SETTINGS_SHOP_DRAFT_ORDERS(),
+		},
+	]);
+
+	const CATALOG_TAB_ITEMS: TabItem[] = $derived([
 		{
 			icon: Parking,
 			name: $tranFunc('product.products'),
 			href: AppRoute.SETTINGS_PRODUCTS(),
-			shouldActive: () => page.url.pathname.startsWith(AppRoute.SETTINGS_PRODUCTS()),
-			// === AppRoute.SETTINGS_PRODUCTS_NEW() ||
-			// page.route.id === '/[[channel]]/settings/products/[slug]',
+			shouldActive: () =>
+				[
+					AppRoute.SETTINGS_PRODUCTS(),
+					AppRoute.SETTINGS_PRODUCTS_NEW(),
+					AppRoute.SETTINGS_PRODUCTS_EDIT(page.params.slug),
+				].includes(page.url.pathname),
 		},
 		{
-			icon: Order,
-			name: $tranFunc('settings.contracts'),
-			href: AppRoute.SETTINGS_CONTRACTS(),
-			shouldActive: () => page.url.pathname.startsWith(AppRoute.SETTINGS_CONTRACTS()),
-			// === AppRoute.SETTINGS_CONTRACTS_NEW(),
+			icon: Category,
+			name: 'Categories',
+			href: AppRoute.SETTINGS_CONFIGS_CATEGORIES(),
+			shouldActive: () =>
+				[
+					AppRoute.SETTINGS_CONFIGS_CATEGORIES(),
+					AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(page.params.id),
+					AppRoute.SETTINGS_CONFIGS_CATEGORY_NEW(),
+				].includes(page.url.pathname),
 		},
 		{
-			icon: SettingCog,
-			name: $tranFunc('settings.configs'),
-			href: AppRoute.SETTINGS_CONFIGS(),
-			shouldActive: () => page.url.pathname.startsWith(AppRoute.SETTINGS_CONFIGS()),
+			name: 'Collections',
+			href: AppRoute.SETTINGS_CONFIGS_COLLECTIONS(),
+			icon: FolderHeart,
+			shouldActive: () =>
+				[
+					AppRoute.SETTINGS_CONFIGS_COLLECTIONS(),
+					AppRoute.SETTINGS_CONFIGS_COLLECTION_DETAILS(page.params.id),
+					AppRoute.SETTINGS_CONFIGS_COLLECTION_NEW(),
+				].includes(page.url.pathname),
+		},
+		{
+			name: 'Giftcards',
+			href: AppRoute.SETTINGS_CONFIGS_GIFTCARDS(),
+			icon: Giftcard,
+			shouldActive: () =>
+				[
+					AppRoute.SETTINGS_CONFIGS_GIFTCARDS(),
+					AppRoute.SETTINGS_CONFIGS_GIFTCARD_DETAIL(page.params.id),
+					AppRoute.SETTINGS_CONFIGS_GIFTCARD_NEW(),
+				].includes(page.url.pathname),
+		},
+	]);
+
+	const SHOP_DISCOUNTS_TAB_ITEMS: TabItem[] = $derived([
+		{
+			icon: Ticket,
+			name: 'Promotions',
+			href: AppRoute.SETTINGS_CONFIGS_PROMOTIONS(),
+			shouldActive: () =>
+				[
+					AppRoute.SETTINGS_CONFIGS_PROMOTIONS(),
+					AppRoute.SETTINGS_CONFIGS_PROMOTION_NEW(),
+					AppRoute.SETTINGS_CONFIGS_PROMOTION_DETAIL(page.params.id),
+				].includes(page.url.pathname),
+		},
+		{
+			icon: Ticket,
+			name: 'Vouchers',
+			href: AppRoute.SETTINGS_CONFIGS_VOUCHERS(),
+			shouldActive: () =>
+				[
+					AppRoute.SETTINGS_CONFIGS_VOUCHERS(),
+					AppRoute.SETTINGS_CONFIGS_VOUCHER_NEW(),
+					AppRoute.SETTINGS_CONFIGS_VOUCHER_DETAIL(page.params.id),
+				].includes(page.url.pathname),
+		},
+	]);
+
+	const SHOP_CONFIG_TAB_ITEMS: TabItem[] = $derived([
+		{
+			icon: Globe,
+			name: $tranFunc('product.channel'),
+			href: AppRoute.SETTINGS_CONFIGS_CHANNELS(),
+			shouldActive: () =>
+				[
+					AppRoute.SETTINGS_CONFIGS_CHANNELS(),
+					AppRoute.SETTINGS_CONFIGS_CHANNEL_NEW(),
+					AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(page.params.slug),
+				].includes(page.url.pathname),
+		},
+		{
+			icon: UsersGroup,
+			name: $tranFunc('settings.staffs'),
+			href: AppRoute.SETTINGS_CONFIGS_STAFFS(),
+			shouldActive: () =>
+				[
+					AppRoute.SETTINGS_CONFIGS_STAFFS(),
+					AppRoute.SETTINGS_CONFIGS_STAFF_NEW(),
+					AppRoute.SETTINGS_CONFIGS_STAFF_DETAILS(page.params.id),
+				].includes(page.url.pathname),
+		},
+		{
+			icon: UsersGroup,
+			name: $tranFunc('settings.users'),
+			href: AppRoute.SETTINGS_CONFIGS_USERS(),
+			shouldActive: () =>
+				[
+					AppRoute.SETTINGS_CONFIGS_USERS(),
+					AppRoute.SETTINGS_CONFIGS_USER_NEW(),
+					AppRoute.SETTINGS_CONFIGS_USER_DETAILS(page.params.id),
+				].includes(page.url.pathname),
+		},
+		{
+			icon: BuildingWarehouse,
+			name: 'Warehouses',
+			href: AppRoute.SETTINGS_CONFIGS_WAREHOUSES(),
+			shouldActive: () =>
+				[
+					AppRoute.SETTINGS_CONFIGS_WAREHOUSES(),
+					AppRoute.SETTINGS_CONFIGS_WAREHOUSE_NEW(),
+					AppRoute.SETTINGS_CONFIGS_WAREHOUSE_DETAILS(page.params.id),
+				].includes(page.url.pathname),
+		},
+		{
+			icon: Dimension,
+			name: 'Attributes',
+			href: AppRoute.SETTINGS_CONFIGS_ATTRIBUTES(),
+			shouldActive: () =>
+				[
+					AppRoute.SETTINGS_CONFIGS_ATTRIBUTES(),
+					AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_NEW(),
+					AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_DETAILS(page.params.id),
+				].includes(page.url.pathname),
 		},
 	]);
 </script>
 
 {#snippet sidebarItem(item: TabItem)}
 	{@const attrs = item.href ? { href: item.href } : {}}
-	{@const active = item.href == page.url.pathname || item.shouldActive?.()}
+	{@const active = item.href == page.url.pathname || item.shouldActive()}
 	<svelte:element
 		this={item.href ? 'a' : 'div'}
 		{...attrs}
@@ -137,7 +265,7 @@
 {:else}
 	<!-- MARK: Detail -->
 	<div class="flex flex-nowrap gap-2">
-		<div class="w-1/4 sticky top-16 h-full p-2 flex flex-col gap-3">
+		<div class="w-1/4 sticky top-16 h-full p-2 space-y-2">
 			<!-- MARK: Avatar -->
 			<div class="flex items-start gap-2 text-gray-700 p-3">
 				<div class="rounded-full h-16 w-16 overflow-hidden">
@@ -167,22 +295,49 @@
 				header={$tranFunc('settings.account')}
 				child={sidebarItem}
 				items={ACCOUNT_TAB_ITEMS}
-				class="w-full"
+				class="w-full p-3"
+				open={ACCOUNT_TAB_ITEMS.some((item) => item.shouldActive())}
 			/>
 
 			<AccordionList
 				header={$tranFunc('settings.shopping')}
 				child={sidebarItem}
 				items={SHOPPING_TAB_ITEMS}
-				class="w-full"
+				class="w-full p-3"
+				open={SHOPPING_TAB_ITEMS.some((item) => item.shouldActive())}
 			/>
 
 			{#if $READ_ONLY_USER_STORE && userIsShopAdmin($READ_ONLY_USER_STORE)}
 				<AccordionList
-					header={$tranFunc('settings.shopManage')}
+					header="Catalog"
 					child={sidebarItem}
-					items={SHOP_TAB_ITEMS}
-					class="w-full"
+					items={CATALOG_TAB_ITEMS}
+					class="w-full p-3"
+					open={CATALOG_TAB_ITEMS.some((item) => item.shouldActive())}
+				/>
+
+				<AccordionList
+					header="Fulfillments"
+					child={sidebarItem}
+					items={SHOP_ORDERS_TAB_ITEMS}
+					class="w-full p-3"
+					open={SHOP_ORDERS_TAB_ITEMS.some((item) => item.shouldActive())}
+				/>
+
+				<AccordionList
+					header="Discounts"
+					child={sidebarItem}
+					items={SHOP_DISCOUNTS_TAB_ITEMS}
+					class="w-full p-3"
+					open={SHOP_DISCOUNTS_TAB_ITEMS.some((item) => item.shouldActive())}
+				/>
+
+				<AccordionList
+					header="Configurations"
+					child={sidebarItem}
+					items={SHOP_CONFIG_TAB_ITEMS}
+					class="w-full p-3"
+					open={SHOP_CONFIG_TAB_ITEMS.some((item) => item.shouldActive())}
 				/>
 			{/if}
 		</div>

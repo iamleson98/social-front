@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import HeadBar from '$lib/components/pages/settings/common/head-bar.svelte';
 	import { AppRoute } from '$lib/utils';
 	import type { Snippet } from 'svelte';
@@ -12,12 +11,12 @@
 </script>
 
 <HeadBar
-	listingPageHref={AppRoute.SETTINGS_CONFIGS_GIFTCARDS()}
-	listingPageLabel="Giftcards"
-	newPageHref={`${page.url.pathname}/?action=create`}
-	newPageLabel="Isue new giftcard"
-	detailRouteID="/[[channel]]/settings/configs/giftcards/[id]"
+	listingPageHref={AppRoute.SETTINGS_CONFIGS_WAREHOUSES()}
+	listingPageLabel="Warehouses"
+	newPageHref={AppRoute.SETTINGS_CONFIGS_WAREHOUSE_NEW()}
+	newPageLabel="New warehouse"
 	detailPageLabelGetter={(page) => page.params.id}
+	detailRouteID="/[[channel]]/settings/warehouses/[id]"
 	backLinkUrl={AppRoute.SETTINGS_CONFIGS()}
 />
 

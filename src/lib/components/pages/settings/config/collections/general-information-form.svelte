@@ -2,7 +2,7 @@
 	import { tranFunc } from '$i18n';
 	import { Input } from '$lib/components/ui/Input';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
-	import { object, string, z } from 'zod';
+	import { any, array, object, string, z } from 'zod';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import type { OutputData } from '@editorjs/editorjs';
 	import type { MediaObject } from '$lib/utils/types';
@@ -18,32 +18,35 @@
 
 	let {
 		name = $bindable(),
-		description = $bindable(),
+		description = $bindable({ blocks: [] }),
 		disabled,
 		media = $bindable<MediaObject[]>(),
 		ok = $bindable(),
 	}: Props = $props();
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
+	const MAX_ERROR = $tranFunc('error.itemsExceed', { max: 1 });
 
-	let descriptionError = $derived.by(() => {
-		if (!description?.blocks?.length) return REQUIRED_ERROR;
-		return undefined;
-	});
 	let collectionFormErrors = $state.raw<Partial<Record<keyof CollectionSchema, string[]>>>({});
 
 	$effect(() => {
-		ok = !Object.keys(collectionFormErrors).length && !descriptionError;
+		ok = !Object.keys(collectionFormErrors).length;
 	});
 
 	const collectionSchema = object({
 		name: string().nonempty(REQUIRED_ERROR),
+		description: object({
+			blocks: array(any()).min(1, REQUIRED_ERROR),
+		}),
+		media: array(any()).max(1, MAX_ERROR).min(1, REQUIRED_ERROR),
 	});
 	type CollectionSchema = z.infer<typeof collectionSchema>;
 
 	const validate = () => {
 		const result = collectionSchema.safeParse({
 			name,
+			description,
+			media,
 		});
 
 		collectionFormErrors = result.success ? {} : result.error.formErrors.fieldErrors;
@@ -51,7 +54,7 @@
 	};
 </script>
 
-<div class="bg-white rounded-lg border w-full border-gray-200 p-3 pb-6 flex flex-col gap-2">
+<div class="bg-white rounded-lg border w-full border-gray-200 p-3 pb-6 space-y-2">
 	<SectionHeader>General Information</SectionHeader>
 	<Input
 		label="Name"
@@ -69,11 +72,11 @@
 		list={{ defaultStyle: 'unordered', maxLevel: 3, inlineToolbar: true }}
 		embed={{ services: { youtube: true } }}
 		quote={{ inlineToolbar: true }}
-		onchange={(data) => (description = data)}
+		onchange={validate}
 		placeholder={$tranFunc('placeholders.valuePlaceholder')}
 		bind:value={description}
-		variant={descriptionError ? 'error' : 'info'}
-		subText={descriptionError}
+		variant={collectionFormErrors.description?.length ? 'error' : 'info'}
+		subText={collectionFormErrors.description?.[0]}
 		required
 		label="Collection description"
 		{disabled}
@@ -83,8 +86,11 @@
 		accept="image/*"
 		max={1}
 		bind:medias={media}
+		onchange={validate}
 		required
 		label="Collection Image"
 		{disabled}
+		variant={collectionFormErrors.media?.length ? 'error' : 'info'}
+		subText={collectionFormErrors.media?.[0]}
 	/>
 </div>

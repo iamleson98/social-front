@@ -11,11 +11,11 @@
 </script>
 
 <HeadBar
-	listingPageHref={AppRoute.SETTINGS_CONFIGS_COLLECTIONS()}
-	listingPageLabel="Collections"
-	newPageHref={AppRoute.SETTINGS_CONFIGS_COLLECTION_NEW()}
-	newPageLabel="New collection"
-	detailRouteID="/[[channel]]/settings/configs/collections/[id]"
+	listingPageHref={AppRoute.SETTINGS_CONFIGS_STAFFS()}
+	listingPageLabel="Staffs"
+	newPageHref={AppRoute.SETTINGS_CONFIGS_STAFF_NEW()}
+	newPageLabel="New staff"
+	detailRouteID="/[[channel]]/settings/staffs/[id]"
 	detailPageLabelGetter={(page) => page.params.id}
 	backLinkUrl={AppRoute.SETTINGS_CONFIGS()}
 />

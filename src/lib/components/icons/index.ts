@@ -114,6 +114,8 @@ export {
   TablerTicket as Ticket,
   TablerExternalLink as ExternalLink,
   TablerBoxOff as BoxOff,
+  TableFolderHeart as FolderHeart,
+  TablerGiftcard as Giftcard,
 } from './consts';
 
 export { default as Icon } from './icon.svelte';

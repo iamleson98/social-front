@@ -11,11 +11,11 @@
 </script>
 
 <HeadBar
-	listingPageHref={AppRoute.SETTINGS_CONFIGS_VOUCHERS()}
-	listingPageLabel="Shop Vouchers"
-	newPageHref={AppRoute.SETTINGS_CONFIGS_VOUCHER_NEW()}
-	newPageLabel="New voucher"
-	detailRouteID="/[[channel]]/settings/configs/vouchers/[id]"
+	listingPageHref={AppRoute.SETTINGS_CONFIGS_CATEGORIES()}
+	listingPageLabel="Categories"
+	newPageHref={AppRoute.SETTINGS_CONFIGS_CATEGORY_NEW()}
+	newPageLabel="New category"
+	detailRouteID="/[[channel]]/settings/categories/[id]"
 	detailPageLabelGetter={(page) => page.params.id}
 	backLinkUrl={AppRoute.SETTINGS_CONFIGS()}
 />
@@ -23,3 +23,4 @@
 <div>
 	{@render children()}
 </div>
+
