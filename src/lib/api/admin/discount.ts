@@ -42,6 +42,27 @@ query Vouchers($first: Int!, $after: String, $last: Int, $before: String, $chann
   }
 }`;
 
+export const PROMOTION_LIST_QUERY = gql`
+query Promotions($first: Int!, $after: String, $last: Int, $before: String, $sortBy: PromotionSortingInput, $where: PromotionWhereInput) {
+  promotions(first: $first, after: $after, last: $last, before: $before, sortBy: $sortBy, where: $where) {
+    edges {
+      node {
+        id
+        name
+        startDate
+        endDate
+        type
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+  }
+}`;
+
 export const VOUCHER_DETAIL_QUERY = gql`
 query VoucherDetail($id: ID!) {
   voucher(id: $id) {

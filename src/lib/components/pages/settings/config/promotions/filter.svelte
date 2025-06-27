@@ -1,87 +1,55 @@
 <script lang="ts">
-	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box';
 	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
-	import { Select, type SelectOption } from '$lib/components/ui/select';
-	import {
-		VoucherDiscountType,
-		type QueryVouchersArgs,
-		type VoucherFilterInput,
-	} from '$lib/gql/graphql';
+	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
+	import { type QueryPromotionsArgs, type PromotionWhereInput } from '$lib/gql/graphql';
 
 	type Props = {
-		variables: QueryVouchersArgs;
+		variables: QueryPromotionsArgs;
 		forceReExecuteGraphqlQuery: boolean;
 	};
 
 	let { variables = $bindable(), forceReExecuteGraphqlQuery = $bindable(false) }: Props = $props();
 
-	const DISCOUNT_TYPES = Object.values(VoucherDiscountType).map<SelectOption>((value) => ({
-		value,
-		label: value.toLowerCase(),
-	}));
-
-	const FILTER_OPTIONS: FilterProps<VoucherFilterInput>[] = [
+	const FILTER_OPTIONS: FilterProps<PromotionWhereInput>[] = [
 		{
-			label: 'Channel',
-			key: 'channel' as keyof VoucherFilterInput,
+			label: 'Start date',
+			key: 'startDate',
 			operations: [
 				{
-					operator: 'eq',
-					component: channel,
+					operator: 'lte',
+					component: date,
+				},
+				{
+					operator: 'gte',
+					component: date,
 				},
 			],
 		},
 		{
-			label: 'Discount type',
-			key: 'discountType',
+			label: 'End date',
+			key: 'endDate',
 			operations: [
 				{
-					operator: 'eq',
-					component: discountType,
+					operator: 'gte',
+					component: date,
 				},
 				{
-					operator: 'oneOf',
-					component: discountTypeIn,
+					operator: 'lte',
+					component: date,
 				},
 			],
 		},
 	];
 </script>
 
-{#snippet channel({ onValue, initialValue = '' }: FilterComponentType)}
-	<ChannelSelect
+{#snippet date({ onValue, initialValue = '' }: FilterComponentType)}
+	<EaseDatePicker
 		size="xs"
-		placeholder="channel"
-		value={initialValue}
-		inputDebounceOption={{ onInput: (evt) => onValue((evt.target as HTMLInputElement).value) }}
+		placeholder="Time"
+		value={{ date: initialValue as string }}
+		onchange={(val) => onValue(val.date!.toString())}
 	/>
 {/snippet}
 
-{#snippet discountType({ onValue, initialValue = '' }: FilterComponentType)}
-	<Select
-		size="xs"
-		placeholder="discount type"
-		options={DISCOUNT_TYPES}
-		value={initialValue as string}
-		onchange={(opt) => onValue((opt as SelectOption).value)}
-	/>
-{/snippet}
-
-{#snippet discountTypeIn({ onValue, initialValue = [] }: FilterComponentType)}
-	<Select
-		size="xs"
-		placeholder="discount types"
-		multiple
-		options={DISCOUNT_TYPES}
-		value={initialValue as string[]}
-		onchange={(opts) => onValue((opts as SelectOption[]).map((item) => item.value as string))}
-	/>
-{/snippet}
-
-<FilterManager
-	filterOptions={FILTER_OPTIONS}
-	bind:variables
-	bind:forceReExecuteGraphqlQuery
-	searchKey={'filter.search' as keyof QueryVouchersArgs}
-/>
+<FilterManager filterOptions={FILTER_OPTIONS} bind:variables bind:forceReExecuteGraphqlQuery />
