@@ -3,6 +3,7 @@
 	import Filter from '$lib/components/pages/settings/config/vouchers/filter.svelte';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import type { QueryVouchersArgs, Voucher, VoucherSortField } from '$lib/gql/graphql';
+	import { AppRoute } from '$lib/utils';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { formatCurrency } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
@@ -44,7 +45,9 @@
 </script>
 
 {#snippet title({ item }: { item: Voucher })}
-	<div class="text-sm font-medium text-gray-800">{item.name}</div>
+	<a href={AppRoute.SETTINGS_CONFIGS_VOUCHER_DETAIL(item.id)} class="link link-hover">
+		{item.name}
+	</a>
 {/snippet}
 
 {#snippet useLimit({ item }: { item: Voucher })}

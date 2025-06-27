@@ -42,24 +42,83 @@ query Vouchers($first: Int!, $after: String, $last: Int, $before: String, $chann
   }
 }`;
 
-export const PROMOTION_LIST_QUERY = gql`
-query Vouchers($first: Int!, $after: String, $last: Int, $before: String, $where: PromotionWhereInput, $sortBy: PromotionSortingInput) {
-  vouchers(filter: $filter, first: $first, after: $after, last: $last, before: $before, sortBy: $sortBy) {
-    edges {
-      node {
-        id
-        name
-        code
-        endDate
-        startDate
-        type
-      }
+export const VOUCHER_DETAIL_QUERY = gql`
+query VoucherDetail($id: ID!) {
+  voucher(id: $id) {
+    id
+    name
+    code
+    endDate
+    startDate
+    discountValue
+    usageLimit
+    type
+    discountValueType
+    metadata {
+      key
+      value
     }
-    pageInfo {
-      hasNextPage
-      hasPreviousPage
-      startCursor
-      endCursor
+    privateMetadata {
+      key
+      value
+    }
+    channelListings {
+      id
+      channel {
+        name
+        id
+        slug
+        currencyCode
+      }
+      discountValue
+      currency
+      minSpent {
+        amount
+        currency
+      }
     }
   }
 }`;
+
+export const VOUCHER_CODE_LIST_QUERY = gql`
+query VoucherCodes($id: ID!, $first: Int!, $after: String, $last: Int, $before: String) {
+  voucher(id: $id) {
+    codes(first: $first, after: $after, last: $last, before: $before) {
+      edges {
+        node {
+          used
+          code
+          isActive
+        }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+    }
+  }
+}`;
+
+// export const PROMOTION_LIST_QUERY = gql`
+// query Vouchers($first: Int!, $after: String, $last: Int, $before: String, $where: PromotionWhereInput, $sortBy: PromotionSortingInput) {
+//   vouchers(filter: $filter, first: $first, after: $after, last: $last, before: $before, sortBy: $sortBy) {
+//     edges {
+//       node {
+//         id
+//         name
+//         code
+//         endDate
+//         startDate
+//         type
+//       }
+//     }
+//     pageInfo {
+//       hasNextPage
+//       hasPreviousPage
+//       startCursor
+//       endCursor
+//     }
+//   }
+// }`;
