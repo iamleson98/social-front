@@ -5,17 +5,61 @@
 		VOUCHER_CATEGORIES_QUERY,
 		VOUCHER_COLLECTIONS_QUERY,
 		VOUCHER_PRODUCTS_QUERY,
+		VOUCHER_VARIANTS_QUERY,
 	} from '$lib/api/admin/discount';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/badge';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
-	import type { Category, Collection, Product, Query } from '$lib/gql/graphql';
+	import type {
+		Category,
+		CategoryCountableConnection,
+		Collection,
+		CollectionCountableConnection,
+		Product,
+		ProductCountableConnection,
+		ProductVariant,
+		ProductVariantCountableConnection,
+		Query,
+	} from '$lib/gql/graphql';
+	import { AppRoute } from '$lib/utils';
+	import { stringSlicer } from '$lib/utils/utils';
 
-	const TAB_NAMES = ['categories', 'products', 'collections', 'variants'];
+	type Props = {
+		categories?: CategoryCountableConnection | null;
+		products?: ProductCountableConnection | null;
+		collections?: CollectionCountableConnection | null;
+		variants?: ProductVariantCountableConnection | null;
+	};
+
+	type TabName = 'categories' | 'products' | 'collections' | 'variants';
+	type TabProps = {
+		name: TabName;
+		count: number;
+	};
+
+	let { categories, products, collections, variants }: Props = $props();
 
 	let activeTab = $derived(page.url.searchParams.get('tab'));
+	const TABS: TabProps[] = [
+		{
+			name: 'categories',
+			count: categories?.totalCount || 0,
+		},
+		{
+			name: 'products',
+			count: products?.totalCount || 0,
+		},
+		{
+			name: 'collections',
+			count: collections?.totalCount || 0,
+		},
+		{
+			name: 'variants',
+			count: variants?.totalCount || 0,
+		},
+	];
 
 	type VoucherRelationVars = {
 		voucherId: string;
@@ -38,7 +82,7 @@
 		},
 		{
 			title: 'No. of products',
-			child: products,
+			child: collectionProducts,
 		},
 	];
 
@@ -76,6 +120,21 @@
 		},
 	];
 
+	const VARIANT_COLUMNS: TableColumnProps<ProductVariant>[] = [
+		{
+			title: 'Image',
+			child: variantImage,
+		},
+		{
+			title: 'Product name',
+			child: variantPrdName,
+		},
+		{
+			title: 'Variant name',
+			child: variantName,
+		},
+	];
+
 	afterNavigate(() => {
 		voucherRelationVars = {
 			voucherId: page.params.id,
@@ -88,17 +147,21 @@
 <!-- Collection -->
 
 {#snippet name({ item }: { item: Collection })}
-	<span>{item.name}</span>
+	<a href={AppRoute.SETTINGS_CONFIGS_COLLECTION_DETAILS(item.id)} class="link link-hover"
+		>{item.name}</a
+	>
 {/snippet}
 
-{#snippet products({ item }: { item: Collection })}
+{#snippet collectionProducts({ item }: { item: Collection })}
 	<span>{item.products?.totalCount || '-'}</span>
 {/snippet}
 
 <!-- Product -->
 
 {#snippet prdName({ item }: { item: Product })}
-	<span>{item.name}</span>
+	<a href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.slug)} class="link link-hover"
+		>{stringSlicer(item.name, 40)}</a
+	>
 {/snippet}
 
 {#snippet prdImage({ item }: { item: Product })}
@@ -111,7 +174,7 @@
 
 {#snippet availability({ item }: { item: Product })}
 	<Badge
-		text={item.channelListings?.length || 0}
+		text={`${item.channelListings?.length} channels`}
 		color={item.channelListings?.length ? 'green' : 'red'}
 		class="tooltip tooltip-top"
 		data-tip={item.channelListings?.map((item) => item.channel.name).join(', ') || 'No channels'}
@@ -121,7 +184,9 @@
 <!-- Category -->
 
 {#snippet categoryName({ item }: { item: Category })}
-	<span>{item.name}</span>
+	<a href={AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(item.id)} class="link link-hover"
+		>{item.name}</a
+	>
 {/snippet}
 
 {#snippet categoryNoOfProducts({ item }: { item: Category })}
@@ -136,14 +201,34 @@
 	/>
 {/snippet}
 
+<!-- Variant -->
+
+{#snippet variantPrdName({ item }: { item: ProductVariant })}
+	<a href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.product.slug)} class="link link-hover"
+		>{stringSlicer(item.product.name, 40)}</a
+	>
+{/snippet}
+
+{#snippet variantImage({ item }: { item: ProductVariant })}
+	<Thumbnail
+		src={item.product.thumbnail?.url}
+		alt={item.product.thumbnail?.alt || item.product.name}
+		size="sm"
+	/>
+{/snippet}
+
+{#snippet variantName({ item }: { item: ProductVariant })}
+	<span>{item.name}</span>
+{/snippet}
+
 <div role="tablist" class="tabs tabs-border">
-	{#each TAB_NAMES as tab, idx (idx)}
+	{#each TABS as tab, idx (idx)}
 		<a
 			role="tab"
 			class="tab"
-			class:tab-active={activeTab === tab}
-			href="?tab={tab}"
-			data-sveltekit-noscroll>{tab}</a
+			class:tab-active={activeTab === tab.name}
+			href="?tab={tab.name}"
+			data-sveltekit-noscroll>{tab.name} ({tab.count})</a
 		>
 	{/each}
 </div>
@@ -187,6 +272,19 @@
 			bind:forceReExecuteGraphqlQuery
 			resultKey={'voucher.categories' as keyof Query}
 			columns={CATEGORY_COLUMNS}
+		/>
+	{:else if activeTab === 'variants'}
+		<SectionHeader>
+			<span>Eligible Variants</span>
+			<Button size="xs" variant="light">Assign variants</Button>
+		</SectionHeader>
+
+		<GraphqlPaginableTable
+			query={VOUCHER_VARIANTS_QUERY}
+			bind:variables={voucherRelationVars}
+			bind:forceReExecuteGraphqlQuery
+			resultKey={'voucher.variants' as keyof Query}
+			columns={VARIANT_COLUMNS}
 		/>
 	{/if}
 </div>

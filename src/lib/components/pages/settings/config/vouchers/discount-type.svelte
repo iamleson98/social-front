@@ -67,9 +67,6 @@
 	let channelIds = $state<string[]>(voucher.channelListings?.map((item) => item.channel.id) ?? []);
 	let requirementType = $state<RequirementType>('none');
 	let limitNumberOfTimesUsed = $state(false);
-	// let limitToOneUsePerCustomer = $state(false);
-	// let limitToStaffOnly = $state(false);
-	// let limitToVoucherCodeUseOnce = $state(false);
 
 	const CHANNEL_LISTING_COLUMNS: TableColumnProps<VoucherChannelListing>[] = [
 		{
@@ -85,7 +82,10 @@
 	const USAGE_PROPS: UsageProps[] = $derived([
 		{
 			title: 'Limit number of times this discount can be used in total',
-			onCheck: (checked) => (limitNumberOfTimesUsed = checked),
+			onCheck: (checked) => {
+				limitNumberOfTimesUsed = checked;
+				if (!checked) usageLimit = undefined; // don't update usageLimit when limitNumberOfTimesUsed is unchecked
+			},
 			value: limitNumberOfTimesUsed,
 			child: numOfUsesLimit,
 		},
@@ -124,17 +124,19 @@
 {/snippet}
 
 {#snippet numOfUsesLimit()}
-	<div class="flex items-center gap-2">
-		<Input bind:value={usageLimit} placeholder="Usage limit" type="number" min={voucher.used} label="Usage limit" />
-		<span
-			>{typeof usageLimit === 'number' && usageLimit > voucher.used
-				? `${usageLimit - voucher.used} uses left`
-				: '0 uses left'}</span
-		>
-	</div>
+	{#if limitNumberOfTimesUsed}
+		<div class="flex items-center gap-2">
+			<Input bind:value={usageLimit} placeholder="Usage limit" type="number" min={voucher.used} />
+			<span
+				>{typeof usageLimit === 'number' && usageLimit > voucher.used
+					? `${usageLimit - voucher.used} uses left`
+					: '0 uses left'}</span
+			>
+		</div>
+	{/if}
 {/snippet}
 
-<div class="rounded-lg p-3 border border-gray-200 bg-white space-y-3.5">
+<div class="rounded-lg p-3 border border-gray-200 bg-white space-y-2">
 	<div>
 		<SectionHeader>Availability</SectionHeader>
 		<ChannelSelect
@@ -159,7 +161,7 @@
 		</div>
 	</div>
 
-	{#if discountType !== DISCOUNT_TYPE_SHIPPING}
+	<!-- {#if discountType !== DISCOUNT_TYPE_SHIPPING}
 		<div>
 			<SectionHeader>Value</SectionHeader>
 			<Table columns={CHANNEL_LISTING_COLUMNS} items={voucher.channelListings ?? []} />
@@ -184,11 +186,11 @@
 			</div>
 		</div>
 		{#if applicationType === VoucherTypeEnum.SpecificProduct}
-			<VoucherProductApplication />
+			<VoucherProductApplication {voucher} />
 		{/if}
-	{/if}
+	{/if} -->
 
-	<div>
+	<!-- <div>
 		<SectionHeader>Minimum requirements</SectionHeader>
 		<div class="space-y-2.5 mb-2">
 			{#each REQUIREMENT_TYPES as type, idx (idx)}
@@ -211,9 +213,9 @@
 				bind:value={minimumQuantityOfItems}
 			/>
 		{/if}
-	</div>
+	</div> -->
 
-	<div>
+	<!-- <div>
 		<SectionHeader>Usage limit</SectionHeader>
 		<div class="space-y-2.5">
 			{#each USAGE_PROPS as prop, idx (idx)}
@@ -225,5 +227,5 @@
 				{@render prop.child?.()}
 			{/each}
 		</div>
-	</div>
+	</div> -->
 </div>

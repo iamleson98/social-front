@@ -110,7 +110,7 @@
 	};
 </script>
 
-{#snippet no({ item, idx }: { item: AddVoucherCodeProps; idx: number })}
+{#snippet no({ idx }: { idx: number })}
 	# {idx + 1}
 {/snippet}
 

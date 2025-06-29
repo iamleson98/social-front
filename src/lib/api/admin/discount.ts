@@ -74,7 +74,20 @@ query VoucherDetail($id: ID!) {
     discountValue
     usageLimit
     type
+    used
     discountValueType
+    collections {
+      totalCount
+    }
+    products {
+      totalCount
+    }
+    categories {
+      totalCount
+    }
+    variants {
+      totalCount
+    }
     metadata {
       key
       value
@@ -158,7 +171,6 @@ query VoucherCollections($voucherId: ID!, $first: Int, $after: String, $last: In
           }
         }
       }
-      totalCount
       pageInfo {
         hasNextPage
         hasPreviousPage
@@ -197,7 +209,6 @@ query VoucherProducts($voucherId: ID!, $first: Int, $after: String, $last: Int, 
           }
         }
       }
-      totalCount
       pageInfo {
         hasNextPage
         hasPreviousPage
@@ -226,7 +237,6 @@ query VoucherCategories($voucherId: ID!, $first: Int, $after: String, $last: Int
           }
         }
       }
-      totalCount
       pageInfo {
         hasNextPage
         hasPreviousPage
@@ -237,4 +247,41 @@ query VoucherCategories($voucherId: ID!, $first: Int, $after: String, $last: Int
   }
 }`;
 
+export const VOUCHER_VARIANTS_QUERY = gql`
+query VoucherVariants($voucherId: ID!, $first: Int, $after: String, $last: Int, $before: String) {
+  voucher(id: $voucherId) {
+    variants(first: $first, after: $after, last: $last, before: $before) {
+      edges {
+        node {
+          id
+          name
+          product {
+            id
+            name
+            slug
+            thumbnail(size: 100, format: WEBP) {
+              url
+              alt
+            }
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+    }
+  }
+}`;
 
+export const VOUCHER_DELETE_MUTATION = gql`
+mutation VoucherDelete($id: ID!) {
+  voucherDelete(id: $id) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
