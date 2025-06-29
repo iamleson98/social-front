@@ -116,6 +116,7 @@ export {
   TablerBoxOff as BoxOff,
   TableFolderHeart as FolderHeart,
   TablerGiftcard as Giftcard,
+  TablerGift as Gift,
 } from './consts';
 
 export { default as Icon } from './icon.svelte';

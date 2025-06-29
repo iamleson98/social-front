@@ -7,8 +7,9 @@
 		Category,
 		CheckOff,
 		Dimension,
+		Discount,
 		FolderHeart,
-		Giftcard,
+		Gift,
 		Globe,
 		Icon,
 		MailQuestion,
@@ -143,7 +144,7 @@
 		{
 			name: 'Giftcards',
 			href: AppRoute.SETTINGS_CONFIGS_GIFTCARDS(),
-			icon: Giftcard,
+			icon: Gift,
 			shouldActive: () =>
 				[
 					AppRoute.SETTINGS_CONFIGS_GIFTCARDS(),
@@ -155,7 +156,7 @@
 
 	const SHOP_DISCOUNTS_TAB_ITEMS: TabItem[] = $derived([
 		{
-			icon: Ticket,
+			icon: Discount,
 			name: 'Promotions',
 			href: AppRoute.SETTINGS_CONFIGS_PROMOTIONS(),
 			shouldActive: () =>

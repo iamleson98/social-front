@@ -143,3 +143,98 @@ query VoucherCodes($id: ID!, $first: Int!, $after: String, $last: Int, $before: 
 //     }
 //   }
 // }`;
+
+export const VOUCHER_COLLECTIONS_QUERY = gql`
+query VoucherCollections($voucherId: ID!, $first: Int, $after: String, $last: Int, $before: String) {
+  voucher(id: $voucherId) {
+    collections(first: $first, after: $after, last: $last, before: $before) {
+      edges {
+        node {
+          id
+          name
+          slug
+          products {
+            totalCount
+          }
+        }
+      }
+      totalCount
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+    }
+  }
+}`;
+
+export const VOUCHER_PRODUCTS_QUERY = gql`
+query VoucherProducts($voucherId: ID!, $first: Int, $after: String, $last: Int, $before: String) {
+  voucher(id: $voucherId) {
+    products(first: $first, after: $after, last: $last, before: $before) {
+      edges {
+        node {
+          id
+          name
+          slug
+          thumbnail(size: 100, format: WEBP) {
+            url
+            alt
+          }
+          productType {
+            id
+            name
+          }
+          channelListings {
+            id
+            isPublished
+            channel {
+              id
+              name
+              slug
+            }
+          }
+        }
+      }
+      totalCount
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+    }
+  }
+}`;
+
+export const VOUCHER_CATEGORIES_QUERY = gql`
+query VoucherCategories($voucherId: ID!, $first: Int, $after: String, $last: Int, $before: String) {
+  voucher(id: $voucherId) {
+    categories(first: $first, after: $after, last: $last, before: $before) {
+      edges {
+        node {
+          id
+          name
+          slug
+          products {
+            totalCount
+          }
+          backgroundImage(size: 100, format: WEBP) {
+            url
+            alt
+          }
+        }
+      }
+      totalCount
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+    }
+  }
+}`;
+
+

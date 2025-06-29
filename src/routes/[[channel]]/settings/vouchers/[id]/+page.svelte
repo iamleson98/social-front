@@ -38,6 +38,7 @@
 		usageLimit: 0,
 		type: VoucherTypeEnum.EntireOrder,
 		discountValueType: DiscountValueTypeEnum.Percentage,
+		applyOncePerCustomer: false,
 	});
 
 	let performUpdateMetadata = $state(false);
@@ -47,8 +48,16 @@
 		voucherQuery.subscribe((result) => {
 			if (!result.data?.voucher) return;
 
-			const { name, code, startDate, endDate, usageLimit, type, discountValueType } =
-				result.data.voucher;
+			const {
+				name,
+				code,
+				startDate,
+				endDate,
+				usageLimit,
+				type,
+				discountValueType,
+				applyOncePerOrder,
+			} = result.data.voucher;
 
 			voucherInput = {
 				name,
@@ -58,6 +67,7 @@
 				usageLimit,
 				type,
 				discountValueType,
+				applyOncePerOrder,
 			};
 		}),
 	);
@@ -80,7 +90,6 @@
 			<div class="rounded-lg p-3 border border-gray-200 bg-white">
 				<SectionHeader>General information</SectionHeader>
 				<Input
-					size="sm"
 					placeholder="Voucher name"
 					label="Voucher name"
 					required
@@ -90,7 +99,12 @@
 
 			<VoucherCodes voucherId={id} />
 
-			<DiscountType bind:discountType={voucherInput.type!} />
+			<DiscountType
+				bind:discountType={voucherInput.discountValueType!}
+				voucher={$voucherQuery.data.voucher}
+				bind:applicationType={voucherInput.type!}
+				bind:applyOncePerOrder={voucherInput.applyOncePerOrder!}
+			/>
 
 			<GeneralMetadataEditor
 				objectId={id}

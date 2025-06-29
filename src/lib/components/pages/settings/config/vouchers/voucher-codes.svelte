@@ -1,20 +1,17 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { VOUCHER_CODE_LIST_QUERY } from '$lib/api/admin/discount';
-	import { operationStore } from '$lib/api/operation';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Plus } from '$lib/components/icons';
+	import { Plus, Trash } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/badge';
+	import { IconButton } from '$lib/components/ui/Button';
 	import { Input, RadioButton } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
-	import {
-		GraphqlPaginableTable,
-		Table,
-		TableSkeleton,
-		type TableColumnProps,
-	} from '$lib/components/ui/Table';
+	import { GraphqlPaginableTable, Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import { type Query, type VoucherCode } from '$lib/gql/graphql';
 	import { v4 as uuid } from 'uuid';
+	import { number, string } from 'zod';
 
 	type Props = {
 		voucherId: string;
@@ -25,6 +22,10 @@
 	let { voucherId }: Props = $props();
 
 	const TABLE_COLUMNS: TableColumnProps<AddVoucherCodeProps>[] = [
+		{
+			title: 'No.',
+			child: no,
+		},
 		{
 			title: 'Code',
 			child: code,
@@ -39,18 +40,44 @@
 		},
 	];
 
+	const TEMPO_CODE_ACTION_COLUMN: TableColumnProps<AddVoucherCodeProps> = {
+		title: deleteAll,
+		child: actions,
+	};
+
+	const MAX_AUTO_CODES = 50;
+
+	const MAX_ITEMS_EXCEED = $tranFunc('error.itemsExceed', { max: MAX_AUTO_CODES });
+	const FIELD_REQUIRED = $tranFunc('helpText.fieldRequired');
+
+	const AutoGenerateCodesSchema = number()
+		.min(1, 'Number must be greater than 0')
+		.max(MAX_AUTO_CODES, MAX_ITEMS_EXCEED);
+
+	const ManualCodeSchema = string().nonempty(FIELD_REQUIRED);
+
 	let openAddCodeModal = $state(false);
 	let forceReExecuteGraphqlQuery = $state(true);
 	let addCodeType = $state<'manual' | 'auto'>('manual');
 	let addVoucherCodes = $state.raw<AddVoucherCodeProps[]>([]);
-
+	let numberOfAutoGenerateCodesError = $state<string>();
+	let manualVoucherCodeError = $state<string>();
 	let manualVoucherCode = $state('');
-
-	let maxAutoCodes = $state(1);
+	let numberOfAutoGenerateCodes = $state(1);
 	let autoCodePrefix = $state('');
 
+	const validate = () => {
+		if (addCodeType === 'auto') {
+			const result = AutoGenerateCodesSchema.safeParse(numberOfAutoGenerateCodes);
+			numberOfAutoGenerateCodesError = result.success ? undefined : result.error.errors[0].message;
+			return;
+		}
+
+		const result = ManualCodeSchema.safeParse(manualVoucherCode);
+		manualVoucherCodeError = result.success ? undefined : result.error.errors[0].message;
+	};
+
 	const handleAddVoucherCodes = () => {
-		debugger;
 		if (addCodeType === 'manual') {
 			if (!manualVoucherCode.trim()) return;
 
@@ -64,21 +91,28 @@
 			return;
 		}
 
-		if (!autoCodePrefix.trim()) return;
-		if (maxAutoCodes < 1 || maxAutoCodes > 50) return;
-
 		autoCodePrefix = autoCodePrefix.trim();
-		const newCodes = new Array(maxAutoCodes).fill(null).map<AddVoucherCodeProps>(() => ({
-			code: [autoCodePrefix, uuid()].join('-'),
-			used: '-' as any,
-			isActive: false,
-		}));
+		const newCodes = new Array(numberOfAutoGenerateCodes)
+			.fill(null)
+			.map<AddVoucherCodeProps>(() => ({
+				code: [autoCodePrefix, uuid()].join('-'),
+				used: '-' as any,
+				isActive: false,
+			}));
 		addVoucherCodes = addVoucherCodes.concat(newCodes);
 		openAddCodeModal = false;
-		maxAutoCodes = 1;
+		numberOfAutoGenerateCodes = 1;
 		autoCodePrefix = '';
 	};
+
+	const removeCode = (code?: AddVoucherCodeProps) => {
+		addVoucherCodes = !code ? [] : addVoucherCodes.filter((item) => item.code !== code.code);
+	};
 </script>
+
+{#snippet no({ item, idx }: { item: AddVoucherCodeProps; idx: number })}
+	# {idx + 1}
+{/snippet}
 
 {#snippet code({ item }: { item: AddVoucherCodeProps })}
 	<Badge variant="light" color="blue" text={item.code || '-'} />
@@ -86,6 +120,32 @@
 
 {#snippet usage({ item }: { item: AddVoucherCodeProps })}
 	<span>{item.used}</span>
+{/snippet}
+
+{#snippet actions({ item }: { item: AddVoucherCodeProps })}
+	<div class="text-center">
+		<IconButton
+			icon={Trash}
+			size="xs"
+			color="red"
+			variant="light"
+			onclick={() => removeCode(item)}
+		/>
+	</div>
+{/snippet}
+
+{#snippet deleteAll()}
+	<div class="text-center">
+		<IconButton
+			icon={Trash}
+			size="xs"
+			color="red"
+			variant="light"
+			class="tooltip tooltip-top"
+			data-tip="Delete all"
+			onclick={() => removeCode()}
+		/>
+	</div>
 {/snippet}
 
 {#snippet status({ item }: { item: AddVoucherCodeProps })}
@@ -106,7 +166,7 @@
 
 	{#if addVoucherCodes.length}
 		<div class="rounded-lg p-3 border border-gray-200 bg-white">
-			<Table columns={TABLE_COLUMNS} items={addVoucherCodes} />
+			<Table columns={TABLE_COLUMNS.concat(TEMPO_CODE_ACTION_COLUMN)} items={addVoucherCodes} />
 		</div>
 	{/if}
 
@@ -131,6 +191,7 @@
 	onOk={handleAddVoucherCodes}
 	size="sm"
 	header="Add voucher codes"
+	disableElements={!!numberOfAutoGenerateCodesError || !!manualVoucherCodeError}
 >
 	<div class="grid grid-cols-2 mb-3">
 		{#each ['manual', 'auto'] as type, idx (idx)}
@@ -145,16 +206,24 @@
 				placeholder="Voucher code"
 				required
 				bind:value={manualVoucherCode}
+				variant={manualVoucherCodeError ? 'error' : 'info'}
+				subText={manualVoucherCodeError}
+				inputDebounceOption={{ onInput: validate }}
+				onblur={validate}
 			/>
 		{:else}
 			<Input
 				label="Number of codes"
 				placeholder="Number of codes"
-				max={50}
-				min={0}
+				max={MAX_AUTO_CODES}
+				min={1}
 				required
 				type="number"
-				bind:value={maxAutoCodes}
+				bind:value={numberOfAutoGenerateCodes}
+				inputDebounceOption={{ onInput: validate }}
+				onblur={validate}
+				variant={numberOfAutoGenerateCodesError ? 'error' : 'info'}
+				subText={numberOfAutoGenerateCodesError}
 			/>
 
 			<Input label="Prefix" placeholder="Code prefix" bind:value={autoCodePrefix} />
