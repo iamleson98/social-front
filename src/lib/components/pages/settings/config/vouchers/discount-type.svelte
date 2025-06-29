@@ -12,6 +12,7 @@
 		type VoucherChannelListing,
 	} from '$lib/gql/graphql';
 	import VoucherProductApplication from './voucher-product-application.svelte';
+	import { type Snippet } from 'svelte';
 
 	type Props = {
 		discountType: DiscountValueTypeEnum;
@@ -20,6 +21,17 @@
 		applyOncePerOrder: boolean;
 		minimumQuantityOfItems?: number;
 		minimumOrderValue?: number;
+		applyOncePerCustomer: boolean;
+		onlyForStaff: boolean;
+		singleUse: boolean;
+		usageLimit?: number;
+	};
+
+	type UsageProps = {
+		title: string;
+		onCheck: (checked: boolean) => void;
+		value: boolean;
+		child?: Snippet;
 	};
 
 	type RequirementType = 'Minimum order value' | 'Minimum quantity of items' | 'none';
@@ -31,6 +43,10 @@
 		applyOncePerOrder = $bindable(),
 		minimumQuantityOfItems = $bindable(),
 		minimumOrderValue = $bindable(),
+		applyOncePerCustomer = $bindable(),
+		onlyForStaff = $bindable(),
+		singleUse = $bindable(),
+		usageLimit = $bindable(),
 	}: Props = $props();
 
 	const DISCOUNT_TYPE_SHIPPING = 'Shipping' as DiscountValueTypeEnum;
@@ -50,6 +66,10 @@
 
 	let channelIds = $state<string[]>(voucher.channelListings?.map((item) => item.channel.id) ?? []);
 	let requirementType = $state<RequirementType>('none');
+	let limitNumberOfTimesUsed = $state(false);
+	// let limitToOneUsePerCustomer = $state(false);
+	// let limitToStaffOnly = $state(false);
+	// let limitToVoucherCodeUseOnce = $state(false);
 
 	const CHANNEL_LISTING_COLUMNS: TableColumnProps<VoucherChannelListing>[] = [
 		{
@@ -61,6 +81,30 @@
 			child: price,
 		},
 	];
+
+	const USAGE_PROPS: UsageProps[] = $derived([
+		{
+			title: 'Limit number of times this discount can be used in total',
+			onCheck: (checked) => (limitNumberOfTimesUsed = checked),
+			value: limitNumberOfTimesUsed,
+			child: numOfUsesLimit,
+		},
+		{
+			title: 'Limit to one use per customer',
+			onCheck: (checked) => (applyOncePerCustomer = checked),
+			value: applyOncePerCustomer,
+		},
+		{
+			title: 'Limit to staff only',
+			onCheck: (checked) => (onlyForStaff = checked),
+			value: onlyForStaff,
+		},
+		{
+			title: 'Limit to voucher code use once',
+			onCheck: (checked) => (singleUse = checked),
+			value: singleUse,
+		},
+	]);
 </script>
 
 {#snippet channel({ item }: { item: VoucherChannelListing })}
@@ -77,6 +121,17 @@
 			{/if}
 		{/snippet}
 	</Input>
+{/snippet}
+
+{#snippet numOfUsesLimit()}
+	<div class="flex items-center gap-2">
+		<Input bind:value={usageLimit} placeholder="Usage limit" type="number" min={voucher.used} label="Usage limit" />
+		<span
+			>{typeof usageLimit === 'number' && usageLimit > voucher.used
+				? `${usageLimit - voucher.used} uses left`
+				: '0 uses left'}</span
+		>
+	</div>
 {/snippet}
 
 <div class="rounded-lg p-3 border border-gray-200 bg-white space-y-3.5">
@@ -128,8 +183,9 @@
 				/>
 			</div>
 		</div>
-
-		<VoucherProductApplication />
+		{#if applicationType === VoucherTypeEnum.SpecificProduct}
+			<VoucherProductApplication />
+		{/if}
 	{/if}
 
 	<div>
@@ -155,5 +211,19 @@
 				bind:value={minimumQuantityOfItems}
 			/>
 		{/if}
+	</div>
+
+	<div>
+		<SectionHeader>Usage limit</SectionHeader>
+		<div class="space-y-2.5">
+			{#each USAGE_PROPS as prop, idx (idx)}
+				<Checkbox
+					label={prop.title}
+					checked={prop.value}
+					onchange={(evt) => prop.onCheck(evt.currentTarget.checked)}
+				/>
+				{@render prop.child?.()}
+			{/each}
+		</div>
 	</div>
 </div>
