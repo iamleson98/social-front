@@ -9,7 +9,9 @@
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import ApplicationType from '$lib/components/pages/settings/config/vouchers/application-type.svelte';
 	import DiscountType from '$lib/components/pages/settings/config/vouchers/discount-type.svelte';
+	import EffectiveTime from '$lib/components/pages/settings/config/vouchers/effective-time.svelte';
 	import Requirements from '$lib/components/pages/settings/config/vouchers/requirements.svelte';
+	import Summary from '$lib/components/pages/settings/config/vouchers/summary.svelte';
 	import UsageLimit from '$lib/components/pages/settings/config/vouchers/usage-limit.svelte';
 	import VoucherCodes from '$lib/components/pages/settings/config/vouchers/voucher-codes.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
@@ -171,6 +173,10 @@
 				bind:singleUse={voucherInput.singleUse!}
 				voucherUsedTimes={used}
 			/>
+			<EffectiveTime
+				bind:startDate={voucherInput.startDate!}
+				bind:endDate={voucherInput.endDate!}
+			/>
 			<GeneralMetadataEditor
 				objectId={id}
 				{metadata}
@@ -180,7 +186,9 @@
 			/>
 		</div>
 
-		<div class="w-3/10"></div>
+		<div class="w-3/10">
+			<Summary voucher={$voucherQuery.data.voucher} />
+		</div>
 	</div>
 
 	<ActionBar

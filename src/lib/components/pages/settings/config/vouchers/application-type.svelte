@@ -38,11 +38,11 @@
 
 	const DISCOUNT_TYPE_SHIPPING = 'Shipping' as DiscountValueTypeEnum;
 
-	const VOUCHER_TYPES: DiscountValueTypeEnum[] = [
-		DiscountValueTypeEnum.Fixed,
-		DiscountValueTypeEnum.Percentage,
-		DISCOUNT_TYPE_SHIPPING,
-	];
+	// const VOUCHER_TYPES: DiscountValueTypeEnum[] = [
+	// 	DiscountValueTypeEnum.Fixed,
+	// 	DiscountValueTypeEnum.Percentage,
+	// 	DISCOUNT_TYPE_SHIPPING,
+	// ];
 	const APPLICATION_TYPES = [VoucherTypeEnum.EntireOrder, VoucherTypeEnum.SpecificProduct];
 
 	const CHANNEL_LISTING_COLUMNS: TableColumnProps<VoucherChannelListing>[] = [
