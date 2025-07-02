@@ -1,8 +1,15 @@
 <script lang="ts">
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { RadioButton } from '$lib/components/ui/Input';
-	import { DiscountValueTypeEnum, VoucherTypeEnum, type Voucher } from '$lib/gql/graphql';
+	import { Badge } from '$lib/components/ui/badge';
+	import { Input, RadioButton } from '$lib/components/ui/Input';
+	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
+	import {
+		DiscountValueTypeEnum,
+		VoucherTypeEnum,
+		type Voucher,
+		type VoucherChannelListing,
+	} from '$lib/gql/graphql';
 
 	type Props = {
 		discountType: DiscountValueTypeEnum;
@@ -15,6 +22,7 @@
 		onlyForStaff: boolean;
 		singleUse: boolean;
 		usageLimit?: number;
+		channelListings: VoucherChannelListing[];
 	};
 
 	let {
@@ -28,6 +36,7 @@
 		onlyForStaff = $bindable(),
 		singleUse = $bindable(),
 		usageLimit = $bindable(),
+		channelListings,
 	}: Props = $props();
 
 	const DISCOUNT_TYPE_SHIPPING = 'Shipping' as DiscountValueTypeEnum;
@@ -39,7 +48,34 @@
 	];
 
 	let channelIds = $state<string[]>(voucher.channelListings?.map((item) => item.channel.id) ?? []);
+
+	const CHANNEL_LISTING_COLUMNS: TableColumnProps<VoucherChannelListing>[] = [
+		{
+			title: 'Channel',
+			child: channel,
+		},
+		{
+			title: 'Price',
+			child: price,
+		},
+	];
 </script>
+
+{#snippet channel({ item }: { item: VoucherChannelListing })}
+	<Badge text={item.channel.slug} />
+{/snippet}
+
+{#snippet price({ item }: { item: VoucherChannelListing })}
+	<Input value={item.discountValue} placeholder="Discount value" type="number" min="0">
+		{#snippet action()}
+			{#if discountType === DiscountValueTypeEnum.Fixed}
+				<span class="text-xs font-semibold text-gray-600">{item.channel.currencyCode}</span>
+			{:else if discountType === DiscountValueTypeEnum.Percentage}
+				<span class="text-xs font-semibold text-gray-600">%</span>
+			{/if}
+		{/snippet}
+	</Input>
+{/snippet}
 
 <div class="rounded-lg p-3 border border-gray-200 bg-white space-y-2">
 	<div>
@@ -65,4 +101,11 @@
 			{/each}
 		</div>
 	</div>
+
+	{#if discountType !== DISCOUNT_TYPE_SHIPPING}
+		<div>
+			<SectionHeader>Value</SectionHeader>
+			<Table columns={CHANNEL_LISTING_COLUMNS} items={channelListings ?? []} />
+		</div>
+	{/if}
 </div>

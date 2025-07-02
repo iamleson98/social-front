@@ -1,16 +1,24 @@
 <script lang="ts">
 	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import { Badge } from '$lib/components/ui/badge';
 	import { RadioButton } from '$lib/components/ui/Input';
 	import { Input } from '$lib/components/ui/Input';
+	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
+	import type { VoucherChannelListing } from '$lib/gql/graphql';
 
 	type Props = {
 		minimumOrderValue?: number;
 		minimumQuantityOfItems?: number;
+		channelListings?: VoucherChannelListing[];
 	};
 
 	type RequirementType = 'Minimum order value' | 'Minimum quantity of items' | 'none';
 
-	let { minimumOrderValue = $bindable(), minimumQuantityOfItems = $bindable() }: Props = $props();
+	let {
+		minimumOrderValue = $bindable(),
+		minimumQuantityOfItems = $bindable(),
+		channelListings,
+	}: Props = $props();
 
 	let requirementType = $state<RequirementType>('none');
 
@@ -19,7 +27,34 @@
 		'Minimum order value',
 		'Minimum quantity of items',
 	];
+
+	$effect(() => {
+		// if (requirementType !== '')
+	});
+
+	const MINIMUM_ORDER_VALUE_COLUMNS: TableColumnProps<VoucherChannelListing>[] = [
+		{
+			title: 'Channel',
+			child: channel,
+		},
+		{
+			title: 'Min order price',
+			child: price,
+		},
+	];
 </script>
+
+{#snippet channel({ item }: { item: VoucherChannelListing })}
+	<Badge text={item.channel.slug} />
+{/snippet}
+
+{#snippet price({ item }: { item: VoucherChannelListing })}
+	<Input value={item.minSpent?.amount} placeholder="Minimum order value" type="number" min={0}>
+		{#snippet action()}
+			<span class="text-xs font-semibold text-gray-600">{item.channel.currencyCode}</span>
+		{/snippet}
+	</Input>
+{/snippet}
 
 <div class="rounded-lg p-3 border border-gray-200 bg-white space-y-2">
 	<SectionHeader>Minimum requirements</SectionHeader>
@@ -30,7 +65,7 @@
 	</div>
 
 	{#if requirementType === 'Minimum order value'}
-		<Input placeholder="Minimum order value" type="number" min={0} bind:value={minimumOrderValue} />
+		<Table columns={MINIMUM_ORDER_VALUE_COLUMNS} items={channelListings ?? []} />
 	{:else if requirementType === 'Minimum quantity of items'}
 		<Input
 			placeholder="Minimum quantity of items"

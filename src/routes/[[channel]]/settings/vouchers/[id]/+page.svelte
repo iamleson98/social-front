@@ -154,18 +154,21 @@
 				bind:onlyForStaff={voucherInput.onlyForStaff!}
 				bind:singleUse={voucherInput.singleUse!}
 				bind:usageLimit={voucherInput.usageLimit!}
+				channelListings={channelListings || []}
 			/>
 			<ApplicationType
 				bind:applicationType={voucherInput.type!}
 				bind:applyOncePerOrder={voucherInput.applyOncePerOrder!}
 				discountType={voucherInput.discountValueType!}
-				channelListings={channelListings || []}
 				{categories}
 				{products}
 				{collections}
 				{variants}
 			/>
-			<Requirements bind:minimumQuantityOfItems={voucherInput.minCheckoutItemsQuantity!} />
+			<Requirements
+				bind:minimumQuantityOfItems={voucherInput.minCheckoutItemsQuantity!}
+				channelListings={channelListings || []}
+			/>
 			<UsageLimit
 				bind:usageLimit={voucherInput.usageLimit!}
 				bind:applyOncePerCustomer={voucherInput.applyOncePerCustomer!}

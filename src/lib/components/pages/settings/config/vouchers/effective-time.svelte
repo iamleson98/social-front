@@ -1,7 +1,6 @@
 <script lang="ts">
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
-	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import dayjs from 'dayjs';
 
 	type Props = {
@@ -21,10 +20,10 @@
 			label="Start date"
 			value={{ date: startDate ? dayjs(startDate).toDate() : undefined }}
 			onchange={(value) => {
-				startDate = dayjs(value.date).format();
+				startDate = value.date!.toString();
 			}}
 			placeholder="Start date"
-			format={SitenameTimeFormat}
+			format={'YYYY-MM-DD HH:mm'}
 		/>
 
 		<EaseDatePicker
@@ -32,9 +31,9 @@
 			placeholder="End date"
 			value={{ date: endDate ? dayjs(endDate).toDate() : undefined }}
 			onchange={(value) => {
-				endDate = dayjs(value.date).format();
+				endDate = value.date!.toString();
 			}}
-			format={SitenameTimeFormat}
+			format={'YYYY-MM-DD HH:mm'}
 		/>
 	</div>
 </div>

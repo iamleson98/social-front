@@ -16,7 +16,6 @@
 
 	type Props = {
 		discountType: DiscountValueTypeEnum;
-		channelListings: VoucherChannelListing[];
 		applicationType: VoucherTypeEnum;
 		applyOncePerOrder: boolean;
 		categories?: CategoryCountableConnection | null;
@@ -27,7 +26,6 @@
 
 	let {
 		discountType,
-		channelListings,
 		applicationType = $bindable(),
 		applyOncePerOrder = $bindable(),
 		categories,
@@ -45,19 +43,19 @@
 	// ];
 	const APPLICATION_TYPES = [VoucherTypeEnum.EntireOrder, VoucherTypeEnum.SpecificProduct];
 
-	const CHANNEL_LISTING_COLUMNS: TableColumnProps<VoucherChannelListing>[] = [
-		{
-			title: 'Channel',
-			child: channel,
-		},
-		{
-			title: 'Price',
-			child: price,
-		},
-	];
+	// const CHANNEL_LISTING_COLUMNS: TableColumnProps<VoucherChannelListing>[] = [
+	// 	{
+	// 		title: 'Channel',
+	// 		child: channel,
+	// 	},
+	// 	{
+	// 		title: 'Price',
+	// 		child: price,
+	// 	},
+	// ];
 </script>
 
-{#snippet channel({ item }: { item: VoucherChannelListing })}
+<!-- {#snippet channel({ item }: { item: VoucherChannelListing })}
 	<Badge text={item.channel.slug} />
 {/snippet}
 
@@ -71,15 +69,10 @@
 			{/if}
 		{/snippet}
 	</Input>
-{/snippet}
+{/snippet} -->
 
 {#if discountType !== DISCOUNT_TYPE_SHIPPING}
 	<div class="rounded-lg p-3 border border-gray-200 bg-white space-y-2">
-		<div>
-			<SectionHeader>Value</SectionHeader>
-			<Table columns={CHANNEL_LISTING_COLUMNS} items={channelListings ?? []} />
-		</div>
-
 		<div>
 			<SectionHeader>Application type</SectionHeader>
 			<div class="space-y-2.5">
