@@ -4,7 +4,6 @@
 	import { GIFT_CARD_DETAIL_QUERY, GIFT_CARD_UPDATE_MUTATION } from '$lib/api/admin/giftcards';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
-	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import DetailGiftcardSkeleton from '$lib/components/pages/settings/config/giftcards/detail-giftcard-skeleton.svelte';
@@ -108,7 +107,8 @@
 {:else if $giftcardQuery.error}
 	<Alert variant="error" bordered size="sm">{$giftcardQuery.error.message}</Alert>
 {:else if $giftcardQuery.data?.giftCard}
-	{@const { giftCard } = $giftcardQuery.data}
+	{@const { id, currentBalance, isActive, tags, metadata, privateMetadata, initialBalance } =
+		$giftcardQuery.data.giftCard}
 	<div class="flex flex-row gap-2">
 		<div class="w-7/10 flex flex-col gap-2">
 			<GiftcardDetail
@@ -116,24 +116,24 @@
 				bind:expiryDate={giftcardUpdateInput.expiryDate}
 				bind:addTags={giftcardUpdateInput.addTags!}
 				bind:removeTags={giftcardUpdateInput.removeTags!}
-				balanceCurrency={giftCard.currentBalance.currency || giftCard.initialBalance.currency}
-				isActive={giftCard.isActive}
-				existingTags={giftCard.tags.map((item) => item.id)}
-				id={giftCard.id}
+				balanceCurrency={currentBalance.currency || initialBalance.currency}
+				existingTags={tags.map((item) => item.id)}
 				disabled={loading}
 				{onActiveChange}
-				metadata={giftCard.metadata}
+				{isActive}
+				{metadata}
+				{id}
 			/>
 			<GeneralMetadataEditor
-				metadata={giftCard.metadata}
-				privateMetadata={giftCard.privateMetadata}
+				{metadata}
+				{privateMetadata}
 				disabled={loading}
-				objectId={giftCard.id}
+				objectId={id}
 				bind:performUpdateMetadata
 			/>
-			<GiftcardEvents id={giftCard.id} />
+			<GiftcardEvents {id} />
 		</div>
-		<GiftcardExtraInformation giftcard={$giftcardQuery.data.giftCard!} />
+		<GiftcardExtraInformation giftcard={$giftcardQuery.data.giftCard} />
 	</div>
 
 	<ActionBar

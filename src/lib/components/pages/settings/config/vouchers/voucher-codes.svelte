@@ -159,7 +159,13 @@
 <div class="rounded-lg p-3 border border-gray-200 bg-white space-y-2">
 	<SectionHeader>
 		<div>Voucher codes</div>
-		<Button size="xs" variant="outline" endIcon={Plus} onclick={() => (openAddCodeModal = true)}>
+		<Button
+			size="xs"
+			variant="outline"
+			color="gray"
+			endIcon={Plus}
+			onclick={() => (openAddCodeModal = true)}
+		>
 			Add voucher codes
 		</Button>
 	</SectionHeader>

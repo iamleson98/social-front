@@ -27,6 +27,8 @@
 		DiscountValueTypeEnum,
 		type Mutation,
 		type MutationVoucherDeleteArgs,
+		type VoucherChannelListingInput,
+		type VoucherChannelListing,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
@@ -54,7 +56,18 @@
 		onlyForStaff: false,
 		applyOncePerOrder: false,
 		singleUse: false,
+		categories: [],
+		products: [],
+		collections: [],
+		variants: [],
 	});
+	let voucherChannelListingInput = $state<VoucherChannelListingInput>({
+		addChannels: [],
+		removeChannels: [],
+	});
+
+	/** temporary state for UI */
+	let activeChannelListings = $state<VoucherChannelListing[]>([]);
 
 	let performUpdateMetadata = $state(false);
 	let loading = $state(false);
@@ -75,6 +88,7 @@
 				applyOncePerCustomer,
 				onlyForStaff,
 				singleUse,
+				channelListings,
 			} = result.data.voucher;
 
 			voucherInput = {
@@ -90,6 +104,8 @@
 				onlyForStaff,
 				singleUse,
 			};
+
+			activeChannelListings = channelListings || [];
 		}),
 	);
 
@@ -147,27 +163,32 @@
 			<VoucherCodes voucherId={id} />
 			<DiscountType
 				bind:discountType={voucherInput.discountValueType!}
-				voucher={$voucherQuery.data.voucher}
 				bind:applicationType={voucherInput.type!}
 				bind:applyOncePerOrder={voucherInput.applyOncePerOrder!}
 				bind:applyOncePerCustomer={voucherInput.applyOncePerCustomer!}
 				bind:onlyForStaff={voucherInput.onlyForStaff!}
 				bind:singleUse={voucherInput.singleUse!}
 				bind:usageLimit={voucherInput.usageLimit!}
-				channelListings={channelListings || []}
+				existingChannelListings={channelListings || []}
+				bind:voucherChannelListingInput
+				bind:activeChannelListings
 			/>
 			<ApplicationType
 				bind:applicationType={voucherInput.type!}
 				bind:applyOncePerOrder={voucherInput.applyOncePerOrder!}
 				discountType={voucherInput.discountValueType!}
-				{categories}
-				{products}
-				{collections}
-				{variants}
+				existingCategoriesCount={categories?.totalCount!}
+				existingCollectionsCount={collections?.totalCount!}
+				existingProductsCount={collections?.totalCount!}
+				existingVariantsCount={collections?.totalCount!}
+				bind:newCategories={voucherInput.categories!}
+				bind:newCollections={voucherInput.collections!}
+				bind:newProducts={voucherInput.products!}
+				bind:newVariants={voucherInput.variants!}
 			/>
 			<Requirements
 				bind:minimumQuantityOfItems={voucherInput.minCheckoutItemsQuantity!}
-				channelListings={channelListings || []}
+				bind:activeChannelListings
 			/>
 			<UsageLimit
 				bind:usageLimit={voucherInput.usageLimit!}
@@ -198,5 +219,6 @@
 		onUpdateClick={handleUpdateVoucher}
 		onDeleteClick={handleDeleteVoucher}
 		disableUpdateButton={loading}
+		backButtonUrl={AppRoute.SETTINGS_CONFIGS_VOUCHERS()}
 	/>
 {/if}

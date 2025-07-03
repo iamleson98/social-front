@@ -28,6 +28,7 @@
 	import { Modal } from '$lib/components/ui/Modal';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { ORDER_FULFILLMENT_UPDATE_TRACKING_MUTATION } from '$lib/api/admin/orders';
+	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 
 	type Props = {
 		order: Order;
@@ -120,11 +121,11 @@
 </script>
 
 {#snippet image({ item }: { item: FulfillmentLine })}
-	<div class="avatar">
-		<div class="w-9 rounded border border-gray-200">
-			<img src={item.orderLine?.thumbnail?.url} alt={item.orderLine?.thumbnail?.alt} />
-		</div>
-	</div>
+	<Thumbnail
+		src={item.orderLine?.thumbnail?.url}
+		alt={item.orderLine?.thumbnail?.alt || item.orderLine?.productName || '-'}
+		size="sm"
+	/>
 {/snippet}
 
 {#snippet product({ item }: { item: FulfillmentLine })}

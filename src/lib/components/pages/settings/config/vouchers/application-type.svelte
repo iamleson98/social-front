@@ -1,8 +1,6 @@
 <script lang="ts">
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Checkbox, Input, RadioButton } from '$lib/components/ui/Input';
-	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
+	import { Checkbox, RadioButton } from '$lib/components/ui/Input';
 	import {
 		DiscountValueTypeEnum,
 		VoucherTypeEnum,
@@ -10,28 +8,38 @@
 		type CollectionCountableConnection,
 		type ProductCountableConnection,
 		type ProductVariantCountableConnection,
-		type VoucherChannelListing,
 	} from '$lib/gql/graphql';
-	import VoucherProductApplication from './voucher-product-application.svelte';
+	import VoucherCatalogApplication from './voucher-catalog-application.svelte';
 
 	type Props = {
 		discountType: DiscountValueTypeEnum;
 		applicationType: VoucherTypeEnum;
 		applyOncePerOrder: boolean;
-		categories?: CategoryCountableConnection | null;
-		products?: ProductCountableConnection | null;
-		collections?: CollectionCountableConnection | null;
-		variants?: ProductVariantCountableConnection | null;
+
+		newCategories: string[];
+		newProducts: string[];
+		newCollections: string[];
+		newVariants: string[];
+
+		existingCategoriesCount: number;
+		existingCollectionsCount: number;
+		existingVariantsCount: number;
+		existingProductsCount: number;
 	};
 
 	let {
 		discountType,
 		applicationType = $bindable(),
 		applyOncePerOrder = $bindable(),
-		categories,
-		products,
-		collections,
-		variants,
+		newCategories = $bindable(),
+		newProducts = $bindable(),
+		newCollections = $bindable(),
+		newVariants = $bindable(),
+
+		existingCategoriesCount,
+		existingCollectionsCount,
+		existingVariantsCount,
+		existingProductsCount,
 	}: Props = $props();
 
 	const DISCOUNT_TYPE_SHIPPING = 'Shipping' as DiscountValueTypeEnum;
@@ -92,7 +100,16 @@
 			</div>
 		</div>
 		{#if applicationType === VoucherTypeEnum.SpecificProduct}
-			<VoucherProductApplication {categories} {products} {collections} {variants} />
+			<VoucherCatalogApplication
+				bind:newCategories
+				bind:newCollections
+				bind:newProducts
+				bind:newVariants
+				{existingCategoriesCount}
+				{existingCollectionsCount}
+				{existingProductsCount}
+				{existingVariantsCount}
+			/>
 		{/if}
 	</div>
 {/if}

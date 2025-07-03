@@ -1,16 +1,20 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
+	import { tranFunc } from '$i18n';
+	import { CATEGORIES_LIST_QUERY_STORE, PRODUCT_LIST_QUERY_STORE } from '$lib/api';
 	import {
 		VOUCHER_CATEGORIES_QUERY,
 		VOUCHER_COLLECTIONS_QUERY,
 		VOUCHER_PRODUCTS_QUERY,
 		VOUCHER_VARIANTS_QUERY,
 	} from '$lib/api/admin/discount';
+	import { COLLECTIONS_QUERY } from '$lib/api/collections';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/badge';
+	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import type {
 		Category,
@@ -22,15 +26,24 @@
 		ProductVariant,
 		ProductVariantCountableConnection,
 		Query,
+		QueryCategoriesArgs,
+		QueryCollectionsArgs,
+		QueryProductsArgs,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { stringSlicer } from '$lib/utils/utils';
+	import CollectionsAndTax from '../../products/new/collections-and-tax.svelte';
 
 	type Props = {
-		categories?: CategoryCountableConnection | null;
-		products?: ProductCountableConnection | null;
-		collections?: CollectionCountableConnection | null;
-		variants?: ProductVariantCountableConnection | null;
+		existingCategoriesCount: number;
+		existingCollectionsCount: number;
+		existingVariantsCount: number;
+		existingProductsCount: number;
+
+		newCategories: string[];
+		newProducts: string[];
+		newCollections: string[];
+		newVariants: string[];
 	};
 
 	type TabName = 'categories' | 'products' | 'collections' | 'variants';
@@ -39,25 +52,35 @@
 		count: number;
 	};
 
-	let { categories, products, collections, variants }: Props = $props();
+	let {
+		existingCategoriesCount,
+		existingCollectionsCount,
+		existingProductsCount,
+		existingVariantsCount,
+
+		newCategories = $bindable(),
+		newProducts = $bindable(),
+		newCollections = $bindable(),
+		newVariants = $bindable(),
+	}: Props = $props();
 
 	let activeTab = $derived(page.url.searchParams.get('tab'));
 	const TABS: TabProps[] = [
 		{
 			name: 'categories',
-			count: categories?.totalCount || 0,
+			count: existingCategoriesCount,
 		},
 		{
 			name: 'products',
-			count: products?.totalCount || 0,
+			count: existingProductsCount,
 		},
 		{
 			name: 'collections',
-			count: collections?.totalCount || 0,
+			count: existingCollectionsCount,
 		},
 		{
 			name: 'variants',
-			count: variants?.totalCount || 0,
+			count: existingVariantsCount,
 		},
 	];
 
@@ -74,6 +97,7 @@
 		first: 10,
 	});
 	let forceReExecuteGraphqlQuery = $state(true);
+	let openAssignCatalogFeature = $state(false);
 
 	const COLLECTION_COLUMNS: TableColumnProps<Collection>[] = [
 		{
@@ -135,12 +159,14 @@
 		},
 	];
 
-	afterNavigate(() => {
+	afterNavigate(({ from, to }) => {
 		voucherRelationVars = {
 			voucherId: page.params.id,
 			first: 10,
 		};
 		forceReExecuteGraphqlQuery = true;
+
+		if (from !== to) openAssignCatalogFeature = false;
 	});
 </script>
 
@@ -159,9 +185,9 @@
 <!-- Product -->
 
 {#snippet prdName({ item }: { item: Product })}
-	<a href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.slug)} class="link link-hover"
-		>{stringSlicer(item.name, 40)}</a
-	>
+	<a href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.slug)} class="link link-hover">
+		{stringSlicer(item.name, 40)}
+	</a>
 {/snippet}
 
 {#snippet prdImage({ item }: { item: Product })}
@@ -184,9 +210,9 @@
 <!-- Category -->
 
 {#snippet categoryName({ item }: { item: Category })}
-	<a href={AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(item.id)} class="link link-hover"
-		>{item.name}</a
-	>
+	<a href={AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(item.id)} class="link link-hover">
+		{item.name}
+	</a>
 {/snippet}
 
 {#snippet categoryNoOfProducts({ item }: { item: Category })}
@@ -204,9 +230,9 @@
 <!-- Variant -->
 
 {#snippet variantPrdName({ item }: { item: ProductVariant })}
-	<a href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.product.slug)} class="link link-hover"
-		>{stringSlicer(item.product.name, 40)}</a
-	>
+	<a href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.product.slug)} class="link link-hover">
+		{stringSlicer(item.product.name, 40)}
+	</a>
 {/snippet}
 
 {#snippet variantImage({ item }: { item: ProductVariant })}
@@ -233,12 +259,36 @@
 	{/each}
 </div>
 
+{#snippet commonHeader(name: string)}
+	<SectionHeader>
+		<span>Eligible {name}</span>
+		<Button size="xs" variant="light" onclick={() => (openAssignCatalogFeature = true)}>
+			Assign {name}
+		</Button>
+	</SectionHeader>
+{/snippet}
+
 <div>
+	{#if activeTab}
+		{@render commonHeader(activeTab)}
+	{/if}
+
 	{#if activeTab === 'collections'}
-		<SectionHeader>
-			<span>Eligible Collections</span>
-			<Button size="xs" variant="light">Assign collections</Button>
-		</SectionHeader>
+		{#if openAssignCatalogFeature}
+			<GraphqlPaginableSelect
+				query={COLLECTIONS_QUERY}
+				resultKey="collections"
+				variableSearchQueryPath="filter.search"
+				variables={{ first: 20, filter: { search: '' } } as QueryCollectionsArgs}
+				optionValueKey="id"
+				optionLabelKey="name"
+				multiple
+				label="Select collections to apply for this voucher"
+				size="sm"
+				class="mb-2"
+				bind:value={newCollections}
+			/>
+		{/if}
 
 		<GraphqlPaginableTable
 			query={VOUCHER_COLLECTIONS_QUERY}
@@ -248,10 +298,21 @@
 			columns={COLLECTION_COLUMNS}
 		/>
 	{:else if activeTab === 'products'}
-		<SectionHeader>
-			<span>Eligible Products</span>
-			<Button size="xs" variant="light">Assign products</Button>
-		</SectionHeader>
+		{#if openAssignCatalogFeature}
+			<GraphqlPaginableSelect
+				query={PRODUCT_LIST_QUERY_STORE}
+				resultKey="products"
+				variableSearchQueryPath="filter.search"
+				variables={{ first: 20, filter: { search: '' } } as QueryProductsArgs}
+				optionValueKey="id"
+				optionLabelKey="name"
+				multiple
+				label="Select products to apply for this voucher"
+				size="sm"
+				class="mb-2"
+				bind:value={newProducts}
+			/>
+		{/if}
 
 		<GraphqlPaginableTable
 			query={VOUCHER_PRODUCTS_QUERY}
@@ -261,10 +322,21 @@
 			columns={PRODUCT_COLUMNS}
 		/>
 	{:else if activeTab === 'categories'}
-		<SectionHeader>
-			<span>Eligible Categories</span>
-			<Button size="xs" variant="light">Assign categories</Button>
-		</SectionHeader>
+		{#if openAssignCatalogFeature}
+			<GraphqlPaginableSelect
+				query={CATEGORIES_LIST_QUERY_STORE}
+				resultKey="categories"
+				variableSearchQueryPath="filter.search"
+				variables={{ first: 20, filter: { search: '' } } as QueryCategoriesArgs}
+				optionValueKey="id"
+				optionLabelKey="name"
+				multiple
+				label="Select categories to apply for this voucher"
+				size="sm"
+				class="mb-2"
+				bind:value={newCategories}
+			/>
+		{/if}
 
 		<GraphqlPaginableTable
 			query={VOUCHER_CATEGORIES_QUERY}
@@ -274,11 +346,6 @@
 			columns={CATEGORY_COLUMNS}
 		/>
 	{:else if activeTab === 'variants'}
-		<SectionHeader>
-			<span>Eligible Variants</span>
-			<Button size="xs" variant="light">Assign variants</Button>
-		</SectionHeader>
-
 		<GraphqlPaginableTable
 			query={VOUCHER_VARIANTS_QUERY}
 			bind:variables={voucherRelationVars}
