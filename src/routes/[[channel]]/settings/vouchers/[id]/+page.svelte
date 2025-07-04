@@ -11,17 +11,15 @@
 	import DiscountType from '$lib/components/pages/settings/config/vouchers/discount-type.svelte';
 	import EffectiveTime from '$lib/components/pages/settings/config/vouchers/effective-time.svelte';
 	import Requirements from '$lib/components/pages/settings/config/vouchers/requirements.svelte';
+	import Skeleton from '$lib/components/pages/settings/config/vouchers/skeleton.svelte';
 	import Summary from '$lib/components/pages/settings/config/vouchers/summary.svelte';
 	import UsageLimit from '$lib/components/pages/settings/config/vouchers/usage-limit.svelte';
 	import VoucherCodes from '$lib/components/pages/settings/config/vouchers/voucher-codes.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Input } from '$lib/components/ui/Input';
-	import { SelectSkeleton } from '$lib/components/ui/select';
 	import {
-		type VoucherUpdate,
 		type Query,
 		type QueryVoucherArgs,
-		type MutationVoucherUpdateArgs,
 		type VoucherInput,
 		VoucherTypeEnum,
 		DiscountValueTypeEnum,
@@ -134,21 +132,12 @@
 </script>
 
 {#if $voucherQuery.fetching}
-	<SelectSkeleton label />
+	<Skeleton />
 {:else if $voucherQuery.error}
 	<Alert variant="error" bordered size="sm">{$voucherQuery.error.message}</Alert>
 {:else if $voucherQuery.data?.voucher}
-	{@const {
-		id,
-		metadata,
-		privateMetadata,
-		channelListings,
-		categories,
-		products,
-		collections,
-		variants,
-		used,
-	} = $voucherQuery.data.voucher}
+	{@const { id, metadata, privateMetadata, channelListings, categories, collections, used } =
+		$voucherQuery.data.voucher}
 	<div class="flex gap-2">
 		<div class="w-7/10 space-y-2">
 			<div class="rounded-lg p-3 border border-gray-200 bg-white">
@@ -169,22 +158,22 @@
 				bind:onlyForStaff={voucherInput.onlyForStaff!}
 				bind:singleUse={voucherInput.singleUse!}
 				bind:usageLimit={voucherInput.usageLimit!}
-				existingChannelListings={channelListings || []}
 				bind:voucherChannelListingInput
 				bind:activeChannelListings
+				existingChannelListings={channelListings || []}
 			/>
 			<ApplicationType
 				bind:applicationType={voucherInput.type!}
 				bind:applyOncePerOrder={voucherInput.applyOncePerOrder!}
+				bind:newCategories={voucherInput.categories!}
+				bind:newCollections={voucherInput.collections!}
+				bind:newProducts={voucherInput.products!}
+				bind:newVariants={voucherInput.variants!}
 				discountType={voucherInput.discountValueType!}
 				existingCategoriesCount={categories?.totalCount!}
 				existingCollectionsCount={collections?.totalCount!}
 				existingProductsCount={collections?.totalCount!}
 				existingVariantsCount={collections?.totalCount!}
-				bind:newCategories={voucherInput.categories!}
-				bind:newCollections={voucherInput.collections!}
-				bind:newProducts={voucherInput.products!}
-				bind:newVariants={voucherInput.variants!}
 			/>
 			<Requirements
 				bind:minimumQuantityOfItems={voucherInput.minCheckoutItemsQuantity!}

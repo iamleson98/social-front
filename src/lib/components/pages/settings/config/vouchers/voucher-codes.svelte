@@ -115,7 +115,7 @@
 {/snippet}
 
 {#snippet code({ item }: { item: AddVoucherCodeProps })}
-	<Badge variant="light" color="blue" text={item.code || '-'} />
+	<Badge color="blue" text={item.code || '-'} />
 {/snippet}
 
 {#snippet usage({ item }: { item: AddVoucherCodeProps })}
@@ -149,11 +149,7 @@
 {/snippet}
 
 {#snippet status({ item }: { item: AddVoucherCodeProps })}
-	<Badge
-		variant="light"
-		color={item.isActive ? 'green' : 'red'}
-		text={item.isActive ? 'Active' : 'Inactive'}
-	/>
+	<Badge color={item.isActive ? 'green' : 'red'} text={item.isActive ? 'Active' : 'Inactive'} />
 {/snippet}
 
 <div class="rounded-lg p-3 border border-gray-200 bg-white space-y-2">

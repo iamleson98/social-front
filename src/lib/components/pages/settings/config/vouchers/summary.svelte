@@ -17,15 +17,15 @@
 	<SectionHeader>Summary</SectionHeader>
 
 	<div class="text-sm">
-		<div class="font-medium">Applies to</div>
+		<div class="font-semibold">Applies to</div>
 		<div>{voucher.type.toLocaleLowerCase().split('_').join(' ')}</div>
 	</div>
 
 	<div class="text-sm">
-		<div class="font-medium">Value</div>
+		<div class="font-semibold">Value</div>
 		{#each voucher.channelListings || [] as listing, idx (idx)}
 			<div class="flex items-center mb-1 justify-between">
-				<Badge text={listing.channel.name} size="sm" />
+				<Badge text={listing.channel.name} size="xs" />
 				<PriceDisplay
 					amount={listing.discountValue}
 					currency={voucher.discountValueType === DiscountValueTypeEnum.Fixed
@@ -37,20 +37,20 @@
 	</div>
 
 	<div class="text-sm">
-		<div class="font-medium">Start date</div>
+		<div class="font-semibold">Start date</div>
 		<div>{voucher.startDate ? dayjs(voucher.startDate).format(SitenameTimeFormat) : '-'}</div>
 	</div>
 
 	<div class="text-sm">
-		<div class="font-medium">End date</div>
+		<div class="font-semibold">End date</div>
 		<div>{voucher.endDate ? dayjs(voucher.endDate).format(SitenameTimeFormat) : '-'}</div>
 	</div>
 
 	<div class="text-sm">
-		<div class="font-medium">Min order value</div>
+		<div class="font-semibold">Min order value</div>
 		{#each voucher.channelListings || [] as listing, idx (idx)}
 			<div class="flex items-center mb-1 justify-between">
-				<Badge text={listing.channel.name} size="sm" />
+				<Badge text={listing.channel.name} size="xs" />
 				{#if listing.minSpent}
 					<PriceDisplay {...listing.minSpent} />
 				{:else}
@@ -61,7 +61,7 @@
 	</div>
 
 	<div class="text-sm">
-		<div class="font-medium">Availability</div>
+		<div class="font-semibold">Availability</div>
 		<div>{voucher.channelListings?.map((item) => item.channel.name).join(', ')}</div>
 	</div>
 </div>

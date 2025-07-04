@@ -114,6 +114,30 @@ query VoucherDetail($id: ID!) {
   }
 }`;
 
+export const PROMOTION_DETAIL_QUERY = gql`
+query Promotion($id: ID!) {
+  promotion(id: $id) {
+    id
+    name
+    type
+    description
+    startDate
+    endDate
+    rules {
+      id
+      name
+    }
+    metadata {
+      key
+      value
+    }
+    privateMetadata {
+      key
+      value
+    }
+  }
+}`;
+
 export const VOUCHER_CODE_LIST_QUERY = gql`
 query VoucherCodes($id: ID!, $first: Int!, $after: String, $last: Int, $before: String) {
   voucher(id: $id) {

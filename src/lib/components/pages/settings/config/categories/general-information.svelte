@@ -35,11 +35,6 @@
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 	const MAX_ERROR = $tranFunc('error.itemsExceed', { max: 1 });
-
-	// let descriptionError = $derived.by(() => {
-	// 	if (!description?.blocks?.length) return REQUIRED_ERROR;
-	// 	return undefined;
-	// });
 	let categoryFormErrors = $state.raw<Partial<Record<keyof CategorySchema, string[]>>>({});
 
 	$effect(() => {
