@@ -135,6 +135,28 @@ query Promotion($id: ID!) {
       key
       value
     }
+    rules {
+      id
+      name
+      description
+      giftIds
+      rewardType
+      rewardValueType
+      rewardValue
+      cataloguePredicate
+      orderPredicate
+      channels {
+        id
+        isActive
+        name
+        slug
+        currencyCode
+        defaultCountry {
+          code
+          country
+        }
+      }
+    }
   }
 }`;
 
@@ -309,3 +331,34 @@ mutation VoucherDelete($id: ID!) {
     }
   }
 }`;
+
+export const PROMOTION_DELETE_MUTATION = gql`
+mutation PromotionDelete($id: ID!) {
+  promotionDelete(id: $id) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const PROMOTION_UPDATE_MUTATION = gql`
+mutation PromotionUpdate($id: ID!, $input: PromotionUpdateInput!) {
+  promotionUpdate(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const PROMOTION_RULE_DELETE_MUTATION = gql`
+mutation PromotionRuleDelete($id: ID!) {
+  promotionRuleDelete(id: $id) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+

@@ -67,18 +67,13 @@
 		subText={collectionFormErrors.name?.[0]}
 	/>
 	<EditorJSComponent
-		header={{ placeholder: 'Heading 2', levels: [2, 3, 4], defaultLevel: 2 }}
-		simpleImage
-		list={{ defaultStyle: 'unordered', maxLevel: 3, inlineToolbar: true }}
-		embed={{ services: { youtube: true } }}
-		quote={{ inlineToolbar: true }}
-		onchange={validate}
-		placeholder={$tranFunc('placeholders.valuePlaceholder')}
+		label="Collection description"
+		required
+		placeholder="Collection description"
 		bind:value={description}
+		onchange={validate}
 		variant={collectionFormErrors.description?.length ? 'error' : 'info'}
 		subText={collectionFormErrors.description?.[0]}
-		required
-		label="Collection description"
 		{disabled}
 	/>
 
