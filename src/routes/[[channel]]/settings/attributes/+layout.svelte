@@ -19,7 +19,6 @@
 	newPageLabel="New attribute"
 	detailRouteID="/[[channel]]/settings/attributes/[id]"
 	detailPageLabelGetter={(page) => page.params.id}
-	backLinkUrl={AppRoute.SETTINGS_CONFIGS()}
 />
 
 <div>

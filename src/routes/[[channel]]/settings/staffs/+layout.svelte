@@ -17,7 +17,6 @@
 	newPageLabel="New staff"
 	detailRouteID="/[[channel]]/settings/staffs/[id]"
 	detailPageLabelGetter={(page) => page.params.id}
-	backLinkUrl={AppRoute.SETTINGS_CONFIGS()}
 />
 
 <div>

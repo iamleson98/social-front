@@ -8,6 +8,7 @@
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
+	import DetailSkeleton from '$lib/components/pages/settings/config/promotions/detail-skeleton.svelte';
 	import Rules from '$lib/components/pages/settings/config/promotions/rules.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
@@ -98,7 +99,7 @@
 </script>
 
 {#if $promotionStore.fetching}
-	<SelectSkeleton label />
+	<DetailSkeleton />
 {:else if $promotionStore.error}
 	<Alert size="sm" variant="error" bordered>{$promotionStore.error.message}</Alert>
 {:else if $promotionStore.data?.promotion}

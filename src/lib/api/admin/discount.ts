@@ -362,3 +362,41 @@ mutation PromotionRuleDelete($id: ID!) {
   }
 }`;
 
+export const RuleConditionsSelectedOptionsDetails = gql`
+query RuleConditionsSelectedOptionsDetails($categoriesIds: [ID!], $collectionsIds: [ID!], $productsIds: [ID!], $variantsIds: [ID!]) {
+  categories(first: 100, ids: $categoriesIds) {
+    edges {
+      node {
+        id
+        name
+        slug
+      }
+    }
+  }
+  collections(first: 100, ids: $collectionsIds) {
+    edges {
+      node {
+        id
+        name
+        slug
+      }
+    }
+  }
+  products(first: 100, ids: $productsIds) {
+    edges {
+      node {
+        id
+        name
+        slug
+      }
+    }
+  }
+  variants(first: 100, ids: $variantsIds) {
+    edges {
+      node {
+        id
+        name
+      }
+    }
+  }
+}`;

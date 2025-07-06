@@ -18,7 +18,6 @@
 	newPageLabel="Isue new giftcard"
 	detailRouteID="/[[channel]]/settings/giftcards/[id]"
 	detailPageLabelGetter={(page) => page.params.id}
-	backLinkUrl={AppRoute.SETTINGS_CONFIGS()}
 />
 
 <div>

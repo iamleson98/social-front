@@ -17,7 +17,6 @@
 	newPageLabel="New warehouse"
 	detailPageLabelGetter={(page) => page.params.id}
 	detailRouteID="/[[channel]]/settings/warehouses/[id]"
-	backLinkUrl={AppRoute.SETTINGS_CONFIGS()}
 />
 
 <div>

@@ -17,7 +17,6 @@
 	newPageLabel="New voucher"
 	detailRouteID="/[[channel]]/settings/vouchers/[id]"
 	detailPageLabelGetter={(page) => page.params.id}
-	backLinkUrl={AppRoute.SETTINGS_CONFIGS()}
 />
 
 <div>

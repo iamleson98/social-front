@@ -17,7 +17,6 @@
 	newPageLabel="New customer"
 	detailRouteID="/[[channel]]/settings/customers/[id]"
 	detailPageLabelGetter={(page) => page.params.id}
-	backLinkUrl={AppRoute.SETTINGS_CONFIGS()}
 />
 
 <div>
