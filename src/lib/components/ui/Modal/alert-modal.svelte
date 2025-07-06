@@ -13,11 +13,11 @@
 		onCancel,
 		okText = $tranFunc('common.ok'),
 		cancelText = $tranFunc('common.cancel'),
-		open
+		open,
 	}: Props = $props();
 </script>
 
-<Modal header="" size="xs" hideFooter hideHeader {open}>
+<Modal header="" size="xs" hideFooter hideHeader {open} closeOnEscape closeOnOutsideClick>
 	<div class="text-orange-400 flex justify-center py-2">
 		<Icon icon={AlertCircle} size="lg" />
 	</div>

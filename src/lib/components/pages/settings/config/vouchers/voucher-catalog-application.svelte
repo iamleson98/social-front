@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
 	import { CATEGORIES_LIST_QUERY_STORE, PRODUCT_LIST_QUERY_STORE } from '$lib/api';
 	import {
 		VOUCHER_CATEGORIES_QUERY,
@@ -18,13 +17,9 @@
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import type {
 		Category,
-		CategoryCountableConnection,
 		Collection,
-		CollectionCountableConnection,
 		Product,
-		ProductCountableConnection,
 		ProductVariant,
-		ProductVariantCountableConnection,
 		Query,
 		QueryCategoriesArgs,
 		QueryCollectionsArgs,
@@ -32,7 +27,6 @@
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { stringSlicer } from '$lib/utils/utils';
-	import CollectionsAndTax from '../../products/new/collections-and-tax.svelte';
 
 	type Props = {
 		existingCategoriesCount: number;

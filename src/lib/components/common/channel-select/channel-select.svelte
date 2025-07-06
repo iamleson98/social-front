@@ -3,16 +3,18 @@
 	import { operationStore } from '$lib/api/operation';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Select, SelectSkeleton, type SelectProps } from '$lib/components/ui/select';
-	import type { Query } from '$lib/gql/graphql';
+	import type { Channel, Query } from '$lib/gql/graphql';
 
 	let {
 		value = $bindable(),
 		size = 'md',
 		valueType = 'slug',
+		onchange,
 		...rest
-	}: Omit<SelectProps, 'options'> & {
+	}: Omit<SelectProps, 'options' | 'onchange'> & {
 		/** thr returned values should be channel ids or channel slugs */
 		valueType?: 'id' | 'slug';
+		onchange?: (value?: Channel) => void;
 	} = $props();
 
 	const channelStore = operationStore<Pick<Query, 'channels'>>({
@@ -20,6 +22,16 @@
 		query: CHANNELS_QUERY,
 		requestPolicy: 'cache-and-network',
 	});
+
+	const innerOnchange = () => {
+		if (!value) onchange?.();
+		else {
+			const channel = $channelStore.data?.channels?.find(
+				(channel) => (valueType === 'slug' ? channel.slug : channel.id) === value,
+			);
+			onchange?.(channel);
+		}
+	};
 </script>
 
 {#if $channelStore.fetching}
@@ -34,5 +46,5 @@
 			label: channel.name,
 			value: valueType === 'slug' ? channel.slug : channel.id,
 		})) ?? []}
-	<Select {options} {size} bind:value {...rest} />
+	<Select {options} {size} bind:value {...rest} onchange={innerOnchange} />
 {/if}

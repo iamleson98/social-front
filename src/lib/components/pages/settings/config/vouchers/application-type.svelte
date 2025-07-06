@@ -1,14 +1,7 @@
 <script lang="ts">
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Checkbox, RadioButton } from '$lib/components/ui/Input';
-	import {
-		DiscountValueTypeEnum,
-		VoucherTypeEnum,
-		type CategoryCountableConnection,
-		type CollectionCountableConnection,
-		type ProductCountableConnection,
-		type ProductVariantCountableConnection,
-	} from '$lib/gql/graphql';
+	import { DiscountValueTypeEnum, VoucherTypeEnum } from '$lib/gql/graphql';
 	import VoucherCatalogApplication from './voucher-catalog-application.svelte';
 
 	type Props = {
@@ -43,41 +36,8 @@
 	}: Props = $props();
 
 	const DISCOUNT_TYPE_SHIPPING = 'Shipping' as DiscountValueTypeEnum;
-
-	// const VOUCHER_TYPES: DiscountValueTypeEnum[] = [
-	// 	DiscountValueTypeEnum.Fixed,
-	// 	DiscountValueTypeEnum.Percentage,
-	// 	DISCOUNT_TYPE_SHIPPING,
-	// ];
 	const APPLICATION_TYPES = [VoucherTypeEnum.EntireOrder, VoucherTypeEnum.SpecificProduct];
-
-	// const CHANNEL_LISTING_COLUMNS: TableColumnProps<VoucherChannelListing>[] = [
-	// 	{
-	// 		title: 'Channel',
-	// 		child: channel,
-	// 	},
-	// 	{
-	// 		title: 'Price',
-	// 		child: price,
-	// 	},
-	// ];
 </script>
-
-<!-- {#snippet channel({ item }: { item: VoucherChannelListing })}
-	<Badge text={item.channel.slug} />
-{/snippet}
-
-{#snippet price({ item }: { item: VoucherChannelListing })}
-	<Input value={item.discountValue} placeholder="Discount value" type="number" min="0">
-		{#snippet action()}
-			{#if discountType === DiscountValueTypeEnum.Fixed}
-				<span class="text-xs font-semibold text-gray-600">{item.channel.currencyCode}</span>
-			{:else if discountType === DiscountValueTypeEnum.Percentage}
-				<span class="text-xs font-semibold text-gray-600">%</span>
-			{/if}
-		{/snippet}
-	</Input>
-{/snippet} -->
 
 {#if discountType !== DISCOUNT_TYPE_SHIPPING}
 	<div class="rounded-lg p-3 border border-gray-200 bg-white space-y-2">

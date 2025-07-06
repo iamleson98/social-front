@@ -95,7 +95,7 @@
 		const newCodes = new Array(numberOfAutoGenerateCodes)
 			.fill(null)
 			.map<AddVoucherCodeProps>(() => ({
-				code: [autoCodePrefix, uuid()].join('-'),
+				code: [autoCodePrefix, uuid()].filter(Boolean).join('-'),
 				used: '-' as any,
 				isActive: false,
 			}));

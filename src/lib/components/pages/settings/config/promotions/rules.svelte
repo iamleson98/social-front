@@ -7,6 +7,7 @@
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/badge';
 	import { IconButton } from '$lib/components/ui/Button';
+	import { Modal } from '$lib/components/ui/Modal';
 	import {
 		RewardValueTypeEnum,
 		type Mutation,
@@ -15,6 +16,7 @@
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import RuleEdit from './rule-edit.svelte';
 
 	type Props = {
 		rules: PromotionRule[];
@@ -30,6 +32,7 @@
 	};
 
 	let activeTabs = $state<Record<number, number>>({});
+	let showRuleEditModal = $state(false);
 
 	let ruleTabs = $derived(
 		rules.reduce(
@@ -96,14 +99,20 @@
 	};
 
 	const setActiveTabs = (ruleIdx: number, tabIdx: number) => {
-    activeTabs[ruleIdx] = tabIdx;
-  };
+		activeTabs[ruleIdx] = tabIdx;
+	};
 </script>
 
 <div class="rounded-lg bg-white border border-gray-200 p-3 space-y-2">
 	<SectionHeader>
 		<div>Rules</div>
-		<Button endIcon={Plus} size="xs" variant="outline" color="gray">Add rule</Button>
+		<Button
+			endIcon={Plus}
+			size="xs"
+			variant="outline"
+			color="gray"
+			onclick={() => (showRuleEditModal = true)}>Add rule</Button
+		>
 	</SectionHeader>
 
 	<div class="grid grid-cols-2 gap-2">
@@ -167,3 +176,17 @@
 		{/each}
 	</div>
 </div>
+
+<Modal
+	open={showRuleEditModal}
+	header="Add promotion rule"
+	okText="Add"
+	cancelText="Cancel"
+	closeOnEscape
+	closeOnOutsideClick
+	onOk={() => (showRuleEditModal = false)}
+	onCancel={() => (showRuleEditModal = false)}
+  onClose={() => (showRuleEditModal = false)}
+>
+	<RuleEdit />
+</Modal>
