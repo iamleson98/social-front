@@ -29,6 +29,8 @@
 		key: string;
 	};
 
+	let activeTabs = $state<Record<number, number>>({});
+
 	let ruleTabs = $derived(
 		rules.reduce(
 			(acc, rule, idx) => {
@@ -71,7 +73,6 @@
 		),
 	);
 
-
 	const handleDeleteRule = async (ruleId: string) => {
 		ALERT_MODAL_STORE.openAlertModal({
 			content: `Are you sure deleting the rule ${ruleId}?`,
@@ -93,6 +94,10 @@
 	const handleEditRule = (ruleId: string) => {
 		// goto(AppRoute.PromotionsEdit(ruleId));
 	};
+
+	const setActiveTabs = (ruleIdx: number, tabIdx: number) => {
+    activeTabs[ruleIdx] = tabIdx;
+  };
 </script>
 
 <div class="rounded-lg bg-white border border-gray-200 p-3 space-y-2">
@@ -102,7 +107,7 @@
 	</SectionHeader>
 
 	<div class="grid grid-cols-2 gap-2">
-		{#each rules as rule, idx (idx)}
+		{#each rules as rule, ruleIdx (ruleIdx)}
 			<div class="rounded-lg border border-gray-200 p-3 space-y-3">
 				<SectionHeader>
 					<div>Catalog rule: {rule.name}</div>
@@ -144,10 +149,17 @@
 					<Badge text={rule.channels!.map((channel) => channel.name).join(', ')} />
 				</div>
 
-				{#if ruleTabs[idx].length > 0}
+				{#if ruleTabs[ruleIdx].length > 0}
 					<div role="tablist" class="tabs tabs-border">
-						{#each ruleTabs[idx] as tab, idx (idx)}
-							<span role="tab" class="tab">{tab.name}</span>
+						{#each ruleTabs[ruleIdx] as tab, tabIdx (tabIdx)}
+							<span
+								role="tab"
+								tabindex="0"
+								class="tab"
+								onclick={() => setActiveTabs(ruleIdx, tabIdx)}
+								onkeydown={(evt) => evt.key === 'Enter' && setActiveTabs(ruleIdx, tabIdx)}
+								class:tab-active={activeTabs[ruleIdx] === tabIdx}>{tab.name}</span
+							>
 						{/each}
 					</div>
 				{/if}
