@@ -165,11 +165,10 @@
 </script>
 
 <!-- Collection -->
-
 {#snippet name({ item }: { item: Collection })}
-	<a href={AppRoute.SETTINGS_CONFIGS_COLLECTION_DETAILS(item.id)} class="link link-hover"
-		>{item.name}</a
-	>
+	<a href={AppRoute.SETTINGS_CONFIGS_COLLECTION_DETAILS(item.id)} class="link link-hover">
+		{item.name}
+	</a>
 {/snippet}
 
 {#snippet collectionProducts({ item }: { item: Collection })}
@@ -177,7 +176,6 @@
 {/snippet}
 
 <!-- Product -->
-
 {#snippet prdName({ item }: { item: Product })}
 	<a href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.slug)} class="link link-hover">
 		{stringSlicer(item.name, 40)}
@@ -202,7 +200,6 @@
 {/snippet}
 
 <!-- Category -->
-
 {#snippet categoryName({ item }: { item: Category })}
 	<a href={AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(item.id)} class="link link-hover">
 		{item.name}
@@ -222,7 +219,6 @@
 {/snippet}
 
 <!-- Variant -->
-
 {#snippet variantPrdName({ item }: { item: ProductVariant })}
 	<a href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.product.slug)} class="link link-hover">
 		{stringSlicer(item.product.name, 40)}
@@ -248,8 +244,10 @@
 			class="tab"
 			class:tab-active={activeTab === tab.name}
 			href="?tab={tab.name}"
-			data-sveltekit-noscroll>{tab.name} ({tab.count})</a
+			data-sveltekit-noscroll
 		>
+			{tab.name} ({tab.count})
+		</a>
 	{/each}
 </div>
 

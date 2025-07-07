@@ -57,7 +57,7 @@
 			.nonempty(REQUIRED_ERROR)
 			.max(
 				SEO_DESCRIPTION_MAX,
-				`Description must be at most ${SEO_DESCRIPTION_MAX} characters long`,
+				$tranFunc('error.lengthInvalid', { max: SEO_DESCRIPTION_MAX, min: 1 }),
 			),
 		media: array(any()).max(1, MAX_ERROR).nonempty(REQUIRED_ERROR),
 		description: object({
@@ -151,7 +151,8 @@
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
 		variant={categoryFormErrors.seoDescription?.length ? 'error' : 'info'}
-		subText={categoryFormErrors.seoDescription?.[0] ?? `${seoDescription.length} / ${SEO_DESCRIPTION_MAX}`}
+		subText={categoryFormErrors.seoDescription?.[0] ??
+			`${seoDescription.length} / ${SEO_DESCRIPTION_MAX}`}
 		inputClass="min-h-20"
 		disabled={loading}
 	/>

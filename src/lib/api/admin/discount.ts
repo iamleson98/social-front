@@ -400,3 +400,24 @@ query RuleConditionsSelectedOptionsDetails($categoriesIds: [ID!], $collectionsId
     }
   }
 }`;
+
+export const VOUCHER_UPDATE_MUTATION = gql`
+mutation UpdateVoucher($id: ID!, $input: VoucherInput!) {
+  voucherUpdate(id: $id, input: $input) {
+    errors {
+      field
+      message
+      code
+    }
+  }
+}`;
+
+export const VOUCHER_CHANNEL_LISTING_UPDATE_MUTATION = gql`
+mutation VoucherChannelListingUpdate($id: ID!, $input: VoucherChannelListingInput!) {
+  voucherChannelListingUpdate(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;

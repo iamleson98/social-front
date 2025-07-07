@@ -1,5 +1,6 @@
 <script lang="ts">
 	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import { Badge } from '$lib/components/ui/badge';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import type { Snippet } from 'svelte';
 
@@ -66,11 +67,12 @@
 				type="number"
 				min={voucherUsedTimes}
 			/>
-			<span
-				>{typeof usageLimit === 'number' && usageLimit > voucherUsedTimes
+			<Badge
+				color="green"
+				text={typeof usageLimit === 'number' && usageLimit > voucherUsedTimes
 					? `${usageLimit - voucherUsedTimes} uses left`
-					: '0 uses left'}</span
-			>
+					: '0 uses left'}
+			/>
 		</div>
 	{/if}
 {/snippet}

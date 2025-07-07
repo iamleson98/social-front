@@ -34,7 +34,7 @@
 			.nonempty(REQUIRED_ERROR)
 			.max(
 				DESCRIPTION_MAX_LENGTH,
-				`Description must be at most ${DESCRIPTION_MAX_LENGTH} characters long`,
+				$tranFunc('error.lengthInvalid', { min: 1, max: DESCRIPTION_MAX_LENGTH }),
 			),
 	});
 

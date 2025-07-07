@@ -7,7 +7,8 @@
 	import dayjs from 'dayjs';
 
 	type Props = {
-		voucher: Voucher;
+		/** if not provided, meaning this is create page */
+		voucher?: Voucher;
 	};
 
 	let { voucher }: Props = $props();
@@ -16,52 +17,54 @@
 <div class="rounded-lg p-3 border border-gray-200 bg-white space-y-2 text-gray-600">
 	<SectionHeader>Summary</SectionHeader>
 
-	<div class="text-sm">
-		<div class="font-semibold">Applies to</div>
-		<div>{voucher.type.toLocaleLowerCase().split('_').join(' ')}</div>
-	</div>
+	{#if voucher}
+		<div class="text-sm">
+			<div class="font-semibold">Applies to</div>
+			<div>{voucher.type.toLocaleLowerCase().split('_').join(' ')}</div>
+		</div>
 
-	<div class="text-sm">
-		<div class="font-semibold">Value</div>
-		{#each voucher.channelListings || [] as listing, idx (idx)}
-			<div class="flex items-center mb-1 justify-between">
-				<Badge text={listing.channel.name} size="xs" />
-				<PriceDisplay
-					amount={listing.discountValue}
-					currency={voucher.discountValueType === DiscountValueTypeEnum.Fixed
-						? listing.currency
-						: '%'}
-				/>
-			</div>
-		{/each}
-	</div>
+		<div class="text-sm">
+			<div class="font-semibold">Value</div>
+			{#each voucher.channelListings || [] as listing, idx (idx)}
+				<div class="flex items-center mb-1 justify-between">
+					<Badge text={listing.channel.name} size="xs" />
+					<PriceDisplay
+						amount={listing.discountValue}
+						currency={voucher.discountValueType === DiscountValueTypeEnum.Fixed
+							? listing.currency
+							: '%'}
+					/>
+				</div>
+			{/each}
+		</div>
 
-	<div class="text-sm">
-		<div class="font-semibold">Start date</div>
-		<div>{voucher.startDate ? dayjs(voucher.startDate).format(SitenameTimeFormat) : '-'}</div>
-	</div>
+		<div class="text-sm">
+			<div class="font-semibold">Start date</div>
+			<div>{voucher.startDate ? dayjs(voucher.startDate).format(SitenameTimeFormat) : '-'}</div>
+		</div>
 
-	<div class="text-sm">
-		<div class="font-semibold">End date</div>
-		<div>{voucher.endDate ? dayjs(voucher.endDate).format(SitenameTimeFormat) : '-'}</div>
-	</div>
+		<div class="text-sm">
+			<div class="font-semibold">End date</div>
+			<div>{voucher.endDate ? dayjs(voucher.endDate).format(SitenameTimeFormat) : '-'}</div>
+		</div>
 
-	<div class="text-sm">
-		<div class="font-semibold">Min order value</div>
-		{#each voucher.channelListings || [] as listing, idx (idx)}
-			<div class="flex items-center mb-1 justify-between">
-				<Badge text={listing.channel.name} size="xs" />
-				{#if listing.minSpent}
-					<PriceDisplay {...listing.minSpent} />
-				{:else}
-					<span>-</span>
-				{/if}
-			</div>
-		{/each}
-	</div>
+		<div class="text-sm">
+			<div class="font-semibold">Min order value</div>
+			{#each voucher.channelListings || [] as listing, idx (idx)}
+				<div class="flex items-center mb-1 justify-between">
+					<Badge text={listing.channel.name} size="xs" />
+					{#if listing.minSpent}
+						<PriceDisplay {...listing.minSpent} />
+					{:else}
+						<span>-</span>
+					{/if}
+				</div>
+			{/each}
+		</div>
 
-	<div class="text-sm">
-		<div class="font-semibold">Availability</div>
-		<div>{voucher.channelListings?.map((item) => item.channel.name).join(', ')}</div>
-	</div>
+		<div class="text-sm">
+			<div class="font-semibold">Availability</div>
+			<div>{voucher.channelListings?.map((item) => item.channel.name).join(', ')}</div>
+		</div>
+	{/if}
 </div>

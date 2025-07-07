@@ -1,10 +1,12 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { RadioButton } from '$lib/components/ui/Input';
 	import { Input } from '$lib/components/ui/Input';
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import type { VoucherChannelListing } from '$lib/gql/graphql';
+	import { array, number, object } from 'zod';
 
 	type Props = {
 		minimumOrderValue?: number;
@@ -28,6 +30,21 @@
 		'Minimum quantity of items',
 	];
 
+	const NON_NEGATIVE = $tranFunc('error.negativeNumber');
+
+	const ValueSchema = array(
+		object({
+			minSpent: object({
+				amount: number().nonnegative(NON_NEGATIVE),
+			}),
+		}),
+	);
+
+	let valueErrors = $state<{
+		formErrors?: string[];
+		fieldErrors?: Record<number, string[]>;
+	}>();
+
 	const MINIMUM_ORDER_VALUE_COLUMNS: TableColumnProps<VoucherChannelListing>[] = [
 		{
 			title: 'Channel',
@@ -38,6 +55,11 @@
 			child: price,
 		},
 	];
+
+	const validateOrderValues = () => {
+		const result = ValueSchema.safeParse(activeChannelListings);
+		valueErrors = result.error?.formErrors as any;
+	};
 
 	const handleUpdateMinOrderPrice = (index: number, evt: Event) => {
 		activeChannelListings = activeChannelListings.map((listing, idx) => {
@@ -50,6 +72,8 @@
 				},
 			};
 		});
+
+		validateOrderValues();
 	};
 </script>
 
@@ -63,7 +87,10 @@
 		placeholder="Minimum order value"
 		type="number"
 		min={0}
-		onchange={(evt) => handleUpdateMinOrderPrice(idx, evt)}
+		inputDebounceOption={{ onInput: (evt) => handleUpdateMinOrderPrice(idx, evt) }}
+		onblur={validateOrderValues}
+		variant={valueErrors?.fieldErrors?.[idx]?.length ? 'error' : 'info'}
+		subText={valueErrors?.fieldErrors?.[idx]?.[0]}
 	>
 		{#snippet action()}
 			<span class="text-xs font-semibold text-gray-600">{item.channel.currencyCode}</span>
@@ -82,11 +109,14 @@
 	{#if requirementType === 'Minimum order value'}
 		<Table columns={MINIMUM_ORDER_VALUE_COLUMNS} items={activeChannelListings} />
 	{:else if requirementType === 'Minimum quantity of items'}
+		{@const error = typeof minimumQuantityOfItems === 'number' && minimumQuantityOfItems < 0}
 		<Input
 			placeholder="Minimum quantity of items"
 			type="number"
 			min={1}
 			bind:value={minimumQuantityOfItems}
+			variant={error ? 'error' : 'info'}
+			subText={error ? NON_NEGATIVE : undefined}
 		/>
 	{/if}
 </div>

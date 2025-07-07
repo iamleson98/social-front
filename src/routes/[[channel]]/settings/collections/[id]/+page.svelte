@@ -141,16 +141,20 @@
 		loading = true; //
 		performUpdateMetadata = true; // trigger update metadata
 
+		const input = {
+			...collectionUpdateInput,
+			description: JSON.stringify(collectionUpdateInput.description),
+		};
+		if (media[0].file) input.backgroundImage = media[0].file;
+		input.backgroundImageAlt = media[0].alt;
+
 		// 1) update general information of collection:
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'collectionUpdate'>,
 			MutationCollectionUpdateArgs
 		>(COLLECTION_UPDATE_MUTATION, {
 			id: page.params.id,
-			input: {
-				...collectionUpdateInput,
-				description: JSON.stringify(collectionUpdateInput.description) || null,
-			},
+			input,
 		});
 
 		hasError ||= checkIfGraphqlResultHasError(

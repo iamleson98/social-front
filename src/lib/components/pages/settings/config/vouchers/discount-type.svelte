@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { CHANNELS_QUERY } from '$lib/api/channels';
 	import { operationStore } from '$lib/api/operation';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
@@ -9,17 +10,15 @@
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
 		DiscountValueTypeEnum,
-		VoucherTypeEnum,
 		type Query,
 		type VoucherChannelListing,
 		type VoucherChannelListingInput,
 	} from '$lib/gql/graphql';
 	import { difference } from 'es-toolkit';
+	import { array, number, object } from 'zod';
 
 	type Props = {
 		discountType: DiscountValueTypeEnum;
-		applicationType: VoucherTypeEnum;
-		applyOncePerOrder: boolean;
 		minimumQuantityOfItems?: number;
 		minimumOrderValue?: number;
 		applyOncePerCustomer: boolean;
@@ -33,8 +32,6 @@
 
 	let {
 		discountType = $bindable(),
-		applicationType = $bindable(),
-		applyOncePerOrder = $bindable(),
 		minimumQuantityOfItems = $bindable(),
 		minimumOrderValue = $bindable(),
 		applyOncePerCustomer = $bindable(),
@@ -54,6 +51,15 @@
 		(acc, cur) => acc.concat(cur.channel.id),
 		[] as string[],
 	);
+
+	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
+	const NON_NEGATIVE = $tranFunc('error.negativeNumber');
+
+	const ChannelListingSchema = array(
+		object({
+			discountValue: number().nonnegative(NON_NEGATIVE),
+		}),
+	).nonempty(REQUIRED_ERROR);
 
 	const DISCOUNT_TYPE_SHIPPING = 'Shipping' as DiscountValueTypeEnum;
 
@@ -81,6 +87,16 @@
 		query: CHANNELS_QUERY,
 	});
 
+	let discountValueErrors = $state<{
+		formErrors?: string[];
+		fieldErrors?: Record<number, string[]>;
+	}>();
+
+	const validate = () => {
+		const result = ChannelListingSchema.safeParse(activeChannelListings);
+		discountValueErrors = result.error?.formErrors as any;
+	};
+
 	const handleChannelsChange = () => {
 		const newChannelIds = difference(channelIds, existingUsedChannelIDs);
 		const removeChannelIds = difference(existingUsedChannelIDs, channelIds);
@@ -90,6 +106,7 @@
 			discountValue: 0,
 			minAmountSpent: 0,
 		}));
+		voucherChannelListingInput.removeChannels = removeChannelIds;
 
 		activeChannelListings = existingChannelListings.concat(
 			newChannelIds.map((id) => {
@@ -108,10 +125,11 @@
 			}),
 		);
 
-		voucherChannelListingInput.removeChannels = removeChannelIds;
 		activeChannelListings = activeChannelListings.filter(
 			(item) => !removeChannelIds.includes(item.channel.id),
 		);
+
+		validate();
 	};
 
 	const handleDiscountAmountChange = (index: number, evt: Event) => {
@@ -123,6 +141,8 @@
 				discountValue: Number((evt.target as HTMLInputElement).value),
 			};
 		});
+
+		validate();
 	};
 </script>
 
@@ -136,7 +156,10 @@
 		placeholder="Discount value"
 		type="number"
 		min={0}
-		onchange={(evt) => handleDiscountAmountChange(idx, evt)}
+		inputDebounceOption={{ onInput: (evt) => handleDiscountAmountChange(idx, evt) }}
+		onblur={validate}
+		variant={discountValueErrors?.fieldErrors?.[idx]?.length ? 'error' : 'info'}
+		subText={discountValueErrors?.fieldErrors?.[idx]?.[0]}
 	>
 		{#snippet action()}
 			<span class="text-xs font-semibold text-gray-600">
@@ -166,6 +189,9 @@
 				placeholder="Specify channels"
 				bind:value={channelIds}
 				onchange={handleChannelsChange}
+				onblur={validate}
+				variant={discountValueErrors?.formErrors?.length ? 'error' : 'info'}
+				subText={discountValueErrors?.formErrors?.[0]}
 			/>
 		{/if}
 	</div>

@@ -1,7 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { VOUCHER_DELETE_MUTATION, VOUCHER_DETAIL_QUERY } from '$lib/api/admin/discount';
+	import { tranFunc } from '$i18n';
+	import {
+		VOUCHER_CHANNEL_LISTING_UPDATE_MUTATION,
+		VOUCHER_DELETE_MUTATION,
+		VOUCHER_DETAIL_QUERY,
+		VOUCHER_UPDATE_MUTATION,
+	} from '$lib/api/admin/discount';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
@@ -32,6 +38,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
+	import { string } from 'zod';
 
 	const voucherQuery = operationStore<Pick<Query, 'voucher'>, QueryVoucherArgs>({
 		kind: 'query',
@@ -58,7 +65,10 @@
 		products: [],
 		collections: [],
 		variants: [],
+		addCodes: [],
 	});
+
+	/** for updating channel listing */
 	let voucherChannelListingInput = $state<VoucherChannelListingInput>({
 		addChannels: [],
 		removeChannels: [],
@@ -69,6 +79,14 @@
 
 	let performUpdateMetadata = $state(false);
 	let loading = $state(false);
+
+	const NameSchema = string().nonempty($tranFunc('helpText.fieldRequired'));
+	let nameErrors = $state<string[]>([]);
+
+	const validateName = () => {
+		const result = NameSchema.safeParse(voucherInput.name);
+		nameErrors = result.success ? [] : result.error.formErrors.formErrors;
+	};
 
 	onMount(() =>
 		voucherQuery.subscribe((result) => {
@@ -109,6 +127,29 @@
 
 	const handleUpdateVoucher = async () => {
 		performUpdateMetadata = true;
+
+		const mainUpdate = GRAPHQL_CLIENT.mutation(VOUCHER_UPDATE_MUTATION, {
+			id: page.params.id,
+			input: voucherInput,
+		}).toPromise();
+
+		const channelListingUpdate = GRAPHQL_CLIENT.mutation(VOUCHER_CHANNEL_LISTING_UPDATE_MUTATION, {
+			id: page.params.id,
+			input: voucherChannelListingInput,
+		}).toPromise();
+
+		const resultKeys = ['voucherUpdate', 'voucherChannelListingUpdate'] as (keyof Mutation)[];
+
+		loading = true;
+		const results = await Promise.all([mainUpdate, channelListingUpdate]);
+		loading = false;
+
+		let hasErr = false;
+		results.forEach(
+			(item, idx) => (hasErr ||= checkIfGraphqlResultHasError(item as any, resultKeys[idx])),
+		);
+
+		if (hasErr) return;
 	};
 
 	const handleDeleteVoucher = async () => {
@@ -136,8 +177,17 @@
 {:else if $voucherQuery.error}
 	<Alert variant="error" bordered size="sm">{$voucherQuery.error.message}</Alert>
 {:else if $voucherQuery.data?.voucher}
-	{@const { id, metadata, privateMetadata, channelListings, categories, collections, used } =
-		$voucherQuery.data.voucher}
+	{@const {
+		id,
+		metadata,
+		privateMetadata,
+		channelListings,
+		categories,
+		collections,
+		used,
+		products,
+		variants,
+	} = $voucherQuery.data.voucher}
 	<div class="flex gap-2">
 		<div class="w-7/10 space-y-2">
 			<div class="rounded-lg p-3 border border-gray-200 bg-white">
@@ -147,13 +197,15 @@
 					label="Voucher name"
 					required
 					bind:value={voucherInput.name}
+					onblur={validateName}
+					inputDebounceOption={{ onInput: validateName }}
+					variant={nameErrors.length ? 'error' : 'info'}
+					subText={nameErrors[0]}
 				/>
 			</div>
-			<VoucherCodes voucherId={id} />
+			<VoucherCodes voucherId={id} bind:addVoucherCodeStrings={voucherInput.addCodes!} />
 			<DiscountType
 				bind:discountType={voucherInput.discountValueType!}
-				bind:applicationType={voucherInput.type!}
-				bind:applyOncePerOrder={voucherInput.applyOncePerOrder!}
 				bind:applyOncePerCustomer={voucherInput.applyOncePerCustomer!}
 				bind:onlyForStaff={voucherInput.onlyForStaff!}
 				bind:singleUse={voucherInput.singleUse!}
@@ -172,8 +224,8 @@
 				discountType={voucherInput.discountValueType!}
 				existingCategoriesCount={categories?.totalCount!}
 				existingCollectionsCount={collections?.totalCount!}
-				existingProductsCount={collections?.totalCount!}
-				existingVariantsCount={collections?.totalCount!}
+				existingProductsCount={products?.totalCount!}
+				existingVariantsCount={variants?.totalCount!}
 			/>
 			<Requirements
 				bind:minimumQuantityOfItems={voucherInput.minCheckoutItemsQuantity!}

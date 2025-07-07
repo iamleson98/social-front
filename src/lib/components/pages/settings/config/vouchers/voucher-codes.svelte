@@ -14,12 +14,14 @@
 	import { number, string } from 'zod';
 
 	type Props = {
-		voucherId: string;
+		/** if not provided, meaning it is create page */
+		voucherId?: string;
+		addVoucherCodeStrings: string[];
 	};
 
 	type AddVoucherCodeProps = Omit<VoucherCode, 'id' | 'createdAt'>;
 
-	let { voucherId }: Props = $props();
+	let { voucherId, addVoucherCodeStrings = $bindable() }: Props = $props();
 
 	const TABLE_COLUMNS: TableColumnProps<AddVoucherCodeProps>[] = [
 		{
@@ -76,6 +78,10 @@
 		const result = ManualCodeSchema.safeParse(manualVoucherCode);
 		manualVoucherCodeError = result.success ? undefined : result.error.errors[0].message;
 	};
+
+	$effect(() => {
+		addVoucherCodeStrings = addVoucherCodes.map((item) => item.code!);
+	});
 
 	const handleAddVoucherCodes = () => {
 		if (addCodeType === 'manual') {
@@ -172,16 +178,18 @@
 		</div>
 	{/if}
 
-	<GraphqlPaginableTable
-		query={VOUCHER_CODE_LIST_QUERY}
-		resultKey={'voucher.codes' as keyof Query}
-		variables={{
-			id: voucherId,
-			first: 10,
-		}}
-		bind:forceReExecuteGraphqlQuery
-		columns={TABLE_COLUMNS}
-	/>
+	{#if voucherId}
+		<GraphqlPaginableTable
+			query={VOUCHER_CODE_LIST_QUERY}
+			resultKey={'voucher.codes' as keyof Query}
+			variables={{
+				id: voucherId,
+				first: 10,
+			}}
+			bind:forceReExecuteGraphqlQuery
+			columns={TABLE_COLUMNS}
+		/>
+	{/if}
 </div>
 
 <Modal
