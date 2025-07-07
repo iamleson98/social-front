@@ -142,6 +142,6 @@ export type NominatimOsmProps = {
 };
 
 export const SitenameTimeFormat = 'MMM D, YYYY hh:mm A';
-
+export const CommonEaseDatePickerFormat = 'YYYY-MM-DD HH:mm'
 export const GiftcardUserEmailMetadataKey = 'customerEmail';
 export const GiftcardChannelMetadataKey = 'channel';

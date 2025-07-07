@@ -456,6 +456,7 @@ export const compareTime = (day1: TimeObject, day2: TimeObject) => {
 	return -1;
 };
 
+/** from raw byte numbers to human readable values */
 export function formatBytes(bytes: number): string {
 	if (bytes === 0) return '0 Bytes';
 	const sizes: string[] = ['Bytes', 'KB', 'MB', 'GB'];

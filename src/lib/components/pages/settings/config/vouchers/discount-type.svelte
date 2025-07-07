@@ -140,11 +140,7 @@
 	>
 		{#snippet action()}
 			<span class="text-xs font-semibold text-gray-600">
-				{#if discountType === DiscountValueTypeEnum.Fixed}
-					{item.channel.currencyCode}
-				{:else if discountType === DiscountValueTypeEnum.Percentage}
-					%
-				{/if}
+				{discountType === DiscountValueTypeEnum.Fixed ? item.channel.currencyCode : '%'}
 			</span>
 		{/snippet}
 	</Input>

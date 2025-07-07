@@ -57,7 +57,7 @@
 	};
 
 	$effect(() => {
-		if (name && isCreatePage) {
+		if (isCreatePage) {
 			slug = slugify(name, { lower: true, strict: true });
 			seo.title = name;
 		}
@@ -80,9 +80,9 @@
 			subText={seoFormErrors.slug?.length ? seoFormErrors.slug[0] : undefined}
 		/>
 		<Input
-			label="Title"
+			label="SEO Title"
 			bind:value={seo.title}
-			placeholder="Search Engine Title"
+			placeholder="SEO Title"
 			required
 			inputDebounceOption={{ onInput: validate }}
 			onblur={validate}
@@ -92,17 +92,16 @@
 		/>
 		<TextArea
 			bind:value={seo.description}
-			placeholder="Search Engine Description"
-			label="Description"
+			placeholder="SEO Description"
+			label="SEO Description"
 			required
 			{disabled}
 			inputClass="min-h-20"
 			inputDebounceOption={{ onInput: validate }}
 			onblur={validate}
 			variant={seoFormErrors.description?.length ? 'error' : 'info'}
-			subText={seoFormErrors.description?.length
-				? seoFormErrors.description[0]
-				: `${seo?.description?.length || 0} / ${DESCRIPTION_MAX_LENGTH}`}
+			subText={seoFormErrors.description?.[0] ??
+				`${seo?.description?.length || 0} / ${DESCRIPTION_MAX_LENGTH}`}
 		/>
 	</div>
 </Accordion>

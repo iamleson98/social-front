@@ -24,6 +24,7 @@
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import type { AnyVariables, TypedDocumentNode } from '@urql/core';
 	import ProductAssignModal from './product-assign-modal.svelte';
+	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 
 	type Props = {
 		/**if not provided, meaning this is create page*/
@@ -168,9 +169,7 @@
 {/snippet}
 
 {#snippet picture({ item }: { item: Product })}
-	<div class="rounded-lg border border-gray-200 w-9 h-9 overflow-hidden">
-		<img src={item.thumbnail?.url} alt={item.thumbnail?.alt} class="w-full h-full" />
-	</div>
+	<Thumbnail src={item.thumbnail?.url} alt={item.thumbnail?.alt || item.name} size="sm" />
 {/snippet}
 
 {#snippet name({ item }: { item: Product })}

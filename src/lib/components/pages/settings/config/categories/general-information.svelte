@@ -35,6 +35,7 @@
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 	const MAX_ERROR = $tranFunc('error.itemsExceed', { max: 1 });
+	const SEO_DESCRIPTION_MAX = 300;
 	let categoryFormErrors = $state.raw<Partial<Record<keyof CategorySchema, string[]>>>({});
 
 	$effect(() => {
@@ -52,10 +53,15 @@
 		name: string().nonempty(REQUIRED_ERROR),
 		slug: string().nonempty(REQUIRED_ERROR),
 		seoTitle: string().nonempty(REQUIRED_ERROR),
-		seoDescription: string().nonempty(REQUIRED_ERROR),
-		media: array(any()).max(1, MAX_ERROR).min(1, REQUIRED_ERROR),
+		seoDescription: string()
+			.nonempty(REQUIRED_ERROR)
+			.max(
+				SEO_DESCRIPTION_MAX,
+				`Description must be at most ${SEO_DESCRIPTION_MAX} characters long`,
+			),
+		media: array(any()).max(1, MAX_ERROR).nonempty(REQUIRED_ERROR),
 		description: object({
-			blocks: array(any()).min(1, REQUIRED_ERROR),
+			blocks: array(any()).nonempty(REQUIRED_ERROR),
 		}),
 	});
 	type CategorySchema = z.infer<typeof categorySchema>;
@@ -145,7 +151,7 @@
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
 		variant={categoryFormErrors.seoDescription?.length ? 'error' : 'info'}
-		subText={categoryFormErrors.seoDescription?.[0]}
+		subText={categoryFormErrors.seoDescription?.[0] ?? `${seoDescription.length} / ${SEO_DESCRIPTION_MAX}`}
 		inputClass="min-h-20"
 		disabled={loading}
 	/>

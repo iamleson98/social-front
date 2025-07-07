@@ -276,11 +276,7 @@
 {/snippet}
 
 {#snippet channelComp({ onValue, initialValue = '' }: FilterComponentType)}
-	<ChannelSelect
-		size="xs"
-		value={initialValue as string}
-		onchange={(opt) => onValue((opt as SelectOption)?.value)}
-	/>
+	<ChannelSelect size="xs" value={initialValue as string} onchange={(opt) => onValue(opt?.id as FilterItemValue)} />
 {/snippet}
 
 {#snippet yesNo({ onValue, initialValue = false }: FilterComponentType)}

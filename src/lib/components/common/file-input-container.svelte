@@ -78,7 +78,7 @@
 			const alt = file.name.slice(0, file.name.lastIndexOf('.'));
 
 			if (file.type.toLowerCase().startsWith('image/')) {
-				const prm = new Promise<MediaObject>((resolve) => {
+				const promise = new Promise<MediaObject>((resolve) => {
 					const url = URL.createObjectURL(file);
 					const img = new Image();
 					img.src = url;
@@ -95,18 +95,18 @@
 					};
 				});
 
-				promises.push(prm);
+				promises.push(promise);
 				continue;
 			}
 
-			const prm = Promise.resolve<MediaObject>({
+			const promise = Promise.resolve<MediaObject>({
 				file,
 				alt,
 				type: 'document',
 				url: URL.createObjectURL(file),
 			});
 
-			promises.push(prm);
+			promises.push(promise);
 		}
 
 		const results = await Promise.all(promises);
