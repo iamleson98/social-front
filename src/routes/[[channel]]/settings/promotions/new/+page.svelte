@@ -1,91 +1,44 @@
 <script lang="ts">
-	import { RFC3339TimeFormat } from '$lib/api/graphql/utils';
-	import { EditorJSComponent } from '$lib/components/common/editorjs';
-	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
+	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
+	import GeneralInformation from '$lib/components/pages/settings/config/promotions/general-information.svelte';
 	import Rules from '$lib/components/pages/settings/config/promotions/rules.svelte';
-	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
-	import { Input } from '$lib/components/ui/Input';
-	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { PromotionTypeEnum, type PromotionCreateInput } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import dayjs from 'dayjs';
 
 	let promotionInput = $state<PromotionCreateInput>({
 		name: '',
 		type: PromotionTypeEnum.Catalogue,
 	});
 	let loading = $state(false);
-	let promotionType = $state<PromotionTypeEnum>();
 
-	let discountTypeOptions = Object.values(PromotionTypeEnum).map<SelectOption>((value) => ({
-		value,
-		label: value.toLowerCase(),
-	}));
+	let createdPromotionId = $state<string>('');
 
 	const handleCreate = async () => {};
 </script>
 
-<div class="rounded-lg bg-white border border-gray-200 p-3 space-y-2 mb-2">
-	<SectionHeader>General information</SectionHeader>
-
-	<div class="flex gap-2 items-start">
-		<Select
-			options={discountTypeOptions}
-			label="Discount type"
-			required
-			class="flex-1/3"
-			size="md"
-			bind:value={promotionType}
-			disabled={loading}
-		/>
-		<Input
-			placeholder="Promotion name"
-			label="Promotion name"
-			required
-			class="flex-2/3"
-			size="md"
-			bind:value={promotionInput.name}
-			disabled={loading}
-		/>
-	</div>
-
-	<EditorJSComponent
-		label="Promotion description"
-		required
-		placeholder="Promotion description"
-		bind:value={promotionInput.description}
-		disabled={loading}
+<div class="space-y-2">
+	<GeneralInformation
+		bind:name={promotionInput.name!}
+		bind:type={promotionInput.type}
+		bind:description={promotionInput.description}
+		bind:startDate={promotionInput.startDate}
+		bind:endDate={promotionInput.endDate}
+		{loading}
+		isCreatePage
 	/>
 
-	<div class="flex items-start gap-2">
-		<EaseDatePicker
-			label="Start date"
-			placeholder="Start date"
-			required
-			class="flex-1"
-			value={{ date: promotionInput.startDate }}
-			format={RFC3339TimeFormat}
-			disabled={loading}
-			onchange={(value) =>
-				(promotionInput.startDate = dayjs(value.start).format(RFC3339TimeFormat))}
-		/>
-		<EaseDatePicker
-			label="End date"
-			placeholder="End date"
-			class="flex-1"
-			value={{ date: promotionInput.endDate }}
-			format={RFC3339TimeFormat}
-			disabled={loading}
-			onchange={(value) => (promotionInput.endDate = dayjs(value.start).format(RFC3339TimeFormat))}
-		/>
-	</div>
+	<Rules rules={[]} />
+	<GeneralMetadataEditor
+		objectId={createdPromotionId}
+		disabled={loading}
+		metadata={[]}
+		privateMetadata={[]}
+	/>
+
+	<ActionBar
+		backButtonUrl={AppRoute.SETTINGS_CONFIGS_PROMOTIONS()}
+		onAddClick={handleCreate}
+		disabled={loading}
+	/>
 </div>
-
-<Rules rules={[]} />
-
-<ActionBar
-	backButtonUrl={AppRoute.SETTINGS_CONFIGS_PROMOTIONS()}
-	onAddClick={handleCreate}
-	disabled={loading}
-/>

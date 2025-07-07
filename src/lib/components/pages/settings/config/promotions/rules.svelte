@@ -78,7 +78,7 @@
 
 	const handleDeleteRule = async (ruleId: string) => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: `Are you sure deleting the rule ${ruleId}?`,
+			content: `Are you sure you want to delete the rule ${ruleId}?`,
 			onOk: async () => {
 				loading = true;
 				const result = await GRAPHQL_CLIENT.mutation<
@@ -115,66 +115,72 @@
 		>
 	</SectionHeader>
 
-	<div class="grid grid-cols-2 gap-2">
-		{#each rules as rule, ruleIdx (ruleIdx)}
-			<div class="rounded-lg border border-gray-200 p-3 space-y-3">
-				<SectionHeader>
-					<div>Catalog rule: {rule.name}</div>
-					<div class="flex gap-1.5">
-						<IconButton
-							size="xs"
-							icon={Edit}
-							variant="light"
-							disabled={loading}
-							onclick={() => handleEditRule(rule.id)}
-						/>
-						<IconButton
-							size="xs"
-							icon={Trash}
-							color="red"
-							variant="light"
-							disabled={loading}
-							onclick={() => handleDeleteRule(rule.id)}
-						/>
-					</div>
-				</SectionHeader>
-				<EditorJSComponent
-					label="Catalogue rule description"
-					placeholder="Catalogue rule description"
-					value={rule.description}
-				/>
-
-				<div>
-					<div class="text-sm font-medium text-gray-700">Discount amount</div>
-					<Badge
-						text={rule.rewardValueType === RewardValueTypeEnum.Percentage
-							? `${rule.rewardValue}%`
-							: `${rule.rewardValue} ${rule.channels![0].currencyCode}`}
+	{#if rules.length}
+		<div class="grid grid-cols-2 gap-2">
+			{#each rules as rule, ruleIdx (ruleIdx)}
+				<div class="rounded-lg border border-gray-200 p-3 space-y-3">
+					<SectionHeader>
+						<div>Catalog rule: {rule.name}</div>
+						<div class="flex gap-1.5">
+							<IconButton
+								size="xs"
+								icon={Edit}
+								variant="light"
+								disabled={loading}
+								onclick={() => handleEditRule(rule.id)}
+							/>
+							<IconButton
+								size="xs"
+								icon={Trash}
+								color="red"
+								variant="light"
+								disabled={loading}
+								onclick={() => handleDeleteRule(rule.id)}
+							/>
+						</div>
+					</SectionHeader>
+					<EditorJSComponent
+						label="Catalogue rule description"
+						placeholder="Catalogue rule description"
+						value={rule.description}
 					/>
-				</div>
 
-				<div>
-					<div class="text-sm font-medium text-gray-700">Apply on channels</div>
-					<Badge text={rule.channels!.map((channel) => channel.name).join(', ')} />
-				</div>
-
-				{#if ruleTabs[ruleIdx].length > 0}
-					<div role="tablist" class="tabs tabs-border">
-						{#each ruleTabs[ruleIdx] as tab, tabIdx (tabIdx)}
-							<span
-								role="tab"
-								tabindex="0"
-								class="tab"
-								onclick={() => setActiveTabs(ruleIdx, tabIdx)}
-								onkeydown={(evt) => evt.key === 'Enter' && setActiveTabs(ruleIdx, tabIdx)}
-								class:tab-active={activeTabs[ruleIdx] === tabIdx}>{tab.name}</span
-							>
-						{/each}
+					<div>
+						<div class="text-sm font-medium text-gray-700">Discount amount</div>
+						<Badge
+							text={rule.rewardValueType === RewardValueTypeEnum.Percentage
+								? `${rule.rewardValue}%`
+								: `${rule.rewardValue} ${rule.channels![0].currencyCode}`}
+						/>
 					</div>
-				{/if}
-			</div>
-		{/each}
-	</div>
+
+					<div>
+						<div class="text-sm font-medium text-gray-700">Apply on channels</div>
+						<Badge text={rule.channels!.map((channel) => channel.name).join(', ')} />
+					</div>
+
+					{#if ruleTabs[ruleIdx].length > 0}
+						<div role="tablist" class="tabs tabs-border">
+							{#each ruleTabs[ruleIdx] as tab, tabIdx (tabIdx)}
+								<span
+									role="tab"
+									tabindex="0"
+									class="tab"
+									onclick={() => setActiveTabs(ruleIdx, tabIdx)}
+									onkeydown={(evt) => evt.key === 'Enter' && setActiveTabs(ruleIdx, tabIdx)}
+									class:tab-active={activeTabs[ruleIdx] === tabIdx}>{tab.name}</span
+								>
+							{/each}
+						</div>
+					{/if}
+				</div>
+			{/each}
+		</div>
+	{:else}
+		<div class="text-center text-gray-400 text-sm">
+			<div>There is no rule, please add more</div>
+		</div>
+	{/if}
 </div>
 
 <Modal
@@ -186,7 +192,7 @@
 	closeOnOutsideClick
 	onOk={() => (showRuleEditModal = false)}
 	onCancel={() => (showRuleEditModal = false)}
-  onClose={() => (showRuleEditModal = false)}
+	onClose={() => (showRuleEditModal = false)}
 >
 	<RuleEdit />
 </Modal>

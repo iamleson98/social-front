@@ -89,23 +89,23 @@
 	<Alert size="sm" variant="error" bordered>{$promotionStore.error.message}</Alert>
 {:else if $promotionStore.data?.promotion}
 	{@const { rules, id, metadata, privateMetadata } = $promotionStore.data.promotion}
-	<GeneralInformation
-		bind:name={promotionInput.name!}
-		type={promotionType}
-		{loading}
-		bind:description={promotionInput.description}
-		bind:startDate={promotionInput.startDate}
-		bind:endDate={promotionInput.endDate}
-	/>
+	<div class="space-y-2">
+		<GeneralInformation
+			bind:name={promotionInput.name!}
+			type={promotionType}
+			{loading}
+			bind:description={promotionInput.description}
+			bind:startDate={promotionInput.startDate}
+			bind:endDate={promotionInput.endDate}
+		/>
 
-	<Rules rules={rules || []} />
-
-	<GeneralMetadataEditor objectId={id} {metadata} {privateMetadata} disabled={loading} />
-
-	<ActionBar
-		backButtonUrl={AppRoute.SETTINGS_CONFIGS_PROMOTIONS()}
-		onDeleteClick={handleDelete}
-		onUpdateClick={handleUpdate}
-		disabled={loading}
-	/>
+		<Rules rules={rules || []} />
+		<GeneralMetadataEditor objectId={id} {metadata} {privateMetadata} disabled={loading} />
+		<ActionBar
+			backButtonUrl={AppRoute.SETTINGS_CONFIGS_PROMOTIONS()}
+			onDeleteClick={handleDelete}
+			onUpdateClick={handleUpdate}
+			disabled={loading}
+		/>
+	</div>
 {/if}
