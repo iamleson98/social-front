@@ -2,28 +2,38 @@
 	import { RFC3339TimeFormat } from '$lib/api/graphql/utils';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
-	import Rules from '$lib/components/pages/settings/config/promotions/rules.svelte';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Input } from '$lib/components/ui/Input';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
-	import { PromotionTypeEnum, type PromotionCreateInput } from '$lib/gql/graphql';
-	import { AppRoute } from '$lib/utils';
+	import { PromotionTypeEnum } from '$lib/gql/graphql';
+	import type { OutputData } from '@editorjs/editorjs';
 	import dayjs from 'dayjs';
 
-	let promotionInput = $state<PromotionCreateInput>({
-		name: '',
-		type: PromotionTypeEnum.Catalogue,
-	});
-	let loading = $state(false);
-	let promotionType = $state<PromotionTypeEnum>();
+	type Props = {
+		/** indicate if current page is promotion create page */
+		isCreatePage?: boolean;
+		name: string;
+		type: PromotionTypeEnum;
+		loading?: boolean;
+		description: OutputData;
+		startDate: string;
+		endDate?: string;
+	};
 
-	let discountTypeOptions = Object.values(PromotionTypeEnum).map<SelectOption>((value) => ({
+	let {
+		isCreatePage = false,
+		name = $bindable(),
+		type = $bindable(),
+		loading,
+		description = $bindable(),
+		startDate = $bindable(),
+		endDate = $bindable(),
+	}: Props = $props();
+
+	const DiscountTypeOptions = Object.values(PromotionTypeEnum).map<SelectOption>((value) => ({
 		value,
 		label: value.toLowerCase(),
 	}));
-
-	const handleCreate = async () => {};
 </script>
 
 <div class="rounded-lg bg-white border border-gray-200 p-3 space-y-2 mb-2">
@@ -31,13 +41,13 @@
 
 	<div class="flex gap-2 items-start">
 		<Select
-			options={discountTypeOptions}
+			options={DiscountTypeOptions}
 			label="Discount type"
 			required
 			class="flex-1/3"
 			size="md"
-			bind:value={promotionType}
-			disabled={loading}
+			bind:value={type}
+			disabled={!isCreatePage}
 		/>
 		<Input
 			placeholder="Promotion name"
@@ -45,7 +55,7 @@
 			required
 			class="flex-2/3"
 			size="md"
-			bind:value={promotionInput.name}
+			bind:value={name}
 			disabled={loading}
 		/>
 	</div>
@@ -54,7 +64,7 @@
 		label="Promotion description"
 		required
 		placeholder="Promotion description"
-		bind:value={promotionInput.description}
+		bind:value={description}
 		disabled={loading}
 	/>
 
@@ -64,28 +74,19 @@
 			placeholder="Start date"
 			required
 			class="flex-1"
-			value={{ date: promotionInput.startDate }}
+			value={{ date: startDate }}
 			format={RFC3339TimeFormat}
 			disabled={loading}
-			onchange={(value) =>
-				(promotionInput.startDate = dayjs(value.start).format(RFC3339TimeFormat))}
+			onchange={(value) => (startDate = dayjs(value.start).format(RFC3339TimeFormat))}
 		/>
 		<EaseDatePicker
 			label="End date"
 			placeholder="End date"
 			class="flex-1"
-			value={{ date: promotionInput.endDate }}
+			value={{ date: endDate }}
 			format={RFC3339TimeFormat}
 			disabled={loading}
-			onchange={(value) => (promotionInput.endDate = dayjs(value.start).format(RFC3339TimeFormat))}
+			onchange={(value) => (endDate = dayjs(value.start).format(RFC3339TimeFormat))}
 		/>
 	</div>
 </div>
-
-<Rules rules={[]} />
-
-<ActionBar
-	backButtonUrl={AppRoute.SETTINGS_CONFIGS_PROMOTIONS()}
-	onAddClick={handleCreate}
-	disabled={loading}
-/>
