@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { PRODUCT_ATTRIBUTES_QUERY } from '$lib/api/admin/attribute';
+	import Filter from '$lib/components/pages/settings/attributes/filter.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { type Attribute, AttributeSortField, type QueryAttributesArgs } from '$lib/gql/graphql';
@@ -55,6 +56,8 @@
 		color={item.filterableInStorefront ? 'green' : 'red'}
 	/>
 {/snippet}
+
+<Filter bind:variables bind:forceReExecuteGraphqlQuery />
 
 <GraphqlPaginableTable
 	query={PRODUCT_ATTRIBUTES_QUERY}

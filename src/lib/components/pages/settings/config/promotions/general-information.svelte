@@ -9,7 +9,6 @@
 	import { PromotionTypeEnum } from '$lib/gql/graphql';
 	import type { OutputData } from '@editorjs/editorjs';
 	import dayjs from 'dayjs';
-	import { valueFromAST } from 'graphql';
 	import z, { any, array, object, string } from 'zod';
 
 	type Props = {
