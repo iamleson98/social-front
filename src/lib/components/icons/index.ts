@@ -117,6 +117,7 @@ export {
   TableFolderHeart as FolderHeart,
   TablerGiftcard as Giftcard,
   TablerGift as Gift,
+  TablerThingiverse as Thingiverse,
 } from './consts';
 
 export { default as Icon } from './icon.svelte';

@@ -15,6 +15,7 @@
 		MailQuestion,
 		Parking,
 		RosetteDiscountChecked,
+		Thingiverse,
 		Ticket,
 		UserCog,
 		UsersGroup,
@@ -192,7 +193,7 @@
 				].includes(page.url.pathname),
 		},
 		{
-			icon: Globe,
+			icon: Thingiverse,
 			name: 'Product types',
 			href: AppRoute.SETTINGS_PRODUCT_TYPES(),
 			shouldActive: () =>
