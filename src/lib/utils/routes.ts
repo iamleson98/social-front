@@ -18,6 +18,10 @@ export const AppRoute = {
 	SETTINGS_PRODUCTS_EDIT: (slug: string) => buildLinkWithRespectToChannel(`settings/products/${slug}`),
 	SETTINGS_PRODUCTS_NEW: () => buildLinkWithRespectToChannel('settings/products/new'),
 
+	SETTINGS_PRODUCT_TYPES: () => buildLinkWithRespectToChannel('settings/product-types'),
+	SETTINGS_PRODUCT_TYPE_EDIT: (id: string) => buildLinkWithRespectToChannel(`settings/product-types/${id}`),
+	SETTINGS_PRODUCT_TYPE_NEW: () => buildLinkWithRespectToChannel('settings/product-types/new'),
+
 	SETTINGS_CONTRACTS: () => buildLinkWithRespectToChannel('settings/contracts'),
 	SETTINGS_CONTRACTS_NEW: () => buildLinkWithRespectToChannel('settings/contracts/new'),
 

@@ -15,7 +15,11 @@
 		type PromotionRule,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import {
+		checkIfGraphqlResultHasError,
+		editorJsParser,
+		parseEditorJsString,
+	} from '$lib/utils/utils';
 	import RuleEdit from './rule-edit.svelte';
 
 	type Props = {
@@ -101,6 +105,8 @@
 	const setActiveTabs = (ruleIdx: number, tabIdx: number) => {
 		activeTabs[ruleIdx] = tabIdx;
 	};
+
+	// editorJsParser.parse()
 </script>
 
 <div class="rounded-lg bg-white border border-gray-200 p-3 space-y-2">
@@ -118,9 +124,9 @@
 	{#if rules.length}
 		<div class="grid grid-cols-2 gap-2">
 			{#each rules as rule, ruleIdx (ruleIdx)}
-				<div class="rounded-lg border border-gray-200 p-3 space-y-3">
+				<div class="rounded-lg border border-gray-200 p-3 space-y-2">
 					<SectionHeader>
-						<div>Catalog rule: {rule.name}</div>
+						<div>Catalog rule</div>
 						<div class="flex gap-1.5">
 							<IconButton
 								size="xs"
@@ -139,13 +145,25 @@
 							/>
 						</div>
 					</SectionHeader>
-					<EditorJSComponent
-						label="Catalogue rule description"
-						placeholder="Catalogue rule description"
-						value={rule.description}
-					/>
+					<div>
+						<div class="text-sm font-medium text-gray-700">Name</div>
+						<div class="text-xs">{rule.name}</div>
+					</div>
 
 					<div>
+						<div class="text-sm font-medium text-gray-700">Description</div>
+						{#if rule.description}
+							<div class="text-xs">
+								{#each parseEditorJsString(rule.description) as para, idx (idx)}
+									{@html para}
+								{/each}
+							</div>
+						{:else}
+							<div>-</div>
+						{/if}
+					</div>
+
+					<div class="flex items-center justify-between">
 						<div class="text-sm font-medium text-gray-700">Discount amount</div>
 						<Badge
 							text={rule.rewardValueType === RewardValueTypeEnum.Percentage
@@ -154,9 +172,9 @@
 						/>
 					</div>
 
-					<div>
+					<div class="flex items-center justify-between">
 						<div class="text-sm font-medium text-gray-700">Apply on channels</div>
-						<Badge text={rule.channels!.map((channel) => channel.name).join(', ')} />
+						<Badge text={rule.channels?.[0].name || '-'} />
 					</div>
 
 					{#if ruleTabs[ruleIdx].length > 0}

@@ -19,7 +19,7 @@
 		<EaseDatePicker
 			required
 			label="Start date"
-			value={{ date: startDate ? dayjs(startDate).toDate() : undefined }}
+			value={{ date: startDate }}
 			onchange={(value) => {
 				startDate = value.date!.toString();
 			}}

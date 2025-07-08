@@ -192,6 +192,17 @@
 				].includes(page.url.pathname),
 		},
 		{
+			icon: Globe,
+			name: 'Product types',
+			href: AppRoute.SETTINGS_PRODUCT_TYPES(),
+			shouldActive: () =>
+				[
+					AppRoute.SETTINGS_PRODUCT_TYPES(),
+					AppRoute.SETTINGS_PRODUCT_TYPE_NEW(),
+					AppRoute.SETTINGS_PRODUCT_TYPE_EDIT(page.params.id),
+				].includes(page.url.pathname),
+		},
+		{
 			icon: UsersGroup,
 			name: $tranFunc('settings.staffs'),
 			href: AppRoute.SETTINGS_CONFIGS_STAFFS(),

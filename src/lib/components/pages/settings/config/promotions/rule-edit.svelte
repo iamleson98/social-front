@@ -1,13 +1,32 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
+	import { PRODUCT_LIST_QUERY_STORE, PRODUCT_VARIANTS_QUERY_STORE } from '$lib/api';
+	import { CATEGORIES_LIST_QUERY } from '$lib/api/admin/category';
+	import { COLLECTIONS_QUERY } from '$lib/api/collections';
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
 	import { Plus } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import { Input } from '$lib/components/ui/Input';
-	import { type Channel, RewardValueTypeEnum } from '$lib/gql/graphql';
+	import { Checkbox, Input } from '$lib/components/ui/Input';
+	import { GraphqlPaginableSelect, Select } from '$lib/components/ui/select';
+	import {
+		type Channel,
+		type PromotionRule,
+		type QueryCategoriesArgs,
+		type QueryCollectionsArgs,
+		type QueryProductsArgs,
+		type QueryProductVariantsArgs,
+		RewardValueTypeEnum,
+	} from '$lib/gql/graphql';
 	import { classNames } from '$lib/utils/utils';
 	import { number, object, string, z } from 'zod';
+
+	// type Props = {
+	// 	/** If not provided, meaning this is create modal */
+	// 	rule?: PromotionRule;
+	// };
+
+	// let { rule }: Props = $props();
 
 	const FIELD_REQUIRED = $tranFunc('helpText.fieldRequired');
 	const POSITIVE_ERROR = $tranFunc('error.negativeNumber');
@@ -36,7 +55,104 @@
 		ruleFormErrors = result.success ? {} : result.error.formErrors.fieldErrors;
 		return result.success;
 	};
+
+	const RuleConditions = $state([
+		{
+			title: 'products',
+			selected: false,
+			values: [],
+			component: products,
+		},
+		{
+			title: 'collections',
+			selected: false,
+			values: [],
+			component: collections,
+		},
+		{
+			title: 'variants',
+			selected: false,
+			values: [],
+			component: variants,
+		},
+		{
+			title: 'categories',
+			selected: false,
+			values: [],
+			component: categories,
+		},
+	]);
 </script>
+
+{#snippet products()}
+	{#if rule.channel}
+		<GraphqlPaginableSelect
+			query={PRODUCT_LIST_QUERY_STORE}
+			variables={{ first: 20, channel: rule.channel, filter: { search: '' } } as QueryProductsArgs}
+			optionLabelKey="name"
+			optionValueKey="id"
+			variableSearchQueryPath="filter.search"
+			multiple
+			bind:value={RuleConditions[0].values}
+			resultKey="products"
+			size="sm"
+		/>
+	{/if}
+{/snippet}
+
+{#snippet collections()}
+	{#if rule.channel}
+		<GraphqlPaginableSelect
+			query={COLLECTIONS_QUERY}
+			variables={{
+				first: 20,
+				channel: rule.channel,
+				filter: { search: '' },
+			} as QueryCollectionsArgs}
+			optionLabelKey="name"
+			optionValueKey="id"
+			variableSearchQueryPath="filter.search"
+			multiple
+			bind:value={RuleConditions[1].values}
+			resultKey="collections"
+			size="sm"
+		/>
+	{/if}
+{/snippet}
+
+{#snippet categories()}
+	<GraphqlPaginableSelect
+		query={CATEGORIES_LIST_QUERY}
+		variables={{ first: 20, filter: { search: '' } } as QueryCategoriesArgs}
+		optionLabelKey="name"
+		optionValueKey="id"
+		variableSearchQueryPath="filter.search"
+		multiple
+		bind:value={RuleConditions[3].values}
+		resultKey="categories"
+		size="sm"
+	/>
+{/snippet}
+
+{#snippet variants()}
+	{#if rule.channel}
+		<GraphqlPaginableSelect
+			query={PRODUCT_VARIANTS_QUERY_STORE}
+			variables={{
+				first: 20,
+				filter: { search: '' },
+				channel: rule.channel,
+			} as QueryProductVariantsArgs}
+			optionLabelKey="name"
+			optionValueKey="id"
+			variableSearchQueryPath="filter.search"
+			multiple
+			bind:value={RuleConditions[2].values}
+			resultKey="productVariants"
+			size="sm"
+		/>
+	{/if}
+{/snippet}
 
 <div class="space-y-3">
 	<div class="flex items-start gap-2">
@@ -68,7 +184,21 @@
 	{#if rule.channel}
 		<div class="text-sm">
 			<dir class="font-medium text-gray-700">Conditions</dir>
-			<Button size="xs" endIcon={Plus}>Add condition</Button>
+			<!-- <Button size="xs" endIcon={Plus}>Add condition</Button> -->
+			<div class="space-y-2">
+				{#each RuleConditions as cond, idx (idx)}
+					<div class="flex items-center gap-1">
+						<div class="flex-1/4">
+							<Checkbox label={cond.title} size="sm" bind:checked={cond.selected} />
+						</div>
+						<div class="flex-3/4">
+							{#if cond.selected}
+								{@render cond.component()}
+							{/if}
+						</div>
+					</div>
+				{/each}
+			</div>
 		</div>
 	{/if}
 
@@ -104,11 +234,9 @@
 			min={0}
 		>
 			{#snippet action()}
-				<span class="text-xs font-semibold"
-					>{rule.rewardValueType === RewardValueTypeEnum.Fixed
-						? selectedChannel?.currencyCode
-						: '%'}</span
-				>
+				<span class="text-xs font-semibold">
+					{rule.rewardValueType === RewardValueTypeEnum.Fixed ? selectedChannel?.currencyCode : '%'}
+				</span>
 			{/snippet}
 		</Input>
 	</div>

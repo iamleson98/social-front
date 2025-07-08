@@ -68,6 +68,9 @@ query ProductTypes($first: Int, $after: String, $last: Int, $before: String, $so
 				isShippingRequired
 				isDigital
 				kind
+        taxClass {
+          name
+        }
 			}
 		}
 		pageInfo {
@@ -77,6 +80,16 @@ query ProductTypes($first: Int, $after: String, $last: Int, $before: String, $so
 			startCursor
 		}
 	}
+}`;
+
+export const PRODUCT_TYPE_DELETE_MUTATION = gql`
+mutation DeleteProductType($id: ID!) {
+  productTypeDelete(id: $id) {
+    errors {
+      field
+      message
+    }
+  }
 }`;
 
 export const PRODUCT_TYPE_QUERY = gql`

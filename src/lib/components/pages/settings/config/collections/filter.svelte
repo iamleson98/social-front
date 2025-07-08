@@ -7,7 +7,6 @@
 		FilterProps,
 	} from '$lib/components/common/filter-box/types';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
-	import { type SelectOption } from '$lib/components/ui/select';
 	import {
 		CollectionPublished,
 		type CollectionFilterInput,

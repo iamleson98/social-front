@@ -69,7 +69,7 @@
 		DISCOUNT_TYPE_SHIPPING,
 	];
 
-	let channelIds = $state<string[]>(existingUsedChannelIDs);
+	let selectedChannelIds = $state<string[]>(existingUsedChannelIDs);
 
 	const CHANNEL_LISTING_COLUMNS: TableColumnProps<VoucherChannelListing>[] = [
 		{
@@ -98,8 +98,8 @@
 	};
 
 	const handleChannelsChange = () => {
-		const newChannelIds = difference(channelIds, existingUsedChannelIDs);
-		const removeChannelIds = difference(existingUsedChannelIDs, channelIds);
+		const newChannelIds = difference(selectedChannelIds, existingUsedChannelIDs);
+		const removeChannelIds = difference(existingUsedChannelIDs, selectedChannelIds);
 
 		voucherChannelListingInput.addChannels = newChannelIds.map((id) => ({
 			channelId: id,
@@ -187,7 +187,7 @@
 				multiple
 				{options}
 				placeholder="Specify channels"
-				bind:value={channelIds}
+				bind:value={selectedChannelIds}
 				onchange={handleChannelsChange}
 				onblur={validate}
 				variant={discountValueErrors?.formErrors?.length ? 'error' : 'info'}

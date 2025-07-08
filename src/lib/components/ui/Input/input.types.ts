@@ -20,6 +20,7 @@ export type CustomInputProps = {
 
   /** indicate if this component is being used in as <Select /> component */
   selectShortcutOptions?: ShortcutOptions<HTMLInputElement | HTMLTextAreaElement>[];
+  /** advanced option to delay the dispatch of typing events, to after specified time */
   inputDebounceOption?: InputDebounceOpts;
 }
 

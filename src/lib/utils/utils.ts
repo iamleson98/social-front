@@ -38,15 +38,13 @@ export function randomString(length: number = 10) {
  * @description Parses the raw product description and returns an array of strings.
  * @param description raw product description
  */
-export const parseProductDescription = (description: string): string[] => {
+export const parseEditorJsString = (description: string | object): string[] => {
 	const result: string[] = [];
 
-	if (!description) {
-		return result;
-	}
+	if (!description) return result;
 
 	try {
-		const jsonData = JSON.parse(description);
+		const jsonData = typeof description === 'string' ? JSON.parse(description) : description;
 		const contentBlocks = editorJsParser.parse(jsonData);
 		for (const block of contentBlocks) {
 			result.push(xss(block));

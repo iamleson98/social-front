@@ -34,6 +34,7 @@
 		/** if provided, will display the text box for search query input as well */
 		searchKey?: keyof Var;
 		forceReExecuteGraphqlQuery: boolean;
+		disabled?: boolean;
 	};
 
 	let {
@@ -41,6 +42,7 @@
 		variables = $bindable(),
 		searchKey,
 		forceReExecuteGraphqlQuery = $bindable(false),
+		disabled,
 	}: Props = $props();
 
 	if (searchKey && !has(variables, searchKey))
@@ -255,7 +257,14 @@
 	{#if filterOptions.length}
 		<Popover placement="bottom-start" bind:open={openFilterBox}>
 			{#snippet trigger(opts: DropdownTriggerInterface)}
-				<Button variant="outline" size="sm" {...opts} class="indicator" endIcon={FilterCog}>
+				<Button
+					variant="outline"
+					size="sm"
+					{...opts}
+					class="indicator"
+					endIcon={FilterCog}
+					{disabled}
+				>
 					{#if filtersCount}
 						<span class="indicator-item badge badge-xs text-white! bg-blue-500">
 							{filtersCount}
@@ -271,6 +280,7 @@
 		<Input
 			placeholder="Enter your query"
 			size="sm"
+			{disabled}
 			value={get(variables, searchKey)}
 			inputDebounceOption={{ onInput: handleSearchValueChange, debounceTime: 888 }}
 			startIcon={Search}

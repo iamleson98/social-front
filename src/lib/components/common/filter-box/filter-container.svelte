@@ -11,9 +11,10 @@
 		filterOptions: FilterProps<T>[];
 		open: boolean;
 		filters: FilterConditions<T>;
+		disabled?: boolean;
 	};
 
-	let { filterOptions, open = $bindable(), filters }: Props = $props();
+	let { filterOptions, open = $bindable(), filters, disabled }: Props = $props();
 
 	const FILTER_MAP = filterOptions.reduce(
 		(acc, cur) => {
@@ -115,6 +116,7 @@
 	<dir class="flex items-center justify-between">
 		<span class="text-sm font-medium">Filters</span>
 		<IconButton
+			{disabled}
 			icon={CloseX}
 			color="gray"
 			size="xs"
@@ -140,7 +142,7 @@
 						onchange={(vl) =>
 							handleFilterItemKeyChange(key as keyof T, (vl as SelectOption)?.value as keyof T)}
 						placeholder="Select filter"
-						disabled={disableDelBtn}
+						disabled={disableDelBtn || disabled}
 					/>
 
 					<div class="flex-4 flex items-center gap-1">
@@ -156,6 +158,7 @@
 								size="xs"
 								class="flex-1"
 								value={filterOpt.operator}
+								{disabled}
 								onchange={(vl) => {
 									setFilterItemValue(key as keyof T, (vl as SelectOption)?.value as FilterOperator);
 								}}
@@ -186,7 +189,7 @@
 							onclick={() =>
 								(activeFilters = omit(activeFilters, [key as keyof T]) as FilterConditions<T>)}
 							aria-label="Delete filter"
-							disabled={disableDelBtn}
+							disabled={disableDelBtn || disabled}
 						/>
 					</div>
 				</div>
@@ -206,7 +209,7 @@
 				variant="light"
 				color="gray"
 				onclick={() => (activeFilters = { ...activeFilters, '': {} })}
-				disabled={disableAddFilterBtn}
+				disabled={disableAddFilterBtn || disabled}
 			>
 				Add Filter
 			</Button>
@@ -216,10 +219,15 @@
 					variant="light"
 					color="gray"
 					onclick={() => (activeFilters = {} as FilterConditions<T>)}
+					{disabled}
 				>
 					Reset
 				</Button>
-				<Button size="xs" disabled={disableAddFilterBtn} onclick={handleApplyCustomFilter}>
+				<Button
+					size="xs"
+					disabled={disableAddFilterBtn || disabled}
+					onclick={handleApplyCustomFilter}
+				>
 					Apply
 				</Button>
 			</div>

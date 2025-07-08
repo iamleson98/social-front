@@ -9,6 +9,7 @@
 	import { PromotionTypeEnum } from '$lib/gql/graphql';
 	import type { OutputData } from '@editorjs/editorjs';
 	import dayjs from 'dayjs';
+	import { valueFromAST } from 'graphql';
 	import z, { any, array, object, string } from 'zod';
 
 	type Props = {
@@ -39,7 +40,7 @@
 		type: string().nonempty(RequiredErr),
 		description: object({
 			blocks: array(any()).min(1, RequiredErr),
-		}),
+		}).nullable(),
 		startDate: string().nonempty(RequiredErr),
 	});
 
@@ -121,6 +122,14 @@
 			variant={promotionFormErrors?.startDate?.length ? 'error' : 'info'}
 			subText={promotionFormErrors?.startDate?.[0]}
 			onblur={validate}
+			allowSelectMonthYears={{
+				showMonths: true,
+				showYears: {
+					min: 2020,
+					max: 2050,
+				},
+				showResetBtn: true,
+			}}
 		/>
 		<EaseDatePicker
 			label="End date"
@@ -130,6 +139,17 @@
 			format={RFC3339TimeFormat}
 			disabled={loading}
 			onchange={(value) => (endDate = dayjs(value.start).format(RFC3339TimeFormat))}
+			allowSelectMonthYears={{
+				showMonths: true,
+				showYears: {
+					min: 2020,
+					max: 2050,
+				},
+				showResetBtn: true,
+			}}
+			timeLock={{
+				minDate: startDate ? dayjs(startDate).add(1, 'day').toDate() : undefined,
+			}}
 		/>
 	</div>
 </div>
