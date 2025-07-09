@@ -47,22 +47,6 @@ export const CHANNEL_UPDATE_MUTATION = gql`
   }
 `;
 
-export const SHIPPING_ZONES_QUERY = gql`
-query ShippingZones($channel: String, $filter: ShippingZoneFilterInput, $before: String, $after: String, $first: Int, $last: Int) {
-  shippingZones(channel: $channel, filter: $filter, before: $before, after: $after, first: $first, last: $last) {
-    edges {
-      node {
-        id
-        name
-        countries {
-          code
-          country
-        }
-      }
-    }
-  }
-}`;
-
 export const CHANNEL_WAREHOUSES_QUERY = gql`
 	query ChannelWarehouses($slug: String!) {
 		channel(slug: $slug) {
@@ -71,19 +55,6 @@ export const CHANNEL_WAREHOUSES_QUERY = gql`
 			warehouses {
 				id
 				name
-			}
-		}
-	}
-`;
-
-export const WAREHOUSES_QUERY = gql`
-	query Warehouses($filter: WarehouseFilterInput, $before: String, $after: String, $first: Int, $last: Int) {
-		warehouses(filter: $filter, before: $before, after: $after, first: $first, last: $last) {
-			edges {
-				node {
-					id
-					name
-				}
 			}
 		}
 	}

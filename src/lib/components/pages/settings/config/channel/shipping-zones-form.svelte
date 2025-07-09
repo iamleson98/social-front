@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { SHIPPING_ZONES_QUERY } from '$lib/api/admin/channels';
+	import { SHIPPING_ZONES_QUERY } from '$lib/api/admin/shipping';
 	import { operationStore } from '$lib/api/operation';
 	import { Plus, Trash } from '$lib/components/icons';
 	import { Accordion } from '$lib/components/ui/Accordion';

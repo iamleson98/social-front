@@ -24,7 +24,7 @@
 <div>
 	<AddressForm
 		channelSlug={checkout.channel.slug}
-		updatingCHeckoutAddresses={false}
+		updatingCheckoutAddresses={false}
 		{countrySelectOptions}
 		onSubmit={console.log}
 		{onCancel}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { SHIPPING_ZONES_QUERY } from '$lib/api/admin/channels';
+	import { SHIPPING_ZONES_QUERY } from '$lib/api/admin/shipping';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { type QueryShippingZonesArgs, type ShippingZone } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';

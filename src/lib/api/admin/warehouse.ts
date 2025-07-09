@@ -39,3 +39,40 @@ mutation UpdateWarehouse($id: ID!, $input: WarehouseUpdateInput!, $externalRefer
     }
   }
 }`;
+
+export const WAREHOUSE_DETAIL_QUERY = gql`
+query Warehouse($id: ID!) {
+  warehouse(id: $id) {
+    name
+    slug
+    email
+    isPrivate
+    externalReference
+    metadata {
+      key
+      value
+    }
+    privateMetadata {
+      key
+      value
+    }
+    clickAndCollectOption
+    address {
+      id
+      firstName
+      lastName
+      companyName
+      countryArea
+      streetAddress1
+      streetAddress2
+      cityArea
+      city
+      postalCode
+      phone
+      country {
+        code
+        country
+      }
+    }
+  }
+}`;

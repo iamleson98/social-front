@@ -225,7 +225,7 @@
 			<AddressForm
 				onSubmit={handleCreateAddress}
 				onCancel={() => (showAddressCreateForm = false)}
-				updatingCHeckoutAddresses={loading}
+				updatingCheckoutAddresses={loading}
 				channelSlug={clientSideGetCookieOrDefault(CHANNEL_KEY, DEFAULT_CHANNEL.slug)}
 				showSetAsDefaultAddressField
 				defaultValue={undefined}
@@ -238,7 +238,7 @@
 			<AddressForm
 				onSubmit={handleUpdateAddress}
 				onCancel={() => (addressUpdateInputInitValue = undefined)}
-				updatingCHeckoutAddresses={loading}
+				updatingCheckoutAddresses={loading}
 				channelSlug={clientSideGetCookieOrDefault(CHANNEL_KEY, DEFAULT_CHANNEL.slug)}
 				defaultValue={addressUpdateInputInitValue}
 			/>

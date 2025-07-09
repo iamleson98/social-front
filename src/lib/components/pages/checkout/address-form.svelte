@@ -33,7 +33,7 @@
 		countrySelectOptions?: SelectOption[];
 		onSubmit: (address: AddressInput, type?: AddressTypeEnum) => void;
 		onCancel: () => void;
-		updatingCHeckoutAddresses: boolean;
+		updatingCheckoutAddresses: boolean;
 		defaultValue?: Address;
 		channelSlug: string;
 		showSetAsDefaultAddressField?: boolean;
@@ -41,7 +41,7 @@
 
 	let {
 		onSubmit,
-		updatingCHeckoutAddresses,
+		updatingCheckoutAddresses,
 		defaultValue,
 		onCancel,
 		channelSlug,
@@ -169,7 +169,7 @@
 					bind:value={formValues[field].value}
 					variant={formValues[field].error ? 'error' : 'info'}
 					subText={formValues[field].error || ''}
-					disabled={updatingCHeckoutAddresses}
+					disabled={updatingCheckoutAddresses}
 					class="mb-2"
 				/>
 			{:else if label}
@@ -183,7 +183,7 @@
 					bind:value={formValues[field].value}
 					variant={formValues[field].error ? 'error' : 'info'}
 					subText={formValues[field].error || ''}
-					disabled={updatingCHeckoutAddresses}
+					disabled={updatingCheckoutAddresses}
 				/>
 			{/if}
 		{/each}
@@ -196,14 +196,14 @@
 					label={AddressTypeEnum.Billing}
 					value={AddressTypeEnum.Billing}
 					bind:group={addressType}
-					disabled={updatingCHeckoutAddresses}
+					disabled={updatingCheckoutAddresses}
 					size="sm"
 				/>
 				<RadioButton
 					label={AddressTypeEnum.Shipping}
 					value={AddressTypeEnum.Shipping}
 					bind:group={addressType}
-					disabled={updatingCHeckoutAddresses}
+					disabled={updatingCheckoutAddresses}
 					size="sm"
 				/>
 			</div>
@@ -214,15 +214,15 @@
 				size="xs"
 				variant="light"
 				onclick={handleSubmit}
-				disabled={updatingCHeckoutAddresses}
-				loading={updatingCHeckoutAddresses}
+				disabled={updatingCheckoutAddresses}
+				loading={updatingCheckoutAddresses}
 			>
 				{$tranFunc('settings.useThisAddr')}
 			</Button>
 		</div>
 	{/if}
 	<div class="text-end mt-2">
-		<Button size="xs" onclick={onCancel} disabled={updatingCHeckoutAddresses} color="red">
+		<Button size="xs" onclick={onCancel} disabled={updatingCheckoutAddresses} color="red">
 			{$tranFunc('common.cancel')}
 		</Button>
 	</div>

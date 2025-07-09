@@ -19,7 +19,7 @@
 		/** a bindable prop, it acts as a lock to help you keep control of when to re-execute the graphql query, from parent component.
 		 * Please note that your query will be paused by default, so you should set this prop to true when you want to re-execute the query.
 		 */
-		forceReExecuteGraphqlQuery: boolean;
+		forceReExecuteGraphqlQuery?: boolean;
 		/**
 		 * tell the component how to reposition the items within the array list.
 		 *
@@ -51,7 +51,7 @@
 			first: 10,
 		}),
 		requestPolicy = 'cache-and-network',
-		forceReExecuteGraphqlQuery = $bindable(false),
+		forceReExecuteGraphqlQuery = $bindable(true),
 		resultKey,
 		columns,
 		tableClass,

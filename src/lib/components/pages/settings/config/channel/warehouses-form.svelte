@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { CHANNEL_WAREHOUSES_QUERY, WAREHOUSES_QUERY } from '$lib/api/admin/channels';
+	import { CHANNEL_WAREHOUSES_QUERY } from '$lib/api/admin/channels';
+	import { WAREHOUSE_LIST_QUERY } from '$lib/api/admin/warehouse';
 	import { operationStore } from '$lib/api/operation';
 	import { Plus, Trash } from '$lib/components/icons';
 	import { Accordion } from '$lib/components/ui/Accordion';
@@ -42,13 +43,13 @@
 		pause: true, // don't call this when in channel creation page
 	});
 
-	const allWarehouses = operationStore<Pick<Query, 'warehouses'>, QueryWarehousesArgs>({
-		kind: 'query',
-		query: WAREHOUSES_QUERY,
-		variables: { first: BATCH_FETCH },
-		requestPolicy: 'network-only',
-		pause: true, // only call when user want to add new warehouses
-	});
+	// const allWarehouses = operationStore<Pick<Query, 'warehouses'>, QueryWarehousesArgs>({
+	// 	kind: 'query',
+	// 	query: WAREHOUSE_LIST_QUERY,
+	// 	variables: { first: BATCH_FETCH },
+	// 	requestPolicy: 'network-only',
+	// 	pause: true, // only call when user want to add new warehouses
+	// });
 
 	const handleDeleteWarehouse = (id: string) => {
 		warehousesOfChannel = warehousesOfChannel.filter((warehouse) => warehouse.id !== id);
@@ -116,7 +117,7 @@
 	<div class="pt-2 mt-2 border-t border-gray-200">
 		{#if showAddWarehouses}
 			<GraphqlPaginableSelect
-				query={WAREHOUSES_QUERY}
+				query={WAREHOUSE_LIST_QUERY}
 				variables={{ first: BATCH_FETCH }}
 				resultKey="warehouses"
 				optionValueKey="id"

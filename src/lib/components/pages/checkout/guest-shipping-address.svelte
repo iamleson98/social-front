@@ -32,7 +32,7 @@
 
 	let { checkout }: Props = $props();
 
-	let updatingCHeckoutAddresses = $state(false);
+	let updatingCheckoutAddresses = $state(false);
 	let showAddressEdit = $state(false);
 
 	const channelStore = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
@@ -74,12 +74,12 @@
 			validationRules,
 		});
 
-		updatingCHeckoutAddresses = true; //
+		updatingCheckoutAddresses = true; //
 		const updateResult = await Promise.all([
 			updateShippingAddressMutation,
 			updateBillingAddressMutation,
 		]);
-		updatingCHeckoutAddresses = false; //
+		updatingCheckoutAddresses = false; //
 
 		if (
 			checkIfGraphqlResultHasError(
@@ -131,7 +131,7 @@
 			label: getCountryName(code),
 		})) || []}
 	<AddressForm
-		{updatingCHeckoutAddresses}
+		{updatingCheckoutAddresses}
 		{countrySelectOptions}
 		channelSlug={checkout.channel.slug!}
 		onSubmit={handleAttachAddressToCheckout}

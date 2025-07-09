@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { WAREHOUSES_QUERY } from '$lib/api/admin/channels';
+	import { WAREHOUSE_LIST_QUERY } from '$lib/api/admin/warehouse';
 	import { type SelectProps } from '$lib/components/ui/select';
 	import GraphqlPaginableSelect from '../ui/select/graphql-paginable-select.svelte';
 
@@ -9,7 +9,7 @@
 <GraphqlPaginableSelect
 	optionValueKey="id"
 	optionLabelKey="name"
-	query={WAREHOUSES_QUERY}
+	query={WAREHOUSE_LIST_QUERY}
 	bind:value
 	variables={{
 		first: 10,
