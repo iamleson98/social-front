@@ -15,6 +15,7 @@
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import DetailSidebar from '$lib/components/pages/settings/warehouses/detail-sidebar.svelte';
 	import DetailSkeleton from '$lib/components/pages/settings/warehouses/detail-skeleton.svelte';
+	import GeneralInformation from '$lib/components/pages/settings/warehouses/general-information.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Input } from '$lib/components/ui/Input';
 	import {
@@ -59,6 +60,9 @@
 	let warehouseInput = $state<WarehouseUpdateInput>({
 		isPrivate: false,
 		clickAndCollectOption: WarehouseClickAndCollectOptionEnum.Disabled,
+		name: '',
+		slug: '',
+		email: '',
 	});
 	let performUpdateMetadata = $state(false);
 
@@ -140,47 +144,13 @@
 	{@const { address, metadata, privateMetadata } = $warehouseQuery.data.warehouse}
 	<div class="flex gap-2">
 		<div class="w-7/10 space-y-2">
-			<div class="rounded-lg bg-white border border-gray-200 p-3 space-y-2">
-				<SectionHeader>General information</SectionHeader>
-				<Input
-					label="Warehouse name"
-					placeholder="Warehouse name"
-					bind:value={warehouseInput.name}
-					required
-					inputDebounceOption={{ onInput: validate }}
-					onblur={validate}
-					variant={warehouseErrors.name?.length ? 'error' : 'info'}
-					subText={warehouseErrors.name?.[0]}
-				/>
-				<Input
-					label="Warehouse slug"
-					required
-					inputDebounceOption={{ onInput: validate }}
-					onblur={validate}
-					placeholder="Warehouse slug"
-					bind:value={warehouseInput.slug}
-					variant={warehouseErrors.slug?.length ? 'error' : 'info'}
-					subText={warehouseErrors.slug?.[0]}
-				/>
-				<Input
-					label="Warehouse email"
-					inputDebounceOption={{ onInput: validate }}
-					onblur={validate}
-					placeholder="Warehouse email"
-					bind:value={warehouseInput.email}
-					variant={warehouseErrors.email?.length ? 'error' : 'info'}
-					subText={warehouseErrors.email?.[0]}
-				/>
-
-				<SectionHeader>Address information</SectionHeader>
-				<AddressForm
-					defaultValue={address}
-					channelSlug={page.params.channel}
-					onCancel={noop}
-					onSubmit={noop}
-					updatingCheckoutAddresses={loading}
-				/>
-			</div>
+			<GeneralInformation
+				bind:name={warehouseInput.name!}
+				bind:slug={warehouseInput.slug!}
+				bind:email={warehouseInput.email!}
+				{address}
+				disabled={loading}
+			/>
 
 			<GeneralMetadataEditor
 				objectId={page.params.id}
@@ -190,34 +160,12 @@
 			/>
 		</div>
 
-		<!-- <div class="space-y-2 w-3/10">
-			<div class="rounded-lg bg-white border border-gray-200 p-3 space-y-2">
-				<SectionHeader>Shipping zones</SectionHeader>
-
-				<GraphqlPaginableTable
-					query={WAREHOUSE_SHIPPING_ZONES_QUERY}
-					resultKey={'warehouse.shippingZones' as keyof Query}
-					columns={[
-            {
-              title: 'name',
-            }
-          ]}
-					bind:variables={warehouseShippingZonesVariables}
-				/>
-			</div>
-
-			<div class="rounded-lg bg-white border border-gray-200 p-3 space-y-2">
-				<SectionHeader>Stock settings</SectionHeader>
-			</div>
-
-			<div class="rounded-lg bg-white border border-gray-200 p-3 space-y-2">
-				<SectionHeader>Pickup</SectionHeader>
-			</div>
-		</div> -->
-		<DetailSidebar
-			bind:isPrivate={warehouseInput.isPrivate!}
-			bind:clickAndCollectOption={warehouseInput.clickAndCollectOption!}
-		/>
+		<div class="space-y-2 w-3/10">
+			<DetailSidebar
+				bind:isPrivate={warehouseInput.isPrivate!}
+				bind:clickAndCollectOption={warehouseInput.clickAndCollectOption!}
+			/>
+		</div>
 	</div>
 
 	<ActionBar
