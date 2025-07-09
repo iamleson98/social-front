@@ -3,8 +3,8 @@ import type { AnyVariables, OperationResult } from '@urql/core';
 import editorJsToHtml from 'editorjs-html';
 import { AppRoute } from './routes';
 import xss from 'xss';
-import { type ServerLoadEvent } from '@sveltejs/kit';
-import { CHANNEL_KEY } from './consts';
+import { redirect, type ServerLoadEvent } from '@sveltejs/kit';
+import { ACCESS_TOKEN_KEY, CHANNEL_KEY, HTTPStatusTemporaryRedirect } from './consts';
 import { getCookieByKey } from './cookies';
 import { DEFAULT_CHANNEL } from './channels';
 import { OrderStatus, PaymentChargeStatusEnum } from "$lib/gql/graphql";
@@ -38,15 +38,13 @@ export function randomString(length: number = 10) {
  * @description Parses the raw product description and returns an array of strings.
  * @param description raw product description
  */
-export const parseProductDescription = (description: string): string[] => {
+export const parseEditorJsString = (description: string | object): string[] => {
 	const result: string[] = [];
 
-	if (!description) {
-		return result;
-	}
+	if (!description) return result;
 
 	try {
-		const jsonData = JSON.parse(description);
+		const jsonData = typeof description === 'string' ? JSON.parse(description) : description;
 		const contentBlocks = editorJsParser.parse(jsonData);
 		for (const block of contentBlocks) {
 			result.push(xss(block));
@@ -312,7 +310,7 @@ export const checkUserHasPermissions = (user: User, ...perms: PermissionEnum[]) 
 	}
 
 	return count === perms.length;
-}
+};
 
 /**
 * Checks if given user has 3 perms: manage settings, manage staff, manage users.
@@ -456,6 +454,7 @@ export const compareTime = (day1: TimeObject, day2: TimeObject) => {
 	return -1;
 };
 
+/** from raw byte numbers to human readable values */
 export function formatBytes(bytes: number): string {
 	if (bytes === 0) return '0 Bytes';
 	const sizes: string[] = ['Bytes', 'KB', 'MB', 'GB'];

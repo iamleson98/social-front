@@ -304,5 +304,16 @@ export default {
 		refund: "Refund",
 		void: "Refund",
 		markAsPaid: "Mark as paid",
+	},
+	staff: {
+		avatar: 'アバター',
+		fullName: '氏名',
+		email: 'メールアドレス',
+		status: 'ステータス',
+		action: '操作',
+		createStaffSuccess: 'スタッフが正常に作成されました',
+		updateStaffSuccess: 'スタッフが正常に更新されました',
+		deleteStaffSuccess: 'スタッフが正常に削除されました',
+		deleteStaffConfirm: 'このスタッフを削除してもよろしいですか？',
 	}
 };

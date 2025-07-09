@@ -139,3 +139,17 @@ mutation CollectionUpdate($id: ID!, $input: CollectionInput!) {
     }
   }
 }`;
+
+export const COLLECTION_CREATE_MUTATION = gql`
+mutation CollectionCreate($input: CollectionCreateInput!) {
+  collectionCreate(input: $input) {
+    errors {
+      field
+      message
+      code
+    }
+    collection {
+      id
+    }
+  }
+}`;

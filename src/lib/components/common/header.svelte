@@ -93,10 +93,10 @@
 	});
 </script>
 
-<header class="fixed top-0 left-0 right-0 flex p-2 bg-white shadow-xs z-200 w-full">
+<header class="fixed top-0 left-0 right-0 flex p-2 bg-white shadow-xs z-100000001 w-full">
 	{#if loading}
 		<progress
-			class="progress h-[3px]! text-blue-400 fixed z-210 left-0 right-0 top-0"
+			class="progress h-[3px]! text-blue-400 fixed z-100000002 left-0 right-0 top-0"
 			value={loadingProgress.current}
 			max="100"
 		></progress>

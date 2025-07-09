@@ -14,6 +14,7 @@
 	import { slide } from 'svelte/transition';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Skeleton } from '$lib/components/ui/Skeleton';
+	import { CommonEaseDatePickerFormat } from '$lib/utils/consts';
 
 	type Props = {
 		addChannelListings?: PublishableChannelListingInput[];
@@ -126,7 +127,7 @@
 	{#if $channelsQuery.fetching}
 		<div class="bg-white border border-gray-200 rounded-lg p-3">
 			<Skeleton class="h-8 w-28 mb-2" />
-			<SelectSkeleton label size="sm"/>
+			<SelectSkeleton label size="sm" />
 		</div>
 	{:else if $channelsQuery.error}
 		<Alert size="sm" bordered variant="error">{$channelsQuery.error.message}</Alert>
@@ -158,8 +159,10 @@
 							size="sm"
 							label="Publication date"
 							value={{ date: listing.publishedAt }}
-							onchange={(val) => (listing.publishedAt = dayjs(val.date).format())}
+							onchange={(val) =>
+								(listing.publishedAt = dayjs(val.date).format(CommonEaseDatePickerFormat))}
 							{disabled}
+							format={CommonEaseDatePickerFormat}
 						/>
 					</div>
 				{/if}

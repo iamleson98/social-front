@@ -14,8 +14,6 @@
 		newPageLabel?: string;
 		detailRouteID: string;
 		detailPageLabelGetter: (page: Page<Record<string, string>, string | null>) => string;
-		/** Optional url, for the convenient `back` link */
-		backLinkUrl?: string;
 		onNewPageBtnClick?: MouseEventHandler<HTMLButtonElement>;
 		disabled?: boolean;
 	};
@@ -27,7 +25,6 @@
 		newPageLabel,
 		detailRouteID,
 		detailPageLabelGetter,
-		backLinkUrl,
 		onNewPageBtnClick,
 		disabled,
 	}: Props = $props();
@@ -38,11 +35,6 @@
 >
 	<div class="breadcrumbs text-sm">
 		<ul>
-			{#if backLinkUrl}
-				<li>
-					<a href={backLinkUrl}>Back</a>
-				</li>
-			{/if}
 			<li><a href={listingPageHref}>{listingPageLabel}</a></li>
 			{#if page.url.pathname === newPageHref}
 				<li>{newPageLabel}</li>

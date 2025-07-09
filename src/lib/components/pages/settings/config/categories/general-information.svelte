@@ -6,7 +6,7 @@
 	import type { OutputData } from '@editorjs/editorjs';
 	import type { MediaObject } from '$lib/utils/types';
 	import { tranFunc } from '$i18n';
-	import { object, string, z } from 'zod';
+	import { any, array, object, string, z } from 'zod';
 	import slugify from 'slugify';
 
 	type Props = {
@@ -34,6 +34,7 @@
 	}: Props = $props();
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
+<<<<<<< HEAD
 
 	let descriptionError = $derived.by(() => {
 		if (!description?.blocks?.length) return REQUIRED_ERROR;
@@ -49,6 +50,14 @@
 
 	$effect(() => {
 		ok = !Object.keys(categoryFormErrors).length && !descriptionError && !mediaError;
+=======
+	const MAX_ERROR = $tranFunc('error.itemsExceed', { max: 1 });
+	const SEO_DESCRIPTION_MAX = 300;
+	let categoryFormErrors = $state.raw<Partial<Record<keyof CategorySchema, string[]>>>({});
+
+	$effect(() => {
+		ok = !Object.keys(categoryFormErrors).length;
+>>>>>>> e014bcad8fd875fbce8cea3d16cba97bcceb2e7b
 	});
 
 	$effect(() => {
@@ -62,7 +71,16 @@
 		name: string().nonempty(REQUIRED_ERROR),
 		slug: string().nonempty(REQUIRED_ERROR),
 		seoTitle: string().nonempty(REQUIRED_ERROR),
-		seoDescription: string().nonempty(REQUIRED_ERROR),
+		seoDescription: string()
+			.nonempty(REQUIRED_ERROR)
+			.max(
+				SEO_DESCRIPTION_MAX,
+				$tranFunc('error.lengthInvalid', { max: SEO_DESCRIPTION_MAX, min: 1 }),
+			),
+		media: array(any()).max(1, MAX_ERROR).nonempty(REQUIRED_ERROR),
+		description: object({
+			blocks: array(any()).nonempty(REQUIRED_ERROR),
+		}),
 	});
 	type CategorySchema = z.infer<typeof categorySchema>;
 
@@ -72,6 +90,8 @@
 			slug,
 			seoTitle,
 			seoDescription,
+			media,
+			description,
 		});
 		categoryFormErrors = result.success ? {} : result.error.formErrors.fieldErrors;
 		return result.success && !descriptionError && !mediaError;
@@ -98,8 +118,9 @@
 		required
 		placeholder="Category description"
 		bind:value={description}
-		variant={descriptionError ? 'error' : 'info'}
-		subText={descriptionError}
+		onchange={validate}
+		variant={categoryFormErrors.description?.length ? 'error' : 'info'}
+		subText={categoryFormErrors.description?.[0]}
 		disabled={loading}
 	/>
 
@@ -109,9 +130,15 @@
 		label="Background image"
 		required
 		bind:medias={media}
+		onchange={validate}
 		disabled={loading}
+<<<<<<< HEAD
 		variant={mediaError ? 'error' : 'info'}
 		subText={mediaError}
+=======
+		variant={categoryFormErrors.media?.length ? 'error' : 'info'}
+		subText={categoryFormErrors.media?.[0]}
+>>>>>>> e014bcad8fd875fbce8cea3d16cba97bcceb2e7b
 	/>
 
 	<SectionHeader>Seo Information</SectionHeader>
@@ -148,7 +175,8 @@
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
 		variant={categoryFormErrors.seoDescription?.length ? 'error' : 'info'}
-		subText={categoryFormErrors.seoDescription?.[0]}
+		subText={categoryFormErrors.seoDescription?.[0] ??
+			`${seoDescription.length} / ${SEO_DESCRIPTION_MAX}`}
 		inputClass="min-h-20"
 		disabled={loading}
 	/>

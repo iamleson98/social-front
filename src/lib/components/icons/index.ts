@@ -114,6 +114,13 @@ export {
   TablerTicket as Ticket,
   TablerExternalLink as ExternalLink,
   TablerBoxOff as BoxOff,
+  TableFolderHeart as FolderHeart,
+  TablerGiftcard as Giftcard,
+  TablerGift as Gift,
+  TablerThingiverse as Thingiverse,
+  BiPersonBadge as PersonBadge,
+  RiPoliceBadgeFill as PoliceBadgeFill,
+  MdiBadgeOutline as BadgeOutline,
 } from './consts';
 
 export { default as Icon } from './icon.svelte';

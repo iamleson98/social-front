@@ -226,7 +226,7 @@
 		{...rest}
 		bind:ref={inputRef}
 		bind:value={inputReprValue.date}
-		class={`${!datePicker ? 'hidden! opacity-0!' : ''}`}
+		class={`${!datePicker ? 'hidden! opacity-0!' : ''} ${className}`}
 		readonly
 		placeholder={rest.placeholder || ACTUAL_TIME_FORMAT}
 	/>

@@ -1,9 +1,12 @@
 <script lang="ts">
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
-	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box/types';
+	import type {
+		FilterComponentType,
+		FilterItemValue,
+		FilterProps,
+	} from '$lib/components/common/filter-box/types';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
-	import { type SelectOption } from '$lib/components/ui/select';
 	import {
 		CollectionPublished,
 		type CollectionFilterInput,
@@ -69,7 +72,7 @@
 	<ChannelSelect
 		value={initialValue as string}
 		size="xs"
-		onchange={(opt) => onValue((opt as SelectOption)?.value)}
+		onchange={(opt) => onValue(opt?.id as FilterItemValue)}
 	/>
 {/snippet}
 

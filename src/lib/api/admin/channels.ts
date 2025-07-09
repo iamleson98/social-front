@@ -54,6 +54,10 @@ query ShippingZones($channel: String, $filter: ShippingZoneFilterInput, $before:
       node {
         id
         name
+        countries {
+          code
+          country
+        }
       }
     }
   }

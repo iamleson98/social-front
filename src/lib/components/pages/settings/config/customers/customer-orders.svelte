@@ -5,6 +5,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { type Order, OrderSortField, type Query, type QueryOrdersArgs } from '$lib/gql/graphql';
+	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { formatCurrency, paymentStatusBadgeClass } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 
@@ -41,7 +42,7 @@
 {/snippet}
 
 {#snippet date({ item }: { item: Order })}
-	<span class="whitespace-nowrap">{dayjs(item.created).format('DD/MM/YYYY HH:mm')}</span>
+	<span class="whitespace-nowrap">{dayjs(item.created).format(SitenameTimeFormat)}</span>
 {/snippet}
 
 {#snippet status({ item }: { item: Order })}

@@ -1,22 +1,25 @@
-import type { QueryAttributesArgs } from '$lib/gql/graphql';
+// import type { QueryAttributesArgs } from '$lib/gql/graphql';
 import { gql } from '@urql/core';
 
-export type CustomAttributesQueryArgs = {
-  /** number of choices to query for given attribute  */
-  choiceFirst: number;
-  /** cursor to query choices after */
-  choiceAfter?: string;
-} & QueryAttributesArgs;
+// export type CustomAttributesQueryArgs = {
+//   /** number of choices to query for given attribute  */
+//   choiceFirst: number;
+//   /** cursor to query choices after */
+//   choiceAfter?: string;
+// } & QueryAttributesArgs;
 
 export const PRODUCT_ATTRIBUTES_QUERY = gql`
 query Attributes(
-  $first: Int!, 
+  $first: Int,
+  $last: Int,
+  $before: String,
+  $after: String,
   $channel: String, 
   $where: AttributeWhereInput,
-	$choiceFirst: Int,
-  $choiceAfter: String
+  $filter: AttributeFilterInput,
+  $sortBy: AttributeSortingInput,
 ) {
-  attributes(first: $first, channel: $channel, where: $where) {
+  attributes(first: $first, channel: $channel, where: $where, before: $before, after: $after, last: $last, filter: $filter, sortBy: $sortBy) {
     edges {
       node {
         id
@@ -25,24 +28,27 @@ query Attributes(
         valueRequired
         inputType
         entityType
-        choices(first: $choiceFirst, after: $choiceAfter) {
-          edges {
-            node {
-              id
-              name
-              value
-            }
-          }
-          pageInfo {
-            hasNextPage
-            endCursor
-          }
-        }
+        visibleInStorefront
+        # choices(first: $choiceFirst, after: $choiceAfter) {
+        #   edges {
+        #     node {
+        #       id
+        #       name
+        #       value
+        #     }
+        #   }
+        #   pageInfo {
+        #     hasNextPage
+        #     endCursor
+        #   }
+        # }
       }
     }
     pageInfo {
       endCursor
       hasNextPage
+      hasPreviousPage
+      startCursor
     }
   }
 }`;

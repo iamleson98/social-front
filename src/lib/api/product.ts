@@ -403,8 +403,8 @@ export const PRODUCT_DETAIL_QUERY = gql`
 
 /** query to fetch product variants */
 export const PRODUCT_VARIANTS_QUERY_STORE = gql`
-	query ProductVariants($ids: [ID!]!, $channel: String!, $first: Int!) {
-		productVariants(channel: $channel, ids: $ids, first: $first) {
+	query ProductVariants($ids: [ID!], $channel: String, $first: Int, $before: String, $last: Int, $after: String) {
+		productVariants(channel: $channel, ids: $ids, first: $first, before: $before, last: $last, after: $after) {
 			edges {
 				node {
 					# quantityOrdered

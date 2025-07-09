@@ -21,6 +21,7 @@
 		class?: string;
 		disabled?: boolean;
 		subText?: string;
+		onchange?: (medias: MediaObject[]) => void;
 	};
 
 	let {
@@ -34,6 +35,7 @@
 		class: className = '',
 		disabled,
 		subText,
+		onchange,
 	}: Props = $props();
 
 	const documentIcon = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2m-8-4h6m-6-4h6"/></g></svg>')}`;
@@ -82,7 +84,7 @@
 			const alt = file.name.slice(0, file.name.lastIndexOf('.'));
 
 			if (file.type.toLowerCase().startsWith('image/')) {
-				const prm = new Promise<MediaObject>((resolve) => {
+				const promise = new Promise<MediaObject>((resolve) => {
 					const url = URL.createObjectURL(file);
 					const img = new Image();
 					img.src = url;
@@ -99,28 +101,28 @@
 					};
 				});
 
-				promises.push(prm);
+				promises.push(promise);
 				continue;
 			}
 
-			const prm = Promise.resolve<MediaObject>({
+			const promise = Promise.resolve<MediaObject>({
 				file,
 				alt,
 				type: 'document',
 				url: URL.createObjectURL(file),
 			});
 
-			promises.push(prm);
+			promises.push(promise);
 		}
 
 		const results = await Promise.all(promises);
 		medias = medias.concat(results);
-		validate();
+		onchange?.(medias);
 	};
 
 	const deleteFileItem = (idx: number) => {
 		medias = medias.filter((_, i) => i !== idx);
-		validate();
+		onchange?.(medias);
 	};
 </script>
 
@@ -140,7 +142,7 @@
 			}}
 			<div
 				class={classNames(
-					'h-50 w-50 relative border border-gray-200 flex rounded-lg bg-white bg-cover bg-center bg-no-repeat',
+					'h-50 w-50 relative border border-gray-200 flex rounded-lg overflow-hidden bg-white bg-cover bg-center bg-no-repeat',
 					{
 						[INPUT_CLASSES['error'].bg]: !!mediaErrors?.[idx]?.length,
 					},
@@ -148,7 +150,7 @@
 				{...props}
 			>
 				<div
-					class="absolute p-1.5 rounded-md bottom-0 left-0 right-0 h-3/4 bg-white opacity-0 transition-opacity hover:opacity-90 ease-in"
+					class="absolute p-1.5 bottom-0 left-0 right-0 h-1/5 hover:h-1/2 bg-white opacity-50 transition-all hover:opacity-100 ease-in"
 				>
 					<div class="text-gray-700 flex items-center text-xs mb-1">
 						<span class="font-semibold w-1/4">alt:</span>
@@ -175,7 +177,7 @@
 							<span>{media.width} x {media.height}</span>
 						</div>
 					{/if}
-					<div class="text-right absolute bottom-1 right-1">
+					<div class="text-right absolute bottom-1.5 right-1.5">
 						<IconButton
 							icon={Trash}
 							size="xs"
@@ -206,10 +208,14 @@
 			</div>
 		{/if}
 	</div>
+<<<<<<< HEAD
 	<div
 		class={`text-[10px] mt-0.5 text-right ${mediaError ? 'text-red-500' : 'text-gray-500'} justify-between`}
 	>
 		{mediaError}
+=======
+	<div class={`text-[10px] mt-0.5 text-right! ${INPUT_CLASSES[variant].fg}`}>
+>>>>>>> e014bcad8fd875fbce8cea3d16cba97bcceb2e7b
 		{subText ? subText : `${medias.length} / ${max}`}
 	</div>
 </div>

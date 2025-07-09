@@ -304,5 +304,16 @@ export default {
 		refund: "Refund",
 		void: "Refund",
 		markAsPaid: "Mark as paid",
+	},
+	staff: {
+		avatar: '아바타',
+		fullName: '성명',
+		email: '이메일',
+		status: '상태',
+		action: '동작',
+		createStaffSuccess: '직원이 성공적으로 생성되었습니다',
+		updateStaffSuccess: '직원 정보가 성공적으로 수정되었습니다',
+		deleteStaffSuccess: '직원이 성공적으로 삭제되었습니다',
+		deleteStaffConfirm: '이 직원을 삭제하시겠습니까?',
 	}
 };
