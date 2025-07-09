@@ -5,7 +5,18 @@
 		type FilterProps,
 	} from '$lib/components/common/filter-box';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
-	import { StaffMemberStatus, type StaffUserInput } from '$lib/gql/graphql';
+	import {
+		StaffMemberStatus,
+		type QueryStaffUsersArgs,
+		type StaffUserInput,
+	} from '$lib/gql/graphql';
+
+	type Props = {
+		variables: QueryStaffUsersArgs;
+		forceReExecuteGraphqlQuery: boolean;
+	};
+
+	let { variables = $bindable(), forceReExecuteGraphqlQuery = $bindable() }: Props = $props();
 
 	const FILTER_OPTIONS: FilterProps<StaffUserInput>[] = [
 		{
@@ -38,6 +49,7 @@
 
 <FilterManager
 	filterOptions={FILTER_OPTIONS}
-	variables={{}}
-	forceReExecuteGraphqlQuery={false}
+	bind:variables
+	bind:forceReExecuteGraphqlQuery
+	searchKey="filter.search"
 />

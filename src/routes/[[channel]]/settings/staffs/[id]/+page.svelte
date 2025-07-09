@@ -8,10 +8,9 @@
 		type MutationStaffDeleteArgs,
 		type MutationStaffUpdateArgs,
 		type Query,
-		type QueryUserArgs
+		type QueryUserArgs,
 	} from '$lib/gql/graphql';
 	import StaffDetailSkeleton from '$lib/components/pages/settings/config/staff/staff-detail-skeleton.svelte';
-	import { Button } from '$lib/components/ui';
 	import { AppRoute } from '$lib/utils';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
@@ -19,12 +18,20 @@
 	import { goto } from '$app/navigation';
 	import StaffForm from '$lib/components/pages/settings/config/staff/staff-form.svelte';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
+	import type { PageServerData } from './$types';
+
+	type Props = {
+		data: PageServerData;
+	};
+
+	let { data }: Props = $props();
 
 	const staffDetailQuery = operationStore<Pick<Query, 'user'>, QueryUserArgs>({
 		kind: 'query',
 		query: USER_DETAIL_QUERY,
 		variables: { id: page.params.id },
-		requestPolicy: 'cache-and-network'
+		requestPolicy: 'cache-and-network',
 	});
 
 	let loading = $state(false);
@@ -47,30 +54,24 @@
 		>(STAFF_UPDATE_MUTATION, {
 			id: $staffDetailQuery.data?.user?.id as string,
 			input: {
-				isActive: isActive
-			}
+				isActive,
+			},
 		});
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'staffUpdate', 'Staff updated successfully')) {
-			return;
-		}
-
+		if (checkIfGraphqlResultHasError(result, 'staffUpdate', 'Staff updated successfully')) return;
 		staffDetailQuery.reexecute({
 			variables: {
-				id: page.params.id
+				id: page.params.id,
 			},
-			context: {
-				requestPolicy: 'network-only'
-			}
 		});
 	};
 
 	const handleOpenDeleteModal = () => {
 		ALERT_MODAL_STORE.openAlertModal({
 			content: 'Are you sure you want to delete this staff?',
-			onOk: handleDeleteStaff
+			onOk: handleDeleteStaff,
 		});
 	};
 
@@ -80,13 +81,12 @@
 			Pick<Mutation, 'staffDelete'>,
 			MutationStaffDeleteArgs
 		>(STAFF_DELETE_MUTATION, {
-			id: page.params.id
+			id: page.params.id,
 		});
 
 		loading = false;
 
 		if (checkIfGraphqlResultHasError(result, 'staffDelete', 'Staff deleted successfully')) return;
-
 		await goto(AppRoute.SETTINGS_CONFIGS_STAFFS());
 	};
 </script>
@@ -96,30 +96,25 @@
 {:else if $staffDetailQuery.error}
 	<Alert variant="error" bordered size="sm">{$staffDetailQuery.error.message}</Alert>
 {:else if $staffDetailQuery.data?.user}
-	{@const { user } = $staffDetailQuery.data}
+	{@const { avatar, firstName, lastName, email, dateJoined } = $staffDetailQuery.data.user}
 	<StaffForm
-		avatar={user.avatar?.url}
-		firstName={user.firstName}
-		lastName={user.lastName}
-		email={user.email}
+		avatar={avatar?.url}
+		{firstName}
+		{lastName}
+		{email}
 		bind:isActive
 		disabled={loading}
 		isCreatePage={false}
+		{dateJoined}
+		canEdit={data.canEdit}
 	/>
 
-	<div
-		class="mt-5 sticky bottom-0 flex justify-between items-center bg-white p-2 border rounded-lg border-gray-200"
-	>
-		<Button color="red" disabled={loading} onclick={handleOpenDeleteModal}>Delete</Button>
-
-		<div class="flex gap-2">
-			<Button
-				variant="light"
-				color="gray"
-				disabled={loading}
-				href={AppRoute.SETTINGS_CONFIGS_STAFFS()}>Back</Button
-			>
-			<Button disabled={loading || nothingChanged} onclick={handleUpdateStaff}>Update</Button>
-		</div>
-	</div>
+	<ActionBar
+		backButtonUrl={AppRoute.SETTINGS_CONFIGS_STAFFS()}
+		onUpdateClick={handleUpdateStaff}
+		disabled={loading}
+		onDeleteClick={handleOpenDeleteModal}
+		disableUpdateButton={(!data.canEdit && !data.isStaffManager) || nothingChanged || loading}
+		disableDeleteButton={!data.isStaffManager}
+	/>
 {/if}

@@ -3,8 +3,8 @@ import type { AnyVariables, OperationResult } from '@urql/core';
 import editorJsToHtml from 'editorjs-html';
 import { AppRoute } from './routes';
 import xss from 'xss';
-import { type ServerLoadEvent } from '@sveltejs/kit';
-import { CHANNEL_KEY } from './consts';
+import { redirect, type ServerLoadEvent } from '@sveltejs/kit';
+import { ACCESS_TOKEN_KEY, CHANNEL_KEY, HTTPStatusTemporaryRedirect } from './consts';
 import { getCookieByKey } from './cookies';
 import { DEFAULT_CHANNEL } from './channels';
 import { OrderStatus, PaymentChargeStatusEnum } from "$lib/gql/graphql";
@@ -310,7 +310,7 @@ export const checkUserHasPermissions = (user: User, ...perms: PermissionEnum[]) 
 	}
 
 	return count === perms.length;
-}
+};
 
 /**
 * Checks if given user has 3 perms: manage settings, manage staff, manage users.

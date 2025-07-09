@@ -3,6 +3,7 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { Trash } from '$lib/components/icons';
 	import Filter from '$lib/components/pages/settings/product-type/filter.svelte';
+	import { Badge } from '$lib/components/ui/badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
@@ -99,9 +100,10 @@
 {/snippet}
 
 {#snippet shippable({ item }: { item: ProductType })}
-	<a href={AppRoute.SETTINGS_PRODUCT_TYPE_EDIT(item.id)} class="link link-hover">
-		{item.name}
-	</a>
+	<Badge
+		color={item.isShippingRequired ? 'green' : 'red'}
+		text={item.isShippingRequired ? 'yes' : 'no'}
+	/>
 {/snippet}
 
 <Filter bind:variables bind:forceReExecuteGraphqlQuery />

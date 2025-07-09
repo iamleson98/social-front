@@ -13,6 +13,7 @@
 		onAddClick?: () => void;
 		disableCreateButton?: boolean;
 		disableUpdateButton?: boolean;
+		disableDeleteButton?: boolean;
 	};
 
 	let {
@@ -24,6 +25,7 @@
 		onAddClick,
 		disableCreateButton,
 		disableUpdateButton,
+		disableDeleteButton,
 	}: Props = $props();
 </script>
 
@@ -32,7 +34,9 @@
 >
 	<div>
 		{#if onDeleteClick}
-			<Button color="red" {disabled} onclick={onDeleteClick}>{$tranFunc('btn.delete')}</Button>
+			<Button color="red" disabled={disabled || disableDeleteButton} onclick={onDeleteClick}
+				>{$tranFunc('btn.delete')}</Button
+			>
 		{/if}
 	</div>
 	<div class="flex gap-2">
@@ -42,11 +46,13 @@
 			</Button>
 		{/if}
 		{#if onUpdateClick}
-			<Button disabled={disableUpdateButton} onclick={onUpdateClick}>
+			<Button disabled={disableUpdateButton || disabled} onclick={onUpdateClick}>
 				{$tranFunc('btn.update')}
 			</Button>
 		{:else if onAddClick}
-			<Button disabled={disableCreateButton} onclick={onAddClick}>{$tranFunc('btn.create')}</Button>
+			<Button disabled={disableCreateButton || disabled} onclick={onAddClick}
+				>{$tranFunc('btn.create')}</Button
+			>
 		{/if}
 	</div>
 </div>

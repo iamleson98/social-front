@@ -32,7 +32,7 @@
 		filterOptions?: FilterProps<T>[];
 		variables: Var;
 		/** if provided, will display the text box for search query input as well */
-		searchKey?: keyof Var;
+		searchKey?: keyof Var | string;
 		forceReExecuteGraphqlQuery: boolean;
 		disabled?: boolean;
 	};

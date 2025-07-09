@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { STAFFS_QUERY } from '$lib/api/admin/staff';
-	import { Search } from '$lib/components/icons';
+	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import FilterButton from '$lib/components/pages/settings/config/staff/filter-button.svelte';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Input } from '$lib/components/ui/Input';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { type QueryStaffUsersArgs, type User, UserSortField } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 
-	let filterVariables = $state<QueryStaffUsersArgs>({
+	let variables = $state<QueryStaffUsersArgs>({
 		first: 10,
+		filter: { search: '' },
 	});
 	let forceReExecuteGraphqlQuery = $state(true);
 
@@ -38,44 +38,29 @@
 </script>
 
 {#snippet avatar({ item }: { item: User })}
-	<div class="w-8 h-8 justify-center items-center flex rounded-full overflow-hidden bg-blue-500">
-		{#if item.avatar}
-			<img src={item.avatar?.url} alt={item.avatar?.alt} />
-		{:else}
-			<span class="text-xs font-medium text-white">
-				{`${item.firstName[0] || item.email[0]}${item.lastName[0] || ''}`.toUpperCase()}
-			</span>
-		{/if}
-	</div>
+	<Thumbnail src={item.avatar?.url} alt={item.avatar?.alt || `${item.firstName} ${item.lastName}`} />
 {/snippet}
 
 {#snippet fullName({ item }: { item: User })}
-	<a class="link" href={AppRoute.SETTINGS_CONFIGS_STAFF_DETAILS(item.id)}>
+	<a class="link link-hover" href={AppRoute.SETTINGS_CONFIGS_STAFF_DETAILS(item.id)}>
 		{item.firstName}
 		{item.lastName}
 	</a>
 {/snippet}
 
 {#snippet email({ item }: { item: User })}
-	{item.email}
+	<span>{item.email}</span>
 {/snippet}
 
 {#snippet status({ item }: { item: User })}
-	{#if item.isActive}
-		<Badge text="Active" color="green" />
-	{:else}
-		<Badge text="Inactive" color="red" variant="light" />
-	{/if}
+	<Badge text={item.isActive ? 'Active' : 'Inactive'} color={item.isActive ? 'green' : 'red'} />
 {/snippet}
 
-<div class="mb-2 flex items-center gap-2">
-	<FilterButton />
-	<Input size="sm" placeholder="Enter query" startIcon={Search} />
-</div>
+<FilterButton bind:variables bind:forceReExecuteGraphqlQuery />
 
 <GraphqlPaginableTable
 	query={STAFFS_QUERY}
-	variables={filterVariables}
+	bind:variables
 	resultKey="staffUsers"
 	columns={STAFF_COLUMNS}
 	bind:forceReExecuteGraphqlQuery

@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
+	import Thumbnail from '$lib/components/common/thumbnail.svelte';
+	import { BadgeOutline, Icon } from '$lib/components/icons';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
+	import { SitenameTimeFormat } from '$lib/utils/consts';
+	import dayjs from 'dayjs';
 	import { boolean, object, string, z } from 'zod';
 
 	type Props = {
@@ -12,6 +16,9 @@
 		isActive: boolean;
 		formOk?: boolean;
 		isCreatePage: boolean;
+		dateJoined?: string;
+		/** indicate if current user can edit given staff */
+		canEdit?: boolean;
 	};
 
 	let {
@@ -22,7 +29,9 @@
 		disabled,
 		isActive = $bindable(false),
 		formOk = $bindable(false),
-		isCreatePage = $bindable(false)
+		isCreatePage = false,
+		dateJoined,
+		canEdit,
 	}: Props = $props();
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
@@ -32,7 +41,7 @@
 		lastName: string().nonempty(REQUIRED_ERROR),
 		firstName: string().nonempty(REQUIRED_ERROR),
 		email: string().nonempty(REQUIRED_ERROR).email($tranFunc('error.invalidEmail')),
-		isActive: boolean()
+		isActive: boolean(),
 	});
 
 	type StaffSchema = z.infer<typeof staffSchema>;
@@ -44,27 +53,31 @@
 			lastName,
 			firstName,
 			email,
-			isActive
+			isActive,
 		});
-		if (!parseResult.success) {
-			staffFormErrors = parseResult.error.formErrors.fieldErrors;
-			return false;
-		}
-		staffFormErrors = {};
-		formOk = true;
-		return true;
+
+		formOk = parseResult.success;
+		staffFormErrors = parseResult.success ? {} : parseResult.error?.formErrors.fieldErrors;
 	};
 </script>
 
-<div class="h-full w-full rounded-lg bg-white border border-gray-200 p-4">
-	<div class="rounded-full overflow-hidden h-20 w-20 flex items-center justify-center bg-blue-600">
-		{#if avatar}
-			<img src={avatar} alt={avatar} />
-		{:else}
-			<span class="text-white text-2xl font-bold">
-				{`${firstName[0] || email[0]}${lastName[0] || email[1]}`.toUpperCase()}
-			</span>
-		{/if}
+<div class="h-full w-full rounded-lg bg-white border border-gray-200 p-3">
+	<div class="flex items-center gap-2">
+		<Thumbnail
+			src={avatar}
+			alt={`${firstName[0] || email[0]}${lastName[0] || email[1]}`.toUpperCase()}
+			size="lg"
+		/>
+		<div>
+			<div class="flex items-center gap-1 text-sm text-gray-600">
+				<Icon icon={BadgeOutline} class="text-blue-600" size="lg" />
+				<span>Staff user</span>
+			</div>
+			<div class="text-xs flex items-center gap-1 text-gray-600">
+				<span class="font-semibold">Joined since:</span>
+				<span>{dateJoined ? dayjs(dateJoined).format(SitenameTimeFormat) : '-'}</span>
+			</div>
+		</div>
 	</div>
 
 	<div class="flex gap-2 items-start mt-5">
@@ -76,7 +89,7 @@
 			subText={staffFormErrors?.lastName?.length ? staffFormErrors.lastName[0] : ''}
 			required
 			{disabled}
-			readonly={!isCreatePage}
+			readonly={!isCreatePage && !canEdit}
 			class="flex-1"
 			onblur={validate}
 		/>
@@ -88,7 +101,7 @@
 			subText={staffFormErrors?.firstName?.length ? staffFormErrors.firstName[0] : ''}
 			required
 			{disabled}
-			readonly={!isCreatePage}
+			readonly={!isCreatePage && !canEdit}
 			class="flex-1"
 			onblur={validate}
 		/>
@@ -101,18 +114,12 @@
 		variant={staffFormErrors?.email?.length ? 'error' : 'info'}
 		subText={staffFormErrors?.email?.length ? staffFormErrors.email[0] : ''}
 		{disabled}
-		readonly={!isCreatePage}
+		readonly={!isCreatePage && !canEdit}
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
 	/>
 
 	<div class="mt-3 flex gap-3 items-center">
-		<Checkbox
-			label="Active"
-			bind:checked={isActive}
-			{disabled}
-			size="sm"
-			class="flex-1"
-		/>
+		<Checkbox label="Active" bind:checked={isActive} {disabled} size="sm" class="flex-1" />
 	</div>
 </div>

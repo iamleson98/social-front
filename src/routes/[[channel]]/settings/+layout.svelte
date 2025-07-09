@@ -1,6 +1,7 @@
 <script lang="ts">
 	import {
 		AdjustmentHorizontal,
+		BadgeOutline,
 		Box,
 		BoxOff,
 		BuildingWarehouse,
@@ -204,7 +205,7 @@
 				].includes(page.url.pathname),
 		},
 		{
-			icon: UsersGroup,
+			icon: BadgeOutline,
 			name: $tranFunc('settings.staffs'),
 			href: AppRoute.SETTINGS_CONFIGS_STAFFS(),
 			shouldActive: () =>
