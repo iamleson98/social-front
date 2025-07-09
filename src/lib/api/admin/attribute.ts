@@ -1,12 +1,5 @@
-// import type { QueryAttributesArgs } from '$lib/gql/graphql';
 import { gql } from '@urql/core';
 
-// export type CustomAttributesQueryArgs = {
-//   /** number of choices to query for given attribute  */
-//   choiceFirst: number;
-//   /** cursor to query choices after */
-//   choiceAfter?: string;
-// } & QueryAttributesArgs;
 
 export const PRODUCT_ATTRIBUTES_QUERY = gql`
 query Attributes(
@@ -52,3 +45,33 @@ query Attributes(
     }
   }
 }`;
+
+export const ATTRIBUTE_DETAILS_QUERY = gql`
+query Attribute($id: ID!) {
+  attribute(id: $id) {
+    id
+    name
+    slug
+    type
+    inputType
+    entityType
+    metadata {
+      key
+      value
+    }
+    privateMetadata {
+      key
+      value
+    }
+  }
+}`;
+
+export const ATTRIBUTE_DELETE_MUTATION = gql`
+mutation DelAttribute($id: ID!) {
+  attributeDelete(id: $id) {
+    errors {
+      field
+      message
+    }
+  }
+}`
