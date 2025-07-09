@@ -82,7 +82,7 @@
 
 	<div class="flex gap-2 items-start mt-5">
 		<Input
-			label="Last name"
+			label={$tranFunc('staff.lastName')}
 			bind:value={lastName}
 			inputDebounceOption={{ onInput: validate }}
 			variant={staffFormErrors?.lastName?.length ? 'error' : 'info'}
@@ -94,7 +94,7 @@
 			onblur={validate}
 		/>
 		<Input
-			label="First name"
+			label={$tranFunc('staff.firstName')}
 			bind:value={firstName}
 			inputDebounceOption={{ onInput: validate }}
 			variant={staffFormErrors?.firstName?.length ? 'error' : 'info'}
@@ -107,7 +107,7 @@
 		/>
 	</div>
 	<Input
-		label="Email"
+		label={$tranFunc('staff.email')}
 		bind:value={email}
 		class="flex-1 mt-3"
 		required
@@ -120,6 +120,12 @@
 	/>
 
 	<div class="mt-3 flex gap-3 items-center">
-		<Checkbox label="Active" bind:checked={isActive} {disabled} size="sm" class="flex-1" />
+		<Checkbox
+			label={$tranFunc('staff.isActive')}
+			bind:checked={isActive}
+			{disabled}
+			size="sm"
+			class="flex-1"
+		/>
 	</div>
 </div>

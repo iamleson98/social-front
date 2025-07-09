@@ -7,6 +7,7 @@
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import StaffForm from '$lib/components/pages/settings/config/staff/staff-form.svelte';
 	import { goto } from '$app/navigation';
+	import { tranFunc } from '$i18n';
 
 	let loading = $state(false);
 	let formOk = $state(false);
@@ -15,7 +16,7 @@
 		firstName: '',
 		lastName: '',
 		email: '',
-		isActive: false
+		isActive: false,
 	});
 
 	const handleAddStaff = async () => {
@@ -28,13 +29,14 @@
 				firstName: user.firstName,
 				lastName: user.lastName,
 				email: user.email,
-				isActive: user.isActive
-			}
+				isActive: user.isActive,
+			},
 		});
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'staffCreate', 'Staff created successfully')) return;
+		if (checkIfGraphqlResultHasError(result, 'staffCreate', $tranFunc('staff.staffCreated')))
+			return;
 
 		await goto(AppRoute.SETTINGS_CONFIGS_STAFFS());
 	};

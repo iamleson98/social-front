@@ -304,5 +304,18 @@ export default {
 		refund: "Refund",
 		void: "Refund",
 		markAsPaid: "Mark as paid",
+	},
+	staff: {
+		avatar: 'Ảnh đại diện',
+		firstName: 'Tên',
+		lastName: 'Họ',
+		fullName: 'Họ và tên',
+		email: 'Email',
+		isActive: 'Hoạt động',
+		inactive: 'Không hoạt động',
+		staffCreated: 'Tạo nhân viên thành công',
+		staffUpdated: 'Cập nhật nhân viên thành công',
+		staffDeleted: 'Xoá nhân viên thành công',
+		staffDeleteConfirm: 'Bạn có chắc chắn muốn xoá nhân viên {{id}}?',
 	}
 };
