@@ -20,6 +20,7 @@
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import type { PageServerData } from './$types';
+	import { tranFunc } from '$i18n';
 
 	type Props = {
 		data: PageServerData;
@@ -60,7 +61,8 @@
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'staffUpdate', 'Staff updated successfully')) return;
+		if (checkIfGraphqlResultHasError(result, 'staffUpdate', $tranFunc('staff.staffUpdated')))
+			return;
 		staffDetailQuery.reexecute({
 			variables: {
 				id: page.params.id,
@@ -70,7 +72,7 @@
 
 	const handleOpenDeleteModal = () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: 'Are you sure you want to delete this staff?',
+			content: $tranFunc('staff.staffDeleteConfirm', { id: page.params.id }),
 			onOk: handleDeleteStaff,
 		});
 	};
@@ -86,7 +88,8 @@
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'staffDelete', 'Staff deleted successfully')) return;
+		if (checkIfGraphqlResultHasError(result, 'staffDelete', $tranFunc('staff.staffDeleted')))
+			return;
 		await goto(AppRoute.SETTINGS_CONFIGS_STAFFS());
 	};
 </script>

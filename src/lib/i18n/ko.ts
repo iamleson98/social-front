@@ -304,5 +304,20 @@ export default {
 		refund: "Refund",
 		void: "Refund",
 		markAsPaid: "Mark as paid",
+	},
+	staff: {
+		staffs: 'Staffs',
+		newStaff: 'New Staff',
+		avatar: 'Avatar',
+		isActive: 'Active',
+		inactive: 'Inactive',
+		fullName: 'Full Name',
+		email: 'Email',
+		status: 'Status',
+		joinedSince: 'Joined since',
+		staffCreated: 'Staff created successfully',
+		staffUpdated: 'Staff updated successfully',
+		staffDeleted: 'Staff deleted successfully',
+		staffDeleteConfirm: 'Are you sure you want to delete the staff {{id}}?',
 	}
 };
