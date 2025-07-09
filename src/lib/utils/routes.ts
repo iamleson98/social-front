@@ -57,6 +57,10 @@ export const AppRoute = {
 	SETTINGS_CONFIGS_WAREHOUSE_DETAILS: (id: string) => buildLinkWithRespectToChannel(`settings/warehouses/${id}`),
 	SETTINGS_CONFIGS_WAREHOUSE_NEW: () => buildLinkWithRespectToChannel('settings/warehouses/new'),
 
+	SETTINGS_CONFIGS_SHIPPING_ZONES: () => buildLinkWithRespectToChannel('settings/shipping-zones'),
+	SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS: (id: string) => buildLinkWithRespectToChannel(`settings/shipping-zones/${id}`),
+	SETTINGS_CONFIGS_SHIPPING_ZONE_NEW: () => buildLinkWithRespectToChannel('settings/shipping-zones/new'),
+
 	SETTINGS_CONFIGS_ATTRIBUTES: () => buildLinkWithRespectToChannel('settings/attributes'),
 	SETTINGS_CONFIGS_ATTRIBUTE_DETAILS: (id: string) => buildLinkWithRespectToChannel(`settings/attributes/${id}`),
 	SETTINGS_CONFIGS_ATTRIBUTE_NEW: () => buildLinkWithRespectToChannel('settings/attributes/new'),

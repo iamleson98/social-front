@@ -18,6 +18,7 @@
 		RosetteDiscountChecked,
 		Thingiverse,
 		Ticket,
+		TruckDelivery,
 		UserCog,
 		UsersGroup,
 		type IconContent,
@@ -246,6 +247,17 @@
 					AppRoute.SETTINGS_CONFIGS_ATTRIBUTES(),
 					AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_NEW(),
 					AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_DETAILS(page.params.id),
+				].includes(page.url.pathname),
+		},
+		{
+			icon: TruckDelivery,
+			name: 'Shipping zones',
+			href: AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONES(),
+			shouldActive: () =>
+				[
+					AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONES(),
+					AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_NEW(),
+					AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS(page.params.id),
 				].includes(page.url.pathname),
 		},
 	]);
