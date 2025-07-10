@@ -4,6 +4,7 @@
 	import { ATTRIBUTE_DELETE_MUTATION, ATTRIBUTE_DETAILS_QUERY } from '$lib/api/admin/attribute';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
+	import AttributeValues from '$lib/components/pages/settings/attributes/attribute-values.svelte';
 	import DetailSidebar from '$lib/components/pages/settings/attributes/detail-sidebar.svelte';
 	import GeneralInformation from '$lib/components/pages/settings/attributes/general-information.svelte';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
@@ -11,6 +12,7 @@
 	import DetailSkeleton from '$lib/components/pages/settings/warehouses/detail-skeleton.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import {
+		AttributeTypeEnum,
 		MeasurementUnitsEnum,
 		type AttributeUpdateInput,
 		type Mutation,
@@ -90,16 +92,19 @@
 {:else if $AttributeQuery.error}
 	<Alert variant="error" size="sm" bordered>{$AttributeQuery.error.message}</Alert>
 {:else if $AttributeQuery.data?.attribute}
-	{@const { metadata, privateMetadata, inputType, type } = $AttributeQuery.data.attribute}
+	{@const { metadata, privateMetadata, inputType, type, withChoices, id } =
+		$AttributeQuery.data.attribute}
 	<div class="flex gap-2">
 		<div class="w-7/10 space-y-2">
 			<GeneralInformation
 				bind:name={attributeInput.name!}
 				bind:slug={attributeInput.slug!}
 				bind:valueRequired={attributeInput.valueRequired!}
-				inputType={inputType ?? undefined}
+				inputType={inputType!}
 				disabled={loading}
 			/>
+
+			<AttributeValues {withChoices} inputType={inputType!} attributeID={id} />
 
 			<GeneralMetadataEditor
 				objectId={page.params.id}
@@ -112,7 +117,7 @@
 		<div class="space-y-2 w-3/10">
 			<DetailSidebar
 				bind:visibleInStorefront={attributeInput.visibleInStorefront!}
-				type={type ?? undefined}
+				type={type || AttributeTypeEnum.ProductType}
 			/>
 		</div>
 	</div>

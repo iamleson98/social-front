@@ -32,7 +32,7 @@
 		variant
 	].fg}"
 >
-	<input {id} type="radio" bind:group class="radio {RADIO_SIZES[size]}" {...rest} />
+	<input {id} type="radio" bind:group class="radio {RADIO_SIZES[size]} shadow-none!" {...rest} />
 	<div>
 		{#if label}
 			<Label {label} {size} {id} required={rest.required} {variant} />

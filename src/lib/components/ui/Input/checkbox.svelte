@@ -35,7 +35,7 @@
 			bind:checked
 			type="checkbox"
 			{id}
-			class={`checkbox ${CHECKBOX_SIZES[size]}`}
+			class={`checkbox ${CHECKBOX_SIZES[size]} shadow-none!`}
 		/>
 		<div>
 			{#if label}

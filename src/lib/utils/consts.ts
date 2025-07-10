@@ -145,3 +145,4 @@ export const SitenameTimeFormat = 'MMM D, YYYY hh:mm A';
 export const CommonEaseDatePickerFormat = 'YYYY-MM-DD HH:mm'
 export const GiftcardUserEmailMetadataKey = 'customerEmail';
 export const GiftcardChannelMetadataKey = 'channel';
+export const ValidSlugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;

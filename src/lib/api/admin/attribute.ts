@@ -55,6 +55,7 @@ query Attribute($id: ID!) {
     type
     inputType
     entityType
+    withChoices
     metadata {
       key
       value
@@ -75,3 +76,47 @@ mutation DelAttribute($id: ID!) {
     }
   }
 }`
+
+export const ATTRIBUTE_VALUES_QUERY = gql`
+query AttributeValues($id: ID!, $first: Int, $last: Int, $before: String, $after: String, $sortBy: AttributeChoicesSortingInput, $filter: AttributeValueFilterInput) {
+  attribute(id: $id) {
+    choices(first: $first, last: $last, before: $before, after: $after, filter: $filter, sortBy: $sortBy) {
+      edges {
+        node {
+          id
+          name
+          slug
+          value
+          inputType
+          reference
+          file {
+            url
+            contentType
+          }
+          richText
+          plainText
+          boolean
+          date
+          dateTime
+          externalReference
+        }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+    }
+  }
+}`;
+
+export const REORDER_ATTRIBUTE_VALUES_MUTATION = gql`
+mutation AttributeReorderValues($attributeId: ID!, $moves: [ReorderInput!]!) {
+  attributeReorderValues(attributeId: $attributeId, moves: $moves) {
+    errors {
+      field
+      message
+    }
+  }
+}`;

@@ -34,6 +34,10 @@
 			sortable: true,
 			key: AttributeSortField.FilterableInStorefront,
 		},
+		{
+			title: 'Input type',
+			child: isInputType,
+		},
 	];
 </script>
 
@@ -41,6 +45,10 @@
 	<a href={AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_DETAILS(item.id)} class="link link-hover">
 		{item.name}
 	</a>
+{/snippet}
+
+{#snippet isInputType({ item }: { item: Attribute })}
+	<span>{item.inputType?.toLowerCase().replace('_', ' ') ?? '-'}</span>
 {/snippet}
 
 {#snippet visible({ item }: { item: Attribute })}

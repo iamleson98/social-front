@@ -4,6 +4,7 @@
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { AttributeInputTypeEnum } from '$lib/gql/graphql';
+	import { ValidSlugRegex } from '$lib/utils/consts';
 	import slugify from 'slugify';
 	import { object, string, z } from 'zod';
 
@@ -12,7 +13,7 @@
 		name: string;
 		slug: string;
 		isCreatePage?: boolean;
-		inputType?: AttributeInputTypeEnum;
+		inputType: AttributeInputTypeEnum;
 		valueRequired: boolean;
 	};
 
@@ -31,7 +32,7 @@
 		name: string().nonempty(RequiredErr),
 		slug: string()
 			.nonempty(RequiredErr)
-			.regex(/^(a-z-)+$/, 'Please provide valid slug'),
+			.regex(ValidSlugRegex, 'Please provide valid slug'),
 	});
 
 	type AttributeProps = z.infer<typeof AttributeSchema>;
@@ -62,36 +63,35 @@
 		label="Attribute name"
 		placeholder="Attribute name"
 		bind:value={name}
-		required
 		variant={attributeErrors.name?.length ? 'error' : 'info'}
 		subText={attributeErrors.name?.[0]}
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
+		required
 	/>
 	<Input
 		label="Attribute slug"
 		placeholder="Attribute slug"
 		bind:value={slug}
-		required
 		variant={attributeErrors.slug?.length ? 'error' : 'info'}
 		subText={attributeErrors.slug?.[0]}
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
+		required
 	/>
 
 	<Select
 		options={AttributeInputTypeOptions}
 		label="Input type"
 		placeholder="Input type"
-		required
 		bind:value={inputType}
 		disabled={disabled || !isCreatePage}
+		required
 	/>
 
 	<Checkbox
 		label="Value required"
 		bind:checked={valueRequired}
-		size="sm"
 		subText="If checked, this attribute is required"
 		required
 	/>
