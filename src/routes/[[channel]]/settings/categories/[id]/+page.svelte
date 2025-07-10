@@ -7,9 +7,9 @@
 	import { operationStore } from '$lib/api/operation';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
-	import DetailSkeleton from '$lib/components/pages/settings/config/categories/detail-skeleton.svelte';
-	import GeneralInformation from '$lib/components/pages/settings/config/categories/general-information.svelte';
-	import SubSection from '$lib/components/pages/settings/config/categories/sub-section.svelte';
+	import DetailSkeleton from '$lib/components/pages/settings/categories/detail-skeleton.svelte';
+	import GeneralInformation from '$lib/components/pages/settings/categories/general-information.svelte';
+	import SubSection from '$lib/components/pages/settings/categories/sub-section.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import type {
 		CategoryInput,

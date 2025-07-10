@@ -17,7 +17,7 @@
 		name: string;
 		slug: string;
 		disabled: boolean;
-		deleteExpiredOrdersAfter: unknown;
+		deleteExpiredOrdersAfter: number;
 		defaultCountry: CountryCode;
 		isActive: boolean;
 		currencyCode: string;
@@ -51,6 +51,10 @@
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 	const MIN_EXPIRE_DAY = 1;
 	const MAX_EXPIRE_DAY = 120;
+	const EXPIRE_ORDER_DEL_ERR = $tranFunc('channel.delExprOrdersErrSubTxt', {
+		min: MIN_EXPIRE_DAY,
+		max: MAX_EXPIRE_DAY,
+	});
 
 	const channelSchema = object({
 		name: string().nonempty(REQUIRED_ERROR),
@@ -62,8 +66,8 @@
 			.refine((val) => val !== undefined, REQUIRED_ERROR),
 		orderSettings: object({
 			deleteExpiredOrdersAfter: number()
-				.min(MIN_EXPIRE_DAY, `Must be >= ${MIN_EXPIRE_DAY}`)
-				.max(MAX_EXPIRE_DAY, `Must be <= ${MAX_EXPIRE_DAY}`),
+				.min(MIN_EXPIRE_DAY, EXPIRE_ORDER_DEL_ERR)
+				.max(MAX_EXPIRE_DAY, EXPIRE_ORDER_DEL_ERR),
 		}),
 		currencyCode: string().nonempty(REQUIRED_ERROR),
 	});
@@ -96,22 +100,22 @@
 	};
 
 	const handleFormChange = (field: keyof ChannelSchema) => {
-		if (field === 'name' && typeof name === 'string') {
-			slug = slugify(name, { lower: true });
+		if (field === 'name' && isCreatePage) {
+			slug = slugify(name, { lower: true, strict: true });
 		}
 		validate();
 	};
 </script>
 
-<SectionHeader>General Information</SectionHeader>
+<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
 
 <div class="flex gap-2 items-start">
 	<Input
-		label="Name"
+		label={$tranFunc('common.name')}
 		bind:value={name}
 		inputDebounceOption={{ onInput: () => handleFormChange('name') }}
 		variant={channelFormErrors?.name?.length ? 'error' : 'info'}
-		subText={channelFormErrors?.name?.length ? channelFormErrors.name[0] : ''}
+		subText={channelFormErrors?.name?.[0]}
 		required
 		{disabled}
 		class="flex-1"
@@ -123,7 +127,7 @@
 		class="flex-1"
 		required
 		variant={channelFormErrors?.slug?.length ? 'error' : 'info'}
-		subText={channelFormErrors?.slug?.length ? channelFormErrors.slug[0] : ''}
+		subText={channelFormErrors?.slug?.[0]}
 		{disabled}
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
@@ -132,7 +136,7 @@
 
 <div class="mt-3 flex gap-3 items-center">
 	<Input
-		label="Order expiration"
+		label={$tranFunc('channel.orderExp')}
 		bind:value={deleteExpiredOrdersAfter}
 		{disabled}
 		class="flex-1"
@@ -144,18 +148,24 @@
 		variant={channelFormErrors?.orderSettings?.length ? 'error' : 'info'}
 		subText={channelFormErrors?.orderSettings?.length
 			? channelFormErrors.orderSettings[0]
-			: `The time in days after expired orders will be deleted. Allowed range between ${MIN_EXPIRE_DAY} and ${MAX_EXPIRE_DAY}.`}
+			: $tranFunc('channel.delExprOrdersSubTxt', { min: MIN_EXPIRE_DAY, max: MAX_EXPIRE_DAY })}
 	/>
-	<Checkbox label="Active" bind:checked={isActive} {disabled} size="sm" class="flex-1" />
+	<Checkbox
+		label={$tranFunc('staff.active')}
+		bind:checked={isActive}
+		{disabled}
+		size="sm"
+		class="flex-1"
+	/>
 </div>
 
 <div class="mt-3 flex gap-3 items-start">
 	<Input
-		label="Currency"
+		label={$tranFunc('common.currency')}
 		bind:value={currencyCode}
 		required
 		variant={channelFormErrors?.currencyCode?.length ? 'error' : 'info'}
-		subText={channelFormErrors?.currencyCode?.length ? channelFormErrors.currencyCode[0] : ''}
+		subText={channelFormErrors?.currencyCode?.[0]}
 		disabled={!isCreatePage}
 		class="flex-1"
 		inputDebounceOption={{ onInput: validate }}
@@ -163,12 +173,11 @@
 	/>
 
 	<CountrySelect
-		label="Country"
-		placeholder="Select a country"
+		label={$tranFunc('common.country')}
 		bind:value={defaultCountry}
 		required
 		variant={channelFormErrors?.defaultCountry?.length ? 'error' : 'info'}
-		subText={channelFormErrors?.defaultCountry?.length ? channelFormErrors.defaultCountry[0] : ''}
+		subText={channelFormErrors?.defaultCountry?.[0]}
 		{disabled}
 		class="flex-1"
 		onchange={validate}
@@ -179,7 +188,7 @@
 {#snippet previewLabel(label: string)}
 	<div class="flex items-center gap-1">
 		<span>{label}</span>
-		<Badge size="xs" text="Preview" variant="outline" rounded />
+		<Badge size="xs" text={$tranFunc('settings.preview')} variant="outline" rounded />
 	</div>
 {/snippet}
 
@@ -188,11 +197,11 @@
 		bind:checked={allowUnpaidOrders}
 		{disabled}
 		size="sm"
-		subText={`Enables completing checkout with order before a successful payment.`}
+		subText={$tranFunc('channel.allowCompleteOrderBeforePay')}
 		class="mb-3"
 	>
 		{#snippet label()}
-			{@render previewLabel('Allow unpaid orders')}
+			{@render previewLabel($tranFunc('channel.allowUnpaidOrder'))}
 		{/snippet}
 	</Checkbox>
 	<Checkbox
@@ -208,7 +217,7 @@
 		subText={`"Mark as paid" feature creates a Transaction - used by Payment Apps. <br /> If left unchecked it creates a Payment - used by Payment Plugins.`}
 	>
 		{#snippet label()}
-			{@render previewLabel('Use Transaction flow when marking order as paid')}
+			{@render previewLabel($tranFunc('channel.useTranFlow'))}
 		{/snippet}
 	</Checkbox>
 	<Checkbox

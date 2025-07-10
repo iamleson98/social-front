@@ -4,7 +4,7 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
-	import GeneralInformation from '$lib/components/pages/settings/config/categories/general-information.svelte';
+	import GeneralInformation from '$lib/components/pages/settings/categories/general-information.svelte';
 	import type { CategoryInput, Mutation, MutationCategoryCreateArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import type { MediaObject } from '$lib/utils/types';

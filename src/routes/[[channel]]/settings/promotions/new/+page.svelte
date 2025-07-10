@@ -1,8 +1,8 @@
 <script lang="ts">
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
-	import GeneralInformation from '$lib/components/pages/settings/config/promotions/general-information.svelte';
-	import Rules from '$lib/components/pages/settings/config/promotions/rules.svelte';
+	import GeneralInformation from '$lib/components/pages/settings/promotions/general-information.svelte';
+	import Rules from '$lib/components/pages/settings/promotions/rules.svelte';
 	import { PromotionTypeEnum, type PromotionCreateInput } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 

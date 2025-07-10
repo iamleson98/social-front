@@ -15,7 +15,6 @@
 		type MutationChannelUpdateArgs,
 		type Query,
 	} from '$lib/gql/graphql';
-	import { Button } from '$lib/components/ui';
 	import { AppRoute } from '$lib/utils';
 	import { afterNavigate, goto } from '$app/navigation';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
@@ -25,12 +24,12 @@
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { onMount } from 'svelte';
-	import ChannelDetailSkeleton from '$lib/components/pages/settings/config/channel/channel-detail-skeleton.svelte';
+	import ChannelDetailSkeleton from '$lib/components/pages/settings/channel/channel-detail-skeleton.svelte';
 	import { omit } from 'es-toolkit';
-	import ShippingZonesForm from '$lib/components/pages/settings/config/channel/shipping-zones-form.svelte';
-	import WarehousesForm from '$lib/components/pages/settings/config/channel/warehouses-form.svelte';
-	import ChannelForm from '$lib/components/pages/settings/config/channel/channel-form.svelte';
-	import { toast } from 'svelte-sonner';
+	import ShippingZonesForm from '$lib/components/pages/settings/channel/shipping-zones-form.svelte';
+	import WarehousesForm from '$lib/components/pages/settings/channel/warehouses-form.svelte';
+	import ChannelForm from '$lib/components/pages/settings/channel/channel-form.svelte';
+	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 
 	const channelDetailQuery = operationStore<Pick<Query, 'channel'>>({
 		kind: 'query',
@@ -41,7 +40,7 @@
 
 	const channelsQuery = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
-		requestPolicy: 'network-only',
+		requestPolicy: 'cache-and-network',
 		query: CHANNELS_QUERY,
 		pause: true,
 	});
@@ -131,10 +130,6 @@
 		);
 	});
 
-	const delModalHeader = $derived(
-		$tranFunc('settings.confirmDelChannel', { id: channelValues.name }),
-	);
-
 	const handleDeleteChannel = async () => {
 		const variable: MutationChannelDeleteArgs = {
 			id: $channelDetailQuery.data?.channel?.id as string,
@@ -146,15 +141,16 @@
 		}
 
 		loading = true;
-		const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'channelDelete'>>(
-			CHANNEL_DELETE_MUTATION,
-			variable,
-		);
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'channelDelete'>,
+			MutationChannelDeleteArgs
+		>(CHANNEL_DELETE_MUTATION, variable);
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'channelDelete')) return;
-		toast.success('Channel deleted successfully');
+		if (checkIfGraphqlResultHasError(result, 'channelDelete', $tranFunc('channel.delSuccess')))
+			return;
+
 		await goto(AppRoute.SETTINGS_CONFIGS_CHANNELS());
 	};
 
@@ -172,8 +168,8 @@
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'channelUpdate')) return;
-		toast.success('Channel updated successfully');
+		if (checkIfGraphqlResultHasError(result, 'channelUpdate', $tranFunc('channel.editSuccess')))
+			return;
 
 		await goto(AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(channelValues.slug as string), {
 			replaceState: true,
@@ -253,30 +249,19 @@
 		</div>
 
 		<!-- MARK: channel detail actions -->
-		<div
-			class="mt-5 sticky bottom-0 flex justify-between items-center bg-white p-2 border rounded-lg border-gray-200"
-		>
-			<Button color="red" disabled={loading} onclick={() => (openDeleteModal = true)}>
-				Delete
-			</Button>
-
-			<div class="flex gap-2">
-				<Button
-					variant="light"
-					color="gray"
-					disabled={loading}
-					href={AppRoute.SETTINGS_CONFIGS_CHANNELS()}>Back</Button
-				>
-				<Button disabled={loading || nothingChanged || !formOk} onclick={handleUpdateChannel}
-					>Update</Button
-				>
-			</div>
-		</div>
+		<ActionBar
+			onUpdateClick={handleUpdateChannel}
+			disableUpdateButton={nothingChanged || loading || !formOk}
+			onDeleteClick={() => (openDeleteModal = true)}
+			disableDeleteButton={loading}
+			backButtonUrl={AppRoute.SETTINGS_CONFIGS_CHANNELS()}
+			disableBackButton={loading}
+		/>
 	</div>
 
 	<Modal
 		open={openDeleteModal}
-		header={delModalHeader}
+		header={$tranFunc('channel.confirmDelChannel', { id: channelValues.name })}
 		onOk={handleDeleteChannel}
 		onCancel={() => (openDeleteModal = false)}
 		onClose={() => (openDeleteModal = false)}
@@ -288,13 +273,12 @@
 		<Select
 			options={replaceChannelOptions}
 			bind:value={channelToReplaceId}
-			label="Please specify channel to replace"
-			placeholder="Channel to replace"
+			label={$tranFunc('channel.chanToReplace')}
+			placeholder={$tranFunc('channel.chanToReplace')}
 		/>
 
 		<Alert variant="info" size="sm" bordered class="mt-3">
-			Specify a new channel to assign products to. The replace channel must have the same currency
-			as deleting channel
+			{$tranFunc('channel.replaceChanHelpTxt')}
 		</Alert>
 	</Modal>
 {/if}

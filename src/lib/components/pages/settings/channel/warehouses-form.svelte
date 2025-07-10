@@ -8,7 +8,7 @@
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
-	import type { Query, QueryChannelArgs, QueryWarehousesArgs, Warehouse } from '$lib/gql/graphql';
+	import type { Query, QueryChannelArgs, Warehouse } from '$lib/gql/graphql';
 	import { onMount } from 'svelte';
 
 	type Props = {

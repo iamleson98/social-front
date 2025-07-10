@@ -4,7 +4,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import StaffForm from '$lib/components/pages/settings/config/staff/staff-form.svelte';
+	import StaffForm from '$lib/components/pages/settings/staff/staff-form.svelte';
 	import { goto } from '$app/navigation';
 	import { tranFunc } from '$i18n';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';

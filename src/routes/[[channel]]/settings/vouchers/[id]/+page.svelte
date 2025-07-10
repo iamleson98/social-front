@@ -13,14 +13,14 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
-	import ApplicationType from '$lib/components/pages/settings/config/vouchers/application-type.svelte';
-	import DiscountType from '$lib/components/pages/settings/config/vouchers/discount-type.svelte';
-	import EffectiveTime from '$lib/components/pages/settings/config/vouchers/effective-time.svelte';
-	import Requirements from '$lib/components/pages/settings/config/vouchers/requirements.svelte';
-	import Skeleton from '$lib/components/pages/settings/config/vouchers/skeleton.svelte';
-	import Summary from '$lib/components/pages/settings/config/vouchers/summary.svelte';
-	import UsageLimit from '$lib/components/pages/settings/config/vouchers/usage-limit.svelte';
-	import VoucherCodes from '$lib/components/pages/settings/config/vouchers/voucher-codes.svelte';
+	import ApplicationType from '$lib/components/pages/settings/vouchers/application-type.svelte';
+	import DiscountType from '$lib/components/pages/settings/vouchers/discount-type.svelte';
+	import EffectiveTime from '$lib/components/pages/settings/vouchers/effective-time.svelte';
+	import Requirements from '$lib/components/pages/settings/vouchers/requirements.svelte';
+	import Skeleton from '$lib/components/pages/settings/vouchers/skeleton.svelte';
+	import Summary from '$lib/components/pages/settings/vouchers/summary.svelte';
+	import UsageLimit from '$lib/components/pages/settings/vouchers/usage-limit.svelte';
+	import VoucherCodes from '$lib/components/pages/settings/vouchers/voucher-codes.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Input } from '$lib/components/ui/Input';
 	import {

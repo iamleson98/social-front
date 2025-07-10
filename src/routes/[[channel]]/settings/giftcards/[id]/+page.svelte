@@ -6,11 +6,11 @@
 	import { operationStore } from '$lib/api/operation';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
-	import DetailGiftcardSkeleton from '$lib/components/pages/settings/config/giftcards/detail-giftcard-skeleton.svelte';
-	import GiftcardDetail from '$lib/components/pages/settings/config/giftcards/giftcard-detail.svelte';
-	import GiftcardEvents from '$lib/components/pages/settings/config/giftcards/giftcard-events.svelte';
-	import GiftcardExtraInformation from '$lib/components/pages/settings/config/giftcards/giftcard-extra-information.svelte';
-	import { GiftcardUtil } from '$lib/components/pages/settings/config/giftcards/utils.svelte';
+	import DetailGiftcardSkeleton from '$lib/components/pages/settings/giftcards/detail-giftcard-skeleton.svelte';
+	import GiftcardDetail from '$lib/components/pages/settings/giftcards/giftcard-detail.svelte';
+	import GiftcardEvents from '$lib/components/pages/settings/giftcards/giftcard-events.svelte';
+	import GiftcardExtraInformation from '$lib/components/pages/settings/giftcards/giftcard-extra-information.svelte';
+	import { GiftcardUtil } from '$lib/components/pages/settings/giftcards/utils.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import {
 		type GiftCardUpdateInput,

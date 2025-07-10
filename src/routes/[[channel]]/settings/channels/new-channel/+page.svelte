@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui';
 	import { CHANNEL_CREATE_MUTATION } from '$lib/api/admin/channels';
 	import {
 		AllocationStrategyEnum,
@@ -8,16 +7,17 @@
 		TransactionFlowStrategyEnum,
 		type ChannelCreateInput,
 		type Mutation,
-		type MutationChannelCreateArgs
+		type MutationChannelCreateArgs,
 	} from '$lib/gql/graphql';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { goto } from '$app/navigation';
 	import { AppRoute } from '$lib/utils';
-	import ShippingZonesForm from '$lib/components/pages/settings/config/channel/shipping-zones-form.svelte';
-	import WarehousesForm from '$lib/components/pages/settings/config/channel/warehouses-form.svelte';
-	import ChannelForm from '$lib/components/pages/settings/config/channel/channel-form.svelte';
-	import { toast } from 'svelte-sonner';
+	import ShippingZonesForm from '$lib/components/pages/settings/channel/shipping-zones-form.svelte';
+	import WarehousesForm from '$lib/components/pages/settings/channel/warehouses-form.svelte';
+	import ChannelForm from '$lib/components/pages/settings/channel/channel-form.svelte';
+	import { tranFunc } from '$i18n';
+	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 
 	let loading = $state(false);
 	let formOk = $state(false);
@@ -31,19 +31,19 @@
 		addShippingZones: [],
 		addWarehouses: [],
 		checkoutSettings: {
-			automaticallyCompleteFullyPaidCheckouts: false
+			automaticallyCompleteFullyPaidCheckouts: false,
 		},
 		orderSettings: {
 			allowUnpaidOrders: false,
 			deleteExpiredOrdersAfter: 60,
-			markAsPaidStrategy: MarkAsPaidStrategyEnum.PaymentFlow
+			markAsPaidStrategy: MarkAsPaidStrategyEnum.PaymentFlow,
 		},
 		paymentSettings: {
-			defaultTransactionFlowStrategy: TransactionFlowStrategyEnum.Charge
+			defaultTransactionFlowStrategy: TransactionFlowStrategyEnum.Charge,
 		},
 		stockSettings: {
-			allocationStrategy: AllocationStrategyEnum.PrioritizeSortingOrder
-		}
+			allocationStrategy: AllocationStrategyEnum.PrioritizeSortingOrder,
+		},
 	});
 
 	const handleAddChannel = async () => {
@@ -55,13 +55,13 @@
 			Pick<Mutation, 'channelCreate'>,
 			MutationChannelCreateArgs
 		>(CHANNEL_CREATE_MUTATION, {
-			input: channelValues
+			input: channelValues,
 		});
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'channelCreate')) return;
-		toast.success('Channel created successfully');
+		if (checkIfGraphqlResultHasError(result, 'channelCreate', $tranFunc('channel.newSuccess')))
+			return;
 
 		await goto(AppRoute.SETTINGS_CONFIGS_CHANNELS());
 	};
@@ -112,16 +112,10 @@
 	</div>
 
 	<!-- MARK: channel detail actions -->
-	<div
-		class="mt-5 sticky bottom-0 flex justify-between gap-3 items-center bg-white p-2 border rounded-lg border-gray-200"
-	>
-		<div class="w-full"></div>
-		<Button
-			variant="light"
-			color="gray"
-			disabled={loading}
-			href={AppRoute.SETTINGS_CONFIGS_CHANNELS()}>Back</Button
-		>
-		<Button disabled={loading || !formOk} onclick={handleAddChannel}>Create</Button>
-	</div>
+	<ActionBar
+		backButtonUrl={AppRoute.SETTINGS_CONFIGS_CHANNELS()}
+		disableBackButton={loading}
+		onAddClick={handleAddChannel}
+		disableCreateButton={loading || !formOk}
+	/>
 </div>

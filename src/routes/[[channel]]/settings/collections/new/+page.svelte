@@ -1,8 +1,8 @@
 <script lang="ts">
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
-	import AvailabilityForm from '$lib/components/pages/settings/config/collections/availability-form.svelte';
-	import GeneralInformationForm from '$lib/components/pages/settings/config/collections/general-information-form.svelte';
-	import SeoForm from '$lib/components/pages/settings/config/collections/seo-form.svelte';
+	import AvailabilityForm from '$lib/components/pages/settings/collections/availability-form.svelte';
+	import GeneralInformationForm from '$lib/components/pages/settings/collections/general-information-form.svelte';
+	import SeoForm from '$lib/components/pages/settings/collections/seo-form.svelte';
 	import {
 		type CollectionCreateInput,
 		type Mutation,
@@ -11,7 +11,7 @@
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
-	import ProductAssignForm from '$lib/components/pages/settings/config/collections/product-assign-form.svelte';
+	import ProductAssignForm from '$lib/components/pages/settings/collections/product-assign-form.svelte';
 	import type { MediaObject } from '$lib/utils/types';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { COLLECTION_CREATE_MUTATION } from '$lib/api/admin/collections';

@@ -13,8 +13,8 @@
 	import MetadataEditor from './metadata-editor.svelte';
 
 	type Props = {
-		metadata: MetadataItem[];
-		privateMetadata: MetadataItem[];
+		metadata?: MetadataItem[];
+		privateMetadata?: MetadataItem[];
 		disabled?: boolean;
 		/** id of the object that owns those metadatas */
 		objectId: string;
@@ -25,8 +25,8 @@
 	};
 
 	let {
-		metadata,
-		privateMetadata,
+		metadata = [],
+		privateMetadata = [],
 		disabled,
 		objectId,
 		performUpdateMetadata = $bindable(false),

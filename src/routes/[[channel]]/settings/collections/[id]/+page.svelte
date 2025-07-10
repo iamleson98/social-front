@@ -11,11 +11,11 @@
 	import { operationStore } from '$lib/api/operation';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
-	import AvailabilityForm from '$lib/components/pages/settings/config/collections/availability-form.svelte';
-	import CollectionDetailSkeleton from '$lib/components/pages/settings/config/collections/collection-detail-skeleton.svelte';
-	import GeneralInformationForm from '$lib/components/pages/settings/config/collections/general-information-form.svelte';
-	import ProductListForm from '$lib/components/pages/settings/config/collections/product-list-form.svelte';
-	import SeoForm from '$lib/components/pages/settings/config/collections/seo-form.svelte';
+	import AvailabilityForm from '$lib/components/pages/settings/collections/availability-form.svelte';
+	import CollectionDetailSkeleton from '$lib/components/pages/settings/collections/collection-detail-skeleton.svelte';
+	import GeneralInformationForm from '$lib/components/pages/settings/collections/general-information-form.svelte';
+	import ProductListForm from '$lib/components/pages/settings/collections/product-list-form.svelte';
+	import SeoForm from '$lib/components/pages/settings/collections/seo-form.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import type {
 		CollectionChannelListingUpdateInput,

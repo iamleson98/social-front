@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { PROMOTION_LIST_QUERY } from '$lib/api/admin/discount';
-	import Filter from '$lib/components/pages/settings/config/promotions/filter.svelte';
+	import Filter from '$lib/components/pages/settings/promotions/filter.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import type { Promotion, QueryPromotionsArgs } from '$lib/gql/graphql';

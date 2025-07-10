@@ -2,7 +2,7 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { COLLECTION_DELETE_MUTATION, COLLECTIONS_QUERY } from '$lib/api/collections';
 	import { Dots, Edit, Trash } from '$lib/components/icons';
-	import Filter from '$lib/components/pages/settings/config/collections/filter.svelte';
+	import Filter from '$lib/components/pages/settings/collections/filter.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown, type MenuItemProps } from '$lib/components/ui/Dropdown';

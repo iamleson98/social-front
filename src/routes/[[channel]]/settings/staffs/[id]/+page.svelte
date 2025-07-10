@@ -10,13 +10,13 @@
 		type Query,
 		type QueryUserArgs,
 	} from '$lib/gql/graphql';
-	import StaffDetailSkeleton from '$lib/components/pages/settings/config/staff/staff-detail-skeleton.svelte';
+	import StaffDetailSkeleton from '$lib/components/pages/settings/staff/staff-detail-skeleton.svelte';
 	import { AppRoute } from '$lib/utils';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { USER_DETAIL_QUERY } from '$lib/api/admin/users';
 	import { goto } from '$app/navigation';
-	import StaffForm from '$lib/components/pages/settings/config/staff/staff-form.svelte';
+	import StaffForm from '$lib/components/pages/settings/staff/staff-form.svelte';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import type { PageServerData } from './$types';

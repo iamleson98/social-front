@@ -6,7 +6,7 @@
 	import type { OutputData } from '@editorjs/editorjs';
 	import FileInputContainer from '$lib/components/common/file-input-container.svelte';
 	import { type MediaObject } from '$lib/utils/types';
-	import RuleEdit from '$lib/components/pages/settings/config/promotions/rule-edit.svelte';
+	import RuleEdit from '$lib/components/pages/settings/promotions/rule-edit.svelte';
 	import { Modal } from '$lib/components/ui/Modal';
 
 	let items = $state([

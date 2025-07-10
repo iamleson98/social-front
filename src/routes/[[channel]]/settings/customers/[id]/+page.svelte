@@ -4,12 +4,11 @@
 	import { USER_DETAIL_QUERY } from '$lib/api/admin/users';
 	import { operationStore } from '$lib/api/operation';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
-	import CustomerInformationForm from '$lib/components/pages/settings/config/customers/customer-information-form.svelte';
-	import SkeletonCustomerDetail from '$lib/components/pages/settings/config/customers/skeleton-customer-detail.svelte';
+	import CustomerInformationForm from '$lib/components/pages/settings/customers/customer-information-form.svelte';
+	import SkeletonCustomerDetail from '$lib/components/pages/settings/customers/skeleton-customer-detail.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import {
 		type CustomerInput,
-		type MetadataInput,
 		type Mutation,
 		type Query,
 		type QueryUserArgs,
@@ -18,9 +17,9 @@
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { USER_UPDATE_MUTATION } from '$lib/api/account';
 	import { type MutationCustomerUpdateArgs } from '$lib/gql/graphql';
-	import CustomerExtraForm from '$lib/components/pages/settings/config/customers/customer-extra-form.svelte';
+	import CustomerExtraForm from '$lib/components/pages/settings/customers/customer-extra-form.svelte';
 	import { onMount } from 'svelte';
-	import CustomerOrders from '$lib/components/pages/settings/config/customers/customer-orders.svelte';
+	import CustomerOrders from '$lib/components/pages/settings/customers/customer-orders.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 
 	const userDetailQuery = operationStore<Pick<Query, 'user'>, QueryUserArgs>({

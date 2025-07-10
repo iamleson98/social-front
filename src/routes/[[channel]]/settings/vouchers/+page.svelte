@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { VOUCHER_LIST_QUERY } from '$lib/api/admin/discount';
-	import Filter from '$lib/components/pages/settings/config/vouchers/filter.svelte';
+	import Filter from '$lib/components/pages/settings/vouchers/filter.svelte';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import type { QueryVouchersArgs, Voucher, VoucherSortField } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';

@@ -6,9 +6,9 @@
 	import { operationStore } from '$lib/api/operation';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
-	import DetailSkeleton from '$lib/components/pages/settings/config/promotions/detail-skeleton.svelte';
-	import GeneralInformation from '$lib/components/pages/settings/config/promotions/general-information.svelte';
-	import Rules from '$lib/components/pages/settings/config/promotions/rules.svelte';
+	import DetailSkeleton from '$lib/components/pages/settings/promotions/detail-skeleton.svelte';
+	import GeneralInformation from '$lib/components/pages/settings/promotions/general-information.svelte';
+	import Rules from '$lib/components/pages/settings/promotions/rules.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import {
 		PromotionTypeEnum,

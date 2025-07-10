@@ -15,7 +15,7 @@
 		Table,
 		TableSkeleton,
 		type SortState,
-		type TableColumnProps
+		type TableColumnProps,
 	} from '$lib/components/ui/Table';
 	import type { Channel, Mutation, MutationChannelDeleteArgs, Query } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
@@ -26,29 +26,29 @@
 	const channelsQuery = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
 		requestPolicy: 'cache-and-network',
-		query: CHANNELS_QUERY
+		query: CHANNELS_QUERY,
 	});
 
-	const CHANNEL_COLUMNS: TableColumnProps<Channel, any>[] = [
+	const CHANNEL_COLUMNS: TableColumnProps<Channel, any>[] = $derived([
 		{
-			title: 'Name',
+			title: $tranFunc('common.name'),
 			key: 'name',
 			child: name,
-			sortable: true
+			sortable: true,
 		},
 		{
-			title: 'Currency',
-			child: currency
+			title: $tranFunc('common.currency'),
+			child: currency,
 		},
 		{
-			title: 'Status',
-			child: status
+			title: $tranFunc('staff.status'),
+			child: status,
 		},
 		{
-			title: 'Action',
-			child: action
-		}
-	];
+			title: $tranFunc('common.action'),
+			child: action,
+		},
+	]);
 
 	let channelToDeleteId = $state<string>();
 	let channelToReplaceId = $state<string>();
@@ -60,7 +60,7 @@
 			if (data?.data) {
 				allChannels = data.data.channels || [];
 			}
-		})
+		}),
 	);
 
 	let channelsToReplaceOptions = $derived.by(() => {
@@ -81,7 +81,7 @@
 
 			currencyMeetMap[channel.currencyCode].push({
 				value: channel.id,
-				label: channel.slug
+				label: channel.slug,
 			});
 		}
 
@@ -89,30 +89,28 @@
 		return [];
 	});
 
-	let delModalHeader = $derived($tranFunc('settings.confirmDelChannel', { id: channelToDeleteId }));
-
 	const handleDeleteChannel = async () => {
 		if (!channelToDeleteId) return;
 
 		const variable: MutationChannelDeleteArgs = {
-			id: channelToDeleteId
+			id: channelToDeleteId,
 		};
 		if (channelToReplaceId) {
 			variable.input = {
-				channelId: channelToReplaceId
+				channelId: channelToReplaceId,
 			};
 		}
 
 		loading = true;
 
-		const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'channelDelete'>>(
-			CHANNEL_DELETE_MUTATION,
-			variable
-		);
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'channelDelete'>,
+			MutationChannelDeleteArgs
+		>(CHANNEL_DELETE_MUTATION, variable);
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'channelDelete', 'Channel deleted successfully'))
+		if (checkIfGraphqlResultHasError(result, 'channelDelete', $tranFunc('channel.delSuccess')))
 			return;
 
 		channelToDeleteId = '';
@@ -135,7 +133,7 @@
 
 {#snippet status({ item }: { item: Channel })}
 	<Badge
-		text={item.isActive ? 'Active' : 'Inactive'}
+		text={item.isActive ? $tranFunc('staff.active') : $tranFunc('staff.inactive')}
 		color={item.isActive ? 'green' : 'red'}
 		variant="light"
 	/>
@@ -148,12 +146,12 @@
 {#snippet action({ item }: { item: Channel })}
 	{@const MENU_OPTIONS: MenuItemProps[] = [
 		{
-			children: 'Edit channel',
+			children: $tranFunc('channel.edit'),
 			startIcon: Edit,
       href: AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(item.id)
 		},
 		{
-			children: 'Delete channel',
+			children: $tranFunc('channel.del'),
 			startIcon: Trash,
 			onclick: () => channelToDeleteId = item.id,
 			class: 'text-red-600',
@@ -179,7 +177,7 @@
 
 <Modal
 	open={!!channelToDeleteId}
-	header={delModalHeader}
+	header={$tranFunc('channel.confirmDelChannel', { id: channelToDeleteId })}
 	onOk={handleDeleteChannel}
 	onCancel={() => (channelToDeleteId = '')}
 	onClose={() => (channelToDeleteId = '')}
@@ -193,13 +191,12 @@
 		<Select
 			options={channelsToReplaceOptions}
 			bind:value={channelToReplaceId}
-			label="Please specify channel to replace"
-			placeholder="Channel to replace"
+			label={$tranFunc('channel.chanToReplace')}
+			placeholder={$tranFunc('channel.chanToReplace')}
 			disabled={loading}
 		/>
 		<Alert variant="info" size="sm" bordered class="mt-3">
-			Specify a new channel to assign products to. The replace channel must have the same currency
-			as deleting channel
+			{$tranFunc('channel.replaceChanHelpTxt')}
 		</Alert>
 	{/if}
 </Modal>

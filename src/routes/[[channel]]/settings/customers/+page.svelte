@@ -5,7 +5,7 @@
 	import { UserSortField, type QueryCustomersArgs, type User } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import dayjs from 'dayjs';
-	import CustomerFilter from '$lib/components/pages/settings/config/customers/filter.svelte';
+	import CustomerFilter from '$lib/components/pages/settings/customers/filter.svelte';
 	import GraphqlPaginableTable from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 

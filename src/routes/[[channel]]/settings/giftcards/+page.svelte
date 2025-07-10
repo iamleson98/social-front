@@ -5,9 +5,9 @@
 	import { GIFT_CARD_DELETE_MUTATION } from '$lib/api/admin/giftcards';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { Cancel, CircleCheck, Dots, Trash } from '$lib/components/icons';
-	import Filter from '$lib/components/pages/settings/config/giftcards/filter.svelte';
-	import GiftcardIssueForm from '$lib/components/pages/settings/config/giftcards/giftcard-issue-form.svelte';
-	import { GiftcardUtil } from '$lib/components/pages/settings/config/giftcards/utils.svelte';
+	import Filter from '$lib/components/pages/settings/giftcards/filter.svelte';
+	import GiftcardIssueForm from '$lib/components/pages/settings/giftcards/giftcard-issue-form.svelte';
+	import { GiftcardUtil } from '$lib/components/pages/settings/giftcards/utils.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
