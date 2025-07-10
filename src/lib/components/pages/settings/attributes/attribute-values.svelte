@@ -3,12 +3,12 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Edit, Trash } from '$lib/components/icons';
 	import { IconButton } from '$lib/components/ui/Button';
-	import { ColorPicker } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { AttributeInputTypeEnum, type Query, type AttributeValue } from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { noop } from 'es-toolkit';
+	import ColorPicker from 'svelte-awesome-color-picker';
 
 	type Props = {
 		inputType: AttributeInputTypeEnum;
@@ -125,8 +125,9 @@
 	closeOnOutsideClick
 	onCancel={noop}
 	onOk={noop}
+	onClose={() => (valueItemToEdit = undefined)}
 >
 	{#if valueItemToEdit?.inputType === AttributeInputTypeEnum.Swatch}
-		<ColorPicker />
+		<ColorPicker bind:hex={valueItemToEdit.value} position="responsive" />
 	{/if}
 </Modal>

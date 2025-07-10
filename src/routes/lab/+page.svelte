@@ -8,7 +8,6 @@
 	import { type MediaObject } from '$lib/utils/types';
 	import RuleEdit from '$lib/components/pages/settings/config/promotions/rule-edit.svelte';
 	import { Modal } from '$lib/components/ui/Modal';
-	import { ColorPicker } from '$lib/components/ui/Input';
 
 	let items = $state([
 		{
@@ -85,6 +84,4 @@
 <!-- <Modal header="edit rule" open>
 	<RuleEdit />
 </Modal> -->
-
-<ColorPicker />
 
