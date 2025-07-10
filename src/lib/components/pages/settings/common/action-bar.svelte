@@ -14,6 +14,7 @@
 		disableCreateButton?: boolean;
 		disableUpdateButton?: boolean;
 		disableDeleteButton?: boolean;
+		disableBackButton?: boolean;
 	};
 
 	let {
@@ -26,6 +27,7 @@
 		disableCreateButton,
 		disableUpdateButton,
 		disableDeleteButton,
+		disableBackButton,
 	}: Props = $props();
 </script>
 
@@ -41,7 +43,12 @@
 	</div>
 	<div class="flex gap-2">
 		{#if backButtonUrl}
-			<Button variant="light" color="gray" {disabled} href={backButtonUrl}>
+			<Button
+				variant="light"
+				color="gray"
+				disabled={disableBackButton || disabled}
+				href={backButtonUrl}
+			>
 				{$tranFunc('btn.back')}
 			</Button>
 		{/if}

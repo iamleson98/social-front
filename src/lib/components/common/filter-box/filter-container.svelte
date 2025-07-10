@@ -6,6 +6,7 @@
 	import { goto } from '$app/navigation';
 	import { Select, type Primitive, type SelectOption } from '$lib/components/ui/select';
 	import { omit } from 'es-toolkit';
+	import { tranFunc } from '$i18n';
 
 	type Props = {
 		filterOptions: FilterProps<T>[];
@@ -114,7 +115,7 @@
 
 <div class="bg-white rounded-lg p-2 shadow-md border border-gray-200 min-w-110">
 	<dir class="flex items-center justify-between">
-		<span class="text-sm font-medium">Filters</span>
+		<span class="text-sm font-medium">{$tranFunc('common.filter')}</span>
 		<IconButton
 			{disabled}
 			icon={CloseX}
@@ -141,7 +142,7 @@
 						value={key}
 						onchange={(vl) =>
 							handleFilterItemKeyChange(key as keyof T, (vl as SelectOption)?.value as keyof T)}
-						placeholder="Select filter"
+						placeholder={$tranFunc('common.selectFilter')}
 						disabled={disableDelBtn || disabled}
 					/>
 
@@ -188,7 +189,7 @@
 							color="red"
 							onclick={() =>
 								(activeFilters = omit(activeFilters, [key as keyof T]) as FilterConditions<T>)}
-							aria-label="Delete filter"
+							aria-label={$tranFunc('common.delFilter')}
 							disabled={disableDelBtn || disabled}
 						/>
 					</div>
@@ -196,7 +197,7 @@
 			{/each}
 		{:else}
 			<div class="flex items-center justify-center text-sm text-gray-500">
-				<span>Add filter</span>
+				<span>{$tranFunc('common.addFilter')}</span>
 			</div>
 		{/if}
 	</div>
@@ -211,7 +212,7 @@
 				onclick={() => (activeFilters = { ...activeFilters, '': {} })}
 				disabled={disableAddFilterBtn || disabled}
 			>
-				Add Filter
+				{$tranFunc('common.addFilter')}
 			</Button>
 			<div class="gap-1">
 				<Button
@@ -221,14 +222,14 @@
 					onclick={() => (activeFilters = {} as FilterConditions<T>)}
 					{disabled}
 				>
-					Reset
+					{$tranFunc('common.reset')}
 				</Button>
 				<Button
 					size="xs"
 					disabled={disableAddFilterBtn || disabled}
 					onclick={handleApplyCustomFilter}
 				>
-					Apply
+					{$tranFunc('btn.apply')}
 				</Button>
 			</div>
 		</div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { STAFFS_QUERY } from '$lib/api/admin/staff';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import FilterButton from '$lib/components/pages/settings/config/staff/filter-button.svelte';
@@ -13,32 +14,35 @@
 	});
 	let forceReExecuteGraphqlQuery = $state(true);
 
-	const STAFF_COLUMNS: TableColumnProps<User, UserSortField>[] = [
+	const STAFF_COLUMNS: TableColumnProps<User, UserSortField>[] = $derived([
 		{
-			title: 'Avatar',
+			title: $tranFunc('staff.avatar'),
 			child: avatar,
 		},
 		{
-			title: 'Full Name',
+			title: $tranFunc('staff.fullName'),
 			key: UserSortField.FirstName,
 			child: fullName,
 			sortable: true,
 		},
 		{
-			title: 'Email',
+			title: $tranFunc('staff.email'),
 			child: email,
 			sortable: true,
 			key: UserSortField.Email,
 		},
 		{
-			title: 'Status',
+			title: $tranFunc('staff.status'),
 			child: status,
 		},
-	];
+	]);
 </script>
 
 {#snippet avatar({ item }: { item: User })}
-	<Thumbnail src={item.avatar?.url} alt={item.avatar?.alt || `${item.firstName} ${item.lastName}`} />
+	<Thumbnail
+		src={item.avatar?.url}
+		alt={item.avatar?.alt || `${item.firstName} ${item.lastName}`}
+	/>
 {/snippet}
 
 {#snippet fullName({ item }: { item: User })}
@@ -53,7 +57,10 @@
 {/snippet}
 
 {#snippet status({ item }: { item: User })}
-	<Badge text={item.isActive ? 'Active' : 'Inactive'} color={item.isActive ? 'green' : 'red'} />
+	<Badge
+		text={item.isActive ? $tranFunc('staff.active') : $tranFunc('staff.inactive')}
+		color={item.isActive ? 'green' : 'red'}
+	/>
 {/snippet}
 
 <FilterButton bind:variables bind:forceReExecuteGraphqlQuery />
