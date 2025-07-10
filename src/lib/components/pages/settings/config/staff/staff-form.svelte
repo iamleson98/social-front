@@ -71,7 +71,7 @@
 		<div>
 			<div class="flex items-center gap-1 text-sm text-gray-600">
 				<Icon icon={BadgeOutline} class="text-blue-600" size="lg" />
-				<span>Staff user</span>
+				<span class="font-semibold">{$tranFunc('staff.staffs')}</span>
 			</div>
 			<div class="text-xs flex items-center gap-1 text-gray-600">
 				<span class="font-semibold">{$tranFunc('staff.joinedSince')}:</span>
@@ -120,6 +120,6 @@
 	/>
 
 	<div class="mt-3 flex gap-3 items-center">
-		<Checkbox label="Active" bind:checked={isActive} {disabled} size="sm" class="flex-1" />
+		<Checkbox label={$tranFunc('staff.active')} bind:checked={isActive} {disabled} class="flex-1" />
 	</div>
 </div>

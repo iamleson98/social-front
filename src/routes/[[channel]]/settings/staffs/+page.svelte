@@ -14,7 +14,7 @@
 	});
 	let forceReExecuteGraphqlQuery = $state(true);
 
-	const STAFF_COLUMNS: TableColumnProps<User, UserSortField>[] = [
+	const STAFF_COLUMNS: TableColumnProps<User, UserSortField>[] = $derived([
 		{
 			title: $tranFunc('staff.avatar'),
 			child: avatar,
@@ -35,7 +35,7 @@
 			title: $tranFunc('staff.status'),
 			child: status,
 		},
-	];
+	]);
 </script>
 
 {#snippet avatar({ item }: { item: User })}
@@ -58,7 +58,7 @@
 
 {#snippet status({ item }: { item: User })}
 	<Badge
-		text={item.isActive ? $tranFunc('staff.isActive') : $tranFunc('staff.inactive')}
+		text={item.isActive ? $tranFunc('staff.active') : $tranFunc('staff.inactive')}
 		color={item.isActive ? 'green' : 'red'}
 	/>
 {/snippet}

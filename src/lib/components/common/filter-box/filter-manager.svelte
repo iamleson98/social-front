@@ -26,6 +26,7 @@
 	import { Button } from '$lib/components/ui';
 	import { FilterCog, Search } from '$lib/components/icons';
 	import FilterContainer from './filter-container.svelte';
+	import { tranFunc } from '$i18n';
 
 	type Props = {
 		/** if not provided, will not show filter button */
@@ -270,7 +271,7 @@
 							{filtersCount}
 						</span>
 					{/if}
-					Filters
+					{$tranFunc('common.filter')}
 				</Button>
 			{/snippet}
 			<FilterContainer {filterOptions} bind:open={openFilterBox} {filters} />
@@ -278,7 +279,7 @@
 	{/if}
 	{#if searchKey}
 		<Input
-			placeholder="Enter your query"
+			placeholder={$tranFunc('placeholders.valuePlaceholder')}
 			size="sm"
 			{disabled}
 			value={get(variables, searchKey)}

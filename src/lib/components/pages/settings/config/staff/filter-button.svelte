@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import {
 		FilterManager,
 		type FilterComponentType,
@@ -20,7 +21,7 @@
 
 	const FILTER_OPTIONS: FilterProps<StaffUserInput>[] = [
 		{
-			label: 'Status',
+			label: $tranFunc('staff.status'),
 			key: 'status',
 			operations: [
 				{
@@ -42,7 +43,7 @@
 		options={STATUS_OPTIONS}
 		value={initialValue as string}
 		onchange={(value) => value && onValue((value as SelectOption).value as StaffMemberStatus)}
-		placeholder="Status"
+		placeholder={$tranFunc('staff.status')}
 		size="xs"
 	/>
 {/snippet}
