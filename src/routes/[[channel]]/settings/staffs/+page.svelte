@@ -46,7 +46,7 @@
 {/snippet}
 
 {#snippet fullName({ item }: { item: User })}
-	<a class="link link-hover" href={AppRoute.SETTINGS_CONFIGS_STAFF_DETAILS(item.id)}>
+	<a class="link" href={AppRoute.SETTINGS_CONFIGS_STAFF_DETAILS(item.id)}>
 		{item.firstName}
 		{item.lastName}
 	</a>

@@ -52,4 +52,9 @@
 	/>
 {/snippet}
 
-<FilterManager filterOptions={FILTER_OPTIONS} bind:variables bind:forceReExecuteGraphqlQuery />
+<FilterManager
+	filterOptions={FILTER_OPTIONS}
+	bind:variables
+	bind:forceReExecuteGraphqlQuery
+	searchKey="where.name.eq"
+/>

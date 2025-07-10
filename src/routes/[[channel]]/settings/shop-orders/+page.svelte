@@ -54,7 +54,7 @@
 
 {#snippet no({ item }: { item: Order })}
 	<div class="text-center">
-		<a href={AppRoute.SETTINGS_ORDERS_DETAILS(item.id)} class="link link-hover">
+		<a href={AppRoute.SETTINGS_ORDERS_DETAILS(item.id)} class="link">
 			# {item.number}
 		</a>
 	</div>

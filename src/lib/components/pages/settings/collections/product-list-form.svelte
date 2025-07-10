@@ -177,7 +177,7 @@
 		href={AppRoute.PRODUCT_DETAILS(item.slug)}
 		aria-label={item.name}
 		data-interactive
-		class="link link-hover"
+		class="link"
 	>
 		{item.name}
 	</a>

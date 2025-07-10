@@ -45,7 +45,7 @@
 </script>
 
 {#snippet title({ item }: { item: Voucher })}
-	<a href={AppRoute.SETTINGS_CONFIGS_VOUCHER_DETAIL(item.id)} class="link link-hover">
+	<a href={AppRoute.SETTINGS_CONFIGS_VOUCHER_DETAIL(item.id)} class="link">
 		{item.name}
 	</a>
 {/snippet}

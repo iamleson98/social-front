@@ -69,7 +69,7 @@
 </script>
 
 {#snippet name({ item }: { item: Warehouse })}
-	<a href={AppRoute.SETTINGS_CONFIGS_WAREHOUSE_DETAILS(item.id)} class="link link-hover">
+	<a href={AppRoute.SETTINGS_CONFIGS_WAREHOUSE_DETAILS(item.id)} class="link">
 		{item.name}
 	</a>
 {/snippet}

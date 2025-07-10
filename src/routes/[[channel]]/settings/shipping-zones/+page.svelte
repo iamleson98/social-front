@@ -25,7 +25,7 @@
 </script>
 
 {#snippet name({ item }: { item: ShippingZone })}
-	<a href={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS(item.id)} class="link link-hover">
+	<a href={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS(item.id)} class="link">
 		{item.name}
 	</a>
 {/snippet}

@@ -166,7 +166,7 @@
 
 <!-- Collection -->
 {#snippet name({ item }: { item: Collection })}
-	<a href={AppRoute.SETTINGS_CONFIGS_COLLECTION_DETAILS(item.id)} class="link link-hover">
+	<a href={AppRoute.SETTINGS_CONFIGS_COLLECTION_DETAILS(item.id)} class="link">
 		{item.name}
 	</a>
 {/snippet}
@@ -177,7 +177,7 @@
 
 <!-- Product -->
 {#snippet prdName({ item }: { item: Product })}
-	<a href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.slug)} class="link link-hover">
+	<a href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.slug)} class="link">
 		{stringSlicer(item.name, 40)}
 	</a>
 {/snippet}
@@ -201,7 +201,7 @@
 
 <!-- Category -->
 {#snippet categoryName({ item }: { item: Category })}
-	<a href={AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(item.id)} class="link link-hover">
+	<a href={AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(item.id)} class="link">
 		{item.name}
 	</a>
 {/snippet}
@@ -220,7 +220,7 @@
 
 <!-- Variant -->
 {#snippet variantPrdName({ item }: { item: ProductVariant })}
-	<a href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.product.slug)} class="link link-hover">
+	<a href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.product.slug)} class="link">
 		{stringSlicer(item.product.name, 40)}
 	</a>
 {/snippet}

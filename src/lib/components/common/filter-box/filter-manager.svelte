@@ -27,6 +27,7 @@
 	import { FilterCog, Search } from '$lib/components/icons';
 	import FilterContainer from './filter-container.svelte';
 	import { tranFunc } from '$i18n';
+	import { unset } from 'es-toolkit/compat';
 
 	type Props = {
 		/** if not provided, will not show filter button */
@@ -46,10 +47,10 @@
 		disabled,
 	}: Props = $props();
 
-	if (searchKey && !has(variables, searchKey))
-		throw new Error(
-			`invalid key provided "${String(searchKey)}" or you forget to initialize the path "${String(searchKey)}"" for your variable?`,
-		);
+	// if (searchKey && !has(variables, searchKey))
+	// 	throw new Error(
+	// 		`invalid key provided "${String(searchKey)}" or you forget to initialize the path "${String(searchKey)}"" for your variable?`,
+	// 	);
 
 	let openFilterBox = $state(false);
 	let filters = $state.raw({} as FilterConditions<T>);
@@ -165,7 +166,8 @@
 					continue;
 				case SEARCH_QUERY:
 					if (searchKey) {
-						set(newVariables, searchKey, queryParams[SEARCH_QUERY]);
+						if (queryParams[SEARCH_QUERY]) set(newVariables, searchKey, queryParams[SEARCH_QUERY]);
+						else unset(newVariables, searchKey);
 					}
 					continue;
 

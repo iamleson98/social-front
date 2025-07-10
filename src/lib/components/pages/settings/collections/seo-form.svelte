@@ -61,6 +61,7 @@
 			slug = slugify(name, { lower: true, strict: true });
 			seo.title = name;
 		}
+		validate();
 	});
 </script>
 

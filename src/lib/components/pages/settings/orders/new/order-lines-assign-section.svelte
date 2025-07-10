@@ -171,7 +171,7 @@
 {/snippet}
 
 {#snippet name({ item }: { item: Product })}
-	<a href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.slug)} class="link link-hover" title={item.name}>
+	<a href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.slug)} class="link" title={item.name}>
 		{stringSlicer(item.name, 50)}
 	</a>
 {/snippet}

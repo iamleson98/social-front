@@ -55,7 +55,7 @@
 </script>
 
 {#snippet categoryName({ item }: { item: Category })}
-	<a class="link link-hover" href={AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(item.id)}
+	<a class="link" href={AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(item.id)}
 		>{item.name}</a
 	>
 {/snippet}
@@ -75,7 +75,7 @@
 {/snippet}
 
 {#snippet productName({ item }: { item: Product })}
-	<a class="link link-hover" href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.slug)}>{item.name}</a>
+	<a class="link" href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.slug)}>{item.name}</a>
 {/snippet}
 
 {#snippet productUpdatedAt({ item }: { item: Product })}

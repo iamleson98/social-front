@@ -80,7 +80,7 @@
 </script>
 
 {#snippet name({ item }: { item: ProductType })}
-	<a href={AppRoute.SETTINGS_PRODUCT_TYPE_EDIT(item.id)} class="link link-hover">
+	<a href={AppRoute.SETTINGS_PRODUCT_TYPE_EDIT(item.id)} class="link">
 		{item.name}
 	</a>
 {/snippet}

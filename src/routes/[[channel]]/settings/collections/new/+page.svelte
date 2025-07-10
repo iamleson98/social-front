@@ -7,7 +7,6 @@
 		type CollectionCreateInput,
 		type Mutation,
 		type MutationCollectionCreateArgs,
-		type SeoInput,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
@@ -25,7 +24,7 @@
 
 	let collectionCreateInput = $state<CollectionCreateInput>({
 		name: '',
-		description: '',
+		description: {},
 		backgroundImage: '',
 		backgroundImageAlt: '',
 		products: [],
@@ -62,26 +61,29 @@
 </script>
 
 <div class="flex gap-2 flex-row">
-	<div class="w-7/10 flex flex-col gap-2">
+	<div class="w-7/10 space-y-2">
 		<GeneralInformationForm
-			bind:name={collectionCreateInput.name as string}
+			bind:name={collectionCreateInput.name!}
 			bind:description={collectionCreateInput.description}
 			bind:media
 			bind:ok={generalFormOk}
+			disabled={loading}
 		/>
 		<ProductAssignForm bind:productsToAssign={collectionCreateInput.products!} />
 		<SeoForm
-			bind:slug={collectionCreateInput.slug as string}
-			bind:seo={collectionCreateInput.seo as SeoInput}
-			name={collectionCreateInput.name as string}
+			bind:slug={collectionCreateInput.slug!}
+			bind:seo={collectionCreateInput.seo!}
+			name={collectionCreateInput.name!}
 			isCreatePage
 			bind:ok={seoFormOk}
+			disabled={loading}
 		/>
 		<GeneralMetadataEditor
 			metadata={[]}
 			privateMetadata={[]}
 			objectId={createdCollectionId}
 			bind:performUpdateMetadata
+			disabled={loading}
 		/>
 	</div>
 
@@ -92,7 +94,7 @@
 
 <ActionBar
 	backButtonUrl={AppRoute.SETTINGS_CONFIGS_COLLECTIONS()}
+	disableBackButton={loading}
 	{onAddClick}
-	disableCreateButton={!generalFormOk || !seoFormOk}
-	disabled={loading || !generalFormOk || !seoFormOk}
+	disableCreateButton={!generalFormOk || !seoFormOk || loading}
 />

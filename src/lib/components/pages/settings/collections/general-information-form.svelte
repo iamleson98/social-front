@@ -36,9 +36,9 @@
 	const collectionSchema = object({
 		name: string().nonempty(REQUIRED_ERROR),
 		description: object({
-			blocks: array(any()).min(1, REQUIRED_ERROR),
+			blocks: array(any()).nonempty(REQUIRED_ERROR),
 		}),
-		media: array(any()).max(1, MAX_ERROR).min(1, REQUIRED_ERROR),
+		media: array(any()).max(1, MAX_ERROR).nonempty(REQUIRED_ERROR),
 	});
 	type CollectionSchema = z.infer<typeof collectionSchema>;
 

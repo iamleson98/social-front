@@ -77,7 +77,7 @@
 		href={AppRoute.PRODUCT_DETAILS(item.slug)}
 		aria-label={item.name}
 		data-interactive
-		class="link link-hover"
+		class="link"
 	>
 		{item.name}
 	</a>
@@ -134,6 +134,6 @@
 			items={Object.values(selectedProductsMap) as Product[]}
 		/>
 	{:else}
-		<div class="text-center py-3 text-gray-600">No products assigned</div>
+		<div class="text-center text-xs py-3 text-gray-600">No products assigned</div>
 	{/if}
 </div>

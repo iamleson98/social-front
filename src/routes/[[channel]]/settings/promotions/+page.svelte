@@ -10,7 +10,6 @@
 
 	let variables = $state<QueryPromotionsArgs>({
 		first: 10,
-		where: {},
 	});
 	let forceReExecuteGraphqlQuery = $state(true);
 
@@ -35,7 +34,7 @@
 </script>
 
 {#snippet title({ item }: { item: Promotion })}
-	<a href={AppRoute.SETTINGS_CONFIGS_PROMOTION_DETAIL(item.id)} class="link link-hover">
+	<a href={AppRoute.SETTINGS_CONFIGS_PROMOTION_DETAIL(item.id)} class="link">
 		{item.name}
 	</a>
 {/snippet}

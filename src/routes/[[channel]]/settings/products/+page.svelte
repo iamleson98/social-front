@@ -55,7 +55,7 @@
 {/snippet}
 
 {#snippet name({ item }: { item: Product })}
-	<a class="link link-hover" href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.slug)}>{item.name}</a>
+	<a class="link" href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.slug)}>{item.name}</a>
 {/snippet}
 
 {#snippet availability({ item }: { item: Product })}

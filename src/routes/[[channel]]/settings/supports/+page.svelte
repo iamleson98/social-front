@@ -79,7 +79,7 @@
 </script>
 
 {#snippet title({ item }: { item: SupportTicket })}
-	<a class="link link-hover" href="{AppRoute.ME_SUPPORT()}/{item.id}" aria-label={item.title}>
+	<a class="link" href="{AppRoute.ME_SUPPORT()}/{item.id}" aria-label={item.title}>
 		{item.title}
 	</a>
 {/snippet}

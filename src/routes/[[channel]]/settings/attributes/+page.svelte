@@ -42,7 +42,7 @@
 </script>
 
 {#snippet name({ item }: { item: Attribute })}
-	<a href={AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_DETAILS(item.id)} class="link link-hover">
+	<a href={AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_DETAILS(item.id)} class="link">
 		{item.name}
 	</a>
 {/snippet}
