@@ -99,6 +99,8 @@ export default {
 		value: 'Giá trị',
 		assign: 'Gán',
 		duplicate: 'Trùng giá trị {{val}}',
+		editAt: 'Cập nhật lúc',
+		seoInfo: 'Thông tin sep',
 	},
 	product: {
 		chooseAddress: 'Vui lòng chọn địa chỉ',
@@ -389,5 +391,9 @@ export default {
 		successReorder: 'Sắp xếp các sản phẩm thành công',
 		successAssignedPrds: 'Gán các sản phẩm vào bộ sưu tập thành công',
 		successUnassignedPrds: 'Xóa các sản phẩm khỏi bộ sưu tập thành công',
+	},
+	category: {
+		new: 'Thêm danh mục',
+		noOfChildren: 'Số lượng mục con',
 	},
 };

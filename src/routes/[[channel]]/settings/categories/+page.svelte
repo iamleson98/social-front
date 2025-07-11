@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { CATEGORIES_LIST_QUERY } from '$lib/api/admin/category';
 	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
@@ -9,34 +10,34 @@
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import dayjs from 'dayjs';
 
-	const COLUMNS: TableColumnProps<Category, CategorySortField>[] = [
+	const COLUMNS: TableColumnProps<Category, CategorySortField>[] = $derived([
 		{
-			title: 'Pic',
+			title: $tranFunc('common.pic'),
 			child: picture,
 		},
 		{
-			title: 'Name',
+			title: $tranFunc('common.name'),
 			child: name,
 			sortable: true,
 			key: CategorySortField.Name,
 		},
 		{
-			title: 'Number of products',
+			title: $tranFunc('collection.noOfPrds'),
 			child: products,
 			sortable: true,
 			key: CategorySortField.ProductCount,
 		},
 		{
-			title: 'Number of children',
+			title: $tranFunc('category.noOfChildren'),
 			child: children,
 			sortable: true,
 			key: CategorySortField.SubcategoryCount,
 		},
 		{
-			title: 'Updated at',
+			title: $tranFunc('common.editAt'),
 			child: updatedAt,
 		},
-	];
+	]);
 
 	let forceReExecuteGraphqlQuery = $state(true);
 	let queryVariables = $state<QueryCategoriesArgs>({

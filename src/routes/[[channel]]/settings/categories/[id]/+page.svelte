@@ -23,6 +23,7 @@
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
+	import { tranFunc } from '$i18n';
 
 	let media = $state<MediaObject[]>([]);
 	let generalFormOk = $state(false);
@@ -89,7 +90,7 @@
 
 	const handleDeleteClick = () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: `Are you sure you want to delete the category ${page.params.id}`,
+			content: $tranFunc('common.confirmDel'),
 			onOk: async () => {
 				loading = true;
 				const result = await GRAPHQL_CLIENT.mutation<
@@ -98,7 +99,7 @@
 				>(CATEGORY_DELETE_MUTATION, { id: page.params.id });
 				loading = false;
 
-				if (checkIfGraphqlResultHasError(result, 'categoryDelete', 'Successfully deleted category'))
+				if (checkIfGraphqlResultHasError(result, 'categoryDelete', $tranFunc('common.delSuccess')))
 					return;
 
 				await goto(AppRoute.SETTINGS_CONFIGS_CATEGORIES());
@@ -124,7 +125,7 @@
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'categoryUpdate', 'Category updated successfully'))
+		if (checkIfGraphqlResultHasError(result, 'categoryUpdate', $tranFunc('common.editSuccess')))
 			return;
 
 		categoryQuery.reexecute({

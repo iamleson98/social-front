@@ -34,7 +34,11 @@
 			.nonempty(REQUIRED_ERROR)
 			.max(
 				DESCRIPTION_MAX_LENGTH,
-				$tranFunc('error.lengthInvalid', { min: 1, max: DESCRIPTION_MAX_LENGTH }),
+				$tranFunc('error.lengthInvalid', {
+					min: 1,
+					max: DESCRIPTION_MAX_LENGTH,
+					name: $tranFunc('settings.description'),
+				}),
 			),
 	});
 

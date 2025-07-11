@@ -99,6 +99,8 @@ export default {
 		value: 'Value',
 		assign: 'Assign',
 		duplicate: 'Duplicate {{val}}',
+		editAt: 'Updated at',
+		seoInfo: 'Seo Information',
 	},
 	product: {
 		chooseAddress: 'Please choose address',
@@ -389,5 +391,9 @@ export default {
 		successReorder: 'Successfully reorderd products of collection',
 		successAssignedPrds: 'Successfully assigned products to collection',
 		successUnassignedPrds: 'Successfully unassigned products from collection',
+	},
+	category: {
+		new: 'Add new category',
+		noOfChildren: 'No. of children',
 	},
 };

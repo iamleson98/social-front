@@ -82,13 +82,13 @@
 </script>
 
 <div class="bg-white border border-gray-200 p-3 rounded-lg space-y-2">
-	<SectionHeader>General information</SectionHeader>
+	<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
 
 	<Input
-		placeholder="Category name"
+		placeholder={$tranFunc('common.name')}
 		disabled={loading}
 		bind:value={name}
-		label="Category name"
+		label={$tranFunc('common.name')}
 		required
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
@@ -97,9 +97,9 @@
 	/>
 
 	<EditorJSComponent
-		label="Category description"
+		label={$tranFunc('settings.description')}
 		required
-		placeholder="Category description"
+		placeholder={$tranFunc('settings.description')}
 		bind:value={description}
 		onchange={validate}
 		variant={categoryFormErrors.description?.length ? 'error' : 'info'}
@@ -110,7 +110,7 @@
 	<FileInputContainer
 		accept="image/*"
 		max={1}
-		label="Background image"
+		label={$tranFunc('common.pic')}
 		required
 		bind:medias={media}
 		onchange={validate}
@@ -119,10 +119,10 @@
 		subText={categoryFormErrors.media?.[0]}
 	/>
 
-	<SectionHeader>Seo Information</SectionHeader>
+	<SectionHeader>{$tranFunc('common.seoInfo')}</SectionHeader>
 	<Input
-		placeholder="Category slug"
-		label="Category slug"
+		placeholder="Slug"
+		label="Slug"
 		required
 		bind:value={slug}
 		inputDebounceOption={{ onInput: validate }}
@@ -132,8 +132,8 @@
 		disabled={loading}
 	/>
 	<Input
-		placeholder="Seo title"
-		label="SEO title"
+		placeholder={$tranFunc('settings.title')}
+		label={$tranFunc('settings.title')}
 		required
 		bind:value={seoTitle}
 		inputDebounceOption={{ onInput: validate }}
@@ -145,8 +145,8 @@
 
 	<TextArea
 		required
-		label="SEO description"
-		placeholder="Seo description"
+		label={$tranFunc('settings.description')}
+		placeholder={$tranFunc('settings.description')}
 		bind:value={seoDescription}
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}

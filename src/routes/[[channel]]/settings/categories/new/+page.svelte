@@ -9,6 +9,7 @@
 	import { AppRoute } from '$lib/utils';
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { tranFunc } from '$i18n';
 
 	let media = $state<MediaObject[]>([]);
 	let generalFormOk = $state(false);
@@ -45,7 +46,7 @@
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'categoryCreate', 'Category created successfully'))
+		if (checkIfGraphqlResultHasError(result, 'categoryCreate', $tranFunc('common.createSuccess')))
 			return;
 
 		createdCategoryId = result.data?.categoryCreate?.category?.id!;

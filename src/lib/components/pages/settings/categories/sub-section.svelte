@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { CATEGORY_CHILDREN_LIST_QUERY } from '$lib/api/admin/category';
 	import { PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
@@ -23,35 +24,35 @@
 
 	let forceReExecuteGraphqlQuery = $state(true);
 
-	const CATEGORY_CHILDREN_COLUMNS: TableColumnProps<Category, any>[] = [
+	const CATEGORY_CHILDREN_COLUMNS: TableColumnProps<Category, any>[] = $derived([
 		{
-			title: 'Name',
+			title: $tranFunc('common.name'),
 			child: categoryName,
 		},
 		{
-			title: 'No. of products',
+			title: $tranFunc('collection.noOfPrds'),
 			child: noOfProducts,
 		},
 		{
-			title: 'Subcategories',
+			title: $tranFunc('product.subCategories'),
 			child: childCount,
 		},
-	];
+	]);
 
-	const PRODUCTS_COLUMNS: TableColumnProps<Product, any>[] = [
+	const PRODUCTS_COLUMNS: TableColumnProps<Product, any>[] = $derived([
 		{
-			title: 'Image',
+			title: $tranFunc('common.pic'),
 			child: image,
 		},
 		{
-			title: 'Name',
+			title: $tranFunc('common.name'),
 			child: productName,
 		},
 		{
-			title: 'Updated at',
+			title: $tranFunc('common.editAt'),
 			child: productUpdatedAt,
 		},
-	];
+	]);
 </script>
 
 {#snippet categoryName({ item }: { item: Category })}
@@ -85,7 +86,7 @@
 {/snippet}
 
 <div>
-	<SectionHeader>Sub categories</SectionHeader>
+	<SectionHeader>{$tranFunc('product.subCategories')}</SectionHeader>
 	<GraphqlPaginableTable
 		query={CATEGORY_CHILDREN_LIST_QUERY}
 		resultKey={'category.children' as keyof Query}
@@ -96,7 +97,7 @@
 </div>
 
 <div class="mt-2">
-	<SectionHeader>Products</SectionHeader>
+	<SectionHeader>{$tranFunc('product.products')}</SectionHeader>
 	<GraphqlPaginableTable
 		query={PRODUCT_LIST_QUERY_ADMIN}
 		resultKey={'products' as keyof Query}
