@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { PRODUCT_TYPE_DELETE_MUTATION, PRODUCT_TYPES_QUERY } from '$lib/api/admin/product';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { Trash } from '$lib/components/icons';
@@ -26,32 +27,32 @@
 	let forceReExecuteGraphqlQuery = $state(false);
 	let loading = $state(false);
 
-	const ProductTypesColumns: TableColumnProps<ProductType, ProductTypeSortField>[] = [
+	const ProductTypesColumns: TableColumnProps<ProductType, ProductTypeSortField>[] = $derived([
 		{
-			title: 'Name',
+			title: $tranFunc('common.name'),
 			child: name,
 			sortable: true,
 			key: ProductTypeSortField.Name,
 		},
 		{
-			title: 'Shippable',
+			title: $tranFunc('prdType.requireShip'),
 			child: shippable,
 			sortable: true,
 			key: ProductTypeSortField.ShippingRequired,
 		},
 		{
-			title: 'Tax class',
+			title: $tranFunc('product.taxCls'),
 			child: taxClass,
 		},
 		{
-			title: 'Action',
+			title: $tranFunc('common.action'),
 			child: deleteItem,
 		},
-	];
+	]);
 
 	const handleClickDelItem = async (id: string) => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: `Are you sure to delete product type ${id}`,
+			content: $tranFunc('prdType.confirmDel', { id }),
 			onOk: async () => {
 				loading = true;
 
@@ -65,11 +66,7 @@
 				loading = false;
 
 				if (
-					checkIfGraphqlResultHasError(
-						result,
-						'productTypeDelete',
-						'Successfully deleted product type',
-					)
+					checkIfGraphqlResultHasError(result, 'productTypeDelete', $tranFunc('prdType.delSuccess'))
 				)
 					return;
 

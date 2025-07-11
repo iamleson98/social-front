@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { CHANNEL_WAREHOUSES_QUERY } from '$lib/api/admin/channels';
 	import { WAREHOUSE_LIST_QUERY } from '$lib/api/admin/warehouse';
 	import { operationStore } from '$lib/api/operation';
@@ -43,14 +44,6 @@
 		pause: true, // don't call this when in channel creation page
 	});
 
-	// const allWarehouses = operationStore<Pick<Query, 'warehouses'>, QueryWarehousesArgs>({
-	// 	kind: 'query',
-	// 	query: WAREHOUSE_LIST_QUERY,
-	// 	variables: { first: BATCH_FETCH },
-	// 	requestPolicy: 'network-only',
-	// 	pause: true, // only call when user want to add new warehouses
-	// });
-
 	const handleDeleteWarehouse = (id: string) => {
 		warehousesOfChannel = warehousesOfChannel.filter((warehouse) => warehouse.id !== id);
 		if (!removeWarehouses?.includes(id)) {
@@ -79,13 +72,12 @@
 </script>
 
 <Accordion
-	header="Warehouses ({warehousesOfChannel.length})"
+	header={`${$tranFunc('channel.warehouse')} (${warehousesOfChannel.length})`}
 	class="rounded-lg border border-gray-200 bg-white mb-3 p-3"
 	open={false}
 >
 	<Alert variant="info" size="sm" bordered class="mb-3">
-		Assign and sort warehouses that will be used in this channel (warehouses can be assigned in
-		multiple channels).
+		{$tranFunc('channel.warehouseAlert')}
 	</Alert>
 
 	{#if $warehousesOfChannelQuery.fetching}
@@ -125,7 +117,7 @@
 				requestPolicy="network-only"
 				size="sm"
 				{disabled}
-				label="Select Warehouse"
+				label={$tranFunc('channel.selectWh')}
 				multiple
 				value={addWarehouses}
 				onchange={handleAddWarehouses}
@@ -139,7 +131,7 @@
 			class="mt-2"
 			onclick={() => (showAddWarehouses = true)}
 		>
-			Add Warehouse
+			{$tranFunc('channel.addWh')}
 		</Button>
 	</div>
 </Accordion>

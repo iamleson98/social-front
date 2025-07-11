@@ -55,17 +55,19 @@
 </script>
 
 {#snippet categoryName({ item }: { item: Category })}
-	<a class="link" href={AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(item.id)}
-		>{item.name}</a
-	>
+	<a class="link" href={AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(item.id)}>
+		{item.name}
+	</a>
 {/snippet}
 
 {#snippet noOfProducts({ item }: { item: Category })}
-	<span class="text-center">{item.products?.totalCount}</span>
+	<div class="text-center"><span>{item.products?.totalCount}</span></div>
 {/snippet}
 
 {#snippet childCount({ item }: { item: Category })}
-	<span>{item.children?.totalCount}</span>
+	<div class="text-center">
+		<span>{item.children?.totalCount}</span>
+	</div>
 {/snippet}
 
 {#snippet image({ item }: { item: Product })}

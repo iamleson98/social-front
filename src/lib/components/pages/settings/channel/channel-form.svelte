@@ -214,19 +214,19 @@
 				? MarkAsPaidStrategyEnum.TransactionFlow
 				: MarkAsPaidStrategyEnum.PaymentFlow;
 		}}
-		subText={`"Mark as paid" feature creates a Transaction - used by Payment Apps. <br /> If left unchecked it creates a Payment - used by Payment Plugins.`}
+		subText={$tranFunc('channel.markAsPaidSubTxt')}
 	>
 		{#snippet label()}
 			{@render previewLabel($tranFunc('channel.useTranFlow'))}
 		{/snippet}
 	</Checkbox>
 	<Checkbox
-		label="Automatically complete checkouts when fully paid"
+		label={$tranFunc('channel.autoCompleteCheckoutsWhenPaid')}
 		bind:checked={automaticallyCompleteFullyPaidCheckouts}
 		{disabled}
 		size="sm"
 		class="mb-3"
-		subText="When enabled, checkouts detected as fully paid will be completed automatically, without checkoutComplete mutation."
+		subText={$tranFunc('channel.autoCompleteCheckoutWhenPaidSubTxt')}
 	></Checkbox>
 	<Checkbox
 		checked={transactionFlowStrategy === TransactionFlowStrategyEnum.Authorization}
@@ -237,26 +237,26 @@
 		}}
 		{disabled}
 		size="sm"
-		subText={`When enabled, all transactions would require an additional step to be charged.`}
+		subText={$tranFunc('channel.authorizeTransSubTxt')}
 	>
 		{#snippet label()}
-			{@render previewLabel('Authorize transaction instead of charging')}
+			{@render previewLabel($tranFunc('channel.authorizeTrans'))}
 		{/snippet}
 	</Checkbox>
 </div>
 
 <div class="mt-3">
-	<Label label="Allocation strategy" />
+	<Label label={$tranFunc('channel.allocStrategy')} />
 	<RadioButton
 		value={AllocationStrategyEnum.PrioritizeHighStock}
-		label="Prioritize warehouses with highest stock"
+		label={$tranFunc('channel.prioritizeWarehouseWithMaxStock')}
 		bind:group={allocationStrategy}
 		size="sm"
 		{disabled}
 	/>
 	<RadioButton
 		value={AllocationStrategyEnum.PrioritizeSortingOrder}
-		label="Prioritize warehouses by sorting order"
+		label={$tranFunc('channel.prioritizeWarehouseByMaxOrder')}
 		bind:group={allocationStrategy}
 		size="sm"
 		{disabled}

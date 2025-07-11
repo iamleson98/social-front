@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import {
 		FilterManager,
 		type FilterComponentType,
@@ -21,7 +22,7 @@
 
 	const Filters: FilterProps<ProductTypeFilterInput>[] = [
 		{
-			label: 'Has variant attributes',
+			label: $tranFunc('prdType.hasVariantAttrs'),
 			key: 'configurable',
 			operations: [
 				{
@@ -31,7 +32,7 @@
 			],
 		},
 		{
-			label: 'Type',
+			label: $tranFunc('prdType.type'),
 			key: 'productType',
 			operations: [
 				{

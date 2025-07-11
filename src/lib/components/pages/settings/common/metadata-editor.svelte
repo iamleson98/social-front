@@ -47,13 +47,7 @@
 	let dataFormErrors = $state<Partial<Record<keyof DataSchema, string[]>>[]>([]);
 
 	const calculateResult = () => {
-		const itemsToAdd: MetadataInput[] = [];
-
-		for (const item of activeMetadata) {
-			if (!oldMetadata[item.key]) itemsToAdd.push(item);
-		}
-
-		metadataItemsToAdd = itemsToAdd;
+		metadataItemsToAdd = activeMetadata.filter((item) => !oldMetadata[item.key]);
 		metadataKeysToRemove = difference(
 			Object.keys(oldMetadata),
 			activeMetadata.map((item) => item.key),

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { SHIPPING_ZONES_QUERY } from '$lib/api/admin/shipping';
 	import { operationStore } from '$lib/api/operation';
 	import { Plus, Trash } from '$lib/components/icons';
@@ -72,12 +73,11 @@
 
 <Accordion
 	open
-	header="Shipping zones ({shippingZonesOfChannel.length})"
+	header={`${$tranFunc('channel.shipZones')} (${shippingZonesOfChannel.length})`}
 	class="rounded-lg border border-gray-200 bg-white mb-3 p-3"
 >
 	<Alert variant="info" size="sm" bordered class="mb-3">
-		Select shipping zones that will be supplied via this channel. You can assign shipping zones to
-		multiple channels.
+		{$tranFunc('channel.shipZonesAlert')}
 	</Alert>
 
 	{#if $shippingZonesOfChanelQuery.fetching}
@@ -117,7 +117,7 @@
 				requestPolicy="network-only"
 				size="sm"
 				{disabled}
-				label="Select Shipping Zone"
+				label={$tranFunc('channel.selectShipZone')}
 				multiple
 				value={addShippingZones}
 				onchange={handleAddShippingZones}
@@ -131,7 +131,7 @@
 			{disabled}
 			onclick={() => (showAddShippingZones = true)}
 		>
-			Add Shipping Zone
+			{$tranFunc('channel.addShipZone')}
 		</Button>
 	</div>
 </Accordion>
