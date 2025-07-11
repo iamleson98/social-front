@@ -25,6 +25,7 @@
 	import type { AnyVariables, TypedDocumentNode } from '@urql/core';
 	import ProductAssignModal from './product-assign-modal.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
+	import { tranFunc } from '$i18n';
 
 	type Props = {
 		/**if not provided, meaning this is create page*/
@@ -43,28 +44,28 @@
 	let loading = $state(false);
 	let shouldDisable = $derived(loading || disabled);
 
-	const PRODUCT_COLUMNS: TableColumnProps<Product, ProductOrderField>[] = [
+	const PRODUCT_COLUMNS: TableColumnProps<Product, ProductOrderField>[] = $derived([
 		{
-			title: 'Pic',
+			title: $tranFunc('common.pic'),
 			child: picture,
 		},
 		{
-			title: 'Name',
+			title: $tranFunc('common.name'),
 			child: name,
 		},
 		{
-			title: 'Category',
+			title: $tranFunc('product.category'),
 			child: category,
 		},
 		{
-			title: 'Availability',
+			title: $tranFunc('settings.availability'),
 			child: availability,
 		},
 		{
-			title: 'Action',
+			title: $tranFunc('settings.action'),
 			child: action,
 		},
-	];
+	]);
 
 	const handleReOrderProductsInCollection = async (
 		dragIndex: number,
@@ -90,7 +91,7 @@
 			checkIfGraphqlResultHasError(
 				result,
 				'collectionReorderProducts',
-				'Successfully reorderd products of collection',
+				$tranFunc('collection.successReorder'),
 			)
 		)
 			return;
@@ -120,7 +121,7 @@
 				},
 			});
 			keys.push('collectionAddProducts');
-			successMessages.push('Successfully assigned products to collection');
+			successMessages.push($tranFunc('collection.successAssignedPrds'));
 		}
 		if (removeProductIds.length) {
 			tasks.push({
@@ -131,7 +132,7 @@
 				},
 			});
 			keys.push('collectionRemoveProducts');
-			successMessages.push('Successfully unassigned products from collection');
+			successMessages.push($tranFunc('collection.successUnassignedPrds'));
 		}
 
 		if (!tasks.length) return;
@@ -195,7 +196,7 @@
 		})) || []}
 	{#snippet trigger({ onclick, onclose }: DropdownTriggerInterface)}
 		<Badge
-			text={`${channels.length} channels`}
+			text={`${channels.length} ${$tranFunc('product.channel')}`}
 			color={channels.length ? 'green' : 'orange'}
 			variant={channels.length ? 'filled' : 'light'}
 			onmouseenter={onclick}
@@ -206,15 +207,17 @@
 	<Popover {trigger} placement="left" noReCalculateOnWindowResize>
 		<div class="py-1 px-2 rounded-lg border border-gray-200 bg-white w-fit shadow-sm">
 			<div class="flex flex-nowrap font-medium gap-1 text-sm">
-				<span class="flex-1">channel</span>
-				<span class="flex-1">status</span>
+				<span class="flex-1">{$tranFunc('product.channel')}</span>
+				<span class="flex-1">{$tranFunc('settings.status')}</span>
 			</div>
 			{#each channels as chan, idx (idx)}
 				<div class="flex flex-nowrap mt-1 gap-1">
 					<div class="flex-1">{chan.channel}</div>
 					<div class="flex-1">
 						<Badge
-							text={chan.published ? 'Published' : 'Unpublished'}
+							text={chan.published
+								? $tranFunc('product.published')
+								: $tranFunc('product.unpublished')}
 							size="xs"
 							color={chan.published ? 'green' : 'red'}
 						/>

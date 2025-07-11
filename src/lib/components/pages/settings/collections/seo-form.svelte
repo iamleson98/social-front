@@ -78,23 +78,23 @@
 			onblur={validate}
 			{disabled}
 			variant={seoFormErrors.slug?.length ? 'error' : 'info'}
-			subText={seoFormErrors.slug?.length ? seoFormErrors.slug[0] : undefined}
+			subText={seoFormErrors.slug?.[0]}
 		/>
 		<Input
-			label="SEO Title"
+			label={$tranFunc('settings.name')}
 			bind:value={seo.title}
-			placeholder="SEO Title"
+			placeholder={$tranFunc('settings.name')}
 			required
 			inputDebounceOption={{ onInput: validate }}
 			onblur={validate}
 			{disabled}
 			variant={seoFormErrors.title?.length ? 'error' : 'info'}
-			subText={seoFormErrors.title?.length ? seoFormErrors.title[0] : undefined}
+			subText={seoFormErrors.title?.[0]}
 		/>
 		<TextArea
 			bind:value={seo.description}
-			placeholder="SEO Description"
-			label="SEO Description"
+			placeholder={$tranFunc('settings.description')}
+			label={$tranFunc('settings.description')}
 			required
 			{disabled}
 			inputClass="min-h-20"

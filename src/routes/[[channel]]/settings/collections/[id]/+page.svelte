@@ -33,6 +33,7 @@
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
+	import { tranFunc } from '$i18n';
 
 	let collectionUpdateInput = $state<CollectionInput>({
 		name: '',
@@ -108,7 +109,7 @@
 
 	const onDeleteClick = () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: 'Are you sure deleting this collection?',
+			content: $tranFunc('common.confirmDel'),
 			onOk: async () => {
 				loading = true; //
 
@@ -122,11 +123,7 @@
 				loading = false; //
 
 				if (
-					checkIfGraphqlResultHasError(
-						result,
-						'collectionDelete',
-						'Collection deleted successfully!',
-					)
+					checkIfGraphqlResultHasError(result, 'collectionDelete', $tranFunc('common.delSuccess'))
 				)
 					return;
 
@@ -157,11 +154,7 @@
 			input,
 		});
 
-		hasError ||= checkIfGraphqlResultHasError(
-			result,
-			'collectionUpdate',
-			'Collection updated successfully',
-		);
+		hasError ||= checkIfGraphqlResultHasError(result, 'collectionUpdate');
 
 		// 2) update channel listings
 		const result2 = await GRAPHQL_CLIENT.mutation<
@@ -177,7 +170,7 @@
 		hasError ||= checkIfGraphqlResultHasError(
 			result2,
 			'collectionChannelListingUpdate',
-			'Collection channel listing updated successfully',
+			$tranFunc('common.editSuccess'),
 		);
 
 		if (hasError) return;
@@ -201,7 +194,7 @@
 	<div class="flex gap-2 flex-row">
 		<div class="w-7/10 flex flex-col gap-2">
 			<GeneralInformationForm
-				bind:name={collectionUpdateInput.name as string}
+				bind:name={collectionUpdateInput.name!}
 				bind:description={collectionUpdateInput.description}
 				bind:media
 				bind:ok={generalFormOk}
@@ -216,10 +209,10 @@
 			/>
 			<ProductListForm collectionID={page.params.id} disabled={loading} />
 			<SeoForm
-				bind:slug={collectionUpdateInput.slug as string}
-				bind:seo={collectionUpdateInput.seo as SeoInput}
+				bind:slug={collectionUpdateInput.slug!}
+				bind:seo={collectionUpdateInput.seo!}
 				bind:ok={seoFormOk}
-				name={collectionUpdateInput.name as string}
+				name={collectionUpdateInput.name!}
 				disabled={loading}
 			/>
 		</div>

@@ -15,6 +15,7 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { COLLECTION_CREATE_MUTATION } from '$lib/api/admin/collections';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { tranFunc } from '$i18n';
 
 	let generalFormOk = $state(false);
 	let seoFormOk = $state(false);
@@ -46,7 +47,9 @@
 			input: collectionCreateInput,
 		});
 
-		if (checkIfGraphqlResultHasError(result, 'collectionCreate')) {
+		if (
+			checkIfGraphqlResultHasError(result, 'collectionCreate', $tranFunc('common.createSuccess'))
+		) {
 			loading = false;
 			return;
 		}

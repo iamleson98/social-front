@@ -63,7 +63,7 @@
 			// check for duplicate
 			for (let i = 0; i < activeMetadata.length && i !== index; i++) {
 				if (item.key === activeMetadata[i].key) {
-					dataFormErrors[index] = { key: [`duplicate key ${item.key}`] };
+					dataFormErrors[index] = { key: [$tranFunc('common.duplicate', { val: item.key })] };
 					return;
 				}
 			}
@@ -92,7 +92,7 @@
 		<div class="flex gap-2 items-start mb-3">
 			<div class="flex items-start gap-2 flex-4/5">
 				<Input
-					placeholder="Key"
+					placeholder={$tranFunc('common.key')}
 					size="sm"
 					bind:value={item.key}
 					{disabled}
@@ -105,7 +105,7 @@
 				/>
 
 				<Input
-					placeholder="Value"
+					placeholder={$tranFunc('common.value')}
 					size="sm"
 					bind:value={item.value}
 					{disabled}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { COLLECTION_DELETE_MUTATION, COLLECTIONS_QUERY } from '$lib/api/collections';
 	import { Dots, Edit, Trash } from '$lib/components/icons';
@@ -25,28 +26,28 @@
 	});
 	let forceReExecuteGraphqlQuery = $state(true);
 
-	const COLLECTION_COLUMNS: TableColumnProps<Collection, CollectionSortField>[] = [
+	const COLLECTION_COLUMNS: TableColumnProps<Collection, CollectionSortField>[] = $derived([
 		{
-			title: 'Collection Name',
+			title: $tranFunc('common.name'),
 			key: CollectionSortField.Name,
 			child: collectionName,
 			sortable: true,
 		},
 		{
-			title: 'Availability',
+			title: $tranFunc('settings.availability'),
 			child: availability,
 		},
 		{
-			title: 'No. of Products',
+			title: $tranFunc('collection.noOfPrds'),
 			child: noOfProducts,
 			sortable: true,
 			key: CollectionSortField.ProductCount,
 		},
 		{
-			title: 'Action',
+			title: $tranFunc('common.action'),
 			child: action,
 		},
-	];
+	]);
 
 	const handleDeleteCollection = async (id: string) => {
 		const result = await GRAPHQL_CLIENT.mutation<
@@ -56,7 +57,7 @@
 			id: id,
 		});
 
-		if (checkIfGraphqlResultHasError(result, 'collectionDelete', 'Collection deleted successfully'))
+		if (checkIfGraphqlResultHasError(result, 'collectionDelete', $tranFunc('common.delSuccess')))
 			return;
 
 		forceReExecuteGraphqlQuery = true;
@@ -65,7 +66,7 @@
 
 {#snippet availability({ item }: { item: Collection })}
 	<Badge
-		text="{item.channelListings?.length as number} channels"
+		text="{item.channelListings?.length ?? 0} {$tranFunc('product.channel')}"
 		color="green"
 		class="tooltip-top tooltip"
 		data-tip={item.channelListings?.map((list) => list.channel.name).join(', ')}
@@ -79,22 +80,22 @@
 {/snippet}
 
 {#snippet noOfProducts({ item }: { item: Collection })}
-	{item.products?.totalCount}
+	<span>{item.products?.totalCount}</span>
 {/snippet}
 
 {#snippet action({ item }: { item: Collection })}
 	{@const MENU_OPTIONS: MenuItemProps[] = [
 		{
-			children: 'Edit collection',
+			children: $tranFunc('btn.update'),
 			startIcon: Edit,
 			href: AppRoute.SETTINGS_CONFIGS_COLLECTION_DETAILS(item.id)
 		},
 		{
-			children: 'Delete collection',
+			children: $tranFunc('btn.delete'),
 			startIcon: Trash,
 			onclick: () => {
 				ALERT_MODAL_STORE.openAlertModal({
-				content: 'Are you sure you want to delete this collection?',
+				content: $tranFunc('common.confirmDel'),
 				onOk: () => handleDeleteCollection(item.id)
 			});
 			},

@@ -11,6 +11,7 @@
 	import { noop, omit } from 'es-toolkit';
 	import type { AnyVariables, TypedDocumentNode } from '@urql/core';
 	import MetadataEditor from './metadata-editor.svelte';
+	import { tranFunc } from '$i18n';
 
 	type Props = {
 		metadata?: MetadataItem[];
@@ -99,7 +100,7 @@
 
 <div class="rounded-lg p-3 border bg-white border-gray-200">
 	<MetadataEditor
-		title="Metadata"
+		title={$tranFunc('common.metadata')}
 		data={metadata.map((item) => omit(item, ['__typename']))}
 		disabled={loading}
 		bind:metadataItemsToAdd
@@ -107,7 +108,7 @@
 	/>
 
 	<MetadataEditor
-		title="Private Metadata"
+		title={$tranFunc('common.privateMetadata')}
 		data={privateMetadata.map((item) => omit(item, ['__typename']))}
 		disabled={loading}
 		bind:metadataItemsToAdd={privateMetadataItemsToAdd}

@@ -52,7 +52,7 @@
 
 	const handleClickDelItem = async (id: string) => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: $tranFunc('prdType.confirmDel', { id }),
+			content: $tranFunc('common.confirmDel', { id }),
 			onOk: async () => {
 				loading = true;
 
@@ -66,7 +66,7 @@
 				loading = false;
 
 				if (
-					checkIfGraphqlResultHasError(result, 'productTypeDelete', $tranFunc('prdType.delSuccess'))
+					checkIfGraphqlResultHasError(result, 'productTypeDelete', $tranFunc('common.delSuccess'))
 				)
 					return;
 
@@ -99,7 +99,7 @@
 {#snippet shippable({ item }: { item: ProductType })}
 	<Badge
 		color={item.isShippingRequired ? 'green' : 'red'}
-		text={item.isShippingRequired ? 'yes' : 'no'}
+		text={item.isShippingRequired ? $tranFunc('common.yes') : $tranFunc('common.no')}
 	/>
 {/snippet}
 

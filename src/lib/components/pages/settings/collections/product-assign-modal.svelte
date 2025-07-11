@@ -8,6 +8,8 @@
 	import type { Product, ProductOrderField, QueryProductsArgs } from '$lib/gql/graphql';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { omit } from 'es-toolkit';
+	import { tranFunc } from '$i18n';
+	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 
 	type Props = {
 		/** if provided, meaning it is update page */
@@ -92,9 +94,7 @@
 {/snippet}
 
 {#snippet picture({ item }: { item: Product })}
-	<div class="rounded-full border border-gray-200 w-8 h-8 overflow-hidden">
-		<img src={item.thumbnail?.url} alt={item.thumbnail?.alt} class="w-full h-full" />
-	</div>
+	<Thumbnail src={item.thumbnail?.url} alt={item.thumbnail?.alt || item.name} size="sm" />
 {/snippet}
 
 {#snippet title({ item }: { item: Product })}
@@ -102,17 +102,16 @@
 {/snippet}
 
 <SectionHeader class="mb-3">
-	<div>Products in collection</div>
+	<div>{$tranFunc('collection.prdsInCol')}</div>
 	<Button size="xs" onclick={handleClickOpenProductListModal} disabled={shouldDisable}>
-		Assign Product
+		{$tranFunc('collection.assignPrd')}
 	</Button>
 </SectionHeader>
 
 <Modal
-	header="Assign products to collection"
+	header={$tranFunc('collection.assignPrd')}
 	open={openAssignProductModal}
-	okText="Assign"
-	cancelText="Cancel"
+	okText={$tranFunc('common.assign')}
 	onOk={handleAssignproducts}
 	onCancel={() => (openAssignProductModal = false)}
 	onClose={() => (openAssignProductModal = false)}
@@ -122,7 +121,7 @@
 >
 	<div class="mb-4">
 		<Input
-			placeholder="Search product"
+			placeholder={$tranFunc('collection.searchPrd')}
 			class="w-full"
 			startIcon={Search}
 			bind:value={filterAllProductsVariables.filter!.search}

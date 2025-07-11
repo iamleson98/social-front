@@ -55,26 +55,27 @@
 </script>
 
 <div class="bg-white rounded-lg border w-full border-gray-200 p-3 pb-6 space-y-2">
-	<SectionHeader>General Information</SectionHeader>
+	<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
 	<Input
-		label="Name"
+		label={$tranFunc('common.name')}
 		bind:value={name}
-		required
-		{disabled}
+		placeholder={$tranFunc('common.name')}
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
 		variant={collectionFormErrors.name?.length ? 'error' : 'info'}
 		subText={collectionFormErrors.name?.[0]}
+		{disabled}
+		required
 	/>
 	<EditorJSComponent
-		label="Collection description"
-		required
-		placeholder="Collection description"
+		label={$tranFunc('settings.description')}
+		placeholder={$tranFunc('settings.description')}
 		bind:value={description}
 		onchange={validate}
 		variant={collectionFormErrors.description?.length ? 'error' : 'info'}
 		subText={collectionFormErrors.description?.[0]}
 		{disabled}
+		required
 	/>
 
 	<FileInputContainer
@@ -82,10 +83,10 @@
 		max={1}
 		bind:medias={media}
 		onchange={validate}
-		required
-		label="Collection Image"
-		{disabled}
+		label={$tranFunc('common.pic')}
 		variant={collectionFormErrors.media?.length ? 'error' : 'info'}
 		subText={collectionFormErrors.media?.[0]}
+		{disabled}
+		required
 	/>
 </div>

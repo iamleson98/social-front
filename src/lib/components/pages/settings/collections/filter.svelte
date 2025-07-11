@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
 	import type {
@@ -20,9 +21,9 @@
 
 	let { variables = $bindable(), forceReExecuteGraphqlQuery = $bindable(false) }: Props = $props();
 
-	const FILTER_OPTIONS: FilterProps<CollectionFilterInput>[] = [
+	const FILTER_OPTIONS: FilterProps<CollectionFilterInput>[] = $derived([
 		{
-			label: 'Is published',
+			label: $tranFunc('product.published'),
 			key: 'published',
 			operations: [
 				{
@@ -33,7 +34,7 @@
 			mustPairWith: 'channel',
 		},
 		{
-			label: 'Channel',
+			label: $tranFunc('product.channel'),
 			key: 'channel',
 			operations: [
 				{
@@ -43,7 +44,7 @@
 			],
 		},
 		{
-			label: 'Metadata',
+			label: $tranFunc('common.metadata'),
 			key: 'metadata',
 			operations: [
 				{
@@ -52,13 +53,13 @@
 				},
 			],
 		},
-	];
+	]);
 </script>
 
 {#snippet publishedComponent({ onValue, initialValue }: FilterComponentType)}
 	<Checkbox
 		size="sm"
-		label="Published?"
+		label={$tranFunc('product.published')}
 		checked={initialValue === CollectionPublished.Published}
 		onchange={(evt) => {
 			onValue(
@@ -81,7 +82,7 @@
 	<div class="flex flex-col gap-1.5">
 		<Input
 			size="xs"
-			placeholder="key"
+			placeholder={$tranFunc('common.key')}
 			value={keyValue[0]}
 			onchange={(evt) => {
 				const { value } = evt.target as HTMLInputElement;
@@ -91,7 +92,7 @@
 		/>
 		<Input
 			size="xs"
-			placeholder="value"
+			placeholder={$tranFunc('common.value')}
 			value={keyValue[1]}
 			onchange={(evt) => {
 				const { value } = evt.target as HTMLInputElement;

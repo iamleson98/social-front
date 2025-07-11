@@ -15,6 +15,7 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Skeleton } from '$lib/components/ui/Skeleton';
 	import { CommonEaseDatePickerFormat } from '$lib/utils/consts';
+	import { tranFunc } from '$i18n';
 
 	type Props = {
 		addChannelListings?: PublishableChannelListingInput[];
@@ -133,8 +134,11 @@
 		<Alert size="sm" bordered variant="error">{$channelsQuery.error.message}</Alert>
 	{:else if $channelsQuery.data}
 		<div class="bg-white rounded-lg border w-full border-gray-200 p-3 mb-3">
-			<SectionHeader>Availability</SectionHeader>
-			<div class="text-xs text-gray-500">In {addChannelListings.length} channels</div>
+			<SectionHeader>{$tranFunc('settings.availability')}</SectionHeader>
+			<div class="text-xs text-gray-500">
+				{addChannelListings.length}
+				{$tranFunc('settings.availability')}
+			</div>
 			<Select
 				size="sm"
 				options={channelSelectOptions}
@@ -151,13 +155,18 @@
 				header={channelsMap[listing.channelId]?.name || listing.channelId}
 				class="mb-2 rounded-full bg-white border border-gray-200 p-3"
 			>
-				<Checkbox bind:checked={listing.isPublished} label="Visible" size="sm" {disabled} />
+				<Checkbox
+					bind:checked={listing.isPublished}
+					label={$tranFunc('common.visible')}
+					size="sm"
+					{disabled}
+				/>
 				{#if !listing.isPublished}
 					<div class="mt-2" transition:slide>
 						<EaseDatePicker
-							placeholder="Enter date time"
+							placeholder={$tranFunc('common.publication_date')}
 							size="sm"
-							label="Publication date"
+							label={$tranFunc('common.publication_date')}
 							value={{ date: listing.publishedAt }}
 							onchange={(val) =>
 								(listing.publishedAt = dayjs(val.date).format(CommonEaseDatePickerFormat))}
@@ -173,8 +182,10 @@
 						color="red"
 						startIcon={Trash}
 						{disabled}
-						onclick={() => removeChannelListing(idx)}>Remove</Button
+						onclick={() => removeChannelListing(idx)}
 					>
+						{$tranFunc('btn.delete')}
+					</Button>
 				</div>
 			</Accordion>
 		{/each}
