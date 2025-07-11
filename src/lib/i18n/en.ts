@@ -100,7 +100,7 @@ export default {
 		assign: 'Assign',
 		duplicate: 'Duplicate {{val}}',
 		editAt: 'Updated at',
-		seoInfo: 'Seo Information',
+		seoInfo: 'SEO Information',
 	},
 	product: {
 		chooseAddress: 'Please choose address',

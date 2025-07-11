@@ -70,12 +70,13 @@
 </script>
 
 <Accordion
-	header="Search engine preview"
+	header={$tranFunc('common.seoInfo')}
 	class="bg-white rounded-lg border w-full border-gray-200 p-3"
 >
-	<div class="flex flex-col gap-1">
+	<div class="space-y-1">
 		<Input
 			label="Slug"
+			placeholder="Slug"
 			bind:value={slug}
 			required
 			inputDebounceOption={{ onInput: validate }}

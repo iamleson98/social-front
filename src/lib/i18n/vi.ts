@@ -100,7 +100,7 @@ export default {
 		assign: 'Gán',
 		duplicate: 'Trùng giá trị {{val}}',
 		editAt: 'Cập nhật lúc',
-		seoInfo: 'Thông tin sep',
+		seoInfo: 'Thông tin SEO',
 	},
 	product: {
 		chooseAddress: 'Vui lòng chọn địa chỉ',
