@@ -34,7 +34,7 @@
 			child: code,
 		},
 		{
-			title: $tranFunc('common.usage'),
+			title: $tranFunc('voucher.usage'),
 			child: usage,
 		},
 		{

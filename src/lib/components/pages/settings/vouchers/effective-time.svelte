@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { RFC3339TimeFormat } from '$lib/api/graphql/utils';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { CommonEaseDatePickerFormat } from '$lib/utils/consts';
@@ -23,7 +24,7 @@
 			label="Start date"
 			value={{ date: startDate }}
 			onchange={(value) => {
-				startDate = value.date!.toString();
+				startDate = dayjs(value.date).format(RFC3339TimeFormat);
 			}}
 			placeholder="Start date"
 			format={CommonEaseDatePickerFormat}
@@ -33,14 +34,11 @@
 			{disabled}
 			label="End date"
 			placeholder="End date"
-			value={{ date: endDate ? dayjs(endDate).toDate() : undefined }}
+			value={{ date: endDate }}
 			onchange={(value) => {
-				endDate = value.date!.toString();
+				endDate = dayjs(value.date).format(RFC3339TimeFormat);
 			}}
 			format={CommonEaseDatePickerFormat}
-			timeLock={{
-				minDate: startDate ? dayjs(startDate).add(1, 'day').toDate() : undefined,
-			}}
 		/>
 	</div>
 </div>

@@ -3,7 +3,6 @@
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { type Order, type Query } from '$lib/gql/graphql';
 	import {
-		formatCurrency,
 		orderStatusBadgeClass,
 		paymentStatusBadgeClass,
 		type PaginationOptions,
@@ -18,6 +17,7 @@
 	import HeadBar from '$lib/components/pages/settings/common/head-bar.svelte';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
+	import PriceDisplay from '$lib/components/common/price-display.svelte';
 
 	const BATCH_LOAD = 20;
 
@@ -63,42 +63,37 @@
 {/snippet}
 
 {#snippet payment({ item }: { item: Order })}
-	<Badge {...paymentStatusBadgeClass(item.paymentStatus)} />
+	<Badge {...paymentStatusBadgeClass(item.paymentStatus)} rounded />
 {/snippet}
 
 {#snippet status({ item }: { item: Order })}
-	<Badge {...orderStatusBadgeClass(item.status)} />
+	<Badge {...orderStatusBadgeClass(item.status)} rounded />
 {/snippet}
 
 {#snippet total({ item }: { item: Order })}
-	<div class="flex items-center justify-between gap-1">
-		<span class="text-gray-500 text-xs">{item.total.gross.currency}</span>
-		<span class="font-semibold text-blue-600 text-right">
-			{formatCurrency(item.total.gross.amount)}
-		</span>
-	</div>
+	<PriceDisplay {...item.total.gross} />
 {/snippet}
 
 {#snippet action({ item }: { item: Order })}
-	<div class="text-center">
-		{#snippet trigger({ ...rest }: DropdownTriggerInterface)}
-			<IconButton icon={Dots} {...rest} size="xs" variant="light" color="gray" />
-		{/snippet}
+	<div class="flex justify-center">
 		<DropDown
-			{trigger}
 			options={[
 				{
 					children: $tranFunc('settings.reqSupport'),
 					href: `${AppRoute.ME_SUPPORT_NEW()}?order_number=${item.number}`,
 				},
 			]}
-		/>
+		>
+			{#snippet trigger({ ...rest }: DropdownTriggerInterface)}
+				<IconButton icon={Dots} {...rest} size="xs" variant="light" color="gray" />
+			{/snippet}
+		</DropDown>
 	</div>
 {/snippet}
 
 <HeadBar
 	listingPageHref={AppRoute.SETTINGS_ORDERS()}
-	listingPageLabel={$tranFunc('settings.orders')}
+	listingPageLabel={$tranFunc('settings.myOrders')}
 	detailRouteID="/[[channel]]/settings/orders/[id]"
 	detailPageLabelGetter={(page) => page.params.id}
 />
