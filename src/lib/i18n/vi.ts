@@ -101,6 +101,11 @@ export default {
 		duplicate: 'Trùng giá trị {{val}}',
 		editAt: 'Cập nhật lúc',
 		seoInfo: 'Thông tin SEO',
+		index: 'Thứ tự',
+		code: 'Mã giảm giá',
+		delAll: 'Xóa tất cả',
+		manual: 'Thủ công',
+		auto: 'Tự động',
 	},
 	product: {
 		chooseAddress: 'Vui lòng chọn địa chỉ',
@@ -395,5 +400,18 @@ export default {
 	category: {
 		new: 'Thêm danh mục',
 		noOfChildren: 'Số lượng mục con',
+	},
+	voucher: {
+		useLimit: 'Giới hạn sử dụng',
+		limitUseTimes: 'Giới hạn tất cả số lần mã giảm giá này có thể sử dụng',
+		limitOneUsePerUser: 'Giới hạn mỗi khách hàng chỉ dùng 1 lần',
+		limitToStaff: 'Dành riêng cho nhân viên',
+		limitVoucherCodeUseOnce: 'Chỉ dùng một lần duy nhất',
+		numOfUsesLimit: 'Giới hạn số lần sử dụng',
+		usesLeft: 'Còn {{no}} lần sử dụng',
+		effectDate: 'Ngày có hiệu lực',
+		usage: 'Lượt sử dụng',
+		voucherCodes: 'Các mã giảm giá',
+		newCodes: 'Thêm mã giảm giá',
 	},
 };

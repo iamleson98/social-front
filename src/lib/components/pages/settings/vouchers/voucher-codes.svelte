@@ -17,30 +17,31 @@
 		/** if not provided, meaning it is create page */
 		voucherId?: string;
 		addVoucherCodeStrings: string[];
+		disabled?: boolean;
 	};
 
 	type AddVoucherCodeProps = Omit<VoucherCode, 'id' | 'createdAt'>;
 
-	let { voucherId, addVoucherCodeStrings = $bindable() }: Props = $props();
+	let { voucherId, addVoucherCodeStrings = $bindable(), disabled }: Props = $props();
 
-	const TABLE_COLUMNS: TableColumnProps<AddVoucherCodeProps>[] = [
+	const TABLE_COLUMNS: TableColumnProps<AddVoucherCodeProps>[] = $derived([
 		{
-			title: 'No.',
+			title: $tranFunc('common.index'),
 			child: no,
 		},
 		{
-			title: 'Code',
+			title: $tranFunc('common.code'),
 			child: code,
 		},
 		{
-			title: 'Usage',
+			title: $tranFunc('common.usage'),
 			child: usage,
 		},
 		{
-			title: 'Status',
+			title: $tranFunc('settings.status'),
 			child: status,
 		},
-	];
+	]);
 
 	const TEMPO_CODE_ACTION_COLUMN: TableColumnProps<AddVoucherCodeProps> = {
 		title: deleteAll,
@@ -53,7 +54,7 @@
 	const FIELD_REQUIRED = $tranFunc('helpText.fieldRequired');
 
 	const AutoGenerateCodesSchema = number()
-		.min(1, 'Number must be greater than 0')
+		.nonnegative($tranFunc('error.negativeNumber'))
 		.max(MAX_AUTO_CODES, MAX_ITEMS_EXCEED);
 
 	const ManualCodeSchema = string().nonempty(FIELD_REQUIRED);
@@ -133,6 +134,7 @@
 		<IconButton
 			icon={Trash}
 			size="xs"
+			{disabled}
 			color="red"
 			variant="light"
 			onclick={() => removeCode(item)}
@@ -144,11 +146,12 @@
 	<div class="text-center">
 		<IconButton
 			icon={Trash}
+			{disabled}
 			size="xs"
 			color="red"
 			variant="light"
 			class="tooltip tooltip-top"
-			data-tip="Delete all"
+			data-tip={$tranFunc('common.delAll')}
 			onclick={() => removeCode()}
 		/>
 	</div>
@@ -160,21 +163,26 @@
 
 <div class="rounded-lg p-3 border border-gray-200 bg-white space-y-2">
 	<SectionHeader>
-		<div>Voucher codes</div>
+		<div>{$tranFunc('voucher.voucherCodes')}</div>
 		<Button
 			size="xs"
 			variant="outline"
 			color="gray"
 			endIcon={Plus}
+			{disabled}
 			onclick={() => (openAddCodeModal = true)}
 		>
-			Add voucher codes
+			{$tranFunc('voucher.newCodes')}
 		</Button>
 	</SectionHeader>
 
 	{#if addVoucherCodes.length}
 		<div class="rounded-lg p-3 border border-gray-200 bg-white">
-			<Table columns={TABLE_COLUMNS.concat(TEMPO_CODE_ACTION_COLUMN)} items={addVoucherCodes} />
+			<Table
+				columns={TABLE_COLUMNS.concat(TEMPO_CODE_ACTION_COLUMN)}
+				items={addVoucherCodes}
+				{disabled}
+			/>
 		</div>
 	{/if}
 
@@ -182,6 +190,7 @@
 		<GraphqlPaginableTable
 			query={VOUCHER_CODE_LIST_QUERY}
 			resultKey={'voucher.codes' as keyof Query}
+			{disabled}
 			variables={{
 				id: voucherId,
 				first: 10,
@@ -200,7 +209,7 @@
 	onCancel={() => (openAddCodeModal = false)}
 	onOk={handleAddVoucherCodes}
 	size="sm"
-	header="Add voucher codes"
+	header={$tranFunc('voucher.newCodes')}
 	disableElements={!!numberOfAutoGenerateCodesError || !!manualVoucherCodeError}
 >
 	<div class="grid grid-cols-2 mb-3">

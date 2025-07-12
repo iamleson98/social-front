@@ -1,22 +1,15 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
-	import type { Snippet } from 'svelte';
-
-	type UsageProps = {
-		title: string;
-		onCheck: (checked: boolean) => void;
-		value: boolean;
-		child?: Snippet;
-	};
 
 	type Props = {
 		applyOncePerCustomer: boolean;
 		onlyForStaff: boolean;
 		singleUse: boolean;
 		usageLimit?: number;
-
+		disabled?: boolean;
 		voucherUsedTimes: number;
 	};
 
@@ -26,67 +19,52 @@
 		singleUse = $bindable(),
 		usageLimit = $bindable(),
 		voucherUsedTimes,
+		disabled,
 	}: Props = $props();
 
-	let limitNumberOfTimesUsed = $state(false);
+	let limitNumberOfTimesUsed = $state(typeof usageLimit === 'number');
 
-	const USAGE_PROPS: UsageProps[] = $derived([
-		{
-			title: 'Limit number of times this discount can be used in total',
-			onCheck: (checked) => {
-				limitNumberOfTimesUsed = checked;
-				if (!checked) usageLimit = undefined; // don't update usageLimit when limitNumberOfTimesUsed is unchecked
-			},
-			value: limitNumberOfTimesUsed,
-			child: numOfUsesLimit,
-		},
-		{
-			title: 'Limit to one use per customer',
-			onCheck: (checked) => (applyOncePerCustomer = checked),
-			value: applyOncePerCustomer,
-		},
-		{
-			title: 'Limit to staff only',
-			onCheck: (checked) => (onlyForStaff = checked),
-			value: onlyForStaff,
-		},
-		{
-			title: 'Limit to voucher code use once',
-			onCheck: (checked) => (singleUse = checked),
-			value: singleUse,
-		},
-	]);
+	$effect(() => {
+		if (!limitNumberOfTimesUsed) usageLimit = undefined;
+	});
 </script>
 
-{#snippet numOfUsesLimit()}
-	{#if limitNumberOfTimesUsed}
-		<div class="flex items-center gap-2">
-			<Input
-				bind:value={usageLimit}
-				placeholder="Usage limit"
-				type="number"
-				min={voucherUsedTimes}
-			/>
-			<Badge
-				color="green"
-				text={typeof usageLimit === 'number' && usageLimit > voucherUsedTimes
-					? `${usageLimit - voucherUsedTimes} uses left`
-					: '0 uses left'}
-			/>
-		</div>
-	{/if}
-{/snippet}
-
 <div class="rounded-lg p-3 border border-gray-200 bg-white space-y-2">
-	<SectionHeader>Usage limit</SectionHeader>
+	<SectionHeader>{$tranFunc('voucher.useLimit')}</SectionHeader>
 	<div class="space-y-2.5">
-		{#each USAGE_PROPS as prop, idx (idx)}
-			<Checkbox
-				label={prop.title}
-				checked={prop.value}
-				onchange={(evt) => prop.onCheck(evt.currentTarget.checked)}
-			/>
-			{@render prop.child?.()}
-		{/each}
+		<Checkbox
+			label={$tranFunc('voucher.limitUseTimes')}
+			{disabled}
+			bind:checked={limitNumberOfTimesUsed}
+		/>
+		{#if limitNumberOfTimesUsed}
+			<div class="flex items-center gap-2">
+				<Input
+					bind:value={usageLimit}
+					placeholder={$tranFunc('voucher.numOfUsesLimit')}
+					type="number"
+					min={voucherUsedTimes}
+					{disabled}
+				/>
+				<Badge
+					color="green"
+					text={typeof usageLimit === 'number' && usageLimit > voucherUsedTimes
+						? $tranFunc('voucher.usesLeft', { no: usageLimit - voucherUsedTimes })
+						: $tranFunc('voucher.usesLeft', { no: 0 })}
+				/>
+			</div>
+		{/if}
+
+		<Checkbox
+			label={$tranFunc('voucher.limitOneUsePerUser')}
+			{disabled}
+			bind:checked={applyOncePerCustomer}
+		/>
+		<Checkbox label={$tranFunc('voucher.limitToStaff')} {disabled} bind:checked={onlyForStaff} />
+		<Checkbox
+			label={$tranFunc('voucher.limitVoucherCodeUseOnce')}
+			{disabled}
+			bind:checked={singleUse}
+		/>
 	</div>
 </div>

@@ -12,6 +12,7 @@
 		minimumOrderValue?: number;
 		minimumQuantityOfItems?: number;
 		activeChannelListings: VoucherChannelListing[];
+		disabled?: boolean;
 	};
 
 	type RequirementType = 'Minimum order value' | 'Minimum quantity of items' | 'none';
@@ -20,6 +21,7 @@
 		minimumOrderValue = $bindable(),
 		minimumQuantityOfItems = $bindable(),
 		activeChannelListings = $bindable(),
+		disabled,
 	}: Props = $props();
 
 	let requirementType = $state<RequirementType>('none');
@@ -87,6 +89,7 @@
 		placeholder="Minimum order value"
 		type="number"
 		min={0}
+		{disabled}
 		inputDebounceOption={{ onInput: (evt) => handleUpdateMinOrderPrice(idx, evt) }}
 		onblur={validateOrderValues}
 		variant={valueErrors?.fieldErrors?.[idx]?.length ? 'error' : 'info'}
@@ -102,18 +105,19 @@
 	<SectionHeader>Minimum requirements</SectionHeader>
 	<div class="space-y-2.5 mb-2">
 		{#each REQUIREMENT_TYPES as type, idx (idx)}
-			<RadioButton label={type} bind:group={requirementType} value={type} />
+			<RadioButton label={type} bind:group={requirementType} value={type} {disabled} />
 		{/each}
 	</div>
 
 	{#if requirementType === 'Minimum order value'}
-		<Table columns={MINIMUM_ORDER_VALUE_COLUMNS} items={activeChannelListings} />
+		<Table columns={MINIMUM_ORDER_VALUE_COLUMNS} items={activeChannelListings} {disabled} />
 	{:else if requirementType === 'Minimum quantity of items'}
 		{@const error = typeof minimumQuantityOfItems === 'number' && minimumQuantityOfItems < 0}
 		<Input
 			placeholder="Minimum quantity of items"
 			type="number"
 			min={1}
+			{disabled}
 			bind:value={minimumQuantityOfItems}
 			variant={error ? 'error' : 'info'}
 			subText={error ? NON_NEGATIVE : undefined}

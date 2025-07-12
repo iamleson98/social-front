@@ -101,6 +101,11 @@ export default {
 		duplicate: 'Duplicate {{val}}',
 		editAt: 'Updated at',
 		seoInfo: 'SEO Information',
+		index: 'No.',
+		code: 'Code',
+		delAll: 'Delete all',
+		manual: 'Manual',
+		auto: 'Automatic',
 	},
 	product: {
 		chooseAddress: 'Please choose address',
@@ -395,5 +400,18 @@ export default {
 	category: {
 		new: 'Add new category',
 		noOfChildren: 'No. of children',
+	},
+	voucher: {
+		useLimit: 'Usage limit',
+		limitUseTimes: 'Limit number of times this discount can be used in total',
+		limitOneUsePerUser: 'Limit to one use per customer',
+		limitToStaff: 'Limit to staff only',
+		limitVoucherCodeUseOnce: 'Limit to voucher code use once',
+		numOfUsesLimit: 'Total number of uses',
+		usesLeft: '{{no}} uses left',
+		effectDate: 'Effective dates',
+		usage: 'Usage',
+		voucherCodes: 'Voucher codes',
+		newCodes: 'Add voucher codes',
 	},
 };

@@ -17,7 +17,7 @@
 	import DiscountType from '$lib/components/pages/settings/vouchers/discount-type.svelte';
 	import EffectiveTime from '$lib/components/pages/settings/vouchers/effective-time.svelte';
 	import Requirements from '$lib/components/pages/settings/vouchers/requirements.svelte';
-	import Skeleton from '$lib/components/pages/settings/vouchers/skeleton.svelte';
+	import DetailSkeleton from '$lib/components/pages/settings/vouchers/detail-skeleton.svelte';
 	import Summary from '$lib/components/pages/settings/vouchers/summary.svelte';
 	import UsageLimit from '$lib/components/pages/settings/vouchers/usage-limit.svelte';
 	import VoucherCodes from '$lib/components/pages/settings/vouchers/voucher-codes.svelte';
@@ -33,11 +33,15 @@
 		type MutationVoucherDeleteArgs,
 		type VoucherChannelListingInput,
 		type VoucherChannelListing,
+		type MutationVoucherUpdateArgs,
+		type MutationVoucherChannelListingUpdateArgs,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { pick } from 'es-toolkit';
 	import { onMount } from 'svelte';
+	import { toast } from 'svelte-sonner';
 	import { string } from 'zod';
 
 	const voucherQuery = operationStore<Pick<Query, 'voucher'>, QueryVoucherArgs>({
@@ -51,7 +55,6 @@
 
 	let voucherInput = $state<VoucherInput>({
 		name: '',
-		code: '',
 		startDate: '',
 		endDate: '',
 		usageLimit: 0,
@@ -92,69 +95,63 @@
 		voucherQuery.subscribe((result) => {
 			if (!result.data?.voucher) return;
 
-			const {
-				name,
-				code,
-				startDate,
-				endDate,
-				usageLimit,
-				type,
-				discountValueType,
-				applyOncePerOrder,
-				applyOncePerCustomer,
-				onlyForStaff,
-				singleUse,
-				channelListings,
-			} = result.data.voucher;
+			const pickValues = pick(result.data.voucher, [
+				'name',
+				'startDate',
+				'endDate',
+				'usageLimit',
+				'type',
+				'discountValueType',
+				'applyOncePerOrder',
+				'applyOncePerCustomer',
+				'onlyForStaff',
+				'singleUse',
+			]);
+			voucherInput = { ...voucherInput, ...pickValues };
 
-			voucherInput = {
-				name,
-				code,
-				startDate,
-				endDate,
-				usageLimit,
-				type,
-				discountValueType,
-				applyOncePerOrder,
-				applyOncePerCustomer,
-				onlyForStaff,
-				singleUse,
-			};
-
-			activeChannelListings = channelListings || [];
+			activeChannelListings = result.data.voucher.channelListings || [];
 		}),
 	);
 
 	const handleUpdateVoucher = async () => {
 		performUpdateMetadata = true;
 
-		const mainUpdate = GRAPHQL_CLIENT.mutation(VOUCHER_UPDATE_MUTATION, {
+		const mainUpdate = GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'voucherUpdate'>,
+			MutationVoucherUpdateArgs
+		>(VOUCHER_UPDATE_MUTATION, {
 			id: page.params.id,
 			input: voucherInput,
 		}).toPromise();
 
-		const channelListingUpdate = GRAPHQL_CLIENT.mutation(VOUCHER_CHANNEL_LISTING_UPDATE_MUTATION, {
+		const channelListingUpdate = GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'voucherChannelListingUpdate'>,
+			MutationVoucherChannelListingUpdateArgs
+		>(VOUCHER_CHANNEL_LISTING_UPDATE_MUTATION, {
 			id: page.params.id,
 			input: voucherChannelListingInput,
 		}).toPromise();
-
-		const resultKeys = ['voucherUpdate', 'voucherChannelListingUpdate'] as (keyof Mutation)[];
 
 		loading = true;
 		const results = await Promise.all([mainUpdate, channelListingUpdate]);
 		loading = false;
 
-		let hasErr = false;
-		results.forEach(
-			(item, idx) => (hasErr ||= checkIfGraphqlResultHasError(item as any, resultKeys[idx])),
-		);
-
+		const resultKeys = ['voucherUpdate', 'voucherChannelListingUpdate'] as (keyof Mutation)[];
+		const hasErr = results
+			.map((res, idx) => checkIfGraphqlResultHasError(res as any, resultKeys[idx]))
+			.some(Boolean);
 		if (hasErr) return;
+
+		toast.success($tranFunc('common.editSuccess'));
+		voucherQuery.reexecute({
+			variables: { id: page.params.id },
+			context: { requestPolicy: 'network-only' },
+		});
 	};
 
 	const handleDeleteVoucher = async () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: `Are you sure to delete the voucher ${page.params.id}?`,
+			content: $tranFunc('common.confirmDel'),
 			onOk: async () => {
 				loading = true;
 				const result = await GRAPHQL_CLIENT.mutation<
@@ -163,7 +160,7 @@
 				>(VOUCHER_DELETE_MUTATION, { id: page.params.id });
 				loading = false;
 
-				if (checkIfGraphqlResultHasError(result, 'voucherDelete', 'Voucher deleted successfully'))
+				if (checkIfGraphqlResultHasError(result, 'voucherDelete', $tranFunc('common.delSuccess')))
 					return;
 
 				await goto(AppRoute.SETTINGS_CONFIGS_VOUCHERS());
@@ -173,7 +170,7 @@
 </script>
 
 {#if $voucherQuery.fetching}
-	<Skeleton />
+	<DetailSkeleton />
 {:else if $voucherQuery.error}
 	<Alert variant="error" bordered size="sm">{$voucherQuery.error.message}</Alert>
 {:else if $voucherQuery.data?.voucher}
@@ -191,11 +188,12 @@
 	<div class="flex gap-2">
 		<div class="w-7/10 space-y-2">
 			<div class="rounded-lg p-3 border border-gray-200 bg-white">
-				<SectionHeader>General information</SectionHeader>
+				<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
 				<Input
 					placeholder="Voucher name"
 					label="Voucher name"
 					required
+					disabled={loading}
 					bind:value={voucherInput.name}
 					onblur={validateName}
 					inputDebounceOption={{ onInput: validateName }}
@@ -203,16 +201,17 @@
 					subText={nameErrors[0]}
 				/>
 			</div>
-			<VoucherCodes voucherId={id} bind:addVoucherCodeStrings={voucherInput.addCodes!} />
+			<VoucherCodes
+				voucherId={id}
+				bind:addVoucherCodeStrings={voucherInput.addCodes!}
+				disabled={loading}
+			/>
 			<DiscountType
 				bind:discountType={voucherInput.discountValueType!}
-				bind:applyOncePerCustomer={voucherInput.applyOncePerCustomer!}
-				bind:onlyForStaff={voucherInput.onlyForStaff!}
-				bind:singleUse={voucherInput.singleUse!}
-				bind:usageLimit={voucherInput.usageLimit!}
 				bind:voucherChannelListingInput
 				bind:activeChannelListings
 				existingChannelListings={channelListings || []}
+				disabled={loading}
 			/>
 			<ApplicationType
 				bind:applicationType={voucherInput.type!}
@@ -226,10 +225,12 @@
 				existingCollectionsCount={collections?.totalCount!}
 				existingProductsCount={products?.totalCount!}
 				existingVariantsCount={variants?.totalCount!}
+				disabled={loading}
 			/>
 			<Requirements
 				bind:minimumQuantityOfItems={voucherInput.minCheckoutItemsQuantity!}
 				bind:activeChannelListings
+				disabled={loading}
 			/>
 			<UsageLimit
 				bind:usageLimit={voucherInput.usageLimit!}
@@ -237,10 +238,12 @@
 				bind:onlyForStaff={voucherInput.onlyForStaff!}
 				bind:singleUse={voucherInput.singleUse!}
 				voucherUsedTimes={used}
+				disabled={loading}
 			/>
 			<EffectiveTime
 				bind:startDate={voucherInput.startDate!}
 				bind:endDate={voucherInput.endDate!}
+				disabled={loading}
 			/>
 			<GeneralMetadataEditor
 				objectId={id}
@@ -259,7 +262,7 @@
 	<ActionBar
 		onUpdateClick={handleUpdateVoucher}
 		onDeleteClick={handleDeleteVoucher}
-		disableUpdateButton={loading}
+		disabled={loading}
 		backButtonUrl={AppRoute.SETTINGS_CONFIGS_VOUCHERS()}
 	/>
 {/if}

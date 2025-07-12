@@ -38,6 +38,8 @@
 		newProducts: string[];
 		newCollections: string[];
 		newVariants: string[];
+
+		disabled?: boolean;
 	};
 
 	type TabName = 'categories' | 'products' | 'collections' | 'variants';
@@ -56,6 +58,7 @@
 		newProducts = $bindable(),
 		newCollections = $bindable(),
 		newVariants = $bindable(),
+		disabled,
 	}: Props = $props();
 
 	let activeTab = $derived(page.url.searchParams.get('tab'));
@@ -254,7 +257,7 @@
 {#snippet commonHeader(name: string)}
 	<SectionHeader>
 		<span>Eligible {name}</span>
-		<Button size="xs" variant="light" onclick={() => (openAssignCatalogFeature = true)}>
+		<Button size="xs" variant="light" onclick={() => (openAssignCatalogFeature = true)} {disabled}>
 			Assign {name}
 		</Button>
 	</SectionHeader>
@@ -275,6 +278,7 @@
 				optionValueKey="id"
 				optionLabelKey="name"
 				multiple
+				{disabled}
 				label="Select collections to apply for this voucher"
 				size="sm"
 				class="mb-2"
@@ -287,6 +291,7 @@
 			bind:variables={voucherRelationVars}
 			bind:forceReExecuteGraphqlQuery
 			resultKey={'voucher.collections' as keyof Query}
+			{disabled}
 			columns={COLLECTION_COLUMNS}
 		/>
 	{:else if activeTab === 'products'}
@@ -297,6 +302,7 @@
 				variableSearchQueryPath="filter.search"
 				variables={{ first: 20, filter: { search: '' } } as QueryProductsArgs}
 				optionValueKey="id"
+				{disabled}
 				optionLabelKey="name"
 				multiple
 				label="Select products to apply for this voucher"
@@ -310,6 +316,7 @@
 			query={VOUCHER_PRODUCTS_QUERY}
 			bind:variables={voucherRelationVars}
 			bind:forceReExecuteGraphqlQuery
+			{disabled}
 			resultKey={'voucher.products' as keyof Query}
 			columns={PRODUCT_COLUMNS}
 		/>
@@ -322,6 +329,7 @@
 				variables={{ first: 20, filter: { search: '' } } as QueryCategoriesArgs}
 				optionValueKey="id"
 				optionLabelKey="name"
+				{disabled}
 				multiple
 				label="Select categories to apply for this voucher"
 				size="sm"
@@ -333,6 +341,7 @@
 		<GraphqlPaginableTable
 			query={VOUCHER_CATEGORIES_QUERY}
 			bind:variables={voucherRelationVars}
+			{disabled}
 			bind:forceReExecuteGraphqlQuery
 			resultKey={'voucher.categories' as keyof Query}
 			columns={CATEGORY_COLUMNS}
@@ -340,6 +349,7 @@
 	{:else if activeTab === 'variants'}
 		<GraphqlPaginableTable
 			query={VOUCHER_VARIANTS_QUERY}
+			{disabled}
 			bind:variables={voucherRelationVars}
 			bind:forceReExecuteGraphqlQuery
 			resultKey={'voucher.variants' as keyof Query}

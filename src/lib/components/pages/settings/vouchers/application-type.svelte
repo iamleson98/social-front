@@ -18,6 +18,8 @@
 		existingCollectionsCount: number;
 		existingVariantsCount: number;
 		existingProductsCount: number;
+
+		disabled?: boolean;
 	};
 
 	let {
@@ -33,6 +35,8 @@
 		existingCollectionsCount,
 		existingVariantsCount,
 		existingProductsCount,
+
+		disabled,
 	}: Props = $props();
 
 	const DISCOUNT_TYPE_SHIPPING = 'Shipping' as DiscountValueTypeEnum;
@@ -49,6 +53,7 @@
 						label={type.toLocaleLowerCase().split('_').join(' ')}
 						bind:group={applicationType}
 						value={type}
+						{disabled}
 					/>
 				{/each}
 
@@ -56,6 +61,7 @@
 					label="Apply only to a single cheapest eligible product"
 					subText="If this option is unchecked, discount will be counted for every eligible product"
 					bind:checked={applyOncePerOrder}
+					{disabled}
 				/>
 			</div>
 		</div>
@@ -69,6 +75,7 @@
 				{existingCollectionsCount}
 				{existingProductsCount}
 				{existingVariantsCount}
+				{disabled}
 			/>
 		{/if}
 	</div>

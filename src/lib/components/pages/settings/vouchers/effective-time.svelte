@@ -7,9 +7,10 @@
 	type Props = {
 		startDate: string;
 		endDate: string;
+		disabled?: boolean;
 	};
 
-	let { startDate = $bindable(), endDate = $bindable() }: Props = $props();
+	let { startDate = $bindable(), endDate = $bindable(), disabled }: Props = $props();
 </script>
 
 <div class="rounded-lg p-3 border border-gray-200 bg-white space-y-2">
@@ -18,6 +19,7 @@
 	<div class="grid grid-cols-2 gap-2">
 		<EaseDatePicker
 			required
+			{disabled}
 			label="Start date"
 			value={{ date: startDate }}
 			onchange={(value) => {
@@ -28,6 +30,7 @@
 		/>
 
 		<EaseDatePicker
+			{disabled}
 			label="End date"
 			placeholder="End date"
 			value={{ date: endDate ? dayjs(endDate).toDate() : undefined }}

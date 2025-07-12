@@ -67,28 +67,26 @@
 <div class="flex gap-2">
 	<div class="w-7/10 space-y-2">
 		<div class="rounded-lg p-3 border border-gray-200 bg-white">
-			<SectionHeader>General information</SectionHeader>
+			<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
 			<Input
-				placeholder="Voucher name"
-				label="Voucher name"
+				placeholder={$tranFunc('common.name')}
+				label={$tranFunc('common.name')}
 				required
 				bind:value={voucherInput.name}
 				onblur={validateName}
 				inputDebounceOption={{ onInput: validateName }}
 				variant={nameErrors.length ? 'error' : 'info'}
 				subText={nameErrors[0]}
+				disabled={loading}
 			/>
 		</div>
 		<VoucherCodes bind:addVoucherCodeStrings={voucherInput.addCodes!} />
 		<DiscountType
 			bind:discountType={voucherInput.discountValueType!}
-			bind:applyOncePerCustomer={voucherInput.applyOncePerCustomer!}
-			bind:onlyForStaff={voucherInput.onlyForStaff!}
-			bind:singleUse={voucherInput.singleUse!}
-			bind:usageLimit={voucherInput.usageLimit!}
 			bind:voucherChannelListingInput
 			bind:activeChannelListings
 			existingChannelListings={[]}
+			disabled={loading}
 		/>
 		<ApplicationType
 			bind:applicationType={voucherInput.type!}
@@ -102,10 +100,12 @@
 			existingCollectionsCount={0}
 			existingProductsCount={0}
 			existingVariantsCount={0}
+			disabled={loading}
 		/>
 		<Requirements
 			bind:minimumQuantityOfItems={voucherInput.minCheckoutItemsQuantity!}
 			bind:activeChannelListings
+			disabled={loading}
 		/>
 		<UsageLimit
 			bind:usageLimit={voucherInput.usageLimit!}
@@ -113,8 +113,13 @@
 			bind:onlyForStaff={voucherInput.onlyForStaff!}
 			bind:singleUse={voucherInput.singleUse!}
 			voucherUsedTimes={0}
+			disabled={loading}
 		/>
-		<EffectiveTime bind:startDate={voucherInput.startDate!} bind:endDate={voucherInput.endDate!} />
+		<EffectiveTime
+			disabled={loading}
+			bind:startDate={voucherInput.startDate!}
+			bind:endDate={voucherInput.endDate!}
+		/>
 		<GeneralMetadataEditor
 			objectId={createdVoucherId as string}
 			metadata={[]}
@@ -131,6 +136,6 @@
 
 <ActionBar
 	onAddClick={handleCreateVoucher}
-	disableUpdateButton={loading}
+	disabled={loading}
 	backButtonUrl={AppRoute.SETTINGS_CONFIGS_VOUCHERS()}
 />

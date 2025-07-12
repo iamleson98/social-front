@@ -19,31 +19,21 @@
 
 	type Props = {
 		discountType: DiscountValueTypeEnum;
-		minimumQuantityOfItems?: number;
-		minimumOrderValue?: number;
-		applyOncePerCustomer: boolean;
-		onlyForStaff: boolean;
-		singleUse: boolean;
-		usageLimit?: number;
 		existingChannelListings: VoucherChannelListing[];
 		voucherChannelListingInput: VoucherChannelListingInput;
 		activeChannelListings: VoucherChannelListing[];
+		disabled?: boolean;
 	};
 
 	let {
 		discountType = $bindable(),
-		minimumQuantityOfItems = $bindable(),
-		minimumOrderValue = $bindable(),
-		applyOncePerCustomer = $bindable(),
-		onlyForStaff = $bindable(),
-		singleUse = $bindable(),
-		usageLimit = $bindable(),
 		voucherChannelListingInput = $bindable({
 			addChannels: [],
 			removeChannels: [],
 		}),
 		existingChannelListings,
 		activeChannelListings = $bindable(),
+		disabled,
 	}: Props = $props();
 
 	/** keeps track of channels already in use with voucher */
@@ -156,6 +146,7 @@
 		placeholder="Discount value"
 		type="number"
 		min={0}
+		{disabled}
 		inputDebounceOption={{ onInput: (evt) => handleDiscountAmountChange(idx, evt) }}
 		onblur={validate}
 		variant={discountValueErrors?.fieldErrors?.[idx]?.length ? 'error' : 'info'}
@@ -185,6 +176,7 @@
 				label="Specify channels"
 				required
 				multiple
+				{disabled}
 				{options}
 				placeholder="Specify channels"
 				bind:value={selectedChannelIds}
@@ -203,6 +195,7 @@
 				<RadioButton
 					label={type.toLocaleLowerCase().split('_').join(' ')}
 					bind:group={discountType}
+					{disabled}
 					value={type}
 				/>
 			{/each}
@@ -212,7 +205,7 @@
 	{#if discountType !== DISCOUNT_TYPE_SHIPPING}
 		<div>
 			<SectionHeader>Value</SectionHeader>
-			<Table columns={CHANNEL_LISTING_COLUMNS} items={activeChannelListings} />
+			<Table {disabled} columns={CHANNEL_LISTING_COLUMNS} items={activeChannelListings} />
 		</div>
 	{/if}
 </div>
