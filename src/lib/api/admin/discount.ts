@@ -76,6 +76,11 @@ query VoucherDetail($id: ID!) {
     type
     used
     discountValueType
+    singleUse
+    onlyForStaff
+    minCheckoutItemsQuantity
+    applyOncePerOrder
+    applyOncePerCustomer
     collections {
       totalCount
     }
@@ -161,7 +166,7 @@ query Promotion($id: ID!) {
 }`;
 
 export const VOUCHER_CODE_LIST_QUERY = gql`
-query VoucherCodes($id: ID!, $first: Int!, $after: String, $last: Int, $before: String) {
+query VoucherCodes($id: ID!, $first: Int, $after: String, $last: Int, $before: String) {
   voucher(id: $id) {
     codes(first: $first, after: $after, last: $last, before: $before) {
       edges {

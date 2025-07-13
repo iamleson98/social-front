@@ -91,11 +91,11 @@
 		const newChannelIds = difference(selectedChannelIds, existingUsedChannelIDs);
 		const removeChannelIds = difference(existingUsedChannelIDs, selectedChannelIds);
 
-		voucherChannelListingInput.addChannels = newChannelIds.map((id) => ({
-			channelId: id,
-			discountValue: 0,
-			minAmountSpent: 0,
-		}));
+		// voucherChannelListingInput.addChannels = newChannelIds.map((id) => ({
+		// 	channelId: id,
+		// 	discountValue: 0,
+		// 	minAmountSpent: 0,
+		// }));
 		voucherChannelListingInput.removeChannels = removeChannelIds;
 
 		activeChannelListings = existingChannelListings.concat(

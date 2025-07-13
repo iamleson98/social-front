@@ -32,8 +32,7 @@ export function dateFromRFC3339(rfc3339String: string) {
   return new Date(isoString);
 }
 
-/** borrowed from golang source code  */
-export const RFC3339TimeFormat = "2023-08-31T12:34:56+00:00";
+export const RFC3339TimeFormat = "YYYY-MM-DDTHH:mm:ssZ";
 
 export const RFC3339TimeRegex = new RegExp(RFC3339TimeFormat);
 

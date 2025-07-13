@@ -2,7 +2,6 @@
 	import { RFC3339TimeFormat } from '$lib/api/graphql/utils';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
-	import { CommonEaseDatePickerFormat } from '$lib/utils/consts';
 	import dayjs from 'dayjs';
 
 	type Props = {
@@ -27,7 +26,6 @@
 				startDate = dayjs(value.date).format(RFC3339TimeFormat);
 			}}
 			placeholder="Start date"
-			format={CommonEaseDatePickerFormat}
 		/>
 
 		<EaseDatePicker
@@ -38,7 +36,6 @@
 			onchange={(value) => {
 				endDate = dayjs(value.date).format(RFC3339TimeFormat);
 			}}
-			format={CommonEaseDatePickerFormat}
 		/>
 	</div>
 </div>

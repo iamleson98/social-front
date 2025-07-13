@@ -20,8 +20,6 @@
 
 	type Props = {
 		theme?: 'light' | 'dark';
-		/** default `YYYY-MM-DD` */
-		format?: string;
 
 		/** for quick month, year navigation */
 		allowSelectMonthYears?: {
@@ -76,7 +74,6 @@
 		},
 		autoApply = timeConfig ? false : true,
 		value: REAL_VALUE = $bindable({}),
-		format = BASIC_TIME_CONFIG,
 		onchange,
 		class: className = '',
 		...rest
@@ -86,17 +83,9 @@
 	let inputRef = $state<HTMLInputElement>();
 	let inputEndRef = $state<HTMLInputElement>();
 
-	let ACTUAL_TIME_FORMAT = $derived.by(() => {
-		if (!timeConfig) {
-			return format ? format : BASIC_TIME_CONFIG;
-		}
-
-		if (!timeConfig.format || timeConfig.format === 24) {
-			return `${BASIC_TIME_CONFIG} HH:mm`;
-		}
-
-		return `${BASIC_TIME_CONFIG} hh:mm`;
-	});
+	const ACTUAL_TIME_FORMAT = timeConfig
+		? `${BASIC_TIME_CONFIG} ${timeConfig.format === 24 ? 'HH:mm' : 'hh:mm'}`
+		: BASIC_TIME_CONFIG;
 
 	let inputReprValue = $state<TimeValue>({});
 
@@ -132,7 +121,7 @@
 			css: [EASEPICK_CORE_STYLE_v1_2_1],
 			plugins: [],
 			autoApply,
-			format,
+			format: ACTUAL_TIME_FORMAT,
 		};
 
 		if (allowSelectMonthYears !== undefined || theme === 'dark') {

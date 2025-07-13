@@ -38,7 +38,6 @@
 	let metadataKeysToRemove = $state<string[]>([]);
 	let privateMetadataItemsToAdd = $state<MetadataInput[]>([]);
 	let privateMetadataKeysToRemove = $state<string[]>([]);
-	let loading = $derived(disabled || performUpdateMetadata);
 
 	type TaskProps = {
 		query: TypedDocumentNode<any, AnyVariables>;
@@ -102,7 +101,7 @@
 	<MetadataEditor
 		title={$tranFunc('common.metadata')}
 		data={metadata.map((item) => omit(item, ['__typename']))}
-		disabled={loading}
+		{disabled}
 		bind:metadataItemsToAdd
 		bind:metadataKeysToRemove
 	/>
@@ -110,7 +109,7 @@
 	<MetadataEditor
 		title={$tranFunc('common.privateMetadata')}
 		data={privateMetadata.map((item) => omit(item, ['__typename']))}
-		disabled={loading}
+		{disabled}
 		bind:metadataItemsToAdd={privateMetadataItemsToAdd}
 		bind:metadataKeysToRemove={privateMetadataKeysToRemove}
 		class="mt-2"

@@ -129,7 +129,14 @@
 			MutationVoucherChannelListingUpdateArgs
 		>(VOUCHER_CHANNEL_LISTING_UPDATE_MUTATION, {
 			id: page.params.id,
-			input: voucherChannelListingInput,
+			input: {
+				...voucherChannelListingInput,
+				addChannels: activeChannelListings.map((item) => ({
+					channelId: item.channel.id,
+					minAmountSpent: item.minSpent?.amount,
+					discountValue: item.discountValue,
+				})),
+			},
 		}).toPromise();
 
 		loading = true;

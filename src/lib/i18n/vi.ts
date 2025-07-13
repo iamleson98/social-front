@@ -406,7 +406,7 @@ export default {
 		limitUseTimes: 'Giới hạn tất cả số lần mã giảm giá này có thể sử dụng',
 		limitOneUsePerUser: 'Giới hạn mỗi khách hàng chỉ dùng 1 lần',
 		limitToStaff: 'Dành riêng cho nhân viên',
-		limitVoucherCodeUseOnce: 'Chỉ dùng một lần duy nhất',
+		limitVoucherCodeUseOnce: 'Mỗi mã chỉ dùng 1 lần duy nhất',
 		numOfUsesLimit: 'Giới hạn số lần sử dụng',
 		usesLeft: 'Còn {{no}} lần sử dụng',
 		effectDate: 'Ngày có hiệu lực',
