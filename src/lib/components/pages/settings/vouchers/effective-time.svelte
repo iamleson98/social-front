@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { RFC3339TimeFormat } from '$lib/api/graphql/utils';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
@@ -14,24 +15,24 @@
 </script>
 
 <div class="rounded-lg p-3 border border-gray-200 bg-white space-y-2">
-	<SectionHeader>Effective Dates</SectionHeader>
+	<SectionHeader>{$tranFunc('voucher.effectDate')}</SectionHeader>
 
 	<div class="grid grid-cols-2 gap-2">
 		<EaseDatePicker
 			required
 			{disabled}
-			label="Start date"
+			label={$tranFunc('common.startAt')}
 			value={{ date: startDate }}
 			onchange={(value) => {
 				startDate = dayjs(value.date).format(RFC3339TimeFormat);
 			}}
-			placeholder="Start date"
+			placeholder={$tranFunc('common.startAt')}
 		/>
 
 		<EaseDatePicker
 			{disabled}
-			label="End date"
-			placeholder="End date"
+			label={$tranFunc('common.endAt')}
+			placeholder={$tranFunc('common.endAt')}
 			value={{ date: endDate }}
 			onchange={(value) => {
 				endDate = dayjs(value.date).format(RFC3339TimeFormat);

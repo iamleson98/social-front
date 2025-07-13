@@ -9,7 +9,6 @@
 	import { array, number, object } from 'zod';
 
 	type Props = {
-		minimumOrderValue?: number;
 		minimumQuantityOfItems?: number;
 		activeChannelListings: VoucherChannelListing[];
 		disabled?: boolean;
@@ -18,7 +17,6 @@
 	type RequirementType = 'Minimum order value' | 'Minimum quantity of items' | 'none';
 
 	let {
-		minimumOrderValue = $bindable(),
 		minimumQuantityOfItems = $bindable(),
 		activeChannelListings = $bindable(),
 		disabled,

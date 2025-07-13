@@ -53,7 +53,7 @@ export default {
 		reset: 'Đặt lại',
 		star: 'Sao',
 		cart: 'Giỏ hàng',
-		startAt: 'Từ',
+		startAt: 'Bắt đầu',
 		discountRange: 'Khoảng giảm giá',
 		packaging: 'Đóng gói',
 		preorder: 'đặt trước',
@@ -106,6 +106,7 @@ export default {
 		delAll: 'Xóa tất cả',
 		manual: 'Thủ công',
 		auto: 'Tự động',
+		endAt: 'Kết thúc',
 	},
 	product: {
 		chooseAddress: 'Vui lòng chọn địa chỉ',

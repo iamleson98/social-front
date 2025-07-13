@@ -106,6 +106,7 @@ export default {
 		delAll: 'Delete all',
 		manual: 'Manual',
 		auto: 'Automatic',
+		endAt: 'End at',
 	},
 	product: {
 		chooseAddress: 'Please choose address',

@@ -197,8 +197,8 @@
 			<div class="rounded-lg p-3 border border-gray-200 bg-white">
 				<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
 				<Input
-					placeholder="Voucher name"
-					label="Voucher name"
+					placeholder={$tranFunc('common.name')}
+					label={$tranFunc('common.name')}
 					required
 					disabled={loading}
 					bind:value={voucherInput.name}
