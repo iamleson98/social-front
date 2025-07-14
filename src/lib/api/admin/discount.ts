@@ -220,6 +220,10 @@ query VoucherCollections($voucherId: ID!, $first: Int, $after: String, $last: In
           products {
             totalCount
           }
+          backgroundImage(size: 100, format: WEBP) {
+            url
+            alt
+          }
         }
       }
       pageInfo {

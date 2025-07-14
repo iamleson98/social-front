@@ -98,6 +98,10 @@
 
 	const COLLECTION_COLUMNS: TableColumnProps<Collection>[] = [
 		{
+			title: 'Image',
+			child: collectionImage,
+		},
+		{
 			title: 'Name',
 			child: name,
 		},
@@ -187,6 +191,14 @@
 
 {#snippet prdImage({ item }: { item: Product })}
 	<Thumbnail src={item.thumbnail?.url} alt={item.thumbnail?.alt || item.name} size="sm" />
+{/snippet}
+
+{#snippet collectionImage({ item }: { item: Collection })}
+	<Thumbnail
+		src={item.backgroundImage?.url}
+		alt={item.backgroundImage?.alt || item.name}
+		size="sm"
+	/>
 {/snippet}
 
 {#snippet productType({ item }: { item: Product })}
