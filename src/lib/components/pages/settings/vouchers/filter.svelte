@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box';
 	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
@@ -30,7 +31,7 @@
 
 	const FILTER_OPTIONS: FilterProps<VoucherFilterInput>[] = [
 		{
-			label: 'Channel',
+			label: $tranFunc('product.channel'),
 			key: 'channel' as keyof VoucherFilterInput,
 			operations: [
 				{
@@ -40,7 +41,7 @@
 			],
 		},
 		{
-			label: 'Discount type',
+			label: $tranFunc('voucher.discountType'),
 			key: 'discountType',
 			operations: [
 				{
@@ -54,7 +55,7 @@
 			],
 		},
 		{
-			label: 'Started',
+			label: $tranFunc('common.startAt'),
 			key: 'started',
 			operations: [
 				{
@@ -72,7 +73,7 @@
 			],
 		},
 		{
-			label: 'Status',
+			label: $tranFunc('settings.status'),
 			key: 'status',
 			operations: [
 				{
@@ -86,7 +87,7 @@
 			],
 		},
 		{
-			label: 'Times used',
+			label: $tranFunc('voucher.timeUsed'),
 			key: 'timesUsed',
 			operations: [
 				{
@@ -101,7 +102,7 @@
 {#snippet channel({ onValue, initialValue = '' }: FilterComponentType)}
 	<ChannelSelect
 		size="xs"
-		placeholder="channel"
+		placeholder={$tranFunc('product.channel')}
 		value={initialValue}
 		inputDebounceOption={{ onInput: (evt) => onValue((evt.target as HTMLInputElement).value) }}
 	/>
@@ -110,7 +111,7 @@
 {#snippet started({ onValue, initialValue = '' }: FilterComponentType)}
 	<EaseDatePicker
 		size="xs"
-		placeholder="Time"
+		placeholder={$tranFunc('common.time')}
 		value={{ date: initialValue as string }}
 		onchange={(val) => onValue(val.date!.toString())}
 	/>
@@ -120,7 +121,7 @@
 	{@const range = initialValue as string[]}
 	<EaseDatePicker
 		size="xs"
-		placeholder="Time"
+		placeholder={$tranFunc('common.time')}
 		allowSelectRange
 		value={{ start: range[0], end: range[1] }}
 		onchange={(val) => {
@@ -134,7 +135,7 @@
 {#snippet discountType({ onValue, initialValue = '' }: FilterComponentType)}
 	<Select
 		size="xs"
-		placeholder="discount type"
+		placeholder={$tranFunc('voucher.discountType')}
 		options={DISCOUNT_TYPES}
 		value={initialValue as string}
 		onchange={(opt) => onValue((opt as SelectOption).value)}
@@ -144,7 +145,7 @@
 {#snippet discountTypeIn({ onValue, initialValue = [] }: FilterComponentType)}
 	<Select
 		size="xs"
-		placeholder="discount types"
+		placeholder={$tranFunc('voucher.discountType')}
 		multiple
 		options={DISCOUNT_TYPES}
 		value={initialValue as string[]}
@@ -155,7 +156,7 @@
 {#snippet status({ onValue, initialValue = '' }: FilterComponentType)}
 	<Select
 		size="xs"
-		placeholder="Discount status"
+		placeholder={$tranFunc('settings.status')}
 		options={DISCOUNT_STATUSES}
 		value={initialValue as string}
 		onchange={(opt) => onValue((opt as SelectOption).value)}
@@ -165,7 +166,7 @@
 {#snippet statusIn({ onValue, initialValue = [] }: FilterComponentType)}
 	<Select
 		size="xs"
-		placeholder="Discount statuses"
+		placeholder={$tranFunc('settings.status')}
 		multiple
 		options={DISCOUNT_STATUSES}
 		value={initialValue as string[]}

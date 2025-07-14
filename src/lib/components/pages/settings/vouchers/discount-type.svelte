@@ -53,21 +53,30 @@
 
 	const DISCOUNT_TYPE_SHIPPING = 'Shipping' as DiscountValueTypeEnum;
 
-	const VOUCHER_TYPES: DiscountValueTypeEnum[] = [
-		DiscountValueTypeEnum.Fixed,
-		DiscountValueTypeEnum.Percentage,
-		DISCOUNT_TYPE_SHIPPING,
+	const VOUCHER_TYPES = [
+		{
+			value: DiscountValueTypeEnum.Fixed,
+			label: 'voucher.discountFixed',
+		},
+		{
+			value: DiscountValueTypeEnum.Percentage,
+			label: 'voucher.discountPercent',
+		},
+		{
+			value: DISCOUNT_TYPE_SHIPPING,
+			label: 'voucher.discountShip',
+		},
 	];
 
 	let selectedChannelIds = $state<string[]>(existingUsedChannelIDs);
 
 	const CHANNEL_LISTING_COLUMNS: TableColumnProps<VoucherChannelListing>[] = [
 		{
-			title: 'Channel',
+			title: $tranFunc('product.channel'),
 			child: channel,
 		},
 		{
-			title: 'Price',
+			title: $tranFunc('product.price'),
 			child: price,
 		},
 	];
@@ -143,7 +152,7 @@
 {#snippet price({ item, idx }: { item: VoucherChannelListing; idx: number })}
 	<Input
 		value={item.discountValue}
-		placeholder="Discount value"
+		placeholder={$tranFunc('voucher.discountValue')}
 		type="number"
 		min={0}
 		{disabled}
@@ -162,7 +171,7 @@
 
 <div class="rounded-lg p-3 border border-gray-200 bg-white space-y-2">
 	<div>
-		<SectionHeader>Availability</SectionHeader>
+		<SectionHeader>{$tranFunc('settings.availability')}</SectionHeader>
 		{#if $channelsQuery.fetching}
 			<SelectSkeleton size="sm" label />
 		{:else if $channelsQuery.error}
@@ -173,12 +182,12 @@
 				label: chan.name,
 			}))}
 			<Select
-				label="Specify channels"
+				label={$tranFunc('voucher.specifyChan')}
 				required
 				multiple
 				{disabled}
 				{options}
-				placeholder="Specify channels"
+				placeholder={$tranFunc('voucher.specifyChan')}
 				bind:value={selectedChannelIds}
 				onchange={handleChannelsChange}
 				onblur={validate}
@@ -189,14 +198,14 @@
 	</div>
 
 	<div>
-		<SectionHeader>Discount value type</SectionHeader>
+		<SectionHeader>{$tranFunc('voucher.discountValueType')}</SectionHeader>
 		<div class="space-y-2.5">
 			{#each VOUCHER_TYPES as type, idx (idx)}
 				<RadioButton
-					label={type.toLocaleLowerCase().split('_').join(' ')}
+					label={$tranFunc(type.label)}
 					bind:group={discountType}
 					{disabled}
-					value={type}
+					value={type.value}
 				/>
 			{/each}
 		</div>
@@ -204,7 +213,7 @@
 
 	{#if discountType !== DISCOUNT_TYPE_SHIPPING}
 		<div>
-			<SectionHeader>Value</SectionHeader>
+			<SectionHeader>{$tranFunc('common.value')}</SectionHeader>
 			<Table {disabled} columns={CHANNEL_LISTING_COLUMNS} items={activeChannelListings} />
 		</div>
 	{/if}

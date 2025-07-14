@@ -182,14 +182,14 @@
 	};
 </script>
 
-<div class="bg-white rounded-lg p-3 border border-gray-200">
-	{#if $queryOperationStore.fetching}
-		<TableSkeleton numColumns={columns.length} showPagination />
-	{:else if $queryOperationStore.error}
-		<Alert variant="error" size="sm" bordered>
-			{$queryOperationStore.error.message}
-		</Alert>
-	{:else if $queryOperationStore.data}
+{#if $queryOperationStore.fetching}
+	<TableSkeleton numColumns={columns.length} showPagination />
+{:else if $queryOperationStore.error}
+	<Alert variant="error" size="sm" bordered>
+		{$queryOperationStore.error.message}
+	</Alert>
+{:else if $queryOperationStore.data}
+	<div class="bg-white rounded-lg p-3 border border-gray-200">
 		<Table
 			{items}
 			{columns}
@@ -204,5 +204,5 @@
 			disabled={$queryOperationStore.fetching || disabled}
 			onDragEnd={onDragEnd ? innerHandleDragEnd : undefined}
 		/>
-	{/if}
-</div>
+	</div>
+{/if}

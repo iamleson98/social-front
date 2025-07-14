@@ -53,6 +53,19 @@
 	const MAX_ITEMS_EXCEED = $tranFunc('error.itemsExceed', { max: MAX_AUTO_CODES });
 	const FIELD_REQUIRED = $tranFunc('helpText.fieldRequired');
 
+	type CodeGenerationType = 'manual' | 'auto';
+
+	const NEW_CODE_TYPES: { value: CodeGenerationType; label: string }[] = [
+		{
+			value: 'manual',
+			label: 'common.manual',
+		},
+		{
+			value: 'auto',
+			label: 'common.auto',
+		},
+	];
+
 	const AutoGenerateCodesSchema = number()
 		.nonnegative($tranFunc('error.negativeNumber'))
 		.max(MAX_AUTO_CODES, MAX_ITEMS_EXCEED);
@@ -118,7 +131,7 @@
 </script>
 
 {#snippet no({ idx }: { idx: number })}
-	# {idx + 1}
+	<span># {idx + 1}</span>
 {/snippet}
 
 {#snippet code({ item }: { item: AddVoucherCodeProps })}
@@ -158,7 +171,10 @@
 {/snippet}
 
 {#snippet status({ item }: { item: AddVoucherCodeProps })}
-	<Badge color={item.isActive ? 'green' : 'red'} text={item.isActive ? 'Active' : 'Inactive'} />
+	<Badge
+		color={item.isActive ? 'green' : 'red'}
+		text={$tranFunc(item.isActive ? 'staff.active' : 'staff.inactive')}
+	/>
 {/snippet}
 
 <div class="rounded-lg p-3 border border-gray-200 bg-white space-y-2">
@@ -210,19 +226,24 @@
 	onOk={handleAddVoucherCodes}
 	size="sm"
 	header={$tranFunc('voucher.newCodes')}
-	disableElements={!!numberOfAutoGenerateCodesError || !!manualVoucherCodeError}
+	disableOkBtn={!!numberOfAutoGenerateCodesError || !!manualVoucherCodeError}
 >
 	<div class="grid grid-cols-2 mb-3">
-		{#each ['manual', 'auto'] as type, idx (idx)}
-			<RadioButton size="sm" label={type} bind:group={addCodeType} value={type} />
+		{#each NEW_CODE_TYPES as type, idx (idx)}
+			<RadioButton
+				size="sm"
+				label={$tranFunc(type.label)}
+				bind:group={addCodeType}
+				value={type.value}
+			/>
 		{/each}
 	</div>
 
 	<div class="space-y-2">
 		{#if addCodeType === 'manual'}
 			<Input
-				label="Voucher code"
-				placeholder="Voucher code"
+				label={$tranFunc('voucher.voucherCode')}
+				placeholder={$tranFunc('voucher.voucherCode')}
 				required
 				bind:value={manualVoucherCode}
 				variant={manualVoucherCodeError ? 'error' : 'info'}
@@ -232,8 +253,8 @@
 			/>
 		{:else}
 			<Input
-				label="Number of codes"
-				placeholder="Number of codes"
+				label={$tranFunc('voucher.noOfCodes')}
+				placeholder={$tranFunc('voucher.noOfCodes')}
 				max={MAX_AUTO_CODES}
 				min={1}
 				required
@@ -245,7 +266,11 @@
 				subText={numberOfAutoGenerateCodesError}
 			/>
 
-			<Input label="Prefix" placeholder="Code prefix" bind:value={autoCodePrefix} />
+			<Input
+				label={$tranFunc('common.prefix')}
+				placeholder={$tranFunc('common.prefix')}
+				bind:value={autoCodePrefix}
+			/>
 		{/if}
 	</div>
 </Modal>

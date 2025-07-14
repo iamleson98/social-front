@@ -28,4 +28,10 @@ export type ModalProps = {
    * E.g: when you submit a form and the API call is in progress, buttons on modal should be disabled
    */
   disableElements?: boolean;
+  /** Disable the upper right close button? */
+  disableCloseBtn?: boolean;
+  /** Disable ok button? */
+  disableOkBtn?: boolean;
+  /** disable cancel button? */
+  disableCancelBtn?: boolean;
 };

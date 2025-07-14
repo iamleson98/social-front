@@ -24,10 +24,19 @@
 
 	let requirementType = $state<RequirementType>('none');
 
-	const REQUIREMENT_TYPES: RequirementType[] = [
-		'none',
-		'Minimum order value',
-		'Minimum quantity of items',
+	const REQUIREMENT_TYPES: { value: RequirementType; label: string }[] = [
+		{
+			value: 'none',
+			label: 'common.no',
+		},
+		{
+			value: 'Minimum order value',
+			label: 'voucher.minOrderPrice',
+		},
+		{
+			value: 'Minimum quantity of items',
+			label: 'voucher.minQtyItems',
+		},
 	];
 
 	const NON_NEGATIVE = $tranFunc('error.negativeNumber');
@@ -47,11 +56,11 @@
 
 	const MINIMUM_ORDER_VALUE_COLUMNS: TableColumnProps<VoucherChannelListing>[] = [
 		{
-			title: 'Channel',
+			title: $tranFunc('product.channel'),
 			child: channel,
 		},
 		{
-			title: 'Min order price',
+			title: $tranFunc('voucher.minOrderPrice'),
 			child: price,
 		},
 	];
@@ -84,7 +93,7 @@
 {#snippet price({ item, idx }: { item: VoucherChannelListing; idx: number })}
 	<Input
 		value={item.minSpent?.amount}
-		placeholder="Minimum order value"
+		placeholder={$tranFunc('voucher.minOrderPrice')}
 		type="number"
 		min={0}
 		{disabled}
@@ -100,10 +109,15 @@
 {/snippet}
 
 <div class="rounded-lg p-3 border border-gray-200 bg-white space-y-2">
-	<SectionHeader>Minimum requirements</SectionHeader>
+	<SectionHeader>{$tranFunc('voucher.minRequirement')}</SectionHeader>
 	<div class="space-y-2.5 mb-2">
 		{#each REQUIREMENT_TYPES as type, idx (idx)}
-			<RadioButton label={type} bind:group={requirementType} value={type} {disabled} />
+			<RadioButton
+				label={$tranFunc(type.label)}
+				bind:group={requirementType}
+				value={type.value}
+				{disabled}
+			/>
 		{/each}
 	</div>
 
@@ -112,7 +126,7 @@
 	{:else if requirementType === 'Minimum quantity of items'}
 		{@const error = typeof minimumQuantityOfItems === 'number' && minimumQuantityOfItems < 0}
 		<Input
-			placeholder="Minimum quantity of items"
+			placeholder={$tranFunc('voucher.minQtyItems')}
 			type="number"
 			min={1}
 			{disabled}

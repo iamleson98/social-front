@@ -150,7 +150,7 @@
 						{#if key && filterOpt}
 							{@const { operations } = FILTER_MAP[key as keyof T]}
 							{@const operatorOpts = operations.map(({ operator }) => ({
-								label: operator,
+								label: $tranFunc(`common.${operator}`),
 								value: operator,
 							}))}
 

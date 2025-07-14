@@ -22,7 +22,11 @@
 		hideFooter = false,
 		closeOnOutsideClick,
 		closeOnEscape,
-		disableElements = false
+		disableElements = false,
+
+		disableCloseBtn,
+		disableCancelBtn,
+		disableOkBtn,
 	}: ModalProps = $props();
 </script>
 
@@ -34,10 +38,10 @@
 			class={`relative w-full max-h-full ${modalSizeMap[size]}`}
 			use:clickOutside={{
 				onOutclick: () => closeOnOutsideClick && onClose(),
-				onEscape: () => closeOnEscape && onClose
+				onEscape: () => closeOnEscape && onClose,
 			}}
 			use:focusOutside={{
-				onFocusOut: () => closeOnOutsideClick && onClose()
+				onFocusOut: () => closeOnOutsideClick && onClose(),
 			}}
 		>
 			<!-- content -->
@@ -56,7 +60,7 @@
 								color="gray"
 								onclick={onClose}
 								rounded
-								disabled={disableElements}
+								disabled={disableElements || disableCloseBtn}
 							/>
 						</div>
 					</div>
@@ -76,7 +80,7 @@
 								color="blue"
 								size="sm"
 								onclick={onOk}
-								disabled={disableElements}>{okText}</Button
+								disabled={disableElements || disableOkBtn}>{okText}</Button
 							>
 							<Button
 								variant="light"
@@ -84,7 +88,7 @@
 								size="sm"
 								class="mr-1"
 								onclick={onCancel}
-								disabled={disableElements}
+								disabled={disableElements || disableCancelBtn}
 							>
 								{cancelText}
 							</Button>
