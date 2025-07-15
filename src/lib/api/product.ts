@@ -407,7 +407,6 @@ export const PRODUCT_VARIANTS_QUERY = gql`
 		productVariants(channel: $channel, ids: $ids, first: $first, before: $before, last: $last, after: $after) {
 			edges {
 				node {
-					# quantityOrdered
 					id
 					name
 					sku
@@ -433,26 +432,13 @@ export const PRODUCT_VARIANTS_QUERY = gql`
 						globalSoldUnits
 						endDate
 					}
-					# media {
-					# 	url(format: WEBP, size: 500)
-					# 	alt
-					# 	id
-					# }
-					# attributes(variantSelection: ALL) {
-					# 	attribute {
-					# 		slug
-					# 		name
-					# 		entityType
-					# 	}
-					# 	values {
-					# 		id
-					# 		name
-					# 		value
-					# 		plainText
-					# 		boolean
-					# 	}
-					# }
 				}
+			}
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				startCursor
+				endCursor
 			}
 		}
 	}
