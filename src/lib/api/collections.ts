@@ -25,6 +25,10 @@ query Collections($after: String, $first: Int!, $channel: String, $sortBy: Colle
         products {
           totalCount
         }
+        backgroundImage(size: 100, format: WEBP) {
+          url
+          alt
+        }
       }
     }
     pageInfo {

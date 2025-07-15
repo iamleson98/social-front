@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PRODUCT_LIST_QUERY_STORE } from '$lib/api';
+	import { PRODUCT_LIST_QUERY } from '$lib/api';
 	import { OpenEye } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/badge';
@@ -51,7 +51,7 @@
 
 	const handleCopyGraphqlTable = () => {
 		const code = `<GraphqlPaginableTable
-			query={PRODUCT_LIST_QUERY_STORE}
+			query={PRODUCT_LIST_QUERY}
 			variables={{ first: 10 }}
 			resultKey={'products' as keyof Query}
 			columns={PRODUCT_COLUMNS}
@@ -101,7 +101,7 @@
 		<Checkbox bind:checked={sortMultipleGraphqlTable} label="Sort Multiple" />
 	</div>
 	<GraphqlPaginableTable
-		query={PRODUCT_LIST_QUERY_STORE}
+		query={PRODUCT_LIST_QUERY}
 		variables={{ first: 3 }}
 		resultKey={'products' as keyof Query}
 		columns={graphqlTableColumns}

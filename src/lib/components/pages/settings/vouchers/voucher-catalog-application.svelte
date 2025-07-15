@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { CATEGORIES_LIST_QUERY_STORE, PRODUCT_LIST_QUERY_STORE } from '$lib/api';
+	import {
+		CATEGORIES_LIST_QUERY_STORE,
+		PRODUCT_LIST_QUERY,
+		PRODUCT_VARIANTS_QUERY,
+	} from '$lib/api';
 	import {
 		VOUCHER_CATEGORIES_QUERY,
 		VOUCHER_COLLECTIONS_QUERY,
@@ -13,7 +17,8 @@
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/badge';
-	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
+	import { Input } from '$lib/components/ui/Input';
+	import { Modal } from '$lib/components/ui/Modal';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import type {
 		Category,
@@ -24,6 +29,7 @@
 		QueryCategoriesArgs,
 		QueryCollectionsArgs,
 		QueryProductsArgs,
+		QueryProductVariantsArgs,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { stringSlicer } from '$lib/utils/utils';
@@ -61,7 +67,7 @@
 		disabled,
 	}: Props = $props();
 
-	let activeTab = $derived(page.url.searchParams.get('tab'));
+	let activeTab = $derived(page.url.searchParams.get('tab') as TabName);
 	const TABS: TabProps[] = [
 		{
 			name: 'categories',
@@ -93,8 +99,23 @@
 		voucherId: page.params.id,
 		first: 10,
 	});
+	/** re-executing lock, for query existing products, variants, collections, categories of current voucher */
 	let forceReExecuteGraphqlQuery = $state(true);
+
+	/** in the modal for assigning products, variants, categories, collections, each of them we have 1 graphql table. This lock controls query fetching of them */
+	let forceReExecuteCatalogQuery = $state(true);
+
 	let openAssignCatalogFeature = $state(false);
+	let queryCategoriesVariables = $state<QueryCategoriesArgs>({ first: 10, filter: { search: '' } });
+	let queryCollectionsVariables = $state<QueryCollectionsArgs>({
+		first: 10,
+		filter: { search: '' },
+	});
+	let queryProductsVariables = $state<QueryProductsArgs>({ first: 10, filter: { search: '' } });
+	let queryVariantsVariables = $state<QueryProductVariantsArgs>({
+		first: 10,
+		filter: { search: '' },
+	});
 
 	const COLLECTION_COLUMNS: TableColumnProps<Collection>[] = [
 		{
@@ -269,7 +290,15 @@
 {#snippet commonHeader(name: string)}
 	<SectionHeader>
 		<span>Eligible {name}</span>
-		<Button size="xs" variant="light" onclick={() => (openAssignCatalogFeature = true)} {disabled}>
+		<Button
+			size="xs"
+			variant="light"
+			onclick={() => {
+				openAssignCatalogFeature = true;
+				forceReExecuteCatalogQuery = true;
+			}}
+			{disabled}
+		>
 			Assign {name}
 		</Button>
 	</SectionHeader>
@@ -281,23 +310,6 @@
 	{/if}
 
 	{#if activeTab === 'collections'}
-		{#if openAssignCatalogFeature}
-			<GraphqlPaginableSelect
-				query={COLLECTIONS_QUERY}
-				resultKey="collections"
-				variableSearchQueryPath="filter.search"
-				variables={{ first: 20, filter: { search: '' } } as QueryCollectionsArgs}
-				optionValueKey="id"
-				optionLabelKey="name"
-				multiple
-				{disabled}
-				label="Select collections to apply for this voucher"
-				size="sm"
-				class="mb-2"
-				bind:value={newCollections}
-			/>
-		{/if}
-
 		<GraphqlPaginableTable
 			query={VOUCHER_COLLECTIONS_QUERY}
 			bind:variables={voucherRelationVars}
@@ -307,23 +319,6 @@
 			columns={COLLECTION_COLUMNS}
 		/>
 	{:else if activeTab === 'products'}
-		{#if openAssignCatalogFeature}
-			<GraphqlPaginableSelect
-				query={PRODUCT_LIST_QUERY_STORE}
-				resultKey="products"
-				variableSearchQueryPath="filter.search"
-				variables={{ first: 20, filter: { search: '' } } as QueryProductsArgs}
-				optionValueKey="id"
-				{disabled}
-				optionLabelKey="name"
-				multiple
-				label="Select products to apply for this voucher"
-				size="sm"
-				class="mb-2"
-				bind:value={newProducts}
-			/>
-		{/if}
-
 		<GraphqlPaginableTable
 			query={VOUCHER_PRODUCTS_QUERY}
 			bind:variables={voucherRelationVars}
@@ -333,23 +328,6 @@
 			columns={PRODUCT_COLUMNS}
 		/>
 	{:else if activeTab === 'categories'}
-		{#if openAssignCatalogFeature}
-			<GraphqlPaginableSelect
-				query={CATEGORIES_LIST_QUERY_STORE}
-				resultKey="categories"
-				variableSearchQueryPath="filter.search"
-				variables={{ first: 20, filter: { search: '' } } as QueryCategoriesArgs}
-				optionValueKey="id"
-				optionLabelKey="name"
-				{disabled}
-				multiple
-				label="Select categories to apply for this voucher"
-				size="sm"
-				class="mb-2"
-				bind:value={newCategories}
-			/>
-		{/if}
-
 		<GraphqlPaginableTable
 			query={VOUCHER_CATEGORIES_QUERY}
 			bind:variables={voucherRelationVars}
@@ -369,3 +347,86 @@
 		/>
 	{/if}
 </div>
+
+<Modal
+	open={openAssignCatalogFeature}
+	closeOnEscape
+	closeOnOutsideClick
+	onClose={() => (openAssignCatalogFeature = false)}
+	header="Assign {activeTab}"
+	size="sm"
+>
+	{#if activeTab === 'categories'}
+		<Input
+			placeholder="Enter query"
+			class="mb-1.5"
+			bind:value={queryCategoriesVariables.filter!.search}
+			inputDebounceOption={{
+				debounceTime: 888,
+				onInput: () => (forceReExecuteCatalogQuery = true),
+			}}
+		/>
+		<GraphqlPaginableTable
+			columns={CATEGORY_COLUMNS}
+			query={CATEGORIES_LIST_QUERY_STORE}
+			resultKey="categories"
+			bind:variables={queryCategoriesVariables}
+			bind:forceReExecuteGraphqlQuery={forceReExecuteCatalogQuery}
+			{disabled}
+		/>
+	{:else if activeTab === 'collections'}
+		<Input
+			placeholder="Enter query"
+			class="mb-1.5"
+			bind:value={queryCollectionsVariables.filter!.search}
+			inputDebounceOption={{
+				debounceTime: 888,
+				onInput: () => (forceReExecuteCatalogQuery = true),
+			}}
+		/>
+		<GraphqlPaginableTable
+			columns={COLLECTION_COLUMNS}
+			query={COLLECTIONS_QUERY}
+			resultKey="collections"
+			bind:variables={queryCollectionsVariables}
+			bind:forceReExecuteGraphqlQuery={forceReExecuteCatalogQuery}
+			{disabled}
+		/>
+	{:else if activeTab === 'products'}
+		<Input
+			placeholder="Enter query"
+			class="mb-1.5"
+			bind:value={queryProductsVariables.filter!.search}
+			inputDebounceOption={{
+				debounceTime: 888,
+				onInput: () => (forceReExecuteCatalogQuery = true),
+			}}
+		/>
+		<GraphqlPaginableTable
+			columns={PRODUCT_COLUMNS}
+			query={PRODUCT_LIST_QUERY}
+			resultKey="products"
+			bind:variables={queryProductsVariables}
+			bind:forceReExecuteGraphqlQuery={forceReExecuteCatalogQuery}
+			{disabled}
+		/>
+	{:else if activeTab === 'variants'}
+		<Input
+			placeholder="Enter query"
+			class="mb-1.5"
+			bind:value={queryVariantsVariables.filter!.search}
+			inputDebounceOption={{
+				debounceTime: 888,
+				onInput: () => (forceReExecuteCatalogQuery = true),
+			}}
+		/>
+		<GraphqlPaginableTable
+			columns={VARIANT_COLUMNS}
+			query={PRODUCT_VARIANTS_QUERY}
+			resultKey="productVariants"
+			bind:variables={queryVariantsVariables}
+			bind:forceReExecuteGraphqlQuery={forceReExecuteCatalogQuery}
+			{disabled}
+		/>
+	{/if}
+</Modal>

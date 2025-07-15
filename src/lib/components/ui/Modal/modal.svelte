@@ -32,7 +32,7 @@
 
 {#if open}
 	<div
-		class="fixed bg-black/50 z-300 top-0 left-0 bottom-0 right-0 overflow-x-hidden overflow-y-auto flex items-center justify-center"
+		class="fixed bg-black/50 z-100000003 top-0 left-0 bottom-0 right-0 overflow-x-hidden overflow-y-auto flex items-center justify-center"
 	>
 		<div
 			class={`relative w-full max-h-full ${modalSizeMap[size]}`}

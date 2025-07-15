@@ -1,10 +1,13 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { DiscountValueTypeEnum, type Voucher } from '$lib/gql/graphql';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import dayjs from 'dayjs';
+	import { APPLICATION_TYPES } from './consts';
+	import { AppRoute } from '$lib/utils';
 
 	type Props = {
 		/** if not provided, meaning this is create page */
@@ -15,16 +18,16 @@
 </script>
 
 <div class="rounded-lg p-3 border border-gray-200 bg-white space-y-2 text-gray-600">
-	<SectionHeader>Summary</SectionHeader>
+	<SectionHeader>{$tranFunc('common.summary')}</SectionHeader>
 
 	{#if voucher}
 		<div class="text-sm">
-			<div class="font-semibold">Applies to</div>
-			<div>{voucher.type.toLocaleLowerCase().split('_').join(' ')}</div>
+			<div class="font-semibold">{$tranFunc('voucher.applies')}</div>
+			<div>{$tranFunc(APPLICATION_TYPES[voucher.type])}</div>
 		</div>
 
 		<div class="text-sm">
-			<div class="font-semibold">Value</div>
+			<div class="font-semibold">{$tranFunc('common.value')}</div>
 			{#each voucher.channelListings || [] as listing, idx (idx)}
 				<div class="flex items-center mb-1 justify-between">
 					<Badge text={listing.channel.name} size="xs" />
@@ -39,17 +42,17 @@
 		</div>
 
 		<div class="text-sm">
-			<div class="font-semibold">Start date</div>
+			<div class="font-semibold">{$tranFunc('common.startAt')}</div>
 			<div>{voucher.startDate ? dayjs(voucher.startDate).format(SitenameTimeFormat) : '-'}</div>
 		</div>
 
 		<div class="text-sm">
-			<div class="font-semibold">End date</div>
+			<div class="font-semibold">{$tranFunc('common.endAt')}</div>
 			<div>{voucher.endDate ? dayjs(voucher.endDate).format(SitenameTimeFormat) : '-'}</div>
 		</div>
 
 		<div class="text-sm">
-			<div class="font-semibold">Min order value</div>
+			<div class="font-semibold">{$tranFunc('voucher.minOrderPrice')}</div>
 			{#each voucher.channelListings || [] as listing, idx (idx)}
 				<div class="flex items-center mb-1 justify-between">
 					<Badge text={listing.channel.name} size="xs" />
@@ -63,8 +66,15 @@
 		</div>
 
 		<div class="text-sm">
-			<div class="font-semibold">Availability</div>
-			<div>{voucher.channelListings?.map((item) => item.channel.name).join(', ')}</div>
+			<div class="font-semibold">{$tranFunc('settings.availability')}</div>
+			{#each voucher.channelListings || [] as listing}
+				<a
+					href={AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(listing.channel.slug)}
+					class="link mr-1"
+				>
+					{listing.channel.name}
+				</a>
+			{/each}
 		</div>
 	{/if}
 </div>

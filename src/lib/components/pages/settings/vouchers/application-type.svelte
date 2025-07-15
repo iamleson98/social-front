@@ -3,6 +3,7 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Checkbox, RadioButton } from '$lib/components/ui/Input';
 	import { DiscountValueTypeEnum, VoucherTypeEnum } from '$lib/gql/graphql';
+	import { APPLICATION_TYPES } from './consts';
 	import VoucherCatalogApplication from './voucher-catalog-application.svelte';
 
 	type Props = {
@@ -41,16 +42,6 @@
 	}: Props = $props();
 
 	const DISCOUNT_TYPE_SHIPPING = 'Shipping' as DiscountValueTypeEnum;
-	const APPLICATION_TYPES = [
-		{
-			value: VoucherTypeEnum.EntireOrder,
-			label: 'voucher.applyEntireOrder',
-		},
-		{
-			value: VoucherTypeEnum.SpecificProduct,
-			label: 'voucher.applySpecificPrd',
-		},
-	];
 </script>
 
 {#if discountType !== DISCOUNT_TYPE_SHIPPING}
@@ -58,11 +49,11 @@
 		<div>
 			<SectionHeader>{$tranFunc('voucher.applyType')}</SectionHeader>
 			<div class="space-y-2.5">
-				{#each APPLICATION_TYPES as type, idx (idx)}
+				{#each Object.keys(APPLICATION_TYPES) as type, idx (idx)}
 					<RadioButton
-						label={$tranFunc(type.label)}
+						label={$tranFunc(APPLICATION_TYPES[type as VoucherTypeEnum])}
 						bind:group={applicationType}
-						value={type.value}
+						value={type}
 						{disabled}
 					/>
 				{/each}

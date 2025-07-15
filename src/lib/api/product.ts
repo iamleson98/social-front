@@ -6,7 +6,7 @@ import type {
 } from '$lib/gql/graphql';
 import { gql } from '@urql/core';
 
-export const PRODUCT_LIST_QUERY_STORE = gql`
+export const PRODUCT_LIST_QUERY = gql`
 	query ProductsList(
 		$filter: ProductFilterInput
 		$where: ProductWhereInput
@@ -402,7 +402,7 @@ export const PRODUCT_DETAIL_QUERY = gql`
 `;
 
 /** query to fetch product variants */
-export const PRODUCT_VARIANTS_QUERY_STORE = gql`
+export const PRODUCT_VARIANTS_QUERY = gql`
 	query ProductVariants($ids: [ID!], $channel: String, $first: Int, $before: String, $last: Int, $after: String) {
 		productVariants(channel: $channel, ids: $ids, first: $first, before: $before, last: $last, after: $after) {
 			edges {
@@ -415,6 +415,15 @@ export const PRODUCT_VARIANTS_QUERY_STORE = gql`
 					quantityLimitPerCustomer
 					quantityAvailable
 					margin
+					product {
+            id
+            name
+            slug
+            thumbnail(size: 100, format: WEBP) {
+              url
+              alt
+            }
+          }
 					weight {
 						unit
 						value
@@ -424,25 +433,25 @@ export const PRODUCT_VARIANTS_QUERY_STORE = gql`
 						globalSoldUnits
 						endDate
 					}
-					media {
-						url(format: WEBP, size: 500)
-						alt
-						id
-					}
-					attributes(variantSelection: ALL) {
-						attribute {
-							slug
-							name
-							entityType
-						}
-						values {
-							id
-							name
-							value
-							plainText
-							boolean
-						}
-					}
+					# media {
+					# 	url(format: WEBP, size: 500)
+					# 	alt
+					# 	id
+					# }
+					# attributes(variantSelection: ALL) {
+					# 	attribute {
+					# 		slug
+					# 		name
+					# 		entityType
+					# 	}
+					# 	values {
+					# 		id
+					# 		name
+					# 		value
+					# 		plainText
+					# 		boolean
+					# 	}
+					# }
 				}
 			}
 		}

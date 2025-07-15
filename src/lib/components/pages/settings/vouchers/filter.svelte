@@ -20,14 +20,41 @@
 
 	let { variables = $bindable(), forceReExecuteGraphqlQuery = $bindable(false) }: Props = $props();
 
-	const DISCOUNT_TYPES = Object.values(VoucherDiscountType).map<SelectOption>((value) => ({
-		value,
-		label: value.toLowerCase(),
-	}));
-	const DISCOUNT_STATUSES = Object.values(DiscountStatusEnum).map<SelectOption>((value) => ({
-		value,
-		label: value.toLowerCase(),
-	}));
+	const DISCOUNT_TYPES: {
+		value: VoucherDiscountType;
+		label: string;
+	}[] = [
+		{
+			value: VoucherDiscountType.Fixed,
+			label: $tranFunc('voucher.discountFixed'),
+		},
+		{
+			value: VoucherDiscountType.Percentage,
+			label: $tranFunc('voucher.discountPercent'),
+		},
+		{
+			value: VoucherDiscountType.Shipping,
+			label: $tranFunc('voucher.discountShip'),
+		},
+	];
+
+	const DISCOUNT_STATUSES: {
+		value: DiscountStatusEnum;
+		label: string;
+	}[] = [
+		{
+			value: DiscountStatusEnum.Active,
+			label: $tranFunc('staff.active'),
+		},
+		{
+			value: DiscountStatusEnum.Expired,
+			label: $tranFunc('voucher.expired'),
+		},
+		{
+			value: DiscountStatusEnum.Scheduled,
+			label: $tranFunc('voucher.scheduled'),
+		},
+	];
 
 	const FILTER_OPTIONS: FilterProps<VoucherFilterInput>[] = [
 		{

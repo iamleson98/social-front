@@ -49,8 +49,8 @@
 				<Badge
 					color="green"
 					text={typeof usageLimit === 'number' && usageLimit > voucherUsedTimes
-						? $tranFunc('voucher.usesLeft', { no: usageLimit - voucherUsedTimes })
-						: $tranFunc('voucher.usesLeft', { no: 0 })}
+						? $tranFunc('voucher.usesLeft', { num: usageLimit - voucherUsedTimes })
+						: $tranFunc('voucher.usesLeft', { num: 0 })}
 				/>
 			</div>
 		{/if}

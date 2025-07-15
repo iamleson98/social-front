@@ -3,7 +3,7 @@
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
 	import type { Query, QueryProductsArgs } from '$lib/gql/graphql';
-	import { PRODUCT_LIST_QUERY_STORE } from '$lib/api';
+	import { PRODUCT_LIST_QUERY } from '$lib/api';
 	import type { ProductFilterParams } from '$lib/stores/app/product-filter.svelte';
 	import { operationStore } from '$lib/api/operation';
 	import ProductCardSkeleton from '$lib/components/common/product/product-card-skeleton.svelte';
@@ -19,7 +19,7 @@
 
 	const productFetchStore = operationStore<Pick<Query, 'products'>, QueryProductsArgs>({
 		kind: 'query',
-		query: PRODUCT_LIST_QUERY_STORE,
+		query: PRODUCT_LIST_QUERY,
 		context: { requestPolicy: 'network-only' },
 		variables
 	});

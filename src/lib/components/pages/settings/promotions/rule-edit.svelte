@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { PRODUCT_LIST_QUERY_STORE, PRODUCT_VARIANTS_QUERY_STORE } from '$lib/api';
+	import { PRODUCT_LIST_QUERY, PRODUCT_VARIANTS_QUERY } from '$lib/api';
 	import { CATEGORIES_LIST_QUERY } from '$lib/api/admin/category';
 	import { COLLECTIONS_QUERY } from '$lib/api/collections';
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
@@ -87,7 +87,7 @@
 {#snippet products()}
 	{#if rule.channel}
 		<GraphqlPaginableSelect
-			query={PRODUCT_LIST_QUERY_STORE}
+			query={PRODUCT_LIST_QUERY}
 			variables={{ first: 20, channel: rule.channel, filter: { search: '' } } as QueryProductsArgs}
 			optionLabelKey="name"
 			optionValueKey="id"
@@ -137,7 +137,7 @@
 {#snippet variants()}
 	{#if rule.channel}
 		<GraphqlPaginableSelect
-			query={PRODUCT_VARIANTS_QUERY_STORE}
+			query={PRODUCT_VARIANTS_QUERY}
 			variables={{
 				first: 20,
 				filter: { search: '' },

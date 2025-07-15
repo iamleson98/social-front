@@ -2,6 +2,7 @@
 	import { tranFunc } from '$i18n';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { COLLECTION_DELETE_MUTATION, COLLECTIONS_QUERY } from '$lib/api/collections';
+	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { Dots, Edit, Trash } from '$lib/components/icons';
 	import Filter from '$lib/components/pages/settings/collections/filter.svelte';
 	import { Badge } from '$lib/components/ui/badge';
@@ -27,6 +28,10 @@
 	let forceReExecuteGraphqlQuery = $state(true);
 
 	const COLLECTION_COLUMNS: TableColumnProps<Collection, CollectionSortField>[] = $derived([
+		{
+			title: $tranFunc('common.pic'),
+			child: image,
+		},
 		{
 			title: $tranFunc('common.name'),
 			key: CollectionSortField.Name,
@@ -77,6 +82,14 @@
 	<a class="link" href={AppRoute.SETTINGS_CONFIGS_COLLECTION_DETAILS(item.id)}>
 		{item.name}
 	</a>
+{/snippet}
+
+{#snippet image({ item }: { item: Collection })}
+	<Thumbnail
+		src={item.backgroundImage?.url}
+		alt={item.backgroundImage?.alt || item.name}
+		size="sm"
+	/>
 {/snippet}
 
 {#snippet noOfProducts({ item }: { item: Collection })}

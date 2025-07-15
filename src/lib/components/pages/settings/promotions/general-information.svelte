@@ -115,7 +115,6 @@
 			required
 			class="flex-1"
 			value={{ date: startDate }}
-			format={RFC3339TimeFormat}
 			disabled={loading}
 			onchange={(value) => (startDate = dayjs(value.start).format(RFC3339TimeFormat))}
 			variant={promotionFormErrors?.startDate?.length ? 'error' : 'info'}
@@ -135,7 +134,6 @@
 			placeholder="End date"
 			class="flex-1"
 			value={{ date: endDate }}
-			format={RFC3339TimeFormat}
 			disabled={loading}
 			onchange={(value) => (endDate = dayjs(value.start).format(RFC3339TimeFormat))}
 			allowSelectMonthYears={{
