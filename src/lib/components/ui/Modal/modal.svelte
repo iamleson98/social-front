@@ -67,7 +67,7 @@
 				{/if}
 
 				<!-- modal body -->
-				<div class="p-4 tablet:p-5">
+				<div class="p-4 tablet:p-5 overflow-x-scroll">
 					{@render children()}
 				</div>
 

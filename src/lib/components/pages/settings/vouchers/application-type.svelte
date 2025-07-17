@@ -20,7 +20,7 @@
 		existingCollectionsCount: number;
 		existingVariantsCount: number;
 		existingProductsCount: number;
-
+		onAssignCatalogItems: () => Promise<void>;
 		disabled?: boolean;
 	};
 
@@ -32,7 +32,7 @@
 		newProducts = $bindable(),
 		newCollections = $bindable(),
 		newVariants = $bindable(),
-
+		onAssignCatalogItems,
 		existingCategoriesCount,
 		existingCollectionsCount,
 		existingVariantsCount,
@@ -77,6 +77,7 @@
 				{existingProductsCount}
 				{existingVariantsCount}
 				{disabled}
+				{onAssignCatalogItems}
 			/>
 		{/if}
 	</div>

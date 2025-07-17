@@ -189,7 +189,7 @@
 		{$queryOperationStore.error.message}
 	</Alert>
 {:else if $queryOperationStore.data}
-	<div class="bg-white rounded-lg p-3 border border-gray-200">
+	<div class="bg-white rounded-lg p-3 border border-gray-200 overflow-x-scroll">
 		<Table
 			{items}
 			{columns}

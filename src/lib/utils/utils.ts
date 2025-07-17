@@ -497,3 +497,22 @@ export const convertAddressToAddressInput = (addr: Address): AddressInput => {
 		skipValidation: false,
 	};
 };
+
+export const addNoDup = <T>(array: T[], ...items: T[]) => {
+	const result = [...array];
+
+	for (const item of items)
+		if (!result.includes(item))
+			result.push(item)
+
+	return result;
+};
+
+export const toggleItemNoDup = <T>(array: T[], item: T, add: boolean = true) => {
+	const result = [...array];
+
+	if (add)
+		return result.includes(item) ? result : result.concat(item);
+
+	return result.filter(it => it !== item);
+};

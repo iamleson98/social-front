@@ -56,15 +56,15 @@
 	const VOUCHER_TYPES = [
 		{
 			value: DiscountValueTypeEnum.Fixed,
-			label: 'voucher.discountFixed',
+			label: $tranFunc('voucher.discountFixed'),
 		},
 		{
 			value: DiscountValueTypeEnum.Percentage,
-			label: 'voucher.discountPercent',
+			label: $tranFunc('voucher.discountPercent'),
 		},
 		{
 			value: DISCOUNT_TYPE_SHIPPING,
-			label: 'voucher.discountShip',
+			label: $tranFunc('voucher.discountShip'),
 		},
 	];
 
@@ -201,12 +201,7 @@
 		<SectionHeader>{$tranFunc('voucher.discountValueType')}</SectionHeader>
 		<div class="space-y-2.5">
 			{#each VOUCHER_TYPES as type, idx (idx)}
-				<RadioButton
-					label={$tranFunc(type.label)}
-					bind:group={discountType}
-					{disabled}
-					value={type.value}
-				/>
+				<RadioButton label={type.label} bind:group={discountType} {disabled} value={type.value} />
 			{/each}
 		</div>
 	</div>

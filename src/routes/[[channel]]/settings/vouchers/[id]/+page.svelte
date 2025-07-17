@@ -234,6 +234,7 @@
 				existingProductsCount={products?.totalCount!}
 				existingVariantsCount={variants?.totalCount!}
 				disabled={loading}
+				onAssignCatalogItems={handleUpdateVoucher}
 			/>
 			<Requirements
 				bind:minimumQuantityOfItems={voucherInput.minCheckoutItemsQuantity!}
