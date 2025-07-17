@@ -23,10 +23,21 @@
 			{disabled}
 			label={$tranFunc('common.startAt')}
 			value={{ date: startDate }}
+			timeConfig={{
+				stepMinutes: 1,
+			}}
 			onchange={(value) => {
 				startDate = dayjs(value.date).format(RFC3339TimeFormat);
 			}}
 			placeholder={$tranFunc('common.startAt')}
+			allowSelectMonthYears={{
+				showMonths: true,
+				showResetBtn: true,
+				showYears: {
+					min: 2020,
+					max: 2050,
+				},
+			}}
 		/>
 
 		<EaseDatePicker
@@ -34,8 +45,19 @@
 			label={$tranFunc('common.endAt')}
 			placeholder={$tranFunc('common.endAt')}
 			value={{ date: endDate }}
+			timeConfig={{
+				stepMinutes: 1,
+			}}
 			onchange={(value) => {
 				endDate = dayjs(value.date).format(RFC3339TimeFormat);
+			}}
+			allowSelectMonthYears={{
+				showMonths: true,
+				showResetBtn: true,
+				showYears: {
+					min: 2020,
+					max: 2050,
+				},
 			}}
 		/>
 	</div>

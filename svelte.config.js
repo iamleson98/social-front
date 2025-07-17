@@ -22,7 +22,7 @@ const config = {
 			// precompress: true,
 			precompress: {
 				brotli: true,
-				gzip: true,
+				// gzip: true,
 				files: ["htm", "html"],
 			},
 			// dynamic_origin: true,

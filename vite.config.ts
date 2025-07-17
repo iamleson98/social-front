@@ -19,6 +19,9 @@ export default defineConfig({
 	},
 	assetsInclude: ['**/*.graphql'],
 	server: {
-		port: 3000
+		port: 5173,
+		fs: {
+			strict: false
+		}
 	}
 });

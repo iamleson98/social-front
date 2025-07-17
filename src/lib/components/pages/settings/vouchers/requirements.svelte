@@ -6,6 +6,7 @@
 	import { Input } from '$lib/components/ui/Input';
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import type { VoucherChannelListing } from '$lib/gql/graphql';
+	import { untrack } from 'svelte';
 	import { array, number, object } from 'zod';
 
 	type Props = {
@@ -14,7 +15,7 @@
 		disabled?: boolean;
 	};
 
-	type RequirementType = 'Minimum order value' | 'Minimum quantity of items' | 'none';
+	type RequirementType = 'min_order_value' | 'min_qty_items' | 'none';
 
 	let {
 		minimumQuantityOfItems = $bindable(),
@@ -22,20 +23,22 @@
 		disabled,
 	}: Props = $props();
 
-	let requirementType = $state<RequirementType>('none');
+	let requirementType = $state<RequirementType>(
+		typeof minimumQuantityOfItems === 'number' ? 'min_qty_items' : 'min_order_value',
+	);
 
 	const REQUIREMENT_TYPES: { value: RequirementType; label: string }[] = [
 		{
 			value: 'none',
-			label: 'common.no',
+			label: $tranFunc('common.no'),
 		},
 		{
-			value: 'Minimum order value',
-			label: 'voucher.minOrderPrice',
+			value: 'min_order_value',
+			label: $tranFunc('voucher.minOrderPrice'),
 		},
 		{
-			value: 'Minimum quantity of items',
-			label: 'voucher.minQtyItems',
+			value: 'min_qty_items',
+			label: $tranFunc('voucher.minQtyItems'),
 		},
 	];
 
@@ -64,6 +67,35 @@
 			child: price,
 		},
 	];
+
+	$effect(() => {
+		// If no requirement, then we must set those value to nothing
+
+		const utActiveChannelListings = untrack(() => activeChannelListings);
+		untrack(() => minimumQuantityOfItems);
+
+		if (requirementType === 'none') {
+			minimumQuantityOfItems = undefined;
+			activeChannelListings = utActiveChannelListings.map((listing) => ({
+				...listing,
+				minSpent: undefined,
+			}));
+		} else if (requirementType === 'min_order_value') {
+			minimumQuantityOfItems = undefined;
+			activeChannelListings = utActiveChannelListings.map((listing) => ({
+				...listing,
+				minSpent: {
+					currency: listing.currency,
+					amount: 1,
+				},
+			}));
+		} else if (requirementType === 'min_qty_items') {
+			activeChannelListings = utActiveChannelListings.map((listing) => ({
+				...listing,
+				minSpent: undefined,
+			}));
+		}
+	});
 
 	const validateOrderValues = () => {
 		const result = ValueSchema.safeParse(activeChannelListings);
@@ -112,18 +144,13 @@
 	<SectionHeader>{$tranFunc('voucher.minRequirement')}</SectionHeader>
 	<div class="space-y-2.5 mb-2">
 		{#each REQUIREMENT_TYPES as type, idx (idx)}
-			<RadioButton
-				label={$tranFunc(type.label)}
-				bind:group={requirementType}
-				value={type.value}
-				{disabled}
-			/>
+			<RadioButton label={type.label} bind:group={requirementType} value={type.value} {disabled} />
 		{/each}
 	</div>
 
-	{#if requirementType === 'Minimum order value'}
+	{#if requirementType === 'min_order_value'}
 		<Table columns={MINIMUM_ORDER_VALUE_COLUMNS} items={activeChannelListings} {disabled} />
-	{:else if requirementType === 'Minimum quantity of items'}
+	{:else if requirementType === 'min_qty_items'}
 		{@const error = typeof minimumQuantityOfItems === 'number' && minimumQuantityOfItems < 0}
 		<Input
 			placeholder={$tranFunc('voucher.minQtyItems')}

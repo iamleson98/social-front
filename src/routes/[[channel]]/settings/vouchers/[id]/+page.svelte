@@ -106,6 +106,7 @@
 				'applyOncePerCustomer',
 				'onlyForStaff',
 				'singleUse',
+				'minCheckoutItemsQuantity',
 			]);
 			voucherInput = { ...voucherInput, ...pickValues };
 
