@@ -44,7 +44,8 @@
 		newCollections: string[];
 		newVariants: string[];
 		disabled?: boolean;
-		onAssignCatalogItems: () => Promise<void>;
+		onAssignCatalogItems?: () => Promise<void>;
+		isCreatePage?: boolean;
 	};
 
 	type TabName = 'categories' | 'products' | 'collections' | 'variants';
@@ -64,6 +65,7 @@
 		newCollections = $bindable(),
 		newVariants = $bindable(),
 		disabled,
+		isCreatePage,
 	}: Props = $props();
 
 	let activeTab = $derived(page.url.searchParams.get('tab') as TabName);
@@ -85,47 +87,6 @@
 			count: existingVariantsCount,
 		},
 	];
-
-	type VoucherRelationVars = {
-		voucherId: string;
-		first?: number;
-		after?: string;
-		last?: number;
-		before?: string;
-	};
-
-	let voucherRelationVars = $state<VoucherRelationVars>({
-		voucherId: page.params.id,
-		first: 10,
-	});
-	/** re-executing lock, for query existing products, variants, collections, categories of current voucher */
-	let forceReExecuteGraphqlQuery = $state(true);
-	let catalogQueryValue = $state('');
-	/** in the modal for assigning products, variants, categories, collections, each of them we have 1 graphql table. This lock controls query fetching of them */
-	let forceReExecuteCatalogQuery = $state(true);
-	let openAssignCatalogFeature = $state(false);
-	let queryCategoriesVariables = $state<QueryCategoriesArgs>({ first: 10, filter: { search: '' } });
-	let queryCollectionsVariables = $state<QueryCollectionsArgs>({
-		first: 10,
-		filter: { search: '' },
-	});
-	let queryProductsVariables = $state<QueryProductsArgs>({ first: 10, filter: { search: '' } });
-	let queryVariantsVariables = $state<QueryProductVariantsArgs>({
-		first: 10,
-		filter: { search: '' },
-	});
-
-	const handleCatalogQueryChange = async () => {
-		if (!activeTab) return;
-
-		const trimQueryValue = catalogQueryValue.trim();
-		if (activeTab === 'categories') queryCategoriesVariables.filter!.search = trimQueryValue;
-		else if (activeTab === 'collections') queryCollectionsVariables.filter!.search = trimQueryValue;
-		else if (activeTab === 'products') queryProductsVariables.filter!.search = trimQueryValue;
-		else queryProductsVariables.filter!.search = trimQueryValue;
-
-		forceReExecuteCatalogQuery = true;
-	};
 
 	const SelectCol: TableColumnProps<any>[] = [
 		{
@@ -197,6 +158,47 @@
 			child: variantName,
 		},
 	];
+
+	type VoucherRelationVars = {
+		voucherId: string;
+		first?: number;
+		after?: string;
+		last?: number;
+		before?: string;
+	};
+
+	let voucherRelationVars = $state<VoucherRelationVars>({
+		voucherId: page.params.id,
+		first: 10,
+	});
+	/** re-executing lock, for query existing products, variants, collections, categories of current voucher */
+	let forceReExecuteGraphqlQuery = $state(true);
+	let catalogQueryValue = $state('');
+	/** in the modal for assigning products, variants, categories, collections, each of them we have 1 graphql table. This lock controls query fetching of them */
+	let forceReExecuteCatalogQuery = $state(true);
+	let openAssignCatalogFeature = $state(false);
+	let queryCategoriesVariables = $state<QueryCategoriesArgs>({ first: 10, filter: { search: '' } });
+	let queryCollectionsVariables = $state<QueryCollectionsArgs>({
+		first: 10,
+		filter: { search: '' },
+	});
+	let queryProductsVariables = $state<QueryProductsArgs>({ first: 10, filter: { search: '' } });
+	let queryVariantsVariables = $state<QueryProductVariantsArgs>({
+		first: 10,
+		filter: { search: '' },
+	});
+
+	const handleCatalogQueryChange = async () => {
+		if (!activeTab) return;
+
+		const trimQueryValue = catalogQueryValue.trim();
+		if (activeTab === 'categories') queryCategoriesVariables.filter!.search = trimQueryValue;
+		else if (activeTab === 'collections') queryCollectionsVariables.filter!.search = trimQueryValue;
+		else if (activeTab === 'products') queryProductsVariables.filter!.search = trimQueryValue;
+		else queryProductsVariables.filter!.search = trimQueryValue;
+
+		forceReExecuteCatalogQuery = true;
+	};
 
 	afterNavigate(({ from, to }) => {
 		voucherRelationVars = {
@@ -347,42 +349,44 @@
 		{@render commonHeader(activeTab)}
 	{/if}
 
-	{#if activeTab === 'collections'}
-		<GraphqlPaginableTable
-			query={VOUCHER_COLLECTIONS_QUERY}
-			bind:variables={voucherRelationVars}
-			bind:forceReExecuteGraphqlQuery
-			resultKey={'voucher.collections' as keyof Query}
-			{disabled}
-			columns={COLLECTION_COLUMNS}
-		/>
-	{:else if activeTab === 'products'}
-		<GraphqlPaginableTable
-			query={VOUCHER_PRODUCTS_QUERY}
-			bind:variables={voucherRelationVars}
-			bind:forceReExecuteGraphqlQuery
-			{disabled}
-			resultKey={'voucher.products' as keyof Query}
-			columns={PRODUCT_COLUMNS}
-		/>
-	{:else if activeTab === 'categories'}
-		<GraphqlPaginableTable
-			query={VOUCHER_CATEGORIES_QUERY}
-			bind:variables={voucherRelationVars}
-			{disabled}
-			bind:forceReExecuteGraphqlQuery
-			resultKey={'voucher.categories' as keyof Query}
-			columns={CATEGORY_COLUMNS}
-		/>
-	{:else if activeTab === 'variants'}
-		<GraphqlPaginableTable
-			query={VOUCHER_VARIANTS_QUERY}
-			{disabled}
-			bind:variables={voucherRelationVars}
-			bind:forceReExecuteGraphqlQuery
-			resultKey={'voucher.variants' as keyof Query}
-			columns={VARIANT_COLUMNS}
-		/>
+	{#if !isCreatePage}
+		{#if activeTab === 'collections'}
+			<GraphqlPaginableTable
+				query={VOUCHER_COLLECTIONS_QUERY}
+				bind:variables={voucherRelationVars}
+				bind:forceReExecuteGraphqlQuery
+				resultKey={'voucher.collections' as keyof Query}
+				{disabled}
+				columns={COLLECTION_COLUMNS}
+			/>
+		{:else if activeTab === 'products'}
+			<GraphqlPaginableTable
+				query={VOUCHER_PRODUCTS_QUERY}
+				bind:variables={voucherRelationVars}
+				bind:forceReExecuteGraphqlQuery
+				{disabled}
+				resultKey={'voucher.products' as keyof Query}
+				columns={PRODUCT_COLUMNS}
+			/>
+		{:else if activeTab === 'categories'}
+			<GraphqlPaginableTable
+				query={VOUCHER_CATEGORIES_QUERY}
+				bind:variables={voucherRelationVars}
+				{disabled}
+				bind:forceReExecuteGraphqlQuery
+				resultKey={'voucher.categories' as keyof Query}
+				columns={CATEGORY_COLUMNS}
+			/>
+		{:else if activeTab === 'variants'}
+			<GraphqlPaginableTable
+				query={VOUCHER_VARIANTS_QUERY}
+				{disabled}
+				bind:variables={voucherRelationVars}
+				bind:forceReExecuteGraphqlQuery
+				resultKey={'voucher.variants' as keyof Query}
+				columns={VARIANT_COLUMNS}
+			/>
+		{/if}
 	{/if}
 </div>
 
@@ -395,7 +399,7 @@
 	onCancel={() => (openAssignCatalogFeature = false)}
 	size="sm"
 	onOk={async () => {
-		await onAssignCatalogItems();
+		await onAssignCatalogItems?.();
 		openAssignCatalogFeature = false;
 	}}
 	disableElements={disabled}

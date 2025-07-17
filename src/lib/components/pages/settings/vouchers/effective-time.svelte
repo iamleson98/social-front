@@ -25,6 +25,8 @@
 			value={{ date: startDate }}
 			timeConfig={{
 				stepMinutes: 1,
+				format: 24,
+				stepHours: 1,
 			}}
 			onchange={(value) => {
 				startDate = dayjs(value.date).format(RFC3339TimeFormat);
@@ -47,6 +49,8 @@
 			value={{ date: endDate }}
 			timeConfig={{
 				stepMinutes: 1,
+				format: 24,
+				stepHours: 1,
 			}}
 			onchange={(value) => {
 				endDate = dayjs(value.date).format(RFC3339TimeFormat);

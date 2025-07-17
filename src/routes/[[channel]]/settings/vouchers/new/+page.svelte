@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
+	import { VOUCHER_CREATE_MUTATION } from '$lib/api/admin/discount';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
@@ -17,8 +19,11 @@
 		DiscountValueTypeEnum,
 		type VoucherChannelListingInput,
 		type VoucherChannelListing,
+		type Mutation,
+		type MutationVoucherCreateArgs,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { string } from 'zod';
 
 	let voucherInput = $state<VoucherInput>({
@@ -59,9 +64,29 @@
 	const validateName = () => {
 		const result = NameSchema.safeParse(voucherInput.name);
 		nameErrors = result.success ? [] : result.error.formErrors.formErrors;
+		return result.success;
 	};
 
-	const handleCreateVoucher = async () => {};
+	const handleCreateVoucher = async () => {
+		if (!validateName()) return;
+
+		loading = true;
+
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'voucherCreate'>,
+			MutationVoucherCreateArgs
+		>(VOUCHER_CREATE_MUTATION, {
+			input: voucherInput,
+		});
+
+		loading = false;
+
+		if (checkIfGraphqlResultHasError(result, 'voucherCreate', $tranFunc('common.createSuccess')))
+			return;
+
+		createdVoucherId = result.data?.voucherCreate?.voucher?.id;
+		performUpdateMetadata = true;
+	};
 </script>
 
 <div class="flex gap-2">
@@ -101,6 +126,7 @@
 			existingProductsCount={0}
 			existingVariantsCount={0}
 			disabled={loading}
+			isCreatePage
 		/>
 		<Requirements
 			bind:minimumQuantityOfItems={voucherInput.minCheckoutItemsQuantity!}

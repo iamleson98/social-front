@@ -421,6 +421,19 @@ mutation UpdateVoucher($id: ID!, $input: VoucherInput!) {
   }
 }`;
 
+export const VOUCHER_CREATE_MUTATION = gql`
+mutation CreateVoucher($input: VoucherInput!) {
+  voucherCreate(input: $input) {
+    errors {
+      field
+      message
+    }
+    voucher {
+      id
+    }
+  }
+}`;
+
 export const VOUCHER_CHANNEL_LISTING_UPDATE_MUTATION = gql`
 mutation VoucherChannelListingUpdate($id: ID!, $input: VoucherChannelListingInput!) {
   voucherChannelListingUpdate(id: $id, input: $input) {

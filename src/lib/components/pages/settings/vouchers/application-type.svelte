@@ -20,8 +20,9 @@
 		existingCollectionsCount: number;
 		existingVariantsCount: number;
 		existingProductsCount: number;
-		onAssignCatalogItems: () => Promise<void>;
+		onAssignCatalogItems?: () => Promise<void>;
 		disabled?: boolean;
+		isCreatePage?: boolean;
 	};
 
 	let {
@@ -37,7 +38,7 @@
 		existingCollectionsCount,
 		existingVariantsCount,
 		existingProductsCount,
-
+		isCreatePage,
 		disabled,
 	}: Props = $props();
 
@@ -78,6 +79,7 @@
 				{existingVariantsCount}
 				{disabled}
 				{onAssignCatalogItems}
+				{isCreatePage}
 			/>
 		{/if}
 	</div>
