@@ -167,9 +167,12 @@
 		before?: string;
 	};
 
+	const FIRST_100 = 100;
+	const FIRST_10 = 10;
+
 	let voucherRelationVars = $state<VoucherRelationVars>({
 		voucherId: page.params.id,
-		first: 10,
+		first: FIRST_100,
 	});
 	/** re-executing lock, for query existing products, variants, collections, categories of current voucher */
 	let forceReExecuteGraphqlQuery = $state(true);
@@ -177,14 +180,20 @@
 	/** in the modal for assigning products, variants, categories, collections, each of them we have 1 graphql table. This lock controls query fetching of them */
 	let forceReExecuteCatalogQuery = $state(true);
 	let openAssignCatalogFeature = $state(false);
-	let queryCategoriesVariables = $state<QueryCategoriesArgs>({ first: 10, filter: { search: '' } });
-	let queryCollectionsVariables = $state<QueryCollectionsArgs>({
-		first: 10,
+	let queryCategoriesVariables = $state<QueryCategoriesArgs>({
+		first: FIRST_10,
 		filter: { search: '' },
 	});
-	let queryProductsVariables = $state<QueryProductsArgs>({ first: 10, filter: { search: '' } });
+	let queryCollectionsVariables = $state<QueryCollectionsArgs>({
+		first: FIRST_10,
+		filter: { search: '' },
+	});
+	let queryProductsVariables = $state<QueryProductsArgs>({
+		first: FIRST_10,
+		filter: { search: '' },
+	});
 	let queryVariantsVariables = $state<QueryProductVariantsArgs>({
-		first: 10,
+		first: FIRST_10,
 		filter: { search: '' },
 	});
 
@@ -200,14 +209,12 @@
 		forceReExecuteCatalogQuery = true;
 	};
 
-	afterNavigate(({ from, to }) => {
+	afterNavigate(() => {
 		voucherRelationVars = {
 			voucherId: page.params.id,
-			first: 10,
+			first: FIRST_100,
 		};
 		forceReExecuteGraphqlQuery = true;
-
-		if (from !== to) openAssignCatalogFeature = false;
 	});
 </script>
 
