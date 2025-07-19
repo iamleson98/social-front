@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { tranFunc } from '$i18n';
-	import { VOUCHER_CREATE_MUTATION } from '$lib/api/admin/discount';
+	import {
+		VOUCHER_CHANNEL_LISTING_UPDATE_MUTATION,
+		VOUCHER_CREATE_MUTATION,
+	} from '$lib/api/admin/discount';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
@@ -22,6 +25,7 @@
 		type VoucherChannelListing,
 		type Mutation,
 		type MutationVoucherCreateArgs,
+		type MutationVoucherChannelListingUpdateArgs,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
@@ -44,12 +48,6 @@
 		collections: [],
 		variants: [],
 		addCodes: [],
-	});
-
-	/** for updating channel listing */
-	let voucherChannelListingInput = $state<VoucherChannelListingInput>({
-		addChannels: [],
-		removeChannels: [],
 	});
 
 	let createdVoucherId = $state<string>();
@@ -80,16 +78,37 @@
 			input: voucherInput,
 		});
 
-		loading = false;
-
-		if (checkIfGraphqlResultHasError(result, 'voucherCreate', $tranFunc('common.createSuccess')))
-			return;
+		if (checkIfGraphqlResultHasError(result, 'voucherCreate')) return;
 
 		createdVoucherId = result.data?.voucherCreate?.voucher?.id;
 		performUpdateMetadata = true;
 
-		// timeout to wait for metadata to be updated
-		setTimeout(() => goto(AppRoute.SETTINGS_CONFIGS_VOUCHER_DETAIL(createdVoucherId!)), 200);
+		const channelListingUpdateResult = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'voucherChannelListingUpdate'>,
+			MutationVoucherChannelListingUpdateArgs
+		>(VOUCHER_CHANNEL_LISTING_UPDATE_MUTATION, {
+			id: createdVoucherId!,
+			input: {
+				addChannels: activeChannelListings.map((item) => ({
+					channelId: item.channel.id,
+					minAmountSpent: item.minSpent?.amount,
+					discountValue: item.discountValue,
+				})),
+			},
+		});
+
+		loading = false;
+
+		if (
+			checkIfGraphqlResultHasError(
+				channelListingUpdateResult,
+				'voucherChannelListingUpdate',
+				$tranFunc('common.createSuccess'),
+			)
+		)
+			return;
+
+		await goto(AppRoute.SETTINGS_CONFIGS_VOUCHER_DETAIL(createdVoucherId!));
 	};
 </script>
 
@@ -112,9 +131,7 @@
 		<VoucherCodes bind:addVoucherCodeStrings={voucherInput.addCodes!} />
 		<DiscountType
 			bind:discountType={voucherInput.discountValueType!}
-			bind:voucherChannelListingInput
 			bind:activeChannelListings
-			existingChannelListings={[]}
 			disabled={loading}
 		/>
 		<ApplicationType

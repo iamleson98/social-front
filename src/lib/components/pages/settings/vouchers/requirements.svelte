@@ -23,6 +23,8 @@
 		disabled,
 	}: Props = $props();
 
+	$inspect(activeChannelListings);
+
 	let requirementType = $state<RequirementType>(
 		typeof minimumQuantityOfItems === 'number' ? 'min_qty_items' : 'min_order_value',
 	);
@@ -70,30 +72,16 @@
 
 	$effect(() => {
 		// If no requirement, then we must set those value to nothing
-
-		const utActiveChannelListings = untrack(() => activeChannelListings);
 		untrack(() => minimumQuantityOfItems);
 
 		if (requirementType === 'none') {
 			minimumQuantityOfItems = undefined;
-			activeChannelListings = utActiveChannelListings.map((listing) => ({
-				...listing,
-				minSpent: undefined,
-			}));
+			activeChannelListings = [];
 		} else if (requirementType === 'min_order_value') {
 			minimumQuantityOfItems = undefined;
-			activeChannelListings = utActiveChannelListings.map((listing) => ({
-				...listing,
-				minSpent: {
-					currency: listing.currency,
-					amount: 1,
-				},
-			}));
+			activeChannelListings = untrack(() => activeChannelListings);
 		} else if (requirementType === 'min_qty_items') {
-			activeChannelListings = utActiveChannelListings.map((listing) => ({
-				...listing,
-				minSpent: undefined,
-			}));
+			activeChannelListings = [];
 		}
 	});
 

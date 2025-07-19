@@ -19,8 +19,8 @@
 
 	type Props = {
 		discountType: DiscountValueTypeEnum;
-		existingChannelListings: VoucherChannelListing[];
-		voucherChannelListingInput: VoucherChannelListingInput;
+		existingChannelListings?: VoucherChannelListing[];
+		voucherChannelListingInput?: VoucherChannelListingInput;
 		activeChannelListings: VoucherChannelListing[];
 		disabled?: boolean;
 	};
@@ -31,7 +31,7 @@
 			addChannels: [],
 			removeChannels: [],
 		}),
-		existingChannelListings,
+		existingChannelListings = [],
 		activeChannelListings = $bindable(),
 		disabled,
 	}: Props = $props();
@@ -100,11 +100,11 @@
 		const newChannelIds = difference(selectedChannelIds, existingUsedChannelIDs);
 		const removeChannelIds = difference(existingUsedChannelIDs, selectedChannelIds);
 
-		// voucherChannelListingInput.addChannels = newChannelIds.map((id) => ({
-		// 	channelId: id,
-		// 	discountValue: 0,
-		// 	minAmountSpent: 0,
-		// }));
+		voucherChannelListingInput.addChannels = newChannelIds.map((id) => ({
+			channelId: id,
+			discountValue: 0,
+			minAmountSpent: 0,
+		}));
 		voucherChannelListingInput.removeChannels = removeChannelIds;
 
 		activeChannelListings = existingChannelListings.concat(

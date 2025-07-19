@@ -182,13 +182,7 @@
 {:else if $voucherQuery.error}
 	<Alert variant="error" bordered size="sm">{$voucherQuery.error.message}</Alert>
 {:else if $voucherQuery.data?.voucher}
-	{@const {
-		id,
-		metadata,
-		privateMetadata,
-		channelListings,
-		used,
-	} = $voucherQuery.data.voucher}
+	{@const { id, metadata, privateMetadata, channelListings, used } = $voucherQuery.data.voucher}
 	<div class="flex gap-2">
 		<div class="w-7/10 space-y-2">
 			<div class="rounded-lg p-3 border border-gray-200 bg-white">
