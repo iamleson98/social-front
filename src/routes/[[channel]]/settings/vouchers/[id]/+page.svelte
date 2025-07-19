@@ -187,11 +187,7 @@
 		metadata,
 		privateMetadata,
 		channelListings,
-		categories,
-		collections,
 		used,
-		products,
-		variants,
 	} = $voucherQuery.data.voucher}
 	<div class="flex gap-2">
 		<div class="w-7/10 space-y-2">
@@ -229,10 +225,6 @@
 				bind:newProducts={voucherInput.products!}
 				bind:newVariants={voucherInput.variants!}
 				discountType={voucherInput.discountValueType!}
-				existingCategoriesCount={categories?.totalCount!}
-				existingCollectionsCount={collections?.totalCount!}
-				existingProductsCount={products?.totalCount!}
-				existingVariantsCount={variants?.totalCount!}
 				disabled={loading}
 				onAssignCatalogItems={handleUpdateVoucher}
 			/>

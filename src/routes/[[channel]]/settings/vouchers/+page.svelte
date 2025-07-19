@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { VOUCHER_LIST_QUERY } from '$lib/api/admin/discount';
 	import Filter from '$lib/components/pages/settings/vouchers/filter.svelte';
+	import { Badge } from '$lib/components/ui/badge';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
-	import type { QueryVouchersArgs, Voucher, VoucherSortField } from '$lib/gql/graphql';
+	import { VoucherSortField, type QueryVouchersArgs, type Voucher } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { formatCurrency } from '$lib/utils/utils';
@@ -20,6 +21,7 @@
 		{
 			title: 'Voucher',
 			child: title,
+			key: VoucherSortField.Name,
 		},
 		{
 			title: 'Min. Spent',
@@ -30,16 +32,22 @@
 			child: value,
 		},
 		{
+			title: 'Usage limit',
+			child: useLimit,
+		},
+		{
+			title: 'Availability',
+			child: availability,
+		},
+		{
 			title: 'Start date',
 			child: startDate,
+			key: VoucherSortField.StartDate,
 		},
 		{
 			title: 'End date',
 			child: endDate,
-		},
-		{
-			title: 'Usage limit',
-			child: useLimit,
+			key: VoucherSortField.EndDate,
 		},
 	];
 </script>
@@ -52,6 +60,15 @@
 
 {#snippet useLimit({ item }: { item: Voucher })}
 	<div class="text-sm font-medium text-gray-800 text-center">{item.usageLimit || '-'}</div>
+{/snippet}
+
+{#snippet availability({ item }: { item: Voucher })}
+	<Badge
+		text="{item.channelListings?.length || 0} channels"
+		color="green"
+		class="tooltip tooltip-top"
+		data-tip={item.channelListings?.map((list) => list.channel.slug).join(', ')}
+	/>
 {/snippet}
 
 {#snippet minSpent({ item }: { item: Voucher })}

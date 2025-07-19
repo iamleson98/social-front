@@ -29,12 +29,11 @@
 		query: CHANNELS_QUERY,
 	});
 
-	const CHANNEL_COLUMNS: TableColumnProps<Channel, any>[] = $derived([
+	const CHANNEL_COLUMNS: TableColumnProps<Channel, string>[] = $derived([
 		{
 			title: $tranFunc('common.name'),
 			key: 'name',
 			child: name,
-			sortable: true,
 		},
 		{
 			title: $tranFunc('common.currency'),

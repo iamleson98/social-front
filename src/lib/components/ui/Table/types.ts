@@ -40,10 +40,6 @@ export type TableColumnProps<T extends Record<string, unknown>, K extends string
   startIcon?: IconContent;
   endIcon?: IconContent;
   /**
-   * If true (in conjunction with key), the column will be sortable.
-   */
-  sortable?: boolean;
-  /**
    * The content of each row in the column.
    * @param item the item of the row
    */

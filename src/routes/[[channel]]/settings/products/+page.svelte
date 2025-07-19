@@ -26,7 +26,6 @@
 		{
 			title: $tranFunc('settings.name'),
 			child: name,
-			sortable: true,
 			key: ProductOrderField.Name,
 		},
 		{
@@ -40,7 +39,6 @@
 		{
 			title: $tranFunc('settings.createdAt'),
 			child: createdAt,
-			sortable: true,
 			key: ProductOrderField.CreatedAt,
 		},
 	]);

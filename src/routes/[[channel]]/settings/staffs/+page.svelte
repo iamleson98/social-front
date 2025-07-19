@@ -23,12 +23,10 @@
 			title: $tranFunc('staff.fullName'),
 			key: UserSortField.FirstName,
 			child: fullName,
-			sortable: true,
 		},
 		{
 			title: $tranFunc('staff.email'),
 			child: email,
-			sortable: true,
 			key: UserSortField.Email,
 		},
 		{

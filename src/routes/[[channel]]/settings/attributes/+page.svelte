@@ -19,19 +19,16 @@
 		{
 			title: 'Name',
 			child: name,
-			sortable: true,
 			key: AttributeSortField.Name,
 		},
 		{
 			title: 'Visible in store front',
 			child: visible,
-			sortable: true,
 			key: AttributeSortField.VisibleInStorefront,
 		},
 		{
 			title: 'Filterable in store front',
 			child: filterable,
-			sortable: true,
 			key: AttributeSortField.FilterableInStorefront,
 		},
 		{

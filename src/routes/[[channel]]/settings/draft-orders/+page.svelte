@@ -29,7 +29,6 @@
 			title: 'Number',
 			child: number,
 			key: OrderSortField.Number,
-			sortable: true,
 		},
 		{
 			title: 'Date',
@@ -39,7 +38,6 @@
 			title: 'Customer',
 			child: customer,
 			key: OrderSortField.Customer,
-			sortable: true,
 		},
 		{
 			title: 'Total',

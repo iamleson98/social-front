@@ -20,21 +20,20 @@
 	$effect(() => {
 		normalTableColumns = [
 			{ title: 'First Column', child: firstColumn },
-			{ title: 'Second Column', child: secondColumn, sortable: sortMultipleTable, key: ProductOrderField.Name },
+			{ title: 'Second Column', child: secondColumn, key: ProductOrderField.Name },
 			{ title: 'Third Column', child: thirdColumn },
-			{ title: 'Action Column', child: actionColumn }
+			{ title: 'Action Column', child: actionColumn },
 		];
 	});
 
 	$effect(() => {
 		graphqlTableColumns = [
 			{ title: 'First Column', child: firstColumn },
-			{ title: 'Second Column', child: secondColumn, sortable: sortMultipleGraphqlTable, key: ProductOrderField.Name },
+			{ title: 'Second Column', child: secondColumn, key: ProductOrderField.Name },
 			{ title: 'Third Column', child: thirdColumn },
-			{ title: 'Action Column', child: actionColumn }
+			{ title: 'Action Column', child: actionColumn },
 		];
 	});
-
 
 	const handleCopyNormalTable = () => {
 		const code = `<Table

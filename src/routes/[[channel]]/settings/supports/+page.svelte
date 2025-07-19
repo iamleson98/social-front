@@ -60,7 +60,6 @@
 		{
 			title: $tranFunc('settings.date'),
 			child: date,
-			sortable: true,
 			key: 'createdAt',
 		},
 		{

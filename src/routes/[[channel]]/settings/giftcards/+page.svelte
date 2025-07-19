@@ -55,7 +55,6 @@
 		},
 		{
 			title: 'Issued at',
-			sortable: true,
 			key: GiftCardSortField.CreatedAt,
 			child: issueAt,
 		},

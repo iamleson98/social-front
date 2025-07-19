@@ -17,6 +17,7 @@
 	import { draggable, droppable, type DragDropState } from '@thisux/sveltednd';
 	import { flip } from 'svelte/animate';
 	import { fade } from 'svelte/transition';
+	import { classNames } from '$lib/utils/utils';
 
 	let {
 		items,
@@ -34,13 +35,8 @@
 		onDragEnd,
 	}: TableProps<T, K> = $props();
 
-	if (columns.some((col) => col.sortable && !col.key)) {
-		throw new Error('All sortable columns must have an unique key');
-	}
-
 	const DEFAULT_SORT_STATE = columns.reduce<SortState<K>>((acc, column) => {
-		if (column.sortable) return { ...acc, [column.key!]: 'NEUTRAL' };
-		return acc;
+		return column.key ? { ...acc, [column.key]: 'NEUTRAL' } : acc;
 	}, {} as SortState<K>);
 	let innerRowsPerPage = $state<number>(rowsPerPage || ROW_OPTIONS[0]);
 	let sortState = $state.raw<SortState<K>>({ ...DEFAULT_SORT_STATE, ...defaultSortState });
@@ -92,10 +88,7 @@
 				<th></th>
 			{/if}
 			{#each columns as column, idx (idx)}
-				{@const classes = column?.sortable
-					? 'cursor-pointer hover:bg-gray-100 active:bg-gray-200 focus:bg-gray-200'
-					: ''}
-				{@const props = column?.sortable
+				{@const props = column?.key
 					? {
 							onclick: () => handleSortClick(column.key!),
 							onkeyup: (evt: KeyboardEvent) => evt.key === 'Enter' && handleSortClick(column.key!),
@@ -104,8 +97,11 @@
 					: {}}
 				<th class="p-[unset]!">
 					<svelte:element
-						this={column?.sortable ? 'button' : 'div'}
-						class="flex items-center gap-2 w-full h-full p-2 justify-between {classes}"
+						this={column?.key ? 'button' : 'div'}
+						class={classNames('flex items-center gap-2 w-full h-full p-2 justify-between', {
+							'cursor-pointer hover:bg-gray-100 active:bg-gray-200 focus:bg-gray-200':
+								!!column?.key,
+						})}
 						{...props}
 					>
 						<div class="flex items-center gap-1">
@@ -121,7 +117,7 @@
 								<Icon icon={column.endIcon} size="sm" />
 							{/if}
 						</div>
-						{#if column?.sortable}
+						{#if column?.key}
 							<span>
 								<Icon icon={SortIconsMap[sortState[column.key!]]} size="sm" />
 							</span>

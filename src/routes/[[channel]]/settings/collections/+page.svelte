@@ -36,7 +36,6 @@
 			title: $tranFunc('common.name'),
 			key: CollectionSortField.Name,
 			child: collectionName,
-			sortable: true,
 		},
 		{
 			title: $tranFunc('settings.availability'),
@@ -45,7 +44,6 @@
 		{
 			title: $tranFunc('collection.noOfPrds'),
 			child: noOfProducts,
-			sortable: true,
 			key: CollectionSortField.ProductCount,
 		},
 		{

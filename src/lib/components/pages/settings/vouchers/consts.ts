@@ -5,3 +5,7 @@ export const APPLICATION_TYPES: Record<VoucherTypeEnum, string> = {
   [VoucherTypeEnum.SpecificProduct]: 'voucher.applySpecificPrd',
   [VoucherTypeEnum.Shipping]: 'voucher.discountShip',
 };
+
+export type TabName = 'categories' | 'products' | 'collections' | 'variants';
+export const TABS: TabName[] = ['categories', 'products', 'collections', 'variants'];
+

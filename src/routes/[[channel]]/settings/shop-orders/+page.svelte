@@ -23,7 +23,6 @@
 	const ORDER_TABLE_COLUMNS: TableColumnProps<Order, OrderSortField>[] = $derived([
 		{
 			title: $tranFunc('settings.no'),
-			sortable: true,
 			child: no,
 			key: OrderSortField.Number,
 		},
@@ -42,12 +41,10 @@
 		{
 			title: $tranFunc('settings.total'),
 			child: total,
-			// sortable: true
 		},
 		{
 			title: $tranFunc('settings.date'),
 			child: date,
-			// sortable: true
 		},
 	]);
 </script>

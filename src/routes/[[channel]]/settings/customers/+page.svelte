@@ -25,13 +25,11 @@
 		{
 			title: 'Customer name',
 			child: customerName,
-			sortable: true,
 			key: UserSortField.FirstName,
 		},
 		{
 			title: 'Email',
 			child: email,
-			sortable: true,
 			key: UserSortField.Email,
 		},
 		{
@@ -45,7 +43,6 @@
 		{
 			title: 'Joined At',
 			child: dateJoined,
-			sortable: true,
 			key: UserSortField.CreatedAt,
 		},
 	];

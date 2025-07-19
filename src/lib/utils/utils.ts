@@ -498,7 +498,7 @@ export const convertAddressToAddressInput = (addr: Address): AddressInput => {
 	};
 };
 
-export const addNoDup = <T>(array: T[], ...items: T[]) => {
+export const addNoDup = <T extends string | number>(array: T[], ...items: T[]) => {
 	const result = [...array];
 
 	for (const item of items)
@@ -508,11 +508,9 @@ export const addNoDup = <T>(array: T[], ...items: T[]) => {
 	return result;
 };
 
-export const toggleItemNoDup = <T>(array: T[], item: T, add: boolean = true) => {
-	const result = [...array];
-
+export const toggleItemNoDup = <T extends string | number>(array: T[], item: T, add: boolean = true) => {
 	if (add)
-		return result.includes(item) ? result : result.concat(item);
+		return array.includes(item) ? array : array.concat(item);
 
-	return result.filter(it => it !== item);
+	return array.filter(it => it !== item);
 };

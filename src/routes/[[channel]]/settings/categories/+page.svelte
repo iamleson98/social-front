@@ -18,19 +18,16 @@
 		{
 			title: $tranFunc('common.name'),
 			child: name,
-			sortable: true,
 			key: CategorySortField.Name,
 		},
 		{
 			title: $tranFunc('collection.noOfPrds'),
 			child: products,
-			sortable: true,
 			key: CategorySortField.ProductCount,
 		},
 		{
 			title: $tranFunc('category.noOfChildren'),
 			child: children,
-			sortable: true,
 			key: CategorySortField.SubcategoryCount,
 		},
 		{

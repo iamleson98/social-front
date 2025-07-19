@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { tranFunc } from '$i18n';
 	import { VOUCHER_CREATE_MUTATION } from '$lib/api/admin/discount';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
@@ -86,6 +87,9 @@
 
 		createdVoucherId = result.data?.voucherCreate?.voucher?.id;
 		performUpdateMetadata = true;
+
+		// timeout to wait for metadata to be updated
+		setTimeout(() => goto(AppRoute.SETTINGS_CONFIGS_VOUCHER_DETAIL(createdVoucherId!)), 200);
 	};
 </script>
 
@@ -121,10 +125,6 @@
 			bind:newProducts={voucherInput.products!}
 			bind:newVariants={voucherInput.variants!}
 			discountType={voucherInput.discountValueType!}
-			existingCategoriesCount={0}
-			existingCollectionsCount={0}
-			existingProductsCount={0}
-			existingVariantsCount={0}
 			disabled={loading}
 			isCreatePage
 		/>

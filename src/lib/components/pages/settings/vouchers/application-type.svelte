@@ -4,22 +4,17 @@
 	import { Checkbox, RadioButton } from '$lib/components/ui/Input';
 	import { DiscountValueTypeEnum, VoucherTypeEnum } from '$lib/gql/graphql';
 	import { APPLICATION_TYPES } from './consts';
-	import VoucherCatalogApplication from './voucher-catalog-application.svelte';
+	import EditVoucherCatalogApplication from './edit-voucher-catalog-application.svelte';
+	import NewVoucherCatalogApplication from './new-voucher-catalog-application.svelte';
 
 	type Props = {
 		discountType: DiscountValueTypeEnum;
 		applicationType: VoucherTypeEnum;
 		applyOncePerOrder: boolean;
-
 		newCategories: string[];
 		newProducts: string[];
 		newCollections: string[];
 		newVariants: string[];
-
-		existingCategoriesCount: number;
-		existingCollectionsCount: number;
-		existingVariantsCount: number;
-		existingProductsCount: number;
 		onAssignCatalogItems?: () => Promise<void>;
 		disabled?: boolean;
 		isCreatePage?: boolean;
@@ -34,10 +29,6 @@
 		newCollections = $bindable(),
 		newVariants = $bindable(),
 		onAssignCatalogItems,
-		existingCategoriesCount,
-		existingCollectionsCount,
-		existingVariantsCount,
-		existingProductsCount,
 		isCreatePage,
 		disabled,
 	}: Props = $props();
@@ -68,19 +59,17 @@
 			</div>
 		</div>
 		{#if applicationType === VoucherTypeEnum.SpecificProduct}
-			<VoucherCatalogApplication
-				bind:newCategories
-				bind:newCollections
-				bind:newProducts
-				bind:newVariants
-				{existingCategoriesCount}
-				{existingCollectionsCount}
-				{existingProductsCount}
-				{existingVariantsCount}
-				{disabled}
-				{onAssignCatalogItems}
-				{isCreatePage}
-			/>
+			{#if !isCreatePage}
+				<EditVoucherCatalogApplication {disabled} {onAssignCatalogItems} />
+			{:else}
+				<NewVoucherCatalogApplication
+					bind:addCategories={newCategories}
+					bind:addProducts={newProducts}
+					bind:addCollections={newCollections}
+					bind:addVariants={newVariants}
+					{disabled}
+				/>
+			{/if}
 		{/if}
 	</div>
 {/if}

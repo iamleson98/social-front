@@ -29,7 +29,6 @@
 			title: 'Name',
 			child: name,
 			key: WarehouseSortField.Name,
-			sortable: true,
 		},
 		{
 			title: 'Shipping zones',

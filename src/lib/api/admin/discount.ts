@@ -81,18 +81,6 @@ query VoucherDetail($id: ID!) {
     minCheckoutItemsQuantity
     applyOncePerOrder
     applyOncePerCustomer
-    collections {
-      totalCount
-    }
-    products {
-      totalCount
-    }
-    categories {
-      totalCount
-    }
-    variants {
-      totalCount
-    }
     metadata {
       key
       value
@@ -185,28 +173,6 @@ query VoucherCodes($id: ID!, $first: Int, $after: String, $last: Int, $before: S
     }
   }
 }`;
-
-// export const PROMOTION_LIST_QUERY = gql`
-// query Vouchers($first: Int!, $after: String, $last: Int, $before: String, $where: PromotionWhereInput, $sortBy: PromotionSortingInput) {
-//   vouchers(filter: $filter, first: $first, after: $after, last: $last, before: $before, sortBy: $sortBy) {
-//     edges {
-//       node {
-//         id
-//         name
-//         code
-//         endDate
-//         startDate
-//         type
-//       }
-//     }
-//     pageInfo {
-//       hasNextPage
-//       hasPreviousPage
-//       startCursor
-//       endCursor
-//     }
-//   }
-// }`;
 
 export const VOUCHER_COLLECTIONS_QUERY = gql`
 query VoucherCollections($voucherId: ID!, $first: Int, $after: String, $last: Int, $before: String) {
@@ -443,3 +409,24 @@ mutation VoucherChannelListingUpdate($id: ID!, $input: VoucherChannelListingInpu
     }
   }
 }`;
+
+export const VOUCHER_CATALOGUES_ADD_MUTATION = gql`
+mutation VoucherCataloguesAdd($id: ID!, $input: CatalogueInput!) {
+  voucherCataloguesAdd(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const VOUCHER_CATALOGUES_REMOVE_MUTATION = gql`
+mutation VoucherCataloguesRemove($id: ID!, $input: CatalogueInput!) {
+  voucherCataloguesRemove(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+

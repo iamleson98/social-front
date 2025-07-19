@@ -31,13 +31,11 @@
 		{
 			title: $tranFunc('common.name'),
 			child: name,
-			sortable: true,
 			key: ProductTypeSortField.Name,
 		},
 		{
 			title: $tranFunc('prdType.requireShip'),
 			child: shippable,
-			sortable: true,
 			key: ProductTypeSortField.ShippingRequired,
 		},
 		{
