@@ -3,7 +3,7 @@
 	import type { AnyVariables } from '@urql/core';
 	import type { FilterConditions, FilterProps } from './types';
 	import { Input } from '$lib/components/ui/Input';
-	import { get, has, set } from 'es-toolkit/compat';
+	import { get, set, unset } from 'es-toolkit/compat';
 	import {
 		AFTER,
 		BEFORE,
@@ -27,7 +27,6 @@
 	import { FilterCog, Search } from '$lib/components/icons';
 	import FilterContainer from './filter-container.svelte';
 	import { tranFunc } from '$i18n';
-	import { unset } from 'es-toolkit/compat';
 
 	type Props = {
 		/** if not provided, will not show filter button */

@@ -59,6 +59,7 @@
 		 * ```
 		 */
 		variableSearchQueryPath?: string;
+		performDataFetching?: boolean;
 	} & Omit<SelectProps, 'options'>;
 
 	let {
@@ -72,6 +73,8 @@
 		value = $bindable<SelectProps['value']>(),
 		optionValueKey,
 		optionLabelKey,
+		performDataFetching = $bindable(true),
+		class: className = '',
 		...rest
 	}: Props = $props();
 
@@ -79,7 +82,7 @@
 	let pageInfo = $state.raw<PageInfo>();
 	let errorMessage = $state();
 	let isInitialFetch = $state(true);
-	let forceFetching = $state(true);
+	let forceFetching = $state(performDataFetching);
 
 	const fetchData = async () => {
 		const result = await GRAPHQL_CLIENT.query<Pick<Query, typeof resultKey>>(query, variables, {
@@ -109,9 +112,10 @@
 	};
 
 	$effect(() => {
-		if (forceFetching) {
+		if (forceFetching || performDataFetching) {
 			fetchData().finally(() => {
 				forceFetching = false;
+				performDataFetching = false;
 				isInitialFetch = false;
 			});
 		}
@@ -146,22 +150,24 @@
 	};
 </script>
 
-{#if isInitialFetch}
-	<SelectSkeleton label={!!label} {size} />
-{:else if errorMessage}
-	<Alert variant="error" {size} bordered>{errorMessage}</Alert>
-{:else}
-	<GeneralSelect
-		bind:value
-		options={selectOptions}
-		{size}
-		{label}
-		inputDebounceOption={{
-			onInput: (evt) => onInput((evt.target as HTMLInputElement).value),
-		}}
-		{onScrollToEnd}
-		showLoadingMore={forceFetching}
-		onclearInputField={onInput}
-		{...rest}
-	/>
-{/if}
+<div class={className}>
+	{#if isInitialFetch}
+		<SelectSkeleton label={!!label} {size} />
+	{:else if errorMessage}
+		<Alert variant="error" {size} bordered>{errorMessage}</Alert>
+	{:else}
+		<GeneralSelect
+			bind:value
+			options={selectOptions}
+			{size}
+			{label}
+			inputDebounceOption={{
+				onInput: (evt) => onInput((evt.target as HTMLInputElement).value),
+			}}
+			{onScrollToEnd}
+			showLoadingMore={forceFetching}
+			onclearInputField={onInput}
+			{...rest}
+		/>
+	{/if}
+</div>

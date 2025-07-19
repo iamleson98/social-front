@@ -337,40 +337,75 @@ mutation PromotionRuleDelete($id: ID!) {
   }
 }`;
 
-export const RuleConditionsSelectedOptionsDetails = gql`
-query RuleConditionsSelectedOptionsDetails($categoriesIds: [ID!], $collectionsIds: [ID!], $productsIds: [ID!], $variantsIds: [ID!]) {
-  categories(first: 100, ids: $categoriesIds) {
+export const PROMOTION_RULE_CONDITIONS_SELECTED_OPTIONS_DETAILS = gql`
+query PromotionRuleConditionsSelectedOptionsDetails($categoriesIds: [ID!], $collectionsIds: [ID!], $productsIds: [ID!], $variantsIds: [ID!]) {
+  categories(first: 100, where: { ids: $categoriesIds }) {
     edges {
       node {
         id
         name
         slug
+        backgroundImage(size: 100, format: WEBP) {
+          url
+          alt
+        }
+        products {
+          totalCount
+        }
       }
     }
   }
-  collections(first: 100, ids: $collectionsIds) {
+  collections(first: 100, where: { ids: $collectionsIds }) {
     edges {
       node {
         id
         name
         slug
+        backgroundImage(size: 100, format: WEBP) {
+          url
+          alt
+        }
+        products {
+          totalCount
+        }
       }
     }
   }
-  products(first: 100, ids: $productsIds) {
+  products(first: 100, where: { ids: $productsIds }) {
     edges {
       node {
         id
         name
         slug
+        productType {
+          name
+        }
+        channelListings {
+          id
+          channel {
+            name
+          }
+        }
+        thumbnail(size: 100, format: WEBP) {
+          url
+          alt
+        }
       }
     }
   }
-  variants(first: 100, ids: $variantsIds) {
+  productVariants(first: 100, where: { ids: $variantsIds }) {
     edges {
       node {
         id
         name
+        product {
+          name
+          slug
+          thumbnail(size: 100, format: WEBP) {
+            url
+            alt
+          }
+        }
       }
     }
   }

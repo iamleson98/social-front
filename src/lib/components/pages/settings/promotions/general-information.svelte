@@ -16,20 +16,22 @@
 		isCreatePage?: boolean;
 		name: string;
 		type: PromotionTypeEnum;
-		loading?: boolean;
+		disabled?: boolean;
 		description: OutputData;
 		startDate: string;
 		endDate?: string;
+		ok: boolean;
 	};
 
 	let {
 		isCreatePage = false,
 		name = $bindable(),
 		type = $bindable(),
-		loading,
+		disabled,
 		description = $bindable(),
 		startDate = $bindable(),
 		endDate = $bindable(),
+		ok = $bindable(),
 	}: Props = $props();
 
 	const RequiredErr = $tranFunc('helpText.fieldRequired');
@@ -51,6 +53,10 @@
 		value,
 		label: value.toLowerCase(),
 	}));
+
+	$effect(() => {
+		ok = !Object.keys(promotionFormErrors).length;
+	});
 
 	const validate = () => {
 		const parseResult = PromotionSchema.safeParse({
@@ -76,7 +82,7 @@
 			class="flex-1/3"
 			size="md"
 			bind:value={type}
-			disabled={!isCreatePage || loading}
+			disabled={!isCreatePage || disabled}
 			onblur={validate}
 			onchange={validate}
 			variant={promotionFormErrors?.type?.length ? 'error' : 'info'}
@@ -89,7 +95,7 @@
 			class="flex-2/3"
 			size="md"
 			bind:value={name}
-			disabled={loading}
+			{disabled}
 			variant={promotionFormErrors?.name?.length ? 'error' : 'info'}
 			subText={promotionFormErrors?.name?.[0]}
 			onblur={validate}
@@ -102,7 +108,7 @@
 		required
 		placeholder="Promotion description"
 		bind:value={description}
-		disabled={loading}
+		{disabled}
 		variant={promotionFormErrors?.description?.length ? 'error' : 'info'}
 		subText={promotionFormErrors?.description?.[0]}
 		onchange={validate}
@@ -115,11 +121,16 @@
 			required
 			class="flex-1"
 			value={{ date: startDate }}
-			disabled={loading}
+			{disabled}
 			onchange={(value) => (startDate = dayjs(value.start).format(RFC3339TimeFormat))}
 			variant={promotionFormErrors?.startDate?.length ? 'error' : 'info'}
 			subText={promotionFormErrors?.startDate?.[0]}
 			onblur={validate}
+			timeConfig={{
+				stepMinutes: 1,
+				format: 24,
+				stepHours: 1,
+			}}
 			allowSelectMonthYears={{
 				showMonths: true,
 				showYears: {
@@ -134,8 +145,14 @@
 			placeholder="End date"
 			class="flex-1"
 			value={{ date: endDate }}
-			disabled={loading}
+			{disabled}
 			onchange={(value) => (endDate = dayjs(value.start).format(RFC3339TimeFormat))}
+			timeConfig={{
+				stepMinutes: 1,
+				format: 24,
+				stepHours: 1,
+			}}
+			onblur={validate}
 			allowSelectMonthYears={{
 				showMonths: true,
 				showYears: {
@@ -143,9 +160,6 @@
 					max: 2050,
 				},
 				showResetBtn: true,
-			}}
-			timeLock={{
-				minDate: startDate ? dayjs(startDate).add(1, 'day').toDate() : undefined,
 			}}
 		/>
 	</div>

@@ -3,7 +3,7 @@
 	import Filter from '$lib/components/pages/settings/promotions/filter.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
-	import type { Promotion, QueryPromotionsArgs } from '$lib/gql/graphql';
+	import { PromotionSortField, type Promotion, type QueryPromotionsArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import dayjs from 'dayjs';
@@ -13,10 +13,11 @@
 	});
 	let forceReExecuteGraphqlQuery = $state(true);
 
-	const PROMOTION_COLUMNS: TableColumnProps<Promotion>[] = [
+	const PROMOTION_COLUMNS: TableColumnProps<Promotion, PromotionSortField>[] = [
 		{
 			title: 'Name',
 			child: title,
+			key: PromotionSortField.Name,
 		},
 		{
 			title: 'Discount type',
@@ -25,10 +26,12 @@
 		{
 			title: 'Starts',
 			child: startDate,
+			key: PromotionSortField.StartDate,
 		},
 		{
 			title: 'Ends',
 			child: endDate,
+			key: PromotionSortField.EndDate,
 		},
 	];
 </script>
@@ -40,11 +43,7 @@
 {/snippet}
 
 {#snippet discountType({ item }: { item: Promotion })}
-	<Badge
-		variant="light"
-		color="blue"
-		text={item.type?.toLocaleLowerCase()?.split('_').join(' ') || '-'}
-	/>
+	<Badge color="green" text={item.type?.toLocaleLowerCase()?.replace('_', ' ') || '-'} />
 {/snippet}
 
 {#snippet startDate({ item }: { item: Promotion })}

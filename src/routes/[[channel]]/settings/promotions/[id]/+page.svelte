@@ -1,7 +1,12 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { PROMOTION_DELETE_MUTATION, PROMOTION_DETAIL_QUERY } from '$lib/api/admin/discount';
+	import { tranFunc } from '$i18n';
+	import {
+		PROMOTION_DELETE_MUTATION,
+		PROMOTION_DETAIL_QUERY,
+		PROMOTION_UPDATE_MUTATION,
+	} from '$lib/api/admin/discount';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
@@ -14,6 +19,7 @@
 		PromotionTypeEnum,
 		type Mutation,
 		type MutationPromotionDeleteArgs,
+		type MutationPromotionUpdateArgs,
 		type PromotionUpdateInput,
 		type Query,
 		type QueryPromotionArgs,
@@ -38,6 +44,8 @@
 	});
 	let loading = $state(false);
 	let promotionType = $state<PromotionTypeEnum>(PromotionTypeEnum.Catalogue);
+	let generalOk = $state(true);
+	let performUpdateMetadata = $state(false);
 
 	onMount(() =>
 		promotionStore.subscribe((result) => {
@@ -55,11 +63,41 @@
 		}),
 	);
 
-	const handleUpdate = async () => {};
+	const handleUpdate = async () => {
+		if (!generalOk) return;
+
+		loading = true;
+
+		performUpdateMetadata = true;
+
+		const promotionUpdate = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'promotionUpdate'>,
+			MutationPromotionUpdateArgs
+		>(PROMOTION_UPDATE_MUTATION, {
+			id: page.params.id,
+			input: promotionInput,
+		});
+
+		loading = false;
+
+		if (
+			checkIfGraphqlResultHasError(
+				promotionUpdate,
+				'promotionUpdate',
+				$tranFunc('common.updateSuccess'),
+			)
+		)
+			return;
+
+		promotionStore.reexecute({
+			variables: { id: page.params.id },
+			context: { requestPolicy: 'network-only' },
+		});
+	};
 
 	const handleDelete = async () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: `Are you sure deleting the promotion ${page.params.id}?`,
+			content: $tranFunc('common.confirmDel'),
 			onOk: async () => {
 				loading = true;
 				const result = await GRAPHQL_CLIENT.mutation<
@@ -71,11 +109,7 @@
 				loading = false;
 
 				if (
-					!checkIfGraphqlResultHasError(
-						result,
-						'promotionDelete',
-						'Promotion deleted successfully!',
-					)
+					!checkIfGraphqlResultHasError(result, 'promotionDelete', $tranFunc('common.delSuccess'))
 				)
 					await goto(AppRoute.SETTINGS_CONFIGS_PROMOTIONS());
 			},
@@ -93,14 +127,21 @@
 		<GeneralInformation
 			bind:name={promotionInput.name!}
 			type={promotionType}
-			{loading}
+			disabled={loading}
 			bind:description={promotionInput.description}
 			bind:startDate={promotionInput.startDate}
 			bind:endDate={promotionInput.endDate}
+			bind:ok={generalOk}
 		/>
 
 		<Rules rules={rules || []} />
-		<GeneralMetadataEditor objectId={id} {metadata} {privateMetadata} disabled={loading} />
+		<GeneralMetadataEditor
+			objectId={id}
+			{metadata}
+			{privateMetadata}
+			disabled={loading}
+			bind:performUpdateMetadata
+		/>
 		<ActionBar
 			backButtonUrl={AppRoute.SETTINGS_CONFIGS_PROMOTIONS()}
 			onDeleteClick={handleDelete}

@@ -20,7 +20,7 @@
 	import { classNames } from '$lib/utils/utils';
 
 	let {
-		items,
+		items = [],
 		columns,
 		tableClass = '',
 		pagination,

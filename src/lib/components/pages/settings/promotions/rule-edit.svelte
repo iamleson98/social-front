@@ -21,13 +21,6 @@
 	import { classNames } from '$lib/utils/utils';
 	import { number, object, string, z } from 'zod';
 
-	// type Props = {
-	// 	/** If not provided, meaning this is create modal */
-	// 	rule?: PromotionRule;
-	// };
-
-	// let { rule }: Props = $props();
-
 	const FIELD_REQUIRED = $tranFunc('helpText.fieldRequired');
 	const POSITIVE_ERROR = $tranFunc('error.negativeNumber');
 
@@ -56,103 +49,16 @@
 		return result.success;
 	};
 
-	const RuleConditions = $state([
-		{
-			title: 'products',
-			selected: false,
-			values: [],
-			component: products,
-		},
-		{
-			title: 'collections',
-			selected: false,
-			values: [],
-			component: collections,
-		},
-		{
-			title: 'variants',
-			selected: false,
-			values: [],
-			component: variants,
-		},
-		{
-			title: 'categories',
-			selected: false,
-			values: [],
-			component: categories,
-		},
-	]);
+	let useProductsWithPromotion = $state(false);
+	let useProductVariantsWithPromotion = $state(false);
+	let useCategoriesWithPromotion = $state(false);
+	let useCollectionsWithPromotion = $state(false);
+
+	let productIds = $state<string[]>([]);
+	let productVariantIds = $state<string[]>([]);
+	let categoryIds = $state<string[]>([]);
+	let collectionIds = $state<string[]>([]);
 </script>
-
-{#snippet products()}
-	{#if rule.channel}
-		<GraphqlPaginableSelect
-			query={PRODUCT_LIST_QUERY}
-			variables={{ first: 20, channel: rule.channel, filter: { search: '' } } as QueryProductsArgs}
-			optionLabelKey="name"
-			optionValueKey="id"
-			variableSearchQueryPath="filter.search"
-			multiple
-			bind:value={RuleConditions[0].values}
-			resultKey="products"
-			size="sm"
-		/>
-	{/if}
-{/snippet}
-
-{#snippet collections()}
-	{#if rule.channel}
-		<GraphqlPaginableSelect
-			query={COLLECTIONS_QUERY}
-			variables={{
-				first: 20,
-				channel: rule.channel,
-				filter: { search: '' },
-			} as QueryCollectionsArgs}
-			optionLabelKey="name"
-			optionValueKey="id"
-			variableSearchQueryPath="filter.search"
-			multiple
-			bind:value={RuleConditions[1].values}
-			resultKey="collections"
-			size="sm"
-		/>
-	{/if}
-{/snippet}
-
-{#snippet categories()}
-	<GraphqlPaginableSelect
-		query={CATEGORIES_LIST_QUERY}
-		variables={{ first: 20, filter: { search: '' } } as QueryCategoriesArgs}
-		optionLabelKey="name"
-		optionValueKey="id"
-		variableSearchQueryPath="filter.search"
-		multiple
-		bind:value={RuleConditions[3].values}
-		resultKey="categories"
-		size="sm"
-	/>
-{/snippet}
-
-{#snippet variants()}
-	{#if rule.channel}
-		<GraphqlPaginableSelect
-			query={PRODUCT_VARIANTS_QUERY}
-			variables={{
-				first: 20,
-				filter: { search: '' },
-				channel: rule.channel,
-			} as QueryProductVariantsArgs}
-			optionLabelKey="name"
-			optionValueKey="id"
-			variableSearchQueryPath="filter.search"
-			multiple
-			bind:value={RuleConditions[2].values}
-			resultKey="productVariants"
-			size="sm"
-		/>
-	{/if}
-{/snippet}
 
 <div class="space-y-3">
 	<div class="flex items-start gap-2">
@@ -178,26 +84,101 @@
 			}}
 			required
 			class="flex-1"
+			onblur={validate}
 		/>
 	</div>
 
 	{#if rule.channel}
-		<div class="text-sm">
+		<div class="text-sm space-y-2">
 			<dir class="font-medium text-gray-700">Conditions</dir>
-			<!-- <Button size="xs" endIcon={Plus}>Add condition</Button> -->
 			<div class="space-y-2">
-				{#each RuleConditions as cond, idx (idx)}
-					<div class="flex items-center gap-1">
-						<div class="flex-1/4">
-							<Checkbox label={cond.title} size="sm" bind:checked={cond.selected} />
-						</div>
-						<div class="flex-3/4">
-							{#if cond.selected}
-								{@render cond.component()}
-							{/if}
-						</div>
-					</div>
-				{/each}
+				<div class="flex items-center gap-1">
+					<Checkbox label="Products" bind:checked={useProductsWithPromotion} class="flex-1/4" />
+					<GraphqlPaginableSelect
+						class="flex-3/4"
+						query={PRODUCT_LIST_QUERY}
+						variables={{
+							first: 20,
+							channel: rule.channel,
+							filter: { search: '' },
+						} as QueryProductsArgs}
+						optionLabelKey="name"
+						optionValueKey="id"
+						variableSearchQueryPath="filter.search"
+						multiple
+						resultKey="products"
+						size="sm"
+						performDataFetching={useProductsWithPromotion}
+						bind:value={productIds}
+					/>
+				</div>
+
+				<div class="flex items-center gap-1">
+					<Checkbox
+						label="Product variants"
+						bind:checked={useProductVariantsWithPromotion}
+						class="flex-1/4"
+					/>
+					<GraphqlPaginableSelect
+						class="flex-3/4"
+						query={PRODUCT_VARIANTS_QUERY}
+						variables={{
+							first: 20,
+							filter: { search: '' },
+							channel: rule.channel,
+						} as QueryProductVariantsArgs}
+						optionLabelKey="name"
+						optionValueKey="id"
+						variableSearchQueryPath="filter.search"
+						multiple
+						resultKey="productVariants"
+						size="sm"
+						performDataFetching={useProductVariantsWithPromotion}
+						bind:value={productVariantIds}
+					/>
+				</div>
+
+				<div class="flex items-center gap-1">
+					<Checkbox label="Categories" bind:checked={useCategoriesWithPromotion} class="flex-1/4" />
+					<GraphqlPaginableSelect
+						class="flex-3/4"
+						query={CATEGORIES_LIST_QUERY}
+						variables={{ first: 20, filter: { search: '' } } as QueryCategoriesArgs}
+						optionLabelKey="name"
+						optionValueKey="id"
+						variableSearchQueryPath="filter.search"
+						multiple
+						resultKey="categories"
+						size="sm"
+						performDataFetching={useCategoriesWithPromotion}
+						bind:value={categoryIds}
+					/>
+				</div>
+
+				<div class="flex items-center gap-1">
+					<Checkbox
+						label="Collections"
+						bind:checked={useCollectionsWithPromotion}
+						class="flex-1/4"
+					/>
+					<GraphqlPaginableSelect
+						class="flex-3/4"
+						query={COLLECTIONS_QUERY}
+						variables={{
+							first: 20,
+							channel: rule.channel,
+							filter: { search: '' },
+						} as QueryCollectionsArgs}
+						optionLabelKey="name"
+						optionValueKey="id"
+						variableSearchQueryPath="filter.search"
+						multiple
+						resultKey="collections"
+						size="sm"
+						performDataFetching={useCollectionsWithPromotion}
+						bind:value={collectionIds}
+					/>
+				</div>
 			</div>
 		</div>
 	{/if}

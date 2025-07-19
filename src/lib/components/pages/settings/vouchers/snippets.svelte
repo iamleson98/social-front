@@ -6,7 +6,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { stringSlicer } from '$lib/utils/utils';
 
-	export const COLLECTION_COLUMNS: TableColumnProps<Collection>[] = [
+	export const COLLECTION_COLUMNS: TableColumnProps<Collection, string>[] = [
 		{
 			title: 'Image',
 			child: collectionImage,
@@ -21,7 +21,7 @@
 		},
 	];
 
-	export const PRODUCT_COLUMNS: TableColumnProps<Product>[] = [
+	export const PRODUCT_COLUMNS: TableColumnProps<Product, string>[] = [
 		{
 			title: 'Image',
 			child: prdImage,
@@ -40,7 +40,7 @@
 		},
 	];
 
-	export const CATEGORY_COLUMNS: TableColumnProps<Category>[] = [
+	export const CATEGORY_COLUMNS: TableColumnProps<Category, string>[] = [
 		{
 			title: 'Image',
 			child: categoryImage,
@@ -55,7 +55,7 @@
 		},
 	];
 
-	export const VARIANT_COLUMNS: TableColumnProps<ProductVariant>[] = [
+	export const VARIANT_COLUMNS: TableColumnProps<ProductVariant, string>[] = [
 		{
 			title: 'Image',
 			child: variantImage,
@@ -73,7 +73,7 @@
 
 <!-- Product -->
 {#snippet prdName({ item }: { item: Product })}
-	<a href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.slug)} class="link">
+	<a href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.slug)} class="link" target="_blank">
 		{stringSlicer(item.name, 40)}
 	</a>
 {/snippet}
@@ -96,7 +96,7 @@
 
 <!-- Collection -->
 {#snippet name({ item }: { item: Collection })}
-	<a href={AppRoute.SETTINGS_CONFIGS_COLLECTION_DETAILS(item.id)} class="link">
+	<a href={AppRoute.SETTINGS_CONFIGS_COLLECTION_DETAILS(item.id)} class="link" target="_blank">
 		{item.name}
 	</a>
 {/snippet}
@@ -116,7 +116,7 @@
 
 <!-- Category -->
 {#snippet categoryName({ item }: { item: Category })}
-	<a href={AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(item.id)} class="link">
+	<a href={AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(item.id)} class="link" target="_blank">
 		{item.name}
 	</a>
 {/snippet}
@@ -135,7 +135,7 @@
 
 <!-- Variant -->
 {#snippet variantPrdName({ item }: { item: ProductVariant })}
-	<a href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.product.slug)} class="link">
+	<a href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.product.slug)} class="link" target="_blank">
 		{stringSlicer(item.product.name, 40)}
 	</a>
 {/snippet}
