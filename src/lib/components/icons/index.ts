@@ -121,6 +121,7 @@ export {
   BiPersonBadge as PersonBadge,
   RiPoliceBadgeFill as PoliceBadgeFill,
   MdiBadgeOutline as BadgeOutline,
+  TablerLockCog as LockCog,
 } from './consts';
 
 export { default as Icon } from './icon.svelte';

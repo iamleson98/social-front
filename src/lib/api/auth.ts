@@ -104,6 +104,9 @@ export const USER_ME_QUERY_STORE = gql`
 				code
 				name
 			}
+			editableGroups {
+				id
+			}
 			avatar(size: 100, format: WEBP) {
 				url
 				alt

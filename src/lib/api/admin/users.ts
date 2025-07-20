@@ -92,4 +92,50 @@ query UserDetail($id: ID, $email: String) {
       alt
     }
   }
-}`
+}`;
+
+export const PERMISSION_GROUP_LIST_QUERY = gql`
+query PermissionGroups($first: Int, $after: String, $last: Int, $before: String, $sortBy: PermissionGroupSortingInput, $filter: PermissionGroupFilterInput) {
+  permissionGroups(first: $first, after: $after, last: $last, before: $before, sortBy: $sortBy, filter: $filter) {
+    edges {
+      node {
+        id
+        name
+        users {
+          id
+        }
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+  }
+}`;
+
+export const PERMISSION_GROUP_DETAIL_QUERY = gql`
+query PermissionGroupDetail($id: ID!) {
+  permissionGroup(id: $id) {
+    id
+    name
+    restrictedAccessToChannels
+    permissions {
+      code
+      name
+    }
+    userCanManage
+    users {
+      id
+      firstName
+      lastName
+      email
+      avatar(size: 100, format: WEBP) {
+        url
+        alt
+      }
+    }
+  }
+}`;
+

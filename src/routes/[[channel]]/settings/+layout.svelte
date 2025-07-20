@@ -13,6 +13,7 @@
 		Gift,
 		Globe,
 		Icon,
+		LockCog,
 		MailQuestion,
 		Parking,
 		RosetteDiscountChecked,
@@ -258,6 +259,17 @@
 					AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONES(),
 					AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_NEW(),
 					AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS(page.params.id),
+				].includes(page.url.pathname),
+		},
+		{
+			icon: LockCog,
+			name: 'Permission groups',
+			href: AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUPS(),
+			shouldActive: () =>
+				[
+					AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUPS(),
+					AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUP_NEW(),
+					AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUP_DETAIL(page.params.id),
 				].includes(page.url.pathname),
 		},
 	]);

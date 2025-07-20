@@ -77,6 +77,10 @@ export const AppRoute = {
 	SETTINGS_CONFIGS_VOUCHER_NEW: () => buildLinkWithRespectToChannel('settings/vouchers/new'),
 	SETTINGS_CONFIGS_VOUCHER_DETAIL: (id: string) => buildLinkWithRespectToChannel(`settings/vouchers/${id}`),
 
+	SETTINGS_CONFIGS_PERMISSION_GROUPS: () => buildLinkWithRespectToChannel('settings/permission-groups'),
+	SETTINGS_CONFIGS_PERMISSION_GROUP_NEW: () => buildLinkWithRespectToChannel('settings/permission-groups/new'),
+	SETTINGS_CONFIGS_PERMISSION_GROUP_DETAIL: (id: string) => buildLinkWithRespectToChannel(`settings/permission-groups/${id}`),
+
 	HOME: () => buildHomePageLink(),
 	TRENDING: () => buildLinkWithRespectToChannel('trending'),
 	SETTINGS: () => buildLinkWithRespectToChannel('settings'),
