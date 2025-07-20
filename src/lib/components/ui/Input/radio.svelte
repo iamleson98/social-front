@@ -5,9 +5,10 @@
 	import { INPUT_CLASSES, RADIO_SIZES } from './input.types';
 	import Label from './label.svelte';
 	import type { SocialVariant } from '$lib/utils';
+	import type { Snippet } from 'svelte';
 
 	type Props = {
-		label?: string;
+		label?: string | Snippet;
 		group?: string | number | boolean;
 		size?: SocialSize;
 		class?: string;

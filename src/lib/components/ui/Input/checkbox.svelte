@@ -12,6 +12,7 @@
 		size?: SocialSize;
 		subText?: string | Snippet;
 		variant?: SocialVariant;
+		onCheckChange?: (checked: boolean) => void;
 	} & Omit<HTMLInputAttributes, 'size'>;
 
 	let {
@@ -23,6 +24,7 @@
 		size = 'md',
 		subText,
 		variant = 'info',
+		onCheckChange,
 		...rest
 	}: Props = $props();
 </script>
@@ -36,6 +38,10 @@
 			type="checkbox"
 			{id}
 			class={`checkbox ${CHECKBOX_SIZES[size]} shadow-none!`}
+			onchange={(evt) => {
+				rest.onchange?.(evt);
+				onCheckChange?.(evt.currentTarget.checked);
+			}}
 		/>
 		<div>
 			{#if label}

@@ -24,7 +24,7 @@ export type CustomInputProps = {
   inputDebounceOption?: InputDebounceOpts;
 }
 
-export type InputDebounceProps = Omit<InputProps, 'inputDebounceOption'> & {
+export type InputDebounceProps = Omit<InputProps, 'inputDebounceOption' | 'onchange'> & {
   /** debounce time in ms, default to 333 */
   debounceTime?: number;
 };

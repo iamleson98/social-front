@@ -103,6 +103,7 @@ query ProductType($id: ID!, $attributeChoicesFirst: Int!, $attributeChoicesAfter
 		productAttributes {
 			id
 			name
+      slug
 			type
 			valueRequired
 			inputType
@@ -121,11 +122,58 @@ query ProductType($id: ID!, $attributeChoicesFirst: Int!, $attributeChoicesAfter
 				}
 			}
 		}
+    assignedVariantAttributes {
+      attribute {
+        id
+        name
+        slug
+      }
+      variantSelection
+    }
 		taxClass {
 			name
 			id
 		}
 	}
+}`;
+
+export const PRODUCT_TYPE_AVAILABLE_ATTRIBUTES_QUERY = gql`
+query ProductType($id: ID!, $first: Int, $after: String, $last: Int, $before: String, $filter: AttributeFilterInput, $where: AttributeWhereInput) {
+	productType(id: $id) {
+		id
+		availableAttributes(first: $first, after: $after, last: $last, before: $before, filter: $filter, where: $where) {
+			edges {
+				node {
+					id
+					name
+					slug
+					type
+					valueRequired
+					inputType
+					entityType
+				}
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+				hasPreviousPage
+				startCursor
+			}
+		}
+	}
+}`;
+
+export const PRODUCT_TYPE_ASSIGN_ATTRIBUTES_MUTATION = gql`
+mutation ProductAttributeAssign($productTypeId: ID!, $operations: [ProductAttributeAssignInput!]!) {
+  productAttributeAssign(productTypeId: $productTypeId, operations: $operations) {
+    productType {
+      id
+    }
+    errors {
+      field
+      message
+    }
+  }
 }`;
 
 export const CREATE_PRODUCT_MUTATION = gql`
@@ -445,3 +493,42 @@ export const PRODUCT_LIST_QUERY_ADMIN = gql`
 		}
 	}
 `;
+
+export const PRODUCT_TYPE_UPDATE_MUTATION = gql`
+mutation ProductTypeUpdate($id: ID!, $input: ProductTypeInput!) {
+  productTypeUpdate(id: $id, input: $input) {
+    productType {
+      id
+    }
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const PRODUCT_TYPE_REORDER_ATTRIBUTES_MUTATION = gql`
+mutation ProductTypeReorderAttributes($productTypeId: ID!, $moves: [ReorderInput!]!, $type: ProductAttributeType!) {
+  productTypeReorderAttributes(productTypeId: $productTypeId, moves: $moves, type: $type) {
+    productType {
+      id
+    }
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const PRODUCT_TYPE_UNASSIGN_ATTRIBUTES_MUTATION = gql`
+mutation ProductAttributeUnassign($productTypeId: ID!, $attributeIds: [ID!]!) {
+  productAttributeUnassign(productTypeId: $productTypeId, attributeIds: $attributeIds) {
+    productType {
+      id
+    }
+    errors {
+      field
+      message
+    }
+  }
+}`;
