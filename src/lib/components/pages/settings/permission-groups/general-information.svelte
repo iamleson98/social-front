@@ -1,5 +1,7 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { STAFFS_QUERY } from '$lib/api/admin/staff';
+	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { Plus, Search, Trash } from '$lib/components/icons';
@@ -7,9 +9,11 @@
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
 	import { GraphqlPaginableTable, Table, type TableColumnProps } from '$lib/components/ui/Table';
-	import { type QueryStaffUsersArgs, type User } from '$lib/gql/graphql';
+	import { type Channel, type QueryStaffUsersArgs, type User } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { toggleItemNoDup } from '$lib/utils/utils';
+	import { addNoDup, toggleItemNoDup } from '$lib/utils/utils';
+	import { difference } from 'es-toolkit';
+	import z, { array, object, string } from 'zod';
 
 	type Props = {
 		name: string;
@@ -18,6 +22,9 @@
 		disabled?: boolean;
 		/** indicates if current user can edit this group */
 		editable?: boolean;
+		existingAccessibleChannels?: Channel[];
+		addChannels?: string[];
+		removeChannels?: string[];
 	};
 
 	let {
@@ -26,8 +33,22 @@
 		users = [],
 		disabled,
 		editable = true,
+		existingAccessibleChannels = [],
+		addChannels = $bindable([]),
+		removeChannels = $bindable([]),
 	}: Props = $props();
 
+	const ExistingChannelIds = existingAccessibleChannels.map((chan) => chan.id);
+
+	const RequiredError = $tranFunc('helpText.fieldRequired');
+	const GroupSchema = object({
+		name: string().nonempty(RequiredError),
+		selectedChannels: array(string()).nonempty(RequiredError),
+	});
+
+	type Group = z.infer<typeof GroupSchema>;
+
+	let groupErrors = $state<Partial<Record<keyof Group, string[]>>>({});
 	let selectedUsersToUnassign = $state<string[]>([]);
 	let selectedUsersToAssign = $state<string[]>([]);
 	let openAssignUserModal = $state(false);
@@ -38,6 +59,7 @@
 		},
 	});
 	let forceReExecuteGraphqlQuery = $state(false);
+	let selectedChannels = $state<string[]>(existingAccessibleChannels.map((item) => item.id));
 
 	const UnassignSelectColumn: TableColumnProps<User>[] = [
 		{
@@ -67,6 +89,24 @@
 			child: email,
 		},
 	];
+
+	const validate = () => {
+		const result = GroupSchema.safeParse({
+			name,
+			selectedChannels,
+		});
+		groupErrors = result.success ? {} : result.error.formErrors.fieldErrors;
+		return result.success;
+	};
+
+	const handleChannelsChange = async () => {
+		const newChansDiff = difference(selectedChannels, ExistingChannelIds);
+		const removeChansDiff = difference(ExistingChannelIds, selectedChannels);
+
+		if (newChansDiff.length) addChannels = addNoDup(addChannels, ...newChansDiff);
+		if (removeChansDiff.length) removeChannels = addNoDup(removeChannels, ...removeChansDiff);
+		validate();
+	};
 </script>
 
 {#snippet selectUnassign({ item }: { item: User })}
@@ -110,12 +150,36 @@
 	<div class="rounded-lg bg-white border border-gray-200 p-3 space-y-3">
 		<SectionHeader>General information</SectionHeader>
 
-		<Input placeholder="Name" label="Name" bind:value={name} required readonly={!editable} />
+		<Input
+			placeholder="Name"
+			label="Name"
+			bind:value={name}
+			required
+			readonly={!editable}
+			onblur={validate}
+			inputDebounceOption={{ onInput: validate }}
+			variant={groupErrors?.name?.length ? 'error' : 'info'}
+			subText={groupErrors?.name?.[0]}
+		/>
 		<Checkbox
 			label="Restricted access to channels"
 			bind:checked={restrictedAccessToChannels}
 			readonly={!editable}
 		/>
+		{#if restrictedAccessToChannels}
+			<ChannelSelect
+				placeholder="Select channels"
+				label="Select visible order channels"
+				required
+				bind:value={selectedChannels}
+				multiple
+				onchange={handleChannelsChange}
+				valueType="id"
+				onblur={validate}
+				variant={groupErrors?.selectedChannels?.length ? 'error' : 'info'}
+				subText={groupErrors?.selectedChannels?.[0]}
+			/>
+		{/if}
 	</div>
 
 	<div class="rounded-lg bg-white border border-gray-200 p-3 space-y-2">

@@ -14,6 +14,10 @@ query Shop($isStaffUser: Boolean = false) {
       code
       language
     }
+    permissions {
+      code
+      name
+    }
     channelCurrencies @include(if: $isStaffUser)
     fulfillmentAutoApprove
     fulfillmentAllowUnpaid

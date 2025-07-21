@@ -136,6 +136,21 @@ query PermissionGroupDetail($id: ID!) {
         alt
       }
     }
+    accessibleChannels {
+      id
+      name
+      slug
+    }
+  }
+}`;
+
+export const PERMISSION_GROUP_UPDATE_MUTATION = gql`
+mutation UpdatePermissionGroup($id: ID!, $input: PermissionGroupUpdateInput!) {
+  permissionGroupUpdate(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
   }
 }`;
 

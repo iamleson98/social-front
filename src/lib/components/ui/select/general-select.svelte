@@ -254,7 +254,7 @@
 		<Label {label} id={INPUT_ID} required={rest.required} {size} {variant} requiredAtPos="end" />
 	{/if}
 	<div
-		class={`flex items-center rounded-lg p-0.5 ${INPUT_CLASSES[variant].bg} ${INPUT_BUTTON_SIZE_MAP[size]}`}
+		class={`flex items-center rounded-lg py-0.5 px-1 ${INPUT_CLASSES[variant].bg} ${INPUT_BUTTON_SIZE_MAP[size]}`}
 	>
 		<div class="flex flex-wrap items-center gap-1 flex-1">
 			{#if multiple && Array.isArray(value)}

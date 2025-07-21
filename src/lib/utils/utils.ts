@@ -499,13 +499,11 @@ export const convertAddressToAddressInput = (addr: Address): AddressInput => {
 };
 
 export const addNoDup = <T extends string | number>(array: T[], ...items: T[]) => {
-	const result = [...array];
-
 	for (const item of items)
-		if (!result.includes(item))
-			result.push(item)
+		if (!array.includes(item))
+			array.push(item)
 
-	return result;
+	return array;
 };
 
 export const toggleItemNoDup = <T extends string | number>(array: T[], item: T, add: boolean = true) => {

@@ -9,6 +9,7 @@
 	import { Toaster } from 'svelte-sonner';
 	import dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
+	import ShopQuery from '$lib/components/common/shop-query.svelte';
 
 	interface Props {
 		children: Snippet;
@@ -46,6 +47,8 @@
 <Header />
 
 <Language />
+
+<ShopQuery />
 
 <main class="pt-16 mx-auto min-h-screen max-w-7xl">
 	{@render children()}

@@ -29,10 +29,6 @@
 	let permissionGroupInput = $state<PermissionGroupUpdateInput>({
 		restrictedAccessToChannels: false,
 		name: '',
-		addChannels: [],
-		removeChannels: [],
-		addPermissions: [],
-		removePermissions: [],
 	});
 
 	const loading = $state(false);
@@ -60,17 +56,13 @@
 {:else if $groupQuery.error}
 	<Alert variant="error" bordered size="sm">{$groupQuery.error.message}</Alert>
 {:else if $groupQuery.data?.permissionGroup}
-	{@const { permissions, users, userCanManage, accessibleChannels } =
-		$groupQuery.data.permissionGroup}
+	{@const { permissions, users, userCanManage } = $groupQuery.data.permissionGroup}
 	<div class="flex gap-2">
 		<GeneralInformation
 			bind:name={permissionGroupInput.name!}
 			bind:restrictedAccessToChannels={permissionGroupInput.restrictedAccessToChannels!}
-			bind:addChannels={permissionGroupInput.addChannels!}
-			bind:removeChannels={permissionGroupInput.removeChannels!}
 			users={users || []}
 			editable={userCanManage}
-			existingAccessibleChannels={accessibleChannels || []}
 		/>
 		<Permissions permissions={permissions || []} editable={userCanManage} />
 	</div>

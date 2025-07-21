@@ -3,7 +3,6 @@
 	import Icon from '$lib/components/icons/icon.svelte';
 	import { classNames, randomID } from '$lib/utils/utils';
 	import { debounceInput } from '$lib/actions/input-debounce';
-	import { tranFunc } from '$i18n';
 	import { INPUT_BUTTON_SIZE_MAP } from '$lib/components/ui/Button/button.types';
 	import { INPUT_CLASSES, type InputProps } from './input.types';
 	import Label from './label.svelte';
@@ -11,7 +10,6 @@
 	let {
 		label,
 		id = randomID(),
-		placeholder = $tranFunc('placeholders.valuePlaceholder'),
 		variant = 'info',
 		subText,
 		startIcon,
@@ -45,7 +43,6 @@
 		<input
 			bind:this={ref}
 			{id}
-			{placeholder}
 			{required}
 			bind:value
 			use:shortcuts={selectShortcutOptions}
