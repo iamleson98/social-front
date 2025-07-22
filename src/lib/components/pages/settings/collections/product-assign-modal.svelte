@@ -119,19 +119,17 @@
 	size="sm"
 	disableElements={shouldDisable}
 >
-	<div class="mb-4">
-		<Input
-			placeholder={$tranFunc('collection.searchPrd')}
-			class="w-full"
-			startIcon={Search}
-			bind:value={filterAllProductsVariables.filter!.search}
-			inputDebounceOption={{
-				onInput: () => (forceReExecuteGraphqlQuery = true), // force the result table to re-execute the query
-				debounceTime: 800,
-			}}
-			disabled={shouldDisable}
-		/>
-	</div>
+	<Input
+		placeholder={$tranFunc('collection.searchPrd')}
+		class="w-full mb-2"
+		startIcon={Search}
+		bind:value={filterAllProductsVariables.filter!.search}
+		inputDebounceOption={{
+			onInput: () => (forceReExecuteGraphqlQuery = true), // force the result table to re-execute the query
+			debounceTime: 800,
+		}}
+		disabled={shouldDisable}
+	/>
 
 	{#if openAssignProductModal}
 		<GraphqlPaginableTable

@@ -26,7 +26,6 @@
 		MutationCollectionUpdateArgs,
 		Query,
 		QueryCollectionArgs,
-		SeoInput,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
@@ -34,6 +33,7 @@
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import { tranFunc } from '$i18n';
+	import { toast } from 'svelte-sonner';
 
 	let collectionUpdateInput = $state<CollectionInput>({
 		name: '',
@@ -133,20 +133,14 @@
 	};
 
 	const onUpdateClick = async () => {
-		let hasError = false;
-
-		loading = true; //
-		performUpdateMetadata = true; // trigger update metadata
-
 		const input = {
 			...collectionUpdateInput,
 			description: JSON.stringify(collectionUpdateInput.description),
 		};
-		if (media[0].file) input.backgroundImage = media[0].file;
-		input.backgroundImageAlt = media[0].alt;
+		if (media[0]?.file) input.backgroundImage = media[0].file;
+		input.backgroundImageAlt = media[0]?.alt;
 
-		// 1) update general information of collection:
-		const result = await GRAPHQL_CLIENT.mutation<
+		const generalUpdateJob = GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'collectionUpdate'>,
 			MutationCollectionUpdateArgs
 		>(COLLECTION_UPDATE_MUTATION, {
@@ -154,10 +148,7 @@
 			input,
 		});
 
-		hasError ||= checkIfGraphqlResultHasError(result, 'collectionUpdate');
-
-		// 2) update channel listings
-		const result2 = await GRAPHQL_CLIENT.mutation<
+		const channelListingUpdateJob = GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'collectionChannelListingUpdate'>,
 			MutationCollectionChannelListingUpdateArgs
 		>(COLLECTION_CHANNEL_LISTING_UPDATE_MUTATION, {
@@ -165,20 +156,18 @@
 			input: collectionChannelListingUpdateInput,
 		});
 
-		loading = false; //
+		loading = true;
+		performUpdateMetadata = true; // trigger update metadata
+		const results = await Promise.all([generalUpdateJob, channelListingUpdateJob]);
+		loading = false;
 
-		hasError ||= checkIfGraphqlResultHasError(
-			result2,
-			'collectionChannelListingUpdate',
-			$tranFunc('common.editSuccess'),
-		);
+		const keys = ['collectionUpdate', 'collectionChannelListingUpdate'] as const;
+		if (results.some((result, idx) => checkIfGraphqlResultHasError(result as any, keys[idx])))
+			return;
 
-		if (hasError) return;
-
+		toast.success($tranFunc('common.editSuccess'));
 		collectionDetailQuery.reexecute({
-			variables: {
-				id: page.params.id,
-			},
+			context: { requestPolicy: 'network-only' },
 		});
 	};
 </script>

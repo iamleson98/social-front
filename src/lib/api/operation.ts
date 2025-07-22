@@ -150,7 +150,7 @@ export function operationStore<Data = unknown, Variables extends AnyVariables = 
 
 	const reexecute = (args: ReexecuteProps<Variables>): void => {
 		const newContext = { ...context, ...args.context };
-		request.variables = args.variables as Variables;
+		request.variables = { ...request.variables, ...args.variables };
 		const newOperation = GRAPHQL_CLIENT.createRequestOperation(operation.kind, request, newContext);
 
 		isPaused$.set(false);

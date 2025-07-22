@@ -16,6 +16,7 @@
 	import { COLLECTION_CREATE_MUTATION } from '$lib/api/admin/collections';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { tranFunc } from '$i18n';
+	import { goto } from '$app/navigation';
 
 	let generalFormOk = $state(false);
 	let seoFormOk = $state(false);
@@ -55,11 +56,12 @@
 		}
 
 		// create success, add metadata now
-		createdCollectionId = result.data?.collectionCreate?.collection?.id as string;
-		if (createdCollectionId) {
-			performUpdateMetadata = true;
-		}
+		createdCollectionId = result.data?.collectionCreate?.collection?.id ?? '';
+		if (!createdCollectionId) return;
+		performUpdateMetadata = true;
 		loading = false;
+
+		await goto(AppRoute.SETTINGS_CONFIGS_COLLECTION_DETAILS(createdCollectionId));
 	};
 </script>
 

@@ -123,13 +123,14 @@
 	const handleUnassignUsers = () => {
 		const newUnassignUserIds: string[] = [];
 		for (const id of innerSelectedUsersToUnassign) {
+			delete innerSelectedUsersToAssign[id];
 			if (users.some((user) => user.id === id)) {
 				newUnassignUserIds.push(id);
 			}
 		}
 
-		removeUsers = addNoDup(removeUsers, ...newUnassignUserIds);
-		displayingUsers = displayingUsers.filter((user) => !newUnassignUserIds.includes(user.id));
+		removeUsers = newUnassignUserIds;
+		displayingUsers = displayingUsers.filter((user) => !innerSelectedUsersToUnassign.includes(user.id));
 		innerSelectedUsersToUnassign = [];
 	};
 
@@ -143,10 +144,9 @@
 				addDisplayUsers.push(innerSelectedUsersToAssign[key]);
 			}
 		}
-		addUsers = addNoDup(addUsers, ...newAddUsers);
+		addUsers = newAddUsers;
 		displayingUsers = displayingUsers.concat(addDisplayUsers);
 		openAssignUserModal = false;
-		innerSelectedUsersToAssign = {};
 	};
 
 	$inspect(addUsers, removeUsers);
