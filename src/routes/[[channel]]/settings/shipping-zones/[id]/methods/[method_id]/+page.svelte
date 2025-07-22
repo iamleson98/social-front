@@ -4,6 +4,7 @@
 	import { operationStore } from '$lib/api/operation';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
+	import ChannelListing from '$lib/components/pages/settings/shipping-method/channel-listing.svelte';
 	import GeneralInfo from '$lib/components/pages/settings/shipping-method/general-info.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { SelectSkeleton } from '$lib/components/ui/select';
@@ -59,23 +60,21 @@
 	{@const shippingMethod = shippingMethods?.find((method) => method.id === page.params.method_id)}
 
 	{#if shippingMethod}
-		<div class="flex gap-2">
-			<div class="w-6/10 space-y-2">
-				<GeneralInfo
-					disabled={loading}
-					bind:name={shippingMethodInput.name!}
-					bind:description={shippingMethodInput.description!}
-					bind:maximumDeliveryDays={shippingMethodInput.maximumDeliveryDays!}
-					bind:minimumDeliveryDays={shippingMethodInput.minimumDeliveryDays!}
-				/>
-				<GeneralMetadataEditor
-					objectId={shippingMethod.id}
-					bind:performUpdateMetadata
-					metadata={shippingMethod.metadata}
-					privateMetadata={shippingMethod.privateMetadata}
-				/>
-			</div>
-			<div class="w-3/10"></div>
+		<div class="space-y-2">
+			<GeneralInfo
+				disabled={loading}
+				bind:name={shippingMethodInput.name!}
+				bind:description={shippingMethodInput.description!}
+				bind:maximumDeliveryDays={shippingMethodInput.maximumDeliveryDays!}
+				bind:minimumDeliveryDays={shippingMethodInput.minimumDeliveryDays!}
+			/>
+			<ChannelListing shippingMethodChannelListings={shippingMethod.channelListings || []} />
+			<GeneralMetadataEditor
+				objectId={shippingMethod.id}
+				bind:performUpdateMetadata
+				metadata={shippingMethod.metadata}
+				privateMetadata={shippingMethod.privateMetadata}
+			/>
 		</div>
 
 		<ActionBar
