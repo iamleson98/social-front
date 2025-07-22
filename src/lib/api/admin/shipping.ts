@@ -40,3 +40,98 @@ query ShippingZones($id: ID!, $before: String, $after: String, $first: Int, $las
     }
   }
 }`;
+
+export const SHIPPING_ZONE_DETAIL_QUERY = gql`
+query ShippingZone($id: ID!, $channel: String) {
+  shippingZone(id: $id, channel: $channel) {
+    id
+    name
+    default
+    channels {
+      id
+      name
+      slug
+    }
+    metadata {
+      key
+      value
+    }
+    privateMetadata {
+      key
+      value
+    }
+    countries {
+      code
+      country
+    }
+    warehouses {
+      id
+      name
+      slug
+    }
+    shippingMethods {
+      id
+      postalCodeRules {
+        id
+        start 
+        end
+        inclusionType
+      }
+      taxClass {
+        id
+        name
+      }
+      metadata {
+        key
+        value
+      }
+      privateMetadata {
+        key
+        value
+      }
+      minimumOrderWeight {
+        unit
+        value
+      }
+      maximumOrderWeight {
+        unit
+        value
+      }
+      minimumDeliveryDays
+      maximumDeliveryDays
+      name
+      description
+      type
+      channelListings {
+        id
+        channel {
+          id
+          name
+          currencyCode
+        }
+        price {
+          amount
+          currency
+        }
+        minimumOrderPrice {
+          amount
+          currency
+        }
+        maximumOrderPrice {
+          amount
+          currency
+        }
+      }
+    }
+  }
+}`;
+
+export const DELETE_SHIPPING_ZONE_MUTATION = gql`
+mutation ShippingZoneDelete($id: ID!) {
+  shippingZoneDelete(id: $id) {
+    errors {
+      field
+      message
+    }
+  }
+}`;

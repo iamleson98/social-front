@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { SHIPPING_ZONES_QUERY } from '$lib/api/admin/shipping';
+	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { type QueryShippingZonesArgs, type ShippingZone } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
@@ -33,6 +34,8 @@
 {#snippet countries({ item }: { item: ShippingZone })}
 	<span>{item.countries.length}</span>
 {/snippet}
+
+<FilterManager bind:variables bind:forceReExecuteGraphqlQuery searchKey="filter.search" />
 
 <GraphqlPaginableTable
 	query={SHIPPING_ZONES_QUERY}

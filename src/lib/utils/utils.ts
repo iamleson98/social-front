@@ -277,6 +277,9 @@ export const classNames = (...classes: ClassArgs[]): string => {
 	return result.trim();
 };
 
+/** This class is commonly used for sections */
+export const SitenameCommonClassName = 'bg-white border border-gray-200 p-3 rounded-lg';
+
 /**
  * Builds the link for the home page.
  * With respect to current channel
