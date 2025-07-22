@@ -21,7 +21,6 @@ query GetOrdersOfUser($first: Int, $after: String, $last: Int, $before: String) 
               currency
             }
           }
-          # totalCharged
         }
       }
       pageInfo {

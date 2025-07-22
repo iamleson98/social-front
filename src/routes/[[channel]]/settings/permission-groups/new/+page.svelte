@@ -1,75 +1,74 @@
 <script lang="ts">
-	import { page } from '$app/state';
-	import { PERMISSION_GROUP_DETAIL_QUERY } from '$lib/api/admin/users';
-	import { operationStore } from '$lib/api/operation';
+	import { goto } from '$app/navigation';
+	import { tranFunc } from '$i18n';
+	import { PERMISSION_GROUP_CREATE_MUTATION } from '$lib/api/admin/users';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralInformation from '$lib/components/pages/settings/permission-groups/general-information.svelte';
 	import Permissions from '$lib/components/pages/settings/permission-groups/permissions.svelte';
-	import { Alert } from '$lib/components/ui/Alert';
-	import { SelectSkeleton } from '$lib/components/ui/select';
-	import type {
-		PermissionGroupUpdateInput,
-		Query,
-		QueryPermissionGroupArgs,
+	import {
+		type Mutation,
+		type MutationPermissionGroupCreateArgs,
+		type PermissionGroupCreateInput,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { pick } from 'es-toolkit';
-	import { onMount } from 'svelte';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 
-	const groupQuery = operationStore<Pick<Query, 'permissionGroup'>, QueryPermissionGroupArgs>({
-		kind: 'query',
-		query: PERMISSION_GROUP_DETAIL_QUERY,
-		variables: {
-			id: page.params.id,
-		},
-		pause: !page.params.id,
-		requestPolicy: 'network-only',
-	});
-
-	let permissionGroupInput = $state<PermissionGroupUpdateInput>({
-		restrictedAccessToChannels: false,
+	let groupInput = $state<PermissionGroupCreateInput>({
 		name: '',
+		restrictedAccessToChannels: false,
+		addChannels: [],
+		addPermissions: [],
+		addUsers: [],
 	});
 
-	const loading = $state(false);
+	let loading = $state(false);
+	let generalFormOk = $state(false);
 
-	const handleUpdate = async () => {};
+	const handleCreate = async () => {
+		if (!generalFormOk) return;
+		loading = true;
 
-	const handleDelete = async () => {};
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'permissionGroupCreate'>,
+			MutationPermissionGroupCreateArgs
+		>(PERMISSION_GROUP_CREATE_MUTATION, {
+			input: groupInput,
+		});
 
-	onMount(() =>
-		groupQuery.subscribe((result) => {
-			if (result.data?.permissionGroup) {
-				const data = pick(result.data.permissionGroup, ['name', 'restrictedAccessToChannels']);
+		loading = false;
 
-				permissionGroupInput = {
-					...permissionGroupInput,
-					...data,
-				};
-			}
-		}),
-	);
+		if (
+			checkIfGraphqlResultHasError(
+				result,
+				'permissionGroupCreate',
+				$tranFunc('common.createSuccess'),
+			)
+		)
+			return;
+
+		const createdGroupId = result.data?.permissionGroupCreate?.group?.id;
+
+		await goto(AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUP_DETAIL(createdGroupId!));
+	};
 </script>
 
-{#if $groupQuery.fetching}
-	<SelectSkeleton />
-{:else if $groupQuery.error}
-	<Alert variant="error" bordered size="sm">{$groupQuery.error.message}</Alert>
-{:else if $groupQuery.data?.permissionGroup}
-	{@const { permissions, users, userCanManage } = $groupQuery.data.permissionGroup}
-	<div class="flex gap-2">
-		<GeneralInformation
-			bind:name={permissionGroupInput.name!}
-			bind:restrictedAccessToChannels={permissionGroupInput.restrictedAccessToChannels!}
-			users={users || []}
-			editable={userCanManage}
-		/>
-		<Permissions permissions={permissions || []} editable={userCanManage} />
-	</div>
-	<ActionBar
-		backButtonUrl={AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUPS()}
-		onUpdateClick={handleUpdate}
-		onDeleteClick={handleDelete}
+<div class="flex gap-2">
+	<GeneralInformation
+		bind:name={groupInput.name!}
+		bind:restrictedAccessToChannels={groupInput.restrictedAccessToChannels!}
+		bind:formOk={generalFormOk}
+		editable
 		disabled={loading}
+		bind:addUsers={groupInput.addUsers!}
+		bind:addChannels={groupInput.addChannels!}
 	/>
-{/if}
+	<Permissions bind:addPermissions={groupInput.addPermissions!} editable disabled={loading} />
+</div>
+
+<ActionBar
+	backButtonUrl={AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUPS()}
+	onAddClick={handleCreate}
+	disabled={loading}
+	disableCreateButton={!generalFormOk}
+/>

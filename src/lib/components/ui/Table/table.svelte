@@ -189,12 +189,13 @@
 	}))}
 	<div class="mt-4 flex items-center justify-between">
 		<div>
-			{#snippet trigger(opts: DropdownTriggerInterface)}
-				<Button size="xs" variant="light" {...opts} {disabled}>
-					No. of row {innerRowsPerPage}
-				</Button>
-			{/snippet}
-			<DropDown {trigger} placement="bottom-start" options={PAGIN_OPTIONS} />
+			<DropDown placement="bottom-start" options={PAGIN_OPTIONS}>
+				{#snippet trigger(opts: DropdownTriggerInterface)}
+					<Button size="xs" variant="light" {...opts} {disabled}>
+						No. of row {innerRowsPerPage}
+					</Button>
+				{/snippet}
+			</DropDown>
 		</div>
 		<div class="flex items-center gap-2 justify-end">
 			<IconButton

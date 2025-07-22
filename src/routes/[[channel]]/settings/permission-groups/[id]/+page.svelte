@@ -1,6 +1,13 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { PERMISSION_GROUP_DETAIL_QUERY } from '$lib/api/admin/users';
+	import { tranFunc } from '$i18n';
+	import {
+		PERMISSION_GROUP_DELETE_MUTATION,
+		PERMISSION_GROUP_DETAIL_QUERY,
+		PERMISSION_GROUP_UPDATE_MUTATION,
+	} from '$lib/api/admin/users';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralInformation from '$lib/components/pages/settings/permission-groups/general-information.svelte';
@@ -8,11 +15,16 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { SelectSkeleton } from '$lib/components/ui/select';
 	import type {
+		Mutation,
+		MutationPermissionGroupDeleteArgs,
+		MutationPermissionGroupUpdateArgs,
 		PermissionGroupUpdateInput,
 		Query,
 		QueryPermissionGroupArgs,
 	} from '$lib/gql/graphql';
+	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { pick } from 'es-toolkit';
 	import { onMount } from 'svelte';
 
@@ -33,13 +45,60 @@
 		removeChannels: [],
 		addPermissions: [],
 		removePermissions: [],
+		addUsers: [],
+		removeUsers: [],
 	});
+	let generalFormOk = $state(false);
 
-	const loading = $state(false);
+	let loading = $state(false);
 
-	const handleUpdate = async () => {};
+	const handleUpdate = async () => {
+		loading = true;
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'permissionGroupUpdate'>,
+			MutationPermissionGroupUpdateArgs
+		>(PERMISSION_GROUP_UPDATE_MUTATION, {
+			id: page.params.id,
+			input: permissionGroupInput,
+		});
+		loading = false;
 
-	const handleDelete = async () => {};
+		if (
+			!checkIfGraphqlResultHasError(
+				result,
+				'permissionGroupUpdate',
+				$tranFunc('common.editSuccess'),
+			)
+		)
+			groupQuery.reexecute({
+				context: { requestPolicy: 'network-only' },
+			});
+	};
+
+	const handleDelete = async () => {
+		ALERT_MODAL_STORE.openAlertModal({
+			content: $tranFunc('common.confirmDel'),
+			onOk: async () => {
+				loading = true;
+				const result = await GRAPHQL_CLIENT.mutation<
+					Pick<Mutation, 'permissionGroupDelete'>,
+					MutationPermissionGroupDeleteArgs
+				>(PERMISSION_GROUP_DELETE_MUTATION, {
+					id: page.params.id,
+				});
+				loading = false;
+
+				if (
+					!checkIfGraphqlResultHasError(
+						result,
+						'permissionGroupDelete',
+						$tranFunc('common.delSuccess'),
+					)
+				)
+					await goto(AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUPS());
+			},
+		});
+	};
 
 	onMount(() =>
 		groupQuery.subscribe((result) => {
@@ -71,13 +130,18 @@
 			users={users || []}
 			editable={userCanManage}
 			existingAccessibleChannels={accessibleChannels || []}
+			disabled={loading}
+			bind:addUsers={permissionGroupInput.addUsers!}
+			bind:removeUsers={permissionGroupInput.removeUsers!}
+			bind:formOk={generalFormOk}
 		/>
-		<Permissions permissions={permissions || []} editable={userCanManage} />
+		<Permissions permissions={permissions || []} editable={userCanManage} disabled={loading} />
 	</div>
 	<ActionBar
 		backButtonUrl={AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUPS()}
 		onUpdateClick={handleUpdate}
 		onDeleteClick={handleDelete}
+		disableUpdateButton={!generalFormOk || loading}
 		disabled={loading}
 	/>
 {/if}

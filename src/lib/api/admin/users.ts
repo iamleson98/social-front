@@ -25,7 +25,6 @@ query Customers($filter: CustomerFilterInput, $sortBy: UserSortingInput, $first:
       startCursor
       endCursor
     }
-    # totalCount
   }
 }`;
 
@@ -147,6 +146,29 @@ query PermissionGroupDetail($id: ID!) {
 export const PERMISSION_GROUP_UPDATE_MUTATION = gql`
 mutation UpdatePermissionGroup($id: ID!, $input: PermissionGroupUpdateInput!) {
   permissionGroupUpdate(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const PERMISSION_GROUP_DELETE_MUTATION = gql`
+mutation DeletePermissionGroup($id: ID!) {
+  permissionGroupDelete(id: $id) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const PERMISSION_GROUP_CREATE_MUTATION = gql`
+mutation CreatePermissionGroup($input: PermissionGroupCreateInput!) {
+  permissionGroupCreate(input: $input) {
+    group {
+      id
+    }
     errors {
       field
       message

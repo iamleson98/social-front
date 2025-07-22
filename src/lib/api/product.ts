@@ -298,7 +298,6 @@ export const PRODUCT_DETAIL_QUERY = gql`
 					type
 					unit
 					inputType
-					# valueRequired
 				}
 				values {
 					id
@@ -322,7 +321,6 @@ export const PRODUCT_DETAIL_QUERY = gql`
 				sku
 				quantityAvailable(countryCode: $countryCode)
 				quantityLimitPerCustomer
-				# quantityOrdered
 				margin
 				weight {
 					unit

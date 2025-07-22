@@ -18,6 +18,7 @@
 	type Props = {
 		name: string;
 		restrictedAccessToChannels: boolean;
+		/** existing users of this group */
 		users?: User[];
 		disabled?: boolean;
 		/** indicates if current user can edit this group */
@@ -25,6 +26,9 @@
 		existingAccessibleChannels?: Channel[];
 		addChannels?: string[];
 		removeChannels?: string[];
+		formOk?: boolean;
+		addUsers?: string[];
+		removeUsers?: string[];
 	};
 
 	let {
@@ -36,6 +40,9 @@
 		existingAccessibleChannels = [],
 		addChannels = $bindable([]),
 		removeChannels = $bindable([]),
+		formOk = $bindable(true),
+		addUsers = $bindable([]),
+		removeUsers = $bindable([]),
 	}: Props = $props();
 
 	const ExistingChannelIds = existingAccessibleChannels.map((chan) => chan.id);
@@ -48,9 +55,7 @@
 
 	type Group = z.infer<typeof GroupSchema>;
 
-	let groupErrors = $state<Partial<Record<keyof Group, string[]>>>({});
-	let selectedUsersToUnassign = $state<string[]>([]);
-	let selectedUsersToAssign = $state<string[]>([]);
+	let permissionGroupErrors = $state<Partial<Record<keyof Group, string[]>>>({});
 	let openAssignUserModal = $state(false);
 	let staffUsersVariables = $state<QueryStaffUsersArgs>({
 		first: 10,
@@ -60,6 +65,13 @@
 	});
 	let forceReExecuteGraphqlQuery = $state(false);
 	let selectedChannels = $state<string[]>(existingAccessibleChannels.map((item) => item.id));
+	let displayingUsers = $state(users);
+	let innerSelectedUsersToUnassign = $state<string[]>([]);
+	let innerSelectedUsersToAssign = $state<Record<string, User>>({});
+
+	$effect(() => {
+		formOk = !Object.values(permissionGroupErrors).length;
+	});
 
 	const UnassignSelectColumn: TableColumnProps<User>[] = [
 		{
@@ -95,7 +107,7 @@
 			name,
 			selectedChannels,
 		});
-		groupErrors = result.success ? {} : result.error.formErrors.fieldErrors;
+		permissionGroupErrors = result.success ? {} : result.error.formErrors.fieldErrors;
 		return result.success;
 	};
 
@@ -107,23 +119,64 @@
 		if (removeChansDiff.length) removeChannels = addNoDup(removeChannels, ...removeChansDiff);
 		validate();
 	};
+
+	const handleUnassignUsers = () => {
+		const newUnassignUserIds: string[] = [];
+		for (const id of innerSelectedUsersToUnassign) {
+			if (users.some((user) => user.id === id)) {
+				newUnassignUserIds.push(id);
+			}
+		}
+
+		removeUsers = addNoDup(removeUsers, ...newUnassignUserIds);
+		displayingUsers = displayingUsers.filter((user) => !newUnassignUserIds.includes(user.id));
+		innerSelectedUsersToUnassign = [];
+	};
+
+	const handleAssignUsers = () => {
+		const newAddUsers: string[] = [];
+		const addDisplayUsers: User[] = [];
+
+		for (const key in innerSelectedUsersToAssign) {
+			if (!users.some((user) => user.id === key)) {
+				newAddUsers.push(key);
+				addDisplayUsers.push(innerSelectedUsersToAssign[key]);
+			}
+		}
+		addUsers = addNoDup(addUsers, ...newAddUsers);
+		displayingUsers = displayingUsers.concat(addDisplayUsers);
+		openAssignUserModal = false;
+		innerSelectedUsersToAssign = {};
+	};
+
+	$inspect(addUsers, removeUsers);
 </script>
 
 {#snippet selectUnassign({ item }: { item: User })}
 	<Checkbox
 		readonly={!editable || disabled}
-		checked={selectedUsersToUnassign.includes(item.id)}
-		onCheckChange={(checked) =>
-			(selectedUsersToUnassign = toggleItemNoDup(selectedUsersToUnassign, item.id, checked))}
+		checked={innerSelectedUsersToUnassign.includes(item.id)}
+		onCheckChange={(checked) => {
+			innerSelectedUsersToUnassign = toggleItemNoDup(
+				innerSelectedUsersToUnassign,
+				item.id,
+				checked,
+			);
+		}}
 	/>
 {/snippet}
 
 {#snippet selectAssign({ item }: { item: User })}
 	<Checkbox
 		readonly={!editable || disabled}
-		checked={selectedUsersToAssign.includes(item.id)}
-		onCheckChange={(checked) =>
-			(selectedUsersToAssign = toggleItemNoDup(selectedUsersToAssign, item.id, checked))}
+		checked={!!innerSelectedUsersToAssign[item.id]}
+		onCheckChange={(checked) => {
+			if (checked) {
+				innerSelectedUsersToAssign[item.id] = item;
+			} else {
+				delete innerSelectedUsersToAssign[item.id];
+			}
+		}}
 	/>
 {/snippet}
 
@@ -158,8 +211,8 @@
 			readonly={!editable}
 			onblur={validate}
 			inputDebounceOption={{ onInput: validate }}
-			variant={groupErrors?.name?.length ? 'error' : 'info'}
-			subText={groupErrors?.name?.[0]}
+			variant={permissionGroupErrors?.name?.length ? 'error' : 'info'}
+			subText={permissionGroupErrors?.name?.[0]}
 		/>
 		<Checkbox
 			label="Restricted access to channels"
@@ -176,8 +229,8 @@
 				onchange={handleChannelsChange}
 				valueType="id"
 				onblur={validate}
-				variant={groupErrors?.selectedChannels?.length ? 'error' : 'info'}
-				subText={groupErrors?.selectedChannels?.[0]}
+				variant={permissionGroupErrors?.selectedChannels?.length ? 'error' : 'info'}
+				subText={permissionGroupErrors?.selectedChannels?.[0]}
 			/>
 		{/if}
 	</div>
@@ -192,7 +245,8 @@
 					variant="light"
 					color="red"
 					endIcon={Trash}
-					disabled={disabled || !selectedUsersToUnassign.length || !editable}
+					disabled={disabled || !innerSelectedUsersToUnassign.length || !editable}
+					onclick={handleUnassignUsers}
 				>
 					Unassign users
 				</Button>
@@ -211,7 +265,7 @@
 			</div>
 		</SectionHeader>
 
-		<Table columns={UnassignSelectColumn.concat(UserColumns)} items={users} />
+		<Table columns={UnassignSelectColumn.concat(UserColumns)} items={displayingUsers} />
 	</div>
 </div>
 
@@ -222,7 +276,8 @@
 	closeOnOutsideClick
 	onClose={() => (openAssignUserModal = false)}
 	onCancel={() => (openAssignUserModal = false)}
-	disableOkBtn={!selectedUsersToAssign.length || !editable}
+	disableOkBtn={!Object.keys(innerSelectedUsersToAssign).length || !editable}
+	onOk={handleAssignUsers}
 >
 	<Input
 		placeholder="Search"
