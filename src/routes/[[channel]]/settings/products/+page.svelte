@@ -2,9 +2,9 @@
 	import { tranFunc } from '$i18n';
 	import { PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
-	import { Icon, InforCircle } from '$lib/components/icons';
 	import ProductFilterStateListener from '$lib/components/pages/home/product-filter-state-listener.svelte';
 	import Filter from '$lib/components/pages/settings/products/filter.svelte';
+	import { Badge } from '$lib/components/ui/badge';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { ProductOrderField, type Product, type QueryProductsArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
@@ -60,12 +60,12 @@
 	{@const tooltip = item.channelListings?.length
 		? item.channelListings.map((list) => list.channel.slug).join(', ')
 		: ''}
-	<div class="flex items-center gap-1">
-		<span class="tooltip tooltip-top" data-tip={tooltip}>
-			<Icon icon={InforCircle} class="text-blue-500 cursor-help" />
-		</span>
-		<span class="whitespace-nowrap">{item.channelListings?.length || 0} channels</span>
-	</div>
+	<Badge
+		text={`${item.channelListings?.length || 0} channels`}
+		class="tooltip tooltip-top"
+		data-tip={tooltip}
+		color="green"
+	/>
 {/snippet}
 
 {#snippet prices({ item }: { item: Product })}
@@ -90,6 +90,7 @@
 <GraphqlPaginableTable
 	query={PRODUCT_LIST_QUERY_ADMIN}
 	bind:variables={productsFilterVariables}
+	class="bg-white rounded-lg p-3 border border-gray-200"
 	resultKey="products"
 	columns={productColumns}
 	bind:forceReExecuteGraphqlQuery

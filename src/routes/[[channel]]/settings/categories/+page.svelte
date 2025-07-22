@@ -83,4 +83,5 @@
 	resultKey="categories"
 	bind:forceReExecuteGraphqlQuery
 	autoRefetchOnVariableChange={false}
+	class="bg-white rounded-lg p-3 border border-gray-200"
 />

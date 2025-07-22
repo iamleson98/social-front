@@ -134,7 +134,6 @@
 	<Badge
 		text={item.isActive ? $tranFunc('staff.active') : $tranFunc('staff.inactive')}
 		color={item.isActive ? 'green' : 'red'}
-		variant="light"
 	/>
 {/snippet}
 

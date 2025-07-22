@@ -85,7 +85,7 @@
 	<span class="text-xs">{dayjs(item.updatedAt).format(SitenameTimeFormat)}</span>
 {/snippet}
 
-<div>
+<div class="bg-white rounded-lg p-3 border border-gray-200">
 	<SectionHeader>{$tranFunc('product.subCategories')}</SectionHeader>
 	<GraphqlPaginableTable
 		query={CATEGORY_CHILDREN_LIST_QUERY}
@@ -96,7 +96,7 @@
 	/>
 </div>
 
-<div class="mt-2">
+<div class="mt-2 bg-white rounded-lg p-3 border border-gray-200">
 	<SectionHeader>{$tranFunc('product.products')}</SectionHeader>
 	<GraphqlPaginableTable
 		query={PRODUCT_LIST_QUERY_ADMIN}

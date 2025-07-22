@@ -85,4 +85,5 @@
 	resultKey="orders"
 	bind:forceReExecuteGraphqlQuery
 	columns={ORDER_TABLE_COLUMNS}
+	class="bg-white rounded-lg border border-gray-200 p-3"
 />

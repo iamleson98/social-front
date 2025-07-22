@@ -125,6 +125,7 @@
 
 <GraphqlPaginableTable
 	query={COLLECTIONS_QUERY}
+	class="bg-white rounded-lg p-3 border border-gray-200"
 	bind:variables={filterVariables}
 	resultKey="collections"
 	columns={COLLECTION_COLUMNS}

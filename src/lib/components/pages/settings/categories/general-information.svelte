@@ -152,7 +152,7 @@
 		onblur={validate}
 		variant={categoryFormErrors.seoDescription?.length ? 'error' : 'info'}
 		subText={categoryFormErrors.seoDescription?.[0] ??
-			`${seoDescription.length} / ${SEO_DESCRIPTION_MAX}`}
+			`${seoDescription?.length} / ${SEO_DESCRIPTION_MAX}`}
 		inputClass="min-h-20"
 		disabled={loading}
 	/>

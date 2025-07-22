@@ -100,6 +100,7 @@
 
 <GraphqlPaginableTable
 	query={USER_ORDERS_QUERY}
+	class="bg-white rounded-lg p-3 border border-gray-200"
 	columns={ORDER_TABLE_COLUMNS}
 	bind:variables={filterVariables}
 	resultKey={'me.orders' as keyof Query}

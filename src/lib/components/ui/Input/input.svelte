@@ -22,6 +22,7 @@
 		value = $bindable<string | number>(),
 		required,
 		inputClass = '',
+		placeholder = 'provide value',
 		...rest
 	}: InputProps = $props();
 </script>
@@ -44,6 +45,7 @@
 			bind:this={ref}
 			{id}
 			{required}
+			{placeholder}
 			bind:value
 			use:shortcuts={selectShortcutOptions}
 			use:debounceInput={inputDebounceOption}

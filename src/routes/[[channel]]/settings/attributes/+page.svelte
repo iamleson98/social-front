@@ -70,4 +70,5 @@
 	bind:variables
 	bind:forceReExecuteGraphqlQuery
 	columns={AttributeColumns}
+	class="bg-white rounded-lg border border-gray-200 p-3"
 />

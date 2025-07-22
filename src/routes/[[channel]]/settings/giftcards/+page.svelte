@@ -180,6 +180,7 @@
 	bind:variables
 	columns={COLUMNS}
 	disabled={loading}
+	class="bg-white rounded-lg border border-gray-200 p-3"
 />
 
 <GiftcardIssueForm

@@ -33,6 +33,7 @@
 		 * if true, then the query will be re-executed when variable changes. Default to `true`
 		 */
 		autoRefetchOnVariableChange?: boolean;
+		class?: string;
 	} & Omit<
 		TableProps<T, K>,
 		| 'items'
@@ -58,6 +59,7 @@
 		onDragEnd,
 		dragEffectType,
 		disabled,
+		class: className = '',
 		autoRefetchOnVariableChange = true,
 	}: Props = $props();
 
@@ -182,14 +184,14 @@
 	};
 </script>
 
-{#if $queryOperationStore.fetching}
-	<TableSkeleton numColumns={columns.length} showPagination />
-{:else if $queryOperationStore.error}
-	<Alert variant="error" size="sm" bordered>
-		{$queryOperationStore.error.message}
-	</Alert>
-{:else if $queryOperationStore.data}
-	<div class="bg-white rounded-lg p-3 border border-gray-200">
+<div class={className}>
+	{#if $queryOperationStore.fetching}
+		<TableSkeleton numColumns={columns.length} showPagination />
+	{:else if $queryOperationStore.error}
+		<Alert variant="error" size="sm" bordered>
+			{$queryOperationStore.error.message}
+		</Alert>
+	{:else if $queryOperationStore.data}
 		<Table
 			{items}
 			{columns}
@@ -204,5 +206,5 @@
 			disabled={$queryOperationStore.fetching || disabled}
 			onDragEnd={onDragEnd ? innerHandleDragEnd : undefined}
 		/>
-	</div>
-{/if}
+	{/if}
+</div>

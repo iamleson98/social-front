@@ -189,13 +189,6 @@
 				bind:ok={generalFormOk}
 				disabled={loading}
 			/>
-			<GeneralMetadataEditor
-				{metadata}
-				{privateMetadata}
-				disabled={loading}
-				objectId={id}
-				bind:performUpdateMetadata
-			/>
 			<ProductListForm collectionID={page.params.id} disabled={loading} />
 			<SeoForm
 				bind:slug={collectionUpdateInput.slug!}
@@ -203,6 +196,13 @@
 				bind:ok={seoFormOk}
 				name={collectionUpdateInput.name!}
 				disabled={loading}
+			/>
+			<GeneralMetadataEditor
+				{metadata}
+				{privateMetadata}
+				disabled={loading}
+				objectId={id}
+				bind:performUpdateMetadata
 			/>
 		</div>
 
