@@ -34,6 +34,7 @@
 			id: page.params.id,
 		},
 		pause: !page.params.id,
+		requestPolicy: 'cache-and-network',
 	});
 
 	let performUpdateMetadata = $state(false);

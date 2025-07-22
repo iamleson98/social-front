@@ -71,6 +71,14 @@ query ShippingZone($id: ID!, $channel: String) {
     }
     shippingMethods {
       id
+      maximumOrderPrice {
+        amount
+        currency
+      }
+      minimumOrderPrice {
+        amount
+        currency
+      }
       postalCodeRules {
         id
         start 
