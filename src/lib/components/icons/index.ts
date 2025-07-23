@@ -35,7 +35,6 @@ export {
   TablerPackageExport as PackageExport,
   TablerArrowDownRight as ArrowDownRight,
   TablerPhoto as Photo,
-  FoundationBurstSale as BurstSale,
   FlowbiteChevronSort as ChevronSort,
   TablerX as CloseX,
   TablerBold as Bold,
@@ -78,7 +77,6 @@ export {
   MdiCurrencyKrw as CurrencyKrw,
   MdiCurrencyJpy as CurrencyJpy,
   TablerRosetteDiscountCheckFilled as RosetteDiscountChecked,
-  StashBilling as Billing,
   MaterialOrder as Order,
   TablerAdjustmentHorizontal as AdjustmentHorizontal,
   TablerMailQuestion as MailQuestion,
@@ -122,6 +120,7 @@ export {
   RiPoliceBadgeFill as PoliceBadgeFill,
   MdiBadgeOutline as BadgeOutline,
   TablerLockCog as LockCog,
+  TablerReceipt2 as Receipt2,
 } from './consts';
 
 export { default as Icon } from './icon.svelte';

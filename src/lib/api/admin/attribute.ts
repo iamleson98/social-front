@@ -75,7 +75,7 @@ mutation DelAttribute($id: ID!) {
       message
     }
   }
-}`
+}`;
 
 export const ATTRIBUTE_VALUES_QUERY = gql`
 query AttributeValues($id: ID!, $first: Int, $last: Int, $before: String, $after: String, $sortBy: AttributeChoicesSortingInput, $filter: AttributeValueFilterInput) {

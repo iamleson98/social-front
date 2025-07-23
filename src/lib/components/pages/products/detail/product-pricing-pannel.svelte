@@ -5,7 +5,7 @@
 		Minus,
 		Plus,
 		ShoppingBagPlus,
-		BurstSale,
+		Discount,
 		Icon,
 		Check,
 	} from '$lib/components/icons';
@@ -177,7 +177,7 @@
 				<Badge
 					color="red"
 					variant="filled"
-					startIcon={BurstSale}
+					startIcon={Discount}
 					text={formatMoney(currency, amount)}
 				/>
 			{/if}

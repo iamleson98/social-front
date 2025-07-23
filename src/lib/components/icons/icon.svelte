@@ -4,7 +4,7 @@
 	import type { SocialSize } from '$lib/components/ui/common';
 	import { ICON_OF_BUTTON_SIZE_MAP } from '$lib/components/ui/Button';
 
-	interface Props {
+	type Props = {
 		/**
 		 * in case it is string:
 		 * - it must have format like <path /> or <g />.
@@ -15,7 +15,7 @@
 		flipped?: boolean;
 		class?: string;
 		size?: SocialSize | 'xxs';
-	}
+	};
 
 	let {
 		class: className,

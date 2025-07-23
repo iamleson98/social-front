@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { BurstSale, Heart, OpenEye } from '$lib/components/icons';
+	import { Discount, Heart, OpenEye } from '$lib/components/icons';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { AppRoute } from '$lib/utils';
@@ -41,7 +41,7 @@
 			<Badge
 				color="red"
 				variant="filled"
-				startIcon={BurstSale}
+				startIcon={Discount}
 				text="Sale"
 				class="absolute top-4 left-2"
 			/>
