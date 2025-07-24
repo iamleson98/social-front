@@ -2,11 +2,10 @@
 	import { tranFunc } from '$i18n';
 	import { CHANNELS_QUERY } from '$lib/api/channels';
 	import { operationStore } from '$lib/api/operation';
+	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Input, RadioButton } from '$lib/components/ui/Input';
-	import { Select, SelectSkeleton, type SelectOption } from '$lib/components/ui/select';
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
 		DiscountValueTypeEnum,
@@ -84,6 +83,7 @@
 	const channelsQuery = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
 		query: CHANNELS_QUERY,
+		requestPolicy: 'cache-and-network',
 	});
 
 	let discountValueErrors = $state<{
@@ -172,7 +172,7 @@
 <div class="rounded-lg p-3 border border-gray-200 bg-white space-y-2">
 	<div>
 		<SectionHeader>{$tranFunc('settings.availability')}</SectionHeader>
-		{#if $channelsQuery.fetching}
+		<!-- {#if $channelsQuery.fetching}
 			<SelectSkeleton size="sm" label />
 		{:else if $channelsQuery.error}
 			<Alert size="sm" variant="error" bordered>{$channelsQuery.error.message}</Alert>
@@ -194,12 +194,25 @@
 				variant={discountValueErrors?.formErrors?.length ? 'error' : 'info'}
 				subText={discountValueErrors?.formErrors?.[0]}
 			/>
-		{/if}
+		{/if} -->
+		<ChannelSelect
+			label={$tranFunc('voucher.specifyChan')}
+			required
+			multiple
+			{disabled}
+			valueType="id"
+			placeholder={$tranFunc('voucher.specifyChan')}
+			bind:value={selectedChannelIds}
+			onchange={handleChannelsChange}
+			onblur={validate}
+			variant={discountValueErrors?.formErrors?.length ? 'error' : 'info'}
+			subText={discountValueErrors?.formErrors?.[0]}
+		/>
 	</div>
 
 	<div>
 		<SectionHeader>{$tranFunc('voucher.discountValueType')}</SectionHeader>
-		<div class="space-y-2.5">
+		<div class="space-y-1.5">
 			{#each VOUCHER_TYPES as type, idx (idx)}
 				<RadioButton label={type.label} bind:group={discountType} {disabled} value={type.value} />
 			{/each}
