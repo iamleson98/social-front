@@ -31,7 +31,7 @@
 	<SectionHeader>
 		<dir>General information</dir>
 
-		<ChannelSelect placeholder="channel" size="xs" class="font-normal!" />
+		<!-- <ChannelSelect placeholder="channel" size="xs" class="font-normal!" /> -->
 	</SectionHeader>
 
 	<Input required label="Name" placeholder="Name" bind:value={name} {disabled} />

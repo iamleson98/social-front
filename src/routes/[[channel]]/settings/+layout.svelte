@@ -58,7 +58,7 @@
 		icon?: IconContent;
 		name?: string;
 		href: string;
-		shouldActive: () => boolean;
+		shouldActive: boolean;
 	};
 
 	const ACCOUNT_TAB_ITEMS: TabItem[] = $derived([
@@ -66,13 +66,13 @@
 			icon: UserCog,
 			name: $tranFunc('settings.account'),
 			href: AppRoute.ME(),
-			shouldActive: () => page.url.pathname === AppRoute.ME(),
+			shouldActive: page.url.pathname === AppRoute.ME(),
 		},
 		{
 			icon: AdjustmentHorizontal,
 			name: $tranFunc('settings.preference'),
 			href: AppRoute.ME_PREFERENCES(),
-			shouldActive: () => page.url.pathname === AppRoute.ME_PREFERENCES(),
+			shouldActive: page.url.pathname === AppRoute.ME_PREFERENCES(),
 		},
 	]);
 
@@ -81,13 +81,13 @@
 			icon: Box,
 			name: $tranFunc('settings.myOrders'),
 			href: AppRoute.MY_ORDERS(),
-			shouldActive: () => page.url.pathname === AppRoute.MY_ORDERS(),
+			shouldActive: page.url.pathname === AppRoute.MY_ORDERS(),
 		},
 		{
 			icon: MailQuestion,
 			name: $tranFunc('settings.supports'),
 			href: AppRoute.ME_SUPPORT(),
-			shouldActive: () => page.url.pathname === AppRoute.ME_SUPPORT(),
+			shouldActive: page.url.pathname === AppRoute.ME_SUPPORT(),
 		},
 	]);
 
@@ -96,18 +96,17 @@
 			icon: Box,
 			name: $tranFunc('settings.orders'),
 			href: AppRoute.SETTINGS_ORDERS(),
-			shouldActive: () =>
-				[
-					AppRoute.SETTINGS_ORDERS(),
-					AppRoute.SETTINGS_ORDERS_NEW(),
-					AppRoute.SETTINGS_ORDERS_DETAILS(page.params.id),
-				].includes(page.url.pathname),
+			shouldActive: [
+				AppRoute.SETTINGS_ORDERS(),
+				AppRoute.SETTINGS_ORDERS_NEW(),
+				AppRoute.SETTINGS_ORDERS_DETAILS(page.params.id),
+			].includes(page.url.pathname),
 		},
 		{
 			icon: BoxOff,
 			name: 'Draft orders',
 			href: AppRoute.SETTINGS_SHOP_DRAFT_ORDERS(),
-			shouldActive: () => page.url.pathname === AppRoute.SETTINGS_SHOP_DRAFT_ORDERS(),
+			shouldActive: page.url.pathname === AppRoute.SETTINGS_SHOP_DRAFT_ORDERS(),
 		},
 	]);
 
@@ -116,45 +115,41 @@
 			icon: Parking,
 			name: $tranFunc('product.products'),
 			href: AppRoute.SETTINGS_PRODUCTS(),
-			shouldActive: () =>
-				[
-					AppRoute.SETTINGS_PRODUCTS(),
-					AppRoute.SETTINGS_PRODUCTS_NEW(),
-					AppRoute.SETTINGS_PRODUCTS_EDIT(page.params.slug),
-				].includes(page.url.pathname),
+			shouldActive: [
+				AppRoute.SETTINGS_PRODUCTS(),
+				AppRoute.SETTINGS_PRODUCTS_NEW(),
+				AppRoute.SETTINGS_PRODUCTS_EDIT(page.params.slug),
+			].includes(page.url.pathname),
 		},
 		{
 			icon: Category,
 			name: 'Categories',
 			href: AppRoute.SETTINGS_CONFIGS_CATEGORIES(),
-			shouldActive: () =>
-				[
-					AppRoute.SETTINGS_CONFIGS_CATEGORIES(),
-					AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(page.params.id),
-					AppRoute.SETTINGS_CONFIGS_CATEGORY_NEW(),
-				].includes(page.url.pathname),
+			shouldActive: [
+				AppRoute.SETTINGS_CONFIGS_CATEGORIES(),
+				AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(page.params.id),
+				AppRoute.SETTINGS_CONFIGS_CATEGORY_NEW(),
+			].includes(page.url.pathname),
 		},
 		{
 			name: 'Collections',
 			href: AppRoute.SETTINGS_CONFIGS_COLLECTIONS(),
 			icon: FolderHeart,
-			shouldActive: () =>
-				[
-					AppRoute.SETTINGS_CONFIGS_COLLECTIONS(),
-					AppRoute.SETTINGS_CONFIGS_COLLECTION_DETAILS(page.params.id),
-					AppRoute.SETTINGS_CONFIGS_COLLECTION_NEW(),
-				].includes(page.url.pathname),
+			shouldActive: [
+				AppRoute.SETTINGS_CONFIGS_COLLECTIONS(),
+				AppRoute.SETTINGS_CONFIGS_COLLECTION_DETAILS(page.params.id),
+				AppRoute.SETTINGS_CONFIGS_COLLECTION_NEW(),
+			].includes(page.url.pathname),
 		},
 		{
 			name: 'Giftcards',
 			href: AppRoute.SETTINGS_CONFIGS_GIFTCARDS(),
 			icon: Gift,
-			shouldActive: () =>
-				[
-					AppRoute.SETTINGS_CONFIGS_GIFTCARDS(),
-					AppRoute.SETTINGS_CONFIGS_GIFTCARD_DETAIL(page.params.id),
-					AppRoute.SETTINGS_CONFIGS_GIFTCARD_NEW(),
-				].includes(page.url.pathname),
+			shouldActive: [
+				AppRoute.SETTINGS_CONFIGS_GIFTCARDS(),
+				AppRoute.SETTINGS_CONFIGS_GIFTCARD_DETAIL(page.params.id),
+				AppRoute.SETTINGS_CONFIGS_GIFTCARD_NEW(),
+			].includes(page.url.pathname),
 		},
 	]);
 
@@ -163,23 +158,21 @@
 			icon: Discount,
 			name: 'Promotions',
 			href: AppRoute.SETTINGS_CONFIGS_PROMOTIONS(),
-			shouldActive: () =>
-				[
-					AppRoute.SETTINGS_CONFIGS_PROMOTIONS(),
-					AppRoute.SETTINGS_CONFIGS_PROMOTION_NEW(),
-					AppRoute.SETTINGS_CONFIGS_PROMOTION_DETAIL(page.params.id),
-				].includes(page.url.pathname),
+			shouldActive: [
+				AppRoute.SETTINGS_CONFIGS_PROMOTIONS(),
+				AppRoute.SETTINGS_CONFIGS_PROMOTION_NEW(),
+				AppRoute.SETTINGS_CONFIGS_PROMOTION_DETAIL(page.params.id),
+			].includes(page.url.pathname),
 		},
 		{
 			icon: Ticket,
 			name: 'Vouchers',
 			href: AppRoute.SETTINGS_CONFIGS_VOUCHERS(),
-			shouldActive: () =>
-				[
-					AppRoute.SETTINGS_CONFIGS_VOUCHERS(),
-					AppRoute.SETTINGS_CONFIGS_VOUCHER_NEW(),
-					AppRoute.SETTINGS_CONFIGS_VOUCHER_DETAIL(page.params.id),
-				].includes(page.url.pathname),
+			shouldActive: [
+				AppRoute.SETTINGS_CONFIGS_VOUCHERS(),
+				AppRoute.SETTINGS_CONFIGS_VOUCHER_NEW(),
+				AppRoute.SETTINGS_CONFIGS_VOUCHER_DETAIL(page.params.id),
+			].includes(page.url.pathname),
 		},
 	]);
 
@@ -188,96 +181,93 @@
 			icon: Globe,
 			name: $tranFunc('product.channel'),
 			href: AppRoute.SETTINGS_CONFIGS_CHANNELS(),
-			shouldActive: () =>
-				[
-					AppRoute.SETTINGS_CONFIGS_CHANNELS(),
-					AppRoute.SETTINGS_CONFIGS_CHANNEL_NEW(),
-					AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(page.params.slug),
-				].includes(page.url.pathname),
+			shouldActive: [
+				AppRoute.SETTINGS_CONFIGS_CHANNELS(),
+				AppRoute.SETTINGS_CONFIGS_CHANNEL_NEW(),
+				AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(page.params.slug),
+			].includes(page.url.pathname),
 		},
 		{
 			icon: Thingiverse,
 			name: 'Product types',
 			href: AppRoute.SETTINGS_PRODUCT_TYPES(),
-			shouldActive: () =>
-				[
-					AppRoute.SETTINGS_PRODUCT_TYPES(),
-					AppRoute.SETTINGS_PRODUCT_TYPE_NEW(),
-					AppRoute.SETTINGS_PRODUCT_TYPE_EDIT(page.params.id),
-				].includes(page.url.pathname),
+			shouldActive: [
+				AppRoute.SETTINGS_PRODUCT_TYPES(),
+				AppRoute.SETTINGS_PRODUCT_TYPE_NEW(),
+				AppRoute.SETTINGS_PRODUCT_TYPE_EDIT(page.params.id),
+			].includes(page.url.pathname),
 		},
 		{
 			icon: BadgeOutline,
 			name: $tranFunc('settings.staffs'),
 			href: AppRoute.SETTINGS_CONFIGS_STAFFS(),
-			shouldActive: () =>
-				[
-					AppRoute.SETTINGS_CONFIGS_STAFFS(),
-					AppRoute.SETTINGS_CONFIGS_STAFF_NEW(),
-					AppRoute.SETTINGS_CONFIGS_STAFF_DETAILS(page.params.id),
-				].includes(page.url.pathname),
+			shouldActive: [
+				AppRoute.SETTINGS_CONFIGS_STAFFS(),
+				AppRoute.SETTINGS_CONFIGS_STAFF_NEW(),
+				AppRoute.SETTINGS_CONFIGS_STAFF_DETAILS(page.params.id),
+			].includes(page.url.pathname),
 		},
 		{
 			icon: UsersGroup,
 			name: $tranFunc('settings.users'),
 			href: AppRoute.SETTINGS_CONFIGS_USERS(),
-			shouldActive: () =>
-				[
-					AppRoute.SETTINGS_CONFIGS_USERS(),
-					AppRoute.SETTINGS_CONFIGS_USER_NEW(),
-					AppRoute.SETTINGS_CONFIGS_USER_DETAILS(page.params.id),
-				].includes(page.url.pathname),
+			shouldActive: [
+				AppRoute.SETTINGS_CONFIGS_USERS(),
+				AppRoute.SETTINGS_CONFIGS_USER_NEW(),
+				AppRoute.SETTINGS_CONFIGS_USER_DETAILS(page.params.id),
+			].includes(page.url.pathname),
 		},
 		{
 			icon: BuildingWarehouse,
 			name: 'Warehouses',
 			href: AppRoute.SETTINGS_CONFIGS_WAREHOUSES(),
-			shouldActive: () =>
-				[
-					AppRoute.SETTINGS_CONFIGS_WAREHOUSES(),
-					AppRoute.SETTINGS_CONFIGS_WAREHOUSE_NEW(),
-					AppRoute.SETTINGS_CONFIGS_WAREHOUSE_DETAILS(page.params.id),
-				].includes(page.url.pathname),
+			shouldActive: [
+				AppRoute.SETTINGS_CONFIGS_WAREHOUSES(),
+				AppRoute.SETTINGS_CONFIGS_WAREHOUSE_NEW(),
+				AppRoute.SETTINGS_CONFIGS_WAREHOUSE_DETAILS(page.params.id),
+			].includes(page.url.pathname),
 		},
 		{
 			icon: Dimension,
 			name: 'Attributes',
 			href: AppRoute.SETTINGS_CONFIGS_ATTRIBUTES(),
-			shouldActive: () =>
-				[
-					AppRoute.SETTINGS_CONFIGS_ATTRIBUTES(),
-					AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_NEW(),
-					AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_DETAILS(page.params.id),
-				].includes(page.url.pathname),
+			shouldActive: [
+				AppRoute.SETTINGS_CONFIGS_ATTRIBUTES(),
+				AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_NEW(),
+				AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_DETAILS(page.params.id),
+			].includes(page.url.pathname),
 		},
 		{
 			icon: TruckDelivery,
 			name: 'Shipping zones',
 			href: AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONES(),
-			shouldActive: () =>
-				[
-					AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONES(),
-					AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_NEW(),
-					AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS(page.params.id),
-				].includes(page.url.pathname),
+			shouldActive: [
+				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONES(),
+				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_NEW(),
+				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS(page.params.id),
+				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_NEW(page.params.id),
+				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_DETAILS(
+					page.params.id,
+					page.params.method_id,
+				),
+			].includes(page.url.pathname),
 		},
 		{
 			icon: LockCog,
 			name: 'Permission groups',
 			href: AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUPS(),
-			shouldActive: () =>
-				[
-					AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUPS(),
-					AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUP_NEW(),
-					AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUP_DETAIL(page.params.id),
-				].includes(page.url.pathname),
+			shouldActive: [
+				AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUPS(),
+				AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUP_NEW(),
+				AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUP_DETAIL(page.params.id),
+			].includes(page.url.pathname),
 		},
 	]);
 </script>
 
 {#snippet sidebarItem(item: TabItem)}
 	{@const attrs = item.href ? { href: item.href } : {}}
-	{@const active = item.href == page.url.pathname || item.shouldActive()}
+	{@const active = item.href == page.url.pathname || item.shouldActive}
 	<svelte:element
 		this={item.href ? 'a' : 'div'}
 		{...attrs}
@@ -334,7 +324,7 @@
 				child={sidebarItem}
 				items={ACCOUNT_TAB_ITEMS}
 				class="w-full p-3"
-				open={ACCOUNT_TAB_ITEMS.some((item) => item.shouldActive())}
+				open={ACCOUNT_TAB_ITEMS.some((item) => item.shouldActive)}
 			/>
 
 			<AccordionList
@@ -342,7 +332,7 @@
 				child={sidebarItem}
 				items={SHOPPING_TAB_ITEMS}
 				class="w-full p-3"
-				open={SHOPPING_TAB_ITEMS.some((item) => item.shouldActive())}
+				open={SHOPPING_TAB_ITEMS.some((item) => item.shouldActive)}
 			/>
 
 			{#if $READ_ONLY_USER_STORE && userIsShopAdmin($READ_ONLY_USER_STORE)}
@@ -351,7 +341,7 @@
 					child={sidebarItem}
 					items={CATALOG_TAB_ITEMS}
 					class="w-full p-3"
-					open={CATALOG_TAB_ITEMS.some((item) => item.shouldActive())}
+					open={CATALOG_TAB_ITEMS.some((item) => item.shouldActive)}
 				/>
 
 				<AccordionList
@@ -359,7 +349,7 @@
 					child={sidebarItem}
 					items={SHOP_ORDERS_TAB_ITEMS}
 					class="w-full p-3"
-					open={SHOP_ORDERS_TAB_ITEMS.some((item) => item.shouldActive())}
+					open={SHOP_ORDERS_TAB_ITEMS.some((item) => item.shouldActive)}
 				/>
 
 				<AccordionList
@@ -367,7 +357,7 @@
 					child={sidebarItem}
 					items={SHOP_DISCOUNTS_TAB_ITEMS}
 					class="w-full p-3"
-					open={SHOP_DISCOUNTS_TAB_ITEMS.some((item) => item.shouldActive())}
+					open={SHOP_DISCOUNTS_TAB_ITEMS.some((item) => item.shouldActive)}
 				/>
 
 				<AccordionList
@@ -375,7 +365,7 @@
 					child={sidebarItem}
 					items={SHOP_CONFIG_TAB_ITEMS}
 					class="w-full p-3"
-					open={SHOP_CONFIG_TAB_ITEMS.some((item) => item.shouldActive())}
+					open={SHOP_CONFIG_TAB_ITEMS.some((item) => item.shouldActive)}
 				/>
 			{/if}
 		</div>

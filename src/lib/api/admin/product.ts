@@ -100,6 +100,7 @@ query ProductType($id: ID!, $attributeChoicesFirst: Int!, $attributeChoicesAfter
 		isShippingRequired
 		isDigital
 		kind
+    hasVariants
 		productAttributes {
 			id
 			name
@@ -138,7 +139,7 @@ query ProductType($id: ID!, $attributeChoicesFirst: Int!, $attributeChoicesAfter
 }`;
 
 export const PRODUCT_TYPE_AVAILABLE_ATTRIBUTES_QUERY = gql`
-query ProductType($id: ID!, $first: Int, $after: String, $last: Int, $before: String, $filter: AttributeFilterInput, $where: AttributeWhereInput) {
+query ProductTypeAvailableAttributes($id: ID!, $first: Int, $after: String, $last: Int, $before: String, $filter: AttributeFilterInput, $where: AttributeWhereInput) {
 	productType(id: $id) {
 		id
 		availableAttributes(first: $first, after: $after, last: $last, before: $before, filter: $filter, where: $where) {

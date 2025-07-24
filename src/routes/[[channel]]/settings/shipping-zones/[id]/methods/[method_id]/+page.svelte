@@ -6,6 +6,7 @@
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import ChannelListing from '$lib/components/pages/settings/shipping-method/channel-listing.svelte';
 	import GeneralInfo from '$lib/components/pages/settings/shipping-method/general-info.svelte';
+	import PostalCodeRules from '$lib/components/pages/settings/shipping-method/postal-code-rules.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { SelectSkeleton } from '$lib/components/ui/select';
 	import type { Query, QueryShippingZoneArgs, ShippingPriceInput } from '$lib/gql/graphql';
@@ -27,6 +28,8 @@
 		description: {},
 		maximumDeliveryDays: 0,
 		minimumDeliveryDays: 0,
+		addPostalCodeRules: [],
+		deletePostalCodeRules: [],
 	});
 	let loading = $state(false);
 	let performUpdateMetadata = $state(false);
@@ -51,6 +54,16 @@
 	);
 </script>
 
+<div class="breadcrumbs text-sm">
+	<ul>
+		<li><a href={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS(page.params.id)}>Parent</a></li>
+		<li>Shipping methods</li>
+		<li>
+			{page.params.method_id}
+		</li>
+	</ul>
+</div>
+
 {#if $shippingZoneQuery.fetching}
 	<SelectSkeleton label />
 {:else if $shippingZoneQuery.error}
@@ -69,6 +82,11 @@
 				bind:minimumDeliveryDays={shippingMethodInput.minimumDeliveryDays!}
 			/>
 			<ChannelListing shippingMethodChannelListings={shippingMethod.channelListings || []} />
+			<PostalCodeRules
+				existingCodeRules={shippingMethod.postalCodeRules || []}
+				bind:addPostalCodeRules={shippingMethodInput.addPostalCodeRules!}
+				bind:deletePostalCodeRules={shippingMethodInput.deletePostalCodeRules!}
+			/>
 			<GeneralMetadataEditor
 				objectId={shippingMethod.id}
 				bind:performUpdateMetadata

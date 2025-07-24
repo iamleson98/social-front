@@ -22,21 +22,28 @@
 		type MutationProductTypeReorderAttributesArgs,
 		type Query,
 	} from '$lib/gql/graphql';
-	import { checkIfGraphqlResultHasError, toggleItemNoDup } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 
 	type Props = {
 		isCreatePage?: boolean;
 		productAttributes?: Attribute[];
 		productTypeId?: string;
+		disabled?: boolean;
 	};
 
-	let { isCreatePage = false, productAttributes = $bindable(), productTypeId }: Props = $props();
+	let {
+		isCreatePage = false,
+		productAttributes = $bindable(),
+		productTypeId,
+		disabled,
+	}: Props = $props();
 
 	let openAssignAttributeModal = $state(false);
 	let forceFetchAvailableAttributes = $state(false);
-	let selectedAttributesToUnassign = $state<string[]>([]);
-	let selectedAttributesToAssign = $state<string[]>([]);
+	let selectedAttributesToUnassign = $state<Record<string, boolean>>({});
+	let selectedAttributesToAssign = $state<Record<string, boolean>>({});
 	let loading = $state(false);
+	const shouldDisable = $derived(disabled || loading);
 
 	let availableAttributeVariables = $state({
 		id: productTypeId,
@@ -45,20 +52,6 @@
 			search: '',
 		},
 	});
-
-	const UnAssignSelectColumn: TableColumnProps<Attribute>[] = [
-		{
-			title: 'Unassign',
-			child: unassignSelect,
-		},
-	];
-
-	const AssignSelectColumn: TableColumnProps<Attribute>[] = [
-		{
-			title: '',
-			child: assignSelect,
-		},
-	];
 
 	const AttributeColumns: TableColumnProps<Attribute>[] = [
 		{
@@ -70,23 +63,36 @@
 			child: slug,
 		},
 	];
+	const UnassignTableColumns = [
+		{
+			title: '',
+			child: unassignSelect,
+		},
+		...AttributeColumns,
+	];
+	const AssignTableColumns = [
+		{
+			title: '',
+			child: assignSelect,
+		},
+		...AttributeColumns,
+	];
 
 	const handleAssignProductAttributes = async () => {
-		if (!selectedAttributesToAssign.length || !productTypeId) return;
+		const ids = Object.keys(selectedAttributesToAssign);
+		if (!ids.length || !productTypeId) return;
 
 		loading = true;
-
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'productAttributeAssign'>,
 			MutationProductAttributeAssignArgs
 		>(PRODUCT_TYPE_ASSIGN_ATTRIBUTES_MUTATION, {
 			productTypeId,
-			operations: selectedAttributesToAssign.map((id) => ({
+			operations: ids.map((id) => ({
 				id,
 				type: ProductAttributeType.Product,
 			})),
 		});
-
 		loading = false;
 
 		if (
@@ -97,10 +103,14 @@
 			)
 		)
 			return;
+
+		openAssignAttributeModal = false;
+		selectedAttributesToAssign = {};
 	};
 
 	const handleUnassignAttributes = async () => {
-		if (!selectedAttributesToUnassign.length || !productTypeId) return;
+		const ids = Object.keys(selectedAttributesToUnassign);
+		if (!ids.length || !productTypeId) return;
 
 		loading = true;
 
@@ -109,7 +119,7 @@
 			MutationProductAttributeUnassignArgs
 		>(PRODUCT_TYPE_UNASSIGN_ATTRIBUTES_MUTATION, {
 			productTypeId,
-			attributeIds: selectedAttributesToUnassign,
+			attributeIds: ids,
 		});
 
 		loading = false;
@@ -122,10 +132,12 @@
 			)
 		)
 			return;
+
+		selectedAttributesToUnassign = {};
 	};
 
 	const handleReorderAttributes = async (dragIndex: number, dropIndex: number) => {
-		if (!productTypeId || dropIndex - dragIndex == 0) return;
+		if (!productTypeId || dropIndex === dragIndex) return;
 
 		const steps = dropIndex - dragIndex;
 
@@ -135,7 +147,7 @@
 			Pick<Mutation, 'productTypeReorderAttributes'>,
 			MutationProductTypeReorderAttributesArgs
 		>(PRODUCT_TYPE_REORDER_ATTRIBUTES_MUTATION, {
-			productTypeId: productTypeId!,
+			productTypeId,
 			moves: [{ id: productAttributes![dragIndex].id, sortOrder: steps }],
 			type: ProductAttributeType.Product,
 		});
@@ -164,25 +176,27 @@
 {#snippet unassignSelect({ item }: { item: Attribute })}
 	<Checkbox
 		data-interactive
-		checked={selectedAttributesToUnassign.includes(item.id)}
+		checked={selectedAttributesToUnassign[item.id]}
 		onCheckChange={(checked) =>
-			(selectedAttributesToUnassign = toggleItemNoDup(
-				selectedAttributesToUnassign,
-				item.id,
-				checked,
-			))}
+			checked
+				? (selectedAttributesToUnassign[item.id] = checked)
+				: delete selectedAttributesToUnassign[item.id]}
+		disabled={shouldDisable}
 	/>
 {/snippet}
 
 {#snippet assignSelect({ item }: { item: Attribute })}
 	<Checkbox
-		checked={selectedAttributesToAssign.includes(item.id)}
+		checked={selectedAttributesToAssign[item.id]}
 		onCheckChange={(checked) =>
-			(selectedAttributesToAssign = toggleItemNoDup(selectedAttributesToAssign, item.id, checked))}
+			checked
+				? (selectedAttributesToAssign[item.id] = checked)
+				: delete selectedAttributesToAssign[item.id]}
+		disabled={shouldDisable}
 	/>
 {/snippet}
 
-<div class="rounded-lg bg-white border border-gray-200 p-3 space-y-2">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>
 		<div>Attributes</div>
 		<div class="flex gap-1">
@@ -192,7 +206,7 @@
 				variant="light"
 				color="red"
 				onclick={handleUnassignAttributes}
-				disabled={loading || !selectedAttributesToUnassign.length}
+				disabled={shouldDisable || !Object.keys(selectedAttributesToUnassign).length}
 			>
 				Unassign attributes
 			</Button>
@@ -200,6 +214,7 @@
 				size="xs"
 				endIcon={Plus}
 				variant="light"
+				disabled={shouldDisable}
 				onclick={() => {
 					openAssignAttributeModal = true;
 					forceFetchAvailableAttributes = true;
@@ -211,9 +226,10 @@
 	</SectionHeader>
 
 	<Table
-		columns={UnAssignSelectColumn.concat(AttributeColumns)}
+		columns={UnassignTableColumns}
 		items={productAttributes || []}
 		onDragEnd={handleReorderAttributes}
+		disabled={shouldDisable}
 	/>
 </div>
 
@@ -225,13 +241,14 @@
 	onClose={() => (openAssignAttributeModal = false)}
 	onCancel={() => (openAssignAttributeModal = false)}
 	onOk={handleAssignProductAttributes}
-	disableElements={loading}
-	disableOkBtn={!selectedAttributesToAssign.length || loading}
+	disableElements={shouldDisable}
+	disableOkBtn={!Object.keys(selectedAttributesToAssign).length || shouldDisable}
 >
 	<Input
 		startIcon={Search}
 		placeholder="Search attribute"
 		class="mb-2"
+		disabled={shouldDisable}
 		bind:value={availableAttributeVariables.filter.search}
 		inputDebounceOption={{
 			debounceTime: 888,
@@ -243,7 +260,9 @@
 	<GraphqlPaginableTable
 		query={PRODUCT_TYPE_AVAILABLE_ATTRIBUTES_QUERY}
 		resultKey={'productType.availableAttributes' as keyof Query}
-		columns={AssignSelectColumn.concat(AttributeColumns)}
+		class={SitenameCommonClassName}
+		columns={AssignTableColumns}
+		disabled={shouldDisable}
 		bind:variables={availableAttributeVariables}
 		bind:forceReExecuteGraphqlQuery={forceFetchAvailableAttributes}
 	/>

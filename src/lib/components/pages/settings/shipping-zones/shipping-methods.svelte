@@ -75,17 +75,20 @@
 {/snippet}
 
 {#snippet action({ item }: { item: ShippingMethodType })}
-	<div class="flex gap-1">
-		<IconButton icon={Edit} size="xs" variant="light" />
-		<IconButton icon={Trash} size="xs" variant="light" color="red" />
-	</div>
+	<IconButton icon={Trash} size="xs" variant="light" color="red" />
 {/snippet}
 
 <div class={classNames(SitenameCommonClassName, 'space-y-2')}>
 	<SectionHeader>
-		<div>Price based rates</div>
+		<div>Price based methods</div>
 
-		<Button endIcon={Plus} variant="light" size="xs">Create rate</Button>
+		<Button
+			endIcon={Plus}
+			variant="light"
+			size="xs"
+			href={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_NEW(page.params.id)}
+			>Create method</Button
+		>
 	</SectionHeader>
 
 	<Table columns={PriceBasedColumns} items={priceBasedMethods} />
