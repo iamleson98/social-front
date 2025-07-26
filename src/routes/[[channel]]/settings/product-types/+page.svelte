@@ -50,7 +50,7 @@
 
 	const handleClickDelItem = async (id: string) => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: $tranFunc('common.confirmDel', { id }),
+			content: $tranFunc('common.confirmDel'),
 			onOk: async () => {
 				loading = true;
 
@@ -91,6 +91,7 @@
 		color="red"
 		variant="light"
 		onclick={() => handleClickDelItem(item.id)}
+		disabled={loading}
 	/>
 {/snippet}
 
@@ -109,4 +110,5 @@
 	bind:forceReExecuteGraphqlQuery
 	columns={ProductTypesColumns}
 	resultKey="productTypes"
+	disabled={loading}
 />

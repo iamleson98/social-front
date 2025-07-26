@@ -30,7 +30,7 @@
 {/snippet}
 
 <div class="bg-white rounded-lg p-3 border border-gray-200 {className}">
-	<Table {columns} items={new Array(numOfRows).fill(null).map(() => ({}))} />
+	<Table {columns} items={new Array(numOfRows).fill(null).map(() => ({}))} class='' />
 	{#if showPagination}
 		<div class="flex items-center justify-between p-2">
 			<Skeleton class="h-4 w-20" />

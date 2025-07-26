@@ -70,7 +70,7 @@ export type OperationArgs<Data = unknown, Variables extends AnyVariables = AnyVa
 
 type ReexecuteProps<Variables extends AnyVariables = AnyVariables> = {
 	context?: Partial<OperationContext>;
-	variables?: Partial<Variables>;
+	variables: Variables;
 };
 
 /**
@@ -150,7 +150,7 @@ export function operationStore<Data = unknown, Variables extends AnyVariables = 
 
 	const reexecute = (args: ReexecuteProps<Variables>): void => {
 		const newContext = { ...context, ...args.context };
-		request.variables = { ...request.variables, ...args.variables };
+		request.variables = args.variables as Variables;
 		const newOperation = GRAPHQL_CLIENT.createRequestOperation(operation.kind, request, newContext);
 
 		isPaused$.set(false);

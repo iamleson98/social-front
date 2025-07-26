@@ -15,9 +15,8 @@
 		isCreatePage?: boolean;
 		inputType: AttributeInputTypeEnum;
 		valueRequired: boolean;
+		formOk: boolean;
 	};
-
-	const RequiredErr = $tranFunc('helpText.fieldRequired');
 
 	let {
 		disabled,
@@ -26,13 +25,15 @@
 		isCreatePage = false,
 		valueRequired = $bindable(),
 		inputType = $bindable(),
+		formOk = $bindable(),
 	}: Props = $props();
+
+	const RequiredErr = $tranFunc('helpText.fieldRequired');
 
 	const AttributeSchema = object({
 		name: string().nonempty(RequiredErr),
-		slug: string()
-			.nonempty(RequiredErr)
-			.regex(ValidSlugRegex, 'Please provide valid slug'),
+		inputType: string().nonempty(RequiredErr),
+		slug: string().nonempty(RequiredErr).regex(ValidSlugRegex, 'Please provide valid slug'),
 	});
 
 	type AttributeProps = z.infer<typeof AttributeSchema>;
@@ -40,13 +41,10 @@
 	let attributeErrors = $state<Partial<Record<keyof AttributeProps, string[]>>>({});
 
 	const validate = () => {
-		const result = AttributeSchema.safeParse({ name, slug });
+		const result = AttributeSchema.safeParse({ name, slug, inputType });
 		attributeErrors = result.success ? {} : result.error.formErrors.fieldErrors;
+		return result.success;
 	};
-
-	$effect(() => {
-		if (isCreatePage) slug = slugify(name, { trim: true, strict: true, lower: true });
-	});
 
 	const AttributeInputTypeOptions = Object.values(AttributeInputTypeEnum).map<SelectOption>(
 		(value) => ({
@@ -54,6 +52,15 @@
 			label: value.toLowerCase().replace('_', ' '),
 		}),
 	);
+
+	const handleNameChange = () => {
+		if (isCreatePage) slug = slugify(name, { trim: true, strict: true, lower: true });
+		validate();
+	};
+
+	$effect(() => {
+		formOk = !Object.keys(attributeErrors).length;
+	});
 </script>
 
 <div class="rounded-lg bg-white border border-gray-200 p-3 space-y-2">
@@ -65,8 +72,8 @@
 		bind:value={name}
 		variant={attributeErrors.name?.length ? 'error' : 'info'}
 		subText={attributeErrors.name?.[0]}
-		inputDebounceOption={{ onInput: validate }}
-		onblur={validate}
+		inputDebounceOption={{ onInput: handleNameChange }}
+		onblur={handleNameChange}
 		required
 	/>
 	<Input
@@ -87,6 +94,9 @@
 		bind:value={inputType}
 		disabled={disabled || !isCreatePage}
 		required
+		onchange={validate}
+		variant={attributeErrors.inputType?.length ? 'error' : 'info'}
+		subText={attributeErrors.inputType?.[0]}
 	/>
 
 	<Checkbox

@@ -100,6 +100,7 @@ query ProductType($id: ID!, $attributeChoicesFirst: Int!, $attributeChoicesAfter
 		isShippingRequired
 		isDigital
 		kind
+    slug
     hasVariants
 		productAttributes {
 			id
@@ -524,6 +525,19 @@ mutation ProductTypeReorderAttributes($productTypeId: ID!, $moves: [ReorderInput
 export const PRODUCT_TYPE_UNASSIGN_ATTRIBUTES_MUTATION = gql`
 mutation ProductAttributeUnassign($productTypeId: ID!, $attributeIds: [ID!]!) {
   productAttributeUnassign(productTypeId: $productTypeId, attributeIds: $attributeIds) {
+    productType {
+      id
+    }
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const PRODUCT_TYPE_CREATE_MUTATION = gql`
+mutation ProductTypeCreate($input: ProductTypeInput!) {
+  productTypeCreate(input: $input) {
     productType {
       id
     }

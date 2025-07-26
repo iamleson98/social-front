@@ -22,19 +22,7 @@ query Attributes(
         inputType
         entityType
         visibleInStorefront
-        # choices(first: $choiceFirst, after: $choiceAfter) {
-        #   edges {
-        #     node {
-        #       id
-        #       name
-        #       value
-        #     }
-        #   }
-        #   pageInfo {
-        #     hasNextPage
-        #     endCursor
-        #   }
-        # }
+        slug
       }
     }
     pageInfo {
@@ -70,6 +58,16 @@ query Attribute($id: ID!) {
 export const ATTRIBUTE_DELETE_MUTATION = gql`
 mutation DelAttribute($id: ID!) {
   attributeDelete(id: $id) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const ATTRIBUTE_UPDATE_MUTATION = gql`
+mutation AttributeUpdate($id: ID!, $input: AttributeUpdateInput!) {
+  attributeUpdate(id: $id, input: $input) {
     errors {
       field
       message
@@ -114,6 +112,26 @@ query AttributeValues($id: ID!, $first: Int, $last: Int, $before: String, $after
 export const REORDER_ATTRIBUTE_VALUES_MUTATION = gql`
 mutation AttributeReorderValues($attributeId: ID!, $moves: [ReorderInput!]!) {
   attributeReorderValues(attributeId: $attributeId, moves: $moves) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const ATTRIBUTE_VALUE_DELETE_MUTATION = gql`
+mutation AttributeValueDelete($id: ID!) {
+  attributeValueDelete(id: $id) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const ATTRIBUTE_VALUE_UPDATE_MUTATION = gql`
+mutation AttributeValueUpdate($id: ID!, $input: AttributeValueUpdateInput!) {
+  attributeValueUpdate(id: $id, input: $input) {
     errors {
       field
       message

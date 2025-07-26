@@ -13,9 +13,7 @@
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import DetailSkeleton from '$lib/components/pages/settings/product-type/detail-skeleton.svelte';
 	import GeneralInfo from '$lib/components/pages/settings/product-type/general-info.svelte';
-	import ProductAttributes from '$lib/components/pages/settings/product-type/product-attributes.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { SelectSkeleton } from '$lib/components/ui/select';
 	import {
 		ProductTypeKindEnum,
 		type Mutation,
@@ -29,8 +27,12 @@
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
+	import EditPageAttributes from '$lib/components/pages/settings/product-type/edit-page-attributes.svelte';
 
-	const productTypeQuery = operationStore<Pick<Query, 'productType'>, QueryProductTypeArgs>({
+	const productTypeQuery = operationStore<
+		Pick<Query, 'productType'>,
+		QueryProductTypeArgs & { attributeChoicesFirst: number }
+	>({
 		kind: 'query',
 		query: PRODUCT_TYPE_QUERY,
 		variables: {
@@ -38,6 +40,7 @@
 			attributeChoicesFirst: 1,
 		},
 		pause: !page.params.id,
+		requestPolicy: 'cache-and-network',
 	});
 
 	let productTypeInput = $state<ProductTypeInput>({
@@ -46,14 +49,20 @@
 		isShippingRequired: true,
 		taxClass: '',
 		hasVariants: false,
+		slug: '',
 	});
 
 	let loading = $state(false);
 	let performUpdateMetadata = $state(false);
+	let generalFormOk = $state(false);
+	/** if existed state is false, then user change to true, we must update the product type itself first before
+	 * we can assign attributes to variants
+	 */
+	let initialHasVariants = $state(false);
 
-	const onUpdateClick = async () => {
+	const handleUpdateProductType = async () => {
 		loading = true;
-
+		performUpdateMetadata = true;
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'productTypeUpdate'>,
 			MutationProductTypeUpdateArgs
@@ -66,7 +75,19 @@
 
 		if (checkIfGraphqlResultHasError(result, 'productTypeUpdate', $tranFunc('common.editSuccess')))
 			return;
+
+		productTypeQuery.reexecute({
+			context: { requestPolicy: 'network-only' },
+			variables: { id: page.params.id, attributeChoicesFirst: 1 },
+		});
 	};
+
+	$effect(() => {
+		if (productTypeInput.hasVariants !== initialHasVariants) {
+			initialHasVariants = productTypeInput.hasVariants!;
+			handleUpdateProductType();
+		}
+	});
 
 	const onDeleteClick = async () => {
 		ALERT_MODAL_STORE.openAlertModal({
@@ -99,6 +120,8 @@
 				const { hasVariants, isDigital, name, slug, isShippingRequired, kind, taxClass } =
 					result.data.productType;
 
+				initialHasVariants = hasVariants; //
+
 				productTypeInput = {
 					hasVariants,
 					isDigital,
@@ -127,8 +150,10 @@
 			bind:kind={productTypeInput.kind!}
 			bind:isShippingRequired={productTypeInput.isShippingRequired!}
 			bind:taxClass={productTypeInput.taxClass!}
+			bind:formOk={generalFormOk}
+			bind:slug={productTypeInput.slug!}
 		/>
-		<ProductAttributes
+		<EditPageAttributes
 			productAttributes={productAttributes || []}
 			productTypeId={id}
 			disabled={loading}
@@ -136,13 +161,20 @@
 			bind:hasVariants={productTypeInput.hasVariants!}
 		/>
 
-		<GeneralMetadataEditor objectId={id} {metadata} {privateMetadata} bind:performUpdateMetadata />
+		<GeneralMetadataEditor
+			objectId={id}
+			{metadata}
+			{privateMetadata}
+			bind:performUpdateMetadata
+			disabled={loading}
+		/>
 	</div>
 
 	<ActionBar
-		{onUpdateClick}
+		onUpdateClick={handleUpdateProductType}
 		disabled={loading}
 		backButtonUrl={AppRoute.SETTINGS_PRODUCT_TYPES()}
 		{onDeleteClick}
+		disableUpdateButton={!generalFormOk || loading}
 	/>
 {/if}

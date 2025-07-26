@@ -1,7 +1,12 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { ATTRIBUTE_DELETE_MUTATION, ATTRIBUTE_DETAILS_QUERY } from '$lib/api/admin/attribute';
+	import { tranFunc } from '$i18n';
+	import {
+		ATTRIBUTE_DELETE_MUTATION,
+		ATTRIBUTE_DETAILS_QUERY,
+		ATTRIBUTE_UPDATE_MUTATION,
+	} from '$lib/api/admin/attribute';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
 	import AttributeValues from '$lib/components/pages/settings/attributes/attribute-values.svelte';
@@ -17,6 +22,7 @@
 		type AttributeUpdateInput,
 		type Mutation,
 		type MutationAttributeDeleteArgs,
+		type MutationAttributeUpdateArgs,
 		type Query,
 		type QueryAttributeArgs,
 	} from '$lib/gql/graphql';
@@ -37,6 +43,7 @@
 
 	let performUpdateMetadata = $state(false);
 	let loading = $state(false);
+	let generalFormOk = $state(false);
 	let attributeInput = $state<AttributeUpdateInput>({
 		name: '',
 		valueRequired: true,
@@ -61,7 +68,7 @@
 
 	const handleClickDelete = async () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: `Are you sure to delete this attribute?`,
+			content: $tranFunc('common.confirmDel'),
 			onOk: async () => {
 				loading = true;
 
@@ -84,7 +91,27 @@
 		});
 	};
 
-	const handleClickUpdate = async () => {};
+	const handleClickUpdate = async () => {
+		loading = true;
+		performUpdateMetadata = true;
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'attributeUpdate'>,
+			MutationAttributeUpdateArgs
+		>(ATTRIBUTE_UPDATE_MUTATION, {
+			id: page.params.id,
+			input: attributeInput,
+		});
+
+		loading = false;
+
+		if (checkIfGraphqlResultHasError(result, 'attributeUpdate', $tranFunc('common.editSuccess')))
+			return;
+
+		AttributeQuery.reexecute({
+			context: { requestPolicy: 'network-only' },
+			variables: { id: page.params.id },
+		});
+	};
 </script>
 
 {#if $AttributeQuery.fetching}
@@ -102,6 +129,7 @@
 				bind:valueRequired={attributeInput.valueRequired!}
 				inputType={inputType!}
 				disabled={loading}
+				bind:formOk={generalFormOk}
 			/>
 
 			<AttributeValues {withChoices} inputType={inputType!} attributeID={id} />
@@ -111,6 +139,7 @@
 				{metadata}
 				{privateMetadata}
 				bind:performUpdateMetadata
+				disabled={loading}
 			/>
 		</div>
 
@@ -127,5 +156,6 @@
 		onUpdateClick={handleClickUpdate}
 		backButtonUrl={AppRoute.SETTINGS_CONFIGS_WAREHOUSES()}
 		disabled={loading}
+		disableUpdateButton={!generalFormOk}
 	/>
 {/if}

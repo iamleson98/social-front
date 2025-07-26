@@ -26,7 +26,6 @@
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 
 	type Props = {
-		isCreatePage?: boolean;
 		productAttributes?: Attribute[];
 		productTypeId?: string;
 		disabled?: boolean;
@@ -35,19 +34,18 @@
 	};
 
 	let {
-		isCreatePage = false,
-		productAttributes = $bindable(),
+		productAttributes = [],
 		productTypeId,
 		disabled,
 		hasVariants = $bindable(),
 		assignedVariantAttributes = [],
 	}: Props = $props();
 
-	let openAssignAttributeModal = $state(false);
 	let forceFetchAvailableAttributes = $state(false);
 	let selectedAttributesToUnassign = $state<Record<string, boolean>>({});
 	let selectedAttributesToAssign = $state<Record<string, boolean>>({});
 	let loading = $state(false);
+	let openAttributeModelType = $state<ProductAttributeType>();
 	const shouldDisable = $derived(disabled || loading);
 
 	let availableAttributeVariables = $state({
@@ -98,36 +96,6 @@
 		},
 	];
 
-	const handleAssignProductAttributes = async () => {
-		const ids = Object.keys(selectedAttributesToAssign);
-		if (!ids.length || !productTypeId) return;
-
-		loading = true;
-		const result = await GRAPHQL_CLIENT.mutation<
-			Pick<Mutation, 'productAttributeAssign'>,
-			MutationProductAttributeAssignArgs
-		>(PRODUCT_TYPE_ASSIGN_ATTRIBUTES_MUTATION, {
-			productTypeId,
-			operations: ids.map((id) => ({
-				id,
-				type: ProductAttributeType.Product,
-			})),
-		});
-		loading = false;
-
-		if (
-			checkIfGraphqlResultHasError(
-				result,
-				'productAttributeAssign',
-				$tranFunc('common.editSuccess'),
-			)
-		)
-			return;
-
-		openAssignAttributeModal = false;
-		selectedAttributesToAssign = {};
-	};
-
 	const handleUnassignAttributes = async () => {
 		const ids = Object.keys(selectedAttributesToUnassign);
 		if (!ids.length || !productTypeId) return;
@@ -156,20 +124,29 @@
 		selectedAttributesToUnassign = {};
 	};
 
-	const handleReorderAttributes = async (dragIndex: number, dropIndex: number) => {
+	const handleReorderAttributes = async (
+		attrType: ProductAttributeType,
+		dragIndex: number,
+		dropIndex: number,
+	) => {
 		if (!productTypeId || dropIndex === dragIndex) return;
 
 		const steps = dropIndex - dragIndex;
 
 		loading = true;
 
+		const moves =
+			attrType === ProductAttributeType.Product
+				? [{ id: productAttributes[dragIndex].id, sortOrder: steps }]
+				: [{ id: assignedVariantAttributes[dragIndex].attribute.id, sortOrder: steps }];
+
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'productTypeReorderAttributes'>,
 			MutationProductTypeReorderAttributesArgs
 		>(PRODUCT_TYPE_REORDER_ATTRIBUTES_MUTATION, {
 			productTypeId,
-			moves: [{ id: productAttributes![dragIndex].id, sortOrder: steps }],
-			type: ProductAttributeType.Product,
+			moves,
+			type: attrType,
 		});
 
 		loading = false;
@@ -184,18 +161,21 @@
 			return;
 	};
 
-	const handleUnassignVariantAttributes = async () => {
-		const ids = Object.keys(selectedAttributesToUnassign);
+	const handleAssignAttributes = async () => {
+		const ids = Object.keys(selectedAttributesToAssign);
 		if (!ids.length || !productTypeId) return;
 
 		loading = true;
 
 		const result = await GRAPHQL_CLIENT.mutation<
-			Pick<Mutation, 'productAttributeUnassign'>,
-			MutationProductAttributeUnassignArgs
-		>(PRODUCT_TYPE_UNASSIGN_ATTRIBUTES_MUTATION, {
+			Pick<Mutation, 'productAttributeAssign'>,
+			MutationProductAttributeAssignArgs
+		>(PRODUCT_TYPE_ASSIGN_ATTRIBUTES_MUTATION, {
 			productTypeId,
-			attributeIds: ids,
+			operations: ids.map((id) => ({
+				id,
+				type: openAttributeModelType!,
+			})),
 		});
 
 		loading = false;
@@ -203,51 +183,16 @@
 		if (
 			checkIfGraphqlResultHasError(
 				result,
-				'productAttributeUnassign',
+				'productAttributeAssign',
 				$tranFunc('common.editSuccess'),
 			)
 		)
 			return;
 
-		selectedAttributesToUnassign = {};
-	};
-
-	const handleReorderVariantAttributes = async (dragIndex: number, dropIndex: number) => {
-		if (!productTypeId || dropIndex - dragIndex == 0) return;
-
-		const steps = dropIndex - dragIndex;
-
-		loading = true;
-
-		const result = await GRAPHQL_CLIENT.mutation<
-			Pick<Mutation, 'productTypeReorderAttributes'>,
-			MutationProductTypeReorderAttributesArgs
-		>(PRODUCT_TYPE_REORDER_ATTRIBUTES_MUTATION, {
-			productTypeId: productTypeId!,
-			moves: [{ id: assignedVariantAttributes![dragIndex].attribute.id, sortOrder: steps }],
-			type: ProductAttributeType.Variant,
-		});
-
-		loading = false;
-
-		if (
-			checkIfGraphqlResultHasError(
-				result,
-				'productTypeReorderAttributes',
-				$tranFunc('common.editSuccess'),
-			)
-		)
-			return;
+		openAttributeModelType = undefined;
+		selectedAttributesToAssign = {};
 	};
 </script>
-
-{#snippet name({ item }: { item: Attribute })}
-	<span>{item.name}</span>
-{/snippet}
-
-{#snippet slug({ item }: { item: Attribute })}
-	<span>{item.slug}</span>
-{/snippet}
 
 {#snippet variantAttrName({ item }: { item: AssignedVariantAttribute })}
 	<span>{item.attribute.name}</span>
@@ -255,6 +200,14 @@
 
 {#snippet variantAttrSlug({ item }: { item: AssignedVariantAttribute })}
 	<span>{item.attribute.slug}</span>
+{/snippet}
+
+{#snippet name({ item }: { item: Attribute })}
+	<span>{item.name}</span>
+{/snippet}
+
+{#snippet slug({ item }: { item: Attribute })}
+	<span>{item.slug}</span>
 {/snippet}
 
 {#snippet variantAttrUnassignSelect({ item }: { item: AssignedVariantAttribute })}
@@ -312,7 +265,7 @@
 				variant="light"
 				disabled={shouldDisable}
 				onclick={() => {
-					openAssignAttributeModal = true;
+					openAttributeModelType = ProductAttributeType.Product;
 					forceFetchAvailableAttributes = true;
 				}}
 			>
@@ -324,7 +277,8 @@
 	<Table
 		columns={UnassignTableColumns}
 		items={productAttributes || []}
-		onDragEnd={handleReorderAttributes}
+		onDragEnd={(dragIndex, dropIndex) =>
+			handleReorderAttributes(ProductAttributeType.Product, dragIndex, dropIndex)}
 		disabled={shouldDisable}
 	/>
 
@@ -342,7 +296,7 @@
 					endIcon={Trash}
 					variant="light"
 					color="red"
-					onclick={handleUnassignVariantAttributes}
+					onclick={handleUnassignAttributes}
 					disabled={shouldDisable || !Object.keys(selectedAttributesToUnassign).length}
 				>
 					Unassign attributes
@@ -353,7 +307,7 @@
 					variant="light"
 					disabled={shouldDisable}
 					onclick={() => {
-						openAssignAttributeModal = true;
+						openAttributeModelType = ProductAttributeType.Variant;
 						forceFetchAvailableAttributes = true;
 					}}
 				>
@@ -366,19 +320,20 @@
 			columns={VariantAttributeColumns}
 			items={assignedVariantAttributes}
 			disabled={shouldDisable}
-			onDragEnd={handleReorderVariantAttributes}
+			onDragEnd={(dragIndex, dropIndex) =>
+				handleReorderAttributes(ProductAttributeType.Variant, dragIndex, dropIndex)}
 		/>
 	{/if}
 </div>
 
 <Modal
 	header="Assign attribute"
-	open={openAssignAttributeModal}
+	open={!!openAttributeModelType}
 	closeOnEscape
 	closeOnOutsideClick
-	onClose={() => (openAssignAttributeModal = false)}
-	onCancel={() => (openAssignAttributeModal = false)}
-	onOk={handleAssignProductAttributes}
+	onClose={() => (openAttributeModelType = undefined)}
+	onCancel={() => (openAttributeModelType = undefined)}
+	onOk={handleAssignAttributes}
 	disableElements={shouldDisable}
 	disableOkBtn={!Object.keys(selectedAttributesToAssign).length || shouldDisable}
 >

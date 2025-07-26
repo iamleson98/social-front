@@ -30,7 +30,7 @@
 </script>
 
 <div class={`${className} ${INPUT_CLASSES[variant].fg}`}>
-	<div class={`flex items-start gap-2`}>
+	<div class={`inline-flex items-start gap-2`}>
 		<input
 			{...rest}
 			{required}
