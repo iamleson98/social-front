@@ -90,7 +90,6 @@
 <GraphqlPaginableTable
 	query={PRODUCT_LIST_QUERY_ADMIN}
 	bind:variables={productsFilterVariables}
-	class="bg-white rounded-lg p-3 border border-gray-200"
 	resultKey="products"
 	columns={productColumns}
 	bind:forceReExecuteGraphqlQuery

@@ -33,7 +33,6 @@
 		 * if true, then the query will be re-executed when variable changes. Default to `true`
 		 */
 		autoRefetchOnVariableChange?: boolean;
-		class?: string;
 	} & Omit<
 		TableProps<T, K>,
 		| 'items'
@@ -55,11 +54,10 @@
 		forceReExecuteGraphqlQuery = $bindable(true),
 		resultKey,
 		columns,
-		tableClass,
 		onDragEnd,
 		dragEffectType,
 		disabled,
-		class: className = '',
+		class: className,
 		autoRefetchOnVariableChange = true,
 	}: Props = $props();
 
@@ -191,20 +189,18 @@
 		{$queryOperationStore.error.message}
 	</Alert>
 {:else if $queryOperationStore.data}
-	<div class={className}>
-		<Table
-			{items}
-			{columns}
-			{pagination}
-			onNextPagelick={handleNextPageClick}
-			onPreviousPagelick={handlePreviousPagelick}
-			onChangeRowsPerPage={handleRowsPerPageChange}
-			onSortChange={handleSortChange}
-			rowsPerPage={(variables.first || variables.last) as RowOptions}
-			defaultSortState={sortState as SortState<K>}
-			{tableClass}
-			disabled={$queryOperationStore.fetching || disabled}
-			onDragEnd={onDragEnd ? innerHandleDragEnd : undefined}
-		/>
-	</div>
+	<Table
+		{items}
+		{columns}
+		{pagination}
+		onNextPagelick={handleNextPageClick}
+		onPreviousPagelick={handlePreviousPagelick}
+		onChangeRowsPerPage={handleRowsPerPageChange}
+		onSortChange={handleSortChange}
+		rowsPerPage={(variables.first || variables.last) as RowOptions}
+		defaultSortState={sortState as SortState<K>}
+		class={className}
+		disabled={$queryOperationStore.fetching || disabled}
+		onDragEnd={onDragEnd ? innerHandleDragEnd : undefined}
+	/>
 {/if}

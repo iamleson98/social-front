@@ -11,9 +11,9 @@
 	import { operationStore } from '$lib/api/operation';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
+	import DetailSkeleton from '$lib/components/pages/settings/product-type/detail-skeleton.svelte';
 	import GeneralInfo from '$lib/components/pages/settings/product-type/general-info.svelte';
 	import ProductAttributes from '$lib/components/pages/settings/product-type/product-attributes.svelte';
-	import VariantAttributes from '$lib/components/pages/settings/product-type/variant-attributes.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { SelectSkeleton } from '$lib/components/ui/select';
 	import {
@@ -114,7 +114,7 @@
 </script>
 
 {#if $productTypeQuery.fetching}
-	<SelectSkeleton label />
+	<DetailSkeleton />
 {:else if $productTypeQuery.error}
 	<Alert variant="error" size="sm" bordered>{$productTypeQuery.error?.message}</Alert>
 {:else if $productTypeQuery.data?.productType}
@@ -132,12 +132,8 @@
 			productAttributes={productAttributes || []}
 			productTypeId={id}
 			disabled={loading}
-		/>
-		<VariantAttributes
-			bind:hasVariants={productTypeInput.hasVariants!}
 			assignedVariantAttributes={assignedVariantAttributes || []}
-			productTypeId={id}
-			disabled={loading}
+			bind:hasVariants={productTypeInput.hasVariants!}
 		/>
 
 		<GeneralMetadataEditor objectId={id} {metadata} {privateMetadata} bind:performUpdateMetadata />

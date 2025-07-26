@@ -17,12 +17,12 @@
 	import { draggable, droppable, type DragDropState } from '@thisux/sveltednd';
 	import { flip } from 'svelte/animate';
 	import { fade } from 'svelte/transition';
-	import { classNames } from '$lib/utils/utils';
+	import { classNames, SitenameCommonClassName } from '$lib/utils/utils';
 
 	let {
 		items = [],
 		columns,
-		tableClass = '',
+		class: className = SitenameCommonClassName,
 		pagination,
 		onNextPagelick,
 		onPreviousPagelick,
@@ -81,98 +81,6 @@
 	};
 </script>
 
-<table class="table {tableClass}" class:disable-table={disabled}>
-	<thead>
-		<tr>
-			{#if onDragEnd}
-				<th></th>
-			{/if}
-			{#each columns as column, idx (idx)}
-				{@const props = column?.key
-					? {
-							onclick: () => handleSortClick(column.key!),
-							onkeyup: (evt: KeyboardEvent) => evt.key === 'Enter' && handleSortClick(column.key!),
-							disabled,
-						}
-					: {}}
-				<th class="p-[unset]!">
-					<svelte:element
-						this={column?.key ? 'button' : 'div'}
-						class={classNames('flex items-center gap-2 w-full h-full p-2 justify-between', {
-							'cursor-pointer hover:bg-gray-100 active:bg-gray-200 focus:bg-gray-200':
-								!!column?.key,
-						})}
-						{...props}
-					>
-						<div class="flex items-center gap-1">
-							{#if column?.startIcon}
-								<Icon icon={column.startIcon} size="sm" />
-							{/if}
-							{#if typeof column.title === 'string'}
-								<span>{column.title}</span>
-							{:else}
-								{@render column.title()}
-							{/if}
-							{#if column?.endIcon}
-								<Icon icon={column.endIcon} size="sm" />
-							{/if}
-						</div>
-						{#if column?.key}
-							<span>
-								<Icon icon={SortIconsMap[sortState[column.key!]]} size="sm" />
-							</span>
-						{/if}
-					</svelte:element>
-				</th>
-			{/each}
-		</tr>
-	</thead>
-	{#if items.length}
-		<tbody>
-			{#if onDragEnd}
-				{#each items as item, idx (idx)}
-					<tr
-						use:droppable={{
-							container: idx.toString(),
-							callbacks: { onDrop: handleDrop },
-						}}
-						use:draggable={{
-							container: idx.toString(),
-							dragData: idx,
-							interactive: ['[data-interactive]'], // within cell definition, add `data-interactive` to the element if you want to exclude it from draggable
-						}}
-						animate:flip={{ duration: 200 }}
-						in:fade={{ duration: 150 }}
-						out:fade={{ duration: 150 }}
-						class="svelte-dnd-touch-feedback"
-					>
-						<td class="px-1! py-2!">
-							<div>
-								<IconButton icon={GripVertical} size="xs" color="gray" variant="light" {disabled} />
-							</div>
-						</td>
-						{@render customTr(item, columns, idx)}
-					</tr>
-				{/each}
-			{:else}
-				{#each items as item, idx (idx)}
-					<tr>
-						{@render customTr(item, columns, idx)}
-					</tr>
-				{/each}
-			{/if}
-		</tbody>
-	{:else}
-		<tbody>
-			<tr
-				><td class="text-sm select-none! text-gray-400 text-center" colspan={columns.length}
-					>{$tranFunc('helpText.noData')}</td
-				></tr
-			>
-		</tbody>
-	{/if}
-</table>
-
 {#snippet customTr(item: T, columns: TableColumnProps<T, K>[], itemIdx: number)}
 	{#each columns as column, idx (idx)}
 		<td class="px-1! py-2!">
@@ -181,48 +89,149 @@
 	{/each}
 {/snippet}
 
-<!-- MARK: pagination -->
-{#if pagination}
-	{@const PAGIN_OPTIONS = ROW_OPTIONS.map<MenuItemProps>((num) => ({
-		children: `${num}`,
-		onclick: () => handleRowsPerPageChange(num),
-	}))}
-	<div class="mt-4 flex items-center justify-between">
-		<div>
-			<DropDown placement="bottom-start" options={PAGIN_OPTIONS}>
-				{#snippet trigger(opts: DropdownTriggerInterface)}
-					<Button size="xs" variant="light" {...opts} {disabled}>
-						No. of row {innerRowsPerPage}
-					</Button>
-				{/snippet}
-			</DropDown>
+<div class={className}>
+	<table class="table" class:disable-table={disabled}>
+		<thead>
+			<tr>
+				{#if onDragEnd}
+					<th></th>
+				{/if}
+				{#each columns as column, idx (idx)}
+					{@const props = column?.key
+						? {
+								onclick: () => handleSortClick(column.key!),
+								onkeyup: (evt: KeyboardEvent) =>
+									evt.key === 'Enter' && handleSortClick(column.key!),
+								disabled,
+							}
+						: {}}
+					<th class="p-[unset]!">
+						<svelte:element
+							this={column?.key ? 'button' : 'div'}
+							class={classNames('flex items-center gap-2 w-full h-full p-2 justify-between', {
+								'cursor-pointer hover:bg-gray-100 active:bg-gray-200 focus:bg-gray-200':
+									!!column?.key,
+							})}
+							{...props}
+						>
+							<div class="flex items-center gap-1">
+								{#if column?.startIcon}
+									<Icon icon={column.startIcon} size="sm" />
+								{/if}
+								{#if typeof column.title === 'string'}
+									<span>{column.title}</span>
+								{:else}
+									{@render column.title()}
+								{/if}
+								{#if column?.endIcon}
+									<Icon icon={column.endIcon} size="sm" />
+								{/if}
+							</div>
+							{#if column?.key}
+								<span>
+									<Icon icon={SortIconsMap[sortState[column.key!]]} size="sm" />
+								</span>
+							{/if}
+						</svelte:element>
+					</th>
+				{/each}
+			</tr>
+		</thead>
+		{#if items.length}
+			<tbody>
+				{#if onDragEnd}
+					{#each items as item, idx (idx)}
+						<tr
+							use:droppable={{
+								container: idx.toString(),
+								callbacks: { onDrop: handleDrop },
+							}}
+							use:draggable={{
+								container: idx.toString(),
+								dragData: idx,
+								interactive: ['[data-interactive]'], // within cell definition, add `data-interactive` to the element if you want to exclude it from draggable
+							}}
+							animate:flip={{ duration: 200 }}
+							in:fade={{ duration: 150 }}
+							out:fade={{ duration: 150 }}
+							class="svelte-dnd-touch-feedback"
+						>
+							<td class="px-1! py-2!">
+								<div>
+									<IconButton
+										icon={GripVertical}
+										size="xs"
+										color="gray"
+										variant="light"
+										{disabled}
+									/>
+								</div>
+							</td>
+							{@render customTr(item, columns, idx)}
+						</tr>
+					{/each}
+				{:else}
+					{#each items as item, idx (idx)}
+						<tr>
+							{@render customTr(item, columns, idx)}
+						</tr>
+					{/each}
+				{/if}
+			</tbody>
+		{:else}
+			<tbody>
+				<tr
+					><td class="text-sm select-none! text-gray-400 text-center" colspan={columns.length}
+						>{$tranFunc('helpText.noData')}</td
+					></tr
+				>
+			</tbody>
+		{/if}
+	</table>
+
+	<!-- MARK: pagination -->
+	{#if pagination}
+		{@const PAGIN_OPTIONS = ROW_OPTIONS.map<MenuItemProps>((num) => ({
+			children: `${num}`,
+			onclick: () => handleRowsPerPageChange(num),
+		}))}
+		<div class="mt-4 flex items-center justify-between">
+			<div>
+				<DropDown placement="bottom-start" options={PAGIN_OPTIONS}>
+					{#snippet trigger(opts: DropdownTriggerInterface)}
+						<Button size="xs" variant="light" {...opts} {disabled}>
+							No. of row {innerRowsPerPage}
+						</Button>
+					{/snippet}
+				</DropDown>
+			</div>
+			<div class="flex items-center gap-2 justify-end">
+				<IconButton
+					icon={ChevronLeft}
+					size="xs"
+					disabled={!pagination.hasPreviousPage || disabled}
+					aria-label="Previous page"
+					class="tooltip tooltip-top"
+					data-tip={$tranFunc('common.prevPage')}
+					color="gray"
+					variant="light"
+					onclick={() => handleNavigateClick(-1)}
+				/>
+				<IconButton
+					icon={ChevronRight}
+					size="xs"
+					disabled={!pagination.hasNextPage || disabled}
+					aria-label="Next page"
+					class="tooltip tooltip-top"
+					data-tip={$tranFunc('common.nextPage')}
+					color="gray"
+					variant="light"
+					onclick={() => handleNavigateClick(1)}
+				/>
+			</div>
 		</div>
-		<div class="flex items-center gap-2 justify-end">
-			<IconButton
-				icon={ChevronLeft}
-				size="xs"
-				disabled={!pagination.hasPreviousPage || disabled}
-				aria-label="Previous page"
-				class="tooltip tooltip-top"
-				data-tip={$tranFunc('common.prevPage')}
-				color="gray"
-				variant="light"
-				onclick={() => handleNavigateClick(-1)}
-			/>
-			<IconButton
-				icon={ChevronRight}
-				size="xs"
-				disabled={!pagination.hasNextPage || disabled}
-				aria-label="Next page"
-				class="tooltip tooltip-top"
-				data-tip={$tranFunc('common.nextPage')}
-				color="gray"
-				variant="light"
-				onclick={() => handleNavigateClick(1)}
-			/>
-		</div>
-	</div>
-{/if}
+	{/if}
+</div>
 
 <style lang="postcss">
 	@reference "tailwindcss"

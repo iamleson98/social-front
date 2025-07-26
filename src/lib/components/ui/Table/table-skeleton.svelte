@@ -6,13 +6,14 @@
 		numColumns: number;
 		numOfRows?: number;
 		showPagination?: boolean;
+		class?: string;
 	};
 
 	type Item = {
 		[x: string]: unknown;
 	};
 
-	let { numColumns, numOfRows = 3, showPagination = false }: Props = $props();
+	let { numColumns, numOfRows = 3, showPagination = false, class: className = '' }: Props = $props();
 
 	let columns = $derived.by(() =>
 		new Array(numColumns).fill(null).map(() => ({
@@ -28,7 +29,7 @@
 	</SkeletonContainer>
 {/snippet}
 
-<div class="bg-white rounded-lg p-3 border border-gray-200">
+<div class="bg-white rounded-lg p-3 border border-gray-200 {className}">
 	<Table {columns} items={new Array(numOfRows).fill(null).map(() => ({}))} />
 	{#if showPagination}
 		<div class="flex items-center justify-between p-2">

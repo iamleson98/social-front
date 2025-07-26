@@ -44,5 +44,4 @@
 	resultKey="permissionGroups"
 	bind:variables
 	bind:forceReExecuteGraphqlQuery
-	class="bg-white rounded-lg border border-gray-200 p-3"
 />

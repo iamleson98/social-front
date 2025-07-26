@@ -9,4 +9,5 @@ export { type InputProps, type TextAreaPropsProps } from './input.types';
 export { default as FileInput } from './file.svelte';
 export { default as DebounceInput } from './debounce-input.svelte';
 export { default as CheckboxSkeleton } from './checkbox-skeleton.svelte';
+export { default as RadioSkeleton } from './radio-skeleton.svelte';
 export * from './input.types';

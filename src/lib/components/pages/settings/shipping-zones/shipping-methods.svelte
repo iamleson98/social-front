@@ -78,7 +78,7 @@
 	<IconButton icon={Trash} size="xs" variant="light" color="red" />
 {/snippet}
 
-<div class={classNames(SitenameCommonClassName, 'space-y-2')}>
+<div class={SitenameCommonClassName}>
 	<SectionHeader>
 		<div>Price based methods</div>
 

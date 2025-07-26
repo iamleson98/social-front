@@ -22,7 +22,7 @@
 	}: Props = $props();
 </script>
 
-<div class={classNames(SitenameCommonClassName, 'space-y-2')}>
+<div class={SitenameCommonClassName}>
 	<SectionHeader>General information</SectionHeader>
 	<Input label="Name" bind:value={name} required placeholder="Name" {disabled} />
 	<EditorJSComponent

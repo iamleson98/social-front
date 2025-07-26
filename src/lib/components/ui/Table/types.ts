@@ -10,7 +10,7 @@ export type RowOptions = typeof ROW_OPTIONS[number];
 export type TableProps<T extends Record<string, unknown>, K extends string = string> = {
   items: T[];
   columns: TableColumnProps<T, K>[];
-  tableClass?: string;
+  class?: string;
   pagination?: PageInfo;
   onNextPagelick?: (afterCursor: string) => void;
   onPreviousPagelick?: (beforeCursor: string) => void;

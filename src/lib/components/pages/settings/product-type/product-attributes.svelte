@@ -15,6 +15,7 @@
 	import { GraphqlPaginableTable, Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
 		ProductAttributeType,
+		type AssignedVariantAttribute,
 		type Attribute,
 		type Mutation,
 		type MutationProductAttributeAssignArgs,
@@ -29,6 +30,8 @@
 		productAttributes?: Attribute[];
 		productTypeId?: string;
 		disabled?: boolean;
+		hasVariants: boolean;
+		assignedVariantAttributes?: AssignedVariantAttribute[];
 	};
 
 	let {
@@ -36,6 +39,8 @@
 		productAttributes = $bindable(),
 		productTypeId,
 		disabled,
+		hasVariants = $bindable(),
+		assignedVariantAttributes = [],
 	}: Props = $props();
 
 	let openAssignAttributeModal = $state(false);
@@ -76,6 +81,21 @@
 			child: assignSelect,
 		},
 		...AttributeColumns,
+	];
+
+	const VariantAttributeColumns: TableColumnProps<AssignedVariantAttribute>[] = [
+		{
+			title: '',
+			child: variantAttrUnassignSelect,
+		},
+		{
+			title: 'Name',
+			child: variantAttrName,
+		},
+		{
+			title: 'Slug',
+			child: variantAttrSlug,
+		},
 	];
 
 	const handleAssignProductAttributes = async () => {
@@ -163,6 +183,62 @@
 		)
 			return;
 	};
+
+	const handleUnassignVariantAttributes = async () => {
+		const ids = Object.keys(selectedAttributesToUnassign);
+		if (!ids.length || !productTypeId) return;
+
+		loading = true;
+
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'productAttributeUnassign'>,
+			MutationProductAttributeUnassignArgs
+		>(PRODUCT_TYPE_UNASSIGN_ATTRIBUTES_MUTATION, {
+			productTypeId,
+			attributeIds: ids,
+		});
+
+		loading = false;
+
+		if (
+			checkIfGraphqlResultHasError(
+				result,
+				'productAttributeUnassign',
+				$tranFunc('common.editSuccess'),
+			)
+		)
+			return;
+
+		selectedAttributesToUnassign = {};
+	};
+
+	const handleReorderVariantAttributes = async (dragIndex: number, dropIndex: number) => {
+		if (!productTypeId || dropIndex - dragIndex == 0) return;
+
+		const steps = dropIndex - dragIndex;
+
+		loading = true;
+
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'productTypeReorderAttributes'>,
+			MutationProductTypeReorderAttributesArgs
+		>(PRODUCT_TYPE_REORDER_ATTRIBUTES_MUTATION, {
+			productTypeId: productTypeId!,
+			moves: [{ id: assignedVariantAttributes![dragIndex].attribute.id, sortOrder: steps }],
+			type: ProductAttributeType.Variant,
+		});
+
+		loading = false;
+
+		if (
+			checkIfGraphqlResultHasError(
+				result,
+				'productTypeReorderAttributes',
+				$tranFunc('common.editSuccess'),
+			)
+		)
+			return;
+	};
 </script>
 
 {#snippet name({ item }: { item: Attribute })}
@@ -171,6 +247,26 @@
 
 {#snippet slug({ item }: { item: Attribute })}
 	<span>{item.slug}</span>
+{/snippet}
+
+{#snippet variantAttrName({ item }: { item: AssignedVariantAttribute })}
+	<span>{item.attribute.name}</span>
+{/snippet}
+
+{#snippet variantAttrSlug({ item }: { item: AssignedVariantAttribute })}
+	<span>{item.attribute.slug}</span>
+{/snippet}
+
+{#snippet variantAttrUnassignSelect({ item }: { item: AssignedVariantAttribute })}
+	<Checkbox
+		data-interactive
+		checked={selectedAttributesToUnassign[item.attribute.id]}
+		onCheckChange={(checked) =>
+			checked
+				? (selectedAttributesToUnassign[item.attribute.id] = checked)
+				: delete selectedAttributesToUnassign[item.attribute.id]}
+		disabled={shouldDisable}
+	/>
 {/snippet}
 
 {#snippet unassignSelect({ item }: { item: Attribute })}
@@ -198,7 +294,7 @@
 
 <div class={SitenameCommonClassName}>
 	<SectionHeader>
-		<div>Attributes</div>
+		<div>Product Attributes</div>
 		<div class="flex gap-1">
 			<Button
 				size="xs"
@@ -231,6 +327,48 @@
 		onDragEnd={handleReorderAttributes}
 		disabled={shouldDisable}
 	/>
+
+	<!-- MARK: variant attributes -->
+
+	<Checkbox label="Has Variant attributes" bind:checked={hasVariants} disabled={shouldDisable} />
+
+	{#if hasVariants}
+		<SectionHeader>
+			<div>Variant Attributes</div>
+
+			<div class="flex gap-1">
+				<Button
+					size="xs"
+					endIcon={Trash}
+					variant="light"
+					color="red"
+					onclick={handleUnassignVariantAttributes}
+					disabled={shouldDisable || !Object.keys(selectedAttributesToUnassign).length}
+				>
+					Unassign attributes
+				</Button>
+				<Button
+					size="xs"
+					endIcon={Plus}
+					variant="light"
+					disabled={shouldDisable}
+					onclick={() => {
+						openAssignAttributeModal = true;
+						forceFetchAvailableAttributes = true;
+					}}
+				>
+					Assign attributes
+				</Button>
+			</div>
+		</SectionHeader>
+
+		<Table
+			columns={VariantAttributeColumns}
+			items={assignedVariantAttributes}
+			disabled={shouldDisable}
+			onDragEnd={handleReorderVariantAttributes}
+		/>
+	{/if}
 </div>
 
 <Modal
@@ -260,7 +398,6 @@
 	<GraphqlPaginableTable
 		query={PRODUCT_TYPE_AVAILABLE_ATTRIBUTES_QUERY}
 		resultKey={'productType.availableAttributes' as keyof Query}
-		class={SitenameCommonClassName}
 		columns={AssignTableColumns}
 		disabled={shouldDisable}
 		bind:variables={availableAttributeVariables}

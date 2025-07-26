@@ -25,7 +25,7 @@
 	import { checkIfGraphqlResultHasError, parseEditorJsString } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import RuleEdit from './rule-edit.svelte';
-	import { GraphqlPaginableTable, Table, TableSkeleton } from '$lib/components/ui/Table';
+	import { Table, TableSkeleton } from '$lib/components/ui/Table';
 	import { Alert } from '$lib/components/ui/Alert';
 	import {
 		CATEGORY_COLUMNS,

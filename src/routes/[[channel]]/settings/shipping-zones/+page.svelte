@@ -43,5 +43,4 @@
 	bind:forceReExecuteGraphqlQuery
 	resultKey="shippingZones"
 	columns={ShippingZoneColumns}
-	class="bg-white rounded-lg border border-gray-200 p-3"
 />
