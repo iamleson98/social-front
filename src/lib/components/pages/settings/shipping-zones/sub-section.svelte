@@ -4,20 +4,47 @@
 	import WarehouseSelect from '$lib/components/common/warehouse-select.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import type { Channel, Warehouse } from '$lib/gql/graphql';
+	import { AppRoute } from '$lib/utils';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import { difference } from 'es-toolkit';
 
 	type Props = {
 		channels?: Channel[];
-    warehouses?: Warehouse[];
+		warehouses?: Warehouse[];
+		addWarehouses: string[];
+		removeWarehouses: string[];
+		addChannels: string[];
+		removeChannels: string[];
+		disabled?: boolean;
 	};
 
-	let { channels = [], warehouses = [] }: Props = $props();
+	let {
+		channels = [],
+		warehouses = [],
+		addWarehouses = $bindable(),
+		removeWarehouses = $bindable(),
+		addChannels = $bindable(),
+		removeChannels = $bindable(),
+		disabled,
+	}: Props = $props();
 
-	let channelIds = $state(channels.map((item) => item.id));
-  let warehouseIds = $state(warehouses.map(item => item.id));
+	const existingChannelIds = channels.map((item) => item.id);
+	const existingWarehouseIds = warehouses.map((item) => item.id);
+
+	let channelIds = $state(existingChannelIds);
+	let warehouseIds = $state(existingWarehouseIds);
+
+	const handleSelectionChange = () => {
+		addChannels = difference(channelIds, existingChannelIds);
+		addWarehouses = difference(warehouseIds, existingWarehouseIds);
+
+		removeChannels = difference(existingChannelIds, channelIds);
+		removeWarehouses = difference(existingWarehouseIds, warehouseIds);
+	};
 </script>
 
 <div class="space-y-2 w-4/10">
-	<div class="bg-white rounded-lg border border-gray-200 p-3 space-y-2">
+	<div class={SitenameCommonClassName}>
 		<SectionHeader>Channels</SectionHeader>
 
 		<Alert size="sm" bordered>
@@ -31,10 +58,12 @@
 			valueType="id"
 			bind:value={channelIds}
 			multiple
+			onchange={handleSelectionChange}
+			{disabled}
 		/>
 	</div>
 
-	<div class="bg-white rounded-lg border border-gray-200 p-3 space-y-2">
+	<div class={SitenameCommonClassName}>
 		<SectionHeader>Warehouses</SectionHeader>
 
 		<Alert size="sm" bordered>
@@ -42,12 +71,23 @@
 			address will also be used to calculate taxes.
 		</Alert>
 
-    <WarehouseSelect
-      bind:value={warehouseIds}
-      placeholder="Warehouses"
-      label="Warehouses"
-      required
-      multiple
-    />
+		<WarehouseSelect
+			bind:value={warehouseIds}
+			placeholder="Warehouses"
+			label="Warehouses"
+			required
+			multiple
+			onchange={handleSelectionChange}
+			{disabled}
+		/>
+
+		<data class="text-right text-xs">
+			<div>
+				Not found a warehouse? <a
+					href={AppRoute.SETTINGS_CONFIGS_WAREHOUSE_NEW()}
+					class="link font-medium">Create one</a
+				>
+			</div>
+		</data>
 	</div>
 </div>

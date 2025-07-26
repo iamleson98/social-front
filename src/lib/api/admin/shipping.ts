@@ -143,3 +143,24 @@ mutation ShippingZoneDelete($id: ID!) {
     }
   }
 }`;
+
+export const DELETE_SHIPPING_METHOD_MUTATION = gql`
+mutation DeleteShippingMethod($id: ID!) {
+  shippingPriceDelete(id: $id) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const UPDATE_SHIPPING_ZONE_MUTATION = gql`
+mutation UpdateShippingZone($id: ID!, $input: ShippingZoneUpdateInput!) {
+  shippingZoneUpdate(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+

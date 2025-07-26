@@ -1,24 +1,40 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { tranFunc } from '$i18n';
+	import { DELETE_SHIPPING_METHOD_MUTATION } from '$lib/api/admin/shipping';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Edit, Plus, Trash } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
-	import { ShippingMethodTypeEnum, type ShippingMethodType } from '$lib/gql/graphql';
+	import {
+		ShippingMethodTypeEnum,
+		type Mutation,
+		type MutationShippingPriceDeleteArgs,
+		type ShippingMethodType,
+	} from '$lib/gql/graphql';
+	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
-	import { classNames, SitenameCommonClassName } from '$lib/utils/utils';
+	import {
+		checkIfGraphqlResultHasError,
+		classNames,
+		SitenameCommonClassName,
+	} from '$lib/utils/utils';
 
 	type Props = {
 		shippingMethods?: ShippingMethodType[];
+		disabled?: boolean;
+		onDoneUpdate?: () => void;
 	};
 
-	let { shippingMethods = [] }: Props = $props();
+	let { shippingMethods = [], disabled, onDoneUpdate }: Props = $props();
 
 	let priceBasedMethods = shippingMethods.filter(
 		(item) => item.type === ShippingMethodTypeEnum.Price,
 	);
+	let loading = $state(false);
 
 	const PriceBasedColumns: TableColumnProps<ShippingMethodType>[] = [
 		{
@@ -38,6 +54,33 @@
 			child: action,
 		},
 	];
+
+	const handleDeleteMethod = (id: string) => {
+		ALERT_MODAL_STORE.openAlertModal({
+			content: $tranFunc('common.confirmDel'),
+			onOk: async () => {
+				loading = true;
+
+				const result = await GRAPHQL_CLIENT.mutation<
+					Pick<Mutation, 'shippingPriceDelete'>,
+					MutationShippingPriceDeleteArgs
+				>(DELETE_SHIPPING_METHOD_MUTATION, { id });
+
+				loading = false;
+
+				if (
+					checkIfGraphqlResultHasError(
+						result,
+						'shippingPriceDelete',
+						$tranFunc('common.delSuccess'),
+					)
+				)
+					return;
+
+				onDoneUpdate?.();
+			},
+		});
+	};
 </script>
 
 {#snippet name({ item }: { item: ShippingMethodType })}
@@ -75,7 +118,14 @@
 {/snippet}
 
 {#snippet action({ item }: { item: ShippingMethodType })}
-	<IconButton icon={Trash} size="xs" variant="light" color="red" />
+	<IconButton
+		icon={Trash}
+		size="xs"
+		variant="light"
+		color="red"
+		onclick={() => handleDeleteMethod(item.id)}
+		{disabled}
+	/>
 {/snippet}
 
 <div class={SitenameCommonClassName}>
@@ -87,9 +137,11 @@
 			variant="light"
 			size="xs"
 			href={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_NEW(page.params.id)}
-			>Create method</Button
+			{disabled}
 		>
+			Create method
+		</Button>
 	</SectionHeader>
 
-	<Table columns={PriceBasedColumns} items={priceBasedMethods} />
+	<Table columns={PriceBasedColumns} items={priceBasedMethods} {disabled} />
 </div>
