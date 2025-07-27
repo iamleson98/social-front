@@ -89,7 +89,7 @@
 	{/each}
 {/snippet}
 
-<div class={className}>
+<div class={[className, 'min-w-fit']}>
 	<table class="table" class:disable-table={disabled}>
 		<thead>
 			<tr>
