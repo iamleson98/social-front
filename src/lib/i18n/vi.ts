@@ -402,7 +402,7 @@ export default {
 	collection: {
 		cols: 'Bộ sưu tập',
 		newCol: 'Thêm bộ sưu tập',
-		noOfPrds: 'Số lượng sản phẩm',
+		noOfPrds: 'Số sản phẩm',
 		noPrdAssigned: 'Chưa có sản phẩm nào',
 		prdsInCol: 'Các sản phẩm',
 		assignPrd: 'Gán sản phẩm',
@@ -413,7 +413,7 @@ export default {
 	},
 	category: {
 		new: 'Thêm danh mục',
-		noOfChildren: 'Số lượng mục con',
+		noOfChildren: 'Số mục con',
 	},
 	voucher: {
 		useLimit: 'Giới hạn sử dụng',
