@@ -3,25 +3,30 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Input } from '$lib/components/ui/Input';
 	import { Select } from '$lib/components/ui/select';
+	import { type TableColumnProps } from '$lib/components/ui/Table';
 	import type {
 		Channel,
-		ShippingMethodChannelListingAddInput,
+		ShippingMethodChannelListing,
 		ShippingMethodChannelListingInput,
 	} from '$lib/gql/graphql';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
-	import { difference } from 'es-toolkit';
-	import { onMount } from 'svelte';
 	import { array, number, object } from 'zod';
 	import { calculateZodErrors, type PriceErrors, type ZodErrors } from './utils';
 
 	type Props = {
+		shippingMethodChannelListings: ShippingMethodChannelListing[];
 		shippingMethodChannelListingsInput: ShippingMethodChannelListingInput;
+		/** all channels that the shipping zone have, all child shipping methods should at most appear in those channels only */
 		availableChannels: Channel[];
 	};
 
-	let { shippingMethodChannelListingsInput = $bindable(), availableChannels }: Props = $props();
+	let {
+		shippingMethodChannelListings,
+		shippingMethodChannelListingsInput = $bindable(),
+		availableChannels,
+	}: Props = $props();
 
-	const availableChannelsMap = availableChannels.reduce(
+	const AvailableChannelsMap = availableChannels.reduce(
 		(acc, cur) => {
 			acc[cur.id] = cur;
 			return acc;
@@ -29,7 +34,9 @@
 		{} as Record<string, Channel>,
 	);
 
-	let innerAvailableChannelIds = $state(Object.keys(availableChannelsMap));
+	let innerAvailableChannelIds = $state(
+		shippingMethodChannelListings.map((item) => item.channel.id),
+	);
 	const FieldRequiredErr = $tranFunc('helpText.fieldRequired');
 	const NonNegativeErr = $tranFunc('error.negativeNumber');
 	const NoChannelError = $derived(!innerAvailableChannelIds.length ? FieldRequiredErr : undefined);
@@ -53,63 +60,79 @@
 			: calculateZodErrors(result.error?.errors as unknown as ZodErrors);
 	};
 
-	const handleChannelsChange = () => {
-		let currentChannelPrices = shippingMethodChannelListingsInput.addChannels || [];
-
-		const availableChannelIds = Object.keys(availableChannelsMap);
-		const removeChannelIds = difference(availableChannelIds, innerAvailableChannelIds);
-		const addChannelIds = difference(
-			innerAvailableChannelIds,
-			currentChannelPrices.map((item) => item.channelId),
-		);
-
-		if (removeChannelIds.length)
-			currentChannelPrices = currentChannelPrices?.filter(
-				(item) => !removeChannelIds.includes(item.channelId),
-			);
-
-		if (addChannelIds.length)
-			currentChannelPrices = currentChannelPrices.concat(
-				addChannelIds.map((id) => ({
-					channelId: id,
-					minimumOrderPrice: 0,
-					maximumOrderPrice: 0,
-					price: 0,
-				})),
-			);
-
-		shippingMethodChannelListingsInput.addChannels = currentChannelPrices;
-		validate();
-	};
-
-	onMount(() => {
-		shippingMethodChannelListingsInput.addChannels =
-			availableChannels.map<ShippingMethodChannelListingAddInput>((chan) => ({
-				channelId: chan.id,
-				minimumOrderPrice: 0,
-				maximumOrderPrice: 0,
-				price: 0,
-			}));
-	});
+	// const PricingColumns: TableColumnProps<ShippingMethodChannelListing>[] = [
+	// 	{
+	// 		title: 'channel',
+	// 		child: channel,
+	// 	},
+	// 	{
+	// 		title: 'min order value',
+	// 		child: minOrderValue,
+	// 	},
+	// 	{
+	// 		title: 'max order value',
+	// 		child: maxOrderValue,
+	// 	},
+	// 	{
+	// 		title: 'Shipping cost',
+	// 		child: shippingCost,
+	// 	},
+	// ];
 </script>
+
+<!-- {#snippet channel({ item }: { item: ShippingMethodChannelListing })}
+	<span class="text-xs">{item.channel.name}</span>
+{/snippet} -->
 
 {#snippet currencyDisplay(code: string)}
 	<span class="text-[10px] font-semibold">{code}</span>
 {/snippet}
 
+<!-- {#snippet shippingCost({ item }: { item: ShippingMethodChannelListing })}
+	<Input size="sm" placeholder="min order value" type="number" value={item.price?.amount}>
+		{#snippet action()}
+			{@render currencyDisplay(item.channel.currencyCode)}
+		{/snippet}
+	</Input>
+{/snippet} -->
+
+<!-- {#snippet minOrderValue({ item }: { item: ShippingMethodChannelListing })}
+	<Input
+		size="sm"
+		placeholder="min order value"
+		type="number"
+		value={item.minimumOrderPrice?.amount}
+	>
+		{#snippet action()}
+			{@render currencyDisplay(item.channel.currencyCode)}
+		{/snippet}
+	</Input>
+{/snippet} -->
+
+<!-- {#snippet maxOrderValue({ item }: { item: ShippingMethodChannelListing })}
+	<Input
+		size="sm"
+		placeholder="max order value"
+		type="number"
+		value={item.maximumOrderPrice?.amount}
+	>
+		{#snippet action()}
+			{@render currencyDisplay(item.channel.currencyCode)}
+		{/snippet}
+	</Input>
+{/snippet} -->
+
 <div class={SitenameCommonClassName}>
 	<SectionHeader>Distribution and Pricing</SectionHeader>
-
 	<Select
-		multiple
-		label="Channels available"
-		placeholder="channels available"
 		options={availableChannels.map((chan) => ({
 			value: chan.id,
 			label: chan.name,
 		}))}
+		multiple
+		label="Channels available"
+		placeholder="channels available"
 		bind:value={innerAvailableChannelIds}
-		onchange={handleChannelsChange}
 		required
 		variant={NoChannelError ? 'error' : 'info'}
 		subText={NoChannelError}
@@ -121,9 +144,10 @@
 		<div class="flex-3/10">Max order value</div>
 		<div class="flex-3/10">Shipping cost</div>
 	</div>
-	{#each shippingMethodChannelListingsInput.addChannels! as listing, idx (idx)}
+
+	{#each shippingMethodChannelListings as listing, idx (idx)}
 		<div class="flex gap-2 items-start flex-row">
-			<div class="flex-1/10">{availableChannelsMap[listing.channelId].name}</div>
+			<div class="flex-1/10">{listing.channel.name}</div>
 			<Input
 				size="sm"
 				placeholder="min order value"
@@ -139,7 +163,7 @@
 				subText={pricingErrors[idx]?.minimumOrderPrice}
 			>
 				{#snippet action()}
-					{@render currencyDisplay(availableChannelsMap[listing.channelId].currencyCode)}
+					{@render currencyDisplay(AvailableChannelsMap[listing.channel.id].currencyCode)}
 				{/snippet}
 			</Input>
 			<Input
@@ -157,7 +181,7 @@
 				subText={pricingErrors[idx]?.maximumOrderPrice}
 			>
 				{#snippet action()}
-					{@render currencyDisplay(availableChannelsMap[listing.channelId].currencyCode)}
+					{@render currencyDisplay(AvailableChannelsMap[listing.channel.id].currencyCode)}
 				{/snippet}
 			</Input>
 			<Input
@@ -175,7 +199,7 @@
 				subText={pricingErrors[idx]?.price}
 			>
 				{#snippet action()}
-					{@render currencyDisplay(availableChannelsMap[listing.channelId].currencyCode)}
+					{@render currencyDisplay(AvailableChannelsMap[listing.channel.id].currencyCode)}
 				{/snippet}
 			</Input>
 		</div>

@@ -28,7 +28,6 @@
 	import { goto } from '$app/navigation';
 	import DetailSkeleton from '$lib/components/pages/settings/shipping-zones/detail-skeleton.svelte';
 	import { onMount } from 'svelte';
-	import { ActiveShippingZone } from '$lib/stores/shipping';
 
 	const shippingZoneQuery = operationStore<Pick<Query, 'shippingZone'>, QueryShippingZoneArgs>({
 		kind: 'query',
@@ -108,8 +107,6 @@
 					description: description || '',
 					default: defaultZone,
 				};
-
-				ActiveShippingZone.set(result.data.shippingZone);
 			}
 		}),
 	);
@@ -136,7 +133,7 @@
 				bind:name={shippingZoneInput.name!}
 				bind:description={shippingZoneInput.description!}
 				disabled={loading}
-				{countries}
+				countries={countries.map((country) => country.code)}
 				bind:isDefault={shippingZoneInput.default!}
 				bind:formOk={generalFormOk}
 			/>

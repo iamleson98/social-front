@@ -11,7 +11,7 @@
 		name: string;
 		description: string;
 		disabled?: boolean;
-		countries: CountryDisplay[];
+		countries: string[];
 		isDefault: boolean;
 		formOk: boolean;
 	};
@@ -20,7 +20,7 @@
 		name = $bindable(),
 		description = $bindable(),
 		disabled,
-		countries,
+		countries = $bindable(),
 		isDefault = $bindable(),
 		formOk = $bindable(),
 	}: Props = $props();
@@ -44,8 +44,6 @@
 	$effect(() => {
 		formOk = !Object.keys(zoneErrors).length;
 	});
-
-	let countryCodes = $state(countries.map((country) => country.code));
 
 	const CountriesOptions = $derived(
 		$READ_ONLY_SHOP_STORE?.countries.map<SelectOption>((item) => ({
@@ -94,8 +92,11 @@
 		placeholder="Shipping zone countries"
 		multiple
 		required
-		bind:value={countryCodes}
-		options={CountriesOptions}
+		bind:value={countries}
+		options={$READ_ONLY_SHOP_STORE?.countries.map<SelectOption>((item) => ({
+			label: item.country,
+			value: item.code,
+		})) || []}
 		{disabled}
 	/>
 </div>

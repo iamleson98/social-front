@@ -92,7 +92,7 @@
 	@reference "tailwindcss";
 
 	.button {
-		@apply cursor-pointer relative outline-hidden! !select-none gap-1.5 appearance-none text-center inline-flex justify-center items-center leading-none grow-0 font-medium focus:ring-4;
+		@apply cursor-pointer relative outline-hidden! !select-none gap-1.5 appearance-none text-center inline-flex justify-center items-center leading-none grow-0 font-medium focus:ring-4 transition-all ease-in-out duration-100;
 		-webkit-tap-highlight-color: transparent;
 	}
 	.button-xs {

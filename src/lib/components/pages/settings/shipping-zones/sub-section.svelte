@@ -12,9 +12,9 @@
 		channels?: Channel[];
 		warehouses?: Warehouse[];
 		addWarehouses: string[];
-		removeWarehouses: string[];
+		removeWarehouses?: string[];
 		addChannels: string[];
-		removeChannels: string[];
+		removeChannels?: string[];
 		disabled?: boolean;
 	};
 
@@ -60,6 +60,7 @@
 			multiple
 			onchange={handleSelectionChange}
 			{disabled}
+			
 		/>
 	</div>
 
@@ -79,6 +80,7 @@
 			multiple
 			onchange={handleSelectionChange}
 			{disabled}
+			
 		/>
 
 		<data class="text-right text-xs">

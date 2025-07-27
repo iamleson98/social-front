@@ -34,23 +34,23 @@ export type TextAreaPropsProps = CustomInputProps & Omit<HTMLTextareaAttributes,
 
 export const INPUT_CLASSES: Record<SocialVariant | 'ghost', Record<'bg' | 'fg', string>> = {
   info: {
-    bg: 'bg-white text-gray-900 ring-1 focus-within:ring-2 focus-within:ring-blue-500 focus:ring-2 ring-gray-200 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:focus:ring-blue-500',
+    bg: 'bg-white text-gray-900 focus-within:ring-blue-500 ring-gray-200 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:focus:ring-blue-500',
     fg: 'text-gray-800! dark:text-white',
   },
   success: {
-    bg: 'bg-green-50 text-green-700 ring-1 focus:ring-2 focus-within:ring-2 focus-within:ring-red-500 ring-green-200 focus:ring-green-500 dark:bg-green-700 dark:text-white dark:focus:ring-green-500',
+    bg: 'bg-green-50 text-green-700 focus-within:ring-red-500 ring-green-200 focus:ring-green-500 dark:bg-green-700 dark:text-white dark:focus:ring-green-500',
     fg: 'text-green-600!',
   },
   error: {
-    bg: 'bg-red-50 text-red-700 ring-1 focus-within:ring-2 focus-within:ring-red-500 focus:ring-2 ring-red-200 focus:ring-red-500 dark:bg-red-700 dark:text-white dark:focus:ring-red-500',
+    bg: 'bg-red-50 text-red-700 focus-within:ring-red-500 ring-red-200 focus:ring-red-500 dark:bg-red-700 dark:text-white dark:focus:ring-red-500',
     fg: 'text-red-600!',
   },
   warning: {
-    bg: 'bg-orange-50 text-orange-700 ring-1 focus-within:ring-2 focus-within:ring-red-500 focus:ring-2 ring-orange-200 focus:ring-orange-500 dark:bg-orange-700 dark:text-white dark:focus:ring-orange-500',
+    bg: 'bg-orange-50 text-orange-700 focus-within:ring-red-500 ring-orange-200 focus:ring-orange-500 dark:bg-orange-700 dark:text-white dark:focus:ring-orange-500',
     fg: 'text-orange-600!',
   },
   ghost: {
-    bg: 'bg-transparent text-gray-700 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700',
+    bg: 'bg-transparent text-gray-700 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 ring-0!',
     fg: 'text-gray-700 dark:text-white',
   }
 }

@@ -4,6 +4,7 @@
 	import { tranFunc } from '$i18n';
 	import {
 		CREATE_SHIPPING_METHOD_MUTATION,
+		SHIPPING_METHOD_CHANNEL_LISTING_UPDATE_MUTATION,
 		SHIPPING_ZONE_DETAIL_QUERY,
 	} from '$lib/api/admin/shipping';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
@@ -20,6 +21,7 @@
 		PostalCodeRuleInclusionTypeEnum,
 		ShippingMethodTypeEnum,
 		type Mutation,
+		type MutationShippingMethodChannelListingUpdateArgs,
 		type MutationShippingPriceCreateArgs,
 		type Query,
 		type QueryShippingZoneArgs,
@@ -28,7 +30,6 @@
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { toast } from 'svelte-sonner';
 
 	const shippingZoneQuery = operationStore<Pick<Query, 'shippingZone'>, QueryShippingZoneArgs>({
 		kind: 'query',
@@ -52,6 +53,8 @@
 		addPostalCodeRules: [],
 		inclusionType: PostalCodeRuleInclusionTypeEnum.Include,
 		type: page.url.searchParams.get('type') as ShippingMethodTypeEnum,
+		minimumOrderWeight: 0,
+		maximumOrderWeight: 0,
 	});
 	let createdMethodId = $state('');
 	let performUpdateMetadata = $state(false);
@@ -64,6 +67,8 @@
 		if (!generalFormOk) return;
 
 		loading = true;
+
+		// 1) create method
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'shippingPriceCreate'>,
 			MutationShippingPriceCreateArgs
@@ -75,19 +80,27 @@
 					: null,
 			},
 		});
-		// loading = false;
 
 		if (checkIfGraphqlResultHasError(result, 'shippingPriceCreate')) return;
 
 		createdMethodId = result.data?.shippingPriceCreate?.shippingMethod?.id!;
 		performUpdateMetadata = true;
 
-		// update postal code rules
-	};
+		// 2) update channel listings
+		const listingUpdateResult = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'shippingMethodChannelListingUpdate'>,
+			MutationShippingMethodChannelListingUpdateArgs
+		>(SHIPPING_METHOD_CHANNEL_LISTING_UPDATE_MUTATION, {
+			id: createdMethodId,
+			input: shippingMethodChannelListingsInput,
+		});
 
-	const handleDoneUpdateMetadata = async () => {
-		loading = false;
-		toast.success($tranFunc('common.createSuccess'));
+		if (
+			(checkIfGraphqlResultHasError(listingUpdateResult, 'shippingMethodChannelListingUpdate'),
+			$tranFunc('common.createSuccess'))
+		)
+			return;
+
 		await goto(
 			AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_DETAILS(page.params.id, createdMethodId),
 		);
@@ -123,18 +136,18 @@
 				{availableChannels}
 			/>
 		{:else if methodType === ShippingMethodTypeEnum.Weight}
-			<ChannelListingWeight isCreatePage />
+			<ChannelListingWeight
+				isCreatePage
+				bind:minimumOrderWeight={shippingMethodInput.minimumOrderWeight!}
+				bind:maximumOrderWeight={shippingMethodInput.maximumOrderWeight!}
+			/>
 		{/if}
 		<PostalCodeRules
 			bind:addPostalCodeRules={shippingMethodInput.addPostalCodeRules!}
 			bind:inclusionType={shippingMethodInput.inclusionType!}
 			deletePostalCodeRules={[]}
 		/>
-		<GeneralMetadataEditor
-			objectId={createdMethodId}
-			bind:performUpdateMetadata
-			onDoneUpdate={handleDoneUpdateMetadata}
-		/>
+		<GeneralMetadataEditor objectId={createdMethodId} bind:performUpdateMetadata />
 	</div>
 
 	<ActionBar

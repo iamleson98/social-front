@@ -50,7 +50,7 @@
 			use:shortcuts={selectShortcutOptions}
 			use:debounceInput={inputDebounceOption}
 			class={classNames(
-				'w-full text-sm rounded-lg placeholder:opacity-55 inline-block px-2',
+				'w-full text-sm rounded-lg placeholder:opacity-55 inline-block px-2 transition-all duration-200 ease-in-out hover:ring-2 focus:ring-2 ring-1',
 				inputClass,
 				INPUT_BUTTON_SIZE_MAP[size],
 				INPUT_CLASSES[variant].bg,

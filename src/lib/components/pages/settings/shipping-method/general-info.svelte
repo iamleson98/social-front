@@ -9,7 +9,6 @@
 	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
 	import { TAX_CLASSES_QUERY } from '$lib/api/tax';
 	import type { QueryTaxClassesArgs } from '$lib/gql/graphql';
-	import { onMount } from 'svelte';
 
 	type Props = {
 		name: string;
@@ -62,7 +61,9 @@
 		return result.success;
 	};
 
-	onMount(() => validate());
+	$effect(() => {
+		ok = !Object.keys(methodErrors).length;
+	});
 </script>
 
 <div class={SitenameCommonClassName}>

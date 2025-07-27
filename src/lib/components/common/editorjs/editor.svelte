@@ -168,7 +168,9 @@
 	<div
 		id="editorjs"
 		bind:this={editorElem}
-		class="text-sm p-1 rounded-lg placeholder:opacity-55 {INPUT_CLASSES[variant].bg}"
+		class="text-sm p-1 rounded-lg transition-all ring-1 focus:ring-2 duration-200 focus-within:ring-2 ease-in-out hover:ring-2 placeholder:opacity-55 {INPUT_CLASSES[
+			variant
+		].bg}"
 		class:pointer-events-none!={disabled}
 		class:cursor-not-allowed!={disabled}
 		class:text-gray-400!={disabled}

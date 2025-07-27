@@ -47,6 +47,7 @@ query ShippingZone($id: ID!, $channel: String) {
     id
     name
     default
+    description
     channels {
       id
       name
@@ -184,6 +185,29 @@ mutation UpdateShippingMethod($id: ID!, $input: ShippingPriceInput!) {
     errors {
       field
       message
+    }
+  }
+}`;
+
+export const SHIPPING_METHOD_CHANNEL_LISTING_UPDATE_MUTATION = gql`
+mutation UpdateShippingMethodChannelListing($id: ID!, $input: ShippingMethodChannelListingInput!) {
+  shippingMethodChannelListingUpdate(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const SHIPPING_ZONE_CREATE_MUTATION = gql`
+mutation CreateShippingZone($input: ShippingZoneCreateInput!) {
+  shippingZoneCreate(input: $input) {
+    errors {
+      field
+      message
+    }
+    shippingZone {
+      id
     }
   }
 }`;
