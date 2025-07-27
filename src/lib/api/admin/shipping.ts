@@ -51,6 +51,7 @@ query ShippingZone($id: ID!, $channel: String) {
       id
       name
       slug
+      currencyCode
     }
     metadata {
       key
@@ -164,3 +165,15 @@ mutation UpdateShippingZone($id: ID!, $input: ShippingZoneUpdateInput!) {
   }
 }`;
 
+export const CREATE_SHIPPING_METHOD_MUTATION = gql`
+mutation CreateShippingMethod($input: ShippingPriceInput!) {
+  shippingPriceCreate(input: $input) {
+    errors {
+      field
+      message
+    }
+    shippingMethod {
+      id
+    }
+  }
+}`;

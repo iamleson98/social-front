@@ -115,19 +115,18 @@
 	disableOkBtn={!addCodeRangeInput.start?.trim()}
 >
 	<div class="space-y-2">
-		<Alert size="sm" bordered
-			>Please provide range of postal codes you want to add to the include/exclude list.</Alert
-		>
-		<div class="grid grid-cols-2 gap-2">
+		<div class="space-y-2">
 			<RadioButton
 				value={PostalCodeRuleInclusionTypeEnum.Include}
 				label="Include"
 				bind:group={addRuleInclusionType}
+				subText="Added postal codes will be excluded from using this delivery methods. If none are added all postal codes will be able to use that shipping rate"
 			/>
 			<RadioButton
 				value={PostalCodeRuleInclusionTypeEnum.Exclude}
 				label="Exclude"
 				bind:group={addRuleInclusionType}
+				subText="Only added postal codes will be able to use this shipping rate"
 			/>
 		</div>
 

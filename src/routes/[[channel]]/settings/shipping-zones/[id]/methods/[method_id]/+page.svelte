@@ -4,7 +4,7 @@
 	import { operationStore } from '$lib/api/operation';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
-	import ChannelListing from '$lib/components/pages/settings/shipping-method/channel-listing.svelte';
+	import ChannelListingPrice from '$lib/components/pages/settings/shipping-method/channel-listing-price.svelte';
 	import GeneralInfo from '$lib/components/pages/settings/shipping-method/general-info.svelte';
 	import PostalCodeRules from '$lib/components/pages/settings/shipping-method/postal-code-rules.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
@@ -25,7 +25,7 @@
 
 	let shippingMethodInput = $state<ShippingPriceInput>({
 		name: '',
-		description: {},
+		description: { blocks: [] },
 		maximumDeliveryDays: 0,
 		minimumDeliveryDays: 0,
 		addPostalCodeRules: [],
@@ -33,6 +33,7 @@
 	});
 	let loading = $state(false);
 	let performUpdateMetadata = $state(false);
+	let generalFormOk = $state(false);
 
 	onMount(() =>
 		shippingZoneQuery.subscribe((result) => {
@@ -71,6 +72,7 @@
 {:else if $shippingZoneQuery.data?.shippingZone}
 	{@const { shippingMethods } = $shippingZoneQuery.data.shippingZone}
 	{@const shippingMethod = shippingMethods?.find((method) => method.id === page.params.method_id)}
+	{@const availableChannels = $shippingZoneQuery.data.shippingZone.channels.map((item) => item.id)}
 
 	{#if shippingMethod}
 		<div class="space-y-2">
@@ -80,8 +82,13 @@
 				bind:description={shippingMethodInput.description!}
 				bind:maximumDeliveryDays={shippingMethodInput.maximumDeliveryDays!}
 				bind:minimumDeliveryDays={shippingMethodInput.minimumDeliveryDays!}
+				bind:ok={generalFormOk}
 			/>
-			<ChannelListing shippingMethodChannelListings={shippingMethod.channelListings || []} />
+			<ChannelListingPrice
+				shippingMethodChannelListings={shippingMethod.channelListings || []}
+				shippingMethodChannelListingsInput={{}}
+				{availableChannels}
+			/>
 			<PostalCodeRules
 				existingCodeRules={shippingMethod.postalCodeRules || []}
 				bind:addPostalCodeRules={shippingMethodInput.addPostalCodeRules!}

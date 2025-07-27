@@ -1,9 +1,6 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Plus, Trash } from '$lib/components/icons';
-	import { Button } from '$lib/components/ui/Button';
 	import { Input, TextArea, Toggle } from '$lib/components/ui/Input';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import type { CountryDisplay } from '$lib/gql/graphql';

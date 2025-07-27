@@ -62,7 +62,7 @@ export const AppRoute = {
 	SETTINGS_CONFIGS_SHIPPING_ZONE_NEW: () => buildLinkWithRespectToChannel('settings/shipping-zones/new'),
 
 	SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_DETAILS: (zoneId: string, id: string) => buildLinkWithRespectToChannel(`settings/shipping-zones/${zoneId}/methods/${id}`),
-	SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_NEW: (zoneId: string) => buildLinkWithRespectToChannel(`settings/shipping-zones/${zoneId}/methods/new`),
+	SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_NEW: (zoneId: string, type: 'price' | 'weight') => buildLinkWithRespectToChannel(`settings/shipping-zones/${zoneId}/methods/new?type=${type}`),
 
 	SETTINGS_CONFIGS_ATTRIBUTES: () => buildLinkWithRespectToChannel('settings/attributes'),
 	SETTINGS_CONFIGS_ATTRIBUTE_DETAILS: (id: string) => buildLinkWithRespectToChannel(`settings/attributes/${id}`),

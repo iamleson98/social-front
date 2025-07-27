@@ -1,9 +1,14 @@
 <script lang="ts">
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { classNames, SitenameCommonClassName } from '$lib/utils/utils';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import type { OutputData } from '@editorjs/editorjs';
 	import { Input } from '$lib/components/ui/Input';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
+	import z, { any, array, number, object, string } from 'zod';
+	import { tranFunc } from '$i18n';
+	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
+	import { TAX_CLASSES_QUERY } from '$lib/api/tax';
+	import type { QueryTaxClassesArgs } from '$lib/gql/graphql';
 
 	type Props = {
 		name: string;
@@ -11,6 +16,8 @@
 		disabled?: boolean;
 		maximumDeliveryDays: number;
 		minimumDeliveryDays: number;
+		taxClass?: string;
+		ok: boolean;
 	};
 
 	let {
@@ -19,18 +26,64 @@
 		disabled,
 		maximumDeliveryDays = $bindable(),
 		minimumDeliveryDays = $bindable(),
+		taxClass = $bindable(),
+		ok = $bindable(),
 	}: Props = $props();
+
+	const RequiredErr = $tranFunc('helpText.fieldRequired');
+	const NegativeErr = $tranFunc('error.negativeNumber');
+
+	const MethodSchema = object({
+		name: string().nonempty(RequiredErr),
+		description: object({
+			blocks: array(any()).nonempty(RequiredErr),
+		}),
+		maximumDeliveryDays: number().nonpositive(NegativeErr),
+		minimumDeliveryDays: number().nonnegative(NegativeErr),
+	});
+
+	type MethodType = z.infer<typeof MethodSchema>;
+
+	let methodErrors = $state<Partial<Record<keyof MethodType, string[]>>>({});
+
+	const validate = () => {
+		const result = MethodSchema.safeParse({
+			name,
+			description,
+			maximumDeliveryDays,
+			minimumDeliveryDays,
+		});
+		methodErrors = result.success ? {} : result.error.formErrors.fieldErrors;
+		return result.success;
+	};
+
+	$effect(() => {
+		ok = !Object.keys(methodErrors).length;
+	});
 </script>
 
 <div class={SitenameCommonClassName}>
 	<SectionHeader>General information</SectionHeader>
-	<Input label="Name" bind:value={name} required placeholder="Name" {disabled} />
+	<Input
+		label="Name"
+		bind:value={name}
+		required
+		placeholder="Name"
+		{disabled}
+		variant={methodErrors.name?.length ? 'error' : 'info'}
+		subText={methodErrors.name?.[0]}
+		inputDebounceOption={{ onInput: validate }}
+		onblur={validate}
+	/>
 	<EditorJSComponent
 		bind:value={description}
 		required
 		label="Description"
 		{disabled}
 		placeholder="Description"
+		variant={methodErrors.description?.length ? 'error' : 'info'}
+		subText={methodErrors.description?.[0]}
+		onchange={validate}
 	/>
 
 	<div class="flex gap-2">
@@ -41,6 +94,11 @@
 			type="number"
 			{disabled}
 			class="flex-1/2"
+			variant={methodErrors.minimumDeliveryDays?.length ? 'error' : 'info'}
+			subText={methodErrors.minimumDeliveryDays?.[0]}
+			onblur={validate}
+			inputDebounceOption={{ onInput: validate }}
+			min={0}
 		/>
 		<Input
 			label="Maximum delivery days"
@@ -49,6 +107,22 @@
 			type="number"
 			{disabled}
 			class="flex-1/2"
+			variant={methodErrors.maximumDeliveryDays?.length ? 'error' : 'info'}
+			subText={methodErrors.maximumDeliveryDays?.[0]}
+			inputDebounceOption={{ onInput: validate }}
+			onblur={validate}
+			min={0}
 		/>
 	</div>
+
+	<GraphqlPaginableSelect
+		query={TAX_CLASSES_QUERY}
+		resultKey="taxClasses"
+		variables={{ first: 20 } as QueryTaxClassesArgs}
+		optionValueKey="id"
+		optionLabelKey="name"
+		{disabled}
+		label={$tranFunc('product.taxCls')}
+		bind:value={taxClass}
+	/>
 </div>

@@ -6,19 +6,27 @@
 	import type {
 		ShippingMethodChannelListing,
 		ShippingMethodChannelListingInput,
-		ShippingMethodChannelListingUpdate,
 	} from '$lib/gql/graphql';
-	import { classNames, SitenameCommonClassName } from '$lib/utils/utils';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 
 	type Props = {
 		/** if not provided, meaning it is create page */
 		shippingMethodChannelListings?: ShippingMethodChannelListing[];
-		shippingMethodChannelListingsInput?: ShippingMethodChannelListingInput;
+		shippingMethodChannelListingsInput: ShippingMethodChannelListingInput;
+		isCreatePage?: boolean;
+		availableChannels: string[];
 	};
 
-	let { shippingMethodChannelListings = [], shippingMethodChannelListingsInput }: Props = $props();
+	let {
+		shippingMethodChannelListings = [],
+		shippingMethodChannelListingsInput = $bindable(),
+		isCreatePage,
+		availableChannels,
+	}: Props = $props();
 
-	let availableChannelIds = $state(shippingMethodChannelListings.map((item) => item.channel.id));
+	let availableChannelIds = $state(
+		isCreatePage ? availableChannels : shippingMethodChannelListings.map((item) => item.channel.id),
+	);
 
 	const PricingColumns: TableColumnProps<ShippingMethodChannelListing>[] = [
 		{
@@ -44,10 +52,14 @@
 	<span class="text-xs">{item.channel.name}</span>
 {/snippet}
 
+{#snippet currencyDisplay(code: string)}
+	<span class="text-[10px] font-semibold">{code}</span>
+{/snippet}
+
 {#snippet shippingCost({ item }: { item: ShippingMethodChannelListing })}
 	<Input size="sm" placeholder="min order value" type="number" value={item.price?.amount}>
 		{#snippet action()}
-			<span class="text-[10px] font-semibold">{item.channel.currencyCode}</span>
+			{@render currencyDisplay(item.channel.currencyCode)}
 		{/snippet}
 	</Input>
 {/snippet}
@@ -60,7 +72,7 @@
 		value={item.minimumOrderPrice?.amount}
 	>
 		{#snippet action()}
-			<span class="text-[10px] font-semibold">{item.channel.currencyCode}</span>
+			{@render currencyDisplay(item.channel.currencyCode)}
 		{/snippet}
 	</Input>
 {/snippet}
@@ -73,7 +85,7 @@
 		value={item.maximumOrderPrice?.amount}
 	>
 		{#snippet action()}
-			<span class="text-[10px] font-medium">{item.channel.currencyCode}</span>
+			{@render currencyDisplay(item.channel.currencyCode)}
 		{/snippet}
 	</Input>
 {/snippet}
@@ -90,5 +102,8 @@
 		required
 	/>
 
-	<Table items={shippingMethodChannelListings} columns={PricingColumns} />
+	<Table
+		items={shippingMethodChannelListingsInput.addChannels as unknown as ShippingMethodChannelListing[]}
+		columns={PricingColumns}
+	/>
 </div>

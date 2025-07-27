@@ -5,6 +5,7 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import WeightDisplay from '$lib/components/common/weight-display.svelte';
 	import { Edit, Plus, Trash } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { IconButton } from '$lib/components/ui/Button';
@@ -31,8 +32,11 @@
 
 	let { shippingMethods = [], disabled, onDoneUpdate }: Props = $props();
 
-	let priceBasedMethods = shippingMethods.filter(
+	const PriceBasedMethods = shippingMethods.filter(
 		(item) => item.type === ShippingMethodTypeEnum.Price,
+	);
+	const WeightBasedMethods = shippingMethods.filter(
+		(item) => item.type === ShippingMethodTypeEnum.Weight,
 	);
 	let loading = $state(false);
 
@@ -44,6 +48,25 @@
 		{
 			title: 'value range',
 			child: valueRange,
+		},
+		{
+			title: 'price',
+			child: price,
+		},
+		{
+			title: 'action',
+			child: action,
+		},
+	];
+
+	const WeightBasedColumns: TableColumnProps<ShippingMethodType>[] = [
+		{
+			title: 'name',
+			child: name,
+		},
+		{
+			title: 'weight range',
+			child: weightRange,
 		},
 		{
 			title: 'price',
@@ -96,15 +119,32 @@
 			{#if listing.minimumOrderPrice}
 				<PriceDisplay {...listing.minimumOrderPrice} />
 			{:else}
-				<span>-</span>
+				<span>?</span>
 			{/if}
+			<span>-</span>
 			{#if listing.maximumOrderPrice}
 				<PriceDisplay {...listing.maximumOrderPrice} />
 			{:else}
-				<span>-</span>
+				<span>?</span>
 			{/if}
 		</div>
 	{/each}
+{/snippet}
+
+{#snippet weightRange({ item }: { item: ShippingMethodType })}
+	<div class="flex items-center gap-1">
+		{#if item.minimumOrderWeight}
+			<WeightDisplay amount={item.minimumOrderWeight.value} unit={item.minimumOrderWeight.unit} />
+		{:else}
+			<span>?</span>
+		{/if}
+		<span>-</span>
+		{#if item.maximumOrderWeight}
+			<WeightDisplay amount={item.maximumOrderWeight.value} unit={item.maximumOrderWeight.unit} />
+		{:else}
+			<span>?</span>
+		{/if}
+	</div>
 {/snippet}
 
 {#snippet price({ item }: { item: ShippingMethodType })}
@@ -136,12 +176,27 @@
 			endIcon={Plus}
 			variant="light"
 			size="xs"
-			href={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_NEW(page.params.id)}
+			href={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_NEW(page.params.id, 'price')}
 			{disabled}
 		>
-			Create method
+			Create price based method
 		</Button>
 	</SectionHeader>
 
-	<Table columns={PriceBasedColumns} items={priceBasedMethods} {disabled} />
+	<Table columns={PriceBasedColumns} items={PriceBasedMethods} {disabled} />
+
+	<SectionHeader>
+		<div>Weight based methods</div>
+		<Button
+			endIcon={Plus}
+			variant="light"
+			size="xs"
+			href={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_NEW(page.params.id, 'weight')}
+			{disabled}
+		>
+			Create weight based method
+		</Button>
+	</SectionHeader>
+
+	<Table columns={WeightBasedColumns} items={WeightBasedMethods} {disabled} />
 </div>

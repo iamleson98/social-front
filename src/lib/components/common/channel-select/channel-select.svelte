@@ -14,7 +14,7 @@
 	}: Omit<SelectProps, 'options' | 'onchange'> & {
 		/** thr returned values should be channel ids or channel slugs */
 		valueType?: 'id' | 'slug';
-		onchange?: (value?: Channel) => void;
+		onchange?: (value?: Channel | Channel[]) => void;
 	} = $props();
 
 	const channelStore = operationStore<Pick<Query, 'channels'>>({
@@ -25,10 +25,17 @@
 
 	const innerOnchange = () => {
 		if (!value) onchange?.();
-		else {
-			const channel = $channelStore.data?.channels?.find(
-				(channel) => (valueType === 'slug' ? channel.slug : channel.id) === value,
-			);
+		else if (rest.multiple) {
+			const channels = $channelStore.data?.channels?.filter((chan) => {
+				if (valueType === 'id') return value.includes(chan.id);
+				return value.includes(chan.slug);
+			});
+			onchange?.(channels);
+		} else {
+			const channel = $channelStore.data?.channels?.find((chan) => {
+				if (valueType === 'id') return chan.id === value;
+				return chan.slug === value;
+			});
 			onchange?.(channel);
 		}
 	};
