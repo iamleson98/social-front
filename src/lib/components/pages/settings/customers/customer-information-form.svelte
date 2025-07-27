@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Checkbox, Input, TextArea } from '$lib/components/ui/Input';
+	import { Input, TextArea, Toggle } from '$lib/components/ui/Input';
+	import { PermissionEnum, type User } from '$lib/gql/graphql';
+	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
+	import { checkUserHasPermissions } from '$lib/utils/utils';
 	import { object, string, z } from 'zod';
 
 	type Props = {
@@ -26,11 +29,15 @@
 		isCreatePage = false,
 	}: Props = $props();
 
-	$effect(() => {
-		ok = !Object.keys(customerFormErrors).length;
-	});
-
+	// only user can modify their own information. shop employees don't have permission to update customer
 	let shouldDisable = $derived(!isCreatePage || disabled);
+
+	// user manager can only activate/deactivate customer
+	const CurrentUserCanUpdateCustomer = $derived(
+		!$READ_ONLY_USER_STORE
+			? false
+			: checkUserHasPermissions($READ_ONLY_USER_STORE, PermissionEnum.ManageUsers),
+	);
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 	const customerSchema = object({
 		firstName: string().nonempty(REQUIRED_ERROR),
@@ -42,6 +49,10 @@
 	type CustomerSchema = z.infer<typeof customerSchema>;
 	let customerFormErrors = $state.raw<Partial<Record<keyof CustomerSchema, string[]>>>({});
 
+	$effect(() => {
+		ok = !Object.keys(customerFormErrors).length;
+	});
+
 	const validate = () => {
 		const result = customerSchema.safeParse({
 			firstName,
@@ -49,17 +60,20 @@
 			email,
 			note,
 		});
-		if (!result.success) {
-			customerFormErrors = result.error.formErrors.fieldErrors;
-			return false;
-		}
-		customerFormErrors = {};
-		return true;
+		customerFormErrors = result.success ? {} : result.error.formErrors.fieldErrors;
+		return result.success;
 	};
 </script>
 
 <div class="bg-white rounded-lg border border-gray-200 p-3 flex flex-col gap-2">
-	<SectionHeader>Customer Information</SectionHeader>
+	<SectionHeader>
+		<div>Customer Information</div>
+		<Toggle
+			bind:checked={isActive}
+			label="Active"
+			disabled={!CurrentUserCanUpdateCustomer || disabled}
+		/>
+	</SectionHeader>
 	<div class="flex flex-row gap-3 items-start">
 		<Input
 			label="First Name"
@@ -94,7 +108,6 @@
 		variant={customerFormErrors.email?.length ? 'error' : 'info'}
 		subText={customerFormErrors.email?.length ? customerFormErrors.email[0] : undefined}
 	/>
-	<Checkbox label="Active" bind:checked={isActive} />
 	<TextArea
 		bind:value={note}
 		placeholder="Note"

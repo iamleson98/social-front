@@ -21,6 +21,7 @@
 	import { onMount } from 'svelte';
 	import CustomerOrders from '$lib/components/pages/settings/customers/customer-orders.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
+	import { tranFunc } from '$i18n';
 
 	const userDetailQuery = operationStore<Pick<Query, 'user'>, QueryUserArgs>({
 		kind: 'query',
@@ -72,7 +73,7 @@
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'customerUpdate', 'Customer updated successfully'))
+		if (checkIfGraphqlResultHasError(result, 'customerUpdate', $tranFunc('common.editSuccess')))
 			return;
 		userDetailQuery.reexecute({ variables: { id: page.params.id } });
 	};
@@ -84,16 +85,17 @@
 	<Alert variant="error" size="sm" bordered>{$userDetailQuery.error.message}</Alert>
 {:else if $userDetailQuery.data?.user}
 	{@const { user } = $userDetailQuery.data}
-	{@const orders = user.orders?.edges.map((edge) => edge.node) ?? []}
-	<div class="flex flex-row gap-2 w-full">
-		<div class="w-6/10 flex flex-col gap-2">
+
+	<div class="flex gap-2">
+		<div class="w-6/10 space-y-2">
 			<CustomerInformationForm
-				firstName={userInput.firstName as string}
-				lastName={userInput.lastName as string}
-				email={userInput.email as string}
-				bind:isActive={userInput.isActive as boolean}
-				note={userInput.note as string}
+				firstName={userInput.firstName!}
+				lastName={userInput.lastName!}
+				email={userInput.email!}
+				bind:isActive={userInput.isActive!}
+				note={userInput.note!}
 				bind:ok={informationOk}
+				disabled={loading}
 			/>
 			<CustomerOrders id={user.id} />
 			<GeneralMetadataEditor
@@ -101,17 +103,16 @@
 				privateMetadata={user.privateMetadata}
 				objectId={user.id}
 				bind:performUpdateMetadata
+				disabled={loading}
 			/>
 		</div>
 
-		<CustomerExtraForm
-			addresses={user.addresses}
-			lastLoginTime={user.lastLogin}
-			lastOrderAt={orders.length > 0 ? orders[0].created : undefined}
-			giftCards={user.giftCards?.edges.map((edge) => edge.node) ?? []}
-			userEmail={user.email}
-			userName={user.firstName + ' ' + $userDetailQuery.data?.user.lastName}
-		/>
+		<CustomerExtraForm {user} />
 	</div>
-	<ActionBar backButtonUrl={AppRoute.SETTINGS_CONFIGS_USERS()} {onUpdateClick} disabled={loading} />
+	<ActionBar
+		backButtonUrl={AppRoute.SETTINGS_CONFIGS_USERS()}
+		{onUpdateClick}
+		disabled={loading}
+		disableCreateButton={loading}
+	/>
 {/if}

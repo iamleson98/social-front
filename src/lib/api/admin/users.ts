@@ -176,3 +176,15 @@ mutation CreatePermissionGroup($input: PermissionGroupCreateInput!) {
   }
 }`;
 
+export const CREATE_USER_MUTATION = gql`
+mutation CreateUser($input: UserCreateInput!) {
+  customerCreate(input: $input) {
+    user {
+      id
+    }
+    errors {
+      field
+      message
+    }
+  }
+}`;

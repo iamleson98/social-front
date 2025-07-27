@@ -1,53 +1,27 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
-	import dayjs from 'dayjs';
-	import { array, number, object, string, z } from 'zod';
 	import UserAddress from '$lib/components/common/user-address/user-address.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
-	import type { Address, GiftCard } from '$lib/gql/graphql';
+	import type { User } from '$lib/gql/graphql';
 	import { Badge } from '$lib/components/ui/badge';
 	import GiftcardIssueForm from '../giftcards/giftcard-issue-form.svelte';
+	import dayjs from 'dayjs';
+	import { SitenameTimeFormat } from '$lib/utils/consts';
 
 	type Props = {
-		addresses: Address[];
-		lastLoginTime: string;
-		lastOrderAt?: string;
-		giftCards: GiftCard[];
-		userEmail: string;
-		userName: string;
+		user: User;
 	};
 
-	let { addresses, lastLoginTime, lastOrderAt, giftCards, userEmail, userName }: Props = $props();
-
-	const formatDate = (label: string, date?: string) =>
-		`${label}: ${date ? dayjs(date).format('DD/MM/YYYY HH:mm') : '_ _'}`;
+	let { user }: Props = $props();
 
 	let isAddCardModalOpen = $state(false);
-	let ok = $state(false);
-
-	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
-	const customerSchema = object({
-		amount: number(),
-		currency: string().nonempty(REQUIRED_ERROR),
-		channel: string().nonempty(REQUIRED_ERROR),
-		note: string().nonempty(REQUIRED_ERROR),
-		addTags: array(string()).nonempty(REQUIRED_ERROR),
-	});
-
-	type CustomerSchema = z.infer<typeof customerSchema>;
-	let customerFormErrors = $state.raw<Partial<Record<keyof CustomerSchema, string[]>>>({});
-
-	$effect(() => {
-		ok = !Object.keys(customerFormErrors).length;
-	});
 </script>
 
 <div class="flex flex-col gap-2 flex-1 w-4/10">
 	<Accordion header="Address information" class="bg-white rounded-lg border border-gray-200 p-3">
-		{#if addresses.length}
-			{#each addresses as address, idx (idx)}
+		{#if user.addresses.length}
+			{#each user.addresses as address, idx (idx)}
 				<UserAddress {address} class="w-full mb-2" />
 			{/each}
 		{:else}
@@ -57,8 +31,14 @@
 
 	<Accordion header="Customer history" class="bg-white rounded-lg border border-gray-200 p-3">
 		<div class="flex flex-col gap-2 text-sm">
-			<span>{formatDate('Last login', lastLoginTime)}</span>
-			<span>{formatDate('Last order', lastOrderAt)}</span>
+			<span>
+				Last login: {user.lastLogin ? dayjs(user.lastLogin).format(SitenameTimeFormat) : '-'}
+			</span>
+			<span>
+				Last order: {user.orders?.edges[0]?.node?.created
+					? dayjs(user.orders?.edges[0]?.node?.created).format(SitenameTimeFormat)
+					: '-'}
+			</span>
 		</div>
 	</Accordion>
 
@@ -70,11 +50,11 @@
 	{/snippet}
 
 	<Accordion header={previewHeader} class="bg-white rounded-lg border border-gray-200 p-3">
-		{#if giftCards.length}
-			{#each giftCards as card, idx (idx)}
+		{#if user.giftCards?.edges?.length}
+			{#each user.giftCards?.edges as card, idx (idx)}
 				<div class="flex flex-col gap-2">
-					<p>{card.code}</p>
-					<p>{card.events}</p>
+					<p>{card.node.code}</p>
+					<p>{card.node.events}</p>
 				</div>
 			{/each}
 		{:else}
@@ -87,4 +67,4 @@
 	</Accordion>
 </div>
 
-<GiftcardIssueForm bind:open={isAddCardModalOpen} toCustomerEmail={userEmail} />
+<GiftcardIssueForm bind:open={isAddCardModalOpen} toCustomerEmail={user.email} />
