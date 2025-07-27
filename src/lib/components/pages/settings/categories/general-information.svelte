@@ -8,6 +8,7 @@
 	import { tranFunc } from '$i18n';
 	import { any, array, object, string, z } from 'zod';
 	import slugify from 'slugify';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 
 	type Props = {
 		name: string;
@@ -81,9 +82,8 @@
 	};
 </script>
 
-<div class="bg-white border border-gray-200 p-3 rounded-lg space-y-2">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
-
 	<Input
 		placeholder={$tranFunc('common.name')}
 		disabled={loading}
@@ -95,7 +95,6 @@
 		variant={categoryFormErrors.name?.length ? 'error' : 'info'}
 		subText={categoryFormErrors.name?.[0]}
 	/>
-
 	<EditorJSComponent
 		label={$tranFunc('settings.description')}
 		required
@@ -106,7 +105,6 @@
 		subText={categoryFormErrors.description?.[0]}
 		disabled={loading}
 	/>
-
 	<FileInputContainer
 		accept="image/*"
 		max={1}
@@ -118,7 +116,6 @@
 		variant={categoryFormErrors.media?.length ? 'error' : 'info'}
 		subText={categoryFormErrors.media?.[0]}
 	/>
-
 	<SectionHeader>{$tranFunc('common.seoInfo')}</SectionHeader>
 	<Input
 		placeholder="Slug"
@@ -142,7 +139,6 @@
 		subText={categoryFormErrors.seoTitle?.[0]}
 		disabled={loading}
 	/>
-
 	<TextArea
 		required
 		label={$tranFunc('settings.description')}

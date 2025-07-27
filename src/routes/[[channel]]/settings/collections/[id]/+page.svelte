@@ -168,6 +168,9 @@
 		toast.success($tranFunc('common.editSuccess'));
 		collectionDetailQuery.reexecute({
 			context: { requestPolicy: 'network-only' },
+			variables: {
+				id: page.params.id,
+			},
 		});
 	};
 </script>

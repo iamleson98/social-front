@@ -7,6 +7,7 @@
 	import type { OutputData } from '@editorjs/editorjs';
 	import type { MediaObject } from '$lib/utils/types';
 	import FileInputContainer from '$lib/components/common/file-input-container.svelte';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 
 	type Props = {
 		name: string;
@@ -54,7 +55,7 @@
 	};
 </script>
 
-<div class="bg-white rounded-lg border w-full border-gray-200 p-3 pb-6 space-y-2">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
 	<Input
 		label={$tranFunc('common.name')}
@@ -77,7 +78,6 @@
 		{disabled}
 		required
 	/>
-
 	<FileInputContainer
 		accept="image/*"
 		max={1}
