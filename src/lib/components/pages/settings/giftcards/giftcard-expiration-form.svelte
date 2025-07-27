@@ -47,7 +47,6 @@
 <Accordion
 	header="Set gift card expiry date"
 	bind:open={setExpiryDate}
-	class="rounded-lg border border-gray-200 p-3"
 	fixed={disabled}
 >
 	<div class="flex items-center gap-2">

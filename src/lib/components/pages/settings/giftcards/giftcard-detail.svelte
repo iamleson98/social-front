@@ -24,7 +24,7 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { toast } from 'svelte-sonner';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 
 	type Props = {
 		id: string;
@@ -129,7 +129,7 @@
 	};
 </script>
 
-<div class="rounded-lg border border-gray-200 bg-white flex flex-col gap-3 p-3">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>
 		<div>
 			<span>Giftcard details</span>
