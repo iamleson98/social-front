@@ -6,7 +6,7 @@
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import WeightDisplay from '$lib/components/common/weight-display.svelte';
-	import { Edit, Plus, Trash } from '$lib/components/icons';
+	import { Plus, Trash } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
@@ -18,11 +18,7 @@
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
-	import {
-		checkIfGraphqlResultHasError,
-		classNames,
-		SitenameCommonClassName,
-	} from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 
 	type Props = {
 		shippingMethods?: ShippingMethodType[];
@@ -176,7 +172,10 @@
 			endIcon={Plus}
 			variant="light"
 			size="xs"
-			href={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_NEW(page.params.id, 'price')}
+			href={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_NEW(
+				page.params.id,
+				ShippingMethodTypeEnum.Price,
+			)}
 			{disabled}
 		>
 			Create price based method
@@ -191,7 +190,10 @@
 			endIcon={Plus}
 			variant="light"
 			size="xs"
-			href={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_NEW(page.params.id, 'weight')}
+			href={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_NEW(
+				page.params.id,
+				ShippingMethodTypeEnum.Weight,
+			)}
 			{disabled}
 		>
 			Create weight based method

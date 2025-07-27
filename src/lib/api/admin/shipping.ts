@@ -177,3 +177,13 @@ mutation CreateShippingMethod($input: ShippingPriceInput!) {
     }
   }
 }`;
+
+export const SHIPPING_METHOD_UPDATE_MUTATION = gql`
+mutation UpdateShippingMethod($id: ID!, $input: ShippingPriceInput!) {
+  shippingPriceUpdate(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;

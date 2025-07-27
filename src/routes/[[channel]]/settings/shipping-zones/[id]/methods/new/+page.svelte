@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { tranFunc } from '$i18n';
 	import {
@@ -10,13 +11,14 @@
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import AddMethodScreenChannelListingPrice from '$lib/components/pages/settings/shipping-method/add-method-screen-channel-listing-price.svelte';
-	import ChannelListingPriceBased from '$lib/components/pages/settings/shipping-method/channel-listing-price.svelte';
 	import ChannelListingWeight from '$lib/components/pages/settings/shipping-method/channel-listing-weight.svelte';
 	import GeneralInfo from '$lib/components/pages/settings/shipping-method/general-info.svelte';
 	import PostalCodeRules from '$lib/components/pages/settings/shipping-method/postal-code-rules.svelte';
 	import DetailSkeleton from '$lib/components/pages/settings/shipping-zones/detail-skeleton.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import {
+		PostalCodeRuleInclusionTypeEnum,
+		ShippingMethodTypeEnum,
 		type Mutation,
 		type MutationShippingPriceCreateArgs,
 		type Query,
@@ -24,9 +26,9 @@
 		type ShippingMethodChannelListingInput,
 		type ShippingPriceInput,
 	} from '$lib/gql/graphql';
-	import { ActiveShippingZone } from '$lib/stores/shipping';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { toast } from 'svelte-sonner';
 
 	const shippingZoneQuery = operationStore<Pick<Query, 'shippingZone'>, QueryShippingZoneArgs>({
 		kind: 'query',
@@ -39,6 +41,8 @@
 	});
 
 	let loading = $state(false);
+	const methodType = $derived(page.url.searchParams.get('type') as ShippingMethodTypeEnum);
+
 	let shippingMethodInput = $state<ShippingPriceInput>({
 		shippingZone: page.params.id,
 		name: '',
@@ -46,6 +50,8 @@
 		maximumDeliveryDays: 0,
 		minimumDeliveryDays: 0,
 		addPostalCodeRules: [],
+		inclusionType: PostalCodeRuleInclusionTypeEnum.Include,
+		type: page.url.searchParams.get('type') as ShippingMethodTypeEnum,
 	});
 	let createdMethodId = $state('');
 	let performUpdateMetadata = $state(false);
@@ -54,27 +60,37 @@
 		addChannels: [],
 	});
 
-	const methodType = $derived(page.url.searchParams.get('type'));
-
 	const handleCreateMethod = async () => {
+		if (!generalFormOk) return;
+
 		loading = true;
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'shippingPriceCreate'>,
 			MutationShippingPriceCreateArgs
 		>(CREATE_SHIPPING_METHOD_MUTATION, {
-			input: shippingMethodInput,
+			input: {
+				...shippingMethodInput,
+				description: shippingMethodInput.description
+					? JSON.stringify(shippingMethodInput.description)
+					: null,
+			},
 		});
-		loading = false;
+		// loading = false;
 
-		if (
-			!checkIfGraphqlResultHasError(
-				result,
-				'shippingPriceCreate',
-				$tranFunc('common.createSuccess'),
-			)
-		) {
-			createdMethodId = result.data?.shippingPriceCreate?.shippingMethod?.id!;
-		}
+		if (checkIfGraphqlResultHasError(result, 'shippingPriceCreate')) return;
+
+		createdMethodId = result.data?.shippingPriceCreate?.shippingMethod?.id!;
+		performUpdateMetadata = true;
+
+		// update postal code rules
+	};
+
+	const handleDoneUpdateMetadata = async () => {
+		loading = false;
+		toast.success($tranFunc('common.createSuccess'));
+		await goto(
+			AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_DETAILS(page.params.id, createdMethodId),
+		);
 	};
 </script>
 
@@ -101,19 +117,24 @@
 			bind:minimumDeliveryDays={shippingMethodInput.minimumDeliveryDays!}
 			bind:ok={generalFormOk}
 		/>
-		{#if methodType === 'price'}
+		{#if methodType === ShippingMethodTypeEnum.Price}
 			<AddMethodScreenChannelListingPrice
 				bind:shippingMethodChannelListingsInput
 				{availableChannels}
 			/>
-		{:else if methodType === 'weight'}
+		{:else if methodType === ShippingMethodTypeEnum.Weight}
 			<ChannelListingWeight isCreatePage />
 		{/if}
 		<PostalCodeRules
 			bind:addPostalCodeRules={shippingMethodInput.addPostalCodeRules!}
-			bind:deletePostalCodeRules={shippingMethodInput.deletePostalCodeRules!}
+			bind:inclusionType={shippingMethodInput.inclusionType!}
+			deletePostalCodeRules={[]}
 		/>
-		<GeneralMetadataEditor objectId={createdMethodId} bind:performUpdateMetadata />
+		<GeneralMetadataEditor
+			objectId={createdMethodId}
+			bind:performUpdateMetadata
+			onDoneUpdate={handleDoneUpdateMetadata}
+		/>
 	</div>
 
 	<ActionBar

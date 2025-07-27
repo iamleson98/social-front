@@ -4,11 +4,12 @@
 	import type { OutputData } from '@editorjs/editorjs';
 	import { Input } from '$lib/components/ui/Input';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
-	import z, { any, array, number, object, string } from 'zod';
+	import { any, array, number, object, string, z } from 'zod';
 	import { tranFunc } from '$i18n';
 	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
 	import { TAX_CLASSES_QUERY } from '$lib/api/tax';
 	import type { QueryTaxClassesArgs } from '$lib/gql/graphql';
+	import { onMount } from 'svelte';
 
 	type Props = {
 		name: string;
@@ -38,8 +39,11 @@
 		description: object({
 			blocks: array(any()).nonempty(RequiredErr),
 		}),
-		maximumDeliveryDays: number().nonpositive(NegativeErr),
+		maximumDeliveryDays: number().nonnegative(NegativeErr),
 		minimumDeliveryDays: number().nonnegative(NegativeErr),
+	}).refine((data) => data.maximumDeliveryDays >= data.minimumDeliveryDays, {
+		message: 'max delivery days <= min delivery days',
+		path: ['maximumDeliveryDays'],
 	});
 
 	type MethodType = z.infer<typeof MethodSchema>;
@@ -54,12 +58,11 @@
 			minimumDeliveryDays,
 		});
 		methodErrors = result.success ? {} : result.error.formErrors.fieldErrors;
+		ok = result.success;
 		return result.success;
 	};
 
-	$effect(() => {
-		ok = !Object.keys(methodErrors).length;
-	});
+	onMount(() => validate());
 </script>
 
 <div class={SitenameCommonClassName}>

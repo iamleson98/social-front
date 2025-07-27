@@ -34,6 +34,7 @@
 	import { page } from '$app/state';
 	import { classNames, userIsShopAdmin } from '$lib/utils/utils';
 	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
+	import type { ShippingMethodTypeEnum } from '$lib/gql/graphql';
 
 	type Props = {
 		children: Snippet;
@@ -245,7 +246,7 @@
 				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONES(),
 				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_NEW(),
 				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS(page.params.id),
-				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_NEW(page.params.id),
+				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_NEW(page.params.id, page.url.searchParams.get('type') as ShippingMethodTypeEnum),
 				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_DETAILS(
 					page.params.id,
 					page.params.method_id,

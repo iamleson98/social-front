@@ -1,7 +1,7 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Plus, Trash } from '$lib/components/icons';
-	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { Input, RadioButton } from '$lib/components/ui/Input';
@@ -18,6 +18,7 @@
 		existingCodeRules?: ShippingMethodPostalCodeRule[];
 		addPostalCodeRules: ShippingPostalCodeRulesCreateInputRange[];
 		deletePostalCodeRules: string[];
+		inclusionType?: PostalCodeRuleInclusionTypeEnum;
 	};
 
 	type PartialShippingMethodPostalCodeRule = Partial<ShippingMethodPostalCodeRule>;
@@ -26,16 +27,21 @@
 		existingCodeRules = [],
 		addPostalCodeRules = $bindable(),
 		deletePostalCodeRules = $bindable(),
+		inclusionType = $bindable(),
 	}: Props = $props();
 
 	const RuleColumns: TableColumnProps<PartialShippingMethodPostalCodeRule>[] = [
 		{
-			title: 'range',
-			child: range,
+			title: 'start',
+			child: start,
+		},
+		{
+			title: 'end',
+			child: end,
 		},
 		{
 			title: 'inclusion type',
-			child: inclusionType,
+			child: inclusionTypeSnippet,
 		},
 		{
 			title: 'action',
@@ -45,46 +51,64 @@
 
 	let displayingPostalCodeRules = $state<PartialShippingMethodPostalCodeRule[]>(existingCodeRules);
 	let openAddRuleRangeModal = $state(false);
-	let addRuleInclusionType = $state<PostalCodeRuleInclusionTypeEnum>(
-		PostalCodeRuleInclusionTypeEnum.Include,
-	);
 	let addCodeRangeInput = $state<ShippingPostalCodeRulesCreateInputRange>({
 		start: '',
 	});
+	let ruleDuplicated = $state(false);
 
 	const handleAddCodeRange = () => {
-		if (!addCodeRangeInput.start) return;
-
-		addPostalCodeRules.push({
+		if (!addCodeRangeInput.start.trim() || ruleDuplicated) return;
+		const newRule = {
 			start: addCodeRangeInput.start.trim(),
 			end: addCodeRangeInput.end?.trim(),
-		});
+		};
+		addPostalCodeRules.push(newRule);
+		displayingPostalCodeRules.push(newRule);
 		addCodeRangeInput = {
 			start: '',
 			end: '',
 		};
 		openAddRuleRangeModal = false;
 	};
+
+	const handleDeleteCodeRange = (item: PartialShippingMethodPostalCodeRule, idx: number) => {
+		if (item.id && !deletePostalCodeRules.includes(item.id)) deletePostalCodeRules.push(item.id);
+
+		displayingPostalCodeRules = displayingPostalCodeRules.filter((_, i) => i !== idx);
+		addPostalCodeRules = addPostalCodeRules.filter(
+			(rule) => rule.start !== item.start && rule.end !== item.end,
+		);
+	};
+
+	const validateDuplication = () => {
+		ruleDuplicated = displayingPostalCodeRules.some(
+			(rule) => rule.start === addCodeRangeInput.start && rule.end === addCodeRangeInput.end,
+		);
+	};
 </script>
 
-{#snippet range({ item }: { item: PartialShippingMethodPostalCodeRule })}
-	<span>{item.start ?? '-'} {item.end ?? '-'}</span>
+{#snippet start({ item }: { item: PartialShippingMethodPostalCodeRule })}
+	<span>{item.start || '-'}</span>
 {/snippet}
 
-{#snippet inclusionType({ item }: { item: PartialShippingMethodPostalCodeRule })}
+{#snippet end({ item }: { item: PartialShippingMethodPostalCodeRule })}
+	<span>{item.end || '-'}</span>
+{/snippet}
+
+{#snippet inclusionTypeSnippet({ item }: { item: PartialShippingMethodPostalCodeRule })}
 	<Badge
-		text={item.inclusionType ?? ''}
-		color={item.inclusionType === PostalCodeRuleInclusionTypeEnum.Include ? 'green' : 'red'}
+		text={inclusionType || '-'}
+		color={inclusionType === PostalCodeRuleInclusionTypeEnum.Include ? 'green' : 'red'}
 	/>
 {/snippet}
 
-{#snippet action({ item }: { item: PartialShippingMethodPostalCodeRule })}
+{#snippet action({ item, idx }: { item: PartialShippingMethodPostalCodeRule; idx: number })}
 	<IconButton
 		icon={Trash}
 		size="xs"
 		color="red"
 		variant="light"
-		onclick={() => item.id && deletePostalCodeRules.push(item.id)}
+		onclick={() => handleDeleteCodeRange(item, idx)}
 	/>
 {/snippet}
 
@@ -112,20 +136,20 @@
 		openAddRuleRangeModal = false;
 	}}
 	onOk={handleAddCodeRange}
-	disableOkBtn={!addCodeRangeInput.start?.trim()}
+	disableOkBtn={!addCodeRangeInput.start?.trim() || ruleDuplicated}
 >
 	<div class="space-y-2">
 		<div class="space-y-2">
 			<RadioButton
 				value={PostalCodeRuleInclusionTypeEnum.Include}
 				label="Include"
-				bind:group={addRuleInclusionType}
+				bind:group={inclusionType}
 				subText="Added postal codes will be excluded from using this delivery methods. If none are added all postal codes will be able to use that shipping rate"
 			/>
 			<RadioButton
 				value={PostalCodeRuleInclusionTypeEnum.Exclude}
 				label="Exclude"
-				bind:group={addRuleInclusionType}
+				bind:group={inclusionType}
 				subText="Only added postal codes will be able to use this shipping rate"
 			/>
 		</div>
@@ -136,9 +160,24 @@
 				type="text"
 				label="Start"
 				bind:value={addCodeRangeInput.start}
+				inputDebounceOption={{ onInput: validateDuplication }}
 				required
+				variant={ruleDuplicated ? 'error' : 'info'}
+				subText={ruleDuplicated
+					? $tranFunc('common.duplicate', { val: addCodeRangeInput.start })
+					: undefined}
 			/>
-			<Input placeholder="end" type="text" label="End" bind:value={addCodeRangeInput.end} />
+			<Input
+				placeholder="end"
+				type="text"
+				label="End"
+				bind:value={addCodeRangeInput.end}
+				inputDebounceOption={{ onInput: validateDuplication }}
+				variant={ruleDuplicated ? 'error' : 'info'}
+				subText={ruleDuplicated
+					? $tranFunc('common.duplicate', { val: addCodeRangeInput.end })
+					: undefined}
+			/>
 		</div>
 	</div>
 </Modal>
