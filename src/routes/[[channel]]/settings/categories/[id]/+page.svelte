@@ -40,7 +40,7 @@
 
 	let categoryInput = $state<CategoryInput>({
 		name: '',
-		description: {},
+		description: { blocks: [] },
 		slug: '',
 		seo: {
 			title: '',
