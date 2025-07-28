@@ -171,7 +171,6 @@
 							onchange={(val) =>
 								(listing.publishedAt = dayjs(val.date).format(CommonEaseDatePickerFormat))}
 							{disabled}
-							format={CommonEaseDatePickerFormat}
 						/>
 					</div>
 				{/if}

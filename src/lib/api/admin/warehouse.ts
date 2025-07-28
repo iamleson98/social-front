@@ -76,3 +76,17 @@ query Warehouse($id: ID!) {
     }
   }
 }`;
+
+export const WAREHOUSE_CREATE_MUTATION = gql`
+mutation CreateWarehouse($input: WarehouseCreateInput!) {
+  warehouseCreate(input: $input) {
+    warehouse {
+      id
+    }
+    errors {
+      field
+      message
+    }
+  }
+}`;
+

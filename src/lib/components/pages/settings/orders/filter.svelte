@@ -360,7 +360,7 @@
 		multiple
 		onchange={(opt) => {
 			if (opt && Array.isArray(opt)) {
-				onValue(opt.map((opt) => opt.value as string));
+				onValue(opt.map((opt) => opt.id as string));
 			}
 		}}
 		value={initialValue as string[]}

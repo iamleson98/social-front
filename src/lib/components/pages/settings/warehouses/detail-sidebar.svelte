@@ -14,9 +14,10 @@
 	type Props = {
 		isPrivate: boolean;
 		clickAndCollectOption: WarehouseClickAndCollectOptionEnum;
+		disabled: boolean;
 	};
 
-	let { isPrivate = $bindable(), clickAndCollectOption = $bindable() }: Props = $props();
+	let { isPrivate = $bindable(), clickAndCollectOption = $bindable(), disabled }: Props = $props();
 
 	let warehouseShippingZonesVariables = $state({
 		first: 10,
@@ -43,6 +44,7 @@
 		resultKey={'warehouse.shippingZones' as keyof Query}
 		columns={ShippingColumns}
 		bind:variables={warehouseShippingZonesVariables}
+		{disabled}
 	/>
 </div>
 
@@ -55,6 +57,7 @@
 		subText="If enabled stock in this warehouse won't be shown"
 		value={true}
 		bind:group={isPrivate}
+		{disabled}
 	/>
 	<RadioButton
 		label="Public stock"
@@ -62,13 +65,13 @@
 		subText="If enabled stock in this warehouse will be shown"
 		value={false}
 		bind:group={isPrivate}
+		{disabled}
 	/>
 </div>
 
 <div class="rounded-lg bg-white border border-gray-200 p-3 space-y-2">
 	<SectionHeader>
 		<span>Pickup</span>
-
 		<Badge size="xs" rounded variant="outline" text="preview" />
 	</SectionHeader>
 
@@ -78,6 +81,7 @@
 		subText="If selected customer won't be able to choose this warehouse as pickup point"
 		value={WarehouseClickAndCollectOptionEnum.Local}
 		bind:group={clickAndCollectOption}
+		{disabled}
 	/>
 	<RadioButton
 		label="All warehouses"
@@ -85,5 +89,6 @@
 		subText="If selected customer will be able to choose this warehouse as pickup point. Ordered products can be shipped here from a different warehouse"
 		value={WarehouseClickAndCollectOptionEnum.All}
 		bind:group={clickAndCollectOption}
+		{disabled}
 	/>
 </div>

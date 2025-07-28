@@ -15,6 +15,7 @@
 		address?: Address;
 		isCreatePage?: boolean;
 		disabled?: boolean;
+		formOk: boolean;
 	};
 
 	let {
@@ -24,6 +25,7 @@
 		address,
 		isCreatePage = false,
 		disabled = false,
+		formOk = $bindable(),
 	}: Props = $props();
 
 	const RequiredErr = $tranFunc('helpText.fieldRequired');
@@ -43,6 +45,10 @@
 		warehouseErrors = result.success ? {} : result.error.formErrors.fieldErrors;
 		return result.success;
 	};
+
+	$effect(() => {
+		formOk = !Object.keys(warehouseErrors).length;
+	});
 </script>
 
 <div class="rounded-lg bg-white border border-gray-200 p-3 space-y-2">
@@ -80,7 +86,7 @@
 	<SectionHeader>Address information</SectionHeader>
 	<AddressForm
 		defaultValue={address}
-		channelSlug={isCreatePage ? '' : page.params.channel}
+		channelSlug={isCreatePage ? '' : page.params.channel!}
 		onCancel={noop}
 		onSubmit={noop}
 		updatingCheckoutAddresses={disabled}

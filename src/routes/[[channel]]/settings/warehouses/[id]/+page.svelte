@@ -9,15 +9,12 @@
 	} from '$lib/api/admin/warehouse';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
-	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import AddressForm from '$lib/components/pages/checkout/address-form.svelte';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import DetailSidebar from '$lib/components/pages/settings/warehouses/detail-sidebar.svelte';
 	import DetailSkeleton from '$lib/components/pages/settings/warehouses/detail-skeleton.svelte';
 	import GeneralInformation from '$lib/components/pages/settings/warehouses/general-information.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { Input } from '$lib/components/ui/Input';
 	import {
 		WarehouseClickAndCollectOptionEnum,
 		type Mutation,
@@ -30,9 +27,8 @@
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { noop } from 'es-toolkit';
+	import { pick } from 'es-toolkit';
 	import { onMount } from 'svelte';
-	import { object, string, z } from 'zod';
 
 	const warehouseQuery = operationStore<Pick<Query, 'warehouse'>, QueryWarehouseArgs>({
 		kind: 'query',
@@ -44,18 +40,6 @@
 		pause: !page.params.id,
 	});
 
-	const RequiredErr = $tranFunc('helpText.fieldRequired');
-
-	const WarehouseSchema = object({
-		name: string().nonempty(RequiredErr),
-		clickAndCollectOption: string().nonempty(RequiredErr),
-		email: string().nonempty(RequiredErr),
-		slug: string().nonempty(RequiredErr),
-	});
-
-	type WarehouseProps = z.infer<typeof WarehouseSchema>;
-
-	let warehouseErrors = $state<Partial<Record<keyof WarehouseProps, string[]>>>({});
 	let loading = $state(false);
 	let warehouseInput = $state<WarehouseUpdateInput>({
 		isPrivate: false,
@@ -65,34 +49,26 @@
 		email: '',
 	});
 	let performUpdateMetadata = $state(false);
-
-	const validate = () => {
-		const result = WarehouseSchema.safeParse(warehouseInput);
-
-		return result.success;
-	};
+	let generalFormOk = $state(false);
 
 	onMount(() =>
 		warehouseQuery.subscribe((result) => {
 			if (result.data?.warehouse) {
-				const { name, slug, email, externalReference, isPrivate, clickAndCollectOption } =
-					result.data.warehouse;
-
-				warehouseInput = {
-					name,
-					slug,
-					email,
-					externalReference,
-					isPrivate,
-					clickAndCollectOption,
-				};
+				warehouseInput = pick(result.data.warehouse, [
+					'name',
+					'slug',
+					'email',
+					'externalReference',
+					'isPrivate',
+					'clickAndCollectOption',
+				]);
 			}
 		}),
 	);
 
 	const handleClickDelete = async () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: `Are you sure to delete warehouse ${page.params.id}?`,
+			content: $tranFunc('common.confirmDel'),
 			onOk: async () => {
 				loading = true;
 
@@ -100,14 +76,12 @@
 					Pick<Mutation, 'deleteWarehouse'>,
 					MutationDeleteWarehouseArgs
 				>(WAREHOUSE_DELETE_MUTATION, {
-					id: page.params.id,
+					id: page.params.id!,
 				});
 
 				loading = false;
 
-				if (
-					checkIfGraphqlResultHasError(result, 'deleteWarehouse', 'Successfully delete warehouse')
-				)
+				if (checkIfGraphqlResultHasError(result, 'deleteWarehouse', $tranFunc('common.delSuccess')))
 					return;
 
 				await goto(AppRoute.SETTINGS_CONFIGS_WAREHOUSES());
@@ -116,10 +90,9 @@
 	};
 
 	const handleClickUpdate = async () => {
-		if (!validate()) return;
+		if (!generalFormOk) return;
 
 		loading = true;
-
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'updateWarehouse'>,
 			MutationUpdateWarehouseArgs
@@ -128,11 +101,15 @@
 			input: warehouseInput,
 		});
 		performUpdateMetadata = true;
-
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'updateWarehouse', 'Successfully updated warehouse'))
+		if (checkIfGraphqlResultHasError(result, 'updateWarehouse', $tranFunc('common.editSuccess')))
 			return;
+
+		warehouseQuery.reexecute({
+			context: { requestPolicy: 'network-only' },
+			variables: { id: page.params.id },
+		});
 	};
 </script>
 
@@ -141,29 +118,32 @@
 {:else if $warehouseQuery.error}
 	<Alert variant="error" size="sm" bordered>{$warehouseQuery.error.message}</Alert>
 {:else if $warehouseQuery.data?.warehouse}
-	{@const { address, metadata, privateMetadata } = $warehouseQuery.data.warehouse}
+	{@const { address, metadata, privateMetadata, id } = $warehouseQuery.data.warehouse}
 	<div class="flex gap-2">
-		<div class="w-7/10 space-y-2">
+		<div class="w-6/10 space-y-2">
 			<GeneralInformation
 				bind:name={warehouseInput.name!}
 				bind:slug={warehouseInput.slug!}
 				bind:email={warehouseInput.email!}
 				{address}
 				disabled={loading}
+				bind:formOk={generalFormOk}
 			/>
 
 			<GeneralMetadataEditor
-				objectId={page.params.id}
+				objectId={id}
 				{metadata}
 				{privateMetadata}
 				bind:performUpdateMetadata
+				disabled={loading}
 			/>
 		</div>
 
-		<div class="space-y-2 w-3/10">
+		<div class="space-y-2 w-4/10">
 			<DetailSidebar
 				bind:isPrivate={warehouseInput.isPrivate!}
 				bind:clickAndCollectOption={warehouseInput.clickAndCollectOption!}
+				disabled={loading}
 			/>
 		</div>
 	</div>

@@ -117,7 +117,7 @@
 					Pick<Mutation, 'collectionDelete'>,
 					MutationCollectionDeleteArgs
 				>(COLLECTION_DELETE_MUTATION, {
-					id: page.params.id,
+					id: page.params.id!,
 				});
 
 				loading = false; //
@@ -144,7 +144,7 @@
 			Pick<Mutation, 'collectionUpdate'>,
 			MutationCollectionUpdateArgs
 		>(COLLECTION_UPDATE_MUTATION, {
-			id: page.params.id,
+			id: page.params.id!,
 			input,
 		});
 
@@ -152,7 +152,7 @@
 			Pick<Mutation, 'collectionChannelListingUpdate'>,
 			MutationCollectionChannelListingUpdateArgs
 		>(COLLECTION_CHANNEL_LISTING_UPDATE_MUTATION, {
-			id: page.params.id,
+			id: page.params.id!,
 			input: collectionChannelListingUpdateInput,
 		});
 
