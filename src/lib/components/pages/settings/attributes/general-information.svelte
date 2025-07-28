@@ -5,6 +5,7 @@
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { AttributeInputTypeEnum } from '$lib/gql/graphql';
 	import { ValidSlugRegex } from '$lib/utils/consts';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import slugify from 'slugify';
 	import { object, string, z } from 'zod';
 
@@ -33,7 +34,7 @@
 	const AttributeSchema = object({
 		name: string().nonempty(RequiredErr),
 		inputType: string().nonempty(RequiredErr),
-		slug: string().nonempty(RequiredErr).regex(ValidSlugRegex, 'Please provide valid slug'),
+		slug: string().nonempty(RequiredErr).regex(ValidSlugRegex, $tranFunc('error.invalidSlug')),
 	});
 
 	type AttributeProps = z.infer<typeof AttributeSchema>;
@@ -63,7 +64,7 @@
 	});
 </script>
 
-<div class="rounded-lg bg-white border border-gray-200 p-3 space-y-2">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>General information</SectionHeader>
 
 	<Input

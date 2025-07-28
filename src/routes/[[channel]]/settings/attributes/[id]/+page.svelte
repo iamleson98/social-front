@@ -48,6 +48,10 @@
 		name: '',
 		valueRequired: true,
 		unit: MeasurementUnitsEnum.G,
+		visibleInStorefront: true,
+		slug: '',
+		addValues: [],
+		removeValues: [],
 	});
 
 	onMount(() =>
@@ -56,6 +60,7 @@
 				const { name, slug, valueRequired, visibleInStorefront, unit } = result.data.attribute;
 
 				attributeInput = {
+					...attributeInput,
 					name,
 					slug,
 					valueRequired,
@@ -81,9 +86,7 @@
 
 				loading = false;
 
-				if (
-					checkIfGraphqlResultHasError(result, 'attributeDelete', 'Successfully deleted attribute')
-				)
+				if (checkIfGraphqlResultHasError(result, 'attributeDelete', $tranFunc('common.delSuccess')))
 					return;
 
 				await goto(AppRoute.SETTINGS_CONFIGS_ATTRIBUTES());
@@ -131,11 +134,9 @@
 				disabled={loading}
 				bind:formOk={generalFormOk}
 			/>
-
 			<AttributeValues {withChoices} inputType={inputType!} attributeID={id} />
-
 			<GeneralMetadataEditor
-				objectId={page.params.id}
+				objectId={id}
 				{metadata}
 				{privateMetadata}
 				bind:performUpdateMetadata

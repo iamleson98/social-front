@@ -8,9 +8,9 @@
 	} from '$lib/api/admin/attribute';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Edit, Trash } from '$lib/components/icons';
-	import { IconButton } from '$lib/components/ui/Button';
-	import { Input } from '$lib/components/ui/Input';
+	import { Edit, Plus, Trash } from '$lib/components/icons';
+	import { Button, IconButton } from '$lib/components/ui/Button';
+	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
@@ -22,9 +22,10 @@
 		type MutationAttributeReorderValuesArgs,
 		type MutationAttributeValueDeleteArgs,
 		type MutationAttributeValueUpdateArgs,
+		type AttributeValueUpdateInput,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { noop } from 'es-toolkit';
 	import ColorPicker from 'svelte-awesome-color-picker';
 
@@ -34,11 +35,19 @@
 		/** if not provided, meaning it is create page */
 		attributeID?: string;
 		attributeName?: string;
+		addValues: AttributeValueUpdateInput[];
+		removeValues: string[];
 	};
 
-	let { inputType, attributeID, attributeName }: Props = $props();
+	let {
+		inputType,
+		attributeID,
+		attributeName,
+		addValues = $bindable(),
+		removeValues = $bindable(),
+	}: Props = $props();
 
-	let showValues = $derived(
+	const ShowValues = $derived(
 		[
 			AttributeInputTypeEnum.Dropdown,
 			AttributeInputTypeEnum.Numeric,
@@ -47,7 +56,7 @@
 		].includes(inputType),
 	);
 
-	let variables = $state({
+	let attributeChoicesVariables = $state({
 		id: attributeID,
 		first: 20,
 		filter: {
@@ -208,10 +217,13 @@
 	</div>
 {/snippet}
 
-{#if showValues}
-	<div class="p-3 rounded-lg border border-gray-200 bg-white">
+{#if ShowValues}
+	<div class={SitenameCommonClassName}>
 		{#if inputType !== AttributeInputTypeEnum.Numeric}
-			<SectionHeader>Attribute values</SectionHeader>
+			<SectionHeader>
+				<div>Attribute values</div>
+				<Button size="xs" variant="light" endIcon={Plus}>Add value</Button>
+			</SectionHeader>
 
 			<!-- is this is edit page -->
 			{#if attributeID}
@@ -219,7 +231,7 @@
 					query={ATTRIBUTE_VALUES_QUERY}
 					resultKey={'attribute.choices' as keyof Query}
 					columns={ValueColumns}
-					bind:variables
+					bind:variables={attributeChoicesVariables}
 					disabled={loading}
 					bind:forceReExecuteGraphqlQuery
 					onDragEnd={handleArrangeValues}
@@ -227,7 +239,9 @@
 				/>
 			{/if}
 		{:else}
-			<div></div>
+			<div>
+				<Checkbox label="Select unit" />
+			</div>
 		{/if}
 	</div>
 {/if}

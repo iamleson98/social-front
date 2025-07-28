@@ -20,6 +20,7 @@
 	});
 
 	let createdAttributeId = $state('');
+	let generalFormOk = $state(false);
 
 	const handleAddAttribute = async () => {};
 </script>
@@ -32,6 +33,7 @@
 			bind:valueRequired={attributeInput.valueRequired!}
 			bind:inputType={attributeInput.inputType!}
 			isCreatePage
+			bind:formOk={generalFormOk}
 		/>
 
 		<GeneralMetadataEditor metadata={[]} privateMetadata={[]} objectId={createdAttributeId} />
