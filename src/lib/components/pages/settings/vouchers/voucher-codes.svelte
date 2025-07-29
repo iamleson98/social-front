@@ -82,15 +82,18 @@
 	let numberOfAutoGenerateCodes = $state(1);
 	let autoCodePrefix = $state('');
 
+	const DisableAddCodeModelOkButton = $derived(
+		addCodeType === 'auto' ? !!numberOfAutoGenerateCodesError : !!manualVoucherCodeError,
+	);
+
 	const validate = () => {
 		if (addCodeType === 'auto') {
 			const result = AutoGenerateCodesSchema.safeParse(numberOfAutoGenerateCodes);
 			numberOfAutoGenerateCodesError = result.success ? undefined : result.error.errors[0].message;
-			return;
+		} else {
+			const result = ManualCodeSchema.safeParse(manualVoucherCode);
+			manualVoucherCodeError = result.success ? undefined : result.error.errors[0].message;
 		}
-
-		const result = ManualCodeSchema.safeParse(manualVoucherCode);
-		manualVoucherCodeError = result.success ? undefined : result.error.errors[0].message;
 	};
 
 	$effect(() => {
@@ -226,7 +229,7 @@
 	onOk={handleAddVoucherCodes}
 	size="sm"
 	header={$tranFunc('voucher.newCodes')}
-	disableOkBtn={!!numberOfAutoGenerateCodesError || !!manualVoucherCodeError}
+	disableOkBtn={DisableAddCodeModelOkButton}
 >
 	<div class="grid grid-cols-2 mb-3">
 		{#each NEW_CODE_TYPES as type, idx (idx)}

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import Signin from '$lib/components/forms/signin.svelte';
+	import Signin from '$lib/components/pages/auth/signin.svelte';
 	import { AppRoute } from '$lib/utils';
 
 	const onSuccess = async () => {
