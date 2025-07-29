@@ -196,13 +196,11 @@
 	</SectionHeader>
 
 	{#if addVoucherCodes.length}
-		<div class="rounded-lg p-3 border border-gray-200 bg-white">
-			<Table
-				columns={TABLE_COLUMNS.concat(TEMPO_CODE_ACTION_COLUMN)}
-				items={addVoucherCodes}
-				{disabled}
-			/>
-		</div>
+		<Table
+			columns={TABLE_COLUMNS.concat(TEMPO_CODE_ACTION_COLUMN)}
+			items={addVoucherCodes}
+			{disabled}
+		/>
 	{/if}
 
 	{#if voucherId}
