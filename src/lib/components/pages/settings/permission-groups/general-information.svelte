@@ -148,8 +148,6 @@
 		displayingUsers = displayingUsers.concat(addDisplayUsers);
 		openAssignUserModal = false;
 	};
-
-	$inspect(addUsers, removeUsers);
 </script>
 
 {#snippet selectUnassign({ item }: { item: User })}

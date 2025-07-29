@@ -13,6 +13,7 @@
 		type VoucherChannelListing,
 		type VoucherChannelListingInput,
 	} from '$lib/gql/graphql';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { difference } from 'es-toolkit';
 	import { array, number, object } from 'zod';
 
@@ -36,10 +37,7 @@
 	}: Props = $props();
 
 	/** keeps track of channels already in use with voucher */
-	const existingUsedChannelIDs = existingChannelListings.reduce(
-		(acc, cur) => acc.concat(cur.channel.id),
-		[] as string[],
-	);
+	const ExistingUsedChannelIDs = existingChannelListings.map((item) => item.channel.id);
 
 	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 	const NON_NEGATIVE = $tranFunc('error.negativeNumber');
@@ -67,7 +65,7 @@
 		},
 	];
 
-	let selectedChannelIds = $state<string[]>(existingUsedChannelIDs);
+	let selectedChannelIds = $state<string[]>(ExistingUsedChannelIDs);
 
 	const CHANNEL_LISTING_COLUMNS: TableColumnProps<VoucherChannelListing>[] = [
 		{
@@ -97,8 +95,8 @@
 	};
 
 	const handleChannelsChange = () => {
-		const newChannelIds = difference(selectedChannelIds, existingUsedChannelIDs);
-		const removeChannelIds = difference(existingUsedChannelIDs, selectedChannelIds);
+		const newChannelIds = difference(selectedChannelIds, ExistingUsedChannelIDs);
+		const removeChannelIds = difference(ExistingUsedChannelIDs, selectedChannelIds);
 
 		voucherChannelListingInput.addChannels = newChannelIds.map((id) => ({
 			channelId: id,
@@ -169,32 +167,9 @@
 	</Input>
 {/snippet}
 
-<div class="rounded-lg p-3 border border-gray-200 bg-white space-y-2">
+<div class={SitenameCommonClassName}>
 	<div>
 		<SectionHeader>{$tranFunc('settings.availability')}</SectionHeader>
-		<!-- {#if $channelsQuery.fetching}
-			<SelectSkeleton size="sm" label />
-		{:else if $channelsQuery.error}
-			<Alert size="sm" variant="error" bordered>{$channelsQuery.error.message}</Alert>
-		{:else if $channelsQuery.data?.channels}
-			{@const options = $channelsQuery.data.channels.map<SelectOption>((chan) => ({
-				value: chan.id,
-				label: chan.name,
-			}))}
-			<Select
-				label={$tranFunc('voucher.specifyChan')}
-				required
-				multiple
-				{disabled}
-				{options}
-				placeholder={$tranFunc('voucher.specifyChan')}
-				bind:value={selectedChannelIds}
-				onchange={handleChannelsChange}
-				onblur={validate}
-				variant={discountValueErrors?.formErrors?.length ? 'error' : 'info'}
-				subText={discountValueErrors?.formErrors?.[0]}
-			/>
-		{/if} -->
 		<ChannelSelect
 			label={$tranFunc('voucher.specifyChan')}
 			required

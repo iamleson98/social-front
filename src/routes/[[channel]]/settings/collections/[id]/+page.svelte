@@ -184,7 +184,7 @@
 {:else if $collectionDetailQuery.data?.collection}
 	{@const { metadata, privateMetadata, id } = $collectionDetailQuery.data.collection}
 	<div class="flex gap-2 flex-row">
-		<div class="w-7/10 flex flex-col gap-2">
+		<div class="w-6/10 flex flex-col gap-2">
 			<GeneralInformationForm
 				bind:name={collectionUpdateInput.name!}
 				bind:description={collectionUpdateInput.description}
@@ -209,7 +209,7 @@
 			/>
 		</div>
 
-		<div class="w-3/10">
+		<div class="w-4/10">
 			<AvailabilityForm
 				bind:addChannelListings={collectionChannelListingUpdateInput.addChannels!}
 				bind:removeChannels={collectionChannelListingUpdateInput.removeChannels!}

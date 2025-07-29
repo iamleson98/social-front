@@ -23,8 +23,6 @@
 		disabled,
 	}: Props = $props();
 
-	$inspect(activeChannelListings);
-
 	let requirementType = $state<RequirementType>(
 		typeof minimumQuantityOfItems === 'number' ? 'min_qty_items' : 'min_order_value',
 	);
