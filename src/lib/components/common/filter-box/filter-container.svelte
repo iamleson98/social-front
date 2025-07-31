@@ -109,8 +109,6 @@
 
 		await goto(`${page.url.pathname}?${params.toString()}`);
 	};
-
-	// $inspect(activeFilters, filters);
 </script>
 
 <div class="bg-white rounded-lg p-2 shadow-md border border-gray-200 min-w-110">

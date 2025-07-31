@@ -26,7 +26,7 @@
 
 	let collectionCreateInput = $state<CollectionCreateInput>({
 		name: '',
-		description: {},
+		description: { blocks: [] },
 		backgroundImage: '',
 		backgroundImageAlt: '',
 		products: [],
@@ -66,7 +66,7 @@
 </script>
 
 <div class="flex gap-2 flex-row">
-	<div class="w-7/10 space-y-2">
+	<div class="w-6/10 space-y-2">
 		<GeneralInformationForm
 			bind:name={collectionCreateInput.name!}
 			bind:description={collectionCreateInput.description}
@@ -92,7 +92,7 @@
 		/>
 	</div>
 
-	<div class="w-3/10">
+	<div class="w-4/10">
 		<AvailabilityForm />
 	</div>
 </div>

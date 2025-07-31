@@ -121,7 +121,7 @@
 			Pick<Mutation, 'voucherUpdate'>,
 			MutationVoucherUpdateArgs
 		>(VOUCHER_UPDATE_MUTATION, {
-			id: page.params.id,
+			id: page.params.id!,
 			input: voucherInput,
 		}).toPromise();
 
@@ -129,7 +129,7 @@
 			Pick<Mutation, 'voucherChannelListingUpdate'>,
 			MutationVoucherChannelListingUpdateArgs
 		>(VOUCHER_CHANNEL_LISTING_UPDATE_MUTATION, {
-			id: page.params.id,
+			id: page.params.id!,
 			input: {
 				...voucherChannelListingInput,
 				addChannels: activeChannelListings.map((item) => ({
@@ -152,7 +152,7 @@
 
 		toast.success($tranFunc('common.editSuccess'));
 		voucherQuery.reexecute({
-			variables: { id: page.params.id },
+			variables: { id: page.params.id! },
 			context: { requestPolicy: 'network-only' },
 		});
 	};
@@ -165,7 +165,7 @@
 				const result = await GRAPHQL_CLIENT.mutation<
 					Pick<Mutation, 'voucherDelete'>,
 					MutationVoucherDeleteArgs
-				>(VOUCHER_DELETE_MUTATION, { id: page.params.id });
+				>(VOUCHER_DELETE_MUTATION, { id: page.params.id! });
 				loading = false;
 
 				if (checkIfGraphqlResultHasError(result, 'voucherDelete', $tranFunc('common.delSuccess')))

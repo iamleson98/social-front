@@ -185,8 +185,7 @@
 		<div>{$tranFunc('voucher.voucherCodes')}</div>
 		<Button
 			size="xs"
-			variant="outline"
-			color="gray"
+			variant="light"
 			endIcon={Plus}
 			{disabled}
 			onclick={() => (openAddCodeModal = true)}
