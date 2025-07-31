@@ -3,6 +3,7 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 
 	type Props = {
 		applyOncePerCustomer: boolean;
@@ -29,7 +30,7 @@
 	});
 </script>
 
-<div class="rounded-lg p-3 border border-gray-200 bg-white space-y-2">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>{$tranFunc('voucher.useLimit')}</SectionHeader>
 	<div class="space-y-2.5">
 		<Checkbox
