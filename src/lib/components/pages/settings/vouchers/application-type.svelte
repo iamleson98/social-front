@@ -3,6 +3,7 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Checkbox, RadioButton } from '$lib/components/ui/Input';
 	import { DiscountValueTypeEnum, VoucherTypeEnum } from '$lib/gql/graphql';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { APPLICATION_TYPES } from './consts';
 	import EditVoucherCatalogApplication from './edit-voucher-catalog-application.svelte';
 	import NewVoucherCatalogApplication from './new-voucher-catalog-application.svelte';
@@ -37,7 +38,7 @@
 </script>
 
 {#if discountType !== DISCOUNT_TYPE_SHIPPING}
-	<div class="rounded-lg p-3 border border-gray-200 bg-white space-y-2">
+	<div class={SitenameCommonClassName}>
 		<div>
 			<SectionHeader>{$tranFunc('voucher.applyType')}</SectionHeader>
 			<div class="space-y-2.5">

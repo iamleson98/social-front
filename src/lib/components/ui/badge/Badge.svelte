@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { CloseX, Icon } from '$lib/components/icons';
 	import { BUTTON_VARIANT_COLORS_MAP } from '$lib/components/ui/Button/button.types';
+	import { SIZE_REDUCE_MAP } from '../select';
 	import { BADGE_SIZE_VARIANTS, type BadgeProps } from './types';
 
 	let {
@@ -34,7 +35,7 @@
 			class={`text-inherit ${roundClass} cursor-pointer ${BADGE_SIZE_VARIANTS[size].btn} bg-inherit`}
 			onclick={() => !disabled && onDismiss()}
 		>
-			<Icon icon={CloseX} {size} />
+			<Icon icon={CloseX} size={SIZE_REDUCE_MAP[size]} />
 		</button>
 	{/if}
 </span>

@@ -102,18 +102,10 @@
 			return;
 
 		await goto(
-			AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_DETAILS(page.params.id, createdMethodId),
+			AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_DETAILS(page.params.id!, createdMethodId),
 		);
 	};
 </script>
-
-<div class="breadcrumbs text-sm">
-	<ul>
-		<li><a href={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS(page.params.id)}>Parent</a></li>
-		<li>Shipping methods</li>
-		<li>New</li>
-	</ul>
-</div>
 
 {#if $shippingZoneQuery.fetching}
 	<DetailSkeleton />
@@ -152,7 +144,7 @@
 
 	<ActionBar
 		onAddClick={handleCreateMethod}
-		backButtonUrl={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS(page.params.id)}
+		backButtonUrl={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS(page.params.id!)}
 		disabled={loading}
 		disableCreateButton={!generalFormOk || loading}
 	/>

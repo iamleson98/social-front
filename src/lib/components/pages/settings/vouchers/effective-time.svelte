@@ -3,6 +3,7 @@
 	import { RFC3339TimeFormat } from '$lib/api/graphql/utils';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 
 	type Props = {
@@ -14,7 +15,7 @@
 	let { startDate = $bindable(), endDate = $bindable(), disabled }: Props = $props();
 </script>
 
-<div class="rounded-lg p-3 border border-gray-200 bg-white space-y-2">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>{$tranFunc('voucher.effectDate')}</SectionHeader>
 
 	<div class="grid grid-cols-2 gap-2">

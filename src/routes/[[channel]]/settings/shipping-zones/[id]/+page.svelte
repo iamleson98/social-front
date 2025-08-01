@@ -61,7 +61,7 @@
 					Pick<Mutation, 'shippingZoneDelete'>,
 					MutationShippingZoneDeleteArgs
 				>(DELETE_SHIPPING_ZONE_MUTATION, {
-					id: page.params.id,
+					id: page.params.id!,
 				});
 				loading = false;
 
@@ -86,7 +86,7 @@
 			Pick<Mutation, 'shippingZoneUpdate'>,
 			MutationShippingZoneUpdateArgs
 		>(UPDATE_SHIPPING_ZONE_MUTATION, {
-			id: page.params.id,
+			id: page.params.id!,
 			input: shippingZoneInput,
 		});
 		loading = false;
@@ -114,7 +114,7 @@
 	const onDoneUpdateMethods = () => {
 		shippingZoneQuery.reexecute({
 			context: { requestPolicy: 'network-only' },
-			variables: { id: page.params.id },
+			variables: { id: page.params.id! },
 		});
 	};
 </script>

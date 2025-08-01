@@ -7,7 +7,7 @@
 	} from '$lib/api/admin/metadata';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import type { MetadataInput, MetadataItem, Mutation } from '$lib/gql/graphql';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { noop, omit } from 'es-toolkit';
 	import type { AnyVariables, TypedDocumentNode } from '@urql/core';
 	import MetadataEditor from './metadata-editor.svelte';
@@ -97,7 +97,7 @@
 	});
 </script>
 
-<div class="rounded-lg p-3 border bg-white border-gray-200">
+<div class={SitenameCommonClassName}>
 	<MetadataEditor
 		title={$tranFunc('common.metadata')}
 		data={metadata.map((item) => omit(item, ['__typename']))}
@@ -112,6 +112,5 @@
 		{disabled}
 		bind:metadataItemsToAdd={privateMetadataItemsToAdd}
 		bind:metadataKeysToRemove={privateMetadataKeysToRemove}
-		class="mt-2"
 	/>
 </div>

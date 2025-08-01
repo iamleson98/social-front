@@ -69,16 +69,6 @@
 	);
 </script>
 
-<div class="breadcrumbs text-sm">
-	<ul>
-		<li><a href={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS(page.params.id)}>Parent</a></li>
-		<li>Shipping methods</li>
-		<li>
-			{page.params.method_id}
-		</li>
-	</ul>
-</div>
-
 {#if $shippingZoneQuery.fetching}
 	<SelectSkeleton label />
 {:else if $shippingZoneQuery.error}
@@ -126,7 +116,7 @@
 		<ActionBar
 			onUpdateClick={console.log}
 			onDeleteClick={console.log}
-			backButtonUrl={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS(page.params.id)}
+			backButtonUrl={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS(page.params.id!)}
 			disabled={loading}
 		/>
 	{/if}

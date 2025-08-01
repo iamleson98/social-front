@@ -13,6 +13,7 @@
 		type VoucherChannelListing,
 		type VoucherChannelListingInput,
 	} from '$lib/gql/graphql';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { difference } from 'es-toolkit';
 	import { array, number, object } from 'zod';
@@ -39,14 +40,13 @@
 	/** keeps track of channels already in use with voucher */
 	const ExistingUsedChannelIDs = existingChannelListings.map((item) => item.channel.id);
 
-	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 	const NON_NEGATIVE = $tranFunc('error.negativeNumber');
 
 	const ChannelListingSchema = array(
 		object({
 			discountValue: number().nonnegative(NON_NEGATIVE),
 		}),
-	).nonempty(REQUIRED_ERROR);
+	).nonempty(CommonState.FieldRequiredError);
 
 	const DISCOUNT_TYPE_SHIPPING = 'Shipping' as DiscountValueTypeEnum;
 
@@ -66,17 +66,6 @@
 	];
 
 	let selectedChannelIds = $state<string[]>(ExistingUsedChannelIDs);
-
-	const CHANNEL_LISTING_COLUMNS: TableColumnProps<VoucherChannelListing>[] = [
-		{
-			title: $tranFunc('product.channel'),
-			child: channel,
-		},
-		{
-			title: $tranFunc('product.price'),
-			child: price,
-		},
-	];
 
 	const channelsQuery = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
@@ -98,74 +87,42 @@
 		const newChannelIds = difference(selectedChannelIds, ExistingUsedChannelIDs);
 		const removeChannelIds = difference(ExistingUsedChannelIDs, selectedChannelIds);
 
-		voucherChannelListingInput.addChannels = newChannelIds.map((id) => ({
-			channelId: id,
-			discountValue: 0,
-			minAmountSpent: 0,
-		}));
-		voucherChannelListingInput.removeChannels = removeChannelIds;
+		if (newChannelIds.length) {
+			voucherChannelListingInput.addChannels = newChannelIds.map((id) => ({
+				channelId: id,
+				discountValue: 0,
+				minAmountSpent: 0,
+			}));
 
-		activeChannelListings = existingChannelListings.concat(
-			newChannelIds.map((id) => {
-				const channel = $channelsQuery.data?.channels?.find((item) => item.id === id)!;
+			activeChannelListings = existingChannelListings.concat(
+				newChannelIds.map((id) => {
+					const channel = $channelsQuery.data?.channels?.find((item) => item.id === id)!;
 
-				return {
-					channel,
-					currency: channel.currencyCode,
-					discountValue: 0,
-					id: '',
-					minSpent: {
+					return {
+						channel,
 						currency: channel.currencyCode,
-						amount: 0,
-					},
-				};
-			}),
-		);
+						discountValue: 0,
+						id: '',
+						minSpent: {
+							currency: channel.currencyCode,
+							amount: 0,
+						},
+					};
+				}),
+			);
+		}
 
-		activeChannelListings = activeChannelListings.filter(
-			(item) => !removeChannelIds.includes(item.channel.id),
-		);
+		if (removeChannelIds.length) {
+			voucherChannelListingInput.removeChannels = removeChannelIds;
 
-		validate();
-	};
-
-	const handleDiscountAmountChange = (index: number, evt: Event) => {
-		activeChannelListings = activeChannelListings.map((listing, idx) => {
-			if (idx !== index) return listing;
-
-			return {
-				...listing,
-				discountValue: Number((evt.target as HTMLInputElement).value),
-			};
-		});
+			activeChannelListings = activeChannelListings.filter(
+				(item) => !removeChannelIds.includes(item.channel.id),
+			);
+		}
 
 		validate();
 	};
 </script>
-
-{#snippet channel({ item }: { item: VoucherChannelListing })}
-	<Badge text={item.channel.slug} />
-{/snippet}
-
-{#snippet price({ item, idx }: { item: VoucherChannelListing; idx: number })}
-	<Input
-		value={item.discountValue}
-		placeholder={$tranFunc('voucher.discountValue')}
-		type="number"
-		min={0}
-		{disabled}
-		inputDebounceOption={{ onInput: (evt) => handleDiscountAmountChange(idx, evt) }}
-		onblur={validate}
-		variant={discountValueErrors?.fieldErrors?.[idx]?.length ? 'error' : 'info'}
-		subText={discountValueErrors?.fieldErrors?.[idx]?.[0]}
-	>
-		{#snippet action()}
-			<span class="text-xs font-semibold text-gray-600">
-				{discountType === DiscountValueTypeEnum.Fixed ? item.channel.currencyCode : '%'}
-			</span>
-		{/snippet}
-	</Input>
-{/snippet}
 
 <div class={SitenameCommonClassName}>
 	<div>
@@ -195,9 +152,37 @@
 	</div>
 
 	{#if discountType !== DISCOUNT_TYPE_SHIPPING}
-		<div>
+		<div class={SitenameCommonClassName}>
 			<SectionHeader>{$tranFunc('common.value')}</SectionHeader>
-			<Table {disabled} columns={CHANNEL_LISTING_COLUMNS} items={activeChannelListings} />
+			<div class="grid grid-cols-2 gap-2 text-sm font-semibold text-gray-600">
+				<div>Channel</div>
+				<div>Value</div>
+			</div>
+			{#each activeChannelListings as listing, idx (idx)}
+				<div class="grid grid-cols-2 gap-2">
+					<div>
+						<Badge text={listing.channel.slug} />
+					</div>
+					<Input
+						bind:value={listing.discountValue}
+						placeholder={$tranFunc('voucher.discountValue')}
+						type="number"
+						size="sm"
+						min={0}
+						{disabled}
+						inputDebounceOption={{ onInput: validate }}
+						onblur={validate}
+						variant={discountValueErrors?.fieldErrors?.[idx]?.length ? 'error' : 'info'}
+						subText={discountValueErrors?.fieldErrors?.[idx]?.[0]}
+					>
+						{#snippet action()}
+							<span class="text-xs font-semibold text-gray-600">
+								{discountType === DiscountValueTypeEnum.Fixed ? listing.channel.currencyCode : '%'}
+							</span>
+						{/snippet}
+					</Input>
+				</div>
+			{/each}
 		</div>
 	{/if}
 </div>

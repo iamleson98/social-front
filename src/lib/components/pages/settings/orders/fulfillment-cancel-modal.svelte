@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { ORDER_CANCEL_FULFILLMENT_MUTATION } from '$lib/api/admin/orders';
+	import { WAREHOUSE_LIST_QUERY } from '$lib/api/admin/warehouse';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import WarehouseSelect from '$lib/components/common/warehouse-select.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Modal } from '$lib/components/ui/Modal';
+	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
 	import type { Mutation, MutationOrderFulfillmentCancelArgs } from '$lib/gql/graphql';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { toast } from 'svelte-sonner';
@@ -63,10 +64,21 @@
 		at a selected warehouse.
 	</Alert>
 
-	<WarehouseSelect
+	<GraphqlPaginableSelect
+		optionValueKey="id"
+		optionLabelKey="name"
+		query={WAREHOUSE_LIST_QUERY}
 		bind:value={warehouseId}
-		label="Select warehouse"
 		placeholder="Select warehouse"
+		label="Select warehouse"
 		disabled={loading}
+		variables={{
+			first: 10,
+			filter: {
+				search: '',
+			},
+		}}
+		resultKey="warehouses"
+		variableSearchQueryPath="filter.search"
 	/>
 </Modal>

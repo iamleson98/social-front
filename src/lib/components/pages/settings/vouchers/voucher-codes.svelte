@@ -142,7 +142,7 @@
 {/snippet}
 
 {#snippet usage({ item }: { item: AddVoucherCodeProps })}
-	<span>{item.used}</span>
+	<div class="text-center">{item.used}</div>
 {/snippet}
 
 {#snippet actions({ item }: { item: AddVoucherCodeProps })}

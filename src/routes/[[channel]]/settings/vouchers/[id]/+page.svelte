@@ -39,7 +39,6 @@
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { pick } from 'es-toolkit';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { string } from 'zod';
@@ -95,20 +94,34 @@
 		voucherQuery.subscribe((result) => {
 			if (!result.data?.voucher) return;
 
-			const pickValues = pick(result.data.voucher, [
-				'name',
-				'startDate',
-				'endDate',
-				'usageLimit',
-				'type',
-				'discountValueType',
-				'applyOncePerOrder',
-				'applyOncePerCustomer',
-				'onlyForStaff',
-				'singleUse',
-				'minCheckoutItemsQuantity',
-			]);
-			voucherInput = { ...voucherInput, ...pickValues };
+			const {
+				name,
+				startDate,
+				endDate,
+				usageLimit,
+				type,
+				discountValueType,
+				applyOncePerOrder,
+				applyOncePerCustomer,
+				onlyForStaff,
+				singleUse,
+				minCheckoutItemsQuantity,
+			} = result.data.voucher;
+
+			voucherInput = {
+				...voucherInput,
+				name,
+				startDate,
+				endDate,
+				usageLimit,
+				type,
+				discountValueType,
+				applyOncePerCustomer,
+				applyOncePerOrder,
+				onlyForStaff,
+				singleUse,
+				minCheckoutItemsQuantity,
+			};
 
 			activeChannelListings = result.data.voucher.channelListings || [];
 		}),

@@ -9,6 +9,10 @@
 	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
 	import { TAX_CLASSES_QUERY } from '$lib/api/tax';
 	import type { QueryTaxClassesArgs } from '$lib/gql/graphql';
+	import { Button, IconButton } from '$lib/components/ui/Button';
+	import { page } from '$app/state';
+	import { AppRoute } from '$lib/utils';
+	import { ChevronLeft } from '$lib/components/icons';
 
 	type Props = {
 		name: string;
@@ -57,7 +61,6 @@
 			minimumDeliveryDays,
 		});
 		methodErrors = result.success ? {} : result.error.formErrors.fieldErrors;
-		ok = result.success;
 		return result.success;
 	};
 
@@ -67,7 +70,20 @@
 </script>
 
 <div class={SitenameCommonClassName}>
-	<SectionHeader>General information</SectionHeader>
+	<SectionHeader>
+		<div class="flex gap-1">
+			<Button
+				href={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS(page.params.id!)}
+				startIcon={ChevronLeft}
+				size="xs"
+				variant="light"
+				color="gray"
+			>
+				Back
+			</Button>
+			<span>General information</span>
+		</div>
+	</SectionHeader>
 	<Input
 		label="Name"
 		bind:value={name}

@@ -78,7 +78,7 @@
 	const FIRST_10 = 10;
 
 	let voucherRelationVars = $state<VoucherRelationVars>({
-		voucherId: page.params.id,
+		voucherId: page.params.id!,
 		first: FIRST_100,
 	});
 	/** re-executing lock, for query existing products, variants, collections, categories of current voucher */
@@ -131,7 +131,7 @@
 
 	afterNavigate(() => {
 		voucherRelationVars = {
-			voucherId: page.params.id,
+			voucherId: page.params.id!,
 			first: FIRST_100,
 		};
 		forceReExecuteGraphqlQuery = true;
@@ -143,7 +143,7 @@
 			Pick<Mutation, 'voucherCataloguesRemove'>,
 			MutationVoucherCataloguesRemoveArgs
 		>(VOUCHER_CATALOGUES_REMOVE_MUTATION, {
-			id: page.params.id,
+			id: page.params.id!,
 			input: {
 				products: activeTab === 'products' ? removeProducts : [],
 				collections: activeTab === 'collections' ? removeCollections : [],
@@ -175,7 +175,7 @@
 			Pick<Mutation, 'voucherCataloguesAdd'>,
 			MutationVoucherCataloguesAddArgs
 		>(VOUCHER_CATALOGUES_ADD_MUTATION, {
-			id: page.params.id,
+			id: page.params.id!,
 			input: {
 				products: activeTab === 'products' ? addProducts : [],
 				collections: activeTab === 'collections' ? addCollections : [],

@@ -1,8 +1,9 @@
 <script lang="ts">
+	import { WAREHOUSE_LIST_QUERY } from '$lib/api/admin/warehouse';
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import WarehouseSelect from '$lib/components/common/warehouse-select.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
+	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
 	import type { Channel, Warehouse } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
@@ -60,7 +61,6 @@
 			multiple
 			onchange={handleSelectionChange}
 			{disabled}
-			
 		/>
 	</div>
 
@@ -72,15 +72,24 @@
 			address will also be used to calculate taxes.
 		</Alert>
 
-		<WarehouseSelect
-			bind:value={warehouseIds}
+		<GraphqlPaginableSelect
+			optionValueKey="id"
+			optionLabelKey="name"
+			query={WAREHOUSE_LIST_QUERY}
 			placeholder="Warehouses"
 			label="Warehouses"
 			required
-			multiple
+			bind:value={warehouseIds}
 			onchange={handleSelectionChange}
-			{disabled}
-			
+			multiple
+			variables={{
+				first: 10,
+				filter: {
+					search: '',
+				},
+			}}
+			resultKey="warehouses"
+			variableSearchQueryPath="filter.search"
 		/>
 
 		<data class="text-right text-xs">

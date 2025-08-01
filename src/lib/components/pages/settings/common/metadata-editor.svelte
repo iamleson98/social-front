@@ -6,10 +6,12 @@
 	import type { MetadataInput } from '$lib/gql/graphql';
 	import { tranFunc } from '$i18n';
 	import { object, string, z } from 'zod';
-	import { difference } from 'es-toolkit';
+	import { CommonState } from '$lib/utils/common.svelte';
+	import { addNoDup } from '$lib/utils/utils';
 
 	type Props = {
 		title: string;
+		/** the existing metadata pairs */
 		data: MetadataInput[];
 		disabled?: boolean;
 		class?: string;
@@ -28,36 +30,25 @@
 		metadataKeysToRemove = $bindable([]),
 	}: Props = $props();
 
-	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
-
-	const dataSchema = object({
-		key: string().nonempty(REQUIRED_ERROR),
-		value: string().nonempty(REQUIRED_ERROR),
+	const DataSchema = object({
+		key: string().nonempty(CommonState.FieldRequiredError),
+		value: string().nonempty(CommonState.FieldRequiredError),
 	});
+	type DataSchemaType = z.infer<typeof DataSchema>;
 
-	/** to keep track of old data */
-	const oldMetadata = data.reduce(
-		(acc, cur) => ({ ...acc, [cur.key]: true }),
-		{} as Record<string, boolean>,
-	);
+	/** keeps track of existing meta data keys */
+	const ExistingMetadataKeys = data.map((item) => item.key);
 	let activeMetadata = $state(data);
-
-	type DataSchema = z.infer<typeof dataSchema>;
-
-	let dataFormErrors = $state<Partial<Record<keyof DataSchema, string[]>>[]>([]);
+	let dataFormErrors = $state<Partial<Record<keyof DataSchemaType, string[]>>[]>([]);
 
 	const calculateResult = () => {
-		metadataItemsToAdd = activeMetadata.filter((item) => !oldMetadata[item.key]);
-		metadataKeysToRemove = difference(
-			Object.keys(oldMetadata),
-			activeMetadata.map((item) => item.key),
-		);
+		metadataItemsToAdd = activeMetadata.filter((item) => !ExistingMetadataKeys.includes(item.key));
 	};
 
 	const validate = (index: number) => {
 		const item = activeMetadata[index];
 
-		const result = dataSchema.safeParse(item);
+		const result = DataSchema.safeParse(item);
 
 		if (result.success) {
 			// check for duplicate
@@ -75,13 +66,20 @@
 		dataFormErrors[index] = result.error?.formErrors.fieldErrors;
 	};
 
-	const handleAddRecord = () => {
+	const handleAddPair = () => {
 		activeMetadata = activeMetadata.concat({ key: '', value: '' });
 		dataFormErrors = dataFormErrors.concat({});
 	};
 
-	const handleRemoveData = (idx: number) => {
+	const handleRemoveAPair = (idx: number) => {
 		dataFormErrors = dataFormErrors.filter((_, i) => i !== idx);
+
+		const itemToRemove = activeMetadata[idx];
+		if (ExistingMetadataKeys.includes(itemToRemove.key)) {
+			delete ExistingMetadataKeys[idx];
+			metadataKeysToRemove = addNoDup(metadataKeysToRemove, itemToRemove.key);
+		}
+
 		activeMetadata = activeMetadata.filter((_, i) => i !== idx);
 		calculateResult();
 	};
@@ -89,6 +87,8 @@
 
 <Accordion header={`${title} (${data.length})`} class={className}>
 	{#each activeMetadata as item, idx (idx)}
+		<!-- existing metadata should be read-only -->
+		{@const readonly = ExistingMetadataKeys.includes(item.key)}
 		<div class="flex gap-2 items-start mb-3">
 			<div class="flex items-start gap-2 flex-4/5">
 				<Input
@@ -97,6 +97,7 @@
 					bind:value={item.key}
 					{disabled}
 					required
+					{readonly}
 					class="flex-1"
 					onblur={() => validate(idx)}
 					inputDebounceOption={{ onInput: () => validate(idx) }}
@@ -109,6 +110,7 @@
 					size="sm"
 					bind:value={item.value}
 					{disabled}
+					{readonly}
 					required
 					class="flex-1"
 					onblur={() => validate(idx)}
@@ -123,7 +125,7 @@
 				size="sm"
 				color="red"
 				variant="light"
-				onclick={() => handleRemoveData(idx)}
+				onclick={() => handleRemoveAPair(idx)}
 				{disabled}
 			>
 				{$tranFunc('btn.delete')}
@@ -131,7 +133,7 @@
 		</div>
 	{/each}
 
-	<Button variant="outline" size="xs" onclick={handleAddRecord} {disabled}>
+	<Button variant="outline" size="xs" onclick={handleAddPair} {disabled}>
 		{$tranFunc('btn.add')}
 	</Button>
 </Accordion>
