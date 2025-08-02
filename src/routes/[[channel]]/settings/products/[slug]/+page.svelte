@@ -11,15 +11,10 @@
 	import ProductDescriptionEditorjsComponent from '$lib/components/pages/settings/products/new/product-description-editorjs-component.svelte';
 	import ProductName from '$lib/components/pages/settings/products/new/product-name.svelte';
 	import ProductSeo from '$lib/components/pages/settings/products/new/product-seo.svelte';
+	import Skeleton from '$lib/components/pages/settings/products/skeleton.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
-	import type {
-		ProductInput,
-		Query,
-		QueryProductArgs,
-		ProductType
-	} from '$lib/gql/graphql';
+	import type { ProductInput, Query, QueryProductArgs, ProductType } from '$lib/gql/graphql';
 	import { onMount } from 'svelte';
 
 	const NOW = new Date();
@@ -30,7 +25,7 @@
 		variables: {
 			slug: page.params.slug,
 		},
-		requestPolicy: 'cache-and-network'
+		requestPolicy: 'cache-and-network',
 	});
 
 	let loading = $state(false);
@@ -53,7 +48,7 @@
 		attributes: false,
 		category: false,
 		name: false,
-		seo: false
+		seo: false,
 	});
 
 	onMount(() => {
@@ -74,7 +69,7 @@
 					taxClass,
 					weight,
 					productType,
-					attributes
+					attributes,
 				} = result.data.product;
 
 				currentProductType = productType;
@@ -89,11 +84,11 @@
 					rating,
 					seo: {
 						title: seoTitle,
-						description: seoDescription
+						description: seoDescription,
 					},
 					slug,
 					taxClass: taxClass?.id,
-					weight
+					weight,
 				};
 			}
 		});
@@ -104,9 +99,7 @@
 
 <div class="m-auto rounded-lg bg-white w-full p-5 text-gray-600 border border-gray-200">
 	{#if $PRODUCT_DETAIL_STORE.fetching}
-		<SkeletonContainer class="w-full">
-			<Skeleton class="w-full h-8" />
-		</SkeletonContainer>
+		<Skeleton />
 	{:else if $PRODUCT_DETAIL_STORE.error}
 		<Alert variant="error" size="sm" bordered>{$PRODUCT_DETAIL_STORE.error.message}</Alert>
 	{:else if product && currentProductType}

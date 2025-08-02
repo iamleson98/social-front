@@ -43,7 +43,7 @@
 	</div>
 
 	{#if open}
-		<div transition:slide class="mt-4">
+		<div transition:slide class="mt-4 border-l-2 border-gray-200 pl-2">
 			{@render children()}
 		</div>
 	{/if}

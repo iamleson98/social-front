@@ -64,10 +64,10 @@
 		},
 	];
 
-	afterNavigate(() => {
-		const action = page.url.searchParams.get('action');
-		openGiftcardIssueForm = action === 'create';
-	});
+	// afterNavigate(() => {
+	// 	const action = page.url.searchParams.get('action');
+	// 	openGiftcardIssueForm = action === 'create';
+	// });
 
 	const handleDeleteGiftcard = (id: string) => {
 		ALERT_MODAL_STORE.openAlertModal({
@@ -182,7 +182,7 @@
 	disabled={loading}
 />
 
-<GiftcardIssueForm
+<!-- <GiftcardIssueForm
 	bind:open={openGiftcardIssueForm}
 	onSuccess={() => (forceReExecuteGraphqlQuery = true)}
-/>
+/> -->

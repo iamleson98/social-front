@@ -68,7 +68,7 @@
 		expiryDate: '',
 	});
 	let loading = $state(false);
-	let issuedGiftcardCode = $state<string>();
+	let issuedGiftcardCode = $state<string>('');
 
 	const validate = () => {
 		const parseResult = giftcardSchema.safeParse({
@@ -102,7 +102,7 @@
 			return;
 
 		// post success handling
-		issuedGiftcardCode = result.data?.giftCardCreate?.giftCard?.code;
+		issuedGiftcardCode = result.data?.giftCardCreate?.giftCard?.code!;
 
 		// create metadata for this giftcard
 		const metas: MetadataInput[] = [];
@@ -148,7 +148,7 @@
 	onCancel={() => (open = false)}
 	disableElements={loading}
 >
-	<div class="flex flex-col gap-3">
+	<div class="space-y-2">
 		{#if issuedGiftcardCode}
 			<Alert variant="success" size="md" bordered>
 				<div class="">

@@ -57,27 +57,25 @@
 	};
 </script>
 
-<div class="flex flex-row gap-2">
-	<div class="w-full space-y-2">
-		<GeneralInformation
-			bind:name={categoryInput.name!}
-			bind:description={categoryInput.description}
-			bind:slug={categoryInput.slug!}
-			bind:seoTitle={categoryInput.seo!.title!}
-			bind:media
-			bind:seoDescription={categoryInput.seo!.description!}
-			bind:ok={generalFormOk}
-			{loading}
-			isCreatePage
-		/>
+<div class="w-full space-y-2">
+	<GeneralInformation
+		bind:name={categoryInput.name!}
+		bind:description={categoryInput.description}
+		bind:slug={categoryInput.slug!}
+		bind:seoTitle={categoryInput.seo!.title!}
+		bind:media
+		bind:seoDescription={categoryInput.seo!.description!}
+		bind:ok={generalFormOk}
+		{loading}
+		isCreatePage
+	/>
 
-		<GeneralMetadataEditor
-			objectId={createdCategoryId}
-			disabled={loading}
-			bind:performUpdateMetadata
-			onDoneUpdate={() => goto(AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(createdCategoryId))}
-		/>
-	</div>
+	<GeneralMetadataEditor
+		objectId={createdCategoryId}
+		disabled={loading}
+		bind:performUpdateMetadata
+		onDoneUpdate={() => goto(AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(createdCategoryId))}
+	/>
 </div>
 
 <ActionBar

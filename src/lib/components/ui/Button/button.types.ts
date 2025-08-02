@@ -2,7 +2,7 @@ import type { ClickDebounceOpts } from '$lib/actions/input-debounce';
 import type { IconContent } from '$lib/components/icons';
 import type { SocialColor, SocialRadius, SocialSize } from '$lib/components/ui/common';
 import { type Snippet } from 'svelte';
-import type { HTMLButtonAttributes } from 'svelte/elements';
+import type { HTMLAnchorAttributes, HTMLButtonAttributes } from 'svelte/elements';
 
 export type ButtonVariant = 'filled' | 'light' | 'outline' | 'gradient';
 
@@ -22,7 +22,7 @@ export type ButtonProps = {
   startIcon?: IconContent;
   endIcon?: IconContent;
   clickDebounceOptions?: ClickDebounceOpts;
-} & HTMLButtonAttributes;
+} & HTMLButtonAttributes & HTMLAnchorAttributes;
 
 export const ICON_BTN_SIZE_MAP: Record<SocialSize, string> = {
   xs: 'w-7!',

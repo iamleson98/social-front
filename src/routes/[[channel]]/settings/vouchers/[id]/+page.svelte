@@ -51,6 +51,7 @@
 			id: page.params.id,
 		},
 		pause: !page.params.id,
+		requestPolicy: 'network-only',
 	});
 
 	let voucherInput = $state<VoucherInput>({

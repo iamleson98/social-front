@@ -74,7 +74,7 @@
 			Pick<Mutation, 'promotionUpdate'>,
 			MutationPromotionUpdateArgs
 		>(PROMOTION_UPDATE_MUTATION, {
-			id: page.params.id,
+			id: page.params.id!,
 			input: promotionInput,
 		});
 
@@ -90,7 +90,7 @@
 			return;
 
 		promotionStore.reexecute({
-			variables: { id: page.params.id },
+			variables: { id: page.params.id! },
 			context: { requestPolicy: 'network-only' },
 		});
 	};
@@ -104,7 +104,7 @@
 					Pick<Mutation, 'promotionDelete'>,
 					MutationPromotionDeleteArgs
 				>(PROMOTION_DELETE_MUTATION, {
-					id: page.params.id,
+					id: page.params.id!,
 				});
 				loading = false;
 
@@ -133,7 +133,6 @@
 			bind:endDate={promotionInput.endDate}
 			bind:ok={generalOk}
 		/>
-
 		<Rules rules={rules || []} />
 		<GeneralMetadataEditor
 			objectId={id}

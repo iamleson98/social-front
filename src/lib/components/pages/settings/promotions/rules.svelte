@@ -99,47 +99,47 @@
 		}
 	});
 
-	let ruleTabs = $derived(
-		rules.reduce(
-			(acc, rule, idx) => {
-				const res: TabProps[] = [];
+	// let ruleTabs = $derived(
+	// 	rules.reduce(
+	// 		(acc, rule, idx) => {
+	// 			const res: TabProps[] = [];
 
-				if (!rule.cataloguePredicate) {
-					acc[idx] = [];
-					return acc;
-				}
+	// 			if (!rule.cataloguePredicate) {
+	// 				acc[idx] = [];
+	// 				return acc;
+	// 			}
 
-				if ('variantPredicate' in rule.cataloguePredicate) {
-					res.push({
-						name: `Variants (${rule.cataloguePredicate.variantPredicate.ids.length})`,
-						key: 'variants',
-					});
-				}
-				if ('productPredicate' in rule.cataloguePredicate) {
-					res.push({
-						name: `Products (${rule.cataloguePredicate.productPredicate.ids.length})`,
-						key: 'products',
-					});
-				}
-				if ('categoryPredicate' in rule.cataloguePredicate) {
-					res.push({
-						name: `Categories (${rule.cataloguePredicate.categoryPredicate.ids.length})`,
-						key: 'categories',
-					});
-				}
-				if ('collectionPredicate' in rule.cataloguePredicate) {
-					res.push({
-						name: `Collections (${rule.cataloguePredicate.collectionPredicate.ids.length})`,
-						key: 'collections',
-					});
-				}
+	// 			if ('variantPredicate' in rule.cataloguePredicate) {
+	// 				res.push({
+	// 					name: `Variants (${rule.cataloguePredicate.variantPredicate.ids.length})`,
+	// 					key: 'variants',
+	// 				});
+	// 			}
+	// 			if ('productPredicate' in rule.cataloguePredicate) {
+	// 				res.push({
+	// 					name: `Products (${rule.cataloguePredicate.productPredicate.ids.length})`,
+	// 					key: 'products',
+	// 				});
+	// 			}
+	// 			if ('categoryPredicate' in rule.cataloguePredicate) {
+	// 				res.push({
+	// 					name: `Categories (${rule.cataloguePredicate.categoryPredicate.ids.length})`,
+	// 					key: 'categories',
+	// 				});
+	// 			}
+	// 			if ('collectionPredicate' in rule.cataloguePredicate) {
+	// 				res.push({
+	// 					name: `Collections (${rule.cataloguePredicate.collectionPredicate.ids.length})`,
+	// 					key: 'collections',
+	// 				});
+	// 			}
 
-				acc[idx] = res;
-				return acc;
-			},
-			{} as Record<number, TabProps[]>,
-		),
-	);
+	// 			acc[idx] = res;
+	// 			return acc;
+	// 		},
+	// 		{} as Record<number, TabProps[]>,
+	// 	),
+	// );
 
 	const handleDeleteRule = async (ruleId: string) => {
 		ALERT_MODAL_STORE.openAlertModal({
@@ -182,7 +182,7 @@
 	</SectionHeader>
 
 	{#if rules.length}
-		<div class="grid grid-cols-2 gap-2">
+		<div class="grid grid-cols-2 gap-2 tablet:grid-cols-1">
 			{#each rules as rule, ruleIdx (ruleIdx)}
 				<div class="rounded-lg border border-gray-200 p-3 space-y-2">
 					<SectionHeader>

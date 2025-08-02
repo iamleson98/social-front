@@ -3,19 +3,28 @@
 	import { Button } from '$lib/components/ui';
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
-	import type { User } from '$lib/gql/graphql';
+	import type { GiftCard, User } from '$lib/gql/graphql';
 	import { Badge } from '$lib/components/ui/badge';
-	import GiftcardIssueForm from '../giftcards/giftcard-issue-form.svelte';
 	import dayjs from 'dayjs';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
+	import { Modal } from '$lib/components/ui/Modal';
+	import IssueForm from '../giftcards/issue-form.svelte';
 
 	type Props = {
 		user: User;
+		onGiftcardIssued?: (gc: GiftCard) => void;
 	};
 
-	let { user }: Props = $props();
+	let { user, onGiftcardIssued }: Props = $props();
 
-	let isAddCardModalOpen = $state(false);
+	let openAddGiftcardModal = $state(false);
+	let giftcardFormOk = $state(false);
+	let triggerCreate = $state(false);
+
+	const handleCreateGiftcardSuccess = (gc: GiftCard) => {
+		openAddGiftcardModal = false;
+		onGiftcardIssued?.(gc);
+	};
 </script>
 
 <div class="flex flex-col gap-2 flex-1 w-4/10">
@@ -61,10 +70,24 @@
 			<Alert variant="info" size="sm" bordered>There are no gift cards used by this customer</Alert>
 		{/if}
 
-		<Button size="xs" class="mt-3" onclick={() => (isAddCardModalOpen = true)}>
+		<Button size="xs" class="mt-3" onclick={() => (openAddGiftcardModal = true)}>
 			Issue new card
 		</Button>
 	</Accordion>
 </div>
 
-<GiftcardIssueForm bind:open={isAddCardModalOpen} toCustomerEmail={user.email} />
+<Modal
+	open={openAddGiftcardModal}
+	header="Issue new gift card"
+	onClose={() => (openAddGiftcardModal = false)}
+	onOk={() => (triggerCreate = true)}
+	onCancel={() => (openAddGiftcardModal = false)}
+	disableElements={!giftcardFormOk}
+>
+	<IssueForm
+		toCustomerEmail={user.email}
+		bind:formOk={giftcardFormOk}
+		bind:triggerCreate
+		onCreateSuccess={handleCreateGiftcardSuccess}
+	/>
+</Modal>

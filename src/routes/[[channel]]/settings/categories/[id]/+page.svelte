@@ -96,7 +96,7 @@
 				const result = await GRAPHQL_CLIENT.mutation<
 					Pick<Mutation, 'categoryDelete'>,
 					MutationCategoryDeleteArgs
-				>(CATEGORY_DELETE_MUTATION, { id: page.params.id });
+				>(CATEGORY_DELETE_MUTATION, { id: page.params.id! });
 				loading = false;
 
 				if (checkIfGraphqlResultHasError(result, 'categoryDelete', $tranFunc('common.delSuccess')))
@@ -141,8 +141,8 @@
 	<Alert size="sm" bordered variant="error">{$categoryQuery.error.message}</Alert>
 {:else if $categoryQuery.data?.category}
 	{@const { metadata, privateMetadata, id } = $categoryQuery.data.category}
-	<div class="flex flex-row gap-2">
-		<div class="w-6/10 space-y-2">
+	<div class="flex flex-row gap-2 tablet:flex-col">
+		<div class="w-6/10 space-y-2 tablet:w-full">
 			<GeneralInformation
 				bind:name={categoryInput.name!}
 				bind:description={categoryInput.description}
@@ -163,9 +163,7 @@
 			/>
 		</div>
 
-		<div class="w-4/10">
-			<SubSection categoryId={id} />
-		</div>
+		<SubSection categoryId={id} />
 	</div>
 
 	<ActionBar

@@ -65,8 +65,8 @@
 	};
 </script>
 
-<div class="flex gap-2 flex-row">
-	<div class="w-6/10 space-y-2">
+<div class="flex gap-2 flex-row tablet:flex-col">
+	<div class="w-6/10 space-y-2 tablet:w-full">
 		<GeneralInformationForm
 			bind:name={collectionCreateInput.name!}
 			bind:description={collectionCreateInput.description}
@@ -92,9 +92,7 @@
 		/>
 	</div>
 
-	<div class="w-4/10">
-		<AvailabilityForm />
-	</div>
+	<AvailabilityForm />
 </div>
 
 <ActionBar

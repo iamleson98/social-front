@@ -14,6 +14,7 @@
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 
 	type Props = {
@@ -85,24 +86,30 @@
 	<span class="text-xs">{dayjs(item.updatedAt).format(SitenameTimeFormat)}</span>
 {/snippet}
 
-<div class="bg-white rounded-lg p-3 border border-gray-200">
-	<SectionHeader>{$tranFunc('product.subCategories')}</SectionHeader>
-	<GraphqlPaginableTable
-		query={CATEGORY_CHILDREN_LIST_QUERY}
-		resultKey={'category.children' as keyof Query}
-		variables={{ first: 10, id: categoryId } as QueryCategoriesArgs}
-		bind:forceReExecuteGraphqlQuery
-		columns={CATEGORY_CHILDREN_COLUMNS}
-	/>
-</div>
+<div class="space-y-2 w-4/10 tablet:w-full">
+	<div class={[SitenameCommonClassName]}>
+		<SectionHeader>{$tranFunc('product.subCategories')}</SectionHeader>
+		<div class="overflow-x-auto">
+			<GraphqlPaginableTable
+				query={CATEGORY_CHILDREN_LIST_QUERY}
+				resultKey={'category.children' as keyof Query}
+				variables={{ first: 10, id: categoryId } as QueryCategoriesArgs}
+				bind:forceReExecuteGraphqlQuery
+				columns={CATEGORY_CHILDREN_COLUMNS}
+			/>
+		</div>
+	</div>
 
-<div class="mt-2 bg-white rounded-lg p-3 border border-gray-200">
-	<SectionHeader>{$tranFunc('product.products')}</SectionHeader>
-	<GraphqlPaginableTable
-		query={PRODUCT_LIST_QUERY_ADMIN}
-		resultKey={'products' as keyof Query}
-		variables={{ first: 10, filter: { categories: [categoryId] } } as QueryProductsArgs}
-		bind:forceReExecuteGraphqlQuery
-		columns={PRODUCTS_COLUMNS}
-	/>
+	<div class={[SitenameCommonClassName]}>
+		<SectionHeader>{$tranFunc('product.products')}</SectionHeader>
+		<div class="overflow-x-auto">
+			<GraphqlPaginableTable
+				query={PRODUCT_LIST_QUERY_ADMIN}
+				resultKey={'products' as keyof Query}
+				variables={{ first: 10, filter: { categories: [categoryId] } } as QueryProductsArgs}
+				bind:forceReExecuteGraphqlQuery
+				columns={PRODUCTS_COLUMNS}
+			/>
+		</div>
+	</div>
 </div>

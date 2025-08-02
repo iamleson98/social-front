@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import { tranFunc } from '$i18n';
 	import { GIFT_CARD_DETAIL_QUERY, GIFT_CARD_UPDATE_MUTATION } from '$lib/api/admin/giftcards';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
@@ -65,13 +66,13 @@
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'giftCardUpdate'>,
 			MutationGiftCardUpdateArgs
-		>(GIFT_CARD_UPDATE_MUTATION, { id: page.params.id, input: giftcardUpdateInput });
+		>(GIFT_CARD_UPDATE_MUTATION, { id: page.params.id!, input: giftcardUpdateInput });
 
 		loading = false;
 
-		if (!checkIfGraphqlResultHasError(result, 'giftCardUpdate', 'Giftcard updated successfully')) {
+		if (!checkIfGraphqlResultHasError(result, 'giftCardUpdate', $tranFunc('common.editSuccess'))) {
 			giftcardQuery.reexecute({
-				variables: { id: page.params.id },
+				variables: { id: page.params.id! },
 				context: { requestPolicy: 'network-only' },
 			});
 		}
@@ -79,10 +80,10 @@
 
 	const onDeleteClick = async () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: `Are you sure to delete the gift card ${page.params.id}?`,
+			content: $tranFunc('common.confirmDel'),
 			onOk: async () => {
 				loading = true;
-				const hasError = await giftcardUtils.handleDeleteGiftcard(page.params.id);
+				const hasError = await giftcardUtils.handleDeleteGiftcard(page.params.id!);
 				loading = false;
 				if (!hasError) await goto(AppRoute.SETTINGS_CONFIGS_GIFTCARDS());
 			},
@@ -91,12 +92,12 @@
 
 	const onActiveChange = async (active: boolean) => {
 		loading = true;
-		const hasError = await giftcardUtils.handleToggleGiftcardStatus(page.params.id, active);
+		const hasError = await giftcardUtils.handleToggleGiftcardStatus(page.params.id!, active);
 		loading = false;
 
 		if (!hasError)
 			giftcardQuery.reexecute({
-				variables: { id: page.params.id },
+				variables: { id: page.params.id! },
 				context: { requestPolicy: 'network-only' },
 			});
 	};
@@ -109,8 +110,8 @@
 {:else if $giftcardQuery.data?.giftCard}
 	{@const { id, currentBalance, isActive, tags, metadata, privateMetadata, initialBalance } =
 		$giftcardQuery.data.giftCard}
-	<div class="flex flex-row gap-2">
-		<div class="w-7/10 flex flex-col gap-2">
+	<div class="flex flex-row gap-2 tablet:flex-col">
+		<div class="w-7/10 space-y-2 tablet:w-full">
 			<GiftcardDetail
 				bind:balanceAmount={giftcardUpdateInput.balanceAmount}
 				bind:expiryDate={giftcardUpdateInput.expiryDate}
@@ -133,6 +134,7 @@
 			/>
 			<GiftcardEvents {id} />
 		</div>
+
 		<GiftcardExtraInformation giftcard={$giftcardQuery.data.giftCard} />
 	</div>
 

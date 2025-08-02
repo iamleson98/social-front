@@ -230,14 +230,16 @@
 
 <div class={SitenameCommonClassName}>
 	<ProductAssignModal onApply={handleAssignProducts} {collectionID} disabled={shouldDisable} />
-	<GraphqlPaginableTable
-		query={COLLECTION_PRODUCTS_QUERY}
-		resultKey={'collection.products' as keyof Query}
-		bind:variables={filterVariables}
-		bind:forceReExecuteGraphqlQuery
-		columns={PRODUCT_COLUMNS}
-		onDragEnd={handleReOrderProductsInCollection}
-		dragEffectType="move-position"
-		disabled={shouldDisable}
-	/>
+	<div class="overflow-x-auto">
+		<GraphqlPaginableTable
+			query={COLLECTION_PRODUCTS_QUERY}
+			resultKey={'collection.products' as keyof Query}
+			bind:variables={filterVariables}
+			bind:forceReExecuteGraphqlQuery
+			columns={PRODUCT_COLUMNS}
+			onDragEnd={handleReOrderProductsInCollection}
+			dragEffectType="move-position"
+			disabled={shouldDisable}
+		/>
+	</div>
 </div>

@@ -16,6 +16,7 @@
 	import { Skeleton } from '$lib/components/ui/Skeleton';
 	import { CommonEaseDatePickerFormat } from '$lib/utils/consts';
 	import { tranFunc } from '$i18n';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 
 	type Props = {
 		addChannelListings?: PublishableChannelListingInput[];
@@ -124,7 +125,7 @@
 	};
 </script>
 
-<div>
+<div class={['w-4/10 tablet:w-full space-y-2']}>
 	{#if $channelsQuery.fetching}
 		<div class="bg-white border border-gray-200 rounded-lg p-3">
 			<Skeleton class="h-8 w-28 mb-2" />
@@ -133,7 +134,7 @@
 	{:else if $channelsQuery.error}
 		<Alert size="sm" bordered variant="error">{$channelsQuery.error.message}</Alert>
 	{:else if $channelsQuery.data}
-		<div class="bg-white rounded-lg border w-full border-gray-200 p-3 mb-3">
+		<div class={SitenameCommonClassName}>
 			<SectionHeader>{$tranFunc('settings.availability')}</SectionHeader>
 			<div class="text-xs text-gray-500">
 				{addChannelListings.length}
@@ -142,7 +143,6 @@
 			<Select
 				size="sm"
 				options={channelSelectOptions}
-				class="w-full mt-2"
 				multiple
 				value={selectValues.map((opt) => opt.value)}
 				onchange={(opts) => handleSelectionChange(opts as SelectOption[])}
@@ -153,7 +153,7 @@
 		{#each addChannelListings as listing, idx (idx)}
 			<Accordion
 				header={channelsMap[listing.channelId]?.name || listing.channelId}
-				class="mb-2 rounded-full bg-white border border-gray-200 p-3"
+				class={SitenameCommonClassName}
 			>
 				<Checkbox
 					bind:checked={listing.isPublished}

@@ -26,15 +26,15 @@
 	} from '$lib/components/icons';
 	import { onMount, type Snippet } from 'svelte';
 	import type { LayoutServerData } from './$types';
-	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import { ME_PAGE_USER_STORE } from '$lib/stores/app/me';
 	import { AccordionList } from '$lib/components/ui/Accordion';
 	import { tranFunc } from '$i18n';
 	import { AppRoute } from '$lib/utils';
 	import { page } from '$app/state';
-	import { classNames, userIsShopAdmin } from '$lib/utils/utils';
+	import { userIsShopAdmin } from '$lib/utils/utils';
 	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
 	import type { ShippingMethodTypeEnum } from '$lib/gql/graphql';
+	import Skeleton from '$lib/components/pages/settings/skeleton.svelte';
 
 	type Props = {
 		children: Snippet;
@@ -100,7 +100,7 @@
 			shouldActive: [
 				AppRoute.SETTINGS_ORDERS(),
 				AppRoute.SETTINGS_ORDERS_NEW(),
-				AppRoute.SETTINGS_ORDERS_DETAILS(page.params.id),
+				AppRoute.SETTINGS_ORDERS_DETAILS(page.params.id!),
 			].includes(page.url.pathname),
 		},
 		{
@@ -119,7 +119,7 @@
 			shouldActive: [
 				AppRoute.SETTINGS_PRODUCTS(),
 				AppRoute.SETTINGS_PRODUCTS_NEW(),
-				AppRoute.SETTINGS_PRODUCTS_EDIT(page.params.slug),
+				AppRoute.SETTINGS_PRODUCTS_EDIT(page.params.slug!),
 			].includes(page.url.pathname),
 		},
 		{
@@ -128,7 +128,7 @@
 			href: AppRoute.SETTINGS_CONFIGS_CATEGORIES(),
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_CATEGORIES(),
-				AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(page.params.id),
+				AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(page.params.id!),
 				AppRoute.SETTINGS_CONFIGS_CATEGORY_NEW(),
 			].includes(page.url.pathname),
 		},
@@ -138,7 +138,7 @@
 			icon: FolderHeart,
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_COLLECTIONS(),
-				AppRoute.SETTINGS_CONFIGS_COLLECTION_DETAILS(page.params.id),
+				AppRoute.SETTINGS_CONFIGS_COLLECTION_DETAILS(page.params.id!),
 				AppRoute.SETTINGS_CONFIGS_COLLECTION_NEW(),
 			].includes(page.url.pathname),
 		},
@@ -148,7 +148,7 @@
 			icon: Gift,
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_GIFTCARDS(),
-				AppRoute.SETTINGS_CONFIGS_GIFTCARD_DETAIL(page.params.id),
+				AppRoute.SETTINGS_CONFIGS_GIFTCARD_DETAIL(page.params.id!),
 				AppRoute.SETTINGS_CONFIGS_GIFTCARD_NEW(),
 			].includes(page.url.pathname),
 		},
@@ -162,7 +162,7 @@
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_PROMOTIONS(),
 				AppRoute.SETTINGS_CONFIGS_PROMOTION_NEW(),
-				AppRoute.SETTINGS_CONFIGS_PROMOTION_DETAIL(page.params.id),
+				AppRoute.SETTINGS_CONFIGS_PROMOTION_DETAIL(page.params.id!),
 			].includes(page.url.pathname),
 		},
 		{
@@ -172,7 +172,7 @@
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_VOUCHERS(),
 				AppRoute.SETTINGS_CONFIGS_VOUCHER_NEW(),
-				AppRoute.SETTINGS_CONFIGS_VOUCHER_DETAIL(page.params.id),
+				AppRoute.SETTINGS_CONFIGS_VOUCHER_DETAIL(page.params.id!),
 			].includes(page.url.pathname),
 		},
 	]);
@@ -185,7 +185,7 @@
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_CHANNELS(),
 				AppRoute.SETTINGS_CONFIGS_CHANNEL_NEW(),
-				AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(page.params.slug),
+				AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(page.params.slug!),
 			].includes(page.url.pathname),
 		},
 		{
@@ -195,7 +195,7 @@
 			shouldActive: [
 				AppRoute.SETTINGS_PRODUCT_TYPES(),
 				AppRoute.SETTINGS_PRODUCT_TYPE_NEW(),
-				AppRoute.SETTINGS_PRODUCT_TYPE_EDIT(page.params.id),
+				AppRoute.SETTINGS_PRODUCT_TYPE_EDIT(page.params.id!),
 			].includes(page.url.pathname),
 		},
 		{
@@ -205,7 +205,7 @@
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_STAFFS(),
 				AppRoute.SETTINGS_CONFIGS_STAFF_NEW(),
-				AppRoute.SETTINGS_CONFIGS_STAFF_DETAILS(page.params.id),
+				AppRoute.SETTINGS_CONFIGS_STAFF_DETAILS(page.params.id!),
 			].includes(page.url.pathname),
 		},
 		{
@@ -215,7 +215,7 @@
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_USERS(),
 				AppRoute.SETTINGS_CONFIGS_USER_NEW(),
-				AppRoute.SETTINGS_CONFIGS_USER_DETAILS(page.params.id),
+				AppRoute.SETTINGS_CONFIGS_USER_DETAILS(page.params.id!),
 			].includes(page.url.pathname),
 		},
 		{
@@ -225,7 +225,7 @@
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_WAREHOUSES(),
 				AppRoute.SETTINGS_CONFIGS_WAREHOUSE_NEW(),
-				AppRoute.SETTINGS_CONFIGS_WAREHOUSE_DETAILS(page.params.id),
+				AppRoute.SETTINGS_CONFIGS_WAREHOUSE_DETAILS(page.params.id!),
 			].includes(page.url.pathname),
 		},
 		{
@@ -235,7 +235,7 @@
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_ATTRIBUTES(),
 				AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_NEW(),
-				AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_DETAILS(page.params.id),
+				AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_DETAILS(page.params.id!),
 			].includes(page.url.pathname),
 		},
 		{
@@ -245,11 +245,14 @@
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONES(),
 				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_NEW(),
-				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS(page.params.id),
-				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_NEW(page.params.id, page.url.searchParams.get('type') as ShippingMethodTypeEnum),
+				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS(page.params.id!),
+				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_NEW(
+					page.params.id!,
+					page.url.searchParams.get('type') as ShippingMethodTypeEnum,
+				),
 				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_DETAILS(
-					page.params.id,
-					page.params.method_id,
+					page.params.id!,
+					page.params.method_id!,
 				),
 			].includes(page.url.pathname),
 		},
@@ -260,7 +263,7 @@
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUPS(),
 				AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUP_NEW(),
-				AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUP_DETAIL(page.params.id),
+				AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUP_DETAIL(page.params.id!),
 			].includes(page.url.pathname),
 		},
 	]);
@@ -272,13 +275,10 @@
 	<svelte:element
 		this={item.href ? 'a' : 'div'}
 		{...attrs}
-		class={classNames(
-			'flex items-center gap-2 rounded-md p-2 py-2.5 hover:bg-blue-100 hover:text-blue-700 cursor-pointer relative',
-			{
-				[`bg-blue-100 text-blue-700 font-semibold before:content-[" "] before:h-full before:w-2 before:rounded-sm before:bg-blue-500 before:absolute before:right-[calc(100%+4px)]`]:
-					!!active,
-			},
-		)}
+		class={[
+			'flex items-center gap-2 rounded-md p-2 py-2.5 hover:bg-blue-100 hover:text-blue-700 cursor-pointer relative transition-colors duration-200 ease-in-out',
+			active && 'bg-blue-100 text-blue-700 font-bold',
+		]}
 	>
 		{#if item.icon}
 			<Icon icon={item.icon} />
@@ -288,13 +288,11 @@
 {/snippet}
 
 {#if !$ME_PAGE_USER_STORE}
-	<SkeletonContainer>
-		<Skeleton class="w-full h-6" />
-	</SkeletonContainer>
+	<Skeleton />
 {:else}
-	<!-- MARK: Detail -->
 	<div class="flex flex-nowrap gap-2">
-		<div class="w-1/4 sticky top-16 h-full p-2 space-y-2">
+		<!-- side bar -->
+		<div class="w-1/4 sticky top-16 h-full p-2 space-y-2 tablet:hidden">
 			<!-- MARK: Avatar -->
 			<div class="flex items-start gap-2 text-gray-700 p-3">
 				<div class="rounded-full h-16 w-16 overflow-hidden">
@@ -371,7 +369,8 @@
 			{/if}
 		</div>
 
-		<div class="w-3/4">
+		<!-- main content -->
+		<div class="w-3/4 tablet:w-full">
 			{@render children()}
 		</div>
 	</div>

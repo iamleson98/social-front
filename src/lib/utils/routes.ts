@@ -70,7 +70,7 @@ export const AppRoute = {
 	SETTINGS_CONFIGS_ATTRIBUTE_NEW: () => buildLinkWithRespectToChannel('settings/attributes/new'),
 
 	SETTINGS_CONFIGS_GIFTCARDS: () => buildLinkWithRespectToChannel('settings/giftcards'),
-	SETTINGS_CONFIGS_GIFTCARD_NEW: () => buildLinkWithRespectToChannel('settings/giftcards/?action=create'),
+	SETTINGS_CONFIGS_GIFTCARD_NEW: (customerEmail?: string) => buildLinkWithRespectToChannel(customerEmail ? `settings/giftcards/new?customerEmail=${customerEmail}` : 'settings/giftcards/new'),
 	SETTINGS_CONFIGS_GIFTCARD_DETAIL: (id: string) => buildLinkWithRespectToChannel(`settings/giftcards/${id}`),
 
 	SETTINGS_CONFIGS_PROMOTIONS: () => buildLinkWithRespectToChannel('settings/promotions'),

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import type { GiftCard } from '$lib/gql/graphql';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 
 	type Props = {
@@ -40,10 +41,10 @@
 	</div>
 {/snippet}
 
-<div class="w-3/10 p-3 rounded-lg border border-gray-200 bg-white h-fit">
+<div class={[SitenameCommonClassName, 'w-3/10 tablet:w-full h-fit']}>
 	<SectionHeader>Card information</SectionHeader>
 
-	<div class="mt-3">
+	<div class="overflow-x-auto">
 		{#each SECTIONS as section, idx (idx)}
 			{@render inforSection(section)}
 		{/each}
