@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import {
+		ATTRIBUTE_VALUE_CREATE_MUTATION,
 		ATTRIBUTE_VALUE_DELETE_MUTATION,
 		ATTRIBUTE_VALUE_UPDATE_MUTATION,
 		ATTRIBUTE_VALUES_QUERY,
@@ -23,6 +24,7 @@
 		type MutationAttributeValueDeleteArgs,
 		type MutationAttributeValueUpdateArgs,
 		type AttributeValueUpdateInput,
+		type MutationAttributeValueCreateArgs,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
@@ -66,21 +68,22 @@
 	let forceReExecuteGraphqlQuery = $state(true);
 	let valueItemToEdit = $state<AttributeValue>();
 	let loading = $state(false);
+	let openUpsertModal = $state(false);
 
-	const ValueColumns: TableColumnProps<AttributeValue>[] = [
+	const ValueColumns: TableColumnProps<AttributeValue>[] = $derived([
 		{
 			title: 'name',
 			child: name,
 		},
 		{
-			title: 'value',
+			title: inputType === AttributeInputTypeEnum.Swatch ? 'value' : 'slug',
 			child: value,
 		},
 		{
 			title: 'action',
 			child: action,
 		},
-	];
+	]);
 
 	const handleDeleteValue = async (item: AttributeValue) => {
 		ALERT_MODAL_STORE.openAlertModal({
@@ -110,8 +113,6 @@
 			},
 		});
 	};
-
-	const handleUpdateValue = async (item: AttributeValue) => {};
 
 	const handleArrangeValues = async (
 		dragIndex: number,
@@ -175,6 +176,46 @@
 		forceReExecuteGraphqlQuery = true;
 		valueItemToEdit = undefined;
 	};
+
+	const handleCreateAttributeValue = async () => {
+		if (!valueItemToEdit) return;
+
+		// if in update page
+		if (attributeID) {
+			loading = true;
+
+			const result = await GRAPHQL_CLIENT.mutation<
+				Pick<Mutation, 'attributeValueCreate'>,
+				MutationAttributeValueCreateArgs
+			>(ATTRIBUTE_VALUE_CREATE_MUTATION, {
+				attribute: attributeID!,
+				input: {
+					name: valueItemToEdit.name!,
+					value: valueItemToEdit.value,
+				},
+			});
+
+			loading = false;
+
+			if (
+				checkIfGraphqlResultHasError(
+					result,
+					'attributeValueCreate',
+					$tranFunc('common.createSuccess'),
+				)
+			)
+				return;
+
+			forceReExecuteGraphqlQuery = true;
+			valueItemToEdit = undefined;
+		} else {
+			addValues.push({
+				name: valueItemToEdit.name!,
+				value: valueItemToEdit.value,
+			});
+			valueItemToEdit = undefined;
+		}
+	};
 </script>
 
 {#snippet name({ item }: { item: AttributeValue })}
@@ -186,10 +227,8 @@
 		{#if item.inputType === AttributeInputTypeEnum.Swatch}
 			<span class="w-5 h-5 rounded-lg" style="background-color: {item.value};"></span>
 			<span style="color: {item.value};">{item.value}</span>
-		{:else if item.inputType === AttributeInputTypeEnum.Dropdown}
-			<span>{item.value || item.slug}</span>
-		{:else if item.inputType === AttributeInputTypeEnum.Multiselect}
-			<span>{item.value || item.slug}</span>
+		{:else}
+			<span>{item.slug}</span>
 		{/if}
 	</div>
 {/snippet}
@@ -210,7 +249,10 @@
 			size="xs"
 			color="blue"
 			variant="light"
-			onclick={() => (valueItemToEdit = item)}
+			onclick={() => {
+				valueItemToEdit = item;
+				openUpsertModal = true;
+			}}
 			data-interactive
 			disabled={loading}
 		/>
@@ -222,7 +264,9 @@
 		{#if inputType !== AttributeInputTypeEnum.Numeric}
 			<SectionHeader>
 				<div>Attribute values</div>
-				<Button size="xs" variant="light" endIcon={Plus}>Add value</Button>
+				<Button size="xs" variant="light" endIcon={Plus} onclick={() => (openUpsertModal = true)}
+					>Add value</Button
+				>
 			</SectionHeader>
 
 			<!-- is this is edit page -->
@@ -248,20 +292,27 @@
 
 <Modal
 	size="sm"
-	open={!!valueItemToEdit}
-	header="Edit attribute"
+	open={openUpsertModal}
+	header="Upsert attribute value"
 	closeOnEscape
 	closeOnOutsideClick
 	disableElements={loading}
 	onCancel={noop}
 	onOk={handleUpdateAttributeValue}
-	onClose={() => (valueItemToEdit = undefined)}
+	onClose={() => {
+		openUpsertModal = false;
+	}}
 >
-	{#if valueItemToEdit?.inputType === AttributeInputTypeEnum.Swatch}
-		<ColorPicker bind:hex={valueItemToEdit.value} position="responsive" />
-	{:else if valueItemToEdit?.inputType === AttributeInputTypeEnum.Dropdown}
-		<Input label="Value" placeholder="Value" bind:value={valueItemToEdit.name} />
-	{:else if valueItemToEdit?.inputType === AttributeInputTypeEnum.Multiselect}
-		<Input label="Value" placeholder="Value" bind:value={valueItemToEdit.name} />
+	{#if !!valueItemToEdit}
+	<!-- edit value -->
+		{#if valueItemToEdit?.inputType === AttributeInputTypeEnum.Swatch}
+			<ColorPicker bind:hex={valueItemToEdit.value} position="responsive" />
+		{:else if valueItemToEdit?.inputType === AttributeInputTypeEnum.Dropdown}
+			<Input label="Value" placeholder="Value" bind:value={valueItemToEdit.name} />
+		{:else if valueItemToEdit?.inputType === AttributeInputTypeEnum.Multiselect}
+			<Input label="Value" placeholder="Value" bind:value={valueItemToEdit.name} />
+		{/if}
+	{:else}
+		<div>lol</div>
 	{/if}
 </Modal>

@@ -29,7 +29,7 @@
 </script>
 
 <Accordion {...rest}>
-	<ul class="list-none text-sm tablet:text-xs" role="menu">
+	<ul class="list-none text-sm tablet:text-xs border-l border-gray-300 pl-2" role="menu">
 		{#each items.slice(0, numOfItemsToShow) as item, idx (idx)}
 			<li class="py-1 break-all">
 				{@render child(item)}

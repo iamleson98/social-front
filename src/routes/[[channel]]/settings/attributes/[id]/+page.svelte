@@ -124,8 +124,8 @@
 {:else if $AttributeQuery.data?.attribute}
 	{@const { metadata, privateMetadata, inputType, type, withChoices, id } =
 		$AttributeQuery.data.attribute}
-	<div class="flex gap-2">
-		<div class="w-7/10 space-y-2">
+	<div class="flex gap-2 tablet:flex-col">
+		<div class="w-7/10 space-y-2 tablet:w-full">
 			<GeneralInformation
 				bind:name={attributeInput.name!}
 				bind:slug={attributeInput.slug!}
@@ -134,7 +134,13 @@
 				disabled={loading}
 				bind:formOk={generalFormOk}
 			/>
-			<AttributeValues {withChoices} inputType={inputType!} attributeID={id} />
+			<AttributeValues
+				{withChoices}
+				inputType={inputType!}
+				attributeID={id}
+				bind:addValues={attributeInput.addValues!}
+				bind:removeValues={attributeInput.removeValues!}
+			/>
 			<GeneralMetadataEditor
 				objectId={id}
 				{metadata}
@@ -144,12 +150,10 @@
 			/>
 		</div>
 
-		<div class="space-y-2 w-3/10">
-			<DetailSidebar
-				bind:visibleInStorefront={attributeInput.visibleInStorefront!}
-				type={type || AttributeTypeEnum.ProductType}
-			/>
-		</div>
+		<DetailSidebar
+			bind:visibleInStorefront={attributeInput.visibleInStorefront!}
+			type={type || AttributeTypeEnum.ProductType}
+		/>
 	</div>
 
 	<ActionBar

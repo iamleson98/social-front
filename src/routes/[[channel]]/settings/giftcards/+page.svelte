@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { afterNavigate } from '$app/navigation';
-	import { page } from '$app/state';
 	import { GIFTCARD_LIST_QUERY } from '$lib/api/admin/giftcards';
 	import { GIFT_CARD_DELETE_MUTATION } from '$lib/api/admin/giftcards';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import { Cancel, CircleCheck, Dots, Trash } from '$lib/components/icons';
 	import Filter from '$lib/components/pages/settings/giftcards/filter.svelte';
-	import GiftcardIssueForm from '$lib/components/pages/settings/giftcards/giftcard-issue-form.svelte';
 	import { GiftcardUtil } from '$lib/components/pages/settings/giftcards/utils.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { IconButton } from '$lib/components/ui/Button';
@@ -23,13 +21,12 @@
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
-	import { checkIfGraphqlResultHasError, formatCurrency } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 
 	const giftcardUtil = new GiftcardUtil();
 	let forceReExecuteGraphqlQuery = $state(true);
 	let variables = $state<QueryGiftCardsArgs>({ first: 10, search: '' });
-	let openGiftcardIssueForm = $state(false);
 	let loading = $state(false);
 
 	const COLUMNS: TableColumnProps<GiftCard, GiftCardSortField>[] = [
@@ -46,12 +43,9 @@
 			child: tags,
 		},
 		{
-			title: 'Product',
-			child: product,
-		},
-		{
 			title: 'Balance',
 			child: balance,
+			key: GiftCardSortField.CurrentBalance,
 		},
 		{
 			title: 'Issued at',
@@ -59,15 +53,14 @@
 			child: issueAt,
 		},
 		{
+			title: 'Used at',
+			child: usedAt,
+		},
+		{
 			title: 'Action',
 			child: action,
 		},
 	];
-
-	// afterNavigate(() => {
-	// 	const action = page.url.searchParams.get('action');
-	// 	openGiftcardIssueForm = action === 'create';
-	// });
 
 	const handleDeleteGiftcard = (id: string) => {
 		ALERT_MODAL_STORE.openAlertModal({
@@ -118,27 +111,18 @@
 {/snippet}
 
 {#snippet balance({ item }: { item: GiftCard })}
-	<div class="flex items-center justify-between gap-1">
-		<span class="text-gray-500 text-xs">{item.currentBalance.currency}</span>
-		<span class="font-semibold text-blue-600 text-right">
-			{formatCurrency(item.currentBalance.amount)}
-		</span>
-	</div>
+	<PriceDisplay {...item.currentBalance} />
 {/snippet}
 
-{#snippet product({ item }: { item: GiftCard })}
-	{#if item.product}
-		<a href={AppRoute.PRODUCT_DETAILS(item.product.slug)} class="link">{item.product.name}</a>
-	{:else}
-		<span>-</span>
-	{/if}
+{#snippet usedAt({ item }: { item: GiftCard })}
+	{item.lastUsedOn ? dayjs(item.lastUsedOn).format(SitenameTimeFormat) : '-'}
 {/snippet}
 
 {#snippet action({ item }: { item: GiftCard })}
-	{#snippet trigger({ onclick }: DropdownTriggerInterface)}
-		<IconButton icon={Dots} {onclick} size="xs" color="gray" variant="light" disabled={loading} />
-	{/snippet}
-	<DropDown {trigger}>
+	<DropDown>
+		{#snippet trigger({ onclick }: DropdownTriggerInterface)}
+			<IconButton icon={Dots} {onclick} size="xs" color="gray" variant="light" disabled={loading} />
+		{/snippet}
 		<MenuItem
 			startIcon={Trash}
 			onclick={() => handleDeleteGiftcard(item.id)}

@@ -53,7 +53,7 @@
 			amount: 0,
 			currency: '',
 		},
-		isActive: false,
+		isActive: true,
 		note: '',
 		expiryDate: '',
 	});
@@ -143,8 +143,7 @@
 
 	$effect(() => {
 		if (triggerCreate) {
-			handleIssueGiftcard();
-			triggerCreate = false;
+			handleIssueGiftcard().finally(() => (triggerCreate = false));
 		}
 	});
 </script>

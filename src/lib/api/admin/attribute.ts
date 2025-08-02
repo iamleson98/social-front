@@ -138,3 +138,13 @@ mutation AttributeValueUpdate($id: ID!, $input: AttributeValueUpdateInput!) {
     }
   }
 }`;
+
+export const ATTRIBUTE_VALUE_CREATE_MUTATION = gql`
+mutation AttributeValueCreate($attribute: ID!, $input: AttributeValueCreateInput!) {
+  attributeValueCreate(attribute: $attribute, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;

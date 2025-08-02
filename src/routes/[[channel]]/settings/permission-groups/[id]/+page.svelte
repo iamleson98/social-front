@@ -12,8 +12,8 @@
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralInformation from '$lib/components/pages/settings/permission-groups/general-information.svelte';
 	import Permissions from '$lib/components/pages/settings/permission-groups/permissions.svelte';
+	import Skeleton from '$lib/components/pages/settings/permission-groups/skeleton.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { SelectSkeleton } from '$lib/components/ui/select';
 	import type {
 		Mutation,
 		MutationPermissionGroupDeleteArgs,
@@ -58,7 +58,7 @@
 			Pick<Mutation, 'permissionGroupUpdate'>,
 			MutationPermissionGroupUpdateArgs
 		>(PERMISSION_GROUP_UPDATE_MUTATION, {
-			id: page.params.id,
+			id: page.params.id!,
 			input: permissionGroupInput,
 		});
 		loading = false;
@@ -72,6 +72,9 @@
 		)
 			groupQuery.reexecute({
 				context: { requestPolicy: 'network-only' },
+				variables: {
+					id: page.params.id!,
+				},
 			});
 	};
 
@@ -84,7 +87,7 @@
 					Pick<Mutation, 'permissionGroupDelete'>,
 					MutationPermissionGroupDeleteArgs
 				>(PERMISSION_GROUP_DELETE_MUTATION, {
-					id: page.params.id,
+					id: page.params.id!,
 				});
 				loading = false;
 
@@ -115,7 +118,7 @@
 </script>
 
 {#if $groupQuery.fetching}
-	<SelectSkeleton />
+	<Skeleton />
 {:else if $groupQuery.error}
 	<Alert variant="error" bordered size="sm">{$groupQuery.error.message}</Alert>
 {:else if $groupQuery.data?.permissionGroup}

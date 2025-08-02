@@ -97,6 +97,41 @@ query Giftcards($first: Int, $last: Int, $before: String, $after: String, $sortB
   }
 }`;
 
+export const USER_GIFTCARDS_QUERY = gql`
+query UserGiftcards($id: ID!, $first: Int, $after: String, $last: Int, $before: String) {
+  user(id: $id) {
+    giftCards(first: $first, after: $after, last: $last, before: $before) {
+      edges {
+        node {
+          id
+          code
+          displayCode
+          isActive
+          created
+          tags {
+            id
+            name
+          }
+          product {
+            name
+            slug
+          }
+          currentBalance {
+            amount
+            currency
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+    }
+  }
+}`;
+
 export const GIFT_CARD_DETAIL_QUERY = gql`
 query Giftcard($id: ID!) {
   giftCard(id: $id) {

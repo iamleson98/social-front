@@ -107,10 +107,7 @@
 			/>
 		</div>
 
-		<CustomerExtraForm
-			{user}
-			onGiftcardIssued={() => userDetailQuery.reexecute({ variables: { id: page.params.id } })}
-		/>
+		<CustomerExtraForm {user} />
 	</div>
 	<ActionBar
 		backButtonUrl={AppRoute.SETTINGS_CONFIGS_USERS()}
