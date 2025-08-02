@@ -10,6 +10,7 @@
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import {
 		CollectionPublished,
+		type Channel,
 		type CollectionFilterInput,
 		type QueryCollectionsArgs,
 	} from '$lib/gql/graphql';
@@ -73,7 +74,7 @@
 	<ChannelSelect
 		value={initialValue as string}
 		size="xs"
-		onchange={(opt) => onValue(opt?.id as FilterItemValue)}
+		onchange={(opt) => onValue((opt as Channel)?.id as FilterItemValue)}
 	/>
 {/snippet}
 

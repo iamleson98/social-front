@@ -21,14 +21,14 @@
 		type VoucherInput,
 		VoucherTypeEnum,
 		DiscountValueTypeEnum,
-		type VoucherChannelListingInput,
+		// type VoucherChannelListingInput,
 		type VoucherChannelListing,
 		type Mutation,
 		type MutationVoucherCreateArgs,
 		type MutationVoucherChannelListingUpdateArgs,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { string } from 'zod';
 
 	let voucherInput = $state<VoucherInput>({
@@ -50,7 +50,7 @@
 		addCodes: [],
 	});
 
-	let createdVoucherId = $state<string>();
+	let createdVoucherId = $state<string>('');
 
 	/** temporary state for UI */
 	let activeChannelListings = $state<VoucherChannelListing[]>([]);
@@ -80,14 +80,14 @@
 
 		if (checkIfGraphqlResultHasError(result, 'voucherCreate')) return;
 
-		createdVoucherId = result.data?.voucherCreate?.voucher?.id;
+		createdVoucherId = result.data?.voucherCreate?.voucher?.id!;
 		performUpdateMetadata = true;
 
 		const channelListingUpdateResult = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'voucherChannelListingUpdate'>,
 			MutationVoucherChannelListingUpdateArgs
 		>(VOUCHER_CHANNEL_LISTING_UPDATE_MUTATION, {
-			id: createdVoucherId!,
+			id: createdVoucherId,
 			input: {
 				addChannels: activeChannelListings.map((item) => ({
 					channelId: item.channel.id,
@@ -114,7 +114,7 @@
 
 <div class="flex gap-2">
 	<div class="w-7/10 space-y-2">
-		<div class="rounded-lg p-3 border border-gray-200 bg-white">
+		<div class={SitenameCommonClassName}>
 			<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
 			<Input
 				placeholder={$tranFunc('common.name')}
@@ -164,7 +164,7 @@
 			bind:endDate={voucherInput.endDate!}
 		/>
 		<GeneralMetadataEditor
-			objectId={createdVoucherId as string}
+			objectId={createdVoucherId}
 			metadata={[]}
 			privateMetadata={[]}
 			bind:performUpdateMetadata

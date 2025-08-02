@@ -12,10 +12,10 @@
 		discountType: DiscountValueTypeEnum;
 		applicationType: VoucherTypeEnum;
 		applyOncePerOrder: boolean;
-		newCategories: string[];
-		newProducts: string[];
-		newCollections: string[];
-		newVariants: string[];
+		newCategories?: string[];
+		newProducts?: string[];
+		newCollections?: string[];
+		newVariants?: string[];
 		onAssignCatalogItems?: () => Promise<void>;
 		disabled?: boolean;
 		isCreatePage?: boolean;
@@ -25,10 +25,10 @@
 		discountType,
 		applicationType = $bindable(),
 		applyOncePerOrder = $bindable(),
-		newCategories = $bindable(),
-		newProducts = $bindable(),
-		newCollections = $bindable(),
-		newVariants = $bindable(),
+		newCategories = $bindable([]),
+		newProducts = $bindable([]),
+		newCollections = $bindable([]),
+		newVariants = $bindable([]),
 		onAssignCatalogItems,
 		isCreatePage,
 		disabled,

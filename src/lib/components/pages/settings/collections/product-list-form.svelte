@@ -21,7 +21,7 @@
 		QueryProductsArgs,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import type { AnyVariables, TypedDocumentNode } from '@urql/core';
 	import ProductAssignModal from './product-assign-modal.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
@@ -228,7 +228,7 @@
 	</Popover>
 {/snippet}
 
-<div class="bg-white rounded-lg border w-full border-gray-200 p-3">
+<div class={SitenameCommonClassName}>
 	<ProductAssignModal onApply={handleAssignProducts} {collectionID} disabled={shouldDisable} />
 	<GraphqlPaginableTable
 		query={COLLECTION_PRODUCTS_QUERY}

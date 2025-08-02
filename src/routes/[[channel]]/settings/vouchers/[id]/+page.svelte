@@ -38,10 +38,11 @@
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { string } from 'zod';
+	import { pick } from 'es-toolkit';
 
 	const voucherQuery = operationStore<Pick<Query, 'voucher'>, QueryVoucherArgs>({
 		kind: 'query',
@@ -63,10 +64,6 @@
 		onlyForStaff: false,
 		applyOncePerOrder: false,
 		singleUse: false,
-		categories: [],
-		products: [],
-		collections: [],
-		variants: [],
 		addCodes: [],
 	});
 
@@ -93,34 +90,21 @@
 	onMount(() =>
 		voucherQuery.subscribe((result) => {
 			if (!result.data?.voucher) return;
-
-			const {
-				name,
-				startDate,
-				endDate,
-				usageLimit,
-				type,
-				discountValueType,
-				applyOncePerOrder,
-				applyOncePerCustomer,
-				onlyForStaff,
-				singleUse,
-				minCheckoutItemsQuantity,
-			} = result.data.voucher;
-
 			voucherInput = {
 				...voucherInput,
-				name,
-				startDate,
-				endDate,
-				usageLimit,
-				type,
-				discountValueType,
-				applyOncePerCustomer,
-				applyOncePerOrder,
-				onlyForStaff,
-				singleUse,
-				minCheckoutItemsQuantity,
+				...pick(result.data.voucher, [
+					'name',
+					'startDate',
+					'endDate',
+					'usageLimit',
+					'type',
+					'discountValueType',
+					'applyOncePerCustomer',
+					'applyOncePerOrder',
+					'onlyForStaff',
+					'singleUse',
+					'minCheckoutItemsQuantity',
+				]),
 			};
 
 			activeChannelListings = result.data.voucher.channelListings || [];
@@ -143,14 +127,7 @@
 			MutationVoucherChannelListingUpdateArgs
 		>(VOUCHER_CHANNEL_LISTING_UPDATE_MUTATION, {
 			id: page.params.id!,
-			input: {
-				...voucherChannelListingInput,
-				addChannels: activeChannelListings.map((item) => ({
-					channelId: item.channel.id,
-					minAmountSpent: item.minSpent?.amount,
-					discountValue: item.discountValue,
-				})),
-			},
+			input: voucherChannelListingInput,
 		}).toPromise();
 
 		loading = true;
@@ -198,7 +175,7 @@
 	{@const { id, metadata, privateMetadata, channelListings, used } = $voucherQuery.data.voucher}
 	<div class="flex gap-2">
 		<div class="w-7/10 space-y-2">
-			<div class="rounded-lg p-3 border border-gray-200 bg-white">
+			<div class={SitenameCommonClassName}>
 				<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
 				<Input
 					placeholder={$tranFunc('common.name')}
@@ -227,10 +204,6 @@
 			<ApplicationType
 				bind:applicationType={voucherInput.type!}
 				bind:applyOncePerOrder={voucherInput.applyOncePerOrder!}
-				bind:newCategories={voucherInput.categories!}
-				bind:newCollections={voucherInput.collections!}
-				bind:newProducts={voucherInput.products!}
-				bind:newVariants={voucherInput.variants!}
 				discountType={voucherInput.discountValueType!}
 				disabled={loading}
 				onAssignCatalogItems={handleUpdateVoucher}

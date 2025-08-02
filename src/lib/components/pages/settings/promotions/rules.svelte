@@ -176,8 +176,7 @@
 		<Button
 			endIcon={Plus}
 			size="xs"
-			variant="outline"
-			color="gray"
+			variant="light"
 			onclick={() => (showRuleEditModal = true)}>Add rule</Button
 		>
 	</SectionHeader>

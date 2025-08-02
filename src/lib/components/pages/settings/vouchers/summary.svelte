@@ -8,6 +8,7 @@
 	import dayjs from 'dayjs';
 	import { APPLICATION_TYPES } from './consts';
 	import { AppRoute } from '$lib/utils';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 
 	type Props = {
 		/** if not provided, meaning this is create page */
@@ -17,7 +18,7 @@
 	let { voucher }: Props = $props();
 </script>
 
-<div class="rounded-lg p-3 border border-gray-200 bg-white space-y-2 text-gray-600">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>{$tranFunc('common.summary')}</SectionHeader>
 
 	{#if voucher}

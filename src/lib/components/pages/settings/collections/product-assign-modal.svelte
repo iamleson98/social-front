@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
-	import { Search } from '$lib/components/icons';
+	import { Plus, Search } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
@@ -103,7 +103,13 @@
 
 <SectionHeader class="mb-3">
 	<div>{$tranFunc('collection.prdsInCol')}</div>
-	<Button size="xs" onclick={handleClickOpenProductListModal} disabled={shouldDisable}>
+	<Button
+		size="xs"
+		onclick={handleClickOpenProductListModal}
+		disabled={shouldDisable}
+		variant="light"
+		endIcon={Plus}
+	>
 		{$tranFunc('collection.assignPrd')}
 	</Button>
 </SectionHeader>

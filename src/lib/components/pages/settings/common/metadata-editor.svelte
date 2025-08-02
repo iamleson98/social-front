@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Input } from '$lib/components/ui/Input';
-	import { Trash } from '$lib/components/icons';
+	import { Plus, Trash } from '$lib/components/icons';
 	import Button from '$lib/components/ui/Button/Button.svelte';
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import type { MetadataInput } from '$lib/gql/graphql';
@@ -121,7 +121,7 @@
 			</div>
 
 			<Button
-				startIcon={Trash}
+				endIcon={Trash}
 				size="sm"
 				color="red"
 				variant="light"
@@ -133,7 +133,7 @@
 		</div>
 	{/each}
 
-	<Button variant="outline" size="xs" onclick={handleAddPair} {disabled}>
+	<Button variant="light" endIcon={Plus} size="xs" onclick={handleAddPair} {disabled}>
 		{$tranFunc('btn.add')}
 	</Button>
 </Accordion>

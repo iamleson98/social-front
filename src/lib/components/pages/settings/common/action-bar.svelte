@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
+	import { ChevronLeft, Send, Trash } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 
 	type Props = {
@@ -36,7 +37,12 @@
 >
 	<div>
 		{#if onDeleteClick}
-			<Button color="red" disabled={disabled || disableDeleteButton} onclick={onDeleteClick}>
+			<Button
+				color="red"
+				disabled={disabled || disableDeleteButton}
+				onclick={onDeleteClick}
+				endIcon={Trash}
+			>
 				{$tranFunc('btn.delete')}
 			</Button>
 		{/if}
@@ -48,16 +54,17 @@
 				color="gray"
 				disabled={disableBackButton || disabled}
 				href={backButtonUrl}
+				startIcon={ChevronLeft}
 			>
 				{$tranFunc('btn.back')}
 			</Button>
 		{/if}
 		{#if onUpdateClick}
-			<Button disabled={disableUpdateButton || disabled} onclick={onUpdateClick}>
+			<Button disabled={disableUpdateButton || disabled} onclick={onUpdateClick} endIcon={Send}>
 				{$tranFunc('btn.update')}
 			</Button>
 		{:else if onAddClick}
-			<Button disabled={disableCreateButton || disabled} onclick={onAddClick}>
+			<Button disabled={disableCreateButton || disabled} onclick={onAddClick} endIcon={Send}>
 				{$tranFunc('btn.create')}
 			</Button>
 		{/if}
