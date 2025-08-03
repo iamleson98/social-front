@@ -9,8 +9,12 @@
 	let promotionInput = $state<PromotionCreateInput>({
 		name: '',
 		type: PromotionTypeEnum.Catalogue,
+		description: { blocks: [] },
+		startDate: '',
+		endDate: '',
 	});
 	let loading = $state(false);
+	let generalOk = $state(true);
 
 	let createdPromotionId = $state<string>('');
 
@@ -24,8 +28,9 @@
 		bind:description={promotionInput.description}
 		bind:startDate={promotionInput.startDate}
 		bind:endDate={promotionInput.endDate}
-		{loading}
+		disabled={loading}
 		isCreatePage
+		bind:ok={generalOk}
 	/>
 
 	<Rules rules={[]} />

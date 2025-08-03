@@ -6,7 +6,7 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Edit, Plus, Trash } from '$lib/components/icons';
+	import { PencilMinus, Plus, Trash } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/badge';
 	import { IconButton } from '$lib/components/ui/Button';
@@ -20,6 +20,8 @@
 		type ProductCountableConnection,
 		type ProductVariantCountableConnection,
 		type PromotionRule,
+		type PromotionRuleCreateInput,
+		type PromotionRuleUpdateInput,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { checkIfGraphqlResultHasError, parseEditorJsString } from '$lib/utils/utils';
@@ -33,9 +35,11 @@
 		PRODUCT_COLUMNS,
 		VARIANT_COLUMNS,
 	} from '../vouchers/snippets.svelte';
+	import { tranFunc } from '$i18n';
 
 	type Props = {
 		rules: PromotionRule[];
+		onRuleDeleted?: () => void;
 	};
 
 	type QueryData = {
@@ -46,20 +50,15 @@
 	};
 	type TabKey = 'products' | 'variants' | 'categories' | 'collections';
 
-	let { rules }: Props = $props();
+	let { rules, onRuleDeleted }: Props = $props();
 
 	let loading = $state(false);
 
-	type TabProps = {
-		name: string;
-		key: string;
-	};
-
-	let activeTabs = $state<Record<number, number>>({});
-	let showRuleEditModal = $state(false);
 	let ruleActiveTabs = $state<TabKey[]>(new Array(rules.length).fill('products'));
+	let ruleUpdateInput = $state<PromotionRuleUpdateInput>();
+	let ruleCreateInput = $state<PromotionRuleCreateInput>();
 
-	const predicateQuery = operationStore<QueryData>({
+	const rulePredicateQuery = operationStore<QueryData>({
 		kind: 'query',
 		query: PROMOTION_RULE_CONDITIONS_SELECTED_OPTIONS_DETAILS,
 		variables: {},
@@ -88,7 +87,7 @@
 		}
 
 		if (productsIds.length || variantsIds.length || categoriesIds.length || collectionsIds.length) {
-			predicateQuery.reexecute({
+			rulePredicateQuery.reexecute({
 				variables: {
 					productsIds,
 					variantsIds,
@@ -99,51 +98,9 @@
 		}
 	});
 
-	// let ruleTabs = $derived(
-	// 	rules.reduce(
-	// 		(acc, rule, idx) => {
-	// 			const res: TabProps[] = [];
-
-	// 			if (!rule.cataloguePredicate) {
-	// 				acc[idx] = [];
-	// 				return acc;
-	// 			}
-
-	// 			if ('variantPredicate' in rule.cataloguePredicate) {
-	// 				res.push({
-	// 					name: `Variants (${rule.cataloguePredicate.variantPredicate.ids.length})`,
-	// 					key: 'variants',
-	// 				});
-	// 			}
-	// 			if ('productPredicate' in rule.cataloguePredicate) {
-	// 				res.push({
-	// 					name: `Products (${rule.cataloguePredicate.productPredicate.ids.length})`,
-	// 					key: 'products',
-	// 				});
-	// 			}
-	// 			if ('categoryPredicate' in rule.cataloguePredicate) {
-	// 				res.push({
-	// 					name: `Categories (${rule.cataloguePredicate.categoryPredicate.ids.length})`,
-	// 					key: 'categories',
-	// 				});
-	// 			}
-	// 			if ('collectionPredicate' in rule.cataloguePredicate) {
-	// 				res.push({
-	// 					name: `Collections (${rule.cataloguePredicate.collectionPredicate.ids.length})`,
-	// 					key: 'collections',
-	// 				});
-	// 			}
-
-	// 			acc[idx] = res;
-	// 			return acc;
-	// 		},
-	// 		{} as Record<number, TabProps[]>,
-	// 	),
-	// );
-
 	const handleDeleteRule = async (ruleId: string) => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: `Are you sure you want to delete the rule ${ruleId}?`,
+			content: $tranFunc('common.confirmDel'),
 			onOk: async () => {
 				loading = true;
 				const result = await GRAPHQL_CLIENT.mutation<
@@ -154,31 +111,59 @@
 				});
 				loading = false;
 
-				checkIfGraphqlResultHasError(result, 'promotionRuleDelete', 'Rule deleted successfully!');
+				if (
+					checkIfGraphqlResultHasError(
+						result,
+						'promotionRuleDelete',
+						$tranFunc('common.deleteSuccess'),
+					)
+				)
+					return;
+
+				onRuleDeleted?.();
 			},
 		});
 	};
 
-	const handleEditRule = (ruleId: string) => {
-		// goto(AppRoute.PromotionsEdit(ruleId));
+	const handleEditRule = (idx: number) => {
+		const rule = rules[idx];
+
+		ruleUpdateInput = {
+			name: rule.name,
+			addChannels: [],
+			removeChannels: [],
+			description: rule.description,
+			rewardValue: rule.rewardValue,
+			rewardValueType: rule.rewardValueType,
+		};
 	};
 
 	const setActiveTabs = (ruleIdx: number, tabKey: TabKey) => {
 		ruleActiveTabs[ruleIdx] = tabKey;
 	};
 
-	// editorJsParser.parse()
+	const handleClickAddRule = () => {
+		ruleCreateInput = {
+			name: '',
+			channels: [],
+			rewardValue: 0,
+			rewardValueType: RewardValueTypeEnum.Percentage,
+			promotion: '',
+		};
+	};
+
+	const handleOkUpsertRule = () => {};
+
+	const handleCancelUpsert = () => {
+		ruleCreateInput = undefined;
+		ruleUpdateInput = undefined;
+	};
 </script>
 
 <div class="rounded-lg bg-white border border-gray-200 p-3 space-y-2">
 	<SectionHeader>
 		<div>Rules</div>
-		<Button
-			endIcon={Plus}
-			size="xs"
-			variant="light"
-			onclick={() => (showRuleEditModal = true)}>Add rule</Button
-		>
+		<Button endIcon={Plus} size="xs" variant="light" onclick={handleClickAddRule}>Add rule</Button>
 	</SectionHeader>
 
 	{#if rules.length}
@@ -190,10 +175,11 @@
 						<div class="flex gap-1.5">
 							<IconButton
 								size="xs"
-								icon={Edit}
+								icon={PencilMinus}
 								variant="light"
+								color="gray"
 								disabled={loading}
-								onclick={() => handleEditRule(rule.id)}
+								onclick={() => handleEditRule(ruleIdx)}
 							/>
 							<IconButton
 								size="xs"
@@ -240,17 +226,21 @@
 					<div class="space-y-2">
 						<div class="text-sm font-medium text-gray-700">Predicates</div>
 
-						{#if $predicateQuery.fetching}
+						{#if $rulePredicateQuery.fetching}
 							<TableSkeleton numColumns={4} numOfRows={1} />
-						{:else if $predicateQuery.error}
-							<Alert size="sm" bordered variant="error">{$predicateQuery.error.message}</Alert>
-						{:else if $predicateQuery.data}
-							{@const products = $predicateQuery.data.products.edges.map((edge) => edge.node)}
-							{@const productVariants = $predicateQuery.data.productVariants.edges.map(
+						{:else if $rulePredicateQuery.error}
+							<Alert size="sm" bordered variant="error">{$rulePredicateQuery.error.message}</Alert>
+						{:else if $rulePredicateQuery.data}
+							{@const products = $rulePredicateQuery.data.products.edges.map((edge) => edge.node)}
+							{@const productVariants = $rulePredicateQuery.data.productVariants.edges.map(
 								(edge) => edge.node,
 							)}
-							{@const categories = $predicateQuery.data.categories.edges.map((edge) => edge.node)}
-							{@const collections = $predicateQuery.data.collections.edges.map((edge) => edge.node)}
+							{@const categories = $rulePredicateQuery.data.categories.edges.map(
+								(edge) => edge.node,
+							)}
+							{@const collections = $rulePredicateQuery.data.collections.edges.map(
+								(edge) => edge.node,
+							)}
 
 							{@const ruleProducts = rule.cataloguePredicate?.productPredicate?.ids
 								? products.filter((product) =>
@@ -273,7 +263,7 @@
 									)
 								: []}
 
-							<div role="tablist" class="tabs tabs-border tabs-sm">
+							<div role="tablist" class="tabs tabs-border tabs-xs">
 								<span
 									role="tab"
 									tabindex="0"
@@ -338,15 +328,32 @@
 </div>
 
 <Modal
-	open={showRuleEditModal}
+	open={!!ruleCreateInput || !!ruleUpdateInput}
 	header="Add promotion rule"
 	okText="Add"
 	cancelText="Cancel"
 	closeOnEscape
 	closeOnOutsideClick
-	onOk={() => (showRuleEditModal = false)}
-	onCancel={() => (showRuleEditModal = false)}
-	onClose={() => (showRuleEditModal = false)}
+	onOk={handleOkUpsertRule}
+	onCancel={handleCancelUpsert}
+	onClose={handleCancelUpsert}
 >
-	<RuleEdit />
+	{#if ruleUpdateInput}
+		<RuleEdit
+			bind:name={ruleUpdateInput.name!}
+			bind:addChannels={ruleUpdateInput.addChannels!}
+			bind:removeChannels={ruleUpdateInput.removeChannels!}
+			bind:rewardValue={ruleUpdateInput.rewardValue!}
+			bind:rewardValueType={ruleUpdateInput.rewardValueType!}
+			bind:description={ruleUpdateInput.description!}
+		/>
+	{:else if ruleCreateInput}
+		<RuleEdit
+			bind:name={ruleCreateInput.name!}
+			bind:addChannels={ruleCreateInput.channels!}
+			bind:rewardValue={ruleCreateInput.rewardValue!}
+			bind:rewardValueType={ruleCreateInput.rewardValueType!}
+			bind:description={ruleCreateInput.description!}
+		/>
+	{/if}
 </Modal>

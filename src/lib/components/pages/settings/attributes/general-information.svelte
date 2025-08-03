@@ -87,7 +87,6 @@
 		onblur={validate}
 		required
 	/>
-
 	<Select
 		options={AttributeInputTypeOptions}
 		label="Input type"
@@ -99,7 +98,6 @@
 		variant={attributeErrors.inputType?.length ? 'error' : 'info'}
 		subText={attributeErrors.inputType?.[0]}
 	/>
-
 	<Checkbox
 		label="Value required"
 		bind:checked={valueRequired}

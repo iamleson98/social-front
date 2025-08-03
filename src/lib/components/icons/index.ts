@@ -121,6 +121,7 @@ export {
   MdiBadgeOutline as BadgeOutline,
   TablerLockCog as LockCog,
   TablerReceipt2 as Receipt2,
+  TablerPencilMinus as PencilMinus,
 } from './consts';
 
 export { default as Icon } from './icon.svelte';

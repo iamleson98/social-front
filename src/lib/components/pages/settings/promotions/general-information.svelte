@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
 	import { RFC3339TimeFormat } from '$lib/api/graphql/utils';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
@@ -7,6 +6,8 @@
 	import { Input } from '$lib/components/ui/Input';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { PromotionTypeEnum } from '$lib/gql/graphql';
+	import { CommonState } from '$lib/utils/common.svelte';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import type { OutputData } from '@editorjs/editorjs';
 	import dayjs from 'dayjs';
 	import z, { any, array, object, string } from 'zod';
@@ -34,15 +35,14 @@
 		ok = $bindable(),
 	}: Props = $props();
 
-	const RequiredErr = $tranFunc('helpText.fieldRequired');
 
 	const PromotionSchema = object({
-		name: string().nonempty(RequiredErr),
-		type: string().nonempty(RequiredErr),
+		name: string().nonempty(CommonState.FieldRequiredError),
+		type: string().nonempty(CommonState.FieldRequiredError),
 		description: object({
-			blocks: array(any()).min(1, RequiredErr),
+			blocks: array(any()).min(1, CommonState.FieldRequiredError),
 		}).nullable(),
-		startDate: string().nonempty(RequiredErr),
+		startDate: string().nonempty(CommonState.FieldRequiredError),
 	});
 
 	type PromotionSchema = z.infer<typeof PromotionSchema>;
@@ -71,7 +71,7 @@
 	};
 </script>
 
-<div class="rounded-lg bg-white border border-gray-200 p-3 space-y-2">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>General information</SectionHeader>
 
 	<div class="flex gap-2 items-start">
@@ -114,15 +114,14 @@
 		onchange={validate}
 	/>
 
-	<div class="flex items-start gap-2">
+	<div class="gap-2 grid grid-cols-2">
 		<EaseDatePicker
+			required
 			label="Start date"
 			placeholder="Start date"
-			required
-			class="flex-1"
 			value={{ date: startDate }}
 			{disabled}
-			onchange={(value) => (startDate = dayjs(value.start).format(RFC3339TimeFormat))}
+			onchange={(value) => (startDate = dayjs(value.date).format(RFC3339TimeFormat))}
 			variant={promotionFormErrors?.startDate?.length ? 'error' : 'info'}
 			subText={promotionFormErrors?.startDate?.[0]}
 			onblur={validate}
@@ -143,10 +142,9 @@
 		<EaseDatePicker
 			label="End date"
 			placeholder="End date"
-			class="flex-1"
 			value={{ date: endDate }}
 			{disabled}
-			onchange={(value) => (endDate = dayjs(value.start).format(RFC3339TimeFormat))}
+			onchange={(value) => (endDate = dayjs(value.date).format(RFC3339TimeFormat))}
 			timeConfig={{
 				stepMinutes: 1,
 				format: 24,

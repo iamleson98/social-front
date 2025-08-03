@@ -11,6 +11,7 @@
 	import {
 		AttributeTypeEnum,
 		type AttributeFilterInput,
+		type Channel,
 		type QueryAttributesArgs,
 	} from '$lib/gql/graphql';
 
@@ -114,7 +115,7 @@
 		size="xs"
 		placeholder="Channel"
 		value={initialValue}
-		onchange={(value) => onValue(value?.id as FilterItemValue)}
+		onchange={(value) => onValue((value as Channel)?.id as FilterItemValue)}
 	/>
 {/snippet}
 

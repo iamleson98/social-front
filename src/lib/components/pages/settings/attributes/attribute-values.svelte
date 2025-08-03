@@ -264,12 +264,12 @@
 		{#if inputType !== AttributeInputTypeEnum.Numeric}
 			<SectionHeader>
 				<div>Attribute values</div>
-				<Button size="xs" variant="light" endIcon={Plus} onclick={() => (openUpsertModal = true)}
-					>Add value</Button
-				>
+				<Button size="xs" variant="light" endIcon={Plus} onclick={() => (openUpsertModal = true)}>
+					Add value
+				</Button>
 			</SectionHeader>
 
-			<!-- is this is edit page -->
+			<!-- if this is edit page -->
 			{#if attributeID}
 				<GraphqlPaginableTable
 					query={ATTRIBUTE_VALUES_QUERY}
@@ -304,7 +304,7 @@
 	}}
 >
 	{#if !!valueItemToEdit}
-	<!-- edit value -->
+		<!-- edit value -->
 		{#if valueItemToEdit?.inputType === AttributeInputTypeEnum.Swatch}
 			<ColorPicker bind:hex={valueItemToEdit.value} position="responsive" />
 		{:else if valueItemToEdit?.inputType === AttributeInputTypeEnum.Dropdown}

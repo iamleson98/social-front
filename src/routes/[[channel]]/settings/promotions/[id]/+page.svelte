@@ -26,6 +26,7 @@
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 
@@ -41,6 +42,9 @@
 
 	let promotionInput = $state<PromotionUpdateInput>({
 		name: '',
+		description: { blocks: [] },
+		startDate: '',
+		endDate: '',
 	});
 	let loading = $state(false);
 	let promotionType = $state<PromotionTypeEnum>(PromotionTypeEnum.Catalogue);
@@ -67,7 +71,6 @@
 		if (!generalOk) return;
 
 		loading = true;
-
 		performUpdateMetadata = true;
 
 		const promotionUpdate = await GRAPHQL_CLIENT.mutation<
@@ -77,16 +80,9 @@
 			id: page.params.id!,
 			input: promotionInput,
 		});
-
 		loading = false;
 
-		if (
-			checkIfGraphqlResultHasError(
-				promotionUpdate,
-				'promotionUpdate',
-				$tranFunc('common.updateSuccess'),
-			)
-		)
+		if (checkIfGraphqlResultHasError(promotionUpdate, 'promotionUpdate', CommonState.EditSuccess))
 			return;
 
 		promotionStore.reexecute({
@@ -97,7 +93,7 @@
 
 	const handleDelete = async () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: $tranFunc('common.confirmDel'),
+			content: CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true;
 				const result = await GRAPHQL_CLIENT.mutation<
@@ -108,9 +104,7 @@
 				});
 				loading = false;
 
-				if (
-					!checkIfGraphqlResultHasError(result, 'promotionDelete', $tranFunc('common.delSuccess'))
-				)
+				if (!checkIfGraphqlResultHasError(result, 'promotionDelete', CommonState.DeleteSuccess))
 					await goto(AppRoute.SETTINGS_CONFIGS_PROMOTIONS());
 			},
 		});
@@ -133,7 +127,10 @@
 			bind:endDate={promotionInput.endDate}
 			bind:ok={generalOk}
 		/>
-		<Rules rules={rules || []} />
+		<Rules
+			rules={rules || []}
+			onRuleDeleted={() => promotionStore.reexecute({ variables: { id } })}
+		/>
 		<GeneralMetadataEditor
 			objectId={id}
 			{metadata}
@@ -145,6 +142,7 @@
 			backButtonUrl={AppRoute.SETTINGS_CONFIGS_PROMOTIONS()}
 			onDeleteClick={handleDelete}
 			onUpdateClick={handleUpdate}
+			disableUpdateButton={!generalOk}
 			disabled={loading}
 		/>
 	</div>

@@ -26,7 +26,7 @@
 		<div class="text-sm text-gray-700 space-y-1.5">
 			<Label required label="Type" />
 			<div class="text-[10px] text-gray-600">
-				Define where this attribute should be used in Saleor system
+				Define where this attribute should be used in App system
 			</div>
 			{#each Object.values(AttributeTypeEnum) as value, idx (idx)}
 				<RadioButton
