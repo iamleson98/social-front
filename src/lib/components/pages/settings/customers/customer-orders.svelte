@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { CUSTOMER_ORDERS_QUERY } from '$lib/api/admin/orders';
+	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/badge';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { type Order, OrderSortField, type Query, type QueryOrdersArgs } from '$lib/gql/graphql';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
-	import { formatCurrency, paymentStatusBadgeClass } from '$lib/utils/utils';
+	import { paymentStatusBadgeClass } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 
 	type Props = {
@@ -50,12 +51,7 @@
 {/snippet}
 
 {#snippet total({ item }: { item: Order })}
-	<div class="flex items-center justify-between gap-1">
-		<span class="text-gray-500 text-xs">{item.total.gross.currency}</span>
-		<span class="font-semibold text-blue-600 text-right">
-			{formatCurrency(item.total.gross.amount)}
-		</span>
-	</div>
+	<PriceDisplay amount={item.total.gross.amount} currency={item.total.gross.currency} />
 {/snippet}
 
 <div class="bg-white rounded-lg border border-gray-200 p-3">

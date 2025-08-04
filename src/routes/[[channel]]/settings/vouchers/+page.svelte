@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { VOUCHER_LIST_QUERY } from '$lib/api/admin/discount';
+	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import Filter from '$lib/components/pages/settings/vouchers/filter.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { VoucherSortField, type QueryVouchersArgs, type Voucher } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
-	import { formatCurrency } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 
 	let variables = $state<QueryVouchersArgs>({
@@ -73,23 +73,13 @@
 
 {#snippet minSpent({ item }: { item: Voucher })}
 	{#each item.channelListings || [] as listing, idx (idx)}
-		<div class="flex items-center justify-between gap-1">
-			<span class="text-gray-500 text-xs">{listing.currency}</span>
-			<span class="font-semibold text-blue-600 text-right">
-				{formatCurrency(listing.minSpent?.amount || 0)}
-			</span>
-		</div>
+		<PriceDisplay amount={listing.minSpent?.amount || 0} currency={listing.currency} />
 	{/each}
 {/snippet}
 
 {#snippet value({ item }: { item: Voucher })}
 	{#each item.channelListings || [] as listing, idx (idx)}
-		<div class="flex items-center justify-between gap-1">
-			<span class="text-gray-500 text-xs">{listing.currency}</span>
-			<span class="font-semibold text-blue-600 text-right">
-				{formatCurrency(listing.discountValue)}
-			</span>
-		</div>
+		<PriceDisplay amount={listing.discountValue} currency={listing.currency} />
 	{/each}
 {/snippet}
 
