@@ -61,11 +61,15 @@ export type RecentEmojiData = {
   usageCount: number;
 };
 
+export const RECENT = 'recent';
+export const SEARCH_RESULTS = 'searchResults';
+export const SMILEY_EMOTION = 'smileys-emotion';
+export const CUSTOM = 'custom';
 
 export type Category = {
   name: EmojiCategory;
   emojiIds?: string[];
-  label: MessageDescriptor;
+  label: string;
   iconClassName: string;
 };
 
