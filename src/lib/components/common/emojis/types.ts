@@ -22,6 +22,11 @@ export type CustomEmoji = {
   creator_id: string;
 };
 
+export type ActionResult<Data = unknown, Error = unknown> = {
+    data?: Data;
+    error?: Error;
+};
+
 export type SystemEmoji = {
   name: string;
   category: EmojiCategory;

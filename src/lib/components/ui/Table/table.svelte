@@ -180,11 +180,11 @@
 			</tbody>
 		{:else}
 			<tbody>
-				<tr
-					><td class="text-sm select-none! text-gray-400 text-center" colspan={columns.length}
-						>{$tranFunc('helpText.noData')}</td
-					></tr
-				>
+				<tr>
+					<td class="text-sm select-none! text-gray-400 text-center" colspan={columns.length}>
+						{$tranFunc('helpText.noData')}
+					</td>
+				</tr>
 			</tbody>
 		{/if}
 	</table>

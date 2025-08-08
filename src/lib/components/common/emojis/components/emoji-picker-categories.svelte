@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { KeyType } from '$lib/actions/shortcut';
 	import {
 		NavigationDirection,
 		type Categories,
@@ -27,7 +28,7 @@
 		evt.stopPropagation();
 		evt.preventDefault();
 
-		switch (evt.key) {
+		switch (evt.key as KeyType) {
 			case 'ArrowRight':
 				onkeydown(NavigationDirection.NextEmoji);
 				focusOnSearchInput();
@@ -51,7 +52,12 @@
 	const activeCategory = isFiltering ? categoryNames[0] : active;
 </script>
 
-<div class={['flex grow-0 shrink-0 justify-between py-0 px-3  mb-2']} onkeydown={handleKeyDown} role="menu" tabindex="-1">
+<div
+	class="flex grow-0 shrink-0 justify-between py-0 px-3 mb-2"
+	onkeydown={handleKeyDown}
+	role="menu"
+	tabindex="-1"
+>
 	{#each categoryNames as categoryName, idx (idx)}
 		{@const category = categories[categoryName]}
 		<EmojiPickerCategory

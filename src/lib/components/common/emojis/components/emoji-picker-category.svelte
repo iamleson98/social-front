@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { PencilMinus } from '$lib/components/icons';
-	import { IconButton } from '$lib/components/ui/Button';
+	import Icon from '$lib/components/icons/icon.svelte';
 	import type { Category, CategoryOrEmojiRow, EmojiCategory } from '../types';
 
 	type Props = {
@@ -27,13 +26,31 @@
 	};
 </script>
 
-<IconButton
-	icon={PencilMinus}
-	size="xs"
-	class="tooltip tooltip-top"
-	data-tip={category.label}
-	color={selected ? 'blue' : 'gray'}
-	variant="light"
-	disabled={!enable}
+<button
+	class={['emoji-picker-category', selected && 'selected', !enable && 'pointer-events-none!']}
+	aria-label={category.label}
 	onclick={handleClick}
-/>
+	aria-pressed={selected}
+>
+	<Icon icon={category.iconClassName} />
+</button>
+
+<style lang="postcss">
+	@reference "tailwindcss";
+
+	.emoji-picker-category {
+		@apply inline-flex w-7 h-7 items-center justify-center rounded-sm decoration-[none] border-none p-0 bg-transparent focus:outline-none!;
+	}
+
+	.emoji-picker-category:hover {
+		@apply bg-gray-200 text-gray-500;
+	}
+
+	.emoji-picker-category:active {
+		@apply bg-gray-300 text-gray-600;
+	}
+
+	.emoji-picker-category.selected {
+		@apply bg-blue-100 text-blue-600;
+	}
+</style>

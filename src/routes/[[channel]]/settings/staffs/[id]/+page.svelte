@@ -83,7 +83,7 @@
 			Pick<Mutation, 'staffDelete'>,
 			MutationStaffDeleteArgs
 		>(STAFF_DELETE_MUTATION, {
-			id: page.params.id,
+			id: page.params.id!,
 		});
 
 		loading = false;

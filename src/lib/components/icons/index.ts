@@ -122,6 +122,17 @@ export {
   TablerLockCog as LockCog,
   TablerReceipt2 as Receipt2,
   TablerPencilMinus as PencilMinus,
+  TablerMoodCog as MoodCog,
+  TablerMoodSmile as MoodSmile,
+  TablerUser as User,
+  TablerApple as Apple,
+  TablerPlane as Plane,
+  TablerVolleyBall as VolleyBall,
+  TablerBulb as Bulb,
+  TablerFlag as Flag,
+  TablerLeaf2 as Leaf2,
+  TablerClock as Clock,
+  TablerHandStop as HandStop,
 } from './consts';
 
 export { default as Icon } from './icon.svelte';

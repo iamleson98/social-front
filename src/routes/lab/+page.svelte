@@ -1,52 +1,40 @@
 <script lang="ts">
-	import { PRODUCT_LIST_QUERY } from '$lib/api';
-	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box';
-	import FilterContainer from '$lib/components/common/filter-box/filter-container.svelte';
-	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
-	import { type QueryProductsArgs } from '$lib/gql/graphql';
+	import { createVirtualizer, type SvelteVirtualizer } from '@tanstack/svelte-virtual';
+	import { onMount } from 'svelte';
+	import type { Readable } from 'svelte/store';
 
-	let count = $state(0);
+	let virtualListEl = $state<HTMLDivElement>();
+	let virtualizer = $state<Readable<SvelteVirtualizer<HTMLDivElement, HTMLDivElement>>>();
 
-	const cleanup = $effect.root(() => {
-		$effect(() => {
-			console.log(count);
+	onMount(() => {
+		virtualizer = createVirtualizer<HTMLDivElement, HTMLDivElement>({
+			count: 10000,
+			getScrollElement: () => virtualListEl!,
+			estimateSize: () => 30,
+			overscan: 5,
+			horizontal: false,
 		});
-
-		return () => {
-			console.log('effect root cleanup');
-		};
 	});
-
-	const filters: FilterProps<any>[] = [
-		{
-			label: 'Products',
-			key: 'products',
-			operations: [
-				{
-					operator: 'eq',
-					component: products,
-				},
-			],
-		},
-	];
 </script>
 
-{#snippet products({ initialValue, onValue }: FilterComponentType)}
-	<GraphqlPaginableSelect
-		multiple
-		placeholder="products"
-		query={PRODUCT_LIST_QUERY}
-		value={initialValue}
-		optionLabelKey="name"
-		optionValueKey="id"
-		variables={{ first: 20, filter: { search: '' } } as QueryProductsArgs}
-		variableSearchQueryPath="filter.search"
-		size="sm"
-		resultKey="products"
-	/>
-{/snippet}
+<div class="list scroll-container bg-red-200" bind:this={virtualListEl}>
+	<div style="position: relative; height: {$virtualizer?.getTotalSize()}px; width: 100%;">
+		{#each $virtualizer?.getVirtualItems() || [] as row (row.index)}
+			<div
+				class:list-item-even={row.index % 2 === 0}
+				class:list-item-odd={row.index % 2 === 1}
+				style="position: absolute; top: 0; left: 0; width: 100%; height: {row.size}px; transform: translateY({row.start}px);"
+			>
+				Row {row.size}/ {row.start}
+			</div>
+		{/each}
+	</div>
+</div>
 
-<button onclick={() => cleanup()}>clean</button>
-<button onclick={() => (count += 1)}>add</button>
-
-<FilterContainer filterOptions={filters} open filters={{}} />
+<style>
+	.scroll-container {
+		height: 200px;
+		width: 400px;
+		overflow: auto;
+	}
+</style>

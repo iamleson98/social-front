@@ -1,13 +1,22 @@
 <script lang="ts">
+	import { noop } from 'es-toolkit';
+	import EmojiPickerSearch from './components/emoji-picker-search.svelte';
+	import EmojiPickerSkin from './components/emoji-picker-skin.svelte';
 	import { RecentEmojis } from './store';
 	import {
 		CATEGORIES,
+		CATEGORIES_CONTAINER_HEIGHT,
+		EMOJI_CONTAINER_HEIGHT,
 		EMOJI_PER_ROW,
+		NavigationDirection,
 		RECENT,
 		RECENT_EMOJI_CATEGORY,
+		SEARCH_RESULTS,
 		SMILEY_EMOTION,
+		type ActionResult,
 		type Categories,
 		type CategoryOrEmojiRow,
+		type CustomEmoji,
 		type Emoji,
 		type EmojiCategory,
 		type EmojiCursor,
@@ -15,6 +24,8 @@
 		type EmojiRow,
 	} from './types';
 	import { getCursorProperties } from './utils';
+	import EmojiPickerCategories from './components/emoji-picker-categories.svelte';
+	import EmojiPickerCurrentResults from './components/emoji-picker-current-results.svelte';
 
 	type Props = {
 		filter: string;
@@ -22,17 +33,34 @@
 		handleFilterChange: (filter: string) => void;
 		handleEmojiPickerClose: () => void;
 		onAddCustomEmojiClick?: () => void;
-		customEmojiEnabled?: boolean;
+		customEmojisEnabled?: boolean;
 		customEmojiPage?: number;
 		// emojiMap
+		userSkinTone?: string;
+		setUserSkinTone?: (skinTone: string) => void;
+		incrementEmojiPickerPage: () => Promise<{
+			data: boolean;
+		}>;
+		getCustomEmojis: (
+			page?: number,
+			perPage?: number,
+			sort?: string,
+			loadUsers?: boolean,
+		) => Promise<ActionResult<CustomEmoji[]>>;
 	};
 
 	let {
-		filter,
+		filter = $bindable(),
 		onEmojiClick,
 		handleEmojiPickerClose,
 		onAddCustomEmojiClick,
 		handleFilterChange,
+		userSkinTone = '',
+		setUserSkinTone = noop,
+		incrementEmojiPickerPage,
+		customEmojiPage = 0,
+		getCustomEmojis,
+		customEmojisEnabled = false,
 	}: Props = $props();
 
 	const getInitialActiveCategory = () => ($RecentEmojis.length ? RECENT : SMILEY_EMOTION);
@@ -42,7 +70,7 @@
 		emojiId: '',
 		emoji: undefined,
 	});
-	let activeCategory = $state(getInitialActiveCategory());
+	let activeCategory = $state<EmojiCategory>(getInitialActiveCategory());
 
 	const getInitialCategories = () =>
 		$RecentEmojis.length ? { ...RECENT_EMOJI_CATEGORY, ...CATEGORIES } : CATEGORIES;
@@ -54,6 +82,8 @@
 	let searchInputRef = $state<HTMLInputElement>();
 	let infiniteLoaderRef = $state<unknown>();
 	let shouldRunCreateCategoryAndEmojiRows = $state<boolean>();
+
+	let categoryOrEmojisRows = $state<CategoryOrEmojiRow[]>([]);
 
 	const getEmojiById = (emojiId: string) => {
 		if (!emojiId) return null;
@@ -133,4 +163,207 @@
 			}
 		}
 	};
+
+	const focusOnSearchInput = () => searchInputRef?.focus();
+
+	const handleEnterOnEmoji = () => {
+		if (cursor.emoji) onEmojiClick(cursor.emoji);
+	};
+
+	function calculateNewCursorForRightOrLeftArrow(
+		moveTo: NavigationDirection,
+		emojiPositions: EmojiPosition[],
+		currentCursorIndexInEmojis: number,
+		focusOnSearchInput: () => void,
+	) {
+		if (
+			moveTo === NavigationDirection.NextEmoji &&
+			currentCursorIndexInEmojis + 1 < emojiPositions.length
+		) {
+			// When next emoji is present, move to next emoji
+			return emojiPositions[currentCursorIndexInEmojis + 1];
+		}
+		if (moveTo === NavigationDirection.PreviousEmoji && currentCursorIndexInEmojis - 1 >= 0) {
+			// When previous emoji is present, move to previous emoji
+			return emojiPositions[currentCursorIndexInEmojis - 1];
+		}
+		if (moveTo === NavigationDirection.PreviousEmoji && currentCursorIndexInEmojis - 1 < 0) {
+			// If cursor was at first emoji then focus on search input
+			focusOnSearchInput();
+			return undefined;
+		}
+
+		return undefined;
+	}
+
+	function calculateNewCursorForDownArrow(
+		cursorCategory: string,
+		emojiPositions: EmojiPosition[],
+		currentCursorsPositionIndex: number,
+		categories: Categories,
+	) {
+		if (currentCursorsPositionIndex + EMOJI_PER_ROW < emojiPositions.length) {
+			// Emoji is present down a row in same x position
+			const downTheRowCategoryName = emojiPositions[currentCursorsPositionIndex + EMOJI_PER_ROW]
+				.categoryName as EmojiCategory;
+
+			if (downTheRowCategoryName !== cursorCategory) {
+				// If down the row emoji is in different category, move to that category's first emoji
+				const downTheRowCategorysEmojis = categories[downTheRowCategoryName].emojiIds || [];
+				const firstEmojiIdDownTheRow = downTheRowCategorysEmojis[0];
+				const firstEmojiPositionDownTheRow = emojiPositions.find((emojiPosition) => {
+					return (
+						emojiPosition.emojiId.toLowerCase() === firstEmojiIdDownTheRow.toLowerCase() &&
+						emojiPosition.categoryName === downTheRowCategoryName
+					);
+				});
+				return firstEmojiPositionDownTheRow;
+			}
+
+			// If down the row emoji is in same category, move to down in same category
+			return emojiPositions[currentCursorsPositionIndex + EMOJI_PER_ROW];
+		}
+
+		// When emoji down the row is not present.
+		// Check if the remaining emojis are of different category
+		const endingEmojisOfDifferentCategory = emojiPositions
+			.slice(currentCursorsPositionIndex + 1, emojiPositions.length)
+			.find((emojiPosition) => {
+				return emojiPosition.categoryName !== cursorCategory;
+			});
+
+		if (endingEmojisOfDifferentCategory) {
+			return endingEmojisOfDifferentCategory;
+		}
+
+		return undefined;
+	}
+
+	const handleKeyboardEmojiNavigation = (moveTo: NavigationDirection) => {
+		if (!emojiPositions.length) return;
+
+		let newCursor;
+
+		if (cursor.emojiId.length !== 0 && cursor.rowIndex !== -1) {
+			// If cursor is on an emoji
+			const currentCursorsPositionIndex = emojiPositions.findIndex(
+				(emojiPosition) =>
+					emojiPosition.rowIndex === cursor.rowIndex &&
+					emojiPosition.emojiId.toLowerCase() === cursor.emojiId.toLowerCase(),
+			);
+
+			if (currentCursorsPositionIndex === -1) {
+				newCursor = undefined;
+			} else if (
+				moveTo === NavigationDirection.NextEmoji ||
+				moveTo === NavigationDirection.PreviousEmoji
+			) {
+				newCursor = calculateNewCursorForRightOrLeftArrow(
+					moveTo,
+					emojiPositions,
+					currentCursorsPositionIndex,
+					focusOnSearchInput,
+				);
+			} else if (moveTo === NavigationDirection.NextEmojiRow) {
+				newCursor = calculateNewCursorForDownArrow(
+					cursorCategory,
+					emojiPositions,
+					currentCursorsPositionIndex,
+					categories,
+				);
+			} else if (moveTo === NavigationDirection.PreviousEmojiRow) {
+				newCursor = calculateNewCursorForUpArrow(
+					cursorCategory,
+					emojiPositions,
+					currentCursorsPositionIndex,
+					categories,
+					focusOnSearchInput,
+				);
+			}
+		} else if (cursor.emojiId.length === 0 && cursor.rowIndex === -1) {
+			if (moveTo === NavigationDirection.NextEmoji || moveTo === NavigationDirection.NextEmojiRow) {
+				// if no cursor is selected, set the first emoji on arrows right & down
+				if (emojiPositions.length !== 0) {
+					newCursor = emojiPositions[0];
+				}
+			}
+		}
+
+		// If newCursorIndex is less than 0, abort and do nothing
+		if (newCursor === undefined) {
+			return;
+		}
+
+		const newCursorEmoji = getEmojiById(newCursor.emojiId);
+		if (!newCursorEmoji) {
+			return;
+		}
+
+		searchInputRef?.setAttribute(
+			'aria-activedescendant',
+			newCursorEmoji.name.toLocaleLowerCase().replaceAll(' ', '_'),
+		);
+
+		cursor = {
+			rowIndex: newCursor.rowIndex,
+			emojiId: newCursor.emojiId,
+			emoji: newCursorEmoji,
+		};
+
+		// TODO: scroll to row index
+	};
+
+	const areSearchResultsEmpty = $derived(
+		filter.length !== 0 &&
+			categoryOrEmojisRows.length === 1 &&
+			categoryOrEmojisRows?.[0]?.items?.[0]?.categoryName === SEARCH_RESULTS,
+	);
+
+	const handleEmojiOnMouseOver = (mouseOverCursor: EmojiCursor) => {
+		if (mouseOverCursor.emojiId !== cursor.emojiId || cursor.emojiId === '')
+			cursor = mouseOverCursor;
+	};
 </script>
+
+<div class="flex items-center">
+	<EmojiPickerSearch
+		bind:value={filter}
+		bind:ref={searchInputRef}
+		{cursorCategoryIndex}
+		{cursorEmojiIndex}
+		focus={focusOnSearchInput}
+		onEnter={handleEnterOnEmoji}
+		onChange={handleFilterChange}
+		onKeyDown={handleKeyboardEmojiNavigation}
+		resetCursorPosition={resetCursor}
+	/>
+	<EmojiPickerSkin {userSkinTone} onSkinSelected={setUserSkinTone} />
+</div>
+
+{#if !filter.length}
+	<EmojiPickerCategories
+		isFiltering={filter.length > 0}
+		active={activeCategory}
+		{categories}
+		onclick={handleCategoryClick}
+		onkeydown={handleKeyboardEmojiNavigation}
+		{focusOnSearchInput}
+	/>
+{/if}
+{#if areSearchResultsEmpty}
+	<div style="height: {EMOJI_CONTAINER_HEIGHT + CATEGORIES_CONTAINER_HEIGHT}px">No result</div>
+{:else}
+	<EmojiPickerCurrentResults
+		isFiltering={filter.length > 0}
+		bind:activeCategory
+		{categoryOrEmojisRows}
+		cursorEmojiId={cursor.emojiId}
+		cursorRowIndex={cursor.rowIndex}
+		{onEmojiClick}
+		onEmojiMouseOver={handleEmojiOnMouseOver}
+		{customEmojiPage}
+		{incrementEmojiPickerPage}
+		{customEmojisEnabled}
+		{getCustomEmojis}
+	/>
+{/if}

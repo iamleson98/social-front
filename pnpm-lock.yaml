@@ -86,6 +86,9 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.1.11
         version: 4.1.11(vite@5.4.19(@types/node@20.19.9)(lightningcss@1.30.1))
+      '@tanstack/svelte-virtual':
+        specifier: ^3.13.12
+        version: 3.13.12(svelte@5.25.7)
       '@thisux/sveltednd':
         specifier: ^0.0.20
         version: 0.0.20(svelte@5.25.7)
@@ -143,6 +146,9 @@ importers:
       svelte-awesome-color-picker:
         specifier: ^4.0.2
         version: 4.0.2(svelte@5.25.7)
+      svelte-infinite:
+        specifier: ^0.5.0
+        version: 0.5.0(svelte@5.25.7)
       svelte-sonner:
         specifier: ^1.0.5
         version: 1.0.5(svelte@5.25.7)
@@ -2092,14 +2098,29 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7
 
+  '@tanstack/svelte-virtual@3.13.12':
+    resolution: {integrity: sha512-SsOinCktvpMFbdSW61X6jeUNaJvD1tmt30AFVSLe1FQxGxjdPkZo0gAsoVPqM9FFZqidvvXQ4gpadDaTz/yGxA==}
+    peerDependencies:
+      svelte: ^3.48.0 || ^4.0.0 || ^5.0.0
+
+  '@tanstack/virtual-core@3.13.12':
+    resolution: {integrity: sha512-1YBOJfRHV4sXUmWsFSf5rQor4Ss82G8dQWLRbnk3GA4jeP8hQt1hxXh0tmflpC0dz3VgEv/1+qwPyLeWkQuPFA==}
+
   '@theguild/federation-composition@0.19.1':
     resolution: {integrity: sha512-E4kllHSRYh+FsY0VR+fwl0rmWhDV8xUgWawLZTXmy15nCWQwj0BDsoEpdEXjPh7xes+75cRaeJcSbZ4jkBuSdg==}
     engines: {node: '>=18'}
     peerDependencies:
       graphql: ^16.0.0
 
+  '@thisux/sveltednd@0.0.12':
+    resolution: {integrity: sha512-9edVcakYkoCzU6pNIwmJ6Cf+9anECod26Ue/rL3Ssf5LyuLaBLXtBx4H4U8YwQCkwtMeSGFf0OsiMpPpFjvCcg==}
+    peerDependencies:
+      svelte: ^5.0.0
+
   '@thisux/sveltednd@0.0.14':
     resolution: {integrity: sha512-Vbq69SU3HUomPg6oCXtb89OG89hka0YIkdaErYibn3waK7tYE66IcQxD/Fzg8YNW3EVsXoA9kc7kW5EUBCSQGg==}
+    peerDependencies:
+      svelte: ^5.0.0
 
   '@thisux/sveltednd@0.0.17':
     resolution: {integrity: sha512-lRninjw439phhA8xAHqCpMAX0hnwFMdbXW4M0XJgAdnGxeum+QsLiIC4P3HnkNXAygsVKUqxRcbS84CxDZ9hPw==}
@@ -5207,6 +5228,11 @@ packages:
       svelte:
         optional: true
 
+  svelte-infinite@0.5.0:
+    resolution: {integrity: sha512-3ZomRQcQzg8VWtnqO4MvPC0Jt3hvh1wmC47t64BcI+8UXTl0FJYVfB7ky4d1NJ3mf/KZZa+hcIZJPnV9cOt8gQ==}
+    peerDependencies:
+      svelte: ^5.0.0-0
+
   svelte-preprocess@5.1.4:
     resolution: {integrity: sha512-IvnbQ6D6Ao3Gg6ftiM5tdbR6aAETwjhHV+UKGf5bHGYR69RQvF1ho0JKPcbUON4vy4R7zom13jPjgdOWCQ5hDA==}
     engines: {node: '>= 16.0.0'}
@@ -8023,6 +8049,13 @@ snapshots:
       tailwindcss: 4.1.11
       vite: 5.4.19(@types/node@20.19.9)(lightningcss@1.30.1)
 
+  '@tanstack/svelte-virtual@3.13.12(svelte@5.25.7)':
+    dependencies:
+      '@tanstack/virtual-core': 3.13.12
+      svelte: 5.25.7
+
+  '@tanstack/virtual-core@3.13.12': {}
+
   '@theguild/federation-composition@0.19.1(graphql@16.11.0)':
     dependencies:
       constant-case: 3.0.4
@@ -8033,11 +8066,18 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@thisux/sveltednd@0.0.14': {}
+  '@thisux/sveltednd@0.0.12(svelte@5.25.7)':
+    dependencies:
+      svelte: 5.25.7
+
+  '@thisux/sveltednd@0.0.14(svelte@5.25.7)':
+    dependencies:
+      '@thisux/sveltednd': 0.0.12(svelte@5.25.7)
+      svelte: 5.25.7
 
   '@thisux/sveltednd@0.0.17(svelte@5.25.7)':
     dependencies:
-      '@thisux/sveltednd': 0.0.14
+      '@thisux/sveltednd': 0.0.14(svelte@5.25.7)
       svelte: 5.25.7
 
   '@thisux/sveltednd@0.0.18(svelte@5.25.7)':
@@ -11557,6 +11597,10 @@ snapshots:
       postcss: 8.5.6
       postcss-scss: 4.0.9(postcss@8.5.6)
     optionalDependencies:
+      svelte: 5.25.7
+
+  svelte-infinite@0.5.0(svelte@5.25.7):
+    dependencies:
       svelte: 5.25.7
 
   svelte-preprocess@5.1.4(@babel/core@7.28.0)(postcss-load-config@3.1.4(postcss@8.5.6))(postcss@8.5.6)(svelte@5.25.7)(typescript@5.8.3):
