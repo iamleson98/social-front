@@ -23,9 +23,15 @@
 		type EmojiPosition,
 		type EmojiRow,
 	} from './types';
-	import { getCursorProperties } from './utils';
+	import {
+		createCategoryAndEmojiRows,
+		getCursorProperties,
+		getUpdatedCategoriesAndAllEmojis,
+	} from './utils';
 	import EmojiPickerCategories from './components/emoji-picker-categories.svelte';
 	import EmojiPickerCurrentResults from './components/emoji-picker-current-results.svelte';
+	import type EmojiMap from './emoji-map';
+	import { onMount, untrack } from 'svelte';
 
 	type Props = {
 		filter: string;
@@ -35,7 +41,8 @@
 		onAddCustomEmojiClick?: () => void;
 		customEmojisEnabled?: boolean;
 		customEmojiPage?: number;
-		// emojiMap
+		emojiMap: EmojiMap;
+		recentEmojis: string[];
 		userSkinTone?: string;
 		setUserSkinTone?: (skinTone: string) => void;
 		incrementEmojiPickerPage: () => Promise<{
@@ -55,7 +62,9 @@
 		handleEmojiPickerClose,
 		onAddCustomEmojiClick,
 		handleFilterChange,
-		userSkinTone = '',
+		emojiMap,
+		recentEmojis,
+		userSkinTone = 'default',
 		setUserSkinTone = noop,
 		incrementEmojiPickerPage,
 		customEmojiPage = 0,
@@ -77,7 +86,7 @@
 
 	let categories = $state(getInitialCategories());
 	let allEmojis = $state.raw<Record<string, Emoji>>({});
-	let categoryOrEmojiRows = $state<CategoryOrEmojiRow[]>([]);
+	// let categoryOrEmojiRows = $state<CategoryOrEmojiRow[]>([]);
 	let emojiPositions = $state<EmojiPosition[]>([]);
 	let searchInputRef = $state<HTMLInputElement>();
 	let infiniteLoaderRef = $state<unknown>();
@@ -144,7 +153,7 @@
 	};
 
 	const [cursorCategory, cursorCategoryIndex, cursorEmojiIndex] = $derived(
-		getCursorProperties(cursor.rowIndex, cursor.emojiId, categoryOrEmojiRows as EmojiRow[]),
+		getCursorProperties(cursor.rowIndex, cursor.emojiId, categoryOrEmojisRows as EmojiRow[]),
 	);
 
 	const calculateNewCursorForUpArrow = (
@@ -165,6 +174,8 @@
 	};
 
 	const focusOnSearchInput = () => searchInputRef?.focus();
+
+	onMount(() => focusOnSearchInput());
 
 	const handleEnterOnEmoji = () => {
 		if (cursor.emoji) onEmojiClick(cursor.emoji);
@@ -238,6 +249,49 @@
 
 		return undefined;
 	}
+
+	$effect(() => {
+		const cur = untrack(() => shouldRunCreateCategoryAndEmojiRows);
+
+		shouldRunCreateCategoryAndEmojiRows = true;
+
+		untrack(() => allEmojis);
+		untrack(() => categories);
+
+		const [updatedCategories, updatedAllEmojis] = getUpdatedCategoriesAndAllEmojis(
+			emojiMap,
+			recentEmojis,
+			userSkinTone,
+			allEmojis,
+		);
+
+		allEmojis = updatedAllEmojis;
+		categories = updatedCategories;
+	});
+
+	$effect(() => {
+		const cur = untrack(() => categoryOrEmojisRows);
+		untrack(() => emojiPositions);
+		
+
+		// shouldRunCreateCategoryAndEmojiRows = false;
+
+		const [updatedCategoryOrEmojisRows, updatedEmojiPositions] = createCategoryAndEmojiRows(
+			allEmojis,
+			categories,
+			filter,
+			userSkinTone,
+		);
+
+		if (activeCategory !== 'custom') {
+			selectFirstEmoji(updatedEmojiPositions);
+		}
+
+		categoryOrEmojisRows = updatedCategoryOrEmojisRows;
+		emojiPositions = updatedEmojiPositions;
+
+		// TODO: scroll to row index
+	});
 
 	const handleKeyboardEmojiNavigation = (moveTo: NavigationDirection) => {
 		if (!emojiPositions.length) return;

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Emoji, EmojiCursor } from '../types';
 	import { getEmojiImageUrl, isSystemEmoji } from '../utils';
-	import imgTrans from 'images/img_trans.gif';
+	import imgTrans from './img_trans.gif';
 	import './item-styles.css';
 
 	type Props = {

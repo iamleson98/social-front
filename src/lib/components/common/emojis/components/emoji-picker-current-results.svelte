@@ -91,12 +91,16 @@
 	<div
 		class="emoji-picker__container"
 		role="grid"
+		style="position: relative; height: {$virtualizer.getTotalSize()}px; width: 100%;"
 		aria-labelledby="emojiPickerSearch"
 		bind:this={virtualListEl}
 	>
 		<AutoSizer>
-			<InfiniteLoader {loaderState} triggerLoad={handleLoadMore}>
-				{#each $virtualizer.getVirtualItems() as item (item.index)}
+			<!-- <InfiniteLoader {loaderState} triggerLoad={handleLoadMore}> -->
+			{#each $virtualizer.getVirtualItems() as item (item.index)}
+				<div
+					style="position: absolute; top: 0; left: 0; width: 100%; height: {item.size}px; transform: translateY({item.start}px);"
+				>
 					<EmojiPickerCategoryOrEmojiRow
 						index={item.index}
 						data={categoryOrEmojisRows}
@@ -105,8 +109,9 @@
 						{onEmojiClick}
 						{onEmojiMouseOver}
 					/>
-				{/each}
-			</InfiniteLoader>
+				</div>
+			{/each}
+			<!-- </InfiniteLoader> -->
 		</AutoSizer>
 	</div>
 </div>

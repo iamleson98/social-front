@@ -1,3 +1,5 @@
+import { CategoryNames } from './emojis'
+
 export type EmojiCategory =
   | 'recent'
   | 'searchResults'
@@ -23,8 +25,8 @@ export type CustomEmoji = {
 };
 
 export type ActionResult<Data = unknown, Error = unknown> = {
-    data?: Data;
-    error?: Error;
+  data?: Data;
+  error?: Error;
 };
 
 export type SystemEmoji = {
@@ -118,6 +120,108 @@ export type EmojiPosition = {
   categoryName: EmojiCategory;
 }
 
+const defineMessage = ({ id, defaultMessage }: { id: string; defaultMessage: string }) => id + defaultMessage
+
+const emojiCategories = {
+  recent: {
+    name: 'recent',
+    label: defineMessage({
+      id: 'emoji_picker.recent',
+      defaultMessage: 'Recent',
+    }),
+    iconClassName: 'icon-clock-outline',
+  },
+  searchResults: {
+    name: 'searchResults',
+    label: defineMessage({
+      id: 'emoji_picker.searchResults',
+      defaultMessage: 'Search Results',
+    }),
+    iconClassName: '',
+  },
+  'smileys-emotion': {
+    name: 'smileys-emotion',
+    label: defineMessage({
+      id: 'emoji_picker.smileys-emotion',
+      defaultMessage: 'Smileys & Emotion',
+    }),
+    iconClassName: 'icon-emoticon-happy-outline',
+  },
+  'people-body': {
+    name: 'people-body',
+    label: defineMessage({
+      id: 'emoji_picker.people-body',
+      defaultMessage: 'People & Body',
+    }),
+    iconClassName: 'icon-account-outline',
+  },
+  'animals-nature': {
+    name: 'animals-nature',
+    label: defineMessage({
+      id: 'emoji_picker.animals-nature',
+      defaultMessage: 'Animals & Nature',
+    }),
+    iconClassName: 'icon-leaf-outline',
+  },
+  'food-drink': {
+    name: 'food-drink',
+    label: defineMessage({
+      id: 'emoji_picker.food-drink',
+      defaultMessage: 'Food & Drink',
+    }),
+    iconClassName: 'icon-food-apple',
+  },
+  'travel-places': {
+    name: 'travel-places',
+    label: defineMessage({
+      id: 'emoji_picker.travel-places',
+      defaultMessage: 'Travel & Places',
+    }),
+    iconClassName: 'icon-airplane-variant',
+  },
+  activities: {
+    name: 'activities',
+    label: defineMessage({
+      id: 'emoji_picker.activities',
+      defaultMessage: 'Activities',
+    }),
+    iconClassName: 'icon-basketball',
+  },
+  objects: {
+    name: 'objects',
+    label: defineMessage({
+      id: 'emoji_picker.objects',
+      defaultMessage: 'Objects',
+    }),
+    iconClassName: 'icon-lightbulb-outline',
+  },
+  symbols: {
+    name: 'symbols',
+    label: defineMessage({
+      id: 'emoji_picker.symbols',
+      defaultMessage: 'Symbols',
+    }),
+    iconClassName: 'icon-heart-outline',
+  },
+  flags: {
+    name: 'flags',
+    label: defineMessage({
+      id: 'emoji_picker.flags',
+      defaultMessage: 'Flags',
+    }),
+    iconClassName: 'icon-flag-outline',
+  },
+  custom: {
+    name: 'custom',
+    label: defineMessage({
+      id: 'emoji_picker.custom',
+      defaultMessage: 'Custom',
+    }),
+    iconClassName: 'icon-emoticon-custom-outline',
+  },
+} satisfies Record<EmojiCategory, Category>;
+
+
 export enum NavigationDirection {
   NextEmoji = 'next',
   PreviousEmoji = 'previous',
@@ -128,7 +232,7 @@ export enum NavigationDirection {
 export const RECENT_EMOJI_CATEGORY: Pick<Categories, 'recent'> = { recent: emojiCategories.recent };
 export const SEARCH_EMOJI_CATEGORY: Pick<Categories, typeof SEARCH_RESULTS> = { searchResults: emojiCategories.searchResults };
 
-export const CATEGORIES: Categories = Emoji.CategoryNames.
+export const CATEGORIES: Categories = CategoryNames.
   filter((category) => !(category === 'recent' || category === 'searchResults')).
   reduce((previousCategory, currentCategory) => {
     return {

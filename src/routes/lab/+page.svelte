@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { EmojiPicker } from '$lib/components/common/emojis';
+	import EmojiMap from '$lib/components/common/emojis/emoji-map';
+	import type { ActionResult, CustomEmoji } from '$lib/components/common/emojis/types';
 	import { createVirtualizer, type SvelteVirtualizer } from '@tanstack/svelte-virtual';
 	import { onMount } from 'svelte';
 	import type { Readable } from 'svelte/store';
@@ -15,26 +18,26 @@
 			horizontal: false,
 		});
 	});
+
+	let filter = $state('');
+
+	const increment = async (): Promise<{data: boolean}> => {
+		return {data: true};
+	}
+
+	const getCustomEmojis = (page?: number, perPage?: number, sort?: string, loadUsers?: boolean): Promise<ActionResult<CustomEmoji[]>> => {
+		// return {data: []};
+		return Promise.resolve({data: []});
+	}
 </script>
 
-<div class="list scroll-container bg-red-200" bind:this={virtualListEl}>
-	<div style="position: relative; height: {$virtualizer?.getTotalSize()}px; width: 100%;">
-		{#each $virtualizer?.getVirtualItems() || [] as row (row.index)}
-			<div
-				class:list-item-even={row.index % 2 === 0}
-				class:list-item-odd={row.index % 2 === 1}
-				style="position: absolute; top: 0; left: 0; width: 100%; height: {row.size}px; transform: translateY({row.start}px);"
-			>
-				Row {row.size}/ {row.start}
-			</div>
-		{/each}
-	</div>
-</div>
-
-<style>
-	.scroll-container {
-		height: 200px;
-		width: 400px;
-		overflow: auto;
-	}
-</style>
+<EmojiPicker
+	bind:filter
+	onEmojiClick={() => {}}
+	handleFilterChange={() => {}}
+	handleEmojiPickerClose={() => {}}
+	incrementEmojiPickerPage={increment}
+	getCustomEmojis={getCustomEmojis}
+	emojiMap={new EmojiMap(new Map())}
+	recentEmojis={[]}
+/>
