@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { EmojiPicker } from '$lib/components/common/emojis';
 	import EmojiMap from '$lib/components/common/emojis/emoji-map';
+	import EmojiPickerTabs from '$lib/components/common/emojis/emoji-picker-tabs.svelte';
 	import type { ActionResult, CustomEmoji } from '$lib/components/common/emojis/types';
 	import { createVirtualizer, type SvelteVirtualizer } from '@tanstack/svelte-virtual';
 	import { onMount } from 'svelte';
@@ -21,17 +22,22 @@
 
 	let filter = $state('');
 
-	const increment = async (): Promise<{data: boolean}> => {
-		return {data: true};
-	}
+	const increment = async (): Promise<{ data: boolean }> => {
+		return { data: true };
+	};
 
-	const getCustomEmojis = (page?: number, perPage?: number, sort?: string, loadUsers?: boolean): Promise<ActionResult<CustomEmoji[]>> => {
+	const getCustomEmojis = (
+		page?: number,
+		perPage?: number,
+		sort?: string,
+		loadUsers?: boolean,
+	): Promise<ActionResult<CustomEmoji[]>> => {
 		// return {data: []};
-		return Promise.resolve({data: []});
-	}
+		return Promise.resolve({ data: [] });
+	};
 </script>
 
-<EmojiPicker
+<!-- <EmojiPicker
 	bind:filter
 	onEmojiClick={() => {}}
 	handleFilterChange={() => {}}
@@ -40,4 +46,6 @@
 	getCustomEmojis={getCustomEmojis}
 	emojiMap={new EmojiMap(new Map())}
 	recentEmojis={[]}
-/>
+/> -->
+
+<EmojiPickerTabs onEmojiClick={() => {}} onAddCustomEmojiClick={() => {}} onEmojiClose={() => {}} />

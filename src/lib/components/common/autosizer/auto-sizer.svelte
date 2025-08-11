@@ -11,6 +11,7 @@
 		defaultWidth?: number;
 		nonce?: string;
 		children: Snippet;
+		ref: HTMLDivElement;
 	};
 
 	let {
@@ -22,6 +23,7 @@
 		defaultWidth,
 		nonce,
 		children,
+		ref = $bindable(),
 	}: Props = $props();
 
 	let height = $state(defaultHeight || 0);
@@ -116,7 +118,7 @@
 	bind:this={autoSizer}
 >
 	{#if !bailoutOnChildren}
-		<div style="width: {childParams.width}px; height: {childParams.height}px">
+		<div style="width: {childParams.width}px; height: {childParams.height}px" bind:this={ref}>
 			{@render children()}
 		</div>
 	{/if}

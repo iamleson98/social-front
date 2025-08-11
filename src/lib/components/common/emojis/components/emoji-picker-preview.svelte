@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Emoji } from '../types';
-	import { isSystemEmoji } from '../utils';
+	import { getEmojiImageUrl, isSystemEmoji } from '../utils';
+	import imgTrans from './img_trans.gif';
 
 	type Props = {
 		emoji?: Emoji;
@@ -15,13 +16,29 @@
 	{#if !emoji}
 		<span>Select an Emoji</span>
 	{:else}
-<div class="mr-3 align-middle">
-  {#if isSystemEmoji(emoji)}
-    
-  {:else}
-    
-  {/if}
-</div>
-		
+		<div class="mr-3 flex items-center gap-2">
+			{#if isSystemEmoji(emoji)}
+				<span class="sprite-preview">
+					<img
+						id="emojiPickerSpritePreview"
+						alt={'emoji category image'}
+						src={imgTrans}
+						class={'emojisprite-preview emoji-category-' +
+							emoji.category +
+							' emoji-' +
+							emoji.unified.toLowerCase()}
+					/>
+				</span>
+			{:else}
+				<img
+					id="emojiPickerSpritePreview"
+					alt={'emoji preview image'}
+					class="emoji-picker__preview-image"
+					src={getEmojiImageUrl(emoji)}
+				/>
+			{/if}
+
+			<span class="text-sm text-gray-600">:{isSystemEmoji(emoji) ? emoji.short_names.join(': :') : emoji.name}:</span>
+		</div>
 	{/if}
 </div>

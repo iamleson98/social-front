@@ -9,7 +9,7 @@
 		cursorEmojiId: SystemEmoji['unified'] | CustomEmoji['id'];
 		onEmojiClick: (emoji: Emoji) => void;
 		onEmojiMouseOver: (cursor: EmojiCursor) => void;
-		data: CategoryOrEmojiRow[];
+		data: CategoryOrEmojiRow;
 		index: number;
 		class?: string;
 	};
@@ -23,18 +23,16 @@
 		index,
 		class: className = '',
 	}: Props = $props();
-
-	const row = data[index];
 </script>
 
-{#if isCategoryHeaderRow(row)}
-	<EmojiPickerCategoryRow categoryName={row.items[0].categoryName} class={className} />
+{#if isCategoryHeaderRow(data)}
+	<EmojiPickerCategoryRow categoryName={data.items[0].categoryName} class={className} />
 {:else}
-	<div class={[className, 'flex justify-start pe-1 ps-3']} role="row">
-		{#each row.items as emojiColumn, idx (idx)}
+	<div class={[className, 'flex justify-start pe-1.5 ps-1.5']} role="row">
+		{#each data.items as emojiColumn, idx (idx)}
 			<EmojiPickerItem
 				emoji={emojiColumn.item}
-				rowIndex={row.index}
+				rowIndex={data.index}
 				isSelected={emojiColumn.emojiId.toLowerCase() === cursorEmojiId.toLowerCase() &&
 					cursorRowIndex === index}
 				onClick={onEmojiClick}

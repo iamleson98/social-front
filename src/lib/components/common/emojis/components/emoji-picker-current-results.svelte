@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createVirtualizer } from '@tanstack/svelte-virtual';
+	import { createVirtualizer, type SvelteVirtualizer } from '@tanstack/svelte-virtual';
 	import { AutoSizer } from '../../autosizer';
 	import {
 		CATEGORIES_CONTAINER_HEIGHT,
@@ -17,6 +17,8 @@
 	} from '../types';
 	import { InfiniteLoader, LoaderState } from 'svelte-infinite';
 	import EmojiPickerCategoryOrEmojiRow from './emoji-picker-category-or-emoji-row.svelte';
+	import type { Readable } from 'svelte/store';
+	import { onMount } from 'svelte';
 
 	interface Props {
 		categoryOrEmojisRows: CategoryOrEmojiRow[];
@@ -26,16 +28,16 @@
 		cursorEmojiId: SystemEmoji['unified'] | CustomEmoji['name'];
 		customEmojisEnabled: boolean;
 		customEmojiPage: number;
-		// setActiveCategory: (category: EmojiCategory) => void;
 		onEmojiClick: (emoji: Emoji) => void;
 		onEmojiMouseOver: (cursor: EmojiCursor) => void;
 		incrementEmojiPickerPage: () => void;
-		getCustomEmojis: (
-			page?: number,
-			perPage?: number,
-			sort?: string,
-			loadUsers?: boolean,
-		) => Promise<ActionResult<CustomEmoji[]>>;
+		// setActiveCategory: (category: EmojiCategory) => void;
+		// getCustomEmojis: (
+		// 	page?: number,
+		// 	perPage?: number,
+		// 	sort?: string,
+		// 	loadUsers?: boolean,
+		// ) => Promise<ActionResult<CustomEmoji[]>>;
 	}
 
 	let {
@@ -44,42 +46,40 @@
 		activeCategory = $bindable(),
 		cursorRowIndex,
 		cursorEmojiId,
-		customEmojisEnabled,
-		customEmojiPage,
-		// setActiveCategory,
 		onEmojiClick,
 		onEmojiMouseOver,
+		customEmojiPage,
+		customEmojisEnabled,
 		incrementEmojiPickerPage,
-		getCustomEmojis,
+		// setActiveCategory,
+		// getCustomEmojis,
 	}: Props = $props();
 
 	const loaderState = new LoaderState();
 	let virtualListEl = $state<HTMLDivElement>();
+	let virtualizer = $state<Readable<SvelteVirtualizer<HTMLDivElement, HTMLDivElement>>>();
 
-	const virtualizer = $derived(
-		createVirtualizer<HTMLDivElement, HTMLDivElement>({
+	onMount(() => {
+		virtualizer = createVirtualizer<HTMLDivElement, HTMLDivElement>({
 			count: categoryOrEmojisRows.length,
 			getScrollElement: () => virtualListEl!,
 			estimateSize: () => ITEM_HEIGHT,
 			overscan: EMOJI_ROWS_OVERSCAN_COUNT,
-			horizontal: false,
-		}),
-	);
+		});
+	});
 
-	const handleLoadMore = async () => {
-		if (!customEmojisEnabled) {
-			return;
-		}
+	// const handleLoadMoreItems = async () => {
+	// 	if (!customEmojisEnabled) return;
 
-		const { data } = await getCustomEmojis(customEmojiPage, CUSTOM_EMOJIS_PER_PAGE);
+	// 	const { data } = await getCustomEmojis?.(customEmojiPage, CUSTOM_EMOJIS_PER_PAGE);
 
-		// If data came back empty, or data is less than the perPage, then we know there are no more pages
-		if (!data || data.length < CUSTOM_EMOJIS_PER_PAGE) {
-			return;
-		}
+	// 	// If data came back empty, or data is less than the perPage, then we know there are no more pages
+	// 	if (!data || data.length < CUSTOM_EMOJIS_PER_PAGE) {
+	// 		return;
+	// 	}
 
-		incrementEmojiPickerPage();
-	};
+	// 	incrementEmojiPickerPage();
+	// };
 </script>
 
 <div
@@ -88,30 +88,24 @@
 		? EMOJI_CONTAINER_HEIGHT + CATEGORIES_CONTAINER_HEIGHT
 		: EMOJI_CONTAINER_HEIGHT}px;"
 >
-	<div
-		class="emoji-picker__container"
-		role="grid"
-		style="position: relative; height: {$virtualizer.getTotalSize()}px; width: 100%;"
-		aria-labelledby="emojiPickerSearch"
-		bind:this={virtualListEl}
-	>
-		<AutoSizer>
-			<!-- <InfiniteLoader {loaderState} triggerLoad={handleLoadMore}> -->
-			{#each $virtualizer.getVirtualItems() as item (item.index)}
-				<div
-					style="position: absolute; top: 0; left: 0; width: 100%; height: {item.size}px; transform: translateY({item.start}px);"
-				>
-					<EmojiPickerCategoryOrEmojiRow
-						index={item.index}
-						data={categoryOrEmojisRows}
-						{cursorRowIndex}
-						{cursorEmojiId}
-						{onEmojiClick}
-						{onEmojiMouseOver}
-					/>
-				</div>
-			{/each}
-			<!-- </InfiniteLoader> -->
+	<div class="emoji-picker__container" role="grid" aria-labelledby="emojiPickerSearch">
+		<AutoSizer bind:ref={virtualListEl!}>
+			<div style="position: relative; height: {$virtualizer?.getTotalSize()}px; width: 100%;">
+				{#each $virtualizer?.getVirtualItems() || [] as item (item.index)}
+					<div
+						style="position: absolute; top: 0; left: 0; width: 100%; height: {item.size}px; transform: translateY({item.start}px);"
+					>
+						<EmojiPickerCategoryOrEmojiRow
+							index={item.index}
+							data={categoryOrEmojisRows[item.index]}
+							{cursorRowIndex}
+							{cursorEmojiId}
+							{onEmojiClick}
+							{onEmojiMouseOver}
+						/>
+					</div>
+				{/each}
+			</div>
 		</AutoSizer>
 	</div>
 </div>

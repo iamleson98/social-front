@@ -141,30 +141,16 @@ export function getFilteredEmojis(allEmojis: Record<string, Emoji>, filter: stri
   // Form a separate array of recent emojis
   const recentEmojis = convertEmojisToUserSkinTone(recentEmojisString, allEmojis, userSkinTone);
 
-  const filteredRecentEmojis = filteredEmojisWithRecent.filter((emoji) => {
-    return recentEmojis.some((recentEmojis) => isEmojiIdEqual(recentEmojis, emoji));
-  });
+  const filteredRecentEmojis = filteredEmojisWithRecent.filter((emoji) => recentEmojis.some((item) => isEmojiIdEqual(item, emoji)));
 
-  const sortedRecentEmojis = filteredRecentEmojis.sort((firstEmoji, secondEmoji) =>
-    compareEmojis(firstEmoji, secondEmoji, filter),
-  );
+  const sortedRecentEmojis = filteredRecentEmojis.sort((firstEmoji, secondEmoji) => compareEmojis(firstEmoji, secondEmoji, filter));
 
   // Seprate out recent emojis from the rest of the emoji result
-  const filtertedEmojisMinusRecent = filteredEmojisWithRecent.filter((emoji) => {
-    return !recentEmojis.some((recentEmojis) => isEmojiIdEqual(recentEmojis, emoji));
-  });
+  const filtertedEmojisMinusRecent = filteredEmojisWithRecent.filter((emoji) => !recentEmojis.some((item) => isEmojiIdEqual(item, emoji)));
 
-  const sortedFiltertedEmojisMinusRecent = filtertedEmojisMinusRecent.sort((firstEmoji, secondEmoji) =>
-    compareEmojis(firstEmoji, secondEmoji, filter),
-  );
+  const sortedFiltertedEmojisMinusRecent = filtertedEmojisMinusRecent.sort((firstEmoji, secondEmoji) => compareEmojis(firstEmoji, secondEmoji, filter));
 
-  const filteredEmojis = [...sortedRecentEmojis, ...sortedFiltertedEmojisMinusRecent];
-
-  const filteredEmojisUserSkinTone = filteredEmojis.filter((emoji) => {
-    return emojiMatchesSkin(emoji, userSkinTone);
-  });
-
-  return filteredEmojisUserSkinTone;
+  return sortedRecentEmojis.concat(sortedFiltertedEmojisMinusRecent).filter((emoji) => emojiMatchesSkin(emoji, userSkinTone));
 }
 
 export function splitEmojisToRows(emojis: Emoji[], categoryIndex: number, categoryName: EmojiCategory, rowIndexCounter: number): [EmojiRow[], number] {
@@ -228,8 +214,7 @@ export function createEmojisPositions(categoryOrEmojiRows: CategoryOrEmojiRow[])
     }
   });
 
-  const emojisPositions = emojisPositions2DArray.flat();
-  return emojisPositions;
+  return emojisPositions2DArray.flat();
 }
 
 function getEmojisByCategory(
@@ -291,7 +276,7 @@ export function createCategoryAndEmojiRows(
       categories[categoryName as EmojiCategory],
     );
 
-    sortedEmojis = [...sortedEmojis, ...emojis];
+    sortedEmojis = sortedEmojis.concat(emojis);
 
     // Add for the category header
     const categoryRow: CategoryHeaderRow = {
@@ -306,19 +291,17 @@ export function createCategoryAndEmojiRows(
       }],
     };
 
-    categoryOrEmojisRows = [...categoryOrEmojisRows, categoryRow];
+    categoryOrEmojisRows = categoryOrEmojisRows.concat(categoryRow);
     rowIndexCounter += 1;
 
     const [emojiRows, increasedRowIndexCounter] = splitEmojisToRows(emojis, categoryIndex, categoryName as EmojiCategory, rowIndexCounter);
 
     rowIndexCounter = increasedRowIndexCounter;
 
-    categoryOrEmojisRows = [...categoryOrEmojisRows, ...emojiRows];
+    categoryOrEmojisRows = categoryOrEmojisRows.concat(emojiRows);
   });
 
-  const emojisPositions = createEmojisPositions(categoryOrEmojisRows);
-
-  return [categoryOrEmojisRows, emojisPositions];
+  return [categoryOrEmojisRows, createEmojisPositions(categoryOrEmojisRows)];
 }
 
 export function getUpdatedCategoriesAndAllEmojis(
@@ -336,12 +319,8 @@ export function getUpdatedCategoriesAndAllEmojis(
     if (categoryName === 'recent' && recentEmojis.length) {
       categoryEmojis = [...recentEmojis].
         reverse().
-        filter((name) => {
-          return emojiMap.has(name);
-        }).
-        map((name) => {
-          return emojiMap.get(name)!;
-        });
+        filter((name) => emojiMap.has(name)).
+        map((name) => emojiMap.get(name)!);
     } else {
       const indices = (EmojiIndicesByCategory.get(userSkinTone) as Map<string, number[]>).get(categoryName) || [];
       categoryEmojis = indices.map((index) => Emojis[index]);

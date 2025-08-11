@@ -11,10 +11,10 @@
 		cursorEmojiIndex: number;
 		focus: () => void;
 		onEnter: () => void;
-		onChange: (value: string) => void;
+		// onChange: (value: string) => void;
 		onKeyDown: (moveTo: NavigationDirection) => void;
 		resetCursorPosition: () => void;
-    ref?: HTMLInputElement;
+		ref?: HTMLInputElement;
 	};
 
 	let {
@@ -23,18 +23,18 @@
 		cursorEmojiIndex,
 		focus,
 		onEnter,
-		onChange,
+		// onChange,
 		onKeyDown,
 		resetCursorPosition,
-    ref = $bindable(),
+		ref = $bindable(),
 	}: Props = $props();
 
 	const innerHandleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
 		event.preventDefault();
 
 		// remove trailing and leading colons
-		const value = (event.target as HTMLInputElement).value.replace(/^:|:$/g, '');
-		onChange(value);
+		value = (event.target as HTMLInputElement).value.replace(/^:|:$/g, '');
+		// onChange(value);
 
 		resetCursorPosition();
 	};
@@ -123,14 +123,13 @@
 	};
 </script>
 
-<div class="rounded-sm">
-	<Input
-		startIcon={Search}
-		placeholder="Search emoji"
-		size="xs"
-		bind:value
-		onkeydown={handleKeyDown}
-		onchange={innerHandleChange}
-    bind:ref
-	/>
-</div>
+<Input
+	startIcon={Search}
+	placeholder="Search emoji"
+	class="flex-1"
+	size="sm"
+	bind:value
+	onkeydown={handleKeyDown}
+	onchange={innerHandleChange}
+	bind:ref
+/>

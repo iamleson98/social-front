@@ -1,4 +1,5 @@
-import { CategoryNames } from './emojis'
+import { Apple, Bulb, Clock, Flag, Heart, Leaf2, MoodCog, MoodSmile, Plane, Search, User, VolleyBall } from '$lib/components/icons';
+import { omit } from 'es-toolkit';
 
 export type EmojiCategory =
   | 'recent'
@@ -120,104 +121,66 @@ export type EmojiPosition = {
   categoryName: EmojiCategory;
 }
 
-const defineMessage = ({ id, defaultMessage }: { id: string; defaultMessage: string }) => id + defaultMessage
-
 const emojiCategories = {
   recent: {
     name: 'recent',
-    label: defineMessage({
-      id: 'emoji_picker.recent',
-      defaultMessage: 'Recent',
-    }),
-    iconClassName: 'icon-clock-outline',
+    label: 'Recent',
+    iconClassName: Clock,
   },
   searchResults: {
     name: 'searchResults',
-    label: defineMessage({
-      id: 'emoji_picker.searchResults',
-      defaultMessage: 'Search Results',
-    }),
-    iconClassName: '',
+    label: 'Search Result',
+    iconClassName: Search,
   },
   'smileys-emotion': {
     name: 'smileys-emotion',
-    label: defineMessage({
-      id: 'emoji_picker.smileys-emotion',
-      defaultMessage: 'Smileys & Emotion',
-    }),
-    iconClassName: 'icon-emoticon-happy-outline',
+    label: 'Smileys & Emotion',
+    iconClassName: MoodSmile,
   },
   'people-body': {
     name: 'people-body',
-    label: defineMessage({
-      id: 'emoji_picker.people-body',
-      defaultMessage: 'People & Body',
-    }),
-    iconClassName: 'icon-account-outline',
+    label: 'People & Body',
+    iconClassName: User,
   },
   'animals-nature': {
     name: 'animals-nature',
-    label: defineMessage({
-      id: 'emoji_picker.animals-nature',
-      defaultMessage: 'Animals & Nature',
-    }),
-    iconClassName: 'icon-leaf-outline',
+    label: 'Animals & Nature',
+    iconClassName: Leaf2,
   },
   'food-drink': {
     name: 'food-drink',
-    label: defineMessage({
-      id: 'emoji_picker.food-drink',
-      defaultMessage: 'Food & Drink',
-    }),
-    iconClassName: 'icon-food-apple',
+    label: 'Food & Drink',
+    iconClassName: Apple,
   },
   'travel-places': {
     name: 'travel-places',
-    label: defineMessage({
-      id: 'emoji_picker.travel-places',
-      defaultMessage: 'Travel & Places',
-    }),
-    iconClassName: 'icon-airplane-variant',
+    label: 'Travel & Places',
+    iconClassName: Plane,
   },
   activities: {
     name: 'activities',
-    label: defineMessage({
-      id: 'emoji_picker.activities',
-      defaultMessage: 'Activities',
-    }),
-    iconClassName: 'icon-basketball',
+    label: 'Activities',
+    iconClassName: VolleyBall,
   },
   objects: {
     name: 'objects',
-    label: defineMessage({
-      id: 'emoji_picker.objects',
-      defaultMessage: 'Objects',
-    }),
-    iconClassName: 'icon-lightbulb-outline',
+    label: 'Objects',
+    iconClassName: Bulb,
   },
   symbols: {
     name: 'symbols',
-    label: defineMessage({
-      id: 'emoji_picker.symbols',
-      defaultMessage: 'Symbols',
-    }),
-    iconClassName: 'icon-heart-outline',
+    label: 'Symbols',
+    iconClassName: Heart,
   },
   flags: {
     name: 'flags',
-    label: defineMessage({
-      id: 'emoji_picker.flags',
-      defaultMessage: 'Flags',
-    }),
-    iconClassName: 'icon-flag-outline',
+    label: 'Flags',
+    iconClassName: Flag,
   },
   custom: {
     name: 'custom',
-    label: defineMessage({
-      id: 'emoji_picker.custom',
-      defaultMessage: 'Custom',
-    }),
-    iconClassName: 'icon-emoticon-custom-outline',
+    label: 'Custom',
+    iconClassName: MoodCog,
   },
 } satisfies Record<EmojiCategory, Category>;
 
@@ -229,17 +192,10 @@ export enum NavigationDirection {
   PreviousEmojiRow = 'previousRow',
 }
 
-export const RECENT_EMOJI_CATEGORY: Pick<Categories, 'recent'> = { recent: emojiCategories.recent };
-export const SEARCH_EMOJI_CATEGORY: Pick<Categories, typeof SEARCH_RESULTS> = { searchResults: emojiCategories.searchResults };
+export const RECENT_EMOJI_CATEGORY = { recent: emojiCategories.recent };
+export const SEARCH_EMOJI_CATEGORY = { searchResults: emojiCategories.searchResults };
 
-export const CATEGORIES: Categories = CategoryNames.
-  filter((category) => !(category === 'recent' || category === 'searchResults')).
-  reduce((previousCategory, currentCategory) => {
-    return {
-      ...previousCategory,
-      [currentCategory]: emojiCategories[currentCategory as EmojiCategory],
-    };
-  }, {} as Categories);
+export const CATEGORIES = omit(emojiCategories, ['recent', 'searchResults']) as Categories;
 
 export const EMOJI_PER_ROW = 9; // needs to match variable `$emoji-per-row` in _variables.scss
 export const ITEM_HEIGHT = 36; //as per .emoji-picker__item height in _emoticons.scss

@@ -17,38 +17,6 @@
   }
 }
 
-.emojisprite {
-  width: 66px;
-  max-width: none;
-  height: 66px;
-  border-radius: 18px;
-  background-repeat: no-repeat;
-  cursor: pointer;
-  -moz-transform: scale(0.35);
-  transform: scale(0.35);
-}
-
-.emojisprite-loading {
-  width: 66px;
-  max-width: none;
-  height: 66px;
-  border-radius: 18px;
-  background-image: none !important;
-  background-repeat: no-repeat;
-  cursor: pointer;
-  -moz-transform: scale(0.35);
-  transform: scale(0.35);
-}
-
-@supports (zoom: 0.35) {
-  .emojisprite,
-  .emojisprite-loading {
-      -moz-transform: none;
-      transform: none;
-      zoom: 0.35;
-  }
-}
-
 .emoji-category-recent,
 .emoji-category-smileys-emotion,
 .emoji-category-people-body,

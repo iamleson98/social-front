@@ -30,46 +30,41 @@
 	} from './utils';
 	import EmojiPickerCategories from './components/emoji-picker-categories.svelte';
 	import EmojiPickerCurrentResults from './components/emoji-picker-current-results.svelte';
-	import type EmojiMap from './emoji-map';
+	import EmojiMap from './emoji-map';
 	import { onMount, untrack } from 'svelte';
+	import './components/item-styles.css';
+	import EmojiPickerPreview from './components/emoji-picker-preview.svelte';
 
 	type Props = {
 		filter: string;
 		onEmojiClick: (emoji: Emoji) => void;
-		handleFilterChange: (filter: string) => void;
-		handleEmojiPickerClose: () => void;
+		// handleFilterChange: (filter: string) => void;
 		onAddCustomEmojiClick?: () => void;
-		customEmojisEnabled?: boolean;
 		customEmojiPage?: number;
-		emojiMap: EmojiMap;
-		recentEmojis: string[];
+		// emojiMap: EmojiMap;
+		recentEmojis?: string[];
 		userSkinTone?: string;
 		setUserSkinTone?: (skinTone: string) => void;
-		incrementEmojiPickerPage: () => Promise<{
-			data: boolean;
-		}>;
-		getCustomEmojis: (
-			page?: number,
-			perPage?: number,
-			sort?: string,
-			loadUsers?: boolean,
-		) => Promise<ActionResult<CustomEmoji[]>>;
+		incrementEmojiPickerPage?: () => void;
+		// getCustomEmojis: (
+		// 	page?: number,
+		// 	perPage?: number,
+		// 	sort?: string,
+		// 	loadUsers?: boolean,
+		// ) => Promise<ActionResult<CustomEmoji[]>>;
 	};
 
 	let {
 		filter = $bindable(),
 		onEmojiClick,
-		handleEmojiPickerClose,
-		onAddCustomEmojiClick,
-		handleFilterChange,
-		emojiMap,
-		recentEmojis,
+		// handleFilterChange,
+		// emojiMap,
+		recentEmojis = [],
 		userSkinTone = 'default',
 		setUserSkinTone = noop,
-		incrementEmojiPickerPage,
+		incrementEmojiPickerPage = noop,
 		customEmojiPage = 0,
-		getCustomEmojis,
-		customEmojisEnabled = false,
+		// getCustomEmojis,
 	}: Props = $props();
 
 	const getInitialActiveCategory = () => ($RecentEmojis.length ? RECENT : SMILEY_EMOTION);
@@ -90,9 +85,31 @@
 	let emojiPositions = $state<EmojiPosition[]>([]);
 	let searchInputRef = $state<HTMLInputElement>();
 	let infiniteLoaderRef = $state<unknown>();
-	let shouldRunCreateCategoryAndEmojiRows = $state<boolean>();
+	// let shouldRunCreateCategoryAndEmojiRows = $state<boolean>();
+	// const [allEmojis, categories] = $derived(getUpdatedCategoriesAndAllEmojis(emojiMap, recentEmojis, userSkinTone, allEmojis))
+
+	const emojiMap = new EmojiMap(new Map());
+
+	$effect(() => {
+		const res = getUpdatedCategoriesAndAllEmojis(
+			emojiMap,
+			recentEmojis,
+			userSkinTone,
+			untrack(() => allEmojis),
+		);
+		categories = res[0];
+		allEmojis = res[1];
+	});
 
 	let categoryOrEmojisRows = $state<CategoryOrEmojiRow[]>([]);
+
+	// $inspect(categories, allEmojis);
+
+	// clear out the active category on search input
+	$effect(() => {
+		if (filter && activeCategory !== getInitialActiveCategory())
+			activeCategory = getInitialActiveCategory();
+	});
 
 	const getEmojiById = (emojiId: string) => {
 		if (!emojiId) return null;
@@ -116,6 +133,24 @@
 		}
 	};
 
+	$effect(() => {
+		const [updatedCategoryOrEmojisRows, updatedEmojiPositions] = createCategoryAndEmojiRows(
+			untrack(() => allEmojis),
+			untrack(() => categories),
+			filter,
+			userSkinTone,
+		);
+
+		if (untrack(() => activeCategory) !== 'custom') {
+			selectFirstEmoji(updatedEmojiPositions);
+		}
+
+		categoryOrEmojisRows = updatedCategoryOrEmojisRows;
+		emojiPositions = updatedEmojiPositions;
+	});
+
+	$inspect(categoryOrEmojisRows);
+
 	const handleCategoryClick = (
 		categoryRowIndex: CategoryOrEmojiRow['index'],
 		categoryName: EmojiCategory,
@@ -125,7 +160,7 @@
 
 		activeCategory = categoryName;
 
-		// add infinite load here
+		// TODO: add infinite load here
 
 		const cursorEmoji = getEmojiById(emojiId);
 		if (cursorEmoji) {
@@ -147,10 +182,10 @@
 		// add infinite load scroll here
 	};
 
-	const onAddCustomEmojiClickInner = () => {
-		handleEmojiPickerClose();
-		onAddCustomEmojiClick?.();
-	};
+	// const onAddCustomEmojiClickInner = () => {
+	// 	handleEmojiPickerClose();
+	// 	onAddCustomEmojiClick?.();
+	// };
 
 	const [cursorCategory, cursorCategoryIndex, cursorEmojiIndex] = $derived(
 		getCursorProperties(cursor.rowIndex, cursor.emojiId, categoryOrEmojisRows as EmojiRow[]),
@@ -161,16 +196,43 @@
 		emojiPositions: EmojiPosition[],
 		currentCursorsPositionIndex: number,
 		categories: Categories,
-		focusOnSearchInput: () => void,
 	) => {
 		if (currentCursorsPositionIndex - EMOJI_PER_ROW >= 0) {
+			// Emoji is present up a row in same x position
 			const upTheRowCategoryName = emojiPositions[currentCursorsPositionIndex - EMOJI_PER_ROW]
 				.categoryName as EmojiCategory;
 
 			if (upTheRowCategoryName !== cursorCategory) {
-				// const
+				// If up the row emoji is in different category, move to that category's last emoji
+				const upTheRowCategorysEmojis = categories[upTheRowCategoryName].emojiIds || [];
+				const lastEmojiIdUpTheRow = upTheRowCategorysEmojis[upTheRowCategorysEmojis.length - 1];
+				const lastEmojiPositionUpTheRow = emojiPositions.find((emojiPosition) => {
+					return (
+						emojiPosition.emojiId.toLowerCase() === lastEmojiIdUpTheRow.toLowerCase() &&
+						emojiPosition.categoryName === upTheRowCategoryName
+					);
+				});
+				return lastEmojiPositionUpTheRow;
 			}
+
+			// If up the row emoji is in same category, move up in same category
+			return emojiPositions[currentCursorsPositionIndex - EMOJI_PER_ROW];
 		}
+
+		// When emojis in the assumingly top row are less than EMOJI_PER_ROW,
+		// Check if those are of different category
+		const startingEmojisOfDifferentCategory = emojiPositions
+			.slice(0, currentCursorsPositionIndex)
+			.reverse()
+			.find((emojiPosition) => emojiPosition.categoryName !== cursorCategory);
+
+		if (startingEmojisOfDifferentCategory) {
+			return startingEmojisOfDifferentCategory;
+		}
+
+		// We are already at the first row, so focus on search
+		focusOnSearchInput();
+		return undefined;
 	};
 
 	const focusOnSearchInput = () => searchInputRef?.focus();
@@ -185,7 +247,6 @@
 		moveTo: NavigationDirection,
 		emojiPositions: EmojiPosition[],
 		currentCursorIndexInEmojis: number,
-		focusOnSearchInput: () => void,
 	) {
 		if (
 			moveTo === NavigationDirection.NextEmoji &&
@@ -222,13 +283,12 @@
 				// If down the row emoji is in different category, move to that category's first emoji
 				const downTheRowCategorysEmojis = categories[downTheRowCategoryName].emojiIds || [];
 				const firstEmojiIdDownTheRow = downTheRowCategorysEmojis[0];
-				const firstEmojiPositionDownTheRow = emojiPositions.find((emojiPosition) => {
+				return emojiPositions.find((emojiPosition) => {
 					return (
 						emojiPosition.emojiId.toLowerCase() === firstEmojiIdDownTheRow.toLowerCase() &&
 						emojiPosition.categoryName === downTheRowCategoryName
 					);
 				});
-				return firstEmojiPositionDownTheRow;
 			}
 
 			// If down the row emoji is in same category, move to down in same category
@@ -239,59 +299,10 @@
 		// Check if the remaining emojis are of different category
 		const endingEmojisOfDifferentCategory = emojiPositions
 			.slice(currentCursorsPositionIndex + 1, emojiPositions.length)
-			.find((emojiPosition) => {
-				return emojiPosition.categoryName !== cursorCategory;
-			});
+			.find((emojiPosition) => emojiPosition.categoryName !== cursorCategory);
 
-		if (endingEmojisOfDifferentCategory) {
-			return endingEmojisOfDifferentCategory;
-		}
-
-		return undefined;
+		return endingEmojisOfDifferentCategory;
 	}
-
-	$effect(() => {
-		const cur = untrack(() => shouldRunCreateCategoryAndEmojiRows);
-
-		shouldRunCreateCategoryAndEmojiRows = true;
-
-		untrack(() => allEmojis);
-		untrack(() => categories);
-
-		const [updatedCategories, updatedAllEmojis] = getUpdatedCategoriesAndAllEmojis(
-			emojiMap,
-			recentEmojis,
-			userSkinTone,
-			allEmojis,
-		);
-
-		allEmojis = updatedAllEmojis;
-		categories = updatedCategories;
-	});
-
-	$effect(() => {
-		const cur = untrack(() => categoryOrEmojisRows);
-		untrack(() => emojiPositions);
-		
-
-		// shouldRunCreateCategoryAndEmojiRows = false;
-
-		const [updatedCategoryOrEmojisRows, updatedEmojiPositions] = createCategoryAndEmojiRows(
-			allEmojis,
-			categories,
-			filter,
-			userSkinTone,
-		);
-
-		if (activeCategory !== 'custom') {
-			selectFirstEmoji(updatedEmojiPositions);
-		}
-
-		categoryOrEmojisRows = updatedCategoryOrEmojisRows;
-		emojiPositions = updatedEmojiPositions;
-
-		// TODO: scroll to row index
-	});
 
 	const handleKeyboardEmojiNavigation = (moveTo: NavigationDirection) => {
 		if (!emojiPositions.length) return;
@@ -316,7 +327,6 @@
 					moveTo,
 					emojiPositions,
 					currentCursorsPositionIndex,
-					focusOnSearchInput,
 				);
 			} else if (moveTo === NavigationDirection.NextEmojiRow) {
 				newCursor = calculateNewCursorForDownArrow(
@@ -331,7 +341,6 @@
 					emojiPositions,
 					currentCursorsPositionIndex,
 					categories,
-					focusOnSearchInput,
 				);
 			}
 		} else if (cursor.emojiId.length === 0 && cursor.rowIndex === -1) {
@@ -379,7 +388,7 @@
 	};
 </script>
 
-<div class="flex items-center">
+<div class="flex items-center justify-between relative m-3 gap-2">
 	<EmojiPickerSearch
 		bind:value={filter}
 		bind:ref={searchInputRef}
@@ -387,7 +396,6 @@
 		{cursorEmojiIndex}
 		focus={focusOnSearchInput}
 		onEnter={handleEnterOnEmoji}
-		onChange={handleFilterChange}
 		onKeyDown={handleKeyboardEmojiNavigation}
 		resetCursorPosition={resetCursor}
 	/>
@@ -417,7 +425,11 @@
 		onEmojiMouseOver={handleEmojiOnMouseOver}
 		{customEmojiPage}
 		{incrementEmojiPickerPage}
-		{customEmojisEnabled}
-		{getCustomEmojis}
+		customEmojisEnabled={false}
 	/>
+	<div>
+		{#if !areSearchResultsEmpty}
+			<EmojiPickerPreview emoji={cursor.emoji} />
+		{/if}
+	</div>
 {/if}

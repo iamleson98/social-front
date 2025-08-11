@@ -14,4 +14,4 @@
 	let pickerMounted = $state(false);
 </script>
 
-<IconButton icon={HandStop} size="xs" variant="light" />
+<IconButton icon={HandStop} size="sm" variant="light" color="gray" />
