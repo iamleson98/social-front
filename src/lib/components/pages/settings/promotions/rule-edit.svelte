@@ -24,7 +24,6 @@
 		existingChannelId?: string;
 		name: string;
 		addChannels: string[];
-		removeChannels?: string[];
 		rewardValue: number;
 		rewardValueType: RewardValueTypeEnum;
 		description: OutputData;
@@ -33,7 +32,6 @@
 	let {
 		name = $bindable(),
 		addChannels = $bindable(),
-		removeChannels = $bindable(),
 		rewardValue = $bindable(),
 		rewardValueType = $bindable(),
 		existingChannelId,
@@ -45,7 +43,6 @@
 	const RuleSchema = object({
 		name: string().nonempty(CommonState.FieldRequiredError),
 		addChannels: string().nonempty(CommonState.FieldRequiredError),
-		removeChannels: string(),
 		rewardValue: number().nonnegative(POSITIVE_ERROR),
 		rewardValueType: z.enum([RewardValueTypeEnum.Fixed, RewardValueTypeEnum.Percentage]),
 	});
@@ -53,7 +50,6 @@
 	type RuleType = z.infer<typeof RuleSchema>;
 
 	let ruleFormErrors = $state.raw<Partial<Record<keyof RuleType, string[]>>>({});
-
 	let selectedChannel = $state<Channel>();
 	let selectedChannelId = $state(existingChannelId);
 
@@ -61,7 +57,6 @@
 		const result = RuleSchema.safeParse({
 			name,
 			addChannels,
-			removeChannels,
 			rewardValue,
 			rewardValueType,
 		});
@@ -122,9 +117,10 @@
 		if (chan) {
 			const newChan = chan as Channel;
 			updateChannelsForVariables(newChan);
+
 			if (existingChannelId && newChan.id !== existingChannelId) {
 				addChannels = [newChan.id];
-				removeChannels = [existingChannelId];
+				// removeChannels = [existingChannelId];
 			}
 		}
 

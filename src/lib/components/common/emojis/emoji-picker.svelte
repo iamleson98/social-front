@@ -149,8 +149,6 @@
 		emojiPositions = updatedEmojiPositions;
 	});
 
-	$inspect(categoryOrEmojisRows);
-
 	const handleCategoryClick = (
 		categoryRowIndex: CategoryOrEmojiRow['index'],
 		categoryName: EmojiCategory,

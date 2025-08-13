@@ -15,7 +15,7 @@
 		type EmojiCursor,
 		type SystemEmoji,
 	} from '../types';
-	import { InfiniteLoader, LoaderState } from 'svelte-infinite';
+	// import { InfiniteLoader, LoaderState } from 'svelte-infinite';
 	import EmojiPickerCategoryOrEmojiRow from './emoji-picker-category-or-emoji-row.svelte';
 	import type { Readable } from 'svelte/store';
 	import { onMount } from 'svelte';
@@ -55,7 +55,7 @@
 		// getCustomEmojis,
 	}: Props = $props();
 
-	const loaderState = new LoaderState();
+	// const loaderState = new LoaderState();
 	let virtualListEl = $state<HTMLDivElement>();
 	let virtualizer = $state<Readable<SvelteVirtualizer<HTMLDivElement, HTMLDivElement>>>();
 

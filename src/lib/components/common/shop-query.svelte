@@ -7,22 +7,20 @@
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 
-	onMount(() => {
-		const { unsubscribe } = GRAPHQL_CLIENT.query<Pick<Query, 'shop'>>(
+	onMount(async () => {
+		const result = await GRAPHQL_CLIENT.query<Pick<Query, 'shop'>>(
 			SHOP_QUERY,
 			{
 				isStaffUser: $READ_ONLY_USER_STORE?.isStaff,
 			},
 			{ requestPolicy: 'cache-and-network' },
-		).subscribe((result) => {
-			if (result.error) {
-				toast.error('Failed to fetch shop detail informations');
-				return;
-			}
+		);
 
-			setShopStoreValue(result.data?.shop);
-		});
+		if (result.error) {
+			toast.error(result.error.message);
+			return;
+		}
 
-		return unsubscribe;
+		setShopStoreValue(result.data?.shop);
 	});
 </script>

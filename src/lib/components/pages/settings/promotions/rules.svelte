@@ -13,18 +13,22 @@
 	import { Modal } from '$lib/components/ui/Modal';
 	import {
 		RewardValueTypeEnum,
+		type Category,
 		type CategoryCountableConnection,
+		type Collection,
 		type CollectionCountableConnection,
 		type Mutation,
 		type MutationPromotionRuleDeleteArgs,
+		type Product,
 		type ProductCountableConnection,
+		type ProductVariant,
 		type ProductVariantCountableConnection,
 		type PromotionRule,
 		type PromotionRuleCreateInput,
 		type PromotionRuleUpdateInput,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
-	import { checkIfGraphqlResultHasError, parseEditorJsString } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, parseEditorJsString, SitenameCommonClassName } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import RuleEdit from './rule-edit.svelte';
 	import { Table, TableSkeleton } from '$lib/components/ui/Table';
@@ -55,8 +59,8 @@
 	let loading = $state(false);
 
 	let ruleActiveTabs = $state<TabKey[]>(new Array(rules.length).fill('products'));
-	let ruleUpdateInput = $state<PromotionRuleUpdateInput>();
-	let ruleCreateInput = $state<PromotionRuleCreateInput>();
+	// let ruleUpdateInput = $state<PromotionRuleUpdateInput>();
+	let ruleUpsertInput = $state<PromotionRuleUpdateInput>();
 
 	const rulePredicateQuery = operationStore<QueryData>({
 		kind: 'query',
@@ -125,42 +129,84 @@
 		});
 	};
 
-	const handleEditRule = (idx: number) => {
+	const handleClickEditRule = (idx: number) => {
 		const rule = rules[idx];
 
-		ruleUpdateInput = {
+		ruleUpsertInput = {
 			name: rule.name,
-			addChannels: [],
-			removeChannels: [],
+			addChannels: rule.channels?.map(chan => chan.id),
 			description: rule.description,
 			rewardValue: rule.rewardValue,
 			rewardValueType: rule.rewardValueType,
+			cataloguePredicate: rule.cataloguePredicate,
 		};
 	};
 
-	const setActiveTabs = (ruleIdx: number, tabKey: TabKey) => {
+	const setActivePredicateTabOfRule = (ruleIdx: number, tabKey: TabKey) => {
 		ruleActiveTabs[ruleIdx] = tabKey;
 	};
 
 	const handleClickAddRule = () => {
-		ruleCreateInput = {
+		ruleUpsertInput = {
 			name: '',
-			channels: [],
+			addChannels: [],
 			rewardValue: 0,
 			rewardValueType: RewardValueTypeEnum.Percentage,
-			promotion: '',
+			description: { blocks: [] },
+			cataloguePredicate: {
+				variantPredicate: {},
+				productPredicate: {},
+				collectionPredicate: {},
+				categoryPredicate: {},
+			},
 		};
 	};
 
 	const handleOkUpsertRule = () => {};
 
 	const handleCancelUpsert = () => {
-		ruleCreateInput = undefined;
-		ruleUpdateInput = undefined;
+		ruleUpsertInput = undefined;
+		// ruleUpdateInput = undefined;
+	};
+
+	const classifyRuleCatalog = (
+		rule: PromotionRule,
+		{ products, productVariants, collections, categories }: QueryData,
+	) => {
+		let ruleCategories: Category[] = [];
+		let ruleProducts: Product[] = [];
+		let ruleCollections: Collection[] = [];
+		let ruleVariants: ProductVariant[] = [];
+
+		if (rule.cataloguePredicate?.productPredicate?.ids) {
+			ruleProducts = products.edges
+				.map((edge) => edge.node)
+				.filter((prd) => rule.cataloguePredicate?.productPredicate?.ids.includes(prd.id));
+		}
+
+		if (rule.cataloguePredicate?.variantPredicate?.ids) {
+			ruleVariants = productVariants.edges
+				.map((edge) => edge.node)
+				.filter((variant) => rule.cataloguePredicate.variantPredicate.ids.includes(variant.id));
+		}
+
+		if (rule.cataloguePredicate?.categoryPredicate?.ids) {
+			ruleCategories = categories.edges
+				.map((edge) => edge.node)
+				.filter((cate) => rule.cataloguePredicate.categoryPredicate.ids.includes(cate.id));
+		}
+
+		if (rule.cataloguePredicate?.collectionPredicate?.ids) {
+			ruleCollections = collections.edges
+				.map((edge) => edge.node)
+				.filter((col) => rule.cataloguePredicate.collectionPredicate.ids.includes(col.id));
+		}
+
+		return { ruleCategories, ruleProducts, ruleVariants, ruleCollections };
 	};
 </script>
 
-<div class="rounded-lg bg-white border border-gray-200 p-3 space-y-2">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>
 		<div>Rules</div>
 		<Button endIcon={Plus} size="xs" variant="light" onclick={handleClickAddRule}>Add rule</Button>
@@ -179,7 +225,7 @@
 								variant="light"
 								color="gray"
 								disabled={loading}
-								onclick={() => handleEditRule(ruleIdx)}
+								onclick={() => handleClickEditRule(ruleIdx)}
 							/>
 							<IconButton
 								size="xs"
@@ -231,37 +277,8 @@
 						{:else if $rulePredicateQuery.error}
 							<Alert size="sm" bordered variant="error">{$rulePredicateQuery.error.message}</Alert>
 						{:else if $rulePredicateQuery.data}
-							{@const products = $rulePredicateQuery.data.products.edges.map((edge) => edge.node)}
-							{@const productVariants = $rulePredicateQuery.data.productVariants.edges.map(
-								(edge) => edge.node,
-							)}
-							{@const categories = $rulePredicateQuery.data.categories.edges.map(
-								(edge) => edge.node,
-							)}
-							{@const collections = $rulePredicateQuery.data.collections.edges.map(
-								(edge) => edge.node,
-							)}
-
-							{@const ruleProducts = rule.cataloguePredicate?.productPredicate?.ids
-								? products.filter((product) =>
-										rule.cataloguePredicate?.productPredicate?.ids.includes(product.id),
-									)
-								: []}
-							{@const ruleVariants = rule.cataloguePredicate?.variantPredicate?.ids
-								? productVariants.filter((variant) =>
-										rule.cataloguePredicate?.variantPredicate?.ids.includes(variant.id),
-									)
-								: []}
-							{@const ruleCategories = rule.cataloguePredicate?.categoryPredicate?.ids
-								? categories.filter((category) =>
-										rule.cataloguePredicate?.categoryPredicate?.ids.includes(category.id),
-									)
-								: []}
-							{@const ruleCollections = rule.cataloguePredicate?.collectionPredicate?.ids
-								? collections.filter((collection) =>
-										rule.cataloguePredicate?.collectionPredicate?.ids.includes(collection.id),
-									)
-								: []}
+							{@const { ruleCategories, ruleCollections, ruleProducts, ruleVariants } =
+								classifyRuleCatalog(rule, $rulePredicateQuery.data)}
 
 							<div role="tablist" class="tabs tabs-border tabs-xs">
 								<span
@@ -269,8 +286,9 @@
 									tabindex="0"
 									class="tab"
 									class:tab-active={ruleActiveTabs[ruleIdx] === 'products'}
-									onclick={() => setActiveTabs(ruleIdx, 'products')}
-									onkeydown={(evt) => evt.key === 'Enter' && setActiveTabs(ruleIdx, 'products')}
+									onclick={() => setActivePredicateTabOfRule(ruleIdx, 'products')}
+									onkeydown={(evt) =>
+										evt.key === 'Enter' && setActivePredicateTabOfRule(ruleIdx, 'products')}
 								>
 									Products ({ruleProducts.length})
 								</span>
@@ -279,8 +297,9 @@
 									tabindex="0"
 									class="tab"
 									class:tab-active={ruleActiveTabs[ruleIdx] === 'variants'}
-									onclick={() => setActiveTabs(ruleIdx, 'variants')}
-									onkeydown={(evt) => evt.key === 'Enter' && setActiveTabs(ruleIdx, 'variants')}
+									onclick={() => setActivePredicateTabOfRule(ruleIdx, 'variants')}
+									onkeydown={(evt) =>
+										evt.key === 'Enter' && setActivePredicateTabOfRule(ruleIdx, 'variants')}
 								>
 									Variants ({ruleVariants.length})
 								</span>
@@ -289,8 +308,9 @@
 									tabindex="0"
 									class="tab"
 									class:tab-active={ruleActiveTabs[ruleIdx] === 'categories'}
-									onclick={() => setActiveTabs(ruleIdx, 'categories')}
-									onkeydown={(evt) => evt.key === 'Enter' && setActiveTabs(ruleIdx, 'categories')}
+									onclick={() => setActivePredicateTabOfRule(ruleIdx, 'categories')}
+									onkeydown={(evt) =>
+										evt.key === 'Enter' && setActivePredicateTabOfRule(ruleIdx, 'categories')}
 								>
 									Categories ({ruleCategories.length})
 								</span>
@@ -299,8 +319,9 @@
 									tabindex="0"
 									class="tab"
 									class:tab-active={ruleActiveTabs[ruleIdx] === 'collections'}
-									onclick={() => setActiveTabs(ruleIdx, 'collections')}
-									onkeydown={(evt) => evt.key === 'Enter' && setActiveTabs(ruleIdx, 'collections')}
+									onclick={() => setActivePredicateTabOfRule(ruleIdx, 'collections')}
+									onkeydown={(evt) =>
+										evt.key === 'Enter' && setActivePredicateTabOfRule(ruleIdx, 'collections')}
 								>
 									Collections ({ruleCollections.length})
 								</span>
@@ -328,7 +349,7 @@
 </div>
 
 <Modal
-	open={!!ruleCreateInput || !!ruleUpdateInput}
+	open={!!ruleUpsertInput}
 	header="Add promotion rule"
 	okText="Add"
 	cancelText="Cancel"
@@ -338,22 +359,21 @@
 	onCancel={handleCancelUpsert}
 	onClose={handleCancelUpsert}
 >
-	{#if ruleUpdateInput}
+	{#if ruleUpsertInput}
 		<RuleEdit
-			bind:name={ruleUpdateInput.name!}
-			bind:addChannels={ruleUpdateInput.addChannels!}
-			bind:removeChannels={ruleUpdateInput.removeChannels!}
-			bind:rewardValue={ruleUpdateInput.rewardValue!}
-			bind:rewardValueType={ruleUpdateInput.rewardValueType!}
-			bind:description={ruleUpdateInput.description!}
+			bind:name={ruleUpsertInput.name!}
+			bind:addChannels={ruleUpsertInput.addChannels!}
+			bind:rewardValue={ruleUpsertInput.rewardValue!}
+			bind:rewardValueType={ruleUpsertInput.rewardValueType!}
+			bind:description={ruleUpsertInput.description!}
 		/>
-	{:else if ruleCreateInput}
+	<!-- {:else if ruleCreateInput}
 		<RuleEdit
 			bind:name={ruleCreateInput.name!}
 			bind:addChannels={ruleCreateInput.channels!}
 			bind:rewardValue={ruleCreateInput.rewardValue!}
 			bind:rewardValueType={ruleCreateInput.rewardValueType!}
 			bind:description={ruleCreateInput.description!}
-		/>
+		/> -->
 	{/if}
 </Modal>

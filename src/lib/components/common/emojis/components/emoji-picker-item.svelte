@@ -55,12 +55,12 @@
 	}
 
 	.emoji-picker-item {
-		@apply relative inline-flex overflow-hidden w-9 h-9 items-center justify-center border-none! outline-none! rounded-sm cursor-pointer align-middle hover:bg-gray-200 active:bg-gray-300;
+		@apply relative inline-flex overflow-hidden w-[36px] h-[36px] items-center justify-center border-none! outline-none! rounded-sm cursor-pointer align-middle hover:bg-gray-200 active:bg-gray-300;
 	}
 
 	.emoji-picker-item.selected img,
 	.emoji-picker-item:hover img {
-		@apply scale-50;
+		@apply scale-48;
 	}
 
 	.emoji-picker-item.selected img.emoji-category--custom,
