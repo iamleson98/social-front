@@ -1,7 +1,7 @@
 import { tranFunc } from "$i18n";
 import { get } from "svelte/store";
 
-export class CommonStateCls {
+class CommonStateCls {
   readonly FieldRequiredError = $derived(get(tranFunc)('helpText.fieldRequired'));
   readonly EditSuccess = $derived(get(tranFunc)('common.editSuccess'));
   readonly DeleteSuccess = $derived(get(tranFunc)('common.delSuccess'));

@@ -28,7 +28,11 @@
 		type PromotionRuleUpdateInput,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
-	import { checkIfGraphqlResultHasError, parseEditorJsString, SitenameCommonClassName } from '$lib/utils/utils';
+	import {
+		checkIfGraphqlResultHasError,
+		parseEditorJsString,
+		SitenameCommonClassName,
+	} from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import RuleEdit from './rule-edit.svelte';
 	import { Table, TableSkeleton } from '$lib/components/ui/Table';
@@ -40,6 +44,7 @@
 		VARIANT_COLUMNS,
 	} from '../vouchers/snippets.svelte';
 	import { tranFunc } from '$i18n';
+	import { DefaultCatalogPredicate } from './consts';
 
 	type Props = {
 		rules: PromotionRule[];
@@ -60,7 +65,7 @@
 
 	let ruleActiveTabs = $state<TabKey[]>(new Array(rules.length).fill('products'));
 	// let ruleUpdateInput = $state<PromotionRuleUpdateInput>();
-	let ruleUpsertInput = $state<PromotionRuleUpdateInput>();
+	let ruleUpsertInput = $state<PromotionRuleUpdateInput & { id?: string }>();
 
 	const rulePredicateQuery = operationStore<QueryData>({
 		kind: 'query',
@@ -133,12 +138,13 @@
 		const rule = rules[idx];
 
 		ruleUpsertInput = {
+			id: rule.id, // to help update
 			name: rule.name,
-			addChannels: rule.channels?.map(chan => chan.id),
+			addChannels: rule.channels?.map((chan) => chan.id),
 			description: rule.description,
 			rewardValue: rule.rewardValue,
 			rewardValueType: rule.rewardValueType,
-			cataloguePredicate: rule.cataloguePredicate,
+			cataloguePredicate: { ...DefaultCatalogPredicate, ...(rule.cataloguePredicate || {}) },
 		};
 	};
 
@@ -153,16 +159,17 @@
 			rewardValue: 0,
 			rewardValueType: RewardValueTypeEnum.Percentage,
 			description: { blocks: [] },
-			cataloguePredicate: {
-				variantPredicate: {},
-				productPredicate: {},
-				collectionPredicate: {},
-				categoryPredicate: {},
-			},
+			cataloguePredicate: { ...DefaultCatalogPredicate },
 		};
 	};
 
-	const handleOkUpsertRule = () => {};
+	const handleOkUpsertRule = () => {
+		if (!ruleUpsertInput) return;
+	
+		loading = true;
+
+		
+	};
 
 	const handleCancelUpsert = () => {
 		ruleUpsertInput = undefined;
@@ -366,8 +373,9 @@
 			bind:rewardValue={ruleUpsertInput.rewardValue!}
 			bind:rewardValueType={ruleUpsertInput.rewardValueType!}
 			bind:description={ruleUpsertInput.description!}
+			bind:catalogPredicate={ruleUpsertInput.cataloguePredicate!}
 		/>
-	<!-- {:else if ruleCreateInput}
+		<!-- {:else if ruleCreateInput}
 		<RuleEdit
 			bind:name={ruleCreateInput.name!}
 			bind:addChannels={ruleCreateInput.channels!}

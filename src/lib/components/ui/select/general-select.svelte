@@ -54,6 +54,7 @@
 	let selectMapper: Record<Primitive, SelectOption> = $state.raw({});
 	let selectMapperChanged = $state(false);
 	let initialRender = $state(true);
+	let optionListRef = $state<HTMLUListElement>();
 
 	$effect(() => {
 		if (value === undefined) {
@@ -188,6 +189,14 @@
 		}
 		initialRender = false;
 	};
+
+	// when show loading more, a circle loading indicator will be shown at the bottom of the <ul />
+	// But it stays off the view since the content is overflow. So this listener splots light it.
+	$effect(() => {
+		if (showLoadingMore && optionListRef) {
+			optionListRef.scrollTo({ behavior: 'smooth', top: optionListRef.scrollHeight });
+		}
+	});
 </script>
 
 <!-- this common snippet is used for rendering select options -->
@@ -211,27 +220,6 @@
 	>
 		{label}
 	</li>
-{/snippet}
-
-{#snippet action()}
-	{#if searchQuery || (!multiple && value)}
-		<span
-			onclick={onClear}
-			role="button"
-			tabindex="0"
-			onkeydown={(evt) => evt.key === 'Enter' && onClear()}
-			class={classNames({
-				'cursor-pointer': !disabled,
-				'cursor-not-allowed!': !!disabled,
-			})}
-			title="Clear"
-			aria-label="Clear"
-		>
-			<Icon icon={CloseX} size="xs" />
-		</span>
-	{:else if !openSelect}
-		<Icon icon={ChevronSort} size="xs" />
-	{/if}
 {/snippet}
 
 <div
@@ -286,7 +274,7 @@
 				autocomplete="off"
 				class={`flex-1 basis-[min-content]`}
 				id={INPUT_ID}
-				size={SIZE_REDUCE_MAP[size]}
+				size="xxs"
 				onclick={handleClick}
 				onfocus={handleFocus}
 				value={inputDisplayText}
@@ -297,8 +285,28 @@
 					onInput,
 					debounceTime: inputDebounceOption?.debounceTime,
 				}}
-				{action}
-			/>
+			>
+				{#snippet action()}
+					{#if searchQuery || (!multiple && value)}
+						<span
+							onclick={onClear}
+							role="button"
+							tabindex="0"
+							onkeydown={(evt) => evt.key === 'Enter' && onClear()}
+							class={classNames({
+								'cursor-pointer': !disabled,
+								'cursor-not-allowed!': !!disabled,
+							})}
+							title="Clear"
+							aria-label="Clear"
+						>
+							<Icon icon={CloseX} size="xs" />
+						</span>
+					{:else if !openSelect}
+						<Icon icon={ChevronSort} size="xs" />
+					{/if}
+				{/snippet}
+			</Input>
 		</div>
 	</div>
 	{#if openSelect}
@@ -309,6 +317,7 @@
 			class={SELECT_CLASSES.selectMenu}
 			tabindex="0"
 			use:scrollToEnd={{ onScrollToEnd }}
+			bind:this={optionListRef}
 		>
 			{#if !searchFilteredOptions.length}
 				{@render selectOption({
@@ -319,18 +328,20 @@
 					label: 'No data',
 					value: '',
 				})}
+			{:else}
+				{#each searchFilteredOptions as option, idx (idx)}
+					{@render selectOption({
+						idx,
+						optionClassName: classNames({
+							'cursor-not-allowed! text-gray-400!': !!option.disabled,
+							[SELECT_CLASSES.activeSelectOption]: !!selectMapper[option.value],
+						}),
+						onclick: () => handleSelect(option),
+						...option,
+					})}
+				{/each}
 			{/if}
-			{#each searchFilteredOptions as option, idx (idx)}
-				{@render selectOption({
-					idx,
-					optionClassName: classNames({
-						'cursor-not-allowed! text-gray-400!': !!option.disabled,
-						[SELECT_CLASSES.activeSelectOption]: !!selectMapper[option.value],
-					}),
-					onclick: () => handleSelect(option),
-					...option,
-				})}
-			{/each}
+
 			{#if showLoadingMore}
 				<li class={SELECT_CLASSES.selectOption}>
 					<span class="loading loading-spinner loading-xs"></span>

@@ -465,3 +465,12 @@ mutation VoucherCataloguesRemove($id: ID!, $input: CatalogueInput!) {
   }
 }`;
 
+export const PROMOTION_RULE_UPDATE_MUTATION = gql`
+mutation UpdatePromotionRule($id: ID!, $input: PromotionRuleUpdateInput!) {
+  promotionRuleUpdate(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;

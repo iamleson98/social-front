@@ -9,7 +9,6 @@
 	import { Input } from '$lib/components/ui/Input';
 	import { Select, SelectSkeleton, type SelectOption } from '$lib/components/ui/select';
 	import {
-		type GiftCardEventFilterInput,
 		GiftCardEventsEnum,
 		type Mutation,
 		type MutationGiftCardAddNoteArgs,
@@ -35,10 +34,7 @@
 		label: key.toLowerCase().replace(/_/g, ' '),
 	}));
 
-	const eventsQuery = operationStore<
-		Pick<Query, 'giftCard'>,
-		QueryGiftCardArgs & { filter: GiftCardEventFilterInput }
-	>({
+	const eventsQuery = operationStore<Pick<Query, 'giftCard'>, QueryGiftCardArgs>({
 		kind: 'query',
 		query: GIFT_CARD_EVENTS_QUERY,
 		variables: {

@@ -82,7 +82,7 @@
 	let pageInfo = $state.raw<PageInfo>();
 	let errorMessage = $state();
 	let isInitialFetch = $state(true);
-	let forceFetching = $state(performDataFetching);
+	let innerForceFetchingMore = $state(performDataFetching);
 
 	const fetchData = async () => {
 		const result = await GRAPHQL_CLIENT.query<Pick<Query, typeof resultKey>>(query, variables, {
@@ -112,9 +112,9 @@
 	};
 
 	$effect(() => {
-		if (forceFetching || performDataFetching) {
+		if (innerForceFetchingMore || performDataFetching) {
 			fetchData().finally(() => {
-				forceFetching = false;
+				innerForceFetchingMore = false;
 				performDataFetching = false;
 				isInitialFetch = false;
 			});
@@ -136,7 +136,7 @@
 
 		variables = newVariables;
 		selectOptions = []; // since we fetch from beginning, so no need to keep the old options
-		forceFetching = true; // trigger fetch over again
+		innerForceFetchingMore = true; // trigger fetch over again
 	};
 
 	const onScrollToEnd = () => {
@@ -146,7 +146,7 @@
 			...variables,
 			after: pageInfo.endCursor,
 		};
-		forceFetching = true; // trigger fetch over again
+		innerForceFetchingMore = true; // trigger fetch over again
 	};
 </script>
 
@@ -165,7 +165,7 @@
 				onInput: (evt) => onInput((evt.target as HTMLInputElement).value),
 			}}
 			{onScrollToEnd}
-			showLoadingMore={forceFetching}
+			showLoadingMore={innerForceFetchingMore}
 			onclearInputField={onInput}
 			{...rest}
 		/>

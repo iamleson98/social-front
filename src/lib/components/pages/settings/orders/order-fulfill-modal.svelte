@@ -4,12 +4,12 @@
 	import { operationStore } from '$lib/api/operation';
 	import { SHOP_QUERY } from '$lib/api/shop';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
-	import { Button } from '$lib/components/ui';
 	import { Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import type {
+		Allocation,
 		Mutation,
 		MutationOrderFulfillArgs,
 		Order,
@@ -19,6 +19,7 @@
 		OrderLine,
 		Query,
 	} from '$lib/gql/graphql';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 
 	type Props = {
@@ -66,18 +67,18 @@
 
 	let orderFulfillInput = $state<OrderFulfillInput>({
 		lines: orderLines.map<OrderFulfillLineInput>((item) => {
-			let stocks: Partial<OrderFulfillStockInput>[] = [];
+			let stocks: OrderFulfillStockInput[] = [];
 
 			if (!item.variant?.preorder) {
 				const highestAllocationWarehouse = item.allocations?.reduce(
 					(acc, cur) => (!acc || acc.quantity < cur.quantity ? cur : acc),
-					null as any,
+					null as unknown as Allocation,
 				);
 
 				stocks = [
 					{
 						quantity: item.quantityToFulfill,
-						warehouse: highestAllocationWarehouse?.warehouse?.id,
+						warehouse: highestAllocationWarehouse?.warehouse?.id as string,
 					},
 				];
 			}
@@ -94,7 +95,7 @@
 			!$shopQuery.data.shop.fulfillmentAllowUnpaid &&
 			!order.isPaid,
 	);
-	let areWarehouseSet = $derived(
+	let areWarehousesSet = $derived(
 		orderFulfillInput.lines
 			.filter((item) => !!item.stocks)
 			.every((item) => item.stocks.every((stock) => stock.warehouse)),
@@ -118,7 +119,7 @@
 				return typeof quantityToFulfill === 'number' && quantityFulfilled > quantityToFulfill;
 			});
 
-		return !overFulfill && isAtleastOneFulfilled && areWarehouseSet;
+		return !overFulfill && isAtleastOneFulfilled && areWarehousesSet;
 	});
 
 	const handleWarehouseChange = (lineIndex: number, warehouseId?: string) => {
@@ -146,8 +147,7 @@
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'orderFulfill', 'Successfully fulfilled order lines'))
-			return;
+		if (checkIfGraphqlResultHasError(result, 'orderFulfill', CommonState.EditSuccess)) return;
 
 		open = false;
 		onFulfillSuccess();
@@ -232,16 +232,10 @@
 	closeOnOutsideClick
 	closeOnEscape
 	header="Items ready to ship"
-	hideFooter
+	okText="Save"
+	onOk={handleFulfill}
+	disableOkBtn={!shouldEnableSaveBtn || loading}
+	disableElements={loading}
 >
 	<Table columns={TABLE_COLUMNS} items={orderLines} />
-
-	<div class="flex items-center gap-2 justify-end">
-		<Button size="sm" disabled={!shouldEnableSaveBtn || loading} onclick={handleFulfill} {loading}>
-			Save
-		</Button>
-		<Button size="sm" variant="light" onclick={() => (open = false)} color="red" disabled={loading}>
-			Cancel
-		</Button>
-	</div>
 </Modal>
