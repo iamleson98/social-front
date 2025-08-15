@@ -8,6 +8,7 @@
 	} from '$lib/api/admin/product';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import ProductType from '$lib/components/common/product-type-select/product-type.svelte';
+	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import CategorySelector from '$lib/components/pages/settings/products/new/category-selector.svelte';
 	import ChannelsSelector from '$lib/components/pages/settings/products/new/channels-selector.svelte';
@@ -31,9 +32,10 @@
 		ProductCreateInput,
 		ProductVariantBulkCreateInput,
 	} from '$lib/gql/graphql';
+	import { AppRoute } from '$lib/utils/routes';
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { omit } from 'es-toolkit';
+	import { noop, omit } from 'es-toolkit';
 	import { toast } from 'svelte-sonner';
 
 	const NOW = new Date();
@@ -257,7 +259,7 @@
 	/>
 	<!-- <GeneralMetadataEditor /> -->
 
-	<Button
+	<!-- <Button
 		size="md"
 		variant="filled"
 		fullWidth
@@ -266,5 +268,11 @@
 		disabled={!Object.values(productInputError).every(Boolean) || loading}
 	>
 		{$tranFunc('btn.create')}
-	</Button>
+	</Button> -->
 </div>
+
+<ActionBar
+	onAddClick={noop}
+	backButtonUrl={AppRoute.SETTINGS_PRODUCTS()}
+	disableCreateButton={false}
+/>
