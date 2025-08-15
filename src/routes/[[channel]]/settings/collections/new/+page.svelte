@@ -6,29 +6,34 @@
 	import {
 		type CollectionCreateInput,
 		type Mutation,
+		type MutationCollectionChannelListingUpdateArgs,
 		type MutationCollectionCreateArgs,
+		type PublishableChannelListingInput,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import ProductAssignForm from '$lib/components/pages/settings/collections/product-assign-form.svelte';
 	import type { MediaObject } from '$lib/utils/types';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { COLLECTION_CREATE_MUTATION } from '$lib/api/admin/collections';
+	import {
+		COLLECTION_CHANNEL_LISTING_UPDATE_MUTATION,
+		COLLECTION_CREATE_MUTATION,
+	} from '$lib/api/admin/collections';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { tranFunc } from '$i18n';
 	import { goto } from '$app/navigation';
+	import { CommonState } from '$lib/utils/common.svelte';
+	import { toast } from 'svelte-sonner';
 
 	let generalFormOk = $state(false);
 	let seoFormOk = $state(false);
 	let createdCollectionId = $state<string>('');
-	let performUpdateMetadata = $state(false);
 	let loading = $state(false);
+	let channelListingsInput = $state<PublishableChannelListingInput[]>([]);
+	let metaEditorRef = $state<any>();
 
 	let collectionCreateInput = $state<CollectionCreateInput>({
 		name: '',
 		description: { blocks: [] },
-		backgroundImage: '',
-		backgroundImageAlt: '',
 		products: [],
 		slug: '',
 		seo: {
@@ -45,22 +50,46 @@
 			Pick<Mutation, 'collectionCreate'>,
 			MutationCollectionCreateArgs
 		>(COLLECTION_CREATE_MUTATION, {
-			input: collectionCreateInput,
+			input: {
+				...collectionCreateInput,
+				backgroundImage: media[0].file,
+				backgroundImageAlt: media[0].alt,
+				description: collectionCreateInput.description
+					? JSON.stringify(collectionCreateInput.description)
+					: '',
+			},
 		});
 
-		if (
-			checkIfGraphqlResultHasError(result, 'collectionCreate', $tranFunc('common.createSuccess'))
-		) {
+		if (checkIfGraphqlResultHasError(result, 'collectionCreate')) {
 			loading = false;
 			return;
 		}
 
 		// create success, add metadata now
-		createdCollectionId = result.data?.collectionCreate?.collection?.id ?? '';
-		if (!createdCollectionId) return;
-		performUpdateMetadata = true;
+		createdCollectionId = result.data?.collectionCreate?.collection?.id as string;
+
+		const hasErr = await metaEditorRef.handleUpdate();
+		if (hasErr) {
+			loading = false;
+			return;
+		}
+
+		// create channel listings:
+		const channelListingResult = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'collectionChannelListingUpdate'>,
+			MutationCollectionChannelListingUpdateArgs
+		>(COLLECTION_CHANNEL_LISTING_UPDATE_MUTATION, {
+			id: createdCollectionId,
+			input: {
+				addChannels: channelListingsInput,
+			},
+		});
 		loading = false;
 
+		if (checkIfGraphqlResultHasError(channelListingResult, 'collectionChannelListingUpdate'))
+			return;
+
+		toast.success(CommonState.CreateSuccess);
 		await goto(AppRoute.SETTINGS_CONFIGS_COLLECTION_DETAILS(createdCollectionId));
 	};
 </script>
@@ -84,15 +113,15 @@
 			disabled={loading}
 		/>
 		<GeneralMetadataEditor
+			bind:this={metaEditorRef}
 			metadata={[]}
 			privateMetadata={[]}
 			objectId={createdCollectionId}
-			bind:performUpdateMetadata
 			disabled={loading}
 		/>
 	</div>
 
-	<AvailabilityForm />
+	<AvailabilityForm disabled={loading} bind:addChannelListings={channelListingsInput} />
 </div>
 
 <ActionBar

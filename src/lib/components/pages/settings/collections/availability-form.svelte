@@ -14,9 +14,14 @@
 	import { slide } from 'svelte/transition';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Skeleton } from '$lib/components/ui/Skeleton';
-	import { CommonEaseDatePickerFormat } from '$lib/utils/consts';
+	import {
+		CommonEaseDatePickerFormat,
+		THIS_TIME_LAST_5_YEARS,
+		THIS_TIME_NEXT_5_YEARS,
+	} from '$lib/utils/consts';
 	import { tranFunc } from '$i18n';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import { RFC3339TimeFormat } from '$lib/api/graphql/utils';
 
 	type Props = {
 		addChannelListings?: PublishableChannelListingInput[];
@@ -168,9 +173,21 @@
 							size="sm"
 							label={$tranFunc('common.publication_date')}
 							value={{ date: listing.publishedAt }}
-							onchange={(val) =>
-								(listing.publishedAt = dayjs(val.date).format(CommonEaseDatePickerFormat))}
+							onchange={(val) => (listing.publishedAt = dayjs(val.date).format(RFC3339TimeFormat))}
 							{disabled}
+							timeConfig={{
+								stepMinutes: 1,
+								format: 24,
+								stepHours: 1,
+							}}
+							allowSelectMonthYears={{
+								showMonths: true,
+								showResetBtn: true,
+								showYears: {
+									min: THIS_TIME_LAST_5_YEARS.year(),
+									max: THIS_TIME_NEXT_5_YEARS.year(),
+								},
+							}}
 						/>
 					</div>
 				{/if}

@@ -8,6 +8,7 @@
 	import type { MediaObject } from '$lib/utils/types';
 	import FileInputContainer from '$lib/components/common/file-input-container.svelte';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
 
 	type Props = {
 		name: string;
@@ -25,7 +26,6 @@
 		ok = $bindable(),
 	}: Props = $props();
 
-	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 	const MAX_ERROR = $tranFunc('error.itemsExceed', { max: 1 });
 
 	let collectionFormErrors = $state.raw<Partial<Record<keyof CollectionSchema, string[]>>>({});
@@ -35,11 +35,11 @@
 	});
 
 	const collectionSchema = object({
-		name: string().nonempty(REQUIRED_ERROR),
+		name: string().nonempty(CommonState.FieldRequiredError),
 		description: object({
-			blocks: array(any()).nonempty(REQUIRED_ERROR),
+			blocks: array(any()).nonempty(CommonState.FieldRequiredError),
 		}),
-		media: array(any()).max(1, MAX_ERROR).nonempty(REQUIRED_ERROR),
+		media: array(any()).max(1, MAX_ERROR).nonempty(CommonState.FieldRequiredError),
 	});
 	type CollectionSchema = z.infer<typeof collectionSchema>;
 

@@ -7,7 +7,7 @@
 	import type { SocialSize } from '../ui/common';
 	import { FileInput, Input, INPUT_CLASSES, Label } from '../ui/Input';
 	import { classNames, formatBytes } from '$lib/utils/utils';
-	import { tranFunc } from '$i18n';
+	import { CommonState } from '$lib/utils/common.svelte';
 
 	type Props = {
 		accept: string;
@@ -40,12 +40,11 @@
 
 	const documentIcon = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2m-8-4h6m-6-4h6"/></g></svg>')}`;
 
-	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 	let mediaErrors = $state<Partial<Record<number, string[]>>>();
 
 	const Schema = array(
 		object({
-			alt: string().nonempty(REQUIRED_ERROR),
+			alt: string().nonempty(CommonState.FieldRequiredError),
 		}),
 	);
 

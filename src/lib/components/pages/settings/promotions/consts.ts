@@ -23,11 +23,13 @@ export const DefaultCatalogPredicate: CataloguePredicateInput = {
   collectionPredicate: { ids: [] },
 };
 
+export type TabKey = 'products' | 'variants' | 'categories' | 'collections';
+
 /**
  * sometimes the backend return predicates ids as empty object {}, which is not desired.
  * This function converts them to array [] instead.
  */
-export const cleanRulesData = (rules: PromotionRule[]) => {
+export const cleanRulesData = (rules: PromotionRule[]): PromotionRule[] => {
   return rules.map(rule => {
     const predicates = rule.cataloguePredicate || {};
 

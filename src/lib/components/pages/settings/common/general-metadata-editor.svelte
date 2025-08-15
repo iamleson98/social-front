@@ -1,3 +1,25 @@
+<script lang="ts" module>
+	type Props = {
+		metadata?: MetadataItem[];
+		privateMetadata?: MetadataItem[];
+		disabled?: boolean;
+		/** id of the object that owns those metadatas */
+		objectId: string;
+		/** the lock for parent to trigger the updating of metadatas. MUST provided as `bind:performUpdateMetadata` */
+		performUpdateMetadata?: boolean;
+		/** callback when update is done */
+		onDoneUpdate?: () => void;
+	};
+
+	export type GeneralMetadataEditorComponentType = Component<
+		Props,
+		{
+			handleUpdate: () => Promise<void>;
+		},
+		'performUpdateMetadata'
+	>;
+</script>
+
 <script lang="ts">
 	import {
 		METADATA_DELETE_MUTATION,
@@ -12,18 +34,7 @@
 	import type { AnyVariables, TypedDocumentNode } from '@urql/core';
 	import MetadataEditor from './metadata-editor.svelte';
 	import { tranFunc } from '$i18n';
-
-	type Props = {
-		metadata?: MetadataItem[];
-		privateMetadata?: MetadataItem[];
-		disabled?: boolean;
-		/** id of the object that owns those metadatas */
-		objectId: string;
-		/** the lock for parent to trigger the updating of metadatas. MUST provided as `bind:performUpdateMetadata` */
-		performUpdateMetadata?: boolean;
-		/** callback when update is done */
-		onDoneUpdate?: () => void;
-	};
+	import type { Component } from 'svelte';
 
 	let {
 		metadata = [],
@@ -44,7 +55,7 @@
 		variables: Record<string, unknown>;
 	};
 
-	const handleUpdate = async () => {
+	export const handleUpdate = async () => {
 		const taskKeys: (keyof Mutation)[] = [];
 		const taskProps: TaskProps[] = [];
 
@@ -83,7 +94,7 @@
 			GRAPHQL_CLIENT.mutation(props.query, props.variables).toPromise(),
 		);
 		const results = await Promise.all(tasks);
-		results.forEach((result, idx) => checkIfGraphqlResultHasError(result, taskKeys[idx]));
+		return results.some((result, idx) => checkIfGraphqlResultHasError(result, taskKeys[idx]));
 	};
 
 	$effect(() => {

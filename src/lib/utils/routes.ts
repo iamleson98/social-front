@@ -26,7 +26,7 @@ export const AppRoute = {
 	SETTINGS_CONTRACTS: () => buildLinkWithRespectToChannel('settings/contracts'),
 	SETTINGS_CONTRACTS_NEW: () => buildLinkWithRespectToChannel('settings/contracts/new'),
 
-	SETTINGS_CONFIGS: () => buildLinkWithRespectToChannel('settings/configs'),
+	// SETTINGS_CONFIGS: () => buildLinkWithRespectToChannel('settings/configs'),
 
 	SETTINGS_CONFIGS_CHANNELS: () => buildLinkWithRespectToChannel('settings/channels'),
 	SETTINGS_CONFIGS_CHANNEL_DETAILS: (slug: string) => buildLinkWithRespectToChannel(`settings/channels/${slug}`),

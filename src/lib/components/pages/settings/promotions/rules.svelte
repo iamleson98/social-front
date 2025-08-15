@@ -28,6 +28,7 @@
 		type ProductVariant,
 		type ProductVariantCountableConnection,
 		type PromotionRule,
+		type PromotionRuleCreateInput,
 		type PromotionRuleUpdateInput,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
@@ -47,12 +48,15 @@
 		VARIANT_COLUMNS,
 	} from '../vouchers/snippets.svelte';
 	import { tranFunc } from '$i18n';
-	import { DefaultCatalogPredicate } from './consts';
+	import { DefaultCatalogPredicate, type TabKey } from './consts';
 	import { omit } from 'es-toolkit';
 	import { CommonState } from '$lib/utils/common.svelte';
 
 	type Props = {
-		rules: PromotionRule[];
+		/** pass in this prop in promotion detail page */
+		rules?: PromotionRule[];
+		/** pass in the prop when in create page */
+		addRules?: PromotionRuleCreateInput[];
 		onRuleDeleted?: () => void;
 		/** if not provided, meanings current page is promotion create page */
 		promotionId?: string;
@@ -65,9 +69,14 @@
 		categories: CategoryCountableConnection;
 		collections: CollectionCountableConnection;
 	};
-	type TabKey = 'products' | 'variants' | 'categories' | 'collections';
 
-	let { rules = $bindable(), onRuleDeleted, promotionId, onDoneUpsertRule }: Props = $props();
+	let {
+		rules = [],
+		onRuleDeleted,
+		promotionId,
+		onDoneUpsertRule,
+		addRules = $bindable(),
+	}: Props = $props();
 
 	let loading = $state(false);
 	let ruleActiveTabs = $state<TabKey[]>(new Array(rules.length).fill('products'));
@@ -211,6 +220,17 @@
 
 				handleDoneUpsertRule();
 			} else {
+				// in prmotion creation page, we just append new rules to the given list, parent will handle them
+				addRules?.push({
+					name: ruleUpsertInput.name,
+					description: ruleUpsertInput.description,
+					channels: ruleUpsertInput.addChannels,
+					cataloguePredicate: ruleUpsertInput.cataloguePredicate,
+					promotion: '', // leave this empty, so the parent page will handle
+					rewardType: ruleUpsertInput.rewardType,
+					rewardValue: ruleUpsertInput.rewardValue,
+					rewardValueType: ruleUpsertInput.rewardValueType,
+				});
 			}
 		}
 	};
@@ -265,7 +285,7 @@
 	{#if rules.length}
 		<div class="grid grid-cols-2 gap-2 tablet:grid-cols-1">
 			{#each rules as rule, ruleIdx (ruleIdx)}
-				<div class="rounded-lg border border-gray-200 p-3 space-y-2">
+				<div class={SitenameCommonClassName}>
 					<SectionHeader>
 						<div>Catalog rule</div>
 						<div class="flex gap-1.5">
@@ -332,19 +352,19 @@
 							{@const tabs: {key: TabKey, display: string}[] = [
 								{
 									key: 'products',
-									display: `Products ${ruleProducts.length}`
+									display: `Products (${ruleProducts.length})`
 								},
 								{
 									key: 'variants',
-									display: `Variants ${ruleVariants.length}`,
+									display: `Variants (${ruleVariants.length})`,
 								},
 								{
 									key: 'collections',
-									display: `Collections ${ruleCollections.length}`,
+									display: `Collections (${ruleCollections.length})`,
 								},
 								{
 									key: 'categories',
-									display: `Categories ${ruleCategories.length}`,
+									display: `Categories (${ruleCategories.length})`,
 								}
 							]}
 							<div role="tablist" class="tabs tabs-border tabs-xs">
