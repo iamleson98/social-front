@@ -274,7 +274,7 @@
 				autocomplete="off"
 				class={`flex-1 basis-[min-content]`}
 				id={INPUT_ID}
-				size="xxs"
+				size={SIZE_REDUCE_MAP[size]}
 				onclick={handleClick}
 				onfocus={handleFocus}
 				value={inputDisplayText}

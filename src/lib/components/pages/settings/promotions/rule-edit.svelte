@@ -17,18 +17,17 @@
 		RewardValueTypeEnum,
 	} from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
-	import { classNames } from '$lib/utils/utils';
 	import type { OutputData } from '@editorjs/editorjs';
 	import { array, number, object, string, z } from 'zod';
 
 	type Props = {
-		// existingChannelId?: string;
 		name: string;
 		addChannels: string[];
 		rewardValue: number;
 		rewardValueType: RewardValueTypeEnum;
 		description: OutputData;
-		catalogPredicate?: CataloguePredicateInput;
+		catalogPredicate: CataloguePredicateInput;
+		disabled: boolean;
 	};
 
 	let {
@@ -36,14 +35,9 @@
 		addChannels = $bindable([]),
 		rewardValue = $bindable(),
 		rewardValueType = $bindable(),
-		// existingChannelId,
 		description = $bindable(),
-		catalogPredicate = $bindable({
-			productPredicate: { ids: [] },
-			categoryPredicate: { ids: [] },
-			collectionPredicate: { ids: [] },
-			variantPredicate: { ids: [] },
-		}),
+		catalogPredicate = $bindable(),
+		disabled,
 	}: Props = $props();
 
 	const POSITIVE_ERROR = $tranFunc('error.negativeNumber');
@@ -59,7 +53,6 @@
 
 	let ruleFormErrors = $state.raw<Partial<Record<keyof RuleType, string[]>>>({});
 	let selectedChannel = $state<Channel>();
-	// let selectedChannelId = $state(addChannels?.[0]);
 
 	const validate = () => {
 		const result = RuleSchema.safeParse({
@@ -72,29 +65,24 @@
 		return result.success;
 	};
 
-	let useProductsWithPromotion = $state(false);
-	let useProductVariantsWithPromotion = $state(false);
-	let useCategoriesWithPromotion = $state(false);
-	let useCollectionsWithPromotion = $state(false);
+	let useProductsWithPromotion = $state(!!catalogPredicate?.productPredicate?.ids?.length);
+	let useProductVariantsWithPromotion = $state(!!catalogPredicate?.variantPredicate?.ids?.length);
+	let useCategoriesWithPromotion = $state(!!catalogPredicate?.categoryPredicate?.ids?.length);
+	let useCollectionsWithPromotion = $state(!!catalogPredicate?.collectionPredicate?.ids?.length);
 
-	let performProductsFetching = $state(false);
-	let performProductVariantsFetching = $state(false);
-	let performCategoriesFetching = $state(false);
-	let performCollectionsFetching = $state(false);
-
-	// let productIds = $state<string[]>([]);
-	// let productVariantIds = $state<string[]>([]);
-	// let categoryIds = $state<string[]>([]);
-	// let collectionIds = $state<string[]>([]);
+	let performProductsFetching = $state(!!catalogPredicate?.productPredicate?.ids?.length);
+	let performProductVariantsFetching = $state(!!catalogPredicate?.variantPredicate?.ids?.length);
+	let performCategoriesFetching = $state(!!catalogPredicate?.categoryPredicate?.ids?.length);
+	let performCollectionsFetching = $state(!!catalogPredicate?.collectionPredicate?.ids?.length);
 
 	let productsVariable = $state<QueryProductsArgs>({
 		first: 20,
-		channel: selectedChannel?.slug,
+		channel: undefined,
 		filter: { search: '' },
 	});
 	let productVariantsVariable = $state<QueryProductVariantsArgs>({
 		first: 20,
-		channel: selectedChannel?.slug,
+		channel: undefined,
 		filter: { search: '' },
 	});
 	let categoriesVariable = $state<QueryCategoriesArgs>({
@@ -104,7 +92,7 @@
 	let collectionsVariable = $state<QueryCollectionsArgs>({
 		first: 20,
 		filter: { search: '' },
-		channel: selectedChannel?.slug,
+		channel: undefined,
 	});
 
 	const updateChannelsForVariables = (chan: Channel) => {
@@ -117,20 +105,6 @@
 		collectionsVariable = { ...collectionsVariable, channel: chan.slug };
 		performCollectionsFetching = useCollectionsWithPromotion;
 	};
-
-	// const handleChannelChange = (chan: Channel | Channel[] | undefined) => {
-	// 	if (chan) {
-	// 		const newChan = chan as Channel;
-	// 		updateChannelsForVariables(newChan);
-
-	// 		if (existingChannelId && newChan.id !== existingChannelId) {
-	// 			addChannels = [newChan.id];
-	// 			// removeChannels = [existingChannelId];
-	// 		}
-	// 	}
-
-	// 	validate();
-	// };
 </script>
 
 <div class="space-y-3">
@@ -145,6 +119,7 @@
 			variant={ruleFormErrors.name?.length ? 'error' : 'info'}
 			subText={ruleFormErrors.name?.[0]}
 			required
+			{disabled}
 		/>
 		<ChannelSelect
 			label="Application channel"
@@ -152,11 +127,13 @@
 			variant={ruleFormErrors.addChannels?.length ? 'error' : 'info'}
 			subText={ruleFormErrors.addChannels?.[0]}
 			required
+			{disabled}
 			valueType="id"
 			class="flex-1"
 			onblur={validate}
 			onchange={(value) => {
 				if (value) updateChannelsForVariables(value as Channel);
+				selectedChannel = value as Channel;
 				validate();
 			}}
 		/>
@@ -168,6 +145,7 @@
 			<div class="space-y-2">
 				<div class="flex items-center gap-1">
 					<Checkbox
+						{disabled}
 						label="Products"
 						bind:checked={useProductsWithPromotion}
 						onCheckChange={(checked) => {
@@ -187,7 +165,7 @@
 						resultKey="products"
 						size="sm"
 						bind:performDataFetching={performProductsFetching}
-						disabled={!useProductsWithPromotion}
+						disabled={!useProductsWithPromotion || disabled}
 						bind:value={catalogPredicate.productPredicate!.ids}
 					/>
 				</div>
@@ -200,6 +178,7 @@
 							performProductVariantsFetching = checked;
 							if (!checked) catalogPredicate.variantPredicate!.ids = [];
 						}}
+						{disabled}
 						class="flex-1/4"
 					/>
 					<GraphqlPaginableSelect
@@ -213,7 +192,7 @@
 						resultKey="productVariants"
 						size="sm"
 						bind:performDataFetching={performProductVariantsFetching}
-						disabled={!useProductVariantsWithPromotion}
+						disabled={!useProductVariantsWithPromotion || disabled}
 						bind:value={catalogPredicate.variantPredicate!.ids}
 					/>
 				</div>
@@ -226,6 +205,7 @@
 							performCategoriesFetching = checked;
 							if (!checked) catalogPredicate.categoryPredicate!.ids = [];
 						}}
+						{disabled}
 						class="flex-1/4"
 					/>
 					<GraphqlPaginableSelect
@@ -239,7 +219,7 @@
 						resultKey="categories"
 						size="sm"
 						bind:performDataFetching={performCategoriesFetching}
-						disabled={!useCategoriesWithPromotion}
+						disabled={!useCategoriesWithPromotion || disabled}
 						bind:value={catalogPredicate.categoryPredicate!.ids}
 					/>
 				</div>
@@ -252,6 +232,7 @@
 							performCollectionsFetching = checked;
 							if (!checked) catalogPredicate.collectionPredicate!.ids = [];
 						}}
+						{disabled}
 						class="flex-1/4"
 					/>
 					<GraphqlPaginableSelect
@@ -265,7 +246,7 @@
 						resultKey="collections"
 						size="sm"
 						bind:performDataFetching={performCollectionsFetching}
-						disabled={!useCollectionsWithPromotion}
+						disabled={!useCollectionsWithPromotion || disabled}
 						bind:value={catalogPredicate.collectionPredicate!.ids}
 					/>
 				</div>
@@ -278,7 +259,13 @@
 			<div class="font-medium text-gray-800 mb-1">Reward type</div>
 			<div class="space-y-1">
 				{#each Object.values(RewardValueTypeEnum) as value, idx (idx)}
-					<RadioButton {value} bind:group={rewardValueType} label={value.toLowerCase()} size="sm" />
+					<RadioButton
+						{value}
+						bind:group={rewardValueType}
+						{disabled}
+						label={value.toLowerCase()}
+						size="sm"
+					/>
 				{/each}
 			</div>
 		</div>
@@ -293,6 +280,7 @@
 			variant={ruleFormErrors.rewardValue?.length ? 'error' : 'info'}
 			subText={ruleFormErrors.rewardValue?.[0]}
 			required
+			{disabled}
 			type="number"
 			min={0}
 		>
@@ -304,5 +292,10 @@
 		</Input>
 	</div>
 
-	<EditorJSComponent label="Description" placeholder="Description" bind:value={description} />
+	<EditorJSComponent
+		{disabled}
+		label="Description"
+		placeholder="Description"
+		bind:value={description}
+	/>
 </div>

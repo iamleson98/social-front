@@ -11,6 +11,7 @@
 	import { operationStore } from '$lib/api/operation';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
+	import { cleanRulesData } from '$lib/components/pages/settings/promotions/consts';
 	import DetailSkeleton from '$lib/components/pages/settings/promotions/detail-skeleton.svelte';
 	import GeneralInformation from '$lib/components/pages/settings/promotions/general-information.svelte';
 	import Rules from '$lib/components/pages/settings/promotions/rules.svelte';
@@ -109,6 +110,10 @@
 			},
 		});
 	};
+
+	const handleRefetchPromotion = () => {
+		promotionStore.reexecute({ variables: { id: page.params.id! } });
+	};
 </script>
 
 {#if $promotionStore.fetching}
@@ -128,8 +133,10 @@
 			bind:ok={generalOk}
 		/>
 		<Rules
-			rules={rules || []}
-			onRuleDeleted={() => promotionStore.reexecute({ variables: { id } })}
+			rules={cleanRulesData(rules || [])}
+			onRuleDeleted={handleRefetchPromotion}
+			onDoneUpsertRule={handleRefetchPromotion}
+			promotionId={id}
 		/>
 		<GeneralMetadataEditor
 			objectId={id}

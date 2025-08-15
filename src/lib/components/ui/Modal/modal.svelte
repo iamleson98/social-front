@@ -23,7 +23,6 @@
 		closeOnOutsideClick,
 		closeOnEscape,
 		disableElements = false,
-
 		disableCloseBtn,
 		disableCancelBtn,
 		disableOkBtn,

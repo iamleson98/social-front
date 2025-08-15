@@ -474,3 +474,13 @@ mutation UpdatePromotionRule($id: ID!, $input: PromotionRuleUpdateInput!) {
     }
   }
 }`;
+
+export const PROMOTION_RULE_CREATE_MUTATION = gql`
+mutation CreatePromotionRule($input: PromotionRuleCreateInput!) {
+  promotionRuleCreate(input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;

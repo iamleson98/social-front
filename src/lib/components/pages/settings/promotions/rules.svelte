@@ -1,7 +1,9 @@
 <script lang="ts">
 	import {
 		PROMOTION_RULE_CONDITIONS_SELECTED_OPTIONS_DETAILS,
+		PROMOTION_RULE_CREATE_MUTATION,
 		PROMOTION_RULE_DELETE_MUTATION,
+		PROMOTION_RULE_UPDATE_MUTATION,
 	} from '$lib/api/admin/discount';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
@@ -18,13 +20,14 @@
 		type Collection,
 		type CollectionCountableConnection,
 		type Mutation,
+		type MutationPromotionRuleCreateArgs,
 		type MutationPromotionRuleDeleteArgs,
+		type MutationPromotionRuleUpdateArgs,
 		type Product,
 		type ProductCountableConnection,
 		type ProductVariant,
 		type ProductVariantCountableConnection,
 		type PromotionRule,
-		type PromotionRuleCreateInput,
 		type PromotionRuleUpdateInput,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
@@ -45,10 +48,15 @@
 	} from '../vouchers/snippets.svelte';
 	import { tranFunc } from '$i18n';
 	import { DefaultCatalogPredicate } from './consts';
+	import { omit } from 'es-toolkit';
+	import { CommonState } from '$lib/utils/common.svelte';
 
 	type Props = {
 		rules: PromotionRule[];
 		onRuleDeleted?: () => void;
+		/** if not provided, meanings current page is promotion create page */
+		promotionId?: string;
+		onDoneUpsertRule?: () => void;
 	};
 
 	type QueryData = {
@@ -59,12 +67,10 @@
 	};
 	type TabKey = 'products' | 'variants' | 'categories' | 'collections';
 
-	let { rules, onRuleDeleted }: Props = $props();
+	let { rules = $bindable(), onRuleDeleted, promotionId, onDoneUpsertRule }: Props = $props();
 
 	let loading = $state(false);
-
 	let ruleActiveTabs = $state<TabKey[]>(new Array(rules.length).fill('products'));
-	// let ruleUpdateInput = $state<PromotionRuleUpdateInput>();
 	let ruleUpsertInput = $state<PromotionRuleUpdateInput & { id?: string }>();
 
 	const rulePredicateQuery = operationStore<QueryData>({
@@ -113,20 +119,14 @@
 			onOk: async () => {
 				loading = true;
 				const result = await GRAPHQL_CLIENT.mutation<
-					Pick<Mutation, 'promotionRuleCreate'>,
+					Pick<Mutation, 'promotionRuleDelete'>,
 					MutationPromotionRuleDeleteArgs
 				>(PROMOTION_RULE_DELETE_MUTATION, {
 					id: ruleId,
 				});
 				loading = false;
 
-				if (
-					checkIfGraphqlResultHasError(
-						result,
-						'promotionRuleDelete',
-						$tranFunc('common.deleteSuccess'),
-					)
-				)
+				if (checkIfGraphqlResultHasError(result, 'promotionRuleDelete', CommonState.DeleteSuccess))
 					return;
 
 				onRuleDeleted?.();
@@ -163,17 +163,60 @@
 		};
 	};
 
-	const handleOkUpsertRule = () => {
+	const handleDoneUpsertRule = () => {
+		ruleUpsertInput = undefined;
+		onDoneUpsertRule?.();
+	};
+
+	const handleOkUpsertRule = async () => {
 		if (!ruleUpsertInput) return;
-	
+
 		loading = true;
 
-		
+		if (ruleUpsertInput.id) {
+			const result = await GRAPHQL_CLIENT.mutation<
+				Pick<Mutation, 'promotionRuleUpdate'>,
+				MutationPromotionRuleUpdateArgs
+			>(PROMOTION_RULE_UPDATE_MUTATION, {
+				id: ruleUpsertInput.id,
+				input: omit(ruleUpsertInput, ['id']),
+			});
+
+			loading = false;
+			if (checkIfGraphqlResultHasError(result, 'promotionRuleUpdate', CommonState.EditSuccess))
+				return;
+
+			handleDoneUpsertRule();
+		} else {
+			if (promotionId) {
+				const result = await GRAPHQL_CLIENT.mutation<
+					Pick<Mutation, 'promotionRuleCreate'>,
+					MutationPromotionRuleCreateArgs
+				>(PROMOTION_RULE_CREATE_MUTATION, {
+					input: {
+						name: ruleUpsertInput.name,
+						description: ruleUpsertInput.description,
+						promotion: promotionId,
+						cataloguePredicate: ruleUpsertInput.cataloguePredicate,
+						channels: ruleUpsertInput.addChannels,
+						rewardType: ruleUpsertInput.rewardType,
+						rewardValue: ruleUpsertInput.rewardValue,
+						rewardValueType: ruleUpsertInput.rewardValueType,
+					},
+				});
+
+				loading = false;
+				if (checkIfGraphqlResultHasError(result, 'promotionRuleCreate', CommonState.CreateSuccess))
+					return;
+
+				handleDoneUpsertRule();
+			} else {
+			}
+		}
 	};
 
 	const handleCancelUpsert = () => {
 		ruleUpsertInput = undefined;
-		// ruleUpdateInput = undefined;
 	};
 
 	const classifyRuleCatalog = (
@@ -286,52 +329,38 @@
 						{:else if $rulePredicateQuery.data}
 							{@const { ruleCategories, ruleCollections, ruleProducts, ruleVariants } =
 								classifyRuleCatalog(rule, $rulePredicateQuery.data)}
-
+							{@const tabs: {key: TabKey, display: string}[] = [
+								{
+									key: 'products',
+									display: `Products ${ruleProducts.length}`
+								},
+								{
+									key: 'variants',
+									display: `Variants ${ruleVariants.length}`,
+								},
+								{
+									key: 'collections',
+									display: `Collections ${ruleCollections.length}`,
+								},
+								{
+									key: 'categories',
+									display: `Categories ${ruleCategories.length}`,
+								}
+							]}
 							<div role="tablist" class="tabs tabs-border tabs-xs">
-								<span
-									role="tab"
-									tabindex="0"
-									class="tab"
-									class:tab-active={ruleActiveTabs[ruleIdx] === 'products'}
-									onclick={() => setActivePredicateTabOfRule(ruleIdx, 'products')}
-									onkeydown={(evt) =>
-										evt.key === 'Enter' && setActivePredicateTabOfRule(ruleIdx, 'products')}
-								>
-									Products ({ruleProducts.length})
-								</span>
-								<span
-									role="tab"
-									tabindex="0"
-									class="tab"
-									class:tab-active={ruleActiveTabs[ruleIdx] === 'variants'}
-									onclick={() => setActivePredicateTabOfRule(ruleIdx, 'variants')}
-									onkeydown={(evt) =>
-										evt.key === 'Enter' && setActivePredicateTabOfRule(ruleIdx, 'variants')}
-								>
-									Variants ({ruleVariants.length})
-								</span>
-								<span
-									role="tab"
-									tabindex="0"
-									class="tab"
-									class:tab-active={ruleActiveTabs[ruleIdx] === 'categories'}
-									onclick={() => setActivePredicateTabOfRule(ruleIdx, 'categories')}
-									onkeydown={(evt) =>
-										evt.key === 'Enter' && setActivePredicateTabOfRule(ruleIdx, 'categories')}
-								>
-									Categories ({ruleCategories.length})
-								</span>
-								<span
-									role="tab"
-									tabindex="0"
-									class="tab"
-									class:tab-active={ruleActiveTabs[ruleIdx] === 'collections'}
-									onclick={() => setActivePredicateTabOfRule(ruleIdx, 'collections')}
-									onkeydown={(evt) =>
-										evt.key === 'Enter' && setActivePredicateTabOfRule(ruleIdx, 'collections')}
-								>
-									Collections ({ruleCollections.length})
-								</span>
+								{#each tabs as tab, idx (idx)}
+									<span
+										role="tab"
+										tabindex="0"
+										class="tab"
+										class:tab-active={ruleActiveTabs[ruleIdx] === tab.key}
+										onclick={() => setActivePredicateTabOfRule(ruleIdx, tab.key)}
+										onkeydown={(evt) =>
+											evt.key === 'Enter' && setActivePredicateTabOfRule(ruleIdx, tab.key)}
+									>
+										{tab.display}
+									</span>
+								{/each}
 							</div>
 
 							{#if ruleActiveTabs[ruleIdx] === 'categories'}
@@ -357,11 +386,12 @@
 
 <Modal
 	open={!!ruleUpsertInput}
-	header="Add promotion rule"
-	okText="Add"
+	header="Upsert promotion rule"
+	okText={ruleUpsertInput?.id ? 'Update' : 'Create'}
 	cancelText="Cancel"
 	closeOnEscape
 	closeOnOutsideClick
+	disableElements={loading}
 	onOk={handleOkUpsertRule}
 	onCancel={handleCancelUpsert}
 	onClose={handleCancelUpsert}
@@ -374,14 +404,7 @@
 			bind:rewardValueType={ruleUpsertInput.rewardValueType!}
 			bind:description={ruleUpsertInput.description!}
 			bind:catalogPredicate={ruleUpsertInput.cataloguePredicate!}
+			disabled={loading}
 		/>
-		<!-- {:else if ruleCreateInput}
-		<RuleEdit
-			bind:name={ruleCreateInput.name!}
-			bind:addChannels={ruleCreateInput.channels!}
-			bind:rewardValue={ruleCreateInput.rewardValue!}
-			bind:rewardValueType={ruleCreateInput.rewardValueType!}
-			bind:description={ruleCreateInput.description!}
-		/> -->
 	{/if}
 </Modal>
