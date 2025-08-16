@@ -291,6 +291,7 @@
 							{:else if node.inputType === AttributeInputTypeEnum.Boolean}
 								<Checkbox
 									{disabled}
+									label={node.name || '-'}
 									required={node.valueRequired}
 									onchange={(evt) => {
 										innerAttributes = innerAttributes.map((attr, i) =>
@@ -302,6 +303,7 @@
 								<EaseDatePicker
 									{disabled}
 									required={node.valueRequired}
+									label={node.name || '-'}
 									onchange={(value) => {
 										innerAttributes = innerAttributes.map((attr, i) =>
 											i === idx ? { ...attr, date: dayjs(value.date).format('YYYY-MM-DD') } : attr,
@@ -324,6 +326,7 @@
 									type="file"
 									{disabled}
 									required={node.valueRequired}
+									label={node.name || '-'}
 									onchange={(evt) => {
 										innerAttributes = innerAttributes.map((attr, i) =>
 											i === idx ? { ...attr, file: evt.currentTarget.files?.[0].name } : attr,
@@ -339,6 +342,7 @@
 									type="number"
 									{disabled}
 									required={node.valueRequired}
+									label={node.name || '-'}
 									onchange={(evt) => {
 										innerAttributes = innerAttributes.map((attr, i) =>
 											i === idx ? { ...attr, numeric: evt.currentTarget.value } : attr,
@@ -352,6 +356,7 @@
 								<EaseDatePicker
 									{disabled}
 									required={node.valueRequired}
+									label={node.name || '-'}
 									onchange={(value) => {
 										innerAttributes = innerAttributes.map((attr, i) =>
 											i === idx ? { ...attr, dateTime: value.date } : attr,
@@ -375,6 +380,7 @@
 								<div>
 									<EditorJSComponent
 										placeholder={$tranFunc('placeholders.valuePlaceholder')}
+										label={node.name || '-'}
 										onchange={(data) => {
 											innerAttributes = innerAttributes.map((attr, i) =>
 												i === idx ? { ...attr, richText: JSON.stringify(data) } : attr,
@@ -394,6 +400,7 @@
 											i === idx ? { ...attr, plainText: evt.currentTarget.value } : attr,
 										);
 									}}
+									label={node.name || '-'}
 									required={node.valueRequired}
 									onblur={() => (attributeFieldsBlurs[idx] = true)}
 									{disabled}
@@ -409,6 +416,7 @@
 									{options}
 									multiple
 									required={node.valueRequired}
+									label={node.name || '-'}
 									{disabled}
 									onchange={(values) => {
 										innerAttributes = innerAttributes.map((attr, i) => {
@@ -426,11 +434,12 @@
 									subText={attributeFieldsBlurs[idx] ? attributeErrors[idx] : undefined}
 								/>
 							{:else if node.inputType === AttributeInputTypeEnum.Swatch}
+								<Label required={node.valueRequired} requiredAtPos="end" label={node.name || '-'} />
 								<div class="flex items-center gap-2 flex-wrap flex-row">
 									{#each node.choices?.edges || [] as edge, sid (sid)}
 										<div class="tooltip tooltip-top" data-tip={edge.node.name}>
 											<div
-												class="w-9 h-9 rounded bg-gray-200 flex items-center justify-center"
+												class="w-9 h-9 rounded flex items-center justify-center"
 												style="background-color: {edge.node.value}"
 											>
 												<input
