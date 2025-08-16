@@ -7,6 +7,7 @@
 	import { PRODUCT_SLUG_MAX_LENGTH } from './utils';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import { CommonState } from '$lib/utils/common.svelte';
 
 	type Props = {
 		seo?: SeoInput;
@@ -19,12 +20,11 @@
 
 	const SEO_DESCRIPTION_MAX_LENGTH = 300; // saleor reference
 	const SEO_TITLE_MAX_LENGTH = 70;
-	const FIELD_REQUIRED = $tranFunc('helpText.fieldRequired');
 
 	const seoSchema = object({
 		slug: string()
-			.min(1, FIELD_REQUIRED)
-			.nonempty(FIELD_REQUIRED)
+			.min(1, CommonState.FieldRequiredError)
+			.nonempty(CommonState.FieldRequiredError)
 			.max(PRODUCT_SLUG_MAX_LENGTH, {
 				message: $tranFunc('error.lengthInvalid', {
 					name: $tranFunc('product.prdSlug'),
@@ -33,8 +33,8 @@
 				}),
 			}),
 		title: string()
-			.min(1, FIELD_REQUIRED)
-			.nonempty(FIELD_REQUIRED)
+			.min(1, CommonState.FieldRequiredError)
+			.nonempty(CommonState.FieldRequiredError)
 			.max(SEO_TITLE_MAX_LENGTH, {
 				message: $tranFunc('error.lengthInvalid', {
 					name: $tranFunc('product.seoTitle'),
@@ -43,8 +43,8 @@
 				}),
 			}),
 		description: string()
-			.min(1, FIELD_REQUIRED)
-			.nonempty(FIELD_REQUIRED)
+			.min(1, CommonState.FieldRequiredError)
+			.nonempty(CommonState.FieldRequiredError)
 			.max(SEO_DESCRIPTION_MAX_LENGTH, {
 				message: $tranFunc('error.lengthInvalid', {
 					name: $tranFunc('product.seoDescription'),
@@ -104,7 +104,6 @@
 		label={$tranFunc('product.prdSlug')}
 		disabled={loading}
 	/>
-
 	<Input
 		bind:value={seo.title}
 		placeholder={$tranFunc('product.seoTitle')}
@@ -119,7 +118,6 @@
 		required
 		disabled={loading}
 	/>
-
 	<TextArea
 		bind:value={seo.description}
 		placeholder={$tranFunc('product.seoDescription')}

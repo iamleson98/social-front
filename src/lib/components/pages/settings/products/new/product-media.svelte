@@ -5,6 +5,7 @@
 	import { FileInput, Input, Label } from '$lib/components/ui/Input';
 	import { IMAGE_EXTENSION_REGEX } from '$lib/utils/consts';
 	import type { MediaObject } from '$lib/utils/types';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import ErrorMsg from './error-msg.svelte';
 
 	const MAX_MEDIAS = 9;
@@ -20,14 +21,14 @@
 		const keys = Object.keys(filesMap);
 		if (keys.length > MAX_MEDIAS)
 			return {
-				length: true
+				length: true,
 			};
 
 		for (const key of keys) {
 			const obj = filesMap[key];
 			if (!obj.alt?.trim())
 				return {
-					alt: true
+					alt: true,
 				};
 		}
 
@@ -59,7 +60,7 @@
 							url,
 							key,
 							width: image.width,
-							height: image.height
+							height: image.height,
 						});
 					};
 				});
@@ -67,7 +68,7 @@
 				acc.push(prm);
 				return acc;
 			},
-			[] as Promise<MediaObject & { key: string }>[]
+			[] as Promise<MediaObject & { key: string }>[],
 		);
 
 		const results = await Promise.all(promises);
@@ -88,7 +89,7 @@
 	};
 </script>
 
-<div class="mb-3">
+<div class={SitenameCommonClassName}>
 	<Label label="Product Images" required requiredAtPos="end" />
 	<div
 		class="rounded-lg border {errors

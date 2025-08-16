@@ -7,12 +7,14 @@
 		UPDATE_PRODUCT_CHANNEL_LISTINGS_MUTATION,
 	} from '$lib/api/admin/product';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import FileInputContainer from '$lib/components/common/file-input-container.svelte';
 	import ProductType from '$lib/components/common/product-type-select/product-type.svelte';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import CategorySelector from '$lib/components/pages/settings/products/new/category-selector.svelte';
 	import ChannelsSelector from '$lib/components/pages/settings/products/new/channels-selector.svelte';
 	import CollectionAndTax from '$lib/components/pages/settings/products/new/collections-and-tax.svelte';
+	import GeneralInformation from '$lib/components/pages/settings/products/new/general-information.svelte';
 	import PackagingAndDelivery from '$lib/components/pages/settings/products/new/packaging-and-delivery.svelte';
 	import ProductAttributeEditor from '$lib/components/pages/settings/products/new/product-attribute-editor.svelte';
 	import ProductDescriptionEditorjsComponent from '$lib/components/pages/settings/products/new/product-description-editorjs-component.svelte';
@@ -34,7 +36,7 @@
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils/routes';
 	import type { MediaObject } from '$lib/utils/types';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { noop, omit } from 'es-toolkit';
 	import { toast } from 'svelte-sonner';
 
@@ -56,10 +58,14 @@
 		],
 		privateMetadata: [],
 		collections: [],
+		description: {
+			blocks: [],
+		},
 	});
 	let channelListingUpdateInput = $state.raw<ProductChannelListingUpdateInput>({});
 	let channelListingUpdateInputOk = $state(true);
 	let productMedias = $state.raw<MediaObject[]>([]);
+	let productMediasOk = $state(true);
 
 	let productInputError = $state<Record<keyof ProductCreateInput, boolean>>({
 		externalReference: true, // not supported yet
@@ -210,8 +216,8 @@
 	};
 </script>
 
-<div class="m-auto rounded-lg bg-white w-full p-5 text-gray-600 border border-gray-200">
-	<ProductName bind:name={productCreateInput.name} bind:ok={productInputError.name} {loading} />
+<div class="space-y-2">
+	<!-- <ProductName bind:name={productCreateInput.name} bind:ok={productInputError.name} {loading} />
 	<ProductType
 		bind:value={productCreateInput.productType}
 		bind:ok={productInputError.productType}
@@ -222,24 +228,43 @@
 		bind:attributes={productCreateInput.attributes!}
 		bind:ok={productInputError.attributes}
 		{loading}
+	/> -->
+	<GeneralInformation
+		bind:name={productCreateInput.name!}
+		bind:productType={productCreateInput.productType}
+		disabled={loading}
+		bind:description={productCreateInput.description}
+		bind:attributes={productCreateInput.attributes!}
 	/>
 	<CategorySelector
 		bind:categoryID={productCreateInput.category}
 		bind:ok={productInputError.category}
 		{loading}
 	/>
-	<ProductMedia bind:medias={productMedias} {loading} />
-	<ProductDescriptionEditorjsComponent
+	<!-- <ProductMedia bind:medias={productMedias} {loading} /> -->
+	<FileInputContainer
+		accept="image/*"
+		max={9}
+		class={SitenameCommonClassName}
+		bind:medias={productMedias}
+		label={$tranFunc('common.pic')}
+		bind:formOk={productMediasOk}
+		disabled={loading}
+		required
+	/>
+	<!-- <ProductDescriptionEditorjsComponent
 		bind:description={productCreateInput.description}
 		bind:ok={productInputError.description}
-	/>
-	<ChannelsSelector bind:channelListingUpdateInput ok={channelListingUpdateInputOk} {loading} />
-	<ProductVariantCreator
-		bind:productVariantsInput
-		channelsListing={channelListingUpdateInput}
-		{loading}
-		{productMedias}
-	/>
+	/> -->
+	<div class={SitenameCommonClassName}>
+		<ChannelsSelector bind:channelListingUpdateInput ok={channelListingUpdateInputOk} {loading} />
+		<ProductVariantCreator
+			bind:productVariantsInput
+			channelsListing={channelListingUpdateInput}
+			{loading}
+			{productMedias}
+		/>
+	</div>
 	<ProductSeo
 		productName={productCreateInput.name}
 		bind:seo={productCreateInput.seo!}

@@ -33,7 +33,7 @@ export type SelectProps<T extends SelectOption = SelectOption> = {
   onScrollToEnd?: OnscrollToEndOpts['onScrollToEnd'];
   onclearInputField?: () => void;
   variant?: SocialVariant;
-} & Omit<InputProps, 'value' | 'size' | 'onchange' | 'variant'> & Omit<HTMLSelectAttributes, 'size' | 'onchange' | 'onblur'>;
+} & Omit<InputProps, 'value' | 'size' | 'onchange' | 'variant'> & Omit<HTMLSelectAttributes, 'size' | 'onchange' | 'onblur' | 'multiple'>;
 
 /** SIZE_REDUCE_MAP is useful you want your input and badge items to reasonably fit your multi select component */
 export const SIZE_REDUCE_MAP: Record<SocialSize | 'xxs', SocialSize | 'xxs'> = {

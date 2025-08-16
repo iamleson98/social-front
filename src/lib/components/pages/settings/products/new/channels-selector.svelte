@@ -10,7 +10,7 @@
 		ProductChannelListing,
 		ProductChannelListingAddInput,
 		ProductChannelListingUpdateInput,
-		Query
+		Query,
 	} from '$lib/gql/graphql';
 	import { tranFunc } from '$lib/i18n';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
@@ -37,7 +37,7 @@
 	const CHANNELS_QUERY_STORE = operationStore<Pick<Query, 'channels'>>({
 		kind: 'query',
 		query: CHANNELS_QUERY,
-		requestPolicy: 'cache-and-network'
+		requestPolicy: 'cache-and-network',
 	});
 
 	type CustomChannelListingAddInput = ProductChannelListingAddInput & {
@@ -53,13 +53,13 @@
 
 	let productChannelListingUpdateInput = $state<CustomProductChannelListingUpdateInput>({
 		updateChannels: [],
-		removeChannels: []
+		removeChannels: [],
 	});
 
 	$effect(() => {
 		channelListingUpdateInput = {
 			...productChannelListingUpdateInput,
-			updateChannels: productChannelListingUpdateInput.updateChannels.filter((chan) => chan.used)
+			updateChannels: productChannelListingUpdateInput.updateChannels.filter((chan) => chan.used),
 		};
 	});
 
@@ -83,9 +83,9 @@
 						isAvailableForPurchase: listing.isAvailableForPurchase,
 						isPublished: listing.isPublished,
 						publishedAt: listing.publishedAt,
-						visibleInListings: listing.visibleInListings
+						visibleInListings: listing.visibleInListings,
 					};
-				})
+				}),
 			};
 		}
 
@@ -104,14 +104,14 @@
 						channelName: chan.name,
 						isPublished: true,
 						isAvailableForPurchase: true,
-						currency: chan.currencyCode.toUpperCase()
+						currency: chan.currencyCode.toUpperCase(),
 					});
 				}
 			}
 
 			productChannelListingUpdateInput = {
 				...productChannelListingUpdateInput,
-				updateChannels: newChannelListings
+				updateChannels: newChannelListings,
 			};
 		});
 	});
@@ -123,9 +123,9 @@
 		if (!checked && ASSIGNED_CHANNEL_IDS_MAP[channelID]) {
 			productChannelListingUpdateInput = {
 				updateChannels: productChannelListingUpdateInput.updateChannels.filter(
-					(chan) => chan.channelId !== channelID
+					(chan) => chan.channelId !== channelID,
 				),
-				removeChannels: productChannelListingUpdateInput.removeChannels.concat(channelID)
+				removeChannels: productChannelListingUpdateInput.removeChannels.concat(channelID),
 			};
 		}
 	};
@@ -134,11 +134,7 @@
 <div class="mb-3">
 	<Label required requiredAtPos="end" label={$tranFunc('product.channel')} />
 
-	<div
-		class="rounded-lg p-3 border flex items-start gap-2 flex-nowrap tablet:flex-wrap {!ok
-			? 'bg-red-50 border-red-200'
-			: 'bg-gray-50 border-gray-200'}"
-	>
+	<div class={['grid grid-cols-4 gap-2', !ok && 'bg-red-50 border-red-200']}>
 		{#if $CHANNELS_QUERY_STORE.fetching}
 			<SkeletonContainer class="w-1/2">
 				<Skeleton class="h-6 w-full" />
@@ -147,22 +143,20 @@
 			<Alert variant="error" size="sm" bordered>{$CHANNELS_QUERY_STORE.error.message}</Alert>
 		{:else}
 			{#each productChannelListingUpdateInput.updateChannels! as channelListing, idx (idx)}
-				{#snippet channelHead()}
-					<Checkbox
-						label={channelListing.channelName}
-						bind:checked={channelListing.used}
-						onchange={(evt) =>
-							toggleSelectChannel(channelListing.channelId, evt.currentTarget.checked)}
-						size="sm"
-					/>
-				{/snippet}
-
-				<div class="w-1/4 tablet:w-1/3 mobile-l:w-full">
+				<div class="">
 					<Accordion
-						header={channelHead}
 						open={channelListing.used}
 						class="p-2 rounded-lg bg-white border border-gray-200"
 					>
+						{#snippet header()}
+							<Checkbox
+								label={channelListing.channelName}
+								bind:checked={channelListing.used}
+								onchange={(evt) =>
+									toggleSelectChannel(channelListing.channelId, evt.currentTarget.checked)}
+								size="sm"
+							/>
+						{/snippet}
 						<Checkbox
 							bind:checked={channelListing.isPublished}
 							size="sm"
@@ -177,7 +171,7 @@
 									onchange={(value) => (channelListing.publishedAt = value.date)}
 									allowSelectMonthYears={{
 										showYears: { min: 2020 },
-										showMonths: true
+										showMonths: true,
 									}}
 									label={$tranFunc('product.promptPublicationTime')}
 									disabled={loading}
@@ -199,7 +193,7 @@
 									onchange={(value) => (channelListing.availableForPurchaseAt = value.date)}
 									allowSelectMonthYears={{
 										showYears: { min: 2020 },
-										showMonths: true
+										showMonths: true,
 									}}
 									disabled={loading}
 								/>

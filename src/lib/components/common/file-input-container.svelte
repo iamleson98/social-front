@@ -22,6 +22,8 @@
 		disabled?: boolean;
 		subText?: string;
 		onchange?: (medias: MediaObject[]) => void;
+		/** indicates if the form is valid */
+		formOk?: boolean;
 	};
 
 	let {
@@ -36,6 +38,7 @@
 		disabled,
 		subText,
 		onchange,
+		formOk = $bindable(),
 	}: Props = $props();
 
 	const documentIcon = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2m-8-4h6m-6-4h6"/></g></svg>')}`;
@@ -51,6 +54,7 @@
 	const validate = () => {
 		const result = Schema.safeParse(medias);
 		mediaErrors = result.success ? {} : result.error.formErrors.fieldErrors;
+		formOk = result.success;
 		return result.success;
 	};
 
@@ -138,7 +142,7 @@
 				{...props}
 			>
 				<div
-					class="absolute p-1.5 bottom-0 left-0 right-0 h-1/5 hover:h-1/2 bg-white opacity-50 transition-all hover:opacity-100 ease-in"
+					class="absolute p-1.5 bottom-0 left-0 right-0 h-1/5 hover:h-1/2 hover:border-t hover:border-gray-300 bg-white opacity-50 transition-all hover:opacity-100 ease-in"
 				>
 					<div class="text-gray-700 flex items-center text-xs mb-1">
 						<span class="font-semibold w-1/4">alt:</span>

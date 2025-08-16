@@ -93,7 +93,7 @@ mutation DeleteProductType($id: ID!) {
 }`;
 
 export const PRODUCT_TYPE_QUERY = gql`
-query ProductType($id: ID!, $attributeChoicesFirst: Int!, $attributeChoicesAfter: String) {
+query ProductType($id: ID!) {
 	productType(id: $id) {
 		id
 		name
@@ -110,7 +110,7 @@ query ProductType($id: ID!, $attributeChoicesFirst: Int!, $attributeChoicesAfter
 			valueRequired
 			inputType
 			entityType
-			choices(first: $attributeChoicesFirst, after: $attributeChoicesAfter) {
+			choices(first: 100) {
 				edges {
 					node {
 						id

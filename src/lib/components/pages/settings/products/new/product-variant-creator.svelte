@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { Plus, Trash, MdiWeightKg } from '$lib/components/icons';
+	import { Plus, Trash, MdiWeightKg, Icon } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { Button, IconButton } from '$lib/components/ui/Button';
+	import { Button, BUTTON_VARIANT_COLORS_MAP, IconButton } from '$lib/components/ui/Button';
 	import { Checkbox, Input, Label } from '$lib/components/ui/Input';
 	import { Select, SelectSkeleton } from '$lib/components/ui/select';
 	import {
@@ -536,16 +536,14 @@
 <div class="mb-3">
 	<Label required requiredAtPos="end" label={$tranFunc('product.variants')} />
 
-	<div
-		class={`rounded-lg w-full border p-3 ${hasGeneralError ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}`}
-	>
+	<div class={`rounded-lg w-full border p-3 ${hasGeneralError ? 'bg-red-50 border-red-200' : ''}`}>
 		<!-- MARK: Menifest -->
 		<div
-			class="flex gap-2 mobile-l:flex-wrap flex-nowrap"
+			class="grid grid-cols-2 gap-2"
 			class:items-center={variantManifests.length < MAX_VARIANT_TYPES}
 		>
 			{#each variantManifests as variant, variantIdx (variantIdx)}
-				<div class="p-3 w-1/2 mobile-l:w-full border rounded-lg bg-white h-fit">
+				<div class="p-3 border rounded-lg h-fit">
 					<!-- TITLE -->
 					<div class="mb-1 text-xs">
 						{$tranFunc('product.variant')}
@@ -610,19 +608,17 @@
 					{/each}
 					<div class="flex justify-center items-center gap-1.5 mt-4">
 						<Button
-							class="tooltip tooltip-top"
-							data-tip={$tranFunc('product.delVariant')}
-							startIcon={Trash}
+							endIcon={Trash}
 							size="sm"
 							disabled={loading}
 							variant="light"
 							color="red"
 							onclick={() => handleDeleteVariant(variantIdx)}
 							fullWidth
-						></Button>
+						>
+							{$tranFunc('product.delVariant')}
+						</Button>
 						<Button
-							class="tooltip tooltip-top"
-							data-tip={$tranFunc('product.addValue')}
 							endIcon={Plus}
 							size="sm"
 							variant="light"
@@ -634,6 +630,7 @@
 									: MAX_VALUES_SINGLE_VARIANT) || loading}
 							fullWidth
 						>
+							{$tranFunc('product.addValue')}
 							{variant.values.length}/{variantManifests.length === MAX_VARIANT_TYPES
 								? MAX_VALUES_PER_VARIANT
 								: MAX_VALUES_SINGLE_VARIANT}
@@ -642,18 +639,16 @@
 				</div>
 			{/each}
 			{#if variantManifests.length < MAX_VARIANT_TYPES}
-				<div class="w-1/2 mobile-l:w-full flex items-center justify-center">
-					<IconButton
-						onclick={handleAddVariant}
-						icon={Plus}
-						size="xl"
-						variant="outline"
-						disabled={loading}
-						color="blue"
-						class="tooltip tooltip-top border-dashed!"
-						data-tip={$tranFunc('product.addVariant')}
-					/>
-				</div>
+				<button
+					class={[
+						'border-dashed border w-full h-full flex items-center justify-center rounded-lg tooltip tooltip-top border-blue-500 text-blue-500 cursor-pointer py-5 hover:bg-blue-50 active:bg-blue-100 focus:bg-blue-50',
+					]}
+					onclick={handleAddVariant}
+					data-tip={$tranFunc('product.addVariant')}
+					aria-label={$tranFunc('product.addVariant')}
+				>
+					<Icon icon={Plus} size="xl" />
+				</button>
 			{/if}
 		</div>
 

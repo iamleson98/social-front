@@ -2,7 +2,7 @@
 	import type { CategoryCountableConnection, Query } from '$lib/gql/graphql';
 	import {
 		CATEGORIES_LIST_FOR_CREATE_PRODUCT,
-		type CategoryListForCreateProductInput
+		type CategoryListForCreateProductInput,
 	} from '$lib/api/admin/product';
 	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 	import { operationStore } from '$lib/api/operation';
@@ -12,6 +12,7 @@
 	import { tranFunc } from '$i18n';
 	import ErrorMsg from './error-msg.svelte';
 	import { Label } from '$lib/components/ui/Input';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 
 	type Props = {
 		categoryID?: string | null;
@@ -24,7 +25,7 @@
 	let {
 		categoryID = $bindable<string | null | undefined>(),
 		ok = $bindable(),
-		loading
+		loading,
 	}: Props = $props();
 	let categoryError = $state<string>();
 
@@ -35,12 +36,12 @@
 		kind: 'query',
 		query: CATEGORIES_LIST_FOR_CREATE_PRODUCT,
 		context: {
-			requestPolicy: 'cache-and-network'
+			requestPolicy: 'cache-and-network',
 		},
 		variables: {
 			level: 0,
-			first: NUMBER_OF_CATEGORIES_PER_FETCH
-		}
+			first: NUMBER_OF_CATEGORIES_PER_FETCH,
+		},
 	});
 
 	const handleCategorySelection = (newCateId: string | null) => {
@@ -53,13 +54,9 @@
 	});
 </script>
 
-<div class="mb-3">
+<div class={SitenameCommonClassName}>
 	<Label required requiredAtPos="end" label={$tranFunc('product.prdCategory')} />
-	<div
-		class="border rounded-lg p-3 {categoryError
-			? 'border-red-200 bg-red-50'
-			: 'border-gray-200 bg-gray-50'}"
-	>
+	<div class={['border rounded-lg p-3', categoryError && 'border-red-200 bg-red-50']}>
 		{#if $categoriesStore.fetching}
 			<div class="flex items-center gap-1">
 				{#each [null, null] as _, idx (idx)}
@@ -74,7 +71,7 @@
 			</Alert>
 		{:else}
 			{@const items = convertCategoryEdgesToMenuSelect(
-				$categoriesStore.data?.categories || ({} as CategoryCountableConnection)
+				$categoriesStore.data?.categories || ({} as CategoryCountableConnection),
 			)}
 			<MegaMenu
 				{items}
