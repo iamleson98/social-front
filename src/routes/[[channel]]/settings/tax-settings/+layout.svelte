@@ -14,19 +14,19 @@
 	<a
 		role="tab"
 		class="tab"
-		class:tab-active={page.url.pathname === AppRoute.TAX_SETTINGS_CHANNELS()}
+		class:tab-active={page.url.pathname.startsWith(AppRoute.TAX_SETTINGS_CHANNELS())}
 		href={AppRoute.TAX_SETTINGS_CHANNELS()}>Channels</a
 	>
 	<a
 		role="tab"
 		class="tab tab-active"
-		class:tab-active={page.url.pathname === AppRoute.TAX_SETTINGS_COUNTRIES()}
+		class:tab-active={page.url.pathname.startsWith(AppRoute.TAX_SETTINGS_COUNTRIES())}
 		href={AppRoute.TAX_SETTINGS_COUNTRIES()}>Countries</a
 	>
 	<a
 		role="tab"
 		class="tab"
-		class:tab-active={page.url.pathname === AppRoute.TAX_SETTINGS_TAX_CLASSES()}
+		class:tab-active={page.url.pathname.startsWith(AppRoute.TAX_SETTINGS_TAX_CLASSES())}
 		href={AppRoute.TAX_SETTINGS_TAX_CLASSES()}>Tax classes</a
 	>
 </div>

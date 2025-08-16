@@ -197,7 +197,7 @@
 				AppRoute.TAX_SETTINGS_CHANNELS(),
 				AppRoute.TAX_SETTINGS_COUNTRIES(),
 				AppRoute.TAX_SETTINGS_TAX_CLASSES(),
-			].includes(page.url.pathname),
+			].some(path => page.url.pathname.startsWith(path)),
 			isPreview: true,
 		},
 		{

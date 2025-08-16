@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { TAX_CONFIG_LIST_QUERY } from '$lib/api/admin/tax';
+	import { GET_TAX_COUNTRY_CONFIGURATIONS_QUERY, TAX_CONFIG_LIST_QUERY } from '$lib/api/admin/tax';
 	import { operationStore } from '$lib/api/operation';
-	import { ChevronRight, Icon } from '$lib/components/icons';
+	import { ChevronRight, Icon, Plus } from '$lib/components/icons';
+	import { Button } from '$lib/components/ui';
 	import { AccordionList } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { type TabItem } from '$lib/components/ui/Tab';
 	import { TableSkeleton } from '$lib/components/ui/Table';
-	import type { Query, QueryTaxConfigurationsArgs } from '$lib/gql/graphql';
+	import type { Query, QueryTaxCountryConfigurationArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import type { Snippet } from 'svelte';
 	import { fly } from 'svelte/transition';
@@ -19,14 +20,11 @@
 	let { children }: Props = $props();
 
 	const TaxConfigsQuery = operationStore<
-		Pick<Query, 'taxConfigurations'>,
-		QueryTaxConfigurationsArgs
+		Pick<Query, 'taxCountryConfigurations'>,
+		QueryTaxCountryConfigurationArgs
 	>({
 		kind: 'query',
-		query: TAX_CONFIG_LIST_QUERY,
-		variables: {
-			first: 10,
-		},
+		query: GET_TAX_COUNTRY_CONFIGURATIONS_QUERY,
 		requestPolicy: 'cache-and-network',
 	});
 </script>
@@ -35,15 +33,21 @@
 	<TableSkeleton numColumns={3} numOfRows={4} />
 {:else if $TaxConfigsQuery.error}
 	<Alert variant="error" size="sm" bordered>{$TaxConfigsQuery.error.message}</Alert>
-{:else if $TaxConfigsQuery.data?.taxConfigurations}
-	{@const items: TabItem[] = $TaxConfigsQuery.data.taxConfigurations.edges.map<TabItem>((edge) => ({
-  title: edge.node.channel.name,
-  active: (page.url.pathname === AppRoute.TAX_SETTINGS_CHANNEL_DETAILS(edge.node.id)),
-  href: AppRoute.TAX_SETTINGS_CHANNEL_DETAILS(edge.node.id),
+{:else if $TaxConfigsQuery.data?.taxCountryConfigurations}
+	{@const items: TabItem[] = $TaxConfigsQuery.data.taxCountryConfigurations.map<TabItem>((item) => ({
+  title: item.country.country,
+  active: (page.url.pathname === AppRoute.TAX_SETTINGS_COUNTRY_DETAILS(item.country.code)),
+  href: AppRoute.TAX_SETTINGS_COUNTRY_DETAILS(item.country.code),
 }))}
 	<div class="flex gap-2">
 		<div class="w-3/10">
-			<AccordionList header="Channels" {items}>
+			<AccordionList {items}>
+				{#snippet header()}
+					<div>
+						<span>Countries</span>
+						<Button size="xs" variant="light" endIcon={Plus}>Add country</Button>
+					</div>
+				{/snippet}
 				{#snippet child(item)}
 					<a href={item.href}>
 						<div
