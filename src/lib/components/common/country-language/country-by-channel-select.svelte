@@ -18,13 +18,13 @@
 		channelSlug: string;
 	} & Omit<SelectProps, 'options'>;
 
-	let { value = $bindable(), channelSlug: slug, ...rest }: Props = $props();
+	let { value = $bindable(), channelSlug, ...rest }: Props = $props();
 
 	const CHANEL_STORE = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
 		kind: 'query',
 		query: CHANNEL_DETAILS_QUERY,
 		variables: {
-			slug,
+			slug: channelSlug,
 		},
 		requestPolicy: 'cache-and-network',
 	});

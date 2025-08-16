@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Select, type SelectOption } from '$lib/components/ui/select';
+	import { Select, SelectSkeleton, type SelectOption } from '$lib/components/ui/select';
 	import type {
 		Address,
 		AddressInput,
@@ -23,14 +23,13 @@
 	import { Input, Label, RadioButton } from '$lib/components/ui/Input';
 	import { camelCase, uniqBy } from 'es-toolkit';
 	import { Button } from '$lib/components/ui';
-	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import { Alert } from '$lib/components/ui/Alert';
 	import CountryByChannelSelect from '$lib/components/common/country-language/country-by-channel-select.svelte';
 	import { tranFunc } from '$i18n';
 	import { toast } from 'svelte-sonner';
 
 	type Props = {
-		countrySelectOptions?: SelectOption[];
+		// countrySelectOptions?: SelectOption[];
 		onSubmit: (address: AddressInput, type?: AddressTypeEnum) => void;
 		onCancel: () => void;
 		updatingCheckoutAddresses: boolean;
@@ -139,12 +138,11 @@
 	</div>
 
 	{#if $ADDRESS_VALIDATION_RULES_STORE.fetching}
-		<SkeletonContainer class="w-full">
-			<Skeleton class="h-6 w-full" />
-		</SkeletonContainer>
+		<SelectSkeleton label />
 	{:else if $ADDRESS_VALIDATION_RULES_STORE.error}
-		<Alert variant="error" size="sm" bordered>{$ADDRESS_VALIDATION_RULES_STORE.error.message}</Alert
-		>
+		<Alert variant="error" size="sm" bordered>
+			{$ADDRESS_VALIDATION_RULES_STORE.error.message}
+		</Alert>
 	{:else if $ADDRESS_VALIDATION_RULES_STORE.data?.addressValidationRules}
 		{@const { allowedFields, countryAreaChoices, countryAreaType, cityType, postalCodeType } =
 			$ADDRESS_VALIDATION_RULES_STORE.data.addressValidationRules}

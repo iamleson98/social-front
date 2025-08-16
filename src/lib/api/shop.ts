@@ -18,8 +18,34 @@ query Shop($isStaffUser: Boolean = false) {
       code
       name
     }
+    companyAddress {
+      phone
+      companyName
+      streetAddress1
+      streetAddress2
+      cityArea
+      city
+      postalCode
+      isDefaultShippingAddress
+      isDefaultBillingAddress
+      countryArea
+      firstName
+      lastName
+      metadata {
+        key
+        value
+      }
+      country {
+        code
+        country
+      }
+    }
     channelCurrencies @include(if: $isStaffUser)
     fulfillmentAutoApprove
     fulfillmentAllowUnpaid
+    reserveStockDurationAnonymousUser
+    reserveStockDurationAuthenticatedUser
+    limitQuantityPerCheckout
+    enableAccountConfirmationByEmail
   }
-}`
+}`;

@@ -133,6 +133,8 @@ export {
   TablerLeaf2 as Leaf2,
   TablerClock as Clock,
   TablerHandStop as HandStop,
+  TablerBuildingStore as BuildingStore,
+  TablerTax as Tax,
 } from './consts';
 
 export { default as Icon } from './icon.svelte';

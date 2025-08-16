@@ -4,6 +4,7 @@
 		BadgeOutline,
 		Box,
 		BoxOff,
+		BuildingStore,
 		BuildingWarehouse,
 		Category,
 		CheckOff,
@@ -12,11 +13,13 @@
 		FolderHeart,
 		Gift,
 		Globe,
+		Home,
 		Icon,
 		LockCog,
 		MailQuestion,
 		Parking,
 		RosetteDiscountChecked,
+		Tax,
 		Thingiverse,
 		Ticket,
 		TruckDelivery,
@@ -35,6 +38,7 @@
 	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
 	import type { ShippingMethodTypeEnum } from '$lib/gql/graphql';
 	import Skeleton from '$lib/components/pages/settings/skeleton.svelte';
+	import { Badge } from '$lib/components/ui/badge';
 
 	type Props = {
 		children: Snippet;
@@ -60,6 +64,7 @@
 		name?: string;
 		href: string;
 		shouldActive: boolean;
+		isPreview?: boolean;
 	};
 
 	const ACCOUNT_TAB_ITEMS: TabItem[] = $derived([
@@ -179,6 +184,23 @@
 
 	const SHOP_CONFIG_TAB_ITEMS: TabItem[] = $derived([
 		{
+			icon: BuildingStore,
+			name: 'Shop Settings',
+			href: AppRoute.STORE_SETTINGS(),
+			shouldActive: [AppRoute.STORE_SETTINGS()].includes(page.url.pathname),
+		},
+		{
+			icon: Tax,
+			name: 'Tax Settings',
+			href: AppRoute.TAX_SETTINGS_CHANNELS(),
+			shouldActive: [
+				AppRoute.TAX_SETTINGS_CHANNELS(),
+				AppRoute.TAX_SETTINGS_COUNTRIES(),
+				AppRoute.TAX_SETTINGS_TAX_CLASSES(),
+			].includes(page.url.pathname),
+			isPreview: true,
+		},
+		{
 			icon: Globe,
 			name: $tranFunc('product.channel'),
 			href: AppRoute.SETTINGS_CONFIGS_CHANNELS(),
@@ -276,7 +298,7 @@
 		this={item.href ? 'a' : 'div'}
 		{...attrs}
 		class={[
-			'flex items-center gap-2 rounded-md p-2 py-2.5 hover:bg-blue-100 hover:text-blue-700 cursor-pointer relative transition-colors duration-200 ease-in-out',
+			'flex items-center gap-2 rounded-md p-2 py-2.5 hover:bg-blue-100 hover:text-blue-700 cursor-pointer relative transition-colors duration-200 ease-in-out select-none!',
 			active && 'bg-blue-100 text-blue-700 font-bold',
 		]}
 	>
@@ -284,6 +306,9 @@
 			<Icon icon={item.icon} />
 		{/if}
 		<span>{item.name}</span>
+		{#if item.isPreview}
+			<Badge text="Preview" color="orange" size="xs" rounded />
+		{/if}
 	</svelte:element>
 {/snippet}
 
