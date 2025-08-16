@@ -114,7 +114,7 @@
 
 		channelToDeleteId = '';
 		channelToReplaceId = '';
-		channelsQuery.reexecute({});
+		channelsQuery.reexecute({ variables: {} });
 	};
 
 	const handleSortChange = (state: SortState<any>) => {
@@ -161,17 +161,15 @@
 	<DropDown {trigger} options={MENU_OPTIONS} />
 {/snippet}
 
-<div class="bg-white rounded-lg border border-gray-200 p-4">
-	{#if $channelsQuery.fetching}
-		<TableSkeleton numColumns={4} />
-	{:else if $channelsQuery.error}
-		<Alert variant="error" size="sm" bordered>
-			{$channelsQuery.error.message}
-		</Alert>
-	{:else if $channelsQuery.data}
-		<Table columns={CHANNEL_COLUMNS} items={allChannels} onSortChange={handleSortChange} />
-	{/if}
-</div>
+{#if $channelsQuery.fetching}
+	<TableSkeleton numColumns={4} />
+{:else if $channelsQuery.error}
+	<Alert variant="error" size="sm" bordered>
+		{$channelsQuery.error.message}
+	</Alert>
+{:else if $channelsQuery.data}
+	<Table columns={CHANNEL_COLUMNS} items={allChannels} onSortChange={handleSortChange} />
+{/if}
 
 <Modal
 	open={!!channelToDeleteId}
