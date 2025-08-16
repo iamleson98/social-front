@@ -12,6 +12,7 @@
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Checkbox } from '$lib/components/ui/Input';
 	import { Select, SelectSkeleton, type SelectOption } from '$lib/components/ui/select';
+	import TableSkeleton from '$lib/components/ui/Table/table-skeleton.svelte';
 	import {
 		CountryCode,
 		TaxCalculationStrategy,
@@ -153,7 +154,15 @@
 </script>
 
 {#if $TaxConfigQuery.fetching}
-	<SelectSkeleton label />
+	<div class="space-y-2">
+		<div class={SitenameCommonClassName}>
+			<TableSkeleton numColumns={2} numOfRows={2} />
+		</div>
+
+		<div class={SitenameCommonClassName}>
+			<TableSkeleton numColumns={4} numOfRows={3} />
+		</div>
+	</div>
 {:else if $TaxConfigQuery.error}
 	<Alert variant="error" size="sm" bordered>{$TaxConfigQuery.error.message}</Alert>
 {:else if $TaxConfigQuery.data?.taxConfiguration}
