@@ -93,7 +93,6 @@
 	<SectionHeader>Seo information</SectionHeader>
 	<Input
 		placeholder={$tranFunc('product.prdSlug')}
-		size="sm"
 		bind:value={slug}
 		class="mb-1"
 		inputDebounceOption={{ onInput: handleValueChange }}
@@ -109,7 +108,6 @@
 		placeholder={$tranFunc('product.seoTitle')}
 		type="text"
 		class="mb-1"
-		size="sm"
 		inputDebounceOption={{ onInput: handleValueChange }}
 		onblur={handleValueChange}
 		variant={seoErrors?.title?.length ? 'error' : 'info'}
@@ -123,7 +121,6 @@
 		placeholder={$tranFunc('product.seoDescription')}
 		type="text"
 		inputClass="min-h-20"
-		size="sm"
 		onblur={handleValueChange}
 		inputDebounceOption={{ onInput: handleValueChange }}
 		variant={seoErrors?.description?.length ? 'error' : 'info'}

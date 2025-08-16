@@ -33,6 +33,7 @@
 		VariantManifestProps,
 	} from './utils';
 	import type { MediaObject } from '$lib/utils/types';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
 
 	type Props = {
 		productVariantsInput: ProductVariantBulkCreateInput[];
@@ -543,14 +544,12 @@
 			class:items-center={variantManifests.length < MAX_VARIANT_TYPES}
 		>
 			{#each variantManifests as variant, variantIdx (variantIdx)}
-				<div class="p-3 border rounded-lg h-fit">
+				<div class="p-3 border rounded-lg h-fit space-y-3">
 					<!-- TITLE -->
-					<div class="mb-1 text-xs">
-						{$tranFunc('product.variant')}
-						{variantIdx + 1}
-					</div>
+					<SectionHeader># {variantIdx + 1}</SectionHeader>
+
 					<!-- NAME -->
-					<div class="mb-4">
+					<div>
 						<label
 							class="input input-sm flex items-center gap-2"
 							class:input-error={!!variant.name.error}
@@ -575,12 +574,12 @@
 					<!-- values -->
 					{#each variant.values as value, valueIdx (valueIdx)}
 						<div class="mb-2" transition:slide>
-							<div class="flex items-center justify-between w-full">
+							<div class="flex items-center gap-2">
 								<Input
 									variant={value.error ? 'error' : 'info'}
 									type="text"
 									disabled={loading}
-									class="w-4/5"
+									class="flex-8/10"
 									size="sm"
 									placeholder={$tranFunc('placeholders.valuePlaceholder')}
 									inputDebounceOption={{
@@ -591,22 +590,22 @@
 									subText={value.error}
 								/>
 								{#if variant.values.length > 1}
-									<IconButton
-										icon={Trash}
-										size="xs"
-										disabled={loading}
+									<Button
+										size="sm"
 										variant="light"
-										rounded
 										color="red"
 										onclick={() => handleDeleteVariantValue(variantIdx, valueIdx)}
-										class="tooltip tooltip-top"
-										data-tip={$tranFunc('product.delValue')}
-									/>
+										endIcon={Trash}
+										class="flex-2/10"
+									>
+										{$tranFunc('btn.delete')}
+									</Button>
 								{/if}
 							</div>
 						</div>
 					{/each}
-					<div class="flex justify-center items-center gap-1.5 mt-4">
+
+					<div class="flex justify-center items-center gap-1.5">
 						<Button
 							endIcon={Trash}
 							size="sm"
@@ -794,27 +793,22 @@
 									<SelectSkeleton size="xs" />
 								{:else}
 									<div
-										class="max-h-32 overflow-y-auto border border-gray-200 bg-white p-1 rounded-lg"
+										class="max-h-32 overflow-y-auto border border-gray-200 bg-white p-1 rounded-lg space-y-1.5"
 									>
 										{#each quickFillingValues.stocks as stockInput, idx (idx)}
 											{@const isError = stockInput.quantity % 1 !== 0}
-											<div class="flex items-start flex-row gap-1.5 mt-1 odd:bg-gray-100 p-1">
-												<span class="w-1/3 text-xs">
-													{stockInput.warehouseName}
-												</span>
-												<Input
-													type="number"
-													placeholder="quantity"
-													min={0}
-													class="w-2/3"
-													disabled={loading}
-													size="xs"
-													onfocus={() => handleFocusHighlightQuickFilling('td-stock-hl')}
-													bind:value={stockInput.quantity}
-													variant={isError ? 'error' : 'info'}
-													subText={isError ? $tranFunc('error.positiveInteger') : ''}
-												/>
-											</div>
+											<Input
+												type="number"
+												placeholder="quantity"
+												label={stockInput.warehouseName}
+												min={0}
+												disabled={loading}
+												size="xs"
+												onfocus={() => handleFocusHighlightQuickFilling('td-stock-hl')}
+												bind:value={stockInput.quantity}
+												variant={isError ? 'error' : 'info'}
+												subText={isError ? $tranFunc('error.positiveInteger') : ''}
+											/>
 										{/each}
 									</div>
 								{/if}
@@ -883,10 +877,8 @@
 
 				<!-- MARK: DETAILS -->
 				<div class="relative h-fit w-full rounded-lg p-3 border border-gray-200 bg-white">
-					<table
-						class="w-full text-sm h-fit text-left rtl:text-right text-gray-600 dark:text-gray-500 mb-4"
-					>
-						<thead class="text-xs text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-500">
+					<table class="w-full text-sm h-fit text-left table text-gray-600 mb-4">
+						<thead>
 							<tr>
 								<th>{variantManifests[0].name.value}</th>
 								{#if variantManifests.length === MAX_VARIANT_TYPES}
@@ -916,16 +908,6 @@
 									{:else}
 										<td class="text-center">
 											<dir>{variantInputDetail.name?.split('-')[0]}</dir>
-											<!-- <div>
-												<IconButton
-													icon={PhotoUp}
-													size="lg"
-													variant="outline"
-													class="border-dashed tooltip tooltip-top"
-													data-tip="Add photo(s)"
-													onclick={() => (openImageModal = true)}
-												/>
-											</div> -->
 										</td>
 									{/if}
 									<!-- CHANNELS -->
@@ -1066,26 +1048,21 @@
 									<!-- STOCK -->
 									<td class="stock-td">
 										<div class="max-h-28 overflow-y-auto p-1">
-											<div class="flex flex-col gap-1">
+											<div class="p-1 space-y-1.5">
 												{#each variantInputDetail.stocks || [] as stock, idx (idx)}
-													<div class="flex items-start gap-2 odd:bg-gray-100 p-1">
-														<span class="text-xs w-1/3">
-															{stock['warehouseName' as keyof StockInput]}
-														</span>
-														<Input
-															size="xs"
-															placeholder={$tranFunc('product.stock')}
-															class="w-2/3"
-															bind:value={variantInputDetail.stocks![idx].quantity}
-															type="number"
-															disabled={loading}
-															min={0}
-															variant={stock.quantity % 1 !== 0 ? 'error' : 'info'}
-															subText={stock.quantity % 1 !== 0
-																? $tranFunc('error.positiveInteger')
-																: ''}
-														/>
-													</div>
+													<Input
+														size="xs"
+														label={stock['warehouseName' as keyof StockInput] as string}
+														placeholder={$tranFunc('product.stock')}
+														bind:value={variantInputDetail.stocks![idx].quantity}
+														type="number"
+														disabled={loading}
+														min={0}
+														variant={stock.quantity % 1 !== 0 ? 'error' : 'info'}
+														subText={stock.quantity % 1 !== 0
+															? $tranFunc('error.positiveInteger')
+															: ''}
+													/>
 												{/each}
 											</div>
 										</div>

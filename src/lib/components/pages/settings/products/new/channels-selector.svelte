@@ -17,6 +17,7 @@
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import ErrorMsg from './error-msg.svelte';
+	import { TableSkeleton } from '$lib/components/ui/Table';
 
 	type Props = {
 		/**
@@ -134,14 +135,12 @@
 <div class="mb-3">
 	<Label required requiredAtPos="end" label={$tranFunc('product.channel')} />
 
-	<div class={['grid grid-cols-4 gap-2', !ok && 'bg-red-50 border-red-200']}>
-		{#if $CHANNELS_QUERY_STORE.fetching}
-			<SkeletonContainer class="w-1/2">
-				<Skeleton class="h-6 w-full" />
-			</SkeletonContainer>
-		{:else if $CHANNELS_QUERY_STORE.error}
-			<Alert variant="error" size="sm" bordered>{$CHANNELS_QUERY_STORE.error.message}</Alert>
-		{:else}
+	{#if $CHANNELS_QUERY_STORE.fetching}
+		<TableSkeleton numOfRows={2} numColumns={4} />
+	{:else if $CHANNELS_QUERY_STORE.error}
+		<Alert variant="error" size="sm" bordered>{$CHANNELS_QUERY_STORE.error.message}</Alert>
+	{:else}
+		<div class={['grid grid-cols-4 gap-2', !ok && 'bg-red-50 border-red-200']}>
 			{#each productChannelListingUpdateInput.updateChannels! as channelListing, idx (idx)}
 				<div class="">
 					<Accordion
@@ -202,7 +201,7 @@
 					</Accordion>
 				</div>
 			{/each}
-		{/if}
-	</div>
+		</div>
+	{/if}
 	<ErrorMsg error={!ok ? $tranFunc('error.thereIsError') : undefined} />
 </div>

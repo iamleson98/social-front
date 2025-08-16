@@ -4,6 +4,7 @@
 	import { TAX_CLASSES_QUERY } from '$lib/api/tax';
 	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
 	import type { ProductInput, QueryCollectionsArgs, QueryTaxClassesArgs } from '$lib/gql/graphql';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 
 	type Props = {
 		collections: ProductInput['collections'];
@@ -14,7 +15,7 @@
 	let { collections = $bindable([]), taxClassID = $bindable(), loading }: Props = $props();
 </script>
 
-<div class="mb-3 flex items-center gap-2">
+<div class={[SitenameCommonClassName, 'flex gap-2']}>
 	<!-- MARK: Collections -->
 	<div class="w-1/2 mobile-l:w-full">
 		<GraphqlPaginableSelect
@@ -27,7 +28,6 @@
 			disabled={loading}
 			multiple
 			label={$tranFunc('product.collection')}
-			size="sm"
 			bind:value={collections as string[]}
 		/>
 	</div>
@@ -42,7 +42,6 @@
 			optionLabelKey="name"
 			disabled={loading}
 			label={$tranFunc('product.taxCls')}
-			size="sm"
 			bind:value={taxClassID as string}
 		/>
 	</div>

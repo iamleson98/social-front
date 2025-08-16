@@ -3,6 +3,7 @@
 	import { MdiWeightKg } from '$lib/components/icons';
 	import { Input, Label } from '$lib/components/ui/Input';
 	import type { ProductInput } from '$lib/gql/graphql';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 
 	type Props = {
 		metadata: ProductInput['metadata'];
@@ -27,10 +28,10 @@
 	<span title="centimeter" class="text-sm font-semibold text-gray-700">cm</span>
 {/snippet}
 
-<div class="mb-3">
+<div class={SitenameCommonClassName}>
 	<Label required requiredAtPos="end" label={$tranFunc('common.packaging')} />
 
-	<div class="flex items-start text-xs gap-2 rounded-lg bg-gray-50 border border-gray-200 p-3">
+	<div class="flex items-start gap-2">
 		<Input
 			type="number"
 			placeholder={$tranFunc('product.weight')}
