@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 	import { Category } from '$lib/components/icons';
 	import { Accordion, AccordionList } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
@@ -8,13 +7,14 @@
 	import { CATEGORIES_LIST_QUERY_STORE } from '$lib/api';
 	import { operationStore } from '$lib/api/operation';
 	import { AppRoute } from '$lib/utils';
+	import { CheckboxSkeleton } from '$lib/components/ui/Input';
 
 	const CATEGORY_LEVEL = 0;
 	const first = 50;
 
 	const categoryStore = operationStore<Pick<Query, 'categories'>, QueryCategoriesArgs>({
 		query: CATEGORIES_LIST_QUERY_STORE,
-		variables: { level: CATEGORY_LEVEL, first }
+		variables: { level: CATEGORY_LEVEL, first },
 	});
 </script>
 
@@ -35,11 +35,8 @@
 {/snippet}
 
 {#snippet categorySkeleton()}
-	<div class="rounded-md border border-gray-200 bg-white mb-2">
-		<SkeletonContainer class="flex items-center gap-1">
-			<Skeleton class="w-7 h-7 rounded-full"></Skeleton>
-			<Skeleton class="h-4 w-2/3"></Skeleton>
-		</SkeletonContainer>
+	<div class="rounded-md border border-gray-200 bg-white mb-2 p-2">
+		<CheckboxSkeleton label />
 	</div>
 {/snippet}
 
