@@ -34,8 +34,8 @@ export type TextAreaPropsProps = CustomInputProps & Omit<HTMLTextareaAttributes,
 
 export const INPUT_CLASSES: Record<SocialVariant | 'ghost', Record<'bg' | 'fg', string>> = {
   info: {
-    bg: 'bg-white text-gray-900 focus-within:ring-blue-500 ring-gray-200 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:focus:ring-blue-500',
-    fg: 'text-gray-800! dark:text-white',
+    bg: 'bg-white text-gray-700 focus-within:ring-blue-500 ring-gray-200 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:focus:ring-blue-500',
+    fg: 'text-gray-700! dark:text-white',
   },
   success: {
     bg: 'bg-green-50 text-green-700 focus-within:ring-red-500 ring-green-200 focus:ring-green-500 dark:bg-green-700 dark:text-white dark:focus:ring-green-500',

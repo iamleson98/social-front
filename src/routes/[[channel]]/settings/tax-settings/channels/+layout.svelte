@@ -59,7 +59,7 @@
 					<a href={item.href}>
 						<div
 							class={[
-								'flex items-center justify-between gap-2 rounded-lg hover:bg-blue-100 hover:font-medium transition-all hover:text-blue-600 px-2 py-2',
+								'flex items-center justify-between gap-2 rounded-lg hover:bg-blue-100 transition-all hover:text-blue-600 px-2 py-2',
 								item.active && 'bg-blue-100 font-medium text-blue-600',
 							]}
 						>
