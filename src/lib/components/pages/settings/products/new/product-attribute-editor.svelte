@@ -32,7 +32,6 @@
 		loading: boolean;
 	};
 
-	const MAX_FETCHING_BATCH = 100;
 	let { productTypeID, attributes = $bindable([]), ok = $bindable(), loading }: Props = $props();
 
 	let prevproductTypeID = $state(productTypeID);
@@ -120,12 +119,10 @@
 	});
 
 	const productTypeQuery = operationStore<Pick<Query, 'productType'>, QueryProductTypeArgs>({
-		kind: 'query',
 		query: PRODUCT_TYPE_QUERY,
 		requestPolicy: 'cache-and-network',
 		variables: {
-			id: productTypeID,
-			attributeChoicesFirst: MAX_FETCHING_BATCH,
+			id: productTypeID as string,
 		},
 		pause: !productTypeID,
 	});

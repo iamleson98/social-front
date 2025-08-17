@@ -16,10 +16,10 @@
 		password: string().nonempty({ message: $tranFunc('helpText.fieldRequired') }),
 		confirmPassword: string().nonempty({ message: $tranFunc('helpText.fieldRequired') }),
 		email: string(),
-		token: string()
+		token: string(),
 	}).refine((data) => data.password === data.confirmPassword, {
 		message: $tranFunc('error.passwordsNotMatch'),
-		path: ['confirmPassword']
+		path: ['confirmPassword'],
 	});
 
 	type ChangePasswordForm = z.infer<typeof ChangePasswordSchema>;
@@ -31,7 +31,7 @@
 		password: '',
 		confirmPassword: '',
 		email: EMAIL,
-		token: TOKEN
+		token: TOKEN,
 	});
 
 	let changePasswordMutationStore =
@@ -62,11 +62,13 @@
 	const handleSubmit = () => {
 		if (!validateForm()) return;
 
-		changePasswordMutationStore = operationStore({
-			kind: 'mutation',
+		changePasswordMutationStore = operationStore<
+			Pick<Mutation, 'setPassword'>,
+			MutationSetPasswordArgs
+		>({
 			query: USER_SET_PASSWORD_MUTATION_STORE,
 			requestPolicy: 'network-only',
-			variables: omit(changePasswordForm, ['confirmPassword'])
+			variables: omit(changePasswordForm, ['confirmPassword']),
 		});
 	};
 </script>

@@ -25,7 +25,6 @@
 		Pick<Query, 'order'>,
 		QueryOrderArgs & { hasManageProductPerms: boolean }
 	>({
-		kind: 'query',
 		query: ORDER_LINES_METADATA_QUERY,
 		requestPolicy: 'cache-and-network',
 		pause: true,

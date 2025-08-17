@@ -18,7 +18,6 @@
 	let { isLastPage, onLoadMore, variables }: Props = $props();
 
 	const productFetchStore = operationStore<Pick<Query, 'products'>, QueryProductsArgs>({
-		kind: 'query',
 		query: PRODUCT_LIST_QUERY,
 		context: { requestPolicy: 'network-only' },
 		variables

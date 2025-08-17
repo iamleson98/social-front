@@ -158,7 +158,6 @@
 	);
 
 	const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
-		kind: 'query',
 		query: CHANNELS_QUERY,
 		context: { requestPolicy: 'cache-and-network' },
 	});

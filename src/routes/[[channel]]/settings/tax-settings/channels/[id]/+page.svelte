@@ -36,7 +36,6 @@
 
 	const TaxConfigQuery = operationStore<Pick<Query, 'taxConfiguration'>, QueryTaxConfigurationArgs>(
 		{
-			kind: 'query',
 			query: TAX_CONFIG_DETAIL_QUERY,
 			variables: {
 				id: page.params.id!,

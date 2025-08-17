@@ -6,8 +6,10 @@ import {
 	type OperationContext,
 	type OperationResult,
 	type OperationType,
-	type RequestPolicy
+	type RequestPolicy,
+	type TypedDocumentNode
 } from '@urql/core';
+import type { DefinitionNode } from 'graphql';
 import { derived, writable, type Readable, type Writable } from 'svelte/store';
 import {
 	concat,
@@ -65,7 +67,7 @@ export type OperationArgs<Data = unknown, Variables extends AnyVariables = AnyVa
 	context?: Partial<OperationContext>;
 	requestPolicy?: RequestPolicy;
 	pause?: boolean;
-	kind: OperationType;
+	kind?: OperationType;
 } & GraphQLRequestParams<Data, Variables>;
 
 type ReexecuteProps<Variables extends AnyVariables = AnyVariables> = {
@@ -79,7 +81,7 @@ type ReexecuteProps<Variables extends AnyVariables = AnyVariables> = {
  * @returns
  */
 export function operationStore<Data = unknown, Variables extends AnyVariables = AnyVariables>(
-	args: OperationArgs
+	args: OperationArgs<Data, Variables>
 ): OperationResultStore<Data, Variables> &
 	Pausable & { reexecute: (args: ReexecuteProps<Variables>) => void } {
 	const request = createRequest<Data, Variables>(args.query, args.variables as Variables);
@@ -90,7 +92,7 @@ export function operationStore<Data = unknown, Variables extends AnyVariables = 
 	};
 
 	const operation = GRAPHQL_CLIENT.createRequestOperation<Data, Variables>(
-		args.kind,
+		(args.query as TypedDocumentNode<Data, Variables>).definitions[0]['operation' as keyof DefinitionNode] as unknown as OperationType,
 		request,
 		context
 	);

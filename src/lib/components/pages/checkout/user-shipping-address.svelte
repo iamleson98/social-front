@@ -19,7 +19,6 @@
 	let displayAddressList = $derived.by(() => !displayAddressCreate && !displayAddressEdit);
 
 	const channelStore = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
-		kind: 'query',
 		query: CHANNEL_DETAILS_QUERY,
 		variables: {
 			slug: checkout.channel.slug,

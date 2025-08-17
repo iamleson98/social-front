@@ -34,7 +34,6 @@
 	let loading = $state(false);
 
 	const customerQuery = operationStore<Pick<Query, 'user'>, QueryUserArgs>({
-		kind: 'query',
 		query: USER_DETAIL_QUERY,
 		variables: {},
 		pause: true,

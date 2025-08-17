@@ -24,7 +24,6 @@
 	);
 
 	const productDetailStore = operationStore<Pick<Query, 'product'>>({
-		kind: 'query',
 		query: PRODUCT_DETAIL_QUERY,
 		variables: {
 			slug: productSlug,

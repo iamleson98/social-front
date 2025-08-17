@@ -92,7 +92,6 @@
 	}));
 
 	const eventsQuery = operationStore<Pick<Query, 'order'>, QueryOrderArgs>({
-		kind: 'query',
 		query: ORDER_HISTORY_QUERY,
 		variables: { id },
 	});

@@ -31,11 +31,10 @@
 	import { onMount } from 'svelte';
 
 	const warehouseQuery = operationStore<Pick<Query, 'warehouse'>, QueryWarehouseArgs>({
-		kind: 'query',
 		query: WAREHOUSE_DETAIL_QUERY,
 		requestPolicy: 'cache-and-network',
 		variables: {
-			id: page.params.id,
+			id: page.params.id as string,
 		},
 		pause: !page.params.id,
 	});

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
 	import {
 		PROMOTION_DELETE_MUTATION,
 		PROMOTION_DETAIL_QUERY,
@@ -32,10 +31,9 @@
 	import { onMount } from 'svelte';
 
 	const promotionStore = operationStore<Pick<Query, 'promotion'>, QueryPromotionArgs>({
-		kind: 'query',
 		query: PROMOTION_DETAIL_QUERY,
 		variables: {
-			id: page.params.id,
+			id: page.params.id as string,
 		},
 		requestPolicy: 'cache-and-network',
 		pause: !page.params.id,

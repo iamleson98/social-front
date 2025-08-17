@@ -29,7 +29,6 @@
 	let generalFormOk = $state(false);
 
 	const categoryQuery = operationStore<Pick<Query, 'category'>, QueryCategoryArgs>({
-		kind: 'query',
 		query: CATEGORY_DETAIL_QUERY,
 		variables: {
 			id: page.params.id,

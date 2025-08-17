@@ -83,7 +83,6 @@
 	let ruleUpsertInput = $state<PromotionRuleUpdateInput & { id?: string }>();
 
 	const rulePredicateQuery = operationStore<QueryData>({
-		kind: 'query',
 		query: PROMOTION_RULE_CONDITIONS_SELECTED_OPTIONS_DETAILS,
 		variables: {},
 		pause: true,

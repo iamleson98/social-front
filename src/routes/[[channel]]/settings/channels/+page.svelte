@@ -24,7 +24,6 @@
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 
 	const channelsQuery = operationStore<Pick<Query, 'channels'>>({
-		kind: 'query',
 		requestPolicy: 'cache-and-network',
 		query: CHANNELS_QUERY,
 	});

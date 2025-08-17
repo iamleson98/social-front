@@ -36,7 +36,6 @@
 		: {};
 
 	const CHANNELS_QUERY_STORE = operationStore<Pick<Query, 'channels'>>({
-		kind: 'query',
 		query: CHANNELS_QUERY,
 		requestPolicy: 'cache-and-network',
 	});

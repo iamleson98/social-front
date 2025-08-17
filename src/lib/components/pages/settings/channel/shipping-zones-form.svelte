@@ -33,7 +33,6 @@
 		Pick<Query, 'shippingZones'>,
 		QueryShippingZonesArgs
 	>({
-		kind: 'query',
 		query: SHIPPING_ZONES_QUERY,
 		variables: { channel: channelSlug, first: BATCH },
 		requestPolicy: 'network-only',

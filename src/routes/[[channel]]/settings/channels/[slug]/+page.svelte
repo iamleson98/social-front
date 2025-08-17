@@ -32,14 +32,12 @@
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 
 	const channelDetailQuery = operationStore<Pick<Query, 'channel'>>({
-		kind: 'query',
 		query: CHANNEL_DETAILS_QUERY,
 		variables: { slug: page.params.slug },
 		requestPolicy: 'network-only',
 	});
 
 	const channelsQuery = operationStore<Pick<Query, 'channels'>>({
-		kind: 'query',
 		requestPolicy: 'cache-and-network',
 		query: CHANNELS_QUERY,
 		pause: true,

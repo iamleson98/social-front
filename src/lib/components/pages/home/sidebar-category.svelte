@@ -13,7 +13,6 @@
 	const first = 50;
 
 	const categoryStore = operationStore<Pick<Query, 'categories'>, QueryCategoriesArgs>({
-		kind: 'query',
 		query: CATEGORIES_LIST_QUERY_STORE,
 		variables: { level: CATEGORY_LEVEL, first }
 	});

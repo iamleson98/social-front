@@ -34,11 +34,9 @@
 	let warehousesOfChannel = $state.raw<Warehouse[]>([]);
 
 	const warehousesOfChannelQuery = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
-		kind: 'query',
 		query: CHANNEL_WAREHOUSES_QUERY,
 		variables: {
 			slug: channelSlug,
-			first: BATCH_FETCH,
 		},
 		requestPolicy: 'network-only',
 		pause: true, // don't call this when in channel creation page

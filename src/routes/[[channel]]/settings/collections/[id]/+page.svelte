@@ -57,7 +57,6 @@
 	let performUpdateMetadata = $state(false); // trigger update metadata
 
 	const collectionDetailQuery = operationStore<Pick<Query, 'collection'>, QueryCollectionArgs>({
-		kind: 'query',
 		query: COLLECTION_DETAIL_QUERY,
 		variables: {
 			id: page.params.id,

@@ -72,7 +72,6 @@
 		Pick<Query, 'addressValidationRules'>,
 		QueryAddressValidationRulesArgs
 	>({
-		kind: 'query',
 		query: ADDRESS_VALIDATION_RULES_QUERY,
 		context: { requestPolicy: 'cache-and-network' },
 		pause: true,

@@ -21,10 +21,9 @@
 	import { onMount } from 'svelte';
 
 	const shippingZoneQuery = operationStore<Pick<Query, 'shippingZone'>, QueryShippingZoneArgs>({
-		kind: 'query',
 		query: SHIPPING_ZONE_DETAIL_QUERY,
 		variables: {
-			id: page.params.id,
+			id: page.params.id as string,
 		},
 		pause: !page.params.id,
 		requestPolicy: 'cache-and-network',

@@ -24,7 +24,6 @@
 		Pick<Query, 'taxConfigurations'>,
 		QueryTaxConfigurationsArgs
 	>({
-		kind: 'query',
 		query: TAX_CONFIG_LIST_QUERY,
 		variables: {
 			first: 10,

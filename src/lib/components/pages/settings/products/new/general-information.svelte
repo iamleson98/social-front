@@ -48,7 +48,6 @@
 	}: Props = $props();
 
 	const productTypeQuery = operationStore<Pick<Query, 'productType'>, QueryProductTypeArgs>({
-		kind: 'query',
 		query: PRODUCT_TYPE_QUERY,
 		requestPolicy: 'cache-and-network',
 		variables: {

@@ -1,35 +1,34 @@
-# Stage 1: Build the app
-FROM node:22-alpine AS builder
-
-# Install pnpm via corepack
-RUN corepack enable && corepack prepare pnpm@latest --activate
+FROM node:22-alpine AS base
 
 WORKDIR /app
 
-# Copy only lockfile first for better caching
-COPY pnpm-lock.yaml package.json ./
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Install dependencies (cached)
+# Copy only package files first for better caching
+COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
-# Copy rest of the source
+# Copy the rest of the application code
 COPY . .
 
-# Build the SvelteKit app and bundle using Nodejs adapter
+# Build the SvelteKit app
 RUN pnpm run build:node
 
-# Stage 2: Serve with NGINX
-FROM nginx:stable-alpine
+# Use a smaller base image for the production stage
+FROM node:22-alpine AS production
 
-# Remove default nginx config
-RUN rm /etc/nginx/conf.d/default.conf
+WORKDIR /app
 
-# Copy custom nginx config
-COPY nginx/prod/nginx.conf /etc/nginx/conf.d/default.conf
+# Copy only the necessary files from the build stage
+COPY --from=base /app/build ./build
+COPY --from=base /app/package.json ./package.json
+COPY --from=base /app/pnpm-lock.yaml ./pnpm-lock.yaml
 
-# Copy built static files
-COPY --from=builder /app/build /usr/share/nginx/html
+# Reinstall only production dependencies
+RUN corepack enable && corepack prepare pnpm@latest --activate && \
+  pnpm install --frozen-lockfile --prod
 
-EXPOSE 80
+EXPOSE 3000
+CMD ["node", "build"]
 
-CMD ["nginx", "-g", "daemon off;"]

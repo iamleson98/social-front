@@ -35,7 +35,6 @@
 	}));
 
 	const eventsQuery = operationStore<Pick<Query, 'giftCard'>, QueryGiftCardArgs>({
-		kind: 'query',
 		query: GIFT_CARD_EVENTS_QUERY,
 		variables: {
 			id,

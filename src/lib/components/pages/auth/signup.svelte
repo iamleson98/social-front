@@ -10,6 +10,7 @@
 	import {
 		CountryCode,
 		LanguageCodeEnum,
+		type AccountRegisterInput,
 		type Mutation,
 		type MutationAccountRegisterArgs,
 	} from '$lib/gql/graphql';
@@ -128,10 +129,9 @@
 			Pick<Mutation, 'accountRegister'>,
 			MutationAccountRegisterArgs
 		>({
-			kind: 'mutation',
 			query: USER_SIGNUP_MUTATION_STORE,
 			variables: {
-				input: omit(signupInfo, ['confirmPassword', 'termAndPoliciesAgree']),
+				input: omit(signupInfo, ['confirmPassword', 'termAndPoliciesAgree']) as AccountRegisterInput,
 			},
 		});
 	};

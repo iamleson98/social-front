@@ -46,7 +46,6 @@
 	let newCountryRateConfig = $state<MutationTaxCountryConfigurationUpdateArgs>();
 
 	const TaxConfigsQuery = operationStore<Pick<Query, 'taxCountryConfigurations'>>({
-		kind: 'query',
 		query: GET_TAX_COUNTRY_CONFIGURATIONS_QUERY,
 		requestPolicy: 'cache-and-network',
 	});
@@ -55,7 +54,6 @@
 		Pick<Query, 'taxCountryConfiguration'>,
 		QueryTaxCountryConfigurationArgs
 	>({
-		kind: 'query',
 		query: GET_TAX_COUNTRY_CONFIGURATION_DETAIL_QUERY,
 		variables: {
 			countryCode: page.url.searchParams.get('code') as CountryCode,
@@ -65,7 +63,6 @@
 	});
 
 	const TaxClassesQuery = operationStore<Pick<Query, 'taxClasses'>, QueryTaxClassesArgs>({
-		kind: 'query',
 		query: TAX_CLASSES_QUERY,
 		requestPolicy: 'cache-and-network',
 		variables: {

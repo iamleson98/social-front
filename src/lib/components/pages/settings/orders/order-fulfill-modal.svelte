@@ -61,7 +61,6 @@
 	let loading = $state(false);
 
 	const shopQuery = operationStore<Pick<Query, 'shop'>>({
-		kind: 'query',
 		query: SHOP_QUERY,
 	});
 

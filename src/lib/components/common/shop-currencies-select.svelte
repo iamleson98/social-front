@@ -19,7 +19,6 @@
 	let { size, label, value = $bindable(), ...rest }: Omit<SelectProps, 'options'> = $props();
 
 	const shopStore = operationStore<Pick<Query, 'shop'>, QueryShopArgs>({
-		kind: 'query',
 		query: SHOP_QUERY,
 		requestPolicy: 'cache-and-network',
 		variables: {

@@ -29,7 +29,6 @@
 	let { data }: Props = $props();
 
 	const staffDetailQuery = operationStore<Pick<Query, 'user'>, QueryUserArgs>({
-		kind: 'query',
 		query: USER_DETAIL_QUERY,
 		variables: { id: page.params.id },
 		requestPolicy: 'cache-and-network',

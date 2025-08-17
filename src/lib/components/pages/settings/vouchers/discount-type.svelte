@@ -74,7 +74,6 @@
 	);
 
 	const channelsQuery = operationStore<Pick<Query, 'channels'>>({
-		kind: 'query',
 		query: CHANNELS_QUERY,
 		requestPolicy: 'cache-and-network',
 	});

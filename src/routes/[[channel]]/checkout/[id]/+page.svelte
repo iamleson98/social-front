@@ -9,7 +9,6 @@
 	import { Alert } from '$lib/components/ui/Alert';
 
 	const checkoutQueryStore = operationStore<Pick<Query, 'checkout'>, QueryCheckoutArgs>({
-		kind: 'query',
 		query: CHECKOUT_DETAILS_QUERY,
 		variables: {
 			id: page.params.id,

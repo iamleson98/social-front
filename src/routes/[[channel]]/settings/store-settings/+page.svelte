@@ -25,7 +25,6 @@
 	import { onMount } from 'svelte';
 
 	const ShopDetailQuery = operationStore<Pick<Query, 'shop'>>({
-		kind: 'query',
 		query: SHOP_QUERY,
 		requestPolicy: 'cache-first',
 		variables: {

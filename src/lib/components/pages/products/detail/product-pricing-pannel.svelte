@@ -126,8 +126,10 @@
 			checkoutStore.set(fetchResultParsed.checkout);
 		}
 
-		checkoutAddLineStore = operationStore({
-			kind: 'mutation',
+		checkoutAddLineStore = operationStore<
+			Pick<Mutation, 'checkoutLinesAdd'>,
+			MutationCheckoutLinesAddArgs
+		>({
 			query: CHECKOUT_ADD_LINE_MUTATION,
 			variables: {
 				id: $checkoutStore?.id,

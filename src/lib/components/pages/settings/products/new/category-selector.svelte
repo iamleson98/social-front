@@ -33,7 +33,6 @@
 		Pick<Query, 'categories'>,
 		CategoryListForCreateProductInput
 	>({
-		kind: 'query',
 		query: CATEGORIES_LIST_FOR_CREATE_PRODUCT,
 		context: {
 			requestPolicy: 'cache-and-network',

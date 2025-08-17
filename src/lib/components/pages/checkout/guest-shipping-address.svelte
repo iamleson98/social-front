@@ -36,7 +36,6 @@
 	let showAddressEdit = $state(false);
 
 	const channelStore = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
-		kind: 'query',
 		query: CHANNEL_DETAILS_QUERY,
 		variables: {
 			slug: checkout.channel.slug,

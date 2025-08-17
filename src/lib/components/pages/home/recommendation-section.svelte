@@ -2,7 +2,7 @@
 	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
-	import type { Query, QueryPromotionArgs } from '$lib/gql/graphql';
+	import type { Query, QueryPromotionsArgs } from '$lib/gql/graphql';
 	import { operationStore } from '$lib/api/operation';
 	import { PROMOTIONS_QUERY } from '$lib/api/discount';
 	import { AppRoute } from '$lib/utils';
@@ -11,16 +11,15 @@
 
 	let promotionEndCursor = $state<string | null>(null);
 
-	const promotionsStore = operationStore<Pick<Query, 'promotions'>, QueryPromotionArgs>({
-		kind: 'query',
+	const promotionsStore = operationStore<Pick<Query, 'promotions'>, QueryPromotionsArgs>({
 		query: PROMOTIONS_QUERY,
 		variables: {
 			first: PROMOTION_FIRST,
-			after: (() => (promotionEndCursor ? promotionEndCursor : undefined))()
+			after: (() => (promotionEndCursor ? promotionEndCursor : undefined))(),
 		},
 		context: {
-			url: AppRoute.GRAPHQL_API
-		}
+			url: AppRoute.GRAPHQL_API,
+		},
 	});
 </script>
 
@@ -52,7 +51,7 @@
 		{:else if $promotionsStore.data?.promotions}
 			{#each $promotionsStore.data.promotions.edges as edge, idx (idx)}
 				{@const {
-					node: { name, startDate }
+					node: { name, startDate },
 				} = edge}
 				<div>
 					<p class="text-gray-700 text-sm">{name}</p>

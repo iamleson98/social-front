@@ -7,6 +7,21 @@ query TaxClasses($first: Int, $after: String, $last: Int, $before: String, $sort
       node {
         id
         name
+        countries {
+          rate
+          country {
+            code
+            country
+          }
+        }
+        metadata {
+          key
+          value
+        }
+        privateMetadata {
+          key
+          value
+        }
       }
     }
     pageInfo {

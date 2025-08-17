@@ -29,10 +29,9 @@
 	import { onMount } from 'svelte';
 
 	const groupQuery = operationStore<Pick<Query, 'permissionGroup'>, QueryPermissionGroupArgs>({
-		kind: 'query',
 		query: PERMISSION_GROUP_DETAIL_QUERY,
 		variables: {
-			id: page.params.id,
+			id: page.params.id as string,
 		},
 		pause: !page.params.id,
 		requestPolicy: 'network-only',

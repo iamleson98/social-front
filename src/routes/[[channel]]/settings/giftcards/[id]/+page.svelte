@@ -31,11 +31,10 @@
 	let performUpdateMetadata = $state(false);
 
 	const giftcardQuery = operationStore<Pick<Query, 'giftCard'>, QueryGiftCardArgs>({
-		kind: 'query',
 		query: GIFT_CARD_DETAIL_QUERY,
 		requestPolicy: 'cache-and-network',
 		variables: {
-			id: page.params.id,
+			id: page.params.id as string,
 		},
 		pause: !page.params.id,
 	});

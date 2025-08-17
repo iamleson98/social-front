@@ -24,7 +24,6 @@
 	import { tranFunc } from '$i18n';
 
 	const userDetailQuery = operationStore<Pick<Query, 'user'>, QueryUserArgs>({
-		kind: 'query',
 		query: USER_DETAIL_QUERY,
 		requestPolicy: 'network-only',
 		variables: {

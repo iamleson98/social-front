@@ -20,7 +20,6 @@
 	const NOW = new Date();
 
 	const PRODUCT_DETAIL_STORE = operationStore<Pick<Query, 'product'>, QueryProductArgs>({
-		kind: 'query',
 		query: PRODUCT_DETAIL_QUERY,
 		variables: {
 			slug: page.params.slug,

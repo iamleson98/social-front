@@ -45,10 +45,9 @@
 	import { pick } from 'es-toolkit';
 
 	const voucherQuery = operationStore<Pick<Query, 'voucher'>, QueryVoucherArgs>({
-		kind: 'query',
 		query: VOUCHER_DETAIL_QUERY,
 		variables: {
-			id: page.params.id,
+			id: page.params.id as string,
 		},
 		pause: !page.params.id,
 		requestPolicy: 'network-only',

@@ -32,7 +32,6 @@
 	import { onMount } from 'svelte';
 
 	const AttributeQuery = operationStore<Pick<Query, 'attribute'>, QueryAttributeArgs>({
-		kind: 'query',
 		query: ATTRIBUTE_DETAILS_QUERY,
 		requestPolicy: 'cache-and-network',
 		variables: {

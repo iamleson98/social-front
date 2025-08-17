@@ -35,11 +35,10 @@
 	let performUpdateMetadata = $state(false);
 
 	const orderQuery = operationStore<Pick<Query, 'order'>, QueryOrderArgs>({
-		kind: 'query',
 		query: ORDER_DETAIL_QUERY,
 		requestPolicy: 'cache-and-network',
 		variables: {
-			id: page.params.id,
+			id: page.params.id as string,
 		},
 		pause: !page.params.id,
 	});

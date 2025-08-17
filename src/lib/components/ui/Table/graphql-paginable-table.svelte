@@ -68,7 +68,6 @@
 		Pick<Query, typeof resultKey>,
 		AnyVariables & GraphqlPaginationArgs
 	>({
-		kind: 'query',
 		query,
 		variables,
 		requestPolicy,

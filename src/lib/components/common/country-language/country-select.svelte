@@ -20,7 +20,6 @@
 	}: Omit<SelectProps, 'options'> = $props();
 
 	const shopStore = operationStore<Pick<Query, 'shop'>>({
-		kind: 'query',
 		query: SHOP_QUERY,
 		requestPolicy: 'cache-and-network',
 	});

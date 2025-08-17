@@ -33,10 +33,9 @@
 		Pick<Query, 'productType'>,
 		QueryProductTypeArgs & { attributeChoicesFirst: number }
 	>({
-		kind: 'query',
 		query: PRODUCT_TYPE_QUERY,
 		variables: {
-			id: page.params.id,
+			id: page.params.id as string,
 			attributeChoicesFirst: 1,
 		},
 		pause: !page.params.id,
@@ -67,7 +66,7 @@
 			Pick<Mutation, 'productTypeUpdate'>,
 			MutationProductTypeUpdateArgs
 		>(PRODUCT_TYPE_UPDATE_MUTATION, {
-			id: page.params.id,
+			id: page.params.id as string,
 			input: productTypeInput,
 		});
 
@@ -78,7 +77,7 @@
 
 		productTypeQuery.reexecute({
 			context: { requestPolicy: 'network-only' },
-			variables: { id: page.params.id, attributeChoicesFirst: 1 },
+			variables: { id: page.params.id as string, attributeChoicesFirst: 1 },
 		});
 	};
 
@@ -99,7 +98,7 @@
 					Pick<Mutation, 'productTypeDelete'>,
 					MutationProductTypeDeleteArgs
 				>(PRODUCT_TYPE_DELETE_MUTATION, {
-					id: page.params.id,
+					id: page.params.id as string,
 				});
 
 				loading = false;

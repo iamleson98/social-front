@@ -134,3 +134,23 @@ mutation TaxCountryConfigurationDelete($countryCode: CountryCode!) {
     }
   }
 }`;
+
+export const TAX_CLASS_UPDATE_MUTATION = gql`
+mutation TaxClassUpdate($id: ID!, $input: TaxClassUpdateInput!) {
+  taxClassUpdate(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const TAX_CLASS_DELETE_MUTATION = gql`
+mutation TaxClassDelete($id: ID!) {
+  taxClassDelete(id: $id) {
+    errors {
+      field
+      message
+    }
+  }
+}`;

@@ -15,7 +15,6 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Skeleton } from '$lib/components/ui/Skeleton';
 	import {
-		CommonEaseDatePickerFormat,
 		THIS_TIME_LAST_5_YEARS,
 		THIS_TIME_NEXT_5_YEARS,
 	} from '$lib/utils/consts';
@@ -36,7 +35,6 @@
 	}: Props = $props();
 
 	const channelsQuery = operationStore<Pick<Query, 'channels'>>({
-		kind: 'query',
 		query: CHANNELS_QUERY,
 		requestPolicy: 'network-only',
 	});
