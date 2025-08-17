@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { CUSTOMER_LIST_QUERY } from '$lib/api/admin/users';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { type TableColumnProps } from '$lib/components/ui/Table';
 	import { UserSortField, type QueryCustomersArgs, type User } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';

@@ -5,7 +5,7 @@
 	import { PasswordInput } from '$lib/components/ui/Input';
 	import { tranFunc } from '$i18n';
 	import { object, string, z } from 'zod';
-	import type { Mutation, MutationPasswordChangeArgs, MutationSetPasswordArgs } from '$lib/gql/graphql';
+	import type { Mutation, MutationSetPasswordArgs } from '$lib/gql/graphql';
 	import { operationStore, type OperationResultStore } from '$lib/api/operation';
 	import { USER_SET_PASSWORD_MUTATION_STORE } from '$lib/api/auth';
 	import { omit } from 'es-toolkit';

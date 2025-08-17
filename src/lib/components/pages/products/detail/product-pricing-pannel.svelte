@@ -23,7 +23,7 @@
 	import { Rating } from '$lib/components/ui/rating';
 	import { checkoutStore } from '$lib/stores/app';
 	import { IconButton } from '$lib/components/ui/Button';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { CHECKOUT_ADD_LINE_MUTATION } from '$lib/api/checkout';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Input } from '$lib/components/ui/Input';

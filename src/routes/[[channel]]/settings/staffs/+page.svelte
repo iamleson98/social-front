@@ -3,7 +3,7 @@
 	import { STAFFS_QUERY } from '$lib/api/admin/staff';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import FilterButton from '$lib/components/pages/settings/staff/filter-button.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { type QueryStaffUsersArgs, type User, UserSortField } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';

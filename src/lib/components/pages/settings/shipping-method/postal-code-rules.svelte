@@ -2,7 +2,7 @@
 	import { tranFunc } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Plus, Trash } from '$lib/components/icons';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { Input, RadioButton } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';

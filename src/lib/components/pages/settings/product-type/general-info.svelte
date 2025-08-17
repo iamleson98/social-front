@@ -2,7 +2,7 @@
 	import { tranFunc } from '$i18n';
 	import { TAX_CLASSES_QUERY } from '$lib/api/tax';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { Checkbox, Input, Label, RadioButton } from '$lib/components/ui/Input';
 	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
 	import { ProductTypeKindEnum, type QueryTaxClassesArgs } from '$lib/gql/graphql';

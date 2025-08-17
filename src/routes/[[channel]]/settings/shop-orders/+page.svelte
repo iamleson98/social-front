@@ -5,7 +5,7 @@
 	import dayjs from 'dayjs';
 	import { tranFunc } from '$i18n';
 	import { SHOP_ORDERS_QUERY } from '$lib/api/admin/orders';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import Filter from '$lib/components/pages/settings/orders/filter.svelte';
 	import { AppRoute } from '$lib/utils';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';

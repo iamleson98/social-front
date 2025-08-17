@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 

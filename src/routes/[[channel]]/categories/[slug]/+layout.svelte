@@ -20,19 +20,19 @@
 		{
 			title: `${$tranFunc('product.products')}`,
 			icon: Box,
-			href: `${AppRoute.CATEGORY_DETAILS(page.params.slug)}`,
+			href: `${AppRoute.CATEGORY_DETAILS(page.params.slug as string)}`,
 			active: false
 		},
 		{
 			title: `${$tranFunc('product.subCategories')} (${data.category?.children?.totalCount || ''})`,
 			icon: CategoryPlus,
-			href: `${AppRoute.SUB_CATEGORIES(page.params.slug)}`,
+			href: `${AppRoute.SUB_CATEGORIES(page.params.slug as string)}`,
 			active: false
 		},
 		{
 			title: $tranFunc('product.detail'),
 			icon: InforCircle,
-			href: `${AppRoute.CATEGORY_INFO(page.params.slug)}`,
+			href: `${AppRoute.CATEGORY_INFO(page.params.slug as string)}`,
 			active: false
 		}
 	]);

@@ -3,7 +3,7 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Ban, CircleCheck, Send } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { Input } from '$lib/components/ui/Input';
 	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
 	import {

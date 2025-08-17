@@ -15,8 +15,8 @@ RUN pnpm install --frozen-lockfile
 # Copy rest of the source
 COPY . .
 
-# Build the SvelteKit app
-RUN pnpm run build
+# Build the SvelteKit app and bundle using Nodejs adapter
+RUN pnpm run build:node
 
 # Stage 2: Serve with NGINX
 FROM nginx:stable-alpine

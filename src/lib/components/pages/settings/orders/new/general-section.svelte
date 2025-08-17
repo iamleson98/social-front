@@ -2,7 +2,7 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Plus } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { OrderStatus } from '$lib/gql/graphql';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { orderStatusBadgeClass } from '$lib/utils/utils';

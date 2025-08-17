@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Trash } from '$lib/components/icons';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Popover, type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';

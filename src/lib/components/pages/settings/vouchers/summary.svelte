@@ -2,7 +2,7 @@
 	import { tranFunc } from '$i18n';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { DiscountValueTypeEnum, type Voucher } from '$lib/gql/graphql';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import dayjs from 'dayjs';

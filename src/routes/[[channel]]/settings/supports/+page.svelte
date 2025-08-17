@@ -10,7 +10,7 @@
 	import dayjs from 'dayjs';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { supportTicketStatusToBadgeClass, supportTicketTagToBadgeClass } from '$lib/utils/utils';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 
 	type SupportTicket = {

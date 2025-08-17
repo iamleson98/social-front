@@ -2,7 +2,7 @@
 	import { PRODUCT_LIST_QUERY } from '$lib/api';
 	import { OpenEye } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Checkbox } from '$lib/components/ui/Input';
 	import { GraphqlPaginableTable, Table, type TableColumnProps } from '$lib/components/ui/Table';

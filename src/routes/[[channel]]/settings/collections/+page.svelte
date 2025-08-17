@@ -5,7 +5,7 @@
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { Dots, Edit, Trash } from '$lib/components/icons';
 	import Filter from '$lib/components/pages/settings/collections/filter.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown, type MenuItemProps } from '$lib/components/ui/Dropdown';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';

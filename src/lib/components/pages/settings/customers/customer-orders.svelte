@@ -3,7 +3,7 @@
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Button } from '$lib/components/ui';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { type Order, OrderSortField, type Query, type QueryOrdersArgs } from '$lib/gql/graphql';
 	import { SitenameTimeFormat } from '$lib/utils/consts';

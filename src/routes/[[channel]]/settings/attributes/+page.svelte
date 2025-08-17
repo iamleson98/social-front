@@ -4,7 +4,7 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { Trash } from '$lib/components/icons';
 	import Filter from '$lib/components/pages/settings/attributes/filter.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {

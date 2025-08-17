@@ -8,7 +8,7 @@ import { CHANNEL_KEY } from './consts';
 import { getCookieByKey } from './cookies';
 import { DEFAULT_CHANNEL } from './channels';
 import { OrderStatus, PaymentChargeStatusEnum } from "$lib/gql/graphql";
-import type { BadgeProps } from '$lib/components/ui/badge/types';
+import type { BadgeProps } from '$lib/components/ui/Badge/types';
 import { lowerCase, pick, startCase } from 'es-toolkit';
 import { toast } from 'svelte-sonner';
 import dayjs from 'dayjs';

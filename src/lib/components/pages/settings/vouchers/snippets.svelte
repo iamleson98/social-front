@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import type { TableColumnProps } from '$lib/components/ui/Table';
 	import type { Category, Collection, Product, ProductVariant } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';

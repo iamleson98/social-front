@@ -1,6 +1,6 @@
 <script lang="ts">
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import Button from '$lib/components/ui/Button/Button.svelte';
 	import { OrderAction, OrderDiscountType, OrderStatus, type Order } from '$lib/gql/graphql';
 	import {

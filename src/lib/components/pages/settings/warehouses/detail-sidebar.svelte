@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import { WAREHOUSE_SHIPPING_ZONES_QUERY } from '$lib/api/admin/shipping';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { RadioButton } from '$lib/components/ui/Input';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {

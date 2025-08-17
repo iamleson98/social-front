@@ -23,7 +23,7 @@
 	import OrderHistory from '$lib/components/pages/settings/orders/order-history.svelte';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import dayjs from 'dayjs';
 	import OrderLines from '$lib/components/pages/settings/orders/order-lines.svelte';
 	import { SitenameTimeFormat } from '$lib/utils/consts';

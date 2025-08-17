@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Input, RadioButton } from '$lib/components/ui/Input';
 	import { Select, type SelectOption } from '$lib/components/ui/select';

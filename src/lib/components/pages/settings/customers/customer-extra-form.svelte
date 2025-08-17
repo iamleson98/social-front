@@ -4,7 +4,7 @@
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import type { GiftCard, Query, User } from '$lib/gql/graphql';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import dayjs from 'dayjs';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { Modal } from '$lib/components/ui/Modal';

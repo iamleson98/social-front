@@ -6,7 +6,7 @@
 	import GeneralSection from '$lib/components/pages/settings/orders/new/general-section.svelte';
 	// import Sidebar from '$lib/components/pages/settings/orders/new/sidebar.svelte';
 	import { Button } from '$lib/components/ui';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { OrderStatus } from '$lib/gql/graphql';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { orderStatusBadgeClass } from '$lib/utils/utils';

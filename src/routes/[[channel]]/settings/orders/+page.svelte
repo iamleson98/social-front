@@ -13,7 +13,7 @@
 	import { Dots } from '$lib/components/icons';
 	import { AppRoute } from '$lib/utils';
 	import { tranFunc } from '$i18n';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import HeadBar from '$lib/components/pages/settings/common/head-bar.svelte';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { SitenameTimeFormat } from '$lib/utils/consts';

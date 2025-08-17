@@ -5,7 +5,7 @@
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { Input, RadioButton } from '$lib/components/ui/Input';
 	import { SelectSkeleton } from '$lib/components/ui/select';
 	import {

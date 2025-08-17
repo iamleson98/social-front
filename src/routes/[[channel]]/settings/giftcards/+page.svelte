@@ -6,7 +6,7 @@
 	import { Cancel, CircleCheck, Dots, Trash } from '$lib/components/icons';
 	import Filter from '$lib/components/pages/settings/giftcards/filter.svelte';
 	import { GiftcardUtil } from '$lib/components/pages/settings/giftcards/utils.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';

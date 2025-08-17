@@ -1,7 +1,7 @@
 <script lang="ts">
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Button } from '$lib/components/ui';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { Input } from '$lib/components/ui/Input';
 	import type { TableColumnProps } from '$lib/components/ui/Table';
 	import Table from '$lib/components/ui/Table/table.svelte';

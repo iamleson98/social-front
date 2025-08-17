@@ -10,7 +10,7 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { PencilMinus, Plus, Trash } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Modal } from '$lib/components/ui/Modal';
 	import {

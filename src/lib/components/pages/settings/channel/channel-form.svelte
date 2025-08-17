@@ -2,7 +2,7 @@
 	import { tranFunc } from '$i18n';
 	import CountrySelect from '$lib/components/common/country-language/country-select.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { Checkbox, Input, Label, RadioButton } from '$lib/components/ui/Input';
 	import {
 		AllocationStrategyEnum,

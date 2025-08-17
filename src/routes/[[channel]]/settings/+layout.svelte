@@ -38,7 +38,7 @@
 	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
 	import type { ShippingMethodTypeEnum } from '$lib/gql/graphql';
 	import Skeleton from '$lib/components/pages/settings/skeleton.svelte';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 
 	type Props = {
 		children: Snippet;

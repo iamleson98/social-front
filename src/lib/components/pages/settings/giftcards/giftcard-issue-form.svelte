@@ -7,7 +7,7 @@
 	import ShopCurrenciesSelect from '$lib/components/common/shop-currencies-select.svelte';
 	import { ClipboardCopy } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { Badge } from '$lib/components/ui/badge';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { TextArea } from '$lib/components/ui/Input';
