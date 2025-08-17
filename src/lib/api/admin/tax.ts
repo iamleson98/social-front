@@ -102,7 +102,7 @@ query TaxCountryConfigurations {
       }
     }
   }
-}`
+}`;
 
 export const GET_TAX_COUNTRY_CONFIGURATION_DETAIL_QUERY = gql`
 query TaxCountryConfigurationDetail($countryCode: CountryCode!) {
@@ -123,5 +123,14 @@ query TaxCountryConfigurationDetail($countryCode: CountryCode!) {
       }
     }
   }
-}`
+}`;
 
+export const TAX_COUNTRY_CONFIGURATION_DELETE_MUTATION = gql`
+mutation TaxCountryConfigurationDelete($countryCode: CountryCode!) {
+  taxCountryConfigurationDelete(countryCode: $countryCode) {
+    errors {
+      field
+      message
+    }
+  }
+}`;

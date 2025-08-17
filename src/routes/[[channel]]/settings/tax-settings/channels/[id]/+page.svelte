@@ -11,7 +11,7 @@
 	import Alert from '$lib/components/ui/Alert/alert.svelte';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Checkbox } from '$lib/components/ui/Input';
-	import { Select, SelectSkeleton, type SelectOption } from '$lib/components/ui/select';
+	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import TableSkeleton from '$lib/components/ui/Table/table-skeleton.svelte';
 	import {
 		CountryCode,
@@ -89,7 +89,6 @@
 							taxAppId: item.taxAppId,
 							existing: true, // NOTE: This is used to identify if the country is existing or new
 						})),
-					removeCountriesConfiguration: [],
 				};
 			}
 		}),

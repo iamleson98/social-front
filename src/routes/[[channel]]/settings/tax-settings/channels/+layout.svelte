@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { TAX_CONFIG_LIST_QUERY } from '$lib/api/admin/tax';
 	import { operationStore } from '$lib/api/operation';
@@ -9,7 +10,8 @@
 	import { TableSkeleton } from '$lib/components/ui/Table';
 	import type { Query, QueryTaxConfigurationsArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import type { Snippet } from 'svelte';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import { onMount, type Snippet } from 'svelte';
 	import { fly } from 'svelte/transition';
 
 	type Props = {
@@ -29,6 +31,15 @@
 		},
 		requestPolicy: 'cache-and-network',
 	});
+
+	onMount(() =>
+		TaxConfigsQuery.subscribe((result) => {
+			if (result.data?.taxConfigurations?.edges.length) {
+				const firstNodeId = result.data.taxConfigurations.edges[0]?.node.id;
+				goto(AppRoute.TAX_SETTINGS_CHANNEL_DETAILS(firstNodeId));
+			}
+		}),
+	);
 </script>
 
 {#if $TaxConfigsQuery.fetching}
@@ -43,7 +54,7 @@
 }))}
 	<div class="flex gap-2">
 		<div class="w-3/10">
-			<AccordionList header="Channels" {items}>
+			<AccordionList header="Channels" {items} class={SitenameCommonClassName}>
 				{#snippet child(item)}
 					<a href={item.href}>
 						<div
@@ -54,7 +65,7 @@
 						>
 							<span>{item.title}</span>
 							{#if item.active}
-								<span transition:fly={{ x: -20 }}>
+								<span transition:fly={{ x: -10 }}>
 									<Icon icon={ChevronRight} size="sm" />
 								</span>
 							{/if}

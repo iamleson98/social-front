@@ -16,10 +16,10 @@
 	} from './types';
 	import type { FocusEventHandler } from 'svelte/elements';
 	import { INPUT_CLASSES } from '$lib/components/ui/Input/input.types';
-	import { Badge } from '$lib/components/ui/badge';
 	import { INPUT_BUTTON_SIZE_MAP } from '../Button';
 	import { difference, noop } from 'es-toolkit';
 	import { scrollToEnd } from '$lib/actions/scroll-end';
+	import { Badge } from '../Badge';
 
 	let {
 		value = $bindable<Primitive | Primitive[] | undefined>(),

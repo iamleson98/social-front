@@ -96,7 +96,7 @@ export const AppRoute = {
 	TAX_SETTINGS_TAX_CLASSES: () => buildLinkWithRespectToChannel('settings/tax-settings/tax-classes'),
 	TAX_SETTINGS_CHANNELS: () => buildLinkWithRespectToChannel('settings/tax-settings/channels'),
 	TAX_SETTINGS_CHANNEL_DETAILS: (id: string) => buildLinkWithRespectToChannel(`settings/tax-settings/channels/${id}`),
-	TAX_SETTINGS_COUNTRY_DETAILS: (code: string) => buildLinkWithRespectToChannel(`settings/tax-settings/countries/${code}`),
+	TAX_SETTINGS_COUNTRY_DETAILS: (code: string) => buildLinkWithRespectToChannel(`settings/tax-settings/countries?code=${code}`),
 
 	PRODUCTS: () => buildLinkWithRespectToChannel('products'),
 	PRODUCT_DETAILS: (slug: string) => buildLinkWithRespectToChannel(`products/${slug}`),

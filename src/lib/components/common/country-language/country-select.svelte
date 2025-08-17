@@ -22,7 +22,7 @@
 	const shopStore = operationStore<Pick<Query, 'shop'>>({
 		kind: 'query',
 		query: SHOP_QUERY,
-		requestPolicy: 'cache-first',
+		requestPolicy: 'cache-and-network',
 	});
 </script>
 
