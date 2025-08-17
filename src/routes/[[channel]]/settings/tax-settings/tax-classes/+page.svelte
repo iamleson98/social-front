@@ -32,6 +32,7 @@
 		QueryTaxClassesArgs,
 		TaxClassUpdateInput,
 	} from '$lib/gql/graphql';
+	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
@@ -83,7 +84,7 @@
 
 	onMount(() =>
 		TaxClassesQuery.subscribe((result) => {
-			if (result.data?.taxClasses?.edges.length) {
+			if (result.data?.taxClasses?.edges.length && !ClassId) {
 				goto(AppRoute.TAX_SETTINGS_TAX_CLASS_DETAILS(result.data.taxClasses.edges[0].node.id));
 			}
 		}),
@@ -121,23 +122,28 @@
 	const handleDeleteTaxClass = async () => {
 		if (!ClassId) return;
 
-		loading = true;
+		ALERT_MODAL_STORE.openAlertModal({
+			content: CommonState.ConfirmDelete,
+			onOk: async () => {
+				loading = true;
 
-		const result = await GRAPHQL_CLIENT.mutation<
-			Pick<Mutation, 'taxClassDelete'>,
-			MutationTaxClassDeleteArgs
-		>(TAX_CLASS_DELETE_MUTATION, {
-			id: ClassId,
+				const result = await GRAPHQL_CLIENT.mutation<
+					Pick<Mutation, 'taxClassDelete'>,
+					MutationTaxClassDeleteArgs
+				>(TAX_CLASS_DELETE_MUTATION, {
+					id: ClassId,
+				});
+
+				loading = false;
+
+				if (checkIfGraphqlResultHasError(result, 'taxClassDelete', CommonState.DeleteSuccess)) {
+					return;
+				}
+
+				TaxClassesQuery.reexecute({ variables: { first: 100 } });
+				await goto(AppRoute.TAX_SETTINGS_TAX_CLASSES());
+			},
 		});
-
-		loading = false;
-
-		if (checkIfGraphqlResultHasError(result, 'taxClassDelete', CommonState.DeleteSuccess)) {
-			return;
-		}
-
-		TaxClassesQuery.reexecute({ variables: { first: 100 } });
-		await goto(AppRoute.TAX_SETTINGS_TAX_CLASSES());
 	};
 
 	const handleClickAddTaxClass = async () => {
