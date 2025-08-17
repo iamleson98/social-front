@@ -10,20 +10,6 @@ query TaxConfigs($first: Int, $after: String, $last: Int, $before: String, $filt
           id
           name
         }
-        # displayGrossPrices
-        # pricesEnteredWithTax
-        # chargeTaxes
-        # taxCalculationStrategy
-        # taxAppId
-        # countries {
-        #   chargeTaxes
-        #   country {
-        #     code
-        #     country
-        #   }
-        #   taxCalculationStrategy
-        #   displayGrossPrices
-        # }
       }
     }
     pageInfo {
@@ -154,3 +140,17 @@ mutation TaxClassDelete($id: ID!) {
     }
   }
 }`;
+
+export const TAX_CLASS_CREATE_MUTATION = gql`
+mutation TaxClassCreate($input: TaxClassCreateInput!) {
+  taxClassCreate(input: $input) {
+    taxClass {
+      id
+    }
+    errors {
+      field
+      message
+    }
+  }
+}`;
+

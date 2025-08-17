@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { afterNavigate, goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { TAX_CLASS_DELETE_MUTATION, TAX_CLASS_UPDATE_MUTATION } from '$lib/api/admin/tax';
+	import {
+		TAX_CLASS_CREATE_MUTATION,
+		TAX_CLASS_DELETE_MUTATION,
+		TAX_CLASS_UPDATE_MUTATION,
+	} from '$lib/api/admin/tax';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
 	import { TAX_CLASSES_QUERY } from '$lib/api/tax';
@@ -17,9 +21,11 @@
 	import { TableSkeleton } from '$lib/components/ui/Table';
 	import type {
 		CountryCode,
+		CountryRateInput,
 		CountryRateUpdateInput,
 		MetadataItem,
 		Mutation,
+		MutationTaxClassCreateArgs,
 		MutationTaxClassDeleteArgs,
 		MutationTaxClassUpdateArgs,
 		Query,
@@ -29,7 +35,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { fly } from 'svelte/transition';
 
 	const TaxClassesQuery = operationStore<Pick<Query, 'taxClasses'>, QueryTaxClassesArgs>({
@@ -37,7 +43,7 @@
 		variables: {
 			first: 100,
 		},
-    requestPolicy: 'cache-and-network',
+		requestPolicy: 'cache-and-network',
 	});
 	const ClassId = $derived(page.url.searchParams.get('id'));
 
@@ -46,6 +52,7 @@
 	let activePrivateMetadata = $state<MetadataItem[]>();
 	let loading = $state(false);
 	let metadataRef = $state<any>();
+	let createdTaxClassId = $state<string>('');
 
 	afterNavigate(() => {
 		if (ClassId) {
@@ -62,8 +69,14 @@
 					removeCountryRates: [],
 				};
 
-				activeMetadata = taxClass.node.metadata;
-				activePrivateMetadata = taxClass.node.privateMetadata;
+				activeMetadata = undefined;
+				activePrivateMetadata = undefined;
+
+				// This helps solve the bug metadata editor not reset when navigate
+				tick().then(() => {
+					activeMetadata = taxClass.node.metadata;
+					activePrivateMetadata = taxClass.node.privateMetadata;
+				});
 			}
 		}
 	});
@@ -126,6 +139,64 @@
 		TaxClassesQuery.reexecute({ variables: { first: 100 } });
 		await goto(AppRoute.TAX_SETTINGS_TAX_CLASSES());
 	};
+
+	const handleClickAddTaxClass = async () => {
+		await goto(AppRoute.TAX_SETTINGS_TAX_CLASS_DETAILS('new'));
+		activeTaxClass = {
+			name: '',
+			updateCountryRates:
+				$TaxClassesQuery.data?.taxClasses?.edges?.[0]?.node.countries.map<CountryRateUpdateInput>(
+					(country) => ({
+						countryCode: country.country.code as CountryCode,
+						rate: 0,
+					}),
+				) || [],
+			removeCountryRates: [],
+		};
+
+		activeMetadata = undefined;
+		activePrivateMetadata = undefined;
+
+		// This helps solve the bug metadata editor not reset when navigate
+		await tick();
+
+		activeMetadata = [];
+		activePrivateMetadata = [];
+	};
+
+	const handleAddTaxClass = async () => {
+		if (!activeTaxClass) return;
+
+		loading = true;
+
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'taxClassCreate'>,
+			MutationTaxClassCreateArgs
+		>(TAX_CLASS_CREATE_MUTATION, {
+			input: {
+				name: activeTaxClass.name!,
+				createCountryRates: activeTaxClass.updateCountryRates as CountryRateInput[],
+			},
+		});
+
+		if (checkIfGraphqlResultHasError(result, 'taxClassCreate')) {
+			loading = false;
+			return;
+		}
+
+		// get id for creating metadata
+		createdTaxClassId = result.data?.taxClassCreate?.taxClass?.id as string;
+
+		const hasErr = await metadataRef.handleUpdate();
+		if (hasErr) {
+			loading = false;
+			return;
+		}
+
+		loading = false;
+		TaxClassesQuery.reexecute({ variables: { first: 100 } });
+		await goto(AppRoute.TAX_SETTINGS_TAX_CLASS_DETAILS(createdTaxClassId));
+	};
 </script>
 
 {#if $TaxClassesQuery.fetching}
@@ -167,7 +238,15 @@
 				{/snippet}
 			</AccordionList>
 
-			<Button size="sm" fullWidth endIcon={Plus} disabled={loading}>Add class</Button>
+			<Button
+				size="sm"
+				fullWidth
+				endIcon={Plus}
+				disabled={loading}
+				onclick={handleClickAddTaxClass}
+			>
+				Add class
+			</Button>
 		</div>
 
 		<div class="w-7/10 space-y-2">
@@ -196,8 +275,8 @@
 								placeholder="Enter rate"
 								bind:value={rate.rate}
 								disabled={loading}
-                min={0}
-                max={100}
+								min={0}
+								max={100}
 							>
 								{#snippet action()}
 									<span class="text-gray-500 font-bold text-xs">%</span>
@@ -207,19 +286,22 @@
 					{/each}
 				</div>
 
-				<GeneralMetadataEditor
-					metadata={activeMetadata}
-					objectId={ClassId}
-					privateMetadata={activePrivateMetadata}
-					bind:this={metadataRef}
-          disabled={loading}
-				/>
+				{#if activeMetadata && activePrivateMetadata}
+					<GeneralMetadataEditor
+						metadata={activeMetadata}
+						objectId={ClassId === 'new' ? createdTaxClassId : ClassId}
+						privateMetadata={activePrivateMetadata}
+						bind:this={metadataRef}
+						disabled={loading}
+					/>
+				{/if}
 
 				<ActionBar
 					backButtonUrl={AppRoute.TAX_SETTINGS_TAX_CLASSES()}
 					disabled={loading}
-					onUpdateClick={handleUpdateTaxClass}
-					onDeleteClick={handleDeleteTaxClass}
+					onUpdateClick={ClassId && ClassId !== 'new' ? handleUpdateTaxClass : undefined}
+					onDeleteClick={ClassId && ClassId !== 'new' ? handleDeleteTaxClass : undefined}
+					onAddClick={ClassId === 'new' ? handleAddTaxClass : undefined}
 				/>
 			{/if}
 		</div>
