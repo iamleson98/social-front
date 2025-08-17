@@ -35,7 +35,6 @@
 		ok = $bindable(),
 	}: Props = $props();
 
-
 	const PromotionSchema = object({
 		name: string().nonempty(CommonState.FieldRequiredError),
 		type: string().nonempty(CommonState.FieldRequiredError),
@@ -121,7 +120,10 @@
 			placeholder="Start date"
 			value={{ date: startDate }}
 			{disabled}
-			onchange={(value) => (startDate = dayjs(value.date).format(RFC3339TimeFormat))}
+			onchange={(value) => {
+				startDate = dayjs(value.date).format(RFC3339TimeFormat);
+				validate();
+			}}
 			variant={promotionFormErrors?.startDate?.length ? 'error' : 'info'}
 			subText={promotionFormErrors?.startDate?.[0]}
 			onblur={validate}
@@ -144,7 +146,10 @@
 			placeholder="End date"
 			value={{ date: endDate }}
 			{disabled}
-			onchange={(value) => (endDate = dayjs(value.date).format(RFC3339TimeFormat))}
+			onchange={(value) => {
+				endDate = dayjs(value.date).format(RFC3339TimeFormat);
+				validate();
+			}}
 			timeConfig={{
 				stepMinutes: 1,
 				format: 24,

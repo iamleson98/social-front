@@ -86,7 +86,6 @@
 
 		promotionStore.reexecute({
 			variables: { id: page.params.id! },
-			context: { requestPolicy: 'network-only' },
 		});
 	};
 
@@ -110,7 +109,10 @@
 	};
 
 	const handleRefetchPromotion = () => {
-		promotionStore.reexecute({ variables: { id: page.params.id! } });
+		promotionStore.reexecute({
+			variables: { id: page.params.id! },
+			context: { requestPolicy: 'network-only' },
+		});
 	};
 </script>
 

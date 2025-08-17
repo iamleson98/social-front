@@ -230,6 +230,7 @@
 					rewardValue: ruleUpsertInput.rewardValue,
 					rewardValueType: ruleUpsertInput.rewardValueType,
 				});
+				ruleUpsertInput = undefined;
 			}
 		}
 	};

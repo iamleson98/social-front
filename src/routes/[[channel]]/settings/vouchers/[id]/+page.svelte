@@ -43,6 +43,7 @@
 	import { toast } from 'svelte-sonner';
 	import { string } from 'zod';
 	import { pick } from 'es-toolkit';
+	import { CommonState } from '$lib/utils/common.svelte';
 
 	const voucherQuery = operationStore<Pick<Query, 'voucher'>, QueryVoucherArgs>({
 		query: VOUCHER_DETAIL_QUERY,
@@ -50,7 +51,7 @@
 			id: page.params.id as string,
 		},
 		pause: !page.params.id,
-		requestPolicy: 'network-only',
+		requestPolicy: 'cache-and-network',
 	});
 
 	let voucherInput = $state<VoucherInput>({
@@ -79,7 +80,7 @@
 	let performUpdateMetadata = $state(false);
 	let loading = $state(false);
 
-	const NameSchema = string().nonempty($tranFunc('helpText.fieldRequired'));
+	const NameSchema = string().nonempty(CommonState.FieldRequiredError);
 	let nameErrors = $state<string[]>([]);
 
 	const validateName = () => {
@@ -143,7 +144,6 @@
 		toast.success($tranFunc('common.editSuccess'));
 		voucherQuery.reexecute({
 			variables: { id: page.params.id! },
-			context: { requestPolicy: 'network-only' },
 		});
 	};
 
