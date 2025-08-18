@@ -6,18 +6,18 @@
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { IconButton } from '$lib/components/ui/Button';
-	import { Input } from '$lib/components/ui/Input';
+	import { Input, RadioButton } from '$lib/components/ui/Input';
 	import { Select } from '$lib/components/ui/select';
 	import {
 		OrderDirection,
 		ProductOrderField,
 		type PriceRangeInput,
-		type ProductOrder
+		type ProductOrder,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { CurrencyIconMap, type CurrencyCode } from '$lib/utils/consts';
 	import { flipDirection } from '$lib/utils/utils';
-	import { ORDER_BY_FIELD, PRICE_RANGE, ORDER_DIRECTION } from './common';
+	import { ORDER_BY_FIELD, PRICE_RANGE, ORDER_DIRECTION, ProductSortFields } from './common';
 	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
 	import { get } from 'svelte/store';
 	import { onMount } from 'svelte';
@@ -26,24 +26,13 @@
 		currency: CurrencyCode;
 	};
 
-	/** in client side, we only support sorting products by these fields below */
-	let PRODUCT_SORT_FIELDS = $derived.by(() =>
-		[
-			ProductOrderField.Price,
-			ProductOrderField.Rating,
-			ProductOrderField.Name,
-			ProductOrderField.PublicationDate,
-			ProductOrderField.MinimalPrice
-		].map((value) => ({ value, label: $tranFunc(`common.${value.toLowerCase()}`) }))
-	);
-
 	const RATINGS = [5, 4, 3, 2, 1];
 
 	let selectedRating = $state(RATINGS[0]);
 
 	const sortingIcons: Record<OrderDirection, IconContent> = {
 		ASC: ArrowUp,
-		DESC: ArrowDown
+		DESC: ArrowDown,
 	};
 
 	let { currency }: Props = $props();
@@ -69,18 +58,18 @@
 		if (!priceRangeError && filterState.filter?.price?.gte && filterState.filter?.price?.lte)
 			searchParams.set(
 				PRICE_RANGE,
-				`${filterState.filter?.price?.gte},${filterState.filter?.price?.lte}`
+				`${filterState.filter?.price?.gte},${filterState.filter?.price?.lte}`,
 			);
 
 		await goto(`${AppRoute.HOME()}?${searchParams.toString()}`, {
 			invalidateAll: false,
-			replaceState: false
+			replaceState: false,
 		});
 	};
 
 	const handleOrderingButtonClick = async () => {
 		($productFilterParamStore.sortBy as ProductOrder).direction = flipDirection(
-			$productFilterParamStore.sortBy?.direction as OrderDirection
+			$productFilterParamStore.sortBy?.direction as OrderDirection,
 		);
 	};
 
@@ -93,7 +82,7 @@
 		<div class="text-xs mb-2">{$tranFunc('common.ordering')}</div>
 		<div class="flex items-center gap-1">
 			<Select
-				options={PRODUCT_SORT_FIELDS}
+				options={$ProductSortFields}
 				size="sm"
 				bind:value={$productFilterParamStore.sortBy!.field as ProductOrderField}
 				class="grow"
@@ -154,15 +143,7 @@
 					<progress class="progress progress-warning" max="100" value={rating * 20}></progress>
 				</div>
 
-				<div>
-					<input
-						type="radio"
-						name="rating"
-						class="radio radio-sm"
-						bind:group={selectedRating}
-						value={rating}
-					/>
-				</div>
+				<RadioButton size="sm" bind:group={selectedRating} value={rating} />
 			</div>
 		{/each}
 	</div>

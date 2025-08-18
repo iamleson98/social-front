@@ -43,9 +43,9 @@ query Shop($isStaffUser: Boolean = false) {
     channelCurrencies @include(if: $isStaffUser)
     fulfillmentAutoApprove
     fulfillmentAllowUnpaid
-    reserveStockDurationAnonymousUser
-    reserveStockDurationAuthenticatedUser
-    limitQuantityPerCheckout
-    enableAccountConfirmationByEmail
+    reserveStockDurationAnonymousUser @include(if: $isStaffUser)
+    reserveStockDurationAuthenticatedUser @include(if: $isStaffUser)
+    limitQuantityPerCheckout @include(if: $isStaffUser)
+    enableAccountConfirmationByEmail @include(if: $isStaffUser)
   }
 }`;

@@ -189,6 +189,9 @@ export const getHrefForVariant = (productSlug: string, variantID: string): strin
 	return `${pathName}?${query.toString()}`;
 };
 
+/**
+ *  direction === 'asc' ? 'dsc' : 'asc' 
+ */
 export const flipDirection = (direction: OrderDirection): OrderDirection =>
 	direction === OrderDirection.Asc ? OrderDirection.Desc : OrderDirection.Asc;
 

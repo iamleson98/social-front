@@ -21,11 +21,11 @@ export const load = async (event) => {
   const channelSlug = event.cookies.get(CHANNEL_KEY) || DEFAULT_CHANNEL.slug;
 
   const categoryResult = await performServerSideGraphqlRequest<Pick<Query, 'category'>, CategoryDetailQueryArgs>(
-    'query',
     CATEGORY_DETAIL_QUERY,
     {
       slug,
       productChannel: channelSlug,
+      backgroundSize: 500,
     },
     event,
   );

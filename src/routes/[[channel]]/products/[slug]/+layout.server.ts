@@ -24,7 +24,6 @@ export const load = async (event) => {
 	};
 
 	const productDetailResult = await performServerSideGraphqlRequest<Pick<Query, 'product'>, QueryProductArgs>(
-		'query',
 		PRODUCT_DETAIL_QUERY,
 		variables,
 		event,

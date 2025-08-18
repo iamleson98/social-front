@@ -10,6 +10,7 @@ import {
 	type OperationContext,
 	type OperationResult,
 	type OperationType,
+	type TypedDocumentNode,
 } from '@urql/core';
 import { AppRoute, getCookieByKey } from '$lib/utils';
 import { error, redirect, type RequestEvent } from '@sveltejs/kit';
@@ -23,6 +24,7 @@ import { PUBLIC_GRAPHQL_API_END_POINT } from '$env/static/public';
 import { USER_ME_QUERY_STORE } from '.';
 import { setUserStoreValue } from '$lib/stores/auth/user';
 import { checkUserHasPermissions } from '$lib/utils/utils';
+import type { DefinitionNode } from 'graphql';
 
 export const MAX_REFRESH_TOKEN_TRIES = 3;
 export const cookieOpts: Readonly<CookieSerializeOptions & { path: string }> = Object.freeze({
@@ -244,15 +246,15 @@ const attachAuthorizationHeaderToRequestIfNeeded = (
  * NOTE: This method is used for server-side only
  */
 export const performServerSideGraphqlRequest = async <Data = never, Variables extends AnyVariables = AnyVariables>(
-	type: OperationType,
 	query: DocumentInput<Data, Variables>,
 	variables: Variables,
 	event: RequestEvent<Partial<Record<string, string>>, string | null>,
 	context?: Partial<OperationContext>
 ): Promise<OperationResult<Data, Variables>> => {
+	const operationType = (query as TypedDocumentNode<Data, Variables>).definitions[0]['operation' as keyof DefinitionNode] as unknown as OperationType
 	const newContext = attachAuthorizationHeaderToRequestIfNeeded(event, context);
 	const request = createRequest(query, variables);
-	const operation = GRAPHQL_CLIENT.createRequestOperation(type, request, newContext);
+	const operation = GRAPHQL_CLIENT.createRequestOperation(operationType, request, newContext);
 	const result = await GRAPHQL_CLIENT.executeRequestOperation(operation);
 	const mustRetryOperation = await checkIsAuthenAuthorErrorAndRedirectIfNeeded(result, event);
 	if (!mustRetryOperation) return result;
@@ -275,7 +277,7 @@ export const pageRequiresAuthentication = async (event: RequestEvent<Partial<Rec
 		redirect(HTTPStatusTemporaryRedirect, `${AppRoute.AUTH_SIGNIN()}?next=${event.url.pathname}`);
 	}
 
-	const meQueryResult = await performServerSideGraphqlRequest<Pick<Query, 'me'>>('query', USER_ME_QUERY_STORE, {}, event, { requestPolicy: 'cache-and-network' });
+	const meQueryResult = await performServerSideGraphqlRequest<Pick<Query, 'me'>>(USER_ME_QUERY_STORE, {}, event, { requestPolicy: 'cache-and-network' });
 	return meQueryResult.data?.me as User;
 };
 

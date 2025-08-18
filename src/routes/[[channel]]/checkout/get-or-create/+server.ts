@@ -13,7 +13,6 @@ export const GET = async (event) => {
 
   if (checkoutId) {
     const checkoutResult = await performServerSideGraphqlRequest<Pick<Query, 'checkout'>, CustomQueryCheckoutArgs>(
-      'query',
       CHECKOUT_PREVIEW_QUERY,
       { id: checkoutId },
       event,
@@ -32,7 +31,6 @@ export const GET = async (event) => {
   }
 
   const checkoutCreateResult = await performServerSideGraphqlRequest<Pick<Mutation, 'checkoutCreate'>, CheckoutCreateInput>(
-    'mutation',
     CHECKOUT_CREATE_MUTATION,
     { channel: channelSlug, lines: [] },
     event,

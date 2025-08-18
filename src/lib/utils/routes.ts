@@ -107,6 +107,7 @@ export const AppRoute = {
 
 	CATEGORIES: () => buildLinkWithRespectToChannel('categories'),
 	CATEGORY_DETAILS: (slug: string) => buildLinkWithRespectToChannel(`categories/${slug}`),
+	CATEGORY_DETAILS_TAB: (slug: string, tab: string) => buildLinkWithRespectToChannel(`categories/${slug}?tab=${tab}`),
 	SUB_CATEGORIES: (slug: string) => buildLinkWithRespectToChannel(`categories/${slug}/sub-categories`),
 	CATEGORY_INFO: (slug: string) => buildLinkWithRespectToChannel(`categories/${slug}/info`),
 

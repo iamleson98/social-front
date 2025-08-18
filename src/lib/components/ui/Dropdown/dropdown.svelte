@@ -19,7 +19,7 @@
 				<MenuItem
 					{...rest}
 					onclick={() => {
-						if (onclick) onclick();
+						onclick?.();
 						open = false;
 					}}
 				/>

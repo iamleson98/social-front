@@ -158,7 +158,7 @@ export type CategoryDetailQueryArgs = {
 
 /**
  * @imageFormat default to WEBP
- * @backgroundSize default to 250
+ * @backgroundSize default to 300
  * @first default to 10
  * @last default to 10
  */
@@ -228,7 +228,7 @@ export const CATEGORY_DETAIL_QUERY = gql`
 						created
 						updatedAt
 						rating
-						thumbnail(size: 300, format: $imageFormat) {
+						thumbnail(size: 500, format: $imageFormat) {
 							url
 							alt
 						}

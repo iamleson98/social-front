@@ -15,7 +15,6 @@ export const load = async (event) => {
 
 	if (accessToken && accessToken !== 'undefined') {
 		const result = await performServerSideGraphqlRequest<Pick<Query, 'me'>>(
-			'query',
 			USER_ME_QUERY_STORE,
 			{},
 			event,

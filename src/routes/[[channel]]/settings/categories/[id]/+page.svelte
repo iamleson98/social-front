@@ -28,10 +28,14 @@
 	let media = $state<MediaObject[]>([]);
 	let generalFormOk = $state(false);
 
-	const categoryQuery = operationStore<Pick<Query, 'category'>, QueryCategoryArgs>({
+	const categoryQuery = operationStore<
+		Pick<Query, 'category'>,
+		QueryCategoryArgs & { backgroundSize?: number }
+	>({
 		query: CATEGORY_DETAIL_QUERY,
 		variables: {
 			id: page.params.id,
+			backgroundSize: 500,
 		},
 		requestPolicy: 'cache-and-network',
 		pause: !page.params.id,

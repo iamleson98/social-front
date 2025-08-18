@@ -22,7 +22,6 @@ export const POST = async (event) => {
   }
 
   const result = await performServerSideGraphqlRequest<Pick<Mutation, 'tokenCreate'>>(
-    'mutation',
     USER_LOGIN_MUTATION_STORE,
     { email, password },
     event,
