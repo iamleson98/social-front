@@ -172,11 +172,6 @@ export const CATEGORY_DETAIL_QUERY = gql`
 		$lastChildren: Int = 10
 		$childrenBefore: String
 		$childrenAfter: String
-		$productFirst: Int = 10
-		$productLast: Int
-		$productBefore: String
-		$productAfter: String
-		$productChannel: String
 	) {
 		category(slug: $slug, id: $id) {
 			id
