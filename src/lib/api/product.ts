@@ -217,30 +217,6 @@ export const CATEGORY_DETAIL_QUERY = gql`
 					hasNextPage
 				}
 			}
-			products(first: $productFirst, last: $productLast, before: $productBefore, after: $productAfter, channel: $productChannel) {
-				# totalCount
-				edges {
-					node {
-						id
-						name
-						slug
-						description
-						created
-						updatedAt
-						rating
-						thumbnail(size: 500, format: $imageFormat) {
-							url
-							alt
-						}
-					}
-				}
-				pageInfo {
-					startCursor
-					endCursor
-					hasPreviousPage
-					hasNextPage
-				}
-			}
 		}
 	}
 `;
