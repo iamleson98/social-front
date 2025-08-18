@@ -143,9 +143,11 @@ export const checkIfGraphqlResultHasError = <T, K extends AnyVariables>(
 		return true;
 	}
 
-	if (apiErrorKey && result.data) {
-		const errors = (result.data as Record<string, Record<string, unknown>>)?.[apiErrorKey]?.errors;
-		if (!errors) throw new Error('No errors field. You MUST check your GraphQL query.');
+	if (result.data) {
+		const key = apiErrorKey || Object.keys(result.data)[0];
+
+		const errors = (result.data as Record<string, Record<string, unknown>>)?.[key]?.errors;
+		if (!errors && apiErrorKey) throw new Error('No errors field. You MUST check your GraphQL query.');
 
 		if (errors && Array.isArray(errors) && errors.length > 0) {
 			toast.error(errors[0].message);

@@ -11,13 +11,14 @@
 	import ShopCurrenciesSelect from '$lib/components/common/shop-currencies-select.svelte';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
-	import type {
-		GiftCardFilterInput,
-		QueryCustomersArgs,
-		QueryGiftCardsArgs,
-		QueryGiftCardTagsArgs,
-		QueryProductsArgs,
+	import {
+		type GiftCardFilterInput,
+		type QueryCustomersArgs,
+		type QueryGiftCardsArgs,
+		type QueryGiftCardTagsArgs,
+		type QueryProductsArgs,
 	} from '$lib/gql/graphql';
+	import Settings from './settings.svelte';
 
 	type Props = {
 		variables: QueryGiftCardsArgs;
@@ -246,9 +247,13 @@
 	/>
 {/snippet}
 
-<FilterManager
-	filterOptions={FILTER_OPTIONS}
-	bind:variables
-	bind:forceReExecuteGraphqlQuery
-	searchKey="search"
-/>
+<div class="flex items-center justify-between">
+	<FilterManager
+		filterOptions={FILTER_OPTIONS}
+		bind:variables
+		bind:forceReExecuteGraphqlQuery
+		searchKey="search"
+	/>
+
+	<Settings />
+</div>

@@ -13,6 +13,7 @@
 		variant?: SocialVariant;
 		children: Snippet;
 		size?: SocialSize | 'xxs';
+		/** whether to show border. Default to `true` */
 		bordered?: boolean;
 		dismissable?: boolean;
 	} & HTMLAttributes<HTMLDivElement>;

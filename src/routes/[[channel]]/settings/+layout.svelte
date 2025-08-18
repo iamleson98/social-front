@@ -13,7 +13,6 @@
 		FolderHeart,
 		Gift,
 		Globe,
-		Home,
 		Icon,
 		LockCog,
 		MailQuestion,
@@ -88,6 +87,12 @@
 			name: $tranFunc('settings.myOrders'),
 			href: AppRoute.MY_ORDERS(),
 			shouldActive: page.url.pathname === AppRoute.MY_ORDERS(),
+		},
+		{
+			icon: Gift,
+			name: 'My Giftcards',
+			href: AppRoute.MY_GIFTCARDS(),
+			shouldActive: page.url.pathname === AppRoute.MY_GIFTCARDS(),
 		},
 		{
 			icon: MailQuestion,
@@ -197,7 +202,7 @@
 				AppRoute.TAX_SETTINGS_CHANNELS(),
 				AppRoute.TAX_SETTINGS_COUNTRIES(),
 				AppRoute.TAX_SETTINGS_TAX_CLASSES(),
-			].some(path => page.url.pathname.startsWith(path)),
+			].some((path) => page.url.pathname.startsWith(path)),
 			isPreview: true,
 		},
 		{

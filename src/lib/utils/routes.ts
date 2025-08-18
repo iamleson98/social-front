@@ -11,6 +11,7 @@ export const AppRoute = {
 
 	ME: () => buildLinkWithRespectToChannel('settings'),
 	MY_ORDERS: () => buildLinkWithRespectToChannel('settings/orders'),
+	MY_GIFTCARDS: () => buildLinkWithRespectToChannel('settings/my-giftcards'),
 	ME_PREFERENCES: () => buildLinkWithRespectToChannel('settings/preferences'),
 	ME_SUPPORT: () => buildLinkWithRespectToChannel('settings/supports'),
 	ME_SUPPORT_NEW: () => buildLinkWithRespectToChannel('settings/supports/new-ticket'),

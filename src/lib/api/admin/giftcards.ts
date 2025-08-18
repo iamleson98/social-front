@@ -231,3 +231,24 @@ mutation GiftcardUpdate($id: ID!, $input: GiftCardUpdateInput!) {
     }
   }
 }`;
+
+export const GIFTCARD_SETTINGS_QUERY = gql`
+query GiftcardSettings {
+  giftCardSettings {
+    expiryType
+    expiryPeriod {
+      amount
+      type
+    }
+  }
+}`;
+
+export const GIFTCARD_SETTINGS_UPDATE_MUTATION = gql`
+mutation GiftCardSettingsUpdate($input: GiftCardSettingsUpdateInput!) {
+  giftCardSettingsUpdate(input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;

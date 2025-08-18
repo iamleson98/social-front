@@ -85,6 +85,60 @@ export const USER_SIGNUP_MUTATION_STORE = gql`
 	}
 `;
 
+export const MY_GIFTCARDS_QUERY = gql`
+query MyGiftcards($first: Int, $last: Int, $before: String, $after: String) {
+	me {
+		giftCards(first: $first, last: $last, before: $before, after: $after) {
+			edges {
+				node {
+					id
+					displayCode
+					last4CodeChars
+					created
+					lastUsedOn
+					expiryDate
+					product {
+						id
+						slug
+						name
+					}
+					tags {
+						id
+						name
+					}
+					boughtInChannel
+					isActive
+					initialBalance {
+						amount
+						currency
+					}
+					currentBalance {
+						amount
+						currency
+					}
+					events {
+						id
+						date
+						type
+						message
+						orderId
+						orderNumber
+						# balance {
+
+						# }
+					}
+				}
+			}
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				startCursor
+				endCursor
+			}
+		}
+	}
+}`;
+
 export const USER_ME_QUERY_STORE = gql`
 	query Me {
 		me {
