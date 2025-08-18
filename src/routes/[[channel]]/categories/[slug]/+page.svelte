@@ -8,7 +8,7 @@
 		Search,
 	} from '$lib/components/icons';
 	import { page } from '$app/state';
-	import { AppRoute } from '$lib/utils';
+	import { AppRoute, getCookieByKey } from '$lib/utils';
 	import Icon from '$lib/components/icons/icon.svelte';
 	import { flipDirection, SitenameCommonClassName } from '$lib/utils/utils';
 	import { AccordionList } from '$lib/components/ui/Accordion';
@@ -18,37 +18,45 @@
 		type CategoryCountableEdge,
 		type Query,
 		type QueryCategoryArgs,
+		type QueryChannelArgs,
 	} from '$lib/gql/graphql';
 	import { DropDown } from '$lib/components/ui/Dropdown';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { Button } from '$lib/components/ui';
 	import { Input } from '$lib/components/ui/Input';
 	import { operationStore } from '$lib/api/operation';
-	import { CHANNELS_QUERY } from '$lib/api/channels';
+	import { CHANNEL_DETAILS_QUERY } from '$lib/api/channels';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import { Select } from '$lib/components/ui/select';
 	import { ProductSortFields } from '$lib/components/pages/home/common';
 	import { IconButton } from '$lib/components/ui/Button';
-	import { getCookieByKey } from '$lib/utils/cookies';
-	import { CHANNEL_KEY } from '$lib/utils/consts';
 	import { CATEGORY_DETAIL_QUERY } from '$lib/api';
+	import { CHANNEL_KEY } from '$lib/utils/consts';
 
 	const CategoryQuery = operationStore<
 		Pick<Query, 'category'>,
-		QueryCategoryArgs & { productChannel?: string; backgroundSize: number }
+		QueryCategoryArgs & {
+			productChannel?: string;
+			backgroundSize: number;
+			AUTHENTICATED_STAFF_USER?: boolean;
+		}
 	>({
 		query: CATEGORY_DETAIL_QUERY,
 		variables: {
 			slug: page.params.slug,
-			productChannel: page.params.channel || getCookieByKey(CHANNEL_KEY),
 			backgroundSize: 500,
+			AUTHENTICATED_STAFF_USER: true,
 		},
 		pause: !page.params.slug,
+		requestPolicy: 'cache-and-network',
 	});
 
-	const ChannelsQuery = operationStore<Pick<Query, 'channels'>>({
-		query: CHANNELS_QUERY,
+	const ChannelQuery = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
+		query: CHANNEL_DETAILS_QUERY,
+		variables: {
+			slug: page.params.channel || getCookieByKey(CHANNEL_KEY),
+		},
 		requestPolicy: 'cache-and-network',
 	});
 	let sortField = $state<ProductOrderField>();
@@ -117,20 +125,17 @@
 
 		<div class="w-3/4 tablet:w-full space-y-2">
 			<!-- Filter Bar -->
-			{#if $ChannelsQuery.fetching}
+			{#if $ChannelQuery.fetching}
 				<SkeletonContainer class="flex items-center gap-4 p-3! rounded-lg!">
 					<Skeleton class="w-1/3 h-5" />
 					<Skeleton class="w-1/3 h-5" />
 				</SkeletonContainer>
-			{:else if $ChannelsQuery.error}
-				<Alert size="xs" variant="error">{$ChannelsQuery.error.message}</Alert>
-			{:else}
-				{@const activeChannel = $ChannelsQuery.data?.channels?.find(
-					(chan) => chan.slug === page.params.channel,
-				)}
+			{:else if $ChannelQuery.error}
+				<Alert size="xs" variant="error">{$ChannelQuery.error.message}</Alert>
+			{:else if $ChannelQuery.data?.channel}
 				{#snippet action()}
 					<span class="text-[10px] font-semibold text-gray-600">
-						{activeChannel ? activeChannel.currencyCode : 'VND'}
+						{$ChannelQuery.data?.channel?.currencyCode || 'VND'}
 					</span>
 				{/snippet}
 				<div

@@ -195,6 +195,12 @@
 			shouldActive: [AppRoute.STORE_SETTINGS()].includes(page.url.pathname),
 		},
 		{
+			icon: BuildingStore,
+			name: 'Apps',
+			href: AppRoute.APPS_SETTINGS(),
+			shouldActive: [AppRoute.APPS_SETTINGS()].includes(page.url.pathname),
+		},
+		{
 			icon: Tax,
 			name: 'Tax Settings',
 			href: AppRoute.TAX_SETTINGS_CHANNELS(),

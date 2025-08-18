@@ -25,6 +25,7 @@ import { USER_ME_QUERY_STORE } from '.';
 import { setUserStoreValue } from '$lib/stores/auth/user';
 import { checkUserHasPermissions } from '$lib/utils/utils';
 import type { DefinitionNode } from 'graphql';
+import { PUBLIC_APP_TOKEN } from '$env/static/public';
 
 export const MAX_REFRESH_TOKEN_TRIES = 3;
 export const cookieOpts: Readonly<CookieSerializeOptions & { path: string }> = Object.freeze({
@@ -137,7 +138,10 @@ let isTokenRefreshingInProgress = false
 
 const authExchangeInner = async (utils: AuthUtilities) => {
 	const addAuthToOperation = (operation: Operation) => {
-		const accessToken = getCookieByKey(ACCESS_TOKEN_KEY);
+		let accessToken = getCookieByKey(ACCESS_TOKEN_KEY);
+		if (!accessToken) {
+			accessToken = PUBLIC_APP_TOKEN;
+		}
 		if (accessToken) {
 			operation = utils.appendHeaders(operation, {
 				Authorization: `Bearer ${accessToken}`,

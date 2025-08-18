@@ -172,6 +172,7 @@ export const CATEGORY_DETAIL_QUERY = gql`
 		$lastChildren: Int = 10
 		$childrenBefore: String
 		$childrenAfter: String
+		$isStaffUser: Boolean = false
 	) {
 		category(slug: $slug, id: $id) {
 			id
@@ -184,7 +185,7 @@ export const CATEGORY_DETAIL_QUERY = gql`
 				key
 				value
 			}
-			privateMetadata {
+			privateMetadata @include(if: $isStaffUser) {
 				key
 				value
 			}

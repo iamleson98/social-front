@@ -4,5 +4,5 @@ export const load = async () => {
     meta: {
       title: 'Category',
     },
-  }
+  };
 };

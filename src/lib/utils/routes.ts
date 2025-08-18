@@ -92,7 +92,7 @@ export const AppRoute = {
 	SHOPPING_CART: () => buildLinkWithRespectToChannel('shopping-cart'),
 
 	STORE_SETTINGS: () => buildLinkWithRespectToChannel('settings/store-settings'),
-	// TAX_SETTINGS: () => buildLinkWithRespectToChannel('settings/tax-settings'),
+	APPS_SETTINGS: () => buildLinkWithRespectToChannel('settings/apps'),
 	TAX_SETTINGS_COUNTRIES: () => buildLinkWithRespectToChannel('settings/tax-settings/countries'),
 	TAX_SETTINGS_TAX_CLASSES: () => buildLinkWithRespectToChannel('settings/tax-settings/tax-classes'),
 	TAX_SETTINGS_CHANNELS: () => buildLinkWithRespectToChannel('settings/tax-settings/channels'),

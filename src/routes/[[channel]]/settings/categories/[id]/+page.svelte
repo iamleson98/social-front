@@ -30,12 +30,13 @@
 
 	const categoryQuery = operationStore<
 		Pick<Query, 'category'>,
-		QueryCategoryArgs & { backgroundSize?: number }
+		QueryCategoryArgs & { backgroundSize?: number; isStaffUser?: boolean }
 	>({
 		query: CATEGORY_DETAIL_QUERY,
 		variables: {
 			id: page.params.id,
 			backgroundSize: 500,
+			isStaffUser: true,
 		},
 		requestPolicy: 'cache-and-network',
 		pause: !page.params.id,
