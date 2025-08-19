@@ -3,7 +3,6 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Input, TextArea, Toggle } from '$lib/components/ui/Input';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
-	import type { CountryDisplay } from '$lib/gql/graphql';
 	import { READ_ONLY_SHOP_STORE } from '$lib/stores/shop';
 	import { object, string, z } from 'zod';
 

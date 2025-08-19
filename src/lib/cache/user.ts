@@ -1,26 +1,20 @@
 import type { User } from "$lib/gql/graphql";
+import { Cache } from "./ttl-cache"
+import { decode, encode } from '@msgpack/msgpack';
 import { decodeJWT } from "$lib/utils/jwt";
-import { pick } from "es-toolkit";
-import { Cache } from "./lmdb"
 
 
 export const getUserByJWT = async (jwtToken: string) => {
-  const now = Date.now() / 1000;
-  const tokenStructure = decodeJWT(jwtToken);
+  const jwtObject = decodeJWT(jwtToken);
 
-  // if token is expired, we must invalidate the cache.
-  // And perform remote API call to get the uptodate jwt
-  if (tokenStructure.exp <= now) {
-    if (Cache.doesExist(jwtToken))
-      await Cache.remove(jwtToken);
+  if (Cache.has(jwtObject.user_id))
+    return decode(Cache.get(jwtObject.user_id))
 
-    return null;
-  }
-
-  return await Cache.get(jwtToken) as User;
+  return null;
 };
 
 export const setJwtWithUser = async (jwtToken: string, user: User) => {
-  const minUser = pick(user, ['userPermissions', 'id', 'email', 'editableGroups', 'accessibleChannels'])
-  return await Cache.put(jwtToken, minUser);
+  const jwtObject = decodeJWT(jwtToken);
+
+  return Cache.set(jwtObject.user_id, encode(user));
 };

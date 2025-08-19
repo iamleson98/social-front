@@ -9,7 +9,7 @@
 	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
 	import { TAX_CLASSES_QUERY } from '$lib/api/tax';
 	import type { QueryTaxClassesArgs } from '$lib/gql/graphql';
-	import { Button, IconButton } from '$lib/components/ui/Button';
+	import { Button } from '$lib/components/ui/Button';
 	import { page } from '$app/state';
 	import { AppRoute } from '$lib/utils';
 	import { ChevronLeft } from '$lib/components/icons';

@@ -3,7 +3,6 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Input } from '$lib/components/ui/Input';
 	import { Select } from '$lib/components/ui/select';
-	import { type TableColumnProps } from '$lib/components/ui/Table';
 	import type {
 		Channel,
 		ShippingMethodChannelListing,
