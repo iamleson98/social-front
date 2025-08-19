@@ -294,7 +294,7 @@
 	/>
 {/snippet}
 
-<div class="flex items-center justify-between">
+<div class="flex items-center justify-between mb-2">
 	<FilterManager
 		filterOptions={FILTER_OPTIONS}
 		bind:forceReExecuteGraphqlQuery

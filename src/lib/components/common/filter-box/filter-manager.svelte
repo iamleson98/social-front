@@ -255,7 +255,7 @@
 	});
 </script>
 
-<div class="flex items-center gap-2 mb-2">
+<div class="flex items-center gap-2">
 	{#if filterOptions.length}
 		<Popover placement="bottom-start" bind:open={openFilterBox}>
 			{#snippet trigger(opts: DropdownTriggerInterface)}
