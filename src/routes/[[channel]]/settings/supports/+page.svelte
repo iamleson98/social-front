@@ -117,6 +117,4 @@
 	/>
 {/snippet}
 
-<div class="rounded-lg bg-white border border-gray-200 mt-3 p-3">
-	<Table {items} columns={ORDER_TABLE_COLUMNS}></Table>
-</div>
+<Table {items} columns={ORDER_TABLE_COLUMNS}></Table>

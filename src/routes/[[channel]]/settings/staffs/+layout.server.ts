@@ -3,6 +3,6 @@ import { PermissionEnum } from '$lib/gql/graphql';
 
 
 export const load = async (event) => {
-  const user = await pageRequiresPermissions(event, PermissionEnum.ManageOrders);
-  return { user, meta: { title: 'Manage Orders' } };
+  const user = await pageRequiresPermissions(event, PermissionEnum.ManageStaff);
+  return { user, meta: { title: 'Staffs management - Admin' } };
 }

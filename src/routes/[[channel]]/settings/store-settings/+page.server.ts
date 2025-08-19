@@ -11,7 +11,7 @@ export const load = async (evt) => {
 
   return {
     meta: {
-      title: 'Store Settings',
+      title: 'Store Settings - Admin',
     },
   };
 }

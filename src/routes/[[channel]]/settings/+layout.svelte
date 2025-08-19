@@ -213,7 +213,7 @@
 		},
 		{
 			icon: Globe,
-			name: $tranFunc('product.channel'),
+			name: $tranFunc('channel.channels'),
 			href: AppRoute.SETTINGS_CONFIGS_CHANNELS(),
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_CHANNELS(),

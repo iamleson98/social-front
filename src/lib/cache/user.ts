@@ -4,11 +4,11 @@ import { decode, encode } from '@msgpack/msgpack';
 import { decodeJWT } from "$lib/utils/jwt";
 
 
-export const getUserByJWT = async (jwtToken: string) => {
+export const getUserByJWT = async (jwtToken: string): Promise<User | null> => {
   const jwtObject = decodeJWT(jwtToken);
 
   if (Cache.has(jwtObject.user_id))
-    return decode(Cache.get(jwtObject.user_id))
+    return decode(Cache.get(jwtObject.user_id)) as User;
 
   return null;
 };

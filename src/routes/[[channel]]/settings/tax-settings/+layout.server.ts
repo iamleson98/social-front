@@ -6,7 +6,7 @@ export const load = async (evt) => {
 
   return {
     meta: {
-      title: 'Tax Settings',
+      title: 'Taxes Management - Admin',
     },
   };
 };
