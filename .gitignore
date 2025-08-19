@@ -13,5 +13,8 @@ $houdini
 
 /study
 
+# cache folder
+/cacheDb
+
 # Sentry Config File
 .env.sentry-build-plugin

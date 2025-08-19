@@ -31,7 +31,6 @@ export const POST = async (event: RequestEvent) => {
       { requestPolicy: 'network-only' }
     );
 
-
   if (result.error || result.data?.tokenRefresh?.errors.length) {
     event.cookies.delete(REFRESH_TOKEN_KEY, cookieOpts);
     event.cookies.delete(CSRF_TOKEN_KEY, cookieOpts);
@@ -45,5 +44,6 @@ export const POST = async (event: RequestEvent) => {
 
   return json({
     user: result.data?.tokenRefresh?.user,
+    [ACCESS_TOKEN_KEY]: result.data?.tokenRefresh?.token,
   });
 };

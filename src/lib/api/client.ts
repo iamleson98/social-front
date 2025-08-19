@@ -25,7 +25,7 @@ import { USER_ME_QUERY_STORE } from '.';
 import { setUserStoreValue } from '$lib/stores/auth/user';
 import { checkUserHasPermissions } from '$lib/utils/utils';
 import type { DefinitionNode } from 'graphql';
-import { PUBLIC_APP_TOKEN } from '$env/static/public';
+import { getUserByJWT, setJwtWithUser } from '$lib/cache/user';
 
 export const MAX_REFRESH_TOKEN_TRIES = 3;
 export const cookieOpts: Readonly<CookieSerializeOptions & { path: string }> = Object.freeze({
@@ -138,10 +138,7 @@ let isTokenRefreshingInProgress = false
 
 const authExchangeInner = async (utils: AuthUtilities) => {
 	const addAuthToOperation = (operation: Operation) => {
-		let accessToken = getCookieByKey(ACCESS_TOKEN_KEY);
-		if (!accessToken) {
-			accessToken = PUBLIC_APP_TOKEN;
-		}
+		const accessToken = getCookieByKey(ACCESS_TOKEN_KEY);
 		if (accessToken) {
 			operation = utils.appendHeaders(operation, {
 				Authorization: `Bearer ${accessToken}`,
@@ -199,6 +196,25 @@ export const GRAPHQL_CLIENT = new Client({
 	],
 });
 
+const tryRefreshToken = async (event: RequestEvent<Partial<Record<string, string>>, string | null>,) => {
+	const refreshToken = event.cookies.get(REFRESH_TOKEN_KEY);
+	const csrfToken = event.cookies.get(CSRF_TOKEN_KEY);
+
+	// don't worry if refresh token or csrf token are empty, the refresh-token API will handle that
+	const result = await event.fetch(
+		`${AppRoute.AUTH_REFRESH_TOKEN()}`,
+		{
+			method: 'POST',
+			body: JSON.stringify({
+				refreshToken,
+				csrfToken,
+			}),
+		}
+	);
+
+	return await result.json() as { user: User, [ACCESS_TOKEN_KEY]: string };
+}
+
 /**
  * @param result 
  * @param event 
@@ -210,21 +226,9 @@ const checkIsAuthenAuthorErrorAndRedirectIfNeeded = async <Data = never, Variabl
 ): Promise<boolean> => {
 	const { error } = result;
 
-	if (!error || !(isAuthenError(error) || isAuthorError(error))) {
-		return false;
-	}
+	if (!error || !(isAuthenError(error) || isAuthorError(error))) return false;
 
-	await event.fetch(
-		`${AppRoute.AUTH_REFRESH_TOKEN()}`,
-		{
-			method: 'POST',
-			body: JSON.stringify({
-				refreshToken: event.cookies.get(REFRESH_TOKEN_KEY),
-				csrfToken: event.cookies.get(CSRF_TOKEN_KEY),
-			}),
-		}
-	);
-
+	await tryRefreshToken(event);
 	return true;
 };
 
@@ -277,18 +281,31 @@ export const performServerSideGraphqlRequest = async <Data = never, Variables ex
  */
 export const pageRequiresAuthentication = async (event: RequestEvent<Partial<Record<string, string>>, string | null>) => {
 	const accessToken = event.cookies.get(ACCESS_TOKEN_KEY);
+
+	// if there is no access token, we must try refresh token first
 	if (!accessToken) {
-		redirect(HTTPStatusTemporaryRedirect, `${AppRoute.AUTH_SIGNIN()}?next=${event.url.pathname}`);
+		const result = await tryRefreshToken(event);
+		if (result) {
+			await setJwtWithUser(result[ACCESS_TOKEN_KEY], result.user);
+			return result.user;
+		}
 	}
 
-	const meQueryResult = await performServerSideGraphqlRequest<Pick<Query, 'me'>>(USER_ME_QUERY_STORE, {}, event, { requestPolicy: 'cache-and-network' });
+	// now we try looking up if the user existed in cache
+	const user = await getUserByJWT(accessToken!);
+	if (user) return user;
+
+	// user not exist in cache, call to remote API backend
+	const meQueryResult = await performServerSideGraphqlRequest<Pick<Query, 'me'>>(USER_ME_QUERY_STORE, {}, event, { requestPolicy: 'network-only' });
+
+	if (meQueryResult.error) redirect(HTTPStatusTemporaryRedirect, `${AppRoute.AUTH_SIGNIN()}?next=${event.url.pathname}`);
+
+	await setJwtWithUser(accessToken!, meQueryResult.data!.me!)
 	return meQueryResult.data?.me as User;
 };
 
 /**
- * @note This function MUST be used in server load only
- * @param event 
- * @returns 
+ * Make sure user is authenticated AND has all given permisions
  */
 export const pageRequiresPermissions = async (event: RequestEvent<Partial<Record<string, string>>, string | null>, ...permissions: PermissionEnum[]) => {
 	const authenticatedUser = await pageRequiresAuthentication(event);

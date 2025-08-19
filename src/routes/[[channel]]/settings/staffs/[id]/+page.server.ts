@@ -9,5 +9,8 @@ export const load = async (event) => {
   return {
     canEdit: user.id === event.params.id,
     isStaffManager: checkUserHasPermissions(user, PermissionEnum.ManageStaff),
+    meta: {
+      title: 'Staffs management',
+    },
   };
 };

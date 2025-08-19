@@ -10,8 +10,8 @@ export type JsonWebToken = {
   type: string;
   user_id: string;
   is_staff: boolean;
-}
+};
 
 export const decodeJWT = (token: string): JsonWebToken => {
   return jwt.decode(token) as JsonWebToken;
-}
+};
