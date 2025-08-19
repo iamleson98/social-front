@@ -12,12 +12,14 @@
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
 	import type {
+		Channel,
 		ProductFilterInput,
 		QueryCategoriesArgs,
 		QueryCollectionsArgs,
 		QueryProductsArgs,
 		QueryProductTypesArgs,
 	} from '$lib/gql/graphql';
+	import Settings from './settings.svelte';
 
 	type Props = {
 		forceReExecuteGraphqlQuery: boolean;
@@ -276,7 +278,11 @@
 {/snippet}
 
 {#snippet channelComp({ onValue, initialValue = '' }: FilterComponentType)}
-	<ChannelSelect size="xs" value={initialValue as string} onchange={(opt) => onValue(opt?.id as FilterItemValue)} />
+	<ChannelSelect
+		size="xs"
+		value={initialValue as string}
+		onchange={(opt) => onValue((opt as Channel)?.id as FilterItemValue)}
+	/>
 {/snippet}
 
 {#snippet yesNo({ onValue, initialValue = false }: FilterComponentType)}
@@ -288,9 +294,12 @@
 	/>
 {/snippet}
 
-<FilterManager
-	filterOptions={FILTER_OPTIONS}
-	bind:forceReExecuteGraphqlQuery
-	bind:variables
-	searchKey="search"
-/>
+<div class="flex items-center justify-between">
+	<FilterManager
+		filterOptions={FILTER_OPTIONS}
+		bind:forceReExecuteGraphqlQuery
+		bind:variables
+		searchKey="search"
+	/>
+	<Settings />
+</div>
