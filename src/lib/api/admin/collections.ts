@@ -79,7 +79,7 @@ query CollectionDetail($id: ID!) {
     seoTitle
     seoDescription
     description
-    backgroundImage(size: 300, format: WEBP) {
+    backgroundImage(size: 500, format: WEBP) {
       url
       alt
     }

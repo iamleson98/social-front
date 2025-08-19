@@ -103,7 +103,7 @@
 			bind:ok={generalFormOk}
 			disabled={loading}
 		/>
-		<ProductAssignForm bind:productsToAssign={collectionCreateInput.products!} />
+		<ProductAssignForm bind:productsToAssign={collectionCreateInput.products!} disabled={loading} />
 		<SeoForm
 			bind:slug={collectionCreateInput.slug!}
 			bind:seo={collectionCreateInput.seo!}
