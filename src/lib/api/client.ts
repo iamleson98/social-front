@@ -293,7 +293,6 @@ export const pageRequiresAuthentication = async (event: RequestEvent<Partial<Rec
 
 	// now we try looking up if the user existed in cache
 	const user = await getUserByJWT(accessToken!);
-	console.log("found", user);
 	if (user) return user;
 
 	// user not exist in cache, call to remote API backend
