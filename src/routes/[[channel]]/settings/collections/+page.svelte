@@ -121,7 +121,9 @@
 	</div>
 {/snippet}
 
-<Filter bind:variables={filterVariables} bind:forceReExecuteGraphqlQuery />
+<div class="mb-2">
+	<Filter bind:variables={filterVariables} bind:forceReExecuteGraphqlQuery />
+</div>
 
 <GraphqlPaginableTable
 	query={COLLECTIONS_QUERY}

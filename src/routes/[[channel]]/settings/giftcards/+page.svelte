@@ -155,7 +155,9 @@
 	/>
 {/snippet}
 
-<Filter bind:variables bind:forceReExecuteGraphqlQuery />
+<div class="mb-2">
+	<Filter bind:variables bind:forceReExecuteGraphqlQuery />
+</div>
 
 <GraphqlPaginableTable
 	query={GIFTCARD_LIST_QUERY}
@@ -165,8 +167,3 @@
 	columns={COLUMNS}
 	disabled={loading}
 />
-
-<!-- <GiftcardIssueForm
-	bind:open={openGiftcardIssueForm}
-	onSuccess={() => (forceReExecuteGraphqlQuery = true)}
-/> -->

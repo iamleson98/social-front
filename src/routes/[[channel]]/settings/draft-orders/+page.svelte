@@ -132,12 +132,14 @@
 	<PriceDisplay {...item.total.gross} />
 {/snippet}
 
-<FilterManager
-	bind:variables
-	searchKey={'filter.search' as keyof QueryDraftOrdersArgs}
-	filterOptions={FILTERS}
-	bind:forceReExecuteGraphqlQuery
-/>
+<div class="mb-2">
+	<FilterManager
+		bind:variables
+		searchKey={'filter.search' as keyof QueryDraftOrdersArgs}
+		filterOptions={FILTERS}
+		bind:forceReExecuteGraphqlQuery
+	/>
+</div>
 
 <GraphqlPaginableTable
 	query={DRAFT_ORDER_LIST_QUERY}

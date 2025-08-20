@@ -92,7 +92,9 @@
 	<span>{dayjs(item.dateJoined).format('DD/MM/YYYY HH:mm')}</span>
 {/snippet}
 
-<CustomerFilter bind:variables={filterVariables} bind:forceReExecuteGraphqlQuery />
+<div class="mb-2">
+	<CustomerFilter bind:variables={filterVariables} bind:forceReExecuteGraphqlQuery />
+</div>
 
 <GraphqlPaginableTable
 	query={CUSTOMER_LIST_QUERY}

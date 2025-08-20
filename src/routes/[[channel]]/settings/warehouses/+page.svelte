@@ -93,12 +93,14 @@
 	{/if}
 {/snippet}
 
-<FilterManager
-	bind:variables
-	searchKey={'filter.search' as keyof QueryWarehousesArgs}
-	bind:forceReExecuteGraphqlQuery
-	disabled={loading}
-/>
+<div class="mb-2">
+	<FilterManager
+		bind:variables
+		searchKey={'filter.search' as keyof QueryWarehousesArgs}
+		bind:forceReExecuteGraphqlQuery
+		disabled={loading}
+	/>
+</div>
 
 <GraphqlPaginableTable
 	query={WAREHOUSE_LIST_QUERY}

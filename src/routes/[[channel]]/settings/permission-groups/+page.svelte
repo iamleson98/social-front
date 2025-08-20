@@ -36,7 +36,9 @@
 	{item.users?.length || 0}
 {/snippet}
 
-<FilterManager bind:variables bind:forceReExecuteGraphqlQuery searchKey="filter.search" />
+<div class="mb-2">
+	<FilterManager bind:variables bind:forceReExecuteGraphqlQuery searchKey="filter.search" />
+</div>
 
 <GraphqlPaginableTable
 	query={PERMISSION_GROUP_LIST_QUERY}

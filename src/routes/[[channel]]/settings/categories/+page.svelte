@@ -70,11 +70,13 @@
 	<div>{dayjs(item.updatedAt).format(SitenameTimeFormat)}</div>
 {/snippet}
 
-<FilterManager
-	searchKey={'filter.search' as keyof QueryCategoriesArgs}
-	bind:variables={queryVariables}
-	bind:forceReExecuteGraphqlQuery
-/>
+<div class="mb-2">
+	<FilterManager
+		searchKey={'filter.search' as keyof QueryCategoriesArgs}
+		bind:variables={queryVariables}
+		bind:forceReExecuteGraphqlQuery
+	/>
+</div>
 
 <GraphqlPaginableTable
 	query={CATEGORIES_LIST_QUERY}

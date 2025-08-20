@@ -35,7 +35,9 @@
 	<span>{item.countries.length}</span>
 {/snippet}
 
-<FilterManager bind:variables bind:forceReExecuteGraphqlQuery searchKey="filter.search" />
+<div class="mb-2">
+	<FilterManager bind:variables bind:forceReExecuteGraphqlQuery searchKey="filter.search" />
+</div>
 
 <GraphqlPaginableTable
 	query={SHIPPING_ZONES_QUERY}
