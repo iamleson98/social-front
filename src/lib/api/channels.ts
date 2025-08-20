@@ -21,6 +21,17 @@ query Channels {
       id
       name
     }
+    orderSettings {
+      automaticallyConfirmAllNewOrders
+      automaticallyFulfillNonShippableGiftCard
+      expireOrdersAfter
+      markAsPaidStrategy
+      deleteExpiredOrdersAfter
+      allowUnpaidOrders
+      includeDraftOrderInVoucherUsage
+      draftOrderLinePriceFreezePeriod
+      useLegacyLineDiscountPropagation
+    }
   }
 }`;
 

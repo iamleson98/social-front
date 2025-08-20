@@ -73,9 +73,7 @@
 	disabled={loading}
 />
 
-<div>
-	{@render children()}
-</div>
+{@render children()}
 
 <Modal
 	open={openChannelModal}

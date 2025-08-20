@@ -111,7 +111,8 @@
 				AppRoute.SETTINGS_ORDERS(),
 				AppRoute.SETTINGS_ORDERS_NEW(),
 				AppRoute.SETTINGS_ORDERS_DETAILS(page.params.id!),
-			].includes(page.url.pathname),
+				AppRoute.SETTINGS_SHOP_ORDER_SETTINGS(),
+			].some((path) => path === page.url.pathname),
 		},
 		{
 			icon: BoxOff,
