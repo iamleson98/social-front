@@ -4,7 +4,9 @@
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import ProductFilterStateListener from '$lib/components/pages/home/product-filter-state-listener.svelte';
 	import Filter from '$lib/components/pages/settings/products/filter.svelte';
+	import Settings from '$lib/components/pages/settings/products/settings.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
+	import { Checkbox } from '$lib/components/ui/Input';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { ProductOrderField, type Product, type QueryProductsArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
@@ -15,10 +17,18 @@
 	let productsFilterVariables = $state<QueryProductsArgs>({
 		first: 10,
 		search: '',
+		filter: {
+			search: '',
+		},
 	});
 	let forceReExecuteGraphqlQuery = $state(true);
+	let selectedProducts = $state<Record<string, boolean>>({});
 
 	const productColumns: TableColumnProps<Product, ProductOrderField>[] = $derived([
+		{
+			title: selectAll,
+			child: itemSelect,
+		},
 		{
 			title: $tranFunc('common.pic'),
 			child: pic,
@@ -45,6 +55,28 @@
 </script>
 
 <ProductFilterStateListener />
+
+{#snippet selectAll({ items }: { items: Product[] })}
+	<Checkbox
+		size="sm"
+		onCheckChange={(checked) => {
+			if (checked) selectedProducts = Object.fromEntries(items.map((item) => [item.id, true]));
+			else selectedProducts = {};
+		}}
+		checked={items.length === Object.keys(selectedProducts).length}
+	/>
+{/snippet}
+
+{#snippet itemSelect({ item }: { item: Product })}
+	<Checkbox
+		size="sm"
+		onCheckChange={(checked) => {
+			if (checked) selectedProducts[item.id] = true;
+			else delete selectedProducts[item.id];
+		}}
+		checked={selectedProducts[item.id]}
+	/>
+{/snippet}
 
 {#snippet pic({ item }: { item: Product })}
 	<div class="text-center">
@@ -85,7 +117,10 @@
 	<span class="whitespace-nowrap">{dayjs(item.created).format(SitenameTimeFormat)}</span>
 {/snippet}
 
-<Filter bind:variables={productsFilterVariables} bind:forceReExecuteGraphqlQuery />
+<div class="flex items-center justify-between mb-2">
+	<Filter bind:variables={productsFilterVariables} bind:forceReExecuteGraphqlQuery />
+	<Settings bind:variables={productsFilterVariables} bind:selectedIds={selectedProducts} />
+</div>
 
 <GraphqlPaginableTable
 	query={PRODUCT_LIST_QUERY_ADMIN}
