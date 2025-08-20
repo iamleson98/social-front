@@ -547,3 +547,27 @@ mutation ProductTypeCreate($input: ProductTypeInput!) {
     }
   }
 }`;
+
+export const PRODUCT_TOTAL_COUNT_QUERY = gql`
+query ProductCount($filter: ProductFilterInput, $channel: String) {
+  products(filter: $filter, channel: $channel) {
+    totalCount
+  }
+}`;
+
+export const EXPORT_PRODUCTS_MUTATION = gql`
+mutation ExportProducts($input: ExportProductsInput!) {
+  exportProducts(input: $input) {
+    errors {
+      field
+      message
+    }
+    exportFile {
+      id
+      status
+      createdAt
+      message
+      url
+    }
+  }
+}`;

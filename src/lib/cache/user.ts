@@ -1,20 +1,14 @@
 import type { User } from "$lib/gql/graphql";
-import { Cache } from "./ttl-cache"
-import { decode, encode } from '@msgpack/msgpack';
+import { readCache, writeCache } from "./ttl-cache"
 import { decodeJWT } from "$lib/utils/jwt";
 
 
-export const getUserByJWT = async (jwtToken: string): Promise<User | null> => {
+export const getUserByJWT = async (jwtToken: string) => {
   const jwtObject = decodeJWT(jwtToken);
-
-  if (Cache.has(jwtObject.user_id))
-    return decode(Cache.get(jwtObject.user_id)) as User;
-
-  return null;
+  return await readCache<User>(jwtObject.user_id);
 };
 
 export const setJwtWithUser = async (jwtToken: string, user: User) => {
   const jwtObject = decodeJWT(jwtToken);
-
-  return Cache.set(jwtObject.user_id, encode(user));
+  await writeCache(jwtObject.user_id, user);
 };

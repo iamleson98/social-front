@@ -413,28 +413,3 @@ export const PRODUCT_VARIANTS_QUERY = gql`
 		}
 	}
 `;
-
-export const PRODUCT_VARIANTS_BY_IDS = gql`
-	query ProductVariants($ids: [ID!]!, $channel: String!, $first: Int!) {
-		productVariants(channel: $channel, ids: $ids, first: $first) {
-			edges {
-				node {
-					id
-					name
-					sku
-					quantityAvailable
-					quantityLimitPerCustomer
-					margin
-					pricing {
-						price {
-							gross {
-								amount
-								currency
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-`;
