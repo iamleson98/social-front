@@ -96,7 +96,7 @@
 				bind:ok={informationOk}
 				disabled={loading}
 			/>
-			<CustomerOrders id={user.id} />
+			<CustomerOrders id={user.id} disabled={loading} />
 			<GeneralMetadataEditor
 				metadata={user.metadata}
 				privateMetadata={user.privateMetadata}
@@ -106,7 +106,7 @@
 			/>
 		</div>
 
-		<CustomerExtraForm {user} />
+		<CustomerExtraForm {user} disabled={loading} />
 	</div>
 	<ActionBar
 		backButtonUrl={AppRoute.SETTINGS_CONFIGS_USERS()}

@@ -11,12 +11,14 @@
 	import IssueForm from '../giftcards/issue-form.svelte';
 	import { USER_GIFTCARDS_QUERY } from '$lib/api/admin/giftcards';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 
 	type Props = {
 		user: User;
+		disabled?: boolean;
 	};
 
-	let { user }: Props = $props();
+	let { user, disabled }: Props = $props();
 
 	let openAddGiftcardModal = $state(false);
 	let giftcardFormOk = $state(false);
@@ -47,7 +49,7 @@
 {/snippet}
 
 <div class="flex flex-col gap-2 flex-1 w-4/10">
-	<Accordion header="Address information" class="bg-white rounded-lg border border-gray-200 p-3">
+	<Accordion header="Address information" class={SitenameCommonClassName}>
 		{#if user.addresses.length}
 			{#each user.addresses as address, idx (idx)}
 				<UserAddress {address} class="w-full mb-2" />
@@ -57,7 +59,7 @@
 		{/if}
 	</Accordion>
 
-	<Accordion header="Customer history" class="bg-white rounded-lg border border-gray-200 p-3">
+	<Accordion header="Customer history" class={SitenameCommonClassName}>
 		<div class="flex flex-col gap-2 text-sm">
 			<span>
 				Last login: {user.lastLogin ? dayjs(user.lastLogin).format(SitenameTimeFormat) : '-'}
@@ -70,7 +72,7 @@
 		</div>
 	</Accordion>
 
-	<Accordion class="bg-white rounded-lg border border-gray-200 p-3">
+	<Accordion class={SitenameCommonClassName}>
 		{#snippet header()}
 			<div class="flex items-center gap-2">
 				<span>Gift cards</span>
@@ -86,9 +88,10 @@
 			}}
 			resultKey={'user.giftCards' as keyof Query}
 			columns={UserGiftcardColumns}
+			{disabled}
 		/>
 
-		<Button size="xs" class="mt-3" onclick={() => (openAddGiftcardModal = true)}>
+		<Button size="xs" class="mt-3" onclick={() => (openAddGiftcardModal = true)} {disabled}>
 			Issue new card
 		</Button>
 	</Accordion>
@@ -101,6 +104,8 @@
 	onOk={() => (triggerCreate = true)}
 	onCancel={() => (openAddGiftcardModal = false)}
 	disableElements={!giftcardFormOk}
+	closeOnEscape
+	closeOnOutsideClick
 >
 	<IssueForm
 		toCustomerEmail={user.email}
