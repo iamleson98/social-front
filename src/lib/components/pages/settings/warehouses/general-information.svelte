@@ -7,6 +7,7 @@
 	import type { Address } from '$lib/gql/graphql';
 	import { page } from '$app/state';
 	import { noop } from 'es-toolkit';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 
 	type Props = {
 		name: string;
@@ -51,7 +52,7 @@
 	});
 </script>
 
-<div class="rounded-lg bg-white border border-gray-200 p-3 space-y-2">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>General information</SectionHeader>
 	<Input
 		label="Warehouse name"

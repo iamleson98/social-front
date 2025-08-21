@@ -15,20 +15,11 @@
 	import { Modal } from '$lib/components/ui/Modal';
 	import {
 		RewardValueTypeEnum,
-		type Category,
-		type CategoryCountableConnection,
-		type Collection,
-		type CollectionCountableConnection,
 		type Mutation,
 		type MutationPromotionRuleCreateArgs,
 		type MutationPromotionRuleDeleteArgs,
 		type MutationPromotionRuleUpdateArgs,
-		type Product,
-		type ProductCountableConnection,
-		type ProductVariant,
-		type ProductVariantCountableConnection,
 		type PromotionRule,
-		type PromotionRuleCreateInput,
 		type PromotionRuleUpdateInput,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
@@ -48,38 +39,28 @@
 		VARIANT_COLUMNS,
 	} from '../vouchers/snippets.svelte';
 	import { tranFunc } from '$i18n';
-	import { DefaultCatalogPredicate, type TabKey } from './consts';
+	import {
+		classifyRuleCatalog,
+		createDefaultCatalogPredicate,
+		type QueryData,
+		type TabKey,
+	} from './consts';
 	import { omit } from 'es-toolkit';
 	import { CommonState } from '$lib/utils/common.svelte';
 
 	type Props = {
 		/** pass in this prop in promotion detail page */
 		rules?: PromotionRule[];
-		/** pass in the prop when in create page */
-		addRules?: PromotionRuleCreateInput[];
 		onRuleDeleted?: () => void;
 		/** if not provided, meanings current page is promotion create page */
 		promotionId?: string;
 		onDoneUpsertRule?: () => void;
 	};
 
-	type QueryData = {
-		products: ProductCountableConnection;
-		productVariants: ProductVariantCountableConnection;
-		categories: CategoryCountableConnection;
-		collections: CollectionCountableConnection;
-	};
-
-	let {
-		rules = [],
-		onRuleDeleted,
-		promotionId,
-		onDoneUpsertRule,
-		addRules = $bindable(),
-	}: Props = $props();
+	let { rules = [], onRuleDeleted, promotionId, onDoneUpsertRule }: Props = $props();
 
 	let loading = $state(false);
-	let ruleActiveTabs = $state<TabKey[]>(new Array(rules.length).fill('products'));
+	let rulesActiveCatalogueTabs = $state<TabKey[]>(new Array(rules.length).fill('products'));
 	let ruleUpsertInput = $state<PromotionRuleUpdateInput & { id?: string }>();
 
 	const rulePredicateQuery = operationStore<QueryData>({
@@ -152,12 +133,15 @@
 			description: rule.description,
 			rewardValue: rule.rewardValue,
 			rewardValueType: rule.rewardValueType,
-			cataloguePredicate: { ...DefaultCatalogPredicate, ...(rule.cataloguePredicate || {}) },
+			cataloguePredicate: {
+				...createDefaultCatalogPredicate(),
+				...(rule.cataloguePredicate || {}),
+			},
 		};
 	};
 
 	const setActivePredicateTabOfRule = (ruleIdx: number, tabKey: TabKey) => {
-		ruleActiveTabs[ruleIdx] = tabKey;
+		rulesActiveCatalogueTabs[ruleIdx] = tabKey;
 	};
 
 	const handleClickAddRule = () => {
@@ -167,7 +151,7 @@
 			rewardValue: 0,
 			rewardValueType: RewardValueTypeEnum.Percentage,
 			description: { blocks: [] },
-			cataloguePredicate: { ...DefaultCatalogPredicate },
+			cataloguePredicate: { ...createDefaultCatalogPredicate() },
 		};
 	};
 
@@ -218,61 +202,12 @@
 					return;
 
 				handleDoneUpsertRule();
-			} else {
-				// in prmotion creation page, we just append new rules to the given list, parent will handle them
-				addRules?.push({
-					name: ruleUpsertInput.name,
-					description: ruleUpsertInput.description,
-					channels: ruleUpsertInput.addChannels,
-					cataloguePredicate: ruleUpsertInput.cataloguePredicate,
-					promotion: '', // leave this empty, so the parent page will handle
-					rewardType: ruleUpsertInput.rewardType,
-					rewardValue: ruleUpsertInput.rewardValue,
-					rewardValueType: ruleUpsertInput.rewardValueType,
-				});
-				ruleUpsertInput = undefined;
 			}
 		}
 	};
 
 	const handleCancelUpsert = () => {
 		ruleUpsertInput = undefined;
-	};
-
-	const classifyRuleCatalog = (
-		rule: PromotionRule,
-		{ products, productVariants, collections, categories }: QueryData,
-	) => {
-		let ruleCategories: Category[] = [];
-		let ruleProducts: Product[] = [];
-		let ruleCollections: Collection[] = [];
-		let ruleVariants: ProductVariant[] = [];
-
-		if (rule.cataloguePredicate?.productPredicate?.ids) {
-			ruleProducts = products.edges
-				.map((edge) => edge.node)
-				.filter((prd) => rule.cataloguePredicate?.productPredicate?.ids.includes(prd.id));
-		}
-
-		if (rule.cataloguePredicate?.variantPredicate?.ids) {
-			ruleVariants = productVariants.edges
-				.map((edge) => edge.node)
-				.filter((variant) => rule.cataloguePredicate.variantPredicate.ids.includes(variant.id));
-		}
-
-		if (rule.cataloguePredicate?.categoryPredicate?.ids) {
-			ruleCategories = categories.edges
-				.map((edge) => edge.node)
-				.filter((cate) => rule.cataloguePredicate.categoryPredicate.ids.includes(cate.id));
-		}
-
-		if (rule.cataloguePredicate?.collectionPredicate?.ids) {
-			ruleCollections = collections.edges
-				.map((edge) => edge.node)
-				.filter((col) => rule.cataloguePredicate.collectionPredicate.ids.includes(col.id));
-		}
-
-		return { ruleCategories, ruleProducts, ruleVariants, ruleCollections };
 	};
 </script>
 
@@ -348,7 +283,7 @@
 							<Alert size="sm" bordered variant="error">{$rulePredicateQuery.error.message}</Alert>
 						{:else if $rulePredicateQuery.data}
 							{@const { ruleCategories, ruleCollections, ruleProducts, ruleVariants } =
-								classifyRuleCatalog(rule, $rulePredicateQuery.data)}
+								classifyRuleCatalog(rule.cataloguePredicate, $rulePredicateQuery.data)}
 							{@const tabs: {key: TabKey, display: string}[] = [
 								{
 									key: 'products',
@@ -373,7 +308,7 @@
 										role="tab"
 										tabindex="0"
 										class="tab"
-										class:tab-active={ruleActiveTabs[ruleIdx] === tab.key}
+										class:tab-active={rulesActiveCatalogueTabs[ruleIdx] === tab.key}
 										onclick={() => setActivePredicateTabOfRule(ruleIdx, tab.key)}
 										onkeydown={(evt) =>
 											evt.key === 'Enter' && setActivePredicateTabOfRule(ruleIdx, tab.key)}
@@ -383,13 +318,13 @@
 								{/each}
 							</div>
 
-							{#if ruleActiveTabs[ruleIdx] === 'categories'}
+							{#if rulesActiveCatalogueTabs[ruleIdx] === 'categories'}
 								<Table columns={CATEGORY_COLUMNS} items={ruleCategories} />
-							{:else if ruleActiveTabs[ruleIdx] === 'collections'}
+							{:else if rulesActiveCatalogueTabs[ruleIdx] === 'collections'}
 								<Table columns={COLLECTION_COLUMNS} items={ruleCollections} />
-							{:else if ruleActiveTabs[ruleIdx] === 'products'}
+							{:else if rulesActiveCatalogueTabs[ruleIdx] === 'products'}
 								<Table columns={PRODUCT_COLUMNS} items={ruleProducts} />
-							{:else if ruleActiveTabs[ruleIdx] === 'variants'}
+							{:else if rulesActiveCatalogueTabs[ruleIdx] === 'variants'}
 								<Table columns={VARIANT_COLUMNS} items={ruleVariants} />
 							{/if}
 						{/if}
