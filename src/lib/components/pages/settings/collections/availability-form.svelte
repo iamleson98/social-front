@@ -130,7 +130,7 @@
 
 <div class={['w-4/10 tablet:w-full space-y-2']}>
 	{#if $channelsQuery.fetching}
-		<div class="bg-white border border-gray-200 rounded-lg p-3">
+		<div class={SitenameCommonClassName}>
 			<Skeleton class="h-8 w-28 mb-2" />
 			<SelectSkeleton label size="sm" />
 		</div>

@@ -21,13 +21,13 @@
 		type VoucherInput,
 		VoucherTypeEnum,
 		DiscountValueTypeEnum,
-		// type VoucherChannelListingInput,
 		type VoucherChannelListing,
 		type Mutation,
 		type MutationVoucherCreateArgs,
 		type MutationVoucherChannelListingUpdateArgs,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { string } from 'zod';
 
@@ -51,13 +51,12 @@
 	});
 
 	let createdVoucherId = $state<string>('');
-
 	/** temporary state for UI */
 	let activeChannelListings = $state<VoucherChannelListing[]>([]);
-	let performUpdateMetadata = $state(false);
 	let loading = $state(false);
+	let metadataRef = $state<any>();
 
-	const NameSchema = string().nonempty($tranFunc('helpText.fieldRequired'));
+	const NameSchema = string().nonempty(CommonState.FieldRequiredError);
 	let nameErrors = $state<string[]>([]);
 
 	const validateName = () => {
@@ -78,10 +77,16 @@
 			input: voucherInput,
 		});
 
-		if (checkIfGraphqlResultHasError(result, 'voucherCreate')) return;
+		if (checkIfGraphqlResultHasError(result, 'voucherCreate')) {
+			loading = false;
+			return;
+		}
 
-		createdVoucherId = result.data?.voucherCreate?.voucher?.id!;
-		performUpdateMetadata = true;
+		const hasErr = await metadataRef.handleUpdate(result.data?.voucherCreate?.voucher?.id!);
+		if (hasErr) {
+			loading = false;
+			return;
+		}
 
 		const channelListingUpdateResult = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'voucherChannelListingUpdate'>,
@@ -163,13 +168,7 @@
 			bind:startDate={voucherInput.startDate!}
 			bind:endDate={voucherInput.endDate!}
 		/>
-		<GeneralMetadataEditor
-			objectId={createdVoucherId}
-			metadata={[]}
-			privateMetadata={[]}
-			bind:performUpdateMetadata
-			disabled={loading}
-		/>
+		<GeneralMetadataEditor objectId={createdVoucherId} bind:this={metadataRef} disabled={loading} />
 	</div>
 
 	<div class="w-3/10">

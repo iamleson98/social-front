@@ -55,35 +55,36 @@
 		variables: Record<string, unknown>;
 	};
 
-	export const handleUpdate = async () => {
+	export const handleUpdate = async (newObjectId?: string) => {
 		const taskKeys: (keyof Mutation)[] = [];
 		const taskProps: TaskProps[] = [];
+		const actualObjectId = newObjectId || objectId;
 
 		if (metadataItemsToAdd.length) {
 			taskProps.push({
 				query: METADATA_UPDATE_MUTATION,
-				variables: { id: objectId, input: metadataItemsToAdd },
+				variables: { id: actualObjectId, input: metadataItemsToAdd },
 			});
 			taskKeys.push('updateMetadata');
 		}
 		if (privateMetadataItemsToAdd.length) {
 			taskProps.push({
 				query: PRIVATE_METADATA_UPDATE_MUTATION,
-				variables: { id: objectId, input: privateMetadataItemsToAdd },
+				variables: { id: actualObjectId, input: privateMetadataItemsToAdd },
 			});
 			taskKeys.push('updatePrivateMetadata');
 		}
 		if (metadataKeysToRemove.length) {
 			taskProps.push({
 				query: METADATA_DELETE_MUTATION,
-				variables: { id: objectId, keys: metadataKeysToRemove },
+				variables: { id: actualObjectId, keys: metadataKeysToRemove },
 			});
 			taskKeys.push('deleteMetadata');
 		}
 		if (privateMetadataKeysToRemove.length) {
 			taskProps.push({
 				query: PRIVATE_METADATA_DELETE_MUTATION,
-				variables: { id: objectId, keys: privateMetadataKeysToRemove },
+				variables: { id: actualObjectId, keys: privateMetadataKeysToRemove },
 			});
 			taskKeys.push('deletePrivateMetadata');
 		}

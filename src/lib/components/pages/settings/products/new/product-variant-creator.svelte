@@ -2,7 +2,7 @@
 	import { tranFunc } from '$i18n';
 	import { Plus, Trash, MdiWeightKg, Icon } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { Button, BUTTON_VARIANT_COLORS_MAP, IconButton } from '$lib/components/ui/Button';
+	import { Button } from '$lib/components/ui/Button';
 	import { Checkbox, Input, Label } from '$lib/components/ui/Input';
 	import { Select, SelectSkeleton } from '$lib/components/ui/select';
 	import {
