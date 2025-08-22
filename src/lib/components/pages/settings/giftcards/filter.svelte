@@ -255,5 +255,5 @@
 		searchKey="search"
 	/>
 
-	<Settings />
+	<Settings addTags={[]} removeTags={[]} {variables} selectedIds={{}} />
 </div>
