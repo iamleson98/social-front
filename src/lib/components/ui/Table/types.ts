@@ -31,7 +31,7 @@ export type TableProps<T extends Record<string, unknown>, K extends string = str
 
 export type TableColumnProps<T extends Record<string, unknown>, K extends string = string> = {
   /** the head title of each column */
-  title: string | Snippet;
+  title: string | Snippet<[{items: T[]}]>;
   /**
    * Key of the column to be used for sorting.
    * If not provided, the column will not be sortable.

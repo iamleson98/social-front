@@ -9,6 +9,10 @@
 	import Filter from '$lib/components/pages/settings/orders/filter.svelte';
 	import { AppRoute } from '$lib/utils';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
+	import { DropDown } from '$lib/components/ui/Dropdown';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
+	import { SettingCog } from '$lib/components/icons';
+	import { IconButton } from '$lib/components/ui/Button';
 
 	const BATCH_LOAD = 20;
 
@@ -77,7 +81,29 @@
 	{item.userEmail}
 {/snippet}
 
-<Filter bind:variables={filterVariables} bind:forceReExecuteGraphqlQuery />
+<div class="mb-2 flex items-center justify-between">
+	<Filter bind:variables={filterVariables} bind:forceReExecuteGraphqlQuery />
+	<DropDown
+		placement="bottom-end"
+		options={[
+			{
+				children: 'Order settings',
+				href: AppRoute.SETTINGS_SHOP_ORDER_SETTINGS(),
+			},
+		]}
+	>
+		{#snippet trigger({ onclick }: DropdownTriggerInterface)}
+			<IconButton
+				icon={SettingCog}
+				size="sm"
+				color="gray"
+				{onclick}
+				class="tooltip tooltip-left"
+				data-tip="Order settings"
+			/>
+		{/snippet}
+	</DropDown>
+</div>
 
 <GraphqlPaginableTable
 	query={SHOP_ORDERS_QUERY}

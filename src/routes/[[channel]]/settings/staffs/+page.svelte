@@ -61,7 +61,9 @@
 	/>
 {/snippet}
 
-<FilterButton bind:variables bind:forceReExecuteGraphqlQuery />
+<div class="mb-2">
+	<FilterButton bind:variables bind:forceReExecuteGraphqlQuery />
+</div>
 
 <GraphqlPaginableTable
 	query={STAFFS_QUERY}

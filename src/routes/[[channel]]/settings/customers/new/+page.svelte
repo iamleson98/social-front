@@ -57,7 +57,6 @@
 		disabled={loading}
     isCreatePage
 	/>
-	<!-- <CustomerOrders id={user.id} /> -->
 	<GeneralMetadataEditor
 		objectId={createdUserId}
 		bind:performUpdateMetadata

@@ -42,6 +42,7 @@ export const AppRoute = {
 	SETTINGS_CONFIGS_USER_NEW: () => buildLinkWithRespectToChannel('settings/customers/new'),
 
 	SETTINGS_ORDERS: () => buildLinkWithRespectToChannel('settings/shop-orders'),
+	SETTINGS_SHOP_ORDER_SETTINGS: (chanSlug?: string) => buildLinkWithRespectToChannel(`settings/shop-orders/configs${chanSlug ? `?chan=${chanSlug}` : ''}`),
 	SETTINGS_ORDERS_NEW: () => buildLinkWithRespectToChannel('settings/shop-orders/new'),
 	SETTINGS_ORDERS_DETAILS: (id: string) => buildLinkWithRespectToChannel(`settings/shop-orders/${id}`),
 

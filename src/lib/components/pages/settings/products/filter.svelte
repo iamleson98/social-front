@@ -19,7 +19,6 @@
 		QueryProductsArgs,
 		QueryProductTypesArgs,
 	} from '$lib/gql/graphql';
-	import Settings from './settings.svelte';
 
 	type Props = {
 		forceReExecuteGraphqlQuery: boolean;
@@ -294,12 +293,9 @@
 	/>
 {/snippet}
 
-<div class="flex items-center justify-between mb-2">
-	<FilterManager
-		filterOptions={FILTER_OPTIONS}
-		bind:forceReExecuteGraphqlQuery
-		bind:variables
-		searchKey="search"
-	/>
-	<Settings />
-</div>
+<FilterManager
+	filterOptions={FILTER_OPTIONS}
+	bind:forceReExecuteGraphqlQuery
+	bind:variables
+	searchKey="search"
+/>

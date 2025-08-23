@@ -95,7 +95,9 @@
 	</div>
 {/snippet}
 
-<Filter bind:variables bind:forceReExecuteGraphqlQuery />
+<div class="mb-2">
+	<Filter bind:variables bind:forceReExecuteGraphqlQuery />
+</div>
 
 <GraphqlPaginableTable
 	query={VOUCHER_LIST_QUERY}

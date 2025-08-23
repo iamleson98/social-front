@@ -61,7 +61,7 @@
 	};
 </script>
 
-<div class="h-full w-full rounded-lg bg-white border border-gray-200 p-3">
+<div class="h-full {SitenameTimeFormat}">
 	<div class="flex items-center gap-2">
 		<Thumbnail
 			src={avatar}

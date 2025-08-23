@@ -261,8 +261,8 @@ query GiftCardCount($filter: GiftCardFilterInput) {
 }`;
 
 export const GIFTCARD_EXPORT_MUTATION = gql`
-mutation ExportGiftcards($input: ExportGiftcardsInput!) {
-  exportGiftcards(input: $input) {
+mutation ExportGiftCards($input: ExportGiftCardsInput!) {
+  exportGiftCards(input: $input) {
     errors {
       field
       message

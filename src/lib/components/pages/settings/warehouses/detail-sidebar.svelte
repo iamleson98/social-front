@@ -10,6 +10,7 @@
 		type Query,
 		type ShippingZone,
 	} from '$lib/gql/graphql';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 
 	type Props = {
 		isPrivate: boolean;
@@ -36,7 +37,7 @@
 	<span>{item.name}</span>
 {/snippet}
 
-<div class="rounded-lg bg-white border border-gray-200 p-3 space-y-2">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>Shipping zones</SectionHeader>
 
 	<GraphqlPaginableTable
@@ -48,7 +49,7 @@
 	/>
 </div>
 
-<div class="rounded-lg bg-white border border-gray-200 p-3 space-y-2">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>Stock settings</SectionHeader>
 
 	<RadioButton
@@ -69,7 +70,7 @@
 	/>
 </div>
 
-<div class="rounded-lg bg-white border border-gray-200 p-3 space-y-2">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>
 		<span>Pickup</span>
 		<Badge size="xs" rounded variant="outline" text="preview" />

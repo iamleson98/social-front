@@ -1,4 +1,4 @@
-import { RewardTypeEnum, type CataloguePredicateInput, type PromotionRule, type PromotionRuleCreateInput, type PromotionRuleUpdateInput } from "$lib/gql/graphql";
+import { RewardTypeEnum, type CataloguePredicateInput, type Category, type CategoryCountableConnection, type Collection, type CollectionCountableConnection, type Product, type ProductCountableConnection, type ProductVariant, type ProductVariantCountableConnection, type PromotionRule, type PromotionRuleCreateInput, type PromotionRuleUpdateInput } from "$lib/gql/graphql";
 
 export const DefaultPromotionRuleUpdateinput: PromotionRuleUpdateInput = {
   name: '',
@@ -16,12 +16,12 @@ export const DefaultPromotionRuleCreateInput: PromotionRuleCreateInput = {
   rewardType: RewardTypeEnum.SubtotalDiscount,
 };
 
-export const DefaultCatalogPredicate: CataloguePredicateInput = {
+export const createDefaultCatalogPredicate = (): CataloguePredicateInput => ({
   productPredicate: { ids: [] },
   variantPredicate: { ids: [] },
   categoryPredicate: { ids: [] },
   collectionPredicate: { ids: [] },
-};
+});
 
 export type TabKey = 'products' | 'variants' | 'categories' | 'collections';
 
@@ -59,4 +59,47 @@ export const cleanRulesData = (rules: PromotionRule[]): PromotionRule[] => {
       },
     };
   });
+};
+
+export type QueryData = {
+  products: ProductCountableConnection;
+  productVariants: ProductVariantCountableConnection;
+  categories: CategoryCountableConnection;
+  collections: CollectionCountableConnection;
+};
+
+export const classifyRuleCatalog = (
+  cataloguePredicate: CataloguePredicateInput,
+  { products, productVariants, collections, categories }: QueryData,
+) => {
+  let ruleCategories: Category[] = [];
+  let ruleProducts: Product[] = [];
+  let ruleCollections: Collection[] = [];
+  let ruleVariants: ProductVariant[] = [];
+
+  if (cataloguePredicate?.productPredicate?.ids) {
+    ruleProducts = products.edges
+      .map((edge) => edge.node)
+      .filter((prd) => cataloguePredicate?.productPredicate?.ids?.includes(prd.id));
+  }
+
+  if (cataloguePredicate?.variantPredicate?.ids) {
+    ruleVariants = productVariants.edges
+      .map((edge) => edge.node)
+      .filter((variant) => cataloguePredicate.variantPredicate?.ids?.includes(variant.id));
+  }
+
+  if (cataloguePredicate?.categoryPredicate?.ids) {
+    ruleCategories = categories.edges
+      .map((edge) => edge.node)
+      .filter((cate) => cataloguePredicate.categoryPredicate?.ids?.includes(cate.id));
+  }
+
+  if (cataloguePredicate?.collectionPredicate?.ids) {
+    ruleCollections = collections.edges
+      .map((edge) => edge.node)
+      .filter((col) => cataloguePredicate.collectionPredicate?.ids?.includes(col.id));
+  }
+
+  return { ruleCategories, ruleProducts, ruleVariants, ruleCollections };
 };

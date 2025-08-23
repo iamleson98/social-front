@@ -12,9 +12,10 @@
 
 	type Props = {
 		id: string;
+		disabled?: boolean;
 	};
 
-	let { id }: Props = $props();
+	let { id, disabled }: Props = $props();
 
 	const ORDER_TABLE_COLUMNS: TableColumnProps<Order, OrderSortField>[] = [
 		{
@@ -57,7 +58,7 @@
 <div class="bg-white rounded-lg border border-gray-200 p-3">
 	<SectionHeader class="mb-3">
 		<div>Recent Orders</div>
-		<Button variant="light" size="xs">View all orders</Button>
+		<Button variant="light" size="xs" {disabled}>View all orders</Button>
 	</SectionHeader>
 	<GraphqlPaginableTable
 		query={CUSTOMER_ORDERS_QUERY}
@@ -68,5 +69,6 @@
 		columns={ORDER_TABLE_COLUMNS}
 		resultKey={'user.orders' as keyof Query}
 		bind:forceReExecuteGraphqlQuery
+		{disabled}
 	/>
 </div>

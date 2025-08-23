@@ -1,19 +1,20 @@
 <script lang="ts">
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { operationStore } from '$lib/api/operation';
 	import {
 		GIFT_CARD_TAGS_QUERY,
+		GIFTCARD_EXPORT_MUTATION,
 		GIFTCARD_SETTINGS_QUERY,
 		GIFTCARD_SETTINGS_UPDATE_MUTATION,
 		GIFTCARD_TOTAL_COUNT_QUERY,
 	} from '$lib/api/admin/giftcards';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { operationStore } from '$lib/api/operation';
-	import ShopCurrenciesSelect from '$lib/components/common/shop-currencies-select.svelte';
+
 	import { SettingCog } from '$lib/components/icons';
+	import ShopCurrenciesSelect from '$lib/components/common/shop-currencies-select.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown, type MenuItemProps } from '$lib/components/ui/Dropdown';
 	import { Checkbox, CheckboxSkeleton, Input, Label, RadioButton } from '$lib/components/ui/Input';
-	import Radio from '$lib/components/ui/Input/radio.svelte';
 	import { Modal } from '$lib/components/ui/Modal';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import {
@@ -22,6 +23,7 @@
 		SelectSkeleton,
 		type SelectOption,
 	} from '$lib/components/ui/select';
+
 	import {
 		ExportScope,
 		FileTypesEnum,
@@ -30,53 +32,53 @@
 		type ExportGiftCardsInput,
 		type GiftCardSettingsUpdateInput,
 		type Mutation,
+		type MutationExportGiftCardsArgs,
 		type MutationGiftCardSettingsUpdateArgs,
 		type Query,
 		type QueryGiftCardsArgs,
 		type QueryGiftCardTagsArgs,
 	} from '$lib/gql/graphql';
+
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { difference } from 'es-toolkit';
 	import { onMount } from 'svelte';
+
 	import GiftcardExpirationForm from './giftcard-expiration-form.svelte';
 
 	type Props = {
-		addTags: string[];
-		removeTags: string[];
 		variables: QueryGiftCardsArgs;
 		selectedIds: Record<string, boolean>;
 	};
-
-	let { addTags, removeTags, variables = $bindable(), selectedIds = $bindable() }: Props = $props();
-
-	const GiftcardSettingsQuery = operationStore<Pick<Query, 'giftCardSettings'>>({
-		query: GIFTCARD_SETTINGS_QUERY,
-		requestPolicy: 'cache-and-network',
-		pause: true, // only execute when user choose to open setting modal
-	});
+	let { variables = $bindable(), selectedIds = $bindable() }: Props = $props();
 
 	let loading = $state(false);
+	let disabled = $state(false);
+
 	let openSettingModal = $state(false);
 	let openBulkIssueModal = $state(false);
 	let openExportCodesModal = $state(false);
+
 	let activeTags = $state<string[]>([]);
-	let disabled = $state(false);
 	let balanceAmount = $state(0);
 	let balanceCurrency = $state('');
 	let cardsIssued = $state('');
+	let addTags = $state<string[]>([]);
+	let removeTags = $state<string[]>([]);
 	let requiresActivation = $state(false);
 	let setExpiryDate = $state(false);
 
-	let exportMode: 'all' | 'selected' | 'current' = $state('all');
-
 	let settingInput = $state<GiftCardSettingsUpdateInput>({
 		expiryType: GiftCardSettingsExpiryTypeEnum.ExpiryPeriod,
-		expiryPeriod: {
-			amount: 0,
-			type: TimePeriodTypeEnum.Day,
-		},
+		expiryPeriod: { amount: 0, type: TimePeriodTypeEnum.Day },
 	});
+
+	let exportConfig = $state<ExportGiftCardsInput>({
+		fileType: FileTypesEnum.Xlsx,
+		scope: ExportScope.All,
+		filter: null,
+	});
+
 	const ExpiryTypes = Object.values(GiftCardSettingsExpiryTypeEnum).map<SelectOption>((value) => ({
 		value,
 		label: value.toLocaleLowerCase().replace(/_/g, ' '),
@@ -85,6 +87,18 @@
 		value,
 		label: value.toLowerCase().replace(/_/g, ' '),
 	}));
+
+	const GiftcardSettingsQuery = operationStore<Pick<Query, 'giftCardSettings'>>({
+		query: GIFTCARD_SETTINGS_QUERY,
+		requestPolicy: 'cache-and-network',
+		pause: true,
+	});
+
+	const GiftcardTotalCountQuery = operationStore<Pick<Query, 'giftCards'>, QueryGiftCardsArgs>({
+		query: GIFTCARD_TOTAL_COUNT_QUERY,
+		requestPolicy: 'cache-and-network',
+		pause: true,
+	});
 
 	onMount(() =>
 		GiftcardSettingsQuery.subscribe((result) => {
@@ -102,80 +116,13 @@
 	);
 
 	$effect(() => {
-		// if (settingInput.expiryType )
-	});
-
-	const handleClickOpenSetting = () => {
-		openSettingModal = true;
-		GiftcardSettingsQuery.reexecute({ variables: {} });
-	};
-
-	const SettingOptions: MenuItemProps[] = [
-		{
-			children: 'Settings',
-			onclick: handleClickOpenSetting,
-		},
-		{
-			children: 'Bulk issue',
-			onclick: () => (openBulkIssueModal = true),
-		},
-		{
-			children: 'Export card codes',
-			onclick: () => {
-				openExportCodesModal = true;
-				GiftcardTotalCountQuery.reexecute({ variables: {} });
-			},
-		},
-	];
-
-	const handleUpdateSettings = async () => {
-		loading = true;
-
-		const result = await GRAPHQL_CLIENT.mutation<
-			Pick<Mutation, 'giftCardSettingsUpdate'>,
-			MutationGiftCardSettingsUpdateArgs
-		>(GIFTCARD_SETTINGS_UPDATE_MUTATION, {
-			input: settingInput,
-		});
-
-		loading = false;
-
-		if (checkIfGraphqlResultHasError(result, 'giftCardSettingsUpdate', CommonState.EditSuccess))
-			return;
-
-		openSettingModal = false;
-	};
-
-	const handleBulkIssue = async () => {
-		openBulkIssueModal = false;
-	};
-
-	const handleExportCodes = async () => {
-		openExportCodesModal = false;
-	};
-
-	const handleTagsChange = () => {
-		if (!activeTags.length) {
-			addTags = [];
-			removeTags = [];
-			return;
+		if (
+			openExportCodesModal &&
+			exportConfig.scope === ExportScope.Ids &&
+			(!selectedIds || Object.keys(selectedIds).length === 0)
+		) {
+			exportConfig.scope = ExportScope.All;
 		}
-
-		addTags = difference(activeTags, removeTags);
-		removeTags = difference(removeTags, activeTags);
-		//validate();
-	};
-
-	const GiftcardTotalCountQuery = operationStore<Pick<Query, 'giftCards'>, QueryGiftCardsArgs>({
-		query: GIFTCARD_TOTAL_COUNT_QUERY,
-		requestPolicy: 'cache-and-network',
-		pause: true,
-	});
-
-	let exportConfig = $state<ExportGiftCardsInput>({
-		fileType: FileTypesEnum.Xlsx,
-		scope: ExportScope.All,
-		filter: null,
 	});
 
 	$effect(() => {
@@ -190,6 +137,72 @@
 			exportConfig.filter = variables.filter;
 		}
 	});
+
+	const handleClickOpenSetting = () => {
+		openSettingModal = true;
+		GiftcardSettingsQuery.reexecute({ variables: {} });
+		exportConfig = { fileType: FileTypesEnum.Xlsx, scope: ExportScope.All, filter: null };
+	};
+
+	const handleUpdateSettings = async () => {
+		loading = true;
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'giftCardSettingsUpdate'>,
+			MutationGiftCardSettingsUpdateArgs
+		>(GIFTCARD_SETTINGS_UPDATE_MUTATION, { input: settingInput });
+		loading = false;
+		if (checkIfGraphqlResultHasError(result, 'giftCardSettingsUpdate', CommonState.EditSuccess))
+			return;
+		openSettingModal = false;
+	};
+
+	const handleBulkIssue = async () => {
+		openBulkIssueModal = false;
+	};
+
+	const handleExportCodes = async () => {
+		loading = true;
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'exportGiftCards'>,
+			MutationExportGiftCardsArgs
+		>(GIFTCARD_EXPORT_MUTATION, {
+			input: exportConfig,
+		});
+		loading = false;
+
+		if (
+			checkIfGraphqlResultHasError(
+				result,
+				'exportGiftCards',
+				`We are currently exporting your requested ${exportConfig.fileType.toLowerCase()}.As soon as it is available it will be sent to your email address`,
+			)
+		)
+			return;
+
+		openExportCodesModal = false;
+	};
+
+	const handleTagsChange = () => {
+		if (!activeTags.length) {
+			addTags = [];
+			removeTags = [];
+			return;
+		}
+		addTags = difference(activeTags, removeTags);
+		removeTags = difference(removeTags, activeTags);
+	};
+
+	const SettingOptions: MenuItemProps[] = [
+		{ children: 'Settings', onclick: handleClickOpenSetting },
+		{ children: 'Bulk issue', onclick: () => (openBulkIssueModal = true) },
+		{
+			children: 'Export card codes',
+			onclick: () => {
+				openExportCodesModal = true;
+				GiftcardTotalCountQuery.reexecute({ variables: {} });
+			},
+		},
+	];
 </script>
 
 <DropDown placement="bottom-end" options={SettingOptions}>

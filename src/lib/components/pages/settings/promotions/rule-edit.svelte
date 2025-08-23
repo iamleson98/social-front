@@ -27,7 +27,7 @@
 		rewardValueType: RewardValueTypeEnum;
 		description: OutputData;
 		catalogPredicate: CataloguePredicateInput;
-		disabled: boolean;
+		disabled?: boolean;
 	};
 
 	let {

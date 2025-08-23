@@ -2,9 +2,10 @@
 	import { tranFunc } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Input, TextArea, Toggle } from '$lib/components/ui/Input';
-	import { PermissionEnum, type User } from '$lib/gql/graphql';
+	import { PermissionEnum } from '$lib/gql/graphql';
 	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
-	import { checkUserHasPermissions } from '$lib/utils/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
+	import { checkUserHasPermissions, SitenameCommonClassName } from '$lib/utils/utils';
 	import { object, string, z } from 'zod';
 
 	type Props = {
@@ -38,12 +39,11 @@
 			? false
 			: checkUserHasPermissions($READ_ONLY_USER_STORE, PermissionEnum.ManageUsers),
 	);
-	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 	const customerSchema = object({
-		firstName: string().nonempty(REQUIRED_ERROR),
-		lastName: string().nonempty(REQUIRED_ERROR),
-		email: string().nonempty(REQUIRED_ERROR).email($tranFunc('error.invalidEmail')),
-		note: string().nonempty(REQUIRED_ERROR),
+		firstName: string().nonempty(CommonState.FieldRequiredError),
+		lastName: string().nonempty(CommonState.FieldRequiredError),
+		email: string().nonempty(CommonState.FieldRequiredError).email($tranFunc('error.invalidEmail')),
+		note: string().nonempty(CommonState.FieldRequiredError),
 	});
 
 	type CustomerSchema = z.infer<typeof customerSchema>;
@@ -65,7 +65,7 @@
 	};
 </script>
 
-<div class="bg-white rounded-lg border border-gray-200 p-3 flex flex-col gap-2">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>
 		<div>Customer Information</div>
 		<Toggle

@@ -23,9 +23,14 @@
 	type Props = {
 		variables: QueryGiftCardsArgs;
 		forceReExecuteGraphqlQuery: boolean;
+		selectedIds: Record<string, boolean>;
 	};
 
-	let { variables = $bindable(), forceReExecuteGraphqlQuery = $bindable(false) }: Props = $props();
+	let {
+		variables = $bindable(),
+		forceReExecuteGraphqlQuery = $bindable(false),
+		selectedIds = $bindable(),
+	}: Props = $props();
 
 	const FILTER_OPTIONS: FilterProps<GiftCardFilterInput>[] = [
 		{
@@ -255,5 +260,5 @@
 		searchKey="search"
 	/>
 
-	<Settings addTags={[]} removeTags={[]} {variables} selectedIds={{}} />
+	<Settings {variables} {selectedIds} />
 </div>

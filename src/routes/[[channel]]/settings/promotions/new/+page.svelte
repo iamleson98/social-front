@@ -7,8 +7,8 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
+	import CreatePageRules from '$lib/components/pages/settings/promotions/create-page-rules.svelte';
 	import GeneralInformation from '$lib/components/pages/settings/promotions/general-information.svelte';
-	import Rules from '$lib/components/pages/settings/promotions/rules.svelte';
 	import {
 		PromotionTypeEnum,
 		type Mutation,
@@ -96,7 +96,7 @@
 		isCreatePage
 		bind:ok={generalOk}
 	/>
-	<Rules bind:addRules />
+	<CreatePageRules bind:rules={addRules} />
 	<GeneralMetadataEditor
 		objectId={createdPromotionId}
 		disabled={loading}
