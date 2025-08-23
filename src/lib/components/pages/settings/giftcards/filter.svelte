@@ -18,19 +18,13 @@
 		type QueryGiftCardTagsArgs,
 		type QueryProductsArgs,
 	} from '$lib/gql/graphql';
-	import Settings from './settings.svelte';
 
 	type Props = {
 		variables: QueryGiftCardsArgs;
 		forceReExecuteGraphqlQuery: boolean;
-		selectedIds: Record<string, boolean>;
 	};
 
-	let {
-		variables = $bindable(),
-		forceReExecuteGraphqlQuery = $bindable(false),
-		selectedIds = $bindable(),
-	}: Props = $props();
+	let { variables = $bindable(), forceReExecuteGraphqlQuery = $bindable(false) }: Props = $props();
 
 	const FILTER_OPTIONS: FilterProps<GiftCardFilterInput>[] = [
 		{
@@ -259,6 +253,4 @@
 		bind:forceReExecuteGraphqlQuery
 		searchKey="search"
 	/>
-
-	<Settings {variables} {selectedIds} />
 </div>

@@ -5,6 +5,7 @@
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import { Cancel, CircleCheck, Dots, Trash } from '$lib/components/icons';
 	import Filter from '$lib/components/pages/settings/giftcards/filter.svelte';
+	import Settings from '$lib/components/pages/settings/giftcards/settings.svelte';
 	import { GiftcardUtil } from '$lib/components/pages/settings/giftcards/utils.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
@@ -184,7 +185,8 @@
 {/snippet}
 
 <div class="mb-2">
-	<Filter bind:variables bind:forceReExecuteGraphqlQuery bind:selectedIds={selectedGiftcards} />
+	<Filter bind:variables bind:forceReExecuteGraphqlQuery />
+	<Settings bind:variables bind:selectedIds={selectedGiftcards} />
 </div>
 
 <GraphqlPaginableTable

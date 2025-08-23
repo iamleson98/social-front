@@ -64,7 +64,6 @@
 	let balanceCurrency = $state('');
 	let cardsIssued = $state('');
 	let addTags = $state<string[]>([]);
-	let removeTags = $state<string[]>([]);
 	let requiresActivation = $state(false);
 	let setExpiryDate = $state(false);
 
@@ -185,11 +184,9 @@
 	const handleTagsChange = () => {
 		if (!activeTags.length) {
 			addTags = [];
-			removeTags = [];
 			return;
 		}
-		addTags = difference(activeTags, removeTags);
-		removeTags = difference(removeTags, activeTags);
+		addTags = difference(activeTags, []);
 	};
 
 	const SettingOptions: MenuItemProps[] = [
