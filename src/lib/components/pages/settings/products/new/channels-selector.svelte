@@ -5,7 +5,6 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Checkbox, Label } from '$lib/components/ui/Input';
-	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import type {
 		ProductChannelListing,
 		ProductChannelListingAddInput,

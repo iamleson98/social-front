@@ -16,6 +16,7 @@
 	import PackagingAndDelivery from '$lib/components/pages/settings/products/new/packaging-and-delivery.svelte';
 	import ProductSeo from '$lib/components/pages/settings/products/new/product-seo.svelte';
 	import ProductVariantCreator from '$lib/components/pages/settings/products/new/product-variant-creator.svelte';
+	import VariantsEditor from '$lib/components/pages/settings/products/new/variants-editor.svelte';
 	import type {
 		Mutation,
 		MutationProductChannelListingUpdateArgs,
@@ -240,6 +241,7 @@
 			{loading}
 			{productMedias}
 		/>
+		<VariantsEditor productTypeId={productCreateInput.productType} />
 	</div>
 	<ProductSeo
 		productName={productCreateInput.name}
