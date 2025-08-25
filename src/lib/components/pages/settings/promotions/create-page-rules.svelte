@@ -43,8 +43,6 @@
 
 	let { rules = $bindable(), disabled }: Props = $props();
 
-	$inspect(rules);
-
 	let selectedProducts = $state<Record<string, Product>>({});
 	let selectedVariants = $state<Record<string, ProductVariant>>({});
 	let selectedCategories = $state<Record<string, Category>>({});

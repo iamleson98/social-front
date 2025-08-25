@@ -53,10 +53,6 @@
 		label: value.toLowerCase(),
 	}));
 
-	$effect(() => {
-		ok = !Object.keys(promotionFormErrors).length;
-	});
-
 	const validate = () => {
 		const parseResult = PromotionSchema.safeParse({
 			name,
@@ -66,6 +62,7 @@
 			endDate,
 		});
 		promotionFormErrors = parseResult.success ? {} : parseResult.error.formErrors.fieldErrors;
+		ok = parseResult.success;
 		return parseResult.success;
 	};
 </script>
