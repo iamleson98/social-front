@@ -28,7 +28,10 @@
 
 	const giftcardUtil = new GiftcardUtil();
 	let forceReExecuteGraphqlQuery = $state(true);
-	let variables = $state<QueryGiftCardsArgs>({ first: 10, search: '' });
+	let giftcardFilterVariables = $state<QueryGiftCardsArgs>({
+		first: 10,
+		filter: { isActive: true || false },
+	});
 	let loading = $state(false);
 	let selectedGiftcards = $state<Record<string, boolean>>({});
 
@@ -184,16 +187,16 @@
 	/>
 {/snippet}
 
-<div class="mb-2">
-	<Filter bind:variables bind:forceReExecuteGraphqlQuery />
-	<Settings bind:variables bind:selectedIds={selectedGiftcards} />
+<div class="flex items-center justify-between mb-2">
+	<Filter bind:variables={giftcardFilterVariables} bind:forceReExecuteGraphqlQuery />
+	<Settings bind:variables={giftcardFilterVariables} bind:selectedIds={selectedGiftcards} />
 </div>
 
 <GraphqlPaginableTable
 	query={GIFTCARD_LIST_QUERY}
 	bind:forceReExecuteGraphqlQuery
 	resultKey="giftCards"
-	bind:variables
+	bind:variables={giftcardFilterVariables}
 	columns={COLUMNS}
 	disabled={loading}
 />

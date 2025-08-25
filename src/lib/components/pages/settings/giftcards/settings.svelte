@@ -7,6 +7,7 @@
 		GIFTCARD_SETTINGS_QUERY,
 		GIFTCARD_SETTINGS_UPDATE_MUTATION,
 		GIFTCARD_TOTAL_COUNT_QUERY,
+		GIFT_CARD_BULK_CREATE_MUTATION,
 	} from '$lib/api/admin/giftcards';
 
 	import { SettingCog } from '$lib/components/icons';
@@ -45,6 +46,8 @@
 	import { onMount } from 'svelte';
 
 	import GiftcardExpirationForm from './giftcard-expiration-form.svelte';
+	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import z, { array, number, object, string } from 'zod';
 
 	type Props = {
 		variables: QueryGiftCardsArgs;
@@ -58,6 +61,7 @@
 	let openSettingModal = $state(false);
 	let openBulkIssueModal = $state(false);
 	let openExportCodesModal = $state(false);
+	let openExportBulkModal = $state(false);
 
 	let activeTags = $state<string[]>([]);
 	let balanceAmount = $state(0);
@@ -66,6 +70,16 @@
 	let addTags = $state<string[]>([]);
 	let requiresActivation = $state(false);
 	let setExpiryDate = $state(false);
+
+	const giftcardSchema = object({
+		cardsIssued: string().nonempty(CommonState.FieldRequiredError),
+		addTags: array(string().nonempty(CommonState.FieldRequiredError)),
+		balanceAmount: number().min(1, 'Please provide positive amount'),
+		balanceCurrency: string().nonempty(CommonState.FieldRequiredError),
+	});
+
+	type GiftcardSchema = z.infer<typeof giftcardSchema>;
+	let giftcardFormErrors = $state.raw<Partial<Record<keyof GiftcardSchema, string[]>>>({});
 
 	let settingInput = $state<GiftCardSettingsUpdateInput>({
 		expiryType: GiftCardSettingsExpiryTypeEnum.ExpiryPeriod,
@@ -137,6 +151,18 @@
 		}
 	});
 
+	const validate = () => {
+		const parseResult = giftcardSchema.safeParse({
+			cardsIssued: cardsIssued,
+			addTags: addTags,
+			balanceAmount: balanceAmount,
+			balanceCurrency: balanceCurrency,
+		});
+
+		giftcardFormErrors = parseResult.success ? {} : parseResult.error?.formErrors.fieldErrors;
+		return parseResult.success;
+	};
+
 	const handleClickOpenSetting = () => {
 		openSettingModal = true;
 		GiftcardSettingsQuery.reexecute({ variables: {} });
@@ -156,7 +182,63 @@
 	};
 
 	const handleBulkIssue = async () => {
-		openBulkIssueModal = false;
+		try {
+			loading = true;
+			const result = await GRAPHQL_CLIENT.mutation(GIFT_CARD_BULK_CREATE_MUTATION, {
+				input: {
+					count: parseInt(cardsIssued, 10) || 1,
+					tags: activeTags,
+					balance: {
+						amount: balanceAmount,
+						currency: balanceCurrency || 'VND',
+					},
+					isActive: !requiresActivation,
+				},
+			});
+
+			if (result.error) {
+				throw result.error;
+			}
+
+			if (result.data?.giftCardBulkCreate?.errors?.length) {
+				const error = result.data.giftCardBulkCreate.errors[0];
+				throw new Error(`${error.field}: ${error.message}`);
+			}
+
+			checkIfGraphqlResultHasError(result, 'giftCardBulkCreate', CommonState.CreateSuccess);
+
+			cardsIssued = '';
+			balanceAmount = 0;
+			activeTags = [];
+			openBulkIssueModal = false;
+			openExportBulkModal = true;
+			GiftcardTotalCountQuery.reexecute({ variables: {} });
+		} catch (error) {
+		} finally {
+			loading = false;
+		}
+	};
+
+	const handleExportBulk = async () => {
+		loading = true;
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'exportGiftCards'>,
+			MutationExportGiftCardsArgs
+		>(GIFTCARD_EXPORT_MUTATION, {
+			input: exportConfig,
+		});
+		loading = false;
+
+		if (
+			checkIfGraphqlResultHasError(
+				result,
+				'exportGiftCards',
+				`We are currently exporting your requested ${exportConfig.fileType.toLowerCase()}.As soon as it is available it will be sent to your email address`,
+			)
+		)
+			return;
+
+		openExportBulkModal = false;
 	};
 
 	const handleExportCodes = async () => {
@@ -276,12 +358,17 @@
 	<div class="space-y-2">
 		<Input
 			size="sm"
+			type="number"
 			placeholder="Cards issued"
 			label="Cards Issued"
 			class="flex-1"
 			bind:value={cardsIssued}
 			disabled={loading || disabled}
 			required
+			onblur={validate}
+			inputDebounceOption={{ onInput: validate }}
+			variant={giftcardFormErrors.cardsIssued?.length ? 'error' : 'info'}
+			subText={giftcardFormErrors.cardsIssued?.[0]}
 		/>
 		<div class="flex items-start gap-2">
 			<Input
@@ -294,6 +381,10 @@
 				bind:value={balanceAmount}
 				disabled={loading || disabled}
 				required
+				onblur={validate}
+				inputDebounceOption={{ onInput: validate }}
+				variant={giftcardFormErrors.balanceAmount?.length ? 'error' : 'info'}
+				subText={giftcardFormErrors.balanceAmount?.[0]}
 			/>
 			<ShopCurrenciesSelect
 				label="Currency"
@@ -302,7 +393,9 @@
 				size="sm"
 				placeholder="Currency"
 				bind:value={balanceCurrency}
-				{disabled}
+				disabled={loading || disabled}
+				variant={giftcardFormErrors.balanceCurrency?.length ? 'error' : 'info'}
+				subText={giftcardFormErrors.balanceCurrency?.[0]}
 			/>
 		</div>
 
@@ -320,21 +413,48 @@
 			placeholder="Giftcard tags"
 			bind:value={activeTags}
 			onchange={handleTagsChange}
-			{disabled}
+			disabled={loading || disabled}
 		/>
 
-		<Checkbox label="Set gift card expiry date" bind:checked={setExpiryDate} {disabled} />
+		<Checkbox
+			label="Set gift card expiry date"
+			bind:checked={setExpiryDate}
+			disabled={loading || disabled}
+		/>
 
 		{#if setExpiryDate}
-			<GiftcardExpirationForm disabled={loading} />
+			<GiftcardExpirationForm disabled={loading || disabled} size="sm" />
 		{/if}
 
-		<Checkbox label="Requires activation" bind:checked={requiresActivation} {disabled} />
+		<Checkbox
+			label="Requires activation"
+			bind:checked={requiresActivation}
+			disabled={loading || disabled}
+		/>
 
 		<Alert size="sm" variant="info">
-			After creation Saleor will create a list of gift card codes that you will be able to download.
+			We have issued all of your requested gift cards. You can download the list of new gift cards
+			using the button below.
 		</Alert>
 	</div>
+</Modal>
+
+<Modal
+	open={openExportBulkModal}
+	header="Export Bulk Giftcards"
+	size="sm"
+	onCancel={() => (openExportBulkModal = false)}
+	onClose={() => (openExportBulkModal = false)}
+	closeOnEscape
+	okText="Export"
+	onOk={handleExportBulk}
+	closeOnOutsideClick
+	disableElements={loading}
+>
+	<Alert size="sm" variant="info">
+		We are currently exporting your requested {exportConfig.fileType.toLowerCase()}.As soon as it is
+		available it will be sent to your email address
+	</Alert>
 </Modal>
 
 <Modal
@@ -365,6 +485,7 @@
 					label={`All giftcards (${$GiftcardTotalCountQuery.data.giftCards?.totalCount})`}
 					bind:group={exportConfig.scope}
 					size="sm"
+					disabled={loading || disabled}
 				/>
 				<RadioButton
 					value={ExportScope.Ids}
@@ -378,6 +499,7 @@
 					label={`Current search`}
 					bind:group={exportConfig.scope}
 					size="sm"
+					disabled={loading || disabled}
 				/>
 			</div>
 		{/if}
@@ -390,7 +512,7 @@
 					{value}
 					label={value.toLowerCase()}
 					bind:group={exportConfig.fileType}
-					disabled={loading}
+					disabled={loading || disabled}
 				/>
 			{/each}
 		</div>

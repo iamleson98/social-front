@@ -260,6 +260,29 @@ query GiftCardCount($filter: GiftCardFilterInput) {
   }
 }`;
 
+export const GIFT_CARD_BULK_CREATE_MUTATION = gql`
+  mutation GiftCardBulkCreate($input: GiftCardBulkCreateInput!) {
+    giftCardBulkCreate(input: $input) {
+      giftCards {
+        id
+        __typename
+      }
+      errors {
+        ...GiftCardBulkCreateErrorFragment
+        __typename
+      }
+      __typename
+    }
+  }
+
+  fragment GiftCardBulkCreateErrorFragment on GiftCardError {
+    code
+    field
+    message
+    __typename
+  }
+`;
+
 export const GIFTCARD_EXPORT_MUTATION = gql`
 mutation ExportGiftCards($input: ExportGiftCardsInput!) {
   exportGiftCards(input: $input) {

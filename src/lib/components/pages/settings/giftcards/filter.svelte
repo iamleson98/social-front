@@ -246,11 +246,9 @@
 	/>
 {/snippet}
 
-<div class="flex items-center justify-between mb-2">
-	<FilterManager
-		filterOptions={FILTER_OPTIONS}
-		bind:variables
-		bind:forceReExecuteGraphqlQuery
-		searchKey="search"
-	/>
-</div>
+<FilterManager
+	filterOptions={FILTER_OPTIONS}
+	bind:variables
+	bind:forceReExecuteGraphqlQuery
+	searchKey="search"
+/>
