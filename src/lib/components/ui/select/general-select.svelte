@@ -37,6 +37,7 @@
 		disabled,
 		onScrollToEnd = noop,
 		onclearInputField,
+		onNotFoundQuerySelected,
 		...rest
 	}: SelectProps = $props();
 
@@ -320,14 +321,28 @@
 			bind:this={optionListRef}
 		>
 			{#if !searchFilteredOptions.length}
-				{@render selectOption({
-					idx: 0,
-					disabled: true,
-					optionClassName: 'cursor-default',
-					onclick: () => toggleDropdown(false),
-					label: 'No data',
-					value: '',
-				})}
+				{#if onNotFoundQuerySelected && inputDisplayText && !showLoadingMore}
+					{@render selectOption({
+						idx: 0,
+						disabled: true,
+						optionClassName: 'cursor-default',
+						onclick: () => {
+							onNotFoundQuerySelected(inputDisplayText);
+							// toggleDropdown(false);
+						},
+						label: `Add "${inputDisplayText}"`,
+						value: inputDisplayText as any,
+					})}
+				{:else}
+					{@render selectOption({
+						idx: 0,
+						disabled: true,
+						optionClassName: 'cursor-default',
+						onclick: () => toggleDropdown(false),
+						label: `No data`,
+						value: '',
+					})}
+				{/if}
 			{:else}
 				{#each searchFilteredOptions as option, idx (idx)}
 					{@render selectOption({

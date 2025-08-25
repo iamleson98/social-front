@@ -33,6 +33,8 @@ export type SelectProps<T extends SelectOption = SelectOption> = {
   onScrollToEnd?: OnscrollToEndOpts['onScrollToEnd'];
   onclearInputField?: () => void;
   variant?: SocialVariant;
+  /** If provided: When you query is not found, the option list shows exactly your query as the only option. You can decide the use of that option. Typically useful to create new option */
+  onNotFoundQuerySelected?: (query?: string) => void;
 } & Omit<InputProps, 'value' | 'size' | 'onchange' | 'variant'> & Omit<HTMLSelectAttributes, 'size' | 'onchange' | 'onblur' | 'multiple'>;
 
 /** SIZE_REDUCE_MAP is useful you want your input and badge items to reasonably fit your multi select component */

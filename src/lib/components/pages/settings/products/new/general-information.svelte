@@ -247,6 +247,7 @@
 		variant={generalErrors.productType?.length ? 'error' : 'info'}
 		subText={generalErrors.productType?.[0]}
 		onblur={validate}
+		onchange={validate}
 		{disabled}
 	/>
 
@@ -264,10 +265,12 @@
 					{#each $productTypeQuery.data?.productType?.productAttributes as node, idx (idx)}
 						<div>
 							{#if node.inputType === AttributeInputTypeEnum.Dropdown && node.choices}
-								{@const options = node.choices.edges.map(({ node: { id, name } }) => ({
-									value: id,
-									label: name || id,
-								})) as SelectOption[]}
+								{@const options = node.choices.edges.map<SelectOption>(
+									({ node: { id, name } }) => ({
+										value: id,
+										label: name || id,
+									}),
+								)}
 								<Select
 									{options}
 									label={node.name || '-'}

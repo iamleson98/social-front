@@ -29,7 +29,7 @@
 </script>
 
 <div
-	class="flex items-start gap-1.5 cursor-pointer dark:border-gray-700 {className} {INPUT_CLASSES[
+	class="inline-flex items-start gap-1.5 cursor-pointer dark:border-gray-700 {className} {INPUT_CLASSES[
 		variant
 	].fg}"
 >
