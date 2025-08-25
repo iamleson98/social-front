@@ -10,9 +10,10 @@
 	type Props = {
 		disabled?: boolean;
 		expiryDate?: string;
+		size?: 'sm' | 'md' | 'lg';
 	};
 
-	let { disabled, expiryDate = $bindable() }: Props = $props();
+	let { disabled, expiryDate = $bindable(), size = 'md' }: Props = $props();
 
 	type ExpiryType = 'in' | 'exact';
 
@@ -44,17 +45,13 @@
 	});
 </script>
 
-<Accordion
-	header="Set gift card expiry date"
-	bind:open={setExpiryDate}
-	fixed={disabled}
->
+<Accordion header="Set gift card expiry date" bind:open={setExpiryDate} fixed={disabled}>
 	<div class="flex items-center gap-2">
 		{#each EXPIRY_TYPES as type, idx (idx)}
 			<RadioButton
 				class="flex-1"
 				label={`Expires ${type}`}
-				size="sm"
+				{size}
 				value={type}
 				bind:group={expiryType}
 				{disabled}
@@ -69,7 +66,7 @@
 				timeConfig={false}
 				placeholder="Set expiry date"
 				label="Exact date"
-				size="sm"
+				{size}
 				{disabled}
 				value={{ date: expiryDate }}
 				allowSelectMonthYears={{
@@ -81,7 +78,7 @@
 		{:else}
 			<div class="flex items-start gap-2">
 				<Input
-					size="sm"
+					{size}
 					placeholder="amount"
 					type="number"
 					min={1}
@@ -94,7 +91,7 @@
 				<Select
 					options={EXPIRY_IN_OPTIONS}
 					placeholder="units"
-					size="sm"
+					{size}
 					class="flex-1/3"
 					label="Unit"
 					required
@@ -105,10 +102,10 @@
 		{/if}
 	</div>
 
-	<Alert size="sm" bordered class="mt-2">
+	<Alert {size} bordered class="mt-2">
 		<div>Will expire on:</div>
 		{#if expiryDate}
-			<Badge size="sm" text={expiryDate} />
+			<Badge {size} text={expiryDate} />
 		{/if}
 	</Alert>
 </Accordion>

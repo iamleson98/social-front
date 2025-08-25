@@ -252,3 +252,50 @@ mutation GiftCardSettingsUpdate($input: GiftCardSettingsUpdateInput!) {
     }
   }
 }`;
+
+export const GIFTCARD_TOTAL_COUNT_QUERY = gql`
+query GiftCardCount($filter: GiftCardFilterInput) {
+  giftCards(filter: $filter) {
+    totalCount
+  }
+}`;
+
+export const GIFT_CARD_BULK_CREATE_MUTATION = gql`
+  mutation GiftCardBulkCreate($input: GiftCardBulkCreateInput!) {
+    giftCardBulkCreate(input: $input) {
+      giftCards {
+        id
+        __typename
+      }
+      errors {
+        ...GiftCardBulkCreateErrorFragment
+        __typename
+      }
+      __typename
+    }
+  }
+
+  fragment GiftCardBulkCreateErrorFragment on GiftCardError {
+    code
+    field
+    message
+    __typename
+  }
+`;
+
+export const GIFTCARD_EXPORT_MUTATION = gql`
+mutation ExportGiftCards($input: ExportGiftCardsInput!) {
+  exportGiftCards(input: $input) {
+    errors {
+      field
+      message
+    }
+    exportFile {
+      id
+      status
+      createdAt
+      message
+      url
+    }
+  }
+}`;

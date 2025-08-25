@@ -5,10 +5,12 @@
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import { Cancel, CircleCheck, Dots, Trash } from '$lib/components/icons';
 	import Filter from '$lib/components/pages/settings/giftcards/filter.svelte';
+	import Settings from '$lib/components/pages/settings/giftcards/settings.svelte';
 	import { GiftcardUtil } from '$lib/components/pages/settings/giftcards/utils.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
+	import { Checkbox } from '$lib/components/ui/Input';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
@@ -26,10 +28,18 @@
 
 	const giftcardUtil = new GiftcardUtil();
 	let forceReExecuteGraphqlQuery = $state(true);
-	let variables = $state<QueryGiftCardsArgs>({ first: 10, search: '' });
+	let giftcardFilterVariables = $state<QueryGiftCardsArgs>({
+		first: 10,
+		filter: { isActive: true || false },
+	});
 	let loading = $state(false);
+	let selectedGiftcards = $state<Record<string, boolean>>({});
 
 	const COLUMNS: TableColumnProps<GiftCard, GiftCardSortField>[] = [
+		{
+			title: selectAll,
+			child: itemSelect,
+		},
 		{
 			title: 'Code',
 			child: code,
@@ -98,6 +108,28 @@
 	};
 </script>
 
+{#snippet selectAll({ items }: { items: GiftCard[] })}
+	<Checkbox
+		size="sm"
+		onCheckChange={(checked) => {
+			if (checked) selectedGiftcards = Object.fromEntries(items.map((item) => [item.id, true]));
+			else selectedGiftcards = {};
+		}}
+		checked={items.length === Object.keys(selectedGiftcards).length}
+	/>
+{/snippet}
+
+{#snippet itemSelect({ item }: { item: GiftCard })}
+	<Checkbox
+		size="sm"
+		onCheckChange={(checked) => {
+			if (checked) selectedGiftcards[item.id] = true;
+			else delete selectedGiftcards[item.id];
+		}}
+		checked={selectedGiftcards[item.id]}
+	/>
+{/snippet}
+
 {#snippet code({ item }: { item: GiftCard })}
 	<a href={AppRoute.SETTINGS_CONFIGS_GIFTCARD_DETAIL(item.id)} class="link">
 		••••-{item.displayCode}
@@ -155,15 +187,16 @@
 	/>
 {/snippet}
 
-<div class="mb-2">
-	<Filter bind:variables bind:forceReExecuteGraphqlQuery />
+<div class="flex items-center justify-between mb-2">
+	<Filter bind:variables={giftcardFilterVariables} bind:forceReExecuteGraphqlQuery />
+	<Settings bind:variables={giftcardFilterVariables} bind:selectedIds={selectedGiftcards} />
 </div>
 
 <GraphqlPaginableTable
 	query={GIFTCARD_LIST_QUERY}
 	bind:forceReExecuteGraphqlQuery
 	resultKey="giftCards"
-	bind:variables
+	bind:variables={giftcardFilterVariables}
 	columns={COLUMNS}
 	disabled={loading}
 />

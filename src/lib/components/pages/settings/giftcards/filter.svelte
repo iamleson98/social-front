@@ -18,7 +18,6 @@
 		type QueryGiftCardTagsArgs,
 		type QueryProductsArgs,
 	} from '$lib/gql/graphql';
-	import Settings from './settings.svelte';
 
 	type Props = {
 		variables: QueryGiftCardsArgs;
@@ -247,13 +246,9 @@
 	/>
 {/snippet}
 
-<div class="flex items-center justify-between mb-2">
-	<FilterManager
-		filterOptions={FILTER_OPTIONS}
-		bind:variables
-		bind:forceReExecuteGraphqlQuery
-		searchKey="search"
-	/>
-
-	<Settings />
-</div>
+<FilterManager
+	filterOptions={FILTER_OPTIONS}
+	bind:variables
+	bind:forceReExecuteGraphqlQuery
+	searchKey="search"
+/>
