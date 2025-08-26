@@ -10,7 +10,7 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Edit, Plus, Trash } from '$lib/components/icons';
 	import { Button, IconButton } from '$lib/components/ui/Button';
-	import { Checkbox, Input } from '$lib/components/ui/Input';
+	import { Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
@@ -32,7 +32,7 @@
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { noop } from 'es-toolkit';
 	import ColorPicker from 'svelte-awesome-color-picker';
-	import { MetricClassification, MetricSystem, MetricUnit } from './consts';
+	import { HumanizeUnit, MetricClassification, MetricSystem, MetricUnit } from './consts';
 
 	type Props = {
 		inputType: AttributeInputTypeEnum;
@@ -106,7 +106,7 @@
 		if (metricSystem && metricUnitsOf)
 			return MetricClassification[metricSystem][metricUnitsOf].map<SelectOption>((value) => ({
 				value,
-				label: value.toLowerCase().replace(/(_)+/, ' '),
+				label: HumanizeUnit[value],
 			}));
 
 		return [];
