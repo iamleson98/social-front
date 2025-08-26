@@ -19,7 +19,7 @@
 	}: Props = $props();
 </script>
 
-<div class="w-3/10 tablet:w-full space-y-2">
+<div class="tablet:w-full space-y-2">
 	<div class={SitenameCommonClassName}>
 		<SectionHeader>Organization</SectionHeader>
 
