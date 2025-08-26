@@ -1,4 +1,8 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { ATTRIBUTE_CREATE_MUTATION } from '$lib/api/admin/attribute';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import AttributeValues from '$lib/components/pages/settings/attributes/attribute-values.svelte';
 	import DetailSidebar from '$lib/components/pages/settings/attributes/detail-sidebar.svelte';
 	import GeneralInformation from '$lib/components/pages/settings/attributes/general-information.svelte';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
@@ -6,9 +10,15 @@
 	import {
 		AttributeInputTypeEnum,
 		AttributeTypeEnum,
+		MeasurementUnitsEnum,
 		type AttributeCreateInput,
+		type Mutation,
+		type MutationAttributeCreateArgs,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { toast } from 'svelte-sonner';
 
 	let attributeInput = $state<AttributeCreateInput>({
 		name: '',
@@ -17,12 +27,45 @@
 		valueRequired: false,
 		inputType: AttributeInputTypeEnum.PlainText,
 		visibleInStorefront: true,
+		unit: MeasurementUnitsEnum.G,
 	});
 
-	let createdAttributeId = $state('');
+	// let createdAttributeId = $state('');
 	let generalFormOk = $state(false);
+	let metaRef = $state<any>();
+	let loading = $state(false);
 
-	const handleAddAttribute = async () => {};
+	const handleAddAttribute = async () => {
+		loading = true;
+
+		const createResult = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'attributeCreate'>,
+			MutationAttributeCreateArgs
+		>(ATTRIBUTE_CREATE_MUTATION, {
+			input: attributeInput,
+		});
+
+		if (checkIfGraphqlResultHasError(createResult, 'attributeCreate')) {
+			loading = false;
+			return;
+		}
+
+		const metaHasErr = await metaRef.handleUpdate(
+			createResult.data?.attributeCreate?.attribute?.id!,
+		);
+		if (metaHasErr) {
+			loading = false;
+			return;
+		}
+
+		loading = false;
+		toast.success(CommonState.CreateSuccess);
+		await goto(
+			AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_DETAILS(
+				createResult.data?.attributeCreate?.attribute?.id!,
+			),
+		);
+	};
 </script>
 
 <div class="flex gap-2">
@@ -35,8 +78,8 @@
 			isCreatePage
 			bind:formOk={generalFormOk}
 		/>
-
-		<GeneralMetadataEditor metadata={[]} privateMetadata={[]} objectId={createdAttributeId} />
+		<AttributeValues inputType={attributeInput.inputType!} addValues={[]} removeValues={[]} />
+		<GeneralMetadataEditor objectId="" bind:this={metaRef} />
 	</div>
 
 	<div class="w-3/10 space-y-2">
@@ -48,4 +91,8 @@
 	</div>
 </div>
 
-<ActionBar onAddClick={handleAddAttribute} backButtonUrl={AppRoute.SETTINGS_CONFIGS_ATTRIBUTES()} />
+<ActionBar
+	onAddClick={handleAddAttribute}
+	backButtonUrl={AppRoute.SETTINGS_CONFIGS_ATTRIBUTES()}
+	disabled={loading}
+/>

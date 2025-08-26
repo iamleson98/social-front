@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
 	import {
 		PRODUCT_TYPE_ASSIGN_ATTRIBUTES_MUTATION,
 		PRODUCT_TYPE_AVAILABLE_ATTRIBUTES_QUERY,
@@ -14,6 +13,7 @@
 	import { Modal } from '$lib/components/ui/Modal';
 	import { GraphqlPaginableTable, Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
+		AttributeInputTypeEnum,
 		ProductAttributeType,
 		type AssignedVariantAttribute,
 		type Attribute,
@@ -21,31 +21,38 @@
 		type MutationProductAttributeAssignArgs,
 		type MutationProductAttributeUnassignArgs,
 		type MutationProductTypeReorderAttributesArgs,
+		type ProductAttributeAssignmentUpdateInput,
 		type Query,
 	} from '$lib/gql/graphql';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
+	import { SvelteSet } from 'svelte/reactivity';
+	import { canUseAttributeForVariantSelection } from './utils';
 
 	type Props = {
 		productAttributes?: Attribute[];
-		productTypeId?: string;
+		productTypeId: string;
 		disabled?: boolean;
 		hasVariants: boolean;
 		assignedVariantAttributes?: AssignedVariantAttribute[];
+		variantSelectionOperations: ProductAttributeAssignmentUpdateInput[];
 	};
 
 	let {
 		productAttributes = [],
+		assignedVariantAttributes = [],
 		productTypeId,
 		disabled,
 		hasVariants = $bindable(),
-		assignedVariantAttributes = [],
+		variantSelectionOperations = $bindable(),
 	}: Props = $props();
 
 	let forceFetchAvailableAttributes = $state(false);
-	let selectedAttributesToUnassign = $state<Record<string, boolean>>({});
-	let selectedAttributesToAssign = $state<Record<string, boolean>>({});
+	let selectedProductAttributesToUnassign = $state<SvelteSet<string>>(new SvelteSet());
+	let selectedProductVariantAttributesToUnassign = $state<SvelteSet<string>>(new SvelteSet());
+	let selectedAttributesToAssign = $state<SvelteSet<string>>(new SvelteSet());
 	let loading = $state(false);
-	let openAttributeModelType = $state<ProductAttributeType>();
+	let attributeAssignType = $state<ProductAttributeType>();
 	const shouldDisable = $derived(disabled || loading);
 
 	let availableAttributeVariables = $state({
@@ -56,7 +63,11 @@
 		},
 	});
 
-	const AttributeColumns: TableColumnProps<Attribute>[] = [
+	const ProductAttributeTableColumns = [
+		{
+			title: productAttributeSelectAll,
+			child: productAttributeUnassignSelect,
+		},
 		{
 			title: 'Name',
 			child: name,
@@ -66,24 +77,25 @@
 			child: slug,
 		},
 	];
-	const UnassignTableColumns = [
-		{
-			title: '',
-			child: unassignSelect,
-		},
-		...AttributeColumns,
-	];
+
 	const AssignTableColumns = [
 		{
 			title: '',
 			child: assignSelect,
 		},
-		...AttributeColumns,
+		{
+			title: 'Name',
+			child: name,
+		},
+		{
+			title: 'Slug',
+			child: slug,
+		},
 	];
 
-	const VariantAttributeColumns: TableColumnProps<AssignedVariantAttribute>[] = [
+	const VariantAttributeTableColumns: TableColumnProps<AssignedVariantAttribute>[] = [
 		{
-			title: '',
+			title: productVariantAttributeSelectAll,
 			child: variantAttrUnassignSelect,
 		},
 		{
@@ -94,34 +106,48 @@
 			title: 'Slug',
 			child: variantAttrSlug,
 		},
+		{
+			title: 'Variant selection',
+			child: attributeIsVariantSelection,
+		},
 	];
 
-	const handleUnassignAttributes = async () => {
-		const ids = Object.keys(selectedAttributesToUnassign);
-		if (!ids.length || !productTypeId) return;
+	const handleUnassignProductVariantAttributes = async () => {
+		if (!selectedProductVariantAttributesToUnassign.size) return;
 
 		loading = true;
-
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'productAttributeUnassign'>,
 			MutationProductAttributeUnassignArgs
 		>(PRODUCT_TYPE_UNASSIGN_ATTRIBUTES_MUTATION, {
 			productTypeId,
-			attributeIds: ids,
+			attributeIds: [...selectedProductVariantAttributesToUnassign],
 		});
-
 		loading = false;
 
-		if (
-			checkIfGraphqlResultHasError(
-				result,
-				'productAttributeUnassign',
-				$tranFunc('common.editSuccess'),
-			)
-		)
+		if (checkIfGraphqlResultHasError(result, 'productAttributeUnassign', CommonState.EditSuccess))
 			return;
 
-		selectedAttributesToUnassign = {};
+		selectedProductVariantAttributesToUnassign = new SvelteSet();
+	};
+
+	const handleUnassignProductAttributes = async () => {
+		if (!selectedProductAttributesToUnassign.size) return;
+
+		loading = true;
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'productAttributeUnassign'>,
+			MutationProductAttributeUnassignArgs
+		>(PRODUCT_TYPE_UNASSIGN_ATTRIBUTES_MUTATION, {
+			productTypeId,
+			attributeIds: [...selectedProductAttributesToUnassign],
+		});
+		loading = false;
+
+		if (checkIfGraphqlResultHasError(result, 'productAttributeUnassign', CommonState.EditSuccess))
+			return;
+
+		selectedProductAttributesToUnassign = new SvelteSet();
 	};
 
 	const handleReorderAttributes = async (
@@ -152,45 +178,32 @@
 		loading = false;
 
 		if (
-			checkIfGraphqlResultHasError(
-				result,
-				'productTypeReorderAttributes',
-				$tranFunc('common.editSuccess'),
-			)
+			checkIfGraphqlResultHasError(result, 'productTypeReorderAttributes', CommonState.EditSuccess)
 		)
 			return;
 	};
 
 	const handleAssignAttributes = async () => {
-		const ids = Object.keys(selectedAttributesToAssign);
-		if (!ids.length || !productTypeId) return;
+		if (!selectedAttributesToAssign.size || !attributeAssignType) return;
 
 		loading = true;
-
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'productAttributeAssign'>,
 			MutationProductAttributeAssignArgs
 		>(PRODUCT_TYPE_ASSIGN_ATTRIBUTES_MUTATION, {
 			productTypeId,
-			operations: ids.map((id) => ({
+			operations: [...selectedAttributesToAssign].map((id) => ({
 				id,
-				type: openAttributeModelType!,
+				type: attributeAssignType!,
 			})),
 		});
-
 		loading = false;
 
-		if (
-			checkIfGraphqlResultHasError(
-				result,
-				'productAttributeAssign',
-				$tranFunc('common.editSuccess'),
-			)
-		)
+		if (checkIfGraphqlResultHasError(result, 'productAttributeAssign', CommonState.EditSuccess))
 			return;
 
-		openAttributeModelType = undefined;
-		selectedAttributesToAssign = {};
+		attributeAssignType = undefined;
+		selectedAttributesToAssign.clear();
 	};
 </script>
 
@@ -210,37 +223,93 @@
 	<span>{item.slug}</span>
 {/snippet}
 
+{#snippet attributeIsVariantSelection({ item }: { item: AssignedVariantAttribute })}
+	{@const isNotVariantSelectable = !canUseAttributeForVariantSelection(item.attribute)}
+	<Checkbox
+		size="sm"
+		data-interactive
+		checked={variantSelectionOperations.some(
+			(selection) => selection.id === item.attribute.id && selection.variantSelection,
+		)}
+		onCheckChange={(checked) => {
+			variantSelectionOperations = variantSelectionOperations.map((selection) =>
+				selection.id === item.attribute.id
+					? { ...selection, variantSelection: checked }
+					: selection,
+			);
+		}}
+		disabled={shouldDisable || isNotVariantSelectable}
+		class={[isNotVariantSelectable && 'tooltip tooltip-top']}
+		data-tip={isNotVariantSelectable
+			? `Attribute "${item.attribute.inputType}" can not be used as variant selection`
+			: undefined}
+	/>
+{/snippet}
+
+{#snippet productAttributeSelectAll({ items }: { items: Attribute[] })}
+	<Checkbox
+		size="sm"
+		disabled={shouldDisable}
+		checked={selectedProductAttributesToUnassign.size === items.length}
+		onCheckChange={(checked) => {
+			if (checked)
+				selectedProductAttributesToUnassign = new SvelteSet(items.map((item) => item.id));
+			else selectedProductAttributesToUnassign.clear();
+		}}
+		data-interactive
+	/>
+{/snippet}
+
+{#snippet productVariantAttributeSelectAll({ items }: { items: AssignedVariantAttribute[] })}
+	<Checkbox
+		size="sm"
+		disabled={shouldDisable}
+		data-interactive
+		checked={selectedProductVariantAttributesToUnassign.size === items.length}
+		onCheckChange={(checked) => {
+			if (checked)
+				selectedProductVariantAttributesToUnassign = new SvelteSet(
+					items.map((item) => item.attribute.id),
+				);
+			else selectedProductVariantAttributesToUnassign.clear();
+		}}
+	/>
+{/snippet}
+
 {#snippet variantAttrUnassignSelect({ item }: { item: AssignedVariantAttribute })}
 	<Checkbox
+		size="sm"
 		data-interactive
-		checked={selectedAttributesToUnassign[item.attribute.id]}
-		onCheckChange={(checked) =>
-			checked
-				? (selectedAttributesToUnassign[item.attribute.id] = checked)
-				: delete selectedAttributesToUnassign[item.attribute.id]}
+		checked={selectedProductVariantAttributesToUnassign.has(item.attribute.id)}
+		onCheckChange={(checked) => {
+			if (checked) selectedProductVariantAttributesToUnassign.add(item.attribute.id);
+			else selectedProductVariantAttributesToUnassign.delete(item.attribute.id);
+		}}
 		disabled={shouldDisable}
 	/>
 {/snippet}
 
-{#snippet unassignSelect({ item }: { item: Attribute })}
+{#snippet productAttributeUnassignSelect({ item }: { item: Attribute })}
 	<Checkbox
+		size="sm"
 		data-interactive
-		checked={selectedAttributesToUnassign[item.id]}
-		onCheckChange={(checked) =>
-			checked
-				? (selectedAttributesToUnassign[item.id] = checked)
-				: delete selectedAttributesToUnassign[item.id]}
+		checked={selectedProductAttributesToUnassign.has(item.id)}
+		onCheckChange={(checked) => {
+			if (checked) selectedProductAttributesToUnassign.add(item.id);
+			else selectedProductAttributesToUnassign.delete(item.id);
+		}}
 		disabled={shouldDisable}
 	/>
 {/snippet}
 
 {#snippet assignSelect({ item }: { item: Attribute })}
 	<Checkbox
-		checked={selectedAttributesToAssign[item.id]}
-		onCheckChange={(checked) =>
-			checked
-				? (selectedAttributesToAssign[item.id] = checked)
-				: delete selectedAttributesToAssign[item.id]}
+		size="sm"
+		checked={selectedAttributesToAssign.has(item.id)}
+		onCheckChange={(checked) => {
+			if (checked) selectedAttributesToAssign.add(item.id);
+			else selectedAttributesToAssign.delete(item.id);
+		}}
 		disabled={shouldDisable}
 	/>
 {/snippet}
@@ -254,8 +323,8 @@
 				endIcon={Trash}
 				variant="light"
 				color="red"
-				onclick={handleUnassignAttributes}
-				disabled={shouldDisable || !Object.keys(selectedAttributesToUnassign).length}
+				onclick={handleUnassignProductAttributes}
+				disabled={shouldDisable || !selectedProductAttributesToUnassign.size}
 			>
 				Unassign attributes
 			</Button>
@@ -265,7 +334,7 @@
 				variant="light"
 				disabled={shouldDisable}
 				onclick={() => {
-					openAttributeModelType = ProductAttributeType.Product;
+					attributeAssignType = ProductAttributeType.Product;
 					forceFetchAvailableAttributes = true;
 				}}
 			>
@@ -275,7 +344,7 @@
 	</SectionHeader>
 
 	<Table
-		columns={UnassignTableColumns}
+		columns={ProductAttributeTableColumns}
 		items={productAttributes || []}
 		onDragEnd={(dragIndex, dropIndex) =>
 			handleReorderAttributes(ProductAttributeType.Product, dragIndex, dropIndex)}
@@ -283,9 +352,7 @@
 	/>
 
 	<!-- MARK: variant attributes -->
-
 	<Checkbox label="Has Variant attributes" bind:checked={hasVariants} disabled={shouldDisable} />
-
 	{#if hasVariants}
 		<SectionHeader>
 			<div>Variant Attributes</div>
@@ -296,8 +363,8 @@
 					endIcon={Trash}
 					variant="light"
 					color="red"
-					onclick={handleUnassignAttributes}
-					disabled={shouldDisable || !Object.keys(selectedAttributesToUnassign).length}
+					onclick={handleUnassignProductVariantAttributes}
+					disabled={shouldDisable || !selectedProductVariantAttributesToUnassign.size}
 				>
 					Unassign attributes
 				</Button>
@@ -307,7 +374,7 @@
 					variant="light"
 					disabled={shouldDisable}
 					onclick={() => {
-						openAttributeModelType = ProductAttributeType.Variant;
+						attributeAssignType = ProductAttributeType.Variant;
 						forceFetchAvailableAttributes = true;
 					}}
 				>
@@ -317,7 +384,7 @@
 		</SectionHeader>
 
 		<Table
-			columns={VariantAttributeColumns}
+			columns={VariantAttributeTableColumns}
 			items={assignedVariantAttributes}
 			disabled={shouldDisable}
 			onDragEnd={(dragIndex, dropIndex) =>
@@ -328,14 +395,15 @@
 
 <Modal
 	header="Assign attribute"
-	open={!!openAttributeModelType}
+	open={!!attributeAssignType}
 	closeOnEscape
 	closeOnOutsideClick
-	onClose={() => (openAttributeModelType = undefined)}
-	onCancel={() => (openAttributeModelType = undefined)}
+	size="sm"
+	onClose={() => (attributeAssignType = undefined)}
+	onCancel={() => (attributeAssignType = undefined)}
 	onOk={handleAssignAttributes}
 	disableElements={shouldDisable}
-	disableOkBtn={!Object.keys(selectedAttributesToAssign).length || shouldDisable}
+	disableOkBtn={!selectedAttributesToAssign.size || shouldDisable}
 >
 	<Input
 		startIcon={Search}

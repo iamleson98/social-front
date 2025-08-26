@@ -6,7 +6,9 @@
 	import { Checkbox, Input, Label, RadioButton } from '$lib/components/ui/Input';
 	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
 	import { ProductTypeKindEnum, type QueryTaxClassesArgs } from '$lib/gql/graphql';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { ValidSlugRegex } from '$lib/utils/consts';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import slugify from 'slugify';
 	import z, { boolean, object, string } from 'zod';
 
@@ -32,11 +34,12 @@
 		isCreatePage,
 	}: Props = $props();
 
-	const RequiredErr = $tranFunc('helpText.fieldRequired');
 	const ProductTypeSchema = object({
-		name: string().nonempty(RequiredErr),
-		slug: string().nonempty(RequiredErr).regex(ValidSlugRegex, 'Please provide valid slug'),
-		kind: string().nonempty(RequiredErr),
+		name: string().nonempty(CommonState.FieldRequiredError),
+		slug: string()
+			.nonempty(CommonState.FieldRequiredError)
+			.regex(ValidSlugRegex, 'Please provide valid slug'),
+		kind: string().nonempty(CommonState.FieldRequiredError),
 		isShippingRequired: boolean(),
 	});
 
@@ -60,7 +63,7 @@
 	};
 </script>
 
-<div class="rounded-lg bg-white border border-gray-200 p-3 space-y-3">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>General information</SectionHeader>
 
 	<div class="grid grid-cols-2 gap-2">

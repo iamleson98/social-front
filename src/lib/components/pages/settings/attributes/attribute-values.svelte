@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
 	import {
 		ATTRIBUTE_VALUE_CREATE_MUTATION,
 		ATTRIBUTE_VALUE_DELETE_MUTATION,
@@ -27,6 +26,7 @@
 		type MutationAttributeValueCreateArgs,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { noop } from 'es-toolkit';
 	import ColorPicker from 'svelte-awesome-color-picker';
@@ -87,7 +87,7 @@
 
 	const handleDeleteValue = async (item: AttributeValue) => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: $tranFunc('common.confirmDel'),
+			content: CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true;
 
@@ -100,13 +100,7 @@
 
 				loading = false;
 
-				if (
-					checkIfGraphqlResultHasError(
-						result,
-						'attributeValueDelete',
-						$tranFunc('common.delSuccess'),
-					)
-				)
+				if (checkIfGraphqlResultHasError(result, 'attributeValueDelete', CommonState.DeleteSuccess))
 					return;
 
 				forceReExecuteGraphqlQuery = true;
@@ -138,13 +132,7 @@
 
 		loading = false;
 
-		if (
-			checkIfGraphqlResultHasError(
-				result,
-				'attributeReorderValues',
-				$tranFunc('common.editSuccess'),
-			)
-		)
+		if (checkIfGraphqlResultHasError(result, 'attributeReorderValues', CommonState.EditSuccess))
 			return;
 
 		forceReExecuteGraphqlQuery = true;
@@ -168,9 +156,7 @@
 
 		loading = false;
 
-		if (
-			checkIfGraphqlResultHasError(result, 'attributeValueUpdate', $tranFunc('common.editSuccess'))
-		)
+		if (checkIfGraphqlResultHasError(result, 'attributeValueUpdate', CommonState.EditSuccess))
 			return;
 
 		forceReExecuteGraphqlQuery = true;
@@ -197,13 +183,7 @@
 
 			loading = false;
 
-			if (
-				checkIfGraphqlResultHasError(
-					result,
-					'attributeValueCreate',
-					$tranFunc('common.createSuccess'),
-				)
-			)
+			if (checkIfGraphqlResultHasError(result, 'attributeValueCreate', CommonState.CreateSuccess))
 				return;
 
 			forceReExecuteGraphqlQuery = true;

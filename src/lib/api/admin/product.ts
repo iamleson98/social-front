@@ -129,6 +129,8 @@ query ProductType($id: ID!) {
         id
         name
         slug
+        inputType
+			  entityType
       }
       variantSelection
     }
@@ -568,6 +570,16 @@ mutation ExportProducts($input: ExportProductsInput!) {
       createdAt
       message
       url
+    }
+  }
+}`;
+
+export const PRODUCT_TYPE_ATTRIBUTE_ASSIGNMENT_UPDATE_MUTATION = gql`
+mutation ProductAttributeAssignmentUpdate($operations: [ProductAttributeAssignmentUpdateInput!]!, $productTypeId: ID!) {
+  productAttributeAssignmentUpdate(operations: $operations, productTypeId: $productTypeId) {
+    errors {
+      field
+      message
     }
   }
 }`;

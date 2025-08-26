@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
 	import { PRODUCT_ATTRIBUTES_QUERY } from '$lib/api/admin/attribute';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Search } from '$lib/components/icons';
@@ -7,6 +6,7 @@
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import type { Attribute, QueryAttributesArgs } from '$lib/gql/graphql';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import { canUseAttributeForVariantSelection } from './utils';
 
 	type Props = {
 		hasVariants: boolean;
@@ -53,15 +53,15 @@
 </script>
 
 {#snippet productAttrAssignSelect({ item }: { item: Attribute })}
-	{@const checked = productAttributesToAssign.includes(item.id)}
+	{@const alreadyChecked = productAttributesToAssign.includes(item.id)}
 	<Toggle
-		{checked}
+		checked={alreadyChecked}
 		onCheckChange={(checked) =>
 			checked
 				? productAttributesToAssign.push(item.id)
 				: (productAttributesToAssign = productAttributesToAssign.filter((id) => id !== item.id))}
 		{disabled}
-		label={checked ? 'Yes' : 'No'}
+		label={alreadyChecked ? 'Yes' : 'No'}
 	/>
 {/snippet}
 
@@ -75,14 +75,19 @@
 
 {#snippet variantAttrAssignSelect({ item }: { item: Attribute })}
 	{@const checked = variantAttributesToAssign.includes(item.id)}
+	{@const isNotVariantSelectable = !canUseAttributeForVariantSelection(item)}
 	<Toggle
 		{checked}
 		onCheckChange={(checked) =>
 			checked
 				? variantAttributesToAssign.push(item.id)
 				: (variantAttributesToAssign = variantAttributesToAssign.filter((id) => id !== item.id))}
-		disabled={disabled || !hasVariants}
+		disabled={disabled || !hasVariants || !isNotVariantSelectable}
 		label={checked ? 'Yes' : 'No'}
+		class={[isNotVariantSelectable && 'tooltip tooltip-top']}
+		data-tip={isNotVariantSelectable
+			? `Attribute "${item.inputType}" can not be used as variant selection`
+			: undefined}
 	/>
 {/snippet}
 

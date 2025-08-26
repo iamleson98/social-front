@@ -29,9 +29,9 @@
 	});
 	let loading = $state(false);
 	let createdProductTypeId = $state<string>('');
-	let performUpdateMetadata = $state(false);
 	let generalFormOk = $state(false);
 	let attrFormOk = $state(false);
+	let metadataRef = $state<any>();
 
 	const onAddClick = async () => {
 		loading = true;
@@ -43,15 +43,16 @@
 			input: productTypeInput,
 		});
 
-		loading = false;
-
-		if (checkIfGraphqlResultHasError(result, 'productTypeCreate')) return;
+		if (checkIfGraphqlResultHasError(result, 'productTypeCreate')) {
+			loading = false;
+			return;
+		}
 
 		createdProductTypeId = result.data?.productTypeCreate?.productType?.id!;
-		performUpdateMetadata = true;
-	};
+		const hasErr = await metadataRef.handleUpdate();
+		loading = false;
+		if (hasErr) return;
 
-	const handleDoneCreate = async () => {
 		toast.success($tranFunc('common.createSuccess'));
 		await goto(AppRoute.SETTINGS_PRODUCT_TYPE_EDIT(createdProductTypeId));
 	};
@@ -76,12 +77,7 @@
 		bind:formOk={attrFormOk}
 	/>
 
-	<GeneralMetadataEditor
-		objectId={createdProductTypeId}
-		bind:performUpdateMetadata
-		onDoneUpdate={handleDoneCreate}
-		disabled={loading}
-	/>
+	<GeneralMetadataEditor objectId="" disabled={loading} bind:this={metadataRef} />
 </div>
 
 <ActionBar

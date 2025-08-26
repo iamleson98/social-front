@@ -3,6 +3,7 @@
 	import { page } from '$app/state';
 	import { tranFunc } from '$i18n';
 	import {
+		PRODUCT_TYPE_ATTRIBUTE_ASSIGNMENT_UPDATE_MUTATION,
 		PRODUCT_TYPE_DELETE_MUTATION,
 		PRODUCT_TYPE_QUERY,
 		PRODUCT_TYPE_UPDATE_MUTATION,
@@ -17,8 +18,10 @@
 	import {
 		ProductTypeKindEnum,
 		type Mutation,
+		type MutationProductAttributeAssignmentUpdateArgs,
 		type MutationProductTypeDeleteArgs,
 		type MutationProductTypeUpdateArgs,
+		type ProductAttributeAssignmentUpdateInput,
 		type ProductTypeInput,
 		type Query,
 		type QueryProductTypeArgs,
@@ -28,6 +31,7 @@
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import EditPageAttributes from '$lib/components/pages/settings/product-type/edit-page-attributes.svelte';
+	import { CommonState } from '$lib/utils/common.svelte';
 
 	const productTypeQuery = operationStore<
 		Pick<Query, 'productType'>,
@@ -52,16 +56,21 @@
 	});
 
 	let loading = $state(false);
-	let performUpdateMetadata = $state(false);
 	let generalFormOk = $state(false);
+	let metadataRef = $state<any>();
+	let variantSelectionOperations = $state<ProductAttributeAssignmentUpdateInput[]>([]);
+
 	/** if existed state is false, then user change to true, we must update the product type itself first before
 	 * we can assign attributes to variants
 	 */
 	let initialHasVariants = $state(false);
 
 	const handleUpdateProductType = async () => {
+		debugger;
+		
 		loading = true;
-		performUpdateMetadata = true;
+
+		// update product type itself
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'productTypeUpdate'>,
 			MutationProductTypeUpdateArgs
@@ -69,10 +78,35 @@
 			id: page.params.id as string,
 			input: productTypeInput,
 		});
+		if (checkIfGraphqlResultHasError(result, 'productTypeUpdate')) {
+			loading = false;
+			return;
+		}
 
+		// update metadata
+		const hasErr = await metadataRef.handleUpdate();
+		if (hasErr) {
+			loading = false;
+			return;
+		}
+
+		// update variant selection
+		const variantSelectionResult = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'productAttributeAssignmentUpdate'>,
+			MutationProductAttributeAssignmentUpdateArgs
+		>(PRODUCT_TYPE_ATTRIBUTE_ASSIGNMENT_UPDATE_MUTATION, {
+			productTypeId: page.params.id as string,
+			operations: variantSelectionOperations,
+		});
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'productTypeUpdate', $tranFunc('common.editSuccess')))
+		if (
+			checkIfGraphqlResultHasError(
+				variantSelectionResult,
+				'productAttributeAssignmentUpdate',
+				CommonState.EditSuccess,
+			)
+		)
 			return;
 
 		productTypeQuery.reexecute({
@@ -103,9 +137,7 @@
 
 				loading = false;
 
-				if (
-					checkIfGraphqlResultHasError(result, 'productTypeDelete', $tranFunc('common.delSuccess'))
-				)
+				if (checkIfGraphqlResultHasError(result, 'productTypeDelete', CommonState.DeleteSuccess))
 					return;
 
 				await goto(AppRoute.SETTINGS_PRODUCT_TYPES());
@@ -116,10 +148,25 @@
 	onMount(() =>
 		productTypeQuery.subscribe((result) => {
 			if (result.data?.productType) {
-				const { hasVariants, isDigital, name, slug, isShippingRequired, kind, taxClass } =
-					result.data.productType;
+				const {
+					hasVariants,
+					isDigital,
+					name,
+					slug,
+					isShippingRequired,
+					kind,
+					taxClass,
+					assignedVariantAttributes,
+				} = result.data.productType;
 
 				initialHasVariants = hasVariants; //
+
+				if (assignedVariantAttributes)
+					variantSelectionOperations =
+						assignedVariantAttributes?.map<ProductAttributeAssignmentUpdateInput>((attr) => ({
+							variantSelection: attr.variantSelection,
+							id: attr.attribute.id,
+						}));
 
 				productTypeInput = {
 					hasVariants,
@@ -158,14 +205,14 @@
 			disabled={loading}
 			assignedVariantAttributes={assignedVariantAttributes || []}
 			bind:hasVariants={productTypeInput.hasVariants!}
+			bind:variantSelectionOperations
 		/>
-
 		<GeneralMetadataEditor
 			objectId={id}
 			{metadata}
 			{privateMetadata}
-			bind:performUpdateMetadata
 			disabled={loading}
+			bind:this={metadataRef}
 		/>
 	</div>
 

@@ -37,7 +37,7 @@
 			operations: [
 				{
 					operator: 'eq',
-					component: prdType,
+					component: productType,
 				},
 			],
 		},
@@ -61,7 +61,7 @@
 	/>
 {/snippet}
 
-{#snippet prdType({ initialValue, onValue }: FilterComponentType)}
+{#snippet productType({ initialValue, onValue }: FilterComponentType)}
 	<Select
 		size="xs"
 		options={ProductTypeTypeOptions}
