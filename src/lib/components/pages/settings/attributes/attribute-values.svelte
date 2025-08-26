@@ -12,6 +12,7 @@
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
+	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
 		AttributeInputTypeEnum,
@@ -24,12 +25,14 @@
 		type MutationAttributeValueUpdateArgs,
 		type AttributeValueUpdateInput,
 		type MutationAttributeValueCreateArgs,
+		MeasurementUnitsEnum,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { noop } from 'es-toolkit';
 	import ColorPicker from 'svelte-awesome-color-picker';
+	import { MetricClassification, MetricSystem, MetricUnit } from './consts';
 
 	type Props = {
 		inputType: AttributeInputTypeEnum;
@@ -39,6 +42,7 @@
 		attributeName?: string;
 		addValues: AttributeValueUpdateInput[];
 		removeValues: string[];
+		unit?: MeasurementUnitsEnum;
 	};
 
 	let {
@@ -47,6 +51,7 @@
 		attributeName,
 		addValues = $bindable(),
 		removeValues = $bindable(),
+		unit = $bindable(),
 	}: Props = $props();
 
 	const ShowValues = $derived(
@@ -58,17 +63,15 @@
 		].includes(inputType),
 	);
 
-	let attributeChoicesVariables = $state({
-		id: attributeID,
-		first: 20,
-		filter: {
-			search: '',
-		},
-	});
-	let forceReExecuteGraphqlQuery = $state(true);
-	let valueItemToEdit = $state<AttributeValue>();
-	let loading = $state(false);
-	let openUpsertModal = $state(false);
+	const MetricSystems = Object.keys(MetricSystem).map<SelectOption>((value) => ({
+		label: value,
+		value,
+	}));
+
+	const MetricUnits = Object.keys(MetricUnit).map<SelectOption>((value) => ({
+		label: value,
+		value,
+	}));
 
 	const ValueColumns: TableColumnProps<AttributeValue>[] = $derived([
 		{
@@ -84,6 +87,30 @@
 			child: action,
 		},
 	]);
+
+	let attributeChoicesVariables = $state({
+		id: attributeID,
+		first: 20,
+		filter: {
+			search: '',
+		},
+	});
+	let forceReExecuteGraphqlQuery = $state(true);
+	let valueItemToEdit = $state<AttributeValue>();
+	let loading = $state(false);
+	let openUpsertModal = $state(false);
+	let metricSystem = $state<MetricSystem>();
+	let metricUnitsOf = $state<MetricUnit>();
+
+	const FinalUnitOptions = $derived.by(() => {
+		if (metricSystem && metricUnitsOf)
+			return MetricClassification[metricSystem][metricUnitsOf].map<SelectOption>((value) => ({
+				value,
+				label: value.toLowerCase().replace(/(_)+/, ' '),
+			}));
+
+		return [];
+	});
 
 	const handleDeleteValue = async (item: AttributeValue) => {
 		ALERT_MODAL_STORE.openAlertModal({
@@ -263,8 +290,35 @@
 				/>
 			{/if}
 		{:else}
-			<div>
-				<Checkbox label="Select unit" />
+			<SectionHeader>
+				<div>Select unit</div>
+			</SectionHeader>
+
+			<div class="grid grid-cols-3 gap-2">
+				<Select
+					label="System"
+					placeholder="system"
+					options={MetricSystems}
+					size="sm"
+					bind:value={metricSystem}
+					disabled={loading}
+				/>
+				<Select
+					label="Units of"
+					placeholder="units of"
+					options={MetricUnits}
+					size="sm"
+					bind:value={metricUnitsOf}
+					disabled={loading || !metricSystem}
+				/>
+				<Select
+					label="Unit"
+					placeholder="unit"
+					size="sm"
+					disabled={loading || !metricUnitsOf}
+					bind:value={unit as string}
+					options={FinalUnitOptions}
+				/>
 			</div>
 		{/if}
 	</div>
