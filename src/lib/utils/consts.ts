@@ -148,6 +148,7 @@ export const GiftcardUserEmailMetadataKey = 'customerEmail';
 export const GiftcardChannelMetadataKey = 'channel';
 export const ValidSlugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
+export const BASIC_DATE_FORMAT = 'YYYY-MM-DD';
 export const NOW = dayjs();
 export const THIS_TIME_LAST_5_YEARS = NOW.subtract(5, 'year');
 export const THIS_TIME_NEXT_5_YEARS = NOW.add(5, 'year');

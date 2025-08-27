@@ -17,7 +17,11 @@
 		type QueryProductTypesArgs,
 	} from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
-	import { THIS_TIME_LAST_5_YEARS, THIS_TIME_NEXT_5_YEARS } from '$lib/utils/consts';
+	import {
+		BASIC_DATE_FORMAT,
+		THIS_TIME_LAST_5_YEARS,
+		THIS_TIME_NEXT_5_YEARS,
+	} from '$lib/utils/consts';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import type { OutputData } from '@editorjs/editorjs';
 	import dayjs from 'dayjs';
@@ -308,7 +312,9 @@
 									label={node.name || '-'}
 									onchange={(value) => {
 										innerAttributes = innerAttributes.map((attr, i) =>
-											i === idx ? { ...attr, date: dayjs(value.date).format('YYYY-MM-DD') } : attr,
+											i === idx
+												? { ...attr, date: dayjs(value.date).format(BASIC_DATE_FORMAT) }
+												: attr,
 										);
 									}}
 									timeConfig={false}

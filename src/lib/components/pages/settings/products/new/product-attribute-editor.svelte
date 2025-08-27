@@ -19,6 +19,8 @@
 	import Editor from '$lib/components/common/editorjs/editor.svelte';
 	import Dayjs from 'dayjs';
 	import { omit } from 'es-toolkit';
+	import { BASIC_DATE_FORMAT } from '$lib/utils/consts';
+	import { CommonState } from '$lib/utils/common.svelte';
 
 	type CustomAttributeInput = AttributeValueInput & {
 		required: boolean;
@@ -41,7 +43,6 @@
 	/** asynchronously calculate attribute errors */
 	let attributeErrors = $derived.by<(string | undefined)[]>(() => {
 		const result = new Array(innerAttributes.length).fill(undefined);
-		const requiredErr = $tranFunc('helpText.fieldRequired');
 
 		for (let idx = 0; idx < innerAttributes.length; idx++) {
 			const attr = innerAttributes[idx];
@@ -52,57 +53,57 @@
 				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.Dropdown &&
 				(!attr.dropdown || !Object.keys(attr.dropdown).length)
 			) {
-				result[idx] = requiredErr;
+				result[idx] = CommonState.FieldRequiredError;
 			} else if (
 				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.Boolean &&
 				typeof attr.boolean !== 'boolean'
 			) {
-				result[idx] = requiredErr;
+				result[idx] = CommonState.FieldRequiredError;
 			} else if (
 				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.Date &&
 				!attr.date
 			) {
-				result[idx] = requiredErr;
+				result[idx] = CommonState.FieldRequiredError;
 			} else if (
 				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.Numeric &&
 				!attr.numeric
 			) {
-				result[idx] = requiredErr;
+				result[idx] = CommonState.FieldRequiredError;
 			} else if (
 				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.DateTime &&
 				!attr.dateTime
 			) {
-				result[idx] = requiredErr;
+				result[idx] = CommonState.FieldRequiredError;
 			} else if (
 				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.Reference &&
 				(!attr.references || !attr.references.length)
 			) {
-				result[idx] = requiredErr;
+				result[idx] = CommonState.FieldRequiredError;
 			} else if (
 				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.RichText &&
 				!attr.richText
 			) {
-				result[idx] = requiredErr;
+				result[idx] = CommonState.FieldRequiredError;
 			} else if (
 				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.PlainText &&
 				!attr.plainText
 			) {
-				result[idx] = requiredErr;
+				result[idx] = CommonState.FieldRequiredError;
 			} else if (
 				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.Swatch &&
 				(!attr.swatch || !Object.keys(attr.swatch).length)
 			) {
-				result[idx] = requiredErr;
+				result[idx] = CommonState.FieldRequiredError;
 			} else if (
 				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.File &&
 				!attr.file
 			) {
-				result[idx] = requiredErr;
+				result[idx] = CommonState.FieldRequiredError;
 			} else if (
 				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.Multiselect &&
 				(!attr.multiselect || !attr.multiselect.length)
 			) {
-				result[idx] = requiredErr;
+				result[idx] = CommonState.FieldRequiredError;
 			}
 		}
 
@@ -254,7 +255,7 @@
 										onchange={(value) => {
 											innerAttributes = innerAttributes.map((attr, i) =>
 												i === idx
-													? { ...attr, date: Dayjs(value.date).format('YYYY-MM-DD') }
+													? { ...attr, date: Dayjs(value.date).format(BASIC_DATE_FORMAT) }
 													: attr,
 											);
 										}}

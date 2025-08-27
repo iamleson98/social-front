@@ -4,6 +4,7 @@
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Input } from '$lib/components/ui/Input';
 	import type { CustomerFilterInput, QueryCustomersArgs } from '$lib/gql/graphql';
+	import { BASIC_DATE_FORMAT } from '$lib/utils/consts';
 	import dayjs from 'dayjs';
 
 	type Props = {
@@ -74,7 +75,7 @@
 		size="xs"
 		value={{ date: initialValue as string }}
 		onchange={(value) => {
-			onValue(dayjs(value.date).format('YYYY-MM-DD'));
+			onValue(dayjs(value.date).format(BASIC_DATE_FORMAT));
 		}}
 		{placeholder}
 		timeConfig={false}

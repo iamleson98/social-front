@@ -5,6 +5,8 @@
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Input, RadioButton } from '$lib/components/ui/Input';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
+	import { TimePeriodTypeEnum } from '$lib/gql/graphql';
+	import { BASIC_DATE_FORMAT } from '$lib/utils/consts';
 	import dayjs from 'dayjs';
 
 	type Props = {
@@ -35,7 +37,7 @@
 			return;
 		}
 		if (expiryType === 'in' && expireInAmount && expireInUnit) {
-			expiryDate = NOW.add(expireInAmount, expireInUnit).format('YYYY-MM-DD');
+			expiryDate = NOW.add(expireInAmount, expireInUnit).format(BASIC_DATE_FORMAT);
 		}
 	});
 
@@ -76,7 +78,8 @@
 					showMonths: true,
 					showYears: { min: NOW.year(), max: NOW.year() + 10 },
 				}}
-				onchange={(value) => value?.date && (expiryDate = dayjs(value.date).format('YYYY-MM-DD'))}
+				onchange={(value) =>
+					value?.date && (expiryDate = dayjs(value.date).format(BASIC_DATE_FORMAT))}
 			/>
 		{:else}
 			<div class="flex items-start gap-2">

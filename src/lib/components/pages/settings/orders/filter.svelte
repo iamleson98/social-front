@@ -16,6 +16,7 @@
 		type OrderFilterInput,
 		type QueryOrdersArgs,
 	} from '$lib/gql/graphql';
+	import { BASIC_DATE_FORMAT } from '$lib/utils/consts';
 	import { orderStatusBadgeClass, paymentStatusBadgeClass } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 	import { set } from 'es-toolkit/compat';
@@ -311,7 +312,7 @@
 		size="xs"
 		placeholder="Date"
 		value={{ date: initialValue as string }}
-		onchange={(vl) => onValue(dayjs(vl.date).format('YYYY-MM-DD'))}
+		onchange={(vl) => onValue(dayjs(vl.date).format(BASIC_DATE_FORMAT))}
 	/>
 {/snippet}
 
@@ -322,8 +323,8 @@
 		placeholder="Date range"
 		value={{ start: range[0], end: range[1] }}
 		onchange={(vl) => {
-			range[0] = dayjs(vl.start).format('YYYY-MM-DD');
-			range[1] = dayjs(vl.end).format('YYYY-MM-DD');
+			range[0] = dayjs(vl.start).format(BASIC_DATE_FORMAT);
+			range[1] = dayjs(vl.end).format(BASIC_DATE_FORMAT);
 			onValue(range);
 		}}
 		allowSelectRange
@@ -335,7 +336,7 @@
 		size="xs"
 		placeholder="Date"
 		value={{ date: initialValue as string }}
-		onchange={(vl) => onValue(dayjs(vl.date).format('YYYY-MM-DD'))}
+		onchange={(vl) => onValue(dayjs(vl.date).format(BASIC_DATE_FORMAT))}
 	/>
 {/snippet}
 
@@ -346,8 +347,8 @@
 		placeholder="Date range"
 		value={{ start: range[0], end: range[1] }}
 		onchange={(vl) => {
-			range[0] = dayjs(vl.start).format('YYYY-MM-DD');
-			range[1] = dayjs(vl.end).format('YYYY-MM-DD');
+			range[0] = dayjs(vl.start).format(BASIC_DATE_FORMAT);
+			range[1] = dayjs(vl.end).format(BASIC_DATE_FORMAT);
 			onValue(range);
 		}}
 		allowSelectRange
