@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
 	import {
 		PERMISSION_GROUP_DELETE_MUTATION,
 		PERMISSION_GROUP_DETAIL_QUERY,
@@ -24,6 +23,7 @@
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { pick } from 'es-toolkit';
 	import { onMount } from 'svelte';
@@ -34,7 +34,7 @@
 			id: page.params.id as string,
 		},
 		pause: !page.params.id,
-		requestPolicy: 'network-only',
+		requestPolicy: 'cache-and-network',
 	});
 
 	let permissionGroupInput = $state<PermissionGroupUpdateInput>({
@@ -62,15 +62,8 @@
 		});
 		loading = false;
 
-		if (
-			!checkIfGraphqlResultHasError(
-				result,
-				'permissionGroupUpdate',
-				$tranFunc('common.editSuccess'),
-			)
-		)
+		if (!checkIfGraphqlResultHasError(result, 'permissionGroupUpdate', CommonState.EditSuccess))
 			groupQuery.reexecute({
-				context: { requestPolicy: 'network-only' },
 				variables: {
 					id: page.params.id!,
 				},
@@ -79,7 +72,7 @@
 
 	const handleDelete = async () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: $tranFunc('common.confirmDel'),
+			content: CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true;
 				const result = await GRAPHQL_CLIENT.mutation<
@@ -91,11 +84,7 @@
 				loading = false;
 
 				if (
-					!checkIfGraphqlResultHasError(
-						result,
-						'permissionGroupDelete',
-						$tranFunc('common.delSuccess'),
-					)
+					!checkIfGraphqlResultHasError(result, 'permissionGroupDelete', CommonState.DeleteSuccess)
 				)
 					await goto(AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUPS());
 			},

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
 	import { STAFFS_QUERY } from '$lib/api/admin/staff';
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
@@ -11,8 +10,10 @@
 	import { GraphqlPaginableTable, Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import { type Channel, type QueryStaffUsersArgs, type User } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { addNoDup, toggleItemNoDup } from '$lib/utils/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
+	import { addNoDup, SitenameCommonClassName } from '$lib/utils/utils';
 	import { difference } from 'es-toolkit';
+	import { SvelteSet } from 'svelte/reactivity';
 	import z, { array, object, string } from 'zod';
 
 	type Props = {
@@ -47,10 +48,9 @@
 
 	const ExistingChannelIds = existingAccessibleChannels.map((chan) => chan.id);
 
-	const RequiredError = $tranFunc('helpText.fieldRequired');
 	const GroupSchema = object({
-		name: string().nonempty(RequiredError),
-		selectedChannels: array(string()).nonempty(RequiredError),
+		name: string().nonempty(CommonState.FieldRequiredError),
+		selectedChannels: array(string()).nonempty(CommonState.FieldRequiredError),
 	});
 
 	type Group = z.infer<typeof GroupSchema>;
@@ -64,9 +64,9 @@
 		},
 	});
 	let forceReExecuteGraphqlQuery = $state(false);
-	let selectedChannels = $state<string[]>(existingAccessibleChannels.map((item) => item.id));
+	let selectedChannels = $state<string[]>(ExistingChannelIds);
 	let displayingUsers = $state(users);
-	let innerSelectedUsersToUnassign = $state<string[]>([]);
+	let innerSelectedUsersToUnassign = $state<SvelteSet<string>>(new SvelteSet());
 	let innerSelectedUsersToAssign = $state<Record<string, User>>({});
 
 	$effect(() => {
@@ -130,8 +130,8 @@
 		}
 
 		removeUsers = newUnassignUserIds;
-		displayingUsers = displayingUsers.filter((user) => !innerSelectedUsersToUnassign.includes(user.id));
-		innerSelectedUsersToUnassign = [];
+		displayingUsers = displayingUsers.filter((user) => !innerSelectedUsersToUnassign.has(user.id));
+		innerSelectedUsersToUnassign.clear();
 	};
 
 	const handleAssignUsers = () => {
@@ -153,14 +153,11 @@
 {#snippet selectUnassign({ item }: { item: User })}
 	<Checkbox
 		readonly={!editable || disabled}
-		checked={innerSelectedUsersToUnassign.includes(item.id)}
+		checked={innerSelectedUsersToUnassign.has(item.id)}
 		onCheckChange={(checked) => {
-			innerSelectedUsersToUnassign = toggleItemNoDup(
-				innerSelectedUsersToUnassign,
-				item.id,
-				checked,
-			);
+			innerSelectedUsersToUnassign[checked ? 'add' : 'delete'](item.id);
 		}}
+		{disabled}
 	/>
 {/snippet}
 
@@ -168,6 +165,7 @@
 	<Checkbox
 		readonly={!editable || disabled}
 		checked={!!innerSelectedUsersToAssign[item.id]}
+		{disabled}
 		onCheckChange={(checked) => {
 			if (checked) {
 				innerSelectedUsersToAssign[item.id] = item;
@@ -198,7 +196,7 @@
 {/snippet}
 
 <div class="w-3/5 space-y-2">
-	<div class="rounded-lg bg-white border border-gray-200 p-3 space-y-3">
+	<div class={SitenameCommonClassName}>
 		<SectionHeader>General information</SectionHeader>
 
 		<Input
@@ -206,6 +204,7 @@
 			label="Name"
 			bind:value={name}
 			required
+			{disabled}
 			readonly={!editable}
 			onblur={validate}
 			inputDebounceOption={{ onInput: validate }}
@@ -216,6 +215,7 @@
 			label="Restricted access to channels"
 			bind:checked={restrictedAccessToChannels}
 			readonly={!editable}
+			{disabled}
 		/>
 		{#if restrictedAccessToChannels}
 			<ChannelSelect
@@ -223,6 +223,7 @@
 				label="Select visible order channels"
 				required
 				bind:value={selectedChannels}
+				{disabled}
 				multiple
 				onchange={handleChannelsChange}
 				valueType="id"
@@ -233,7 +234,7 @@
 		{/if}
 	</div>
 
-	<div class="rounded-lg bg-white border border-gray-200 p-3 space-y-2">
+	<div class={SitenameCommonClassName}>
 		<SectionHeader>
 			<div>Group members</div>
 
@@ -243,7 +244,7 @@
 					variant="light"
 					color="red"
 					endIcon={Trash}
-					disabled={disabled || !innerSelectedUsersToUnassign.length || !editable}
+					disabled={disabled || !innerSelectedUsersToUnassign.size || !editable}
 					onclick={handleUnassignUsers}
 				>
 					Unassign users
@@ -263,7 +264,7 @@
 			</div>
 		</SectionHeader>
 
-		<Table columns={UnassignSelectColumn.concat(UserColumns)} items={displayingUsers} />
+		<Table columns={UnassignSelectColumn.concat(UserColumns)} items={displayingUsers} {disabled} />
 	</div>
 </div>
 

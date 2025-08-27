@@ -27,8 +27,6 @@ export const AppRoute = {
 	SETTINGS_CONTRACTS: () => buildLinkWithRespectToChannel('settings/contracts'),
 	SETTINGS_CONTRACTS_NEW: () => buildLinkWithRespectToChannel('settings/contracts/new'),
 
-	// SETTINGS_CONFIGS: () => buildLinkWithRespectToChannel('settings/configs'),
-
 	SETTINGS_CONFIGS_CHANNELS: () => buildLinkWithRespectToChannel('settings/channels'),
 	SETTINGS_CONFIGS_CHANNEL_DETAILS: (slug: string) => buildLinkWithRespectToChannel(`settings/channels/${slug}`),
 	SETTINGS_CONFIGS_CHANNEL_NEW: () => buildLinkWithRespectToChannel('settings/channels/new-channel'),
@@ -100,6 +98,10 @@ export const AppRoute = {
 	TAX_SETTINGS_CHANNEL_DETAILS: (id: string) => buildLinkWithRespectToChannel(`settings/tax-settings/channels/${id}`),
 	TAX_SETTINGS_COUNTRY_DETAILS: (code: string) => buildLinkWithRespectToChannel(`settings/tax-settings/countries?code=${code}`),
 	TAX_SETTINGS_TAX_CLASS_DETAILS: (id: string) => buildLinkWithRespectToChannel(`settings/tax-settings/tax-classes?id=${id}`),
+
+	SETTINGS_BLOGS: () => buildLinkWithRespectToChannel('settings/blogs'),
+	SETTINGS_BLOG_DETAILS: (id: string) => buildLinkWithRespectToChannel(`settings/blogs/${id}`),
+	SETTINGS_BLOG_NEW: () => buildLinkWithRespectToChannel(`settings/blogs/new`),
 
 	PRODUCTS: () => buildLinkWithRespectToChannel('products'),
 	PRODUCT_DETAILS: (slug: string) => buildLinkWithRespectToChannel(`products/${slug}`),

@@ -13,7 +13,7 @@
 		/** If you leave it empty, the new button will not be displayed */
 		newPageLabel?: string;
 		detailRouteID: string;
-		detailPageLabelGetter: (page: Page<Record<string, string>, string | null>) => string;
+		detailPageLabelGetter: (page: Page<Record<string, string>, any>) => string;
 		onNewPageBtnClick?: MouseEventHandler<HTMLButtonElement>;
 		disabled?: boolean;
 	};

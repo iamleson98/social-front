@@ -4,6 +4,7 @@
 		BadgeOutline,
 		Box,
 		BoxOff,
+		BrandBlogger,
 		BuildingStore,
 		BuildingWarehouse,
 		Category,
@@ -186,6 +187,29 @@
 				AppRoute.SETTINGS_CONFIGS_VOUCHER_DETAIL(page.params.id!),
 			].includes(page.url.pathname),
 		},
+	]);
+
+	const BLOG_TAB_ITEMS: TabItem[] = $derived([
+		{
+			icon: BrandBlogger,
+			name: 'Blogs',
+			href: AppRoute.SETTINGS_BLOGS(),
+			shouldActive: [
+				AppRoute.SETTINGS_BLOGS(),
+				AppRoute.SETTINGS_BLOG_NEW(),
+				AppRoute.SETTINGS_BLOG_DETAILS(page.params.id!),
+			].includes(page.url.pathname),
+		},
+		// {
+		// 	icon: Ticket,
+		// 	name: 'Vouchers',
+		// 	href: AppRoute.SETTINGS_CONFIGS_VOUCHERS(),
+		// 	shouldActive: [
+		// 		AppRoute.SETTINGS_CONFIGS_VOUCHERS(),
+		// 		AppRoute.SETTINGS_CONFIGS_VOUCHER_NEW(),
+		// 		AppRoute.SETTINGS_CONFIGS_VOUCHER_DETAIL(page.params.id!),
+		// 	].includes(page.url.pathname),
+		// },
 	]);
 
 	const SHOP_CONFIG_TAB_ITEMS: TabItem[] = $derived([
@@ -394,6 +418,14 @@
 					items={SHOP_DISCOUNTS_TAB_ITEMS}
 					class="w-full p-3"
 					open={SHOP_DISCOUNTS_TAB_ITEMS.some((item) => item.shouldActive)}
+				/>
+
+				<AccordionList
+					header="BLogs"
+					child={sidebarItem}
+					items={BLOG_TAB_ITEMS}
+					class="w-full p-3"
+					open={BLOG_TAB_ITEMS.some((item) => item.shouldActive)}
 				/>
 
 				<AccordionList

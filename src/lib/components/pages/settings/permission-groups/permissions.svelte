@@ -3,7 +3,7 @@
 	import { Checkbox } from '$lib/components/ui/Input';
 	import type { Permission, PermissionEnum } from '$lib/gql/graphql';
 	import { READ_ONLY_SHOP_STORE } from '$lib/stores/shop';
-	import { addNoDup, classNames } from '$lib/utils/utils';
+	import { addNoDup, classNames, SitenameCommonClassName } from '$lib/utils/utils';
 
 	type Props = {
 		/** permission set of this group only */
@@ -57,7 +57,7 @@
 	};
 </script>
 
-<div class="w-2/5 space-y-2 bg-white rounded-lg border border-gray-200 p-3">
+<div class="w-2/5 {SitenameCommonClassName}">
 	<SectionHeader>Your Permissions</SectionHeader>
 
 	<Checkbox
@@ -66,6 +66,7 @@
 		checked={permissions.length === $READ_ONLY_SHOP_STORE?.permissions?.length}
 		readonly={!editable || disabled}
 		onCheckChange={handleToggleAssignAllPermissions}
+		{disabled}
 	/>
 
 	<div class="grid grid-cols-2 gap-2">
@@ -82,6 +83,7 @@
 				<Checkbox
 					size="sm"
 					{checked}
+					{disabled}
 					readonly={!editable || disabled}
 					onCheckChange={(checked) => handleUpdatePermissions(permission.code, checked)}
 					label={permission.name}

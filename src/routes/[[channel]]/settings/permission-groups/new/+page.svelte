@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { tranFunc } from '$i18n';
 	import { PERMISSION_GROUP_CREATE_MUTATION } from '$lib/api/admin/users';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
@@ -12,6 +11,7 @@
 		type PermissionGroupCreateInput,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 
 	let groupInput = $state<PermissionGroupCreateInput>({
@@ -38,18 +38,14 @@
 
 		loading = false;
 
-		if (
-			checkIfGraphqlResultHasError(
-				result,
-				'permissionGroupCreate',
-				$tranFunc('common.createSuccess'),
-			)
-		)
+		if (checkIfGraphqlResultHasError(result, 'permissionGroupCreate', CommonState.CreateSuccess))
 			return;
 
-		const createdGroupId = result.data?.permissionGroupCreate?.group?.id;
-
-		await goto(AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUP_DETAIL(createdGroupId!));
+		await goto(
+			AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUP_DETAIL(
+				result.data?.permissionGroupCreate?.group?.id!,
+			),
+		);
 	};
 </script>
 

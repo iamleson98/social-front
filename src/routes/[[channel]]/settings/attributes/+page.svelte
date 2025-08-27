@@ -40,9 +40,9 @@
 			key: AttributeSortField.VisibleInStorefront,
 		},
 		{
-			title: 'Filterable in store front',
+			title: 'Filterable in dashboard',
 			child: filterable,
-			key: AttributeSortField.FilterableInStorefront,
+			key: AttributeSortField.FilterableInDashboard,
 		},
 		{
 			title: 'Input type',
@@ -108,8 +108,8 @@
 
 {#snippet filterable({ item }: { item: Attribute })}
 	<Badge
-		text={item.filterableInStorefront ? 'yes' : 'no'}
-		color={item.filterableInStorefront ? 'green' : 'red'}
+		text={item.filterableInDashboard ? 'yes' : 'no'}
+		color={item.filterableInDashboard ? 'green' : 'red'}
 	/>
 {/snippet}
 

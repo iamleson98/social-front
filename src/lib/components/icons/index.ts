@@ -135,6 +135,7 @@ export {
   TablerHandStop as HandStop,
   TablerBuildingStore as BuildingStore,
   TablerTax as Tax,
+  TablerBrandBlogger as BrandBlogger,
 } from './consts';
 
 export { default as Icon } from './icon.svelte';
