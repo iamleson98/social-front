@@ -1,8 +1,11 @@
+import type { SocialVariant } from '$lib/utils';
 import type { Snippet } from 'svelte';
 import { writable } from 'svelte/store';
 
 export type AlertActionFlowState = {
 	content: Snippet | string;
+	/** Default to `warning` */
+	variant?: SocialVariant;
 	onOk: () => void;
 	onCancel?: () => void;
 };
@@ -10,8 +13,9 @@ export type AlertActionFlowState = {
 export const newAlertModalStore = () => {
 	const _store = writable<AlertActionFlowState | null>(null);
 
-	const openAlertModal = async ({ content, onOk, onCancel }: AlertActionFlowState) => {
+	const openAlertModal = async ({ content, onOk, onCancel, variant = 'warning' }: AlertActionFlowState) => {
 		const newAction: AlertActionFlowState = {
+			variant,
 			content,
 			onOk: () => {
 				onOk();

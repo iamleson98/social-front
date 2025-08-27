@@ -13,6 +13,7 @@
 	import { Modal } from '$lib/components/ui/Modal';
 	import { GraphqlPaginableTable, Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
+		AttributeInputTypeEnum,
 		ProductAttributeType,
 		type AssignedVariantAttribute,
 		type Attribute,

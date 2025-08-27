@@ -64,6 +64,39 @@ mutation DeleteGiftcard($id: ID!) {
   }
 }`;
 
+export const GIFT_CARD_BULK_DELETE_MUTATION = gql`
+mutation BulkDeleteGiftcard($ids: [ID!]!) {
+  giftCardBulkDelete(ids: $ids) {
+    errors {
+      field
+      message
+    }
+    count
+  }
+}`;
+
+export const GIFT_CARD_BULK_ACTIVATE_MUTATION = gql`
+mutation GiftCardBulkActivate($ids: [ID!]!) {
+  giftCardBulkActivate(ids: $ids) {
+    errors {
+      field
+      message
+    }
+    count
+  }
+}`;
+
+export const GIFT_CARD_BULK_DEACTIVATE_MUTATION = gql`
+mutation GiftCardBulkDeactivate($ids: [ID!]!) {
+  giftCardBulkDeactivate(ids: $ids) {
+    errors {
+      field
+      message
+    }
+    count
+  }
+}`;
+
 export const GIFTCARD_LIST_QUERY = gql`
 query Giftcards($first: Int, $last: Int, $before: String, $after: String, $sortBy: GiftCardSortingInput, $filter: GiftCardFilterInput, $search: String) {
   giftCards(first: $first, last: $last, before: $before, after: $after, sortBy: $sortBy, search: $search, filter: $filter) {
@@ -249,6 +282,45 @@ mutation GiftCardSettingsUpdate($input: GiftCardSettingsUpdateInput!) {
     errors {
       field
       message
+    }
+  }
+}`;
+
+export const GIFTCARD_TOTAL_COUNT_QUERY = gql`
+query GiftCardCount($filter: GiftCardFilterInput) {
+  giftCards(filter: $filter) {
+    totalCount
+  }
+}`;
+
+export const GIFT_CARD_BULK_CREATE_MUTATION = gql`
+  mutation GiftCardBulkCreate($input: GiftCardBulkCreateInput!) {
+    giftCardBulkCreate(input: $input) {
+      giftCards {
+        id
+      }
+      errors {
+        code
+        field
+        message
+      }
+    }
+  }
+`;
+
+export const GIFTCARD_EXPORT_MUTATION = gql`
+mutation ExportGiftCards($input: ExportGiftCardsInput!) {
+  exportGiftCards(input: $input) {
+    errors {
+      field
+      message
+    }
+    exportFile {
+      id
+      status
+      createdAt
+      message
+      url
     }
   }
 }`;

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { clickOutside } from '$lib/actions/click-outside';
-	import { focusOutside } from '$lib/actions/focus-outside';
 	import { shortcuts } from '$lib/actions/shortcut';
 	import { ChevronSort, CloseX, Icon } from '$lib/components/icons';
 	import { classNames, randomID } from '$lib/utils/utils';
@@ -38,6 +37,7 @@
 		onScrollToEnd = noop,
 		onclearInputField,
 		onNotFoundQuerySelected,
+		onblur,
 		...rest
 	}: SelectProps = $props();
 
@@ -56,6 +56,7 @@
 	let selectMapperChanged = $state(false);
 	let initialRender = $state(true);
 	let optionListRef = $state<HTMLUListElement>();
+	let isFocusing = false;
 
 	$effect(() => {
 		if (value === undefined) {
@@ -122,26 +123,25 @@
 	});
 
 	const onInput = (evt: Event) => {
-		toggleDropdown(true);
+		if (!openSelect) toggleDropdown(true);
 		searchQuery = input?.value.trim() ?? '';
 		optionRefs[0]?.scrollIntoView({ block: 'nearest' });
-
 		// pass result to parent
 		inputDebounceOption?.onInput(evt);
 	};
 
 	const onOutclick = (evt: any) => {
-		toggleDropdown(false);
-		rest.onblur?.(evt);
-	};
-
-	const handleClick = () => {
-		toggleDropdown(true);
+		if (isFocusing) {
+			toggleDropdown(false);
+			onblur?.(evt);
+			isFocusing = false;
+		}
 	};
 
 	const handleFocus: FocusEventHandler<HTMLInputElement> = (evt) => {
 		rest.onfocus?.(evt);
-		handleClick();
+		toggleDropdown(true);
+		isFocusing = true;
 	};
 
 	const toggleDropdown = (open: boolean) => (openSelect = open);
@@ -226,7 +226,6 @@
 <div
 	class={`${className} relative`}
 	use:clickOutside={{ onOutclick }}
-	use:focusOutside={{ onFocusOut: onOutclick }}
 	use:shortcuts={[
 		{
 			shortcut: { key: 'Escape' },
@@ -276,7 +275,6 @@
 				class={`flex-1 basis-[min-content]`}
 				id={INPUT_ID}
 				size={SIZE_REDUCE_MAP[size]}
-				onclick={handleClick}
 				onfocus={handleFocus}
 				value={inputDisplayText}
 				type="text"

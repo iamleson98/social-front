@@ -283,7 +283,7 @@ export const classNames = (...classes: ClassArgs[]): string => {
 };
 
 /** This class is commonly used for sections */
-export const SitenameCommonClassName = 'bg-white border border-gray-200 p-3 rounded-lg space-y-2';
+export const SitenameCommonClassName = 'bg-white border border-gray-200 p-3 rounded-lg space-y-3!';
 
 /**
  * Builds the link for the home page.

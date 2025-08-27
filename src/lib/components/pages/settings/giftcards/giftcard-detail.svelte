@@ -15,7 +15,6 @@
 	} from '$lib/gql/graphql';
 	import GiftcardExpirationForm from './giftcard-expiration-form.svelte';
 	import { array, number, object, string, z } from 'zod';
-	import { tranFunc } from '$i18n';
 	import { difference } from 'es-toolkit';
 	import { Modal } from '$lib/components/ui/Modal';
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
@@ -25,6 +24,8 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { toast } from 'svelte-sonner';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
+	import { tranFunc } from '$i18n';
 
 	type Props = {
 		id: string;
@@ -67,13 +68,11 @@
 
 	let loading = $state(false);
 
-	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
-
 	const GiftcardUpdateSchema = object({
-		balanceAmount: number().min(1, 'Amount must be greater than 0'),
+		balanceAmount: number().min(1, $tranFunc('error.negativeNumber')),
 		expiryDate: string().optional(),
-		addTags: array(string().nonempty(REQUIRED_ERROR)).optional(),
-		removeTags: array(string().nonempty(REQUIRED_ERROR)).optional(),
+		addTags: array(string().nonempty(CommonState.FieldRequiredError)).optional(),
+		removeTags: array(string().nonempty(CommonState.FieldRequiredError)).optional(),
 	});
 
 	type GiftcardUpdateSchema = z.infer<typeof GiftcardUpdateSchema>;
@@ -129,7 +128,7 @@
 	};
 </script>
 
-<div class={SitenameCommonClassName}>
+<div class="{SitenameCommonClassName}">
 	<SectionHeader>
 		<div>
 			<span>Giftcard details</span>
@@ -145,8 +144,7 @@
 			<Button
 				size="xs"
 				color={isActive ? 'red' : 'green'}
-				variant="light"
-				startIcon={isActive ? Ban : CircleCheck}
+				endIcon={isActive ? Ban : CircleCheck}
 				onclick={() => onActiveChange(!isActive)}
 				disabled={loading || disabled}
 			>
@@ -154,7 +152,7 @@
 			</Button>
 			<Button
 				size="xs"
-				startIcon={Send}
+				endIcon={Send}
 				color="violet"
 				disabled={loading || disabled}
 				onclick={() => (openResendModal = true)}>Resend code</Button
@@ -187,7 +185,6 @@
 			disabled
 		/>
 	</div>
-
 	<GraphqlPaginableSelect
 		query={GIFT_CARD_TAGS_QUERY}
 		variables={{ first: 20, filter: { search: '' } } as QueryGiftCardTagsArgs}
@@ -204,7 +201,6 @@
 		onchange={handleTagsChange}
 		{disabled}
 	/>
-
 	<GiftcardExpirationForm {disabled} bind:expiryDate />
 </div>
 
