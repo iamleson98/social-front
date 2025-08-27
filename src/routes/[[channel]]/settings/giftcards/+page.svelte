@@ -1,35 +1,55 @@
 <script lang="ts">
-	import { GIFTCARD_LIST_QUERY } from '$lib/api/admin/giftcards';
+	import {
+		GIFT_CARD_BULK_ACTIVATE_MUTATION,
+		GIFT_CARD_BULK_DEACTIVATE_MUTATION,
+		GIFT_CARD_BULK_DELETE_MUTATION,
+		GIFTCARD_LIST_QUERY,
+	} from '$lib/api/admin/giftcards';
 	import { GIFT_CARD_DELETE_MUTATION } from '$lib/api/admin/giftcards';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
-	import { Cancel, CircleCheck, Dots, Trash } from '$lib/components/icons';
+	import { Ban, Cancel, CircleCheck, Dots, Trash } from '$lib/components/icons';
 	import Filter from '$lib/components/pages/settings/giftcards/filter.svelte';
+	import Settings from '$lib/components/pages/settings/giftcards/settings.svelte';
 	import { GiftcardUtil } from '$lib/components/pages/settings/giftcards/utils.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
+	import Button from '$lib/components/ui/Button/Button.svelte';
 	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
+	import { Checkbox } from '$lib/components/ui/Input';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
 		GiftCardSortField,
 		type GiftCard,
 		type Mutation,
+		type MutationGiftCardBulkActivateArgs,
+		type MutationGiftCardBulkDeactivateArgs,
+		type MutationGiftCardBulkDeleteArgs,
 		type MutationGiftCardDeleteArgs,
 		type QueryGiftCardsArgs,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 
 	const giftcardUtil = new GiftcardUtil();
 	let forceReExecuteGraphqlQuery = $state(true);
-	let variables = $state<QueryGiftCardsArgs>({ first: 10, search: '' });
+	let giftcardFilterVariables = $state<QueryGiftCardsArgs>({
+		first: 10,
+		filter: {},
+	});
 	let loading = $state(false);
+	let selectedGiftcards = $state<Record<string, boolean>>({});
 
 	const COLUMNS: TableColumnProps<GiftCard, GiftCardSortField>[] = [
+		{
+			title: selectAll,
+			child: itemSelect,
+		},
 		{
 			title: 'Code',
 			child: code,
@@ -64,7 +84,7 @@
 
 	const handleDeleteGiftcard = (id: string) => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: `Are you sure to delete the gift card ${id}?`,
+			content: CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true; //
 				const result = await GRAPHQL_CLIENT.mutation<
@@ -76,16 +96,34 @@
 
 				loading = false; //
 
-				if (
-					checkIfGraphqlResultHasError(
-						result,
-						'giftCardDelete',
-						`Successfully deleted giftcard ${id}`,
-					)
-				)
+				if (checkIfGraphqlResultHasError(result, 'giftCardDelete', CommonState.DeleteSuccess))
 					return;
 
 				forceReExecuteGraphqlQuery = true; // trigger refetching table data
+			},
+		});
+	};
+
+	const handleDeleteSelectedGiftcards = () => {
+		const ids = Object.keys(selectedGiftcards);
+		if (!ids.length) return;
+
+		ALERT_MODAL_STORE.openAlertModal({
+			content: CommonState.ConfirmDelete,
+			onOk: async () => {
+				loading = true;
+
+				const result = await GRAPHQL_CLIENT.mutation<
+					Mutation['giftCardBulkDelete'],
+					MutationGiftCardBulkDeleteArgs
+				>(GIFT_CARD_BULK_DELETE_MUTATION, { ids });
+
+				if (checkIfGraphqlResultHasError(result, 'giftCardBulkDelete', CommonState.DeleteSuccess))
+					return;
+
+				loading = false;
+				selectedGiftcards = {};
+				forceReExecuteGraphqlQuery = true;
 			},
 		});
 	};
@@ -96,7 +134,71 @@
 		loading = false;
 		if (!hasErr) forceReExecuteGraphqlQuery = true;
 	};
+
+	const handleBulkDeactivateGiftcards = async () => {
+		const ids = Object.keys(selectedGiftcards);
+		if (!ids.length) return;
+
+		loading = true;
+		const result = await GRAPHQL_CLIENT.mutation<
+			Mutation['giftCardBulkDeactivate'],
+			MutationGiftCardBulkDeactivateArgs
+		>(GIFT_CARD_BULK_DEACTIVATE_MUTATION, {
+			ids,
+		});
+		loading = false;
+
+		if (checkIfGraphqlResultHasError(result, 'giftCardBulkDeactivate', CommonState.EditSuccess))
+			return;
+
+		selectedGiftcards = {};
+		forceReExecuteGraphqlQuery = true;
+	};
+
+	const handleBulkActivateGiftcards = async () => {
+		const ids = Object.keys(selectedGiftcards);
+		if (!ids.length) return;
+
+		loading = true;
+		const result = await GRAPHQL_CLIENT.mutation<
+			Mutation['giftCardBulkActivate'],
+			MutationGiftCardBulkActivateArgs
+		>(GIFT_CARD_BULK_ACTIVATE_MUTATION, {
+			ids,
+		});
+		loading = false;
+
+		if (checkIfGraphqlResultHasError(result, 'giftCardBulkActivate', CommonState.EditSuccess))
+			return;
+
+		selectedGiftcards = {};
+		forceReExecuteGraphqlQuery = true;
+	};
 </script>
+
+{#snippet selectAll({ items }: { items: GiftCard[] })}
+	<Checkbox
+		size="sm"
+		onCheckChange={(checked) => {
+			if (checked) selectedGiftcards = Object.fromEntries(items.map((item) => [item.id, true]));
+			else selectedGiftcards = {};
+		}}
+		checked={items.length === Object.keys(selectedGiftcards).length}
+		disabled={loading}
+	/>
+{/snippet}
+
+{#snippet itemSelect({ item }: { item: GiftCard })}
+	<Checkbox
+		size="sm"
+		onCheckChange={(checked) => {
+			if (checked) selectedGiftcards[item.id] = true;
+			else delete selectedGiftcards[item.id];
+		}}
+		checked={selectedGiftcards[item.id]}
+		disabled={loading}
+	/>
+{/snippet}
 
 {#snippet code({ item }: { item: GiftCard })}
 	<a href={AppRoute.SETTINGS_CONFIGS_GIFTCARD_DETAIL(item.id)} class="link">
@@ -155,15 +257,46 @@
 	/>
 {/snippet}
 
-<div class="mb-2">
-	<Filter bind:variables bind:forceReExecuteGraphqlQuery />
+<div class="flex items-center justify-between mb-2">
+	<Filter bind:variables={giftcardFilterVariables} bind:forceReExecuteGraphqlQuery />
+	<div class="flex gap-1.5">
+		{#if Object.keys(selectedGiftcards).length}
+			<Button
+				disabled={loading}
+				onclick={handleBulkActivateGiftcards}
+				endIcon={CircleCheck}
+				color="green"
+				size="sm"
+			>
+				Activate
+			</Button>
+			<Button
+				size="sm"
+				disabled={loading}
+				onclick={handleBulkDeactivateGiftcards}
+				endIcon={Ban}
+				color="indigo"
+			>
+				Deactivate
+			</Button>
+			<IconButton
+				icon={Trash}
+				variant="light"
+				color="red"
+				size="sm"
+				onclick={handleDeleteSelectedGiftcards}
+				disabled={loading}
+			/>
+		{/if}
+		<Settings bind:variables={giftcardFilterVariables} bind:selectedIds={selectedGiftcards} />
+	</div>
 </div>
 
 <GraphqlPaginableTable
 	query={GIFTCARD_LIST_QUERY}
 	bind:forceReExecuteGraphqlQuery
 	resultKey="giftCards"
-	bind:variables
+	bind:variables={giftcardFilterVariables}
 	columns={COLUMNS}
 	disabled={loading}
 />

@@ -159,4 +159,3 @@ export const inferMetricSystemAndUnitsOfFromUnit = (
 ): MetricInfo | undefined => {
   return unitMetricMap[unit];
 };
-
