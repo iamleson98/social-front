@@ -78,7 +78,12 @@
 			isCreatePage
 			bind:formOk={generalFormOk}
 		/>
-		<AttributeValues inputType={attributeInput.inputType!} addValues={[]} removeValues={[]} />
+		<AttributeValues
+			inputType={attributeInput.inputType!}
+			addValues={[]}
+			removeValues={[]}
+			bind:unit={attributeInput.unit!}
+		/>
 		<GeneralMetadataEditor objectId="" bind:this={metaRef} />
 	</div>
 

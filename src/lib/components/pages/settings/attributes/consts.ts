@@ -99,3 +99,64 @@ export const MetricClassification: Record<MetricSystem, Record<MetricUnit, Measu
     ]
   }
 };
+
+type MetricInfo = [MetricUnit, MetricSystem];
+
+const unitMetricMap: Record<MeasurementUnitsEnum, MetricInfo> = {
+  // Imperial Area
+  [MeasurementUnitsEnum.SqInch]: [MetricUnit.Area, MetricSystem.Imperial],
+  [MeasurementUnitsEnum.SqFt]: [MetricUnit.Area, MetricSystem.Imperial],
+  [MeasurementUnitsEnum.SqYd]: [MetricUnit.Area, MetricSystem.Imperial],
+
+  // Imperial Distance
+  [MeasurementUnitsEnum.Inch]: [MetricUnit.Distance, MetricSystem.Imperial],
+  [MeasurementUnitsEnum.Ft]: [MetricUnit.Distance, MetricSystem.Imperial],
+  [MeasurementUnitsEnum.Yd]: [MetricUnit.Distance, MetricSystem.Imperial],
+
+  // Imperial Volume
+  [MeasurementUnitsEnum.FlOz]: [MetricUnit.Volume, MetricSystem.Imperial],
+  [MeasurementUnitsEnum.Pint]: [MetricUnit.Volume, MetricSystem.Imperial],
+  [MeasurementUnitsEnum.Qt]: [MetricUnit.Volume, MetricSystem.Imperial],
+  [MeasurementUnitsEnum.CubicInch]: [MetricUnit.Volume, MetricSystem.Imperial],
+  [MeasurementUnitsEnum.CubicFoot]: [MetricUnit.Volume, MetricSystem.Imperial],
+  [MeasurementUnitsEnum.CubicYard]: [MetricUnit.Volume, MetricSystem.Imperial],
+  [MeasurementUnitsEnum.AcreFt]: [MetricUnit.Volume, MetricSystem.Imperial],
+  [MeasurementUnitsEnum.AcreIn]: [MetricUnit.Volume, MetricSystem.Imperial],
+
+  // Imperial Weight
+  [MeasurementUnitsEnum.Lb]: [MetricUnit.Weight, MetricSystem.Imperial],
+  [MeasurementUnitsEnum.Oz]: [MetricUnit.Weight, MetricSystem.Imperial],
+
+  // Metric Area
+  [MeasurementUnitsEnum.SqMm]: [MetricUnit.Area, MetricSystem.Metric],
+  [MeasurementUnitsEnum.SqCm]: [MetricUnit.Area, MetricSystem.Metric],
+  [MeasurementUnitsEnum.SqDm]: [MetricUnit.Area, MetricSystem.Metric],
+  [MeasurementUnitsEnum.SqM]: [MetricUnit.Area, MetricSystem.Metric],
+  [MeasurementUnitsEnum.SqKm]: [MetricUnit.Area, MetricSystem.Metric],
+
+  // Metric Distance
+  [MeasurementUnitsEnum.Mm]: [MetricUnit.Distance, MetricSystem.Metric],
+  [MeasurementUnitsEnum.Cm]: [MetricUnit.Distance, MetricSystem.Metric],
+  [MeasurementUnitsEnum.Dm]: [MetricUnit.Distance, MetricSystem.Metric],
+  [MeasurementUnitsEnum.M]: [MetricUnit.Distance, MetricSystem.Metric],
+  [MeasurementUnitsEnum.Km]: [MetricUnit.Distance, MetricSystem.Metric],
+
+  // Metric Volume
+  [MeasurementUnitsEnum.Liter]: [MetricUnit.Volume, MetricSystem.Metric],
+  [MeasurementUnitsEnum.CubicMillimeter]: [MetricUnit.Volume, MetricSystem.Metric],
+  [MeasurementUnitsEnum.CubicCentimeter]: [MetricUnit.Volume, MetricSystem.Metric],
+  [MeasurementUnitsEnum.CubicDecimeter]: [MetricUnit.Volume, MetricSystem.Metric],
+  [MeasurementUnitsEnum.CubicMeter]: [MetricUnit.Volume, MetricSystem.Metric],
+
+  // Metric Weight
+  [MeasurementUnitsEnum.G]: [MetricUnit.Weight, MetricSystem.Metric],
+  [MeasurementUnitsEnum.Kg]: [MetricUnit.Weight, MetricSystem.Metric],
+  [MeasurementUnitsEnum.Tonne]: [MetricUnit.Weight, MetricSystem.Metric],
+};
+
+export const inferMetricSystemAndUnitsOfFromUnit = (
+  unit: MeasurementUnitsEnum
+): MetricInfo | undefined => {
+  return unitMetricMap[unit];
+};
+

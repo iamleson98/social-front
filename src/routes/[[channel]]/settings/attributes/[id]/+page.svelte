@@ -139,6 +139,7 @@
 				attributeID={id}
 				bind:addValues={attributeInput.addValues!}
 				bind:removeValues={attributeInput.removeValues!}
+				bind:unit={attributeInput.unit!}
 			/>
 			<GeneralMetadataEditor
 				objectId={id}

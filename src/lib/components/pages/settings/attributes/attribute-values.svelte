@@ -18,7 +18,6 @@
 		AttributeInputTypeEnum,
 		type Query,
 		type AttributeValue,
-		type ReorderInput,
 		type Mutation,
 		type MutationAttributeReorderValuesArgs,
 		type MutationAttributeValueDeleteArgs,
@@ -26,20 +25,25 @@
 		type AttributeValueUpdateInput,
 		type MutationAttributeValueCreateArgs,
 		MeasurementUnitsEnum,
+		type AttributeValueCreateInput,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
-	import { noop } from 'es-toolkit';
-	import ColorPicker from 'svelte-awesome-color-picker';
-	import { HumanizeUnit, MetricClassification, MetricSystem, MetricUnit } from './consts';
+	import ColorPicker, { ChromeVariant } from 'svelte-awesome-color-picker';
+	import {
+		HumanizeUnit,
+		inferMetricSystemAndUnitsOfFromUnit,
+		MetricClassification,
+		MetricSystem,
+		MetricUnit,
+	} from './consts';
 
 	type Props = {
 		inputType: AttributeInputTypeEnum;
 		withChoices?: boolean;
 		/** if not provided, meaning it is create page */
 		attributeID?: string;
-		attributeName?: string;
 		addValues: AttributeValueUpdateInput[];
 		removeValues: string[];
 		unit?: MeasurementUnitsEnum;
@@ -48,7 +52,6 @@
 	let {
 		inputType,
 		attributeID,
-		attributeName,
 		addValues = $bindable(),
 		removeValues = $bindable(),
 		unit = $bindable(),
@@ -97,10 +100,16 @@
 	});
 	let forceReExecuteGraphqlQuery = $state(true);
 	let valueItemToEdit = $state<AttributeValue>();
+	let valueItemToCreate = $state<AttributeValueCreateInput>();
 	let loading = $state(false);
 	let openUpsertModal = $state(false);
 	let metricSystem = $state<MetricSystem>();
 	let metricUnitsOf = $state<MetricUnit>();
+	const shouldDisableOkButton = $derived.by(() => {
+		if (inputType === AttributeInputTypeEnum.Swatch)
+			return valueItemToEdit ? !valueItemToEdit?.value?.trim() : !valueItemToCreate?.value?.trim();
+		return valueItemToEdit ? !valueItemToEdit?.name?.trim() : !valueItemToCreate?.name.trim();
+	});
 
 	const FinalUnitOptions = $derived.by(() => {
 		if (metricSystem && metricUnitsOf)
@@ -110,6 +119,17 @@
 			}));
 
 		return [];
+	});
+
+	$effect(() => {
+		if (unit) {
+			const result = inferMetricSystemAndUnitsOfFromUnit(unit);
+			if (Array.isArray(result)) {
+				const [unitsOf, system] = result;
+				metricUnitsOf = unitsOf as MetricUnit;
+				metricSystem = system as MetricSystem;
+			}
+		}
 	});
 
 	const handleDeleteValue = async (item: AttributeValue) => {
@@ -143,18 +163,14 @@
 	) => {
 		if (dragIndex === dropIndex) return;
 
-		const steps = dropIndex - dragIndex;
-
 		loading = true;
-
-		const moves: ReorderInput[] = [{ id: dragItem.id, sortOrder: steps }];
 
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'attributeReorderValues'>,
 			MutationAttributeReorderValuesArgs
 		>(REORDER_ATTRIBUTE_VALUES_MUTATION, {
 			attributeId: attributeID!,
-			moves,
+			moves: [{ id: dragItem.id, sortOrder: dropIndex - dragIndex }],
 		});
 
 		loading = false;
@@ -191,7 +207,7 @@
 	};
 
 	const handleCreateAttributeValue = async () => {
-		if (!valueItemToEdit) return;
+		if (!valueItemToCreate) return;
 
 		// if in update page
 		if (attributeID) {
@@ -201,11 +217,8 @@
 				Pick<Mutation, 'attributeValueCreate'>,
 				MutationAttributeValueCreateArgs
 			>(ATTRIBUTE_VALUE_CREATE_MUTATION, {
-				attribute: attributeID!,
-				input: {
-					name: valueItemToEdit.name!,
-					value: valueItemToEdit.value,
-				},
+				attribute: attributeID,
+				input: valueItemToCreate,
 			});
 
 			loading = false;
@@ -214,14 +227,19 @@
 				return;
 
 			forceReExecuteGraphqlQuery = true;
-			valueItemToEdit = undefined;
 		} else {
-			addValues.push({
-				name: valueItemToEdit.name!,
-				value: valueItemToEdit.value,
-			});
-			valueItemToEdit = undefined;
+			addValues.push({ ...valueItemToCreate });
 		}
+
+		valueItemToCreate = undefined;
+	};
+
+	const handleClickAddValue = () => {
+		openUpsertModal = true;
+		valueItemToCreate = {
+			name: '',
+			value: '',
+		};
 	};
 </script>
 
@@ -271,7 +289,13 @@
 		{#if inputType !== AttributeInputTypeEnum.Numeric}
 			<SectionHeader>
 				<div>Attribute values</div>
-				<Button size="xs" variant="light" endIcon={Plus} onclick={() => (openUpsertModal = true)}>
+				<Button
+					size="xs"
+					variant="light"
+					endIcon={Plus}
+					onclick={handleClickAddValue}
+					disabled={loading || !inputType}
+				>
 					Add value
 				</Button>
 			</SectionHeader>
@@ -331,22 +355,56 @@
 	closeOnEscape
 	closeOnOutsideClick
 	disableElements={loading}
-	onCancel={noop}
-	onOk={handleUpdateAttributeValue}
-	onClose={() => {
-		openUpsertModal = false;
-	}}
+	onOk={() => (valueItemToEdit ? handleUpdateAttributeValue() : handleCreateAttributeValue())}
+	onClose={() => (openUpsertModal = false)}
+	onCancel={() => (openUpsertModal = false)}
+	disableOkBtn={shouldDisableOkButton}
 >
-	{#if !!valueItemToEdit}
+	{#if valueItemToEdit}
 		<!-- edit value -->
-		{#if valueItemToEdit?.inputType === AttributeInputTypeEnum.Swatch}
-			<ColorPicker bind:hex={valueItemToEdit.value} position="responsive" />
-		{:else if valueItemToEdit?.inputType === AttributeInputTypeEnum.Dropdown}
-			<Input label="Value" placeholder="Value" bind:value={valueItemToEdit.name} />
-		{:else if valueItemToEdit?.inputType === AttributeInputTypeEnum.Multiselect}
-			<Input label="Value" placeholder="Value" bind:value={valueItemToEdit.name} />
+		{#if inputType === AttributeInputTypeEnum.Swatch}
+			<ColorPicker
+				bind:hex={valueItemToEdit.value}
+				position="responsive"
+				isDialog={false}
+				sliderDirection="horizontal"
+				components={ChromeVariant}
+			/>
+		{:else if inputType === AttributeInputTypeEnum.Dropdown}
+			<Input
+				label="Please provide value"
+				placeholder="Please provide value"
+				bind:value={valueItemToEdit.name}
+			/>
+		{:else if inputType === AttributeInputTypeEnum.Multiselect}
+			<Input
+				label="Please provide value"
+				placeholder="Please provide value"
+				bind:value={valueItemToEdit.name}
+			/>
 		{/if}
-	{:else}
-		<div>lol</div>
+	{:else if valueItemToCreate}
+		<!-- add value -->
+		{#if inputType === AttributeInputTypeEnum.Swatch}
+			<ColorPicker
+				bind:hex={valueItemToCreate.value}
+				position="responsive"
+				isDialog={false}
+				sliderDirection="horizontal"
+				components={ChromeVariant}
+			/>
+		{:else if inputType === AttributeInputTypeEnum.Dropdown}
+			<Input
+				label="Please provide value"
+				placeholder="Please provide value"
+				bind:value={valueItemToCreate.name}
+			/>
+		{:else if inputType === AttributeInputTypeEnum.Multiselect}
+			<Input
+				label="Please provide value"
+				placeholder="Please provide value"
+				bind:value={valueItemToCreate.name}
+			/>
+		{/if}
 	{/if}
 </Modal>

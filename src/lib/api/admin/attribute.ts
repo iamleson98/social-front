@@ -44,6 +44,7 @@ query Attribute($id: ID!) {
     inputType
     entityType
     withChoices
+    unit
     metadata {
       key
       value
