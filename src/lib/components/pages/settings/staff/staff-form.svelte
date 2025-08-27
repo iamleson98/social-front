@@ -1,10 +1,16 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
+	import { PERMISSION_GROUP_LIST_QUERY } from '$lib/api/admin/users';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { BadgeOutline, Icon } from '$lib/components/icons';
-	import { Checkbox, Input } from '$lib/components/ui/Input';
+	import { Input, Toggle } from '$lib/components/ui/Input';
+	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
+	import { type QueryPermissionGroupsArgs } from '$lib/gql/graphql';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
+	import { difference } from 'es-toolkit';
 	import { boolean, object, string, z } from 'zod';
 
 	type Props = {
@@ -19,6 +25,11 @@
 		dateJoined?: string;
 		/** indicate if current user can edit given staff */
 		canEdit?: boolean;
+		/** if not provided, meaning it is create page */
+		existingGroups?: string[];
+		addGroups: string[];
+		removeGroups?: string[];
+		isStaffManager?: boolean;
 	};
 
 	let {
@@ -32,21 +43,24 @@
 		isCreatePage = false,
 		dateJoined,
 		canEdit,
+		existingGroups = [],
+		addGroups = $bindable([]),
+		removeGroups = $bindable([]),
+		isStaffManager,
 	}: Props = $props();
-
-	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 
 	const staffSchema = object({
 		avatar: string().optional(),
-		lastName: string().nonempty(REQUIRED_ERROR),
-		firstName: string().nonempty(REQUIRED_ERROR),
-		email: string().nonempty(REQUIRED_ERROR).email($tranFunc('error.invalidEmail')),
+		lastName: string().nonempty(CommonState.FieldRequiredError),
+		firstName: string().nonempty(CommonState.FieldRequiredError),
+		email: string().nonempty(CommonState.FieldRequiredError).email($tranFunc('error.invalidEmail')),
 		isActive: boolean(),
 	});
 
 	type StaffSchema = z.infer<typeof staffSchema>;
 
 	let staffFormErrors = $state.raw<Partial<Record<keyof StaffSchema, string[]>>>({});
+	let displayingGroups = $state(existingGroups);
 
 	const validate = () => {
 		const parseResult = staffSchema.safeParse({
@@ -59,9 +73,19 @@
 		formOk = parseResult.success;
 		staffFormErrors = parseResult.success ? {} : parseResult.error?.formErrors.fieldErrors;
 	};
+
+	const handlePermissionGroupChange = (opts?: SelectOption | SelectOption[]) => {
+		if (!opts) return;
+
+		const newAddGroups = difference(displayingGroups, existingGroups);
+		const newRemoveGroups = difference(existingGroups, displayingGroups);
+
+		addGroups = newAddGroups;
+		removeGroups = newRemoveGroups;
+	};
 </script>
 
-<div class="h-full {SitenameTimeFormat}">
+<div class="h-full {SitenameCommonClassName}">
 	<div class="flex items-center gap-2">
 		<Thumbnail
 			src={avatar}
@@ -119,7 +143,26 @@
 		onblur={validate}
 	/>
 
-	<div class="mt-3 flex gap-3 items-center">
-		<Checkbox label={$tranFunc('staff.active')} bind:checked={isActive} {disabled} class="flex-1" />
-	</div>
+	<Toggle
+		label={$tranFunc('staff.active')}
+		bind:checked={isActive}
+		disabled={!isStaffManager || disabled}
+		class="flex-1"
+	/>
+
+	<GraphqlPaginableSelect
+		query={PERMISSION_GROUP_LIST_QUERY}
+		variables={{ first: 20, filter: { search: '' } } as QueryPermissionGroupsArgs}
+		resultKey="permissionGroups"
+		variableSearchQueryPath="filter.search"
+		disabled={!isStaffManager || disabled}
+		optionValueKey="id"
+		optionLabelKey="name"
+		requestPolicy="cache-and-network"
+		multiple
+		label="Permission Groups"
+		placeholder="Permission groups"
+		onchange={handlePermissionGroupChange}
+		bind:value={displayingGroups}
+	/>
 </div>

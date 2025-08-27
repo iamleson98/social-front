@@ -4,6 +4,7 @@
 	import { STAFF_DELETE_MUTATION, STAFF_UPDATE_MUTATION } from '$lib/api/admin/staff';
 	import { Alert } from '$lib/components/ui/Alert';
 	import {
+		type StaffUpdateInput,
 		type Mutation,
 		type MutationStaffDeleteArgs,
 		type MutationStaffUpdateArgs,
@@ -21,6 +22,7 @@
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import type { PageServerData } from './$types';
 	import { tranFunc } from '$i18n';
+	import { onMount } from 'svelte';
 
 	type Props = {
 		data: PageServerData;
@@ -35,16 +37,23 @@
 	});
 
 	let loading = $state(false);
-	let initialIsActive = $state(false);
-	let isActive = $state(false);
-	let nothingChanged = $derived(isActive === initialIsActive);
-
-	$effect(() => {
-		if ($staffDetailQuery.data?.user) {
-			initialIsActive = $staffDetailQuery.data.user.isActive;
-			isActive = initialIsActive;
-		}
+	let staffUpdateInput = $state<StaffUpdateInput>({
+		isActive: false,
+		addGroups: [],
+		removeGroups: [],
 	});
+
+	onMount(() =>
+		staffDetailQuery.subscribe((result) => {
+			if (result.data?.user) {
+				const { isActive } = result.data.user;
+				staffUpdateInput = {
+					...staffUpdateInput,
+					isActive,
+				};
+			}
+		}),
+	);
 
 	const handleUpdateStaff = async () => {
 		loading = true;
@@ -53,15 +62,14 @@
 			MutationStaffUpdateArgs
 		>(STAFF_UPDATE_MUTATION, {
 			id: $staffDetailQuery.data?.user?.id as string,
-			input: {
-				isActive,
-			},
+			input: staffUpdateInput,
 		});
 
 		loading = false;
 
 		if (checkIfGraphqlResultHasError(result, 'staffUpdate', $tranFunc('staff.staffUpdated')))
 			return;
+
 		staffDetailQuery.reexecute({
 			variables: {
 				id: page.params.id,
@@ -98,17 +106,22 @@
 {:else if $staffDetailQuery.error}
 	<Alert variant="error" bordered size="sm">{$staffDetailQuery.error.message}</Alert>
 {:else if $staffDetailQuery.data?.user}
-	{@const { avatar, firstName, lastName, email, dateJoined } = $staffDetailQuery.data.user}
+	{@const { avatar, firstName, lastName, email, dateJoined, permissionGroups } =
+		$staffDetailQuery.data.user}
 	<StaffForm
 		avatar={avatar?.url}
 		{firstName}
 		{lastName}
 		{email}
-		bind:isActive
+		bind:isActive={staffUpdateInput.isActive!}
+		bind:addGroups={staffUpdateInput.addGroups!}
+		bind:removeGroups={staffUpdateInput.removeGroups!}
+		existingGroups={permissionGroups?.map((group) => group.id)}
 		disabled={loading}
 		isCreatePage={false}
 		{dateJoined}
 		canEdit={data.canEdit}
+		isStaffManager={data.isStaffManager}
 	/>
 
 	<ActionBar
@@ -116,7 +129,7 @@
 		onUpdateClick={handleUpdateStaff}
 		disabled={loading}
 		onDeleteClick={handleOpenDeleteModal}
-		disableUpdateButton={(!data.canEdit && !data.isStaffManager) || nothingChanged || loading}
+		disableUpdateButton={(!data.canEdit && !data.isStaffManager) || loading}
 		disableDeleteButton={!data.isStaffManager}
 	/>
 {/if}

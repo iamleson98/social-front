@@ -35,6 +35,9 @@ query UserDetail($id: ID, $email: String) {
     firstName
     lastName
     email
+    permissionGroups {
+      id
+    }
     addresses {
       phone
       companyName
