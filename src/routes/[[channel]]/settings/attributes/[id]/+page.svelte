@@ -40,7 +40,6 @@
 		pause: !page.params.id,
 	});
 
-	let performUpdateMetadata = $state(false);
 	let loading = $state(false);
 	let generalFormOk = $state(false);
 	let attributeInput = $state<AttributeUpdateInput>({
@@ -52,6 +51,7 @@
 		addValues: [],
 		removeValues: [],
 	});
+	let metadataRef = $state<any>();
 
 	onMount(() =>
 		AttributeQuery.subscribe((result) => {
@@ -95,7 +95,6 @@
 
 	const handleClickUpdate = async () => {
 		loading = true;
-		performUpdateMetadata = true;
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'attributeUpdate'>,
 			MutationAttributeUpdateArgs
@@ -104,10 +103,16 @@
 			input: attributeInput,
 		});
 
+		if (checkIfGraphqlResultHasError(result, 'attributeUpdate', $tranFunc('common.editSuccess'))) {
+			loading = false;
+			return;
+		}
+
+		// update metadata
+		const hasError = await metadataRef?.handleUpdate();
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'attributeUpdate', $tranFunc('common.editSuccess')))
-			return;
+		if (hasError) return;
 
 		AttributeQuery.reexecute({
 			context: { requestPolicy: 'network-only' },
@@ -145,7 +150,7 @@
 				objectId={id}
 				{metadata}
 				{privateMetadata}
-				bind:performUpdateMetadata
+				bind:this={metadataRef}
 				disabled={loading}
 			/>
 		</div>

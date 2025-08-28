@@ -328,6 +328,7 @@
 	onCancel={() => (openBulkIssueModal = false)}
 	onClose={() => (openBulkIssueModal = false)}
 	onOk={handleBulkIssue}
+	size="sm"
 	disableElements={loading}
 >
 	<div class="space-y-2">
@@ -405,6 +406,7 @@
 	onOk={handleExportCodes}
 	closeOnOutsideClick
 	disableElements={loading}
+	size="sm"
 >
 	<div class="space-y-3">
 		{#if $GiftcardTotalCountQuery.fetching}

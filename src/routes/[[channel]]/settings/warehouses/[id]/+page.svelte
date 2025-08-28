@@ -29,6 +29,7 @@
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { pick } from 'es-toolkit';
 	import { onMount } from 'svelte';
+	import { toast } from 'svelte-sonner';
 
 	const warehouseQuery = operationStore<Pick<Query, 'warehouse'>, QueryWarehouseArgs>({
 		query: WAREHOUSE_DETAIL_QUERY,
@@ -47,7 +48,7 @@
 		slug: '',
 		email: '',
 	});
-	let performUpdateMetadata = $state(false);
+	let metaRef = $state<any>();
 	let generalFormOk = $state(false);
 
 	onMount(() =>
@@ -99,12 +100,17 @@
 			id: page.params.id,
 			input: warehouseInput,
 		});
-		performUpdateMetadata = true;
-		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'updateWarehouse', $tranFunc('common.editSuccess')))
+		if (checkIfGraphqlResultHasError(result, 'updateWarehouse')) {
+			loading = false;
 			return;
+		}
 
+		const hasErr = metaRef?.handleUpdate();
+		loading = false;
+		if (hasErr) return;
+
+		toast.success($tranFunc('common.editSuccess'));
 		warehouseQuery.reexecute({
 			context: { requestPolicy: 'network-only' },
 			variables: { id: page.params.id },
@@ -133,7 +139,7 @@
 				objectId={id}
 				{metadata}
 				{privateMetadata}
-				bind:performUpdateMetadata
+				bind:this={metaRef}
 				disabled={loading}
 			/>
 		</div>

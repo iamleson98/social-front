@@ -32,7 +32,6 @@
 	let loading = $state(false);
 	let generalOk = $state(true);
 	let addRules = $state<PromotionRuleCreateInput[]>([]);
-	let createdPromotionId = $state<string>('');
 	let metadataRef = $state<any>();
 
 	const handleCreate = async () => {
@@ -50,8 +49,8 @@
 		}
 
 		// perform create metadatas
-		createdPromotionId = promotionCreateResult.data?.promotionCreate?.promotion?.id as string;
-		const hasError = await metadataRef.handleUpdate();
+		const createdPromotionId = promotionCreateResult.data?.promotionCreate?.promotion?.id as string;
+		const hasError = await metadataRef.handleUpdate(createdPromotionId);
 		if (hasError) {
 			loading = false;
 			return;
@@ -71,12 +70,12 @@
 		);
 
 		const rulesCreationResults = await Promise.all(ruleCreationTasks);
+		loading = false;
 		if (
 			rulesCreationResults.some((result) =>
 				checkIfGraphqlResultHasError(result, 'promotionRuleCreate'),
 			)
 		) {
-			loading = false;
 			return;
 		}
 
@@ -98,7 +97,7 @@
 	/>
 	<CreatePageRules bind:rules={addRules} />
 	<GeneralMetadataEditor
-		objectId={createdPromotionId}
+		objectId={''}
 		disabled={loading}
 		metadata={[]}
 		privateMetadata={[]}

@@ -68,7 +68,7 @@
 		// create success, add metadata now
 		createdCollectionId = result.data?.collectionCreate?.collection?.id as string;
 
-		const hasErr = await metaEditorRef.handleUpdate();
+		const hasErr = await metaEditorRef?.handleUpdate();
 		if (hasErr) {
 			loading = false;
 			return;

@@ -10,11 +10,13 @@
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { tranFunc } from '$i18n';
+	import { toast } from 'svelte-sonner';
 
 	let media = $state<MediaObject[]>([]);
 	let generalFormOk = $state(false);
-	let performUpdateMetadata = $state(false);
 	let createdCategoryId = $state<string>('');
+	let loading = $state(false);
+	let metaRef = $state<any>();
 
 	let categoryInput = $state<CategoryInput>({
 		name: '',
@@ -25,7 +27,6 @@
 			description: '',
 		},
 	});
-	let loading = $state(false);
 
 	const handleCreate = async () => {
 		if (!generalFormOk) return;
@@ -44,16 +45,15 @@
 			},
 		});
 
+		if (checkIfGraphqlResultHasError(result, 'categoryCreate')) {
+			loading = false;
+			return;
+		}
+
+		const hasErr = await metaRef?.handleUpdate(result.data?.categoryCreate?.category?.id!);
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'categoryCreate', $tranFunc('common.createSuccess')))
-			return;
-
-		createdCategoryId = result.data?.categoryCreate?.category?.id!;
-
-		if (createdCategoryId) {
-			performUpdateMetadata = true;
-		}
+		if (!hasErr) toast.success($tranFunc('common.createSuccess'));
 	};
 </script>
 
@@ -73,7 +73,7 @@
 	<GeneralMetadataEditor
 		objectId={createdCategoryId}
 		disabled={loading}
-		bind:performUpdateMetadata
+		bind:this={metaRef}
 		onDoneUpdate={() => goto(AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(createdCategoryId))}
 	/>
 </div>

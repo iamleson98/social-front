@@ -30,9 +30,11 @@
 	import { differenceBy } from 'es-toolkit/compat';
 	import OrderLinesAssignSection from '$lib/components/pages/settings/orders/new/order-lines-assign-section.svelte';
 	import Sidebar from '$lib/components/pages/settings/orders/sidebar.svelte';
+	import { toast } from 'svelte-sonner';
+	import { CommonState } from '$lib/utils/common.svelte';
 
 	let loading = $state(false);
-	let performUpdateMetadata = $state(false);
+	let metaRef = $state<any>();
 
 	const orderQuery = operationStore<Pick<Query, 'order'>, QueryOrderArgs>({
 		query: ORDER_DETAIL_QUERY,
@@ -63,18 +65,22 @@
 
 	const onUpdateClick = async () => {
 		loading = true;
-		performUpdateMetadata = true;
-
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'orderUpdate'>,
 			MutationOrderUpdateArgs
 		>(ORDER_UPDATE_MUTATION, { id: page.params.id, input: orderUpdateInput });
 
-		loading = false;
-
-		if (!checkIfGraphqlResultHasError(result, 'orderUpdate', 'Order updated successfully')) {
-			reexecuteQuery();
+		if (checkIfGraphqlResultHasError(result, 'orderUpdate')) {
+			loading = false;
+			return;
 		}
+
+		const hasErr = await metaRef?.handleUpdate();
+		loading = false;
+		if (hasErr) return;
+
+		toast.success(CommonState.EditSuccess);
+		reexecuteQuery();
 	};
 </script>
 
@@ -121,7 +127,7 @@
 				privateMetadata={order.privateMetadata}
 				objectId={order.id}
 				disabled={loading}
-				bind:performUpdateMetadata
+				bind:this={metaRef}
 			/>
 			<OrderHistory id={order.id} />
 		</div>

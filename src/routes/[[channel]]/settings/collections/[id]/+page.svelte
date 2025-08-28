@@ -54,7 +54,7 @@
 		removeChannels: [],
 	});
 	let loading = $state(false);
-	let performUpdateMetadata = $state(false); // trigger update metadata
+	let metaRef = $state<any>();
 
 	const collectionDetailQuery = operationStore<Pick<Query, 'collection'>, QueryCollectionArgs>({
 		query: COLLECTION_DETAIL_QUERY,
@@ -156,13 +156,17 @@
 		});
 
 		loading = true;
-		performUpdateMetadata = true; // trigger update metadata
 		const results = await Promise.all([generalUpdateJob, channelListingUpdateJob]);
-		loading = false;
 
 		const keys = ['collectionUpdate', 'collectionChannelListingUpdate'] as const;
-		if (results.some((result, idx) => checkIfGraphqlResultHasError(result as any, keys[idx])))
+		if (results.some((result, idx) => checkIfGraphqlResultHasError(result as any, keys[idx]))) {
+			loading = false;
 			return;
+		}
+
+		const hasErr = await metaRef?.handleUpdate();
+		loading = false;
+		if (hasErr) return;
 
 		toast.success($tranFunc('common.editSuccess'));
 		collectionDetailQuery.reexecute({
@@ -204,7 +208,7 @@
 				{privateMetadata}
 				disabled={loading}
 				objectId={id}
-				bind:performUpdateMetadata
+				bind:this={metaRef}
 			/>
 		</div>
 

@@ -65,11 +65,8 @@
 	 */
 	let initialHasVariants = $state(false);
 
-	const handleUpdateProductType = async () => {
-		debugger;
-		
+	const handleUpdateProductType = async () => {		
 		loading = true;
-
 		// update product type itself
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'productTypeUpdate'>,

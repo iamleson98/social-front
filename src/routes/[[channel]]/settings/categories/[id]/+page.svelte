@@ -24,9 +24,12 @@
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import { tranFunc } from '$i18n';
+	import { toast } from 'svelte-sonner';
 
 	let media = $state<MediaObject[]>([]);
 	let generalFormOk = $state(false);
+	let metaRef = $state<any>();
+	let loading = $state(false);
 
 	const categoryQuery = operationStore<
 		Pick<Query, 'category'>,
@@ -51,8 +54,6 @@
 			description: '',
 		},
 	});
-	let performUpdateMetadata = $state(false);
-	let loading = $state(false);
 
 	afterNavigate(() => {
 		categoryQuery.reexecute({
@@ -115,8 +116,6 @@
 		if (!generalFormOk) return;
 		loading = true;
 
-		performUpdateMetadata = true;
-
 		const result = await GRAPHQL_CLIENT.mutation(CATEGORY_UPDATE_MUTATION, {
 			id: page.params.id,
 			input: {
@@ -127,11 +126,16 @@
 			},
 		});
 
-		loading = false;
-
-		if (checkIfGraphqlResultHasError(result, 'categoryUpdate', $tranFunc('common.editSuccess')))
+		if (checkIfGraphqlResultHasError(result, 'categoryUpdate')) {
+			loading = false;
 			return;
+		}
 
+		const hasError = await metaRef.handleUpdate();
+		loading = false;
+		if (hasError) return;
+
+		toast.success($tranFunc('common.editSuccess'));
 		categoryQuery.reexecute({
 			variables: { id: page.params.id },
 			context: { requestPolicy: 'network-only' },
@@ -157,12 +161,11 @@
 				bind:ok={generalFormOk}
 				{loading}
 			/>
-
 			<GeneralMetadataEditor
 				{metadata}
 				{privateMetadata}
 				objectId={id}
-				bind:performUpdateMetadata
+				bind:this={metaRef}
 				disabled={loading}
 			/>
 		</div>

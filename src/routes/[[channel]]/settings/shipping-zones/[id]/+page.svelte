@@ -37,7 +37,7 @@
 		pause: !page.params.id,
 	});
 
-	let performUpdateMetadata = $state(false);
+	let metaRef = $state<any>();
 	let loading = $state(false);
 	let generalFormOk = $state(false);
 
@@ -79,7 +79,6 @@
 
 	const handleUpdateZone = async () => {
 		loading = true;
-		performUpdateMetadata = true;
 
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'shippingZoneUpdate'>,
@@ -88,13 +87,17 @@
 			id: page.params.id!,
 			input: shippingZoneInput,
 		});
-		loading = false;
 
-		if (
-			!checkIfGraphqlResultHasError(result, 'shippingZoneUpdate', $tranFunc('common.editSuccess'))
-		) {
-			onDoneUpdateMethods();
+		if (checkIfGraphqlResultHasError(result, 'shippingZoneUpdate')) {
+			loading = false;
+			return;
 		}
+
+		const hasErr = await metaRef?.handleUpdate();
+		loading = false;
+		if (hasErr) return;
+
+		onDoneUpdateMethods();
 	};
 
 	onMount(() =>
@@ -145,7 +148,7 @@
 				{metadata}
 				{privateMetadata}
 				objectId={id}
-				bind:performUpdateMetadata
+				bind:this={metaRef}
 				disabled={loading}
 			/>
 		</div>

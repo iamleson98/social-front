@@ -22,13 +22,15 @@
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
+	import { toast } from 'svelte-sonner';
 
 	const giftcardUtils = new GiftcardUtil();
 
 	let loading = $state(false);
-	let performUpdateMetadata = $state(false);
+	let metaRef = $state<any>();
 
 	const giftcardQuery = operationStore<Pick<Query, 'giftCard'>, QueryGiftCardArgs>({
 		query: GIFT_CARD_DETAIL_QUERY,
@@ -60,21 +62,25 @@
 
 	const onUpdateClick = async () => {
 		loading = true;
-		performUpdateMetadata = true; // trigger for metadata update
-
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'giftCardUpdate'>,
 			MutationGiftCardUpdateArgs
 		>(GIFT_CARD_UPDATE_MUTATION, { id: page.params.id!, input: giftcardUpdateInput });
 
-		loading = false;
-
-		if (!checkIfGraphqlResultHasError(result, 'giftCardUpdate', $tranFunc('common.editSuccess'))) {
-			giftcardQuery.reexecute({
-				variables: { id: page.params.id! },
-				context: { requestPolicy: 'network-only' },
-			});
+		if (checkIfGraphqlResultHasError(result, 'giftCardUpdate')) {
+			loading = false;
+			return;
 		}
+
+		const hasErr = await metaRef?.handleUpdate();
+		loading = false;
+		if (hasErr) return;
+
+		toast.success(CommonState.EditSuccess);
+		giftcardQuery.reexecute({
+			variables: { id: page.params.id! },
+			context: { requestPolicy: 'network-only' },
+		});
 	};
 
 	const onDeleteClick = async () => {
@@ -129,7 +135,7 @@
 				{privateMetadata}
 				disabled={loading}
 				objectId={id}
-				bind:performUpdateMetadata
+				bind:this={metaRef}
 			/>
 			<GiftcardEvents {id} />
 		</div>

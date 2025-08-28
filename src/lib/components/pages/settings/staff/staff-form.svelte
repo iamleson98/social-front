@@ -146,7 +146,7 @@
 	<Toggle
 		label={$tranFunc('staff.active')}
 		bind:checked={isActive}
-		disabled={!isStaffManager || disabled}
+		disabled={!isStaffManager || (isStaffManager && canEdit) || disabled}
 		class="flex-1"
 	/>
 

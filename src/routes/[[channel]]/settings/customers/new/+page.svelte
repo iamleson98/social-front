@@ -6,10 +6,10 @@
 	import type { Mutation, MutationCustomerCreateArgs, UserCreateInput } from '$lib/gql/graphql';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { toast } from 'svelte-sonner';
-	import { tranFunc } from '$i18n';
 	import { goto } from '$app/navigation';
 	import { AppRoute } from '$lib/utils';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
+	import { CommonState } from '$lib/utils/common.svelte';
 
 	let userInput = $state<UserCreateInput>({
 		firstName: '',
@@ -20,8 +20,7 @@
 	});
 	let generalFormOk = $state(false);
 	let loading = $state(false);
-	let performUpdateMetadata = $state(false);
-	let createdUserId = $state('');
+	let metaRef = $state<any>();
 
 	const onCreateClick = async () => {
 		loading = true;
@@ -33,16 +32,17 @@
 			input: userInput,
 		});
 
-		if (checkIfGraphqlResultHasError(result, 'customerCreate')) return;
+		if (checkIfGraphqlResultHasError(result, 'customerCreate')) {
+			loading = false;
+			return;
+		}
 
-		createdUserId = result.data?.customerCreate?.user?.id!;
-		performUpdateMetadata = true; // trigger update metadatas
-	};
-
-	const handleDoneUpdateMetadata = async () => {
+		const hasErr = await metaRef?.handleUpdate(result.data?.customerCreate?.user?.id!);
 		loading = false;
-		toast.success($tranFunc('common.createSuccess'));
-		await goto(AppRoute.SETTINGS_CONFIGS_USER_DETAILS(createdUserId));
+		if (hasErr) return;
+
+		toast.success(CommonState.CreateSuccess);
+		await goto(AppRoute.SETTINGS_CONFIGS_USER_DETAILS(result.data?.customerCreate?.user?.id!));
 	};
 </script>
 
@@ -55,14 +55,9 @@
 		note={userInput.note!}
 		bind:ok={generalFormOk}
 		disabled={loading}
-    isCreatePage
+		isCreatePage
 	/>
-	<GeneralMetadataEditor
-		objectId={createdUserId}
-		bind:performUpdateMetadata
-		disabled={loading}
-		onDoneUpdate={handleDoneUpdateMetadata}
-	/>
+	<GeneralMetadataEditor objectId={''} bind:this={metaRef} disabled={loading} />
 </div>
 
 <ActionBar

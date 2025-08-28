@@ -22,6 +22,7 @@
 	import CustomerOrders from '$lib/components/pages/settings/customers/customer-orders.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import { tranFunc } from '$i18n';
+	import { toast } from 'svelte-sonner';
 
 	const userDetailQuery = operationStore<Pick<Query, 'user'>, QueryUserArgs>({
 		query: USER_DETAIL_QUERY,
@@ -40,8 +41,7 @@
 		isActive: false,
 		note: '',
 	});
-	/** keep track of when to update metadata */
-	let performUpdateMetadata = $state(false);
+	let metaRef = $state<any>();
 
 	onMount(() =>
 		userDetailQuery.subscribe((result) => {
@@ -60,8 +60,6 @@
 
 	const onUpdateClick = async () => {
 		loading = true;
-		performUpdateMetadata = true; // trigger update metadatas
-
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'customerUpdate'>,
 			MutationCustomerUpdateArgs
@@ -70,10 +68,16 @@
 			input: userInput,
 		});
 
-		loading = false;
-
-		if (checkIfGraphqlResultHasError(result, 'customerUpdate', $tranFunc('common.editSuccess')))
+		if (checkIfGraphqlResultHasError(result, 'customerUpdate')) {
+			loading = false;
 			return;
+		}
+
+		const hasErr = await metaRef?.handleUpdate();
+		loading = false;
+		if (hasErr) return;
+
+		toast.success($tranFunc('common.editSuccess'));
 		userDetailQuery.reexecute({ variables: { id: page.params.id } });
 	};
 </script>
@@ -101,7 +105,7 @@
 				metadata={user.metadata}
 				privateMetadata={user.privateMetadata}
 				objectId={user.id}
-				bind:performUpdateMetadata
+				bind:this={metaRef}
 				disabled={loading}
 			/>
 		</div>

@@ -30,7 +30,6 @@
 		unit: MeasurementUnitsEnum.G,
 	});
 
-	// let createdAttributeId = $state('');
 	let generalFormOk = $state(false);
 	let metaRef = $state<any>();
 	let loading = $state(false);
@@ -53,12 +52,9 @@
 		const metaHasErr = await metaRef.handleUpdate(
 			createResult.data?.attributeCreate?.attribute?.id!,
 		);
-		if (metaHasErr) {
-			loading = false;
-			return;
-		}
-
 		loading = false;
+		if (metaHasErr) return;
+
 		toast.success(CommonState.CreateSuccess);
 		await goto(
 			AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_DETAILS(

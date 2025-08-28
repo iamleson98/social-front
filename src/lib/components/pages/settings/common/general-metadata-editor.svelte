@@ -78,7 +78,7 @@
 			taskKeys.push('deletePrivateMetadata');
 		}
 
-		if (!taskProps.length) return;
+		if (!taskProps.length) return false;
 
 		const tasks = taskProps.map((props) =>
 			GRAPHQL_CLIENT.mutation(props.query, props.variables).toPromise(),

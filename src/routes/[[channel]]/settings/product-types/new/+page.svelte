@@ -49,7 +49,7 @@
 		}
 
 		createdProductTypeId = result.data?.productTypeCreate?.productType?.id!;
-		const hasErr = await metadataRef.handleUpdate();
+		const hasErr = await metadataRef.handleUpdate(createdProductTypeId);
 		loading = false;
 		if (hasErr) return;
 

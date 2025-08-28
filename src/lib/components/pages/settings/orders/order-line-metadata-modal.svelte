@@ -19,7 +19,8 @@
 
 	let { orderID, orderLineID, onClose }: Props = $props();
 
-	let performUpdateMetadata = $state(false);
+	let orderLineMetaRef = $state<any>();
+	let orderLineVariantMetaRef = $state<any>();
 
 	const lineMetaQuery = operationStore<
 		Pick<Query, 'order'>,
@@ -43,6 +44,11 @@
 			});
 		}),
 	);
+
+	const handleUpdateMetadatas = async () => {
+		const jobs = [orderLineMetaRef?.handleUpdate(), orderLineVariantMetaRef?.handleUpdate()];
+		await Promise.all(jobs);
+	};
 </script>
 
 <Modal
@@ -51,7 +57,7 @@
 	header="Order line metadata"
 	onCancel={onClose}
 	{onClose}
-	onOk={() => (performUpdateMetadata = true)}
+	onOk={handleUpdateMetadatas}
 	closeOnOutsideClick
 >
 	{#if $lineMetaQuery.fetching}
@@ -86,7 +92,7 @@
 					metadata={orderLine.metadata}
 					privateMetadata={orderLine.privateMetadata || []}
 					objectId={orderLine.id}
-					bind:performUpdateMetadata
+					bind:this={orderLineMetaRef}
 				/>
 
 				<div class="border-t border-gray-200"></div>
@@ -102,7 +108,7 @@
 					metadata={orderLine.variant.metadata}
 					privateMetadata={orderLine.variant.privateMetadata}
 					objectId={orderLine.variant.id}
-					bind:performUpdateMetadata
+					bind:this={orderLineVariantMetaRef}
 				/>
 			{/if}
 		</div>

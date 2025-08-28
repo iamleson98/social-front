@@ -55,8 +55,8 @@
 		minimumOrderWeight: 0,
 		maximumOrderWeight: 0,
 	});
-	let createdMethodId = $state('');
-	let performUpdateMetadata = $state(false);
+	// let createdMethodId = $state('');
+	let metaRef = $state<any>();
 	let generalFormOk = $state(false);
 	let shippingMethodChannelListingsInput = $state<ShippingMethodChannelListingInput>({
 		addChannels: [],
@@ -80,10 +80,18 @@
 			},
 		});
 
-		if (checkIfGraphqlResultHasError(result, 'shippingPriceCreate')) return;
+		if (checkIfGraphqlResultHasError(result, 'shippingPriceCreate')) {
+			loading = false;
+			return;
+		}
 
-		createdMethodId = result.data?.shippingPriceCreate?.shippingMethod?.id!;
-		performUpdateMetadata = true;
+		const createdMethodId = result.data?.shippingPriceCreate?.shippingMethod?.id!;
+		// update meta
+		const hasErr = await metaRef?.handleUpdate(createdMethodId);
+		if (hasErr) {
+			loading = false;
+			return;
+		}
 
 		// 2) update channel listings
 		const listingUpdateResult = await GRAPHQL_CLIENT.mutation<
@@ -93,6 +101,8 @@
 			id: createdMethodId,
 			input: shippingMethodChannelListingsInput,
 		});
+
+		loading = false;
 
 		if (
 			(checkIfGraphqlResultHasError(listingUpdateResult, 'shippingMethodChannelListingUpdate'),
@@ -138,7 +148,7 @@
 			bind:inclusionType={shippingMethodInput.inclusionType!}
 			deletePostalCodeRules={[]}
 		/>
-		<GeneralMetadataEditor objectId={createdMethodId} bind:performUpdateMetadata />
+		<GeneralMetadataEditor objectId={''} bind:this={metaRef} />
 	</div>
 
 	<ActionBar

@@ -53,7 +53,6 @@
 	let activePrivateMetadata = $state<MetadataItem[]>();
 	let loading = $state(false);
 	let metadataRef = $state<any>();
-	let createdTaxClassId = $state<string>('');
 
 	afterNavigate(() => {
 		if (ClassId) {
@@ -103,19 +102,15 @@
 			input: activeTaxClass,
 		});
 
-		const hasErr = await metadataRef.handleUpdate();
-		if (hasErr) {
-			loading = false;
-			return;
-		}
-
 		if (checkIfGraphqlResultHasError(result, 'taxClassUpdate', CommonState.EditSuccess)) {
 			loading = false;
 			return;
 		}
 
+		const hasErr = await metadataRef?.handleUpdate();
 		loading = false;
-		// await goto(AppRoute.TAX_SETTINGS_TAX_CLASSES());
+		if (hasErr) return;
+
 		TaxClassesQuery.reexecute({ variables: { first: 100 } });
 	};
 
@@ -191,9 +186,9 @@
 		}
 
 		// get id for creating metadata
-		createdTaxClassId = result.data?.taxClassCreate?.taxClass?.id as string;
+		const createdTaxClassId = result.data?.taxClassCreate?.taxClass?.id as string;
 
-		const hasErr = await metadataRef.handleUpdate();
+		const hasErr = await metadataRef.handleUpdate(createdTaxClassId);
 		if (hasErr) {
 			loading = false;
 			return;
@@ -295,7 +290,7 @@
 				{#if activeMetadata && activePrivateMetadata}
 					<GeneralMetadataEditor
 						metadata={activeMetadata}
-						objectId={ClassId === 'new' ? createdTaxClassId : ClassId}
+						objectId={ClassId === 'new' ? '' : ClassId}
 						privateMetadata={activePrivateMetadata}
 						bind:this={metadataRef}
 						disabled={loading}

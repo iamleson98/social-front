@@ -22,8 +22,7 @@
 		address: {},
 	});
 
-	let performUpdateMetadata = $state(false);
-	let createdWarehouseID = $state('');
+	let metaRef = $state<any>();
 	let loading = $state(false);
 	let generalFormOk = $state(false);
 
@@ -37,14 +36,17 @@
 		>(WAREHOUSE_CREATE_MUTATION, {
 			input: warehouseInput,
 		});
-		if (checkIfGraphqlResultHasError(result, 'createWarehouse')) return;
 
-		createdWarehouseID = result.data?.createWarehouse?.warehouse?.id!;
-		performUpdateMetadata = true;
-	};
+		if (checkIfGraphqlResultHasError(result, 'createWarehouse')) {
+			loading = false;
+			return;
+		}
 
-	const onDoneUpdateMeta = async () => {
+		const createdWarehouseID = result.data?.createWarehouse?.warehouse?.id!;
+		const hasErr = await metaRef?.handleUpdate(createdWarehouseID);
 		loading = false;
+		if (hasErr) return;
+
 		toast.success($tranFunc('common.createSuccess'));
 		await goto(AppRoute.SETTINGS_CONFIGS_WAREHOUSE_DETAILS(createdWarehouseID));
 	};
@@ -63,9 +65,8 @@
 	<GeneralMetadataEditor
 		metadata={[]}
 		privateMetadata={[]}
-		bind:performUpdateMetadata
-		objectId={createdWarehouseID}
-		onDoneUpdate={onDoneUpdateMeta}
+		bind:this={metaRef}
+		objectId={''}
 		disabled={loading}
 	/>
 </div>

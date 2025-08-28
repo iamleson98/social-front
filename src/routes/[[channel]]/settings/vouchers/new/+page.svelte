@@ -50,13 +50,11 @@
 		addCodes: [],
 	});
 
-	let createdVoucherId = $state<string>('');
+	const NameSchema = string().nonempty(CommonState.FieldRequiredError);
 	/** temporary state for UI */
 	let activeChannelListings = $state<VoucherChannelListing[]>([]);
 	let loading = $state(false);
 	let metadataRef = $state<any>();
-
-	const NameSchema = string().nonempty(CommonState.FieldRequiredError);
 	let nameErrors = $state<string[]>([]);
 
 	const validateName = () => {
@@ -82,7 +80,9 @@
 			return;
 		}
 
-		const hasErr = await metadataRef.handleUpdate(result.data?.voucherCreate?.voucher?.id!);
+		const createdVoucherId = result.data?.voucherCreate?.voucher?.id!;
+
+		const hasErr = await metadataRef?.handleUpdate(createdVoucherId);
 		if (hasErr) {
 			loading = false;
 			return;
@@ -168,7 +168,7 @@
 			bind:startDate={voucherInput.startDate!}
 			bind:endDate={voucherInput.endDate!}
 		/>
-		<GeneralMetadataEditor objectId={createdVoucherId} bind:this={metadataRef} disabled={loading} />
+		<GeneralMetadataEditor objectId={''} bind:this={metadataRef} disabled={loading} />
 	</div>
 
 	<div class="w-3/10">

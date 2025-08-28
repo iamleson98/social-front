@@ -76,8 +76,7 @@
 
 	/** temporary state for UI */
 	let activeChannelListings = $state<VoucherChannelListing[]>([]);
-
-	let performUpdateMetadata = $state(false);
+	let metaRef = $state<any>();
 	let loading = $state(false);
 
 	const NameSchema = string().nonempty(CommonState.FieldRequiredError);
@@ -113,8 +112,6 @@
 	);
 
 	const handleUpdateVoucher = async () => {
-		performUpdateMetadata = true;
-
 		const mainUpdate = GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'voucherUpdate'>,
 			MutationVoucherUpdateArgs
@@ -133,13 +130,19 @@
 
 		loading = true;
 		const results = await Promise.all([mainUpdate, channelListingUpdate]);
-		loading = false;
-
 		const resultKeys = ['voucherUpdate', 'voucherChannelListingUpdate'] as (keyof Mutation)[];
-		const hasErr = results
-			.map((res, idx) => checkIfGraphqlResultHasError(res as any, resultKeys[idx]))
-			.some(Boolean);
-		if (hasErr) return;
+		const hasErr = results.some((res, idx) =>
+			checkIfGraphqlResultHasError(res as any, resultKeys[idx]),
+		);
+		if (hasErr) {
+			loading = false;
+			return;
+		}
+
+		// update meta
+		const isThereError = await metaRef?.handleUpdate();
+		loading = false;
+		if (isThereError) return;
 
 		toast.success($tranFunc('common.editSuccess'));
 		voucherQuery.reexecute({
@@ -230,7 +233,7 @@
 				objectId={id}
 				{metadata}
 				{privateMetadata}
-				bind:performUpdateMetadata
+				bind:this={metaRef}
 				disabled={loading}
 			/>
 		</div>

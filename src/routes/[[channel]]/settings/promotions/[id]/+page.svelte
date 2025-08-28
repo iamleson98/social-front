@@ -29,6 +29,7 @@
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
+	import { toast } from 'svelte-sonner';
 
 	const promotionStore = operationStore<Pick<Query, 'promotion'>, QueryPromotionArgs>({
 		query: PROMOTION_DETAIL_QUERY,
@@ -48,7 +49,7 @@
 	let loading = $state(false);
 	let promotionType = $state<PromotionTypeEnum>(PromotionTypeEnum.Catalogue);
 	let generalOk = $state(true);
-	let performUpdateMetadata = $state(false);
+	let metaRef = $state<any>();
 
 	onMount(() =>
 		promotionStore.subscribe((result) => {
@@ -70,8 +71,6 @@
 		if (!generalOk) return;
 
 		loading = true;
-		performUpdateMetadata = true;
-
 		const promotionUpdate = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'promotionUpdate'>,
 			MutationPromotionUpdateArgs
@@ -79,11 +78,16 @@
 			id: page.params.id!,
 			input: promotionInput,
 		});
-		loading = false;
 
-		if (checkIfGraphqlResultHasError(promotionUpdate, 'promotionUpdate', CommonState.EditSuccess))
+		if (checkIfGraphqlResultHasError(promotionUpdate, 'promotionUpdate')) {
+			loading = false;
 			return;
+		}
 
+		const hasErr = await metaRef?.handleUpdate();
+		if (hasErr) return;
+
+		toast.success(CommonState.EditSuccess);
 		promotionStore.reexecute({
 			variables: { id: page.params.id! },
 		});
@@ -143,7 +147,7 @@
 			{metadata}
 			{privateMetadata}
 			disabled={loading}
-			bind:performUpdateMetadata
+			bind:this={metaRef}
 		/>
 		<ActionBar
 			backButtonUrl={AppRoute.SETTINGS_CONFIGS_PROMOTIONS()}

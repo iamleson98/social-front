@@ -16,6 +16,7 @@
 	import {
 		checkIfGraphqlResultHasError,
 		fulfillmentStatusBadgeClass,
+		SitenameCommonClassName,
 		stringSlicer,
 	} from '$lib/utils/utils';
 	import OrderLineMetadataModal from './order-line-metadata-modal.svelte';
@@ -36,10 +37,6 @@
 	};
 
 	let { order, onUpdateTrackingCode }: Props = $props();
-
-	let openTrackingModal = $state(false);
-	let loading = $state(false);
-	let trackingCode = $state('');
 
 	const PRODUCT_MODAL_COLUMNS: TableColumnProps<FulfillmentLine, any>[] = [
 		{
@@ -84,6 +81,9 @@
 		},
 	];
 
+	let openTrackingModal = $state(false);
+	let loading = $state(false);
+	let trackingCode = $state('');
 	let orderLineIDForMetadataView = $state<string>();
 	let fulfillmentToCancelWarehouseID = $state<string>();
 	let selectedFulfillment = $state<Fulfillment>();
@@ -187,10 +187,10 @@
 	>
 {/snippet}
 
-<div class="bg-white rounded-lg border border-gray-200 p-3 flex flex-col gap-3">
+<div class={SitenameCommonClassName}>
 	{#each order.fulfillments as fulfillment, idx (idx)}
 		<div
-			class="border-gray-200 flex flex-col gap-2 pb-2"
+			class="border-gray-200 space-y-2 pb-2"
 			class:border-b={idx !== order.fulfillments.length - 1}
 		>
 			<SectionHeader>

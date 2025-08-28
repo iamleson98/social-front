@@ -27,8 +27,7 @@
 	});
 	let loading = $state(false);
 	let generalFormOk = $state(false);
-	let createdShippingZoneId = $state('');
-	let performUpdateMetadata = $state(false);
+	let metaRef = $state<any>();
 
 	const handleCreate = async () => {
 		loading = true;
@@ -38,15 +37,17 @@
 		>(SHIPPING_ZONE_CREATE_MUTATION, {
 			input: shippingZoneInput,
 		});
+
+		if (checkIfGraphqlResultHasError(result, 'shippingZoneCreate')) {
+			loading = false;
+			return;
+		}
+
+		const createdShippingZoneId = result.data?.shippingZoneCreate?.shippingZone?.id!;
+		const hasErr = await metaRef?.handleUpdate(createdShippingZoneId);
 		loading = false;
+		if (hasErr) return;
 
-		if (checkIfGraphqlResultHasError(result, 'shippingZoneCreate')) return;
-
-		createdShippingZoneId = result.data?.shippingZoneCreate?.shippingZone?.id!;
-		performUpdateMetadata = true;
-	};
-
-	const onDoneUpdateMetadata = async () => {
 		toast.success($tranFunc('common.createSuccess'));
 		await goto(AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS(createdShippingZoneId));
 	};
@@ -63,12 +64,7 @@
 			bind:formOk={generalFormOk}
 		/>
 		<ShippingMethods disabled={loading} />
-		<GeneralMetadataEditor
-			objectId={createdShippingZoneId}
-			bind:performUpdateMetadata
-			disabled={loading}
-			onDoneUpdate={onDoneUpdateMetadata}
-		/>
+		<GeneralMetadataEditor objectId={''} bind:this={metaRef} disabled={loading} />
 	</div>
 
 	<SubSection

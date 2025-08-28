@@ -39,11 +39,11 @@
 		minimumOrderWeight: 0,
 		maximumOrderWeight: 0,
 	});
-	let shippingMethodChannelListingsInput = $state<ShippingMethodChannelListingInput>({
-		addChannels: [],
-	});
+	// let shippingMethodChannelListingsInput = $state<ShippingMethodChannelListingInput>({
+	// 	addChannels: [],
+	// });
 	let loading = $state(false);
-	let performUpdateMetadata = $state(false);
+	let metaRef = $state<any>();
 	let generalFormOk = $state(false);
 
 	onMount(() =>
@@ -106,7 +106,7 @@
 			/>
 			<GeneralMetadataEditor
 				objectId={shippingMethod.id}
-				bind:performUpdateMetadata
+				bind:this={metaRef}
 				metadata={shippingMethod.metadata}
 				privateMetadata={shippingMethod.privateMetadata}
 			/>
