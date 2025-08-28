@@ -73,14 +73,16 @@
 			bind:inputType={attributeInput.inputType!}
 			isCreatePage
 			bind:formOk={generalFormOk}
+			disabled={loading}
 		/>
 		<AttributeValues
 			inputType={attributeInput.inputType!}
 			addValues={[]}
+			disabled={loading}
 			removeValues={[]}
 			bind:unit={attributeInput.unit!}
 		/>
-		<GeneralMetadataEditor objectId="" bind:this={metaRef} />
+		<GeneralMetadataEditor disabled={loading} objectId="" bind:this={metaRef} />
 	</div>
 
 	<div class="w-3/10 space-y-2">
@@ -88,6 +90,7 @@
 			bind:visibleInStorefront={attributeInput.visibleInStorefront!}
 			isCreatePage
 			bind:type={attributeInput.type}
+			disabled={loading}
 		/>
 	</div>
 </div>

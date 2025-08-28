@@ -47,6 +47,7 @@
 		addValues: AttributeValueUpdateInput[];
 		removeValues: string[];
 		unit?: MeasurementUnitsEnum;
+		disabled?: boolean;
 	};
 
 	let {
@@ -55,6 +56,7 @@
 		addValues = $bindable(),
 		removeValues = $bindable(),
 		unit = $bindable(),
+		disabled,
 	}: Props = $props();
 
 	const ShowValues = $derived(
@@ -267,7 +269,7 @@
 			variant="light"
 			onclick={() => handleDeleteValue(item)}
 			data-interactive
-			disabled={loading}
+			disabled={loading || disabled}
 		/>
 		<IconButton
 			icon={Edit}
@@ -279,7 +281,7 @@
 				openUpsertModal = true;
 			}}
 			data-interactive
-			disabled={loading}
+			disabled={loading || disabled}
 		/>
 	</div>
 {/snippet}
@@ -294,7 +296,7 @@
 					variant="light"
 					endIcon={Plus}
 					onclick={handleClickAddValue}
-					disabled={loading || !inputType}
+					disabled={loading || !inputType || disabled}
 				>
 					Add value
 				</Button>
@@ -307,7 +309,7 @@
 					resultKey={'attribute.choices' as keyof Query}
 					columns={ValueColumns}
 					bind:variables={attributeChoicesVariables}
-					disabled={loading}
+					disabled={loading || disabled}
 					bind:forceReExecuteGraphqlQuery
 					onDragEnd={handleArrangeValues}
 					dragEffectType="move-position"
@@ -325,7 +327,7 @@
 					options={MetricSystems}
 					size="sm"
 					bind:value={metricSystem}
-					disabled={loading}
+					disabled={loading || disabled}
 				/>
 				<Select
 					label="Units of"
@@ -333,13 +335,13 @@
 					options={MetricUnits}
 					size="sm"
 					bind:value={metricUnitsOf}
-					disabled={loading || !metricSystem}
+					disabled={loading || !metricSystem || disabled}
 				/>
 				<Select
 					label="Unit"
 					placeholder="unit"
 					size="sm"
-					disabled={loading || !metricUnitsOf}
+					disabled={loading || !metricUnitsOf || disabled}
 					bind:value={unit as string}
 					options={FinalUnitOptions}
 				/>
@@ -358,7 +360,7 @@
 	onOk={() => (valueItemToEdit ? handleUpdateAttributeValue() : handleCreateAttributeValue())}
 	onClose={() => (openUpsertModal = false)}
 	onCancel={() => (openUpsertModal = false)}
-	disableOkBtn={shouldDisableOkButton}
+	disableOkBtn={shouldDisableOkButton || disabled}
 >
 	{#if valueItemToEdit}
 		<!-- edit value -->
@@ -375,9 +377,11 @@
 				label="Please provide value"
 				placeholder="Please provide value"
 				bind:value={valueItemToEdit.name}
+				{disabled}
 			/>
 		{:else if inputType === AttributeInputTypeEnum.Multiselect}
 			<Input
+				{disabled}
 				label="Please provide value"
 				placeholder="Please provide value"
 				bind:value={valueItemToEdit.name}
@@ -395,12 +399,14 @@
 			/>
 		{:else if inputType === AttributeInputTypeEnum.Dropdown}
 			<Input
+				{disabled}
 				label="Please provide value"
 				placeholder="Please provide value"
 				bind:value={valueItemToCreate.name}
 			/>
 		{:else if inputType === AttributeInputTypeEnum.Multiselect}
 			<Input
+				{disabled}
 				label="Please provide value"
 				placeholder="Please provide value"
 				bind:value={valueItemToCreate.name}

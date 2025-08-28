@@ -76,6 +76,7 @@
 		inputDebounceOption={{ onInput: handleNameChange }}
 		onblur={handleNameChange}
 		required
+		{disabled}
 	/>
 	<Input
 		label="Attribute slug"
@@ -86,6 +87,7 @@
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
 		required
+		{disabled}
 	/>
 	<Select
 		options={AttributeInputTypeOptions}
@@ -103,5 +105,6 @@
 		bind:checked={valueRequired}
 		subText="If checked, this attribute is required"
 		required
+		{disabled}
 	/>
 </div>

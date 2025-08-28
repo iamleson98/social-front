@@ -145,6 +145,7 @@
 				bind:addValues={attributeInput.addValues!}
 				bind:removeValues={attributeInput.removeValues!}
 				bind:unit={attributeInput.unit!}
+				disabled={loading}
 			/>
 			<GeneralMetadataEditor
 				objectId={id}
@@ -158,6 +159,7 @@
 		<DetailSidebar
 			bind:visibleInStorefront={attributeInput.visibleInStorefront!}
 			type={type || AttributeTypeEnum.ProductType}
+			disabled={loading}
 		/>
 	</div>
 
