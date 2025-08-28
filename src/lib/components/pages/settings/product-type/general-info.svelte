@@ -35,11 +35,11 @@
 	}: Props = $props();
 
 	const ProductTypeSchema = object({
-		name: string().nonempty(CommonState.FieldRequiredError),
+		name: string().nonempty($CommonState.FieldRequiredError),
 		slug: string()
-			.nonempty(CommonState.FieldRequiredError)
+			.nonempty($CommonState.FieldRequiredError)
 			.regex(ValidSlugRegex, 'Please provide valid slug'),
-		kind: string().nonempty(CommonState.FieldRequiredError),
+		kind: string().nonempty($CommonState.FieldRequiredError),
 		isShippingRequired: boolean(),
 	});
 

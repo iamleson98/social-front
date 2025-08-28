@@ -87,7 +87,7 @@
 		const hasErr = await metaRef?.handleUpdate();
 		if (hasErr) return;
 
-		toast.success(CommonState.EditSuccess);
+		toast.success($CommonState.EditSuccess);
 		promotionStore.reexecute({
 			variables: { id: page.params.id! },
 		});
@@ -95,7 +95,7 @@
 
 	const handleDelete = async () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: CommonState.ConfirmDelete,
+			content: $CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true;
 				const result = await GRAPHQL_CLIENT.mutation<
@@ -106,7 +106,7 @@
 				});
 				loading = false;
 
-				if (!checkIfGraphqlResultHasError(result, 'promotionDelete', CommonState.DeleteSuccess))
+				if (!checkIfGraphqlResultHasError(result, 'promotionDelete', $CommonState.DeleteSuccess))
 					await goto(AppRoute.SETTINGS_CONFIGS_PROMOTIONS());
 			},
 		});

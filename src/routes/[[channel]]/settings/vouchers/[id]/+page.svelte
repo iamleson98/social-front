@@ -79,7 +79,7 @@
 	let metaRef = $state<any>();
 	let loading = $state(false);
 
-	const NameSchema = string().nonempty(CommonState.FieldRequiredError);
+	const NameSchema = string().nonempty($CommonState.FieldRequiredError);
 	let nameErrors = $state<string[]>([]);
 
 	const validateName = () => {

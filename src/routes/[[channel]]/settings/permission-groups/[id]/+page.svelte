@@ -62,7 +62,7 @@
 		});
 		loading = false;
 
-		if (!checkIfGraphqlResultHasError(result, 'permissionGroupUpdate', CommonState.EditSuccess))
+		if (!checkIfGraphqlResultHasError(result, 'permissionGroupUpdate', $CommonState.EditSuccess))
 			groupQuery.reexecute({
 				variables: {
 					id: page.params.id!,
@@ -72,7 +72,7 @@
 
 	const handleDelete = async () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: CommonState.ConfirmDelete,
+			content: $CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true;
 				const result = await GRAPHQL_CLIENT.mutation<
@@ -84,7 +84,7 @@
 				loading = false;
 
 				if (
-					!checkIfGraphqlResultHasError(result, 'permissionGroupDelete', CommonState.DeleteSuccess)
+					!checkIfGraphqlResultHasError(result, 'permissionGroupDelete', $CommonState.DeleteSuccess)
 				)
 					await goto(AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUPS());
 			},

@@ -31,8 +31,8 @@
 	}: Props = $props();
 
 	const DataSchema = object({
-		key: string().nonempty(CommonState.FieldRequiredError),
-		value: string().nonempty(CommonState.FieldRequiredError),
+		key: string().nonempty($CommonState.FieldRequiredError),
+		value: string().nonempty($CommonState.FieldRequiredError),
 	});
 	type DataSchemaType = z.infer<typeof DataSchema>;
 

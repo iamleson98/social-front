@@ -43,8 +43,8 @@
 	const POSITIVE_ERROR = $tranFunc('error.negativeNumber');
 
 	const RuleSchema = object({
-		name: string().nonempty(CommonState.FieldRequiredError),
-		addChannels: array(string()).nonempty(CommonState.FieldRequiredError),
+		name: string().nonempty($CommonState.FieldRequiredError),
+		addChannels: array(string()).nonempty($CommonState.FieldRequiredError),
 		rewardValue: number().nonnegative(POSITIVE_ERROR),
 		rewardValueType: z.enum([RewardValueTypeEnum.Fixed, RewardValueTypeEnum.Percentage]),
 	});

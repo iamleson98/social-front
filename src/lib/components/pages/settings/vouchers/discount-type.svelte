@@ -49,7 +49,7 @@
 		object({
 			discountValue: number().nonnegative(NON_NEGATIVE),
 		}),
-	).nonempty(CommonState.FieldRequiredError);
+	).nonempty($CommonState.FieldRequiredError);
 
 	const DISCOUNT_TYPE_SHIPPING = 'Shipping' as DiscountValueTypeEnum;
 
@@ -70,7 +70,7 @@
 
 	let selectedChannelIds = $state<string[]>(ExistingUsedChannelIDs);
 	const SelectedChannelError = $derived(
-		!selectedChannelIds.length ? CommonState.FieldRequiredError : undefined,
+		!selectedChannelIds.length ? $CommonState.FieldRequiredError : undefined,
 	);
 
 	const channelsQuery = operationStore<Pick<Query, 'channels'>>({

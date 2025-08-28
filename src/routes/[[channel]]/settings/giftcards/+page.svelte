@@ -84,7 +84,7 @@
 
 	const handleDeleteGiftcard = (id: string) => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: CommonState.ConfirmDelete,
+			content: $CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true; //
 				const result = await GRAPHQL_CLIENT.mutation<
@@ -96,7 +96,7 @@
 
 				loading = false; //
 
-				if (checkIfGraphqlResultHasError(result, 'giftCardDelete', CommonState.DeleteSuccess))
+				if (checkIfGraphqlResultHasError(result, 'giftCardDelete', $CommonState.DeleteSuccess))
 					return;
 
 				forceReExecuteGraphqlQuery = true; // trigger refetching table data
@@ -109,7 +109,7 @@
 		if (!ids.length) return;
 
 		ALERT_MODAL_STORE.openAlertModal({
-			content: CommonState.ConfirmDelete,
+			content: $CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true;
 
@@ -118,7 +118,7 @@
 					MutationGiftCardBulkDeleteArgs
 				>(GIFT_CARD_BULK_DELETE_MUTATION, { ids });
 
-				if (checkIfGraphqlResultHasError(result, 'giftCardBulkDelete', CommonState.DeleteSuccess))
+				if (checkIfGraphqlResultHasError(result, 'giftCardBulkDelete', $CommonState.DeleteSuccess))
 					return;
 
 				loading = false;
@@ -148,7 +148,7 @@
 		});
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'giftCardBulkDeactivate', CommonState.EditSuccess))
+		if (checkIfGraphqlResultHasError(result, 'giftCardBulkDeactivate', $CommonState.EditSuccess))
 			return;
 
 		selectedGiftcards = {};
@@ -168,7 +168,7 @@
 		});
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'giftCardBulkActivate', CommonState.EditSuccess))
+		if (checkIfGraphqlResultHasError(result, 'giftCardBulkActivate', $CommonState.EditSuccess))
 			return;
 
 		selectedGiftcards = {};

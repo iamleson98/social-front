@@ -140,7 +140,7 @@
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'taxConfigurationUpdate', CommonState.EditSuccess))
+		if (checkIfGraphqlResultHasError(result, 'taxConfigurationUpdate', $CommonState.EditSuccess))
 			return;
 
 		TaxConfigQuery.reexecute({

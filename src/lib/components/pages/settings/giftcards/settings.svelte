@@ -78,10 +78,10 @@
 	let bulkIssueInput = $state<GiftCardBulkCreateInput>(createDefaultBulkIssueInput());
 
 	const giftcardSchema = object({
-		count: number().min(1, CommonState.NonNegativeError),
+		count: number().min(1, $CommonState.NonNegativeError),
 		tags: array(string()),
-		amount: number().min(1, CommonState.NonNegativeError),
-		currency: string().nonempty(CommonState.FieldRequiredError),
+		amount: number().min(1, $CommonState.NonNegativeError),
+		currency: string().nonempty($CommonState.FieldRequiredError),
 		isActive: boolean(),
 		expiryDate: string().optional(),
 	});
@@ -169,7 +169,7 @@
 		>(GIFTCARD_SETTINGS_UPDATE_MUTATION, { input: giftcardSettingInput });
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'giftCardSettingsUpdate', CommonState.EditSuccess))
+		if (checkIfGraphqlResultHasError(result, 'giftCardSettingsUpdate', $CommonState.EditSuccess))
 			return;
 
 		openSettingModal = false;
@@ -185,7 +185,7 @@
 		});
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'giftCardBulkCreate', CommonState.CreateSuccess))
+		if (checkIfGraphqlResultHasError(result, 'giftCardBulkCreate', $CommonState.CreateSuccess))
 			return;
 
 		bulkIssueInput = createDefaultBulkIssueInput(); // reset form
@@ -238,7 +238,7 @@
 		});
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'exportGiftCards', CommonState.CreateSuccess)) return;
+		if (checkIfGraphqlResultHasError(result, 'exportGiftCards', $CommonState.CreateSuccess)) return;
 
 		openExportCodesModal = false;
 		selectedIds = {}; // reset ids

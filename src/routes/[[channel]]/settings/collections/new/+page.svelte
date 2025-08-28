@@ -89,7 +89,7 @@
 		if (checkIfGraphqlResultHasError(channelListingResult, 'collectionChannelListingUpdate'))
 			return;
 
-		toast.success(CommonState.CreateSuccess);
+		toast.success($CommonState.CreateSuccess);
 		await goto(AppRoute.SETTINGS_CONFIGS_COLLECTION_DETAILS(createdCollectionId));
 	};
 </script>

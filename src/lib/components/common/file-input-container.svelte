@@ -47,7 +47,7 @@
 
 	const Schema = array(
 		object({
-			alt: string().nonempty(CommonState.FieldRequiredError),
+			alt: string().nonempty($CommonState.FieldRequiredError),
 		}),
 	);
 

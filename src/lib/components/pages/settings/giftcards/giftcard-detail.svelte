@@ -71,8 +71,8 @@
 	const GiftcardUpdateSchema = object({
 		balanceAmount: number().min(1, $tranFunc('error.negativeNumber')),
 		expiryDate: string().optional(),
-		addTags: array(string().nonempty(CommonState.FieldRequiredError)).optional(),
-		removeTags: array(string().nonempty(CommonState.FieldRequiredError)).optional(),
+		addTags: array(string().nonempty($CommonState.FieldRequiredError)).optional(),
+		removeTags: array(string().nonempty($CommonState.FieldRequiredError)).optional(),
 	});
 
 	type GiftcardUpdateSchema = z.infer<typeof GiftcardUpdateSchema>;

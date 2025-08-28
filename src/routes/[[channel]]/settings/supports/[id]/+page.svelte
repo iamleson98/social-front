@@ -12,10 +12,10 @@
 	import { object, string, z } from 'zod';
 
 	const TicketSchema = object({
-		title: string().min(1, CommonState.FieldRequiredError),
-		tag: string().min(1, CommonState.FieldRequiredError),
-		description: string().min(1, CommonState.FieldRequiredError),
-		orderNo: string().min(1, CommonState.FieldRequiredError),
+		title: string().min(1, $CommonState.FieldRequiredError),
+		tag: string().min(1, $CommonState.FieldRequiredError),
+		description: string().min(1, $CommonState.FieldRequiredError),
+		orderNo: string().min(1, $CommonState.FieldRequiredError),
 	});
 
 	type TicketInput = z.infer<typeof TicketSchema>;

@@ -77,57 +77,57 @@
 				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.Dropdown &&
 				(!attr.dropdown || !Object.keys(attr.dropdown).length)
 			) {
-				result[idx] = CommonState.FieldRequiredError;
+				result[idx] = $CommonState.FieldRequiredError;
 			} else if (
 				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.Boolean &&
 				typeof attr.boolean !== 'boolean'
 			) {
-				result[idx] = CommonState.FieldRequiredError;
+				result[idx] = $CommonState.FieldRequiredError;
 			} else if (
 				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.Date &&
 				!attr.date
 			) {
-				result[idx] = CommonState.FieldRequiredError;
+				result[idx] = $CommonState.FieldRequiredError;
 			} else if (
 				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.Numeric &&
 				!attr.numeric
 			) {
-				result[idx] = CommonState.FieldRequiredError;
+				result[idx] = $CommonState.FieldRequiredError;
 			} else if (
 				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.DateTime &&
 				!attr.dateTime
 			) {
-				result[idx] = CommonState.FieldRequiredError;
+				result[idx] = $CommonState.FieldRequiredError;
 			} else if (
 				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.Reference &&
 				(!attr.references || !attr.references.length)
 			) {
-				result[idx] = CommonState.FieldRequiredError;
+				result[idx] = $CommonState.FieldRequiredError;
 			} else if (
 				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.RichText &&
 				!attr.richText
 			) {
-				result[idx] = CommonState.FieldRequiredError;
+				result[idx] = $CommonState.FieldRequiredError;
 			} else if (
 				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.PlainText &&
 				!attr.plainText
 			) {
-				result[idx] = CommonState.FieldRequiredError;
+				result[idx] = $CommonState.FieldRequiredError;
 			} else if (
 				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.Swatch &&
 				(!attr.swatch || !Object.keys(attr.swatch).length)
 			) {
-				result[idx] = CommonState.FieldRequiredError;
+				result[idx] = $CommonState.FieldRequiredError;
 			} else if (
 				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.File &&
 				!attr.file
 			) {
-				result[idx] = CommonState.FieldRequiredError;
+				result[idx] = $CommonState.FieldRequiredError;
 			} else if (
 				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.Multiselect &&
 				(!attr.multiselect || !attr.multiselect.length)
 			) {
-				result[idx] = CommonState.FieldRequiredError;
+				result[idx] = $CommonState.FieldRequiredError;
 			}
 		}
 
@@ -174,17 +174,17 @@
 		if (attributeFieldsBlurs[idx]) {
 			attributeErrors[idx] = validCheck(innerAttributes[idx])
 				? undefined
-				: CommonState.FieldRequiredError;
+				: $CommonState.FieldRequiredError;
 		}
 	};
 
 	const GeneralSchema = object({
-		name: string().nonempty(CommonState.FieldRequiredError),
-		productType: string().nonempty(CommonState.FieldRequiredError),
+		name: string().nonempty($CommonState.FieldRequiredError),
+		productType: string().nonempty($CommonState.FieldRequiredError),
 		description: object({
-			blocks: array(any()).nonempty(CommonState.FieldRequiredError),
+			blocks: array(any()).nonempty($CommonState.FieldRequiredError),
 		}),
-		// attributes: array(any()).nonempty(CommonState.FieldRequiredError),
+		// attributes: array(any()).nonempty($CommonState.FieldRequiredError),
 	});
 
 	type GeneralProps = z.infer<typeof GeneralSchema>;

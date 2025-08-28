@@ -1,8 +1,11 @@
 <script lang="ts">
+	import { type LanguageCode, switchTranslationLanguage } from '$i18n';
 	import { PRODUCT_LIST_QUERY } from '$lib/api';
+	import { Button } from '$lib/components/ui';
 	import { Input } from '$lib/components/ui/Input';
 	import { GraphqlPaginableSelect, Select, type SelectOption } from '$lib/components/ui/select';
-	import { type QueryProductsArgs } from '$lib/gql/graphql';
+	import { LanguageCodeEnum } from '$lib/gql/graphql';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { get, readable, readonly, writable } from 'svelte/store';
 
 	const options: SelectOption[] = [
@@ -19,15 +22,17 @@
 	const store = writable(2);
 	const read = readonly(store);
 
-	const lol = $derived(read);
+	// const lol = $derived(read);
 
-	$effect(() => {
-		console.log(lol);
-	});
+	let languageCode = $state<LanguageCode>(LanguageCodeEnum.En);
+
+	const toggleLanguage = async () => {
+		await switchTranslationLanguage(
+			languageCode === LanguageCodeEnum.En ? LanguageCodeEnum.Vi : LanguageCodeEnum.En,
+		);
+	};
 </script>
 
-<!-- <Select multiple {options} onNotFoundQuerySelected={console.log} onblur={console.log} />-->
+<Button onclick={toggleLanguage}>toggle language</Button>
 
-<!-- <Input onblur={console.log} /> -->
-
-<button onclick={() => $store++}>add</button>
+<div>{$CommonState.EditSuccess}</div>

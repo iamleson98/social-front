@@ -40,10 +40,10 @@
 			: checkUserHasPermissions($READ_ONLY_USER_STORE, PermissionEnum.ManageUsers),
 	);
 	const customerSchema = object({
-		firstName: string().nonempty(CommonState.FieldRequiredError),
-		lastName: string().nonempty(CommonState.FieldRequiredError),
-		email: string().nonempty(CommonState.FieldRequiredError).email($tranFunc('error.invalidEmail')),
-		note: string().nonempty(CommonState.FieldRequiredError),
+		firstName: string().nonempty($CommonState.FieldRequiredError),
+		lastName: string().nonempty($CommonState.FieldRequiredError),
+		email: string().nonempty($CommonState.FieldRequiredError).email($tranFunc('error.invalidEmail')),
+		note: string().nonempty($CommonState.FieldRequiredError),
 	});
 
 	type CustomerSchema = z.infer<typeof customerSchema>;

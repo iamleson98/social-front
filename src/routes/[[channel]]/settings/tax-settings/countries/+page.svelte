@@ -125,7 +125,7 @@
 		loading = false;
 
 		if (
-			checkIfGraphqlResultHasError(result, 'taxCountryConfigurationUpdate', CommonState.EditSuccess)
+			checkIfGraphqlResultHasError(result, 'taxCountryConfigurationUpdate', $CommonState.EditSuccess)
 		)
 			return;
 
@@ -138,7 +138,7 @@
 
 	const handleClickDeleteCountryConfiguration = () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: CommonState.ConfirmDelete,
+			content: $CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true;
 				const result = await GRAPHQL_CLIENT.mutation<
@@ -153,7 +153,7 @@
 					checkIfGraphqlResultHasError(
 						result,
 						'taxCountryConfigurationDelete',
-						CommonState.DeleteSuccess,
+						$CommonState.DeleteSuccess,
 					)
 				)
 					return;
@@ -182,7 +182,7 @@
 		loading = false;
 
 		if (
-			checkIfGraphqlResultHasError(result, 'taxCountryConfigurationUpdate', CommonState.EditSuccess)
+			checkIfGraphqlResultHasError(result, 'taxCountryConfigurationUpdate', $CommonState.EditSuccess)
 		)
 			return;
 

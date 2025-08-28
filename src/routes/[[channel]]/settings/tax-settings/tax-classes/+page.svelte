@@ -102,7 +102,7 @@
 			input: activeTaxClass,
 		});
 
-		if (checkIfGraphqlResultHasError(result, 'taxClassUpdate', CommonState.EditSuccess)) {
+		if (checkIfGraphqlResultHasError(result, 'taxClassUpdate', $CommonState.EditSuccess)) {
 			loading = false;
 			return;
 		}
@@ -118,7 +118,7 @@
 		if (!ClassId) return;
 
 		ALERT_MODAL_STORE.openAlertModal({
-			content: CommonState.ConfirmDelete,
+			content: $CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true;
 
@@ -131,7 +131,7 @@
 
 				loading = false;
 
-				if (checkIfGraphqlResultHasError(result, 'taxClassDelete', CommonState.DeleteSuccess)) {
+				if (checkIfGraphqlResultHasError(result, 'taxClassDelete', $CommonState.DeleteSuccess)) {
 					return;
 				}
 

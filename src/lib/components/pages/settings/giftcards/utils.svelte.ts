@@ -24,7 +24,7 @@ export class GiftcardUtil {
       id,
     });
 
-    return (checkIfGraphqlResultHasError(result, resultKey, CommonState.EditSuccess));
+    return (checkIfGraphqlResultHasError(result, resultKey, $CommonState.EditSuccess));
   };
 
   async handleDeleteGiftcard(id: string) {
@@ -32,6 +32,6 @@ export class GiftcardUtil {
       id,
     });
 
-    return (checkIfGraphqlResultHasError(result, 'giftCardDelete', CommonState.DeleteSuccess));
+    return (checkIfGraphqlResultHasError(result, 'giftCardDelete', $CommonState.DeleteSuccess));
   }
 }

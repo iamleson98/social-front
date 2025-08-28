@@ -41,7 +41,7 @@
 		loading = false;
 		if (hasErr) return;
 
-		toast.success(CommonState.CreateSuccess);
+		toast.success($CommonState.CreateSuccess);
 		await goto(AppRoute.SETTINGS_CONFIGS_USER_DETAILS(result.data?.customerCreate?.user?.id!));
 	};
 </script>

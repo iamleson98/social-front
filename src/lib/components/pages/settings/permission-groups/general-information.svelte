@@ -49,8 +49,8 @@
 	const ExistingChannelIds = existingAccessibleChannels.map((chan) => chan.id);
 
 	const GroupSchema = object({
-		name: string().nonempty(CommonState.FieldRequiredError),
-		selectedChannels: array(string()).nonempty(CommonState.FieldRequiredError),
+		name: string().nonempty($CommonState.FieldRequiredError),
+		selectedChannels: array(string()).nonempty($CommonState.FieldRequiredError),
 	});
 
 	type Group = z.infer<typeof GroupSchema>;

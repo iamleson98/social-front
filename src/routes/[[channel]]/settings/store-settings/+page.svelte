@@ -67,7 +67,7 @@
 		});
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'shopSettingsUpdate', CommonState.EditSuccess)) return;
+		if (checkIfGraphqlResultHasError(result, 'shopSettingsUpdate', $CommonState.EditSuccess)) return;
 
 		ShopDetailQuery.reexecute({
 			variables: {

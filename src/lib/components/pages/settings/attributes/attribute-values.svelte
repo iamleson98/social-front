@@ -136,7 +136,7 @@
 
 	const handleDeleteValue = async (item: AttributeValue) => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: CommonState.ConfirmDelete,
+			content: $CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true;
 
@@ -149,7 +149,7 @@
 
 				loading = false;
 
-				if (checkIfGraphqlResultHasError(result, 'attributeValueDelete', CommonState.DeleteSuccess))
+				if (checkIfGraphqlResultHasError(result, 'attributeValueDelete', $CommonState.DeleteSuccess))
 					return;
 
 				forceReExecuteGraphqlQuery = true;
@@ -177,7 +177,7 @@
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'attributeReorderValues', CommonState.EditSuccess))
+		if (checkIfGraphqlResultHasError(result, 'attributeReorderValues', $CommonState.EditSuccess))
 			return;
 
 		forceReExecuteGraphqlQuery = true;
@@ -201,7 +201,7 @@
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'attributeValueUpdate', CommonState.EditSuccess))
+		if (checkIfGraphqlResultHasError(result, 'attributeValueUpdate', $CommonState.EditSuccess))
 			return;
 
 		forceReExecuteGraphqlQuery = true;
@@ -225,7 +225,7 @@
 
 			loading = false;
 
-			if (checkIfGraphqlResultHasError(result, 'attributeValueCreate', CommonState.CreateSuccess))
+			if (checkIfGraphqlResultHasError(result, 'attributeValueCreate', $CommonState.CreateSuccess))
 				return;
 
 			forceReExecuteGraphqlQuery = true;

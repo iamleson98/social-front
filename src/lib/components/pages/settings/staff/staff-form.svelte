@@ -51,9 +51,9 @@
 
 	const staffSchema = object({
 		avatar: string().optional(),
-		lastName: string().nonempty(CommonState.FieldRequiredError),
-		firstName: string().nonempty(CommonState.FieldRequiredError),
-		email: string().nonempty(CommonState.FieldRequiredError).email($tranFunc('error.invalidEmail')),
+		lastName: string().nonempty($CommonState.FieldRequiredError),
+		firstName: string().nonempty($CommonState.FieldRequiredError),
+		email: string().nonempty($CommonState.FieldRequiredError).email($tranFunc('error.invalidEmail')),
 		isActive: boolean(),
 	});
 

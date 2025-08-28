@@ -101,7 +101,7 @@
 			checkIfGraphqlResultHasError(
 				variantSelectionResult,
 				'productAttributeAssignmentUpdate',
-				CommonState.EditSuccess,
+				$CommonState.EditSuccess,
 			)
 		)
 			return;
@@ -134,7 +134,7 @@
 
 				loading = false;
 
-				if (checkIfGraphqlResultHasError(result, 'productTypeDelete', CommonState.DeleteSuccess))
+				if (checkIfGraphqlResultHasError(result, 'productTypeDelete', $CommonState.DeleteSuccess))
 					return;
 
 				await goto(AppRoute.SETTINGS_PRODUCT_TYPES());

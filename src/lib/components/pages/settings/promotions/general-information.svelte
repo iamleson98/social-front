@@ -36,12 +36,12 @@
 	}: Props = $props();
 
 	const PromotionSchema = object({
-		name: string().nonempty(CommonState.FieldRequiredError),
-		type: string().nonempty(CommonState.FieldRequiredError),
+		name: string().nonempty($CommonState.FieldRequiredError),
+		type: string().nonempty($CommonState.FieldRequiredError),
 		description: object({
-			blocks: array(any()).min(1, CommonState.FieldRequiredError),
+			blocks: array(any()).min(1, $CommonState.FieldRequiredError),
 		}).nullable(),
-		startDate: string().nonempty(CommonState.FieldRequiredError),
+		startDate: string().nonempty($CommonState.FieldRequiredError),
 	});
 
 	type PromotionSchema = z.infer<typeof PromotionSchema>;

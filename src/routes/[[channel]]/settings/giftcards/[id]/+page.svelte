@@ -76,7 +76,7 @@
 		loading = false;
 		if (hasErr) return;
 
-		toast.success(CommonState.EditSuccess);
+		toast.success($CommonState.EditSuccess);
 		giftcardQuery.reexecute({
 			variables: { id: page.params.id! },
 			context: { requestPolicy: 'network-only' },

@@ -59,13 +59,13 @@
 	});
 
 	const giftcardSchema = object({
-		channel: string().nonempty(CommonState.FieldRequiredError),
+		channel: string().nonempty($CommonState.FieldRequiredError),
 		note: string()
 			.max(NOTE_MAX_LENGTH, `Note must be at most ${NOTE_MAX_LENGTH} characters.`)
 			.optional(),
-		addTags: array(string().nonempty(CommonState.FieldRequiredError)),
+		addTags: array(string().nonempty($CommonState.FieldRequiredError)),
 		amount: number().min(1, 'Please provide positive amount'),
-		currency: string().nonempty(CommonState.FieldRequiredError),
+		currency: string().nonempty($CommonState.FieldRequiredError),
 		userEmail: string().email('Please provide valid email').optional(),
 	});
 

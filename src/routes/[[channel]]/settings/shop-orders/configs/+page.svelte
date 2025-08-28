@@ -76,7 +76,7 @@
 		});
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'channelUpdate', CommonState.EditSuccess)) return;
+		if (checkIfGraphqlResultHasError(result, 'channelUpdate', $CommonState.EditSuccess)) return;
 
 		ChannelsQuery.reexecute({ variables: {} });
 	};

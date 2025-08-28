@@ -35,11 +35,11 @@
 	});
 
 	const collectionSchema = object({
-		name: string().nonempty(CommonState.FieldRequiredError),
+		name: string().nonempty($CommonState.FieldRequiredError),
 		description: object({
-			blocks: array(any()).nonempty(CommonState.FieldRequiredError),
+			blocks: array(any()).nonempty($CommonState.FieldRequiredError),
 		}),
-		media: array(any()).max(1, MAX_ERROR).nonempty(CommonState.FieldRequiredError),
+		media: array(any()).max(1, MAX_ERROR).nonempty($CommonState.FieldRequiredError),
 	});
 	type CollectionSchema = z.infer<typeof collectionSchema>;
 

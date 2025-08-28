@@ -79,7 +79,7 @@
 		loading = false;
 		if (hasErr) return;
 
-		toast.success(CommonState.EditSuccess);
+		toast.success($CommonState.EditSuccess);
 		reexecuteQuery();
 	};
 </script>

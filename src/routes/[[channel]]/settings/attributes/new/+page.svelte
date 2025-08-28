@@ -55,7 +55,7 @@
 		loading = false;
 		if (metaHasErr) return;
 
-		toast.success(CommonState.CreateSuccess);
+		toast.success($CommonState.CreateSuccess);
 		await goto(
 			AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_DETAILS(
 				createResult.data?.attributeCreate?.attribute?.id!,

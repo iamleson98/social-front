@@ -23,8 +23,8 @@
 
 	const seoSchema = object({
 		slug: string()
-			.min(1, CommonState.FieldRequiredError)
-			.nonempty(CommonState.FieldRequiredError)
+			.min(1, $CommonState.FieldRequiredError)
+			.nonempty($CommonState.FieldRequiredError)
 			.max(PRODUCT_SLUG_MAX_LENGTH, {
 				message: $tranFunc('error.lengthInvalid', {
 					name: $tranFunc('product.prdSlug'),
@@ -33,8 +33,8 @@
 				}),
 			}),
 		title: string()
-			.min(1, CommonState.FieldRequiredError)
-			.nonempty(CommonState.FieldRequiredError)
+			.min(1, $CommonState.FieldRequiredError)
+			.nonempty($CommonState.FieldRequiredError)
 			.max(SEO_TITLE_MAX_LENGTH, {
 				message: $tranFunc('error.lengthInvalid', {
 					name: $tranFunc('product.seoTitle'),
@@ -43,8 +43,8 @@
 				}),
 			}),
 		description: string()
-			.min(1, CommonState.FieldRequiredError)
-			.nonempty(CommonState.FieldRequiredError)
+			.min(1, $CommonState.FieldRequiredError)
+			.nonempty($CommonState.FieldRequiredError)
 			.max(SEO_DESCRIPTION_MAX_LENGTH, {
 				message: $tranFunc('error.lengthInvalid', {
 					name: $tranFunc('product.seoDescription'),

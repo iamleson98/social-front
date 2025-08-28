@@ -125,7 +125,7 @@
 		});
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'productAttributeUnassign', CommonState.EditSuccess))
+		if (checkIfGraphqlResultHasError(result, 'productAttributeUnassign', $CommonState.EditSuccess))
 			return;
 
 		selectedProductVariantAttributesToUnassign = new SvelteSet();
@@ -144,7 +144,7 @@
 		});
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'productAttributeUnassign', CommonState.EditSuccess))
+		if (checkIfGraphqlResultHasError(result, 'productAttributeUnassign', $CommonState.EditSuccess))
 			return;
 
 		selectedProductAttributesToUnassign = new SvelteSet();
@@ -178,7 +178,7 @@
 		loading = false;
 
 		if (
-			checkIfGraphqlResultHasError(result, 'productTypeReorderAttributes', CommonState.EditSuccess)
+			checkIfGraphqlResultHasError(result, 'productTypeReorderAttributes', $CommonState.EditSuccess)
 		)
 			return;
 	};
@@ -199,7 +199,7 @@
 		});
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'productAttributeAssign', CommonState.EditSuccess))
+		if (checkIfGraphqlResultHasError(result, 'productAttributeAssign', $CommonState.EditSuccess))
 			return;
 
 		attributeAssignType = undefined;

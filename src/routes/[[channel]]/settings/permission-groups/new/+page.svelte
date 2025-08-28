@@ -38,7 +38,7 @@
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'permissionGroupCreate', CommonState.CreateSuccess))
+		if (checkIfGraphqlResultHasError(result, 'permissionGroupCreate', $CommonState.CreateSuccess))
 			return;
 
 		await goto(

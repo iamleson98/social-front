@@ -29,10 +29,10 @@
 	const DESCRIPTION_MAX_LENGTH = 300;
 
 	const seoSchema = object({
-		slug: string().nonempty(CommonState.FieldRequiredError),
-		title: string().nonempty(CommonState.FieldRequiredError),
+		slug: string().nonempty($CommonState.FieldRequiredError),
+		title: string().nonempty($CommonState.FieldRequiredError),
 		description: string()
-			.nonempty(CommonState.FieldRequiredError)
+			.nonempty($CommonState.FieldRequiredError)
 			.max(
 				DESCRIPTION_MAX_LENGTH,
 				$tranFunc('error.lengthInvalid', {

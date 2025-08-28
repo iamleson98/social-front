@@ -146,7 +146,7 @@
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'orderFulfill', CommonState.EditSuccess)) return;
+		if (checkIfGraphqlResultHasError(result, 'orderFulfill', $CommonState.EditSuccess)) return;
 
 		open = false;
 		onFulfillSuccess();

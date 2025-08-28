@@ -115,7 +115,7 @@
 				});
 				loading = false;
 
-				if (checkIfGraphqlResultHasError(result, 'promotionRuleDelete', CommonState.DeleteSuccess))
+				if (checkIfGraphqlResultHasError(result, 'promotionRuleDelete', $CommonState.DeleteSuccess))
 					return;
 
 				onRuleDeleted?.();
@@ -175,7 +175,7 @@
 			});
 
 			loading = false;
-			if (checkIfGraphqlResultHasError(result, 'promotionRuleUpdate', CommonState.EditSuccess))
+			if (checkIfGraphqlResultHasError(result, 'promotionRuleUpdate', $CommonState.EditSuccess))
 				return;
 
 			handleDoneUpsertRule();
@@ -198,7 +198,7 @@
 				});
 
 				loading = false;
-				if (checkIfGraphqlResultHasError(result, 'promotionRuleCreate', CommonState.CreateSuccess))
+				if (checkIfGraphqlResultHasError(result, 'promotionRuleCreate', $CommonState.CreateSuccess))
 					return;
 
 				handleDoneUpsertRule();

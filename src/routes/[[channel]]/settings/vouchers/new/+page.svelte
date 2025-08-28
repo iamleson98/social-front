@@ -50,7 +50,7 @@
 		addCodes: [],
 	});
 
-	const NameSchema = string().nonempty(CommonState.FieldRequiredError);
+	const NameSchema = string().nonempty($CommonState.FieldRequiredError);
 	/** temporary state for UI */
 	let activeChannelListings = $state<VoucherChannelListing[]>([]);
 	let loading = $state(false);
