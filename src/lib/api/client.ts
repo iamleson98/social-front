@@ -212,7 +212,10 @@ const tryRefreshToken = async (event: RequestEvent<Partial<Record<string, string
 		}
 	);
 
-	return await result.json() as { user: User, [ACCESS_TOKEN_KEY]: string };
+	if (result.ok)
+		return await result.json() as { user: User, [ACCESS_TOKEN_KEY]: string };
+
+	return null;
 }
 
 /**
@@ -289,6 +292,7 @@ export const pageRequiresAuthentication = async (event: RequestEvent<Partial<Rec
 			await setJwtWithUser(result[ACCESS_TOKEN_KEY], result.user);
 			return result.user;
 		}
+		redirect(HTTPStatusTemporaryRedirect, `${AppRoute.AUTH_SIGNIN()}?next=${event.url.pathname}`);
 	}
 
 	// now we try looking up if the user existed in cache

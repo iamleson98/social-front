@@ -21,7 +21,7 @@
 		disabled: boolean;
 		isActive: boolean;
 		formOk?: boolean;
-		isCreatePage: boolean;
+		isCreatePage?: boolean;
 		dateJoined?: string;
 		/** indicate if current user can edit given staff */
 		canEdit?: boolean;
@@ -146,7 +146,7 @@
 	<Toggle
 		label={$tranFunc('staff.active')}
 		bind:checked={isActive}
-		disabled={!isStaffManager || (isStaffManager && canEdit) || disabled}
+		disabled={!isStaffManager || disabled}
 		class="flex-1"
 	/>
 

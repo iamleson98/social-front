@@ -1,78 +1,53 @@
-import { dbManager } from "$lib/db";
-import { DiscountPromotion } from "$lib/db/models/entities/DiscountPromotion";
-import { OrderDirection, PromotionSortField, type PromotionCountableConnection, type QueryPromotionsArgs } from "$lib/gql/graphql";
+import { type Mutation, type MutationTokenCreateArgs, type PromotionCountableConnection, type Query, type QueryPromotionsArgs } from "$lib/gql/graphql";
 import { type YogaInitialContext } from "graphql-yoga";
-import { addPaginOptionsToQuery, createGraphqlPageInfo, dateToRFC3339, encodeBase64Cursor, getLimit, objectToMetaItemList } from "../utils";
-import type { PaginationOptions } from "$lib/utils/utils";
+import { GRAPHQL_CLIENT } from "$lib/api/client";
+import { USER_LOGIN_MUTATION_STORE } from "$lib/api/auth";
+import { PROMOTION_MANAGER_EMAIL, PROMOTION_MANAGER_PWD } from "$env/static/private";
+import { PROMOTIONS_QUERY } from "$lib/api/discount";
 
+let token: string
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const resolvePromotions = async function (root: unknown, { first, last, sortBy, before, after }: QueryPromotionsArgs, context: YogaInitialContext): Promise<PromotionCountableConnection> {
-  const db = await dbManager.getDatabaseConnection();
-  let queryBuilder = db.getRepository(DiscountPromotion).createQueryBuilder();
-
-  if (!sortBy) {
-    sortBy = {
-      field: PromotionSortField.CreatedAt,
-      direction: OrderDirection.Asc, // dummy value
-    };
-  }
-
-  const paginOpts: PaginationOptions = {
-    first,
-    last,
-    before,
-    after,
-  };
-
-  // const totalCount = await queryBuilder.getCount();
-
-  queryBuilder = addPaginOptionsToQuery(queryBuilder, sortBy.field.toString().toLowerCase(), paginOpts);
-
-  let promotions = await queryBuilder.getMany();
-  let predicate: (p: DiscountPromotion) => unknown;
-  switch (sortBy.field) {
-    case PromotionSortField.CreatedAt:
-      predicate = pm => dateToRFC3339(pm.createdAt);
-      break;
-    case PromotionSortField.StartDate:
-      predicate = pm => dateToRFC3339(pm.startDate);
-      break;
-    case PromotionSortField.EndDate:
-      predicate = pm => pm.endDate ? dateToRFC3339(pm.endDate) : pm.name;
-      break;
-    default:
-      predicate = pm => pm.name;
-  }
-
-  const pageInfo = createGraphqlPageInfo(paginOpts, promotions);
-
-  const queryLimit = getLimit(paginOpts);
-  if (queryLimit) {
-    promotions = promotions.slice(0, queryLimit - 1);
-  }
-
-  pageInfo.startCursor = promotions.length > 0 ? encodeBase64Cursor(DiscountPromotion.name, predicate(promotions[0])) : null;
-  pageInfo.endCursor = promotions.length > 0 ? encodeBase64Cursor(DiscountPromotion.name, predicate(promotions[promotions.length - 1])) : null;
-
-  const result: PromotionCountableConnection = {
-    // totalCount,
-    pageInfo,
-    edges: promotions.map(promotion => {
+export const resolvePromotions = async function (root: unknown, args: QueryPromotionsArgs, context: YogaInitialContext): Promise<PromotionCountableConnection> {
+  if (!token) {
+    const signinResult = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'tokenCreate'>, MutationTokenCreateArgs>(
+      USER_LOGIN_MUTATION_STORE,
+      {
+        email: PROMOTION_MANAGER_EMAIL,
+        password: PROMOTION_MANAGER_PWD,
+      },
+    )
+    if (signinResult.error || !signinResult.data?.tokenCreate?.token)
       return {
-        cursor: encodeBase64Cursor(DiscountPromotion.name, predicate(promotion)),
-        node: {
-          id: promotion.id,
-          name: promotion.name,
-          metadata: objectToMetaItemList(promotion.metadata as Record<string, unknown>),
-          privateMetadata: objectToMetaItemList(promotion.privateMetadata as Record<string, unknown>),
-          createdAt: promotion.createdAt,
-          startDate: promotion.startDate,
-          updatedAt: promotion.updatedAt,
+        edges: [],
+        pageInfo: {
+          hasNextPage: false,
+          hasPreviousPage: false,
         },
-      }
-    })
-  };
+      };
 
-  return result;
+    token = signinResult.data?.tokenCreate.token;
+  }
+
+  const result = await GRAPHQL_CLIENT.query<Pick<Query, 'promotions'>, QueryPromotionsArgs>(
+    PROMOTIONS_QUERY,
+    args,
+    {
+      fetchOptions: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    },
+  )
+  if (result.error)
+    return {
+      edges: [],
+      pageInfo: {
+        hasNextPage: false,
+        hasPreviousPage: false,
+      },
+    };
+
+  return result.data?.promotions as PromotionCountableConnection;
 };

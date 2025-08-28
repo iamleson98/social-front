@@ -24,6 +24,7 @@ export const PROMOTIONS_QUERY = gql`
           name
           createdAt
           startDate
+          endDate
         }
       }
       pageInfo {
