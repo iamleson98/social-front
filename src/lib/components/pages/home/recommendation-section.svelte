@@ -4,30 +4,43 @@
 	import {
 		OrderDirection,
 		PromotionSortField,
-		type Query,
+		type PromotionCountableConnection,
 		type QueryPromotionsArgs,
 	} from '$lib/gql/graphql';
-	import { operationStore } from '$lib/api/operation';
-	import { PROMOTIONS_QUERY } from '$lib/api/discount';
-	import { AppRoute } from '$lib/utils';
 	import { SelectSkeleton } from '$lib/components/ui/select';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { FlipTimer } from '$lib/components/common/flip-timer/index';
+	import { onMount } from 'svelte';
 
 	const PROMOTION_FIRST = 5;
 
-	const promotionsStore = operationStore<Pick<Query, 'promotions'>, QueryPromotionsArgs>({
-		query: PROMOTIONS_QUERY,
-		variables: {
-			first: PROMOTION_FIRST,
-			sortBy: {
-				field: PromotionSortField.EndDate,
-				direction: OrderDirection.Desc,
+	let promotions = $state<PromotionCountableConnection>();
+	let loading = $state(true);
+	let showError = $state(false);
+
+	onMount(async () => {
+		const result = await fetch('/api/promotions', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
 			},
-		},
-		context: {
-			url: AppRoute.GRAPHQL_API,
-		},
+			body: JSON.stringify({
+				first: PROMOTION_FIRST,
+				sortBy: {
+					field: PromotionSortField.EndDate,
+					direction: OrderDirection.Desc,
+				},
+			} as QueryPromotionsArgs),
+		});
+
+		loading = false;
+
+		if (result.ok) {
+			const data = await result.json();
+			promotions = data.promotions;
+		} else {
+			showError = true;
+		}
 	});
 </script>
 
@@ -40,22 +53,18 @@
 	</div>
 
 	<div class={SitenameCommonClassName}>
-		{#if $promotionsStore.fetching}
+		{#if loading}
 			<div class="space-y-1.5">
 				<SelectSkeleton size="xs" />
 				<SelectSkeleton size="xs" />
 			</div>
-		{:else if $promotionsStore.error}
+		{:else if showError}
 			<Alert variant="warning" size="xs">Failed to load promotions. Please try again later.</Alert>
-		{:else if $promotionsStore.data?.promotions}
-			{#each $promotionsStore.data.promotions.edges as edge, idx (idx)}
-				{@const {
-					node: { name, startDate },
-				} = edge}
+		{:else if promotions}
+			{#each promotions.edges as edge, idx (idx)}
 				<div>
 					<p class="text-gray-700 text-sm">{edge.node.name}</p>
 					<div class="flex text-gray-500 text-xs mt-2 space-x-4">
-						<!-- <span>{startDate}</span> -->
 						{#if edge.node.endDate}
 							<FlipTimer />
 						{/if}
