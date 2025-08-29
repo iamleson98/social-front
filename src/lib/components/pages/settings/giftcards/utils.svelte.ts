@@ -3,6 +3,7 @@ import { GRAPHQL_CLIENT } from "$lib/api/client";
 import type { Mutation, MutationGiftCardActivateArgs, MutationGiftCardDeleteArgs } from "$lib/gql/graphql";
 import { CommonState } from "$lib/utils/common.svelte";
 import { checkIfGraphqlResultHasError } from "$lib/utils/utils";
+import { get } from "svelte/store";
 
 
 export class GiftcardUtil {
@@ -24,7 +25,7 @@ export class GiftcardUtil {
       id,
     });
 
-    return (checkIfGraphqlResultHasError(result, resultKey, $CommonState.EditSuccess));
+    return (checkIfGraphqlResultHasError(result, resultKey, get(CommonState).EditSuccess));
   };
 
   async handleDeleteGiftcard(id: string) {
@@ -32,6 +33,6 @@ export class GiftcardUtil {
       id,
     });
 
-    return (checkIfGraphqlResultHasError(result, 'giftCardDelete', $CommonState.DeleteSuccess));
+    return (checkIfGraphqlResultHasError(result, 'giftCardDelete', get(CommonState).DeleteSuccess));
   }
 }
