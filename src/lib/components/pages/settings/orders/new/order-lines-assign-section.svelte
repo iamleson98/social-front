@@ -10,7 +10,7 @@
 		type Product,
 		type QueryProductsArgs,
 	} from '$lib/gql/graphql';
-	import { checkIfGraphqlResultHasError, classNames, stringSlicer } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, classNames, SitenameCommonClassName, stringSlicer } from '$lib/utils/utils';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { get, set } from 'es-toolkit/compat';
@@ -130,7 +130,7 @@
 	};
 </script>
 
-<div class="rounded-lg border border-gray-200 p-3 bg-white">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>
 		<div>Order Details</div>
 		<Button

@@ -5,7 +5,7 @@
 	import type { TableColumnProps } from '$lib/components/ui/Table';
 	import Table from '$lib/components/ui/Table/table.svelte';
 	import { OrderStatus, type Order, type OrderLine } from '$lib/gql/graphql';
-	import { orderStatusBadgeClass, stringSlicer } from '$lib/utils/utils';
+	import { orderStatusBadgeClass, SitenameCommonClassName, stringSlicer } from '$lib/utils/utils';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import { AppRoute } from '$lib/utils';
 	import { ExternalLink, Icon } from '$lib/components/icons';
@@ -124,7 +124,7 @@
 	</Button>
 {/snippet}
 
-<div class="border border-gray-200 flex flex-col gap-2 p-3 bg-white rounded-lg">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>
 		<Badge {...orderStatusBadgeClass(OrderStatus.Unfulfilled)} rounded />
 	</SectionHeader>

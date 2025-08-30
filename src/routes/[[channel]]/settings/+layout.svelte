@@ -353,7 +353,11 @@
 {:else}
 	<div class="flex flex-nowrap gap-2">
 		<!-- side bar -->
-		<div class="w-1/4 sticky top-16 h-full p-2 space-y-2 tablet:hidden">
+		<div
+			class="w-1/4 sticky top-16 h-[calc(100vh-4rem)] p-2 space-y-2 tablet:hidden overflow-auto"
+			style="scrollbar-width: none; -ms-overflow-style: none;"
+			id="sidebar"
+		>
 			<!-- MARK: Avatar -->
 			<div class="flex items-start gap-2 text-gray-700 p-3">
 				<div class="rounded-full h-16 w-16 overflow-hidden">
@@ -444,3 +448,9 @@
 		</div>
 	</div>
 {/if}
+
+<style>
+	#sidebar::-webkit-scrollbar {
+		display: none; /* Chrome, Safari, Edge */
+	}
+</style>

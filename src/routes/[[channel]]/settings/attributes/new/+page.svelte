@@ -99,4 +99,5 @@
 	onAddClick={handleAddAttribute}
 	backButtonUrl={AppRoute.SETTINGS_CONFIGS_ATTRIBUTES()}
 	disabled={loading}
+	disableCreateButton={!generalFormOk}
 />

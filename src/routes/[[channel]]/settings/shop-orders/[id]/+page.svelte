@@ -12,7 +12,7 @@
 	import { page } from '$app/state';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { AppRoute } from '$lib/utils';
-	import { checkIfGraphqlResultHasError, orderStatusBadgeClass } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, orderStatusBadgeClass, SitenameCommonClassName } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import { ORDER_DETAIL_QUERY, ORDER_UPDATE_MUTATION } from '$lib/api/admin/orders';
 	import DetailOrderSkeleton from '$lib/components/pages/settings/orders/detail-order-skeleton.svelte';
@@ -101,7 +101,7 @@
 	)}
 	<div class="flex flex-row gap-2">
 		<div class="space-y-2 w-7/10">
-			<SectionHeader>
+			<SectionHeader class={SitenameCommonClassName}>
 				<div class="flex items-center gap-2">
 					<div>Order #{order.number}</div>
 					<Badge {...orderStatusBadgeClass(order.status)} rounded />

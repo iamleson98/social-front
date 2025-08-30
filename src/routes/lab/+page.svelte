@@ -7,32 +7,17 @@
 	import { LanguageCodeEnum } from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { get, readable, readonly, writable } from 'svelte/store';
+	import Com from './com.svelte';
+	import { onMount } from 'svelte';
+	import { randomString } from '$lib/utils/utils';
 
-	const options: SelectOption[] = [
-		{
-			label: 'one',
-			value: 'one',
-		},
-		{
-			label: 'two',
-			value: 'two',
-		},
-	];
+	let comRef = $state<any>();
 
-	const store = writable(2);
-	const read = readonly(store);
-
-	// const lol = $derived(read);
-
-	let languageCode = $state<LanguageCode>(LanguageCodeEnum.En);
-
-	const toggleLanguage = async () => {
-		await switchTranslationLanguage(
-			languageCode === LanguageCodeEnum.En ? LanguageCodeEnum.Vi : LanguageCodeEnum.En,
-		);
+	const update = () => {
+		comRef.control(randomString(20));
 	};
 </script>
 
-<Button onclick={toggleLanguage}>toggle language</Button>
+<Com bind:this={comRef} />
 
-<div>{$CommonState.EditSuccess}</div>
+<Button onclick={update}>update</Button>

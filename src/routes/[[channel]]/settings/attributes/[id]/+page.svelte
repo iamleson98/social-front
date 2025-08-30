@@ -28,8 +28,10 @@
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
+	import { toast } from 'svelte-sonner';
 
 	const AttributeQuery = operationStore<Pick<Query, 'attribute'>, QueryAttributeArgs>({
 		query: ATTRIBUTE_DETAILS_QUERY,
@@ -72,7 +74,7 @@
 
 	const handleClickDelete = async () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: $tranFunc('common.confirmDel'),
+			content: $CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true;
 
@@ -85,7 +87,7 @@
 
 				loading = false;
 
-				if (checkIfGraphqlResultHasError(result, 'attributeDelete', $tranFunc('common.delSuccess')))
+				if (checkIfGraphqlResultHasError(result, 'attributeDelete', $CommonState.DeleteSuccess))
 					return;
 
 				await goto(AppRoute.SETTINGS_CONFIGS_ATTRIBUTES());
@@ -103,7 +105,7 @@
 			input: attributeInput,
 		});
 
-		if (checkIfGraphqlResultHasError(result, 'attributeUpdate', $tranFunc('common.editSuccess'))) {
+		if (checkIfGraphqlResultHasError(result, 'attributeUpdate')) {
 			loading = false;
 			return;
 		}
@@ -112,12 +114,13 @@
 		const hasError = await metadataRef?.handleUpdate();
 		loading = false;
 
-		if (hasError) return;
-
-		AttributeQuery.reexecute({
-			context: { requestPolicy: 'network-only' },
-			variables: { id: page.params.id },
-		});
+		if (!hasError) {
+			toast.success($CommonState.EditSuccess);
+			AttributeQuery.reexecute({
+				context: { requestPolicy: 'network-only' },
+				variables: { id: page.params.id },
+			});
+		}
 	};
 </script>
 
