@@ -3,6 +3,7 @@
 	import { tranFunc } from '$i18n';
 	import { WAREHOUSE_CREATE_MUTATION } from '$lib/api/admin/warehouse';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import GeneralInformation from '$lib/components/pages/settings/warehouses/general-information.svelte';
@@ -22,7 +23,7 @@
 		address: {},
 	});
 
-	let metaRef = $state<any>();
+	let metaRef = $state<GeneralMetadataEditorRef>();
 	let loading = $state(false);
 	let generalFormOk = $state(false);
 

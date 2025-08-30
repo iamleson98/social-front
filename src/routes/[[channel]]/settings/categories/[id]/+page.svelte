@@ -25,10 +25,11 @@
 	import { onMount } from 'svelte';
 	import { tranFunc } from '$i18n';
 	import { toast } from 'svelte-sonner';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 
 	let media = $state<MediaObject[]>([]);
 	let generalFormOk = $state(false);
-	let metaRef = $state<any>();
+	let metaRef = $state<GeneralMetadataEditorRef>();
 	let loading = $state(false);
 
 	const categoryQuery = operationStore<
@@ -131,7 +132,7 @@
 			return;
 		}
 
-		const hasError = await metaRef.handleUpdate();
+		const hasError = await metaRef?.handleUpdate();
 		loading = false;
 		if (hasError) return;
 

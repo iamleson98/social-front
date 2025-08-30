@@ -34,6 +34,7 @@
 	import { onMount } from 'svelte';
 	import { tranFunc } from '$i18n';
 	import { toast } from 'svelte-sonner';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 
 	let collectionUpdateInput = $state<CollectionInput>({
 		name: '',
@@ -54,7 +55,7 @@
 		removeChannels: [],
 	});
 	let loading = $state(false);
-	let metaRef = $state<any>();
+	let metaRef = $state<GeneralMetadataEditorRef>();
 
 	const collectionDetailQuery = operationStore<Pick<Query, 'collection'>, QueryCollectionArgs>({
 		query: COLLECTION_DETAIL_QUERY,

@@ -44,6 +44,7 @@
 	import { string } from 'zod';
 	import { pick } from 'es-toolkit';
 	import { CommonState } from '$lib/utils/common.svelte';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 
 	const voucherQuery = operationStore<Pick<Query, 'voucher'>, QueryVoucherArgs>({
 		query: VOUCHER_DETAIL_QUERY,
@@ -76,7 +77,7 @@
 
 	/** temporary state for UI */
 	let activeChannelListings = $state<VoucherChannelListing[]>([]);
-	let metaRef = $state<any>();
+	let metaRef = $state<GeneralMetadataEditorRef>();
 	let loading = $state(false);
 
 	const NameSchema = string().nonempty($CommonState.FieldRequiredError);

@@ -23,13 +23,14 @@
 	import { goto } from '$app/navigation';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { toast } from 'svelte-sonner';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 
 	let generalFormOk = $state(false);
 	let seoFormOk = $state(false);
 	let createdCollectionId = $state<string>('');
 	let loading = $state(false);
 	let channelListingsInput = $state<PublishableChannelListingInput[]>([]);
-	let metaEditorRef = $state<any>();
+	let metaEditorRef = $state<GeneralMetadataEditorRef>();
 
 	let collectionCreateInput = $state<CollectionCreateInput>({
 		name: '',

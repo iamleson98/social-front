@@ -16,6 +16,7 @@
 	import CreatePageAttributes from '$lib/components/pages/settings/product-type/create-page-attributes.svelte';
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 
 	let productTypeInput = $state<ProductTypeInput>({
 		hasVariants: false,
@@ -31,7 +32,7 @@
 	let createdProductTypeId = $state<string>('');
 	let generalFormOk = $state(false);
 	let attrFormOk = $state(false);
-	let metadataRef = $state<any>();
+	let metadataRef = $state<GeneralMetadataEditorRef>();
 
 	const onAddClick = async () => {
 		loading = true;
@@ -49,7 +50,7 @@
 		}
 
 		createdProductTypeId = result.data?.productTypeCreate?.productType?.id!;
-		const hasErr = await metadataRef.handleUpdate(createdProductTypeId);
+		const hasErr = await metadataRef?.handleUpdate(createdProductTypeId);
 		loading = false;
 		if (hasErr) return;
 

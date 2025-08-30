@@ -23,6 +23,7 @@
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import { tranFunc } from '$i18n';
 	import { toast } from 'svelte-sonner';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 
 	const userDetailQuery = operationStore<Pick<Query, 'user'>, QueryUserArgs>({
 		query: USER_DETAIL_QUERY,
@@ -41,7 +42,7 @@
 		isActive: false,
 		note: '',
 	});
-	let metaRef = $state<any>();
+	let metaRef = $state<GeneralMetadataEditorRef>();
 
 	onMount(() =>
 		userDetailQuery.subscribe((result) => {

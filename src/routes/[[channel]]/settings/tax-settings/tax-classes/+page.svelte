@@ -11,6 +11,7 @@
 	import { TAX_CLASSES_QUERY } from '$lib/api/tax';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { ChevronRight, Icon, Plus } from '$lib/components/icons';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import { Button } from '$lib/components/ui';
@@ -52,7 +53,7 @@
 	let activeMetadata = $state<MetadataItem[]>();
 	let activePrivateMetadata = $state<MetadataItem[]>();
 	let loading = $state(false);
-	let metadataRef = $state<any>();
+	let metadataRef = $state<GeneralMetadataEditorRef>();
 
 	afterNavigate(() => {
 		if (ClassId) {
@@ -188,7 +189,7 @@
 		// get id for creating metadata
 		const createdTaxClassId = result.data?.taxClassCreate?.taxClass?.id as string;
 
-		const hasErr = await metadataRef.handleUpdate(createdTaxClassId);
+		const hasErr = await metadataRef?.handleUpdate(createdTaxClassId);
 		if (hasErr) {
 			loading = false;
 			return;

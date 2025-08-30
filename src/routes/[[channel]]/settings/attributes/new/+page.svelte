@@ -5,6 +5,7 @@
 	import AttributeValues from '$lib/components/pages/settings/attributes/attribute-values.svelte';
 	import DetailSidebar from '$lib/components/pages/settings/attributes/detail-sidebar.svelte';
 	import GeneralInformation from '$lib/components/pages/settings/attributes/general-information.svelte';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import {
@@ -31,7 +32,7 @@
 	});
 
 	let generalFormOk = $state(false);
-	let metaRef = $state<any>();
+	let metaRef = $state<GeneralMetadataEditorRef>();
 	let loading = $state(false);
 
 	const handleAddAttribute = async () => {
@@ -49,7 +50,7 @@
 			return;
 		}
 
-		const metaHasErr = await metaRef.handleUpdate(
+		const metaHasErr = await metaRef?.handleUpdate(
 			createResult.data?.attributeCreate?.attribute?.id!,
 		);
 		loading = false;

@@ -7,6 +7,7 @@
 	} from '$lib/api/admin/discount';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import ApplicationType from '$lib/components/pages/settings/vouchers/application-type.svelte';
@@ -54,7 +55,7 @@
 	/** temporary state for UI */
 	let activeChannelListings = $state<VoucherChannelListing[]>([]);
 	let loading = $state(false);
-	let metadataRef = $state<any>();
+	let metadataRef = $state<GeneralMetadataEditorRef>();
 	let nameErrors = $state<string[]>([]);
 
 	const validateName = () => {

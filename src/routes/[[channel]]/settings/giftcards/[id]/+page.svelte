@@ -5,6 +5,7 @@
 	import { GIFT_CARD_DETAIL_QUERY, GIFT_CARD_UPDATE_MUTATION } from '$lib/api/admin/giftcards';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import DetailGiftcardSkeleton from '$lib/components/pages/settings/giftcards/detail-giftcard-skeleton.svelte';
@@ -30,7 +31,7 @@
 	const giftcardUtils = new GiftcardUtil();
 
 	let loading = $state(false);
-	let metaRef = $state<any>();
+	let metaRef = $state<GeneralMetadataEditorRef>();
 
 	const giftcardQuery = operationStore<Pick<Query, 'giftCard'>, QueryGiftCardArgs>({
 		query: GIFT_CARD_DETAIL_QUERY,

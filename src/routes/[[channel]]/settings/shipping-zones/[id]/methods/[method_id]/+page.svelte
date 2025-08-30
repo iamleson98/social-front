@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { SHIPPING_ZONE_DETAIL_QUERY } from '$lib/api/admin/shipping';
 	import { operationStore } from '$lib/api/operation';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import ChannelListingWeight from '$lib/components/pages/settings/shipping-method/channel-listing-weight.svelte';
@@ -43,7 +44,7 @@
 	// 	addChannels: [],
 	// });
 	let loading = $state(false);
-	let metaRef = $state<any>();
+	let metaRef = $state<GeneralMetadataEditorRef>();
 	let generalFormOk = $state(false);
 
 	onMount(() =>

@@ -32,6 +32,7 @@
 	import { onMount } from 'svelte';
 	import EditPageAttributes from '$lib/components/pages/settings/product-type/edit-page-attributes.svelte';
 	import { CommonState } from '$lib/utils/common.svelte';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 
 	const productTypeQuery = operationStore<
 		Pick<Query, 'productType'>,
@@ -57,7 +58,7 @@
 
 	let loading = $state(false);
 	let generalFormOk = $state(false);
-	let metadataRef = $state<any>();
+	let metadataRef = $state<GeneralMetadataEditorRef>();
 	let variantSelectionOperations = $state<ProductAttributeAssignmentUpdateInput[]>([]);
 
 	/** if existed state is false, then user change to true, we must update the product type itself first before
@@ -81,7 +82,7 @@
 		}
 
 		// update metadata
-		const hasErr = await metadataRef.handleUpdate();
+		const hasErr = await metadataRef?.handleUpdate();
 		if (hasErr) {
 			loading = false;
 			return;

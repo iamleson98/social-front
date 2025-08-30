@@ -10,6 +10,7 @@
 	import { checkUserHasPermissions } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import GeneralMetadataEditor from '../common/general-metadata-editor.svelte';
+	import type { GeneralMetadataEditorRef } from '../common';
 
 	type Props = {
 		orderID: string;
@@ -19,8 +20,8 @@
 
 	let { orderID, orderLineID, onClose }: Props = $props();
 
-	let orderLineMetaRef = $state<any>();
-	let orderLineVariantMetaRef = $state<any>();
+	let orderLineMetaRef = $state<GeneralMetadataEditorRef>();
+	let orderLineVariantMetaRef = $state<GeneralMetadataEditorRef>();
 
 	const lineMetaQuery = operationStore<
 		Pick<Query, 'order'>,

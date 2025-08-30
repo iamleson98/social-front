@@ -9,6 +9,7 @@
 	} from '$lib/api/admin/warehouse';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import DetailSidebar from '$lib/components/pages/settings/warehouses/detail-sidebar.svelte';
@@ -48,7 +49,7 @@
 		slug: '',
 		email: '',
 	});
-	let metaRef = $state<any>();
+	let metaRef = $state<GeneralMetadataEditorRef>();
 	let generalFormOk = $state(false);
 
 	onMount(() =>

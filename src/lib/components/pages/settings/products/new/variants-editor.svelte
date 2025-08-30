@@ -7,7 +7,7 @@
 	import { PRODUCT_TYPE_QUERY } from '$lib/api/admin/product';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
-	import { Icon, MdiWeightKg, Plus } from '$lib/components/icons';
+	import { Icon, MdiWeightKg, Plus, Trash } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Checkbox, Input, Label } from '$lib/components/ui/Input';
@@ -131,7 +131,7 @@
 	);
 
 	$effect(() => {
-		if (productTypeId)
+		if (!!productTypeId)
 			ProductTypeDetailQuery.reexecute({
 				variables: { id: productTypeId },
 			});
@@ -178,6 +178,14 @@
 
 		// added value success, perform refetching now
 		manifestPerformFetchingAttributeValues[manifestIdx] = true;
+	};
+
+	const checkAttributeIsSwatch = (attributeId: string) => {
+		return (
+			$ProductTypeDetailQuery.data?.productType?.assignedVariantAttributes?.find(
+				(attr) => attr.attribute.id === attributeId,
+			)?.attribute.inputType === AttributeInputTypeEnum.Swatch
+		);
 	};
 
 	const handleVariantValuesChange = (
@@ -254,11 +262,7 @@
 				}
 
 				const attributes = variantManifests.map((manifest) => {
-					const isSwatchAttr =
-						$ProductTypeDetailQuery.data?.productType?.assignedVariantAttributes?.find(
-							(attr) => attr.attribute.id === manifest.attribute.id,
-						)?.attribute.inputType === AttributeInputTypeEnum.Swatch;
-
+					const isSwatchAttr = checkAttributeIsSwatch(manifest.attribute.id);
 					const attributeProps: BulkAttributeValueInput = {
 						id: manifest.attribute.id,
 					};
@@ -286,7 +290,7 @@
 	};
 
 	const handleQuickFillingClick = () => {
-		const canQuickFillingStocks = true; // quickFillingValues.stocks.some((stock) => !!stock.quantity);
+		const canQuickFillingStocks = true;
 		const canQuickFillingChannels = quickFillingValues.channels.length > 0;
 
 		if (canQuickFillingChannels || canQuickFillingStocks) {
@@ -320,6 +324,42 @@
 			});
 		}
 	};
+
+	const handleDeleteVariant = (variantIdx: number) => {
+		const currentNumberOfManifests = variantManifests.length;
+
+		// remove the manifest
+		variantManifests = variantManifests.filter((_, idx) => idx !== variantIdx);
+		if (!variantManifests.length) {
+			variantsInputDetails = [];
+			return;
+		}
+
+		// trigger fetching attribute values again
+		if (variantIdx === 0 && currentNumberOfManifests === 2)
+			manifestPerformFetchingAttributeValues[0] = true;
+
+		// update the variants input details
+		variantsInputDetails = variantManifests[0].values.map((value) => {
+			const isSwatchAttribute = checkAttributeIsSwatch(variantManifests[0].attribute.id);
+			const attributeProp: BulkAttributeValueInput = {
+				id: variantManifests[0].attribute.id,
+			};
+
+			if (isSwatchAttribute) set(attributeProp, 'swatch.id', value.value);
+			else set(attributeProp, 'dropdown.id', value.value);
+
+			return {
+				attributes: [attributeProp],
+				name: `${value.value}`,
+				sku: `${value.value}`,
+				trackInventory: true,
+				channelListings: [],
+				weight: 0,
+				preorder: {},
+			};
+		});
+	};
 </script>
 
 <div class={SitenameCommonClassName}>
@@ -343,28 +383,42 @@
 					/>
 
 					{#if manifest.attribute.id}
-						<GraphqlPaginableSelect
-							disabled={loading}
-							query={ATTRIBUTE_VALUES_QUERY}
-							variables={{
-								id: manifest.attribute.id,
-								first: 15,
-								filter: { search: '' },
-							} as GraphqlPaginationArgs}
-							label="Attribute values"
-							resultKey={'attribute.choices' as keyof Query}
-							variableSearchQueryPath="filter.search"
-							optionValueKey="id"
-							optionLabelKey="name"
-							multiple
-							value={manifest.values.map((item) => item.value)}
-							onchange={(opt) => handleVariantValuesChange(idx, opt)}
-							size="sm"
-							bind:performDataFetching={manifestPerformFetchingAttributeValues[idx]}
-							onNotFoundQuerySelected={(newValue) =>
-								newValue && handleAddNewAttributeValue(idx, newValue)}
-						/>
+						{#key manifest.attribute.id}
+							<GraphqlPaginableSelect
+								disabled={loading}
+								query={ATTRIBUTE_VALUES_QUERY}
+								variables={{
+									id: manifest.attribute.id,
+									first: 15,
+									filter: { search: '' },
+								} as GraphqlPaginationArgs}
+								label="Attribute values"
+								resultKey={'attribute.choices' as keyof Query}
+								variableSearchQueryPath="filter.search"
+								optionValueKey="id"
+								optionLabelKey="name"
+								multiple
+								value={manifest.values.map((item) => item.value)}
+								onchange={(opt) => handleVariantValuesChange(idx, opt)}
+								size="sm"
+								bind:performDataFetching={manifestPerformFetchingAttributeValues[idx]}
+								onNotFoundQuerySelected={(newValue) =>
+									newValue && handleAddNewAttributeValue(idx, newValue)}
+							/>
+						{/key}
 					{/if}
+
+					<Button
+						endIcon={Trash}
+						size="sm"
+						disabled={loading}
+						fullWidth
+						variant="light"
+						color="red"
+						onclick={() => handleDeleteVariant(idx)}
+					>
+						{$tranFunc('product.delVariant')}
+					</Button>
 				</div>
 			{/each}
 			{#if variantManifests.length < MAX_VARIANT_TYPES && AvailableAttributeOptions.some((opt) => !opt.disabled)}
@@ -594,14 +648,15 @@
 			</Accordion>
 
 			<!-- DOCUMENT -->
-			<Alert variant="info" size="sm" bordered>
+			<!-- <Alert variant="info" size="sm" bordered>
 				<ol class="text-xs">
 					{#each VARIANT_ATTRIBUTE_HINTS as hint, idx (idx)}
 						<li>{idx + 1}. {hint.title}</li>
 					{/each}
 				</ol>
-			</Alert>
+			</Alert> -->
 		</div>
+
 		<!-- MARK: DETAILS -->
 		<div class="relative h-fit w-full rounded-lg p-3 border border-gray-200 bg-white">
 			<table class="w-full text-sm h-fit text-left table text-gray-600 mb-4">

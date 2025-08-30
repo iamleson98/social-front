@@ -3,6 +3,7 @@
 	import { tranFunc } from '$i18n';
 	import { SHIPPING_ZONE_CREATE_MUTATION } from '$lib/api/admin/shipping';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import GeneralInfo from '$lib/components/pages/settings/shipping-zones/general-info.svelte';
@@ -27,7 +28,7 @@
 	});
 	let loading = $state(false);
 	let generalFormOk = $state(false);
-	let metaRef = $state<any>();
+	let metaRef = $state<GeneralMetadataEditorRef>();
 
 	const handleCreate = async () => {
 		loading = true;

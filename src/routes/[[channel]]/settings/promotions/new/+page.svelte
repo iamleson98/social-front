@@ -5,6 +5,7 @@
 		PROMOTION_RULE_CREATE_MUTATION,
 	} from '$lib/api/admin/discount';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import CreatePageRules from '$lib/components/pages/settings/promotions/create-page-rules.svelte';
@@ -32,7 +33,7 @@
 	let loading = $state(false);
 	let generalOk = $state(true);
 	let addRules = $state<PromotionRuleCreateInput[]>([]);
-	let metadataRef = $state<any>();
+	let metadataRef = $state<GeneralMetadataEditorRef>();
 
 	const handleCreate = async () => {
 		loading = true;
@@ -50,7 +51,7 @@
 
 		// perform create metadatas
 		const createdPromotionId = promotionCreateResult.data?.promotionCreate?.promotion?.id as string;
-		const hasError = await metadataRef.handleUpdate(createdPromotionId);
+		const hasError = await metadataRef?.handleUpdate(createdPromotionId);
 		if (hasError) {
 			loading = false;
 			return;

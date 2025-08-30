@@ -11,12 +11,13 @@
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { tranFunc } from '$i18n';
 	import { toast } from 'svelte-sonner';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 
 	let media = $state<MediaObject[]>([]);
 	let generalFormOk = $state(false);
 	let createdCategoryId = $state<string>('');
 	let loading = $state(false);
-	let metaRef = $state<any>();
+	let metaRef = $state<GeneralMetadataEditorRef>();
 
 	let categoryInput = $state<CategoryInput>({
 		name: '',

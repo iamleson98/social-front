@@ -10,6 +10,7 @@
 	import { AppRoute } from '$lib/utils';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import { CommonState } from '$lib/utils/common.svelte';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 
 	let userInput = $state<UserCreateInput>({
 		firstName: '',
@@ -20,7 +21,7 @@
 	});
 	let generalFormOk = $state(false);
 	let loading = $state(false);
-	let metaRef = $state<any>();
+	let metaRef = $state<GeneralMetadataEditorRef>();
 
 	const onCreateClick = async () => {
 		loading = true;

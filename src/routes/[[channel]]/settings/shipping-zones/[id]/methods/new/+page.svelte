@@ -9,6 +9,7 @@
 	} from '$lib/api/admin/shipping';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import AddMethodScreenChannelListingPrice from '$lib/components/pages/settings/shipping-method/add-method-screen-channel-listing-price.svelte';
@@ -55,8 +56,7 @@
 		minimumOrderWeight: 0,
 		maximumOrderWeight: 0,
 	});
-	// let createdMethodId = $state('');
-	let metaRef = $state<any>();
+	let metaRef = $state<GeneralMetadataEditorRef>();
 	let generalFormOk = $state(false);
 	let shippingMethodChannelListingsInput = $state<ShippingMethodChannelListingInput>({
 		addChannels: [],

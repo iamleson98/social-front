@@ -8,6 +8,7 @@
 	} from '$lib/api/admin/discount';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import { cleanRulesData } from '$lib/components/pages/settings/promotions/consts';
@@ -49,7 +50,7 @@
 	let loading = $state(false);
 	let promotionType = $state<PromotionTypeEnum>(PromotionTypeEnum.Catalogue);
 	let generalOk = $state(true);
-	let metaRef = $state<any>();
+	let metaRef = $state<GeneralMetadataEditorRef>();
 
 	onMount(() =>
 		promotionStore.subscribe((result) => {

@@ -12,6 +12,7 @@
 	import AttributeValues from '$lib/components/pages/settings/attributes/attribute-values.svelte';
 	import DetailSidebar from '$lib/components/pages/settings/attributes/detail-sidebar.svelte';
 	import GeneralInformation from '$lib/components/pages/settings/attributes/general-information.svelte';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import DetailSkeleton from '$lib/components/pages/settings/warehouses/detail-skeleton.svelte';
@@ -53,7 +54,7 @@
 		addValues: [],
 		removeValues: [],
 	});
-	let metadataRef = $state<any>();
+	let metadataRef = $state<GeneralMetadataEditorRef>();
 
 	onMount(() =>
 		AttributeQuery.subscribe((result) => {

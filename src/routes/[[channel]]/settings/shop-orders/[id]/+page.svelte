@@ -32,9 +32,10 @@
 	import Sidebar from '$lib/components/pages/settings/orders/sidebar.svelte';
 	import { toast } from 'svelte-sonner';
 	import { CommonState } from '$lib/utils/common.svelte';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 
 	let loading = $state(false);
-	let metaRef = $state<any>();
+	let metaRef = $state<GeneralMetadataEditorRef>();
 
 	const orderQuery = operationStore<Pick<Query, 'order'>, QueryOrderArgs>({
 		query: ORDER_DETAIL_QUERY,

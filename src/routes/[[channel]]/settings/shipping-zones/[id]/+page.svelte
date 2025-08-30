@@ -28,6 +28,7 @@
 	import { goto } from '$app/navigation';
 	import DetailSkeleton from '$lib/components/pages/settings/shipping-zones/detail-skeleton.svelte';
 	import { onMount } from 'svelte';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 
 	const shippingZoneQuery = operationStore<Pick<Query, 'shippingZone'>, QueryShippingZoneArgs>({
 		query: SHIPPING_ZONE_DETAIL_QUERY,
@@ -37,7 +38,7 @@
 		pause: !page.params.id,
 	});
 
-	let metaRef = $state<any>();
+	let metaRef = $state<GeneralMetadataEditorRef>();
 	let loading = $state(false);
 	let generalFormOk = $state(false);
 
