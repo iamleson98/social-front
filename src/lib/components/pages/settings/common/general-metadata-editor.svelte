@@ -18,11 +18,12 @@
 		privateMetadata?: MetadataItem[];
 		disabled?: boolean;
 		/** id of the object that owns those metadatas */
-		objectId: string;
+		objectId?: string;
 		/** the lock for parent to trigger the updating of metadatas. MUST provided as `bind:performUpdateMetadata` */
 		performUpdateMetadata?: boolean;
 		/** callback when update is done */
 		onDoneUpdate?: () => void;
+		formOk?: boolean;
 	};
 
 	let {
@@ -32,12 +33,19 @@
 		objectId,
 		performUpdateMetadata = $bindable(false),
 		onDoneUpdate = noop,
+		formOk = $bindable(true),
 	}: Props = $props();
 
 	let metadataItemsToAdd = $state<MetadataInput[]>([]);
 	let metadataKeysToRemove = $state<string[]>([]);
 	let privateMetadataItemsToAdd = $state<MetadataInput[]>([]);
 	let privateMetadataKeysToRemove = $state<string[]>([]);
+	let formMetaOk = $state(true);
+	let formPrivateMetaOk = $state(true);
+
+	$effect(() => {
+		formOk = formMetaOk && formPrivateMetaOk;
+	});
 
 	type TaskProps = {
 		query: TypedDocumentNode<any, AnyVariables>;
@@ -105,6 +113,7 @@
 		{disabled}
 		bind:metadataItemsToAdd
 		bind:metadataKeysToRemove
+		bind:formOk={formMetaOk}
 	/>
 
 	<MetadataEditor
@@ -113,5 +122,6 @@
 		{disabled}
 		bind:metadataItemsToAdd={privateMetadataItemsToAdd}
 		bind:metadataKeysToRemove={privateMetadataKeysToRemove}
+		bind:formOk={formPrivateMetaOk}
 	/>
 </div>

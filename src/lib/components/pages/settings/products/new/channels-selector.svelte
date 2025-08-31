@@ -149,6 +149,7 @@
 							<Checkbox
 								label={channelListing.channelName}
 								bind:checked={channelListing.used}
+								disabled={loading}
 								onchange={(evt) =>
 									toggleSelectChannel(channelListing.channelId, evt.currentTarget.checked)}
 								size="sm"

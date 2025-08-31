@@ -14,7 +14,7 @@
 		/** reference for creating default seo */
 		productName: ProductCreateInput['name'];
 		slug: ProductCreateInput['slug'];
-		ok: boolean;
+		formOk: boolean;
 		loading: boolean;
 	};
 
@@ -60,7 +60,7 @@
 		productName,
 		slug = $bindable(),
 		seo = $bindable({}),
-		ok = $bindable(),
+		formOk = $bindable(),
 		loading,
 	}: Props = $props();
 
@@ -85,7 +85,7 @@
 		} else {
 			seoErrors = {};
 		}
-		ok = !Object.values(seoErrors).some(Boolean);
+		formOk = !Object.values(seoErrors).some(Boolean);
 	};
 </script>
 

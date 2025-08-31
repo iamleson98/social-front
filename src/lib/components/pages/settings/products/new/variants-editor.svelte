@@ -42,12 +42,12 @@
 	} from './utils';
 	import dayjs from 'dayjs';
 	import { Button } from '$lib/components/ui';
-	import { Accordion } from '$lib/components/ui/Accordion';
 	import { slide } from 'svelte/transition';
 	import type { MediaObject } from '$lib/utils/types';
 	import { CHANNELS_QUERY } from '$lib/api/channels';
 	import { onMount } from 'svelte';
 	import { omit } from 'es-toolkit';
+	import { CommonState } from '$lib/utils/common.svelte';
 
 	type Props = {
 		productTypeId: string;
@@ -87,20 +87,10 @@
 		pause: true,
 	});
 
-	const VARIANT_ATTRIBUTE_HINTS = [
-		{ title: $tranFunc('product.channelHint') },
-		{ title: $tranFunc('product.priceHint') },
-		{ title: $tranFunc('product.costPriceHint') },
-		{ title: $tranFunc('product.stockHint') },
-		{ title: $tranFunc('product.weightHint') },
-		{ title: $tranFunc('product.skuHint') },
-		{
-			title: $tranFunc('product.preorderHint', {
-				min: MIN_DAYS_FOR_PREORDER,
-				max: MAX_DAYS_FOR_PREORDER,
-			}),
-		},
-	];
+	const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
+		query: CHANNELS_QUERY,
+		context: { requestPolicy: 'cache-and-network' },
+	});
 
 	let variantManifests = $state<VariantManifest[]>([]);
 	let quickFillingHighlightClass = $state<QuickFillHighlight>();
@@ -113,12 +103,6 @@
 		preOrder: {},
 		weight: 0,
 		trackInventory: true,
-	});
-	let showQuickFillingAdvancedSettings = $state(false);
-
-	const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
-		query: CHANNELS_QUERY,
-		context: { requestPolicy: 'cache-and-network' },
 	});
 
 	onMount(() => {
@@ -303,13 +287,13 @@
 						id: variantManifests[0].attribute.id,
 					};
 
-					if (isSwatchAttribute) set(attributeProp, 'swatch.id', attrValue.value);
-					else set(attributeProp, 'dropdown.id', attrValue.value);
+					if (isSwatchAttribute) set(attributeProp, 'swatch.value', attrValue.value);
+					else set(attributeProp, 'dropdown.value', attrValue.value);
 
 					return {
 						attributes: [attributeProp],
-						name: `${attrValue.label}`,
-						sku: `${attrValue.label}`,
+						name: `${attrValue.value}`,
+						sku: `${attrValue.value}`,
 						trackInventory: true,
 						channelListings: [],
 						weight: 0,
@@ -353,16 +337,16 @@
 					const attributeProps: BulkAttributeValueInput = {
 						id: manifest.attribute.id,
 					};
-					if (isSwatchAttr) set(attributeProps, 'swatch.id', value1.value);
-					else set(attributeProps, 'dropdown.id', value2.value);
+					if (isSwatchAttr) set(attributeProps, 'swatch.value', value1.value);
+					else set(attributeProps, 'dropdown.value', value2.value);
 
 					return attributeProps;
 				});
 
 				const newVariant: ProductVariantBulkCreateInput = {
 					attributes,
-					name: `${value1.label}-${value2.label}`,
-					sku: `${value1.label}-${value2.label}`,
+					name: `${value1.value}-${value2.value}`,
+					sku: `${value1.value}-${value2.value}`,
 					trackInventory: true,
 					channelListings: [],
 					weight: 0,
@@ -433,8 +417,8 @@
 				id: variantManifests[0].attribute.id,
 			};
 
-			if (isSwatchAttribute) set(attributeProp, 'swatch.id', value.value);
-			else set(attributeProp, 'dropdown.id', value.value);
+			if (isSwatchAttribute) set(attributeProp, 'swatch.value', value.value);
+			else set(attributeProp, 'dropdown.value', value.value);
 
 			return {
 				attributes: [attributeProp],
@@ -483,7 +467,7 @@
 								label="Attribute values"
 								resultKey={'attribute.choices' as keyof Query}
 								variableSearchQueryPath="filter.search"
-								optionValueKey="id"
+								optionValueKey="slug"
 								optionLabelKey="name"
 								multiple
 								value={manifest.values.map((item) => item.value)}
@@ -573,7 +557,7 @@
 											class="w-1/2"
 											bind:value={channel.price}
 											variant={channel.price < 0 ? 'error' : 'info'}
-											subText={channel.price < 0 ? $tranFunc('error.negativeNumber') : ''}
+											subText={channel.price < 0 ? $CommonState.NonNegativeError : ''}
 											onfocus={() => handleFocusHighlightQuickFilling('td-price-hl')}
 										/>
 										<Input
@@ -586,7 +570,7 @@
 											class="w-1/2"
 											bind:value={channel.costPrice}
 											variant={channel.costPrice < 0 ? 'error' : 'info'}
-											subText={channel.costPrice < 0 ? $tranFunc('error.negativeNumber') : ''}
+											subText={channel.costPrice < 0 ? $CommonState.NonNegativeError : ''}
 											onfocus={() => handleFocusHighlightQuickFilling('td-cost-price-hl')}
 										/>
 									</div>
@@ -611,7 +595,7 @@
 								: 'info'}
 							subText={typeof quickFillingValues.weight === 'number' &&
 							quickFillingValues.weight < 0
-								? $tranFunc('error.negativeNumber')
+								? $CommonState.NonNegativeError
 								: undefined}
 						/>
 					</div>
@@ -634,7 +618,7 @@
 									: 'info'}
 								subText={typeof quickFillingValues.preOrder.globalThreshold === 'number' &&
 								quickFillingValues.preOrder.globalThreshold % 1 !== 0
-									? $tranFunc('error.positiveInteger')
+									? $CommonState.NonNegativeError
 									: undefined}
 								onfocus={() => handleFocusHighlightQuickFilling('td-preorder-hl')}
 							/>
@@ -679,7 +663,7 @@
 										onfocus={() => handleFocusHighlightQuickFilling('td-stock-hl')}
 										bind:value={stockInput.quantity}
 										variant={isError ? 'error' : 'info'}
-										subText={isError ? $tranFunc('error.positiveInteger') : ''}
+										subText={isError ? $CommonState.NonNegativeError : ''}
 									/>
 								{/each}
 							</div>
@@ -722,19 +706,10 @@
 						: 'info'}
 					subText={typeof quickFillingValues.quantityLimitPerCustomer === 'number' &&
 					quickFillingValues.quantityLimitPerCustomer % 1 !== 0
-						? $tranFunc('error.positiveInteger')
+						? $CommonState.NonNegativeError
 						: ''}
 				/>
 			</div>
-
-			<!-- DOCUMENT -->
-			<!-- <Alert variant="info" size="sm" bordered>
-				<ol class="text-xs">
-					{#each VARIANT_ATTRIBUTE_HINTS as hint, idx (idx)}
-						<li>{idx + 1}. {hint.title}</li>
-					{/each}
-				</ol>
-			</Alert> -->
 		</div>
 
 		<!-- MARK: DETAILS -->
@@ -805,7 +780,7 @@
 												variant={channelListing.price < 0 ? 'error' : 'info'}
 												subText={typeof channelListing.price === 'number' &&
 												channelListing.price < 0
-													? $tranFunc('error.negativeNumber')
+													? $CommonState.NonNegativeError
 													: ''}
 											>
 												{#snippet action()}
@@ -844,7 +819,7 @@
 												variant={channelListing.costPrice < 0 ? 'error' : 'info'}
 												subText={typeof channelListing.costPrice === 'number' &&
 												channelListing.costPrice < 0
-													? $tranFunc('error.negativeNumber')
+													? $CommonState.NonNegativeError
 													: ''}
 											/>
 										{/each}
@@ -862,7 +837,7 @@
 									startIcon={MdiWeightKg}
 									bind:value={variantInputDetail.weight}
 									variant={variantInputDetail.weight >= 0 ? 'info' : 'error'}
-									subText={variantInputDetail.weight >= 0 ? '' : $tranFunc('error.negativeNumber')}
+									subText={variantInputDetail.weight >= 0 ? '' : $CommonState.NonNegativeError}
 								/>
 							</td>
 							<!-- PREORDER -->
@@ -882,7 +857,7 @@
 											: 'info'}
 										subText={typeof variantInputDetail.preorder?.globalThreshold === 'number' &&
 										variantInputDetail.preorder.globalThreshold % 1 !== 0
-											? $tranFunc('error.positiveInteger')
+											? $CommonState.NonNegativeError
 											: undefined}
 									/>
 									<EaseDatePicker
@@ -918,7 +893,7 @@
 												disabled={loading}
 												min={0}
 												variant={stock.quantity % 1 !== 0 ? 'error' : 'info'}
-												subText={stock.quantity % 1 !== 0 ? $tranFunc('error.positiveInteger') : ''}
+												subText={stock.quantity % 1 !== 0 ? $CommonState.NonNegativeError : ''}
 											/>
 										{/each}
 									</div>
@@ -933,9 +908,7 @@
 									placeholder="SKU"
 									bind:value={variantInputDetail.sku}
 									variant={variantInputDetail.sku?.trim() ? 'info' : 'error'}
-									subText={variantInputDetail.sku?.trim()
-										? ''
-										: $tranFunc('helpText.fieldRequired')}
+									subText={variantInputDetail.sku?.trim() ? '' : $CommonState.FieldRequiredError}
 								/>
 							</td>
 						</tr>

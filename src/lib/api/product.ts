@@ -255,7 +255,7 @@ export const PRODUCT_DETAIL_QUERY = gql`
 				value
 			}
 			media {
-				url(format: WEBP, size: 500)
+				url(format: WEBP, size: 700)
 				alt
 				type
 				oembedData

@@ -23,5 +23,5 @@ export const ProductSortFields = derived(tranFunc, (func) => {
     ProductOrderField.Name,
     ProductOrderField.PublicationDate,
     ProductOrderField.MinimalPrice,
-  ].map<SelectOption>((value) => ({ value, label: func(`common.${value.toLowerCase()}`) }))
+  ].map<SelectOption>((value) => ({ value, label: func(`common.${value.toLowerCase().replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())}`) }))
 })

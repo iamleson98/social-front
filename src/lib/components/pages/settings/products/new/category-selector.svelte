@@ -13,10 +13,11 @@
 	import { Label } from '$lib/components/ui/Input';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { TableSkeleton } from '$lib/components/ui/Table';
+	import { CommonState } from '$lib/utils/common.svelte';
 
 	type Props = {
 		categoryID?: string | null;
-		ok: boolean;
+		formOk: boolean;
 		loading: boolean;
 	};
 
@@ -24,7 +25,7 @@
 
 	let {
 		categoryID = $bindable<string | null | undefined>(),
-		ok = $bindable(),
+		formOk = $bindable(),
 		loading,
 	}: Props = $props();
 	let categoryError = $state<string>();
@@ -44,12 +45,12 @@
 	});
 
 	const handleCategorySelection = (newCateId: string | null) => {
-		categoryError = newCateId ? undefined : $tranFunc('helpText.fieldRequired');
+		categoryError = newCateId ? undefined : $CommonState.FieldRequiredError;
 		categoryID = newCateId;
 	};
 
 	$effect(() => {
-		ok = !categoryError;
+		formOk = !categoryError;
 	});
 </script>
 

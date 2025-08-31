@@ -8,6 +8,10 @@
 	} from '$lib/api/admin/product';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import FileInputContainer from '$lib/components/common/file-input-container.svelte';
+	import {
+		GeneralMetadataEditor,
+		type GeneralMetadataEditorRef,
+	} from '$lib/components/pages/settings/common';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import CategorySelector from '$lib/components/pages/settings/products/new/category-selector.svelte';
 	import ChannelsSelector from '$lib/components/pages/settings/products/new/channels-selector.svelte';
@@ -15,7 +19,6 @@
 	import GeneralInformation from '$lib/components/pages/settings/products/new/general-information.svelte';
 	import PackagingAndDelivery from '$lib/components/pages/settings/products/new/packaging-and-delivery.svelte';
 	import ProductSeo from '$lib/components/pages/settings/products/new/product-seo.svelte';
-	import ProductVariantCreator from '$lib/components/pages/settings/products/new/product-variant-creator.svelte';
 	import VariantsEditor from '$lib/components/pages/settings/products/new/variants-editor.svelte';
 	import type {
 		Mutation,
@@ -31,10 +34,8 @@
 	import { AppRoute } from '$lib/utils/routes';
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
-	import { noop, omit } from 'es-toolkit';
+	import { omit } from 'es-toolkit';
 	import { toast } from 'svelte-sonner';
-
-	const NOW = new Date();
 
 	let productCreateInput = $state<ProductCreateInput>({
 		productType: '',
@@ -60,19 +61,10 @@
 	let channelListingUpdateInputOk = $state(true);
 	let productMedias = $state.raw<MediaObject[]>([]);
 	let productMediasOk = $state(true);
+	let metaRef = $state<GeneralMetadataEditorRef>();
 
-	let productInputError = $state<Record<keyof ProductCreateInput, boolean>>({
-		externalReference: true, // not supported yet
-		privateMetadata: true, // not supported yet
-		collections: true, // this field is optional
-		chargeTaxes: true, // not supported yet
-		metadata: true,
-		taxClass: true, // optional
-		taxCode: true, // not supported yet
-		rating: true, // default set to 5 (highest)
-		weight: true,
-		slug: true,
-
+	let productInputError = $state<Partial<Record<keyof ProductCreateInput, boolean>>>({
+		metadata: false,
 		productType: false,
 		description: false,
 		attributes: false,
@@ -84,8 +76,6 @@
 	let productVariantsInput = $state.raw<ProductVariantBulkCreateInput[]>([]);
 	let loading = $state(false);
 
-	const setLoading = (load: boolean) => (loading = load);
-
 	const createProductMedias = async (productID: string) => {
 		if (!productMedias.length) return;
 
@@ -93,19 +83,13 @@
 			return GRAPHQL_CLIENT.mutation<
 				Pick<Mutation, 'productMediaCreate'>,
 				MutationProductMediaCreateArgs
-			>(
-				PRODUCT_MEDIA_CREATE_MUTATION,
-				{
-					input: {
-						product: productID,
-						alt: media.alt,
-						image: media.file,
-					},
+			>(PRODUCT_MEDIA_CREATE_MUTATION, {
+				input: {
+					product: productID,
+					alt: media.alt,
+					image: media.file,
 				},
-				{
-					requestPolicy: 'network-only',
-				},
-			);
+			});
 		});
 
 		const results = await Promise.all(operations);
@@ -132,7 +116,7 @@
 			return;
 		}
 
-		setLoading(true);
+		loading = true;
 
 		// 1) Create product
 		const productCreateBody: ProductCreateInput = {
@@ -149,7 +133,7 @@
 			input: productCreateBody,
 		});
 		if (checkIfGraphqlResultHasError(productCreateResult, 'productCreate')) {
-			setLoading(false);
+			loading = false;
 			return;
 		}
 
@@ -176,7 +160,7 @@
 		if (
 			checkIfGraphqlResultHasError(updateProductChannelListingResult, 'productChannelListingUpdate')
 		) {
-			setLoading(false);
+			loading = false;
 			return;
 		}
 
@@ -188,7 +172,10 @@
 			product: productCreateResult.data?.productCreate?.product?.id as string,
 			variants: productVariantsInput,
 		});
-		if (checkIfGraphqlResultHasError(variantsBulkCreateResult, 'productVariantBulkCreate')) return;
+		if (checkIfGraphqlResultHasError(variantsBulkCreateResult, 'productVariantBulkCreate')) {
+			loading = false;
+			return;
+		}
 
 		let hasError = false;
 		for (const result of variantsBulkCreateResult.data?.productVariantBulkCreate?.results || []) {
@@ -199,12 +186,13 @@
 		}
 
 		if (hasError) {
-			setLoading(false);
+			loading = false;
 			return;
 		}
 
 		// 4) create product medias
 		await createProductMedias(productCreateResult.data?.productCreate?.product?.id as string);
+		loading = false;
 
 		toast.success($tranFunc('product.prdCreated'));
 	};
@@ -214,13 +202,13 @@
 	<GeneralInformation
 		bind:name={productCreateInput.name!}
 		bind:productType={productCreateInput.productType}
-		disabled={loading}
 		bind:description={productCreateInput.description}
 		bind:attributes={productCreateInput.attributes!}
+		disabled={loading}
 	/>
 	<CategorySelector
 		bind:categoryID={productCreateInput.category}
-		bind:ok={productInputError.category}
+		bind:formOk={productInputError.category!}
 		{loading}
 	/>
 	<FileInputContainer
@@ -235,15 +223,9 @@
 	/>
 	<div class={SitenameCommonClassName}>
 		<ChannelsSelector bind:channelListingUpdateInput ok={channelListingUpdateInputOk} {loading} />
-		<!-- <ProductVariantCreator
-			bind:productVariantsInput
-			channelsListing={channelListingUpdateInput}
-			{loading}
-			{productMedias}
-		/> -->
 		<VariantsEditor
-			productTypeId={productCreateInput.productType}
 			{loading}
+			productTypeId={productCreateInput.productType}
 			{productMedias}
 			channelsListing={channelListingUpdateInput}
 			bind:productVariantsInput
@@ -253,13 +235,18 @@
 		productName={productCreateInput.name}
 		bind:seo={productCreateInput.seo!}
 		bind:slug={productCreateInput.slug}
-		bind:ok={productInputError.seo}
+		bind:formOk={productInputError.seo!}
 		{loading}
 	/>
 	<CollectionAndTax
 		bind:collections={productCreateInput.collections}
 		bind:taxClassID={productCreateInput.taxClass}
 		{loading}
+	/>
+	<GeneralMetadataEditor
+		bind:this={metaRef}
+		disabled={loading}
+		bind:formOk={productInputError.metadata}
 	/>
 	<PackagingAndDelivery
 		bind:metadata={productCreateInput.metadata}
@@ -269,7 +256,9 @@
 </div>
 
 <ActionBar
-	onAddClick={noop}
 	backButtonUrl={AppRoute.SETTINGS_PRODUCTS()}
-	disableCreateButton={false}
+	disableCreateButton={loading ||
+		!Object.values(productInputError).every(Boolean) ||
+		!productMediasOk}
+	onAddClick={handleSubmit}
 />

@@ -15,9 +15,9 @@
 		data: MetadataInput[];
 		disabled?: boolean;
 		class?: string;
-		valueChanged?: boolean;
 		metadataItemsToAdd?: MetadataInput[];
 		metadataKeysToRemove?: string[];
+		formOk?: boolean;
 	};
 
 	let {
@@ -25,9 +25,9 @@
 		data,
 		disabled,
 		class: className = '',
-		valueChanged = $bindable(false),
 		metadataItemsToAdd = $bindable([]),
 		metadataKeysToRemove = $bindable([]),
+		formOk = $bindable(true),
 	}: Props = $props();
 
 	const DataSchema = object({
@@ -65,6 +65,12 @@
 
 		dataFormErrors[index] = result.error?.formErrors.fieldErrors;
 	};
+
+	$effect(() => {
+		formOk =
+			dataFormErrors.every((item) => !item?.key?.length && !item?.value?.length) &&
+			activeMetadata.every((item) => item.key && item.value);
+	});
 
 	const handleAddPair = () => {
 		activeMetadata = activeMetadata.concat({ key: '', value: '' });

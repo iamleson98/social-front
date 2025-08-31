@@ -36,6 +36,7 @@
 		productType: string;
 		description: OutputData;
 		attributes: AttributeValueInput[];
+		formOk?: boolean;
 	};
 
 	type CustomAttributeInput = AttributeValueInput & {
@@ -49,6 +50,7 @@
 		productType = $bindable(),
 		description = $bindable(),
 		attributes = $bindable(),
+		formOk = $bindable(true),
 	}: Props = $props();
 
 	const productTypeQuery = operationStore<Pick<Query, 'productType'>, QueryProductTypeArgs>({
@@ -167,16 +169,16 @@
 		return unsub;
 	});
 
-	const checkAttributeValidity = (
-		idx: number,
-		validCheck: (attr: CustomAttributeInput) => boolean,
-	) => {
-		if (attributeFieldsBlurs[idx]) {
-			attributeErrors[idx] = validCheck(innerAttributes[idx])
-				? undefined
-				: $CommonState.FieldRequiredError;
-		}
-	};
+	// const checkAttributeValidity = (
+	// 	idx: number,
+	// 	validCheck: (attr: CustomAttributeInput) => boolean,
+	// ) => {
+	// 	if (attributeFieldsBlurs[idx]) {
+	// 		attributeErrors[idx] = validCheck(innerAttributes[idx])
+	// 			? undefined
+	// 			: $CommonState.FieldRequiredError;
+	// 	}
+	// };
 
 	const GeneralSchema = object({
 		name: string().nonempty($CommonState.FieldRequiredError),
@@ -190,6 +192,10 @@
 	type GeneralProps = z.infer<typeof GeneralSchema>;
 
 	let generalErrors = $state<Partial<Record<keyof GeneralProps, string[]>>>({});
+
+	$effect(() => {
+		formOk = !Object.keys(generalErrors).length;
+	});
 
 	const validate = () => {
 		const result = GeneralSchema.safeParse({
