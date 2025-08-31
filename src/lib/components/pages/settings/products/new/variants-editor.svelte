@@ -23,6 +23,8 @@
 		type BulkAttributeValueInput,
 		type Mutation,
 		type MutationAttributeValueCreateArgs,
+		type ProductChannelListingAddInput,
+		type ProductChannelListingUpdateInput,
 		type ProductVariantBulkCreateInput,
 		type ProductVariantChannelListingAddInput,
 		type Query,
@@ -32,18 +34,36 @@
 	import { type CurrencyCode, CurrencyIconMap } from '$lib/utils/consts';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { set } from 'es-toolkit/compat';
-	import type { ChannelSelectOptionProps, QuickFillHighlight, QuickFillingProps } from './utils';
+	import type {
+		ChannelSelectOptionProps,
+		CustomStockInput,
+		QuickFillHighlight,
+		QuickFillingProps,
+	} from './utils';
 	import dayjs from 'dayjs';
 	import { Button } from '$lib/components/ui';
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { slide } from 'svelte/transition';
+	import type { MediaObject } from '$lib/utils/types';
+	import { CHANNELS_QUERY } from '$lib/api/channels';
+	import { onMount } from 'svelte';
+	import { omit } from 'es-toolkit';
 
 	type Props = {
 		productTypeId: string;
-		productName?: string;
+		channelsListing: ProductChannelListingUpdateInput;
+		loading: boolean;
+		productMedias: MediaObject[];
+		productVariantsInput: ProductVariantBulkCreateInput[];
 	};
 
-	let { productTypeId, productName = '' }: Props = $props();
+	let {
+		productTypeId,
+		channelsListing,
+		loading,
+		productMedias,
+		productVariantsInput = $bindable([]),
+	}: Props = $props();
 
 	type VariantManifest = {
 		attribute: {
@@ -83,7 +103,6 @@
 	];
 
 	let variantManifests = $state<VariantManifest[]>([]);
-	let loading = $state(false);
 	let quickFillingHighlightClass = $state<QuickFillHighlight>();
 	let channelSelectOptions = $state.raw<ChannelSelectOptionProps[]>([]);
 	let manifestPerformFetchingAttributeValues = $state([false, false]);
@@ -96,6 +115,74 @@
 		trackInventory: true,
 	});
 	let showQuickFillingAdvancedSettings = $state(false);
+
+	const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
+		query: CHANNELS_QUERY,
+		context: { requestPolicy: 'cache-and-network' },
+	});
+
+	onMount(() => {
+		return channelsQueryStore.subscribe((result) => {
+			if (checkIfGraphqlResultHasError(result)) return;
+
+			const warehousesOfChannels: CustomStockInput[] = [];
+			const warehouseMeetMap: Record<string, boolean> = {};
+
+			for (const channel of result.data?.channels || []) {
+				for (const warehouse of channel.warehouses) {
+					if (!warehouseMeetMap[warehouse.id]) {
+						warehouseMeetMap[warehouse.id] = true;
+
+						warehousesOfChannels.push({
+							warehouse: warehouse.id,
+							warehouseName: warehouse.name,
+							quantity: 0,
+						});
+					}
+				}
+			}
+
+			quickFillingValues = {
+				...quickFillingValues,
+				stocks: warehousesOfChannels,
+			};
+		});
+	});
+
+	$effect(() => {
+		productVariantsInput = variantsInputDetails.map((item) => {
+			return {
+				...item,
+				stocks: item.stocks?.map(
+					(stock) => omit(stock, ['warehouseName' as keyof StockInput]) as StockInput,
+				),
+				channelListings: item.channelListings?.map(
+					(listing) =>
+						omit(listing, [
+							'label' as keyof ProductVariantChannelListingAddInput,
+							'value' as keyof ProductVariantChannelListingAddInput,
+							'currency' as keyof ProductVariantChannelListingAddInput,
+						]) as ProductVariantChannelListingAddInput,
+				),
+			};
+		});
+	});
+
+	$effect(() => {
+		const newChannelSelectOptions: ChannelSelectOptionProps[] = [];
+
+		channelsListing?.updateChannels?.forEach((channelListing) => {
+			newChannelSelectOptions.push({
+				value: channelListing.channelId,
+				label: channelListing['channelName' as keyof ProductChannelListingAddInput],
+				currency: channelListing['currency' as keyof ProductChannelListingAddInput],
+				channelId: channelListing.channelId,
+				price: undefined,
+			});
+		});
+
+		channelSelectOptions = newChannelSelectOptions;
+	});
 
 	/** check if quick filling form has any error */
 	const quickFillingError = $derived.by(() => {
@@ -362,7 +449,7 @@
 	};
 </script>
 
-<div class={SitenameCommonClassName}>
+<div class="space-y-2">
 	{#if $ProductTypeDetailQuery.fetching}
 		<div class="grid grid-cols-2 gap-2">
 			<SelectSkeleton label />
@@ -373,13 +460,14 @@
 	{:else if $ProductTypeDetailQuery.data?.productType}
 		<div class="grid grid-cols-2 gap-2">
 			{#each variantManifests as manifest, idx (idx)}
-				<div class="space-y-2">
+				<div class={SitenameCommonClassName}>
 					<Select
 						placeholder="Select an attribute"
 						label="Variant #{idx + 1}"
 						options={AvailableAttributeOptions}
 						bind:value={manifest.attribute.id}
 						onchange={(opt) => opt && (manifest.attribute.name = (opt as SelectOption).label)}
+						disabled={loading}
 					/>
 
 					{#if manifest.attribute.id}
@@ -438,13 +526,13 @@
 
 	{#if variantManifests.length}
 		<!-- MARK: QUICK FILLING -->
-		<div class="mb-4 rounded-lg bg-white p-3 border border-gray-200">
+		<div class={SitenameCommonClassName}>
 			<Label label={$tranFunc('product.quickFilling')} size="sm" />
 			<div class="flex gap-x-2 items-start flex-row w-full">
 				<div class="w-11/12 flex gap-1 items-start flex-row">
 					<!-- CHANNELS -->
 					<div class="w-1/6">
-						<div class="text-xs">{$tranFunc('product.channel')}</div>
+						<Label label={$tranFunc('product.channel')} size="sm" />
 						{#if !channelSelectOptions?.length}
 							<SelectSkeleton size="sm" />
 						{:else}
@@ -465,18 +553,20 @@
 					<!-- PRICING -->
 					<div class="w-2/6">
 						{#if quickFillingValues.channels.length}
-							<div class="flex flex-row text-xs">
-								<span class="w-1/2">{$tranFunc('product.price')}</span>
-								<span class="w-1/2">{$tranFunc('product.costPrice')}</span>
+							<div class="grid grid-cols-2">
+								<Label label={$tranFunc('product.price')} size="sm" />
+								<Label label={$tranFunc('product.costPrice')} size="sm" />
 							</div>
 							<div class="max-h-32 overflow-y-auto border border-gray-200 bg-white p-2 rounded-lg">
 								{#each quickFillingValues.channels as channel, idx (idx)}
-									{@const iconType = CurrencyIconMap[channel.currency as CurrencyCode]}
+									{#snippet action()}
+										<span class="font-bold text-[9px]">{channel.currency}</span>
+									{/snippet}
 									<div class="flex gap-1 mt-1">
 										<Input
-											startIcon={iconType}
 											type="number"
 											disabled={loading}
+											{action}
 											min={0}
 											placeholder={channel.currency}
 											size="xs"
@@ -487,9 +577,9 @@
 											onfocus={() => handleFocusHighlightQuickFilling('td-price-hl')}
 										/>
 										<Input
-											startIcon={iconType}
 											type="number"
 											min={0}
+											{action}
 											placeholder={channel.currency}
 											disabled={loading}
 											size="xs"
@@ -506,13 +596,13 @@
 					</div>
 					<!-- WEIGHT -->
 					<div class="w-1/6">
-						<div class="text-xs">{$tranFunc('product.weight')}</div>
 						<Input
 							size="sm"
 							type="number"
 							bind:value={quickFillingValues.weight}
 							min={0}
 							disabled={loading}
+							label={$tranFunc('product.weight')}
 							startIcon={MdiWeightKg}
 							onfocus={() => handleFocusHighlightQuickFilling('td-weight-hl')}
 							variant={typeof quickFillingValues.weight === 'number' &&
@@ -527,7 +617,7 @@
 					</div>
 					<!-- PRE-ORDER -->
 					<div class="w-1/6">
-						<div class="text-xs">{$tranFunc('common.preorder')}</div>
+						<Label label={$tranFunc('common.preorder')} size="sm" />
 						<div class="border border-gray-200 bg-white p-2 rounded-lg">
 							<!-- QUANTITY LIMIT -->
 							<Input
@@ -570,12 +660,12 @@
 					</div>
 					<!-- STOCK -->
 					<div class="w-1/6">
-						<div class="text-xs">{$tranFunc('product.stock')}</div>
+						<Label label={$tranFunc('product.stock')} size="sm" />
 						{#if !quickFillingValues.stocks.length}
 							<SelectSkeleton size="xs" />
 						{:else}
 							<div
-								class="max-h-32 overflow-y-auto border border-gray-200 bg-white p-1 rounded-lg space-y-1.5"
+								class="max-h-32 overflow-y-auto border border-gray-200 bg-white p-2 rounded-lg space-y-1.5"
 							>
 								{#each quickFillingValues.stocks as stockInput, idx (idx)}
 									{@const isError = stockInput.quantity % 1 !== 0}
@@ -598,7 +688,7 @@
 				</div>
 				<!-- APPLY BUTTON -->
 				<div class="w-1/12">
-					<div class="text-xs">{$tranFunc('common.action')}</div>
+					<Label label={$tranFunc('common.action')} size="sm" />
 					<Button
 						class="btn btn-sm grow shrink"
 						size="sm"
@@ -611,41 +701,31 @@
 			</div>
 
 			<!-- QUICK FILLING ADVANCED OPTIONS -->
-			<Accordion open={showQuickFillingAdvancedSettings} header={$tranFunc('common.advanced')}>
-				<div class="mt-2 flex gap-2 items-start" transition:slide>
-					<div>
-						<div class="text-xs">{$tranFunc('product.trackInventory')}</div>
-						<Checkbox
-							bind:checked={quickFillingValues.trackInventory}
-							size="md"
-							disabled={loading}
-							label={quickFillingValues.trackInventory
-								? $tranFunc('common.yes')
-								: $tranFunc('common.no')}
-						/>
-					</div>
-
-					<div>
-						<div class="text-xs">{$tranFunc('product.qtyLimit')}</div>
-						<Input
-							type="number"
-							bind:value={quickFillingValues.quantityLimitPerCustomer}
-							size="sm"
-							disabled={loading}
-							min="0"
-							placeholder={$tranFunc('placeholders.valuePlaceholder')}
-							variant={typeof quickFillingValues.quantityLimitPerCustomer === 'number' &&
-							quickFillingValues.quantityLimitPerCustomer % 1 !== 0
-								? 'error'
-								: 'info'}
-							subText={typeof quickFillingValues.quantityLimitPerCustomer === 'number' &&
-							quickFillingValues.quantityLimitPerCustomer % 1 !== 0
-								? $tranFunc('error.positiveInteger')
-								: ''}
-						/>
-					</div>
-				</div>
-			</Accordion>
+			<div class="mt-2 flex gap-2 items-start" transition:slide>
+				<Checkbox
+					bind:checked={quickFillingValues.trackInventory}
+					label={$tranFunc('product.trackInventory')}
+					size="sm"
+					disabled={loading}
+				/>
+				<Input
+					type="number"
+					bind:value={quickFillingValues.quantityLimitPerCustomer}
+					size="sm"
+					disabled={loading}
+					min="0"
+					label={$tranFunc('product.qtyLimit')}
+					placeholder={$tranFunc('placeholders.valuePlaceholder')}
+					variant={typeof quickFillingValues.quantityLimitPerCustomer === 'number' &&
+					quickFillingValues.quantityLimitPerCustomer % 1 !== 0
+						? 'error'
+						: 'info'}
+					subText={typeof quickFillingValues.quantityLimitPerCustomer === 'number' &&
+					quickFillingValues.quantityLimitPerCustomer % 1 !== 0
+						? $tranFunc('error.positiveInteger')
+						: ''}
+				/>
+			</div>
 
 			<!-- DOCUMENT -->
 			<!-- <Alert variant="info" size="sm" bordered>
@@ -713,14 +793,7 @@
 								<div class="max-h-28 overflow-y-auto p-1">
 									<div class="flex flex-col gap-1">
 										{#each variantInputDetail.channelListings || [] as channelListing, idx (idx)}
-											{@const iconType =
-												CurrencyIconMap[
-													channelListing[
-														'currency' as keyof ProductVariantChannelListingAddInput
-													] as CurrencyCode
-												]}
 											<Input
-												startIcon={iconType}
 												type="number"
 												min={0}
 												disabled={loading}
@@ -734,7 +807,15 @@
 												channelListing.price < 0
 													? $tranFunc('error.negativeNumber')
 													: ''}
-											/>
+											>
+												{#snippet action()}
+													<span class="font-bold text-[9px]">
+														{channelListing[
+															'currency' as keyof ProductVariantChannelListingAddInput
+														]}
+													</span>
+												{/snippet}
+											</Input>
 										{/each}
 									</div>
 								</div>
@@ -864,3 +945,38 @@
 		</div>
 	{/if}
 </div>
+
+<style lang="postcss">
+	@reference "tailwindcss";
+
+	td {
+		@apply p-1 border-transparent border-l border-r;
+	}
+	th {
+		@apply px-1 py-3;
+	}
+
+	.variant-table-row:last-child > td {
+		@apply border-b;
+	}
+	.variant-table-row:first-child > td {
+		@apply border-t;
+	}
+
+	/** price highlight */
+	.td-price-hl > .price-td,
+	.td-channel-hl > .channel-td,
+	.td-stock-hl > .stock-td,
+	.td-sku-hl > .sku-td,
+	.td-cost-price-hl > .cost-price-td,
+	.td-weight-hl > .weight-td,
+	.td-preorder-hl > .preorder-td {
+		@apply border-blue-500!;
+	}
+
+	table,
+	tr,
+	td {
+		border-collapse: initial !important;
+	}
+</style>

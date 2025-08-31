@@ -235,13 +235,19 @@
 	/>
 	<div class={SitenameCommonClassName}>
 		<ChannelsSelector bind:channelListingUpdateInput ok={channelListingUpdateInputOk} {loading} />
-		<ProductVariantCreator
+		<!-- <ProductVariantCreator
 			bind:productVariantsInput
 			channelsListing={channelListingUpdateInput}
 			{loading}
 			{productMedias}
+		/> -->
+		<VariantsEditor
+			productTypeId={productCreateInput.productType}
+			{loading}
+			{productMedias}
+			channelsListing={channelListingUpdateInput}
+			bind:productVariantsInput
 		/>
-		<VariantsEditor productTypeId={productCreateInput.productType} />
 	</div>
 	<ProductSeo
 		productName={productCreateInput.name}

@@ -12,7 +12,7 @@
 		Query,
 	} from '$lib/gql/graphql';
 	import { tranFunc } from '$lib/i18n';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import ErrorMsg from './error-msg.svelte';
@@ -142,8 +142,8 @@
 			{#each productChannelListingUpdateInput.updateChannels! as channelListing, idx (idx)}
 				<div class="">
 					<Accordion
-						open={channelListing.used}
-						class="p-2 rounded-lg bg-white border border-gray-200"
+						bind:open={channelListing.used}
+						class={SitenameCommonClassName}
 					>
 						{#snippet header()}
 							<Checkbox

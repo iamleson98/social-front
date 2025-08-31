@@ -36,7 +36,7 @@
 
 	const channelsQuery = operationStore<Pick<Query, 'channels'>>({
 		query: CHANNELS_QUERY,
-		requestPolicy: 'network-only',
+		requestPolicy: 'cache-and-network',
 	});
 
 	/**
@@ -128,7 +128,7 @@
 	};
 </script>
 
-<div class={['w-4/10 tablet:w-full space-y-2']}>
+<div class={['w-3/10 tablet:w-full space-y-2']}>
 	{#if $channelsQuery.fetching}
 		<div class={SitenameCommonClassName}>
 			<Skeleton class="h-8 w-28 mb-2" />
@@ -167,9 +167,9 @@
 				{#if !listing.isPublished}
 					<div class="mt-2" transition:slide>
 						<EaseDatePicker
-							placeholder={$tranFunc('common.publication_date')}
+							placeholder={$tranFunc('common.publicationDate')}
 							size="sm"
-							label={$tranFunc('common.publication_date')}
+							label={$tranFunc('common.publicationDate')}
 							value={{ date: listing.publishedAt }}
 							onchange={(val) => (listing.publishedAt = dayjs(val.date).format(RFC3339TimeFormat))}
 							{disabled}

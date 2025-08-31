@@ -32,9 +32,9 @@
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
-	import { tranFunc } from '$i18n';
 	import { toast } from 'svelte-sonner';
 	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
+	import { CommonState } from '$lib/utils/common.svelte';
 
 	let collectionUpdateInput = $state<CollectionInput>({
 		name: '',
@@ -109,7 +109,7 @@
 
 	const onDeleteClick = () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: $tranFunc('common.confirmDel'),
+			content: $CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true; //
 
@@ -122,9 +122,7 @@
 
 				loading = false; //
 
-				if (
-					checkIfGraphqlResultHasError(result, 'collectionDelete', $tranFunc('common.delSuccess'))
-				)
+				if (checkIfGraphqlResultHasError(result, 'collectionDelete', $CommonState.DeleteSuccess))
 					return;
 
 				await goto(AppRoute.SETTINGS_CONFIGS_COLLECTIONS());
@@ -169,7 +167,7 @@
 		loading = false;
 		if (hasErr) return;
 
-		toast.success($tranFunc('common.editSuccess'));
+		toast.success($CommonState.EditSuccess);
 		collectionDetailQuery.reexecute({
 			context: { requestPolicy: 'network-only' },
 			variables: {
@@ -188,7 +186,7 @@
 {:else if $collectionDetailQuery.data?.collection}
 	{@const { metadata, privateMetadata, id } = $collectionDetailQuery.data.collection}
 	<div class="flex gap-2 flex-row tablet:flex-col">
-		<div class={['w-6/10 tablet:w-full space-y-2']}>
+		<div class={['w-7/10 tablet:w-full space-y-2']}>
 			<GeneralInformationForm
 				bind:name={collectionUpdateInput.name!}
 				bind:description={collectionUpdateInput.description}

@@ -96,7 +96,7 @@
 </script>
 
 <div class="flex gap-2 flex-row tablet:flex-col">
-	<div class="w-6/10 space-y-2 tablet:w-full">
+	<div class="w-7/10 space-y-2 tablet:w-full">
 		<GeneralInformationForm
 			bind:name={collectionCreateInput.name!}
 			bind:description={collectionCreateInput.description}
