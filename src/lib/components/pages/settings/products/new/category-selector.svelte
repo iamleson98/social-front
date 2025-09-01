@@ -1,7 +1,8 @@
 <script lang="ts">
-	import type { CategoryCountableConnection, Query } from '$lib/gql/graphql';
+	import type { CategoryCountableConnection, Query, QueryCategoryArgs } from '$lib/gql/graphql';
 	import {
 		CATEGORIES_LIST_FOR_CREATE_PRODUCT,
+		CATEGORY_WITH_PARENTS_QUERY,
 		type CategoryListForCreateProductInput,
 	} from '$lib/api/admin/product';
 	import { operationStore } from '$lib/api/operation';
@@ -14,6 +15,8 @@
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { TableSkeleton } from '$lib/components/ui/Table';
 	import { CommonState } from '$lib/utils/common.svelte';
+	import { onMount } from 'svelte';
+	import type { SelectItemProps } from '$lib/components/ui/MegaMenu/types';
 
 	type Props = {
 		categoryID?: string | null;
@@ -29,25 +32,58 @@
 		loading,
 	}: Props = $props();
 	let categoryError = $state<string>();
+	let menuItems = $state<SelectItemProps[]>([]);
 
 	const categoriesStore = operationStore<
 		Pick<Query, 'categories'>,
 		CategoryListForCreateProductInput
 	>({
 		query: CATEGORIES_LIST_FOR_CREATE_PRODUCT,
-		context: {
-			requestPolicy: 'cache-and-network',
-		},
+		requestPolicy: 'cache-and-network',
 		variables: {
 			level: 0,
 			first: NUMBER_OF_CATEGORIES_PER_FETCH,
 		},
+		pause: !!categoryID,
 	});
+
+	const CategoryWithParentsQuery = operationStore<Pick<Query, 'category'>, QueryCategoryArgs>({
+		query: CATEGORY_WITH_PARENTS_QUERY,
+		variables: {
+			id: categoryID,
+		},
+		pause: !categoryID,
+	});
+
+	// onMount(() => categoriesStore.subscribe(result => {
+	// 	if (result.data?.categories)
+	// }))
 
 	const handleCategorySelection = (newCateId: string | null) => {
 		categoryError = newCateId ? undefined : $CommonState.FieldRequiredError;
 		categoryID = newCateId;
 	};
+
+	onMount(() => {
+		if (categoryID) {
+			// meaning it is edit page
+			// return CategoryWithParentsQuery.subscribe((result) => {
+			// 	if (result.data?.category) {
+			// 		if (result.data.category.ancestors?.edges.length) {
+
+			// 			const connection = result.data.category.ancestors.ed
+
+			// 		}
+			// 		menuItems = convertCategoryEdgesToMenuSelect(result.data.categories);
+			// 	}
+			// });
+		} else
+			return categoriesStore.subscribe((result) => {
+				if (result.data?.categories) {
+					menuItems = convertCategoryEdgesToMenuSelect(result.data.categories);
+				}
+			});
+	});
 
 	$effect(() => {
 		formOk = !categoryError;
@@ -56,19 +92,16 @@
 
 <div class={SitenameCommonClassName}>
 	<Label required requiredAtPos="end" label={$tranFunc('product.prdCategory')} />
-	<div class={['border rounded-lg p-3', categoryError && 'border-red-200 bg-red-50']}>
+	<div class={['border rounded-lg p-2', categoryError && 'border-red-200 bg-red-50']}>
 		{#if $categoriesStore.fetching}
 			<TableSkeleton numOfRows={4} numColumns={3} />
 		{:else if $categoriesStore.error}
 			<Alert variant="error" bordered size="sm">
 				{$categoriesStore.error.message}
 			</Alert>
-		{:else}
-			{@const items = convertCategoryEdgesToMenuSelect(
-				$categoriesStore.data?.categories || ({} as CategoryCountableConnection),
-			)}
+		{:else if menuItems}
 			<MegaMenu
-				{items}
+				items={menuItems}
 				onSelect={(item) => handleCategorySelection(item.value as string)}
 				onDeselect={() => handleCategorySelection(null)}
 				disabled={loading}

@@ -31,7 +31,6 @@
 		type QueryProductTypeArgs,
 		type StockInput,
 	} from '$lib/gql/graphql';
-	import { type CurrencyCode, CurrencyIconMap } from '$lib/utils/consts';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { set } from 'es-toolkit/compat';
 	import type {
@@ -714,7 +713,7 @@
 
 		<!-- MARK: DETAILS -->
 		<div class="relative h-fit w-full rounded-lg p-3 border border-gray-200 bg-white">
-			<table class="w-full text-sm h-fit text-left table text-gray-600 mb-4">
+			<table class="w-full text-sm h-fit text-left table table-zebra text-gray-600 mb-4">
 				<thead>
 					<tr>
 						<th>{variantManifests[0].attribute.name}</th>
@@ -800,14 +799,7 @@
 								<div class="max-h-28 overflow-y-auto p-1">
 									<div class="flex flex-col gap-1">
 										{#each variantInputDetail.channelListings || [] as channelListing, idx (idx)}
-											{@const iconType =
-												CurrencyIconMap[
-													channelListing[
-														'currency' as keyof ProductVariantChannelListingAddInput
-													] as CurrencyCode
-												]}
 											<Input
-												startIcon={iconType}
 												type="number"
 												min={0}
 												disabled={loading}
@@ -821,7 +813,15 @@
 												channelListing.costPrice < 0
 													? $CommonState.NonNegativeError
 													: ''}
-											/>
+											>
+												{#snippet action()}
+													<span class="font-bold text-[9px]">
+														{channelListing[
+															'currency' as keyof ProductVariantChannelListingAddInput
+														]}
+													</span>
+												{/snippet}
+											</Input>
 										{/each}
 									</div>
 								</div>
@@ -881,22 +881,22 @@
 							</td>
 							<!-- STOCK -->
 							<td class="stock-td">
-								<div class="max-h-28 overflow-y-auto p-1">
-									<div class="p-1 space-y-1.5">
-										{#each variantInputDetail.stocks || [] as stock, idx (idx)}
-											<Input
-												size="xs"
-												label={stock['warehouseName' as keyof StockInput] as string}
-												placeholder={$tranFunc('product.stock')}
-												bind:value={variantInputDetail.stocks![idx].quantity}
-												type="number"
-												disabled={loading}
-												min={0}
-												variant={stock.quantity % 1 !== 0 ? 'error' : 'info'}
-												subText={stock.quantity % 1 !== 0 ? $CommonState.NonNegativeError : ''}
-											/>
-										{/each}
-									</div>
+								<div
+									class="p-1.5 space-y-1.5 border border-gray-200 rounded-lg max-h-28 overflow-y-auto"
+								>
+									{#each variantInputDetail.stocks || [] as stock, idx (idx)}
+										<Input
+											size="xs"
+											label={stock['warehouseName' as keyof StockInput] as string}
+											placeholder={$tranFunc('product.stock')}
+											bind:value={variantInputDetail.stocks![idx].quantity}
+											type="number"
+											disabled={loading}
+											min={0}
+											variant={stock.quantity % 1 !== 0 ? 'error' : 'info'}
+											subText={stock.quantity % 1 !== 0 ? $CommonState.NonNegativeError : ''}
+										/>
+									{/each}
 								</div>
 							</td>
 							<!-- SKU -->

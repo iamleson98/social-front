@@ -29,7 +29,7 @@
 	}: Props = $props();
 </script>
 
-<div class={`${className} ${INPUT_CLASSES[variant].fg}`}>
+<div class={`${className} ${INPUT_CLASSES[variant].fg} flex items-center`}>
 	<div class={`inline-flex items-start gap-2`}>
 		<input
 			{...rest}

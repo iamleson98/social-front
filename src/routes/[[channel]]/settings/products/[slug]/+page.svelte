@@ -1,25 +1,41 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
-	import { PRODUCT_DETAIL_QUERY } from '$lib/api/admin/product';
+	import { PRODUCT_DELETE_MUTATION, PRODUCT_DETAIL_QUERY } from '$lib/api/admin/product';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
-	import ProductTypeSelector from '$lib/components/common/product-type-select/product-type.svelte';
+	import {
+		ActionBar,
+		GeneralMetadataEditor,
+		type GeneralMetadataEditorRef,
+	} from '$lib/components/pages/settings/common';
+	import GeneralInformation from '$lib/components/pages/settings/products/new/general-information.svelte';
 	import CategorySelector from '$lib/components/pages/settings/products/new/category-selector.svelte';
 	import CollectionsAndTax from '$lib/components/pages/settings/products/new/collections-and-tax.svelte';
 	import PackagingAndDelivery from '$lib/components/pages/settings/products/new/packaging-and-delivery.svelte';
-	import ProductAttributeEditor from '$lib/components/pages/settings/products/new/product-attribute-editor.svelte';
-	import ProductDescriptionEditorjsComponent from '$lib/components/pages/settings/products/new/product-description-editorjs-component.svelte';
-	import ProductName from '$lib/components/pages/settings/products/new/product-name.svelte';
 	import ProductSeo from '$lib/components/pages/settings/products/new/product-seo.svelte';
 	import Skeleton from '$lib/components/pages/settings/products/skeleton.svelte';
-	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
-	import type { ProductInput, Query, QueryProductArgs, ProductType } from '$lib/gql/graphql';
+	import type {
+		ProductInput,
+		Query,
+		QueryProductArgs,
+		ProductType,
+		Mutation,
+		MutationProductDeleteArgs,
+	} from '$lib/gql/graphql';
+	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
+	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
+	import FileInputContainer from '$lib/components/common/file-input-container.svelte';
+	import { tranFunc } from '$i18n';
+	import type { MediaObject } from '$lib/utils/types';
+	import ChannelsSelector from '$lib/components/pages/settings/products/new/channels-selector.svelte';
+	import VariantsEditor from '$lib/components/pages/settings/products/new/variants-editor.svelte';
 
-	const NOW = new Date();
-
-	const PRODUCT_DETAIL_STORE = operationStore<Pick<Query, 'product'>, QueryProductArgs>({
+	const ProductDetailStore = operationStore<Pick<Query, 'product'>, QueryProductArgs>({
 		query: PRODUCT_DETAIL_QUERY,
 		variables: {
 			slug: page.params.slug,
@@ -28,8 +44,24 @@
 	});
 
 	let loading = $state(false);
-	let product = $state<ProductInput>({});
+	let product = $state<ProductInput>({
+		name: '',
+		description: '',
+		attributes: [],
+		category: '',
+		seo: {},
+		slug: '',
+		metadata: [],
+		privateMetadata: [],
+		collections: [],
+		rating: 5,
+		chargeTaxes: true,
+		weight: 0,
+	});
 	let currentProductType = $state<ProductType>();
+	let metaRef = $state<GeneralMetadataEditorRef>();
+	let productMediasOk = $state(true);
+	let productMedias = $state.raw<MediaObject[]>([]);
 	let productInputError = $state<Record<keyof ProductInput, boolean>>({
 		externalReference: true, // not supported yet
 		privateMetadata: true, // not supported yet
@@ -51,7 +83,7 @@
 	});
 
 	onMount(() => {
-		return PRODUCT_DETAIL_STORE.subscribe((result) => {
+		return ProductDetailStore.subscribe((result) => {
 			if (result.data?.product) {
 				const {
 					category,
@@ -69,6 +101,8 @@
 					weight,
 					productType,
 					attributes,
+					media,
+					channelListings,
 				} = result.data.product;
 
 				currentProductType = productType;
@@ -89,63 +123,106 @@
 					taxClass: taxClass?.id,
 					weight,
 				};
+
+				if (media?.length) {
+					productMedias = media.map<MediaObject>((item) => ({
+						alt: item.alt,
+						url: item.url,
+						type: item.type,
+					}));
+				}
 			}
 		});
 	});
 
 	const handleSubmit = () => {};
+
+	const handleDelete = () => {
+		ALERT_MODAL_STORE.openAlertModal({
+			content: $CommonState.ConfirmDelete,
+			onOk: async () => {
+				loading = true;
+				const result = await GRAPHQL_CLIENT.mutation<
+					Pick<Mutation, 'productDelete'>,
+					MutationProductDeleteArgs
+				>(PRODUCT_DELETE_MUTATION, {
+					id: page.params.slug!,
+				});
+				loading = false;
+
+				if (!checkIfGraphqlResultHasError(result, 'productDelete', $CommonState.DeleteSuccess))
+					await goto(AppRoute.SETTINGS_PRODUCTS());
+			},
+		});
+	};
 </script>
 
-<div class="m-auto rounded-lg bg-white w-full p-5 text-gray-600 border border-gray-200">
-	{#if $PRODUCT_DETAIL_STORE.fetching}
-		<Skeleton />
-	{:else if $PRODUCT_DETAIL_STORE.error}
-		<Alert variant="error" size="sm" bordered>{$PRODUCT_DETAIL_STORE.error.message}</Alert>
-	{:else if product && currentProductType}
-		<div class="text-right">
-			<span class="text-xs">{NOW.toDateString()}</span>
-		</div>
-
-		<ProductName bind:name={product.name} bind:ok={productInputError.name} {loading} />
-		<ProductTypeSelector value={currentProductType?.id} ok={true} loading={true} />
-		<ProductAttributeEditor
-			productTypeID={currentProductType?.id}
-			attributes={product.attributes!}
-			bind:ok={productInputError.attributes}
-			{loading}
+{#if $ProductDetailStore.fetching}
+	<Skeleton />
+{:else if $ProductDetailStore.error}
+	<Alert variant="error" size="sm" bordered>{$ProductDetailStore.error.message}</Alert>
+{:else if $ProductDetailStore.data?.product && currentProductType}
+	{@const { metadata, privateMetadata, id } = $ProductDetailStore.data.product}
+	<div class="space-y-2">
+		<GeneralInformation
+			bind:name={product.name!}
+			bind:productType={currentProductType.id}
+			bind:description={product.description}
+			bind:attributes={product.attributes!}
+			disabled={loading}
+			isCreatePage
 		/>
 		<CategorySelector
 			bind:categoryID={product.category}
-			bind:ok={productInputError.category}
+			bind:formOk={productInputError.category}
 			{loading}
 		/>
-		<ProductDescriptionEditorjsComponent
-			bind:description={product.description}
-			bind:ok={productInputError.description}
-		/>
-		<CollectionsAndTax
-			bind:collections={product.collections}
-			bind:taxClassID={product.taxClass}
-			{loading}
+		<FileInputContainer
+			accept="image/*"
+			max={9}
+			class={SitenameCommonClassName}
+			bind:medias={productMedias}
+			label={$tranFunc('common.pic')}
+			bind:formOk={productMediasOk}
+			disabled={loading}
+			required
 		/>
 		<ProductSeo
 			productName={product.name}
 			bind:seo={product.seo!}
 			bind:slug={product.slug}
-			bind:ok={productInputError.seo}
+			bind:formOk={productInputError.seo}
 			{loading}
 		/>
-		<PackagingAndDelivery bind:metadata={product.metadata} bind:weight={product.weight} {loading} />
-
-		<Button
-			size="md"
-			variant="filled"
-			fullWidth
-			onclick={handleSubmit}
+		<!-- <div class={SitenameCommonClassName}>
+			<ChannelsSelector bind:channelListingUpdateInput ok={channelListingUpdateInputOk} {loading} />
+			<VariantsEditor
+				{loading}
+				productTypeId={currentProductType.id}
+				{productMedias}
+				channelsListing={channelListingUpdateInput}
+				bind:productVariantsInput
+			/>
+		</div> -->
+		<CollectionsAndTax
+			bind:collections={product.collections}
+			bind:taxClassID={product.taxClass}
 			{loading}
-			disabled={!Object.values(productInputError).every(Boolean) || loading}
-		>
-			{$tranFunc('btn.update')}
-		</Button>
-	{/if}
-</div>
+		/>
+		<GeneralMetadataEditor
+			bind:this={metaRef}
+			disabled={loading}
+			{metadata}
+			{privateMetadata}
+			objectId={id}
+		/>
+		<PackagingAndDelivery bind:metadata={product.metadata} bind:weight={product.weight} {loading} />
+	</div>
+
+	<ActionBar
+		disabled={loading}
+		onUpdateClick={handleSubmit}
+		backButtonUrl={AppRoute.SETTINGS_PRODUCTS()}
+		onDeleteClick={handleDelete}
+	/>
+{/if}

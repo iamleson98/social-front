@@ -137,6 +137,8 @@
 			return;
 		}
 
+		const createdProductId = productCreateResult.data?.productCreate?.product?.id as string;
+
 		// 2) assign product channel listings
 		// clean input
 		const cleanChannelListingUpdateInput: ProductChannelListingUpdateInput = {
@@ -154,7 +156,7 @@
 			Pick<Mutation, 'productChannelListingUpdate'>,
 			MutationProductChannelListingUpdateArgs
 		>(UPDATE_PRODUCT_CHANNEL_LISTINGS_MUTATION, {
-			id: productCreateResult.data?.productCreate?.product?.id as string,
+			id: createdProductId,
 			input: cleanChannelListingUpdateInput,
 		});
 		if (
@@ -169,7 +171,7 @@
 			Pick<Mutation, 'productVariantBulkCreate'>,
 			MutationProductVariantBulkCreateArgs
 		>(PRODUCT_VARIANTS_BULK_CREATE_MUTATION, {
-			product: productCreateResult.data?.productCreate?.product?.id as string,
+			product: createdProductId,
 			variants: productVariantsInput,
 		});
 		if (checkIfGraphqlResultHasError(variantsBulkCreateResult, 'productVariantBulkCreate')) {
@@ -191,7 +193,15 @@
 		}
 
 		// 4) create product medias
-		await createProductMedias(productCreateResult.data?.productCreate?.product?.id as string);
+		await createProductMedias(createdProductId);
+
+		// 5) update metadatas
+		const metaHasErr = await metaRef?.handleUpdate(createdProductId);
+		if (metaHasErr) {
+			loading = false;
+			return;
+		}
+
 		loading = false;
 
 		toast.success($tranFunc('product.prdCreated'));

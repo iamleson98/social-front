@@ -48,7 +48,7 @@
 	});
 </script>
 
-<Accordion open={openSetExpirationDateForm} fixed={disabled}>
+<Accordion bind:open={openSetExpirationDateForm} fixed={disabled}>
 	{#snippet header()}
 		<Checkbox
 			label="Set gift card expiry date"

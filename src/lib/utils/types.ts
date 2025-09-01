@@ -1,5 +1,5 @@
 
-import type { LanguageCodeEnum, QueryCheckoutArgs } from "$lib/gql/graphql";
+import type { LanguageCodeEnum, ProductMediaType, QueryCheckoutArgs } from "$lib/gql/graphql";
 
 export type CustomQueryCheckoutArgs = { languageCode?: LanguageCodeEnum } & QueryCheckoutArgs;
 
@@ -16,5 +16,5 @@ export type MediaObject = {
   alt: string;
   width?: number;
   height?: number;
-  type?: 'document' | 'image';
+  type?: ProductMediaType | 'document';
 };

@@ -37,6 +37,7 @@
 		description: OutputData;
 		attributes: AttributeValueInput[];
 		formOk?: boolean;
+		isCreatePage?: boolean;
 	};
 
 	type CustomAttributeInput = AttributeValueInput & {
@@ -51,6 +52,7 @@
 		description = $bindable(),
 		attributes = $bindable(),
 		formOk = $bindable(true),
+		isCreatePage,
 	}: Props = $props();
 
 	const productTypeQuery = operationStore<Pick<Query, 'productType'>, QueryProductTypeArgs>({
@@ -248,6 +250,7 @@
 				search: '',
 			},
 		} as QueryProductTypesArgs}
+		disabled={disabled || isCreatePage}
 		resultKey="productTypes"
 		optionValueKey="id"
 		optionLabelKey="name"
@@ -258,7 +261,6 @@
 		subText={generalErrors.productType?.[0]}
 		onblur={validate}
 		onchange={validate}
-		{disabled}
 	/>
 
 	{#if productType}

@@ -8,6 +8,7 @@
 	import { FileInput, Input, INPUT_CLASSES, Label } from '../ui/Input';
 	import { classNames, formatBytes } from '$lib/utils/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
+	import { ProductMediaType } from '$lib/gql/graphql';
 
 	type Props = {
 		accept: string;
@@ -93,7 +94,7 @@
 							alt,
 							width: img.width,
 							height: img.height,
-							type: 'image',
+							type: ProductMediaType.Image,
 						});
 					};
 				});
@@ -130,7 +131,7 @@
 	<div class="flex flex-wrap gap-1.5 p-2 rounded-lg {INPUT_CLASSES[variant].bg}">
 		{#each medias as media, idx (idx)}
 			{@const props = {
-				style: `background-image: url('${media.type === 'image' ? media.url : documentIcon}')`,
+				style: `background-image: url('${media.type === ProductMediaType.Image ? media.url : documentIcon}')`,
 			}}
 			<div
 				class={classNames(

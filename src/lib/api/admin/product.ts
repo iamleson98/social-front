@@ -240,6 +240,11 @@ query Product($slug: String!, $channel: String) {
     }
     availableForPurchaseAt
     isAvailableForPurchase
+    media {
+      url(format: WEBP, size: 500)
+      alt
+      type
+    }
     collections {
       id
       name
@@ -580,6 +585,36 @@ mutation ProductAttributeAssignmentUpdate($operations: [ProductAttributeAssignme
     errors {
       field
       message
+    }
+  }
+}`;
+
+export const PRODUCT_DELETE_MUTATION = gql`
+mutation ProductDelete($id: ID!) {
+  productDelete(id: $id) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const CATEGORY_WITH_PARENTS_QUERY = gql`
+query CategoryWithParents($id: ID!) {
+  category(id: $id) {
+    id
+    name
+    slug
+    level
+    ancestors(first: 20) {
+      edges {
+        node {
+          id
+          name
+          slug
+          level
+        }
+      }
     }
   }
 }`;

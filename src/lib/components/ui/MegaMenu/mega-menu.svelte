@@ -22,18 +22,22 @@
 		selectedItems = [...selectedItems.slice(0, level), item];
 	};
 
-	$effect(() => {
+	const handleCheckChange = (checked: boolean) => {
 		if (checked) {
 			onSelect?.(selectedItems[selectedItems.length - 1]);
 			onSelectWhole?.(selectedItems);
-		} else if (checked === false) onDeselect?.();
-	});
+		} else onDeselect?.();
+	};
 </script>
 
 <div>
 	<div class="flex gap-2 flex-row w-full overflow-x-auto">
 		{#each menuSectionsData as items, idx (idx)}
-			<SingleMenu {items} onSelect={(item) => handleItemSelect(idx, item)} disabled={checked || disabled} />
+			<SingleMenu
+				{items}
+				onSelect={(item) => handleItemSelect(idx, item)}
+				disabled={checked || disabled}
+			/>
 		{/each}
 	</div>
 
@@ -44,7 +48,13 @@
 		/>
 
 		{#if selectedItems.length && !selectedItems[selectedItems.length - 1].children?.length}
-			<Checkbox bind:checked title="Select this item" size="sm" {disabled} />
+			<Checkbox
+				bind:checked
+				title="Select this item"
+				size="sm"
+				{disabled}
+				onCheckChange={handleCheckChange}
+			/>
 		{/if}
 	</div>
 </div>
