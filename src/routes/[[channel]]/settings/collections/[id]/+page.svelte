@@ -17,15 +17,16 @@
 	import ProductListForm from '$lib/components/pages/settings/collections/product-list-form.svelte';
 	import SeoForm from '$lib/components/pages/settings/collections/seo-form.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
-	import type {
-		CollectionChannelListingUpdateInput,
-		CollectionInput,
-		Mutation,
-		MutationCollectionChannelListingUpdateArgs,
-		MutationCollectionDeleteArgs,
-		MutationCollectionUpdateArgs,
-		Query,
-		QueryCollectionArgs,
+	import {
+		ProductMediaType,
+		type CollectionChannelListingUpdateInput,
+		type CollectionInput,
+		type Mutation,
+		type MutationCollectionChannelListingUpdateArgs,
+		type MutationCollectionDeleteArgs,
+		type MutationCollectionUpdateArgs,
+		type Query,
+		type QueryCollectionArgs,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
@@ -92,7 +93,7 @@
 						{
 							alt: backgroundImage.alt || '',
 							url: backgroundImage.url,
-							type: 'image',
+							type: ProductMediaType.Image,
 						},
 					];
 

@@ -166,7 +166,7 @@ export const CATEGORY_DETAIL_QUERY = gql`
 	query Category(
 		$slug: String
 		$id: ID
-		$backgroundSize: Int = 300
+		$backgroundSize: Int = 500
 		$imageFormat: ThumbnailFormatEnum = WEBP
 		$firstChildren: Int = 10
 		$lastChildren: Int = 10

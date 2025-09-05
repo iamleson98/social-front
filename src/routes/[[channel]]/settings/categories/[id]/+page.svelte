@@ -11,12 +11,13 @@
 	import GeneralInformation from '$lib/components/pages/settings/categories/general-information.svelte';
 	import SubSection from '$lib/components/pages/settings/categories/sub-section.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
-	import type {
-		CategoryInput,
-		Mutation,
-		MutationCategoryDeleteArgs,
-		Query,
-		QueryCategoryArgs,
+	import {
+		ProductMediaType,
+		type CategoryInput,
+		type Mutation,
+		type MutationCategoryDeleteArgs,
+		type Query,
+		type QueryCategoryArgs,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
@@ -86,7 +87,7 @@
 						{
 							alt: backgroundImage.alt || name,
 							url: backgroundImage.url,
-							type: 'image',
+							type: ProductMediaType.Image,
 						},
 					];
 				}
