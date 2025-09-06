@@ -15,7 +15,6 @@
 		ShippingMethodTypeEnum,
 		type Query,
 		type QueryShippingZoneArgs,
-		type ShippingMethodChannelListingInput,
 		type ShippingPriceInput,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
@@ -40,9 +39,6 @@
 		minimumOrderWeight: 0,
 		maximumOrderWeight: 0,
 	});
-	// let shippingMethodChannelListingsInput = $state<ShippingMethodChannelListingInput>({
-	// 	addChannels: [],
-	// });
 	let loading = $state(false);
 	let metaRef = $state<GeneralMetadataEditorRef>();
 	let generalFormOk = $state(false);

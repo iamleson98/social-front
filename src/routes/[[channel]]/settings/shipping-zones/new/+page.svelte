@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { tranFunc } from '$i18n';
 	import { SHIPPING_ZONE_CREATE_MUTATION } from '$lib/api/admin/shipping';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
@@ -15,6 +14,7 @@
 		ShippingZoneCreateInput,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { toast } from 'svelte-sonner';
 
@@ -49,7 +49,7 @@
 		loading = false;
 		if (hasErr) return;
 
-		toast.success($tranFunc('common.createSuccess'));
+		toast.success($CommonState.CreateSuccess);
 		await goto(AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS(createdShippingZoneId));
 	};
 </script>

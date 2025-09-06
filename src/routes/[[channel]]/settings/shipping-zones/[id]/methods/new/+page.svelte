@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
 	import {
 		CREATE_SHIPPING_METHOD_MUTATION,
 		SHIPPING_METHOD_CHANNEL_LISTING_UPDATE_MUTATION,
@@ -30,6 +29,7 @@
 		type ShippingPriceInput,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 
 	const shippingZoneQuery = operationStore<Pick<Query, 'shippingZone'>, QueryShippingZoneArgs>({
@@ -106,7 +106,7 @@
 
 		if (
 			(checkIfGraphqlResultHasError(listingUpdateResult, 'shippingMethodChannelListingUpdate'),
-			$tranFunc('common.createSuccess'))
+			$CommonState.CreateSuccess)
 		)
 			return;
 

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Input, TextArea, Toggle } from '$lib/components/ui/Input';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { READ_ONLY_SHOP_STORE } from '$lib/stores/shop';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { object, string, z } from 'zod';
 
 	type Props = {
@@ -24,10 +24,9 @@
 		formOk = $bindable(),
 	}: Props = $props();
 
-	const RequiredErr = $tranFunc('helpText.fieldRequired');
 	const ZoneSchema = object({
-		name: string().nonempty(RequiredErr),
-		description: string().nonempty(RequiredErr),
+		name: string().nonempty($CommonState.FieldRequiredError),
+		description: string().nonempty($CommonState.FieldRequiredError),
 	});
 
 	type ZoneType = z.infer<typeof ZoneSchema>;

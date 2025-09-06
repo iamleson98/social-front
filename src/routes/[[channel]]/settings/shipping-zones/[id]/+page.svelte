@@ -22,13 +22,13 @@
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
-	import { tranFunc } from '$i18n';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { goto } from '$app/navigation';
 	import DetailSkeleton from '$lib/components/pages/settings/shipping-zones/detail-skeleton.svelte';
 	import { onMount } from 'svelte';
 	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
+	import { CommonState } from '$lib/utils/common.svelte';
 
 	const shippingZoneQuery = operationStore<Pick<Query, 'shippingZone'>, QueryShippingZoneArgs>({
 		query: SHIPPING_ZONE_DETAIL_QUERY,
@@ -54,7 +54,7 @@
 
 	const handleDeleteZone = async () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: $tranFunc('common.confirmDel'),
+			content: $CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true;
 				const result = await GRAPHQL_CLIENT.mutation<
@@ -66,11 +66,7 @@
 				loading = false;
 
 				if (
-					!checkIfGraphqlResultHasError(
-						result,
-						'shippingZoneDelete',
-						$tranFunc('common.delSuccess'),
-					)
+					!checkIfGraphqlResultHasError(result, 'shippingZoneDelete', $CommonState.DeleteSuccess)
 				) {
 					await goto(AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONES());
 				}

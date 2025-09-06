@@ -24,9 +24,9 @@
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
-	import { tranFunc } from '$i18n';
 	import { toast } from 'svelte-sonner';
 	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
+	import { CommonState } from '$lib/utils/common.svelte';
 
 	let media = $state<MediaObject[]>([]);
 	let generalFormOk = $state(false);
@@ -62,7 +62,6 @@
 			variables: {
 				id: page.params.id,
 			},
-			context: { requestPolicy: 'network-only' },
 		});
 	});
 
@@ -97,7 +96,7 @@
 
 	const handleDeleteClick = () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: $tranFunc('common.confirmDel'),
+			content: $CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true;
 				const result = await GRAPHQL_CLIENT.mutation<
@@ -106,7 +105,7 @@
 				>(CATEGORY_DELETE_MUTATION, { id: page.params.id! });
 				loading = false;
 
-				if (checkIfGraphqlResultHasError(result, 'categoryDelete', $tranFunc('common.delSuccess')))
+				if (checkIfGraphqlResultHasError(result, 'categoryDelete', $CommonState.DeleteSuccess))
 					return;
 
 				await goto(AppRoute.SETTINGS_CONFIGS_CATEGORIES());
@@ -137,7 +136,7 @@
 		loading = false;
 		if (hasError) return;
 
-		toast.success($tranFunc('common.editSuccess'));
+		toast.success($CommonState.EditSuccess);
 		categoryQuery.reexecute({
 			variables: { id: page.params.id },
 			context: { requestPolicy: 'network-only' },

@@ -9,9 +9,9 @@
 	import { AppRoute } from '$lib/utils';
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { tranFunc } from '$i18n';
 	import { toast } from 'svelte-sonner';
 	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
+	import { CommonState } from '$lib/utils/common.svelte';
 
 	let media = $state<MediaObject[]>([]);
 	let generalFormOk = $state(false);
@@ -54,7 +54,7 @@
 		const hasErr = await metaRef?.handleUpdate(result.data?.categoryCreate?.category?.id!);
 		loading = false;
 
-		if (!hasErr) toast.success($tranFunc('common.createSuccess'));
+		if (!hasErr) toast.success($CommonState.CreateSuccess);
 	};
 </script>
 
