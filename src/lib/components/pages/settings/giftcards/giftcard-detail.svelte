@@ -128,12 +128,12 @@
 	};
 </script>
 
-<div class="{SitenameCommonClassName}">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>
 		<div>
-			<span>Giftcard details</span>
+			<span>{$tranFunc('giftcard.title')}</span>
 			<Badge
-				text={isActive ? 'Active' : 'Disabled'}
+				text={isActive ? $tranFunc('giftcard.active') : $tranFunc('giftcard.deactivated')}
 				color={isActive ? 'green' : 'red'}
 				rounded
 				variant="light"
@@ -148,7 +148,7 @@
 				onclick={() => onActiveChange(!isActive)}
 				disabled={loading || disabled}
 			>
-				{isActive ? 'Deactivate' : 'Activate'}
+				{$tranFunc(isActive ? 'giftcard.deactivate' : 'giftcard.activate')}
 			</Button>
 			<Button
 				size="xs"
@@ -166,7 +166,7 @@
 			type="number"
 			min={1}
 			placeholder="Set balance amount"
-			label="Balance amount"
+			label={$tranFunc('giftcard.balance')}
 			class="flex-2/3"
 			bind:value={balanceAmount}
 			disabled={loading || disabled}
@@ -178,7 +178,7 @@
 		<Input
 			readonly
 			value={balanceCurrency}
-			label="Currency"
+			label={$tranFunc('giftcard.form.currency')}
 			required
 			size="sm"
 			class="flex-1/3"
@@ -195,7 +195,7 @@
 		size="sm"
 		requestPolicy="cache-and-network"
 		multiple
-		label="Giftcard Tags"
+		label={$tranFunc('giftcard.form.tags')}
 		placeholder="Giftcard tags"
 		bind:value={activeTags}
 		onchange={handleTagsChange}
