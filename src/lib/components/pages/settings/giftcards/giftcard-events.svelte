@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { GIFT_CARD_ADD_NOTE_MUTATION, GIFT_CARD_EVENTS_QUERY } from '$lib/api/admin/giftcards';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
@@ -17,7 +18,7 @@
 	} from '$lib/gql/graphql';
 	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
 	import { AppRoute } from '$lib/utils';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 
 	type Props = {
@@ -41,37 +42,6 @@
 		},
 	});
 
-	const giftcardTypeToHumanize = (type?: GiftCardEventsEnum | null) => {
-		switch (type) {
-			case GiftCardEventsEnum.Activated:
-				return 'Gift card was activated';
-			case GiftCardEventsEnum.BalanceReset:
-				return 'Gift card balance was reset';
-			case GiftCardEventsEnum.Bought:
-				return 'Gift card was bought';
-			case GiftCardEventsEnum.Deactivated:
-				return 'Gift card was deactivated';
-			case GiftCardEventsEnum.ExpiryDateUpdated:
-				return 'Gift card expiry date was updated';
-			case GiftCardEventsEnum.Issued:
-				return 'Gift card was issued';
-			case GiftCardEventsEnum.NoteAdded:
-				return 'Gift card note was added';
-			case GiftCardEventsEnum.Resent:
-				return 'Gift card was resent';
-			case GiftCardEventsEnum.SentToCustomer:
-				return 'Gift card was sent to customer';
-			case GiftCardEventsEnum.TagsUpdated:
-				return 'Gift card tags was updated';
-			case GiftCardEventsEnum.Updated:
-				return 'Gift card was updated';
-			case GiftCardEventsEnum.UsedInOrder:
-				return 'Gift card was used';
-			default:
-				return '';
-		}
-	};
-
 	const handleAddNote = async () => {
 		if (!newNote) return;
 
@@ -92,7 +62,7 @@
 			checkIfGraphqlResultHasError(
 				result,
 				'giftCardAddNote',
-				'Successfully posted new note to giftcard',
+				$tranFunc('giftcard.events.noteAdded'),
 			)
 		)
 			return;
@@ -102,8 +72,8 @@
 	};
 </script>
 
-<div class="p-3 rounded-lg border border-gray-200 bg-white flex flex-col gap-3">
-	<SectionHeader>Order timeline</SectionHeader>
+<div class={SitenameCommonClassName}>
+	<SectionHeader>{$tranFunc('giftcard.timeline')}</SectionHeader>
 
 	{#if $eventsQuery.fetching}
 		<SelectSkeleton size="sm" label />
@@ -129,7 +99,7 @@
 				</div>
 				<Input
 					size="sm"
-					placeholder="Add giftcard note"
+					placeholder={$tranFunc('giftcard.addNote')}
 					class="w-full"
 					bind:value={newNote}
 					disabled={loading}
@@ -142,7 +112,7 @@
 					fullWidth
 					variant="light"
 					disabled={!newNote?.trim() || loading}
-					onclick={handleAddNote}>Submit</Button
+					onclick={handleAddNote}>{$tranFunc('giftcard.filter.submit')}</Button
 				>
 			</div>
 		</div>
@@ -154,8 +124,8 @@
 				<Select
 					size="xs"
 					bind:value={filterType}
-					placeholder="Filter type"
-					label="Filter by type"
+					placeholder={$tranFunc('giftcard.filter.filterByType')}
+					label={$tranFunc('giftcard.filter.filterByType')}
 					options={filterTypeOptions}
 					class="w-1/3"
 				/>
@@ -176,7 +146,7 @@
 							rounded
 						/>
 						<div class="mb-1 font-medium text-sm dark:text-white text-gray-700">
-							{giftcardTypeToHumanize(event.type)}
+							{event.type ? $tranFunc('giftcard.types.' + event.type) : ''}
 						</div>
 						<div class="text-xs font-normal leading-none text-gray-400 dark:text-gray-500 mb-1">
 							{dayjs(event.date).fromNow()}
@@ -187,7 +157,8 @@
 							</div>
 						{/if}
 						<div class="text-xs text-gray-600">
-							By <a
+							{$tranFunc('giftcard.by')}
+							<a
 								class="text-blue-600 text-sm font-semibold"
 								href={AppRoute.SETTINGS_CONFIGS_STAFF_DETAILS(event.user?.id!)}
 							>

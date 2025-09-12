@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import {
 		GIFT_CARD_BULK_ACTIVATE_MUTATION,
 		GIFT_CARD_BULK_DEACTIVATE_MUTATION,
@@ -51,33 +52,33 @@
 			child: itemSelect,
 		},
 		{
-			title: 'Code',
+			title: $tranFunc('giftcard.code'),
 			child: code,
 		},
 		{
-			title: 'Status',
+			title: $tranFunc('settings.status'),
 			child: status,
 		},
 		{
-			title: 'Tags',
+			title: $tranFunc('giftcard.form.tags'),
 			child: tags,
 		},
 		{
-			title: 'Balance',
+			title: $tranFunc('giftcard.balance'),
 			child: balance,
 			key: GiftCardSortField.CurrentBalance,
 		},
 		{
-			title: 'Issued at',
+			title: $tranFunc('giftcard.issueAt'),
 			key: GiftCardSortField.CreatedAt,
 			child: issueAt,
 		},
 		{
-			title: 'Used at',
+			title: $tranFunc('giftcard.usedAt'),
 			child: usedAt,
 		},
 		{
-			title: 'Action',
+			title: $tranFunc('common.action'),
 			child: action,
 		},
 	];
@@ -114,7 +115,7 @@
 				loading = true;
 
 				const result = await GRAPHQL_CLIENT.mutation<
-					Mutation['giftCardBulkDelete'],
+					Pick<Mutation, 'giftCardBulkDelete'>,
 					MutationGiftCardBulkDeleteArgs
 				>(GIFT_CARD_BULK_DELETE_MUTATION, { ids });
 
@@ -231,7 +232,7 @@
 			class="text-red-600"
 			disabled={loading}
 		>
-			Delete
+			{$tranFunc('giftcard.delete')}
 		</MenuItem>
 		<MenuItem
 			disabled={loading}
@@ -239,7 +240,7 @@
 			onclick={() => handleToggleGiftcardStatus(item.id, !item.isActive)}
 			class={item.isActive ? 'text-gray-600' : 'text-green-600'}
 		>
-			{item.isActive ? 'Deactivate' : 'Activate'}
+			{item.isActive ? $tranFunc('giftcard.deactivate') : $tranFunc('giftcard.activate')}
 		</MenuItem>
 	</DropDown>
 {/snippet}
@@ -250,7 +251,7 @@
 
 {#snippet status({ item }: { item: GiftCard })}
 	<Badge
-		text={item.isActive ? 'Active' : 'Disabled'}
+		text={item.isActive ? $tranFunc('staff.active') : $tranFunc('giftcard.status.deactivated')}
 		size="sm"
 		variant="filled"
 		color={item.isActive ? 'green' : 'red'}
@@ -268,7 +269,7 @@
 				color="green"
 				size="sm"
 			>
-				Activate
+				{$tranFunc('giftcard.activate')}
 			</Button>
 			<Button
 				size="sm"
@@ -277,7 +278,7 @@
 				endIcon={Ban}
 				color="indigo"
 			>
-				Deactivate
+				{$tranFunc('giftcard.deactivate')}
 			</Button>
 			<IconButton
 				icon={Trash}

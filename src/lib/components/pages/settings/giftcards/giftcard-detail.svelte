@@ -69,7 +69,7 @@
 	let loading = $state(false);
 
 	const GiftcardUpdateSchema = object({
-		balanceAmount: number().min(1, $tranFunc('error.negativeNumber')),
+		balanceAmount: number().min(1, $CommonState.NonNegativeError),
 		expiryDate: string().optional(),
 		addTags: array(string().nonempty($CommonState.FieldRequiredError)).optional(),
 		removeTags: array(string().nonempty($CommonState.FieldRequiredError)).optional(),
@@ -104,7 +104,7 @@
 
 	const handleResendGiftcard = async () => {
 		if (!giftCardChannel) {
-			toast.warning('Please specify channel');
+			toast.warning($tranFunc('giftcard.specifyChannel'));
 			return;
 		}
 
@@ -121,19 +121,25 @@
 		});
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'giftCardResend', 'Successfully resent giftcard'))
+		if (
+			checkIfGraphqlResultHasError(
+				result,
+				'giftCardResend',
+				$tranFunc('giftcard.events.giftcardResent'),
+			)
+		)
 			return;
 
 		openResendModal = false;
 	};
 </script>
 
-<div class="{SitenameCommonClassName}">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>
 		<div>
-			<span>Giftcard details</span>
+			<span>{$tranFunc('giftcard.title')}</span>
 			<Badge
-				text={isActive ? 'Active' : 'Disabled'}
+				text={$tranFunc(isActive ? 'staff.active' : 'giftcard.status.deactivated')}
 				color={isActive ? 'green' : 'red'}
 				rounded
 				variant="light"
@@ -148,14 +154,14 @@
 				onclick={() => onActiveChange(!isActive)}
 				disabled={loading || disabled}
 			>
-				{isActive ? 'Deactivate' : 'Activate'}
+				{$tranFunc(isActive ? 'giftcard.deactivate' : 'giftcard.activate')}
 			</Button>
 			<Button
 				size="xs"
 				endIcon={Send}
 				color="violet"
 				disabled={loading || disabled}
-				onclick={() => (openResendModal = true)}>Resend code</Button
+				onclick={() => (openResendModal = true)}>{$tranFunc('giftcard.resendCode')}</Button
 			>
 		</div>
 	</SectionHeader>
@@ -165,8 +171,8 @@
 			size="sm"
 			type="number"
 			min={1}
-			placeholder="Set balance amount"
-			label="Balance amount"
+			placeholder={$tranFunc('giftcard.form.amount')}
+			label={$tranFunc('giftcard.form.amount')}
 			class="flex-2/3"
 			bind:value={balanceAmount}
 			disabled={loading || disabled}
@@ -178,7 +184,7 @@
 		<Input
 			readonly
 			value={balanceCurrency}
-			label="Currency"
+			label={$tranFunc('common.currency')}
 			required
 			size="sm"
 			class="flex-1/3"
@@ -195,7 +201,7 @@
 		size="sm"
 		requestPolicy="cache-and-network"
 		multiple
-		label="Giftcard Tags"
+		label={$tranFunc('giftcard.form.tags')}
 		placeholder="Giftcard tags"
 		bind:value={activeTags}
 		onchange={handleTagsChange}
@@ -207,24 +213,23 @@
 <Modal
 	size="sm"
 	open={openResendModal}
-	header="Resend giftcard code"
+	header={$tranFunc('giftcard.resendCode')}
 	onClose={() => (openResendModal = false)}
 	onCancel={() => (openResendModal = false)}
-	okText="Resend code to user"
+	okText={$tranFunc('giftcard.resendCode')}
 	onOk={handleResendGiftcard}
 	disableElements={loading || disabled}
 >
 	<div class="flex flex-col gap-2">
 		<Alert size="sm">
-			Gift Card Code will be resent to email provided during checkout. You can provide a different
-			email address if you want to:
+			{$tranFunc('giftcard.resendCodeAlert')}
 		</Alert>
 		<ChannelSelect
 			size="sm"
 			bind:value={giftCardChannel}
 			disabled={loading || disabled}
-			label="Channel to send from"
-			placeholder="Please specify channel"
+			label={$tranFunc('giftcard.form.channel')}
+			placeholder={$tranFunc('giftcard.form.channel')}
 			required
 		/>
 		<GraphqlPaginableSelect
@@ -234,12 +239,12 @@
 			optionLabelKey="email"
 			optionValueKey="email"
 			size="sm"
-			label="To Customer"
-			placeholder="Specify customer"
+			label={$tranFunc('giftcard.form.customer')}
+			placeholder={$tranFunc('giftcard.form.customer')}
 			requestPolicy="cache-and-network"
 			bind:value={customerEmailOfGiftcard}
 			disabled={loading || disabled}
-			subText="Email of customer who received this giftcard"
+			subText={$tranFunc('giftcard.form.customerSubtext')}
 			onchange={validate}
 		/>
 	</div>
