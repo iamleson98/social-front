@@ -202,7 +202,7 @@
 		requestPolicy="cache-and-network"
 		multiple
 		label={$tranFunc('giftcard.form.tags')}
-		placeholder="Giftcard tags"
+		placeholder={$tranFunc('giftcard.form.tags')}
 		bind:value={activeTags}
 		onchange={handleTagsChange}
 		{disabled}
