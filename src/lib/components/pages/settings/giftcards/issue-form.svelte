@@ -41,7 +41,6 @@
 		triggerCreate = $bindable(),
 		formOk = $bindable(),
 	}: Props = $props();
-	let issuedGiftcardCode = $state<string>('');
 	const NOTE_MAX_LENGTH = 300;
 	let loading = $state(false);
 
@@ -61,12 +60,19 @@
 	const giftcardSchema = object({
 		channel: string().nonempty($CommonState.FieldRequiredError),
 		note: string()
-			.max(NOTE_MAX_LENGTH, `Note must be at most ${NOTE_MAX_LENGTH} characters.`)
+			.max(
+				NOTE_MAX_LENGTH,
+				$tranFunc('error.lengthInvalid', {
+					name: $tranFunc('giftcard.form.note'),
+					max: NOTE_MAX_LENGTH,
+					min: 1,
+				}),
+			)
 			.optional(),
 		addTags: array(string().nonempty($CommonState.FieldRequiredError)),
-		amount: number().min(1, 'Please provide positive amount'),
+		amount: number().min(1, $tranFunc('error.negativeNumber')),
 		currency: string().nonempty($CommonState.FieldRequiredError),
-		userEmail: string().email('Please provide valid email').optional(),
+		userEmail: string().email($tranFunc('error.invalidEmail')).optional(),
 	});
 
 	type GiftcardSchema = z.infer<typeof giftcardSchema>;
@@ -106,9 +112,6 @@
 
 		if (checkIfGraphqlResultHasError(result, 'giftCardCreate')) return;
 
-		// post success handling
-		issuedGiftcardCode = result.data?.giftCardCreate?.giftCard?.code!;
-
 		// create metadata for this giftcard
 		const metas: MetadataInput[] = [];
 		if (giftCardInput.userEmail) {
@@ -133,9 +136,7 @@
 			id: result.data?.giftCardCreate?.giftCard?.id!,
 			input: metas,
 		});
-		if (
-			checkIfGraphqlResultHasError(metaResult, 'updateMetadata', $tranFunc('common.createSuccess'))
-		)
+		if (checkIfGraphqlResultHasError(metaResult, 'updateMetadata', $CommonState.CreateSuccess))
 			return;
 
 		onCreateSuccess?.(result.data?.giftCardCreate?.giftCard!);
@@ -151,7 +152,7 @@
 <div class="space-y-2">
 	<div class="flex flex-row gap-3 items-start">
 		<Input
-			label="Amount"
+			label={$tranFunc('giftcard.form.amount')}
 			bind:value={giftCardInput.balance.amount}
 			required
 			type="number"
@@ -162,15 +163,15 @@
 			min={0}
 			variant={giftcardFormErrors.amount?.length ? 'error' : 'info'}
 			subText={giftcardFormErrors.amount?.[0]}
-			placeholder="Money amount"
+			placeholder={$tranFunc('giftcard.form.amount')}
 		/>
 		<ShopCurrenciesSelect
-			label="Currency"
+			label={$tranFunc('common.currency')}
 			class="flex-1"
 			variant={giftcardFormErrors.currency?.length ? 'error' : 'info'}
 			subText={giftcardFormErrors.currency?.[0]}
 			required
-			placeholder="Currency"
+			placeholder={$tranFunc('common.currency')}
 			onchange={validate}
 			bind:value={giftCardInput.balance.currency}
 			{disabled}
@@ -186,8 +187,8 @@
 		optionLabelKey="name"
 		requestPolicy="cache-and-network"
 		multiple
-		label="Giftcard Tags"
-		placeholder="Giftcard tags"
+		label={$tranFunc('giftcard.form.tags')}
+		placeholder={$tranFunc('giftcard.form.tags')}
 		bind:value={giftCardInput.addTags}
 		{disabled}
 		variant={giftcardFormErrors.addTags?.length ? 'error' : 'info'}
@@ -201,8 +202,8 @@
 		resultKey="customers"
 		optionLabelKey="email"
 		optionValueKey="email"
-		label="To Customer"
-		placeholder="Specify customer"
+		label={$tranFunc('giftcard.form.customer')}
+		placeholder={$tranFunc('giftcard.form.customer')}
 		requestPolicy="cache-and-network"
 		bind:value={giftCardInput.userEmail}
 		disabled={disabled || !!toCustomerEmail}
@@ -212,40 +213,37 @@
 	/>
 
 	<Alert bordered size="sm">
-		Selected customer will be sent the generated gift card code. Someone else can redeem the gift
-		card code. Gift card will be assigned to account which redeemed the code.
+		{$tranFunc('giftcard.issueFormAlert')}
 	</Alert>
 
 	<GiftcardExpirationForm {disabled} bind:expiryDate={giftCardInput.expiryDate} />
 
 	<ChannelSelect
-		label="Channel"
+		label={$tranFunc('giftcard.form.channel')}
 		bind:value={giftCardInput.channel}
 		{disabled}
 		variant={giftcardFormErrors.channel?.length ? 'error' : 'info'}
-		subText={giftcardFormErrors.channel?.[0] ??
-			'Customer will be sent the gift card code via this channels email address'}
-		placeholder="Please specify channel"
+		subText={giftcardFormErrors.channel?.[0] ?? $tranFunc('giftcard.form.channelSubText')}
+		placeholder={$tranFunc('giftcard.form.channel')}
 		required
 		onchange={validate}
 	/>
 
 	<TextArea
-		label="Note"
+		label={$tranFunc('giftcard.form.note')}
 		bind:value={giftCardInput.note}
 		inputDebounceOption={{ onInput: validate }}
 		onblur={validate}
 		inputClass="min-h-20"
 		{disabled}
 		variant={giftcardFormErrors.note?.length ? 'error' : 'info'}
-		subText={giftcardFormErrors.note?.[0] ??
-			'Why was this gift card issued. This note will not be shown to the customer. Note will be stored in gift card history'}
-		placeholder="Note for this giftcard"
+		subText={giftcardFormErrors.note?.[0] ?? $tranFunc('giftcard.form.noteSubText')}
+		placeholder={$tranFunc('giftcard.form.note')}
 	/>
 	<Checkbox
-		label="Active"
+		label={$tranFunc('giftcard.activate')}
 		bind:checked={giftCardInput.isActive}
 		{disabled}
-		subText="All issued cards require activation by staff before use."
+		subText={$tranFunc('giftcard.form.activeSubText')}
 	/>
 </div>

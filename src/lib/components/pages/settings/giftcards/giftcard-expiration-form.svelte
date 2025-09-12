@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/Badge';
@@ -24,7 +25,7 @@
 	const EXPIRY_TYPES: ExpiryType[] = ['exact', 'in'];
 	const EXPIRY_IN_OPTIONS = Object.keys(TimePeriodTypeEnum).map<SelectOption>((item) => ({
 		value: item.toLowerCase(),
-		label: item.toLowerCase(),
+		label: $tranFunc(`giftcard.periodType.${item.toLowerCase()}`),
 	}));
 
 	/* if there is existing value, it should be in `exact` option, initially */
@@ -51,7 +52,7 @@
 <Accordion bind:open={openSetExpirationDateForm} fixed={disabled}>
 	{#snippet header()}
 		<Checkbox
-			label="Set gift card expiry date"
+			label={$tranFunc('giftcard.form.setExpirationDate')}
 			{disabled}
 			bind:checked={openSetExpirationDateForm}
 		/>
@@ -61,7 +62,9 @@
 		{#each EXPIRY_TYPES as type, idx (idx)}
 			<RadioButton
 				class="flex-1"
-				label={`Expires ${type}`}
+				label={$tranFunc(
+					type === 'exact' ? 'giftcard.expiry.optionExact' : 'giftcard.expiry.optionIn',
+				)}
 				{size}
 				value={type}
 				bind:group={expiryType}
@@ -75,8 +78,8 @@
 			<EaseDatePicker
 				timeLock={{ minDate: NOW.toDate() }}
 				timeConfig={false}
-				placeholder="Set expiry date"
-				label="Exact date"
+				placeholder={$tranFunc('giftcard.expiry.placeholderExact')}
+				label={$tranFunc('giftcard.expiry.labelExact')}
 				{size}
 				{disabled}
 				value={{ date: expiryDate }}
@@ -91,21 +94,21 @@
 			<div class="flex items-start gap-2">
 				<Input
 					{size}
-					placeholder="amount"
+					placeholder={$tranFunc('giftcard.duration')}
 					type="number"
 					min={1}
 					class="flex-2/3"
-					label="Amount"
+					label={$tranFunc('giftcard.duration')}
 					required
 					bind:value={expireInAmount}
 					{disabled}
 				/>
 				<Select
 					options={EXPIRY_IN_OPTIONS}
-					placeholder="units"
+					placeholder={$tranFunc('giftcard.form.unit')}
 					{size}
 					class="flex-1/3"
-					label="Unit"
+					label={$tranFunc('giftcard.form.unit')}
 					required
 					bind:value={expireInUnit}
 					{disabled}
@@ -115,7 +118,7 @@
 	</div>
 
 	<Alert {size} bordered class="mt-2">
-		<div>Will expire on:</div>
+		<div>{$tranFunc('giftcard.expiry.willExpireOn')}</div>
 		{#if expiryDate}
 			<Badge {size} text={expiryDate} />
 		{/if}

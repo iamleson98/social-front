@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { GIFT_CARD_TAGS_QUERY } from '$lib/api/admin/giftcards';
 	import { PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
 	import { CUSTOMER_LIST_QUERY } from '$lib/api/admin/users';
@@ -28,7 +29,7 @@
 
 	const FILTER_OPTIONS: FilterProps<GiftCardFilterInput>[] = [
 		{
-			label: 'Currency',
+			label: $tranFunc('common.currency'),
 			key: 'currency',
 			operations: [
 				{
@@ -38,7 +39,7 @@
 			],
 		},
 		{
-			label: 'Current balance',
+			label: $tranFunc('giftcard.currentBalance'),
 			key: 'currentBalance',
 			mustPairWith: 'currency',
 			operations: [
@@ -57,7 +58,7 @@
 			],
 		},
 		{
-			label: 'Initial balance',
+			label: $tranFunc('giftcard.initialBalance'),
 			key: 'initialBalance',
 			mustPairWith: 'currency',
 			operations: [
@@ -76,7 +77,7 @@
 			],
 		},
 		{
-			label: 'Products',
+			label: $tranFunc('common.products'),
 			key: 'products',
 			operations: [
 				{
@@ -86,7 +87,7 @@
 			],
 		},
 		{
-			label: 'Is active',
+			label: $tranFunc('staff.active'),
 			key: 'isActive',
 			operations: [
 				{
@@ -96,7 +97,7 @@
 			],
 		},
 		{
-			label: 'Tags',
+			label: $tranFunc('giftcard.form.tags'),
 			key: 'tags',
 			operations: [
 				{
@@ -106,7 +107,7 @@
 			],
 		},
 		{
-			label: 'Used by',
+			label: $tranFunc('giftcard.filter.usedBy'),
 			key: 'usedBy',
 			operations: [
 				{
@@ -116,7 +117,7 @@
 			],
 		},
 		{
-			label: 'Is used',
+			label: $tranFunc('giftcard.usedAmount'),
 			key: 'used',
 			operations: [
 				{
@@ -131,27 +132,27 @@
 {#snippet currencyIs({ onValue, initialValue = '' }: FilterComponentType)}
 	<ShopCurrenciesSelect
 		size="xs"
-		placeholder="currency"
+		placeholder={$tranFunc('common.currency')}
 		value={initialValue}
 		inputDebounceOption={{ onInput: (evt) => onValue((evt.target as HTMLInputElement).value) }}
 	/>
 {/snippet}
 
 {#snippet balanceLte({ onValue, initialValue = '' }: FilterComponentType)}
-	{@render numberSnippet({ onValue, initialValue, placeholder: 'Lte' })}
+	{@render numberSnippet({ onValue, initialValue, placeholder: $tranFunc('common.lte') })}
 {/snippet}
 
 {#snippet isUsed({ onValue, initialValue = false }: FilterComponentType)}
 	<Checkbox
 		size="sm"
-		label="Yes"
+		label={$tranFunc('common.yes')}
 		checked={initialValue as boolean}
 		onchange={(evt) => onValue(evt.currentTarget.checked)}
 	/>
 {/snippet}
 
 {#snippet balanceGte({ onValue, initialValue = '' }: FilterComponentType)}
-	{@render numberSnippet({ onValue, initialValue, placeholder: 'Gte' })}
+	{@render numberSnippet({ onValue, initialValue, placeholder: $tranFunc('common.gte') })}
 {/snippet}
 
 {#snippet numberSnippet({ onValue, initialValue, placeholder }: FilterComponentType)}
@@ -173,7 +174,7 @@
 				onValue(range);
 			},
 			initialValue,
-			placeholder: 'Lte',
+			placeholder: $tranFunc('common.lte'),
 		})}
 		{@render numberSnippet({
 			onValue: (value) => {
@@ -181,7 +182,7 @@
 				onValue(range);
 			},
 			initialValue,
-			placeholder: 'Gte',
+			placeholder: $tranFunc('common.gte'),
 		})}
 	</div>
 {/snippet}
@@ -197,7 +198,7 @@
 		variables={{ first: 20, filter: { search: '' } } as QueryProductsArgs}
 		variableSearchQueryPath="filter.search"
 		value={initialValue}
-		placeholder="products"
+		placeholder={$tranFunc('common.products')}
 		onchange={(opts) =>
 			onValue((opts as SelectOption[])?.map((item) => item.value) as FilterItemValue)}
 	/>
@@ -214,7 +215,7 @@
 		variables={{ first: 20, filter: { search: '' } } as QueryGiftCardTagsArgs}
 		variableSearchQueryPath="filter.search"
 		value={initialValue}
-		placeholder="giftcard tags"
+		placeholder={$tranFunc('giftcard.form.tags')}
 		onchange={(opts) =>
 			onValue((opts as SelectOption[])?.map((item) => item.value) as FilterItemValue)}
 	/>
@@ -231,7 +232,7 @@
 		variables={{ first: 20, filter: { search: '' } } as QueryCustomersArgs}
 		variableSearchQueryPath="filter.search"
 		value={initialValue}
-		placeholder="customers"
+		placeholder={$tranFunc('common.user')}
 		onchange={(opts) =>
 			onValue((opts as SelectOption[])?.map((item) => item.value) as FilterItemValue)}
 	/>

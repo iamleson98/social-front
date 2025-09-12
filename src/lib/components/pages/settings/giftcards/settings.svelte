@@ -45,6 +45,7 @@
 	import GiftcardExpirationForm from './giftcard-expiration-form.svelte';
 	import z, { array, boolean, number, object, string } from 'zod';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { tranFunc } from '$i18n';
 
 	type Props = {
 		variables: QueryGiftCardsArgs;
@@ -96,13 +97,17 @@
 			type: TimePeriodTypeEnum.Day,
 		},
 	});
+
+	const camelCase = (enumValue: string) =>
+		enumValue.toLowerCase().replace(/_(\w)/g, (_, c) => c.toUpperCase());
+
 	const ExpiryTypes = Object.values(GiftCardSettingsExpiryTypeEnum).map<SelectOption>((value) => ({
 		value,
-		label: value.toLocaleLowerCase().replace(/_/g, ' '),
+		label: $tranFunc(`giftcard.expiryType.${camelCase(value)}`),
 	}));
 	const ExpiryPeriodTypes = Object.values(TimePeriodTypeEnum).map<SelectOption>((value) => ({
 		value,
-		label: value.toLowerCase(),
+		label: $tranFunc(`giftcard.periodType.${camelCase(value)}`),
 	}));
 
 	onMount(() =>
@@ -218,13 +223,12 @@
 						checkIfGraphqlResultHasError(
 							result,
 							'exportGiftCards',
-							`We are currently exporting your requested excel file. As soon as it is available it will be sent to your email address`,
+							$tranFunc('common.fileExporting'),
 						)
 					)
 						return;
 				},
-				content:
-					'We have issued all of your requested gift cards. You can download the list of new gift cards by clicking the ok button below.',
+				content: $tranFunc('giftcard.events.bulkIssueSuccess'),
 			});
 	};
 
@@ -245,10 +249,10 @@
 	};
 
 	const SettingOptions: MenuItemProps[] = [
-		{ children: 'Settings', onclick: handleClickOpenSetting },
-		{ children: 'Bulk issue', onclick: () => (openBulkIssueModal = true) },
+		{ children: $tranFunc('common.settings'), onclick: handleClickOpenSetting },
+		{ children: $tranFunc('giftcard.bulkIssue'), onclick: () => (openBulkIssueModal = true) },
 		{
-			children: 'Export card codes',
+			children: $tranFunc('giftcard.exportCodes'),
 			onclick: () => {
 				openExportCodesModal = true;
 				GiftcardTotalCountQuery.reexecute({ variables: {} });
@@ -264,8 +268,8 @@
 			{onclick}
 			color="gray"
 			size="sm"
-			aria-label="Settings"
-			data-tip="Settings"
+			aria-label={$tranFunc('common.settings')}
+			data-tip={$tranFunc('common.settings')}
 			class="tooltip tooltip-left"
 			disabled={loading}
 		/>
@@ -275,7 +279,7 @@
 <!-- MARK: Setting modal -->
 <Modal
 	open={openSettingModal}
-	header="Giftcard settings"
+	header={$tranFunc('common.settings')}
 	onCancel={() => (openSettingModal = false)}
 	onClose={() => (openSettingModal = false)}
 	onOk={handleUpdateSettings}
@@ -292,7 +296,7 @@
 				required
 				disabled={loading}
 				options={ExpiryTypes}
-				label="Expiry type"
+				label={$tranFunc('giftcard.form.expiryType')}
 				bind:value={giftcardSettingInput.expiryType!}
 				placeholder="Select type"
 			/>
@@ -303,15 +307,15 @@
 						type="number"
 						disabled={loading}
 						bind:value={giftcardSettingInput.expiryPeriod!.amount}
-						placeholder="Amount"
-						label="Amount"
+						placeholder={$tranFunc('giftcard.duration')}
+						label={$tranFunc('giftcard.duration')}
 						required
 					/>
 					<Select
 						disabled={loading}
 						options={ExpiryPeriodTypes}
-						label="Duration type"
-						placeholder="Duration type"
+						label={$tranFunc('giftcard.form.unit')}
+						placeholder={$tranFunc('giftcard.form.unit')}
 						required
 						bind:value={giftcardSettingInput.expiryPeriod!.type}
 					/>
@@ -324,7 +328,7 @@
 <!-- MARK: Bulk issue modal -->
 <Modal
 	open={openBulkIssueModal}
-	header="Bulk Issue Gift Cards"
+	header={$tranFunc('giftcard.bulkIssue')}
 	onCancel={() => (openBulkIssueModal = false)}
 	onClose={() => (openBulkIssueModal = false)}
 	onOk={handleBulkIssue}
@@ -332,10 +336,13 @@
 	disableElements={loading}
 >
 	<div class="space-y-2">
+		<Alert>
+			{$tranFunc('giftcard.bulkIssueAlert')}
+		</Alert>
 		<Input
 			type="number"
-			placeholder="Cards issued"
-			label="Cards Issued"
+			placeholder={$tranFunc('product.quantity')}
+			label={$tranFunc('product.quantity')}
 			class="flex-1"
 			bind:value={bulkIssueInput.count}
 			disabled={loading}
@@ -349,8 +356,8 @@
 			<Input
 				type="number"
 				min={1}
-				placeholder="Set balance amount"
-				label="Balance amount"
+				placeholder={$tranFunc('giftcard.form.amount')}
+				label={$tranFunc('giftcard.form.amount')}
 				class="flex-1"
 				bind:value={bulkIssueInput.balance.amount}
 				disabled={loading}
@@ -361,10 +368,10 @@
 				subText={giftcardFormErrors.amount?.[0]}
 			/>
 			<ShopCurrenciesSelect
-				label="Currency"
+				label={$tranFunc('common.currency')}
 				class="flex-1"
 				required
-				placeholder="Currency"
+				placeholder={$tranFunc('common.currency')}
 				bind:value={bulkIssueInput.balance.currency}
 				disabled={loading}
 				onblur={validate}
@@ -382,27 +389,28 @@
 			optionLabelKey="name"
 			requestPolicy="cache-and-network"
 			multiple
-			label="Giftcard Tags"
-			placeholder="Giftcard tags"
+			label={$tranFunc('giftcard.form.tags')}
+			placeholder={$tranFunc('giftcard.form.tags')}
 			bind:value={bulkIssueInput.tags}
 			disabled={loading}
 		/>
 		<GiftcardExpirationForm bind:expiryDate={bulkIssueInput.expiryDate} disabled={loading} />
-		<Checkbox label="Is active" bind:checked={bulkIssueInput.isActive} disabled={loading} />
-		<Alert>
-			After creation Saleor will create a list of gift card codes that you will be able to download.
-		</Alert>
+		<Checkbox
+			label={$tranFunc('staff.active')}
+			bind:checked={bulkIssueInput.isActive}
+			disabled={loading}
+		/>
 	</div>
 </Modal>
 
 <!-- MARK: Export codes modal -->
 <Modal
-	header="Export Giftcards"
+	header={$tranFunc('giftcard.exportCodes')}
 	open={openExportCodesModal}
 	onCancel={() => (openExportCodesModal = false)}
 	onClose={() => (openExportCodesModal = false)}
 	closeOnEscape
-	okText="Export"
+	okText={$tranFunc('giftcard.exportCodes')}
 	onOk={handleExportCodes}
 	closeOnOutsideClick
 	disableElements={loading}
@@ -417,25 +425,25 @@
 		{:else if $GiftcardTotalCountQuery.error}
 			<Alert variant="error">{$GiftcardTotalCountQuery.error.message}</Alert>
 		{:else if $GiftcardTotalCountQuery.data}
-			<Label label="Export information for" />
+			<Label label={$tranFunc('giftcard.exportInfo')} />
 			<div class="space-y-2">
 				<RadioButton
 					value={ExportScope.All}
-					label={`All giftcards (${$GiftcardTotalCountQuery.data.giftCards?.totalCount})`}
+					label={`${$tranFunc('giftcard.exportAll')} (${$GiftcardTotalCountQuery.data.giftCards?.totalCount})`}
 					bind:group={exportConfig.scope}
 					disabled={loading}
 					size="sm"
 				/>
 				<RadioButton
 					value={ExportScope.Ids}
-					label={`Selected giftcards (${selectedIds ? Object.keys(selectedIds).length : 0})`}
+					label={`${$tranFunc('giftcard.exportSelected')} (${selectedIds ? Object.keys(selectedIds).length : 0})`}
 					bind:group={exportConfig.scope}
 					disabled={selectedIds ? Object.keys(selectedIds).length === 0 : false}
 					size="sm"
 				/>
 				<RadioButton
 					value={ExportScope.Filter}
-					label={`Current search`}
+					label={$tranFunc('giftcard.exportSearch')}
 					bind:group={exportConfig.scope}
 					disabled={loading}
 					size="sm"
@@ -443,7 +451,7 @@
 			</div>
 		{/if}
 
-		<Label label="Export as" />
+		<Label label={$tranFunc('giftcard.exportAs')} />
 		<div class="space-y-2">
 			{#each Object.values(FileTypesEnum) as value, idx (idx)}
 				<RadioButton

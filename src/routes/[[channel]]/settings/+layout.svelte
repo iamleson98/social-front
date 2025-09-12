@@ -155,7 +155,7 @@
 			].includes(page.url.pathname),
 		},
 		{
-			name: 'Giftcards',
+			name: $tranFunc('giftcard.title'),
 			href: AppRoute.SETTINGS_CONFIGS_GIFTCARDS(),
 			icon: Gift,
 			shouldActive: [
