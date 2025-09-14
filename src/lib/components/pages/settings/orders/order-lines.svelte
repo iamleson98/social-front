@@ -8,10 +8,13 @@
 	import { orderStatusBadgeClass, SitenameCommonClassName, stringSlicer } from '$lib/utils/utils';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import { AppRoute } from '$lib/utils';
-	import { ExternalLink, Icon } from '$lib/components/icons';
+	import { Dots, ExternalLink, Icon, Trash } from '$lib/components/icons';
 	import OrderLineMetadataModal from './order-line-metadata-modal.svelte';
 	import OrderFulfillModal from './order-fulfill-modal.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
+	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
+	import { IconButton } from '$lib/components/ui/Button';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 
 	type Props = {
 		orderLines: OrderLine[];
@@ -74,13 +77,24 @@
 {/snippet}
 
 {#snippet actions({ item }: { item: OrderLine })}
-	<a
-		href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.variant!.product.slug)}
-		class="flex justify-center text-blue-600"
-		target="_blank"
-	>
-		<Icon icon={ExternalLink} />
-	</a>
+	<div class="text-center">
+		<DropDown placement="bottom-end">
+			{#snippet trigger({ onclick }: DropdownTriggerInterface)}
+				<IconButton size="xs" icon={Dots} {onclick} variant="light" color="gray" />
+			{/snippet}
+
+			<MenuItem
+				startIcon={ExternalLink}
+				href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.variant!.product.slug)}
+				class="text-blue-500"
+			>
+				View product
+			</MenuItem>
+			{#if order.status === OrderStatus.Draft}
+				<MenuItem startIcon={Trash} onclick={() => {}} class="text-red-500">Remove</MenuItem>
+			{/if}
+		</DropDown>
+	</div>
 {/snippet}
 
 {#snippet product({ item }: { item: OrderLine })}
@@ -124,18 +138,8 @@
 	</Button>
 {/snippet}
 
-<div class={SitenameCommonClassName}>
-	<SectionHeader>
-		<Badge {...orderStatusBadgeClass(OrderStatus.Unfulfilled)} rounded />
-	</SectionHeader>
-
-	<div class="overflow-x-auto">
-		<Table columns={PRODUCT_MODAL_COLUMNS} items={orderLines} />
-	</div>
-
-	<div class="text-right">
-		<Button size="sm" onclick={() => (openFulfillModal = true)}>Fulfill</Button>
-	</div>
+<div class="overflow-x-auto">
+	<Table columns={PRODUCT_MODAL_COLUMNS} items={orderLines} />
 </div>
 
 <OrderLineMetadataModal
@@ -144,4 +148,4 @@
 	onClose={() => (orderLineIDForMetadataView = undefined)}
 />
 
-<OrderFulfillModal bind:open={openFulfillModal} {onFulfillSuccess} {orderLines} {order} />
+<!-- <OrderFulfillModal bind:open={openFulfillModal} {onFulfillSuccess} {orderLines} {order} /> -->

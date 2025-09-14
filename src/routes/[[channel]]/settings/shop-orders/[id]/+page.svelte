@@ -12,7 +12,11 @@
 	import { page } from '$app/state';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { AppRoute } from '$lib/utils';
-	import { checkIfGraphqlResultHasError, orderStatusBadgeClass, SitenameCommonClassName } from '$lib/utils/utils';
+	import {
+		checkIfGraphqlResultHasError,
+		orderStatusBadgeClass,
+		SitenameCommonClassName,
+	} from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import { ORDER_DETAIL_QUERY, ORDER_UPDATE_MUTATION } from '$lib/api/admin/orders';
 	import DetailOrderSkeleton from '$lib/components/pages/settings/orders/detail-order-skeleton.svelte';
@@ -33,6 +37,8 @@
 	import { toast } from 'svelte-sonner';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
+	import OrderNormalDetails from '$lib/components/pages/settings/orders/order-normal-details.svelte';
+	import OrderDraftDetails from '$lib/components/pages/settings/orders/order-draft-details.svelte';
 
 	let loading = $state(false);
 	let metaRef = $state<GeneralMetadataEditorRef>();
@@ -112,17 +118,23 @@
 				</div>
 			</SectionHeader>
 
-			{#if order.status === OrderStatus.Draft}
+			{#if ![OrderStatus.Draft, OrderStatus.Unconfirmed].includes(order.status)}
+				<OrderNormalDetails {order} />
+			{:else if order.status === OrderStatus.Draft}
+				<!-- <OrderLinesAssignSection {order} onAddedVariants={reexecuteQuery} /> -->
+				 <OrderDraftDetails {order} />
+			{/if}
+			<!-- {#if order.status === OrderStatus.Draft}
 				<OrderLinesAssignSection {order} onAddedVariants={reexecuteQuery} />
-			{/if}
-			{#if unfulfilledOrderLines.length}
+			{/if} -->
+			<!-- {#if unfulfilledOrderLines.length}
 				<OrderLines orderLines={unfulfilledOrderLines} {order} onFulfillSuccess={reexecuteQuery} />
-			{/if}
+			{/if} -->
 			{#if order.fulfillments.length}
 				<OrderFulfillment {order} onUpdateTrackingCode={reexecuteQuery} />
 			{/if}
 
-			<OrderPaymentBalance {order} />
+			<!-- <OrderPaymentBalance {order} /> -->
 			<GeneralMetadataEditor
 				metadata={order.metadata}
 				privateMetadata={order.privateMetadata}

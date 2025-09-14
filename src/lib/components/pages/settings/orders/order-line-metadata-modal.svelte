@@ -5,10 +5,7 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Modal } from '$lib/components/ui/Modal';
 	import { SelectSkeleton } from '$lib/components/ui/select';
-	import { PermissionEnum, type Query, type QueryOrderArgs } from '$lib/gql/graphql';
-	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
-	import { checkUserHasPermissions } from '$lib/utils/utils';
-	import { onMount } from 'svelte';
+	import { type Query, type QueryOrderArgs } from '$lib/gql/graphql';
 	import GeneralMetadataEditor from '../common/general-metadata-editor.svelte';
 	import type { GeneralMetadataEditorRef } from '../common';
 
@@ -32,19 +29,15 @@
 		pause: true,
 	});
 
-	onMount(() =>
-		READ_ONLY_USER_STORE.subscribe((user) => {
-			const hasManageProductPerms = user
-				? checkUserHasPermissions(user, PermissionEnum.ManageProducts)
-				: false;
+	$effect(() => {
+		if (orderID && orderLineID)
 			lineMetaQuery.reexecute({
 				variables: {
 					id: orderID,
-					hasManageProductPerms,
+					hasManageProductPerms: true,
 				},
 			});
-		}),
-	);
+	});
 
 	const handleUpdateMetadatas = async () => {
 		const jobs = [orderLineMetaRef?.handleUpdate(), orderLineVariantMetaRef?.handleUpdate()];

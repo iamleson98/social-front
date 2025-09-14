@@ -217,6 +217,18 @@ export const ORDER_DETAIL_QUERY = gql`
       userEmail
       customerNote
       isPaid
+      discounts {
+        id
+        type
+        name
+        valueType
+        value
+        reason
+        total {
+          amount
+          currency
+        }
+      }
       user {
         id
       }
@@ -306,6 +318,15 @@ export const ORDER_DETAIL_QUERY = gql`
         companyName
         cityArea
       }
+      shippingMethods {
+        name
+        id
+        active
+        price {
+          amount
+          currency
+        }
+      }
       totalRemainingGrant {
         amount
         currency
@@ -366,6 +387,14 @@ export const ORDER_DETAIL_QUERY = gql`
       }
       actions
       shippingMethodName
+      deliveryMethod {
+        ... on ShippingMethod {
+          id
+        }
+        ... on Warehouse {
+          id
+        }
+      }
       subtotal {
         gross {
           amount
@@ -606,6 +635,194 @@ query DraftOrders($first: Int, $after: String, $last: Int, $before: String, $sor
       hasNextPage
       hasPreviousPage
       startCursor
+    }
+  }
+}`;
+
+export const ORDER_VOID_MUTATION = gql`
+mutation OrderVoid($id: ID!) {
+  orderVoid(id: $id) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const ORDER_CANCEL_MUTATION = gql`
+mutation OrderCancel($id: ID!) {
+  orderCancel(id: $id) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const ORDER_CAPTURE_MUTATION = gql`
+mutation OrderCapture($id: ID!, $amount: PositiveDecimal!) {
+  orderCapture(id: $id, amount: $amount) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const ORDER_UPDATE_NOTE_MUTATION = gql`
+mutation OrderUpdateNote($id: ID!, $input: OrderNoteInput!) {
+  orderNoteUpdate(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const ORDER_SHIPPING_UPDATE_MUTATION = gql`
+mutation OrderShippingUpdate($order: ID!, $input: OrderUpdateShippingInput!) {
+  orderUpdateShipping(order: $order, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const ORDER_LINE_DELETE_MUTATION = gql`
+mutation OrderLineDelete($id: ID!) {
+  orderLineDelete(id: $id) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const ORDER_LINES_ADD_MUTATION = gql`
+mutation OrderLinesAdd($id: ID!, $input: [OrderLineCreateInput!]!) {
+  orderLinesCreate(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const ORDER_LINE_UPDATE_MUTATION = gql`
+mutation OrderLineUpdate($id: ID!, $input: OrderLineInput!) {
+  orderLineUpdate(id: $id, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const ORDER_FULFILLMENT_APPROVE_MUTATION = gql`
+mutation OrderFulfillmentApprove($id: ID!, $notifyCustomer: Boolean!, $allowStockToBeExceeded: Boolean) {
+  orderFulfillmentApprove(
+    id: $id
+    notifyCustomer: $notifyCustomer
+    allowStockToBeExceeded: $allowStockToBeExceeded
+  ) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const ORDER_DRAFT_FINALIZE_MUTATION = gql`
+mutation OrderDraftFinalize($id: ID!) {
+  draftOrderComplete(id: $id) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const DRAFT_ORDER_DELETE_MUTATION = gql`
+mutation DraftOrderDelete($id: ID!) {
+  draftOrderDelete(id: $id) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const ORDER_MARK_AS_PAID_MUTATION = gql`
+mutation OrderMarkAsPaid($id: ID!, $transactionReference: String) {
+  orderMarkAsPaid(id: $id, transactionReference: $transactionReference) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const INVOICE_REQUEST_MUTATION = gql`
+mutation InvoiceRequest($orderId: ID!) {
+  invoiceRequest(orderId: $orderId) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const INVOICE_EMAIL_SEND_MUTATION = gql`
+mutation InvoiceEmailSend($id: ID!) {
+  invoiceSendNotification(id: $id) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const ORDER_TRANSACTION_REQUEST_ACTION_MUTATION = gql`
+mutation OrderTransactionRequestAction($actionType: TransactionActionEnum!, $id: ID!, $amount: PositiveDecimal) {
+  transactionRequestAction(
+    actionType: $actionType
+    id: $id
+    amount: $amount
+  ) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const TRANSACTION_CREATE_MUTATION = gql`
+mutation TransactionCreate($id: ID!, $transaction: TransactionCreateInput!, $transactionEvent: TransactionEventInput!) {
+  transactionCreate(id: $id, transaction: $transaction, transactionEvent: $transactionEvent) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const ORDER_DISCOUNT_ADD_MUTATION = gql`
+mutation OrderDiscountAdd($orderId: ID!, $input: OrderDiscountCommonInput!) {
+  orderDiscountAdd(orderId: $orderId, input: $input) {
+    errors {
+      field
+      message
+    }
+  }
+}`;
+
+export const ORDER_DISCOUNT_UPDATE_MUTATION = gql`
+mutation OrderDiscountUpdate($orderId: ID!, $input: OrderDiscountCommonInput!) {
+  orderDiscountUpdate(orderId: $orderId, input: $input) {
+    errors {
+      field
+      message
     }
   }
 }`;

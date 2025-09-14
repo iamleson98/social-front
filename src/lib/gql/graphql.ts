@@ -16427,8 +16427,9 @@ export enum OrderDirection {
 /** Contains all details related to the applied discount to the order. */
 export type OrderDiscount = Node & {
   __typename?: 'OrderDiscount';
-  /** Returns amount of discount. */
+  /** @deprecated Returns amount of discount. */
   amount: Money;
+  total: Money;
   /** The ID of discount applied. */
   id: Scalars['ID']['output'];
   /** The name of applied discount. */

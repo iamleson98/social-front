@@ -6,51 +6,64 @@ import type {
   MutationDraftOrderUpdateArgs, MutationInvoiceRequestArgs,
   MutationInvoiceSendNotificationArgs, MutationOrderAddNoteArgs,
   MutationOrderCancelArgs, MutationOrderCaptureArgs,
+  MutationOrderDiscountAddArgs,
   MutationOrderFulfillmentApproveArgs, MutationOrderFulfillmentCancelArgs,
   MutationOrderFulfillmentUpdateTrackingArgs, MutationOrderLineDeleteArgs,
   MutationOrderLinesCreateArgs, MutationOrderLineUpdateArgs,
   MutationOrderMarkAsPaidArgs, MutationOrderNoteUpdateArgs,
   MutationOrderUpdateShippingArgs, MutationOrderVoidArgs,
   MutationTransactionCreateArgs, MutationTransactionRequestActionArgs,
-  OrderAddNoteInput, OrderLineCreateInput, OrderLineInput,
+  OrderAddNoteInput, OrderDiscountCommonInput, OrderLineCreateInput, OrderLineInput,
   OrderNoteInput, OrderUpdateShippingInput, TransactionActionEnum,
   TransactionCreateInput, TransactionEventInput,
 } from "$lib/gql/graphql"
-import { DRAFT_ORDER_DELETE_MUTATION, DRAFT_ORDER_UPDATE_MUTATION,
+import {
+  DRAFT_ORDER_DELETE_MUTATION, DRAFT_ORDER_UPDATE_MUTATION,
   INVOICE_EMAIL_SEND_MUTATION, INVOICE_REQUEST_MUTATION,
   ORDER_ADD_NOTE_MUTATION, ORDER_CANCEL_FULFILLMENT_MUTATION,
   ORDER_CANCEL_MUTATION, ORDER_CAPTURE_MUTATION,
+  ORDER_DISCOUNT_ADD_MUTATION,
   ORDER_DRAFT_FINALIZE_MUTATION, ORDER_FULFILLMENT_APPROVE_MUTATION,
   ORDER_FULFILLMENT_UPDATE_TRACKING_MUTATION, ORDER_LINE_DELETE_MUTATION,
   ORDER_LINE_UPDATE_MUTATION, ORDER_LINES_ADD_MUTATION,
   ORDER_MARK_AS_PAID_MUTATION, ORDER_SHIPPING_UPDATE_MUTATION,
   ORDER_TRANSACTION_REQUEST_ACTION_MUTATION, ORDER_UPDATE_NOTE_MUTATION,
-  ORDER_VOID_MUTATION, TRANSACTION_CREATE_MUTATION } from "$lib/api/admin/orders"
+  ORDER_VOID_MUTATION, TRANSACTION_CREATE_MUTATION
+} from "$lib/api/admin/orders"
 import { checkIfGraphqlResultHasError } from "$lib/utils/utils"
 import { get } from "svelte/store"
 import { CommonState } from "$lib/utils/common.svelte"
 
 
-export const OrderUtils = {
-  orderVoid: async (id: string) => {
+export class OrderUtils {
+  loading = $state(false);
+
+  orderVoid = async (id: string) => {
+    this.loading = true;
     const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'orderVoid'>, MutationOrderVoidArgs>(
       ORDER_VOID_MUTATION,
       {
         id,
       },
     );
+    this.loading = false;
     return checkIfGraphqlResultHasError(result, 'orderVoid', get(CommonState).EditSuccess);
-  },
-  orderCancel: async (id: string) => {
+  }
+
+  orderCancel = async (id: string) => {
+    this.loading = true;
     const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'orderCancel'>, MutationOrderCancelArgs>(
       ORDER_CANCEL_MUTATION,
       {
         id,
       },
     );
+    this.loading = false;
     return checkIfGraphqlResultHasError(result, 'orderCancel', get(CommonState).EditSuccess);
-  },
-  paymentCapture: async (id: string, amount: number) => {
+  }
+
+  paymentCapture = async (id: string, amount: number) => {
+    this.loading = true;
     const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'orderCapture'>, MutationOrderCaptureArgs>(
       ORDER_CAPTURE_MUTATION,
       {
@@ -58,9 +71,12 @@ export const OrderUtils = {
         amount,
       },
     );
+    this.loading = false;
     return checkIfGraphqlResultHasError(result, 'orderCapture', get(CommonState).EditSuccess);
-  },
-  orderAddNote: async (id: string, input: OrderAddNoteInput) => {
+  }
+
+  orderAddNote = async (id: string, input: OrderAddNoteInput) => {
+    this.loading = true;
     const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'orderAddNote'>, MutationOrderAddNoteArgs>(
       ORDER_ADD_NOTE_MUTATION,
       {
@@ -68,9 +84,12 @@ export const OrderUtils = {
         input,
       },
     );
+    this.loading = false;
     return checkIfGraphqlResultHasError(result, 'orderAddNote', get(CommonState).EditSuccess);
-  },
-  orderUpdateNote: async (id: string, input: OrderNoteInput) => {
+  }
+
+  orderUpdateNote = async (id: string, input: OrderNoteInput) => {
+    this.loading = true;
     const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'orderNoteUpdate'>, MutationOrderNoteUpdateArgs>(
       ORDER_UPDATE_NOTE_MUTATION,
       {
@@ -78,9 +97,12 @@ export const OrderUtils = {
         input,
       },
     );
+    this.loading = false;
     return checkIfGraphqlResultHasError(result, 'orderNoteUpdate', get(CommonState).EditSuccess);
-  },
-  draftOrderUpdate: async (id: string, input: DraftOrderInput) => {
+  }
+
+  draftOrderUpdate = async (id: string, input: DraftOrderInput) => {
+    this.loading = true;
     const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'draftOrderUpdate'>, MutationDraftOrderUpdateArgs>(
       DRAFT_ORDER_UPDATE_MUTATION,
       {
@@ -88,28 +110,37 @@ export const OrderUtils = {
         input,
       },
     );
+    this.loading = false;
     return checkIfGraphqlResultHasError(result, 'draftOrderUpdate', get(CommonState).EditSuccess);
-  },
-  updateShippingMethod: async (id: string, input: OrderUpdateShippingInput) => {
+  }
+
+  updateShippingMethod = async (order: string, input: OrderUpdateShippingInput) => {
+    this.loading = true;
     const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'orderUpdateShipping'>, MutationOrderUpdateShippingArgs>(
       ORDER_SHIPPING_UPDATE_MUTATION,
       {
-        order: id,
+        order,
         input,
       },
     );
+    this.loading = false;
     return checkIfGraphqlResultHasError(result, 'orderUpdateShipping', get(CommonState).EditSuccess);
-  },
-  deleteOrderLine: async (id: string) => {
+  }
+
+  deleteOrderLine = async (id: string) => {
+    this.loading = true;
     const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'orderLineDelete'>, MutationOrderLineDeleteArgs>(
       ORDER_LINE_DELETE_MUTATION,
       {
         id,
       },
     );
+    this.loading = false;
     return checkIfGraphqlResultHasError(result, 'orderLineDelete', get(CommonState).EditSuccess);
-  },
-  addOrderLines: async (id: string, input: OrderLineCreateInput[]) => {
+  }
+
+  addOrderLines = async (id: string, input: OrderLineCreateInput[]) => {
+    this.loading = true;
     const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'orderLinesCreate'>, MutationOrderLinesCreateArgs>(
       ORDER_LINES_ADD_MUTATION,
       {
@@ -117,9 +148,12 @@ export const OrderUtils = {
         input,
       },
     );
+    this.loading = false;
     return checkIfGraphqlResultHasError(result, 'orderLinesCreate', get(CommonState).EditSuccess);
-  },
-  updateOrderLine: async (id: string, input: OrderLineInput) => {
+  }
+
+  updateOrderLine = async (id: string, input: OrderLineInput) => {
+    this.loading = true;
     const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'orderLineUpdate'>, MutationOrderLineUpdateArgs>(
       ORDER_LINE_UPDATE_MUTATION,
       {
@@ -127,9 +161,12 @@ export const OrderUtils = {
         input,
       },
     );
+    this.loading = false;
     return checkIfGraphqlResultHasError(result, 'orderLineUpdate', get(CommonState).EditSuccess);
-  },
-  approveFulfillment: async (id: string, notifyCustomer: boolean, allowStockToBeExceeded?: boolean) => {
+  }
+
+  approveFulfillment = async (id: string, notifyCustomer: boolean, allowStockToBeExceeded?: boolean) => {
+    this.loading = true;
     const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'orderFulfillmentApprove'>, MutationOrderFulfillmentApproveArgs>(
       ORDER_FULFILLMENT_APPROVE_MUTATION,
       {
@@ -138,9 +175,12 @@ export const OrderUtils = {
         allowStockToBeExceeded,
       },
     );
+    this.loading = false;
     return checkIfGraphqlResultHasError(result, 'orderFulfillmentApprove', get(CommonState).EditSuccess);
-  },
-  cancelFulfillment: async (id: string, input?: FulfillmentCancelInput) => {
+  }
+
+  cancelFulfillment = async (id: string, input?: FulfillmentCancelInput) => {
+    this.loading = true;
     const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'orderFulfillmentCancel'>, MutationOrderFulfillmentCancelArgs>(
       ORDER_CANCEL_FULFILLMENT_MUTATION,
       {
@@ -148,9 +188,12 @@ export const OrderUtils = {
         input,
       },
     );
+    this.loading = false;
     return checkIfGraphqlResultHasError(result, 'orderFulfillmentCancel', get(CommonState).EditSuccess);
-  },
-  orderFulfillmentUpdateTracking: async (id: string, input: FulfillmentUpdateTrackingInput) => {
+  }
+
+  orderFulfillmentUpdateTracking = async (id: string, input: FulfillmentUpdateTrackingInput) => {
+    this.loading = true;
     const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'orderFulfillmentUpdateTracking'>, MutationOrderFulfillmentUpdateTrackingArgs>(
       ORDER_FULFILLMENT_UPDATE_TRACKING_MUTATION,
       {
@@ -158,18 +201,24 @@ export const OrderUtils = {
         input,
       },
     );
+    this.loading = false;
     return checkIfGraphqlResultHasError(result, 'orderFulfillmentUpdateTracking', get(CommonState).EditSuccess);
-  },
-  finalizeDraftOrder: async (id: string) => {
+  }
+
+  finalizeDraftOrder = async (id: string) => {
+    this.loading = true;
     const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'draftOrderComplete'>, MutationDraftOrderCompleteArgs>(
       ORDER_DRAFT_FINALIZE_MUTATION,
       {
         id,
       },
     );
+    this.loading = false;
     return checkIfGraphqlResultHasError(result, 'draftOrderComplete', get(CommonState).EditSuccess);
-  },
-  deleteDraftOrder: async (id: string, externalReference?: string) => {
+  }
+
+  deleteDraftOrder = async (id: string, externalReference?: string) => {
+    this.loading = true;
     const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'draftOrderDelete'>, MutationDraftOrderDeleteArgs>(
       DRAFT_ORDER_DELETE_MUTATION,
       {
@@ -177,9 +226,12 @@ export const OrderUtils = {
         externalReference,
       },
     );
+    this.loading = false;
     return checkIfGraphqlResultHasError(result, 'draftOrderDelete', get(CommonState).DeleteSuccess);
-  },
-  markAsPaid: async (id: string, transactionReference?: string) => {
+  }
+
+  markAsPaid = async (id: string, transactionReference?: string) => {
+    this.loading = true;
     const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'orderMarkAsPaid'>, MutationOrderMarkAsPaidArgs>(
       ORDER_MARK_AS_PAID_MUTATION,
       {
@@ -187,9 +239,12 @@ export const OrderUtils = {
         transactionReference,
       },
     );
+    this.loading = false;
     return checkIfGraphqlResultHasError(result, 'orderMarkAsPaid', get(CommonState).EditSuccess);
-  },
-  invoiceRequest: async (id: string, number?: string) => {
+  }
+
+  invoiceRequest = async (id: string, number?: string) => {
+    this.loading = true;
     const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'invoiceRequest'>, MutationInvoiceRequestArgs>(
       INVOICE_REQUEST_MUTATION,
       {
@@ -197,18 +252,24 @@ export const OrderUtils = {
         number,
       },
     );
+    this.loading = false;
     return checkIfGraphqlResultHasError(result, 'invoiceRequest', get(CommonState).EditSuccess);
-  },
-  invoiceSendNotification: async (id: string) => {
+  }
+
+  invoiceSendNotification = async (id: string) => {
+    this.loading = true;
     const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'invoiceSendNotification'>, MutationInvoiceSendNotificationArgs>(
       INVOICE_EMAIL_SEND_MUTATION,
       {
         id,
       },
     );
+    this.loading = false;
     return checkIfGraphqlResultHasError(result, 'invoiceSendNotification', get(CommonState).EditSuccess);
-  },
-  transactionActionSend: async (actionType: TransactionActionEnum, amount?: number, id?: string, token?: string) => {
+  }
+
+  transactionActionSend = async (actionType: TransactionActionEnum, amount?: number, id?: string, token?: string) => {
+    this.loading = true;
     const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'transactionRequestAction'>, MutationTransactionRequestActionArgs>(
       ORDER_TRANSACTION_REQUEST_ACTION_MUTATION,
       {
@@ -218,9 +279,12 @@ export const OrderUtils = {
         token,
       },
     );
+    this.loading = false;
     return checkIfGraphqlResultHasError(result, 'transactionRequestAction', get(CommonState).EditSuccess);
-  },
-  transactionCreate: async (id: string, transaction: TransactionCreateInput, transactionEvent: TransactionEventInput) => {
+  }
+
+  transactionCreate = async (id: string, transaction: TransactionCreateInput, transactionEvent: TransactionEventInput) => {
+    this.loading = true;
     const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'transactionCreate'>, MutationTransactionCreateArgs>(
       TRANSACTION_CREATE_MUTATION,
       {
@@ -229,8 +293,22 @@ export const OrderUtils = {
         transactionEvent,
       },
     );
+    this.loading = false;
     return checkIfGraphqlResultHasError(result, 'transactionCreate', get(CommonState).EditSuccess);
-  },
+  }
+
+  orderAddDiscount = async (orderId: string, input: OrderDiscountCommonInput) => {
+    this.loading = true;
+    const result = await GRAPHQL_CLIENT.mutation<Pick<Mutation, 'orderDiscountAdd'>, MutationOrderDiscountAddArgs>(
+      ORDER_DISCOUNT_ADD_MUTATION,
+      {
+        orderId,
+        input,
+      },
+    );
+    this.loading = false;
+    return checkIfGraphqlResultHasError(result, 'orderDiscountAdd', get(CommonState).EditSuccess);
+  };
 };
 
-
+export const OrderUtilsInstance = new OrderUtils();
