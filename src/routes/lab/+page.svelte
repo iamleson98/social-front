@@ -3,13 +3,13 @@
 	import Com from './com.svelte';
 	import { randomString } from '$lib/utils/utils';
 
-	let comRef = $state<ReturnType<typeof Com>>();
+	const a = $state([1, 2, 3]);
 
-	const update = () => {
-		comRef?.control(randomString(20));
-	};
+	let b = $state(a);
 </script>
 
-<Com bind:this={comRef} />
+{a}
 
-<Button onclick={update}>update</Button>
+{b}
+
+<button onclick={() => b = b.concat(2)}>update</button>

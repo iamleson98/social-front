@@ -91,12 +91,6 @@
 	};
 
 	const handleTagsChange = () => {
-		if (!activeTags.length) {
-			addTags = [];
-			removeTags = existingTags;
-			return;
-		}
-
 		addTags = difference(activeTags, existingTags);
 		removeTags = difference(existingTags, activeTags);
 		validate();

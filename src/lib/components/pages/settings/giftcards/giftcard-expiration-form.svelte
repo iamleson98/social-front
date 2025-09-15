@@ -36,16 +36,16 @@
 
 	$effect(() => {
 		if (!openSetExpirationDateForm) {
-			if (expiryDate !== undefined) expiryDate = undefined;
+			expiryDate = undefined;
 			return;
 		}
-		if (expiryType === 'in' && expireInAmount && expireInUnit) {
+		if (expiryType === 'in' && expireInAmount > 0 && expireInUnit) {
 			expiryDate = NOW.add(expireInAmount, expireInUnit).format(BASIC_DATE_FORMAT);
 		}
 	});
 
 	$effect(() => {
-		if (expireInAmount < 0) expireInAmount = 1;
+		if (expireInAmount <= 0) expireInAmount = 1;
 	});
 </script>
 

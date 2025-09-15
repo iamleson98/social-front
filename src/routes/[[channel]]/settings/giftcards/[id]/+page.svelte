@@ -45,16 +45,18 @@
 	let giftcardUpdateInput = $state<GiftCardUpdateInput>({
 		removeTags: [],
 		addTags: [],
+		expiryDate: '',
+		balanceAmount: 0,
 	});
 
 	onMount(() =>
 		giftcardQuery.subscribe((result) => {
 			if (!result.data?.giftCard) return;
 
-			const { tags, currentBalance, expiryDate } = result.data.giftCard;
+			const { currentBalance, expiryDate } = result.data.giftCard;
 
 			giftcardUpdateInput = {
-				addTags: tags.map((tag) => tag.id),
+				...giftcardUpdateInput,
 				balanceAmount: currentBalance.amount,
 				expiryDate: expiryDate,
 			};
@@ -124,7 +126,7 @@
 				bind:addTags={giftcardUpdateInput.addTags!}
 				bind:removeTags={giftcardUpdateInput.removeTags!}
 				balanceCurrency={currentBalance.currency || initialBalance.currency}
-				existingTags={tags.map((item) => item.id)}
+				existingTags={tags.map((item) => item.name)}
 				disabled={loading}
 				{onActiveChange}
 				{isActive}
