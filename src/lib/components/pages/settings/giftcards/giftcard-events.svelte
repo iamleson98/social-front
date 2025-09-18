@@ -38,13 +38,17 @@
 
 	const eventsQuery = operationStore<Pick<Query, 'giftCard'>, QueryGiftCardArgs>({
 		query: GIFT_CARD_EVENTS_QUERY,
+		requestPolicy: 'network-only',
 		variables: {
 			id,
 		},
 	});
 
 	$effect(() => {
-		if (timelineReloadTrigger) fetchEvents();
+		if (timelineReloadTrigger) {
+			eventsQuery.reexecute({ variables: { id } });
+			timelineReloadTrigger = false;
+		}
 	});
 
 	const handleAddNote = async () => {
@@ -73,12 +77,7 @@
 			return;
 
 		newNote = ''; // reset note
-		eventsQuery.reexecute({ context: { requestPolicy: 'network-only' }, variables: { id } });
-	};
-
-	const fetchEvents = () => {
-		eventsQuery.reexecute({ context: { requestPolicy: 'network-only' }, variables: { id } });
-		timelineReloadTrigger = false;
+		eventsQuery.reexecute({ variables: { id } });
 	};
 </script>
 
