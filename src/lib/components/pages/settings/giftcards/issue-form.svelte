@@ -183,7 +183,7 @@
 		variables={{ first: 20, filter: { search: '' } } as QueryGiftCardTagsArgs}
 		resultKey="giftCardTags"
 		variableSearchQueryPath="filter.search"
-		optionValueKey="id"
+		optionValueKey="name"
 		optionLabelKey="name"
 		requestPolicy="cache-and-network"
 		multiple

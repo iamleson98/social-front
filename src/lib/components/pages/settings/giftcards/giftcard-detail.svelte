@@ -57,7 +57,7 @@
 	}: Props = $props();
 
 	let openResendModal = $state(false);
-	let activeTags = $state([...existingTags]);
+	let activeTags = $state(existingTags);
 
 	let giftCardChannel = $state(
 		metadata?.find((item) => item.key === GiftcardChannelMetadataKey)?.value,
@@ -201,6 +201,7 @@
 		onchange={handleTagsChange}
 		{disabled}
 	/>
+
 	<GiftcardExpirationForm {disabled} bind:expiryDate />
 </div>
 

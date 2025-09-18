@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
 	import { GIFT_CARD_DETAIL_QUERY, GIFT_CARD_UPDATE_MUTATION } from '$lib/api/admin/giftcards';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
@@ -33,9 +32,11 @@
 	let loading = $state(false);
 	let metaRef = $state<GeneralMetadataEditorRef>();
 
+	let timelineReloadTrigger = $state(false);
+
 	const giftcardQuery = operationStore<Pick<Query, 'giftCard'>, QueryGiftCardArgs>({
 		query: GIFT_CARD_DETAIL_QUERY,
-		requestPolicy: 'cache-and-network',
+		requestPolicy: 'network-only',
 		variables: {
 			id: page.params.id as string,
 		},
@@ -82,13 +83,13 @@
 		toast.success($CommonState.EditSuccess);
 		giftcardQuery.reexecute({
 			variables: { id: page.params.id! },
-			context: { requestPolicy: 'network-only' },
 		});
+		timelineReloadTrigger = true;
 	};
 
 	const onDeleteClick = async () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: $tranFunc('common.confirmDel'),
+			content: $CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true;
 				const hasError = await giftcardUtils.handleDeleteGiftcard(page.params.id!);
@@ -106,7 +107,6 @@
 		if (!hasError)
 			giftcardQuery.reexecute({
 				variables: { id: page.params.id! },
-				context: { requestPolicy: 'network-only' },
 			});
 	};
 </script>
@@ -140,7 +140,7 @@
 				objectId={id}
 				bind:this={metaRef}
 			/>
-			<GiftcardEvents {id} />
+			<GiftcardEvents {id} bind:timelineReloadTrigger />
 		</div>
 
 		<GiftcardExtraInformation giftcard={$giftcardQuery.data.giftCard} />

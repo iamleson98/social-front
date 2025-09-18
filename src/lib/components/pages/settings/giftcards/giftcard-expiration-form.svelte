@@ -32,10 +32,14 @@
 	let expiryType = $state<ExpiryType>(expiryDate ? 'exact' : 'in');
 	let expireInAmount = $state<number>(1);
 	let expireInUnit = $state<dayjs.ManipulateType>('month');
-	let openSetExpirationDateForm = $state(!!expiryDate);
+	let openSetExpirationDateForm = $state(Boolean(expiryDate));
 
 	$effect(() => {
-		if (!openSetExpirationDateForm) {
+		if (openSetExpirationDateForm) {
+			if (expiryType === 'in' && expireInAmount && expireInUnit) {
+				expiryDate = NOW.add(expireInAmount, expireInUnit).format(BASIC_DATE_FORMAT);
+			}
+		} else {
 			expiryDate = undefined;
 			return;
 		}

@@ -23,9 +23,10 @@
 
 	type Props = {
 		id: string;
+		timelineReloadTrigger: boolean;
 	};
 
-	let { id }: Props = $props();
+	let { id, timelineReloadTrigger = $bindable() }: Props = $props();
 
 	let newNote = $state<string>();
 	let loading = $state(false);
@@ -37,9 +38,17 @@
 
 	const eventsQuery = operationStore<Pick<Query, 'giftCard'>, QueryGiftCardArgs>({
 		query: GIFT_CARD_EVENTS_QUERY,
+		requestPolicy: 'network-only',
 		variables: {
 			id,
 		},
+	});
+
+	$effect(() => {
+		if (timelineReloadTrigger) {
+			eventsQuery.reexecute({ variables: { id } });
+			timelineReloadTrigger = false;
+		}
 	});
 
 	const handleAddNote = async () => {
@@ -68,7 +77,7 @@
 			return;
 
 		newNote = ''; // reset note
-		eventsQuery.reexecute({ context: { requestPolicy: 'network-only' }, variables: { id } });
+		eventsQuery.reexecute({ variables: { id } });
 	};
 </script>
 
