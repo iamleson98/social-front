@@ -23,9 +23,10 @@
 
 	type Props = {
 		id: string;
+		timelineReloadTrigger: boolean;
 	};
 
-	let { id }: Props = $props();
+	let { id, timelineReloadTrigger = $bindable() }: Props = $props();
 
 	let newNote = $state<string>();
 	let loading = $state(false);
@@ -40,6 +41,10 @@
 		variables: {
 			id,
 		},
+	});
+
+	$effect(() => {
+		if (timelineReloadTrigger) fetchEvents();
 	});
 
 	const handleAddNote = async () => {
@@ -69,6 +74,11 @@
 
 		newNote = ''; // reset note
 		eventsQuery.reexecute({ context: { requestPolicy: 'network-only' }, variables: { id } });
+	};
+
+	const fetchEvents = () => {
+		eventsQuery.reexecute({ context: { requestPolicy: 'network-only' }, variables: { id } });
+		timelineReloadTrigger = false;
 	};
 </script>
 

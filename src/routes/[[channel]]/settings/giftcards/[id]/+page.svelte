@@ -33,6 +33,8 @@
 	let loading = $state(false);
 	let metaRef = $state<GeneralMetadataEditorRef>();
 
+	let timelineReloadTrigger = $state(false);
+
 	const giftcardQuery = operationStore<Pick<Query, 'giftCard'>, QueryGiftCardArgs>({
 		query: GIFT_CARD_DETAIL_QUERY,
 		requestPolicy: 'cache-and-network',
@@ -49,6 +51,8 @@
 		balanceAmount: 0,
 	});
 
+	let expiryDateBind = $state<string>('');
+
 	onMount(() =>
 		giftcardQuery.subscribe((result) => {
 			if (!result.data?.giftCard) return;
@@ -60,6 +64,7 @@
 				balanceAmount: currentBalance.amount,
 				expiryDate: expiryDate,
 			};
+			expiryDateBind = expiryDate;
 		}),
 	);
 
@@ -84,6 +89,7 @@
 			variables: { id: page.params.id! },
 			context: { requestPolicy: 'network-only' },
 		});
+		timelineReloadTrigger = true;
 	};
 
 	const onDeleteClick = async () => {
@@ -122,7 +128,7 @@
 		<div class="w-7/10 space-y-2 tablet:w-full">
 			<GiftcardDetail
 				bind:balanceAmount={giftcardUpdateInput.balanceAmount}
-				bind:expiryDate={giftcardUpdateInput.expiryDate}
+				bind:expiryDate={expiryDateBind}
 				bind:addTags={giftcardUpdateInput.addTags!}
 				bind:removeTags={giftcardUpdateInput.removeTags!}
 				balanceCurrency={currentBalance.currency || initialBalance.currency}
@@ -140,7 +146,7 @@
 				objectId={id}
 				bind:this={metaRef}
 			/>
-			<GiftcardEvents {id} />
+			<GiftcardEvents {id} bind:timelineReloadTrigger />
 		</div>
 
 		<GiftcardExtraInformation giftcard={$giftcardQuery.data.giftCard} />

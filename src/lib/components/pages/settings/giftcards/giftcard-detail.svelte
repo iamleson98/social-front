@@ -201,6 +201,7 @@
 		onchange={handleTagsChange}
 		{disabled}
 	/>
+
 	<GiftcardExpirationForm {disabled} bind:expiryDate />
 </div>
 
