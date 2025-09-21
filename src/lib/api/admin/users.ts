@@ -39,6 +39,7 @@ query UserDetail($id: ID, $email: String) {
       id
     }
     addresses {
+      id
       phone
       companyName
       streetAddress1

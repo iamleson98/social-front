@@ -114,7 +114,12 @@
 {/snippet}
 
 {#snippet price({ item }: { item: OrderLine })}
+<div class="flex items-center gap-2">
+	{#if item.undiscountedUnitPrice}
+	 <PriceDisplay {...item.undiscountedUnitPrice.gross} class="line-through" />
+	{/if}
 	<PriceDisplay {...item.unitPrice.gross} />
+</div>
 {/snippet}
 
 {#snippet total({ item }: { item: OrderLine })}

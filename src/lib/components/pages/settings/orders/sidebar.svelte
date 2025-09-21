@@ -1,106 +1,65 @@
 <script lang="ts">
 	import { CUSTOMER_LIST_QUERY, USER_DETAIL_QUERY } from '$lib/api/admin/users';
-	import { operationStore, type OperationResultState } from '$lib/api/operation';
+	import { operationStore } from '$lib/api/operation';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { TextArea } from '$lib/components/ui/Input';
-	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
+	import { Checkbox, RadioButton, TextArea } from '$lib/components/ui/Input';
+	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
 	import {
+		AddressTypeEnum,
 		OrderStatus,
 		type Address,
-		type Mutation,
-		type MutationDraftOrderUpdateArgs,
+		type AddressInput,
 		type Order,
 		type Query,
 		type QueryCustomersArgs,
 		type QueryUserArgs,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import UserAddressOrder from './user-address-order.svelte';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { DRAFT_ORDER_UPDATE_MUTATION } from '$lib/api/admin/orders';
-	import { checkIfGraphqlResultHasError, convertAddressToAddressInput } from '$lib/utils/utils';
-	import { onMount } from 'svelte';
+	import { convertAddressToAddressInput, SitenameCommonClassName } from '$lib/utils/utils';
+	import { Accordion } from '$lib/components/ui/Accordion';
+	import UserAddress from '$lib/components/common/user-address/user-address.svelte';
+	import { Plus } from '$lib/components/icons';
+	import { Modal } from '$lib/components/ui/Modal';
+	import { TableSkeleton } from '$lib/components/ui/Table';
 
 	type Props = {
 		order: Order;
 		onDoneCustomerUpdate?: () => void;
+		handleUpdateCustomer: (id: string) => void;
+		disabled?: boolean;
+		setAddress: (type: AddressTypeEnum, addr: AddressInput, alsoSetForTheRest: boolean) => void;
 	};
 
-	let { order, onDoneCustomerUpdate }: Props = $props();
+	let { order, onDoneCustomerUpdate, handleUpdateCustomer, disabled, setAddress }: Props = $props();
 
-	let customerId = $state('');
-	let loading = $state(false);
+	let currentSetAddressType = $state<AddressTypeEnum>();
+	let alsoSetSeLectedAddressAsTheRest = $state(false);
+	let selectedAddress = $state<Address>();
+	let selectedAddressId = $state<string>();
 
-	const customerQuery = operationStore<Pick<Query, 'user'>, QueryUserArgs>({
+	const CustomerQuery = operationStore<Pick<Query, 'user'>, QueryUserArgs>({
 		query: USER_DETAIL_QUERY,
 		variables: {},
 		pause: true,
+		requestPolicy: 'cache-and-network',
 	});
 
-	let shippingAddress = $state<Address | null | undefined>(order.shippingAddress);
-	let billingAddress = $state<Address | null | undefined>(order.billingAddress);
-
-	const handleUpdateCustomerAndAddressForOrder = async (
-		queryResult: OperationResultState<Pick<Query, 'user'>, QueryUserArgs>,
-	) => {
-		if (!queryResult.data?.user) return;
-
-		const { addresses } = queryResult.data.user;
-		shippingAddress = addresses.find((addr) => addr.isDefaultShippingAddress) || addresses[0];
-		billingAddress = addresses.find((addr) => addr.isDefaultBillingAddress) || addresses[0];
-
-		loading = true;
-
-		const result = await GRAPHQL_CLIENT.mutation<
-			Pick<Mutation, 'draftOrderUpdate'>,
-			MutationDraftOrderUpdateArgs
-		>(DRAFT_ORDER_UPDATE_MUTATION, {
-			id: order.id,
-			input: {
-				user: customerId,
-				shippingAddress: shippingAddress ? convertAddressToAddressInput(shippingAddress) : null,
-				billingAddress: billingAddress ? convertAddressToAddressInput(billingAddress) : null,
-			},
-		});
-
-		loading = false;
-
-		if (
-			checkIfGraphqlResultHasError(
-				result,
-				'draftOrderUpdate',
-				'Successfully updated customer for darft order',
-			)
-		)
-			return;
-
-		onDoneCustomerUpdate?.();
+	const handleClickSetAddress = async (type: AddressTypeEnum) => {
+		CustomerQuery.reexecute({ variables: { id: order.user?.id } });
+		currentSetAddressType = type;
 	};
-
-	const handleCustomerChange = async () => {
-		if (!customerId) return;
-
-		// fetch customer detail for showing addresses
-		customerQuery.reexecute({
-			variables: {
-				id: customerId,
-			},
-			context: { requestPolicy: 'network-only' },
-		});
-	};
-
-	onMount(() => customerQuery.subscribe(handleUpdateCustomerAndAddressForOrder));
 </script>
 
 <div class="space-y-2 w-3/10">
-	<div class="bg-white rounded-lg border border-gray-200 p-3">
+	<div class={SitenameCommonClassName}>
 		<SectionHeader>Customer</SectionHeader>
 		{#if order.status === OrderStatus.Draft}
 			<GraphqlPaginableSelect
 				query={CUSTOMER_LIST_QUERY}
 				optionLabelKey="email"
+				{disabled}
 				optionValueKey="id"
 				placeholder="Select customer"
 				label="Specify order customer"
@@ -109,25 +68,66 @@
 				variableSearchQueryPath="filter.search"
 				size="sm"
 				resultKey="customers"
-				bind:value={customerId}
-				onchange={handleCustomerChange}
+				value={order.user?.id}
+				onchange={(opt) =>
+					opt &&
+					(opt as SelectOption).value !== order.user?.id &&
+					handleUpdateCustomer((opt as SelectOption).value as string)}
 			/>
 		{:else if order.userEmail}
 			<p class="text-sm">{order.userEmail}</p>
 		{/if}
 		{#if order.user}
 			<a
-				class="link text-sm text-blue-500"
+				class="link text-xs text-blue-500 block"
 				href={AppRoute.SETTINGS_CONFIGS_USER_DETAILS(order.user?.id)}
 			>
 				View profile
 			</a>
 		{/if}
+		{#if order.userEmail}
+			<a class="link text-xs text-blue-500 block" href={`mailto:${order.userEmail}`}>Send email</a>
+		{/if}
 	</div>
 
-	<UserAddressOrder {shippingAddress} {billingAddress} />
+	<div class={SitenameCommonClassName}>
+		<Accordion header="Shipping address">
+			<div class="space-y-2">
+				{#if order.shippingAddress}
+					<UserAddress address={order.shippingAddress} class="w-full mb-2" />
+				{:else}
+					<Alert variant="info" size="sm" bordered>This order has no shipping address</Alert>
+				{/if}
+				<Button
+					size="xs"
+					fullWidth
+					endIcon={Plus}
+					color="gray"
+					onclick={() => handleClickSetAddress(AddressTypeEnum.Shipping)}
+					>Set shipping address</Button
+				>
+			</div>
+		</Accordion>
 
-	<div class="bg-white rounded-lg border border-gray-200 p-3">
+		<Accordion header="Billing address">
+			<div class="space-y-2">
+				{#if order.billingAddress}
+					<UserAddress address={order.billingAddress} class="w-full mb-2" />
+				{:else}
+					<Alert variant="info" size="sm" bordered>This order has no billing address</Alert>
+				{/if}
+				<Button
+					size="xs"
+					fullWidth
+					endIcon={Plus}
+					color="gray"
+					onclick={() => handleClickSetAddress(AddressTypeEnum.Billing)}>Set billing address</Button
+				>
+			</div>
+		</Accordion>
+	</div>
+
+	<div class={SitenameCommonClassName}>
 		<SectionHeader>Sales channel</SectionHeader>
 		<a
 			class="link text-blue-500 text-sm"
@@ -138,7 +138,7 @@
 		</a>
 	</div>
 
-	<div class="bg-white rounded-lg border border-gray-200 p-3">
+	<div class={SitenameCommonClassName}>
 		<SectionHeader>
 			<span>Invoices</span>
 			<Button size="xs" variant="light">Generate</Button>
@@ -148,16 +148,73 @@
 				<div>{invoice.number}</div>
 			{/each}
 		{:else}
-			<Alert size="xs" bordered>No invoice to show</Alert>
+			<Alert size="sm" bordered>No invoice to show</Alert>
 		{/if}
 	</div>
 
-	<div class="bg-white rounded-lg border border-gray-200 p-3">
+	<div class={SitenameCommonClassName}>
 		<SectionHeader>Customer note</SectionHeader>
 		{#if order.customerNote}
 			<TextArea readonly value={order.customerNote} />
 		{:else}
-			<Alert size="xs" bordered>This order has no customer note</Alert>
+			<Alert size="sm" bordered>This order has no customer note</Alert>
 		{/if}
 	</div>
 </div>
+
+<Modal
+	size="sm"
+	open={!!currentSetAddressType}
+	header="Set {currentSetAddressType?.toLowerCase()} address"
+	closeOnEscape
+	closeOnOutsideClick
+	onClose={() => (currentSetAddressType = undefined)}
+	onCancel={() => (currentSetAddressType = undefined)}
+	disableElements={disabled}
+	onOk={() => {
+		if (selectedAddress) {
+			setAddress(
+				currentSetAddressType!,
+				convertAddressToAddressInput(selectedAddress),
+				alsoSetSeLectedAddressAsTheRest,
+			);
+		}
+	}}
+>
+	{#if $CustomerQuery.fetching}
+		<TableSkeleton numColumns={2} />
+	{:else if $CustomerQuery.error}
+		<Alert size="sm" variant="error">Something went wrong</Alert>
+	{:else if $CustomerQuery.data?.user}
+		{#if $CustomerQuery.data.user.addresses.length}
+			<div class="space-y-2 mb-2">
+				{#each $CustomerQuery.data.user.addresses as address, idx (idx)}
+					<label class="cursor-pointer" for={address.id}>
+						<UserAddress {address} class="relative">
+							<RadioButton
+								value={address.id}
+								bind:group={selectedAddressId}
+								checked={address.id === selectedAddressId}
+								{disabled}
+								class="absolute right-2 top-4"
+								onchange={() => address.id === selectedAddressId && (selectedAddress = address)}
+							/>
+						</UserAddress>
+					</label>
+				{/each}
+			</div>
+
+			{#if selectedAddressId}
+				<Checkbox
+					label="Also use this address as {currentSetAddressType === AddressTypeEnum.Shipping
+						? 'billing'
+						: 'shipping'} address ?"
+					{disabled}
+					bind:checked={alsoSetSeLectedAddressAsTheRest}
+				/>
+			{/if}
+		{:else}
+			<Alert size="md" variant="warning">This customer has no address</Alert>
+		{/if}
+	{/if}
+</Modal>

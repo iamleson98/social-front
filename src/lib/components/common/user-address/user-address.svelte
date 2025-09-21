@@ -6,7 +6,7 @@
 		Icon,
 		MapPin,
 		Phone,
-		TruckDelivery
+		TruckDelivery,
 	} from '$lib/components/icons';
 	import type { Address } from '$lib/gql/graphql';
 	import type { Snippet } from 'svelte';
@@ -20,7 +20,7 @@
 	let { address, children, class: className = '' }: Props = $props();
 </script>
 
-<div class="overflow-hidden rounded-lg border bg-white py-3 px-5 {className}">
+<div class="overflow-hidden rounded-lg border bg-white py-3 px-5 {className} space-y-2">
 	<h2 class="text-base font-bold leading-7 text-blue-700">
 		{address.firstName}
 		{address.lastName}
@@ -85,9 +85,5 @@
 			</div>
 		</li>
 	</ul>
-	{#if children}
-		<div class="mt-3">
-			{@render children()}
-		</div>
-	{/if}
+	{@render children?.()}
 </div>

@@ -109,7 +109,7 @@
 								disabled={OrderUtilsInstance.loading}
 							>
 								{#snippet action()}
-									<span class="text-xs font-semibold">
+									<span class="text-xs">
 										{orderDiscountInput.valueType === DiscountValueTypeEnum.Fixed
 											? order.channel.currencyCode
 											: '%'}
@@ -228,7 +228,7 @@
 		@apply text-right;
 	}
 	tr > td:first-child {
-		@apply font-semibold text-gray-700;
+		@apply text-gray-700;
 	}
 	tr > td:nth-child(2) > * {
 		@apply inline-flex;

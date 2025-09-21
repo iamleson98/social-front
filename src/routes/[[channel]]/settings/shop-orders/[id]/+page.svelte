@@ -1,9 +1,13 @@
 <script lang="ts">
 	import { operationStore } from '$lib/api/operation';
 	import {
+		AddressTypeEnum,
 		FulfillmentStatus,
 		OrderStatus,
+		type AddressInput,
+		type DraftOrderInput,
 		type Mutation,
+		type MutationDraftOrderUpdateArgs,
 		type MutationOrderUpdateArgs,
 		type OrderUpdateInput,
 		type Query,
@@ -18,7 +22,11 @@
 		SitenameCommonClassName,
 	} from '$lib/utils/utils';
 	import { onMount } from 'svelte';
-	import { ORDER_DETAIL_QUERY, ORDER_UPDATE_MUTATION } from '$lib/api/admin/orders';
+	import {
+		DRAFT_ORDER_UPDATE_MUTATION,
+		ORDER_DETAIL_QUERY,
+		ORDER_UPDATE_MUTATION,
+	} from '$lib/api/admin/orders';
 	import DetailOrderSkeleton from '$lib/components/pages/settings/orders/detail-order-skeleton.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import OrderFulfillment from '$lib/components/pages/settings/orders/order-fulfillment.svelte';
@@ -67,7 +75,7 @@
 	const reexecuteQuery = () =>
 		orderQuery.reexecute({
 			variables: { id: page.params.id },
-			context: { requestPolicy: 'network-only' },
+			// context: { requestPolicy: 'network-only' },
 		});
 
 	const onUpdateClick = async () => {
@@ -88,6 +96,63 @@
 
 		toast.success($CommonState.EditSuccess);
 		reexecuteQuery();
+	};
+
+	/** only draft orders can update customer */
+	const handleUpdateCustomer = async (userId: string) => {
+		loading = true;
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'draftOrderUpdate'>,
+			MutationDraftOrderUpdateArgs
+		>(DRAFT_ORDER_UPDATE_MUTATION, {
+			id: page.params.id,
+			input: {
+				user: userId,
+				shippingAddress: null,
+				billingAddress: null,
+			},
+		});
+		loading = false;
+
+		if (checkIfGraphqlResultHasError(result, 'draftOrderUpdate', 'Customer updated successfully'))
+			return;
+
+		reexecuteQuery();
+	};
+
+	const handleUpdateAddress = async (
+		type: AddressTypeEnum,
+		addr: AddressInput,
+		alsoSetForTheRest: boolean,
+	) => {
+		if (!$orderQuery.data?.order) return;
+
+		const isDraftOrder = $orderQuery.data.order.status === OrderStatus.Draft;
+
+		const input: Pick<DraftOrderInput, 'billingAddress' | 'shippingAddress'> = {};
+		if (type === AddressTypeEnum.Billing) {
+			input.billingAddress = addr;
+			if (alsoSetForTheRest) input.shippingAddress = addr;
+		} else {
+			input.shippingAddress = addr;
+			if (alsoSetForTheRest) input.billingAddress = addr;
+		}
+
+		loading = true;
+		if (isDraftOrder) {
+			const result = await GRAPHQL_CLIENT.mutation<
+				Pick<Mutation, 'draftOrderUpdate'>,
+				MutationDraftOrderUpdateArgs
+			>(DRAFT_ORDER_UPDATE_MUTATION, { id: page.params.id, input });
+			checkIfGraphqlResultHasError(result, 'draftOrderUpdate', $CommonState.EditSuccess);
+		} else {
+			const result = await GRAPHQL_CLIENT.mutation<
+				Pick<Mutation, 'orderUpdate'>,
+				MutationOrderUpdateArgs
+			>(ORDER_UPDATE_MUTATION, { id: page.params.id, input: input });
+			checkIfGraphqlResultHasError(result, 'orderUpdate', $CommonState.EditSuccess);
+		}
+		loading = false;
 	};
 </script>
 
@@ -122,7 +187,7 @@
 				<OrderNormalDetails {order} />
 			{:else if order.status === OrderStatus.Draft}
 				<!-- <OrderLinesAssignSection {order} onAddedVariants={reexecuteQuery} /> -->
-				 <OrderDraftDetails {order} />
+				<OrderDraftDetails {order} />
 			{/if}
 			<!-- {#if order.status === OrderStatus.Draft}
 				<OrderLinesAssignSection {order} onAddedVariants={reexecuteQuery} />
@@ -145,7 +210,13 @@
 			<OrderHistory id={order.id} />
 		</div>
 
-		<Sidebar {order} onDoneCustomerUpdate={reexecuteQuery} />
+		<Sidebar
+			{order}
+			onDoneCustomerUpdate={reexecuteQuery}
+			{handleUpdateCustomer}
+			disabled={loading}
+			setAddress={handleUpdateAddress}
+		/>
 	</div>
 
 	<ActionBar backButtonUrl={AppRoute.SETTINGS_ORDERS()} {onUpdateClick} disabled={loading} />
