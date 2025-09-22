@@ -22,7 +22,7 @@
 	import { onMount } from 'svelte';
 	import { ACCESS_TOKEN_KEY, HTTPStatusSuccess } from '$lib/utils/consts';
 	import { afterNavigate, beforeNavigate } from '$app/navigation';
-	import { DropDown } from '$lib/components/ui/Dropdown';
+	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
 	import { READ_ONLY_USER_STORE, setUserStoreValue } from '$lib/stores/auth/user';
 	import { Tween } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
@@ -30,15 +30,12 @@
 	import { toast } from 'svelte-sonner';
 	import { handleLogout } from '$lib/utils/auth.svelte';
 
-	const { userDisplayName } = $derived.by(() => {
-		let userDisplayName;
+	const SettingButtonText = $derived.by(() => {
+		if ($READ_ONLY_USER_STORE?.firstName && $READ_ONLY_USER_STORE?.lastName)
+			return `${$READ_ONLY_USER_STORE.firstName[0]}${$READ_ONLY_USER_STORE.lastName[0]}`;
+		else if ($READ_ONLY_USER_STORE?.email) return $READ_ONLY_USER_STORE.email.slice(0, 2);
 
-		if ($READ_ONLY_USER_STORE?.firstName && $READ_ONLY_USER_STORE.lastName)
-			userDisplayName = `${$READ_ONLY_USER_STORE.firstName[0]}${$READ_ONLY_USER_STORE.lastName[0]}`;
-		else if ($READ_ONLY_USER_STORE?.email)
-			userDisplayName = $READ_ONLY_USER_STORE.email.slice(0, 2);
-
-		return { userDisplayName };
+		return '';
 	});
 
 	// load current user when page load
@@ -144,36 +141,41 @@
 				</IconButton>
 			</a>
 			{#if $READ_ONLY_USER_STORE}
-				{#snippet trigger({ onclick, onfocus }: DropdownTriggerInterface)}
-					<Button variant="light" size="sm" class="space-x-2 uppercase" {onclick} {onfocus}>
-						{#if $READ_ONLY_USER_STORE.avatar}
-							<span
-								class="rounded-full w-5 h-5 bg-blue-300 flex items-center justify-center font-bold bg-cover bg-center bg-no-repeat"
-								style="background-image: url({$READ_ONLY_USER_STORE.avatar.url});"
-							>
-							</span>
-						{/if}
-						<span>{userDisplayName}</span>
-					</Button>
+				{#snippet avatar()}
+					<span
+						class="rounded-full w-6 h-6 bg-blue-300 flex items-center justify-center font-bold bg-cover bg-center bg-no-repeat"
+						style:background-image={$READ_ONLY_USER_STORE.avatar
+							? `url(${$READ_ONLY_USER_STORE.avatar.url})`
+							: 'bg-blue-300'}
+					>
+					</span>
 				{/snippet}
-
-				<DropDown
-					{trigger}
-					placement="bottom-end"
-					noReCalculateOnWindowResize
-					options={[
-						{
-							children: $tranFunc('common.settings'),
-							href: AppRoute.ME(),
-							startIcon: UserCog,
-						},
-						{
-							children: $tranFunc('common.logout'),
-							onclick: () => handleLogout($tranFunc),
-							startIcon: Logout,
-						},
-					]}
-				/>
+				<DropDown placement="bottom-end" noReCalculateOnWindowResize>
+					{#snippet trigger({ onclick, onfocus }: DropdownTriggerInterface)}
+						<Button variant="light" size="sm" class="space-x-2 uppercase" {onclick} {onfocus}>
+							{@render avatar()}
+							<span>{SettingButtonText}</span>
+						</Button>
+					{/snippet}
+					<MenuItem>
+						<div class="flex items-center gap-1.5">
+							{@render avatar()}
+							<div>
+								<div class="font-semibold">
+									{`${$READ_ONLY_USER_STORE.firstName} ${$READ_ONLY_USER_STORE.lastName}`}
+								</div>
+								<div class="text-xs text-gray-500">{$READ_ONLY_USER_STORE.email}</div>
+							</div>
+						</div>
+					</MenuItem>
+					<div class="bg-gray-200 my-1 h-px"></div>
+					<MenuItem href={AppRoute.ME()} startIcon={UserCog}>
+						{$tranFunc('common.settings')}
+					</MenuItem>
+					<MenuItem href={AppRoute.ME()} startIcon={Logout} onclick={() => handleLogout($tranFunc)}>
+						{$tranFunc('common.logout')}
+					</MenuItem>
+				</DropDown>
 			{:else if !$READ_ONLY_USER_STORE && !page.url.pathname.startsWith('/auth')}
 				<a href={AppRoute.AUTH_SIGNIN()}>
 					<Button variant="filled" size="sm">{$tranFunc('signin.title')}</Button>

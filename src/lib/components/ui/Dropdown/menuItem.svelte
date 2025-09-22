@@ -24,7 +24,7 @@
 <svelte:element
 	this={rest.href ? 'a' : 'div'}
 	{...rest}
-	class="flex items-center gap-2 py-1 px-2 text-sm select-none! {disabled
+	class="flex items-center gap-2 py-1 px-2 text-sm flex-nowrap select-none! {disabled
 		? 'cursor-not-allowed! text-gray-400'
 		: 'cursor-pointer hover:bg-gray-100 text-gray-700'} {className}"
 	onclick={handleClick}
@@ -34,7 +34,7 @@
 	{#if startIcon}
 		<Icon icon={startIcon} />
 	{/if}
-	<span class="text-nowrap">
+	<div class="text-nowrap">
 		{#if children}
 			{#if typeof children === 'string'}
 				{children}
@@ -42,5 +42,5 @@
 				{@render children()}
 			{/if}
 		{/if}
-	</span>
+	</div>
 </svelte:element>
