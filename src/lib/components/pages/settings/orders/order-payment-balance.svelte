@@ -20,7 +20,7 @@
 		onVoid?: () => void;
 	};
 
-	let { order, onCapture, onMarkAsPaid, onRefund, onVoid }: Props = $props();
+	let { order, onCapture, onMarkAsPaid, onVoid }: Props = $props();
 
 	const refundedAmount = extractRefundedAmount(order);
 	const usedGiftCardAmount = extractOrderGiftCardUsedAmount(order);

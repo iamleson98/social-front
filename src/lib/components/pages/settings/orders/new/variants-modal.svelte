@@ -1,26 +1,13 @@
 <script lang="ts">
 	import { VARIANTS_FOR_ORDER_QUERY } from '$lib/api/admin/orders';
-	import { CHANNEL_DETAILS_QUERY } from '$lib/api/channels';
-	import { operationStore } from '$lib/api/operation';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { Search } from '$lib/components/icons';
 	import Alert from '$lib/components/ui/Alert/alert.svelte';
 	import { Checkbox, DebounceInput } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
-	import {
-		GraphqlPaginableTable,
-		TableSkeleton,
-		type TableColumnProps,
-	} from '$lib/components/ui/Table';
-	import {
-		MenuItemsSortField,
-		type AddressInput,
-		type Product,
-		type Query,
-		type QueryChannelArgs,
-		type QueryProductsArgs,
-	} from '$lib/gql/graphql';
+	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import { type AddressInput, type Product, type QueryProductsArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { classNames, stringSlicer } from '$lib/utils/utils';
 	import { get, set } from 'es-toolkit/compat';
@@ -75,7 +62,7 @@
 	});
 </script>
 
-{#snippet checkbox({ item }: { item: Product })}
+{#snippet checkbox({}: { item: Product })}
 	<Checkbox size="sm" />
 {/snippet}
 

@@ -12,12 +12,10 @@
 		type GeneralMetadataEditorRef,
 	} from '$lib/components/pages/settings/common';
 	import CategorySelector from '$lib/components/pages/settings/products/new/category-selector.svelte';
-	import ChannelsSelector from '$lib/components/pages/settings/products/new/channels-selector.svelte';
 	import CollectionsAndTax from '$lib/components/pages/settings/products/new/collections-and-tax.svelte';
 	import GeneralInformation from '$lib/components/pages/settings/products/new/general-information.svelte';
 	import PackagingAndDelivery from '$lib/components/pages/settings/products/new/packaging-and-delivery.svelte';
 	import ProductSeo from '$lib/components/pages/settings/products/new/product-seo.svelte';
-	import VariantsEditor from '$lib/components/pages/settings/products/new/variants-editor.svelte';
 	import Skeleton from '$lib/components/pages/settings/products/skeleton.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import type {
@@ -100,9 +98,7 @@
 					taxClass,
 					weight,
 					productType,
-					attributes,
 					media,
-					channelListings,
 				} = result.data.product;
 
 				currentProductType = productType;

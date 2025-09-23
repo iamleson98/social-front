@@ -16473,10 +16473,15 @@ type OrderDiscount implements Node @doc(category: "Discounts") {
 	"""
 	reason: String
 
+	@deprecated(
+			reason: "Use `total` instead"
+		)
+	amount: Money!
+
 	"""
 	Returns amount of discount.
 	"""
-	amount: Money!
+	total: Money!
 }
 
 enum OrderDiscountType @doc(category: "Discounts") {

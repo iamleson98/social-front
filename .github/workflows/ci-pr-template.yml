@@ -6,19 +6,19 @@ on:
   workflow_call:
 
 jobs:
-  # check-lint:
-  #   runs-on: ubuntu-22.04
-  # defaults:
-  #   run:
-  #     working-directory: webapp
-  # steps:
-  #   - name: ci/checkout-repo
-  #     uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-  #   - name: ci/setup
-  #     uses: ./.github/actions/webapp-setup
-  #   - name: ci/lint
-  #     run: |
-  #       npm run check
+  check-lint:
+    runs-on: ubuntu-22.04
+  defaults:
+    run:
+      working-directory: webapp
+  steps:
+    - name: ci/checkout-repo
+      uses: actions/checkout@v4
+    - name: ci/setup
+      uses: ./.github/actions/webapp-setup
+    - name: ci/lint
+      run: |
+        npm run check
 
   # check-i18n:
   #   runs-on: ubuntu-22.04
@@ -27,7 +27,7 @@ jobs:
   #       working-directory: webapp
   #   steps:
   #     - name: ci/checkout-repo
-  #       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+  #       uses: actions/checkout@v4
   #     - name: ci/setup
   #       uses: ./.github/actions/webapp-setup
   #     - name: ci/lint
@@ -50,7 +50,7 @@ jobs:
   #       working-directory: webapp
   #   steps:
   #     - name: ci/checkout-repo
-  #       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+  #       uses: actions/checkout@v4
   #     - name: ci/setup
   #       uses: ./.github/actions/webapp-setup
   #     - name: ci/lint
@@ -67,7 +67,7 @@ jobs:
   #       working-directory: .
   #   steps:
   #     - name: ci/checkout-repo
-  #       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+  #       uses: actions/checkout@v4
   #     - name: ci/setup
   #       uses: ./.github/actions/webapp-setup
   #     - name: ci/test
@@ -76,16 +76,16 @@ jobs:
   #       run: |
   #         npm run test-ci
 
-  build:
-    runs-on: ubuntu-22.04
-    defaults:
-      run:
-        working-directory: .
-    steps:
-      - name: ci/checkout-repo
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      # - name: ci/setup
-      #   uses: ./.github/actions/webapp-setup
-      - name: ci/build
-        run: |
-          pnpm run build
+  # build:
+  #   runs-on: ubuntu-22.04
+  #   defaults:
+  #     run:
+  #       working-directory: .
+  #   steps:
+  #     - name: ci/checkout-repo
+  #       uses: actions/checkout@v4
+  #     - name: ci/setup
+  #       uses: ./.github/actions/webapp-setup
+  #     - name: ci/build
+  #       run: |
+  #         pnpm run build

@@ -74,7 +74,7 @@
 		<Badge text="Not Available" color="red" />
 	{/if}
 {/snippet}
-{#snippet actionColumn({ item }: { item: Product })}
+{#snippet actionColumn({  }: { item: Product })}
 	<IconButton variant="outline" size="xs" onclick={() => {}} icon={OpenEye} />
 {/snippet}
 

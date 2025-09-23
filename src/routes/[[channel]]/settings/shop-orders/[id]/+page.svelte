@@ -12,19 +12,15 @@
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import DetailOrderSkeleton from '$lib/components/pages/settings/orders/detail-order-skeleton.svelte';
-	import OrderLinesAssignSection from '$lib/components/pages/settings/orders/new/order-lines-assign-section.svelte';
 	import OrderDraftDetails from '$lib/components/pages/settings/orders/order-draft-details.svelte';
 	import OrderFulfillment from '$lib/components/pages/settings/orders/order-fulfillment.svelte';
 	import OrderHistory from '$lib/components/pages/settings/orders/order-history.svelte';
-	import OrderLines from '$lib/components/pages/settings/orders/order-lines.svelte';
 	import OrderNormalDetails from '$lib/components/pages/settings/orders/order-normal-details.svelte';
-	import OrderPaymentBalance from '$lib/components/pages/settings/orders/order-payment-balance.svelte';
 	import Sidebar from '$lib/components/pages/settings/orders/sidebar.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/Badge';
 	import {
 		AddressTypeEnum,
-		FulfillmentStatus,
 		OrderStatus,
 		type AddressInput,
 		type DraftOrderInput,
@@ -44,7 +40,6 @@
 		SitenameCommonClassName,
 	} from '$lib/utils/utils';
 	import dayjs from 'dayjs';
-	import { differenceBy } from 'es-toolkit/compat';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 
@@ -66,7 +61,7 @@
 		orderQuery.subscribe((result) => {
 			if (!result.data?.order) return;
 
-			const { billingAddress, totalBalance, metadata, privateMetadata } = result.data.order;
+			// const { billingAddress, totalBalance, metadata, privateMetadata } = result.data.order;
 
 			orderUpdateInput = {};
 		}),
@@ -162,7 +157,7 @@
 	<Alert variant="error" size="sm" bordered>{$orderQuery.error?.message}</Alert>
 {:else if $orderQuery.data?.order}
 	{@const { order } = $orderQuery.data}
-	{@const unfulfilledOrderLines = differenceBy(
+	<!-- {@const unfulfilledOrderLines = differenceBy(
 		order.lines,
 		order.fulfillments
 			.filter((item) => item.status === FulfillmentStatus.Fulfilled)
@@ -170,7 +165,7 @@
 			.map((item) => item.orderLine)
 			.filter(Boolean),
 		(item) => item?.id,
-	)}
+	)} -->
 	<div class="flex flex-row gap-2">
 		<div class="space-y-2 w-7/10">
 			<SectionHeader class={SitenameCommonClassName}>

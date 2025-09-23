@@ -2,7 +2,6 @@
 	import { tranFunc } from '$i18n';
 	import {
 		CATEGORIES_LIST_FOR_CREATE_PRODUCT,
-		CATEGORY_WITH_PARENTS_QUERY,
 		type CategoryListForCreateProductInput,
 	} from '$lib/api/admin/product';
 	import { operationStore } from '$lib/api/operation';
@@ -11,7 +10,7 @@
 	import { MegaMenu } from '$lib/components/ui/MegaMenu';
 	import type { SelectItemProps } from '$lib/components/ui/MegaMenu/types';
 	import { TableSkeleton } from '$lib/components/ui/Table';
-	import type { CategoryCountableConnection, Query, QueryCategoryArgs } from '$lib/gql/graphql';
+	import type { Query } from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import ErrorMsg from './error-msg.svelte';
@@ -47,13 +46,13 @@
 		pause: !!categoryID,
 	});
 
-	const CategoryWithParentsQuery = operationStore<Pick<Query, 'category'>, QueryCategoryArgs>({
-		query: CATEGORY_WITH_PARENTS_QUERY,
-		variables: {
-			id: categoryID,
-		},
-		pause: !categoryID,
-	});
+	// const CategoryWithParentsQuery = operationStore<Pick<Query, 'category'>, QueryCategoryArgs>({
+	// 	query: CATEGORY_WITH_PARENTS_QUERY,
+	// 	variables: {
+	// 		id: categoryID,
+	// 	},
+	// 	pause: !categoryID,
+	// });
 
 	// onMount(() => categoriesStore.subscribe(result => {
 	// 	if (result.data?.categories)

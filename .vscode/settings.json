@@ -1,8 +1,14 @@
 {
 	"editor.tabSize": 2,
-	"files.associations": {
-		"iosfwd": "cpp",
-		"system_error": "cpp"
+	"eslint.validate": [
+		"javascript",
+		"typescript",
+		"svelte"
+	],
+	"editor.codeActionsOnSave": {
+		"source.fixAll": "always",
+		"source.fixAll.eslint": "always"
 	},
-	"eslint.validate": ["javascript", "javascriptreact", "svelte"]
+"eslint.run": "onType",
+"editor.showUnused": true,
 }

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
 	import {
 		ATTRIBUTE_DELETE_MUTATION,
 		ATTRIBUTE_DETAILS_QUERY,

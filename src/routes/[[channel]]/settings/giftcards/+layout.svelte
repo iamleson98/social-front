@@ -2,7 +2,6 @@
 	import { tranFunc } from '$i18n';
 	import HeadBar from '$lib/components/pages/settings/common/head-bar.svelte';
 	import { AppRoute } from '$lib/utils';
-	import { Giftcard } from '@adyen/adyen-web';
 	import type { Snippet } from 'svelte';
 
 	type Props = {

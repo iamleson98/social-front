@@ -104,7 +104,7 @@
 
 {#snippet name({ item }: { item: ShippingMethodType })}
 	<a
-		href={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_DETAILS(page.params.id, item.id)}
+		href={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_DETAILS(page.params.id!, item.id)}
 		class="link">{item.name}</a
 	>
 {/snippet}
@@ -173,7 +173,7 @@
 			variant="light"
 			size="xs"
 			href={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_NEW(
-				page.params.id,
+				page.params.id!,
 				ShippingMethodTypeEnum.Price,
 			)}
 			{disabled}
@@ -191,7 +191,7 @@
 			variant="light"
 			size="xs"
 			href={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_NEW(
-				page.params.id,
+				page.params.id!,
 				ShippingMethodTypeEnum.Weight,
 			)}
 			{disabled}

@@ -1,8 +1,7 @@
 <script lang="ts">
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
-	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
-	import { Dots, ExternalLink, Icon, Trash } from '$lib/components/icons';
+	import { Dots, ExternalLink, Trash } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
@@ -12,8 +11,7 @@
 	import Table from '$lib/components/ui/Table/table.svelte';
 	import { OrderStatus, type Order, type OrderLine } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { orderStatusBadgeClass, SitenameCommonClassName, stringSlicer } from '$lib/utils/utils';
-	import OrderFulfillModal from './order-fulfill-modal.svelte';
+	import { stringSlicer } from '$lib/utils/utils';
 	import OrderLineMetadataModal from './order-line-metadata-modal.svelte';
 
 	type Props = {
@@ -22,7 +20,7 @@
 		onFulfillSuccess: () => void;
 	};
 
-	let { orderLines, order, onFulfillSuccess }: Props = $props();
+	let { orderLines, order }: Props = $props();
 
 	const PRODUCT_MODAL_COLUMNS: TableColumnProps<OrderLine, any>[] = [
 		{
@@ -69,7 +67,7 @@
 
 	let orderLineIDForMetadataView = $state<string>();
 
-	let openFulfillModal = $state(false);
+	// let openFulfillModal = $state(false);
 </script>
 
 {#snippet image({ item }: { item: OrderLine })}

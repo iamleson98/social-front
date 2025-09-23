@@ -1,5 +1,4 @@
-# .github/workflows/lint.yml
-name: Lint
+name: linting
 
 on:
   push:

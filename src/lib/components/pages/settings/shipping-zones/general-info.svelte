@@ -43,12 +43,12 @@
 		formOk = !Object.keys(zoneErrors).length;
 	});
 
-	const CountriesOptions = $derived(
-		$READ_ONLY_SHOP_STORE?.countries.map<SelectOption>((item) => ({
-			label: item.country,
-			value: item.code,
-		})) || [],
-	);
+	// const CountriesOptions = $derived(
+	// 	$READ_ONLY_SHOP_STORE?.countries.map<SelectOption>((item) => ({
+	// 		label: item.country,
+	// 		value: item.code,
+	// 	})) || [],
+	// );
 </script>
 
 <div class="bg-white border border-gray-200 p-3 space-y-2 rounded-lg">

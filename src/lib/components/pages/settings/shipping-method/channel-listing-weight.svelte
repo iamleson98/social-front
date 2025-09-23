@@ -6,7 +6,7 @@
 	};
 
 	const {
-		isCreatePage,
+		// isCreatePage,
 		maximumOrderWeight = $bindable(),
 		minimumOrderWeight = $bindable(),
 	}: Props = $props();

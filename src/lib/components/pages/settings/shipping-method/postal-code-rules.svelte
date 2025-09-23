@@ -95,7 +95,7 @@
 	<span>{item.end || '-'}</span>
 {/snippet}
 
-{#snippet inclusionTypeSnippet({ item }: { item: PartialShippingMethodPostalCodeRule })}
+{#snippet inclusionTypeSnippet({ }: { item: PartialShippingMethodPostalCodeRule })}
 	<Badge
 		text={inclusionType || '-'}
 		color={inclusionType === PostalCodeRuleInclusionTypeEnum.Include ? 'green' : 'red'}

@@ -60,7 +60,7 @@
 		productTypeId,
 		channelsListing,
 		loading,
-		productMedias,
+		// productMedias,
 		productVariantsInput = $bindable([]),
 	}: Props = $props();
 

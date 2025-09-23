@@ -83,7 +83,7 @@
 				<td>
 					<Popover placement="bottom-start">
 						{#snippet trigger({ onclick }: DropdownTriggerInterface)}
-							<Button size="xs" variant="light" color="blue" {onclick}>Add discount</Button>
+							<Button size="xs" disabled={loading} variant="light" color="blue" {onclick}>Add discount</Button>
 						{/snippet}
 
 						<div class="p-3 bg-white rounded-lg shadow-md space-y-2 w-64">
@@ -95,7 +95,7 @@
 										value={type}
 										size="sm"
 										bind:group={orderDiscountInput.valueType}
-										disabled={OrderUtilsInstance.loading}
+										disabled={OrderUtilsInstance.loading || loading}
 									/>
 								{/each}
 							</div>
@@ -106,7 +106,7 @@
 								type="number"
 								required
 								bind:value={orderDiscountInput.value}
-								disabled={OrderUtilsInstance.loading}
+								disabled={OrderUtilsInstance.loading || loading}
 							>
 								{#snippet action()}
 									<span class="text-xs">
@@ -121,7 +121,7 @@
 								placeholder="Reason"
 								label="Reason"
 								bind:value={orderDiscountInput.reason}
-								disabled={OrderUtilsInstance.loading}
+								disabled={OrderUtilsInstance.loading || loading}
 								inputClass="min-h-20"
 							/>
 							<div class="justify-end flex gap-1">
@@ -133,7 +133,7 @@
 									color="blue"
 									disabled={orderDiscountInput.value < 0 ||
 										!orderDiscountInput.value ||
-										OrderUtilsInstance.loading}
+										OrderUtilsInstance.loading || loading}
 									onclick={() => OrderUtilsInstance.orderAddDiscount(order.id, orderDiscountInput)}
 								>
 									Confirm
@@ -169,7 +169,7 @@
 				<td>
 					<Popover placement="bottom-start">
 						{#snippet trigger({ onclick }: DropdownTriggerInterface)}
-							<Button size="xs" variant="light" color="blue" {onclick}>
+							<Button size="xs" variant="light" color="blue" {onclick} disabled={loading}>
 								{order.shippingMethodName || 'Shipping Method'}
 							</Button>
 						{/snippet}
@@ -178,7 +178,7 @@
 							<Select
 								label="Please specify a shipping method"
 								options={ShippingMethodChoices}
-								disabled={OrderUtilsInstance.loading}
+								disabled={OrderUtilsInstance.loading || loading}
 								value={order.deliveryMethod?.id}
 								size="sm"
 								onchange={(opt) => {

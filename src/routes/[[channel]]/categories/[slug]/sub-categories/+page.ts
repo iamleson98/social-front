@@ -1,5 +1,5 @@
-import type { PageLoad } from './$types';
+import type { Category } from '$lib/gql/graphql.js';
 
-export const load: PageLoad = async (evt) => {
-	return await evt.parent();
+export const load = async (evt) => {
+	return (await evt.parent()) as { category: Category };
 };

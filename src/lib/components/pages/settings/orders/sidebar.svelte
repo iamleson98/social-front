@@ -32,7 +32,7 @@
 		setAddress: (type: AddressTypeEnum, addr: AddressInput, alsoSetForTheRest: boolean) => void;
 	};
 
-	let { order, onDoneCustomerUpdate, handleUpdateCustomer, disabled, setAddress }: Props = $props();
+	let { order, handleUpdateCustomer, disabled, setAddress }: Props = $props();
 
 	let currentSetAddressType = $state<AddressTypeEnum>();
 	let alsoSetSeLectedAddressAsTheRest = $state(false);
