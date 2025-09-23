@@ -1,5 +1,10 @@
 <script lang="ts">
+	import {
+		CHECKOUT_COMPLETE_MUTATION,
+		PAYMENT_GATEWAYS_INITIALIZE_MUTATION,
+	} from '$lib/api/checkout';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import {
 		CheckoutAuthorizeStatusEnum,
 		CheckoutChargeStatusEnum,
@@ -10,10 +15,6 @@
 		type PaymentGatewayToInitialize,
 	} from '$lib/gql/graphql';
 	import {
-		CHECKOUT_COMPLETE_MUTATION,
-		PAYMENT_GATEWAYS_INITIALIZE_MUTATION,
-	} from '$lib/api/checkout';
-	import {
 		adyenGatewayId,
 		paidStatuses,
 		supportedPaymentGateways,
@@ -22,7 +23,6 @@
 	} from '$lib/utils/consts';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import AdyenComponent from './adyen-component.svelte';
-	import SectionHeader from '$lib/components/common/section-header.svelte';
 
 	type Props = {
 		checkout: Checkout;

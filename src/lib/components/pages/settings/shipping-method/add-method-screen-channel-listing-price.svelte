@@ -9,10 +9,10 @@
 		ShippingMethodChannelListingInput,
 	} from '$lib/gql/graphql';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import { calculateZodErrors, type PriceErrors, type ZodErrors } from './utils';
 	import { difference } from 'es-toolkit';
 	import { onMount } from 'svelte';
 	import { array, number, object } from 'zod';
-	import { calculateZodErrors, type PriceErrors, type ZodErrors } from './utils';
 
 	type Props = {
 		shippingMethodChannelListingsInput: ShippingMethodChannelListingInput;

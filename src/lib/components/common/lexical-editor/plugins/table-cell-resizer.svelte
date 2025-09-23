@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { convertObjectToCssStyles } from './consts';
 	import {
 		$getTableNodeFromLexicalNodeOrThrow as getTableNodeFromLexicalNodeOrThrow,
 		getDOMCellFromTarget,
@@ -10,14 +11,13 @@
 		TableCellNode,
 		type TableMapType,
 		$getTableRowIndexFromTableCellNode as getTableRowIndexFromTableCellNode,
-		$isTableRowNode as isTableRowNode
+		$isTableRowNode as isTableRowNode,
 	} from '@lexical/table';
 	import { calculateZoomLevel, isHTMLElement } from '@lexical/utils';
 	import {
 		$getNearestNodeFromDOMNode as getNearestNodeFromDOMNode,
-		type LexicalEditor
+		type LexicalEditor,
 	} from 'lexical';
-	import { convertObjectToCssStyles } from './consts';
 
 	type Props = {
 		editor: LexicalEditor;
@@ -66,7 +66,7 @@
 				left: `${window.scrollX + left}px`,
 				top: `${window.scrollY + top + height - zoneWidth / 2}px`,
 				width: `${width}px`,
-				'background-color': 'none'
+				'background-color': 'none',
 			},
 			right: {
 				cursor: 'col-resize',
@@ -74,8 +74,8 @@
 				left: `${window.scrollX + left + width - zoneWidth / 2}px`,
 				top: `${window.scrollY + top}px`,
 				width: `${zoneWidth}px`,
-				'background-color': 'none'
-			}
+				'background-color': 'none',
+			},
 		};
 
 		if (draggingDirection && mouseCurrentPos && tableRectRef) {
@@ -94,7 +94,7 @@
 
 		return {
 			bottom: convertObjectToCssStyles(styles.bottom),
-			right: convertObjectToCssStyles(styles.right)
+			right: convertObjectToCssStyles(styles.right),
 		};
 	});
 
@@ -106,7 +106,7 @@
 
 		mouseStartPosRef = {
 			x: evt.clientX,
-			y: evt.clientY
+			y: evt.clientY,
 		};
 		mouseCurrentPos = mouseStartPosRef;
 		draggingDirection = direction;
@@ -131,7 +131,7 @@
 		if (draggingDirection) {
 			mouseCurrentPos = {
 				x: event.clientX,
-				y: event.clientY
+				y: event.clientY,
 			};
 			return;
 		}
@@ -155,7 +155,7 @@
 						const tableNode = getTableNodeFromLexicalNodeOrThrow(tableCellNode);
 						const tableElement = getTableElement(
 							tableNode,
-							editor.getElementByKey(tableNode.getKey())
+							editor.getElementByKey(tableNode.getKey()),
 						);
 
 						if (!tableElement) {
@@ -166,7 +166,7 @@
 						tableRectRef = tableElement.getBoundingClientRect();
 						activeCell = cell;
 					},
-					{ editor }
+					{ editor },
 				);
 			} else if (cell == null) {
 				resetState();
@@ -186,7 +186,7 @@
 
 	const getCellNodeHeight = (
 		cell: TableCellNode,
-		activeEditor: LexicalEditor
+		activeEditor: LexicalEditor,
 	): number | undefined => {
 		const domCellNode = activeEditor.getElementByKey(cell.getKey());
 		return domCellNode?.clientHeight;
@@ -228,7 +228,7 @@
 				const newHeight = Math.max(height + heightChange, MIN_ROW_HEIGHT);
 				tableRow.setHeight(newHeight);
 			},
-			{ tag: 'skip-scroll-into-view' }
+			{ tag: 'skip-scroll-into-view' },
 		);
 	};
 
@@ -262,7 +262,7 @@
 				newColWidths[columnIndex] = newWidth;
 				tableNode.setColWidths(newColWidths);
 			},
-			{ tag: 'skip-scroll-into-view' }
+			{ tag: 'skip-scroll-into-view' },
 		);
 	};
 

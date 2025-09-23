@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { Component, Snippet } from 'svelte';
-	import Star from './star.svelte';
 	import { randomID } from '$lib/utils/utils';
+	import Star from './star.svelte';
+	import type { Component, Snippet } from 'svelte';
 
 	type Props = {
 		class?: string;
@@ -25,7 +25,7 @@
 		partialId = 'partialStar' + randomID(),
 		icon: Icon = Star,
 		children,
-		slotText
+		slotText,
 	}: Props = $props();
 
 	const fullStarID = randomID();
@@ -37,7 +37,7 @@
 		return {
 			fullStars,
 			percentRating: Math.round(rateDifference * 100),
-			grayStars: total - (fullStars + Math.ceil(rateDifference))
+			grayStars: total - (fullStars + Math.ceil(rateDifference)),
 		};
 	});
 </script>

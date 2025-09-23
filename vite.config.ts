@@ -1,7 +1,7 @@
 // import { sentrySvelteKit } from '@sentry/sveltekit';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vitest/config';
 import tailwindcss from '@tailwindcss/vite';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	plugins: [
@@ -12,16 +12,16 @@ export default defineConfig({
 		// 	}
 		// }),
 		sveltekit(),
-		tailwindcss()
+		tailwindcss(),
 	],
 	test: {
-		include: ['src/**/*.{test,spec}.{js,ts}']
+		include: ['src/**/*.{test,spec}.{js,ts}'],
 	},
 	assetsInclude: ['**/*.graphql'],
 	server: {
 		port: 5173,
 		fs: {
-			strict: false
-		}
+			strict: false,
+		},
 	},
 });

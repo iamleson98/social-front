@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { CategoryCountableConnection, Query, QueryCategoryArgs } from '$lib/gql/graphql';
+	import { tranFunc } from '$i18n';
 	import {
 		CATEGORIES_LIST_FOR_CREATE_PRODUCT,
 		CATEGORY_WITH_PARENTS_QUERY,
@@ -7,16 +7,16 @@
 	} from '$lib/api/admin/product';
 	import { operationStore } from '$lib/api/operation';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { MegaMenu } from '$lib/components/ui/MegaMenu';
-	import { convertCategoryEdgesToMenuSelect } from './utils';
-	import { tranFunc } from '$i18n';
-	import ErrorMsg from './error-msg.svelte';
 	import { Label } from '$lib/components/ui/Input';
-	import { SitenameCommonClassName } from '$lib/utils/utils';
-	import { TableSkeleton } from '$lib/components/ui/Table';
-	import { CommonState } from '$lib/utils/common.svelte';
-	import { onMount } from 'svelte';
+	import { MegaMenu } from '$lib/components/ui/MegaMenu';
 	import type { SelectItemProps } from '$lib/components/ui/MegaMenu/types';
+	import { TableSkeleton } from '$lib/components/ui/Table';
+	import type { CategoryCountableConnection, Query, QueryCategoryArgs } from '$lib/gql/graphql';
+	import { CommonState } from '$lib/utils/common.svelte';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import ErrorMsg from './error-msg.svelte';
+	import { convertCategoryEdgesToMenuSelect } from './utils';
+	import { onMount } from 'svelte';
 
 	type Props = {
 		categoryID?: string | null;
@@ -70,9 +70,7 @@
 			// return CategoryWithParentsQuery.subscribe((result) => {
 			// 	if (result.data?.category) {
 			// 		if (result.data.category.ancestors?.edges.length) {
-
 			// 			const connection = result.data.category.ancestors.ed
-
 			// 		}
 			// 		menuItems = convertCategoryEdgesToMenuSelect(result.data.categories);
 			// 	}

@@ -1,7 +1,6 @@
 <script lang="ts">
-	import * as easePick from '@easepick/core';
-	import { onDestroy, onMount } from 'svelte';
 	import { Input, type InputProps } from '$lib/components/ui/Input';
+	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import {
 		EASEPICK_AMP_STYLE_v1_2_1,
 		EASEPICK_CORE_STYLE_v1_2_1,
@@ -9,9 +8,10 @@
 		EASEPICK_RANGE_STYLE_v1_2_1,
 		EASEPICK_TIME_STYLE_v1_2_1,
 	} from '$lib/utils/consts';
+	import * as easePick from '@easepick/core';
 	import type { IPickerConfig } from '@easepick/core/dist/types';
-	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import dayjs from 'dayjs';
+	import { onDestroy, onMount } from 'svelte';
 
 	const NOW = new Date();
 	const BASIC_TIME_CONFIG = 'YYYY-MM-DD';

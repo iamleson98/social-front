@@ -1,9 +1,6 @@
-import {
-	HTTPStatusBadRequest,
-	HTTPStatusSuccess,
-} from '$lib/utils/consts';
-import { error } from '@sveltejs/kit';
 import { serverSideTranslate } from '$lib/i18n';
+import { HTTPStatusBadRequest, HTTPStatusSuccess } from '$lib/utils/consts';
+import { error } from '@sveltejs/kit';
 import validator from 'validator';
 
 export const load = async (event) => {
@@ -12,8 +9,8 @@ export const load = async (event) => {
 
 	if (!token || !email || !validator.isEmail(email)) {
 		return error(HTTPStatusBadRequest, {
-			message: await serverSideTranslate(event, 'changePassword.invalidUrl')
-		})
+			message: await serverSideTranslate(event, 'changePassword.invalidUrl'),
+		});
 	}
 
 	return {

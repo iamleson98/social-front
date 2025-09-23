@@ -9,8 +9,8 @@
 		ShippingMethodChannelListingInput,
 	} from '$lib/gql/graphql';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
-	import { array, number, object } from 'zod';
 	import { calculateZodErrors, type PriceErrors, type ZodErrors } from './utils';
+	import { array, number, object } from 'zod';
 
 	type Props = {
 		shippingMethodChannelListings: ShippingMethodChannelListing[];

@@ -1,13 +1,13 @@
 <script lang="ts">
-	import type { SocialSize } from "../common";
-	import { Skeleton } from "../Skeleton";
-	import { RADIO_SIZES } from "./input.types";
+	import { Skeleton } from '../Skeleton';
+	import type { SocialSize } from '../common';
+	import { RADIO_SIZES } from './input.types';
 
-  type Props = {
-    size?: SocialSize;
-  };
+	type Props = {
+		size?: SocialSize;
+	};
 
-  let { size = 'md' }: Props = $props();
+	let { size = 'md' }: Props = $props();
 </script>
 
 <div class="flex items-center gap-1.5">

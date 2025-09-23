@@ -1,8 +1,12 @@
 <script lang="ts">
+	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Ban, Plus } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
+	import { Input, RadioButton, TextArea } from '$lib/components/ui/Input';
+	import { Popover, type DropdownTriggerInterface } from '$lib/components/ui/Popover';
+	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import {
 		DiscountValueTypeEnum,
 		OrderDiscountType,
@@ -10,13 +14,9 @@
 		type OrderDiscountCommonInput,
 	} from '$lib/gql/graphql';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
-	import { noop } from 'es-toolkit';
 	import OrderLines from './order-lines.svelte';
-	import { Popover, type DropdownTriggerInterface } from '$lib/components/ui/Popover';
-	import PriceDisplay from '$lib/components/common/price-display.svelte';
-	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { OrderUtilsInstance } from './utils.svelte';
-	import { Input, RadioButton, TextArea } from '$lib/components/ui/Input';
+	import { noop } from 'es-toolkit';
 
 	type Props = {
 		loading?: boolean;

@@ -1,14 +1,14 @@
 <script lang="ts" generics="T = Record<string, unknown>">
-	import type { AnyVariables, RequestPolicy, TypedDocumentNode } from '@urql/core';
-	import type { CountableConnection, GraphqlPaginationArgs } from '../Table';
-	import type { PageInfo, Query } from '$lib/gql/graphql';
-	import type { SelectProps, SelectOption } from './types';
-	import SelectSkeleton from './select-skeleton.svelte';
-	import { Alert } from '$lib/components/ui/Alert';
-	import { get, has, set } from 'es-toolkit/compat';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { Alert } from '$lib/components/ui/Alert';
+	import type { PageInfo, Query } from '$lib/gql/graphql';
+	import type { CountableConnection, GraphqlPaginationArgs } from '../Table';
 	import GeneralSelect from './general-select.svelte';
+	import SelectSkeleton from './select-skeleton.svelte';
+	import type { SelectProps, SelectOption } from './types';
+	import type { AnyVariables, RequestPolicy, TypedDocumentNode } from '@urql/core';
 	import { omit } from 'es-toolkit';
+	import { get, has, set } from 'es-toolkit/compat';
 
 	type Props = {
 		query: TypedDocumentNode<any, AnyVariables & GraphqlPaginationArgs>;

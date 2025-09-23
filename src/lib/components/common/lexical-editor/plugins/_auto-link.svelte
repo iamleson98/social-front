@@ -1,27 +1,27 @@
 <script lang="ts">
 	import {
-		$getSelection as getSelection,
-		$isRangeSelection as isRangeSelection,
-		COMMAND_PRIORITY_LOW,
-		TextNode,
-		type LexicalEditor
-	} from 'lexical';
-	import {
-		$isAutoLinkNode as isAutoLinkNode,
-		$isLinkNode as isLinkNode,
-		AutoLinkNode,
-		TOGGLE_LINK_COMMAND
-	} from '@lexical/link';
-	import { mergeRegister } from '@lexical/utils';
-	import {
 		$handleLinkCreation as handleLinkCreation,
 		getTextNodesToMatch,
 		handleBadNeighbors,
 		handleLinkEdit,
 		startsWithSeparator,
 		type ChangeHandler,
-		type LinkMatcher
+		type LinkMatcher,
 	} from './consts';
+	import {
+		$isAutoLinkNode as isAutoLinkNode,
+		$isLinkNode as isLinkNode,
+		AutoLinkNode,
+		TOGGLE_LINK_COMMAND,
+	} from '@lexical/link';
+	import { mergeRegister } from '@lexical/utils';
+	import {
+		$getSelection as getSelection,
+		$isRangeSelection as isRangeSelection,
+		COMMAND_PRIORITY_LOW,
+		TextNode,
+		type LexicalEditor,
+	} from 'lexical';
 
 	type Props = {
 		editor: LexicalEditor;
@@ -80,8 +80,8 @@
 					});
 					return false;
 				},
-				COMMAND_PRIORITY_LOW
-			)
+				COMMAND_PRIORITY_LOW,
+			),
 		);
 	});
 </script>

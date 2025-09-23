@@ -1,13 +1,13 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
+	import { debounceInput } from '$lib/actions/input-debounce';
 	import { shortcuts } from '$lib/actions/shortcut';
 	import Icon from '$lib/components/icons/icon.svelte';
 	import { randomID } from '$lib/utils/utils';
-	import { debounceInput } from '$lib/actions/input-debounce';
-	import { tranFunc } from '$i18n';
 	import { TEXT_AREA_SIZE_MAP } from './input.types';
 	import { INPUT_CLASSES, type InputProps } from './input.types';
-	import type { HTMLTextareaAttributes } from 'svelte/elements';
 	import Label from './label.svelte';
+	import type { HTMLTextareaAttributes } from 'svelte/elements';
 
 	let {
 		label,

@@ -2,8 +2,8 @@
 	import { tranFunc } from '$i18n';
 	import { Input } from '$lib/components/ui/Input';
 	import type { ProductCreateInput } from '$lib/gql/graphql';
-	import { string } from 'zod';
 	import { PRODUCT_NAME_MAX_LENGTH } from './utils';
+	import { string } from 'zod';
 
 	type Props = {
 		name: ProductCreateInput['name'];
@@ -25,8 +25,8 @@
 			message: $tranFunc('error.lengthInvalid', {
 				min: 1,
 				max: PRODUCT_NAME_MAX_LENGTH,
-				name: $tranFunc('common.name')
-			})
+				name: $tranFunc('common.name'),
+			}),
 		});
 
 	const handleNameChange = () => {

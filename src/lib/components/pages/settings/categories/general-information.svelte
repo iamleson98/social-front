@@ -1,14 +1,14 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
 	import FileInputContainer from '$lib/components/common/file-input-container.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Input, TextArea } from '$lib/components/ui/Input';
-	import type { OutputData } from '@editorjs/editorjs';
 	import type { MediaObject } from '$lib/utils/types';
-	import { tranFunc } from '$i18n';
-	import { any, array, object, string, z } from 'zod';
-	import slugify from 'slugify';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import type { OutputData } from '@editorjs/editorjs';
+	import slugify from 'slugify';
+	import { any, array, object, string, z } from 'zod';
 
 	type Props = {
 		name: string;

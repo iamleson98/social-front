@@ -1,9 +1,9 @@
 <script lang="ts">
-	import type { SelectItemProps, MenuProps } from './types';
-	import SingleMenu from './single-menu.svelte';
 	import { BreadCrumb } from '$lib/components/ui/Breadcrumb';
-	import { tick } from 'svelte';
 	import { Checkbox } from '$lib/components/ui/Input';
+	import SingleMenu from './single-menu.svelte';
+	import type { SelectItemProps, MenuProps } from './types';
+	import { tick } from 'svelte';
 
 	let { items, onSelect, onDeselect, onSelectWhole, disabled }: MenuProps = $props();
 

@@ -1,12 +1,12 @@
-import { pageRequiresPermissions } from '$lib/api/client'
-import { PermissionEnum } from '$lib/gql/graphql'
+import { pageRequiresPermissions } from '$lib/api/client';
+import { PermissionEnum } from '$lib/gql/graphql';
 
 export const load = async (evt) => {
-  await pageRequiresPermissions(evt, PermissionEnum.HandleTaxes, PermissionEnum.ManageTaxes)
+	await pageRequiresPermissions(evt, PermissionEnum.HandleTaxes, PermissionEnum.ManageTaxes);
 
-  return {
-    meta: {
-      title: 'Taxes Management - Admin',
-    },
-  };
+	return {
+		meta: {
+			title: 'Taxes Management - Admin',
+		},
+	};
 };

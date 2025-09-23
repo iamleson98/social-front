@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { Input, TextArea } from '$lib/components/ui/Input';
-	import { z, object, string } from 'zod';
-	import type { SeoInput } from '$lib/gql/graphql';
-	import slugify from 'slugify';
-	import { SitenameCommonClassName } from '$lib/utils/utils';
-	import { CommonState } from '$lib/utils/common.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import { Input, TextArea } from '$lib/components/ui/Input';
+	import type { SeoInput } from '$lib/gql/graphql';
+	import { CommonState } from '$lib/utils/common.svelte';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import slugify from 'slugify';
+	import { z, object, string } from 'zod';
 
 	type Props = {
 		name: string;

@@ -1,4 +1,11 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
+	import { ADDRESS_VALIDATION_RULES_QUERY } from '$lib/api/account';
+	import { operationStore } from '$lib/api/operation';
+	import CountryByChannelSelect from '$lib/components/common/country-language/country-by-channel-select.svelte';
+	import { Button } from '$lib/components/ui';
+	import { Alert } from '$lib/components/ui/Alert';
+	import { Input, Label, RadioButton } from '$lib/components/ui/Input';
 	import { Select, SelectSkeleton, type SelectOption } from '$lib/components/ui/select';
 	import type {
 		Address,
@@ -8,8 +15,6 @@
 		QueryAddressValidationRulesArgs,
 	} from '$lib/gql/graphql';
 	import { AddressTypeEnum } from '$lib/gql/graphql';
-	import { operationStore } from '$lib/api/operation';
-	import { ADDRESS_VALIDATION_RULES_QUERY } from '$lib/api/account';
 	import {
 		getOrderedAddressFields,
 		type AddressField,
@@ -20,12 +25,7 @@
 		addressToFieldValues,
 		type AddressFieldLabel,
 	} from '$lib/utils/address';
-	import { Input, Label, RadioButton } from '$lib/components/ui/Input';
 	import { camelCase, uniqBy } from 'es-toolkit';
-	import { Button } from '$lib/components/ui';
-	import { Alert } from '$lib/components/ui/Alert';
-	import CountryByChannelSelect from '$lib/components/common/country-language/country-by-channel-select.svelte';
-	import { tranFunc } from '$i18n';
 	import { toast } from 'svelte-sonner';
 
 	type Props = {

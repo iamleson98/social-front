@@ -1,5 +1,5 @@
-import { SvelteKitAuth } from "@auth/sveltekit"
+import { SvelteKitAuth } from '@auth/sveltekit';
 
 export const { handle } = SvelteKitAuth({
-  providers: [],
+	providers: [],
 });

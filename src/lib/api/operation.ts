@@ -7,7 +7,7 @@ import {
 	type OperationResult,
 	type OperationType,
 	type RequestPolicy,
-	type TypedDocumentNode
+	type TypedDocumentNode,
 } from '@urql/core';
 import type { DefinitionNode } from 'graphql';
 import { derived, writable, type Readable, type Writable } from 'svelte/store';
@@ -21,7 +21,7 @@ import {
 	subscribe,
 	switchMap,
 	type Source,
-	never
+	never,
 } from 'wonka';
 
 export interface OperationResultState<Data = unknown, Variables extends AnyVariables = AnyVariables>
@@ -31,7 +31,7 @@ export interface OperationResultState<Data = unknown, Variables extends AnyVaria
 
 export type OperationResultStore<
 	Data = unknown,
-	Variables extends AnyVariables = AnyVariables
+	Variables extends AnyVariables = AnyVariables,
 > = Readable<OperationResultState<Data, Variables>>;
 
 export const fromStore = <T>(store$: Readable<T>): Source<T> =>
@@ -44,7 +44,7 @@ export const initialResult = {
 	error: undefined,
 	extensions: undefined,
 	hasNext: false,
-	stale: false
+	stale: false,
 };
 
 export interface Pausable {
@@ -60,7 +60,7 @@ export const createPausable = (isPaused$: Writable<boolean>): Pausable => ({
 	},
 	resume() {
 		isPaused$.set(false);
-	}
+	},
 });
 
 export type OperationArgs<Data = unknown, Variables extends AnyVariables = AnyVariables> = {
@@ -81,27 +81,29 @@ type ReexecuteProps<Variables extends AnyVariables = AnyVariables> = {
  * @returns
  */
 export function operationStore<Data = unknown, Variables extends AnyVariables = AnyVariables>(
-	args: OperationArgs<Data, Variables>
+	args: OperationArgs<Data, Variables>,
 ): OperationResultStore<Data, Variables> &
 	Pausable & { reexecute: (args: ReexecuteProps<Variables>) => void } {
 	const request = createRequest<Data, Variables>(args.query, args.variables as Variables);
 
 	const context: Partial<OperationContext> = {
 		requestPolicy: args.requestPolicy,
-		...args.context
+		...args.context,
 	};
 
 	const operation = GRAPHQL_CLIENT.createRequestOperation<Data, Variables>(
-		(args.query as TypedDocumentNode<Data, Variables>).definitions[0]['operation' as keyof DefinitionNode] as unknown as OperationType,
+		(args.query as TypedDocumentNode<Data, Variables>).definitions[0][
+			'operation' as keyof DefinitionNode
+		] as unknown as OperationType,
 		request,
-		context
+		context,
 	);
 
 	const operation$ = writable(operation);
 
 	const initialState: OperationResultState<Data, Variables> = {
 		...initialResult,
-		operation
+		operation,
 	};
 
 	const isPaused$ = writable(args.pause);
@@ -127,24 +129,24 @@ export function operationStore<Data = unknown, Variables extends AnyVariables = 
 									data,
 									error,
 									operation,
-									extensions
-								}))
+									extensions,
+								})),
 							),
-							fromValue({ fetching: false })
+							fromValue({ fetching: false }),
 						]);
-					})
+					}),
 				);
 			}),
 			scan(
 				(result: OperationResultState<Data, Variables>, partial) => ({
 					...result,
-					...partial
+					...partial,
 				}),
-				initialState
+				initialState,
 			),
 			subscribe((result) => {
 				result$.set(result);
-			})
+			}),
 		);
 
 		return unsubscribe;
@@ -162,6 +164,6 @@ export function operationStore<Data = unknown, Variables extends AnyVariables = 
 	return {
 		reexecute,
 		...derived(result$, (result, set) => set(result)),
-		...createPausable(isPaused$)
+		...createPausable(isPaused$),
 	};
 }

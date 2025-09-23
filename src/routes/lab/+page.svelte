@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui';
-	import Com from './com.svelte';
 	import { randomString } from '$lib/utils/utils';
+	import Com from './com.svelte';
 
 	const a = $state([1, 2, 3]);
 
@@ -12,4 +12,4 @@
 
 {b}
 
-<button onclick={() => b = b.concat(2)}>update</button>
+<button onclick={() => (b = b.concat(2))}>update</button>

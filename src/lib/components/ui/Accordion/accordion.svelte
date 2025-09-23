@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { ChevronDown, ChevronUp, Icon } from '$lib/components/icons';
-	import { slide } from 'svelte/transition';
 	import type { AccordionProps } from './types';
+	import { slide } from 'svelte/transition';
 
 	let {
 		header,
@@ -9,7 +9,7 @@
 		children,
 		open = $bindable(true),
 		fixed = false,
-		headerIcon
+		headerIcon,
 	}: AccordionProps = $props();
 
 	const toggle = () => {

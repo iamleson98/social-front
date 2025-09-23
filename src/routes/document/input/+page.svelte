@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Email } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import type { SocialSize } from '$lib/components/ui/common';
 	import { Checkbox, Input, RadioButton } from '$lib/components/ui/Input';
+	import type { SocialSize } from '$lib/components/ui/common';
 	import type { SocialVariant } from '$lib/utils';
 	import { toast } from 'svelte-sonner';
 

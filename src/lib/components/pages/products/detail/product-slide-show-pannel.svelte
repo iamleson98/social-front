@@ -4,7 +4,7 @@
 	import { slideShowManager } from '$lib/stores/ui/slideshow';
 
 	let displayMedias = $derived.by(() =>
-		$slideShowManager.medias.slice(...$slideShowManager.slicing)
+		$slideShowManager.medias.slice(...$slideShowManager.slicing),
 	);
 
 	const handleKeydown = (e: KeyboardEvent) => {

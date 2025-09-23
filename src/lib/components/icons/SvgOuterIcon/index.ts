@@ -1,4 +1,3 @@
-
 export { default as KoreaFlag } from './emojione--flag-korea.svelte';
 export { default as UsaFlag } from './emojione--flag-us.svelte';
 export { default as VietnamFlag } from './emojione--flag-vietnam.svelte';
@@ -11,4 +10,3 @@ export { default as Google } from './logo--google.svelte';
 export { default as Youtube } from './logo--youtube.svelte';
 export { default as Instagram } from './logo--instagram.svelte';
 export { default as EmptyCart } from './emojione--cart.svelte';
-

@@ -1,5 +1,5 @@
-import type { Shop } from "$lib/gql/graphql";
-import { readonly, writable } from "svelte/store";
+import type { Shop } from '$lib/gql/graphql';
+import { readonly, writable } from 'svelte/store';
 
 const ShopStore = writable<Shop | undefined>();
 

@@ -6,7 +6,7 @@
 		MailQuestion,
 		Order,
 		UserCog,
-		type IconContent
+		type IconContent,
 	} from '$lib/components/icons';
 	import { AccordionList } from '$lib/components/ui/Accordion';
 	import { AppRoute } from '$lib/utils';
@@ -21,26 +21,26 @@
 		{
 			icon: UserCog,
 			name: 'Account',
-			href: AppRoute.ME()
+			href: AppRoute.ME(),
 		},
 		{
 			icon: AdjustmentHorizontal,
 			name: 'Preference',
-			href: AppRoute.ME_PREFERENCES()
-		}
+			href: AppRoute.ME_PREFERENCES(),
+		},
 	];
 
 	const SHOPPING_TAB_ITEMS: TabItem[] = [
 		{
 			icon: Order,
 			name: 'My Orders',
-			href: AppRoute.MY_ORDERS()
+			href: AppRoute.MY_ORDERS(),
 		},
 		{
 			icon: MailQuestion,
 			name: 'Supports',
-			href: AppRoute.ME_SUPPORT()
-		}
+			href: AppRoute.ME_SUPPORT(),
+		},
 	];
 </script>
 

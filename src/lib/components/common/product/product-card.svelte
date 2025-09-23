@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import { Discount, Heart, OpenEye } from '$lib/components/icons';
+	import { PRODUCT_PREVIEW_STORE } from '$lib/components/pages/home/common';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { Button, IconButton } from '$lib/components/ui/Button';
+	import type { Product } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
+	import { CHANNELS } from '$lib/utils/channels';
 	import { MAX_RATING, MIN_RATING } from '$lib/utils/consts';
 	import { clamp, formatMoney } from '$lib/utils/utils';
 	import { fade } from 'svelte/transition';
-	import type { Product } from '$lib/gql/graphql';
-	import { CHANNELS } from '$lib/utils/channels';
-	import { PRODUCT_PREVIEW_STORE } from '$lib/components/pages/home/common';
 
 	type ProductProps = {
 		product: Product;
@@ -80,7 +80,7 @@
 					pricing?.priceRange?.start?.gross.currency ||
 						CHANNELS.find((chan) => chan.slug === product.channel)?.currency ||
 						'',
-					pricing?.priceRange?.start?.gross.amount || 0
+					pricing?.priceRange?.start?.gross.amount || 0,
 				)}
 			</p>
 		</div>

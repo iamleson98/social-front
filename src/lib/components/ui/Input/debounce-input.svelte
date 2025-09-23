@@ -15,6 +15,6 @@
 	{value}
 	inputDebounceOption={{
 		debounceTime,
-		onInput: (evt) => (value = (evt.target as HTMLInputElement).value)
+		onInput: (evt) => (value = (evt.target as HTMLInputElement).value),
 	}}
 />

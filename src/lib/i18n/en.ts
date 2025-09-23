@@ -13,8 +13,10 @@ export default {
 		confirmPasswordPlaceholder: 'Please confirm password',
 		agreeToTerms: 'I agree to the terms and conditions',
 		alreadyHasAccount: 'Already have an account?',
-		signupSuccess: 'Welcome to Sitename. An email is sent to your email address. Please check your inbox.',
-		promtGeoAccessPerm: 'We need your precise location to provide better experience. Please accept location request. Thank you!',
+		signupSuccess:
+			'Welcome to Sitename. An email is sent to your email address. Please check your inbox.',
+		promtGeoAccessPerm:
+			'We need your precise location to provide better experience. Please accept location request. Thank you!',
 	},
 	resetPassword: {
 		title: 'Reset Password',
@@ -122,7 +124,8 @@ export default {
 		variants: 'Variants',
 		user: 'User',
 		order: 'Order',
-		fileExporting: 'We are currently exporting your requested file. As soon as it is available it will be sent to your email address',
+		fileExporting:
+			'We are currently exporting your requested file. As soon as it is available it will be sent to your email address',
 	},
 	product: {
 		chooseAddress: 'Please choose address',
@@ -194,7 +197,8 @@ export default {
 		promptPublicationTime: 'If not, please specify publidation time',
 		availForPurchase: 'Available for purchase',
 		promptAvailTime: 'If not, please specify availability time',
-		preorderHint: 'Pre-order is when you must order the product from other suppliers. The number of days it takes to delivery must be between {{min}} to {{max}} working days.',
+		preorderHint:
+			'Pre-order is when you must order the product from other suppliers. The number of days it takes to delivery must be between {{min}} to {{max}} working days.',
 		prdCreated: 'Product created successfully',
 		prdUpdated: 'Product updated successfully',
 	},
@@ -273,7 +277,7 @@ export default {
 		contracts: 'Contracts',
 		basicInfo: 'Basic Information',
 		addrManage: 'Address Management',
-		havingNoAddress: 'You don\'t have any address',
+		havingNoAddress: "You don't have any address",
 		makeDefaultBillingAddr: 'Set as default billing address',
 		makeDefaultShippingAddr: 'Set as default shipping address',
 		newAddr: 'New Address',
@@ -322,29 +326,29 @@ export default {
 		users: 'Users',
 	},
 	payment: {
-		clickAndCollectShippingMethod: "click&collect",
-		shippingDoesNotApply: "does not apply",
-		paymentTitle: "Payment balance",
-		subtotal: "Subtotal",
-		itemCount: "{{quantity}} items",
-		taxes: "Taxes",
-		vatIncluded: "VAT included",
-		vatNotIncluded: "does not apply",
-		shipping: "Shipping",
-		shippingNotApplicable: "does not apply",
-		discount: "Discount",
-		total: "Total",
-		preauthorized: "Preauthorized amount",
-		captured: "Captured amount",
-		refunded: "Refunded amount",
-		outstanding: "Outstanding Balance",
-		includedInSubtotal: "Included in subtotal",
-		includedInPrices: "Included in prices",
-		settled: "Settled",
-		capture: "Capture",
-		refund: "Refund",
-		void: "Refund",
-		markAsPaid: "Mark as paid",
+		clickAndCollectShippingMethod: 'click&collect',
+		shippingDoesNotApply: 'does not apply',
+		paymentTitle: 'Payment balance',
+		subtotal: 'Subtotal',
+		itemCount: '{{quantity}} items',
+		taxes: 'Taxes',
+		vatIncluded: 'VAT included',
+		vatNotIncluded: 'does not apply',
+		shipping: 'Shipping',
+		shippingNotApplicable: 'does not apply',
+		discount: 'Discount',
+		total: 'Total',
+		preauthorized: 'Preauthorized amount',
+		captured: 'Captured amount',
+		refunded: 'Refunded amount',
+		outstanding: 'Outstanding Balance',
+		includedInSubtotal: 'Included in subtotal',
+		includedInPrices: 'Included in prices',
+		settled: 'Settled',
+		capture: 'Capture',
+		refund: 'Refund',
+		void: 'Refund',
+		markAsPaid: 'Mark as paid',
 	},
 	staff: {
 		staffs: 'Staffs',
@@ -378,9 +382,12 @@ export default {
 		exportSelected: 'Selected gift cards',
 		exportSearch: 'Current search',
 		durationType: 'Duration Type',
-		bulkIssueAlert: 'After creation Saleor will create a list of gift card codes that you will be able to download.',
-		issueFormAlert: 'Selected customer will be sent the generated gift card code. Someone else can redeem the gift card code. Gift card will be assigned to account which redeemed the code.',
-		resendCodeAlert: 'Gift Card Code will be resent to email provided during checkout. You can provide a different email address if you want to: ',
+		bulkIssueAlert:
+			'After creation Saleor will create a list of gift card codes that you will be able to download.',
+		issueFormAlert:
+			'Selected customer will be sent the generated gift card code. Someone else can redeem the gift card code. Gift card will be assigned to account which redeemed the code.',
+		resendCodeAlert:
+			'Gift Card Code will be resent to email provided during checkout. You can provide a different email address if you want to: ',
 		status: {
 			deactivated: 'Deactivated',
 			used: 'Used',
@@ -426,14 +433,14 @@ export default {
 			willExpireOn: 'Will expire on:',
 		},
 		expiryType: {
-			expiryPeriod: "Has Expiry Period",
-			neverExpire: "Never Expire"
+			expiryPeriod: 'Has Expiry Period',
+			neverExpire: 'Never Expire',
 		},
 		periodType: {
-			day: "Day",
-			week: "Week",
-			month: "Month",
-			year: "Year"
+			day: 'Day',
+			week: 'Week',
+			month: 'Month',
+			year: 'Year',
 		},
 		form: {
 			channel: 'Channel',
@@ -448,7 +455,7 @@ export default {
 			activeSubText: 'All issued cards must be activated before they can be used.',
 			noteSubText:
 				'Reason for issuing the card. This note will not be shown to the customer but will be stored in card history.',
-			channelSubText: 'The customer will receive the gift card code via this channel\'s email',
+			channelSubText: "The customer will receive the gift card code via this channel's email",
 			customerSubtext: 'The customer will receive the gift card code via this email',
 		},
 		events: {
@@ -456,7 +463,8 @@ export default {
 			noEvents: 'No history for this card',
 			noteAdded: 'Successfully posted new note to giftcard',
 			giftcardResent: 'Gift card has been resent',
-			bulkIssueSuccess: 'We have issued all of your requested gift cards. You can download the list of new gift cards by clicking the ok button below.',
+			bulkIssueSuccess:
+				'We have issued all of your requested gift cards. You can download the list of new gift cards by clicking the ok button below.',
 		},
 		types: {
 			ACTIVATED: 'Gift card has been activated',
@@ -482,28 +490,35 @@ export default {
 		editSuccess: 'Successfully updated channel',
 		newSuccess: 'Successfully created channel',
 		chanToReplace: 'Channel to replace',
-		replaceChanHelpTxt: 'Specify a new channel to assign products to. The replace channel must have the same currency as deleting channel',
+		replaceChanHelpTxt:
+			'Specify a new channel to assign products to. The replace channel must have the same currency as deleting channel',
 		channels: 'Channels',
 		delExprOrdersErrSubTxt: 'This value must be >= {{min}} and <= {{max}}',
 		orderExp: 'Order expiration',
-		delExprOrdersSubTxt: 'The time in days after expired orders will be deleted. Allowed range between {{min}} to {{max}}',
+		delExprOrdersSubTxt:
+			'The time in days after expired orders will be deleted. Allowed range between {{min}} to {{max}}',
 		allowUnpaidOrder: 'Allow unpaid orders',
-		allowCompleteOrderBeforePay: 'Enables completing checkout with order before a successful payment.`',
+		allowCompleteOrderBeforePay:
+			'Enables completing checkout with order before a successful payment.`',
 		useTranFlow: 'Use Transaction flow when marking order as paid',
 		markAsPaidSubTxt: `"Mark as paid" feature creates a Transaction - used by Payment Apps. <br /> If left unchecked it creates a Payment - used by Payment Plugins.`,
 		autoCompleteCheckoutsWhenPaid: 'Automatically complete checkouts when fully paid',
-		autoCompleteCheckoutWhenPaidSubTxt: 'When enabled, checkouts detected as fully paid will be completed automatically, without checkoutComplete mutation.',
+		autoCompleteCheckoutWhenPaidSubTxt:
+			'When enabled, checkouts detected as fully paid will be completed automatically, without checkoutComplete mutation.',
 		authorizeTrans: 'Authorize transaction instead of charging',
-		authorizeTransSubTxt: 'When enabled, all transactions would require an additional step to be charged.',
+		authorizeTransSubTxt:
+			'When enabled, all transactions would require an additional step to be charged.',
 		allocStrategy: 'Allocation strategy',
 		prioritizeWarehouseWithMaxStock: 'Prioritize warehouses with highest stock',
 		prioritizeWarehouseByMaxOrder: 'Prioritize warehouses by sorting order',
 		shipZones: 'Shipping zones',
-		shipZonesAlert: 'Select shipping zones that will be supplied via this channel. You can assign shipping zones to multiple channels.',
+		shipZonesAlert:
+			'Select shipping zones that will be supplied via this channel. You can assign shipping zones to multiple channels.',
 		addShipZone: 'Add Shipping Zone',
 		selectShipZone: 'Select shipping zone',
 		warehouse: 'Warehouses',
-		warehouseAlert: 'Assign and sort warehouses that will be used in this channel (warehouses can be assigned in multiple channels).',
+		warehouseAlert:
+			'Assign and sort warehouses that will be used in this channel (warehouses can be assigned in multiple channels).',
 		addWh: 'Add Warehouse',
 		selectWh: 'Select Warehouse',
 	},
@@ -544,7 +559,8 @@ export default {
 		newCodes: 'Add voucher codes',
 		applyType: 'Application type',
 		applyCheapPrd: 'Apply only to a single cheapest eligible product',
-		applyCheapPrdHelpTxt: 'If this option is unchecked, discount will be counted for every eligible product',
+		applyCheapPrdHelpTxt:
+			'If this option is unchecked, discount will be counted for every eligible product',
 		applyEntireOrder: 'Entire order',
 		applySpecificPrd: 'Specific products and variants',
 		discountValue: 'Discount value',

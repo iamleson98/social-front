@@ -9,7 +9,7 @@
 
 	type Props = {
 		items: ItemProps[];
-    class?: string;
+		class?: string;
 	};
 
 	let { items, class: className = '' }: Props = $props();

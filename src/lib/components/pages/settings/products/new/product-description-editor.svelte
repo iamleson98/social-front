@@ -1,9 +1,20 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
+	import CheckList from '$lib/components/common/lexical-editor/plugins/check-list.svelte';
+	import { Label } from '$lib/components/ui/Input';
+	import { editorConfig } from '$lib/configs';
 	import DescriptionEditorToolbar from './product-description-editor-toolbar.svelte';
-	import { onMount } from 'svelte';
-	import { mergeRegister } from '@lexical/utils';
-	import { registerRichText } from '@lexical/rich-text';
 	import { createEmptyHistoryState, registerHistory } from '@lexical/history';
+	import {
+		$handleListInsertParagraph as handleListInsertParagraph,
+		INSERT_ORDERED_LIST_COMMAND,
+		INSERT_UNORDERED_LIST_COMMAND,
+		insertList,
+		REMOVE_LIST_COMMAND,
+		removeList,
+	} from '@lexical/list';
+	import { registerRichText } from '@lexical/rich-text';
+	import { mergeRegister } from '@lexical/utils';
 	import {
 		$getRoot as getRoot,
 		CLEAR_EDITOR_COMMAND,
@@ -12,20 +23,9 @@
 		createEditor,
 		INSERT_PARAGRAPH_COMMAND,
 		type LexicalEditor,
-		BLUR_COMMAND
+		BLUR_COMMAND,
 	} from 'lexical';
-	import {
-		$handleListInsertParagraph as handleListInsertParagraph,
-		INSERT_ORDERED_LIST_COMMAND,
-		INSERT_UNORDERED_LIST_COMMAND,
-		insertList,
-		REMOVE_LIST_COMMAND,
-		removeList
-	} from '@lexical/list';
-	import { editorConfig } from '$lib/configs';
-	import { tranFunc } from '$i18n';
-	import CheckList from '$lib/components/common/lexical-editor/plugins/check-list.svelte';
-	import { Label } from '$lib/components/ui/Input';
+	import { onMount } from 'svelte';
 
 	type Props = {
 		ariaActiveDescendantID?: string;
@@ -68,7 +68,7 @@
 		id,
 		class: className = '',
 		style,
-		description = $bindable()
+		description = $bindable(),
 	}: Props = $props();
 
 	let activeEditor = $state<LexicalEditor | undefined>(undefined);
@@ -106,7 +106,7 @@
 					insertList(activeEditor as LexicalEditor, 'number');
 					return true;
 				},
-				COMMAND_PRIORITY_LOW
+				COMMAND_PRIORITY_LOW,
 			),
 			activeEditor.registerCommand(
 				INSERT_UNORDERED_LIST_COMMAND,
@@ -114,7 +114,7 @@
 					insertList(activeEditor as LexicalEditor, 'bullet');
 					return true;
 				},
-				COMMAND_PRIORITY_LOW
+				COMMAND_PRIORITY_LOW,
 			),
 			activeEditor.registerCommand(
 				REMOVE_LIST_COMMAND,
@@ -122,12 +122,12 @@
 					removeList(activeEditor as LexicalEditor);
 					return true;
 				},
-				COMMAND_PRIORITY_LOW
+				COMMAND_PRIORITY_LOW,
 			),
 			activeEditor.registerCommand(
 				INSERT_PARAGRAPH_COMMAND,
 				handleListInsertParagraph,
-				COMMAND_PRIORITY_LOW
+				COMMAND_PRIORITY_LOW,
 			),
 			activeEditor.registerCommand(
 				CLEAR_EDITOR_COMMAND,
@@ -138,9 +138,9 @@
 					});
 					return true;
 				},
-				COMMAND_PRIORITY_EDITOR
+				COMMAND_PRIORITY_EDITOR,
 			),
-			activeEditor.registerCommand(BLUR_COMMAND, handleBlur, COMMAND_PRIORITY_EDITOR)
+			activeEditor.registerCommand(BLUR_COMMAND, handleBlur, COMMAND_PRIORITY_EDITOR),
 		);
 	});
 </script>

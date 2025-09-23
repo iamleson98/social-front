@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { operationStore } from '$lib/api/operation';
 	import { SHOP_QUERY } from '$lib/api/shop';
+	import { Alert } from '$lib/components/ui/Alert';
 	import {
 		Select,
 		SelectSkeleton,
@@ -9,7 +10,6 @@
 	} from '$lib/components/ui/select';
 	import type { Query } from '$lib/gql/graphql';
 	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
-	import { Alert } from '$lib/components/ui/Alert';
 	import { onMount } from 'svelte';
 
 	type QueryShopArgs = {

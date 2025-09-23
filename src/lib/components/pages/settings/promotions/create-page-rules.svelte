@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { PROMOTION_RULE_CONDITIONS_SELECTED_OPTIONS_DETAILS } from '$lib/api/admin/discount';
+	import { CHANNELS_QUERY } from '$lib/api/channels';
 	import { operationStore } from '$lib/api/operation';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { PencilMinus, Plus, Trash } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
+	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Modal } from '$lib/components/ui/Modal';
@@ -19,7 +21,6 @@
 		type Query,
 	} from '$lib/gql/graphql';
 	import { parseEditorJsString, SitenameCommonClassName } from '$lib/utils/utils';
-	import { difference } from 'es-toolkit';
 	import {
 		CATEGORY_COLUMNS,
 		COLLECTION_COLUMNS,
@@ -33,8 +34,7 @@
 		type TabKey,
 	} from './consts';
 	import RuleEdit from './rule-edit.svelte';
-	import { CHANNELS_QUERY } from '$lib/api/channels';
-	import { Alert } from '$lib/components/ui/Alert';
+	import { difference } from 'es-toolkit';
 
 	type Props = {
 		rules: PromotionRuleCreateInput[];

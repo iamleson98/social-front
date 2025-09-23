@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - '3000:3000'
     restart: always
 
   nginx:
@@ -12,6 +12,6 @@ services:
       context: .
       dockerfile: nginx/prod/Dockerfile
     ports:
-      - "80:80"
+      - '80:80'
     depends_on:
       - sitename-fe

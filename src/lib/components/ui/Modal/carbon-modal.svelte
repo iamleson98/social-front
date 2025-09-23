@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { createEventDispatcher, type Snippet } from 'svelte';
 	import { CloseX } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui/Button';
-	import { trackModal } from './modal-sore';
-	import { writable } from 'svelte/store';
 	import type { SocialSize } from '$lib/components/ui/common';
 	import { randomString } from '$lib/utils/utils';
+	import { trackModal } from './modal-sore';
+	import { createEventDispatcher, type Snippet } from 'svelte';
+	import { writable } from 'svelte/store';
 
 	type Props = {
 		size?: SocialSize;
@@ -67,7 +67,7 @@
 		ariaLabel,
 		onmouseenter,
 		onmouseleave,
-		onmouseover
+		onmouseover,
 	}: Props = $props();
 	/**
 	 * Set the size of the modal
@@ -334,7 +334,7 @@
 						color="red"
 						onclick={() => {
 							dispatch('click:button--secondary', {
-								text: secondaryButtonText
+								text: secondaryButtonText,
 							});
 						}}
 					>

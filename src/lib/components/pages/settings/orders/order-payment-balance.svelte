@@ -1,15 +1,15 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
+	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Badge } from '$lib/components/ui/Badge';
-	import Button from '$lib/components/ui/Button/Button.svelte';
-	import { OrderAction, OrderDiscountType, OrderStatus, type Order } from '$lib/gql/graphql';
 	import {
 		extractRefundedAmount,
 		extractOrderGiftCardUsedAmount,
 	} from '$lib/components/pages/settings/orders/utils';
+	import { Badge } from '$lib/components/ui/Badge';
+	import Button from '$lib/components/ui/Button/Button.svelte';
+	import { OrderAction, OrderDiscountType, OrderStatus, type Order } from '$lib/gql/graphql';
 	import { paymentStatusBadgeClass } from '$lib/utils/utils';
-	import { tranFunc } from '$i18n';
-	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import OrderRefundModal from './order-refund-modal.svelte';
 
 	type Props = {

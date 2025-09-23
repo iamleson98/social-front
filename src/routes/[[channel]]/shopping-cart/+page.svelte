@@ -1,18 +1,18 @@
 <script lang="ts">
 	import { afterNavigate, goto } from '$app/navigation';
 	import { tranFunc } from '$i18n';
+	import { CheckoutSteps } from '$lib/components/common/checkout-steps';
 	import { ArrowNarrowRight, ChevronLeft, Icon } from '$lib/components/icons';
+	import { EmptyCart } from '$lib/components/icons/SvgOuterIcon';
 	import CartItemLine from '$lib/components/pages/cart/cart-item-line.svelte';
+	import CartPageSkeleton from '$lib/components/pages/cart/cart-page-skeleton.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Input } from '$lib/components/ui/Input';
-	import { AppRoute } from '$lib/utils';
-	import { formatMoney } from '$lib/utils/utils';
-	import { CheckoutSteps } from '$lib/components/common/checkout-steps';
-	import CartPageSkeleton from '$lib/components/pages/cart/cart-page-skeleton.svelte';
-	import { onMount } from 'svelte';
 	import { checkoutStore } from '$lib/stores/app';
+	import { AppRoute } from '$lib/utils';
 	import { HTTPStatusSuccess } from '$lib/utils/consts';
-	import { EmptyCart } from '$lib/components/icons/SvgOuterIcon';
+	import { formatMoney } from '$lib/utils/utils';
+	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 
 	afterNavigate(() => {

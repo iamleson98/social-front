@@ -1,4 +1,1 @@
-
-<div>
-  New Contract
-</div>
+<div>New Contract</div>

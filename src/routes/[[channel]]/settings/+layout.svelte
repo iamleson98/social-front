@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { page } from '$app/state';
+	import { tranFunc } from '$i18n';
 	import {
 		AdjustmentHorizontal,
 		BadgeOutline,
@@ -27,18 +29,16 @@
 		UsersGroup,
 		type IconContent,
 	} from '$lib/components/icons';
-	import { onMount, type Snippet } from 'svelte';
-	import type { LayoutServerData } from './$types';
-	import { ME_PAGE_USER_STORE } from '$lib/stores/app/me';
-	import { AccordionList } from '$lib/components/ui/Accordion';
-	import { tranFunc } from '$i18n';
-	import { AppRoute } from '$lib/utils';
-	import { page } from '$app/state';
-	import { userIsShopAdmin } from '$lib/utils/utils';
-	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
-	import type { ShippingMethodTypeEnum } from '$lib/gql/graphql';
 	import Skeleton from '$lib/components/pages/settings/skeleton.svelte';
+	import { AccordionList } from '$lib/components/ui/Accordion';
 	import { Badge } from '$lib/components/ui/Badge';
+	import type { ShippingMethodTypeEnum } from '$lib/gql/graphql';
+	import { ME_PAGE_USER_STORE } from '$lib/stores/app/me';
+	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
+	import { AppRoute } from '$lib/utils';
+	import { userIsShopAdmin } from '$lib/utils/utils';
+	import type { LayoutServerData } from './$types';
+	import { onMount, type Snippet } from 'svelte';
 
 	type Props = {
 		children: Snippet;

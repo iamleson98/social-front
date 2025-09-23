@@ -1,15 +1,15 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { Plus, Search } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import type { Product, ProductOrderField, QueryProductsArgs } from '$lib/gql/graphql';
-	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { omit } from 'es-toolkit';
-	import { tranFunc } from '$i18n';
-	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 
 	type Props = {
 		/** if provided, meaning it is update page */

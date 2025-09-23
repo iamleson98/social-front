@@ -1,7 +1,7 @@
 <script lang="ts" generics="T">
-	import Accordion from './accordion.svelte';
 	import { tranFunc } from '$i18n';
 	import { ChevronDown, Icon } from '$lib/components/icons';
+	import Accordion from './accordion.svelte';
 	import type { AccordionListProps } from './types';
 
 	const {

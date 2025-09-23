@@ -1,10 +1,10 @@
 <script lang="ts">
 	import type { IconContent } from '$lib/components/icons';
-	import { randomID } from '$lib/utils/utils';
 	import { IconButton } from '$lib/components/ui/Button';
 	import type { SocialColor, SocialSize } from '$lib/components/ui/common';
-	import type { HTMLAttributes } from 'svelte/elements';
+	import { randomID } from '$lib/utils/utils';
 	import Label from './label.svelte';
+	import type { HTMLAttributes } from 'svelte/elements';
 
 	type Props = {
 		icon: IconContent;

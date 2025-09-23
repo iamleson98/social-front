@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { ParsedAdyenGateway } from '$lib/utils/consts';
-	import { onMount } from 'svelte';
 	import {
 		AdyenCheckout,
 		type AdyenCheckoutError,
@@ -13,8 +12,9 @@
 		PayPal,
 		type UIElement,
 		type DropinConfiguration,
-		type PaymentFailedData
+		type PaymentFailedData,
 	} from '@adyen/adyen-web';
+	import { onMount } from 'svelte';
 
 	type Props = {
 		config: ParsedAdyenGateway;
@@ -35,11 +35,11 @@
 				countryCode: 'US',
 				amount: {
 					value: 23,
-					currency: 'USD'
+					currency: 'USD',
 				},
 				locale: 'en-US',
 				analytics: {
-					enabled: false
+					enabled: false,
 				},
 				onError(error: AdyenCheckoutError) {
 					console.error('Something went wrong', error);
@@ -49,16 +49,16 @@
 				},
 				onPaymentFailed(data: PaymentFailedData, element: UIElement) {
 					console.log(data, element);
-				}
+				},
 			});
 
 			const dropinConfiguration: DropinConfiguration = {
 				paymentMethodsConfiguration: {
 					card: {
-						_disableClickToPay: true
-					}
+						_disableClickToPay: true,
+					},
 				},
-				paymentMethodComponents: [Card, PayPal, CashAppPay, GooglePay, ApplePay]
+				paymentMethodComponents: [Card, PayPal, CashAppPay, GooglePay, ApplePay],
 			};
 
 			const drop = new Dropin(adyen, dropinConfiguration);

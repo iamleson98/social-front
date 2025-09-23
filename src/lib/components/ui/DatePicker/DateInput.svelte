@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { fly } from 'svelte/transition';
 	import { Input } from '$lib/components/ui/Input';
-	import { cubicInOut } from 'svelte/easing';
 	import type { SocialSize } from '$lib/components/ui/common';
 	import DatePicker from './DatePicker.svelte';
-	import type { Snippet } from 'svelte';
+	import { cloneDate, toText } from './date-utils';
 	import { createFormat, parse } from './parse';
 	import type { FormatToken, Locale } from './types';
-	import { cloneDate, toText } from './date-utils';
+	import type { Snippet } from 'svelte';
+	import { cubicInOut } from 'svelte/easing';
+	import { fly } from 'svelte/transition';
 
 	type Props = {
 		class?: string;
@@ -48,7 +48,7 @@
 		max = new Date(defaultDate.getFullYear(), 11, 31, 23, 59, 59, 999),
 		browseWithoutSelecting = false,
 		timePrecision,
-		closeOnSelection = false
+		closeOnSelection = false,
 	}: Props = $props();
 
 	let showAbove = $state(false);
@@ -65,10 +65,10 @@
 	$effect(() => {
 		if (value === undefined) {
 			innerStore = undefined;
-      value = value;
+			value = value;
 		} else if (innerStore && value.getTime() !== innerStore.getTime()) {
 			innerStore = cloneDate(value);
-      value = value;
+			value = value;
 		}
 	});
 
@@ -157,7 +157,7 @@
 		return fly(node, {
 			duration: 200,
 			easing: cubicInOut,
-			y: showAbove ? 5 : -5
+			y: showAbove ? 5 : -5,
 		});
 	}
 

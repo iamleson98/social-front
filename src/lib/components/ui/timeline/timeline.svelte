@@ -29,7 +29,9 @@
 				<span class="font-semibold">{item.title}</span>
 			</div>
 			{#if idx !== items.length - 1}
-				<div class={`rounded-sm ${item.done ? 'bg-green-700!' : 'bg-gray-400'} tl-line-${dir}`}></div>
+				<div
+					class={`rounded-sm ${item.done ? 'bg-green-700!' : 'bg-gray-400'} tl-line-${dir}`}
+				></div>
 			{/if}
 		</div>
 	{/each}

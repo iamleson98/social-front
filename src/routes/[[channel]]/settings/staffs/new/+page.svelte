@@ -1,17 +1,17 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { tranFunc } from '$i18n';
 	import { STAFF_CREATE_MUTATION } from '$lib/api/admin/staff';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
+	import StaffForm from '$lib/components/pages/settings/staff/staff-form.svelte';
 	import {
 		type Mutation,
 		type MutationStaffCreateArgs,
 		type StaffCreateInput,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import StaffForm from '$lib/components/pages/settings/staff/staff-form.svelte';
-	import { goto } from '$app/navigation';
-	import { tranFunc } from '$i18n';
-	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import type { PageServerData } from './$types';
 
 	type Props = {

@@ -1,8 +1,15 @@
 <script lang="ts">
+	import { ORDER_FULFILLMENT_UPDATE_TRACKING_MUTATION } from '$lib/api/admin/orders';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import Thumbnail from '$lib/components/common/thumbnail.svelte';
+	import { ExternalLink, Icon, Trash } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/Badge';
+	import { IconButton } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
+	import { Modal } from '$lib/components/ui/Modal';
 	import type { TableColumnProps } from '$lib/components/ui/Table';
 	import Table from '$lib/components/ui/Table/table.svelte';
 	import { FulfillmentStatus } from '$lib/gql/graphql';
@@ -13,23 +20,16 @@
 		MutationOrderFulfillmentUpdateTrackingArgs,
 		Order,
 	} from '$lib/gql/graphql';
+	import { AppRoute } from '$lib/utils';
 	import {
 		checkIfGraphqlResultHasError,
 		fulfillmentStatusBadgeClass,
 		SitenameCommonClassName,
 		stringSlicer,
 	} from '$lib/utils/utils';
-	import OrderLineMetadataModal from './order-line-metadata-modal.svelte';
-	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import GeneralMetadataEditor from '../common/general-metadata-editor.svelte';
-	import { IconButton } from '$lib/components/ui/Button';
-	import { ExternalLink, Icon, Trash } from '$lib/components/icons';
 	import FulfillmentCancelModal from './fulfillment-cancel-modal.svelte';
-	import { AppRoute } from '$lib/utils';
-	import { Modal } from '$lib/components/ui/Modal';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { ORDER_FULFILLMENT_UPDATE_TRACKING_MUTATION } from '$lib/api/admin/orders';
-	import Thumbnail from '$lib/components/common/thumbnail.svelte';
+	import OrderLineMetadataModal from './order-line-metadata-modal.svelte';
 
 	type Props = {
 		order: Order;

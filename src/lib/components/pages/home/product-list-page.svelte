@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { Button } from '$lib/components/ui';
-	import { Alert } from '$lib/components/ui/Alert';
-	import type { Query, QueryProductsArgs } from '$lib/gql/graphql';
 	import { PRODUCT_LIST_QUERY } from '$lib/api';
-	import type { ProductFilterParams } from '$lib/stores/app/product-filter.svelte';
 	import { operationStore } from '$lib/api/operation';
 	import ProductCardSkeleton from '$lib/components/common/product/product-card-skeleton.svelte';
 	import ProductCard from '$lib/components/common/product/product-card.svelte';
+	import { Button } from '$lib/components/ui';
+	import { Alert } from '$lib/components/ui/Alert';
+	import type { Query, QueryProductsArgs } from '$lib/gql/graphql';
+	import type { ProductFilterParams } from '$lib/stores/app/product-filter.svelte';
 
 	type Props = {
 		isLastPage: boolean;
@@ -20,7 +20,7 @@
 	const productFetchStore = operationStore<Pick<Query, 'products'>, QueryProductsArgs>({
 		query: PRODUCT_LIST_QUERY,
 		context: { requestPolicy: 'network-only' },
-		variables
+		variables,
 	});
 </script>
 

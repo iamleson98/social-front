@@ -1,6 +1,12 @@
 <script lang="ts">
-	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
+	import { tranFunc } from '$i18n';
+	import { PRODUCT_TYPE_QUERY } from '$lib/api/admin/product';
+	import { operationStore } from '$lib/api/operation';
+	import Editor from '$lib/components/common/editorjs/editor.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
+	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
+	import { Checkbox, Input, Label } from '$lib/components/ui/Input';
+	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import {
 		AttributeInputTypeEnum,
@@ -8,19 +14,13 @@
 		type Query,
 		type QueryProductTypeArgs,
 	} from '$lib/gql/graphql';
-	import { operationStore } from '$lib/api/operation';
-	import { slide } from 'svelte/transition';
-	import { tranFunc } from '$i18n';
-	import { Checkbox, Input, Label } from '$lib/components/ui/Input';
-	import { onMount } from 'svelte';
-	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
+	import { CommonState } from '$lib/utils/common.svelte';
+	import { BASIC_DATE_FORMAT } from '$lib/utils/consts';
 	import ErrorMsg from './error-msg.svelte';
-	import { PRODUCT_TYPE_QUERY } from '$lib/api/admin/product';
-	import Editor from '$lib/components/common/editorjs/editor.svelte';
 	import Dayjs from 'dayjs';
 	import { omit } from 'es-toolkit';
-	import { BASIC_DATE_FORMAT } from '$lib/utils/consts';
-	import { CommonState } from '$lib/utils/common.svelte';
+	import { onMount } from 'svelte';
+	import { slide } from 'svelte/transition';
 
 	type CustomAttributeInput = AttributeValueInput & {
 		required: boolean;

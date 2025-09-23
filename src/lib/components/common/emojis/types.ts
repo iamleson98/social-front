@@ -1,72 +1,85 @@
-import { Apple, Bulb, Clock, Flag, Heart, Leaf2, MoodCog, MoodSmile, Plane, Search, User, VolleyBall } from '$lib/components/icons';
+import {
+	Apple,
+	Bulb,
+	Clock,
+	Flag,
+	Heart,
+	Leaf2,
+	MoodCog,
+	MoodSmile,
+	Plane,
+	Search,
+	User,
+	VolleyBall,
+} from '$lib/components/icons';
 import { omit } from 'es-toolkit';
 
 export type EmojiCategory =
-  | 'recent'
-  | 'searchResults'
-  | 'smileys-emotion'
-  | 'people-body'
-  | 'animals-nature'
-  | 'food-drink'
-  | 'activities'
-  | 'travel-places'
-  | 'objects'
-  | 'symbols'
-  | 'flags'
-  | 'custom';
+	| 'recent'
+	| 'searchResults'
+	| 'smileys-emotion'
+	| 'people-body'
+	| 'animals-nature'
+	| 'food-drink'
+	| 'activities'
+	| 'travel-places'
+	| 'objects'
+	| 'symbols'
+	| 'flags'
+	| 'custom';
 
 export type CustomEmoji = {
-  id: string;
-  name: string;
-  category: 'custom';
-  create_at: number;
-  update_at: number;
-  delete_at: number;
-  creator_id: string;
+	id: string;
+	name: string;
+	category: 'custom';
+	create_at: number;
+	update_at: number;
+	delete_at: number;
+	creator_id: string;
 };
 
 export type ActionResult<Data = unknown, Error = unknown> = {
-  data?: Data;
-  error?: Error;
+	data?: Data;
+	error?: Error;
 };
 
 export type SystemEmoji = {
-  name: string;
-  category: EmojiCategory;
-  image: string;
-  short_name: string;
-  short_names: string[];
-  batch: number;
-  skins?: string[];
-  skin_variations?: Record<string, SystemEmojiVariation>;
-  unified: string;
+	name: string;
+	category: EmojiCategory;
+	image: string;
+	short_name: string;
+	short_names: string[];
+	batch: number;
+	skins?: string[];
+	skin_variations?: Record<string, SystemEmojiVariation>;
+	unified: string;
 };
 
 export type SystemEmojiVariation = {
-  unified: string;
-  non_qualified: null;
-  image: string;
-  sheet_x: number;
-  sheet_y: number;
-  added_in: string;
-  has_img_apple: boolean;
-  has_img_google: boolean;
-  has_img_twitter: boolean;
-  has_img_facebook: boolean;
-}
+	unified: string;
+	non_qualified: null;
+	image: string;
+	sheet_x: number;
+	sheet_y: number;
+	added_in: string;
+	has_img_apple: boolean;
+	has_img_google: boolean;
+	has_img_twitter: boolean;
+	has_img_facebook: boolean;
+};
 
 export type Emoji = SystemEmoji | CustomEmoji;
 
 export type EmojisState = {
-  customEmoji: {
-    [x: string]: CustomEmoji;
-  };
-  nonExistentEmoji: Set<string>;
+	customEmoji: {
+		[x: string]: CustomEmoji;
+	};
+	nonExistentEmoji: Set<string>;
 };
 
 export type RecentEmojiData = {
-  name: string;
-  usageCount: number;
+	name: string;
+	usageCount: number;
 };
 
 export const RECENT = 'recent';
@@ -75,10 +88,10 @@ export const SMILEY_EMOTION = 'smileys-emotion';
 export const CUSTOM = 'custom';
 
 export type Category = {
-  name: EmojiCategory;
-  emojiIds?: string[];
-  label: string;
-  iconClassName: string;
+	name: EmojiCategory;
+	emojiIds?: string[];
+	label: string;
+	iconClassName: string;
 };
 
 export type Categories = Record<EmojiCategory, Category>;
@@ -86,110 +99,109 @@ export type Categories = Record<EmojiCategory, Category>;
 export type CategoryOrEmojiRow = CategoryHeaderRow | EmojiRow;
 
 export type CategoryHeaderRow = {
-  index: number;
-  type: typeof CATEGORY_HEADER_ROW;
-  items: Array<{
-    categoryIndex: number;
-    categoryName: EmojiCategory;
-    emojiIndex: -1;
-    emojiId: '';
-    item: undefined;
-  }>;
-}
+	index: number;
+	type: typeof CATEGORY_HEADER_ROW;
+	items: Array<{
+		categoryIndex: number;
+		categoryName: EmojiCategory;
+		emojiIndex: -1;
+		emojiId: '';
+		item: undefined;
+	}>;
+};
 
 export type EmojiRow = {
-  index: number;
-  type: typeof EMOJIS_ROW;
-  items: Array<{
-    categoryIndex: number;
-    categoryName: EmojiCategory;
-    emojiIndex: number;
-    emojiId: CustomEmoji['id'] | SystemEmoji['unified'];
-    item: Emoji;
-  }>;
-}
+	index: number;
+	type: typeof EMOJIS_ROW;
+	items: Array<{
+		categoryIndex: number;
+		categoryName: EmojiCategory;
+		emojiIndex: number;
+		emojiId: CustomEmoji['id'] | SystemEmoji['unified'];
+		item: Emoji;
+	}>;
+};
 
 export type EmojiCursor = {
-  rowIndex: number;
-  emojiId: CustomEmoji['id'] | SystemEmoji['unified'];
-  emoji: Emoji | undefined;
+	rowIndex: number;
+	emojiId: CustomEmoji['id'] | SystemEmoji['unified'];
+	emoji: Emoji | undefined;
 };
 
 export type EmojiPosition = {
-  rowIndex: number;
-  emojiId: CustomEmoji['id'] | SystemEmoji['unified'];
-  categoryName: EmojiCategory;
-}
+	rowIndex: number;
+	emojiId: CustomEmoji['id'] | SystemEmoji['unified'];
+	categoryName: EmojiCategory;
+};
 
 const emojiCategories = {
-  recent: {
-    name: 'recent',
-    label: 'Recent',
-    iconClassName: Clock,
-  },
-  searchResults: {
-    name: 'searchResults',
-    label: 'Search Result',
-    iconClassName: Search,
-  },
-  'smileys-emotion': {
-    name: 'smileys-emotion',
-    label: 'Smileys & Emotion',
-    iconClassName: MoodSmile,
-  },
-  'people-body': {
-    name: 'people-body',
-    label: 'People & Body',
-    iconClassName: User,
-  },
-  'animals-nature': {
-    name: 'animals-nature',
-    label: 'Animals & Nature',
-    iconClassName: Leaf2,
-  },
-  'food-drink': {
-    name: 'food-drink',
-    label: 'Food & Drink',
-    iconClassName: Apple,
-  },
-  'travel-places': {
-    name: 'travel-places',
-    label: 'Travel & Places',
-    iconClassName: Plane,
-  },
-  activities: {
-    name: 'activities',
-    label: 'Activities',
-    iconClassName: VolleyBall,
-  },
-  objects: {
-    name: 'objects',
-    label: 'Objects',
-    iconClassName: Bulb,
-  },
-  symbols: {
-    name: 'symbols',
-    label: 'Symbols',
-    iconClassName: Heart,
-  },
-  flags: {
-    name: 'flags',
-    label: 'Flags',
-    iconClassName: Flag,
-  },
-  custom: {
-    name: 'custom',
-    label: 'Custom',
-    iconClassName: MoodCog,
-  },
+	recent: {
+		name: 'recent',
+		label: 'Recent',
+		iconClassName: Clock,
+	},
+	searchResults: {
+		name: 'searchResults',
+		label: 'Search Result',
+		iconClassName: Search,
+	},
+	'smileys-emotion': {
+		name: 'smileys-emotion',
+		label: 'Smileys & Emotion',
+		iconClassName: MoodSmile,
+	},
+	'people-body': {
+		name: 'people-body',
+		label: 'People & Body',
+		iconClassName: User,
+	},
+	'animals-nature': {
+		name: 'animals-nature',
+		label: 'Animals & Nature',
+		iconClassName: Leaf2,
+	},
+	'food-drink': {
+		name: 'food-drink',
+		label: 'Food & Drink',
+		iconClassName: Apple,
+	},
+	'travel-places': {
+		name: 'travel-places',
+		label: 'Travel & Places',
+		iconClassName: Plane,
+	},
+	activities: {
+		name: 'activities',
+		label: 'Activities',
+		iconClassName: VolleyBall,
+	},
+	objects: {
+		name: 'objects',
+		label: 'Objects',
+		iconClassName: Bulb,
+	},
+	symbols: {
+		name: 'symbols',
+		label: 'Symbols',
+		iconClassName: Heart,
+	},
+	flags: {
+		name: 'flags',
+		label: 'Flags',
+		iconClassName: Flag,
+	},
+	custom: {
+		name: 'custom',
+		label: 'Custom',
+		iconClassName: MoodCog,
+	},
 } satisfies Record<EmojiCategory, Category>;
 
-
 export enum NavigationDirection {
-  NextEmoji = 'next',
-  PreviousEmoji = 'previous',
-  NextEmojiRow = 'nextRow',
-  PreviousEmojiRow = 'previousRow',
+	NextEmoji = 'next',
+	PreviousEmoji = 'previous',
+	NextEmojiRow = 'nextRow',
+	PreviousEmojiRow = 'previousRow',
 }
 
 export const RECENT_EMOJI_CATEGORY = { recent: emojiCategories.recent };

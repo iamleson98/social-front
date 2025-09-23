@@ -25,7 +25,7 @@
 					rootElement.focus({ preventScroll: true });
 				}
 			},
-			{ defaultSelection }
+			{ defaultSelection },
 		);
 	});
 </script>

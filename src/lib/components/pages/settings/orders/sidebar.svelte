@@ -2,9 +2,14 @@
 	import { CUSTOMER_LIST_QUERY, USER_DETAIL_QUERY } from '$lib/api/admin/users';
 	import { operationStore } from '$lib/api/operation';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import UserAddress from '$lib/components/common/user-address/user-address.svelte';
+	import { Plus } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
+	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Checkbox, RadioButton, TextArea } from '$lib/components/ui/Input';
+	import { Modal } from '$lib/components/ui/Modal';
+	import { TableSkeleton } from '$lib/components/ui/Table';
 	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
 	import {
 		AddressTypeEnum,
@@ -18,11 +23,6 @@
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { convertAddressToAddressInput, SitenameCommonClassName } from '$lib/utils/utils';
-	import { Accordion } from '$lib/components/ui/Accordion';
-	import UserAddress from '$lib/components/common/user-address/user-address.svelte';
-	import { Plus } from '$lib/components/icons';
-	import { Modal } from '$lib/components/ui/Modal';
-	import { TableSkeleton } from '$lib/components/ui/Table';
 
 	type Props = {
 		order: Order;

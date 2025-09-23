@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { CheckboxSkeleton } from '$lib/components/ui/Input';
-	import { SelectSkeleton } from '$lib/components/ui/select';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
+	import { SelectSkeleton } from '$lib/components/ui/select';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 </script>
 

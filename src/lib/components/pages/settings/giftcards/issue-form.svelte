@@ -1,6 +1,10 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { GIFT_CARD_CREATE_MUTATION, GIFT_CARD_TAGS_QUERY } from '$lib/api/admin/giftcards';
+	import { METADATA_UPDATE_MUTATION } from '$lib/api/admin/metadata';
 	import { CUSTOMER_LIST_QUERY } from '$lib/api/admin/users';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import ShopCurrenciesSelect from '$lib/components/common/shop-currencies-select.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Checkbox, Input, TextArea } from '$lib/components/ui/Input';
@@ -16,15 +20,11 @@
 		QueryGiftCardTagsArgs,
 	} from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
+	import { GiftcardChannelMetadataKey, GiftcardUserEmailMetadataKey } from '$lib/utils/consts';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import GiftcardExpirationForm from './giftcard-expiration-form.svelte';
 	import type z from 'zod';
 	import { array, number, object, string } from 'zod';
-	import GiftcardExpirationForm from './giftcard-expiration-form.svelte';
-	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { GiftcardChannelMetadataKey, GiftcardUserEmailMetadataKey } from '$lib/utils/consts';
-	import { METADATA_UPDATE_MUTATION } from '$lib/api/admin/metadata';
-	import { tranFunc } from '$i18n';
 
 	type Props = {
 		toCustomerEmail?: string;

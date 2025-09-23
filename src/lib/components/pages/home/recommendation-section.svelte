@@ -1,15 +1,15 @@
 <script lang="ts">
+	import { FlipTimer } from '$lib/components/common/flip-timer/index';
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
+	import { SelectSkeleton } from '$lib/components/ui/select';
 	import {
 		OrderDirection,
 		PromotionSortField,
 		type PromotionCountableConnection,
 		type QueryPromotionsArgs,
 	} from '$lib/gql/graphql';
-	import { SelectSkeleton } from '$lib/components/ui/select';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
-	import { FlipTimer } from '$lib/components/common/flip-timer/index';
 	import { onMount } from 'svelte';
 
 	const PROMOTION_FIRST = 5;

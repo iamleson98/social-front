@@ -1,13 +1,17 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import {
 		DELETE_SHIPPING_ZONE_MUTATION,
 		SHIPPING_ZONE_DETAIL_QUERY,
 		UPDATE_SHIPPING_ZONE_MUTATION,
 	} from '$lib/api/admin/shipping';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
+	import DetailSkeleton from '$lib/components/pages/settings/shipping-zones/detail-skeleton.svelte';
 	import GeneralInfo from '$lib/components/pages/settings/shipping-zones/general-info.svelte';
 	import ShippingMethods from '$lib/components/pages/settings/shipping-zones/shipping-methods.svelte';
 	import SubSection from '$lib/components/pages/settings/shipping-zones/sub-section.svelte';
@@ -20,15 +24,11 @@
 		type QueryShippingZoneArgs,
 		type ShippingZoneUpdateInput,
 	} from '$lib/gql/graphql';
-	import { AppRoute } from '$lib/utils';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { goto } from '$app/navigation';
-	import DetailSkeleton from '$lib/components/pages/settings/shipping-zones/detail-skeleton.svelte';
-	import { onMount } from 'svelte';
-	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
+	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { onMount } from 'svelte';
 
 	const shippingZoneQuery = operationStore<Pick<Query, 'shippingZone'>, QueryShippingZoneArgs>({
 		query: SHIPPING_ZONE_DETAIL_QUERY,

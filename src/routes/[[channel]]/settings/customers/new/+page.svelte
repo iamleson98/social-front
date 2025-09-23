@@ -1,16 +1,16 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { CREATE_USER_MUTATION } from '$lib/api/admin/users';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
+	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import CustomerInformationForm from '$lib/components/pages/settings/customers/customer-information-form.svelte';
 	import type { Mutation, MutationCustomerCreateArgs, UserCreateInput } from '$lib/gql/graphql';
+	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { toast } from 'svelte-sonner';
-	import { goto } from '$app/navigation';
-	import { AppRoute } from '$lib/utils';
-	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
-	import { CommonState } from '$lib/utils/common.svelte';
-	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 
 	let userInput = $state<UserCreateInput>({
 		firstName: '',

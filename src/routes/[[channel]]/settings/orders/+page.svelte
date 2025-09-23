@@ -1,23 +1,23 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { USER_ORDERS_QUERY } from '$lib/api/orders';
+	import PriceDisplay from '$lib/components/common/price-display.svelte';
+	import { Dots } from '$lib/components/icons';
+	import HeadBar from '$lib/components/pages/settings/common/head-bar.svelte';
+	import { Badge } from '$lib/components/ui/Badge';
+	import { IconButton } from '$lib/components/ui/Button';
+	import { DropDown } from '$lib/components/ui/Dropdown';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { type Order, type Query } from '$lib/gql/graphql';
+	import { AppRoute } from '$lib/utils';
+	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import {
 		orderStatusBadgeClass,
 		paymentStatusBadgeClass,
 		type PaginationOptions,
 	} from '$lib/utils/utils';
 	import dayjs from 'dayjs';
-	import { DropDown } from '$lib/components/ui/Dropdown';
-	import { IconButton } from '$lib/components/ui/Button';
-	import { Dots } from '$lib/components/icons';
-	import { AppRoute } from '$lib/utils';
-	import { tranFunc } from '$i18n';
-	import { Badge } from '$lib/components/ui/Badge';
-	import HeadBar from '$lib/components/pages/settings/common/head-bar.svelte';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
-	import { SitenameTimeFormat } from '$lib/utils/consts';
-	import PriceDisplay from '$lib/components/common/price-display.svelte';
 
 	const BATCH_LOAD = 20;
 

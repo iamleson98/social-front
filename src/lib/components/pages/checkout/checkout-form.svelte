@@ -1,7 +1,7 @@
 <script lang="ts">
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import Signin from '$lib/components/pages/auth/signin.svelte';
 	import { Email } from '$lib/components/icons';
+	import Signin from '$lib/components/pages/auth/signin.svelte';
 	import { Input } from '$lib/components/ui/Input';
 	import type { Checkout } from '$lib/gql/graphql';
 	import { READ_ONLY_USER_STORE } from '$lib/stores/auth/user';

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import Alert from '$lib/components/ui/Alert/alert.svelte';
-	import type { SocialSize } from '$lib/components/ui/common';
 	import { INPUT_CLASSES, Label } from '$lib/components/ui/Input';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
+	import type { SocialSize } from '$lib/components/ui/common';
 	import type { SocialVariant } from '$lib/utils';
 	import type { OutputData } from '@editorjs/editorjs';
 	import { onMount } from 'svelte';

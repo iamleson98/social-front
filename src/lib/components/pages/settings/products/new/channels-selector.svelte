@@ -5,6 +5,7 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Checkbox, Label } from '$lib/components/ui/Input';
+	import { TableSkeleton } from '$lib/components/ui/Table';
 	import type {
 		ProductChannelListing,
 		ProductChannelListingAddInput,
@@ -13,10 +14,9 @@
 	} from '$lib/gql/graphql';
 	import { tranFunc } from '$lib/i18n';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
+	import ErrorMsg from './error-msg.svelte';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import ErrorMsg from './error-msg.svelte';
-	import { TableSkeleton } from '$lib/components/ui/Table';
 
 	type Props = {
 		/**
@@ -141,10 +141,7 @@
 		<div class={['grid grid-cols-4 gap-2', !ok && 'bg-red-50 border-red-200']}>
 			{#each productChannelListingUpdateInput.updateChannels! as channelListing, idx (idx)}
 				<div class="">
-					<Accordion
-						bind:open={channelListing.used}
-						class={SitenameCommonClassName}
-					>
+					<Accordion bind:open={channelListing.used} class={SitenameCommonClassName}>
 						{#snippet header()}
 							<Checkbox
 								label={channelListing.channelName}

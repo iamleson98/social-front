@@ -1,30 +1,30 @@
 <script lang="ts">
+	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { TABS, type TabName } from './consts';
-	import { toggleItemNoDup } from '$lib/utils/utils';
-	import {
-		type QueryCategoriesArgs,
-		type QueryCollectionsArgs,
-		type QueryProductsArgs,
-		type QueryProductVariantsArgs,
-	} from '$lib/gql/graphql';
-	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
-	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import {
 		CATEGORIES_LIST_QUERY_STORE,
 		PRODUCT_LIST_QUERY,
 		PRODUCT_VARIANTS_QUERY,
 	} from '$lib/api';
 	import { COLLECTIONS_QUERY } from '$lib/api/collections';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import { Search } from '$lib/components/icons';
+	import { Checkbox, Input } from '$lib/components/ui/Input';
+	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import {
+		type QueryCategoriesArgs,
+		type QueryCollectionsArgs,
+		type QueryProductsArgs,
+		type QueryProductVariantsArgs,
+	} from '$lib/gql/graphql';
+	import { toggleItemNoDup } from '$lib/utils/utils';
+	import { TABS, type TabName } from './consts';
 	import {
 		CATEGORY_COLUMNS,
 		COLLECTION_COLUMNS,
 		PRODUCT_COLUMNS,
 		VARIANT_COLUMNS,
 	} from './snippets.svelte';
-	import { Search } from '$lib/components/icons';
-	import { afterNavigate } from '$app/navigation';
 
 	type Props = {
 		disabled?: boolean;

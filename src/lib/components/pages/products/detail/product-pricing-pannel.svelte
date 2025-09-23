@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
+	import { CHECKOUT_ADD_LINE_MUTATION } from '$lib/api/checkout';
+	import { operationStore, type OperationResultStore } from '$lib/api/operation';
 	import {
 		MapPin,
 		Minus,
@@ -10,6 +12,13 @@
 		Check,
 	} from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
+	import { Alert } from '$lib/components/ui/Alert';
+	import { Badge } from '$lib/components/ui/Badge';
+	import { IconButton } from '$lib/components/ui/Button';
+	import { Input } from '$lib/components/ui/Input';
+	import { MegaMenu } from '$lib/components/ui/MegaMenu';
+	import { Modal } from '$lib/components/ui/Modal';
+	import { Rating } from '$lib/components/ui/rating';
 	import type {
 		Checkout,
 		Mutation,
@@ -17,24 +26,15 @@
 		Product,
 		ProductVariant,
 	} from '$lib/gql/graphql';
-	import { HTTPStatusSuccess, MAX_RATING } from '$lib/utils/consts';
-	import { formatMoney, checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { fade } from 'svelte/transition';
-	import { Rating } from '$lib/components/ui/rating';
 	import { checkoutStore } from '$lib/stores/app';
-	import { IconButton } from '$lib/components/ui/Button';
-	import { Badge } from '$lib/components/ui/Badge';
-	import { CHECKOUT_ADD_LINE_MUTATION } from '$lib/api/checkout';
-	import { Alert } from '$lib/components/ui/Alert';
-	import { Input } from '$lib/components/ui/Input';
-	import { Modal } from '$lib/components/ui/Modal';
-	import { MegaMenu } from '$lib/components/ui/MegaMenu';
-	import { VIETNAM_COUNTRY_UNITS } from '$lib/utils/countries';
-	import { AppRoute } from '$lib/utils';
-	import { operationStore, type OperationResultStore } from '$lib/api/operation';
-	import { CHANNELS } from '$lib/utils/channels';
 	import { READ_ONLY_USER_STORE } from '$lib/stores/auth/user';
+	import { AppRoute } from '$lib/utils';
+	import { CHANNELS } from '$lib/utils/channels';
+	import { HTTPStatusSuccess, MAX_RATING } from '$lib/utils/consts';
+	import { VIETNAM_COUNTRY_UNITS } from '$lib/utils/countries';
+	import { formatMoney, checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { toast } from 'svelte-sonner';
+	import { fade } from 'svelte/transition';
 
 	type Props = {
 		productInformation: Product;

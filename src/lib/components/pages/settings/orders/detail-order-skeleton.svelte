@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { SelectSkeleton } from '$lib/components/ui/select';
 	import { Skeleton } from '$lib/components/ui/Skeleton';
 	import { TableSkeleton } from '$lib/components/ui/Table';
+	import { SelectSkeleton } from '$lib/components/ui/select';
 </script>
 
 <div class="flex gap-2 flex-row">

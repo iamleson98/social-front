@@ -1,18 +1,18 @@
 <script lang="ts">
+	import { PUBLIC_LOCAL_URL } from '$env/static/public';
+	import { USER_REQUEST_PASSWORD_RESET_MUTATION_STORE } from '$lib/api/auth';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { Email } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import { CHANNEL_KEY } from '$lib/utils/consts';
-	import { tranFunc } from '$lib/i18n';
 	import { Input } from '$lib/components/ui/Input';
-	import { USER_REQUEST_PASSWORD_RESET_MUTATION_STORE } from '$lib/api/auth';
 	import type { Mutation, MutationRequestPasswordResetArgs } from '$lib/gql/graphql';
+	import { tranFunc } from '$lib/i18n';
 	import { AppRoute } from '$lib/utils';
-	import { PUBLIC_LOCAL_URL } from '$env/static/public';
-	import { string } from 'zod';
-	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import { DEFAULT_CHANNEL } from '$lib/utils/channels';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { CHANNEL_KEY } from '$lib/utils/consts';
+	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { string } from 'zod';
 
 	let email = $state('');
 	let emailError = $state<string>();

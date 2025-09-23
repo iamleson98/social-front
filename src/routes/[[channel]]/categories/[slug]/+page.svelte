@@ -1,4 +1,8 @@
 <script lang="ts">
+	import { page } from '$app/state';
+	import { CATEGORY_DETAIL_QUERY } from '$lib/api';
+	import { CHANNEL_DETAILS_QUERY } from '$lib/api/channels';
+	import { operationStore } from '$lib/api/operation';
 	import {
 		ArrowDown,
 		ArrowUp,
@@ -7,11 +11,17 @@
 		RosetteDiscountChecked,
 		Search,
 	} from '$lib/components/icons';
-	import { page } from '$app/state';
-	import { AppRoute, getCookieByKey } from '$lib/utils';
 	import Icon from '$lib/components/icons/icon.svelte';
-	import { flipDirection, SitenameCommonClassName } from '$lib/utils/utils';
+	import { ProductSortFields } from '$lib/components/pages/home/common';
+	import { Button } from '$lib/components/ui';
 	import { AccordionList } from '$lib/components/ui/Accordion';
+	import { Alert } from '$lib/components/ui/Alert';
+	import { IconButton } from '$lib/components/ui/Button';
+	import { DropDown } from '$lib/components/ui/Dropdown';
+	import { Input } from '$lib/components/ui/Input';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
+	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
+	import { Select } from '$lib/components/ui/select';
 	import {
 		OrderDirection,
 		ProductOrderField,
@@ -20,19 +30,9 @@
 		type QueryCategoryArgs,
 		type QueryChannelArgs,
 	} from '$lib/gql/graphql';
-	import { DropDown } from '$lib/components/ui/Dropdown';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
-	import { Button } from '$lib/components/ui';
-	import { Input } from '$lib/components/ui/Input';
-	import { operationStore } from '$lib/api/operation';
-	import { CHANNEL_DETAILS_QUERY } from '$lib/api/channels';
-	import { Alert } from '$lib/components/ui/Alert';
-	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
-	import { Select } from '$lib/components/ui/select';
-	import { ProductSortFields } from '$lib/components/pages/home/common';
-	import { IconButton } from '$lib/components/ui/Button';
-	import { CATEGORY_DETAIL_QUERY } from '$lib/api';
+	import { AppRoute, getCookieByKey } from '$lib/utils';
 	import { CHANNEL_KEY } from '$lib/utils/consts';
+	import { flipDirection, SitenameCommonClassName } from '$lib/utils/utils';
 
 	const CategoryQuery = operationStore<
 		Pick<Query, 'category'>,

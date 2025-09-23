@@ -1,12 +1,12 @@
 <script lang="ts">
+	import { INSERT_HORIZONTAL_RULE_COMMAND } from './consts';
 	import {
 		$getSelection as getSelection,
 		$isRangeSelection as isRangeSelection,
 		COMMAND_PRIORITY_EDITOR,
 		COMMAND_PRIORITY_LOW,
-		type LexicalEditor
+		type LexicalEditor,
 	} from 'lexical';
-	import { INSERT_HORIZONTAL_RULE_COMMAND } from './consts';
 
 	type Props = {
 		editor: LexicalEditor;
@@ -31,7 +31,7 @@
 
 				return true;
 			},
-			COMMAND_PRIORITY_EDITOR
+			COMMAND_PRIORITY_EDITOR,
 		);
 	});
 </script>

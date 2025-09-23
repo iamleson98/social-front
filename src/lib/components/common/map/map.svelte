@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import 'leaflet/dist/leaflet.css';
+	import { onMount } from 'svelte';
 
 	type Props = {
 		class?: string;
@@ -11,7 +11,7 @@
 
 	const config = {
 		minZoom: 2,
-		maxZoom: 18
+		maxZoom: 18,
 	};
 
 	// let L = $state<any>();
@@ -21,22 +21,21 @@
 	onMount(async () => {
 		const L = await import('leaflet');
 
-    // init map
+		// init map
 		MAP = L.map(mapContainer!, config).setView(
 			[51.505, -0.09],
-			(config.maxZoom + config.minZoom) / 2
+			(config.maxZoom + config.minZoom) / 2,
 		);
 
-    // add tile layer
+		// add tile layer
 		L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			attribution:
-				'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+				'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 		}).addTo(MAP);
 
-    // handle config props
-    if (canGetCurrentLocation) {
-
-    }
+		// handle config props
+		if (canGetCurrentLocation) {
+		}
 	});
 </script>
 

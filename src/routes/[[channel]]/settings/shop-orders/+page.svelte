@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
-	import { OrderSortField, type Order, type QueryOrdersArgs } from '$lib/gql/graphql';
-	import { orderStatusBadgeClass, paymentStatusBadgeClass } from '$lib/utils/utils';
-	import dayjs from 'dayjs';
 	import { tranFunc } from '$i18n';
 	import { SHOP_ORDERS_QUERY } from '$lib/api/admin/orders';
-	import { Badge } from '$lib/components/ui/Badge';
-	import Filter from '$lib/components/pages/settings/orders/filter.svelte';
-	import { AppRoute } from '$lib/utils';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
+	import { SettingCog } from '$lib/components/icons';
+	import Filter from '$lib/components/pages/settings/orders/filter.svelte';
+	import { Badge } from '$lib/components/ui/Badge';
+	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown } from '$lib/components/ui/Dropdown';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
-	import { SettingCog } from '$lib/components/icons';
-	import { IconButton } from '$lib/components/ui/Button';
+	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import { OrderSortField, type Order, type QueryOrdersArgs } from '$lib/gql/graphql';
+	import { AppRoute } from '$lib/utils';
+	import { orderStatusBadgeClass, paymentStatusBadgeClass } from '$lib/utils/utils';
+	import dayjs from 'dayjs';
 
 	const BATCH_LOAD = 20;
 

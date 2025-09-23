@@ -1,9 +1,15 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
+	import { CHANNELS_QUERY } from '$lib/api/channels';
+	import { operationStore } from '$lib/api/operation';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Plus, Trash, MdiWeightKg, Icon } from '$lib/components/icons';
+	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button } from '$lib/components/ui/Button';
+	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Checkbox, Input, Label } from '$lib/components/ui/Input';
+	import { Modal } from '$lib/components/ui/Modal';
 	import { Select, SelectSkeleton } from '$lib/components/ui/select';
 	import {
 		type ProductChannelListingAddInput,
@@ -13,18 +19,10 @@
 		type Query,
 		type StockInput,
 	} from '$lib/gql/graphql';
-	import { CHANNELS_QUERY } from '$lib/api/channels';
-	import { operationStore } from '$lib/api/operation';
-	import { checkIfGraphqlResultHasError, randomString } from '$lib/utils/utils';
-	import { slide } from 'svelte/transition';
-	import { chunk, flatten, omit } from 'es-toolkit';
 	import { CurrencyIconMap, type CurrencyCode } from '$lib/utils/consts';
-	import { onMount } from 'svelte';
-	import DAYJS from 'dayjs';
-	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
-	import { Accordion } from '$lib/components/ui/Accordion';
+	import type { MediaObject } from '$lib/utils/types';
+	import { checkIfGraphqlResultHasError, randomString } from '$lib/utils/utils';
 	import ErrorMsg from './error-msg.svelte';
-	import { Modal } from '$lib/components/ui/Modal';
 	import type {
 		ChannelSelectOptionProps,
 		CustomStockInput,
@@ -32,8 +30,10 @@
 		QuickFillingProps,
 		VariantManifestProps,
 	} from './utils';
-	import type { MediaObject } from '$lib/utils/types';
-	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import DAYJS from 'dayjs';
+	import { chunk, flatten, omit } from 'es-toolkit';
+	import { onMount } from 'svelte';
+	import { slide } from 'svelte/transition';
 
 	type Props = {
 		productVariantsInput: ProductVariantBulkCreateInput[];

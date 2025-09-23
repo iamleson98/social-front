@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { onMount, tick, type Snippet } from 'svelte';
-	import { computePosition, offset, shift, flip, type Placement } from '@floating-ui/dom';
 	import { clickOutside } from '$lib/actions/click-outside';
-	import { fly, type FlyParams } from 'svelte/transition';
 	import { dropdownResizeDebounce, type DropdownTriggerInterface } from './types';
+	import { computePosition, offset, shift, flip, type Placement } from '@floating-ui/dom';
+	import { onMount, tick, type Snippet } from 'svelte';
+	import { fly, type FlyParams } from 'svelte/transition';
 
 	type Props = {
 		/** NOTE: children and options must be provided exclusively */
@@ -22,7 +22,7 @@
 		placement = 'bottom',
 		children,
 		noReCalculateOnWindowResize = false,
-		open = $bindable(false)
+		open = $bindable(false),
 	}: Props = $props();
 
 	let menuElemRef = $state<HTMLElement>();
@@ -46,12 +46,12 @@
 		if (!triggerRef || !menuElemRef) return;
 		const { x, y } = await computePosition(triggerRef, menuElemRef, {
 			placement,
-			middleware: [offset(4), flip(), shift()]
+			middleware: [offset(4), flip(), shift()],
 		});
 
 		Object.assign(menuElemRef.style, {
 			left: `${x}px`,
-			top: `${y}px`
+			top: `${y}px`,
 		});
 	};
 
@@ -71,7 +71,7 @@
 	{@render trigger({
 		onclick: handleTriggerClick,
 		onfocus: handleTriggerClick,
-		onclose: () => (open = false)
+		onclose: () => (open = false),
 	})}
 	<div class="absolute z-100 min-w-full" bind:this={menuElemRef}>
 		{#if open}

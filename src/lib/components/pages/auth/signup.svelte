@@ -1,12 +1,15 @@
 <script lang="ts">
-	import { Email } from '$lib/components/icons';
-	import { Button } from '$lib/components/ui';
-	import { AppRoute } from '$lib/utils';
-	import { Alert } from '$lib/components/ui/Alert';
-	import { SUPPORTED_LANGUAGES, tranFunc } from '$lib/i18n';
-	import { Checkbox, Input, PasswordInput } from '$lib/components/ui/Input';
-	import { boolean, object, string, z } from 'zod';
+	import { dev } from '$app/environment';
+	import { PUBLIC_LOCAL_URL, PUBLIC_STORE_FRONT_URL } from '$env/static/public';
+	import { USER_SIGNUP_MUTATION_STORE } from '$lib/api';
 	import { operationStore, type OperationResultStore } from '$lib/api/operation';
+	import CountrySelect from '$lib/components/common/country-language/country-select.svelte';
+	import LanguageSelect from '$lib/components/common/country-language/language-select.svelte';
+	import { Email } from '$lib/components/icons';
+	import Location from '$lib/components/plugins/location.svelte';
+	import { Button } from '$lib/components/ui';
+	import { Alert } from '$lib/components/ui/Alert';
+	import { Checkbox, Input, PasswordInput } from '$lib/components/ui/Input';
 	import {
 		CountryCode,
 		LanguageCodeEnum,
@@ -14,16 +17,13 @@
 		type Mutation,
 		type MutationAccountRegisterArgs,
 	} from '$lib/gql/graphql';
-	import { USER_SIGNUP_MUTATION_STORE } from '$lib/api';
-	import { clientSideGetCookieOrDefault, clientSideSetCookie } from '$lib/utils/cookies';
-	import { CHANNEL_KEY, COUNTRY_CODE_KEY, LANGUAGE_KEY } from '$lib/utils/consts';
-	import { PUBLIC_LOCAL_URL, PUBLIC_STORE_FRONT_URL } from '$env/static/public';
-	import { omit } from 'es-toolkit';
-	import { dev } from '$app/environment';
-	import LanguageSelect from '$lib/components/common/country-language/language-select.svelte';
-	import CountrySelect from '$lib/components/common/country-language/country-select.svelte';
+	import { SUPPORTED_LANGUAGES, tranFunc } from '$lib/i18n';
+	import { AppRoute } from '$lib/utils';
 	import { CHANNELS, DEFAULT_CHANNEL } from '$lib/utils/channels';
-	import Location from '$lib/components/plugins/location.svelte';
+	import { CHANNEL_KEY, COUNTRY_CODE_KEY, LANGUAGE_KEY } from '$lib/utils/consts';
+	import { clientSideGetCookieOrDefault, clientSideSetCookie } from '$lib/utils/cookies';
+	import { omit } from 'es-toolkit';
+	import { boolean, object, string, z } from 'zod';
 
 	const CHANNEL_SLUG = clientSideGetCookieOrDefault(CHANNEL_KEY, DEFAULT_CHANNEL.slug);
 	const DEFAULT_COUNTRY =
@@ -131,7 +131,10 @@
 		>({
 			query: USER_SIGNUP_MUTATION_STORE,
 			variables: {
-				input: omit(signupInfo, ['confirmPassword', 'termAndPoliciesAgree']) as AccountRegisterInput,
+				input: omit(signupInfo, [
+					'confirmPassword',
+					'termAndPoliciesAgree',
+				]) as AccountRegisterInput,
 			},
 		});
 	};

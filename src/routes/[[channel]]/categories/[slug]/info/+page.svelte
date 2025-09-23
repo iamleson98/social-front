@@ -1,4 +1,1 @@
-
-<div>
-  category info
-</div>
+<div>category info</div>

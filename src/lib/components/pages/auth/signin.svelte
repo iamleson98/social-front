@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui';
-	import { AppRoute } from '$lib/utils';
 	import { Email } from '$lib/components/icons';
-	import { Alert } from '$lib/components/ui/Alert';
-	import { tranFunc } from '$lib/i18n';
-	import { Checkbox, Input, PasswordInput } from '$lib/components/ui/Input';
-	import { HTTPStatusSuccess } from '$lib/utils/consts';
 	import { Facebook, Twitter, Google } from '$lib/components/icons/SvgOuterIcon';
-	import { boolean, object, string, z } from 'zod';
+	import { Button } from '$lib/components/ui';
+	import { Alert } from '$lib/components/ui/Alert';
+	import { Checkbox, Input, PasswordInput } from '$lib/components/ui/Input';
+	import { tranFunc } from '$lib/i18n';
 	import { setUserStoreValue } from '$lib/stores/auth/user';
+	import { AppRoute } from '$lib/utils';
+	import { HTTPStatusSuccess } from '$lib/utils/consts';
 	import { toast } from 'svelte-sonner';
+	import { boolean, object, string, z } from 'zod';
 
 	type Props = {
 		onSuccess: () => void;

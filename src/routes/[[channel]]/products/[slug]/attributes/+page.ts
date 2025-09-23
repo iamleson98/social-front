@@ -1,11 +1,13 @@
-import type { PageLoad } from "./$types";
+import type { PageLoad } from './$types';
 
 export const ssr = true;
 
 export const load: PageLoad = async (event) => {
-  const { product: { attributes } } = await event.parent();
+	const {
+		product: { attributes },
+	} = await event.parent();
 
-  return {
-    attributes,
-  };
-}
+	return {
+		attributes,
+	};
+};

@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { randomID } from '$lib/utils/utils';
-	import type { HTMLInputAttributes } from 'svelte/elements';
 	import type { SocialSize } from '$lib/components/ui/common';
+	import type { SocialVariant } from '$lib/utils';
+	import { randomID } from '$lib/utils/utils';
 	import { CHECKBOX_SIZES, INPUT_CLASSES } from './input.types';
 	import Label from './label.svelte';
-	import type { SocialVariant } from '$lib/utils';
 	import type { Snippet } from 'svelte';
+	import type { HTMLInputAttributes } from 'svelte/elements';
 
 	type Props = {
 		label?: Snippet | string;

@@ -26,8 +26,8 @@
 	} from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
-	import { SvelteSet } from 'svelte/reactivity';
 	import { canUseAttributeForVariantSelection } from './utils';
+	import { SvelteSet } from 'svelte/reactivity';
 
 	type Props = {
 		productAttributes?: Attribute[];

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { LexicalEditor } from "lexical";
+	import type { LexicalEditor } from 'lexical';
 
-  type Props = {
-    editor: LexicalEditor;
-  };
+	type Props = {
+		editor: LexicalEditor;
+	};
 </script>

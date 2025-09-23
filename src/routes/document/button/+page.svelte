@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Email } from '$lib/components/icons';
 	import { Button, IconButton, type ButtonVariant } from '$lib/components/ui/Button';
-	import type { SocialColor, SocialSize } from '$lib/components/ui/common';
 	import { Checkbox, RadioButton } from '$lib/components/ui/Input';
+	import type { SocialColor, SocialSize } from '$lib/components/ui/common';
 	import { toast } from 'svelte-sonner';
 
 	const socialColors: SocialColor[] = [

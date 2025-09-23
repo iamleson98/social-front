@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { SelectSkeleton } from '$lib/components/ui/select';
 	import { Skeleton } from '$lib/components/ui/Skeleton';
+	import { SelectSkeleton } from '$lib/components/ui/select';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 </script>
 

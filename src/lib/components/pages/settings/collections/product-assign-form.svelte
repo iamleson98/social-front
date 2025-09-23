@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
+	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { Trash } from '$lib/components/icons';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
@@ -6,10 +8,8 @@
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import type { Product, ProductOrderField } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { omit } from 'es-toolkit';
 	import ProductAssignModal from './product-assign-modal.svelte';
-	import Thumbnail from '$lib/components/common/thumbnail.svelte';
-	import { tranFunc } from '$i18n';
+	import { omit } from 'es-toolkit';
 
 	type Props = {
 		disabled?: boolean;

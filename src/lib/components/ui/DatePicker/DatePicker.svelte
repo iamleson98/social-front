@@ -1,13 +1,13 @@
 <script lang="ts">
-	import type { FocusEventHandler } from 'svelte/elements';
+	import { ChevronLeft, ChevronRight } from '$lib/components/icons';
+	import { IconButton } from '$lib/components/ui/Button';
+	import { Select, type SelectOption } from '$lib/components/ui/select';
+	import TimePicker from './TimePicker.svelte';
 	import { cloneDate, getCalendarDays, getMonthLength, type CalendarDay } from './date-utils';
 	import { getInnerLocale } from './locale';
 	import type { Locale } from './types';
-	import { IconButton } from '$lib/components/ui/Button';
-	import { ChevronLeft, ChevronRight } from '$lib/components/icons';
-	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import type { Snippet } from 'svelte';
-	import TimePicker from './TimePicker.svelte';
+	import type { FocusEventHandler } from 'svelte/elements';
 
 	type Props = {
 		value?: Date;
@@ -34,7 +34,7 @@
 		browseWithoutSelecting = false,
 		onfocusout,
 		onSelect,
-		children
+		children,
 	}: Props = $props();
 
 	function getYearSelectOptions(min: Date, max: Date): SelectOption[] {
@@ -44,7 +44,7 @@
 		for (let i = minFullYear; i <= maxFullYear; i++) {
 			years.push({
 				value: i,
-				label: `${i}`
+				label: `${i}`,
 			});
 		}
 		return years;
@@ -62,8 +62,8 @@
 				new Date(browseYear, idx, getMonthLength(browseYear, idx), 23, 59, 59, 999) < min ||
 				new Date(browseYear, idx) > max,
 			value: idx,
-			label: m
-		}))
+			label: m,
+		})),
 	);
 
 	$effect(() => {
@@ -98,8 +98,8 @@
 				browseDate.getHours(),
 				browseDate.getMinutes(),
 				browseDate.getSeconds(),
-				browseDate.getMilliseconds()
-			)
+				browseDate.getMilliseconds(),
+			),
 		);
 	}
 
@@ -151,7 +151,7 @@
 				d.getHours(),
 				d.getMinutes(),
 				d.getSeconds(),
-				d.getMilliseconds()
+				d.getMilliseconds(),
 			);
 			d = clamp(d, min, max);
 		}

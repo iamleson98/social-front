@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { Checkout, CountryCode, Query, QueryChannelArgs } from '$lib/gql/graphql';
-	import { operationStore } from '$lib/api/operation';
 	import { CHANNEL_DETAILS_QUERY } from '$lib/api/channels';
+	import { operationStore } from '$lib/api/operation';
+	import { Alert } from '$lib/components/ui/Alert';
+	import type { Checkout, CountryCode, Query, QueryChannelArgs } from '$lib/gql/graphql';
 	import AddressCreateForm from './address-create-form.svelte';
 	import AddressEditForm from './address-edit-form.svelte';
 	import AddressList from './address-list.svelte';
-	import { Alert } from '$lib/components/ui/Alert';
 
 	type Props = {
 		checkout: Checkout;

@@ -1,16 +1,16 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui';
-	import { page } from '$app/state';
-	import { PasswordInput } from '$lib/components/ui/Input';
-	import { tranFunc } from '$i18n';
-	import { object, string, z } from 'zod';
-	import type { Mutation, MutationSetPasswordArgs } from '$lib/gql/graphql';
-	import { USER_SET_PASSWORD_MUTATION_STORE } from '$lib/api/auth';
-	import { omit } from 'es-toolkit';
 	import { goto } from '$app/navigation';
-	import { AppRoute } from '$lib/utils';
+	import { page } from '$app/state';
+	import { tranFunc } from '$i18n';
+	import { USER_SET_PASSWORD_MUTATION_STORE } from '$lib/api/auth';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { Button } from '$lib/components/ui';
+	import { PasswordInput } from '$lib/components/ui/Input';
+	import type { Mutation, MutationSetPasswordArgs } from '$lib/gql/graphql';
+	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { omit } from 'es-toolkit';
+	import { object, string, z } from 'zod';
 
 	const ChangePasswordSchema = object({
 		password: string().nonempty({ message: $tranFunc('helpText.fieldRequired') }),

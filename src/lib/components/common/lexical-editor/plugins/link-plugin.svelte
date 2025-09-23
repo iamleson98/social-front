@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { LexicalEditor } from 'lexical';
 	import Link from './_link.svelte';
 	import { validateUrl } from './consts';
+	import type { LexicalEditor } from 'lexical';
 
 	type Props = {
 		hasLinkAttributes?: boolean;

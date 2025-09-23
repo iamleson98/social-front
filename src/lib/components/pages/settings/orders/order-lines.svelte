@@ -1,20 +1,20 @@
 <script lang="ts">
+	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import Thumbnail from '$lib/components/common/thumbnail.svelte';
+	import { Dots, ExternalLink, Icon, Trash } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/Badge';
+	import { IconButton } from '$lib/components/ui/Button';
+	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import type { TableColumnProps } from '$lib/components/ui/Table';
 	import Table from '$lib/components/ui/Table/table.svelte';
 	import { OrderStatus, type Order, type OrderLine } from '$lib/gql/graphql';
-	import { orderStatusBadgeClass, SitenameCommonClassName, stringSlicer } from '$lib/utils/utils';
-	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import { AppRoute } from '$lib/utils';
-	import { Dots, ExternalLink, Icon, Trash } from '$lib/components/icons';
-	import OrderLineMetadataModal from './order-line-metadata-modal.svelte';
+	import { orderStatusBadgeClass, SitenameCommonClassName, stringSlicer } from '$lib/utils/utils';
 	import OrderFulfillModal from './order-fulfill-modal.svelte';
-	import Thumbnail from '$lib/components/common/thumbnail.svelte';
-	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
-	import { IconButton } from '$lib/components/ui/Button';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
+	import OrderLineMetadataModal from './order-line-metadata-modal.svelte';
 
 	type Props = {
 		orderLines: OrderLine[];
@@ -114,12 +114,12 @@
 {/snippet}
 
 {#snippet price({ item }: { item: OrderLine })}
-<div class="flex items-center gap-2">
-	{#if item.undiscountedUnitPrice}
-	 <PriceDisplay {...item.undiscountedUnitPrice.gross} class="line-through" />
-	{/if}
-	<PriceDisplay {...item.unitPrice.gross} />
-</div>
+	<div class="flex items-center gap-2">
+		{#if item.undiscountedUnitPrice}
+			<PriceDisplay {...item.undiscountedUnitPrice.gross} class="line-through" />
+		{/if}
+		<PriceDisplay {...item.unitPrice.gross} />
+	</div>
 {/snippet}
 
 {#snippet total({ item }: { item: OrderLine })}

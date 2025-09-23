@@ -1,10 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { tranFunc } from '$i18n';
+	import { USER_UPDATE_MUTATION } from '$lib/api/account';
 	import { USER_DETAIL_QUERY } from '$lib/api/admin/users';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
+	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
+	import CustomerExtraForm from '$lib/components/pages/settings/customers/customer-extra-form.svelte';
 	import CustomerInformationForm from '$lib/components/pages/settings/customers/customer-information-form.svelte';
+	import CustomerOrders from '$lib/components/pages/settings/customers/customer-orders.svelte';
 	import SkeletonCustomerDetail from '$lib/components/pages/settings/customers/skeleton-customer-detail.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import {
@@ -13,17 +19,11 @@
 		type Query,
 		type QueryUserArgs,
 	} from '$lib/gql/graphql';
+	import { type MutationCustomerUpdateArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { USER_UPDATE_MUTATION } from '$lib/api/account';
-	import { type MutationCustomerUpdateArgs } from '$lib/gql/graphql';
-	import CustomerExtraForm from '$lib/components/pages/settings/customers/customer-extra-form.svelte';
 	import { onMount } from 'svelte';
-	import CustomerOrders from '$lib/components/pages/settings/customers/customer-orders.svelte';
-	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
-	import { tranFunc } from '$i18n';
 	import { toast } from 'svelte-sonner';
-	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 
 	const userDetailQuery = operationStore<Pick<Query, 'user'>, QueryUserArgs>({
 		query: USER_DETAIL_QUERY,

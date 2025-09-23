@@ -1,12 +1,12 @@
-import { pageRequiresPermissions } from '$lib/api/client'
-import { PermissionEnum } from '$lib/gql/graphql'
+import { pageRequiresPermissions } from '$lib/api/client';
+import { PermissionEnum } from '$lib/gql/graphql';
 
 export const load = async (evt) => {
-  await pageRequiresPermissions(evt, PermissionEnum.ManageDiscounts)
+	await pageRequiresPermissions(evt, PermissionEnum.ManageDiscounts);
 
-  return {
-    meta: {
-      title: 'Vouchers Management - Admin',
-    },
-  };
+	return {
+		meta: {
+			title: 'Vouchers Management - Admin',
+		},
+	};
 };

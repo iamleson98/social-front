@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { SelectSkeleton } from '$lib/components/ui/select';
 	import { Skeleton } from '$lib/components/ui/Skeleton';
 	import { TableSkeleton } from '$lib/components/ui/Table';
+	import { SelectSkeleton } from '$lib/components/ui/select';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 </script>
 

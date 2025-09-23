@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Input, TextArea } from '$lib/components/ui/Input';
 	import type { ProductCreateInput, SeoInput } from '$lib/gql/graphql';
+	import { CommonState } from '$lib/utils/common.svelte';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import { PRODUCT_SLUG_MAX_LENGTH } from './utils';
 	import slugify from 'slugify';
 	import { object, string, z } from 'zod';
-	import { PRODUCT_SLUG_MAX_LENGTH } from './utils';
-	import { SitenameCommonClassName } from '$lib/utils/utils';
-	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { CommonState } from '$lib/utils/common.svelte';
 
 	type Props = {
 		seo?: SeoInput;

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { AppRoute } from '$lib/utils';
 	import { page } from '$app/state';
+	import { AppRoute } from '$lib/utils';
 	import type { Snippet } from 'svelte';
 
 	type Props = {

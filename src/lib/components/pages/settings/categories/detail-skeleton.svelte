@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { SelectSkeleton } from '$lib/components/ui/select';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
+	import { SelectSkeleton } from '$lib/components/ui/select';
 </script>
 
 <div class="flex gap-2 flex-row">

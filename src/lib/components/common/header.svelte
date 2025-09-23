@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui';
-	import { AppRoute, getCookieByKey } from '$lib/utils';
+	import { afterNavigate, beforeNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { checkoutStore } from '$lib/stores/app';
+	import { tranFunc } from '$i18n';
+	import { USER_ME_QUERY_STORE } from '$lib/api';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import {
 		IonFlame,
 		Logout,
@@ -11,24 +12,23 @@
 		ShoppingBag,
 		UserCog,
 	} from '$lib/components/icons';
-	import { scale } from 'svelte/transition';
-	import { Input } from '$lib/components/ui/Input';
+	import { Button } from '$lib/components/ui';
 	import { IconButton } from '$lib/components/ui/Button';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { USER_ME_QUERY_STORE } from '$lib/api';
-	import type { Query, User } from '$lib/gql/graphql';
-	import { buildHomePageLink, checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { tranFunc } from '$i18n';
-	import { onMount } from 'svelte';
-	import { ACCESS_TOKEN_KEY, HTTPStatusSuccess } from '$lib/utils/consts';
-	import { afterNavigate, beforeNavigate } from '$app/navigation';
 	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
-	import { READ_ONLY_USER_STORE, setUserStoreValue } from '$lib/stores/auth/user';
-	import { Tween } from 'svelte/motion';
-	import { cubicOut } from 'svelte/easing';
+	import { Input } from '$lib/components/ui/Input';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
-	import { toast } from 'svelte-sonner';
+	import type { Query, User } from '$lib/gql/graphql';
+	import { checkoutStore } from '$lib/stores/app';
+	import { READ_ONLY_USER_STORE, setUserStoreValue } from '$lib/stores/auth/user';
+	import { AppRoute, getCookieByKey } from '$lib/utils';
 	import { handleLogout } from '$lib/utils/auth.svelte';
+	import { ACCESS_TOKEN_KEY, HTTPStatusSuccess } from '$lib/utils/consts';
+	import { buildHomePageLink, checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { onMount } from 'svelte';
+	import { toast } from 'svelte-sonner';
+	import { cubicOut } from 'svelte/easing';
+	import { Tween } from 'svelte/motion';
+	import { scale } from 'svelte/transition';
 
 	const SettingButtonText = $derived.by(() => {
 		if ($READ_ONLY_USER_STORE?.firstName && $READ_ONLY_USER_STORE?.lastName)

@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { Input } from '$lib/components/ui/Input';
-	import { Plus, Trash } from '$lib/components/icons';
-	import Button from '$lib/components/ui/Button/Button.svelte';
-	import { Accordion } from '$lib/components/ui/Accordion';
-	import type { MetadataInput } from '$lib/gql/graphql';
 	import { tranFunc } from '$i18n';
-	import { object, string, z } from 'zod';
+	import { Plus, Trash } from '$lib/components/icons';
+	import { Accordion } from '$lib/components/ui/Accordion';
+	import Button from '$lib/components/ui/Button/Button.svelte';
+	import { Input } from '$lib/components/ui/Input';
+	import type { MetadataInput } from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { addNoDup } from '$lib/utils/utils';
+	import { object, string, z } from 'zod';
 
 	type Props = {
 		title: string;

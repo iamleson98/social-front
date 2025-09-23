@@ -42,7 +42,9 @@
 	const customerSchema = object({
 		firstName: string().nonempty($CommonState.FieldRequiredError),
 		lastName: string().nonempty($CommonState.FieldRequiredError),
-		email: string().nonempty($CommonState.FieldRequiredError).email($tranFunc('error.invalidEmail')),
+		email: string()
+			.nonempty($CommonState.FieldRequiredError)
+			.email($tranFunc('error.invalidEmail')),
 		note: string().nonempty($CommonState.FieldRequiredError),
 	});
 

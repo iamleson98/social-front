@@ -1,5 +1,6 @@
 <script lang="ts" module>
 	import type { Snippet } from 'svelte';
+
 	export type Props = {
 		onclick?: () => void;
 		children?: Snippet;

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import {
 		GIFT_CARD_TAGS_QUERY,
 		GIFTCARD_SETTINGS_QUERY,
@@ -39,13 +40,12 @@
 		type QueryGiftCardsArgs,
 		type QueryGiftCardTagsArgs,
 	} from '$lib/gql/graphql';
+	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { onMount } from 'svelte';
 	import GiftcardExpirationForm from './giftcard-expiration-form.svelte';
+	import { onMount } from 'svelte';
 	import z, { array, boolean, number, object, string } from 'zod';
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
-	import { tranFunc } from '$i18n';
 
 	type Props = {
 		variables: QueryGiftCardsArgs;

@@ -1,5 +1,27 @@
 <script lang="ts">
+	import { page } from '$app/state';
+	import {
+		DRAFT_ORDER_UPDATE_MUTATION,
+		ORDER_DETAIL_QUERY,
+		ORDER_UPDATE_MUTATION,
+	} from '$lib/api/admin/orders';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
+	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
+	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
+	import DetailOrderSkeleton from '$lib/components/pages/settings/orders/detail-order-skeleton.svelte';
+	import OrderLinesAssignSection from '$lib/components/pages/settings/orders/new/order-lines-assign-section.svelte';
+	import OrderDraftDetails from '$lib/components/pages/settings/orders/order-draft-details.svelte';
+	import OrderFulfillment from '$lib/components/pages/settings/orders/order-fulfillment.svelte';
+	import OrderHistory from '$lib/components/pages/settings/orders/order-history.svelte';
+	import OrderLines from '$lib/components/pages/settings/orders/order-lines.svelte';
+	import OrderNormalDetails from '$lib/components/pages/settings/orders/order-normal-details.svelte';
+	import OrderPaymentBalance from '$lib/components/pages/settings/orders/order-payment-balance.svelte';
+	import Sidebar from '$lib/components/pages/settings/orders/sidebar.svelte';
+	import { Alert } from '$lib/components/ui/Alert';
+	import { Badge } from '$lib/components/ui/Badge';
 	import {
 		AddressTypeEnum,
 		FulfillmentStatus,
@@ -13,40 +35,18 @@
 		type Query,
 		type QueryOrderArgs,
 	} from '$lib/gql/graphql';
-	import { page } from '$app/state';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
+	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import {
 		checkIfGraphqlResultHasError,
 		orderStatusBadgeClass,
 		SitenameCommonClassName,
 	} from '$lib/utils/utils';
-	import { onMount } from 'svelte';
-	import {
-		DRAFT_ORDER_UPDATE_MUTATION,
-		ORDER_DETAIL_QUERY,
-		ORDER_UPDATE_MUTATION,
-	} from '$lib/api/admin/orders';
-	import DetailOrderSkeleton from '$lib/components/pages/settings/orders/detail-order-skeleton.svelte';
-	import { Alert } from '$lib/components/ui/Alert';
-	import OrderFulfillment from '$lib/components/pages/settings/orders/order-fulfillment.svelte';
-	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
-	import OrderPaymentBalance from '$lib/components/pages/settings/orders/order-payment-balance.svelte';
-	import OrderHistory from '$lib/components/pages/settings/orders/order-history.svelte';
-	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
-	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Badge } from '$lib/components/ui/Badge';
 	import dayjs from 'dayjs';
-	import OrderLines from '$lib/components/pages/settings/orders/order-lines.svelte';
-	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { differenceBy } from 'es-toolkit/compat';
-	import OrderLinesAssignSection from '$lib/components/pages/settings/orders/new/order-lines-assign-section.svelte';
-	import Sidebar from '$lib/components/pages/settings/orders/sidebar.svelte';
+	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import { CommonState } from '$lib/utils/common.svelte';
-	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
-	import OrderNormalDetails from '$lib/components/pages/settings/orders/order-normal-details.svelte';
-	import OrderDraftDetails from '$lib/components/pages/settings/orders/order-draft-details.svelte';
 
 	let loading = $state(false);
 	let metaRef = $state<GeneralMetadataEditorRef>();

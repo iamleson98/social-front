@@ -1,21 +1,22 @@
 <!doctype html>
 <html lang="en" data-theme="light">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<script
+			defer
+			src="https://cloud.umami.is/script.js"
+			data-website-id="94804e0b-228d-4da0-ac12-a9ac28bbd81a"
+		></script>
+		%sveltekit.head%
+	</head>
 
-<head>
-	<meta charset="utf-8" />
-	<link rel="icon" href="%sveltekit.assets%/favicon.png" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<script defer src="https://cloud.umami.is/script.js" data-website-id="94804e0b-228d-4da0-ac12-a9ac28bbd81a"></script>
-	%sveltekit.head%
-</head>
+	<body data-sveltekit-preload-data="hover" class="bg-gray-100">
+		<div>%sveltekit.body%</div>
+	</body>
 
-<body data-sveltekit-preload-data="hover" class="bg-gray-100">
-	<div>%sveltekit.body%</div>
-</body>
-
-<noscript
-	class="absolute z-1000 flex h-screen place-content-center place-items-center">
-	<p>To use Sitename, you must enable JavaScript or use a JavaScript compatible browser.</p>
-</noscript>
-
+	<noscript class="absolute z-1000 flex h-screen place-content-center place-items-center">
+		<p>To use Sitename, you must enable JavaScript or use a JavaScript compatible browser.</p>
+	</noscript>
 </html>

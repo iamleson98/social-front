@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import {
 		METADATA_DELETE_MUTATION,
 		METADATA_UPDATE_MUTATION,
@@ -8,10 +9,9 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import type { MetadataInput, MetadataItem, Mutation } from '$lib/gql/graphql';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
-	import { noop, omit } from 'es-toolkit';
-	import type { AnyVariables, TypedDocumentNode } from '@urql/core';
 	import MetadataEditor from './metadata-editor.svelte';
-	import { tranFunc } from '$i18n';
+	import type { AnyVariables, TypedDocumentNode } from '@urql/core';
+	import { noop, omit } from 'es-toolkit';
 
 	type Props = {
 		metadata?: MetadataItem[];

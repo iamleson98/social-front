@@ -1,14 +1,14 @@
 <script lang="ts">
+	import PriceDisplay from '$lib/components/common/price-display.svelte';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import Thumbnail from '$lib/components/common/thumbnail.svelte';
+	import { Button } from '$lib/components/ui/Button';
+	import { Input } from '$lib/components/ui/Input';
 	import type { TableColumnProps } from '$lib/components/ui/Table';
 	import Table from '$lib/components/ui/Table/table.svelte';
 	import type { Fulfillment, FulfillmentLine } from '$lib/gql/graphql';
 	import { stringSlicer } from '$lib/utils/utils';
-	import PriceDisplay from '$lib/components/common/price-display.svelte';
-	import { Button } from '$lib/components/ui/Button';
-	import { Input } from '$lib/components/ui/Input';
 	import type { RefundQuantityProps } from './utils';
-	import Thumbnail from '$lib/components/common/thumbnail.svelte';
-	import SectionHeader from '$lib/components/common/section-header.svelte';
 
 	type Props = {
 		fulfilledFulfillments: Fulfillment[];

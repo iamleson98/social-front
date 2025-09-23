@@ -1,9 +1,9 @@
 <script lang="ts">
+	import { debounceInput } from '$lib/actions/input-debounce';
 	import { shortcuts } from '$lib/actions/shortcut';
 	import Icon from '$lib/components/icons/icon.svelte';
-	import { classNames, randomID } from '$lib/utils/utils';
-	import { debounceInput } from '$lib/actions/input-debounce';
 	import { INPUT_BUTTON_SIZE_MAP } from '$lib/components/ui/Button/button.types';
+	import { classNames, randomID } from '$lib/utils/utils';
 	import { INPUT_CLASSES, type InputProps } from './input.types';
 	import Label from './label.svelte';
 

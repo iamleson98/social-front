@@ -26,7 +26,7 @@
 			expires: new Date(3000, 1, 1),
 			secure: true,
 			sameSite: 'lax',
-      path: '/'
+			path: '/',
 		});
 
 		return READ_ONLY_USER_STORE.subscribe((user) => {
@@ -38,7 +38,7 @@
 						expires: new Date(3000, 1, 1),
 						secure: true,
 						sameSite: 'lax',
-						path: '/'
+						path: '/',
 					});
 				}
 			}

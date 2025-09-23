@@ -1,13 +1,13 @@
 <script lang="ts" generics="T extends Record<string, unknown>, K extends string">
-	import type { AnyVariables, RequestPolicy, TypedDocumentNode } from '@urql/core';
-	import Table from './table.svelte';
-	import type { GraphqlPaginationArgs, RowOptions, SortState, TableProps } from './types';
 	import { operationStore } from '$lib/api/operation';
+	import { Alert } from '$lib/components/ui/Alert';
 	import { type PageInfo, type Query } from '$lib/gql/graphql';
 	import TableSkeleton from './table-skeleton.svelte';
-	import { Alert } from '$lib/components/ui/Alert';
-	import { tick } from 'svelte';
+	import Table from './table.svelte';
+	import type { GraphqlPaginationArgs, RowOptions, SortState, TableProps } from './types';
+	import type { AnyVariables, RequestPolicy, TypedDocumentNode } from '@urql/core';
 	import { get } from 'es-toolkit/compat';
+	import { tick } from 'svelte';
 
 	type Props = {
 		query: TypedDocumentNode<any, AnyVariables & GraphqlPaginationArgs>;

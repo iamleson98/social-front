@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { EditorJSComponent } from '$lib/components/common/editorjs';
 	import { tranFunc } from '$i18n';
+	import { EditorJSComponent } from '$lib/components/common/editorjs';
 	import type { OutputData } from '@editorjs/editorjs';
 
 	type Props = {

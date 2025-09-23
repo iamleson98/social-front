@@ -1,13 +1,13 @@
 <script lang="ts">
-	import type { LexicalEditor } from "lexical";
+	import type { LexicalEditor } from 'lexical';
 
-  type Props = {
-    editor: LexicalEditor;
-  };
+	type Props = {
+		editor: LexicalEditor;
+	};
 
-  let { editor }: Props = $props();
+	let { editor }: Props = $props();
 
-  $effect(() => {
-    // if (!editor.hasNodes([Youtube]))
-  })
+	$effect(() => {
+		// if (!editor.hasNodes([Youtube]))
+	});
 </script>

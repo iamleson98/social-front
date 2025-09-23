@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { type LexicalEditor } from 'lexical';
 	import {
 		registerTableCellUnmergeTransform,
 		registerTablePlugin,
 		registerTableSelectionObserver,
 		setScrollableTablesActive,
-		TableCellNode
+		TableCellNode,
 	} from '@lexical/table';
+	import { type LexicalEditor } from 'lexical';
 
 	type Props = {
 		editor: LexicalEditor;
@@ -34,7 +34,7 @@
 		hasCellMerge = true,
 		hasCellBackgroundColor = true,
 		hasTabHandler = true,
-		hasHorizontalScroll = false
+		hasHorizontalScroll = false,
 	}: Props = $props();
 
 	$effect(() => {

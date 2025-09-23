@@ -12,8 +12,8 @@
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
-	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import {
 		AttributeInputTypeEnum,
 		type Query,
@@ -30,7 +30,6 @@
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
-	import ColorPicker, { ChromeVariant } from 'svelte-awesome-color-picker';
 	import {
 		HumanizeUnit,
 		inferMetricSystemAndUnitsOfFromUnit,
@@ -38,6 +37,7 @@
 		MetricSystem,
 		MetricUnit,
 	} from './consts';
+	import ColorPicker, { ChromeVariant } from 'svelte-awesome-color-picker';
 
 	type Props = {
 		inputType: AttributeInputTypeEnum;
@@ -149,7 +149,9 @@
 
 				loading = false;
 
-				if (checkIfGraphqlResultHasError(result, 'attributeValueDelete', $CommonState.DeleteSuccess))
+				if (
+					checkIfGraphqlResultHasError(result, 'attributeValueDelete', $CommonState.DeleteSuccess)
+				)
 					return;
 
 				forceReExecuteGraphqlQuery = true;

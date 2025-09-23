@@ -6,8 +6,8 @@
 	import { Modal } from '$lib/components/ui/Modal';
 	import { SelectSkeleton } from '$lib/components/ui/select';
 	import { type Query, type QueryOrderArgs } from '$lib/gql/graphql';
-	import GeneralMetadataEditor from '../common/general-metadata-editor.svelte';
 	import type { GeneralMetadataEditorRef } from '../common';
+	import GeneralMetadataEditor from '../common/general-metadata-editor.svelte';
 
 	type Props = {
 		orderID: string;

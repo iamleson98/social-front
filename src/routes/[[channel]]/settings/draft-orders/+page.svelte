@@ -5,8 +5,8 @@
 	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
-	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
 	import {
 		OrderSortField,
 		type Order,

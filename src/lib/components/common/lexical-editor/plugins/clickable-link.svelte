@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { findMatchingDOM } from './consts';
 	import { $isLinkNode as isLinkNode } from '@lexical/link';
 	import { $findMatchingParent as findMatchingParent } from '@lexical/utils';
 	import {
@@ -9,9 +10,8 @@
 		getNearestEditorFromDOMNode,
 		isDOMNode,
 		isHTMLAnchorElement,
-		type LexicalEditor
+		type LexicalEditor,
 	} from 'lexical';
-	import { findMatchingDOM } from './consts';
 
 	type Props = {
 		editor: LexicalEditor;
@@ -68,7 +68,7 @@
 			url,
 			newTab || isMiddle || event.metaKey || event.ctrlKey || urlTarget === '_blank'
 				? '_blank'
-				: '_self'
+				: '_self',
 		);
 		event.preventDefault();
 	};

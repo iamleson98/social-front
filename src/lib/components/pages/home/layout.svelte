@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Sidebar from './sidebar.svelte';
 	import ProductListSection from './product-list-section.svelte';
 	import RecommendationSection from './recommendation-section.svelte';
+	import Sidebar from './sidebar.svelte';
 </script>
 
 <div class="flex gap-6">

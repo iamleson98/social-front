@@ -1,15 +1,15 @@
 <script lang="ts">
+	import { PRODUCT_DETAIL_QUERY } from '$lib/api';
+	import { operationStore } from '$lib/api/operation';
+	import ProductPricingPannel from '$lib/components/pages/products/detail/product-pricing-pannel.svelte';
+	import ProductSlideShowPannel from '$lib/components/pages/products/detail/product-slide-show-pannel.svelte';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import { type Query } from '$lib/gql/graphql';
 	import { slideShowManager } from '$lib/stores/ui/slideshow';
-	import { CHANNEL_KEY, COUNTRY_CODE_KEY } from '$lib/utils/consts';
-	import { onMount } from 'svelte';
-	import ProductSlideShowPannel from '$lib/components/pages/products/detail/product-slide-show-pannel.svelte';
-	import { operationStore } from '$lib/api/operation';
-	import { PRODUCT_DETAIL_QUERY } from '$lib/api';
-	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import { DEFAULT_CHANNEL } from '$lib/utils/channels';
-	import ProductPricingPannel from '$lib/components/pages/products/detail/product-pricing-pannel.svelte';
+	import { CHANNEL_KEY, COUNTRY_CODE_KEY } from '$lib/utils/consts';
+	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
+	import { onMount } from 'svelte';
 
 	type Props = {
 		productSlug: string;
@@ -20,7 +20,7 @@
 	const CHANNEL_SLUG = clientSideGetCookieOrDefault(CHANNEL_KEY, DEFAULT_CHANNEL.slug);
 	const COUNTRY_CODE = clientSideGetCookieOrDefault(
 		COUNTRY_CODE_KEY,
-		DEFAULT_CHANNEL.defaultCountryCode
+		DEFAULT_CHANNEL.defaultCountryCode,
 	);
 
 	const productDetailStore = operationStore<Pick<Query, 'product'>>({
@@ -28,9 +28,9 @@
 		variables: {
 			slug: productSlug,
 			channel: CHANNEL_SLUG,
-			countryCode: COUNTRY_CODE
+			countryCode: COUNTRY_CODE,
 		},
-		requestPolicy: 'cache-and-network'
+		requestPolicy: 'cache-and-network',
 	});
 
 	onMount(() => {

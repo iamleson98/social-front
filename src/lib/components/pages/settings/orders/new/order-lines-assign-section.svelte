@@ -1,7 +1,15 @@
 <script lang="ts">
+	import { ORDER_LINES_CREATE_MUTATION, VARIANTS_FOR_ORDER_QUERY } from '$lib/api/admin/orders';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { Plus, Search } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
+	import { Alert } from '$lib/components/ui/Alert';
+	import { Checkbox, DebounceInput } from '$lib/components/ui/Input';
+	import { Modal } from '$lib/components/ui/Modal';
+	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
 		type AddressInput,
 		type Mutation,
@@ -10,18 +18,15 @@
 		type Product,
 		type QueryProductsArgs,
 	} from '$lib/gql/graphql';
-	import { checkIfGraphqlResultHasError, classNames, SitenameCommonClassName, stringSlicer } from '$lib/utils/utils';
-	import { Alert } from '$lib/components/ui/Alert';
-	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
-	import { get, set } from 'es-toolkit/compat';
-	import { Checkbox, DebounceInput } from '$lib/components/ui/Input';
-	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { AppRoute } from '$lib/utils';
-	import PriceDisplay from '$lib/components/common/price-display.svelte';
-	import { Modal } from '$lib/components/ui/Modal';
-	import { ORDER_LINES_CREATE_MUTATION, VARIANTS_FOR_ORDER_QUERY } from '$lib/api/admin/orders';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import {
+		checkIfGraphqlResultHasError,
+		classNames,
+		SitenameCommonClassName,
+		stringSlicer,
+	} from '$lib/utils/utils';
 	import { omit } from 'es-toolkit';
+	import { get, set } from 'es-toolkit/compat';
 
 	type Props = {
 		order: Order;

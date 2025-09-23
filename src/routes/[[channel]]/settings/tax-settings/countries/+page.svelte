@@ -19,9 +19,9 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
-	import { SelectSkeleton } from '$lib/components/ui/select';
 	import { type TabItem } from '$lib/components/ui/Tab';
 	import { TableSkeleton } from '$lib/components/ui/Table';
+	import { SelectSkeleton } from '$lib/components/ui/select';
 	import type {
 		CountryCode,
 		Mutation,
@@ -125,7 +125,11 @@
 		loading = false;
 
 		if (
-			checkIfGraphqlResultHasError(result, 'taxCountryConfigurationUpdate', $CommonState.EditSuccess)
+			checkIfGraphqlResultHasError(
+				result,
+				'taxCountryConfigurationUpdate',
+				$CommonState.EditSuccess,
+			)
 		)
 			return;
 
@@ -182,7 +186,11 @@
 		loading = false;
 
 		if (
-			checkIfGraphqlResultHasError(result, 'taxCountryConfigurationUpdate', $CommonState.EditSuccess)
+			checkIfGraphqlResultHasError(
+				result,
+				'taxCountryConfigurationUpdate',
+				$CommonState.EditSuccess,
+			)
 		)
 			return;
 

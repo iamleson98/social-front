@@ -6,8 +6,8 @@
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
-	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
+	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
 	import type { Query, QueryShippingZonesArgs, ShippingZone } from '$lib/gql/graphql';
 	import { onMount } from 'svelte';
 

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { BUTTON_VARIANT_COLORS_MAP, type ButtonProps } from './button.types';
-	import { Icon, type IconContent } from '$lib/components/icons';
 	import { debounceClick } from '$lib/actions/input-debounce';
-	import { INPUT_BUTTON_SIZE_MAP } from './button.types';
+	import { Icon, type IconContent } from '$lib/components/icons';
 	import { classNames } from '$lib/utils/utils';
+	import { BUTTON_VARIANT_COLORS_MAP, type ButtonProps } from './button.types';
+	import { INPUT_BUTTON_SIZE_MAP } from './button.types';
 
 	type IconProps = {
 		icon?: IconContent;

@@ -1,12 +1,12 @@
-import { pageRequiresPermissions } from "$lib/api/client"
-import { PermissionEnum } from "$lib/gql/graphql"
+import { pageRequiresPermissions } from '$lib/api/client';
+import { PermissionEnum } from '$lib/gql/graphql';
 
 export const load = async (evt) => {
-  await pageRequiresPermissions(evt, PermissionEnum.ManagePages);
+	await pageRequiresPermissions(evt, PermissionEnum.ManagePages);
 
-  return {
-    meta: {
-      title: 'Blogs - Admin',
-    },
-  };
+	return {
+		meta: {
+			title: 'Blogs - Admin',
+		},
+	};
 };

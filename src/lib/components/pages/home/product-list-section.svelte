@@ -1,13 +1,13 @@
 <script lang="ts">
-	import ProductFilterStateListener from './product-filter-state-listener.svelte';
-	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
-	import ProductListPage from './product-list-page.svelte';
-	import { onMount, tick } from 'svelte';
-	import { Modal } from '$lib/components/ui/Modal';
 	import { pushState, replaceState } from '$app/navigation';
-	import ProductPreview from './product-preview.svelte';
-	import { PRODUCT_PREVIEW_STORE } from './common';
 	import { tranFunc } from '$i18n';
+	import { Modal } from '$lib/components/ui/Modal';
+	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
+	import { PRODUCT_PREVIEW_STORE } from './common';
+	import ProductFilterStateListener from './product-filter-state-listener.svelte';
+	import ProductListPage from './product-list-page.svelte';
+	import ProductPreview from './product-preview.svelte';
+	import { onMount, tick } from 'svelte';
 
 	let productLoadPageVariables = $state.raw([$productFilterParamStore]);
 

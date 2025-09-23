@@ -9,7 +9,7 @@
 
 	let preorderData = $state<Preorder>({
 		isPreorder: false,
-		daysToShip: 0
+		daysToShip: 0,
 	});
 </script>
 

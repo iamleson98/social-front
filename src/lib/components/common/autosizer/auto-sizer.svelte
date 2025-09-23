@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { onDestroy, onMount, type Snippet } from 'svelte';
 	import { createDetectElementResize } from './detectElementResize.js';
+	import { onDestroy, onMount, type Snippet } from 'svelte';
 
 	type Props = {
 		onResize?: ({ height, width }: { height: number; width: number }) => void;

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import {
 		ASSIGN_PRODUCTS_TO_COLLECTION_MUTATION,
 		COLLECTION_PRODUCTS_QUERY,
@@ -6,6 +7,7 @@
 		REORDER_PRODUCTS_IN_COLLECTION_MUTATION,
 	} from '$lib/api/admin/collections';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { Trash } from '$lib/components/icons';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
@@ -22,10 +24,8 @@
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
-	import type { AnyVariables, TypedDocumentNode } from '@urql/core';
 	import ProductAssignModal from './product-assign-modal.svelte';
-	import Thumbnail from '$lib/components/common/thumbnail.svelte';
-	import { tranFunc } from '$i18n';
+	import type { AnyVariables, TypedDocumentNode } from '@urql/core';
 
 	type Props = {
 		/**if not provided, meaning this is create page*/

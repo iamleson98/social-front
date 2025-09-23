@@ -1,40 +1,40 @@
 <script lang="ts">
 	import { ChevronDown } from '$lib/components/icons';
+	import { Button, IconButton } from '$lib/components/ui/Button';
+	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import {
 		LEXICAL_DEFAULT_BLOCK_FORMATS,
 		DEFAULT_INLINE_FORMATS,
 		type BlockType,
 		type InlineType,
-		type Styleformat
+		type Styleformat,
 	} from '$lib/configs/lexical';
+	import {
+		$isListNode as isListNode,
+		INSERT_CHECK_LIST_COMMAND,
+		INSERT_ORDERED_LIST_COMMAND,
+		INSERT_UNORDERED_LIST_COMMAND,
+		ListNode,
+	} from '@lexical/list';
+	import {
+		$createHeadingNode as createHeadingNode,
+		$createQuoteNode as createQuoteNode,
+		$isHeadingNode as isHeadingNode,
+	} from '@lexical/rich-text';
+	import { $setBlocksType as setBlocksType } from '@lexical/selection';
+	import {
+		$getNearestNodeOfType as getNearestNodeOfType,
+		$findMatchingParent as findMatchingParent,
+	} from '@lexical/utils';
 	import {
 		$isRangeSelection as isRangeSelection,
 		FORMAT_TEXT_COMMAND,
 		$isRootOrShadowRoot as isRootOrShadowRoot,
 		type LexicalEditor,
 		$getSelection as getSelection,
-		$createParagraphNode as createParagraphNode
+		$createParagraphNode as createParagraphNode,
 	} from 'lexical';
-	import {
-		$getNearestNodeOfType as getNearestNodeOfType,
-		$findMatchingParent as findMatchingParent
-	} from '@lexical/utils';
-	import {
-		$isListNode as isListNode,
-		INSERT_CHECK_LIST_COMMAND,
-		INSERT_ORDERED_LIST_COMMAND,
-		INSERT_UNORDERED_LIST_COMMAND,
-		ListNode
-	} from '@lexical/list';
-	import {
-		$createHeadingNode as createHeadingNode,
-		$createQuoteNode as createQuoteNode,
-		$isHeadingNode as isHeadingNode
-	} from '@lexical/rich-text';
-	import { $setBlocksType as setBlocksType } from '@lexical/selection';
-	import { Button, IconButton } from '$lib/components/ui/Button';
-	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 
 	type Props = {
 		/** indicates if editing mode is allowed */
@@ -74,7 +74,7 @@
 				newInlineState[key as InlineType] = {
 					icon: inlineFormatState[key as InlineType].icon,
 					tip: inlineFormatState[key as InlineType].tip,
-					active: selection.hasFormat(key as InlineType)
+					active: selection.hasFormat(key as InlineType),
 				};
 			}
 

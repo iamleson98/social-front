@@ -11,13 +11,14 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import ApplicationType from '$lib/components/pages/settings/vouchers/application-type.svelte';
+	import DetailSkeleton from '$lib/components/pages/settings/vouchers/detail-skeleton.svelte';
 	import DiscountType from '$lib/components/pages/settings/vouchers/discount-type.svelte';
 	import EffectiveTime from '$lib/components/pages/settings/vouchers/effective-time.svelte';
 	import Requirements from '$lib/components/pages/settings/vouchers/requirements.svelte';
-	import DetailSkeleton from '$lib/components/pages/settings/vouchers/detail-skeleton.svelte';
 	import Summary from '$lib/components/pages/settings/vouchers/summary.svelte';
 	import UsageLimit from '$lib/components/pages/settings/vouchers/usage-limit.svelte';
 	import VoucherCodes from '$lib/components/pages/settings/vouchers/voucher-codes.svelte';
@@ -38,13 +39,12 @@
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
+	import { pick } from 'es-toolkit';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { string } from 'zod';
-	import { pick } from 'es-toolkit';
-	import { CommonState } from '$lib/utils/common.svelte';
-	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 
 	const voucherQuery = operationStore<Pick<Query, 'voucher'>, QueryVoucherArgs>({
 		query: VOUCHER_DETAIL_QUERY,

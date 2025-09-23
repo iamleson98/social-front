@@ -38,7 +38,9 @@
 				/>
 			{/if}
 
-			<span class="text-sm text-gray-600">:{isSystemEmoji(emoji) ? emoji.short_names.join(': :') : emoji.name}:</span>
+			<span class="text-sm text-gray-600"
+				>:{isSystemEmoji(emoji) ? emoji.short_names.join(': :') : emoji.name}:</span
+			>
 		</div>
 	{/if}
 </div>

@@ -12,7 +12,7 @@
 
 <Card cardTitle="Product Attributes">
 	{#each data.attributes as selectedAttribute, idx (idx)}
-		<div class="flex items-center mb-2  text-sm">
+		<div class="flex items-center mb-2 text-sm">
 			<div class="w-1/6">
 				{selectedAttribute.attribute.name}
 			</div>

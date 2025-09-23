@@ -8,6 +8,8 @@
 	let { children, class: className = '' }: Props = $props();
 </script>
 
-<div class="font-semibold! text-gray-700! text-base! mb-2 flex items-center justify-between {className}">
+<div
+	class="font-semibold! text-gray-700! text-base! mb-2 flex items-center justify-between {className}"
+>
 	{@render children()}
 </div>

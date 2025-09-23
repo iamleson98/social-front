@@ -2,8 +2,8 @@
 	import type { KeyType } from '$lib/actions/shortcut';
 	import { Search } from '$lib/components/icons';
 	import { Input } from '$lib/components/ui/Input';
-	import type { ChangeEventHandler, KeyboardEventHandler } from 'svelte/elements';
 	import { EMOJI_PER_ROW, NavigationDirection } from '../types';
+	import type { ChangeEventHandler, KeyboardEventHandler } from 'svelte/elements';
 
 	type Props = {
 		value: string;

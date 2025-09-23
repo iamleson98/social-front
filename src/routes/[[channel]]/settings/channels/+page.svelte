@@ -10,18 +10,18 @@
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown, type MenuItemProps } from '$lib/components/ui/Dropdown';
 	import { Modal } from '$lib/components/ui/Modal';
-	import { Select, type SelectOption } from '$lib/components/ui/select';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import {
 		Table,
 		TableSkeleton,
 		type SortState,
 		type TableColumnProps,
 	} from '$lib/components/ui/Table';
+	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import type { Channel, Mutation, MutationChannelDeleteArgs, Query } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 
 	const channelsQuery = operationStore<Pick<Query, 'channels'>>({
 		requestPolicy: 'cache-and-network',

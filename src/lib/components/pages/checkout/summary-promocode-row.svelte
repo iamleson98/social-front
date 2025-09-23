@@ -1,17 +1,17 @@
 <script lang="ts">
+	import { CHECKOUT_REMOVE_PROMO_CODE_MUTATION } from '$lib/api/checkout';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { Trash } from '$lib/components/icons';
+	import { IconButton } from '$lib/components/ui/Button';
 	import {
 		LanguageCodeEnum,
 		type Maybe,
 		type Money as MoneyType,
 		type Mutation,
-		type MutationCheckoutRemovePromoCodeArgs
+		type MutationCheckoutRemovePromoCodeArgs,
 	} from '$lib/gql/graphql';
-	import Money from './money.svelte';
-	import { IconButton } from '$lib/components/ui/Button';
-	import { Trash } from '$lib/components/icons';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { CHECKOUT_REMOVE_PROMO_CODE_MUTATION } from '$lib/api/checkout';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import Money from './money.svelte';
 
 	type Props = {
 		editable?: boolean;
@@ -47,9 +47,7 @@
 
 		loading = false;
 
-		if (
-			checkIfGraphqlResultHasError(removeResult, 'checkoutRemovePromoCode', 'Promo code removed')
-		)
+		if (checkIfGraphqlResultHasError(removeResult, 'checkoutRemovePromoCode', 'Promo code removed'))
 			return;
 	};
 </script>

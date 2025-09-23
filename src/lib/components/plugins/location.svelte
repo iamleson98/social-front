@@ -8,7 +8,7 @@
 		HTTPStatusSuccess,
 		LATITUDE,
 		LONGITUDE,
-		type NominatimOsmProps
+		type NominatimOsmProps,
 	} from '$lib/utils/consts';
 	import { clientSideSetCookie } from '$lib/utils/cookies';
 	import { LOCATION_KEY } from '$lib/utils/preferences';
@@ -35,7 +35,7 @@
 		}
 
 		const {
-			coords: { latitude, longitude }
+			coords: { latitude, longitude },
 		} = geoPosition;
 
 		// save local storage
@@ -43,15 +43,15 @@
 			LOCATION_KEY,
 			JSON.stringify({
 				latitude,
-				longitude
-			})
+				longitude,
+			}),
 		);
 
 		const fetchResult = await fetch(
 			PUBLIC_NOMINATIM_OSM_API.replace(LATITUDE, latitude.toString()).replace(
 				LONGITUDE,
-				longitude.toString()
-			)
+				longitude.toString(),
+			),
 		);
 
 		if (fetchResult.status === HTTPStatusSuccess) {
@@ -64,7 +64,7 @@
 			const suportedChannel = CHANNELS.find(
 				(chan) =>
 					chan.defaultCountryCode ===
-					(locationData.address.country_code.toUpperCase() as CountryCode)
+					(locationData.address.country_code.toUpperCase() as CountryCode),
 			);
 			if (suportedChannel) {
 				channelSlug = suportedChannel.slug;
@@ -75,13 +75,13 @@
 				secure: true,
 				expires: new Date(3000, 1, 1),
 				sameSite: 'lax',
-				path: '/'
+				path: '/',
 			});
 			clientSideSetCookie(COUNTRY_CODE_KEY, countryCode, {
 				secure: true,
 				expires: new Date(3000, 1, 1),
 				sameSite: 'lax',
-				path: '/'
+				path: '/',
 			});
 
 			return;
@@ -89,7 +89,7 @@
 
 		setTimeout(
 			() => handleBrowserGetLocationSuccess(geoPosition as GeolocationPosition, tryTime + 1),
-			1100 // Open Street API allows 1 request/sec
+			1100, // Open Street API allows 1 request/sec
 		);
 	};
 
@@ -123,8 +123,8 @@
 			handleBrowserGetLocationSuccess,
 			handleBrowserGetLocationError,
 			{
-				enableHighAccuracy: true
-			}
+				enableHighAccuracy: true,
+			},
 		);
 	});
 </script>

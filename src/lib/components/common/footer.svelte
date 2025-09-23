@@ -1,16 +1,16 @@
 <script lang="ts">
-	import { AppRoute } from '$lib/utils';
-	import { Facebook, Instagram, Twitter } from '$lib/components/icons/SvgOuterIcon';
 	import { SUPPORTED_LANGUAGES, switchTranslationLanguage } from '$i18n';
-	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
+	import { Facebook, Instagram, Twitter } from '$lib/components/icons/SvgOuterIcon';
 	import { Button } from '$lib/components/ui';
-	import { clientSideGetCookieOrDefault, clientSideSetCookie } from '$lib/utils/cookies';
-	import { LANGUAGE_KEY } from '$lib/utils/consts';
-	import { onMount } from 'svelte';
-	import { LanguageCodeEnum } from '$lib/gql/graphql';
-	import { buildHomePageLink } from '$lib/utils/utils';
-	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
+	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
+	import { LanguageCodeEnum } from '$lib/gql/graphql';
+	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
+	import { AppRoute } from '$lib/utils';
+	import { LANGUAGE_KEY } from '$lib/utils/consts';
+	import { clientSideGetCookieOrDefault, clientSideSetCookie } from '$lib/utils/cookies';
+	import { buildHomePageLink } from '$lib/utils/utils';
+	import { onMount } from 'svelte';
 
 	let activeLanguage = $state(SUPPORTED_LANGUAGES[0]);
 
@@ -21,14 +21,14 @@
 			secure: true,
 			path: '/',
 			expires: new Date(3000, 1, 1),
-			sameSite: 'lax'
+			sameSite: 'lax',
 		});
 	};
 
 	onMount(async () => {
 		const cookieLang = clientSideGetCookieOrDefault(
 			LANGUAGE_KEY,
-			LanguageCodeEnum.En
+			LanguageCodeEnum.En,
 		).toUpperCase();
 		const supportedLang = SUPPORTED_LANGUAGES.find((lang) => lang.code === cookieLang);
 		if (supportedLang) {

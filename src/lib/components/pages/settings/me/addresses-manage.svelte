@@ -1,9 +1,17 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
+	import {
+		ACCOUNT_ADDRESS_CREATE_MUTATION,
+		ACCOUNT_ADDRESS_DELETE_MUTATION,
+		ACCOUNT_ADDRESS_UPDATE_MUTATION,
+		ACCOUNT_SET_DEFAULT_ADDRESS_MUTATION,
+	} from '$lib/api/account';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import UserAddress from '$lib/components/common/user-address/user-address.svelte';
 	import { Edit, Plus, Trash } from '$lib/components/icons';
+	import AddressForm from '$lib/components/pages/checkout/address-form.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Checkbox, Label } from '$lib/components/ui/Input';
-	import AddressForm from '$lib/components/pages/checkout/address-form.svelte';
 	import type {
 		Address,
 		AddressInput,
@@ -15,20 +23,12 @@
 		User,
 	} from '$lib/gql/graphql';
 	import { AddressTypeEnum } from '$lib/gql/graphql';
-	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
-	import { CHANNEL_KEY } from '$lib/utils/consts';
-	import { DEFAULT_CHANNEL } from '$lib/utils/channels';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import {
-		ACCOUNT_ADDRESS_CREATE_MUTATION,
-		ACCOUNT_ADDRESS_DELETE_MUTATION,
-		ACCOUNT_ADDRESS_UPDATE_MUTATION,
-		ACCOUNT_SET_DEFAULT_ADDRESS_MUTATION,
-	} from '$lib/api/account';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { ME_PAGE_USER_STORE } from '$lib/stores/app/me';
-	import { tranFunc } from '$i18n';
+	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { DEFAULT_CHANNEL } from '$lib/utils/channels';
+	import { CHANNEL_KEY } from '$lib/utils/consts';
+	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 
 	let showAddressCreateForm = $state(false);
 	let loading = $state(false);

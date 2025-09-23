@@ -1,132 +1,149 @@
-import { default as vietnamese } from './vi';
-import { LanguageCodeEnum } from "$lib/gql/graphql";
-import { derived, writable } from "svelte/store";
-import type { Component } from 'svelte';
 import { JapanFlag, KoreaFlag, UsaFlag, VietnamFlag } from '$lib/components/icons/SvgOuterIcon';
-import type { RequestEvent } from '@sveltejs/kit';
+import { LanguageCodeEnum } from '$lib/gql/graphql';
 import { LANGUAGE_KEY } from '$lib/utils/consts';
+import { default as vietnamese } from './vi';
+import type { RequestEvent } from '@sveltejs/kit';
+import type { Component } from 'svelte';
+import { derived, writable } from 'svelte/store';
 
 const placeholderRegex = /{{([a-zA-Z ]+)}}/g;
 
 type LanguageProps = { code: LanguageCode; name: string; icon: Component };
 
 export const SUPPORTED_LANGUAGES: LanguageProps[] = [
-  { icon: UsaFlag, name: 'English', code: LanguageCodeEnum.En },
-  { icon: VietnamFlag, name: 'Tiếng Việt', code: LanguageCodeEnum.Vi },
-  { icon: KoreaFlag, name: '한국어', code: LanguageCodeEnum.Ko },
-  { icon: JapanFlag, name: '日本語', code: LanguageCodeEnum.Ja },
+	{ icon: UsaFlag, name: 'English', code: LanguageCodeEnum.En },
+	{ icon: VietnamFlag, name: 'Tiếng Việt', code: LanguageCodeEnum.Vi },
+	{ icon: KoreaFlag, name: '한국어', code: LanguageCodeEnum.Ko },
+	{ icon: JapanFlag, name: '日本語', code: LanguageCodeEnum.Ja },
 ];
 
 const findTemplatePlaceholders = (template: string): string[] => {
-  const matches = template.matchAll(placeholderRegex);
-  if (!matches) return [];
+	const matches = template.matchAll(placeholderRegex);
+	if (!matches) return [];
 
-  const res = [];
-  for (const value of matches) {
-    res.push(value[1]);
-  }
+	const res = [];
+	for (const value of matches) {
+		res.push(value[1]);
+	}
 
-  return res;
+	return res;
 };
 
-const parseTranslationObject = (obj: Record<string, unknown>, trans: Translation, prefix: string = ""): Translation => {
-  for (const key in obj) {
-    const value = obj[key];
-    const newPrefix = prefix ? `${prefix}.${key}` : key;
+const parseTranslationObject = (
+	obj: Record<string, unknown>,
+	trans: Translation,
+	prefix: string = '',
+): Translation => {
+	for (const key in obj) {
+		const value = obj[key];
+		const newPrefix = prefix ? `${prefix}.${key}` : key;
 
-    if (typeof value === 'string') {
-      const matches = findTemplatePlaceholders(value);
-      trans[newPrefix] = {
-        template: value,
-        args: matches.length ? new Set(matches) : null,
-      };
-    } else if (typeof value === 'object') {
-      parseTranslationObject(value as Record<string, unknown>, trans, newPrefix);
-    }
-  }
+		if (typeof value === 'string') {
+			const matches = findTemplatePlaceholders(value);
+			trans[newPrefix] = {
+				template: value,
+				args: matches.length ? new Set(matches) : null,
+			};
+		} else if (typeof value === 'object') {
+			parseTranslationObject(value as Record<string, unknown>, trans, newPrefix);
+		}
+	}
 
-  return trans;
+	return trans;
 };
 
-export type LanguageCode = LanguageCodeEnum.Vi | LanguageCodeEnum.Ja | LanguageCodeEnum.Ko | LanguageCodeEnum.En | 'vi-VN' | 'en-US';
+export type LanguageCode =
+	| LanguageCodeEnum.Vi
+	| LanguageCodeEnum.Ja
+	| LanguageCodeEnum.Ko
+	| LanguageCodeEnum.En
+	| 'vi-VN'
+	| 'en-US';
 
 export const languageSupportInfer = (language: LanguageCode | LanguageCodeEnum) => {
-  switch (language) {
-    case LanguageCodeEnum.En:
-    case 'en-US':
-      return LanguageCodeEnum.En;
-    case LanguageCodeEnum.Vi:
-    case 'vi-VN':
-      return LanguageCodeEnum.Vi;
-    case LanguageCodeEnum.Ko:
-      return LanguageCodeEnum.Ko;
-    case LanguageCodeEnum.Ja:
-      return LanguageCodeEnum.Ja;
+	switch (language) {
+		case LanguageCodeEnum.En:
+		case 'en-US':
+			return LanguageCodeEnum.En;
+		case LanguageCodeEnum.Vi:
+		case 'vi-VN':
+			return LanguageCodeEnum.Vi;
+		case LanguageCodeEnum.Ko:
+			return LanguageCodeEnum.Ko;
+		case LanguageCodeEnum.Ja:
+			return LanguageCodeEnum.Ja;
 
-    default:
-      return LanguageCodeEnum.En;
-  }
+		default:
+			return LanguageCodeEnum.En;
+	}
 };
 
 const TRANS_MAP: Partial<Record<LanguageCodeEnum, Translation>> = {
-  [LanguageCodeEnum.Vi]: parseTranslationObject(vietnamese, {}),
+	[LanguageCodeEnum.Vi]: parseTranslationObject(vietnamese, {}),
 };
 
 const innerStore = writable(TRANS_MAP.VI);
 
 export const switchTranslationLanguage = async (language: LanguageCode) => {
-  const lang = languageSupportInfer(language);
-  const trans = await getTranslation(lang);
-  innerStore.set(trans!);
+	const lang = languageSupportInfer(language);
+	const trans = await getTranslation(lang);
+	innerStore.set(trans!);
 };
 
 const getTranslation = async (lang: LanguageCodeEnum) => {
-  if (TRANS_MAP[lang]) return TRANS_MAP[lang];
+	if (TRANS_MAP[lang]) return TRANS_MAP[lang];
 
-  const inferLang = languageSupportInfer(lang);
+	const inferLang = languageSupportInfer(lang);
 
-  let imp = undefined;
+	let imp = undefined;
 
-  switch (inferLang) {
-    case LanguageCodeEnum.Ko:
-      imp = await import("./ko");
-      break;
-    case LanguageCodeEnum.Ja:
-      imp = await import("./ja");
-      break;
-    case LanguageCodeEnum.En:
-      imp = await import("./en");
-      break;
-    default:
-      return TRANS_MAP.VI;
-  }
+	switch (inferLang) {
+		case LanguageCodeEnum.Ko:
+			imp = await import('./ko');
+			break;
+		case LanguageCodeEnum.Ja:
+			imp = await import('./ja');
+			break;
+		case LanguageCodeEnum.En:
+			imp = await import('./en');
+			break;
+		default:
+			return TRANS_MAP.VI;
+	}
 
-  TRANS_MAP[lang] = parseTranslationObject(imp.default, {});
-  return TRANS_MAP[lang];
+	TRANS_MAP[lang] = parseTranslationObject(imp.default, {});
+	return TRANS_MAP[lang];
 };
 
-export const serverSideTranslate = async <T extends RequestEvent>(event: T, key: string, args?: Record<string, unknown>) => {
-  const languageCookie = event.cookies.get(LANGUAGE_KEY) as LanguageCodeEnum || LanguageCodeEnum.Vi;
+export const serverSideTranslate = async <T extends RequestEvent>(
+	event: T,
+	key: string,
+	args?: Record<string, unknown>,
+) => {
+	const languageCookie =
+		(event.cookies.get(LANGUAGE_KEY) as LanguageCodeEnum) || LanguageCodeEnum.Vi;
 
-  const trans = await getTranslation(languageCookie);
-  return buildTranslationText(trans!, key, args);
+	const trans = await getTranslation(languageCookie);
+	return buildTranslationText(trans!, key, args);
 };
 
 const buildTranslationText = (trans: Translation, key: string, args?: Record<string, unknown>) => {
-  const tranObject = trans[key];
-  if (tranObject === undefined) {
-    throw new Error(`Translation key ${key} not found in translations`);
-  }
-  if (args && Object.keys(args).some(arg => !tranObject.args?.has(arg))) {
-    throw new Error(`Translation key ${key} has no placeholders for ${Object.keys(args).join(', ')}`);
-  }
+	const tranObject = trans[key];
+	if (tranObject === undefined) {
+		throw new Error(`Translation key ${key} not found in translations`);
+	}
+	if (args && Object.keys(args).some((arg) => !tranObject.args?.has(arg))) {
+		throw new Error(
+			`Translation key ${key} has no placeholders for ${Object.keys(args).join(', ')}`,
+		);
+	}
 
-  let result = tranObject.template;
-  for (const key in args) {
-    result = result.replace(`{{${key}}}`, args[key] as string);
-  }
+	let result = tranObject.template;
+	for (const key in args) {
+		result = result.replace(`{{${key}}}`, args[key] as string);
+	}
 
-  return result;
+	return result;
 };
 
 /**a svelte store for translation.
@@ -134,7 +151,7 @@ const buildTranslationText = (trans: Translation, key: string, args?: Record<str
  * On server side or utils fies (**.ts files), use it like: const result = get(tranFunc)('`<your_key>`')
  */
 export const tranFunc = derived(innerStore, ($trans) => {
-  return (key: string, args?: Record<string, unknown>) => buildTranslationText($trans, key, args);
+	return (key: string, args?: Record<string, unknown>) => buildTranslationText($trans, key, args);
 });
 
 /**
@@ -150,8 +167,8 @@ export const tranFunc = derived(innerStore, ($trans) => {
  *  }
  */
 type Translation = {
-  [key: string]: {
-    template: string;
-    args: Set<string> | null;
-  };
+	[key: string]: {
+		template: string;
+		args: Set<string> | null;
+	};
 };

@@ -1,5 +1,7 @@
 <script lang="ts">
+	import { CHECKOUT_UPDATE_DELIVERY_METHOD_MUTATION } from '$lib/api/checkout';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { RadioButton } from '$lib/components/ui/Input';
 	import type {
 		Checkout,
@@ -7,10 +9,8 @@
 		Mutation,
 		MutationCheckoutDeliveryMethodUpdateArgs,
 	} from '$lib/gql/graphql';
-	import { CHECKOUT_UPDATE_DELIVERY_METHOD_MUTATION } from '$lib/api/checkout';
-	import { formatMoney, checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { READ_ONLY_USER_STORE } from '$lib/stores/auth/user';
-	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import { formatMoney, checkIfGraphqlResultHasError } from '$lib/utils/utils';
 
 	type Props = {
 		checkout: Checkout;

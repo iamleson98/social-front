@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
+	import { CATEGORIES_LIST_QUERY_STORE } from '$lib/api';
+	import { operationStore } from '$lib/api/operation';
 	import { Category } from '$lib/components/icons';
 	import { Accordion, AccordionList } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
-	import type { CategoryCountableEdge, Query, QueryCategoriesArgs } from '$lib/gql/graphql';
-	import { CATEGORIES_LIST_QUERY_STORE } from '$lib/api';
-	import { operationStore } from '$lib/api/operation';
-	import { AppRoute } from '$lib/utils';
 	import { CheckboxSkeleton } from '$lib/components/ui/Input';
+	import type { CategoryCountableEdge, Query, QueryCategoriesArgs } from '$lib/gql/graphql';
+	import { AppRoute } from '$lib/utils';
 
 	const CATEGORY_LEVEL = 0;
 	const first = 50;

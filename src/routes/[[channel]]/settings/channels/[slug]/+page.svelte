@@ -1,8 +1,19 @@
 <script lang="ts">
+	import { afterNavigate, goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { operationStore } from '$lib/api/operation';
+	import { tranFunc } from '$i18n';
 	import { CHANNEL_DELETE_MUTATION, CHANNEL_UPDATE_MUTATION } from '$lib/api/admin/channels';
 	import { CHANNEL_DETAILS_QUERY, CHANNELS_QUERY } from '$lib/api/channels';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { operationStore } from '$lib/api/operation';
+	import ChannelDetailSkeleton from '$lib/components/pages/settings/channel/channel-detail-skeleton.svelte';
+	import ChannelForm from '$lib/components/pages/settings/channel/channel-form.svelte';
+	import ShippingZonesForm from '$lib/components/pages/settings/channel/shipping-zones-form.svelte';
+	import WarehousesForm from '$lib/components/pages/settings/channel/warehouses-form.svelte';
+	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
+	import { Alert } from '$lib/components/ui/Alert';
+	import { Modal } from '$lib/components/ui/Modal';
+	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import {
 		AllocationStrategyEnum,
 		MarkAsPaidStrategyEnum,
@@ -16,20 +27,9 @@
 		type Query,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { afterNavigate, goto } from '$app/navigation';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { Modal } from '$lib/components/ui/Modal';
-	import { tranFunc } from '$i18n';
-	import { Select, type SelectOption } from '$lib/components/ui/select';
-	import { Alert } from '$lib/components/ui/Alert';
-	import { onMount } from 'svelte';
-	import ChannelDetailSkeleton from '$lib/components/pages/settings/channel/channel-detail-skeleton.svelte';
 	import { omit } from 'es-toolkit';
-	import ShippingZonesForm from '$lib/components/pages/settings/channel/shipping-zones-form.svelte';
-	import WarehousesForm from '$lib/components/pages/settings/channel/warehouses-form.svelte';
-	import ChannelForm from '$lib/components/pages/settings/channel/channel-form.svelte';
-	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
+	import { onMount } from 'svelte';
 
 	const channelDetailQuery = operationStore<Pick<Query, 'channel'>>({
 		query: CHANNEL_DETAILS_QUERY,

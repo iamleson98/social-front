@@ -1,21 +1,21 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
+	import {
+		CHECKOUT_LINES_DELETE_MUTATION,
+		CHECKOUT_LINES_UPDATE_MUTATION,
+	} from '$lib/api/checkout';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 	import { Minus, Plus } from '$lib/components/icons';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
+	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
 	import type {
 		Checkout,
 		CheckoutLine,
 		Mutation,
 		MutationCheckoutLinesDeleteArgs,
-		MutationCheckoutLinesUpdateArgs
+		MutationCheckoutLinesUpdateArgs,
 	} from '$lib/gql/graphql';
-	import {
-		CHECKOUT_LINES_DELETE_MUTATION,
-		CHECKOUT_LINES_UPDATE_MUTATION
-	} from '$lib/api/checkout';
 	import { checkoutStore } from '$lib/stores/app';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { defaultSlideShowState } from '$lib/stores/ui/slideshow';
@@ -56,7 +56,7 @@
 			MutationCheckoutLinesDeleteArgs
 		>(CHECKOUT_LINES_DELETE_MUTATION, {
 			linesIds: [line.id],
-			id: checkoutId
+			id: checkoutId,
 		});
 
 		loading = false; //
@@ -85,7 +85,7 @@
 			MutationCheckoutLinesUpdateArgs
 		>(CHECKOUT_LINES_UPDATE_MUTATION, {
 			lines: [{ lineId: line.id, quantity }],
-			id: checkoutId
+			id: checkoutId,
 		});
 
 		loading = false; //
@@ -132,7 +132,7 @@
 				onCancel: () => {
 					quantity = 1;
 					handleUpdateCheckoutLine();
-				}
+				},
 			});
 		}
 	});

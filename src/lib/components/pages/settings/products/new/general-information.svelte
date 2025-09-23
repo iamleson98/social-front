@@ -7,8 +7,8 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Checkbox, Input, Label } from '$lib/components/ui/Input';
-	import { GraphqlPaginableSelect, Select, type SelectOption } from '$lib/components/ui/select';
 	import { TableSkeleton } from '$lib/components/ui/Table';
+	import { GraphqlPaginableSelect, Select, type SelectOption } from '$lib/components/ui/select';
 	import {
 		AttributeInputTypeEnum,
 		type AttributeValueInput,

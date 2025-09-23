@@ -1,11 +1,14 @@
-import type { CountryCode } from "$lib/gql/graphql";
+import type { CountryCode } from '$lib/gql/graphql';
 import {
 	parsePhoneNumberWithError,
 	type CountryCode as PhoneNumberLibCountryCode,
 	type PhoneNumber,
-} from "libphonenumber-js/max";
+} from 'libphonenumber-js/max';
 
-export const getPhoneNumberInstance = (phone: string, countryCode: CountryCode | undefined): PhoneNumber | null => {
+export const getPhoneNumberInstance = (
+	phone: string,
+	countryCode: CountryCode | undefined,
+): PhoneNumber | null => {
 	try {
 		const phoneNumber = parsePhoneNumberWithError(phone, countryCode as PhoneNumberLibCountryCode);
 		return phoneNumber;
@@ -13,4 +16,3 @@ export const getPhoneNumberInstance = (phone: string, countryCode: CountryCode |
 		return null;
 	}
 };
-

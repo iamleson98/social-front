@@ -9,13 +9,14 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { COLLECTION_DELETE_MUTATION } from '$lib/api/collections';
 	import { operationStore } from '$lib/api/operation';
-	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
-	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import AvailabilityForm from '$lib/components/pages/settings/collections/availability-form.svelte';
 	import CollectionDetailSkeleton from '$lib/components/pages/settings/collections/collection-detail-skeleton.svelte';
 	import GeneralInformationForm from '$lib/components/pages/settings/collections/general-information-form.svelte';
 	import ProductListForm from '$lib/components/pages/settings/collections/product-list-form.svelte';
 	import SeoForm from '$lib/components/pages/settings/collections/seo-form.svelte';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
+	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
+	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import {
 		ProductMediaType,
@@ -30,12 +31,11 @@
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
-	import { CommonState } from '$lib/utils/common.svelte';
 
 	let collectionUpdateInput = $state<CollectionInput>({
 		name: '',

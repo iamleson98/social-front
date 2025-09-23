@@ -1,326 +1,365 @@
-import { gql } from "@urql/core"
+import { gql } from '@urql/core';
 
 export const GIFT_CARD_CREATE_MUTATION = gql`
-mutation GiftCardCreate($input: GiftCardCreateInput!) {
-  giftCardCreate(
-    input: $input
-  ) {
-    errors {
-      field
-      message
-    }
-    giftCard {
-      id
-      code
-    }
-  }
-}`;
+	mutation GiftCardCreate($input: GiftCardCreateInput!) {
+		giftCardCreate(input: $input) {
+			errors {
+				field
+				message
+			}
+			giftCard {
+				id
+				code
+			}
+		}
+	}
+`;
 
 export const GIFT_CARD_TAGS_QUERY = gql`
-query SearchGiftCardTags($first: Int!, $after: String, $last: Int, $before: String, $filter: GiftCardTagFilterInput) {
-  giftCardTags(filter: $filter, first: $first, after: $after, last: $last, before: $before) {
-    edges {
-      node {
-        id
-        name
-      }
-    }
-    pageInfo {
-      hasNextPage
-      hasPreviousPage
-      startCursor
-      endCursor
-    }
-  }
-}`;
+	query SearchGiftCardTags(
+		$first: Int!
+		$after: String
+		$last: Int
+		$before: String
+		$filter: GiftCardTagFilterInput
+	) {
+		giftCardTags(filter: $filter, first: $first, after: $after, last: $last, before: $before) {
+			edges {
+				node {
+					id
+					name
+				}
+			}
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				startCursor
+				endCursor
+			}
+		}
+	}
+`;
 
 export const GIFT_CARD_ACTIVATE_MUTATION = gql`
-mutation GiftcardActivate($id: ID!) {
-  giftCardActivate(id: $id) {
-    errors {
-      field
-      message
-    }
-  }
-}`;
+	mutation GiftcardActivate($id: ID!) {
+		giftCardActivate(id: $id) {
+			errors {
+				field
+				message
+			}
+		}
+	}
+`;
 
 export const GIFT_CARD_DEACTIVATE_MUTATION = gql`
-mutation GiftcardDeactivate($id: ID!) {
-  giftCardDeactivate(id: $id) {
-    errors {
-      field
-      message
-    }
-  }
-}`;
+	mutation GiftcardDeactivate($id: ID!) {
+		giftCardDeactivate(id: $id) {
+			errors {
+				field
+				message
+			}
+		}
+	}
+`;
 
 export const GIFT_CARD_DELETE_MUTATION = gql`
-mutation DeleteGiftcard($id: ID!) {
-  giftCardDelete(id: $id) {
-    errors {
-      field
-      message
-    }
-  }
-}`;
+	mutation DeleteGiftcard($id: ID!) {
+		giftCardDelete(id: $id) {
+			errors {
+				field
+				message
+			}
+		}
+	}
+`;
 
 export const GIFT_CARD_BULK_DELETE_MUTATION = gql`
-mutation BulkDeleteGiftcard($ids: [ID!]!) {
-  giftCardBulkDelete(ids: $ids) {
-    errors {
-      field
-      message
-    }
-    count
-  }
-}`;
+	mutation BulkDeleteGiftcard($ids: [ID!]!) {
+		giftCardBulkDelete(ids: $ids) {
+			errors {
+				field
+				message
+			}
+			count
+		}
+	}
+`;
 
 export const GIFT_CARD_BULK_ACTIVATE_MUTATION = gql`
-mutation GiftCardBulkActivate($ids: [ID!]!) {
-  giftCardBulkActivate(ids: $ids) {
-    errors {
-      field
-      message
-    }
-    count
-  }
-}`;
+	mutation GiftCardBulkActivate($ids: [ID!]!) {
+		giftCardBulkActivate(ids: $ids) {
+			errors {
+				field
+				message
+			}
+			count
+		}
+	}
+`;
 
 export const GIFT_CARD_BULK_DEACTIVATE_MUTATION = gql`
-mutation GiftCardBulkDeactivate($ids: [ID!]!) {
-  giftCardBulkDeactivate(ids: $ids) {
-    errors {
-      field
-      message
-    }
-    count
-  }
-}`;
+	mutation GiftCardBulkDeactivate($ids: [ID!]!) {
+		giftCardBulkDeactivate(ids: $ids) {
+			errors {
+				field
+				message
+			}
+			count
+		}
+	}
+`;
 
 export const GIFTCARD_LIST_QUERY = gql`
-query Giftcards($first: Int, $last: Int, $before: String, $after: String, $sortBy: GiftCardSortingInput, $filter: GiftCardFilterInput, $search: String) {
-  giftCards(first: $first, last: $last, before: $before, after: $after, sortBy: $sortBy, search: $search, filter: $filter) {
-    edges {
-      node {
-        id
-        code
-        displayCode
-        isActive
-        created
-        tags {
-          id
-          name
-        }
-        product {
-          name
-          slug
-        }
-        currentBalance {
-          amount
-          currency
-        }
-      }
-    }
-    pageInfo {
-      hasNextPage
-      hasPreviousPage
-      startCursor
-      endCursor
-    }
-  }
-}`;
+	query Giftcards(
+		$first: Int
+		$last: Int
+		$before: String
+		$after: String
+		$sortBy: GiftCardSortingInput
+		$filter: GiftCardFilterInput
+		$search: String
+	) {
+		giftCards(
+			first: $first
+			last: $last
+			before: $before
+			after: $after
+			sortBy: $sortBy
+			search: $search
+			filter: $filter
+		) {
+			edges {
+				node {
+					id
+					code
+					displayCode
+					isActive
+					created
+					tags {
+						id
+						name
+					}
+					product {
+						name
+						slug
+					}
+					currentBalance {
+						amount
+						currency
+					}
+				}
+			}
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				startCursor
+				endCursor
+			}
+		}
+	}
+`;
 
 export const USER_GIFTCARDS_QUERY = gql`
-query UserGiftcards($id: ID!, $first: Int, $after: String, $last: Int, $before: String) {
-  user(id: $id) {
-    giftCards(first: $first, after: $after, last: $last, before: $before) {
-      edges {
-        node {
-          id
-          code
-          displayCode
-          isActive
-          created
-          tags {
-            id
-            name
-          }
-          product {
-            name
-            slug
-          }
-          currentBalance {
-            amount
-            currency
-          }
-        }
-      }
-      pageInfo {
-        hasNextPage
-        hasPreviousPage
-        startCursor
-        endCursor
-      }
-    }
-  }
-}`;
+	query UserGiftcards($id: ID!, $first: Int, $after: String, $last: Int, $before: String) {
+		user(id: $id) {
+			giftCards(first: $first, after: $after, last: $last, before: $before) {
+				edges {
+					node {
+						id
+						code
+						displayCode
+						isActive
+						created
+						tags {
+							id
+							name
+						}
+						product {
+							name
+							slug
+						}
+						currentBalance {
+							amount
+							currency
+						}
+					}
+				}
+				pageInfo {
+					hasNextPage
+					hasPreviousPage
+					startCursor
+					endCursor
+				}
+			}
+		}
+	}
+`;
 
 export const GIFT_CARD_DETAIL_QUERY = gql`
-query Giftcard($id: ID!) {
-  giftCard(id: $id) {
-    id
-    metadata {
-      key
-      value
-    }
-    privateMetadata {
-      key
-      value
-    }
-    displayCode
-    last4CodeChars
-    code
-    created
-    createdByEmail
-    lastUsedOn
-    expiryDate
-    tags {
-      id
-      name
-    }
-    isActive
-    initialBalance {
-      amount
-      currency
-    }
-    currentBalance {
-      amount
-      currency
-    }
-  }
-}`;
+	query Giftcard($id: ID!) {
+		giftCard(id: $id) {
+			id
+			metadata {
+				key
+				value
+			}
+			privateMetadata {
+				key
+				value
+			}
+			displayCode
+			last4CodeChars
+			code
+			created
+			createdByEmail
+			lastUsedOn
+			expiryDate
+			tags {
+				id
+				name
+			}
+			isActive
+			initialBalance {
+				amount
+				currency
+			}
+			currentBalance {
+				amount
+				currency
+			}
+		}
+	}
+`;
 
 export const GIFT_CARD_EVENTS_QUERY = gql`
-query GiftCardEvents($id: ID!, $filter: GiftCardEventFilterInput) {
-  giftCard(id: $id) {
-    events(filter: $filter) {
-      id
-      expiryDate
-      oldExpiryDate
-      date
-      type
-      message
-      email
-      orderId
-      orderNumber
-      tags
-      oldTags
-      balance {
-        initialBalance {
-          amount
-          currency
-        }
-        currentBalance {
-          amount
-          currency
-        }
-      }
-      user {
-        id
-        email
-        firstName
-        lastName
-      }
-    }
-  }
-}`;
+	query GiftCardEvents($id: ID!, $filter: GiftCardEventFilterInput) {
+		giftCard(id: $id) {
+			events(filter: $filter) {
+				id
+				expiryDate
+				oldExpiryDate
+				date
+				type
+				message
+				email
+				orderId
+				orderNumber
+				tags
+				oldTags
+				balance {
+					initialBalance {
+						amount
+						currency
+					}
+					currentBalance {
+						amount
+						currency
+					}
+				}
+				user {
+					id
+					email
+					firstName
+					lastName
+				}
+			}
+		}
+	}
+`;
 
 export const GIFT_CARD_ADD_NOTE_MUTATION = gql`
-mutation GiftcardAddNote($id: ID!, $input: GiftCardAddNoteInput!) {
-  giftCardAddNote(id: $id, input: $input) {
-    errors {
-      field
-      message
-    }
-  }
-}`;
+	mutation GiftcardAddNote($id: ID!, $input: GiftCardAddNoteInput!) {
+		giftCardAddNote(id: $id, input: $input) {
+			errors {
+				field
+				message
+			}
+		}
+	}
+`;
 
 export const GIFT_CARD_RESEND_MUTATION = gql`
-mutation GiftcardResend($input: GiftCardResendInput!) {
-  giftCardResend(input: $input) {
-    errors {
-      field
-      message
-    }
-  }
-}`;
+	mutation GiftcardResend($input: GiftCardResendInput!) {
+		giftCardResend(input: $input) {
+			errors {
+				field
+				message
+			}
+		}
+	}
+`;
 
 export const GIFT_CARD_UPDATE_MUTATION = gql`
-mutation GiftcardUpdate($id: ID!, $input: GiftCardUpdateInput!) {
-  giftCardUpdate(id: $id, input: $input) {
-    errors {
-      field
-      message
-    }
-  }
-}`;
+	mutation GiftcardUpdate($id: ID!, $input: GiftCardUpdateInput!) {
+		giftCardUpdate(id: $id, input: $input) {
+			errors {
+				field
+				message
+			}
+		}
+	}
+`;
 
 export const GIFTCARD_SETTINGS_QUERY = gql`
-query GiftcardSettings {
-  giftCardSettings {
-    expiryType
-    expiryPeriod {
-      amount
-      type
-    }
-  }
-}`;
+	query GiftcardSettings {
+		giftCardSettings {
+			expiryType
+			expiryPeriod {
+				amount
+				type
+			}
+		}
+	}
+`;
 
 export const GIFTCARD_SETTINGS_UPDATE_MUTATION = gql`
-mutation GiftCardSettingsUpdate($input: GiftCardSettingsUpdateInput!) {
-  giftCardSettingsUpdate(input: $input) {
-    errors {
-      field
-      message
-    }
-  }
-}`;
+	mutation GiftCardSettingsUpdate($input: GiftCardSettingsUpdateInput!) {
+		giftCardSettingsUpdate(input: $input) {
+			errors {
+				field
+				message
+			}
+		}
+	}
+`;
 
 export const GIFTCARD_TOTAL_COUNT_QUERY = gql`
-query GiftCardCount($filter: GiftCardFilterInput) {
-  giftCards(filter: $filter) {
-    totalCount
-  }
-}`;
+	query GiftCardCount($filter: GiftCardFilterInput) {
+		giftCards(filter: $filter) {
+			totalCount
+		}
+	}
+`;
 
 export const GIFT_CARD_BULK_CREATE_MUTATION = gql`
-  mutation GiftCardBulkCreate($input: GiftCardBulkCreateInput!) {
-    giftCardBulkCreate(input: $input) {
-      giftCards {
-        id
-      }
-      errors {
-        code
-        field
-        message
-      }
-    }
-  }
+	mutation GiftCardBulkCreate($input: GiftCardBulkCreateInput!) {
+		giftCardBulkCreate(input: $input) {
+			giftCards {
+				id
+			}
+			errors {
+				code
+				field
+				message
+			}
+		}
+	}
 `;
 
 export const GIFTCARD_EXPORT_MUTATION = gql`
-mutation ExportGiftCards($input: ExportGiftCardsInput!) {
-  exportGiftCards(input: $input) {
-    errors {
-      field
-      message
-    }
-    exportFile {
-      id
-      status
-      createdAt
-      message
-      url
-    }
-  }
-}`;
+	mutation ExportGiftCards($input: ExportGiftCardsInput!) {
+		exportGiftCards(input: $input) {
+			errors {
+				field
+				message
+			}
+			exportFile {
+				id
+				status
+				createdAt
+				message
+				url
+			}
+		}
+	}
+`;

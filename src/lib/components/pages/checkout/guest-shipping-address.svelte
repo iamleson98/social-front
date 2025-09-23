@@ -1,5 +1,11 @@
 <script lang="ts">
+	import { CHANNEL_DETAILS_QUERY } from '$lib/api/channels';
+	import {
+		CHECKOUT_BILLING_ADDRESS_UPDATE_MUTATION,
+		CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION,
+	} from '$lib/api/checkout';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { operationStore } from '$lib/api/operation';
 	import UserAddress from '$lib/components/common/user-address/user-address.svelte';
 	import { Edit } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
@@ -16,12 +22,6 @@
 		Query,
 		QueryChannelArgs,
 	} from '$lib/gql/graphql';
-	import { CHANNEL_DETAILS_QUERY } from '$lib/api/channels';
-	import {
-		CHECKOUT_BILLING_ADDRESS_UPDATE_MUTATION,
-		CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION,
-	} from '$lib/api/checkout';
-	import { operationStore } from '$lib/api/operation';
 	import { getCountryName } from '$lib/utils/address';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import AddressForm from './address-form.svelte';

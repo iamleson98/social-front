@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { createVirtualizer, type SvelteVirtualizer } from '@tanstack/svelte-virtual';
 	import { AutoSizer } from '../../autosizer';
 	import {
 		CATEGORIES_CONTAINER_HEIGHT,
@@ -17,8 +16,9 @@
 	} from '../types';
 	// import { InfiniteLoader, LoaderState } from 'svelte-infinite';
 	import EmojiPickerCategoryOrEmojiRow from './emoji-picker-category-or-emoji-row.svelte';
-	import type { Readable } from 'svelte/store';
+	import { createVirtualizer, type SvelteVirtualizer } from '@tanstack/svelte-virtual';
 	import { onMount } from 'svelte';
+	import type { Readable } from 'svelte/store';
 
 	interface Props {
 		categoryOrEmojisRows: CategoryOrEmojiRow[];

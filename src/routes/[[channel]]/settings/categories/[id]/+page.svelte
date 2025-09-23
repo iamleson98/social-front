@@ -5,11 +5,12 @@
 	import { CATEGORY_DELETE_MUTATION, CATEGORY_UPDATE_MUTATION } from '$lib/api/admin/category';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
-	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
-	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import DetailSkeleton from '$lib/components/pages/settings/categories/detail-skeleton.svelte';
 	import GeneralInformation from '$lib/components/pages/settings/categories/general-information.svelte';
 	import SubSection from '$lib/components/pages/settings/categories/sub-section.svelte';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
+	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
+	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import {
 		ProductMediaType,
@@ -21,12 +22,11 @@
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
-	import { CommonState } from '$lib/utils/common.svelte';
 
 	let media = $state<MediaObject[]>([]);
 	let generalFormOk = $state(false);

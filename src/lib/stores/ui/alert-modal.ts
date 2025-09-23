@@ -13,7 +13,12 @@ export type AlertActionFlowState = {
 export const newAlertModalStore = () => {
 	const _store = writable<AlertActionFlowState | null>(null);
 
-	const openAlertModal = async ({ content, onOk, onCancel, variant = 'warning' }: AlertActionFlowState) => {
+	const openAlertModal = async ({
+		content,
+		onOk,
+		onCancel,
+		variant = 'warning',
+	}: AlertActionFlowState) => {
 		const newAction: AlertActionFlowState = {
 			variant,
 			content,
@@ -24,14 +29,14 @@ export const newAlertModalStore = () => {
 			onCancel: () => {
 				onCancel?.();
 				_store.set(null);
-			}
+			},
 		};
 		_store.set(newAction);
 	};
 
 	return {
 		openAlertModal,
-		subscribe: _store.subscribe
+		subscribe: _store.subscribe,
 	};
 };
 

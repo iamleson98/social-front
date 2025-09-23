@@ -6,8 +6,8 @@
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
-	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
+	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import type {
 		Allocation,
 		Mutation,

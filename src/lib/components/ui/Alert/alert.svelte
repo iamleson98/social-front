@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { CloseX, Icon } from '$lib/components/icons';
+	import { IconButton } from '$lib/components/ui/Button';
+	import type { SocialColor, SocialSize } from '$lib/components/ui/common';
 	import { SocialVariantIconsMap, type SocialVariant } from '$lib/utils/consts';
+	import { ALERT_VARIANT_STYLE_MAP } from './types';
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { fly } from 'svelte/transition';
-	import { ALERT_VARIANT_STYLE_MAP } from './types';
-	import type { SocialColor, SocialSize } from '$lib/components/ui/common';
-	import { IconButton } from '$lib/components/ui/Button';
 
 	type Props = {
 		/** variant of Alert. Default to `info` */

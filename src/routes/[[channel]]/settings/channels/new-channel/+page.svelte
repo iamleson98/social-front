@@ -1,5 +1,12 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { tranFunc } from '$i18n';
 	import { CHANNEL_CREATE_MUTATION } from '$lib/api/admin/channels';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import ChannelForm from '$lib/components/pages/settings/channel/channel-form.svelte';
+	import ShippingZonesForm from '$lib/components/pages/settings/channel/shipping-zones-form.svelte';
+	import WarehousesForm from '$lib/components/pages/settings/channel/warehouses-form.svelte';
+	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import {
 		AllocationStrategyEnum,
 		CountryCode,
@@ -9,15 +16,8 @@
 		type Mutation,
 		type MutationChannelCreateArgs,
 	} from '$lib/gql/graphql';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { goto } from '$app/navigation';
 	import { AppRoute } from '$lib/utils';
-	import ShippingZonesForm from '$lib/components/pages/settings/channel/shipping-zones-form.svelte';
-	import WarehousesForm from '$lib/components/pages/settings/channel/warehouses-form.svelte';
-	import ChannelForm from '$lib/components/pages/settings/channel/channel-form.svelte';
-	import { tranFunc } from '$i18n';
-	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 
 	let loading = $state(false);
 	let formOk = $state(false);

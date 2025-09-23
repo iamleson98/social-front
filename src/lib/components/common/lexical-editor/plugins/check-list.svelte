@@ -1,14 +1,17 @@
 <script lang="ts">
 	import {
+		getActiveCheckListItem,
+		handleArrownUpOrDown,
+		handleCheckListItemClick,
+		handleChecklistItemPointerDown,
+	} from './consts';
+	import {
 		$isListItemNode as isListItemNode,
 		INSERT_CHECK_LIST_COMMAND,
 		insertList,
-		$isListNode as isListNode
+		$isListNode as isListNode,
 	} from '@lexical/list';
-	import {
-		$findMatchingParent as findMatchingParent,
-		mergeRegister
-	} from '@lexical/utils';
+	import { $findMatchingParent as findMatchingParent, mergeRegister } from '@lexical/utils';
 	import {
 		$getNearestNodeFromDOMNode as getNearestNodeFromDOMNode,
 		COMMAND_PRIORITY_LOW,
@@ -20,9 +23,8 @@
 		KEY_ARROW_LEFT_COMMAND,
 		$isRangeSelection as isRangeSelection,
 		$isElementNode as isElementNode,
-		$getSelection as getSelection
+		$getSelection as getSelection,
 	} from 'lexical';
-	import { getActiveCheckListItem, handleArrownUpOrDown, handleCheckListItemClick, handleChecklistItemPointerDown } from './consts';
 
 	type Props = {
 		editor?: LexicalEditor;
@@ -40,21 +42,21 @@
 					insertList(editor, 'check');
 					return true;
 				},
-				COMMAND_PRIORITY_LOW
+				COMMAND_PRIORITY_LOW,
 			),
 			editor.registerCommand<KeyboardEvent>(
 				KEY_ARROW_DOWN_COMMAND,
 				(event) => {
 					return handleArrownUpOrDown(event, editor, false);
 				},
-				COMMAND_PRIORITY_LOW
+				COMMAND_PRIORITY_LOW,
 			),
 			editor.registerCommand<KeyboardEvent>(
 				KEY_ARROW_UP_COMMAND,
 				(event) => {
 					return handleArrownUpOrDown(event, editor, true);
 				},
-				COMMAND_PRIORITY_LOW
+				COMMAND_PRIORITY_LOW,
 			),
 			editor.registerCommand<KeyboardEvent>(
 				KEY_ESCAPE_COMMAND,
@@ -73,7 +75,7 @@
 
 					return false;
 				},
-				COMMAND_PRIORITY_LOW
+				COMMAND_PRIORITY_LOW,
 			),
 			editor.registerCommand<KeyboardEvent>(
 				KEY_SPACE_COMMAND,
@@ -94,7 +96,7 @@
 
 					return false;
 				},
-				COMMAND_PRIORITY_LOW
+				COMMAND_PRIORITY_LOW,
 			),
 			editor.registerCommand<KeyboardEvent>(
 				KEY_ARROW_LEFT_COMMAND,
@@ -110,7 +112,7 @@
 								const anchorNode = anchor.getNode();
 								const elementNode = findMatchingParent(
 									anchorNode,
-									(node) => isElementNode(node) && !node.isInline()
+									(node) => isElementNode(node) && !node.isInline(),
 								);
 								if (isListItemNode(elementNode)) {
 									const parent = elementNode.getParent();
@@ -134,7 +136,7 @@
 						return false;
 					});
 				},
-				COMMAND_PRIORITY_LOW
+				COMMAND_PRIORITY_LOW,
 			),
 			editor.registerRootListener((rootElement, prevElement) => {
 				if (rootElement !== null) {
@@ -146,7 +148,7 @@
 					prevElement.removeEventListener('click', handleCheckListItemClick);
 					prevElement.removeEventListener('pointerdown', handleChecklistItemPointerDown);
 				}
-			})
+			}),
 		);
 	});
 </script>

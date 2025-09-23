@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { clickOutside } from '$lib/actions/click-outside';
+	import { scrollToEnd } from '$lib/actions/scroll-end';
 	import { shortcuts } from '$lib/actions/shortcut';
 	import { ChevronSort, CloseX, Icon } from '$lib/components/icons';
-	import { classNames, randomID } from '$lib/utils/utils';
-	import { fly } from 'svelte/transition';
 	import { Input, Label } from '$lib/components/ui/Input';
+	import { INPUT_CLASSES } from '$lib/components/ui/Input/input.types';
+	import { classNames, randomID } from '$lib/utils/utils';
+	import { Badge } from '../Badge';
+	import { INPUT_BUTTON_SIZE_MAP } from '../Button';
 	import {
 		SELECT_CLASSES,
 		type SelectItemprops,
@@ -13,12 +16,9 @@
 		SIZE_REDUCE_MAP,
 		type Primitive,
 	} from './types';
-	import type { FocusEventHandler } from 'svelte/elements';
-	import { INPUT_CLASSES } from '$lib/components/ui/Input/input.types';
-	import { INPUT_BUTTON_SIZE_MAP } from '../Button';
 	import { difference, noop } from 'es-toolkit';
-	import { scrollToEnd } from '$lib/actions/scroll-end';
-	import { Badge } from '../Badge';
+	import type { FocusEventHandler } from 'svelte/elements';
+	import { fly } from 'svelte/transition';
 
 	let {
 		value = $bindable<Primitive | Primitive[] | undefined>(),

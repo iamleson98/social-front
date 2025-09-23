@@ -1,10 +1,12 @@
 <script lang="ts" generics="T extends Record<string, unknown>, K extends string">
 	import { tranFunc } from '$i18n';
 	import { ChevronLeft, ChevronRight, GripVertical, Icon } from '$lib/components/icons';
-	import { OrderDirection } from '$lib/gql/graphql';
 	import { IconButton } from '$lib/components/ui/Button';
 	import Button from '$lib/components/ui/Button/Button.svelte';
 	import { DropDown, type MenuItemProps } from '$lib/components/ui/Dropdown';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
+	import { OrderDirection } from '$lib/gql/graphql';
+	import { classNames, SitenameCommonClassName } from '$lib/utils/utils';
 	import {
 		ROW_OPTIONS,
 		SortIconsMap,
@@ -13,11 +15,9 @@
 		type TableColumnProps,
 		type TableProps,
 	} from './types';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { draggable, droppable, type DragDropState } from '@thisux/sveltednd';
 	import { flip } from 'svelte/animate';
 	import { fade } from 'svelte/transition';
-	import { classNames, SitenameCommonClassName } from '$lib/utils/utils';
 
 	let {
 		items = [],

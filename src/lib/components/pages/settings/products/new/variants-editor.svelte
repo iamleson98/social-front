@@ -5,19 +5,21 @@
 		ATTRIBUTE_VALUES_QUERY,
 	} from '$lib/api/admin/attribute';
 	import { PRODUCT_TYPE_QUERY } from '$lib/api/admin/product';
+	import { CHANNELS_QUERY } from '$lib/api/channels';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
 	import { Icon, MdiWeightKg, Plus, Trash } from '$lib/components/icons';
+	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Checkbox, Input, Label } from '$lib/components/ui/Input';
+	import { type GraphqlPaginationArgs } from '$lib/components/ui/Table';
 	import {
 		GraphqlPaginableSelect,
 		Select,
 		SelectSkeleton,
 		type SelectOption,
 	} from '$lib/components/ui/select';
-	import { type GraphqlPaginationArgs } from '$lib/components/ui/Table';
 	import {
 		AttributeInputTypeEnum,
 		type BulkAttributeValueInput,
@@ -31,8 +33,9 @@
 		type QueryProductTypeArgs,
 		type StockInput,
 	} from '$lib/gql/graphql';
+	import { CommonState } from '$lib/utils/common.svelte';
+	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
-	import { set } from 'es-toolkit/compat';
 	import type {
 		ChannelSelectOptionProps,
 		CustomStockInput,
@@ -40,13 +43,10 @@
 		QuickFillingProps,
 	} from './utils';
 	import dayjs from 'dayjs';
-	import { Button } from '$lib/components/ui';
-	import { slide } from 'svelte/transition';
-	import type { MediaObject } from '$lib/utils/types';
-	import { CHANNELS_QUERY } from '$lib/api/channels';
-	import { onMount } from 'svelte';
 	import { omit } from 'es-toolkit';
-	import { CommonState } from '$lib/utils/common.svelte';
+	import { set } from 'es-toolkit/compat';
+	import { onMount } from 'svelte';
+	import { slide } from 'svelte/transition';
 
 	type Props = {
 		productTypeId: string;

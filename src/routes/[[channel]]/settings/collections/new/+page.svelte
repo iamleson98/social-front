@@ -1,8 +1,17 @@
 <script lang="ts">
-	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
+	import { goto } from '$app/navigation';
+	import {
+		COLLECTION_CHANNEL_LISTING_UPDATE_MUTATION,
+		COLLECTION_CREATE_MUTATION,
+	} from '$lib/api/admin/collections';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import AvailabilityForm from '$lib/components/pages/settings/collections/availability-form.svelte';
 	import GeneralInformationForm from '$lib/components/pages/settings/collections/general-information-form.svelte';
+	import ProductAssignForm from '$lib/components/pages/settings/collections/product-assign-form.svelte';
 	import SeoForm from '$lib/components/pages/settings/collections/seo-form.svelte';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
+	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
+	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import {
 		type CollectionCreateInput,
 		type Mutation,
@@ -11,19 +20,10 @@
 		type PublishableChannelListingInput,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
-	import ProductAssignForm from '$lib/components/pages/settings/collections/product-assign-form.svelte';
-	import type { MediaObject } from '$lib/utils/types';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import {
-		COLLECTION_CHANNEL_LISTING_UPDATE_MUTATION,
-		COLLECTION_CREATE_MUTATION,
-	} from '$lib/api/admin/collections';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { goto } from '$app/navigation';
 	import { CommonState } from '$lib/utils/common.svelte';
+	import type { MediaObject } from '$lib/utils/types';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { toast } from 'svelte-sonner';
-	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 
 	let generalFormOk = $state(false);
 	let seoFormOk = $state(false);

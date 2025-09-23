@@ -1,1 +1,1 @@
-export { default as MegaMenu } from './mega-menu.svelte'
+export { default as MegaMenu } from './mega-menu.svelte';

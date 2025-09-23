@@ -1,26 +1,40 @@
-import { RewardTypeEnum, type CataloguePredicateInput, type Category, type CategoryCountableConnection, type Collection, type CollectionCountableConnection, type Product, type ProductCountableConnection, type ProductVariant, type ProductVariantCountableConnection, type PromotionRule, type PromotionRuleCreateInput, type PromotionRuleUpdateInput } from "$lib/gql/graphql";
+import {
+	RewardTypeEnum,
+	type CataloguePredicateInput,
+	type Category,
+	type CategoryCountableConnection,
+	type Collection,
+	type CollectionCountableConnection,
+	type Product,
+	type ProductCountableConnection,
+	type ProductVariant,
+	type ProductVariantCountableConnection,
+	type PromotionRule,
+	type PromotionRuleCreateInput,
+	type PromotionRuleUpdateInput,
+} from '$lib/gql/graphql';
 
 export const DefaultPromotionRuleUpdateinput: PromotionRuleUpdateInput = {
-  name: '',
-  addChannels: [],
-  removeChannels: [],
-  rewardValue: 0,
-  rewardType: RewardTypeEnum.SubtotalDiscount,
+	name: '',
+	addChannels: [],
+	removeChannels: [],
+	rewardValue: 0,
+	rewardType: RewardTypeEnum.SubtotalDiscount,
 };
 
 export const DefaultPromotionRuleCreateInput: PromotionRuleCreateInput = {
-  name: '',
-  channels: [],
-  promotion: "",
-  rewardValue: 0,
-  rewardType: RewardTypeEnum.SubtotalDiscount,
+	name: '',
+	channels: [],
+	promotion: '',
+	rewardValue: 0,
+	rewardType: RewardTypeEnum.SubtotalDiscount,
 };
 
 export const createDefaultCatalogPredicate = (): CataloguePredicateInput => ({
-  productPredicate: { ids: [] },
-  variantPredicate: { ids: [] },
-  categoryPredicate: { ids: [] },
-  collectionPredicate: { ids: [] },
+	productPredicate: { ids: [] },
+	variantPredicate: { ids: [] },
+	categoryPredicate: { ids: [] },
+	collectionPredicate: { ids: [] },
 });
 
 export type TabKey = 'products' | 'variants' | 'categories' | 'collections';
@@ -30,76 +44,72 @@ export type TabKey = 'products' | 'variants' | 'categories' | 'collections';
  * This function converts them to array [] instead.
  */
 export const cleanRulesData = (rules: PromotionRule[]): PromotionRule[] => {
-  return rules.map(rule => {
-    const predicates = rule.cataloguePredicate || {};
+	return rules.map((rule) => {
+		const predicates = rule.cataloguePredicate || {};
 
-    let productIds = predicates.productPredicate?.ids;
-    if (!productIds || !Array.isArray(productIds))
-      productIds = [];
+		let productIds = predicates.productPredicate?.ids;
+		if (!productIds || !Array.isArray(productIds)) productIds = [];
 
-    let variantIds = predicates.variantPredicate?.ids;
-    if (!variantIds || !Array.isArray(variantIds))
-      variantIds = [];
+		let variantIds = predicates.variantPredicate?.ids;
+		if (!variantIds || !Array.isArray(variantIds)) variantIds = [];
 
-    let collectionIds = predicates.collectionPredicate?.ids;
-    if (!collectionIds || !Array.isArray(collectionIds))
-      collectionIds = [];
+		let collectionIds = predicates.collectionPredicate?.ids;
+		if (!collectionIds || !Array.isArray(collectionIds)) collectionIds = [];
 
-    let categoryIds = predicates.categoryPredicate?.ids;
-    if (!categoryIds || !Array.isArray(categoryIds))
-      categoryIds = [];
+		let categoryIds = predicates.categoryPredicate?.ids;
+		if (!categoryIds || !Array.isArray(categoryIds)) categoryIds = [];
 
-    return {
-      ...rule,
-      cataloguePredicate: {
-        productPredicate: { ids: productIds },
-        variantPredicate: { ids: variantIds },
-        categoryPredicate: { ids: categoryIds },
-        collectionPredicate: { ids: collectionIds },
-      },
-    };
-  });
+		return {
+			...rule,
+			cataloguePredicate: {
+				productPredicate: { ids: productIds },
+				variantPredicate: { ids: variantIds },
+				categoryPredicate: { ids: categoryIds },
+				collectionPredicate: { ids: collectionIds },
+			},
+		};
+	});
 };
 
 export type QueryData = {
-  products: ProductCountableConnection;
-  productVariants: ProductVariantCountableConnection;
-  categories: CategoryCountableConnection;
-  collections: CollectionCountableConnection;
+	products: ProductCountableConnection;
+	productVariants: ProductVariantCountableConnection;
+	categories: CategoryCountableConnection;
+	collections: CollectionCountableConnection;
 };
 
 export const classifyRuleCatalog = (
-  cataloguePredicate: CataloguePredicateInput,
-  { products, productVariants, collections, categories }: QueryData,
+	cataloguePredicate: CataloguePredicateInput,
+	{ products, productVariants, collections, categories }: QueryData,
 ) => {
-  let ruleCategories: Category[] = [];
-  let ruleProducts: Product[] = [];
-  let ruleCollections: Collection[] = [];
-  let ruleVariants: ProductVariant[] = [];
+	let ruleCategories: Category[] = [];
+	let ruleProducts: Product[] = [];
+	let ruleCollections: Collection[] = [];
+	let ruleVariants: ProductVariant[] = [];
 
-  if (cataloguePredicate?.productPredicate?.ids) {
-    ruleProducts = products.edges
-      .map((edge) => edge.node)
-      .filter((prd) => cataloguePredicate?.productPredicate?.ids?.includes(prd.id));
-  }
+	if (cataloguePredicate?.productPredicate?.ids) {
+		ruleProducts = products.edges
+			.map((edge) => edge.node)
+			.filter((prd) => cataloguePredicate?.productPredicate?.ids?.includes(prd.id));
+	}
 
-  if (cataloguePredicate?.variantPredicate?.ids) {
-    ruleVariants = productVariants.edges
-      .map((edge) => edge.node)
-      .filter((variant) => cataloguePredicate.variantPredicate?.ids?.includes(variant.id));
-  }
+	if (cataloguePredicate?.variantPredicate?.ids) {
+		ruleVariants = productVariants.edges
+			.map((edge) => edge.node)
+			.filter((variant) => cataloguePredicate.variantPredicate?.ids?.includes(variant.id));
+	}
 
-  if (cataloguePredicate?.categoryPredicate?.ids) {
-    ruleCategories = categories.edges
-      .map((edge) => edge.node)
-      .filter((cate) => cataloguePredicate.categoryPredicate?.ids?.includes(cate.id));
-  }
+	if (cataloguePredicate?.categoryPredicate?.ids) {
+		ruleCategories = categories.edges
+			.map((edge) => edge.node)
+			.filter((cate) => cataloguePredicate.categoryPredicate?.ids?.includes(cate.id));
+	}
 
-  if (cataloguePredicate?.collectionPredicate?.ids) {
-    ruleCollections = collections.edges
-      .map((edge) => edge.node)
-      .filter((col) => cataloguePredicate.collectionPredicate?.ids?.includes(col.id));
-  }
+	if (cataloguePredicate?.collectionPredicate?.ids) {
+		ruleCollections = collections.edges
+			.map((edge) => edge.node)
+			.filter((col) => cataloguePredicate.collectionPredicate?.ids?.includes(col.id));
+	}
 
-  return { ruleCategories, ruleProducts, ruleVariants, ruleCollections };
+	return { ruleCategories, ruleProducts, ruleVariants, ruleCollections };
 };

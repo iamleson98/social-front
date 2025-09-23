@@ -1,3 +1,1 @@
-<div>
-  trending
-</div>
+<div>trending</div>

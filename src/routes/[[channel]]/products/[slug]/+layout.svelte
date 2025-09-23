@@ -1,9 +1,7 @@
 <script lang="ts">
-	import type { LayoutServerData } from './$types';
-	import ProductMediaSlideShow from '$lib/components/pages/products/detail/product-slide-show-pannel.svelte';
-	import ProductPricingPanel from '$lib/components/pages/products/detail/product-pricing-pannel.svelte';
-	import { type ProductMedia } from '$lib/gql/graphql';
+	import { afterNavigate, disableScrollHandling } from '$app/navigation';
 	import { page } from '$app/state';
+	import { tranFunc } from '$i18n';
 	import {
 		Icon,
 		HeadSet,
@@ -11,14 +9,16 @@
 		FileText,
 		PackageExport,
 		MingcuteHome,
-		ChevronRight
+		ChevronRight,
 	} from '$lib/components/icons';
-	import { afterNavigate, disableScrollHandling } from '$app/navigation';
-	import { tranFunc } from '$i18n';
-	import { AppRoute } from '$lib/utils';
-	import { onMount, type Snippet } from 'svelte';
+	import ProductPricingPanel from '$lib/components/pages/products/detail/product-pricing-pannel.svelte';
+	import ProductMediaSlideShow from '$lib/components/pages/products/detail/product-slide-show-pannel.svelte';
 	import Button from '$lib/components/ui/Button/Button.svelte';
+	import { type ProductMedia } from '$lib/gql/graphql';
 	import { slideShowManager } from '$lib/stores/ui/slideshow';
+	import { AppRoute } from '$lib/utils';
+	import type { LayoutServerData } from './$types';
+	import { onMount, type Snippet } from 'svelte';
 
 	type Props = {
 		data: LayoutServerData;
@@ -34,23 +34,23 @@
 		{
 			title: $tranFunc('product.tabDescription'),
 			href: AppRoute.PRODUCT_DETAILS(page.params.slug!),
-			icon: FileText
+			icon: FileText,
 		},
 		{
 			title: $tranFunc('product.tabAttributes'),
 			href: AppRoute.PRODUCT_ATTRIBUTES(page.params.slug!),
-			icon: SettingCheck
+			icon: SettingCheck,
 		},
 		{
 			title: $tranFunc('product.tabFeedBack'),
 			href: AppRoute.PRODUCT_FEEDBACKS(page.params.slug!),
-			icon: HeadSet
+			icon: HeadSet,
 		},
 		{
 			title: $tranFunc('product.tabPackaging'),
 			href: AppRoute.PRODUCT_PACKAGING(page.params.slug!),
-			icon: PackageExport
-		}
+			icon: PackageExport,
+		},
 	]);
 
 	const { product, productJsonLd } = data;
@@ -122,7 +122,6 @@
 
 	<!-- product more details -->
 	<div class="bg-white border border-gray-200 rounded-lg p-6">
-
 		<div class="flex items-center gap-2 mb-4">
 			{#each tabs as tab, idx (idx)}
 				<a role="tab" class="inline" href={tab.href}>

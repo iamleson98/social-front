@@ -1,5 +1,1 @@
-
-
-export const resolveFetchCheckout = async () => {
-
-}
+export const resolveFetchCheckout = async () => {};

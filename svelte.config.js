@@ -23,7 +23,7 @@ const config = {
 			precompress: {
 				brotli: true,
 				// gzip: true,
-				files: ["htm", "html"],
+				files: ['htm', 'html'],
 			},
 			// dynamic_origin: true,
 			// xff_depth: 1,
@@ -38,7 +38,7 @@ const config = {
 	},
 	compilerOptions: {
 		runes: true,
-		sourcemap: false
+		sourcemap: false,
 	},
 };
 

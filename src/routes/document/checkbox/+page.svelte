@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { SocialSize } from '$lib/components/ui/common';
 	import { Checkbox, RadioButton } from '$lib/components/ui/Input';
+	import type { SocialSize } from '$lib/components/ui/common';
 	import type { SocialVariant } from '$lib/utils';
 
 	const socialSizes: SocialSize[] = ['xs', 'sm', 'md', 'lg', 'xl'];

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { INPUT_BUTTON_SIZE_MAP } from '../Button';
-	import type { SocialSize } from '../common';
 	import { SkeletonContainer } from '../Skeleton';
 	import Skeleton from '../Skeleton/skeleton.svelte';
+	import type { SocialSize } from '../common';
 
 	type Props = {
 		/**size of input skeleton*/

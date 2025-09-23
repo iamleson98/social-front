@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { CUSTOMER_LIST_QUERY } from '$lib/api/admin/users';
+	import Thumbnail from '$lib/components/common/thumbnail.svelte';
+	import CustomerFilter from '$lib/components/pages/settings/customers/filter.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { type TableColumnProps } from '$lib/components/ui/Table';
+	import GraphqlPaginableTable from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { UserSortField, type QueryCustomersArgs, type User } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import dayjs from 'dayjs';
-	import CustomerFilter from '$lib/components/pages/settings/customers/filter.svelte';
-	import GraphqlPaginableTable from '$lib/components/ui/Table/graphql-paginable-table.svelte';
-	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 
 	let filterVariables = $state<QueryCustomersArgs>({
 		filter: {

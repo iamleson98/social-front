@@ -10,9 +10,11 @@
 	} from '$lib/api/admin/product';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import DetailSkeleton from '$lib/components/pages/settings/product-type/detail-skeleton.svelte';
+	import EditPageAttributes from '$lib/components/pages/settings/product-type/edit-page-attributes.svelte';
 	import GeneralInfo from '$lib/components/pages/settings/product-type/general-info.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import {
@@ -28,11 +30,9 @@
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
-	import EditPageAttributes from '$lib/components/pages/settings/product-type/edit-page-attributes.svelte';
-	import { CommonState } from '$lib/utils/common.svelte';
-	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 
 	const productTypeQuery = operationStore<
 		Pick<Query, 'productType'>,
@@ -66,7 +66,7 @@
 	 */
 	let initialHasVariants = $state(false);
 
-	const handleUpdateProductType = async () => {		
+	const handleUpdateProductType = async () => {
 		loading = true;
 		// update product type itself
 		const result = await GRAPHQL_CLIENT.mutation<

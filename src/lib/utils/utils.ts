@@ -1,19 +1,31 @@
-import { type Address, type AddressInput, type Money, type Mutation, type Query, type SelectedAttribute, type User, AttributeInputTypeEnum, CountryCode, FulfillmentStatus, OrderDirection, PermissionEnum } from '$lib/gql/graphql';
-import type { AnyVariables, OperationResult } from '@urql/core';
-import editorJsToHtml from 'editorjs-html';
-import { AppRoute } from './routes';
-import xss from 'xss';
-import { type ServerLoadEvent } from '@sveltejs/kit';
+import type { BadgeProps } from '$lib/components/ui/Badge/types';
+import {
+	type Address,
+	type AddressInput,
+	type Money,
+	type Mutation,
+	type Query,
+	type SelectedAttribute,
+	type User,
+	AttributeInputTypeEnum,
+	CountryCode,
+	FulfillmentStatus,
+	OrderDirection,
+	PermissionEnum,
+} from '$lib/gql/graphql';
+import { OrderStatus, PaymentChargeStatusEnum } from '$lib/gql/graphql';
+import { DEFAULT_CHANNEL } from './channels';
 import { CHANNEL_KEY } from './consts';
 import { getCookieByKey } from './cookies';
-import { DEFAULT_CHANNEL } from './channels';
-import { OrderStatus, PaymentChargeStatusEnum } from "$lib/gql/graphql";
-import type { BadgeProps } from '$lib/components/ui/Badge/types';
+import { AppRoute } from './routes';
+import type { SupportTicketStatus, SupportTicketTag } from './types';
+import { type ServerLoadEvent } from '@sveltejs/kit';
+import type { AnyVariables, OperationResult } from '@urql/core';
+import dayjs from 'dayjs';
+import editorJsToHtml from 'editorjs-html';
 import { lowerCase, pick, startCase } from 'es-toolkit';
 import { toast } from 'svelte-sonner';
-import dayjs from 'dayjs';
-import type { SupportTicketStatus, SupportTicketTag } from './types';
-
+import xss from 'xss';
 
 export const editorJsParser = editorJsToHtml();
 
@@ -22,7 +34,7 @@ export const randomID = () => (++_counter).toString(36);
 
 /**
  * @param length default to 10
- * @returns 
+ * @returns
  */
 export function randomString(length: number = 10) {
 	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -32,7 +44,7 @@ export function randomString(length: number = 10) {
 		result += characters[randomIndex];
 	}
 	return result;
-};
+}
 
 /**
  * @description Parses the raw product description and returns an array of strings.
@@ -73,7 +85,7 @@ export function constructPaginationParams<T extends PaginationOptions>({
 	before,
 	after,
 	first,
-	last
+	last,
 }: T): PaginationOptions {
 	const pagination = {} as PaginationOptions;
 	if (before) {
@@ -87,12 +99,12 @@ export function constructPaginationParams<T extends PaginationOptions>({
 		pagination.last = last;
 	}
 	return pagination;
-};
+}
 
 export const formatMoney = (currency: string, startAmount: number, endAmount?: number) => {
 	const formatter = new Intl.NumberFormat('en-US', {
 		style: 'currency',
-		currency
+		currency,
 	});
 	if (endAmount !== undefined) {
 		return formatter.formatRange(startAmount, endAmount);
@@ -147,7 +159,8 @@ export const checkIfGraphqlResultHasError = <T, K extends AnyVariables>(
 		const key = apiErrorKey || Object.keys(result.data)[0];
 
 		const errors = (result.data as Record<string, Record<string, unknown>>)?.[key]?.errors;
-		if (!errors && apiErrorKey) throw new Error('No errors field. You MUST check your GraphQL query.');
+		if (!errors && apiErrorKey)
+			throw new Error('No errors field. You MUST check your GraphQL query.');
 
 		if (errors && Array.isArray(errors) && errors.length > 0) {
 			toast.error(errors[0].message);
@@ -163,7 +176,7 @@ export type PredicateFunc<T> = (obj: T) => boolean;
 
 export const recursiveSearch = <T extends { children?: T[] }>(
 	arr: T[],
-	predicate: PredicateFunc<T>
+	predicate: PredicateFunc<T>,
 ): T | null => {
 	if (arr.length === 0) return null;
 
@@ -192,7 +205,7 @@ export const getHrefForVariant = (productSlug: string, variantID: string): strin
 };
 
 /**
- *  direction === 'asc' ? 'dsc' : 'asc' 
+ *  direction === 'asc' ? 'dsc' : 'asc'
  */
 export const flipDirection = (direction: OrderDirection): OrderDirection =>
 	direction === OrderDirection.Asc ? OrderDirection.Desc : OrderDirection.Asc;
@@ -321,18 +334,23 @@ export const checkUserHasPermissions = (user: User, ...perms: PermissionEnum[]) 
 };
 
 /**
-* Checks if given user has 3 perms: manage settings, manage staff, manage users.
+ * Checks if given user has 3 perms: manage settings, manage staff, manage users.
  */
 export const userIsShopAdmin = (user: User) => {
-	return checkUserHasPermissions(user, PermissionEnum.ManageSettings, PermissionEnum.ManageStaff, PermissionEnum.ManageUsers)
+	return checkUserHasPermissions(
+		user,
+		PermissionEnum.ManageSettings,
+		PermissionEnum.ManageStaff,
+		PermissionEnum.ManageUsers,
+	);
 };
 
 export function formatCurrency(value: number): string {
 	return value.toLocaleString('en-US', {
 		minimumFractionDigits: 2,
-		maximumFractionDigits: 2
+		maximumFractionDigits: 2,
 	});
-};
+}
 
 export const inferRowsPerPage = (paging: PaginationOptions) => {
 	if (paging.first) return paging.first;
@@ -444,10 +462,10 @@ export const supportTicketStatusToBadgeClass = (status: SupportTicketStatus): Ba
  */
 export interface TimeObject {
 	valueOf(): number;
-};
+}
 
 dayjs() satisfies TimeObject;
-(new Date()) satisfies TimeObject;
+new Date() satisfies TimeObject;
 
 /**
  * Compare 2 date values
@@ -469,7 +487,7 @@ export function formatBytes(bytes: number): string {
 	const i: number = Math.floor(Math.log(bytes) / Math.log(1024));
 	const formattedSize: string = (bytes / Math.pow(1024, i)).toFixed(2);
 	return `${formattedSize} ${sizes[i]}`;
-};
+}
 
 /**
 	If the given `str` is longer than given len, cut the first len chars, append ... to the end
@@ -478,7 +496,7 @@ export const stringSlicer = (str?: string, len: number = 100) => {
 	if (len === 0 || !str) return '-';
 	if (str.length < len) return str;
 
-	return str.slice(0, len) + "...";
+	return str.slice(0, len) + '...';
 };
 
 export function subtractMoney(init: Money, ...args: Money[]): Money {
@@ -497,7 +515,7 @@ export const convertAddressToAddressInput = (addr: Address): AddressInput => {
 		countryArea: addr.countryArea,
 		firstName: addr.firstName,
 		lastName: addr.lastName,
-		metadata: addr.metadata.map(item => pick(item, ['key', 'value'])),
+		metadata: addr.metadata.map((item) => pick(item, ['key', 'value'])),
 		phone: addr.phone,
 		postalCode: addr.postalCode,
 		streetAddress1: addr.streetAddress1,
@@ -507,16 +525,17 @@ export const convertAddressToAddressInput = (addr: Address): AddressInput => {
 };
 
 export const addNoDup = <T extends string | number>(array: T[], ...items: T[]) => {
-	for (const item of items)
-		if (!array.includes(item))
-			array.push(item)
+	for (const item of items) if (!array.includes(item)) array.push(item);
 
 	return array;
 };
 
-export const toggleItemNoDup = <T extends string | number>(array: T[], item: T, add: boolean = true) => {
-	if (add)
-		return array.includes(item) ? array : array.concat(item);
+export const toggleItemNoDup = <T extends string | number>(
+	array: T[],
+	item: T,
+	add: boolean = true,
+) => {
+	if (add) return array.includes(item) ? array : array.concat(item);
 
-	return array.filter(it => it !== item);
+	return array.filter((it) => it !== item);
 };

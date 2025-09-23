@@ -1,8 +1,8 @@
-name: "Web app setup"
-description: "Set up NPM and dependencies"
+name: 'Web app setup'
+description: 'Set up NPM and dependencies'
 
 runs:
-  using: "composite"
+  using: 'composite'
   # steps:
   #   - name: ci/setup-node
   #     uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
@@ -36,7 +36,7 @@ runs:
       uses: actions/setup-node@v4
       with:
         node-version-file: package.json
-        cache: "pnpm"
+        cache: 'pnpm'
 
     - name: Install dependencies
       run: pnpm --version && pnpm install --frozen-lockfile

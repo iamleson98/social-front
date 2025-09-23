@@ -16,7 +16,6 @@
       - any-glob-to-any-file:
           - src/**
           - static/**
-
 # 📱mobile:
 #   - changed-files:
 #       - any-glob-to-any-file:

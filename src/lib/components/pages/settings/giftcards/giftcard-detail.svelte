@@ -1,10 +1,16 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { GIFT_CARD_RESEND_MUTATION, GIFT_CARD_TAGS_QUERY } from '$lib/api/admin/giftcards';
+	import { CUSTOMER_LIST_QUERY } from '$lib/api/admin/users';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Ban, CircleCheck, Send } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
+	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { Input } from '$lib/components/ui/Input';
+	import { Modal } from '$lib/components/ui/Modal';
 	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
 	import {
 		type QueryGiftCardTagsArgs,
@@ -13,19 +19,13 @@
 		type MutationGiftCardResendArgs,
 		type MetadataItem,
 	} from '$lib/gql/graphql';
-	import GiftcardExpirationForm from './giftcard-expiration-form.svelte';
-	import { array, number, object, string, z } from 'zod';
-	import { difference } from 'es-toolkit';
-	import { Modal } from '$lib/components/ui/Modal';
-	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
-	import { GiftcardChannelMetadataKey, GiftcardUserEmailMetadataKey } from '$lib/utils/consts';
-	import { CUSTOMER_LIST_QUERY } from '$lib/api/admin/users';
-	import { Alert } from '$lib/components/ui/Alert';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { toast } from 'svelte-sonner';
-	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
-	import { tranFunc } from '$i18n';
+	import { GiftcardChannelMetadataKey, GiftcardUserEmailMetadataKey } from '$lib/utils/consts';
+	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
+	import GiftcardExpirationForm from './giftcard-expiration-form.svelte';
+	import { difference } from 'es-toolkit';
+	import { toast } from 'svelte-sonner';
+	import { array, number, object, string, z } from 'zod';
 
 	type Props = {
 		id: string;

@@ -1,9 +1,12 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { tranFunc } from '$i18n';
 	import { PRODUCT_TYPE_CREATE_MUTATION } from '$lib/api/admin/product';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
+	import CreatePageAttributes from '$lib/components/pages/settings/product-type/create-page-attributes.svelte';
 	import GeneralInfo from '$lib/components/pages/settings/product-type/general-info.svelte';
 	import {
 		ProductTypeKindEnum,
@@ -13,10 +16,7 @@
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import CreatePageAttributes from '$lib/components/pages/settings/product-type/create-page-attributes.svelte';
 	import { toast } from 'svelte-sonner';
-	import { goto } from '$app/navigation';
-	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 
 	let productTypeInput = $state<ProductTypeInput>({
 		hasVariants: false,

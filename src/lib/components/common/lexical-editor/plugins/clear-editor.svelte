@@ -6,8 +6,9 @@
 		$isRangeSelection as isRangeSelection,
 		CLEAR_EDITOR_COMMAND,
 		COMMAND_PRIORITY_EDITOR,
-		type LexicalEditor
+		type LexicalEditor,
 	} from 'lexical';
+
 	type Props = {
 		editor: LexicalEditor;
 		onClear?: () => void;
@@ -37,7 +38,7 @@
 
 				return true;
 			},
-			COMMAND_PRIORITY_EDITOR
+			COMMAND_PRIORITY_EDITOR,
 		);
 	});
 </script>

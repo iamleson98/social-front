@@ -22,7 +22,7 @@
 			channelSlug: '',
 			fromProduct: 0,
 			toProduct: 0,
-			discount: 0
+			discount: 0,
 		};
 		if (discountRanges.length) {
 			newRange.fromProduct = discountRanges[discountRanges.length - 1].toProduct + 1;

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import {
 		PROMOTION_RULE_CONDITIONS_SELECTED_OPTIONS_DETAILS,
 		PROMOTION_RULE_CREATE_MUTATION,
@@ -10,9 +11,11 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { PencilMinus, Plus, Trash } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
+	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Modal } from '$lib/components/ui/Modal';
+	import { Table, TableSkeleton } from '$lib/components/ui/Table';
 	import {
 		RewardValueTypeEnum,
 		type Mutation,
@@ -23,30 +26,27 @@
 		type PromotionRuleUpdateInput,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import {
 		checkIfGraphqlResultHasError,
 		parseEditorJsString,
 		SitenameCommonClassName,
 	} from '$lib/utils/utils';
-	import { onMount } from 'svelte';
-	import RuleEdit from './rule-edit.svelte';
-	import { Table, TableSkeleton } from '$lib/components/ui/Table';
-	import { Alert } from '$lib/components/ui/Alert';
 	import {
 		CATEGORY_COLUMNS,
 		COLLECTION_COLUMNS,
 		PRODUCT_COLUMNS,
 		VARIANT_COLUMNS,
 	} from '../vouchers/snippets.svelte';
-	import { tranFunc } from '$i18n';
 	import {
 		classifyRuleCatalog,
 		createDefaultCatalogPredicate,
 		type QueryData,
 		type TabKey,
 	} from './consts';
+	import RuleEdit from './rule-edit.svelte';
 	import { omit } from 'es-toolkit';
-	import { CommonState } from '$lib/utils/common.svelte';
+	import { onMount } from 'svelte';
 
 	type Props = {
 		/** pass in this prop in promotion detail page */

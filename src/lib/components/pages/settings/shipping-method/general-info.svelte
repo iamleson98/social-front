@@ -1,18 +1,18 @@
 <script lang="ts">
+	import { page } from '$app/state';
+	import { tranFunc } from '$i18n';
+	import { TAX_CLASSES_QUERY } from '$lib/api/tax';
+	import { EditorJSComponent } from '$lib/components/common/editorjs';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import { ChevronLeft } from '$lib/components/icons';
+	import { Button } from '$lib/components/ui/Button';
+	import { Input } from '$lib/components/ui/Input';
+	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
+	import type { QueryTaxClassesArgs } from '$lib/gql/graphql';
+	import { AppRoute } from '$lib/utils';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import type { OutputData } from '@editorjs/editorjs';
-	import { Input } from '$lib/components/ui/Input';
-	import { EditorJSComponent } from '$lib/components/common/editorjs';
 	import { any, array, number, object, string, z } from 'zod';
-	import { tranFunc } from '$i18n';
-	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
-	import { TAX_CLASSES_QUERY } from '$lib/api/tax';
-	import type { QueryTaxClassesArgs } from '$lib/gql/graphql';
-	import { Button } from '$lib/components/ui/Button';
-	import { page } from '$app/state';
-	import { AppRoute } from '$lib/utils';
-	import { ChevronLeft } from '$lib/components/icons';
 
 	type Props = {
 		name: string;

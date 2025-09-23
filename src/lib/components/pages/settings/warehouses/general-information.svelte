@@ -1,13 +1,13 @@
 <script lang="ts">
+	import { page } from '$app/state';
+	import { tranFunc } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Input } from '$lib/components/ui/Input';
-	import { object, string, z } from 'zod';
-	import AddressForm from '../../checkout/address-form.svelte';
-	import { tranFunc } from '$i18n';
 	import type { Address } from '$lib/gql/graphql';
-	import { page } from '$app/state';
-	import { noop } from 'es-toolkit';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import AddressForm from '../../checkout/address-form.svelte';
+	import { noop } from 'es-toolkit';
+	import { object, string, z } from 'zod';
 
 	type Props = {
 		name: string;

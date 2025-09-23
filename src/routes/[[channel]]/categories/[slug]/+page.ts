@@ -1,8 +1,7 @@
-
 export const load = async () => {
-  return {
-    meta: {
-      title: 'Category',
-    },
-  };
+	return {
+		meta: {
+			title: 'Category',
+		},
+	};
 };

@@ -1,7 +1,14 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { operationStore } from '$lib/api/operation';
+	import { tranFunc } from '$i18n';
 	import { STAFF_DELETE_MUTATION, STAFF_UPDATE_MUTATION } from '$lib/api/admin/staff';
+	import { USER_DETAIL_QUERY } from '$lib/api/admin/users';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { operationStore } from '$lib/api/operation';
+	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
+	import StaffDetailSkeleton from '$lib/components/pages/settings/staff/staff-detail-skeleton.svelte';
+	import StaffForm from '$lib/components/pages/settings/staff/staff-form.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import {
 		type StaffUpdateInput,
@@ -11,17 +18,10 @@
 		type Query,
 		type QueryUserArgs,
 	} from '$lib/gql/graphql';
-	import StaffDetailSkeleton from '$lib/components/pages/settings/staff/staff-detail-skeleton.svelte';
-	import { AppRoute } from '$lib/utils';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { USER_DETAIL_QUERY } from '$lib/api/admin/users';
-	import { goto } from '$app/navigation';
-	import StaffForm from '$lib/components/pages/settings/staff/staff-form.svelte';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
-	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
+	import { AppRoute } from '$lib/utils';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import type { PageServerData } from './$types';
-	import { tranFunc } from '$i18n';
 	import { onMount } from 'svelte';
 
 	type Props = {

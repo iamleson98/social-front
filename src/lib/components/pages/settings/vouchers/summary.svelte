@@ -4,11 +4,11 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { DiscountValueTypeEnum, type Voucher } from '$lib/gql/graphql';
-	import { SitenameTimeFormat } from '$lib/utils/consts';
-	import dayjs from 'dayjs';
-	import { APPLICATION_TYPES } from './consts';
 	import { AppRoute } from '$lib/utils';
+	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import { APPLICATION_TYPES } from './consts';
+	import dayjs from 'dayjs';
 
 	type Props = {
 		/** if not provided, meaning this is create page */
@@ -69,10 +69,7 @@
 		<div class="text-sm">
 			<div class="font-semibold">{$tranFunc('settings.availability')}</div>
 			{#each voucher.channelListings || [] as listing}
-				<a
-					href={AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(listing.channel.slug)}
-					class="link mr-1"
-				>
+				<a href={AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(listing.channel.slug)} class="link mr-1">
 					{listing.channel.name}
 				</a>
 			{/each}

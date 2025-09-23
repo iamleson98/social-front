@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { randomID } from '$lib/utils/utils';
-	import type { HTMLInputAttributes } from 'svelte/elements';
 	import type { SocialSize } from '$lib/components/ui/common';
+	import type { SocialVariant } from '$lib/utils';
+	import { randomID } from '$lib/utils/utils';
 	import { INPUT_CLASSES, RADIO_SIZES } from './input.types';
 	import Label from './label.svelte';
-	import type { SocialVariant } from '$lib/utils';
 	import type { Snippet } from 'svelte';
+	import type { HTMLInputAttributes } from 'svelte/elements';
 
 	type Props = {
 		label?: string | Snippet;
@@ -28,11 +28,7 @@
 	}: Props = $props();
 </script>
 
-<div
-	class="flex items-start gap-1.5 dark:border-gray-700 {className} {INPUT_CLASSES[
-		variant
-	].fg}"
->
+<div class="flex items-start gap-1.5 dark:border-gray-700 {className} {INPUT_CLASSES[variant].fg}">
 	<input {id} type="radio" bind:group class="radio {RADIO_SIZES[size]} shadow-none!" {...rest} />
 	<div>
 		{#if label}

@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { CheckoutSteps } from '$lib/components/common/checkout-steps';
 	import { page } from '$app/state';
-	import { operationStore } from '$lib/api/operation';
 	import { CHECKOUT_DETAILS_QUERY } from '$lib/api/checkout';
-	import type { Query, QueryCheckoutArgs } from '$lib/gql/graphql';
+	import { operationStore } from '$lib/api/operation';
+	import { CheckoutSteps } from '$lib/components/common/checkout-steps';
 	import CheckoutForm from '$lib/components/pages/checkout/checkout-form.svelte';
 	import CheckoutSummary from '$lib/components/pages/checkout/checkout-summary.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
+	import type { Query, QueryCheckoutArgs } from '$lib/gql/graphql';
 
 	const checkoutQueryStore = operationStore<Pick<Query, 'checkout'>, QueryCheckoutArgs>({
 		query: CHECKOUT_DETAILS_QUERY,

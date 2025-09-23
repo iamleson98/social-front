@@ -6,8 +6,8 @@
 	import { OrderStatus } from '$lib/gql/graphql';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { orderStatusBadgeClass } from '$lib/utils/utils';
-	import dayjs from 'dayjs';
 	import VariantsModal from './variants-modal.svelte';
+	import dayjs from 'dayjs';
 
 	type Props = {
 		channelSlug: string;

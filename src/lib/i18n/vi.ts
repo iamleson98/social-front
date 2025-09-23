@@ -13,8 +13,10 @@ export default {
 		confirmPasswordPlaceholder: 'Vui lòng xác nhận mật khẩu',
 		agreeToTerms: 'Tôi đồng ý với các điều khoản và điều kiện',
 		alreadyHasAccount: 'Bạn đã có tài khoản?',
-		signupSuccess: 'Chào mừng bạn đến với Sitename. Vui lòng kiểm tra hòm thư để xác thực tài khoản.',
-		promtGeoAccessPerm: 'Chúng tôi cần nắm được khu vực bạn sinh sống để cung cấp trải nghiệm tốt hơn. Bạn vui lòng chấp nhận yêu cầu quyền truy cập vị trí. Cảm ơn bạn!',
+		signupSuccess:
+			'Chào mừng bạn đến với Sitename. Vui lòng kiểm tra hòm thư để xác thực tài khoản.',
+		promtGeoAccessPerm:
+			'Chúng tôi cần nắm được khu vực bạn sinh sống để cung cấp trải nghiệm tốt hơn. Bạn vui lòng chấp nhận yêu cầu quyền truy cập vị trí. Cảm ơn bạn!',
 	},
 	resetPassword: {
 		title: 'Yêu cầu đặt lại mật khẩu',
@@ -122,7 +124,8 @@ export default {
 		variants: 'Phân loại sản phẩm',
 		user: 'Người dùng',
 		order: 'Đơn hàng',
-		fileExporting: 'Chúng tôi đang xuất file bạn yêu cầu. File sẽ được gửi đến địa chỉ email của bạn',
+		fileExporting:
+			'Chúng tôi đang xuất file bạn yêu cầu. File sẽ được gửi đến địa chỉ email của bạn',
 	},
 	product: {
 		chooseAddress: 'Vui lòng chọn địa chỉ',
@@ -158,7 +161,8 @@ export default {
 		noVote: 'Chưa có đánh giá',
 		noDescription: 'Chưa có mô tả',
 		prdPolicy: 'Chính sách bán hàng',
-		prdPolicyDetail: 'Sitename luôn lỗ lực để mang tới cho khách hàng sản phẩm với chất lượng tốt nhất. Sitename hoàn tiền 100% nếu sản phẩm không đạt chất lượng tiêu chuẩn.',
+		prdPolicyDetail:
+			'Sitename luôn lỗ lực để mang tới cho khách hàng sản phẩm với chất lượng tốt nhất. Sitename hoàn tiền 100% nếu sản phẩm không đạt chất lượng tiêu chuẩn.',
 		quickFilling: 'Nhập nhanh',
 		price: 'giá',
 		costPrice: 'giá nhập',
@@ -194,7 +198,8 @@ export default {
 		promptPublicationTime: 'Nếu chưa, vui lòng khai báo thời gian phát hành',
 		availForPurchase: 'Hàng có sẵn để bán',
 		promptAvailTime: 'Nếu chưa, vui lòng khai báo thời gian có hàng',
-		preorderHint: 'Hàng đặt trước là khi bạn phải lấy hàng từ một nhà cung cấp khác. Thời gian để giao hàng phải từ {{min}} tới {{max}} ngày làm việc.',
+		preorderHint:
+			'Hàng đặt trước là khi bạn phải lấy hàng từ một nhà cung cấp khác. Thời gian để giao hàng phải từ {{min}} tới {{max}} ngày làm việc.',
 		prdCreated: 'Sản phẩm đã được tạo mới thành công',
 		prdUpdated: 'Sản phẩm đã được cập nhật thành công',
 	},
@@ -322,29 +327,29 @@ export default {
 		users: 'Users',
 	},
 	payment: {
-		clickAndCollectShippingMethod: "click&collect",
-		shippingDoesNotApply: "does not apply",
-		paymentTitle: "Payment balance",
-		subtotal: "Subtotal",
-		itemCount: "{{quantity}} items",
-		taxes: "Taxes",
-		vatIncluded: "VAT included",
-		vatNotIncluded: "does not apply",
-		shipping: "Shipping",
-		shippingNotApplicable: "does not apply",
-		discount: "Discount",
-		total: "Total",
-		preauthorized: "Preauthorized amount",
-		captured: "Captured amount",
-		refunded: "Refunded amount",
-		outstanding: "Outstanding Balance",
-		includedInSubtotal: "Included in subtotal",
-		includedInPrices: "Included in prices",
-		settled: "Settled",
-		capture: "Capture",
-		refund: "Refund",
-		void: "Refund",
-		markAsPaid: "Mark as paid",
+		clickAndCollectShippingMethod: 'click&collect',
+		shippingDoesNotApply: 'does not apply',
+		paymentTitle: 'Payment balance',
+		subtotal: 'Subtotal',
+		itemCount: '{{quantity}} items',
+		taxes: 'Taxes',
+		vatIncluded: 'VAT included',
+		vatNotIncluded: 'does not apply',
+		shipping: 'Shipping',
+		shippingNotApplicable: 'does not apply',
+		discount: 'Discount',
+		total: 'Total',
+		preauthorized: 'Preauthorized amount',
+		captured: 'Captured amount',
+		refunded: 'Refunded amount',
+		outstanding: 'Outstanding Balance',
+		includedInSubtotal: 'Included in subtotal',
+		includedInPrices: 'Included in prices',
+		settled: 'Settled',
+		capture: 'Capture',
+		refund: 'Refund',
+		void: 'Refund',
+		markAsPaid: 'Mark as paid',
 	},
 	staff: {
 		staffs: 'Nhân viên',
@@ -378,9 +383,12 @@ export default {
 		exportSelected: 'Thẻ đã chọn',
 		exportSearch: 'Tìm kiếm hiện tại',
 		durationType: 'Loại thời gian',
-		bulkIssueAlert: 'Sau khi tạo, Sitename sẽ tạo danh sách mã thẻ quà tặng mà bạn có thể tải xuống.',
-		issueFormAlert: 'Khách hàng được chọn sẽ nhận được mã thẻ quà tặng đã tạo. Người khác có thể đổi mã thẻ quà tặng. Thẻ quà tặng sẽ được gán cho tài khoản đã đổi mã.',
-		resendCodeAlert: 'Mã Thẻ Quà Tặng sẽ được gửi đến email bạn đã cung cấp khi thanh toán. Bạn có thể cung cấp một địa chỉ email khác nếu muốn: ',
+		bulkIssueAlert:
+			'Sau khi tạo, Sitename sẽ tạo danh sách mã thẻ quà tặng mà bạn có thể tải xuống.',
+		issueFormAlert:
+			'Khách hàng được chọn sẽ nhận được mã thẻ quà tặng đã tạo. Người khác có thể đổi mã thẻ quà tặng. Thẻ quà tặng sẽ được gán cho tài khoản đã đổi mã.',
+		resendCodeAlert:
+			'Mã Thẻ Quà Tặng sẽ được gửi đến email bạn đã cung cấp khi thanh toán. Bạn có thể cung cấp một địa chỉ email khác nếu muốn: ',
 		status: {
 			deactivated: 'Đã vô hiệu hóa',
 			used: 'Đã sử dụng',
@@ -415,7 +423,7 @@ export default {
 			usedByCustomer: 'Được sử dụng bởi khách hàng',
 			usedByEmail: 'Được sử dụng bởi email',
 			filterByType: 'Lọc theo loại',
-			submit: 'Xác nhận'
+			submit: 'Xác nhận',
 		},
 		expiry: {
 			labelExact: 'Ngày cụ thể',
@@ -426,14 +434,14 @@ export default {
 			willExpireOn: 'Sẽ hết hạn vào:',
 		},
 		expiryType: {
-			expiryPeriod: "Có thời hạn",
-			neverExpire: "Không bao giờ hết hạn"
+			expiryPeriod: 'Có thời hạn',
+			neverExpire: 'Không bao giờ hết hạn',
 		},
 		periodType: {
-			day: "Ngày",
-			week: "Tuần",
-			month: "Tháng",
-			year: "Năm"
+			day: 'Ngày',
+			week: 'Tuần',
+			month: 'Tháng',
+			year: 'Năm',
 		},
 		form: {
 			channel: 'Kênh',
@@ -456,7 +464,8 @@ export default {
 			noEvents: 'Không có lịch sử cho thẻ này',
 			noteAdded: 'Đã thêm ghi chú vào thẻ',
 			giftcardResent: 'Thẻ quà tặng đã được gửi lại',
-			bulkIssueSuccess: 'Chúng tôi vừa phát hành xong số thẻ quà bạn yêu cầu. Bạn có thể chọn nút ok bên dưới để tải về danh sách thẻ quà đã tạo.',
+			bulkIssueSuccess:
+				'Chúng tôi vừa phát hành xong số thẻ quà bạn yêu cầu. Bạn có thể chọn nút ok bên dưới để tải về danh sách thẻ quà đã tạo.',
 		},
 		types: {
 			ACTIVATED: 'Thẻ quà tặng đã được kích hoạt',
@@ -482,28 +491,35 @@ export default {
 		editSuccess: 'Cập nhật kênh thành công',
 		newSuccess: 'Tạo mới kênh thành công',
 		chanToReplace: 'kênh thay thế',
-		replaceChanHelpTxt: 'Khai báo kênh khác để gán các sản phẩm sang. Kênh thay thế phải có chung tiền tệ với kênh muốn xóa.',
+		replaceChanHelpTxt:
+			'Khai báo kênh khác để gán các sản phẩm sang. Kênh thay thế phải có chung tiền tệ với kênh muốn xóa.',
 		channels: 'Các kênh',
 		delExprOrdersErrSubTxt: 'Giá trị này cần >= {{min}} và <= {{max}}',
 		orderExp: 'Thời hạn đơn hàng',
-		delExprOrdersSubTxt: 'Số ngày cho tới lúc xóa đơn hàng quá hạn. Giá trị cho phép trong khoản từ {{min}} tới {{max}}',
+		delExprOrdersSubTxt:
+			'Số ngày cho tới lúc xóa đơn hàng quá hạn. Giá trị cho phép trong khoản từ {{min}} tới {{max}}',
 		allowUnpaidOrder: 'Cho phép đơn hàng thanh toán khi lúc nhận',
-		allowCompleteOrderBeforePay: 'Bật cho phép hoàn thành đơn hàng trước khi thanh toán thành công.',
+		allowCompleteOrderBeforePay:
+			'Bật cho phép hoàn thành đơn hàng trước khi thanh toán thành công.',
 		useTranFlow: 'Sử dụng luồng thanh toán khi cập nhật trạng thái đã thanh toán cho đơn',
 		markAsPaidSubTxt: `"Đánh dấu đã thanh toán" tạo một giao dịch - sử dụng bởi các ứng dụng thanh toán. <br /> Nểu bỏ chọn thì hệ thông sẽ tạo một thanh toán, sử dụng bởi tính năng phụ trợ thanh toán.`,
 		autoCompleteCheckoutsWhenPaid: 'Tự động hoàn thiện thanh toán khi đã nhận đủ tiền',
-		autoCompleteCheckoutWhenPaidSubTxt: 'Khi bật tính năng này, các thanh toán giỏ hàng sẽ được tự động hoàn thiện, mà không cần phải thao tác thủ công.',
+		autoCompleteCheckoutWhenPaidSubTxt:
+			'Khi bật tính năng này, các thanh toán giỏ hàng sẽ được tự động hoàn thiện, mà không cần phải thao tác thủ công.',
 		authorizeTrans: 'Ủy quyền giao dịch thay vì trừ tiền',
-		authorizeTransSubTxt: 'Khi bật tính năng này, tất cả giao dịch sẽ yêu cầu thêm một bước trước khi trừ tiền',
+		authorizeTransSubTxt:
+			'Khi bật tính năng này, tất cả giao dịch sẽ yêu cầu thêm một bước trước khi trừ tiền',
 		allocStrategy: 'Chiến lược phân bổ',
 		prioritizeWarehouseWithMaxStock: 'Ưu tiên những kho còn nhiều hàng tồn',
 		prioritizeWarehouseByMaxOrder: 'Ưu tiên chọn kho theo thứ tự sắp xếp',
 		shipZones: 'Địa bàn giao vận',
-		shipZonesAlert: 'Chọn các địa bàn giao vận được cung ứng bởi kênh này. Có thể chọn nhiều địa bàn cho một kênh.',
+		shipZonesAlert:
+			'Chọn các địa bàn giao vận được cung ứng bởi kênh này. Có thể chọn nhiều địa bàn cho một kênh.',
 		addShipZone: 'Thêm dịa bàn giao vận',
 		selectShipZone: 'Chọn địa bàn giao vận',
 		warehouse: 'Kho hàng',
-		warehouseAlert: 'Phân bổ và sắp xếp các kho hàng sẽ dùng trong kênh này (Các kho hàng có thể được phân bổ vào nhiều kênh)',
+		warehouseAlert:
+			'Phân bổ và sắp xếp các kho hàng sẽ dùng trong kênh này (Các kho hàng có thể được phân bổ vào nhiều kênh)',
 		addWh: 'Thêm kho hàng',
 		selectWh: 'Chọn kho hàng',
 	},
@@ -544,7 +560,8 @@ export default {
 		newCodes: 'Thêm mã giảm giá',
 		applyType: 'Áp dụng',
 		applyCheapPrd: 'Áp dụng cho sản phẩm rẻ nhất đủ điều kiện',
-		applyCheapPrdHelpTxt: 'Nếu không chọn, mã giảm giá sẽ áp dụng cho tất cả các sản phẩm đủ điều kiện',
+		applyCheapPrdHelpTxt:
+			'Nếu không chọn, mã giảm giá sẽ áp dụng cho tất cả các sản phẩm đủ điều kiện',
 		applyEntireOrder: 'Cả đơn hàng',
 		applySpecificPrd: 'Hạng mục sản phẩm cụ thể',
 		discountValue: 'Giá trị triết khấu',

@@ -1,4 +1,3 @@
-
 export type EditorProps = {
-  isRichText?: boolean;
+	isRichText?: boolean;
 };

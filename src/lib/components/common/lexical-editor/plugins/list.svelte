@@ -7,7 +7,7 @@
 		ListItemNode,
 		ListNode,
 		REMOVE_LIST_COMMAND,
-		removeList
+		removeList,
 	} from '@lexical/list';
 	import { mergeRegister } from '@lexical/utils';
 	import { COMMAND_PRIORITY_LOW, INSERT_PARAGRAPH_COMMAND, type LexicalEditor } from 'lexical';
@@ -30,7 +30,7 @@
 					insertList(editor, 'number');
 					return true;
 				},
-				COMMAND_PRIORITY_LOW
+				COMMAND_PRIORITY_LOW,
 			),
 			editor.registerCommand(
 				INSERT_UNORDERED_LIST_COMMAND,
@@ -38,7 +38,7 @@
 					insertList(editor, 'bullet');
 					return true;
 				},
-				COMMAND_PRIORITY_LOW
+				COMMAND_PRIORITY_LOW,
 			),
 			editor.registerCommand(
 				REMOVE_LIST_COMMAND,
@@ -46,15 +46,15 @@
 					removeList(editor);
 					return true;
 				},
-				COMMAND_PRIORITY_LOW
+				COMMAND_PRIORITY_LOW,
 			),
 			editor.registerCommand(
 				INSERT_PARAGRAPH_COMMAND,
 				() => {
 					return handleListInsertParagraph();
 				},
-				COMMAND_PRIORITY_LOW
-			)
+				COMMAND_PRIORITY_LOW,
+			),
 		);
 	});
 </script>

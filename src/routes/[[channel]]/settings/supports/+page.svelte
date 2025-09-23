@@ -1,17 +1,17 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import { Dots, Edit, Trash } from '$lib/components/icons';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown } from '$lib/components/ui/Dropdown';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
-	import { type SupportTicketStatus, type SupportTicketTag } from '$lib/utils/types';
-	import dayjs from 'dayjs';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
-	import { supportTicketStatusToBadgeClass, supportTicketTagToBadgeClass } from '$lib/utils/utils';
-	import { Badge } from '$lib/components/ui/Badge';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
+	import { type SupportTicketStatus, type SupportTicketTag } from '$lib/utils/types';
+	import { supportTicketStatusToBadgeClass, supportTicketTagToBadgeClass } from '$lib/utils/utils';
+	import dayjs from 'dayjs';
 
 	type SupportTicket = {
 		id: string;

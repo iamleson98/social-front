@@ -14,13 +14,13 @@
 		type PriceRangeInput,
 		type ProductOrder,
 	} from '$lib/gql/graphql';
+	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
 	import { AppRoute } from '$lib/utils';
 	import { CurrencyIconMap, type CurrencyCode } from '$lib/utils/consts';
 	import { flipDirection } from '$lib/utils/utils';
 	import { ORDER_BY_FIELD, PRICE_RANGE, ORDER_DIRECTION, ProductSortFields } from './common';
-	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
-	import { get } from 'svelte/store';
 	import { onMount } from 'svelte';
+	import { get } from 'svelte/store';
 
 	type Props = {
 		currency: CurrencyCode;

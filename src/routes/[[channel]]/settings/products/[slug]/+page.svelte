@@ -1,19 +1,23 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import { tranFunc } from '$i18n';
 	import { PRODUCT_DELETE_MUTATION, PRODUCT_DETAIL_QUERY } from '$lib/api/admin/product';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
+	import FileInputContainer from '$lib/components/common/file-input-container.svelte';
 	import {
 		ActionBar,
 		GeneralMetadataEditor,
 		type GeneralMetadataEditorRef,
 	} from '$lib/components/pages/settings/common';
-	import GeneralInformation from '$lib/components/pages/settings/products/new/general-information.svelte';
 	import CategorySelector from '$lib/components/pages/settings/products/new/category-selector.svelte';
+	import ChannelsSelector from '$lib/components/pages/settings/products/new/channels-selector.svelte';
 	import CollectionsAndTax from '$lib/components/pages/settings/products/new/collections-and-tax.svelte';
+	import GeneralInformation from '$lib/components/pages/settings/products/new/general-information.svelte';
 	import PackagingAndDelivery from '$lib/components/pages/settings/products/new/packaging-and-delivery.svelte';
 	import ProductSeo from '$lib/components/pages/settings/products/new/product-seo.svelte';
+	import VariantsEditor from '$lib/components/pages/settings/products/new/variants-editor.svelte';
 	import Skeleton from '$lib/components/pages/settings/products/skeleton.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import type {
@@ -27,13 +31,9 @@
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
+	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
-	import FileInputContainer from '$lib/components/common/file-input-container.svelte';
-	import { tranFunc } from '$i18n';
-	import type { MediaObject } from '$lib/utils/types';
-	import ChannelsSelector from '$lib/components/pages/settings/products/new/channels-selector.svelte';
-	import VariantsEditor from '$lib/components/pages/settings/products/new/variants-editor.svelte';
 
 	const ProductDetailStore = operationStore<Pick<Query, 'product'>, QueryProductArgs>({
 		query: PRODUCT_DETAIL_QUERY,

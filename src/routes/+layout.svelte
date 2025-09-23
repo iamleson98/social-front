@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { Header } from '$lib/components/common';
 	import { page } from '$app/state';
-	import { onMount, type Snippet } from 'svelte';
+	import { Header } from '$lib/components/common';
 	import Footer from '$lib/components/common/footer.svelte';
+	import ShopQuery from '$lib/components/common/shop-query.svelte';
+	import Language from '$lib/components/plugins/language.svelte';
 	import { AlertListener } from '$lib/components/ui/Modal';
 	import '../app.css';
-	import Language from '$lib/components/plugins/language.svelte';
-	import { Toaster } from 'svelte-sonner';
 	import dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
-	import ShopQuery from '$lib/components/common/shop-query.svelte';
+	import { onMount, type Snippet } from 'svelte';
+	import { Toaster } from 'svelte-sonner';
 
 	interface Props {
 		children: Snippet;

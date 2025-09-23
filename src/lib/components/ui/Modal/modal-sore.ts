@@ -1,5 +1,5 @@
-import { onMount } from "svelte";
-import { get, writable, type Writable } from "svelte/store";
+import { onMount } from 'svelte';
+import { get, writable, type Writable } from 'svelte/store';
 
 /** A set of stores indicating whether a modal is open. */
 const stores = new Set<Writable<boolean>>();
@@ -7,8 +7,7 @@ const stores = new Set<Writable<boolean>>();
 /** Store for the number of open modals. */
 const modalsOpen = writable(0);
 
-const updateModalsOpen = () =>
-  modalsOpen.set([...stores].filter((open) => get(open)).length);
+const updateModalsOpen = () => modalsOpen.set([...stores].filter((open) => get(open)).length);
 
 /**
  * Adds a modal's store to the open modal tracking.
@@ -18,19 +17,19 @@ const updateModalsOpen = () =>
  *   Store that indicates whether the modal is opened.
  */
 export const trackModal = (openStore: Writable<boolean>) =>
-  onMount(() => {
-    stores.add(openStore);
-    const unsubscribe = openStore.subscribe(updateModalsOpen);
+	onMount(() => {
+		stores.add(openStore);
+		const unsubscribe = openStore.subscribe(updateModalsOpen);
 
-    return () => {
-      unsubscribe();
-      stores.delete(openStore);
+		return () => {
+			unsubscribe();
+			stores.delete(openStore);
 
-      updateModalsOpen();
-    };
-  });
+			updateModalsOpen();
+		};
+	});
 
 modalsOpen.subscribe((openCount) => {
-  if (typeof document !== "undefined")
-    document.body.classList.toggle("bx--body--with-modal-open", openCount > 0);
+	if (typeof document !== 'undefined')
+		document.body.classList.toggle('bx--body--with-modal-open', openCount > 0);
 });

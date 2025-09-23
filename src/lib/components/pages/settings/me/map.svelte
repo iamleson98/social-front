@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import 'leaflet/dist/leaflet.css';
+	import { onMount } from 'svelte';
 
 	let L = $state<any>();
 	let MAP = $state<any>();
@@ -11,7 +11,7 @@
 		MAP = L.map(mapContainer).setView([51.505, -0.09], 13);
 		L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			attribution:
-				'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+				'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 		}).addTo(MAP);
 	});
 </script>

@@ -1,10 +1,18 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
-	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
 	import { page } from '$app/state';
-	import { NUMBER_REGEX, parseUrlSearchParams } from '$lib/utils/utils';
-	import { AFTER, BEFORE, FIRST, LAST, ORDER_BY_FIELD, PRICE_RANGE, ORDER_DIRECTION } from './common';
 	import { OrderDirection, ProductOrderField } from '$lib/gql/graphql';
+	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
+	import { NUMBER_REGEX, parseUrlSearchParams } from '$lib/utils/utils';
+	import {
+		AFTER,
+		BEFORE,
+		FIRST,
+		LAST,
+		ORDER_BY_FIELD,
+		PRICE_RANGE,
+		ORDER_DIRECTION,
+	} from './common';
 	import { get } from 'svelte/store';
 
 	afterNavigate(async () => {
@@ -20,12 +28,12 @@
 			: ProductOrderField.Price;
 
 		newProductQueryArgs.sortBy!.direction = Object.values(OrderDirection).includes(
-			sortDirection as OrderDirection
+			sortDirection as OrderDirection,
 		)
 			? (sortDirection as OrderDirection)
 			: OrderDirection.Asc;
 		newProductQueryArgs.sortBy!.field = Object.values(ProductOrderField).includes(
-			sortField as ProductOrderField
+			sortField as ProductOrderField,
 		)
 			? (sortField as ProductOrderField)
 			: ProductOrderField.Price;
@@ -42,8 +50,8 @@
 				newProductQueryArgs.filter = {
 					price: {
 						gte: Number(priceRangeSplit[0]),
-						lte: priceRangeSplit[1] ? Number(priceRangeSplit[1]) : null
-					}
+						lte: priceRangeSplit[1] ? Number(priceRangeSplit[1]) : null,
+					},
 				};
 			}
 		}

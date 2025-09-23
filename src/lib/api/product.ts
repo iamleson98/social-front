@@ -2,7 +2,7 @@ import type {
 	CategoryFilterInput,
 	CategorySortingInput,
 	CategoryWhereInput,
-	ThumbnailFormatEnum
+	ThumbnailFormatEnum,
 } from '$lib/gql/graphql';
 import { gql } from '@urql/core';
 
@@ -193,7 +193,12 @@ export const CATEGORY_DETAIL_QUERY = gql`
 				url
 				alt
 			}
-			children(first: $firstChildren, last: $lastChildren, before: $childrenBefore, after: $childrenAfter) {
+			children(
+				first: $firstChildren
+				last: $lastChildren
+				before: $childrenBefore
+				after: $childrenAfter
+			) {
 				totalCount
 				edges {
 					node {
@@ -373,8 +378,22 @@ export const PRODUCT_DETAIL_QUERY = gql`
 
 /** query to fetch product variants */
 export const PRODUCT_VARIANTS_QUERY = gql`
-	query ProductVariants($ids: [ID!], $channel: String, $first: Int, $before: String, $last: Int, $after: String) {
-		productVariants(channel: $channel, ids: $ids, first: $first, before: $before, last: $last, after: $after) {
+	query ProductVariants(
+		$ids: [ID!]
+		$channel: String
+		$first: Int
+		$before: String
+		$last: Int
+		$after: String
+	) {
+		productVariants(
+			channel: $channel
+			ids: $ids
+			first: $first
+			before: $before
+			last: $last
+			after: $after
+		) {
 			edges {
 				node {
 					id
@@ -385,14 +404,14 @@ export const PRODUCT_VARIANTS_QUERY = gql`
 					quantityAvailable
 					margin
 					product {
-            id
-            name
-            slug
-            thumbnail(size: 100, format: WEBP) {
-              url
-              alt
-            }
-          }
+						id
+						name
+						slug
+						thumbnail(size: 100, format: WEBP) {
+							url
+							alt
+						}
+					}
 					weight {
 						unit
 						value

@@ -1,38 +1,30 @@
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "Debug Built SvelteKit",
-      "type": "node",
-      "request": "launch",
-      "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "node",
-      "program": "${workspaceFolder}/build",
-      "sourceMaps": true,
-      "outFiles": [
-        "${workspaceFolder}/build/**/*.js"
-      ],
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "name": "Debug Built SvelteKit (Attach)",
-      "type": "node",
-      "request": "attach",
-      "port": 9230,
-      "restart": true,
-      "cwd": "${workspaceFolder}",
-      "sourceMaps": true,
-      "outFiles": [
-        "${workspaceFolder}/build/**/*.js"
-      ],
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "internalConsoleOptions": "neverOpen"
-    }
-  ]
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Debug Built SvelteKit",
+			"type": "node",
+			"request": "launch",
+			"cwd": "${workspaceFolder}",
+			"runtimeExecutable": "node",
+			"program": "${workspaceFolder}/build",
+			"sourceMaps": true,
+			"outFiles": ["${workspaceFolder}/build/**/*.js"],
+			"skipFiles": ["<node_internals>/**"],
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen"
+		},
+		{
+			"name": "Debug Built SvelteKit (Attach)",
+			"type": "node",
+			"request": "attach",
+			"port": 9230,
+			"restart": true,
+			"cwd": "${workspaceFolder}",
+			"sourceMaps": true,
+			"outFiles": ["${workspaceFolder}/build/**/*.js"],
+			"skipFiles": ["<node_internals>/**"],
+			"internalConsoleOptions": "neverOpen"
+		}
+	]
 }

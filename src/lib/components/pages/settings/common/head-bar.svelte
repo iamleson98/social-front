@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { Plus } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import type { Page } from '@sveltejs/kit';
-	import { Plus } from '$lib/components/icons';
 	import type { MouseEventHandler } from 'svelte/elements';
 
 	type Props = {

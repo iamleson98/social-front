@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { SVGAttributes } from 'svelte/elements';
-	import type { IconContent } from './consts';
-	import type { SocialSize } from '$lib/components/ui/common';
 	import { ICON_OF_BUTTON_SIZE_MAP } from '$lib/components/ui/Button';
+	import type { SocialSize } from '$lib/components/ui/common';
+	import type { IconContent } from './consts';
+	import type { SVGAttributes } from 'svelte/elements';
 
 	type Props = {
 		/**

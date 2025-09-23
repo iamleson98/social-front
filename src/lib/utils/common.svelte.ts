@@ -1,12 +1,11 @@
-import { tranFunc } from "$i18n";
-import { derived } from "svelte/store";
-
+import { tranFunc } from '$i18n';
+import { derived } from 'svelte/store';
 
 export const CommonState = derived(tranFunc, ($func) => ({
-  FieldRequiredError: $func('helpText.fieldRequired'),
-  EditSuccess: $func('common.editSuccess'),
-  DeleteSuccess: $func('common.delSuccess'),
-  CreateSuccess: $func('common.createSuccess'),
-  ConfirmDelete: $func('common.confirmDel'),
-  NonNegativeError: $func('error.negativeNumber'),
+	FieldRequiredError: $func('helpText.fieldRequired'),
+	EditSuccess: $func('common.editSuccess'),
+	DeleteSuccess: $func('common.delSuccess'),
+	CreateSuccess: $func('common.createSuccess'),
+	ConfirmDelete: $func('common.confirmDel'),
+	NonNegativeError: $func('error.negativeNumber'),
 }));

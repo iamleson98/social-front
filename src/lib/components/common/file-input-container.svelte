@@ -1,14 +1,14 @@
 <script lang="ts">
+	import { ProductMediaType } from '$lib/gql/graphql';
 	import type { SocialVariant } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import type { MediaObject } from '$lib/utils/types';
-	import { array, object, string } from 'zod';
+	import { classNames, formatBytes } from '$lib/utils/utils';
 	import { FileUpload, Trash } from '../icons';
 	import { IconButton } from '../ui/Button';
-	import type { SocialSize } from '../ui/common';
 	import { FileInput, Input, INPUT_CLASSES, Label } from '../ui/Input';
-	import { classNames, formatBytes } from '$lib/utils/utils';
-	import { CommonState } from '$lib/utils/common.svelte';
-	import { ProductMediaType } from '$lib/gql/graphql';
+	import type { SocialSize } from '../ui/common';
+	import { array, object, string } from 'zod';
 
 	type Props = {
 		accept: string;

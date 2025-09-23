@@ -1,7 +1,11 @@
 <script lang="ts">
-	import { noop } from 'es-toolkit';
+	import EmojiPickerCategories from './components/emoji-picker-categories.svelte';
+	import EmojiPickerCurrentResults from './components/emoji-picker-current-results.svelte';
+	import EmojiPickerPreview from './components/emoji-picker-preview.svelte';
 	import EmojiPickerSearch from './components/emoji-picker-search.svelte';
 	import EmojiPickerSkin from './components/emoji-picker-skin.svelte';
+	import './components/item-styles.css';
+	import EmojiMap from './emoji-map';
 	import { RecentEmojis } from './store';
 	import {
 		CATEGORIES,
@@ -28,12 +32,8 @@
 		getCursorProperties,
 		getUpdatedCategoriesAndAllEmojis,
 	} from './utils';
-	import EmojiPickerCategories from './components/emoji-picker-categories.svelte';
-	import EmojiPickerCurrentResults from './components/emoji-picker-current-results.svelte';
-	import EmojiMap from './emoji-map';
+	import { noop } from 'es-toolkit';
 	import { onMount, untrack } from 'svelte';
-	import './components/item-styles.css';
-	import EmojiPickerPreview from './components/emoji-picker-preview.svelte';
 
 	type Props = {
 		filter: string;

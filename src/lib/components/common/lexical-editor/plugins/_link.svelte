@@ -3,7 +3,7 @@
 		LinkNode,
 		TOGGLE_LINK_COMMAND,
 		$toggleLink as toggleLink,
-		type LinkAttributes
+		type LinkAttributes,
 	} from '@lexical/link';
 	import { mergeRegister, objectKlassEquals } from '@lexical/utils';
 	import {
@@ -12,7 +12,7 @@
 		type LexicalEditor,
 		$getSelection as getSelection,
 		$isElementNode as isElementNode,
-		$isRangeSelection as isRangeSelection
+		$isRangeSelection as isRangeSelection,
 	} from 'lexical';
 
 	type Props = {
@@ -46,12 +46,12 @@
 						...attributes,
 						rel,
 						target,
-						title
+						title,
 					});
 					return true;
 				}
 			},
-			COMMAND_PRIORITY_LOW
+			COMMAND_PRIORITY_LOW,
 		);
 
 		const commands = [toggleLinkCommand];
@@ -77,7 +77,7 @@
 					if (!selection.getNodes().some(isElementNode)) {
 						editor.dispatchCommand(TOGGLE_LINK_COMMAND, {
 							...attributes,
-							url: clipboardText
+							url: clipboardText,
 						});
 						event.preventDefault();
 						return true;
@@ -85,7 +85,7 @@
 
 					return false;
 				},
-				COMMAND_PRIORITY_LOW
+				COMMAND_PRIORITY_LOW,
 			);
 
 			commands.push(pasteCommand);
