@@ -85,15 +85,14 @@
 	let loading = $state(false);
 	let filterType = $state<OrderEventsEnum>();
 
-	let openDiscounts = $state<Set<number>>(new Set());
+	let openDiscounts = $state<Set<string>>(new Set());
 
-	const toggleDiscount = (idx: number) => {
-		if (openDiscounts.has(idx)) {
-			openDiscounts.delete(idx);
+	const toggleDiscount = (key: string) => {
+		if (openDiscounts.has(key)) {
+			openDiscounts.delete(key);
 		} else {
-			openDiscounts.add(idx);
+			openDiscounts.add(key);
 		}
-		// trigger reactive update
 		openDiscounts = new Set(openDiscounts);
 	};
 
@@ -216,7 +215,7 @@
 									{byName}
 								</a>
 							</div>
-							{#if openDiscounts.has(idx) && discount}
+							{#if openDiscounts.has(event.id) && discount}
 								<div class="mt-2 text-sm">
 									{#if discount?.amount}
 										<p>
@@ -237,7 +236,7 @@
 								color="orange"
 								icon={ArrowDown}
 								class="w-3 h-3"
-								onclick={() => toggleDiscount(idx)}
+								onclick={() => toggleDiscount(event.id)}
 							/>
 						{/if}
 					</li>
