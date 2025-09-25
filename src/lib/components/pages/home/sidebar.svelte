@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { CHANNELS, DEFAULT_CHANNEL } from '$lib/utils/channels';
+	import { CHANNELS, DEFAULT_CHANNEL } from '$lib/utils/consts';
 	import CategoriesAccordion from './sidebar-category.svelte';
 	import SidebarFilter from './sidebar-filter.svelte';
 

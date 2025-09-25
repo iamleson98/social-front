@@ -133,6 +133,9 @@
 	};
 </script>
 
+<!-- bypass linting warning -->
+{void addVoucherCodeStrings}
+
 {#snippet no({ idx }: { idx: number })}
 	<span># {idx + 1}</span>
 {/snippet}

@@ -8,9 +8,3 @@ export const APPLICATION_TYPES: Record<VoucherTypeEnum, string> = {
 
 export type TabName = 'categories' | 'products' | 'collections' | 'variants';
 export const TABS: TabName[] = ['categories', 'products', 'collections', 'variants'];
-
-function greet(name: string, another: number) {
-  console.log("Hello " + name);
-}
-
-console.log("lol")

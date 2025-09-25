@@ -51,6 +51,8 @@
 	// );
 </script>
 
+{void formOk}
+
 <div class="bg-white border border-gray-200 p-3 space-y-2 rounded-lg">
 	<SectionHeader>
 		<dir>General information</dir>

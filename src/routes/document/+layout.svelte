@@ -37,10 +37,10 @@
 			name: 'Select',
 			path: '/document/select',
 		},
-		{
-			name: 'GraphiQL',
-			path: '/document/graphql',
-		},
+		// {
+		// 	name: 'GraphiQL',
+		// 	path: '/document/graphql',
+		// },
 	];
 </script>
 

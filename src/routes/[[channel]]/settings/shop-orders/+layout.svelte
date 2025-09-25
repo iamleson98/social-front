@@ -24,7 +24,7 @@
 	let openChannelModal = $state(false);
 	let channelId = $state('');
 
-	const handleClickCreateOrder: MouseEventHandler<HTMLButtonElement> = async (evt) => {
+	const handleClickCreateOrder = async (evt: Event) => {
 		evt.preventDefault(); // prevent browser from following the link
 		openChannelModal = true;
 	};

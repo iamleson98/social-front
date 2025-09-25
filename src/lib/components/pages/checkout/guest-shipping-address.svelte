@@ -47,7 +47,7 @@
 
 	const handleAttachAddressToCheckout = async (
 		addressInput: AddressInput,
-		type?: AddressTypeEnum,
+		_type?: AddressTypeEnum,
 	) => {
 		const validationRules: CheckoutAddressValidationRules = {
 			checkFieldsFormat: true,
@@ -124,14 +124,13 @@
 {:else if $channelStore.error}
 	<div>{$channelStore.error.message}</div>
 {:else}
-	{@const countrySelectOptions =
+	<!-- {@const countrySelectOptions =
 		$channelStore.data?.channel?.countries?.map<SelectOption>(({ code }) => ({
 			value: code,
 			label: getCountryName(code),
-		})) || []}
+		})) || []} -->
 	<AddressForm
 		{updatingCheckoutAddresses}
-		{countrySelectOptions}
 		channelSlug={checkout.channel.slug!}
 		onSubmit={handleAttachAddressToCheckout}
 		defaultValue={checkout.shippingAddress as Address}

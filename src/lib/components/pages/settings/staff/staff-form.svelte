@@ -87,6 +87,11 @@
 	};
 </script>
 
+<!-- fix lint warning -->
+{void removeGroups}
+{void addGroups}
+{void formOk}
+
 <div class="h-full {SitenameCommonClassName}">
 	<div class="flex items-center gap-2">
 		<Thumbnail

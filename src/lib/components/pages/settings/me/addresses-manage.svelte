@@ -25,7 +25,7 @@
 	import { AddressTypeEnum } from '$lib/gql/graphql';
 	import { ME_PAGE_USER_STORE } from '$lib/stores/app/me';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
-	import { DEFAULT_CHANNEL } from '$lib/utils/channels';
+	import { DEFAULT_CHANNEL } from '$lib/utils/consts';
 	import { CHANNEL_KEY } from '$lib/utils/consts';
 	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
@@ -40,7 +40,7 @@
 		addressUpdateInputInitValue = defaultAddress;
 	};
 
-	const handleUpdateAddress = async (input: AddressInput, type?: AddressTypeEnum) => {
+	const handleUpdateAddress = async (input: AddressInput, _type?: AddressTypeEnum) => {
 		loading = true; //
 
 		const result = await GRAPHQL_CLIENT.mutation<

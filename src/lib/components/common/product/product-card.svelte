@@ -6,7 +6,7 @@
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import type { Product } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { CHANNELS } from '$lib/utils/channels';
+	import { CHANNELS } from '$lib/utils/consts';
 	import { MAX_RATING, MIN_RATING } from '$lib/utils/consts';
 	import { clamp, formatMoney } from '$lib/utils/utils';
 	import { fade } from 'svelte/transition';

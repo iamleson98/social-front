@@ -19,7 +19,7 @@
 	$effect(() => {
 		editor.registerCommand(
 			CLEAR_EDITOR_COMMAND,
-			(payload) => {
+			(_payload) => {
 				editor.update(() => {
 					if (onClear) {
 						onClear();

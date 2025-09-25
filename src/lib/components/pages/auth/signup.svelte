@@ -19,7 +19,7 @@
 	} from '$lib/gql/graphql';
 	import { SUPPORTED_LANGUAGES, tranFunc } from '$lib/i18n';
 	import { AppRoute } from '$lib/utils';
-	import { CHANNELS, DEFAULT_CHANNEL } from '$lib/utils/channels';
+	import { CHANNELS, DEFAULT_CHANNEL } from '$lib/utils/consts';
 	import { CHANNEL_KEY, COUNTRY_CODE_KEY, LANGUAGE_KEY } from '$lib/utils/consts';
 	import { clientSideGetCookieOrDefault, clientSideSetCookie } from '$lib/utils/cookies';
 	import { omit } from 'es-toolkit';

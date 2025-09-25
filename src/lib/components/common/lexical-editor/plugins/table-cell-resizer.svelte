@@ -296,11 +296,11 @@
 		return handler;
 	};
 
-	const onMouseDown = (event: MouseEvent) => {
+	const onMouseDown = (_event: MouseEvent) => {
 		isMouseDown = true;
 	};
 
-	const onMouseUp = (event: MouseEvent) => {
+	const onMouseUp = (_event: MouseEvent) => {
 		isMouseDown = false;
 	};
 

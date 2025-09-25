@@ -29,7 +29,7 @@
 	import { checkoutStore } from '$lib/stores/app';
 	import { READ_ONLY_USER_STORE } from '$lib/stores/auth/user';
 	import { AppRoute } from '$lib/utils';
-	import { CHANNELS } from '$lib/utils/channels';
+	import { CHANNELS } from '$lib/utils/consts';
 	import { HTTPStatusSuccess, MAX_RATING } from '$lib/utils/consts';
 	import { VIETNAM_COUNTRY_UNITS } from '$lib/utils/countries';
 	import { formatMoney, checkIfGraphqlResultHasError } from '$lib/utils/utils';

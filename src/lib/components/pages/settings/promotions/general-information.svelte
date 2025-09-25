@@ -67,6 +67,8 @@
 	};
 </script>
 
+{void ok}
+
 <div class={SitenameCommonClassName}>
 	<SectionHeader>General information</SectionHeader>
 

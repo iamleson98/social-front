@@ -17,7 +17,9 @@
 		type QueryShippingZoneArgs,
 		type ShippingPriceInput,
 	} from '$lib/gql/graphql';
+	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { onMount } from 'svelte';
 
 	const shippingZoneQuery = operationStore<Pick<Query, 'shippingZone'>, QueryShippingZoneArgs>({
@@ -63,6 +65,20 @@
 			}
 		}),
 	);
+
+	const handleUpdate = async () => {
+		const hasErr = await metaRef?.handleUpdate();
+		if (hasErr) return;
+	};
+
+	const handleDelete = async () => {
+		ALERT_MODAL_STORE.openAlertModal({
+			content: $CommonState.ConfirmDelete,
+			onOk: async () => {
+
+			},
+		})
+	};
 </script>
 
 {#if $shippingZoneQuery.fetching}
@@ -110,8 +126,8 @@
 		</div>
 
 		<ActionBar
-			onUpdateClick={console.log}
-			onDeleteClick={console.log}
+			onUpdateClick={handleUpdate}
+			onDeleteClick={handleDelete}
 			backButtonUrl={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS(page.params.id!)}
 			disabled={loading}
 		/>
