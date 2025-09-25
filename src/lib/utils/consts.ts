@@ -65,7 +65,7 @@ export type Channel = {
 
 export type WeightUnit = 'kg' | 'lb' | 'g' | 'oz';
 
-export const CurrencyIconMap = CHANNELS.reduce(
+export const CurrencyIconMap = (CHANNELS ?? []).reduce(
 	(acc, chan) => ({
 		...acc,
 		[chan.currency as CurrencyCode]: chan.currencyIcon,
