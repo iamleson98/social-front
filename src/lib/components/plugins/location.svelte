@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PUBLIC_NOMINATIM_OSM_API } from '$env/static/public';
 	import { CountryCode } from '$lib/gql/graphql';
-	import { CHANNELS, DEFAULT_CHANNEL } from '$lib/utils/channels';
+	import { CHANNELS, DEFAULT_CHANNEL } from '$lib/utils/consts';
 	import {
 		CHANNEL_KEY,
 		COUNTRY_CODE_KEY,

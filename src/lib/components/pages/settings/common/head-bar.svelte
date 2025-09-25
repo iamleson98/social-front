@@ -14,7 +14,7 @@
 		newPageLabel?: string;
 		detailRouteID: string;
 		detailPageLabelGetter: (page: Page<Record<string, string>, any>) => string;
-		onNewPageBtnClick?: MouseEventHandler<HTMLButtonElement>;
+		onNewPageBtnClick?: (evt: Event) => void;
 		disabled?: boolean;
 	};
 

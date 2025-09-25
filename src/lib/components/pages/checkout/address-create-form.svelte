@@ -25,7 +25,6 @@
 	<AddressForm
 		channelSlug={checkout.channel.slug}
 		updatingCheckoutAddresses={false}
-		{countrySelectOptions}
 		onSubmit={console.log}
 		{onCancel}
 	/>

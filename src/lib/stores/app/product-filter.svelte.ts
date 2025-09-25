@@ -1,5 +1,5 @@
 import { OrderDirection, ProductOrderField, type QueryProductsArgs } from '$lib/gql/graphql';
-import { DEFAULT_CHANNEL } from '$lib/utils/channels';
+import { DEFAULT_CHANNEL } from '$lib/utils/consts';
 import { CHANNEL_KEY } from '$lib/utils/consts';
 import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 import { writable } from 'svelte/store';

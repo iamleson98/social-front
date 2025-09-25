@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Input } from '$lib/components/ui/Input';
 	import type { Address } from '$lib/gql/graphql';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import AddressForm from '../../checkout/address-form.svelte';
 	import { noop } from 'es-toolkit';
@@ -29,12 +29,10 @@
 		formOk = $bindable(),
 	}: Props = $props();
 
-	const RequiredErr = $tranFunc('helpText.fieldRequired');
-
 	const WarehouseSchema = object({
-		name: string().nonempty(RequiredErr),
-		email: string().nonempty(RequiredErr),
-		slug: string().nonempty(RequiredErr),
+		name: string().nonempty($CommonState.FieldRequiredError),
+		email: string().nonempty($CommonState.FieldRequiredError),
+		slug: string().nonempty($CommonState.FieldRequiredError),
 	});
 
 	type WarehouseProps = z.infer<typeof WarehouseSchema>;
@@ -44,13 +42,13 @@
 	const validate = () => {
 		const result = WarehouseSchema.safeParse({ email, name, slug });
 		warehouseErrors = result.success ? {} : result.error.formErrors.fieldErrors;
+		formOk = !Object.keys(warehouseErrors).length;
 		return result.success;
 	};
-
-	$effect(() => {
-		formOk = !Object.keys(warehouseErrors).length;
-	});
 </script>
+
+<!-- bypass linting warning -->
+{void formOk}
 
 <div class={SitenameCommonClassName}>
 	<SectionHeader>General information</SectionHeader>

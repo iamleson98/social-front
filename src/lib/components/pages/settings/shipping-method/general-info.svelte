@@ -69,6 +69,8 @@
 	});
 </script>
 
+{void ok}
+
 <div class={SitenameCommonClassName}>
 	<SectionHeader>
 		<div class="flex gap-1">

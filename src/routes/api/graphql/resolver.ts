@@ -4,7 +4,6 @@
  * Use with caution
  */
 import { resolvePromotions } from '$lib/api/graphql/resolvers/promotions';
-import { resolveVouchers } from '$lib/api/graphql/resolvers/vouchers';
 import { AppRoute } from '$lib/utils';
 import { typeDefs } from './schema';
 import type { RequestEvent } from '@sveltejs/kit';
@@ -14,7 +13,6 @@ import { createSchema, createYoga } from 'graphql-yoga';
 const resolvers = {
 	Query: {
 		promotions: resolvePromotions,
-		vouchers: resolveVouchers,
 	},
 };
 

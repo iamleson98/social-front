@@ -44,6 +44,11 @@
 	};
 </script>
 
+{void removeChannels}
+{void addChannels}
+{void removeWarehouses}
+{void addWarehouses}
+
 <div class="space-y-2 w-4/10">
 	<div class={SitenameCommonClassName}>
 		<SectionHeader>Channels</SectionHeader>

@@ -14,7 +14,7 @@ import {
 	PermissionEnum,
 } from '$lib/gql/graphql';
 import { OrderStatus, PaymentChargeStatusEnum } from '$lib/gql/graphql';
-import { DEFAULT_CHANNEL } from './channels';
+import { DEFAULT_CHANNEL } from './consts';
 import { CHANNEL_KEY } from './consts';
 import { getCookieByKey } from './cookies';
 import { AppRoute } from './routes';

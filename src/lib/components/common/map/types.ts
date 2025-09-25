@@ -92,7 +92,7 @@ export type LatLng = {
 };
 
 export type LatLngBounds = {
-	extend(latlngOrBounds: LatLngExpression | LatLngBoundsExpression);
+	// extend(latlngOrBounds: LatLngExpression | LatLngBoundsExpression);
 	pad(bufferRatio: number): LatLngBounds; // Returns a new LatLngBounds
 	getCenter(): LatLng;
 	getSouthWest(): LatLng;

@@ -8,7 +8,7 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
-	import { SelectSkeleton, type SelectOption } from '$lib/components/ui/select';
+	import { SelectSkeleton } from '$lib/components/ui/select';
 	import {
 		OrderEventsEnum,
 		type Mutation,
@@ -20,6 +20,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
+	import { SvelteSet } from 'svelte/reactivity';
 
 	type Props = {
 		id: string;
@@ -82,14 +83,23 @@
 	};
 
 	let newNote = $state<string>();
-	let showDiscount = $state(false);
 	let loading = $state(false);
 	let filterType = $state<OrderEventsEnum>();
 
-	const filterTypeOptions = Object.values(OrderEventsEnum).map<SelectOption>((key) => ({
-		value: key,
-		label: key.toLowerCase().replace(/_/g, ' '),
-	}));
+	let openDiscounts = $state<SvelteSet<string>>(new SvelteSet());
+
+	const toggleShowHistoryEventDetail = (key: string) => {
+		if (openDiscounts.has(key)) {
+			openDiscounts.delete(key);
+		} else {
+			openDiscounts.add(key);
+		}
+	};
+
+	// const filterTypeOptions = Object.values(OrderEventsEnum).map<SelectOption>((key) => ({
+	// 	value: key,
+	// 	label: key.toLowerCase().replace(/_/g, ' '),
+	// }));
 
 	const eventsQuery = operationStore<Pick<Query, 'order'>, QueryOrderArgs>({
 		query: ORDER_HISTORY_QUERY,
@@ -205,10 +215,13 @@
 									{byName}
 								</a>
 							</div>
-							{#if showDiscount && discount}
+							{#if openDiscounts.has(event.id) && discount}
 								<div class="mt-2 text-sm">
 									{#if discount?.amount}
-										<p>Discount value: {discount.amount.amount} {discount.amount.currency}</p>
+										<p>
+											Discount value: {discount.amount.amount}
+											{discount.amount.currency}
+										</p>
 									{/if}
 									{#if discount?.reason}
 										<p>Reason for discount: {discount.reason}</p>
@@ -216,14 +229,14 @@
 								</div>
 							{/if}
 						</div>
-						{#if event.type === OrderEventsEnum.OrderDiscountAdded}
+						{#if event.type === OrderEventsEnum.OrderDiscountAdded || event.type === OrderEventsEnum.OrderDiscountUpdated}
 							<IconButton
 								size="xs"
 								variant="light"
 								color="orange"
 								icon={ArrowDown}
 								class="w-3 h-3"
-								onclick={() => (showDiscount = !showDiscount)}
+								onclick={() => toggleShowHistoryEventDetail(event.id)}
 							/>
 						{/if}
 					</li>

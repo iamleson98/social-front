@@ -6,7 +6,7 @@
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import { type Query } from '$lib/gql/graphql';
 	import { slideShowManager } from '$lib/stores/ui/slideshow';
-	import { DEFAULT_CHANNEL } from '$lib/utils/channels';
+	import { DEFAULT_CHANNEL } from '$lib/utils/consts';
 	import { CHANNEL_KEY, COUNTRY_CODE_KEY } from '$lib/utils/consts';
 	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import { onMount } from 'svelte';

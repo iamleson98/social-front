@@ -131,7 +131,10 @@
 		});
 	});
 
-	const handleSubmit = () => {};
+	const handleSubmit = async () => {
+		const hasErr = await metaRef?.handleUpdate($ProductDetailStore.data?.product?.id);
+		if (hasErr) return;
+	};
 
 	const handleDelete = () => {
 		ALERT_MODAL_STORE.openAlertModal({

@@ -1,6 +1,6 @@
 import { cookieOpts } from '$lib/api/client.js';
 import { AppRoute } from '$lib/utils';
-import { CHANNELS, DEFAULT_CHANNEL } from '$lib/utils/channels';
+import { CHANNELS, DEFAULT_CHANNEL } from '$lib/utils/consts';
 import { CHANNEL_KEY, HTTPStatusPermanentRedirect } from '$lib/utils/consts';
 import { redirect } from '@sveltejs/kit';
 

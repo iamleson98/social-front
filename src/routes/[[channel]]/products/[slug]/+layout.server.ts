@@ -1,7 +1,7 @@
 import { PRODUCT_DETAIL_QUERY } from '$lib/api';
 import { performServerSideGraphqlRequest } from '$lib/api/client';
 import { type Product as TypeProduct, type Query, type QueryProductArgs } from '$lib/gql/graphql';
-import { DEFAULT_CHANNEL } from '$lib/utils/channels';
+import { DEFAULT_CHANNEL } from '$lib/utils/consts';
 import {
 	CHANNEL_KEY,
 	COUNTRY_CODE_KEY,

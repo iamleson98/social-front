@@ -108,7 +108,7 @@
 		size="md"
 		icon={PhotoUp}
 		accept="image/*"
-		onChange={(files) => {}}
+		onChange={() => {}}
 		label={$tranFunc('settings.attachments')}
 	/>
 

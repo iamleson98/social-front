@@ -19,8 +19,8 @@
 		"emitDecoratorMetadata": true,
 		"noImplicitAny": true,
 		"strictNullChecks": true,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true
+		"noUnusedLocals": false, // for snippets defined within file, still get used in <script /> but still show not used errors
+		"noUnusedParameters": true,
 	}
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
 	// except $lib which is handled by https://kit.svelte.dev/docs/configuration#files

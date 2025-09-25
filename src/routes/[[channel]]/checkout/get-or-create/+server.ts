@@ -1,7 +1,7 @@
 import { CHECKOUT_CREATE_MUTATION, CHECKOUT_PREVIEW_QUERY } from '$lib/api/checkout';
 import { cookieOpts, performServerSideGraphqlRequest } from '$lib/api/client';
 import type { Checkout, CheckoutCreateInput, Mutation, Query } from '$lib/gql/graphql';
-import { DEFAULT_CHANNEL } from '$lib/utils/channels.js';
+import { DEFAULT_CHANNEL } from '$lib/utils/consts';
 import {
 	CHANNEL_KEY,
 	HTTPStatusBadRequest,

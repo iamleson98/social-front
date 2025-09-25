@@ -160,7 +160,7 @@
 		variant="light"
 		color="red"
 		onclick={() => handleDeleteMethod(item.id)}
-		{disabled}
+		disabled={disabled || loading}
 	/>
 {/snippet}
 
@@ -176,13 +176,13 @@
 				page.params.id!,
 				ShippingMethodTypeEnum.Price,
 			)}
-			{disabled}
+			disabled={disabled || loading}
 		>
 			Create price based method
 		</Button>
 	</SectionHeader>
 
-	<Table columns={PriceBasedColumns} items={PriceBasedMethods} {disabled} />
+	<Table columns={PriceBasedColumns} items={PriceBasedMethods} disabled={disabled || loading} />
 
 	<SectionHeader>
 		<div>Weight based methods</div>
@@ -194,11 +194,11 @@
 				page.params.id!,
 				ShippingMethodTypeEnum.Weight,
 			)}
-			{disabled}
+			disabled={disabled || loading}
 		>
 			Create weight based method
 		</Button>
 	</SectionHeader>
 
-	<Table columns={WeightBasedColumns} items={WeightBasedMethods} {disabled} />
+	<Table columns={WeightBasedColumns} items={WeightBasedMethods} disabled={disabled || loading} />
 </div>
