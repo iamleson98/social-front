@@ -20,6 +20,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
+	import { SvelteSet } from 'svelte/reactivity';
 
 	type Props = {
 		id: string;
@@ -85,15 +86,14 @@
 	let loading = $state(false);
 	let filterType = $state<OrderEventsEnum>();
 
-	let openDiscounts = $state<Set<string>>(new Set());
+	let openDiscounts = $state<SvelteSet<string>>(new SvelteSet());
 
-	const toggleDiscount = (key: string) => {
+	const toggleShowHistoryEventDetail = (key: string) => {
 		if (openDiscounts.has(key)) {
 			openDiscounts.delete(key);
 		} else {
 			openDiscounts.add(key);
 		}
-		openDiscounts = new Set(openDiscounts);
 	};
 
 	// const filterTypeOptions = Object.values(OrderEventsEnum).map<SelectOption>((key) => ({
@@ -236,7 +236,7 @@
 								color="orange"
 								icon={ArrowDown}
 								class="w-3 h-3"
-								onclick={() => toggleDiscount(event.id)}
+								onclick={() => toggleShowHistoryEventDetail(event.id)}
 							/>
 						{/if}
 					</li>
