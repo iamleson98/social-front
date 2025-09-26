@@ -27,7 +27,7 @@
 		ProductVariant,
 	} from '$lib/gql/graphql';
 	import { checkoutStore } from '$lib/stores/app';
-	import { READ_ONLY_USER_STORE } from '$lib/stores/auth/user';
+	import { UserStoreManager } from '$lib/stores/auth/user';
 	import { AppRoute } from '$lib/utils';
 	import { CHANNELS } from '$lib/utils/consts';
 	import { HTTPStatusSuccess, MAX_RATING } from '$lib/utils/consts';
@@ -74,12 +74,12 @@
 	});
 
 	let userShippingAddress = $derived.by(() => {
-		if (!$READ_ONLY_USER_STORE || !$READ_ONLY_USER_STORE?.addresses?.length)
+		if (!$UserStoreManager || !$UserStoreManager?.addresses?.length)
 			return $tranFunc('product.chooseAddress');
 
 		const defaulShippingAddress =
-			$READ_ONLY_USER_STORE.addresses.find((addr) => addr.isDefaultShippingAddress) ||
-			$READ_ONLY_USER_STORE.addresses[0];
+			$UserStoreManager.addresses.find((addr) => addr.isDefaultShippingAddress) ||
+			$UserStoreManager.addresses[0];
 
 		return `${defaulShippingAddress.streetAddress1 || defaulShippingAddress.streetAddress2}, ${defaulShippingAddress.cityArea}, ${defaulShippingAddress.city}`;
 	});

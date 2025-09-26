@@ -17,8 +17,9 @@
 	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
 	import { AppRoute } from '$lib/utils';
 	import { CurrencyIconMap, type CurrencyCode } from '$lib/utils/consts';
+	import { SearchParamKey } from '$lib/utils/consts';
 	import { flipDirection } from '$lib/utils/utils';
-	import { ORDER_BY_FIELD, PRICE_RANGE, ORDER_DIRECTION, ProductSortFields } from './common';
+	import { ProductSortFields } from './common';
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 
@@ -52,12 +53,12 @@
 		const searchParams = new URLSearchParams();
 
 		if (filterState.sortBy?.field) {
-			searchParams.set(ORDER_BY_FIELD, filterState.sortBy.field);
-			searchParams.set(ORDER_DIRECTION, filterState.sortBy.direction);
+			searchParams.set(SearchParamKey.ORDER_BY_FIELD, filterState.sortBy.field);
+			searchParams.set(SearchParamKey.ORDER_DIRECTION, filterState.sortBy.direction);
 		}
 		if (!priceRangeError && filterState.filter?.price?.gte && filterState.filter?.price?.lte)
 			searchParams.set(
-				PRICE_RANGE,
+				SearchParamKey.PRICE_RANGE,
 				`${filterState.filter?.price?.gte},${filterState.filter?.price?.lte}`,
 			);
 

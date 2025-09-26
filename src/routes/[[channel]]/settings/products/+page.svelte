@@ -13,6 +13,7 @@
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { formatCurrency } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
+	import { SvelteSet } from 'svelte/reactivity';
 
 	let productsFilterVariables = $state<QueryProductsArgs>({
 		first: 10,
@@ -22,7 +23,7 @@
 		},
 	});
 	let forceReExecuteGraphqlQuery = $state(true);
-	let selectedProducts = $state<Record<string, boolean>>({});
+	let selectedProducts = $state<SvelteSet<string>>(new SvelteSet());
 
 	const productColumns: TableColumnProps<Product, ProductOrderField>[] = $derived([
 		{
@@ -60,21 +61,18 @@
 	<Checkbox
 		size="sm"
 		onCheckChange={(checked) => {
-			if (checked) selectedProducts = Object.fromEntries(items.map((item) => [item.id, true]));
-			else selectedProducts = {};
+			if (checked) items.forEach((item) => selectedProducts.add(item.id));
+			else selectedProducts.clear();
 		}}
-		checked={items.length === Object.keys(selectedProducts).length}
+		checked={items.length === selectedProducts.size}
 	/>
 {/snippet}
 
 {#snippet itemSelect({ item }: { item: Product })}
 	<Checkbox
 		size="sm"
-		onCheckChange={(checked) => {
-			if (checked) selectedProducts[item.id] = true;
-			else delete selectedProducts[item.id];
-		}}
-		checked={selectedProducts[item.id]}
+		onCheckChange={(checked) => selectedProducts[checked ? 'add' : 'delete'](item.id)}
+		checked={selectedProducts.has(item.id)}
 	/>
 {/snippet}
 
@@ -128,4 +126,5 @@
 	resultKey="products"
 	columns={productColumns}
 	bind:forceReExecuteGraphqlQuery
+	autoRefetchOnVariableChange={false}
 />

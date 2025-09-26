@@ -98,7 +98,7 @@
 
 	$effect(() => {
 		if (forceReExecuteGraphqlQuery) {
-			queryOperationStore.reexecute({ variables, context: { requestPolicy: 'network-only' } });
+			queryOperationStore.reexecute({ variables });
 
 			tick().then(() => {
 				forceReExecuteGraphqlQuery = false;
@@ -114,7 +114,7 @@
 			first: variables.first || variables.last,
 			last: null,
 		};
-		if (autoRefetchOnVariableChange) forceReExecuteGraphqlQuery = true;
+		forceReExecuteGraphqlQuery = autoRefetchOnVariableChange;
 	};
 
 	const handlePreviousPagelick = (before: string) => {
@@ -125,7 +125,7 @@
 			last: variables.last || variables.first,
 			first: null,
 		};
-		if (autoRefetchOnVariableChange) forceReExecuteGraphqlQuery = true;
+		forceReExecuteGraphqlQuery = autoRefetchOnVariableChange;
 	};
 
 	const handleRowsPerPageChange = (num: RowOptions) => {
@@ -136,7 +136,7 @@
 			before: null,
 			after: null,
 		};
-		if (autoRefetchOnVariableChange) forceReExecuteGraphqlQuery = true;
+		forceReExecuteGraphqlQuery = autoRefetchOnVariableChange;
 	};
 
 	const handleSortChange = (sort: SortState<K>) => {
@@ -158,7 +158,7 @@
 				direction,
 			},
 		};
-		if (autoRefetchOnVariableChange) forceReExecuteGraphqlQuery = true;
+		forceReExecuteGraphqlQuery = autoRefetchOnVariableChange;
 	};
 
 	const innerHandleDragEnd = (dragIdx: number, dropIdx: number) => {

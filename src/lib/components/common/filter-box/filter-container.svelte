@@ -1,10 +1,9 @@
 <script lang="ts" generics="T">
-	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
 	import { tranFunc } from '$i18n';
 	import { CloseX, Plus, Trash } from '$lib/components/icons';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { Select, type Primitive, type SelectOption } from '$lib/components/ui/select';
+	import { constructUrlSearchParamsAndNavigate } from '$lib/utils/utils';
 	import type { FilterConditions, FilterItemValue, FilterOperator, FilterProps } from './types';
 	import { omit } from 'es-toolkit';
 
@@ -34,6 +33,14 @@
 			disabled: !!activeFilters[key],
 		})),
 	);
+	let disableAddFilterBtn = $derived(
+		Object.entries<
+			Partial<{
+				operator: FilterOperator;
+				value: FilterItemValue;
+			}>
+		>(activeFilters).some(([key, value]) => !key || !value.operator || value.value === undefined),
+	);
 
 	const setFilterItemValue = (key: keyof T, operator?: FilterOperator, value?: FilterItemValue) => {
 		activeFilters = {
@@ -46,15 +53,6 @@
 				: {},
 		};
 	};
-
-	let disableAddFilterBtn = $derived(
-		Object.entries<
-			Partial<{
-				operator: FilterOperator;
-				value: FilterItemValue;
-			}>
-		>(activeFilters).some(([key, value]) => !key || !value.operator || value.value === undefined),
-	);
 
 	const handleFilterItemKeyChange = async (oldKey: keyof T, newKey?: keyof T) => {
 		if (!newKey || oldKey === newKey) return;
@@ -74,40 +72,8 @@
 	};
 
 	const handleApplyCustomFilter = async () => {
-		const keys = Object.keys(activeFilters);
-		if (!keys.length) return;
-
-		const params = page.url.searchParams; // add filter conditions to existing params
-
-		for (const key of keys) {
-			const filterOpt = activeFilters[key as keyof T];
-			if (!filterOpt) continue;
-
-			if (filterOpt.operator === 'lte') {
-				params.set(key, `<null,${filterOpt.value}>`);
-			} else if (filterOpt.operator === 'gte') {
-				params.set(key, `<${filterOpt.value},null>`);
-			} else if (filterOpt.operator === 'oneOf') {
-				params.set(key, JSON.stringify(filterOpt.value));
-			} else if (filterOpt.operator === 'range' && Array.isArray(filterOpt.value)) {
-				params.set(key, `<${filterOpt.value[0]},${filterOpt.value[1]}>`);
-			} else if (filterOpt.operator === 'eq') {
-				/**
-				 * There are a few cases for `eq` operator:
-				 * 1) equal to a pair of `key-value` record,
-				 */
-				if (Array.isArray(filterOpt.value)) {
-					params.set(key, `{${filterOpt.value[0]},${filterOpt.value[1]}}`);
-				} else {
-					// 2) equal to primitives, E.g: slug='hello-world';
-					params.set(key, `${filterOpt.value}`);
-				}
-			}
-		}
-
-		open = false; //
-
-		await goto(`${page.url.pathname}?${params.toString()}`);
+		open = false;
+		await constructUrlSearchParamsAndNavigate(activeFilters);
 	};
 </script>
 

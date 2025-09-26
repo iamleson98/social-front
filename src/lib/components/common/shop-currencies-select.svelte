@@ -9,7 +9,7 @@
 		type SelectProps,
 	} from '$lib/components/ui/select';
 	import type { Query } from '$lib/gql/graphql';
-	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
+	import { UserStoreManager } from '$lib/stores/auth';
 	import { onMount } from 'svelte';
 
 	type QueryShopArgs = {
@@ -28,7 +28,7 @@
 	});
 
 	onMount(() =>
-		READ_ONLY_USER_STORE.subscribe((user) => {
+		UserStoreManager.subscribe((user) => {
 			const isStaffUser = !!user && user.isStaff;
 
 			shopStore.reexecute({ variables: { isStaffUser } });

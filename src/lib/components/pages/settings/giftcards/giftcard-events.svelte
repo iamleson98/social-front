@@ -16,7 +16,7 @@
 		type Query,
 		type QueryGiftCardArgs,
 	} from '$lib/gql/graphql';
-	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
+	import { UserStoreManager } from '$lib/stores/auth';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
@@ -101,8 +101,8 @@
 				<div class="avatar">
 					<div class="w-9 rounded-lg">
 						<img
-							src={$READ_ONLY_USER_STORE?.avatar?.url}
-							alt={$READ_ONLY_USER_STORE?.avatar?.alt}
+							src={$UserStoreManager?.avatar?.url}
+							alt={$UserStoreManager?.avatar?.alt}
 						/>
 					</div>
 				</div>

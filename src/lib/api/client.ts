@@ -2,7 +2,7 @@ import { browser } from '$app/environment';
 import { PUBLIC_GRAPHQL_API_END_POINT } from '$env/static/public';
 import { getUserByJWT, setJwtWithUser } from '$lib/cache/user';
 import type { PermissionEnum, Query, User } from '$lib/gql/graphql';
-import { setUserStoreValue } from '$lib/stores/auth/user';
+import { UserStoreManager } from '$lib/stores/auth/user';
 import { AppRoute, getCookieByKey } from '$lib/utils';
 import {
 	ACCESS_TOKEN_KEY,
@@ -167,7 +167,7 @@ const authExchangeInner = async (utils: AuthUtilities) => {
 		});
 
 		const result: Record<string, unknown> = await refreshResult.json();
-		setUserStoreValue(result.user as User);
+		UserStoreManager.setValue(result.user as User);
 
 		isTokenRefreshingInProgress = false;
 	};

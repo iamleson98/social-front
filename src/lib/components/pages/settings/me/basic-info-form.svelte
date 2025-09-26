@@ -12,7 +12,7 @@
 		type User,
 	} from '$lib/gql/graphql';
 	import { ME_PAGE_USER_STORE } from '$lib/stores/app/me';
-	import { setUserStoreValue } from '$lib/stores/auth';
+	import { UserStoreManager } from '$lib/stores/auth';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { object, string, z } from 'zod';
 
@@ -88,7 +88,7 @@
 		} as User;
 
 		// in case user update display language , we need to update it for the whole UI also
-		setUserStoreValue($ME_PAGE_USER_STORE);
+		UserStoreManager.setValue($ME_PAGE_USER_STORE);
 	};
 </script>
 

@@ -19,7 +19,7 @@
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import type { Query, User } from '$lib/gql/graphql';
 	import { checkoutStore } from '$lib/stores/app';
-	import { READ_ONLY_USER_STORE, setUserStoreValue } from '$lib/stores/auth/user';
+	import { UserStoreManager } from '$lib/stores/auth/user';
 	import { AppRoute, getCookieByKey } from '$lib/utils';
 	import { handleLogout } from '$lib/utils/auth.svelte';
 	import { ACCESS_TOKEN_KEY, HTTPStatusSuccess } from '$lib/utils/consts';
@@ -31,9 +31,9 @@
 	import { scale } from 'svelte/transition';
 
 	const SettingButtonText = $derived.by(() => {
-		if ($READ_ONLY_USER_STORE?.firstName && $READ_ONLY_USER_STORE?.lastName)
-			return `${$READ_ONLY_USER_STORE.firstName[0]}${$READ_ONLY_USER_STORE.lastName[0]}`;
-		else if ($READ_ONLY_USER_STORE?.email) return $READ_ONLY_USER_STORE.email.slice(0, 2);
+		if ($UserStoreManager?.firstName && $UserStoreManager?.lastName)
+			return `${$UserStoreManager.firstName[0]}${$UserStoreManager.lastName[0]}`;
+		else if ($UserStoreManager?.email) return $UserStoreManager.email.slice(0, 2);
 
 		return '';
 	});
@@ -50,7 +50,7 @@
 		);
 
 		if (checkIfGraphqlResultHasError(userResult)) return;
-		setUserStoreValue(userResult.data?.me as User);
+		UserStoreManager.setValue(userResult.data?.me as User);
 	});
 
 	// load checkout when page load
@@ -140,12 +140,12 @@
 					{/key}
 				</IconButton>
 			</a>
-			{#if $READ_ONLY_USER_STORE}
+			{#if $UserStoreManager}
 				{#snippet avatar()}
 					<span
 						class="rounded-full w-6 h-6 bg-blue-300 flex items-center justify-center font-bold bg-cover bg-center bg-no-repeat"
-						style:background-image={$READ_ONLY_USER_STORE.avatar
-							? `url(${$READ_ONLY_USER_STORE.avatar.url})`
+						style:background-image={$UserStoreManager.avatar
+							? `url(${$UserStoreManager.avatar.url})`
 							: 'bg-blue-300'}
 					>
 					</span>
@@ -162,9 +162,9 @@
 							{@render avatar()}
 							<div>
 								<div class="font-semibold">
-									{`${$READ_ONLY_USER_STORE.firstName} ${$READ_ONLY_USER_STORE.lastName}`}
+									{`${$UserStoreManager.firstName} ${$UserStoreManager.lastName}`}
 								</div>
-								<div class="text-xs text-gray-500">{$READ_ONLY_USER_STORE.email}</div>
+								<div class="text-xs text-gray-500">{$UserStoreManager.email}</div>
 							</div>
 						</div>
 					</MenuItem>
@@ -176,7 +176,7 @@
 						{$tranFunc('common.logout')}
 					</MenuItem>
 				</DropDown>
-			{:else if !$READ_ONLY_USER_STORE && !page.url.pathname.startsWith('/auth')}
+			{:else if !$UserStoreManager && !page.url.pathname.startsWith('/auth')}
 				<a href={AppRoute.AUTH_SIGNIN()}>
 					<Button variant="filled" size="sm">{$tranFunc('signin.title')}</Button>
 				</a>

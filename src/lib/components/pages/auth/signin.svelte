@@ -5,7 +5,7 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Checkbox, Input, PasswordInput } from '$lib/components/ui/Input';
 	import { tranFunc } from '$lib/i18n';
-	import { setUserStoreValue } from '$lib/stores/auth/user';
+	import { UserStoreManager } from '$lib/stores/auth/user';
 	import { AppRoute } from '$lib/utils';
 	import { HTTPStatusSuccess } from '$lib/utils/consts';
 	import { toast } from 'svelte-sonner';
@@ -81,7 +81,7 @@
 			return;
 		}
 
-		setUserStoreValue(loginResult.data);
+		UserStoreManager.setValue(loginResult.data);
 		toast.success(
 			$tranFunc('signin.welcomeBack', {
 				name: loginResult.data.firstName + ' ' + loginResult.data.lastName,

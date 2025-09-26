@@ -3,7 +3,7 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Input, TextArea, Toggle } from '$lib/components/ui/Input';
 	import { PermissionEnum } from '$lib/gql/graphql';
-	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
+	import { UserStoreManager } from '$lib/stores/auth';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkUserHasPermissions, SitenameCommonClassName } from '$lib/utils/utils';
 	import { object, string, z } from 'zod';
@@ -35,9 +35,9 @@
 
 	// user manager can only activate/deactivate customer
 	const CurrentUserCanUpdateCustomer = $derived(
-		!$READ_ONLY_USER_STORE
+		!$UserStoreManager
 			? false
-			: checkUserHasPermissions($READ_ONLY_USER_STORE, PermissionEnum.ManageUsers),
+			: checkUserHasPermissions($UserStoreManager, PermissionEnum.ManageUsers),
 	);
 	const customerSchema = object({
 		firstName: string().nonempty($CommonState.FieldRequiredError),

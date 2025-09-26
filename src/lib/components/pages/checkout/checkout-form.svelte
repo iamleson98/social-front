@@ -4,7 +4,7 @@
 	import Signin from '$lib/components/pages/auth/signin.svelte';
 	import { Input } from '$lib/components/ui/Input';
 	import type { Checkout } from '$lib/gql/graphql';
-	import { READ_ONLY_USER_STORE } from '$lib/stores/auth/user';
+	import { UserStoreManager } from '$lib/stores/auth/user';
 	import DeliveryMethodForm from './delivery-method-form.svelte';
 	import GuestShippingAddress from './guest-shipping-address.svelte';
 	import PaymentForm from './payment-form.svelte';
@@ -27,8 +27,8 @@
 	<div class="bg-white rounded-lg p-3 border border-gray-200">
 		<SectionHeader>Account</SectionHeader>
 
-		{#if $READ_ONLY_USER_STORE}
-			<div>{$READ_ONLY_USER_STORE.email}</div>
+		{#if $UserStoreManager}
+			<div>{$UserStoreManager.email}</div>
 		{:else}
 			<div>
 				{#if showLoginForm}
@@ -56,7 +56,7 @@
 		<div class="mt-2 bg-white p-3 rounded-lg border border-gray-200">
 			<SectionHeader>Delivery address</SectionHeader>
 
-			{#if $READ_ONLY_USER_STORE}
+			{#if $UserStoreManager}
 				<UserShippingAddress {checkout} />
 			{:else}
 				<GuestShippingAddress {checkout} />

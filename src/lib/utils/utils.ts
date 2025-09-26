@@ -1,3 +1,6 @@
+import { goto } from '$app/navigation';
+import { page } from '$app/state';
+import type { FilterConditions } from '$lib/components/common/filter-box';
 import type { BadgeProps } from '$lib/components/ui/Badge/types';
 import {
 	type Address,
@@ -213,7 +216,7 @@ export const flipDirection = (direction: OrderDirection): OrderDirection =>
 export const NUMBER_REGEX = /^-?\d+(\.\d+)?$/;
 export const BOOL_REGEX = /(true|false)/;
 /**
- * regex for range like: `<gte,nul>]`, `<nul,lte>` or `<gte,lte>`.
+ * regex for range like: `<gte,null>`, `<null,lte>` or `<gte,lte>`.
  */
 // eslint-disable-next-line no-useless-escape
 export const FILTER_COMPARE_RANGE_REGEX = /^\<([\w\d\.-]+)\,([\w\d\.-]+)\>$/;
@@ -249,24 +252,98 @@ export const parseBoolean = (expr: string) => {
  * parse search query params, and auto performs type casting when the query param value is boolean or number
  */
 export const parseUrlSearchParams = (url: URL) => {
-	const result: Record<string, number | string | boolean> = {};
+	const result: Record<string, number | string | boolean | Record<string, unknown>> = {};
 
 	for (const key of url.searchParams.keys()) {
 		if (!key) continue;
 
 		const value = url.searchParams.get(key)?.trim();
-		if (value === undefined) continue;
+		if (value === undefined || value === null) continue;
 
 		if (NUMBER_REGEX.test(value)) {
 			result[key] = Number(value);
 		} else if (BOOL_REGEX.test(value.toLowerCase())) {
 			result[key] = parseBoolean(value);
 		} else {
+			const rangeMatches = FILTER_COMPARE_RANGE_REGEX.exec(value);
+			if (rangeMatches) {
+				const gte = rangeMatches[1].trim();
+				const lte = rangeMatches[2].trim();
+
+				const data: Record<string, unknown> = {};
+				if (gte && gte !== 'null') {
+					data.gte = NUMBER_REGEX.test(gte) ? Number(gte) : gte;
+				}
+				if (lte && lte !== 'null') {
+					data.lte = NUMBER_REGEX.test(lte) ? Number(lte) : lte;
+				}
+				if (Object.keys(data).length) result[key] = data;
+				continue;
+			}
+
+			const pairMatches = FILTER_KEY_VALUE_PAIR_REGEX.exec(value);
+			if (pairMatches) {
+				const keyValue = pairMatches[1].trim();
+				const value = pairMatches[2].trim();
+
+				result[key] = {
+					key: keyValue,
+					value,
+				}
+				continue;
+			}
+
+			const oneOfMatches = FILTER_ONE_OF_RANGE_REGEX.exec(value);
+			if (oneOfMatches) {
+				try {
+					result[key] = JSON.parse(value);
+				} catch { }
+				continue;
+			}
+
 			result[key] = value;
 		}
 	}
 
 	return result;
+};
+
+/** This function converts filter conditions to URL search params. The reversed process of `parseUrlSearchParams`
+ * NOTE: only used in client side since it calls `goto` function
+ */
+export const constructUrlSearchParamsAndNavigate = async <T>(activeFilters: FilterConditions<T>) => {
+	const keys = Object.keys(activeFilters);
+	if (!keys.length) return;
+
+	const params = page.url.searchParams; // add filter conditions to existing params
+
+	for (const key of keys) {
+		const filterOpt = activeFilters[key as keyof T];
+		if (!filterOpt) continue;
+
+		if (filterOpt.operator === 'lte') {
+			params.set(key, `<null,${filterOpt.value}>`);
+		} else if (filterOpt.operator === 'gte') {
+			params.set(key, `<${filterOpt.value},null>`);
+		} else if (filterOpt.operator === 'oneOf') {
+			params.set(key, JSON.stringify(filterOpt.value));
+		} else if (filterOpt.operator === 'range' && Array.isArray(filterOpt.value)) {
+			params.set(key, `<${filterOpt.value[0]},${filterOpt.value[1]}>`);
+		} else if (filterOpt.operator === 'eq') {
+			/**
+			 * There are a few cases for `eq` operator:
+			 * 1) equal to a pair of `key-value` record,
+			 */
+			if (Array.isArray(filterOpt.value)) {
+				params.set(key, `{${filterOpt.value[0]},${filterOpt.value[1]}}`);
+			} else {
+				// 2) equal to primitives, E.g: slug='hello-world';
+				params.set(key, `${filterOpt.value}`);
+			}
+		}
+	}
+
+	await goto(`${page.url.pathname}?${params.toString()}`);
 };
 
 export const clamp = (value: number, min: number, max: number): number => {
@@ -281,13 +358,12 @@ export const classNames = (...classes: ClassArgs[]): string => {
 
 	for (let cls of classes) {
 		if (typeof cls === 'string') {
-			cls = cls.trim();
 			if (cls) result += `${cls} `;
 			continue;
 		}
 		for (const key in cls) {
 			if (cls[key]) {
-				result += `${key.trim()} `;
+				result += `${key} `;
 			}
 		}
 	}

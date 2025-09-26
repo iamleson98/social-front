@@ -5,7 +5,7 @@
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import { RadioButton } from '$lib/components/ui/Input';
 	import type { MetadataInput, Mutation, MutationAccountUpdateArgs } from '$lib/gql/graphql';
-	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
+	import { UserStoreManager } from '$lib/stores/auth';
 	import { AppRoute } from '$lib/utils/routes';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { omit } from 'es-toolkit';
@@ -20,8 +20,8 @@
 	let userPreferences = $state<MetadataInput[]>([]);
 
 	onMount(() => {
-		if ($READ_ONLY_USER_STORE) {
-			const currentPreferences = $READ_ONLY_USER_STORE.metadata.map<MetadataInput>((item) =>
+		if ($UserStoreManager) {
+			const currentPreferences = $UserStoreManager.metadata.map<MetadataInput>((item) =>
 				omit(item, ['__typename']),
 			);
 
@@ -36,7 +36,7 @@
 		}
 	});
 
-	// const MeMetadata = $READ_ONLY_USER_STORE?.metadata || [];
+	// const MeMetadata = $UserStoreManager?.metadata || [];
 
 	const handleUpdatePreferences = () => {
 		GRAPHQL_CLIENT.mutation<Pick<Mutation, 'accountUpdate'>, MutationAccountUpdateArgs>(

@@ -184,12 +184,12 @@
 	{#if $CustomerQuery.fetching}
 		<TableSkeleton numColumns={2} />
 	{:else if $CustomerQuery.error}
-		<Alert size="sm" variant="error">Something went wrong</Alert>
+		<Alert size="sm" variant="error">{$CustomerQuery.error.message}</Alert>
 	{:else if $CustomerQuery.data?.user}
 		{#if $CustomerQuery.data.user.addresses.length}
-			<div class="space-y-2 mb-2">
+			<div class="mb-2">
 				{#each $CustomerQuery.data.user.addresses as address, idx (idx)}
-					<label class="cursor-pointer" for={address.id}>
+					<label class="cursor-pointer my-1" for={address.id}>
 						<UserAddress {address} class="relative">
 							<RadioButton
 								value={address.id}

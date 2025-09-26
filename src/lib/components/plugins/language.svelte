@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { languageSupportInfer, switchTranslationLanguage, type LanguageCode } from '$i18n';
 	import { LanguageCodeEnum } from '$lib/gql/graphql';
-	import { READ_ONLY_USER_STORE } from '$lib/stores/auth/user';
+	import { UserStoreManager } from '$lib/stores/auth/user';
 	import { getCookieByKey } from '$lib/utils';
 	import { LANGUAGE_KEY } from '$lib/utils/consts';
 	import { clientSideSetCookie } from '$lib/utils/cookies';
@@ -29,7 +29,7 @@
 			path: '/',
 		});
 
-		return READ_ONLY_USER_STORE.subscribe((user) => {
+		return UserStoreManager.subscribe((user) => {
 			if (user?.languageCode) {
 				const code = languageSupportInfer(user.languageCode);
 				if (code) {

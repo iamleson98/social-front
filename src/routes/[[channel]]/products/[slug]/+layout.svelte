@@ -15,7 +15,6 @@
 	import ProductMediaSlideShow from '$lib/components/pages/products/detail/product-slide-show-pannel.svelte';
 	import Button from '$lib/components/ui/Button/Button.svelte';
 	import { type ProductMedia } from '$lib/gql/graphql';
-	import { slideShowManager } from '$lib/stores/ui/slideshow';
 	import { AppRoute } from '$lib/utils';
 	import type { LayoutServerData } from './$types';
 	import { onMount, type Snippet } from 'svelte';
@@ -55,6 +54,8 @@
 
 	const { product, productJsonLd } = data;
 
+	let medias = $state<ProductMedia[]>([]);
+
 	let categories = $derived.by(() => {
 		if (!product?.category) return [];
 
@@ -78,9 +79,7 @@
 			}
 		}
 
-		slideShowManager.setMedias(allProductMedias);
-
-		return () => slideShowManager.reset();
+		medias = allProductMedias;
 	});
 </script>
 
@@ -113,7 +112,7 @@
 
 	<div class="flex flex-row tablet:flex-col tablet:flex-wrap gap-2 w-full mb-2">
 		<div class="w-2/5 tablet:w-full">
-			<ProductMediaSlideShow />
+			<ProductMediaSlideShow {medias} />
 		</div>
 		<div class="w-3/5 tablet:w-full">
 			<ProductPricingPanel productInformation={product} />

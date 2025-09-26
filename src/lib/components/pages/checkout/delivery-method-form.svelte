@@ -9,7 +9,7 @@
 		Mutation,
 		MutationCheckoutDeliveryMethodUpdateArgs,
 	} from '$lib/gql/graphql';
-	import { READ_ONLY_USER_STORE } from '$lib/stores/auth/user';
+	import { UserStoreManager } from '$lib/stores/auth/user';
 	import { formatMoney, checkIfGraphqlResultHasError } from '$lib/utils/utils';
 
 	type Props = {
@@ -67,10 +67,10 @@
 	<SectionHeader>Shipping method</SectionHeader>
 
 	<div class="flex flex-row flex-wrap">
-		{#if !$READ_ONLY_USER_STORE && !checkout.shippingAddress}
+		{#if !$UserStoreManager && !checkout.shippingAddress}
 			<p>Please provide shipping address first to see available shipping methods</p>
 		{/if}
-		{#if $READ_ONLY_USER_STORE && !checkout.shippingAddress}
+		{#if $UserStoreManager && !checkout.shippingAddress}
 			<p>Loading...</p>
 		{:else if checkout.shippingMethods.length}
 			{#each checkout.shippingMethods as method, idx (idx)}

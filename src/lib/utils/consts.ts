@@ -56,6 +56,17 @@ export const CHANNEL_KEY = 'channel';
 export const LANGUAGE_KEY = 'language';
 export const COUNTRY_CODE_KEY = 'country';
 
+/** Common keys used in search params. Mostly used in pages that show tabular data */
+export enum SearchParamKey {
+	ORDER_DIRECTION = 'sort',
+	ORDER_BY_FIELD = 'order-by',
+	PRICE_RANGE = 'price-range',
+	BEFORE = 'before',
+	AFTER = 'after',
+	FIRST = 'first',
+	LAST = 'last',
+	SEARCH_QUERY = 'search',
+};
 
 /**
  * NOTE: one channel has 1 country only

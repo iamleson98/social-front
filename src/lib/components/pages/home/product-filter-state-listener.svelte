@@ -3,16 +3,8 @@
 	import { page } from '$app/state';
 	import { OrderDirection, ProductOrderField } from '$lib/gql/graphql';
 	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
+	import { SearchParamKey } from '$lib/utils/consts';
 	import { NUMBER_REGEX, parseUrlSearchParams } from '$lib/utils/utils';
-	import {
-		AFTER,
-		BEFORE,
-		FIRST,
-		LAST,
-		ORDER_BY_FIELD,
-		PRICE_RANGE,
-		ORDER_DIRECTION,
-	} from './common';
 	import { get } from 'svelte/store';
 
 	afterNavigate(async () => {
@@ -20,11 +12,11 @@
 		const newProductQueryArgs = get(productFilterParamStore);
 
 		// parse sort by field:
-		let sortDirection = queryParams[ORDER_DIRECTION]
-			? (queryParams[ORDER_DIRECTION] as string).toUpperCase()
+		let sortDirection = queryParams[SearchParamKey.ORDER_DIRECTION]
+			? (queryParams[SearchParamKey.ORDER_DIRECTION] as string).toUpperCase()
 			: OrderDirection.Asc;
-		let sortField = queryParams[ORDER_BY_FIELD]
-			? (queryParams[ORDER_BY_FIELD] as string).toUpperCase()
+		let sortField = queryParams[SearchParamKey.ORDER_BY_FIELD]
+			? (queryParams[SearchParamKey.ORDER_BY_FIELD] as string).toUpperCase()
 			: ProductOrderField.Price;
 
 		newProductQueryArgs.sortBy!.direction = Object.values(OrderDirection).includes(
@@ -39,7 +31,7 @@
 			: ProductOrderField.Price;
 
 		// parse price range
-		const priceRangeParam = queryParams[PRICE_RANGE];
+		const priceRangeParam = queryParams[SearchParamKey.PRICE_RANGE];
 		if (priceRangeParam) {
 			const priceRangeSplit = (priceRangeParam as string)
 				.replace(/\s+/g, '')
@@ -57,8 +49,8 @@
 		}
 
 		// before, after
-		const before = queryParams[BEFORE];
-		const after = queryParams[AFTER];
+		const before = queryParams[SearchParamKey.BEFORE];
+		const after = queryParams[SearchParamKey.AFTER];
 		if (before) {
 			newProductQueryArgs.before = before as string;
 			newProductQueryArgs.after = null;
@@ -68,8 +60,8 @@
 		}
 
 		// first, last
-		const first = queryParams[FIRST];
-		const last = queryParams[LAST];
+		const first = queryParams[SearchParamKey.FIRST];
+		const last = queryParams[SearchParamKey.LAST];
 		if (first) {
 			newProductQueryArgs.first = Number(first);
 			newProductQueryArgs.last = null;

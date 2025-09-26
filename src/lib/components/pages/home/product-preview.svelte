@@ -4,8 +4,7 @@
 	import ProductPricingPannel from '$lib/components/pages/products/detail/product-pricing-pannel.svelte';
 	import ProductSlideShowPannel from '$lib/components/pages/products/detail/product-slide-show-pannel.svelte';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
-	import { type Query } from '$lib/gql/graphql';
-	import { slideShowManager } from '$lib/stores/ui/slideshow';
+	import { type ProductMedia, type Query } from '$lib/gql/graphql';
 	import { DEFAULT_CHANNEL } from '$lib/utils/consts';
 	import { CHANNEL_KEY, COUNTRY_CODE_KEY } from '$lib/utils/consts';
 	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
@@ -22,6 +21,7 @@
 		COUNTRY_CODE_KEY,
 		DEFAULT_CHANNEL.defaultCountryCode,
 	);
+	let slideShowImages = $state.raw<ProductMedia[]>([]);
 
 	const productDetailStore = operationStore<Pick<Query, 'product'>>({
 		query: PRODUCT_DETAIL_QUERY,
@@ -33,18 +33,13 @@
 		requestPolicy: 'cache-and-network',
 	});
 
-	onMount(() => {
-		const unsub = productDetailStore.subscribe((result) => {
-			if (result.data?.product) {
-				slideShowManager.setMedias(result.data.product.media || []);
+	onMount(() =>
+		productDetailStore.subscribe((result) => {
+			if (result.data?.product?.media) {
+				slideShowImages = result.data.product.media;
 			}
-		});
-
-		return () => {
-			unsub();
-			slideShowManager.reset();
-		};
-	});
+		}),
+	);
 </script>
 
 <div class="max-h-[700px] overflow-y-scroll">
@@ -53,7 +48,7 @@
 			<Skeleton class="w-full h-96" rounded={false} />
 		</SkeletonContainer>
 	{:else if $productDetailStore.data?.product}
-		<ProductSlideShowPannel />
+		<ProductSlideShowPannel medias={slideShowImages} />
 		<div class="mb-2"></div>
 		<ProductPricingPannel
 			useForPreviewModal

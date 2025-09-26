@@ -1,5 +1,5 @@
 import { invalidateAll } from '$app/navigation';
-import { setUserStoreValue } from '$lib/stores/auth';
+import { UserStoreManager } from '$lib/stores/auth';
 import { HTTPStatusSuccess } from './consts';
 import { AppRoute } from './routes';
 import { toast } from 'svelte-sonner';
@@ -15,6 +15,6 @@ export const handleLogout = async (
 		return;
 	}
 
-	setUserStoreValue(null);
+	UserStoreManager.setValue(null);
 	await invalidateAll();
 };

@@ -4,7 +4,7 @@
 	import { operationStore } from '$lib/api/operation';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
-	import { ArrowDown, CalendarClock, Send } from '$lib/components/icons';
+	import { ArrowDown, CalendarClock, ChevronDown, ChevronUp, Send } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
@@ -16,11 +16,12 @@
 		type Query,
 		type QueryOrderArgs,
 	} from '$lib/gql/graphql';
-	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
+	import { UserStoreManager } from '$lib/stores/auth';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 	import { SvelteSet } from 'svelte/reactivity';
+	import { slide } from 'svelte/transition';
 
 	type Props = {
 		id: string;
@@ -86,13 +87,13 @@
 	let loading = $state(false);
 	let filterType = $state<OrderEventsEnum>();
 
-	let openDiscounts = $state<SvelteSet<string>>(new SvelteSet());
+	let orderEventOpeningState = $state<SvelteSet<string>>(new SvelteSet());
 
 	const toggleShowHistoryEventDetail = (key: string) => {
-		if (openDiscounts.has(key)) {
-			openDiscounts.delete(key);
+		if (orderEventOpeningState.has(key)) {
+			orderEventOpeningState.delete(key);
 		} else {
-			openDiscounts.add(key);
+			orderEventOpeningState.add(key);
 		}
 	};
 
@@ -104,6 +105,7 @@
 	const eventsQuery = operationStore<Pick<Query, 'order'>, QueryOrderArgs>({
 		query: ORDER_HISTORY_QUERY,
 		variables: { id },
+		requestPolicy: 'cache-and-network',
 	});
 
 	const handleAddNote = async () => {
@@ -128,21 +130,21 @@
 			return;
 
 		newNote = ''; // reset note
-		eventsQuery.reexecute({ context: { requestPolicy: 'network-only' }, variables: { id } });
+		eventsQuery.reexecute({ variables: { id } });
 	};
 </script>
 
 <div class="p-3 rounded-lg border border-gray-200 bg-white flex flex-col gap-3">
 	<SectionHeader>Order timeline</SectionHeader>
-	<Alert size="sm" bordered
-		>The timeline below shows the history of all events related to this order. Each entry represents
-		a single event along with its content or readable description.</Alert
-	>
+	<Alert size="sm">
+		The timeline below shows the history of all events related to this order. Each entry represents
+		a single event along with its content or readable description.
+	</Alert>
 
 	{#if $eventsQuery.fetching}
 		<SelectSkeleton size="sm" label />
 	{:else if $eventsQuery.error}
-		<Alert size="sm" variant="error" bordered>{$eventsQuery.error.message}</Alert>
+		<Alert size="sm" variant="error">{$eventsQuery.error.message}</Alert>
 	{:else if $eventsQuery.data}
 		{@const events =
 			$eventsQuery.data.order?.events
@@ -155,8 +157,8 @@
 			<div class="flex-3/4 flex items-center gap-2">
 				<Thumbnail
 					size="sm"
-					src={$READ_ONLY_USER_STORE?.avatar?.url}
-					alt={$READ_ONLY_USER_STORE?.avatar?.alt || $READ_ONLY_USER_STORE?.email || 'User'}
+					src={$UserStoreManager?.avatar?.url}
+					alt={$UserStoreManager?.avatar?.alt || $UserStoreManager?.email || 'User'}
 				/>
 				<Input
 					size="sm"
@@ -172,8 +174,10 @@
 					endIcon={Send}
 					fullWidth
 					disabled={!newNote?.trim() || loading}
-					onclick={handleAddNote}>Send</Button
+					onclick={handleAddNote}
 				>
+					Send
+				</Button>
 			</div>
 		</div>
 
@@ -181,7 +185,6 @@
 		<div class="relative w-full mx-auto dark:bg-gray-900 mt-5">
 			<ol class="relative mt-2 ml-5 border-s border-gray-200 dark:border-gray-700">
 				{#each events as event, idx (idx)}
-					{@const discount = event.discount}
 					{@const byName =
 						event.user?.firstName || event.user?.lastName
 							? `${event.user.firstName || ''} ${event.user.lastName || ''}`
@@ -215,16 +218,16 @@
 									{byName}
 								</a>
 							</div>
-							{#if openDiscounts.has(event.id) && discount}
-								<div class="mt-2 text-sm">
-									{#if discount?.amount}
+							{#if orderEventOpeningState.has(event.id) && event.discount}
+								<div class="mt-2 text-sm" transition:slide>
+									{#if event.discount?.amount}
 										<p>
-											Discount value: {discount.amount.amount}
-											{discount.amount.currency}
+											Discount value: {event.discount.amount.amount}
+											{event.discount.amount.currency}
 										</p>
 									{/if}
-									{#if discount?.reason}
-										<p>Reason for discount: {discount.reason}</p>
+									{#if event.discount?.reason}
+										<p>Reason for discount: {event.discount.reason}</p>
 									{/if}
 								</div>
 							{/if}
@@ -232,9 +235,9 @@
 						{#if event.type === OrderEventsEnum.OrderDiscountAdded || event.type === OrderEventsEnum.OrderDiscountUpdated}
 							<IconButton
 								size="xs"
-								variant="light"
-								color="orange"
-								icon={ArrowDown}
+								variant="outline"
+								color="gray"
+								icon={orderEventOpeningState.has(event.id) ? ChevronUp : ChevronDown}
 								class="w-3 h-3"
 								onclick={() => toggleShowHistoryEventDetail(event.id)}
 							/>

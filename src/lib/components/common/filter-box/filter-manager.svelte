@@ -3,20 +3,12 @@
 	import { page } from '$app/state';
 	import { tranFunc } from '$i18n';
 	import { FilterCog, Search } from '$lib/components/icons';
-	import {
-		AFTER,
-		BEFORE,
-		FIRST,
-		LAST,
-		ORDER_BY_FIELD,
-		ORDER_DIRECTION,
-		SEARCH_QUERY,
-	} from '$lib/components/pages/home/common';
 	import { Button } from '$lib/components/ui';
 	import { Input } from '$lib/components/ui/Input';
 	import { type DropdownTriggerInterface, Popover } from '$lib/components/ui/Popover';
 	import type { GraphqlPaginationArgs } from '$lib/components/ui/Table';
 	import { OrderDirection } from '$lib/gql/graphql';
+	import { SearchParamKey } from '$lib/utils/consts';
 	import {
 		FILTER_COMPARE_RANGE_REGEX,
 		FILTER_KEY_VALUE_PAIR_REGEX,
@@ -64,60 +56,58 @@
 	);
 
 	const handleSearchValueChange = async (evt: Event) => {
-		if (!searchKey) return;
-
 		const value = (evt.target as HTMLInputElement).value.trim();
-		page.url.searchParams.set(SEARCH_QUERY, value);
+		page.url.searchParams.set(SearchParamKey.SEARCH_QUERY, value);
 
 		await goto(`${page.url.pathname}?${page.url.searchParams.toString()}`, { keepFocus: true });
 	};
 
 	// listener for pagination, sorting changes
-	$effect(() => {
-		const pageSortField = page.url.searchParams.get(ORDER_BY_FIELD);
-		const pageSortDirection = page.url.searchParams.get(ORDER_DIRECTION);
-		const pageFirst = page.url.searchParams.get(FIRST);
-		const pageLast = page.url.searchParams.get(LAST);
-		const pageAfter = page.url.searchParams.get(AFTER);
-		const pageBefore = page.url.searchParams.get(BEFORE);
+	// $effect(() => {
+	// 	const pageSortField = page.url.searchParams.get(SearchParamKey.ORDER_BY_FIELD);
+	// 	const pageSortDirection = page.url.searchParams.get(SearchParamKey.ORDER_DIRECTION);
+	// 	const pageFirst = page.url.searchParams.get(SearchParamKey.FIRST);
+	// 	const pageLast = page.url.searchParams.get(SearchParamKey.LAST);
+	// 	const pageAfter = page.url.searchParams.get(SearchParamKey.AFTER);
+	// 	const pageBefore = page.url.searchParams.get(SearchParamKey.BEFORE);
 
-		const variableSortField = variables.sortBy?.field;
-		const variableSortDirection = variables.sortBy?.direction || OrderDirection.Asc;
-		const variableFirst = variables.first;
-		const variableLast = variables.last;
-		const variableAfter = variables.after;
-		const variableBefore = variables.before;
+	// 	const variableSortField = variables.sortBy?.field;
+	// 	const variableSortDirection = variables.sortBy?.direction || OrderDirection.Asc;
+	// 	const variableFirst = variables.first;
+	// 	const variableLast = variables.last;
+	// 	const variableAfter = variables.after;
+	// 	const variableBefore = variables.before;
 
-		let shouldNavigate = false;
+	// 	let shouldNavigate = false;
 
-		if (typeof variableSortField === 'string') {
-			if (pageSortField !== variableSortField || pageSortDirection !== variableSortDirection) {
-				page.url.searchParams.set(ORDER_BY_FIELD, variableSortField);
-				page.url.searchParams.set(ORDER_DIRECTION, variableSortDirection);
-				shouldNavigate = true;
-			}
-		}
+	// 	if (typeof variableSortField === 'string') {
+	// 		if (pageSortField !== variableSortField || pageSortDirection !== variableSortDirection) {
+	// 			page.url.searchParams.set(SearchParamKey.ORDER_BY_FIELD, variableSortField);
+	// 			page.url.searchParams.set(SearchParamKey.ORDER_DIRECTION, variableSortDirection);
+	// 			shouldNavigate = true;
+	// 		}
+	// 	}
 
-		if (pageFirst != variableFirst || pageAfter != variableAfter) {
-			page.url.searchParams.set(FIRST, String(variableFirst));
-			page.url.searchParams.delete(LAST);
-			page.url.searchParams.delete(BEFORE);
-			if (variableAfter) page.url.searchParams.set(AFTER, variableAfter);
-			shouldNavigate = true;
-		}
+	// 	if (pageFirst != variableFirst || pageAfter != variableAfter) {
+	// 		page.url.searchParams.set(SearchParamKey.FIRST, String(variableFirst));
+	// 		page.url.searchParams.delete(SearchParamKey.LAST);
+	// 		page.url.searchParams.delete(SearchParamKey.BEFORE);
+	// 		if (variableAfter) page.url.searchParams.set(SearchParamKey.AFTER, variableAfter);
+	// 		shouldNavigate = true;
+	// 	}
 
-		if (pageLast != variableLast || pageBefore != variableBefore) {
-			page.url.searchParams.set(LAST, String(variableLast));
-			page.url.searchParams.delete(FIRST);
-			page.url.searchParams.delete(AFTER);
-			if (variableBefore) page.url.searchParams.set(BEFORE, variableBefore);
-			shouldNavigate = true;
-		}
+	// 	if (pageLast != variableLast || pageBefore != variableBefore) {
+	// 		page.url.searchParams.set(SearchParamKey.LAST, String(variableLast));
+	// 		page.url.searchParams.delete(SearchParamKey.FIRST);
+	// 		page.url.searchParams.delete(SearchParamKey.AFTER);
+	// 		if (variableBefore) page.url.searchParams.set(SearchParamKey.BEFORE, variableBefore);
+	// 		shouldNavigate = true;
+	// 	}
 
-		if (shouldNavigate) {
-			goto(`${page.url.pathname}?${page.url.searchParams.toString()}`);
-		}
-	});
+	// 	if (shouldNavigate) {
+	// 		goto(`${page.url.pathname}?${page.url.searchParams.toString()}`);
+	// 	}
+	// });
 
 	// listener for variables changed have been applied on the URL bar
 	afterNavigate(async () => {
@@ -129,43 +119,46 @@
 
 		for (const key in queryParams) {
 			switch (key) {
-				case FIRST:
-					if (typeof queryParams[FIRST] === 'number') {
-						newVariables.first = queryParams[FIRST];
+				case SearchParamKey.FIRST:
+					if (typeof queryParams[SearchParamKey.FIRST] === 'number') {
+						newVariables.first = queryParams[SearchParamKey.FIRST];
 						newVariables.last = null;
 						newVariables.before = null;
 					}
 					continue;
-				case AFTER:
-					if (typeof queryParams[AFTER] === 'string') {
-						newVariables.after = queryParams[AFTER];
+				case SearchParamKey.AFTER:
+					if (typeof queryParams[SearchParamKey.AFTER] === 'string') {
+						newVariables.after = queryParams[SearchParamKey.AFTER];
 					}
 					continue;
-				case LAST:
-					if (typeof queryParams[LAST] === 'number') {
-						newVariables.last = queryParams[LAST];
+				case SearchParamKey.LAST:
+					if (typeof queryParams[SearchParamKey.LAST] === 'number') {
+						newVariables.last = queryParams[SearchParamKey.LAST];
 						newVariables.first = null;
 						newVariables.after = null;
 					}
 					continue;
-				case BEFORE:
-					if (typeof queryParams[BEFORE] === 'string') {
-						newVariables.before = queryParams[BEFORE];
+				case SearchParamKey.BEFORE:
+					if (typeof queryParams[SearchParamKey.BEFORE] === 'string') {
+						newVariables.before = queryParams[SearchParamKey.BEFORE];
 					}
 					continue;
-				case ORDER_BY_FIELD:
-					if (typeof queryParams[ORDER_BY_FIELD] === 'string') {
+				case SearchParamKey.ORDER_BY_FIELD:
+					if (typeof queryParams[SearchParamKey.ORDER_BY_FIELD] === 'string') {
 						newVariables.sortBy = {
-							field: queryParams[ORDER_BY_FIELD],
-							direction: (queryParams[ORDER_DIRECTION] as OrderDirection) || OrderDirection.Asc,
+							field: queryParams[SearchParamKey.ORDER_BY_FIELD],
+							direction:
+								(queryParams[SearchParamKey.ORDER_DIRECTION] as OrderDirection) ||
+								OrderDirection.Asc,
 						};
 					}
 					continue;
-				case ORDER_DIRECTION:
+				case SearchParamKey.ORDER_DIRECTION:
 					continue;
-				case SEARCH_QUERY:
+				case SearchParamKey.SEARCH_QUERY:
 					if (searchKey) {
-						if (queryParams[SEARCH_QUERY]) set(newVariables, searchKey, queryParams[SEARCH_QUERY]);
+						if (queryParams[SearchParamKey.SEARCH_QUERY])
+							set(newVariables, searchKey, queryParams[SearchParamKey.SEARCH_QUERY]);
 						else unset(newVariables, searchKey);
 					}
 					continue;

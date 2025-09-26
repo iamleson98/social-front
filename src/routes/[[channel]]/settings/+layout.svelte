@@ -34,7 +34,7 @@
 	import { Badge } from '$lib/components/ui/Badge';
 	import type { ShippingMethodTypeEnum } from '$lib/gql/graphql';
 	import { ME_PAGE_USER_STORE } from '$lib/stores/app/me';
-	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
+	import { UserStoreManager } from '$lib/stores/auth';
 	import { AppRoute } from '$lib/utils';
 	import { userIsShopAdmin } from '$lib/utils/utils';
 	import type { LayoutServerData } from './$types';
@@ -399,7 +399,7 @@
 				open={SHOPPING_TAB_ITEMS.some((item) => item.shouldActive)}
 			/>
 
-			{#if $READ_ONLY_USER_STORE && userIsShopAdmin($READ_ONLY_USER_STORE)}
+			{#if $UserStoreManager && userIsShopAdmin($UserStoreManager)}
 				<AccordionList
 					header="Catalog"
 					child={sidebarItem}

@@ -26,10 +26,11 @@
 		type QueryWarehousesArgs,
 	} from '$lib/gql/graphql';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import type { SvelteSet } from 'svelte/reactivity';
 
 	type Props = {
 		variables: QueryProductsArgs;
-		selectedIds: Record<string, boolean>;
+		selectedIds: SvelteSet<string>;
 	};
 
 	let { variables = $bindable(), selectedIds = $bindable() }: Props = $props();
@@ -64,7 +65,7 @@
 			exportConfig.filter = null;
 		} else if (exportConfig.scope === ExportScope.Ids) {
 			exportConfig.filter = null;
-			exportConfig.ids = Object.keys(selectedIds);
+			exportConfig.ids = selectedIds.keys().toArray();
 		} else if (exportConfig.scope === ExportScope.Filter) {
 			exportConfig.ids = null;
 			exportConfig.filter = variables.filter;
@@ -206,7 +207,7 @@
 				/>
 				<RadioButton
 					value={ExportScope.Ids}
-					label={`Selected products (${Object.keys(selectedIds).length})`}
+					label={`Selected products (${selectedIds.size})`}
 					bind:group={exportConfig.scope}
 					size="sm"
 				/>

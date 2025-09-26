@@ -2,7 +2,7 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Input, TextArea, Toggle } from '$lib/components/ui/Input';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
-	import { READ_ONLY_SHOP_STORE } from '$lib/stores/shop';
+	import { ShopStoreManager } from '$lib/stores/shop';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { object, string, z } from 'zod';
 
@@ -44,7 +44,7 @@
 	});
 
 	// const CountriesOptions = $derived(
-	// 	$READ_ONLY_SHOP_STORE?.countries.map<SelectOption>((item) => ({
+	// 	$ShopStoreManager?.countries.map<SelectOption>((item) => ({
 	// 		label: item.country,
 	// 		value: item.code,
 	// 	})) || [],
@@ -93,7 +93,7 @@
 		multiple
 		required
 		bind:value={countries}
-		options={$READ_ONLY_SHOP_STORE?.countries.map<SelectOption>((item) => ({
+		options={$ShopStoreManager?.countries.map<SelectOption>((item) => ({
 			label: item.country,
 			value: item.code,
 		})) || []}

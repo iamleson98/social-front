@@ -1,19 +1,63 @@
 <script lang="ts">
 	import { ChevronLeft, ChevronRight } from '$lib/components/icons';
 	import { IconButton } from '$lib/components/ui/Button';
-	import { slideShowManager } from '$lib/stores/ui/slideshow';
+	import { type ProductMedia } from '$lib/gql/graphql';
+	import { defaultSlideShowState } from '$lib/stores/ui/slideshow';
 
-	let displayMedias = $derived.by(() =>
-		$slideShowManager.medias.slice(...$slideShowManager.slicing),
-	);
+	type Props = {
+		medias: ProductMedia[];
+	};
+
+	let { medias }: Props = $props();
+
+	let slideShowImages = $state.raw(defaultSlideShowState);
+
+	const displayMedias = $derived(slideShowImages.medias.slice(...slideShowImages.slicing));
+
+	$effect(() => {
+		if (medias.length) {
+			slideShowImages = {
+				medias,
+				activeIndex: 0,
+				slicing: [0, Math.min(5, medias.length)],
+			};
+		}
+	});
+
+	const handleNavigate = (dir: 1 | -1) => {
+		const newImages = { ...slideShowImages };
+
+		const nextIndex = newImages.activeIndex + dir;
+
+		if (nextIndex < 0) {
+			if (newImages.slicing[0] === 0) return;
+			newImages.slicing = newImages.slicing.map((i) => i - 1);
+			slideShowImages = newImages;
+			return;
+		}
+		if (nextIndex === newImages.slicing[1] - newImages.slicing[0]) {
+			if (newImages.slicing[1] === newImages.medias.length) return;
+			newImages.slicing = newImages.slicing.map((i) => i + 1);
+			slideShowImages = newImages;
+			return;
+		}
+
+		newImages.activeIndex = nextIndex;
+		slideShowImages = newImages;
+	};
 
 	const handleKeydown = (e: KeyboardEvent) => {
 		switch (e.key) {
 			case 'ArrowLeft':
-				slideShowManager.handleNavigate(-1);
+				handleNavigate(-1);
 			case 'ArrowRight':
-				slideShowManager.handleNavigate(1);
+				handleNavigate(1);
 		}
+	};
+
+	const handleFocus = (index: number) => {
+		const newImages = { ...slideShowImages };
+		if (index !== newImages.activeIndex) slideShowImages = { ...newImages, activeIndex: index };
 	};
 </script>
 
@@ -22,17 +66,17 @@
 <div class="flex flex-col gap-2">
 	<div
 		class="bg-no-repeat relative bg-contain bg-center bg-white justify-center pt-[100%] rounded-lg border w-full flex items-center"
-		style="background-image: url('{displayMedias[$slideShowManager.activeIndex].url}');"
+		style="background-image: url('{displayMedias[slideShowImages.activeIndex].url}');"
 	></div>
 
 	<div class="w-full bg-white relative">
-		<div class="w-full bg-gray-100 overflow-hidden">
+		<div class="w-full bg-gray-100 overflow-hidden grid grid-cols-5 gap-0.5">
 			{#each displayMedias as picture, idx (idx)}
-				<div class="w-1/5 p-1 inline-block box-border">
+				<div class="inline-block">
 					<div
 						class="relative bg-white rounded-md overflow-hidden cursor-pointer outline-hidden"
-						onmouseover={() => slideShowManager.handleFocus(idx)}
-						onfocus={() => slideShowManager.handleFocus(idx)}
+						onmouseover={() => handleFocus(idx)}
+						onfocus={() => handleFocus(idx)}
 						tabindex="0"
 						role="button"
 					>
@@ -52,7 +96,7 @@
 						</div>
 
 						<div
-							class={`absolute left-0 top-0 bottom-0 right-0 rounded-md ${idx === $slideShowManager.activeIndex ? 'border-blue-500 border-2' : ''}`}
+							class="absolute left-0 top-0 bottom-0 right-0 rounded-md {idx === slideShowImages.activeIndex ? 'border-2 border-blue-500' : 'border-1 border-gray-200'}"
 						></div>
 					</div>
 				</div>
@@ -62,19 +106,19 @@
 		<IconButton
 			icon={ChevronLeft}
 			size="xs"
-			variant="light"
+			variant="outline"
 			class="absolute! left-1.5 top-1/2 -translate-y-1/2 z-10"
 			rounded
-			onclick={() => slideShowManager.handleNavigate(-1)}
+			onclick={() => handleNavigate(-1)}
 			aria-label="navigate previous"
 		/>
 		<IconButton
 			icon={ChevronRight}
 			size="xs"
-			variant="light"
+			variant="outline"
 			class="absolute! right-1.5 top-1/2 -translate-y-1/2 z-10"
 			rounded
-			onclick={() => slideShowManager.handleNavigate(1)}
+			onclick={() => handleNavigate(1)}
 			aria-label="navigate next"
 		/>
 	</div>

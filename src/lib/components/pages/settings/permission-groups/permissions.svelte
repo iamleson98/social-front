@@ -2,7 +2,7 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Checkbox } from '$lib/components/ui/Input';
 	import type { Permission, PermissionEnum } from '$lib/gql/graphql';
-	import { READ_ONLY_SHOP_STORE } from '$lib/stores/shop';
+	import { ShopStoreManager } from '$lib/stores/shop';
 	import { addNoDup, classNames, SitenameCommonClassName } from '$lib/utils/utils';
 
 	type Props = {
@@ -24,7 +24,7 @@
 	}: Props = $props();
 
 	const AvailablePermissions =
-		$READ_ONLY_SHOP_STORE?.permissions
+		$ShopStoreManager?.permissions
 			?.filter((perm1) => !permissions.some((perm) => perm1.code === perm.code))
 			.map((perm) => perm.code) || [];
 
@@ -63,14 +63,14 @@
 	<Checkbox
 		label="Assign all permissions"
 		subText="Select this checkbox to assign all permissions to this group"
-		checked={permissions.length === $READ_ONLY_SHOP_STORE?.permissions?.length}
+		checked={permissions.length === $ShopStoreManager?.permissions?.length}
 		readonly={!editable || disabled}
 		onCheckChange={handleToggleAssignAllPermissions}
 		{disabled}
 	/>
 
 	<div class="grid grid-cols-2 gap-2">
-		{#each $READ_ONLY_SHOP_STORE?.permissions || [] as permission, idx (idx)}
+		{#each $ShopStoreManager?.permissions || [] as permission, idx (idx)}
 			{@const isAdding = addPermissions.includes(permission.code)}
 			{@const isRemoving = removePermissions.includes(permission.code)}
 			{@const checked = permissions.some((perm) => perm.code === permission.code) || isAdding}

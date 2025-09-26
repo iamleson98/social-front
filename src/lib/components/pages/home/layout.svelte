@@ -6,7 +6,7 @@
 
 <div class="flex gap-6">
 	<aside
-		class="sticky overflow-auto top-16 h-[calc(100vh-4rem)] w-1/5 tablet:hidden!"
+		class="sticky overflow-y-auto top-16 h-[calc(100vh-4rem)] w-1/5 tablet:hidden!"
 		style="scrollbar-width: none;"
 	>
 		<Sidebar />
@@ -17,7 +17,7 @@
 			<ProductListSection />
 		</div>
 		<div
-			class="w-1/4 tablet:hidden sticky overflow-auto top-16 h-[calc(100vh-4rem)]"
+			class="w-1/4 tablet:hidden sticky top-16 h-[calc(100vh-4rem)]"
 			style="scrollbar-width: none;"
 		>
 			<RecommendationSection />

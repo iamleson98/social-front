@@ -5,7 +5,7 @@
 	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { LanguageCodeEnum } from '$lib/gql/graphql';
-	import { READ_ONLY_USER_STORE } from '$lib/stores/auth';
+	import { UserStoreManager } from '$lib/stores/auth';
 	import { AppRoute } from '$lib/utils';
 	import { LANGUAGE_KEY } from '$lib/utils/consts';
 	import { clientSideGetCookieOrDefault, clientSideSetCookie } from '$lib/utils/cookies';
@@ -88,7 +88,7 @@
 					</ul>
 				</div>
 
-				{#if !$READ_ONLY_USER_STORE}
+				{#if !$UserStoreManager}
 					<div>
 						<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">Language</h2>
 						{#snippet trigger({ onclick, onfocus }: DropdownTriggerInterface)}

@@ -3,22 +3,20 @@
 
 name: Web App CI Template
 on:
-  workflow_call:
+  pull_request:
+    branches: [master]
 
 jobs:
   check-lint:
-    runs-on: ubuntu-22.04
-  defaults:
-    run:
-      working-directory: webapp
-  steps:
-    - name: ci/checkout-repo
-      uses: actions/checkout@v4
-    - name: ci/setup
-      uses: ./.github/actions/webapp-setup
-    - name: ci/lint
-      run: |
-        npm run check
+    runs-on: ubuntu-latest
+    steps:
+      - name: ci/checkout-repo
+        uses: actions/checkout@v5
+      - name: ci/setup
+        uses: ./.github/actions/webapp-setup
+      - name: ci/lint
+        run: |
+          npm run check
 
   # check-i18n:
   #   runs-on: ubuntu-22.04

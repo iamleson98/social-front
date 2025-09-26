@@ -23,7 +23,7 @@
 		type TaxConfigurationPerCountryInput,
 		type TaxConfigurationUpdateInput,
 	} from '$lib/gql/graphql';
-	import { READ_ONLY_SHOP_STORE } from '$lib/stores/shop';
+	import { ShopStoreManager } from '$lib/stores/shop';
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import {
@@ -53,7 +53,7 @@
 	);
 
 	const Countries =
-		$READ_ONLY_SHOP_STORE?.countries.map<SelectOption>((country) => ({
+		$ShopStoreManager?.countries.map<SelectOption>((country) => ({
 			value: country.code,
 			label: country.country,
 		})) || [];
