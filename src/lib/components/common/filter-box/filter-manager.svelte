@@ -14,20 +14,11 @@
 	import FilterContainer from './filter-container.svelte';
 	import type { FilterConditions, FilterProps } from './types';
 	import type { AnyVariables } from '@urql/core';
-	import { get } from 'es-toolkit/compat';
+	import { get, set } from 'es-toolkit/compat';
 	import { onMount } from 'svelte';
 
 	/**
-	 * The idea for this search params querying system is:
-	 * 
-	 * 1) When the pagination params (first, last, before, after) change, the `$effect` below runs, reflect those changes to the address bar
-	 * 
-	 * 2) - When the nevigation event occurs (pagination, extra filter change, F5 reload page), the `QyeryParamsStore` will also change.
-	 * 		We listen on those changes, to update pagination, extra filter fields of the variables.
-	 * 		The $effect will run again also, but if the pagination params does not differ from of the address bar, it will stop early and not cause infinite running.
-	 * 		- Also within this listener, we parse filter state for the filtering button, so the filter panel has the right state to display, even after F5 reload.
-	 * 
-	 * 3) Each parent components/pages that use this component, should perform setting extra filter fields to the variables themself. Since there is no common pattern for 
+	 * 1) Each parent components/pages that use this component, should perform setting extra filter fields to the variables themself. Since there is no common pattern for
 	 * 		auto update them within this component.
 	 */
 
@@ -71,9 +62,10 @@
 		await goto(`${page.url.pathname}?${page.url.searchParams.toString()}`, { keepFocus: true });
 	};
 
-	// listener for pagination params only
+	// 1) When the PAGINATION params (first, last, before, after, order_by_field, order_direction) change, this `$effect` runs, reflect those changes to the address bar.
+	// <QueryParamsStore> will also update, and trigger the listener that under this $effect
 	$effect(() => {
-		console.log('------------------')
+		// NOTE: we use `!=` instead of `!==` to compare the values here, since there are null and undefined values and the fact that <null == undefined and 3 == '3'> :))
 		const pageSortField = page.url.searchParams.get(SearchParamKey.ORDER_BY_FIELD);
 		const pageSortDirection = page.url.searchParams.get(SearchParamKey.ORDER_DIRECTION);
 		const variableSortField = variables.sortBy?.field;
@@ -81,7 +73,7 @@
 
 		let shouldNavigate = false;
 
-		if (variableSortField !== pageSortField || variableSortDirection !== pageSortDirection) {
+		if (variableSortField != pageSortField || variableSortDirection != pageSortDirection) {
 			if (!!variableSortField)
 				page.url.searchParams.set(SearchParamKey.ORDER_BY_FIELD, variableSortField);
 			else page.url.searchParams.delete(SearchParamKey.ORDER_BY_FIELD);
@@ -98,7 +90,7 @@
 		const variableFirst = variables.first;
 		const variableAfter = variables.after;
 
-		if (variableFirst !== pageFirst || variableAfter !== pageAfter) {
+		if (variableFirst != pageFirst || variableAfter != pageAfter) {
 			if (!!variableFirst && variableFirst > 0) {
 				page.url.searchParams.set(SearchParamKey.FIRST, String(variableFirst));
 				page.url.searchParams.delete(SearchParamKey.LAST);
@@ -114,7 +106,7 @@
 		const pageLast = page.url.searchParams.get(SearchParamKey.LAST);
 		const pageBefore = page.url.searchParams.get(SearchParamKey.BEFORE);
 
-		if (variableLast !== pageLast || variableBefore !== pageBefore) {
+		if (variableLast != pageLast || variableBefore != pageBefore) {
 			if (!!variableLast && variableLast > 0) {
 				page.url.searchParams.set(SearchParamKey.LAST, String(variableLast));
 				page.url.searchParams.delete(SearchParamKey.FIRST);
@@ -127,16 +119,20 @@
 		if (shouldNavigate) goto(`${page.url.pathname}?${page.url.searchParams.toString()}`);
 	});
 
-	// listener for extra filters other than pagination only
+	/**
+	 * 2) - When the nevigation event occurs (pagination, extra filters change, F5 reload page), the `QyeryParamsStore` will also change.
+	 * 		We listen on those changes, to update pagination, extra filter fields of the variables.
+	 * 		The $effect will run again also, BUT if the pagination params does not differ from of the address bar, it will stop early and not cause infinite running.
+	 * 		- Also within this listener, we parse filter state for the filtering button, so the filter panel has the right state to display, even after F5 reload.
+	 */
 	onMount(() =>
 		QyeryParamsStore.subscribe((params) => {
 			if (!params) return;
 
 			scrollTo({ top: 0, behavior: 'smooth' });
 
-			// delete those fields to prevent the callback `variablePatching` unexpectedly updating those fields of variables.
 			// which triggers running the $effect above infinitely.
-			const newVariables = { ...variables };
+			const newVariables = {} as Var;
 			const newFilters = {} as FilterConditions<T>;
 
 			for (const key in params) {
@@ -148,12 +144,16 @@
 					newVariables.before = params[SearchParamKey.BEFORE].value as string;
 				else if (params[SearchParamKey.AFTER])
 					newVariables.after = params[SearchParamKey.AFTER].value as string;
-				else if (SearchParamKey.ORDER_BY_FIELD === key && newVariables['sortBy']) {
-					newVariables.sortBy.field = params[SearchParamKey.ORDER_BY_FIELD].value as string;
+				else if (SearchParamKey.ORDER_BY_FIELD === key) {
+					set(newVariables, 'sortBy.field', params[SearchParamKey.ORDER_BY_FIELD].value as string);
 					if (params[SearchParamKey.ORDER_DIRECTION])
-						newVariables.sortBy.direction = (
-							params[SearchParamKey.ORDER_DIRECTION].value as string
-						).toUpperCase() as OrderDirection;
+						set(
+							newVariables,
+							'sortBy.direction',
+							(
+								params[SearchParamKey.ORDER_DIRECTION].value as string
+							).toUpperCase() as OrderDirection,
+						);
 				} else if (FILTER_MAP[key as keyof T]) {
 					newFilters[key as keyof T] = params[key];
 				}

@@ -1,3 +1,9 @@
-import Comp from './com.svelte';
+import { set } from "es-toolkit/compat";
 
-export type ComType = typeof Comp;
+
+const a = {};
+
+set(a, 'b.c', 1)
+
+console.log(a)
+
