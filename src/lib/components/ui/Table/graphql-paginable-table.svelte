@@ -30,7 +30,7 @@
 		dragEffectType?: 'swap-position' | 'move-position';
 		onDragEnd?: (dragIndex: number, dragItem: T, dropIndex: number, dropItem: T) => void;
 		/**
-		 * if true, then the query will be re-executed when variable changes. Default to `true`
+		 * if true, then the query will be re-executed when variable changes. Default to `false`
 		 */
 		autoRefetchOnVariableChange?: boolean;
 	} & Omit<
@@ -58,7 +58,7 @@
 		dragEffectType,
 		disabled,
 		class: className,
-		autoRefetchOnVariableChange = true,
+		autoRefetchOnVariableChange = false,
 	}: Props = $props();
 
 	if ((dragEffectType && !onDragEnd) || (!dragEffectType && onDragEnd))

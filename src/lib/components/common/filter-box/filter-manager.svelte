@@ -1,5 +1,5 @@
 <script lang="ts" generics="T, Var extends (AnyVariables & GraphqlPaginationArgs)">
-	import { afterNavigate, goto } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { tranFunc } from '$i18n';
 	import { FilterCog, Search } from '$lib/components/icons';
@@ -9,16 +9,27 @@
 	import type { GraphqlPaginationArgs } from '$lib/components/ui/Table';
 	import { OrderDirection } from '$lib/gql/graphql';
 	import { SearchParamKey } from '$lib/utils/consts';
-	import {
-		FILTER_COMPARE_RANGE_REGEX,
-		FILTER_KEY_VALUE_PAIR_REGEX,
-		FILTER_ONE_OF_RANGE_REGEX,
-		parseUrlSearchParams,
-	} from '$lib/utils/utils';
+	import { type SearchParamsType } from '$lib/utils/utils';
+	import { QyeryParamsStore } from '../query-params-lister.svelte';
 	import FilterContainer from './filter-container.svelte';
 	import type { FilterConditions, FilterProps } from './types';
 	import type { AnyVariables } from '@urql/core';
-	import { get, set, unset } from 'es-toolkit/compat';
+	import { get } from 'es-toolkit/compat';
+	import { onMount } from 'svelte';
+
+	/**
+	 * The idea for this search params querying system is:
+	 * 
+	 * 1) When the pagination params (first, last, before, after) change, the `$effect` below runs, reflect those changes to the address bar
+	 * 
+	 * 2) - When the nevigation event occurs (pagination, extra filter change, F5 reload page), the `QyeryParamsStore` will also change.
+	 * 		We listen on those changes, to update pagination, extra filter fields of the variables.
+	 * 		The $effect will run again also, but if the pagination params does not differ from of the address bar, it will stop early and not cause infinite running.
+	 * 		- Also within this listener, we parse filter state for the filtering button, so the filter panel has the right state to display, even after F5 reload.
+	 * 
+	 * 3) Each parent components/pages that use this component, should perform setting extra filter fields to the variables themself. Since there is no common pattern for 
+	 * 		auto update them within this component.
+	 */
 
 	type Props = {
 		/** if not provided, will not show filter button */
@@ -28,6 +39,8 @@
 		searchKey?: keyof Var | string;
 		forceReExecuteGraphqlQuery: boolean;
 		disabled?: boolean;
+		/** the parent component should handle update extra filters setting on the variables, on their own. Don't update pagination fields */
+		extraVariablesFiltersPatching?: (variables: Var, searchParams: SearchParamsType) => void;
 	};
 
 	let {
@@ -36,12 +49,8 @@
 		searchKey,
 		forceReExecuteGraphqlQuery = $bindable(false),
 		disabled,
+		extraVariablesFiltersPatching,
 	}: Props = $props();
-
-	// if (searchKey && !has(variables, searchKey))
-	// 	throw new Error(
-	// 		`invalid key provided "${String(searchKey)}" or you forget to initialize the path "${String(searchKey)}"" for your variable?`,
-	// 	);
 
 	let openFilterBox = $state(false);
 	let filters = $state.raw({} as FilterConditions<T>);
@@ -52,7 +61,7 @@
 			acc[cur.key] = cur;
 			return acc;
 		},
-		{} as Record<keyof T, FilterProps<T, Var>>,
+		{} as Record<keyof T, FilterProps<T>>,
 	);
 
 	const handleSearchValueChange = async (evt: Event) => {
@@ -62,190 +71,102 @@
 		await goto(`${page.url.pathname}?${page.url.searchParams.toString()}`, { keepFocus: true });
 	};
 
-	// listener for pagination, sorting changes
-	// $effect(() => {
-	// 	const pageSortField = page.url.searchParams.get(SearchParamKey.ORDER_BY_FIELD);
-	// 	const pageSortDirection = page.url.searchParams.get(SearchParamKey.ORDER_DIRECTION);
-	// 	const pageFirst = page.url.searchParams.get(SearchParamKey.FIRST);
-	// 	const pageLast = page.url.searchParams.get(SearchParamKey.LAST);
-	// 	const pageAfter = page.url.searchParams.get(SearchParamKey.AFTER);
-	// 	const pageBefore = page.url.searchParams.get(SearchParamKey.BEFORE);
+	// listener for pagination params only
+	$effect(() => {
+		console.log('------------------')
+		const pageSortField = page.url.searchParams.get(SearchParamKey.ORDER_BY_FIELD);
+		const pageSortDirection = page.url.searchParams.get(SearchParamKey.ORDER_DIRECTION);
+		const variableSortField = variables.sortBy?.field;
+		const variableSortDirection = variables.sortBy?.direction;
 
-	// 	const variableSortField = variables.sortBy?.field;
-	// 	const variableSortDirection = variables.sortBy?.direction || OrderDirection.Asc;
-	// 	const variableFirst = variables.first;
-	// 	const variableLast = variables.last;
-	// 	const variableAfter = variables.after;
-	// 	const variableBefore = variables.before;
+		let shouldNavigate = false;
 
-	// 	let shouldNavigate = false;
+		if (variableSortField !== pageSortField || variableSortDirection !== pageSortDirection) {
+			if (!!variableSortField)
+				page.url.searchParams.set(SearchParamKey.ORDER_BY_FIELD, variableSortField);
+			else page.url.searchParams.delete(SearchParamKey.ORDER_BY_FIELD);
 
-	// 	if (typeof variableSortField === 'string') {
-	// 		if (pageSortField !== variableSortField || pageSortDirection !== variableSortDirection) {
-	// 			page.url.searchParams.set(SearchParamKey.ORDER_BY_FIELD, variableSortField);
-	// 			page.url.searchParams.set(SearchParamKey.ORDER_DIRECTION, variableSortDirection);
-	// 			shouldNavigate = true;
-	// 		}
-	// 	}
+			if (!!variableSortDirection)
+				page.url.searchParams.set(SearchParamKey.ORDER_DIRECTION, variableSortDirection);
+			else page.url.searchParams.delete(SearchParamKey.ORDER_DIRECTION);
 
-	// 	if (pageFirst != variableFirst || pageAfter != variableAfter) {
-	// 		page.url.searchParams.set(SearchParamKey.FIRST, String(variableFirst));
-	// 		page.url.searchParams.delete(SearchParamKey.LAST);
-	// 		page.url.searchParams.delete(SearchParamKey.BEFORE);
-	// 		if (variableAfter) page.url.searchParams.set(SearchParamKey.AFTER, variableAfter);
-	// 		shouldNavigate = true;
-	// 	}
-
-	// 	if (pageLast != variableLast || pageBefore != variableBefore) {
-	// 		page.url.searchParams.set(SearchParamKey.LAST, String(variableLast));
-	// 		page.url.searchParams.delete(SearchParamKey.FIRST);
-	// 		page.url.searchParams.delete(SearchParamKey.AFTER);
-	// 		if (variableBefore) page.url.searchParams.set(SearchParamKey.BEFORE, variableBefore);
-	// 		shouldNavigate = true;
-	// 	}
-
-	// 	if (shouldNavigate) {
-	// 		goto(`${page.url.pathname}?${page.url.searchParams.toString()}`);
-	// 	}
-	// });
-
-	// listener for variables changed have been applied on the URL bar
-	afterNavigate(async () => {
-		scrollTo({ top: 0, behavior: 'smooth' });
-
-		const queryParams = parseUrlSearchParams(page.url);
-		const newVariables = { ...variables };
-		const newFilters = {} as FilterConditions<T>;
-
-		for (const key in queryParams) {
-			switch (key) {
-				case SearchParamKey.FIRST:
-					if (typeof queryParams[SearchParamKey.FIRST] === 'number') {
-						newVariables.first = queryParams[SearchParamKey.FIRST];
-						newVariables.last = null;
-						newVariables.before = null;
-					}
-					continue;
-				case SearchParamKey.AFTER:
-					if (typeof queryParams[SearchParamKey.AFTER] === 'string') {
-						newVariables.after = queryParams[SearchParamKey.AFTER];
-					}
-					continue;
-				case SearchParamKey.LAST:
-					if (typeof queryParams[SearchParamKey.LAST] === 'number') {
-						newVariables.last = queryParams[SearchParamKey.LAST];
-						newVariables.first = null;
-						newVariables.after = null;
-					}
-					continue;
-				case SearchParamKey.BEFORE:
-					if (typeof queryParams[SearchParamKey.BEFORE] === 'string') {
-						newVariables.before = queryParams[SearchParamKey.BEFORE];
-					}
-					continue;
-				case SearchParamKey.ORDER_BY_FIELD:
-					if (typeof queryParams[SearchParamKey.ORDER_BY_FIELD] === 'string') {
-						newVariables.sortBy = {
-							field: queryParams[SearchParamKey.ORDER_BY_FIELD],
-							direction:
-								(queryParams[SearchParamKey.ORDER_DIRECTION] as OrderDirection) ||
-								OrderDirection.Asc,
-						};
-					}
-					continue;
-				case SearchParamKey.ORDER_DIRECTION:
-					continue;
-				case SearchParamKey.SEARCH_QUERY:
-					if (searchKey) {
-						if (queryParams[SearchParamKey.SEARCH_QUERY])
-							set(newVariables, searchKey, queryParams[SearchParamKey.SEARCH_QUERY]);
-						else unset(newVariables, searchKey);
-					}
-					continue;
-
-				default:
-					// all the custom filter cases:
-					if (!FILTER_MAP[key as keyof T]) continue;
-					const operations = FILTER_MAP[key as keyof T].operations;
-
-					const value = queryParams[key];
-
-					if (
-						typeof value === 'number' ||
-						typeof value === 'boolean' ||
-						(!FILTER_COMPARE_RANGE_REGEX.test(value) &&
-							!FILTER_KEY_VALUE_PAIR_REGEX.test(value) &&
-							!FILTER_ONE_OF_RANGE_REGEX.test(value))
-					) {
-						newFilters[key as keyof T] = {
-							operator: 'eq',
-							value,
-						};
-						continue;
-					}
-
-					// comparison filter
-					const rangeMatches = FILTER_COMPARE_RANGE_REGEX.exec(value);
-					if (rangeMatches) {
-						const gte = rangeMatches[1].trim();
-						const lte = rangeMatches[2].trim();
-
-						if (gte || lte) {
-							if (gte !== 'null' && lte !== 'null') {
-								newFilters[key as keyof T] = {
-									operator: 'range',
-									value: [gte, lte],
-								};
-							} else if (gte !== 'null') {
-								newFilters[key as keyof T] = {
-									operator: 'gte',
-									value: gte,
-								};
-							} else if (lte !== 'null') {
-								newFilters[key as keyof T] = {
-									operator: 'lte',
-									value: lte,
-								};
-							}
-						}
-						continue;
-					}
-
-					// one of
-					const oneOfMatches = FILTER_ONE_OF_RANGE_REGEX.exec(value);
-					if (oneOfMatches) {
-						const values = JSON.parse(value);
-						const operation = operations.find((opt) => opt.operator === 'oneOf');
-						if (operation && operation.setBackValue) operation.setBackValue(newVariables, values);
-
-						newFilters[key as keyof T] = {
-							operator: 'oneOf',
-							value: values,
-						};
-						continue;
-					}
-
-					// metadata filter
-					const metadataMatches = FILTER_KEY_VALUE_PAIR_REGEX.exec(value);
-					if (metadataMatches) {
-						const key = metadataMatches[1].trim();
-						const value = metadataMatches[2].trim();
-						const operation = operations.find((op) => op.operator === 'eq');
-						if (operation && operation.setBackValue)
-							operation.setBackValue(newVariables, [{ key, value }]);
-
-						newFilters[key as keyof T] = {
-							operator: 'eq',
-							value: [key, value],
-						};
-					}
-			}
+			shouldNavigate = true;
 		}
 
-		filters = newFilters;
-		variables = newVariables;
-		forceReExecuteGraphqlQuery = true;
+		const pageFirst = page.url.searchParams.get(SearchParamKey.FIRST);
+		const pageAfter = page.url.searchParams.get(SearchParamKey.AFTER);
+		const variableFirst = variables.first;
+		const variableAfter = variables.after;
+
+		if (variableFirst !== pageFirst || variableAfter !== pageAfter) {
+			if (!!variableFirst && variableFirst > 0) {
+				page.url.searchParams.set(SearchParamKey.FIRST, String(variableFirst));
+				page.url.searchParams.delete(SearchParamKey.LAST);
+				page.url.searchParams.delete(SearchParamKey.BEFORE);
+			}
+			if (!!variableAfter) page.url.searchParams.set(SearchParamKey.AFTER, variableAfter);
+
+			shouldNavigate = true;
+		}
+
+		const variableLast = variables.last;
+		const variableBefore = variables.before;
+		const pageLast = page.url.searchParams.get(SearchParamKey.LAST);
+		const pageBefore = page.url.searchParams.get(SearchParamKey.BEFORE);
+
+		if (variableLast !== pageLast || variableBefore !== pageBefore) {
+			if (!!variableLast && variableLast > 0) {
+				page.url.searchParams.set(SearchParamKey.LAST, String(variableLast));
+				page.url.searchParams.delete(SearchParamKey.FIRST);
+				page.url.searchParams.delete(SearchParamKey.AFTER);
+			}
+			if (!!variableBefore) page.url.searchParams.set(SearchParamKey.BEFORE, variableBefore);
+			shouldNavigate = true;
+		}
+
+		if (shouldNavigate) goto(`${page.url.pathname}?${page.url.searchParams.toString()}`);
 	});
+
+	// listener for extra filters other than pagination only
+	onMount(() =>
+		QyeryParamsStore.subscribe((params) => {
+			if (!params) return;
+
+			scrollTo({ top: 0, behavior: 'smooth' });
+
+			// delete those fields to prevent the callback `variablePatching` unexpectedly updating those fields of variables.
+			// which triggers running the $effect above infinitely.
+			const newVariables = { ...variables };
+			const newFilters = {} as FilterConditions<T>;
+
+			for (const key in params) {
+				if (SearchParamKey.FIRST === key)
+					newVariables.first = params[SearchParamKey.FIRST].value as number;
+				else if (SearchParamKey.LAST === key)
+					newVariables.last = params[SearchParamKey.LAST].value as number;
+				else if (SearchParamKey.BEFORE === key)
+					newVariables.before = params[SearchParamKey.BEFORE].value as string;
+				else if (params[SearchParamKey.AFTER])
+					newVariables.after = params[SearchParamKey.AFTER].value as string;
+				else if (SearchParamKey.ORDER_BY_FIELD === key && newVariables['sortBy']) {
+					newVariables.sortBy.field = params[SearchParamKey.ORDER_BY_FIELD].value as string;
+					if (params[SearchParamKey.ORDER_DIRECTION])
+						newVariables.sortBy.direction = (
+							params[SearchParamKey.ORDER_DIRECTION].value as string
+						).toUpperCase() as OrderDirection;
+				} else if (FILTER_MAP[key as keyof T]) {
+					newFilters[key as keyof T] = params[key];
+				}
+			}
+
+			// perform inner update extra filter state for variables
+			if (extraVariablesFiltersPatching) extraVariablesFiltersPatching(newVariables, params);
+
+			variables = newVariables;
+			filters = newFilters;
+			forceReExecuteGraphqlQuery = true;
+		}),
+	);
 </script>
 
 <div class="flex items-center gap-2">

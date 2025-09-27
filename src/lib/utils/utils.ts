@@ -1,6 +1,6 @@
 import { goto } from '$app/navigation';
 import { page } from '$app/state';
-import type { FilterConditions } from '$lib/components/common/filter-box';
+import type { FilterConditions, FilterItemValue, FilterOperator } from '$lib/components/common/filter-box';
 import type { BadgeProps } from '$lib/components/ui/Badge/types';
 import {
 	type Address,
@@ -248,11 +248,16 @@ export const parseBoolean = (expr: string) => {
 	return expr.toLowerCase() === 'true';
 };
 
+export type SearchParamsType = Record<string, {
+	operator: FilterOperator;
+	value: FilterItemValue;
+}>;
+
 /**
  * parse search query params, and auto performs type casting when the query param value is boolean or number
  */
 export const parseUrlSearchParams = (url: URL) => {
-	const result: Record<string, number | string | boolean | Record<string, unknown>> = {};
+	const result: SearchParamsType = {};
 
 	for (const key of url.searchParams.keys()) {
 		if (!key) continue;
@@ -261,52 +266,79 @@ export const parseUrlSearchParams = (url: URL) => {
 		if (value === undefined || value === null) continue;
 
 		if (NUMBER_REGEX.test(value)) {
-			result[key] = Number(value);
+			result[key] = {
+				operator: 'eq',
+				value: Number(value),
+			};
 		} else if (BOOL_REGEX.test(value.toLowerCase())) {
-			result[key] = parseBoolean(value);
-		} else {
-			const rangeMatches = FILTER_COMPARE_RANGE_REGEX.exec(value);
-			if (rangeMatches) {
-				const gte = rangeMatches[1].trim();
-				const lte = rangeMatches[2].trim();
-
-				const data: Record<string, unknown> = {};
-				if (gte && gte !== 'null') {
-					data.gte = NUMBER_REGEX.test(gte) ? Number(gte) : gte;
-				}
-				if (lte && lte !== 'null') {
-					data.lte = NUMBER_REGEX.test(lte) ? Number(lte) : lte;
-				}
-				if (Object.keys(data).length) result[key] = data;
-				continue;
+			result[key] = {
+				operator: 'eq',
+				value: parseBoolean(value),
 			}
-
-			const pairMatches = FILTER_KEY_VALUE_PAIR_REGEX.exec(value);
-			if (pairMatches) {
-				const keyValue = pairMatches[1].trim();
-				const value = pairMatches[2].trim();
-
-				result[key] = {
-					key: keyValue,
-					value,
-				}
-				continue;
-			}
-
-			const oneOfMatches = FILTER_ONE_OF_RANGE_REGEX.exec(value);
-			if (oneOfMatches) {
-				try {
-					result[key] = JSON.parse(value);
-				} catch { }
-				continue;
-			}
-
-			result[key] = value;
 		}
+		const rangeMatches = FILTER_COMPARE_RANGE_REGEX.exec(value);
+		if (rangeMatches) {
+			const gte = rangeMatches[1].trim();
+			const lte = rangeMatches[2].trim();
+
+			const value: Record<string, unknown> = {};
+			if (gte && gte !== 'null') {
+				value.gte = NUMBER_REGEX.test(gte) ? Number(gte) : gte;
+			}
+			if (lte && lte !== 'null') {
+				value.lte = NUMBER_REGEX.test(lte) ? Number(lte) : lte;
+			}
+
+			if (lte && lte !== 'null' && gte && gte !== 'null')
+				result[key] = {
+					operator: 'range',
+					value: [ gte, lte ],
+				};
+			else if (lte && lte !== 'null')
+				result[key] = {
+					operator: 'lte',
+					value: lte,
+				};
+			else if (gte && gte !== 'null')
+				result[key] = {
+					operator: 'gte',
+					value: gte,
+				};
+
+			continue;
+		};
+
+		const pairMatches = FILTER_KEY_VALUE_PAIR_REGEX.exec(value);
+		if (pairMatches) {
+			const keyValue = pairMatches[1].trim();
+			const value = pairMatches[2].trim();
+
+			result[key] = {
+				operator: 'eq',
+				value: [keyValue, value],
+			};
+			continue;
+		}
+
+		const oneOfMatches = FILTER_ONE_OF_RANGE_REGEX.exec(value);
+		if (oneOfMatches) {
+			try {
+				result[key] = {
+					operator: 'oneOf',
+					value: JSON.parse(value),
+				};
+			} catch { }
+			continue;
+		}
+
+		result[key] = {
+			operator: 'eq',
+			value: value
+		};
 	}
 
 	return result;
-};
+}
 
 /** This function converts filter conditions to URL search params. The reversed process of `parseUrlSearchParams`
  * NOTE: only used in client side since it calls `goto` function
@@ -315,35 +347,33 @@ export const constructUrlSearchParamsAndNavigate = async <T>(activeFilters: Filt
 	const keys = Object.keys(activeFilters);
 	if (!keys.length) return;
 
-	const params = page.url.searchParams; // add filter conditions to existing params
-
 	for (const key of keys) {
 		const filterOpt = activeFilters[key as keyof T];
 		if (!filterOpt) continue;
 
 		if (filterOpt.operator === 'lte') {
-			params.set(key, `<null,${filterOpt.value}>`);
+			page.url.searchParams.set(key, `<null,${filterOpt.value}>`);
 		} else if (filterOpt.operator === 'gte') {
-			params.set(key, `<${filterOpt.value},null>`);
+			page.url.searchParams.set(key, `<${filterOpt.value},null>`);
 		} else if (filterOpt.operator === 'oneOf') {
-			params.set(key, JSON.stringify(filterOpt.value));
+			page.url.searchParams.set(key, JSON.stringify(filterOpt.value));
 		} else if (filterOpt.operator === 'range' && Array.isArray(filterOpt.value)) {
-			params.set(key, `<${filterOpt.value[0]},${filterOpt.value[1]}>`);
+			page.url.searchParams.set(key, `<${filterOpt.value[0]},${filterOpt.value[1]}>`);
 		} else if (filterOpt.operator === 'eq') {
 			/**
 			 * There are a few cases for `eq` operator:
 			 * 1) equal to a pair of `key-value` record,
 			 */
 			if (Array.isArray(filterOpt.value)) {
-				params.set(key, `{${filterOpt.value[0]},${filterOpt.value[1]}}`);
+				page.url.searchParams.set(key, `{${filterOpt.value[0]},${filterOpt.value[1]}}`);
 			} else {
 				// 2) equal to primitives, E.g: slug='hello-world';
-				params.set(key, `${filterOpt.value}`);
+				page.url.searchParams.set(key, `${filterOpt.value}`);
 			}
 		}
 	}
 
-	await goto(`${page.url.pathname}?${params.toString()}`);
+	await goto(`${page.url.pathname}?${page.url.searchParams.toString()}`);
 };
 
 export const clamp = (value: number, min: number, max: number): number => {
