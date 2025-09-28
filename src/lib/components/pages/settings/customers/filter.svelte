@@ -3,9 +3,17 @@
 	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box/types';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Input } from '$lib/components/ui/Input';
-	import type { CustomerFilterInput, QueryCustomersArgs } from '$lib/gql/graphql';
+	import type {
+		CustomerFilterInput,
+		DateRangeInput,
+		IntRangeInput,
+		MetadataFilter,
+		MetadataInput,
+		QueryCustomersArgs,
+	} from '$lib/gql/graphql';
 	import { BASIC_DATE_FORMAT } from '$lib/utils/consts';
 	import dayjs from 'dayjs';
+	import { set } from 'es-toolkit/compat';
 
 	type Props = {
 		variables: QueryCustomersArgs;
@@ -149,4 +157,44 @@
 	bind:forceReExecuteGraphqlQuery
 	bind:variables
 	searchKey={'filter.search' as keyof QueryCustomersArgs}
+	extraVariablesFiltersPatching={(variables, searchParams) => {
+		if (searchParams.dateJoined) {
+			const value: DateRangeInput = {};
+			if (searchParams.dateJoined.operator === 'range') {
+				value.gte = (searchParams.dateJoined.value as string[])[0];
+				value.lte = (searchParams.dateJoined.value as string[])[1];
+			} else if (['lte', 'gte'].includes(searchParams.dateJoined.operator)) {
+				value[searchParams.dateJoined.operator as keyof DateRangeInput] = searchParams.dateJoined
+					.value as string;
+			}
+			set(variables, 'filter.dateJoined', value);
+		}
+
+		if (searchParams.numberOfOrders) {
+			const value: IntRangeInput = {};
+			if (searchParams.numberOfOrders.operator === 'eq') {
+				value.gte = searchParams.numberOfOrders.value as number;
+				value.lte = searchParams.numberOfOrders.value as number;
+			} else if (['lte', 'gte'].includes(searchParams.numberOfOrders.operator)) {
+				value[searchParams.numberOfOrders.operator as keyof IntRangeInput] = searchParams
+					.numberOfOrders.value as number;
+			} else if (searchParams.numberOfOrders.operator === 'range') {
+				value.gte = (searchParams.numberOfOrders.value as number[])[0];
+				value.lte = (searchParams.numberOfOrders.value as number[])[1];
+			}
+			set(variables, 'filter.numberOfOrders', value);
+		}
+
+		if (searchParams.metadata) {
+			if (searchParams.metadata.operator === 'eq') {
+				const value: MetadataFilter[] = [{
+					key: (searchParams.metadata.value as string[])[0],
+					value: (searchParams.metadata.value as string[])[1],
+				}];
+				set(variables, 'filter.metadata', value);
+			}
+		}
+
+		return variables;
+	}}
 />

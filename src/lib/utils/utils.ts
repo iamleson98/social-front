@@ -235,7 +235,7 @@ export const parseBoolean = (expr: string) => {
 	return expr.toLowerCase() === 'true';
 };
 
-export type SearchParamsType = Record<string, {
+export type SearchParamsType<T> = Record<keyof T, {
 	operator: FilterOperator;
 	value: FilterItemValue;
 }>;
@@ -243,8 +243,8 @@ export type SearchParamsType = Record<string, {
 /**
  * parse search query params, and auto performs type casting when the query param value is boolean or number
  */
-export const parseUrlSearchParams = (url: URL) => {
-	const result: SearchParamsType = {};
+export const parseUrlSearchParams = <T>(url: URL) => {
+	const result = {} as SearchParamsType<T>;
 
 	for (const key of url.searchParams.keys()) {
 		if (!key) continue;
@@ -253,13 +253,13 @@ export const parseUrlSearchParams = (url: URL) => {
 		if (value === undefined || value === null) continue;
 
 		if (NUMBER_REGEX.test(value)) {
-			result[key] = {
+			result[key as keyof T] = {
 				operator: 'eq',
 				value: Number(value),
 			};
 			continue;
 		} else if (BOOL_REGEX.test(value.toLowerCase())) {
-			result[key] = {
+			result[key as keyof T] = {
 				operator: 'eq',
 				value: parseBoolean(value),
 			};
@@ -271,26 +271,18 @@ export const parseUrlSearchParams = (url: URL) => {
 			const gte = rangeMatches[1].trim();
 			const lte = rangeMatches[2].trim();
 
-			const value: Record<string, unknown> = {};
-			if (gte && gte !== 'null') {
-				value.gte = NUMBER_REGEX.test(gte) ? Number(gte) : gte;
-			}
-			if (lte && lte !== 'null') {
-				value.lte = NUMBER_REGEX.test(lte) ? Number(lte) : lte;
-			}
-
 			if (lte && lte !== 'null' && gte && gte !== 'null')
-				result[key] = {
+				result[key as keyof T] = {
 					operator: 'range',
 					value: [ gte, lte ],
 				};
 			else if (lte && lte !== 'null')
-				result[key] = {
+				result[key as keyof T] = {
 					operator: 'lte',
 					value: lte,
 				};
 			else if (gte && gte !== 'null')
-				result[key] = {
+				result[key as keyof T] = {
 					operator: 'gte',
 					value: gte,
 				};
@@ -303,7 +295,7 @@ export const parseUrlSearchParams = (url: URL) => {
 			const keyValue = pairMatches[1].trim();
 			const value = pairMatches[2].trim();
 
-			result[key] = {
+			result[key as keyof T] = {
 				operator: 'eq',
 				value: [keyValue, value],
 			};
@@ -313,7 +305,7 @@ export const parseUrlSearchParams = (url: URL) => {
 		const oneOfMatches = FILTER_ONE_OF_RANGE_REGEX.exec(value);
 		if (oneOfMatches) {
 			try {
-				result[key] = {
+				result[key as keyof T] = {
 					operator: 'oneOf',
 					value: JSON.parse(value),
 				};
@@ -321,7 +313,7 @@ export const parseUrlSearchParams = (url: URL) => {
 			continue;
 		}
 
-		result[key] = {
+		result[key as keyof T] = {
 			operator: 'eq',
 			value: value
 		};

@@ -7,7 +7,6 @@
 	import { Input } from '$lib/components/ui/Input';
 	import { type DropdownTriggerInterface, Popover } from '$lib/components/ui/Popover';
 	import type { GraphqlPaginationArgs } from '$lib/components/ui/Table';
-	import { OrderDirection } from '$lib/gql/graphql';
 	import { SearchParamKey } from '$lib/utils/consts';
 	import { parseUrlSearchParams, type SearchParamsType } from '$lib/utils/utils';
 	import FilterContainer from './filter-container.svelte';
@@ -30,7 +29,7 @@
 		forceReExecuteGraphqlQuery: boolean;
 		disabled?: boolean;
 		/** the parent component should handle update extra filters setting on the variables, on their own. Don't update pagination fields */
-		extraVariablesFiltersPatching?: (variables: Var, searchParams: SearchParamsType) => Var;
+		extraVariablesFiltersPatching?: (variables: Var, searchParams: SearchParamsType<T>) => Var;
 	};
 
 	let {
@@ -46,14 +45,6 @@
 	let filters = $state.raw({} as FilterConditions<T>);
 	let filtersCount = $derived(Object.keys(filters).length);
 	let isInitialLoad = $state(true);
-
-	// const FILTER_MAP = filterOptions.reduce(
-	// 	(acc, cur) => {
-	// 		acc[cur.key] = cur;
-	// 		return acc;
-	// 	},
-	// 	{} as Record<keyof T, FilterProps<T>>,
-	// );
 
 	const handleSearchValueChange = async (evt: Event) => {
 		const value = (evt.target as HTMLInputElement).value.trim();
@@ -129,7 +120,7 @@
 	 * 		- Also within this listener, we parse filter state for the filtering button, so the filter panel has the right state to display, even after F5 reload.
 	 */
 	afterNavigate(async () => {
-		const params = parseUrlSearchParams(page.url);
+		const params = parseUrlSearchParams<T>(page.url);
 		if (!params || !Object.keys(params).length) {
 			isInitialLoad = false;
 			return;
@@ -142,27 +133,21 @@
 		const newFilters = {} as FilterConditions<T>;
 
 		for (const key in params) {
-			if (SearchParamKey.FIRST === key) {
-				newVariables.first = params[SearchParamKey.FIRST].value as number;
-			} else if (SearchParamKey.LAST === key) {
-				newVariables.last = params[SearchParamKey.LAST].value as number;
-			} else if (SearchParamKey.BEFORE === key) {
-				newVariables.before = params[SearchParamKey.BEFORE].value as string;
-			} else if (SearchParamKey.AFTER === key) {
-				newVariables.after = params[SearchParamKey.AFTER].value as string;
+			if (
+				[
+					SearchParamKey.FIRST,
+					SearchParamKey.LAST,
+					SearchParamKey.BEFORE,
+					SearchParamKey.AFTER,
+				].includes(key as SearchParamKey)
+			) {
+				newVariables[key] = params[key].value as any;
 			} else if (SearchParamKey.ORDER_BY_FIELD === key) {
-				set(newVariables, 'sortBy.field', params[SearchParamKey.ORDER_BY_FIELD].value as string);
-				if (params[SearchParamKey.ORDER_DIRECTION]) {
-					set(
-						newVariables,
-						'sortBy.direction',
-						(
-							params[SearchParamKey.ORDER_DIRECTION].value as string
-						).toUpperCase() as OrderDirection,
-					);
-				}
-			} else if (filterOptions[key as keyof T]) {
-				newFilters[key as keyof T] = params[key];
+				set(newVariables, 'sortBy.field', params[key].value);
+			} else if (SearchParamKey.ORDER_DIRECTION === key) {
+				set(newVariables, 'sortBy.direction', params[key].value);
+			} else if (filterOptions[key]) {
+				newFilters[key] = params[key];
 			}
 		}
 

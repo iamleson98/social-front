@@ -16,14 +16,6 @@
 
 	let { filterOptions = {}, open = $bindable(), filters, disabled }: Props = $props();
 
-	// const FILTER_MAP = filterOptions.reduce(
-	// 	(acc, cur) => {
-	// 		acc[cur.key] = cur;
-	// 		return acc;
-	// 	},
-	// 	{} as Record<keyof T, FilterProps<T>>,
-	// );
-
 	let activeFilters = $state.raw(filters);
 
 	let availableFilters = $derived(
