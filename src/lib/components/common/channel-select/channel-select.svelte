@@ -12,7 +12,7 @@
 		onchange,
 		...rest
 	}: Omit<SelectProps, 'options' | 'onchange'> & {
-		/** thr returned values should be channel ids or channel slugs */
+		/** thr returned values should be channel ids or channel slugs, default to `slug` */
 		valueType?: 'id' | 'slug';
 		onchange?: (value?: Channel | Channel[]) => void;
 	} = $props();
@@ -25,16 +25,14 @@
 	const innerOnchange = () => {
 		if (!value) onchange?.();
 		else if (rest.multiple) {
-			const channels = $channelStore.data?.channels?.filter((chan) => {
-				if (valueType === 'id') return value.includes(chan.id);
-				return value.includes(chan.slug);
-			});
+			const channels = $channelStore.data?.channels?.filter((chan) =>
+				value.includes(valueType === 'id' ? chan.id : chan.slug),
+			);
 			onchange?.(channels);
 		} else {
-			const channel = $channelStore.data?.channels?.find((chan) => {
-				if (valueType === 'id') return chan.id === value;
-				return chan.slug === value;
-			});
+			const channel = $channelStore.data?.channels?.find((chan) =>
+				value.includes(valueType === 'id' ? chan.id : chan.slug),
+			);
 			onchange?.(channel);
 		}
 	};

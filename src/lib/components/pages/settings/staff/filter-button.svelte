@@ -11,6 +11,7 @@
 		type QueryStaffUsersArgs,
 		type StaffUserInput,
 	} from '$lib/gql/graphql';
+	import { set } from 'es-toolkit/compat';
 
 	type Props = {
 		variables: QueryStaffUsersArgs;
@@ -49,4 +50,10 @@
 	bind:variables
 	bind:forceReExecuteGraphqlQuery
 	searchKey="filter.search"
+	extraVariablesFiltersPatching={(variables, searchParams) => {
+		if (searchParams.status) {
+			set(variables, 'filter.status', searchParams.status.value);
+		}
+		return variables;
+	}}
 />

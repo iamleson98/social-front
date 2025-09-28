@@ -62,7 +62,8 @@
 	<ChannelSelect
 		value={initialValue as string}
 		size="xs"
-		onchange={(opt) => onValue((opt as Channel)?.id as FilterItemValue)}
+		valueType="slug"
+		onchange={(opt) => onValue((opt as Channel)?.slug as FilterItemValue)}
 	/>
 {/snippet}
 

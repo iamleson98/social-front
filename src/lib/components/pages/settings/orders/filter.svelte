@@ -194,7 +194,7 @@
 		resultKey="customers"
 		variableSearchQueryPath="filter.search"
 		placeholder="Select customer"
-		optionValueKey="id"
+		optionValueKey="email"
 		optionLabelKey="email"
 		size="xs"
 		value={initialValue}

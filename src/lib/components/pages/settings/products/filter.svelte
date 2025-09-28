@@ -225,8 +225,9 @@
 {#snippet channelComp({ onValue, initialValue = '' }: FilterComponentType)}
 	<ChannelSelect
 		size="xs"
+		valueType="slug"
 		value={initialValue as string}
-		onchange={(opt) => onValue((opt as Channel)?.id as FilterItemValue)}
+		onchange={(opt) => onValue((opt as Channel)?.slug as FilterItemValue)}
 	/>
 {/snippet}
 

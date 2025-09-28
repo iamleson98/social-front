@@ -101,7 +101,7 @@
 				bind:ok={informationOk}
 				disabled={loading}
 			/>
-			<CustomerOrders id={user.id} disabled={loading} />
+			<CustomerOrders id={user.id} disabled={loading} email={user.email} />
 			<GeneralMetadataEditor
 				metadata={user.metadata}
 				privateMetadata={user.privateMetadata}

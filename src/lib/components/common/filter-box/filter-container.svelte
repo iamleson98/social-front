@@ -86,9 +86,9 @@
 		{#if Object.keys(activeFilters).length}
 			{#each Object.keys(activeFilters) as key, idx (idx)}
 				{@const filterOpt = activeFilters[key as keyof T]}
-				{@const disableDelBtn =
-					!!filterOptions[key as keyof T]?.mustPairWith &&
-					!!activeFilters[filterOptions[key as keyof T]!.mustPairWith!]}
+				{@const disableDeleleButton = Object.keys(activeFilters).some(
+					(item) => filterOptions[item as keyof T]?.mustPairWith === key,
+				)}
 				<div class="flex items-center gap-1 mt-1.5 justify-between">
 					<Select
 						options={availableFilters}
@@ -98,7 +98,7 @@
 						onchange={(vl) =>
 							handleFilterItemKeyChange(key as keyof T, (vl as SelectOption)?.value as keyof T)}
 						placeholder={$tranFunc('common.selectFilter')}
-						disabled={disableDelBtn || disabled}
+						disabled={disableDeleleButton || disabled}
 					/>
 
 					<div class="flex-4 flex items-center gap-1">
@@ -143,7 +143,7 @@
 							onclick={() =>
 								(activeFilters = omit(activeFilters, [key as keyof T]) as FilterConditions<T>)}
 							aria-label={$tranFunc('common.delFilter')}
-							disabled={disableDelBtn || disabled}
+							disabled={disableDeleleButton || disabled}
 						/>
 					</div>
 				</div>

@@ -15,11 +15,6 @@
 	import { get, set } from 'es-toolkit/compat';
 	import { untrack } from 'svelte';
 
-	/**
-	 * 1) Each parent components/pages that use this component, should perform setting extra filter fields to the variables themself. Since there is no common pattern for
-	 * 		auto update them within this component.
-	 */
-
 	type Props = {
 		/** if not provided, will not show filter button */
 		filterOptions?: FilterProps<T>;
