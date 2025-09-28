@@ -3,18 +3,24 @@ import type { Snippet } from 'svelte';
 export type FilterOperator = 'oneOf' | 'lte' | 'gte' | 'range' | 'eq';
 
 /** This type is used for extra filters other than paginations */
-export type FilterProps<T> = {
+// export type FilterProps<T> = {
+// 	label: string;
+// 	key: keyof T;
+// 	operations: Partial<Record<FilterOperator, Snippet<[FilterComponentType]>>>;
+// 	/**
+// 	 * In case this filter must be used with another filter
+// 	 */
+// 	mustPairWith?: keyof T;
+// };
+
+export type FilterProps<T> = Partial<Record<keyof T, {
 	label: string;
-	key: keyof T;
-	operations: {
-		operator: FilterOperator;
-		component: Snippet<[FilterComponentType]>;
-	}[];
+	operations: Partial<Record<FilterOperator, Snippet<[FilterComponentType]>>>;
 	/**
 	 * In case this filter must be used with another filter
 	 */
 	mustPairWith?: keyof T;
-};
+}>>
 
 export type FilterComponentType = {
 	onValue: FilterComponentCallback;

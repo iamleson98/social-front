@@ -2,7 +2,7 @@
 	import { SHOP_ORDERS_QUERY } from '$lib/api/admin/orders';
 	import { CUSTOMER_LIST_QUERY } from '$lib/api/admin/users';
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
-	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
+	import { FilterManager } from '$lib/components/common/filter-box';
 	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box/types';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
@@ -19,7 +19,6 @@
 	import { BASIC_DATE_FORMAT } from '$lib/utils/consts';
 	import { orderStatusBadgeClass, paymentStatusBadgeClass } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
-	import { set } from 'es-toolkit/compat';
 
 	type Props = {
 		variables: QueryOrdersArgs;
@@ -38,183 +37,100 @@
 		label: value.toLowerCase(),
 	}));
 
-	const FILTER_OPTIONS: FilterProps<OrderFilterInput>[] = [
-		{
+	const FilterOptions: FilterProps<OrderFilterInput> = {
+		ids: {
 			label: 'IDs',
-			key: 'ids',
-			operations: [
-				{
-					operator: 'oneOf',
-					component: orderIds,
-					setBackValue: (ent, value) => {
-						set(ent, 'filter.ids', value);
-					},
-				},
-			],
+			operations: {
+				oneOf: orderIds,
+			},
 		},
-		{
+		channels: {
 			label: 'Channels',
-			key: 'channels',
-			operations: [
-				{
-					operator: 'oneOf',
-					component: channels,
-				},
-			],
+			operations: {
+				oneOf: channels,
+			},
 		},
-		{
+		created: {
 			label: 'Creation date',
-			key: 'created',
-			operations: [
-				{
-					operator: 'lte',
-					component: creationDate,
-				},
-				{
-					operator: 'gte',
-					component: creationDate,
-				},
-				{
-					operator: 'range',
-					component: creationDateRange,
-				},
-			],
+			operations: {
+				lte: creationDate,
+				gte: creationDate,
+				range: creationDateRange,
+			},
 		},
-		{
+		updatedAt: {
 			label: 'Updated at',
-			key: 'updatedAt',
-			operations: [
-				{
-					operator: 'lte',
-					component: updatedAt,
-				},
-				{
-					operator: 'gte',
-					component: updatedAt,
-				},
-				{
-					operator: 'range',
-					component: updatedAtRange,
-				},
-			],
+			operations: {
+				lte: updatedAt,
+				gte: updatedAt,
+				range: updatedAtRange,
+			},
 		},
-		{
+		paymentStatus: {
 			label: 'Payment status',
-			key: 'paymentStatus',
-			operations: [
-				{
-					operator: 'eq',
-					component: paymentStatus,
-				},
-				{
-					operator: 'oneOf',
-					component: paymentStatuses,
-				},
-			],
+			operations: {
+				eq: paymentStatus,
+				oneOf: paymentStatuses,
+			},
 		},
-		{
+		status: {
 			label: 'Fulfillment status',
-			key: 'status',
-			operations: [
-				{
-					operator: 'eq',
-					component: fulfillmentStatus,
-				},
-				{
-					operator: 'oneOf',
-					component: fulfillmentStatuses,
-				},
-			],
+			operations: {
+				eq: fulfillmentStatus,
+				oneOf: fulfillmentStatuses,
+			},
 		},
-		{
+		isClickAndCollect: {
 			label: 'Click and collect',
-			key: 'isClickAndCollect',
-			operations: [
-				{
-					operator: 'eq',
-					component: yesNo,
-				},
-			],
+			operations: {
+				eq: yesNo,
+			},
 		},
-		{
+		isPreorder: {
 			label: 'Is preorder',
-			key: 'isPreorder',
-			operations: [
-				{
-					operator: 'eq',
-					component: yesNo,
-				},
-			],
+			operations: {
+				eq: yesNo,
+			},
 		},
-		{
+		giftCardUsed: {
 			label: 'Gift card used',
-			key: 'giftCardUsed',
-			operations: [
-				{
-					operator: 'eq',
-					component: yesNo,
-				},
-			],
+			operations: {
+				eq: yesNo,
+			},
 		},
-		{
+		giftCardBought: {
 			label: 'Gift card bought',
-			key: 'giftCardBought',
-			operations: [
-				{
-					operator: 'eq',
-					component: yesNo,
-				},
-			],
+			operations: {
+				eq: yesNo,
+			},
 		},
-		{
+		authorizeStatus: {
 			label: 'Authorize status',
-			key: 'authorizeStatus',
-			operations: [
-				{
-					operator: 'eq',
-					component: authorize,
-				},
-				{
-					operator: 'oneOf',
-					component: authorizeIn,
-				},
-			],
+			operations: {
+				eq: authorize,
+				oneOf: authorizeIn,
+			},
 		},
-		{
+		chargeStatus: {
 			label: 'Charge status',
-			key: 'chargeStatus',
-			operations: [
-				{
-					operator: 'eq',
-					component: chargeEq,
-				},
-				{
-					operator: 'oneOf',
-					component: chargeIn,
-				},
-			],
+			operations: {
+				eq: chargeEq,
+				oneOf: chargeIn,
+			},
 		},
-		{
+		metadata: {
 			label: 'Metadata',
-			key: 'metadata',
-			operations: [
-				{
-					operator: 'eq',
-					component: metadataComponent,
-				},
-			],
+			operations: {
+				eq: metadataComponent,
+			},
 		},
-		{
+		customer: {
 			label: 'Customer',
-			key: 'customer',
-			operations: [
-				{
-					operator: 'eq',
-					component: customerSelect,
-				},
-			],
+			operations: {
+				eq: customerSelect,
+			},
 		},
-	];
+	};
 
 	const paymentStatusOptions = Object.values(PaymentChargeStatusEnum).map<SelectOption>(
 		(status) => {
@@ -457,6 +373,6 @@
 <FilterManager
 	bind:variables
 	bind:forceReExecuteGraphqlQuery
-	filterOptions={FILTER_OPTIONS}
+	filterOptions={FilterOptions}
 	searchKey={'filter.search' as keyof QueryOrdersArgs}
 />

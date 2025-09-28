@@ -20,28 +20,20 @@
 
 	let { variables = $bindable(), forceReExecuteGraphqlQuery = $bindable() }: Props = $props();
 
-	const Filters: FilterProps<ProductTypeFilterInput>[] = [
-		{
+	const FilterOptions: FilterProps<ProductTypeFilterInput> = $derived({
+		configurable: {
 			label: $tranFunc('prdType.hasVariantAttrs'),
-			key: 'configurable',
-			operations: [
-				{
-					operator: 'eq',
-					component: yesNo,
-				},
-			],
+			operations: {
+				eq: yesNo,
+			},
 		},
-		{
+		productType: {
 			label: $tranFunc('prdType.type'),
-			key: 'productType',
-			operations: [
-				{
-					operator: 'eq',
-					component: productType,
-				},
-			],
+			operations: {
+				eq: productType,
+			},
 		},
-	];
+	});
 
 	const ProductTypeTypeOptions = [
 		ProductTypeEnum.Digital,
@@ -74,6 +66,6 @@
 <FilterManager
 	bind:variables
 	bind:forceReExecuteGraphqlQuery
-	filterOptions={Filters}
+	filterOptions={FilterOptions}
 	searchKey={'filter.search' as keyof QueryProductTypesArgs}
 />

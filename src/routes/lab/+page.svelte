@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
-	import { page } from "$app/state";
+	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
+	import { untrack } from 'svelte';
 
 	// import { Button } from '$lib/components/ui';
 	// import { randomString } from '$lib/utils/utils';
@@ -8,14 +9,12 @@
 
 	// const a = $state([1, 2, 3]);
 
-	let b = $state('');
+	let num = $state(Math.random());
+
+	$effect(() => {
+		console.log(num)
+	});
 </script>
 
-<button onclick={async () => {
-	const rand = Math.random().toString();
-	b = rand;
-	page.url.searchParams.set('number', rand);
-	await goto(`${page.url.pathname}?${page.url.searchParams.toString()}`)
-}}>change</button>
 
-<div>{b}</div>
+<button onclick={() => (num = Math.floor(Math.random() * 10))}>number</button>

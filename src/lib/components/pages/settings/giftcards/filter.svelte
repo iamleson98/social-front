@@ -8,7 +8,7 @@
 		FilterItemValue,
 		FilterProps,
 	} from '$lib/components/common/filter-box';
-	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
+	import { FilterManager } from '$lib/components/common/filter-box';
 	import ShopCurrenciesSelect from '$lib/components/common/shop-currencies-select.svelte';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
@@ -27,106 +27,62 @@
 
 	let { variables = $bindable(), forceReExecuteGraphqlQuery = $bindable(false) }: Props = $props();
 
-	const FILTER_OPTIONS: FilterProps<GiftCardFilterInput>[] = [
-		{
+	const FilterOptions: FilterProps<GiftCardFilterInput> = $derived({
+		currency: {
 			label: $tranFunc('common.currency'),
-			key: 'currency',
-			operations: [
-				{
-					operator: 'eq',
-					component: currencyIs,
-				},
-			],
+			operations: {
+				eq: currencyIs,
+			},
 		},
-		{
+		currentBalance: {
 			label: $tranFunc('giftcard.currentBalance'),
-			key: 'currentBalance',
 			mustPairWith: 'currency',
-			operations: [
-				{
-					operator: 'lte',
-					component: balanceLte,
-				},
-				{
-					operator: 'gte',
-					component: balanceGte,
-				},
-				{
-					operator: 'range',
-					component: balanceRange,
-				},
-			],
+			operations: {
+				lte: balanceLte,
+				gte: balanceGte,
+				range: balanceRange,
+			},
 		},
-		{
+		initialBalance: {
 			label: $tranFunc('giftcard.initialBalance'),
-			key: 'initialBalance',
 			mustPairWith: 'currency',
-			operations: [
-				{
-					operator: 'lte',
-					component: balanceLte,
-				},
-				{
-					operator: 'gte',
-					component: balanceGte,
-				},
-				{
-					operator: 'range',
-					component: balanceRange,
-				},
-			],
+			operations: {
+				lte: balanceLte,
+				gte: balanceGte,
+				range: balanceRange,
+			},
 		},
-		{
+		products: {
 			label: $tranFunc('common.products'),
-			key: 'products',
-			operations: [
-				{
-					operator: 'oneOf',
-					component: products,
-				},
-			],
+			operations: {
+				oneOf: products,
+			},
 		},
-		{
+		isActive: {
 			label: $tranFunc('staff.active'),
-			key: 'isActive',
-			operations: [
-				{
-					operator: 'eq',
-					component: isActive,
-				},
-			],
+			operations: {
+				eq: isActive,
+			},
 		},
-		{
+		tags: {
 			label: $tranFunc('giftcard.form.tags'),
-			key: 'tags',
-			operations: [
-				{
-					operator: 'oneOf',
-					component: tags,
-				},
-			],
+			operations: {
+				oneOf: tags,
+			},
 		},
-		{
+		usedBy: {
 			label: $tranFunc('giftcard.filter.usedBy'),
-			key: 'usedBy',
-			operations: [
-				{
-					operator: 'oneOf',
-					component: usedBy,
-				},
-			],
+			operations: {
+				oneOf: usedBy,
+			},
 		},
-		{
+		used: {
 			label: $tranFunc('giftcard.usedAmount'),
-			key: 'used',
-			operations: [
-				{
-					operator: 'eq',
-					component: isUsed,
-				},
-			],
+			operations: {
+				eq: isUsed,
+			},
 		},
-	];
+	});
 </script>
 
 {#snippet currencyIs({ onValue, initialValue = '' }: FilterComponentType)}
@@ -248,7 +204,7 @@
 {/snippet}
 
 <FilterManager
-	filterOptions={FILTER_OPTIONS}
+	filterOptions={FilterOptions}
 	bind:variables
 	bind:forceReExecuteGraphqlQuery
 	searchKey="search"

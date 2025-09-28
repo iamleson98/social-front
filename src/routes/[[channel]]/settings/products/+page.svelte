@@ -22,7 +22,7 @@
 			search: '',
 		},
 	});
-	let forceReExecuteGraphqlQuery = $state(true);
+	let forceReExecuteGraphqlQuery = $state(false);
 	let selectedProducts = $state<SvelteSet<string>>(new SvelteSet());
 
 	const productColumns: TableColumnProps<Product, ProductOrderField>[] = $derived([
@@ -64,7 +64,8 @@
 			if (checked) items.forEach((item) => selectedProducts.add(item.id));
 			else selectedProducts.clear();
 		}}
-		checked={items.length === selectedProducts.size}
+		checked={items.length === selectedProducts.size && !!items.length}
+		disabled={!items.length}
 	/>
 {/snippet}
 
@@ -126,5 +127,4 @@
 	resultKey="products"
 	columns={productColumns}
 	bind:forceReExecuteGraphqlQuery
-	autoRefetchOnVariableChange={false}
 />

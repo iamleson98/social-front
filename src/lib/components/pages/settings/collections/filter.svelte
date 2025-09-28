@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
-	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
+	import { FilterManager } from '$lib/components/common/filter-box';
 	import type {
 		FilterComponentType,
 		FilterItemValue,
@@ -22,39 +22,27 @@
 
 	let { variables = $bindable(), forceReExecuteGraphqlQuery = $bindable(false) }: Props = $props();
 
-	const FILTER_OPTIONS: FilterProps<CollectionFilterInput>[] = $derived([
-		{
+	const FilterOptions: FilterProps<CollectionFilterInput> = $derived({
+		published: {
 			label: $tranFunc('product.published'),
-			key: 'published',
-			operations: [
-				{
-					operator: 'eq',
-					component: publishedComponent,
-				},
-			],
+			operations: {
+				eq: publishedComponent,
+			},
 			mustPairWith: 'channel',
 		},
-		{
+		channel: {
 			label: $tranFunc('product.channel'),
-			key: 'channel',
-			operations: [
-				{
-					operator: 'eq',
-					component: channelComponent,
-				},
-			],
+			operations: {
+				eq: channelComponent,
+			},
 		},
-		{
+		metadata: {
 			label: $tranFunc('common.metadata'),
-			key: 'metadata',
-			operations: [
-				{
-					operator: 'eq',
-					component: metadataComponent,
-				},
-			],
+			operations: {
+				eq: metadataComponent,
+			},
 		},
-	]);
+	});
 </script>
 
 {#snippet publishedComponent({ onValue, initialValue }: FilterComponentType)}
@@ -105,7 +93,7 @@
 {/snippet}
 
 <FilterManager
-	filterOptions={FILTER_OPTIONS}
+	filterOptions={FilterOptions}
 	bind:variables
 	searchKey={'filter.search' as keyof QueryCollectionsArgs}
 	bind:forceReExecuteGraphqlQuery

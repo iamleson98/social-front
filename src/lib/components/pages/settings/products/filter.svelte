@@ -3,7 +3,7 @@
 	import { PRODUCT_TYPES_QUERY } from '$lib/api/admin/product';
 	import { COLLECTIONS_QUERY } from '$lib/api/collections';
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
-	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
+	import { FilterManager } from '$lib/components/common/filter-box';
 	import type {
 		FilterComponentType,
 		FilterItemValue,
@@ -19,6 +19,7 @@
 		QueryProductsArgs,
 		QueryProductTypesArgs,
 	} from '$lib/gql/graphql';
+	import { SearchParamKey } from '$lib/utils/consts';
 
 	type Props = {
 		forceReExecuteGraphqlQuery: boolean;
@@ -27,132 +28,77 @@
 
 	let { forceReExecuteGraphqlQuery = $bindable(), variables = $bindable() }: Props = $props();
 
-	const FILTER_OPTIONS: FilterProps<ProductFilterInput>[] = [
-		{
+	const FilterOptions: FilterProps<ProductFilterInput> = {
+		price: {
 			label: 'Price',
-			key: 'price',
 			mustPairWith: 'channel', //
-			operations: [
-				{
-					operator: 'eq',
-					component: priceCmp,
-				},
-				{
-					operator: 'lte',
-					component: priceCmp,
-				},
-				{
-					operator: 'gte',
-					component: priceCmp,
-				},
-				{
-					operator: 'range',
-					component: priceBetween,
-				},
-			],
+			operations: {
+				eq: priceCmp,
+				lte: priceCmp,
+				gte: priceCmp,
+				range: priceBetween,
+			},
 		},
-		{
+		categories: {
 			label: 'Category',
-			key: 'categories',
-			operations: [
-				{
-					operator: 'eq',
-					component: categoryIs,
-				},
-				{
-					operator: 'oneOf',
-					component: categoryOneOf,
-				},
-			],
+			operations: {
+				eq: categoryIs,
+				oneOf: categoryOneOf,
+			},
 		},
-		{
+		collections: {
 			label: 'Collection',
-			key: 'collections',
-			operations: [
-				{
-					operator: 'oneOf',
-					component: collectionOneOf,
-				},
-			],
+			operations: {
+				oneOf: collectionOneOf,
+			},
 		},
-		{
+		channel: {
 			label: 'Channel',
-			key: 'channel',
-			operations: [
-				{
-					operator: 'eq',
-					component: channelComp,
-				},
-			],
+			operations: {
+				eq: channelComp,
+			},
 		},
-		{
+		productTypes: {
 			label: 'Product type',
-			key: 'productTypes',
-			operations: [
-				{
-					operator: 'eq',
-					component: productTypeIs,
-				},
-				{
-					operator: 'oneOf',
-					component: productTypeOneOf,
-				},
-			],
+			operations: {
+				eq: productTypeIs,
+				oneOf: productTypeOneOf,
+			},
 		},
-		{
+		isAvailable: {
 			label: 'Is available',
-			key: 'isAvailable',
 			mustPairWith: 'channel',
-			operations: [
-				{
-					operator: 'eq',
-					component: yesNo,
-				},
-			],
+			operations: {
+				eq: yesNo,
+			},
 		},
-		{
+		isPublished: {
 			label: 'Is published',
-			key: 'isPublished',
 			mustPairWith: 'channel',
-			operations: [
-				{
-					operator: 'eq',
-					component: yesNo,
-				},
-			],
+			operations: {
+				eq: yesNo,
+			},
 		},
-		{
+		isVisibleInListing: {
 			label: 'Visible in listing',
-			key: 'isVisibleInListing',
 			mustPairWith: 'channel',
-			operations: [
-				{
-					operator: 'eq',
-					component: yesNo,
-				},
-			],
+			operations: {
+				eq: yesNo,
+			},
 		},
-		{
+		hasCategory: {
 			label: 'Has category',
-			key: 'hasCategory',
-			operations: [
-				{
-					operator: 'eq',
-					component: yesNo,
-				},
-			],
+			operations: {
+				eq: yesNo,
+			},
 		},
-		{
+		giftCard: {
 			label: 'Is giftcard',
-			key: 'giftCard',
-			operations: [
-				{
-					operator: 'eq',
-					component: yesNo,
-				},
-			],
+			operations: {
+				eq: yesNo,
+			},
 		},
-	];
+	};
 </script>
 
 {#snippet categoryIs({ onValue, initialValue = '' }: FilterComponentType)}
@@ -294,8 +240,14 @@
 {/snippet}
 
 <FilterManager
-	filterOptions={FILTER_OPTIONS}
+	filterOptions={FilterOptions}
 	bind:forceReExecuteGraphqlQuery
 	bind:variables
 	searchKey="search"
+	extraVariablesFiltersPatching={(variables, params) => {
+		if (params[SearchParamKey.SEARCH_QUERY])
+			variables.search = params[SearchParamKey.SEARCH_QUERY].value as string;
+
+		return variables;
+	}}
 />

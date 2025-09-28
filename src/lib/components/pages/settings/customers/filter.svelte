@@ -1,5 +1,5 @@
 <script lang="ts">
-	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
+	import { FilterManager } from '$lib/components/common/filter-box';
 	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box/types';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Input } from '$lib/components/ui/Input';
@@ -16,58 +16,31 @@
 
 	const THIS_YEAR = new Date().getFullYear();
 
-	const FILTER_OPTIONS: FilterProps<CustomerFilterInput>[] = [
-		{
+	const FilterOptions: FilterProps<CustomerFilterInput> = {
+		dateJoined: {
 			label: 'Join date',
-			key: 'dateJoined',
-			operations: [
-				{
-					operator: 'lte',
-					component: joinDateSingle,
-				},
-				{
-					operator: 'gte',
-					component: joinDateSingle,
-				},
-				{
-					operator: 'range',
-					component: joinDateBetween,
-				},
-			],
+			operations: {
+				lte: joinDateSingle,
+				gte: joinDateSingle,
+				range: joinDateBetween,
+			},
 		},
-		{
+		numberOfOrders: {
 			label: 'Number of orders',
-			key: 'numberOfOrders',
-			operations: [
-				{
-					operator: 'eq',
-					component: numberOfOrdersSingle,
-				},
-				{
-					operator: 'gte',
-					component: numberOfOrdersSingle,
-				},
-				{
-					operator: 'lte',
-					component: numberOfOrdersSingle,
-				},
-				{
-					operator: 'range',
-					component: numberOfOrdersBetween,
-				},
-			],
+			operations: {
+				eq: numberOfOrdersSingle,
+				gte: numberOfOrdersSingle,
+				lte: numberOfOrdersSingle,
+				range: numberOfOrdersBetween,
+			},
 		},
-		{
+		metadata: {
 			label: 'Metadata',
-			key: 'metadata',
-			operations: [
-				{
-					operator: 'eq',
-					component: metadataComponent,
-				},
-			],
+			operations: {
+				eq: metadataComponent,
+			},
 		},
-	];
+	};
 </script>
 
 {#snippet joinDateSingle({ onValue, initialValue, placeholder }: FilterComponentType)}
@@ -172,7 +145,7 @@
 {/snippet}
 
 <FilterManager
-	filterOptions={FILTER_OPTIONS}
+	filterOptions={FilterOptions}
 	bind:forceReExecuteGraphqlQuery
 	bind:variables
 	searchKey={'filter.search' as keyof QueryCustomersArgs}

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { SHIPPING_ZONES_QUERY } from '$lib/api/admin/shipping';
-	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
+	import { FilterManager } from '$lib/components/common/filter-box';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { type QueryShippingZonesArgs, type ShippingZone } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';

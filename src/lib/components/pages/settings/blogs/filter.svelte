@@ -5,7 +5,7 @@
 		FilterItemValue,
 		FilterProps,
 	} from '$lib/components/common/filter-box';
-	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
+	import { FilterManager } from '$lib/components/common/filter-box';
 	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
 	import type { PageFilterInput, QueryPagesArgs, QueryPageTypesArgs } from '$lib/gql/graphql';
 
@@ -16,18 +16,14 @@
 
 	let { variables = $bindable(), forceReExecuteGraphqlQuery = $bindable(false) }: Props = $props();
 
-	const FilterOptions: FilterProps<PageFilterInput>[] = [
-		{
+	const FilterOptions: FilterProps<PageFilterInput> = {
+		pageTypes: {
 			label: 'Blog type',
-			key: 'pageTypes',
-			operations: [
-				{
-					operator: 'oneOf',
-					component: oneOf,
-				},
-			],
+			operations: {
+				oneOf: oneOf,
+			},
 		},
-	];
+	};
 </script>
 
 {#snippet oneOf({ onValue, initialValue = [] }: FilterComponentType)}

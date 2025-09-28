@@ -2,7 +2,7 @@
 	import { tranFunc } from '$i18n';
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box';
-	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
+	import { FilterManager } from '$lib/components/common/filter-box';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Input } from '$lib/components/ui/Input';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
@@ -56,74 +56,47 @@
 		},
 	];
 
-	const FILTER_OPTIONS: FilterProps<VoucherFilterInput>[] = [
-		{
+	const FilterOptions: FilterProps<VoucherFilterInput> = $derived({
+		channel: {
 			label: $tranFunc('product.channel'),
 			key: 'channel' as keyof VoucherFilterInput,
-			operations: [
-				{
-					operator: 'eq',
-					component: channel,
-				},
-			],
+			operations: {
+				eq: channel,
+			},
 		},
-		{
+		discountType: {
 			label: $tranFunc('voucher.discountType'),
 			key: 'discountType',
-			operations: [
-				{
-					operator: 'eq',
-					component: discountType,
-				},
-				{
-					operator: 'oneOf',
-					component: discountTypeIn,
-				},
-			],
+			operations: {
+				eq: discountType,
+				oneOf: discountTypeIn,
+			},
 		},
-		{
+		started: {
 			label: $tranFunc('common.startAt'),
 			key: 'started',
-			operations: [
-				{
-					operator: 'lte',
-					component: started,
-				},
-				{
-					operator: 'gte',
-					component: started,
-				},
-				{
-					operator: 'range',
-					component: startedRange,
-				},
-			],
+			operations: {
+				lte: started,
+				gte: started,
+				range: startedRange,
+			},
 		},
-		{
+		status: {
 			label: $tranFunc('settings.status'),
 			key: 'status',
-			operations: [
-				{
-					operator: 'eq',
-					component: status,
-				},
-				{
-					operator: 'oneOf',
-					component: statusIn,
-				},
-			],
+			operations: {
+				eq: status,
+				oneOf: statusIn,
+			},
 		},
-		{
+		timesUsed: {
 			label: $tranFunc('voucher.timeUsed'),
 			key: 'timesUsed',
-			operations: [
-				{
-					operator: 'eq',
-					component: numberSnippet,
-				},
-			],
+			operations: {
+				eq: numberSnippet,
+			},
 		},
-	];
+	});
 </script>
 
 {#snippet channel({ onValue, initialValue = '' }: FilterComponentType)}
@@ -212,7 +185,7 @@
 {/snippet}
 
 <FilterManager
-	filterOptions={FILTER_OPTIONS}
+	filterOptions={FilterOptions}
 	bind:variables
 	bind:forceReExecuteGraphqlQuery
 	searchKey={'filter.search' as keyof QueryVouchersArgs}

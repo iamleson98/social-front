@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import { CATEGORIES_LIST_QUERY } from '$lib/api/admin/category';
-	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
+	import { FilterManager } from '$lib/components/common/filter-box';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import type { TableColumnProps } from '$lib/components/ui/Table';
 	import GraphqlPaginableTable from '$lib/components/ui/Table/graphql-paginable-table.svelte';

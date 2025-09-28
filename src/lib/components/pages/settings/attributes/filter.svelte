@@ -22,68 +22,44 @@
 
 	let { variables = $bindable(), forceReExecuteGraphqlQuery = $bindable(false) }: Props = $props();
 
-	const FILTER_OPTIONS: FilterProps<AttributeFilterInput>[] = [
-		{
+	const FilterOptions: FilterProps<AttributeFilterInput> = {
+		filterableInStorefront: {
 			label: 'Filterable in storefront',
-			key: 'filterableInStorefront',
-			operations: [
-				{
-					operator: 'eq',
-					component: yesNo,
-				},
-			],
+			operations: {
+				eq: yesNo,
+			},
 		},
-		{
+		isVariantOnly: {
 			label: 'Variant only',
-			key: 'isVariantOnly',
-			operations: [
-				{
-					operator: 'eq',
-					component: yesNo,
-				},
-			],
+			operations: {
+				eq: yesNo,
+			},
 		},
-		{
+		valueRequired: {
 			label: 'Is required',
-			key: 'valueRequired',
-			operations: [
-				{
-					operator: 'eq',
-					component: yesNo,
-				},
-			],
+			operations: {
+				eq: yesNo,
+			},
 		},
-		{
+		visibleInStorefront: {
 			label: 'Visible in storefront',
-			key: 'visibleInStorefront',
-			operations: [
-				{
-					operator: 'eq',
-					component: yesNo,
-				},
-			],
+			operations: {
+				eq: yesNo,
+			},
 		},
-		{
+		type: {
 			label: 'Type',
-			key: 'type',
-			operations: [
-				{
-					operator: 'eq',
-					component: type,
-				},
-			],
+			operations: {
+				eq: type,
+			},
 		},
-		{
+		channel: {
 			label: 'Channel',
-			key: 'channel',
-			operations: [
-				{
-					operator: 'eq',
-					component: channel,
-				},
-			],
+			operations: {
+				eq: channel,
+			},
 		},
-	];
+	};
 
 	const TypeOptions = Object.values(AttributeTypeEnum).map((value) => ({
 		label: value.toLowerCase().replace('_', ' '),
@@ -120,7 +96,7 @@
 {/snippet}
 
 <FilterManager
-	filterOptions={FILTER_OPTIONS}
+	filterOptions={FilterOptions}
 	bind:forceReExecuteGraphqlQuery
 	bind:variables
 	searchKey={'filter.search' as keyof QueryAttributesArgs}

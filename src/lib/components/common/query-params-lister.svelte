@@ -11,17 +11,17 @@
 </script>
 
 <script lang="ts">
-	import { afterNavigate } from '$app/navigation';
-	import { page } from '$app/state';
-	import { parseUrlSearchParams, type SearchParamsType } from '$lib/utils/utils';
+	// import { afterNavigate } from '$app/navigation';
+	// import { page } from '$app/state';
+	import { type SearchParamsType } from '$lib/utils/utils';
 	import { writable } from 'svelte/store';
 
-	let lastUrlSearch = $state('');
+	// let lastUrlSearch = $state('');
 
-	afterNavigate(async () => {
-		if (page.url.search !== lastUrlSearch) {
-			QyeryParamsStore.update(parseUrlSearchParams(page.url));
-			lastUrlSearch = page.url.search;
-		}
-	});
+	// afterNavigate(async () => {
+	// 	if (page.url.search !== lastUrlSearch) {
+	// 		QyeryParamsStore.update(parseUrlSearchParams(page.url));
+	// 		lastUrlSearch = page.url.search;
+	// 	}
+	// });
 </script>

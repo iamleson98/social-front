@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { RFC3339TimeFormat } from '$lib/api/graphql/utils';
 	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box';
-	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
+	import { FilterManager } from '$lib/components/common/filter-box';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { type QueryPromotionsArgs, type PromotionWhereInput } from '$lib/gql/graphql';
 	import dayjs from 'dayjs';
@@ -13,36 +13,22 @@
 
 	let { variables = $bindable(), forceReExecuteGraphqlQuery = $bindable(false) }: Props = $props();
 
-	const FILTER_OPTIONS: FilterProps<PromotionWhereInput>[] = [
-		{
+	const FilterOptions: FilterProps<PromotionWhereInput> = {
+		startDate: {
 			label: 'Start date',
-			key: 'startDate',
-			operations: [
-				{
-					operator: 'lte',
-					component: date,
-				},
-				{
-					operator: 'gte',
-					component: date,
-				},
-			],
+			operations: {
+				lte: date,
+				gte: date,
+			},
 		},
-		{
+		endDate: {
 			label: 'End date',
-			key: 'endDate',
-			operations: [
-				{
-					operator: 'gte',
-					component: date,
-				},
-				{
-					operator: 'lte',
-					component: date,
-				},
-			],
+			operations: {
+				gte: date,
+				lte: date,
+			},
 		},
-	];
+	};
 
 	$effect(() => {
 		if (variables.where?.name && !Object.keys(variables.where.name).length)
@@ -73,7 +59,7 @@
 {/snippet}
 
 <FilterManager
-	filterOptions={FILTER_OPTIONS}
+	filterOptions={FilterOptions}
 	bind:variables
 	bind:forceReExecuteGraphqlQuery
 	searchKey="where.name.eq"

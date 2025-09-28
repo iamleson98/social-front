@@ -19,18 +19,14 @@
 
 	let { variables = $bindable(), forceReExecuteGraphqlQuery = $bindable() }: Props = $props();
 
-	const FILTER_OPTIONS: FilterProps<StaffUserInput>[] = [
-		{
+	const FilterOptions: FilterProps<StaffUserInput> = $derived({
+		status: {
 			label: $tranFunc('staff.status'),
-			key: 'status',
-			operations: [
-				{
-					operator: 'eq',
-					component: statusSingle,
-				},
-			],
+			operations: {
+				eq: statusSingle,
+			},
 		},
-	];
+	});
 
 	const STATUS_OPTIONS = Object.keys(StaffMemberStatus).map((key) => ({
 		label: key,
@@ -49,7 +45,7 @@
 {/snippet}
 
 <FilterManager
-	filterOptions={FILTER_OPTIONS}
+	filterOptions={FilterOptions}
 	bind:variables
 	bind:forceReExecuteGraphqlQuery
 	searchKey="filter.search"

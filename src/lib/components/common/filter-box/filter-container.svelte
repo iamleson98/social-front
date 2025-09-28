@@ -8,29 +8,29 @@
 	import { omit } from 'es-toolkit';
 
 	type Props = {
-		filterOptions: FilterProps<T>[];
+		filterOptions: FilterProps<T>;
 		open: boolean;
 		filters: FilterConditions<T>;
 		disabled?: boolean;
 	};
 
-	let { filterOptions, open = $bindable(), filters, disabled }: Props = $props();
+	let { filterOptions = {}, open = $bindable(), filters, disabled }: Props = $props();
 
-	const FILTER_MAP = filterOptions.reduce(
-		(acc, cur) => {
-			acc[cur.key] = cur;
-			return acc;
-		},
-		{} as Record<keyof T, FilterProps<T>>,
-	);
+	// const FILTER_MAP = filterOptions.reduce(
+	// 	(acc, cur) => {
+	// 		acc[cur.key] = cur;
+	// 		return acc;
+	// 	},
+	// 	{} as Record<keyof T, FilterProps<T>>,
+	// );
 
 	let activeFilters = $state.raw(filters);
 
-	let availableFilters = $derived.by(() =>
-		filterOptions.map<SelectOption>(({ key, label }) => ({
+	let availableFilters = $derived(
+		Object.keys(filterOptions).map<SelectOption>((key) => ({
 			value: key as Primitive,
-			label,
-			disabled: !!activeFilters[key],
+			label: filterOptions[key as keyof T]!.label,
+			disabled: !!activeFilters[key as keyof T],
 		})),
 	);
 	let disableAddFilterBtn = $derived(
@@ -62,9 +62,9 @@
 
 		newFilters[newKey] = {};
 
-		const pairWith = FILTER_MAP[newKey].mustPairWith;
+		const pairWith = filterOptions[newKey]?.mustPairWith;
 
-		if (pairWith && !activeFilters[pairWith] && FILTER_MAP[pairWith]) {
+		if (pairWith && !activeFilters[pairWith] && filterOptions[pairWith]) {
 			newFilters[pairWith] = {};
 		}
 
@@ -94,10 +94,9 @@
 		{#if Object.keys(activeFilters).length}
 			{#each Object.keys(activeFilters) as key, idx (idx)}
 				{@const filterOpt = activeFilters[key as keyof T]}
-				{@const disableDelBtn = filterOptions.some(
-					// if this filter is additional requirement to make a pair with another filter, then its delete button must be disabled
-					(opt) => opt.mustPairWith === key && activeFilters[opt.key],
-				)}
+				{@const disableDelBtn =
+					!!filterOptions[key as keyof T]?.mustPairWith &&
+					!!activeFilters[filterOptions[key as keyof T]!.mustPairWith!]}
 				<div class="flex items-center gap-1 mt-1.5 justify-between">
 					<Select
 						options={availableFilters}
@@ -112,14 +111,15 @@
 
 					<div class="flex-4 flex items-center gap-1">
 						{#if key && filterOpt}
-							{@const { operations } = FILTER_MAP[key as keyof T]}
-							{@const operatorOpts = operations.map(({ operator }) => ({
+							{@const operatorOptions = Object.keys(
+								filterOptions[key as keyof T]?.operations || {},
+							).map<SelectOption>((operator) => ({
 								label: $tranFunc(`common.${operator}`),
 								value: operator,
 							}))}
 
 							<Select
-								options={operatorOpts}
+								options={operatorOptions}
 								size="xs"
 								class="flex-1"
 								value={filterOpt.operator}
@@ -129,11 +129,8 @@
 								}}
 							/>
 							{#if filterOpt.operator}
-								{@const component = operations.find(
-									({ operator }) => operator === filterOpt.operator,
-								)?.component}
 								<div class="flex-1">
-									{@render component?.({
+									{@render filterOptions[key as keyof T]?.operations[filterOpt.operator]?.({
 										onValue: (value) => {
 											setFilterItemValue(key as keyof T, filterOpt.operator, value);
 										},

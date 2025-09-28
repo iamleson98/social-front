@@ -2,7 +2,7 @@
 	import { DRAFT_ORDER_LIST_QUERY } from '$lib/api/admin/orders';
 	import { CUSTOMER_LIST_QUERY } from '$lib/api/admin/users';
 	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box';
-	import FilterManager from '$lib/components/common/filter-box/filter-manager.svelte';
+	import { FilterManager } from '$lib/components/common/filter-box';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
@@ -45,36 +45,24 @@
 		},
 	];
 
-	const FILTERS: FilterProps<OrderDraftFilterInput>[] = [
-		{
+	const FilterOptions: FilterProps<OrderDraftFilterInput> = $derived({
+		customer: {
 			label: 'Customer',
 			key: 'customer',
-			operations: [
-				{
-					operator: 'eq',
-					component: customerFilter,
-				},
-			],
+			operations: {
+				eq: customerFilter,
+			},
 		},
-		{
+		created: {
 			label: 'Creation Date',
 			key: 'created',
-			operations: [
-				{
-					operator: 'gte',
-					component: dateSingle,
-				},
-				{
-					operator: 'lte',
-					component: dateSingle,
-				},
-				{
-					operator: 'range',
-					component: dateRange,
-				},
-			],
+			operations: {
+				gte: dateSingle,
+				lte: dateSingle,
+				range: dateRange,
+			},
 		},
-	];
+	});
 </script>
 
 {#snippet customerFilter({ onValue, initialValue = '' }: FilterComponentType)}
@@ -136,7 +124,7 @@
 	<FilterManager
 		bind:variables
 		searchKey={'filter.search' as keyof QueryDraftOrdersArgs}
-		filterOptions={FILTERS}
+		filterOptions={FilterOptions}
 		bind:forceReExecuteGraphqlQuery
 	/>
 </div>
