@@ -2,7 +2,6 @@
 	import { page } from '$app/state';
 	import { Header } from '$lib/components/common';
 	import Footer from '$lib/components/common/footer.svelte';
-	import QueryParamsLister from '$lib/components/common/query-params-lister.svelte';
 	import ShopQuery from '$lib/components/common/shop-query.svelte';
 	import Language from '$lib/components/plugins/language.svelte';
 	import { AlertListener } from '$lib/components/ui/Modal';
@@ -46,9 +45,6 @@
 </svelte:head>
 
 <Header />
-
-<!-- listener for search query params on search bar -->
-<QueryParamsLister />
 
 <Language />
 
