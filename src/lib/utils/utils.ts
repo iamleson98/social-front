@@ -17,7 +17,7 @@ import {
 	PermissionEnum,
 } from '$lib/gql/graphql';
 import { OrderStatus, PaymentChargeStatusEnum } from '$lib/gql/graphql';
-import { DEFAULT_CHANNEL } from './consts';
+import { DEFAULT_CHANNEL, SearchParamKey } from './consts';
 import { CHANNEL_KEY } from './consts';
 import { getCookieByKey } from './cookies';
 import { AppRoute } from './routes';
@@ -274,7 +274,7 @@ export const parseUrlSearchParams = <T>(url: URL) => {
 			if (lte && lte !== 'null' && gte && gte !== 'null')
 				result[key as keyof T] = {
 					operator: 'range',
-					value: [ gte, lte ],
+					value: [gte, lte],
 				};
 			else if (lte && lte !== 'null')
 				result[key as keyof T] = {
@@ -329,6 +329,21 @@ export const constructUrlSearchParamsAndNavigate = async <T>(activeFilters: Filt
 	const keys = Object.keys(activeFilters);
 	if (!keys.length) return;
 
+	const whiteListKeys = [
+		...keys,
+		SearchParamKey.AFTER,
+		SearchParamKey.BEFORE,
+		SearchParamKey.FIRST,
+		SearchParamKey.LAST,
+		SearchParamKey.ORDER_BY_FIELD,
+		SearchParamKey.ORDER_DIRECTION,
+	]
+
+	// delete not used filter fields
+	for (const key of page.url.searchParams.keys()) {
+		if (!whiteListKeys.includes(key)) page.url.searchParams.delete(key);
+	}
+
 	for (const key of keys) {
 		const filterOpt = activeFilters[key as keyof T];
 		if (!filterOpt) continue;
@@ -354,6 +369,8 @@ export const constructUrlSearchParamsAndNavigate = async <T>(activeFilters: Filt
 			}
 		}
 	}
+
+
 
 	await goto(`${page.url.pathname}?${page.url.searchParams.toString()}`);
 };

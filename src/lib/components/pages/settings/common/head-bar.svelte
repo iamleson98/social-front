@@ -35,7 +35,7 @@
 >
 	<div class="breadcrumbs text-sm">
 		<ul>
-			<li><a href={listingPageHref}>{listingPageLabel}</a></li>
+			<li><a href={listingPageHref} class="link text-blue-600 font-medium">{listingPageLabel}</a></li>
 			{#if page.url.pathname === newPageHref}
 				<li>{newPageLabel}</li>
 			{:else if page.route.id === detailRouteID}
