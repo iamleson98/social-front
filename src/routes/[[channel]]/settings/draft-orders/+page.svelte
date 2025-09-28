@@ -4,6 +4,7 @@
 	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box';
 	import { FilterManager } from '$lib/components/common/filter-box';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
+	import HeadBar from '$lib/components/pages/settings/common/head-bar.svelte';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
@@ -23,6 +24,7 @@
 		filter: { search: '' },
 	});
 	let forceReExecuteGraphqlQuery = $state(true);
+	let loading = $state(false);
 
 	const COLUMNS: TableColumnProps<Order, OrderSortField>[] = [
 		{
@@ -119,6 +121,16 @@
 {#snippet total({ item }: { item: Order })}
 	<PriceDisplay {...item.total.gross} />
 {/snippet}
+
+<HeadBar
+	listingPageHref={AppRoute.SETTINGS_ORDERS()}
+	listingPageLabel="Draft orders"
+	newPageHref={AppRoute.SETTINGS_ORDERS_NEW()}
+	newPageLabel="New order"
+	detailRouteID="/[[channel]]/settings/shop-orders/[id]"
+	detailPageLabelGetter={(page) => page.params.id}
+	disabled={loading}
+/>
 
 <div class="mb-2">
 	<FilterManager

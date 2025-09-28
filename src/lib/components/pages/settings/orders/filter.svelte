@@ -13,12 +13,14 @@
 		OrderStatus,
 		OrderStatusFilter,
 		PaymentChargeStatusEnum,
+		type MetadataFilter,
 		type OrderFilterInput,
 		type QueryOrdersArgs,
 	} from '$lib/gql/graphql';
 	import { BASIC_DATE_FORMAT } from '$lib/utils/consts';
 	import { orderStatusBadgeClass, paymentStatusBadgeClass } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
+	import { set } from 'es-toolkit/compat';
 
 	type Props = {
 		variables: QueryOrdersArgs;
@@ -190,7 +192,7 @@
 {#snippet customerSelect({ onValue, initialValue = '' }: FilterComponentType)}
 	<GraphqlPaginableSelect
 		query={CUSTOMER_LIST_QUERY}
-		variables={{ first: 10 }}
+		variables={{ first: 15 }}
 		resultKey="customers"
 		variableSearchQueryPath="filter.search"
 		placeholder="Select customer"
@@ -375,4 +377,28 @@
 	bind:forceReExecuteGraphqlQuery
 	filterOptions={FilterOptions}
 	searchKey={'filter.search' as keyof QueryOrdersArgs}
+	extraVariablesFiltersPatching={(variables, searchParams) => {
+		if (searchParams.customer) {
+			set(variables, 'filter.customer', searchParams.customer.value);
+		}
+		if (searchParams.metadata) {
+			const value: MetadataFilter[] = [
+				{
+					key: (searchParams.metadata.value as string[])[0],
+					value: (searchParams.metadata.value as string[])[1],
+				},
+			];
+			set(variables, 'filter.metadata', value);
+		}
+		if (searchParams.chargeStatus) {
+			let value: OrderChargeStatusEnum[] = [];
+			if (searchParams.chargeStatus.operator === 'eq')
+				value = [searchParams.chargeStatus.value as OrderChargeStatusEnum];
+			else if (searchParams.chargeStatus.operator === 'oneOf')
+				value = searchParams.chargeStatus.value as OrderChargeStatusEnum[];
+			set(variables, 'filter.chargeStatus', value);
+		}
+
+		return variables;
+	}}
 />

@@ -124,7 +124,7 @@
 		scrollTo({ top: 0, behavior: 'smooth' });
 
 		// which triggers running the $effect above infinitely.
-		let newVariables = {} as Var;
+		let newVariables = { ...variables } as Var;
 		const newFilters = {} as FilterConditions<T>;
 
 		for (const key in params) {

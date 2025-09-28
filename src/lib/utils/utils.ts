@@ -370,8 +370,6 @@ export const constructUrlSearchParamsAndNavigate = async <T>(activeFilters: Filt
 		}
 	}
 
-
-
 	await goto(`${page.url.pathname}?${page.url.searchParams.toString()}`);
 };
 
@@ -408,12 +406,7 @@ export const SitenameCommonClassName = 'bg-white border border-gray-200 p-3 roun
  * With respect to current channel
  */
 export const buildHomePageLink = (event?: ServerLoadEvent) => {
-	let channelSlug: string | undefined;
-	if (event) {
-		channelSlug = event.cookies.get(CHANNEL_KEY);
-	} else {
-		channelSlug = getCookieByKey(CHANNEL_KEY);
-	}
+	let channelSlug = event ? event.cookies.get(CHANNEL_KEY) : getCookieByKey(CHANNEL_KEY);
 
 	if (!channelSlug) {
 		channelSlug = DEFAULT_CHANNEL.slug;
