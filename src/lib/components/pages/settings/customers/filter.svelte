@@ -3,17 +3,9 @@
 	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box/types';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Input } from '$lib/components/ui/Input';
-	import type {
-		CustomerFilterInput,
-		DateRangeInput,
-		IntRangeInput,
-		MetadataFilter,
-		MetadataInput,
-		QueryCustomersArgs,
-	} from '$lib/gql/graphql';
+	import type { CustomerFilterInput, QueryCustomersArgs } from '$lib/gql/graphql';
 	import { BASIC_DATE_FORMAT } from '$lib/utils/consts';
 	import dayjs from 'dayjs';
-	import { set } from 'es-toolkit/compat';
 
 	type Props = {
 		variables: QueryCustomersArgs;
@@ -158,40 +150,44 @@
 	bind:variables
 	searchKey={'filter.search' as keyof QueryCustomersArgs}
 	extraVariablesFiltersPatching={(variables, searchParams) => {
-		if (searchParams.dateJoined) {
-			const value: DateRangeInput = {};
-			if (searchParams.dateJoined.operator === 'range') {
-				value.gte = (searchParams.dateJoined.value as string[])[0];
-				value.lte = (searchParams.dateJoined.value as string[])[1];
-			} else if (['lte', 'gte'].includes(searchParams.dateJoined.operator)) {
-				value[searchParams.dateJoined.operator as keyof DateRangeInput] = searchParams.dateJoined
-					.value as string;
+		const { dateJoined, numberOfOrders, metadata } = searchParams;
+
+		if (!variables.filter) variables.filter = {};
+
+		if (dateJoined) {
+			if (dateJoined.operator === 'range' && Array.isArray(dateJoined.value))
+				variables.filter.dateJoined = {
+					gte: dateJoined.value[0],
+					lte: dateJoined.value[1],
+				};
+			else if (['lte', 'gte'].includes(dateJoined.operator)) {
+				variables.filter.dateJoined = { [dateJoined.operator]: dateJoined.value };
 			}
-			set(variables, 'filter.dateJoined', value);
 		}
 
-		if (searchParams.numberOfOrders) {
-			const value: IntRangeInput = {};
-			if (searchParams.numberOfOrders.operator === 'eq') {
-				value.gte = searchParams.numberOfOrders.value as number;
-				value.lte = searchParams.numberOfOrders.value as number;
-			} else if (['lte', 'gte'].includes(searchParams.numberOfOrders.operator)) {
-				value[searchParams.numberOfOrders.operator as keyof IntRangeInput] = searchParams
-					.numberOfOrders.value as number;
-			} else if (searchParams.numberOfOrders.operator === 'range') {
-				value.gte = (searchParams.numberOfOrders.value as number[])[0];
-				value.lte = (searchParams.numberOfOrders.value as number[])[1];
-			}
-			set(variables, 'filter.numberOfOrders', value);
+		if (numberOfOrders) {
+			if (numberOfOrders.operator === 'eq')
+				variables.filter.numberOfOrders = {
+					gte: numberOfOrders.value as number,
+					lte: numberOfOrders.value as number,
+				};
+			else if (['lte', 'gte'].includes(numberOfOrders.operator))
+				variables.filter.numberOfOrders = { [numberOfOrders.operator]: numberOfOrders.value };
+			else if (numberOfOrders.operator === 'range' && Array.isArray(numberOfOrders.value))
+				variables.filter.numberOfOrders = {
+					gte: numberOfOrders.value[0] as number,
+					lte: numberOfOrders.value[1] as number,
+				};
 		}
 
-		if (searchParams.metadata) {
-			if (searchParams.metadata.operator === 'eq') {
-				const value: MetadataFilter[] = [{
-					key: (searchParams.metadata.value as string[])[0],
-					value: (searchParams.metadata.value as string[])[1],
-				}];
-				set(variables, 'filter.metadata', value);
+		if (metadata) {
+			if (metadata.operator === 'eq') {
+				variables.filter.metadata = [
+					{
+						key: (metadata.value as string[])[0],
+						value: (metadata.value as string[])[1],
+					},
+				];
 			}
 		}
 

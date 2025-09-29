@@ -12,6 +12,7 @@
 	import FilterContainer from './filter-container.svelte';
 	import type { FilterConditions, FilterProps } from './types';
 	import type { AnyVariables } from '@urql/core';
+	import { pick } from 'es-toolkit';
 	import { get, set } from 'es-toolkit/compat';
 	import { untrack } from 'svelte';
 
@@ -126,16 +127,16 @@
 
 		scrollTo({ top: 0, behavior: 'smooth' });
 
-		// which triggers running the $effect above infinitely.
-		let newVariables = {} as Var;
-		const newFilters = {} as FilterConditions<T>;
-
 		const paginationKeys = [
 			SearchParamKey.FIRST,
 			SearchParamKey.LAST,
 			SearchParamKey.BEFORE,
 			SearchParamKey.AFTER,
 		];
+
+		// which triggers running the $effect above infinitely.
+		let newVariables = {} as Var;
+		const newFilters = {} as FilterConditions<T>;
 
 		for (const key in params) {
 			if (paginationKeys.includes(key as SearchParamKey)) {
