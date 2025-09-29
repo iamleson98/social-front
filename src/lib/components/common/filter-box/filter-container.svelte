@@ -67,6 +67,12 @@
 		open = false;
 		await constructUrlSearchParamsAndNavigate(activeFilters);
 	};
+
+	const handleClickResetFilter = async () => {
+		activeFilters = {} as FilterConditions<T>;
+		open = false;
+		await constructUrlSearchParamsAndNavigate(activeFilters);
+	};
 </script>
 
 <div class="bg-white rounded-lg p-2 shadow-md border border-gray-200 min-w-110">
@@ -123,9 +129,8 @@
 							{#if filterOpt.operator}
 								<div class="flex-1">
 									{@render filterOptions[key as keyof T]?.operations[filterOpt.operator]?.({
-										onValue: (value) => {
-											setFilterItemValue(key as keyof T, filterOpt.operator, value);
-										},
+										onValue: (value) =>
+											setFilterItemValue(key as keyof T, filterOpt.operator, value),
 										initialValue: filterOpt.value,
 									})}
 								</div>
@@ -168,13 +173,7 @@
 				{$tranFunc('common.addFilter')}
 			</Button>
 			<div class="gap-1">
-				<Button
-					size="xs"
-					variant="light"
-					color="gray"
-					onclick={() => (activeFilters = {} as FilterConditions<T>)}
-					{disabled}
-				>
+				<Button size="xs" variant="light" color="gray" onclick={handleClickResetFilter} {disabled}>
 					{$tranFunc('common.reset')}
 				</Button>
 				<Button

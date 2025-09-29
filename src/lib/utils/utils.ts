@@ -329,7 +329,6 @@ export const parseUrlSearchParams = <T>(url: URL) => {
  */
 export const constructUrlSearchParamsAndNavigate = async <T>(activeFilters: FilterConditions<T>) => {
 	const keys = Object.keys(activeFilters);
-	if (!keys.length) return;
 
 	const whiteListKeys = [
 		...keys,
