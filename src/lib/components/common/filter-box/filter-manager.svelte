@@ -124,18 +124,18 @@
 		scrollTo({ top: 0, behavior: 'smooth' });
 
 		// which triggers running the $effect above infinitely.
-		let newVariables = { ...variables } as Var;
+		let newVariables = {} as Var;
 		const newFilters = {} as FilterConditions<T>;
 
+		const paginationKeys = [
+			SearchParamKey.FIRST,
+			SearchParamKey.LAST,
+			SearchParamKey.BEFORE,
+			SearchParamKey.AFTER,
+		];
+
 		for (const key in params) {
-			if (
-				[
-					SearchParamKey.FIRST,
-					SearchParamKey.LAST,
-					SearchParamKey.BEFORE,
-					SearchParamKey.AFTER,
-				].includes(key as SearchParamKey)
-			) {
+			if (paginationKeys.includes(key as SearchParamKey)) {
 				newVariables[key] = params[key].value as any;
 			} else if (SearchParamKey.ORDER_BY_FIELD === key) {
 				set(newVariables, 'sortBy.field', params[key].value);

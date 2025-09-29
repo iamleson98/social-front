@@ -285,6 +285,8 @@
 	onOk={handleUpdateSettings}
 	disableElements={loading}
 	size="sm"
+	closeOnEscape
+	closeOnOutsideClick
 >
 	{#if $GiftcardSettingsQuery.fetching}
 		<SelectSkeleton label />
@@ -334,6 +336,8 @@
 	onOk={handleBulkIssue}
 	size="sm"
 	disableElements={loading}
+	closeOnEscape
+	closeOnOutsideClick
 >
 	<div class="space-y-2">
 		<Alert>
