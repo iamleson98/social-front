@@ -50,14 +50,14 @@
 			use:shortcuts={selectShortcutOptions}
 			use:debounceInput={inputDebounceOption}
 			class={classNames(
-				'w-full text-sm rounded-lg placeholder:opacity-55 inline-block px-2 transition-all duration-200 ease-in-out hover:ring-2 focus:ring-2 ring-1',
+				'w-full text-sm rounded-lg placeholder:opacity-55 inline-block px-1.5 transition-all duration-200 ease-in-out hover:ring-2 focus:ring-2 ring-1',
 				inputClass,
 				INPUT_BUTTON_SIZE_MAP[size],
 				INPUT_CLASSES[variant].bg,
 				{
 					'text-gray-400! cursor-not-allowed!': !!rest.disabled,
-					'ps-8': !!startIcon,
-					'pe-9': !!action,
+					'ps-7': !!startIcon,
+					'pe-7': !!action,
 				},
 			)}
 			{...rest}

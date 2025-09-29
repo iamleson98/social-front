@@ -292,10 +292,7 @@
 							role="button"
 							tabindex="0"
 							onkeydown={(evt) => evt.key === 'Enter' && onClear()}
-							class={classNames({
-								'cursor-pointer': !disabled,
-								'cursor-not-allowed!': !!disabled,
-							})}
+							class={[disabled && 'cursor-not-allowed', !disabled && 'cursor-pointer', 'rounded-full bg-gray-50 text-gray-500 border border-gray-200']}
 							title="Clear"
 							aria-label="Clear"
 						>
