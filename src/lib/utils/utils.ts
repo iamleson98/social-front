@@ -338,10 +338,11 @@ export const constructUrlSearchParamsAndNavigate = async <T>(activeFilters: Filt
 		SearchParamKey.LAST,
 		SearchParamKey.ORDER_BY_FIELD,
 		SearchParamKey.ORDER_DIRECTION,
-	]
+	];
 
+	const currentSearchParamKeys = [...page.url.searchParams.keys()];
 	// delete not used filter fields
-	for (const key of page.url.searchParams.keys()) {
+	for (const key of currentSearchParamKeys) {
 		if (!whiteListKeys.includes(key)) page.url.searchParams.delete(key);
 	}
 
