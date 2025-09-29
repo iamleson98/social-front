@@ -139,6 +139,8 @@
 	};
 
 	const handleFocus: FocusEventHandler<HTMLInputElement> = (evt) => {
+		if (disabled) return;
+
 		rest.onfocus?.(evt);
 		toggleDropdown(true);
 		isFocusing = true;

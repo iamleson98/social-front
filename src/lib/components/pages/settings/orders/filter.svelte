@@ -20,7 +20,6 @@
 	import { BASIC_DATE_FORMAT } from '$lib/utils/consts';
 	import { orderStatusBadgeClass, paymentStatusBadgeClass } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
-	import { set } from 'es-toolkit/compat';
 
 	type Props = {
 		variables: QueryOrdersArgs;
@@ -378,25 +377,26 @@
 	filterOptions={FilterOptions}
 	searchKey={'filter.search' as keyof QueryOrdersArgs}
 	extraVariablesFiltersPatching={(variables, searchParams) => {
-		if (searchParams.customer) {
-			set(variables, 'filter.customer', searchParams.customer.value);
-		}
-		if (searchParams.metadata) {
+		if (!variables.filter) variables.filter = {};
+		const { customer, metadata, chargeStatus } = searchParams;
+
+		if (customer) variables.filter.customer = customer.value as string;
+
+		if (metadata) {
 			const value: MetadataFilter[] = [
 				{
-					key: (searchParams.metadata.value as string[])[0],
-					value: (searchParams.metadata.value as string[])[1],
+					key: (metadata.value as string[])[0],
+					value: (metadata.value as string[])[1],
 				},
 			];
-			set(variables, 'filter.metadata', value);
+			variables.filter.metadata = value;
 		}
-		if (searchParams.chargeStatus) {
+		if (chargeStatus) {
 			let value: OrderChargeStatusEnum[] = [];
-			if (searchParams.chargeStatus.operator === 'eq')
-				value = [searchParams.chargeStatus.value as OrderChargeStatusEnum];
-			else if (searchParams.chargeStatus.operator === 'oneOf')
-				value = searchParams.chargeStatus.value as OrderChargeStatusEnum[];
-			set(variables, 'filter.chargeStatus', value);
+			if (chargeStatus.operator === 'eq') value = [chargeStatus.value as OrderChargeStatusEnum];
+			else if (chargeStatus.operator === 'oneOf')
+				value = chargeStatus.value as OrderChargeStatusEnum[];
+			variables.filter.chargeStatus = value;
 		}
 
 		return variables;

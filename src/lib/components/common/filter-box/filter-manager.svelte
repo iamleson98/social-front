@@ -42,7 +42,9 @@
 	let isInitialLoad = $state(true);
 
 	const handleSearchValueChange = async (evt: Event) => {
-		const value = (evt.target as HTMLInputElement).value.trim();
+		const value = (evt.target as HTMLInputElement).value;
+		if (page.url.searchParams.get(SearchParamKey.SEARCH_QUERY)?.trim() === value) return;
+
 		page.url.searchParams.set(SearchParamKey.SEARCH_QUERY, value);
 
 		await goto(`${page.url.pathname}?${page.url.searchParams.toString()}`, { keepFocus: true });
@@ -63,7 +65,8 @@
 
 		let shouldNavigate = false;
 
-		// NOTE: Below we use `!=` instead of `!==` to compare the values here, since there are null and undefined values and the fact that <null == undefined and 3 == '3'> :))
+		// NOTE: Below we use `!=` instead of `!==` to compare the values,
+		// since there are null and undefined values and the fact that <null == undefined and 3 == '3'> :))
 
 		if (variableSortField != pageSortField || variableSortDirection != pageSortDirection) {
 			if (!!variableSortField) searchParams.set(SearchParamKey.ORDER_BY_FIELD, variableSortField);
@@ -143,6 +146,8 @@
 				set(newVariables, 'sortBy.direction', params[key].value);
 			} else if (filterOptions[key]) {
 				newFilters[key] = params[key];
+			} else if (SearchParamKey.SEARCH_QUERY === key && !!searchKey) {
+				set(newVariables, searchKey, params[key].value);
 			}
 		}
 

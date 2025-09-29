@@ -268,8 +268,10 @@ export const parseUrlSearchParams = <T>(url: URL) => {
 
 		const rangeMatches = FILTER_COMPARE_RANGE_REGEX.exec(value);
 		if (rangeMatches) {
-			const gte = rangeMatches[1].trim();
-			const lte = rangeMatches[2].trim();
+			let gte = rangeMatches[1].trim();
+			let lte = rangeMatches[2].trim();
+			if (NUMBER_REGEX.test(gte)) gte = Number(gte) as any;
+			if (NUMBER_REGEX.test(lte)) lte = Number(lte) as any;
 
 			if (lte && lte !== 'null' && gte && gte !== 'null')
 				result[key as keyof T] = {

@@ -19,7 +19,6 @@
 		QueryProductsArgs,
 		QueryProductTypesArgs,
 	} from '$lib/gql/graphql';
-	import { SearchParamKey } from '$lib/utils/consts';
 
 	type Props = {
 		forceReExecuteGraphqlQuery: boolean;
@@ -122,6 +121,7 @@
 		placeholder="Enter category"
 		query={CATEGORIES_LIST_QUERY_STORE}
 		resultKey="categories"
+		maxDisplay={6}
 		optionValueKey="id"
 		optionLabelKey="name"
 		requestPolicy="cache-and-network"
@@ -156,6 +156,7 @@
 		placeholder="Enter product type"
 		query={PRODUCT_TYPES_QUERY}
 		resultKey="productTypes"
+		maxDisplay={6}
 		optionValueKey="id"
 		optionLabelKey="name"
 		requestPolicy="cache-and-network"
@@ -246,8 +247,54 @@
 	bind:variables
 	searchKey="search"
 	extraVariablesFiltersPatching={(variables, params) => {
-		if (params[SearchParamKey.SEARCH_QUERY])
-			variables.search = params[SearchParamKey.SEARCH_QUERY].value as string;
+		const {
+			giftCard,
+			hasCategory,
+			isVisibleInListing,
+			isPublished,
+			isAvailable,
+			productTypes,
+			channel,
+			collections,
+			categories,
+			price,
+		} = params;
+		if (!variables.filter) variables.filter = {}; // create if not have
+
+		if (giftCard) variables.filter.giftCard = giftCard.value as boolean;
+		if (hasCategory) variables.filter.hasCategory = hasCategory.value as boolean;
+		if (isVisibleInListing)
+			variables.filter.isVisibleInListing = isVisibleInListing.value as boolean;
+		if (isPublished) variables.filter.isPublished = isPublished.value as boolean;
+		if (isAvailable) variables.filter.isAvailable = isAvailable.value as boolean;
+
+		if (productTypes) {
+			if (productTypes.operator === 'eq')
+				variables.filter.productTypes = [productTypes.value as string];
+			else if (productTypes.operator === 'oneOf')
+				variables.filter.productTypes = productTypes.value as string[];
+		}
+		if (channel) variables.channel = channel.value as string;
+		if (collections) variables.filter.collections = collections.value as string[];
+		if (categories) {
+			if (categories.operator === 'eq') variables.filter.categories = [categories.value as string];
+			else if (categories.operator === 'oneOf')
+				variables.filter.categories = categories.value as string[];
+		}
+		if (price) {
+			if (price.operator === 'eq')
+				variables.filter.price = {
+					gte: price.value as number,
+					lte: price.value as number,
+				};
+			else if (price.operator === 'gte') variables.filter.price = { gte: price.value as number };
+			else if (price.operator === 'lte') variables.filter.price = { lte: price.value as number };
+			else if (price.operator === 'range' && Array.isArray(price.value))
+				variables.filter.price = {
+					gte: price.value[0] as number,
+					lte: price.value[1] as number,
+				};
+		}
 
 		return variables;
 	}}

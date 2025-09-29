@@ -3,7 +3,7 @@
 	import type { SocialVariant } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import type { MediaObject } from '$lib/utils/types';
-	import { classNames, formatBytes } from '$lib/utils/utils';
+	import { formatBytes } from '$lib/utils/utils';
 	import { FileUpload, Trash } from '../icons';
 	import { IconButton } from '../ui/Button';
 	import { FileInput, Input, INPUT_CLASSES, Label } from '../ui/Input';
@@ -134,12 +134,10 @@
 				style: `background-image: url('${media.type === ProductMediaType.Image ? media.url : documentIcon}')`,
 			}}
 			<div
-				class={classNames(
+				class={[
+					!!mediaErrors?.[idx]?.length && INPUT_CLASSES['error'].bg,
 					'h-50 w-50 relative border border-gray-200 flex rounded-lg overflow-hidden bg-white bg-cover bg-center bg-no-repeat',
-					{
-						[INPUT_CLASSES['error'].bg]: !!mediaErrors?.[idx]?.length,
-					},
-				)}
+				]}
 				{...props}
 			>
 				<div

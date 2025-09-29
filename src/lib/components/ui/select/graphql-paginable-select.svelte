@@ -79,6 +79,7 @@
 	}: Props = $props();
 
 	let selectOptions = $state.raw<SelectOption[]>([]);
+	const OptionsSet = new Set();
 	let pageInfo = $state.raw<PageInfo>();
 	let errorMessage = $state();
 	let isInitialFetch = $state(true);
@@ -103,8 +104,9 @@
 		for (const edge of connection.edges) {
 			const value = get(edge.node, optionValueKey);
 			const label = get(edge.node, optionLabelKey);
-			if (!value && !label) continue;
+			if ((!value && !label) || OptionsSet.has(value)) continue;
 
+			OptionsSet.add(value);
 			selections.push({ value, label });
 		}
 
@@ -136,6 +138,7 @@
 
 		variables = newVariables;
 		selectOptions = []; // since we fetch from beginning, so no need to keep the old options
+		OptionsSet.clear();
 		innerForceFetchingMore = true; // trigger fetch over again
 	};
 
