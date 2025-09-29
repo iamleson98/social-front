@@ -8,6 +8,7 @@
 	import { Checkbox } from '$lib/components/ui/Input';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import {
+		ProductTypeConfigurable,
 		ProductTypeEnum,
 		type ProductTypeFilterInput,
 		type QueryProductTypesArgs,
@@ -68,4 +69,16 @@
 	bind:forceReExecuteGraphqlQuery
 	filterOptions={FilterOptions}
 	searchKey={'filter.search' as keyof QueryProductTypesArgs}
+	extraVariablesFiltersPatching={(newVariables, params) => {
+		const { productType, configurable } = params;
+
+		if (!newVariables.filter) newVariables.filter = {};
+
+		if (productType) newVariables.filter.productType = productType.value as ProductTypeEnum;
+		if (configurable)
+			newVariables.filter.configurable = configurable.value
+				? ProductTypeConfigurable.Configurable
+				: ProductTypeConfigurable.Simple;
+		return newVariables;
+	}}
 />
