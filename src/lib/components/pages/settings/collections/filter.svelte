@@ -98,4 +98,26 @@
 	bind:variables
 	searchKey={'filter.search' as keyof QueryCollectionsArgs}
 	bind:forceReExecuteGraphqlQuery
+	extraVariablesFiltersPatching={(newVariables, params) => {
+		const { published, channel, metadata } = params;
+
+		if (!newVariables.filter) newVariables.filter = {};
+
+		if (published)
+			newVariables.filter.published = published.value
+				? CollectionPublished.Published
+				: CollectionPublished.Hidden;
+
+		if (metadata && Array.isArray(metadata.value))
+			newVariables.filter.metadata = [
+				{
+					key: metadata.value[0] as string,
+					value: metadata.value[1] as string,
+				},
+			];
+
+		if (channel) newVariables.channel = channel.value as string;
+
+		return newVariables;
+	}}
 />

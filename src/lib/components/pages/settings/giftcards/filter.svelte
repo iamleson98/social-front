@@ -208,4 +208,39 @@
 	bind:variables
 	bind:forceReExecuteGraphqlQuery
 	searchKey="search"
+	extraVariablesFiltersPatching={(newVariables, params) => {
+		if (!newVariables.filter) newVariables.filter = {};
+
+		const { currency, used, usedBy, tags, isActive, products, initialBalance, currentBalance } =
+			params;
+
+		if (currency) newVariables.filter.currency = currency.value as string;
+		if (used) newVariables.filter.used = used.value as boolean;
+		if (usedBy && Array.isArray(usedBy.value))
+			newVariables.filter.usedBy = usedBy.value as string[];
+		if (tags && Array.isArray(tags.value)) newVariables.filter.tags = tags.value as string[];
+		if (isActive) newVariables.filter.isActive = isActive.value as boolean;
+		if (products && Array.isArray(products.value))
+			newVariables.filter.products = products.value as string[];
+		if (initialBalance) {
+			if (initialBalance.operator === 'range' && Array.isArray(initialBalance.value))
+				newVariables.filter.initialBalance = {
+					gte: initialBalance.value[0] as number,
+					lte: initialBalance.value[1] as number,
+				};
+			else if (['gte', 'lte'].includes(initialBalance.operator))
+				newVariables.filter.initialBalance = { [initialBalance.operator]: initialBalance.value };
+		}
+		if (currentBalance) {
+			if (currentBalance.operator === 'range' && Array.isArray(currentBalance.value))
+				newVariables.filter.currentBalance = {
+					gte: currentBalance.value[0] as number,
+					lte: currentBalance.value[1] as number,
+				};
+			else if (['gte', 'lte'].includes(currentBalance.operator))
+				newVariables.filter.currentBalance = { [currentBalance.operator]: currentBalance.value };
+		}
+
+		return newVariables;
+	}}
 />
