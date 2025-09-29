@@ -6,13 +6,12 @@
 	import { Button } from '$lib/components/ui';
 	import { Input } from '$lib/components/ui/Input';
 	import { type DropdownTriggerInterface, Popover } from '$lib/components/ui/Popover';
-	import type { GraphqlPaginationArgs } from '$lib/components/ui/Table';
+	import { ROW_OPTIONS, type GraphqlPaginationArgs } from '$lib/components/ui/Table';
 	import { SearchParamKey } from '$lib/utils/consts';
 	import { parseUrlSearchParams, type SearchParamsType } from '$lib/utils/utils';
 	import FilterContainer from './filter-container.svelte';
 	import type { FilterConditions, FilterProps } from './types';
 	import type { AnyVariables } from '@urql/core';
-	import { pick } from 'es-toolkit';
 	import { get, set } from 'es-toolkit/compat';
 	import { untrack } from 'svelte';
 
@@ -137,10 +136,12 @@
 		// which triggers running the $effect above infinitely.
 		let newVariables = {} as Var;
 		const newFilters = {} as FilterConditions<T>;
+		let foundAPaginationParam = false;
 
 		for (const key in params) {
 			if (paginationKeys.includes(key as SearchParamKey)) {
 				newVariables[key] = params[key].value as any;
+				foundAPaginationParam = true;
 			} else if (SearchParamKey.ORDER_BY_FIELD === key) {
 				set(newVariables, 'sortBy.field', params[key].value);
 			} else if (SearchParamKey.ORDER_DIRECTION === key) {
@@ -151,6 +152,8 @@
 				set(newVariables, searchKey, params[key].value);
 			}
 		}
+
+		if (!foundAPaginationParam) newVariables.first = ROW_OPTIONS[0];
 
 		// perform inner update extra filter state for variables
 		if (extraVariablesFiltersPatching) {

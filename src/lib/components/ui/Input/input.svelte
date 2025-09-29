@@ -56,7 +56,7 @@
 				INPUT_CLASSES[variant].bg,
 				{
 					'text-gray-400! cursor-not-allowed!': !!rest.disabled,
-					'ps-7': !!startIcon,
+					'ps-8': !!startIcon,
 					'pe-7': !!action,
 				},
 			)}
