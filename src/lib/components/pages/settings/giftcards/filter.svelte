@@ -208,7 +208,7 @@
 	bind:variables
 	bind:forceReExecuteGraphqlQuery
 	searchKey="search"
-	extraVariablesFiltersPatching={(newVariables, params) => {
+	variablePatchingCallbackAfterReload={(newVariables, params) => {
 		if (!newVariables.filter) newVariables.filter = {};
 
 		const { currency, used, usedBy, tags, isActive, products, initialBalance, currentBalance } =

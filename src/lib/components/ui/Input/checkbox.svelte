@@ -45,7 +45,7 @@
 		/>
 		<div>
 			{#if label}
-				<Label {id} {label} {required} {size} requiredAtPos="end" />
+				<Label {id} {label} {variant} {required} {size} requiredAtPos="end" />
 			{/if}
 			{#if typeof subText === 'string'}
 				<div class={`text-[10px] mt-0.5`}>{@html subText}</div>

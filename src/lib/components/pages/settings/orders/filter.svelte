@@ -376,7 +376,7 @@
 	bind:forceReExecuteGraphqlQuery
 	filterOptions={FilterOptions}
 	searchKey={'filter.search' as keyof QueryOrdersArgs}
-	extraVariablesFiltersPatching={(variables, searchParams) => {
+	variablePatchingCallbackAfterReload={(variables, searchParams) => {
 		if (!variables.filter) variables.filter = {};
 		const { customer, metadata, chargeStatus } = searchParams;
 

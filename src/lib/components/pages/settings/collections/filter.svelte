@@ -98,7 +98,7 @@
 	bind:variables
 	searchKey={'filter.search' as keyof QueryCollectionsArgs}
 	bind:forceReExecuteGraphqlQuery
-	extraVariablesFiltersPatching={(newVariables, params) => {
+	variablePatchingCallbackAfterReload={(newVariables, params) => {
 		const { published, channel, metadata } = params;
 
 		if (!newVariables.filter) newVariables.filter = {};

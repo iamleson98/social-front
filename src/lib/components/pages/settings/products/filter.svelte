@@ -246,7 +246,7 @@
 	bind:forceReExecuteGraphqlQuery
 	bind:variables
 	searchKey="search"
-	extraVariablesFiltersPatching={(variables, params) => {
+	variablePatchingCallbackAfterReload={(variables, params) => {
 		const {
 			giftCard,
 			hasCategory,

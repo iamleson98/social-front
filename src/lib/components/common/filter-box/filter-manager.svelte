@@ -23,8 +23,13 @@
 		searchKey?: keyof Var | string;
 		forceReExecuteGraphqlQuery: boolean;
 		disabled?: boolean;
-		/** the parent component should handle update extra filters setting on the variables, on their own. Don't update pagination fields */
-		extraVariablesFiltersPatching?: (variables: Var, searchParams: SearchParamsType<T>) => Var;
+		/** 
+		 * In tabular pages, we support all kind of search params, filtering, sortings, paginations. those things reflects directly on the URL bar.
+		 * This callback serves as a means to plug those search params into the variables.
+		 * the parent component should handle update extra filters setting on the variables, on their own.
+		 * NOTE: Please do not try to update pagination fields (first, last, before, after, order_by_field, order_direction) within this callback. They are handled automatically.
+		 */
+		variablePatchingCallbackAfterReload?: (variables: Var, searchParams: SearchParamsType<T>) => Var;
 	};
 
 	let {
@@ -33,7 +38,7 @@
 		searchKey,
 		forceReExecuteGraphqlQuery = $bindable(false),
 		disabled,
-		extraVariablesFiltersPatching,
+		variablePatchingCallbackAfterReload,
 	}: Props = $props();
 
 	let openFilterBox = $state(false);
@@ -156,10 +161,10 @@
 		if (!foundAPaginationParam) newVariables.first = ROW_OPTIONS[0];
 
 		// perform inner update extra filter state for variables
-		if (extraVariablesFiltersPatching) {
+		if (variablePatchingCallbackAfterReload) {
 			// NOTE: reassign like this prevent the parent unexpectedly update pagination fields
 			newVariables = {
-				...extraVariablesFiltersPatching({ ...newVariables }, params),
+				...variablePatchingCallbackAfterReload({ ...newVariables }, params),
 				...newVariables,
 			};
 		}

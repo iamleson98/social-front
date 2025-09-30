@@ -45,12 +45,13 @@
 	}));
 </script>
 
-{#snippet yesNo({ initialValue = false, onValue }: FilterComponentType)}
+{#snippet yesNo({ initialValue, onValue }: FilterComponentType)}
 	<Checkbox
 		size="sm"
 		label="yes"
-		checked={initialValue as boolean}
-		onchange={(evt) => onValue(evt.currentTarget.checked)}
+		checked={initialValue === ProductTypeConfigurable.Configurable}
+		onCheckChange={(checked) =>
+			onValue(checked ? ProductTypeConfigurable.Configurable : ProductTypeConfigurable.Simple)}
 	/>
 {/snippet}
 
@@ -69,16 +70,15 @@
 	bind:forceReExecuteGraphqlQuery
 	filterOptions={FilterOptions}
 	searchKey={'filter.search' as keyof QueryProductTypesArgs}
-	extraVariablesFiltersPatching={(newVariables, params) => {
+	variablePatchingCallbackAfterReload={(newVariables, params) => {
 		const { productType, configurable } = params;
 
 		if (!newVariables.filter) newVariables.filter = {};
 
 		if (productType) newVariables.filter.productType = productType.value as ProductTypeEnum;
 		if (configurable)
-			newVariables.filter.configurable = configurable.value
-				? ProductTypeConfigurable.Configurable
-				: ProductTypeConfigurable.Simple;
+			newVariables.filter.configurable = configurable.value as ProductTypeConfigurable;
+
 		return newVariables;
 	}}
 />

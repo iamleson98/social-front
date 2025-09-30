@@ -90,8 +90,9 @@
 	<ChannelSelect
 		size="xs"
 		placeholder="Channel"
+		valueType="slug"
 		value={initialValue}
-		onchange={(value) => onValue((value as Channel)?.id as FilterItemValue)}
+		onchange={(value) => onValue((value as Channel)?.slug as FilterItemValue)}
 	/>
 {/snippet}
 
@@ -100,4 +101,25 @@
 	bind:forceReExecuteGraphqlQuery
 	bind:variables
 	searchKey={'filter.search' as keyof QueryAttributesArgs}
+	variablePatchingCallbackAfterReload={(variables, params) => {
+		const {
+			filterableInStorefront,
+			isVariantOnly,
+			valueRequired,
+			visibleInStorefront,
+			type,
+			channel,
+		} = params;
+
+		if (!variables.filter) variables.filter = {};
+
+		if (filterableInStorefront) variables.filter.filterableInStorefront = filterableInStorefront.value as boolean;
+		if (isVariantOnly) variables.filter.isVariantOnly = isVariantOnly.value as boolean;
+		if (valueRequired) variables.filter.valueRequired = valueRequired.value as boolean;
+		if (visibleInStorefront) variables.filter.visibleInStorefront = visibleInStorefront.value as boolean;
+		if (type) variables.filter.type = type.value as AttributeTypeEnum;
+		if (channel) variables.channel = channel.value as string;
+
+		return variables;
+	}}
 />

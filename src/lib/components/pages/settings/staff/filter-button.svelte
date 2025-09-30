@@ -50,7 +50,7 @@
 	bind:variables
 	bind:forceReExecuteGraphqlQuery
 	searchKey="filter.search"
-	extraVariablesFiltersPatching={(variables, searchParams) => {
+	variablePatchingCallbackAfterReload={(variables, searchParams) => {
 		if (searchParams.status) {
 			set(variables, 'filter.status', searchParams.status.value);
 		}

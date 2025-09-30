@@ -71,7 +71,7 @@
 </div>
 
 {#snippet action()}
-	<Button variant="light" color="gray" size="xs">Action</Button>
+	<Button size="xs">Action</Button>
 {/snippet}
 
 <div class="mt-5">
