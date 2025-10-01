@@ -13,7 +13,6 @@
 		OrderStatus,
 		OrderStatusFilter,
 		PaymentChargeStatusEnum,
-		type MetadataFilter,
 		type OrderFilterInput,
 		type QueryOrdersArgs,
 	} from '$lib/gql/graphql';
@@ -278,11 +277,11 @@
 		multiple
 		onchange={(opt) => {
 			if (opt && Array.isArray(opt)) {
-				onValue(opt.map((opt) => opt.id as string));
+				onValue(opt.map((opt) => opt.slug as string));
 			}
 		}}
 		value={initialValue as string[]}
-		valueType="id"
+		valueType="slug"
 	/>
 {/snippet}
 
@@ -376,29 +375,92 @@
 	bind:forceReExecuteGraphqlQuery
 	filterOptions={FilterOptions}
 	searchKey={'filter.search' as keyof QueryOrdersArgs}
-	variablePatchingCallbackAfterReload={(variables, searchParams) => {
-		if (!variables.filter) variables.filter = {};
-		const { customer, metadata, chargeStatus } = searchParams;
+	variablePatchingCallbackAfterReload={(filterVariables, searchParams) => {
+		const {
+			customer,
+			metadata,
+			chargeStatus,
+			ids,
+			search,
+			channels,
+			created,
+			updatedAt,
+			paymentStatus,
+			status,
+			isClickAndCollect,
+			isPreorder,
+			giftCardBought,
+			giftCardUsed,
+			authorizeStatus,
+		} = searchParams;
 
-		if (customer) variables.filter.customer = customer.value as string;
+		if (!filterVariables.filter) filterVariables.filter = {};
 
-		if (metadata) {
-			const value: MetadataFilter[] = [
+		if (customer) filterVariables.filter.customer = customer.value as string;
+		if (metadata)
+			filterVariables.filter.metadata = [
 				{
 					key: (metadata.value as string[])[0],
 					value: (metadata.value as string[])[1],
 				},
 			];
-			variables.filter.metadata = value;
-		}
+
 		if (chargeStatus) {
 			let value: OrderChargeStatusEnum[] = [];
 			if (chargeStatus.operator === 'eq') value = [chargeStatus.value as OrderChargeStatusEnum];
 			else if (chargeStatus.operator === 'oneOf')
 				value = chargeStatus.value as OrderChargeStatusEnum[];
-			variables.filter.chargeStatus = value;
+			filterVariables.filter.chargeStatus = value;
+		}
+		if (ids && Array.isArray(ids.value)) filterVariables.filter.ids = ids.value as string[];
+		if (search) filterVariables.filter.search = search.value as string;
+		if (channels && Array.isArray(channels.value))
+			filterVariables.filter.channels = channels.value as string[];
+		if (created) {
+			if (created.operator === 'range' && Array.isArray(created.value))
+				filterVariables.filter.created = {
+					gte: created.value[0],
+					lte: created.value[1],
+				};
+			else if (['gte', 'lte'].includes(created.operator))
+				filterVariables.filter.created = { [created.operator]: created.value };
+		}
+		if (updatedAt) {
+			if (updatedAt.operator === 'range' && Array.isArray(updatedAt.value))
+				filterVariables.filter.updatedAt = {
+					gte: updatedAt.value[0],
+					lte: updatedAt.value[1],
+				};
+			else if (['gte', 'lte'].includes(updatedAt.operator))
+				filterVariables.filter.updatedAt = { [updatedAt.operator]: updatedAt.value };
+		}
+		if (paymentStatus) {
+			if (paymentStatus.operator === 'eq')
+				filterVariables.filter.paymentStatus = [paymentStatus.value] as PaymentChargeStatusEnum[];
+			else if (paymentStatus.operator === 'oneOf')
+				filterVariables.filter.paymentStatus = paymentStatus.value as PaymentChargeStatusEnum[];
+		}
+		if (status) {
+			if (status.operator === 'eq')
+				filterVariables.filter.status = [status.value] as OrderStatusFilter[];
+			else if (status.operator === 'oneOf')
+				filterVariables.filter.status = status.value as OrderStatusFilter[];
+		}
+		if (isClickAndCollect)
+			filterVariables.filter.isClickAndCollect = isClickAndCollect.value as boolean;
+		if (isPreorder) filterVariables.filter.isPreorder = isPreorder.value as boolean;
+		if (giftCardBought) filterVariables.filter.giftCardBought = giftCardBought.value as boolean;
+		if (giftCardUsed) filterVariables.filter.giftCardUsed = giftCardUsed.value as boolean;
+		if (authorizeStatus) {
+			if (authorizeStatus.operator === 'oneOf' && Array.isArray(authorizeStatus.value))
+				filterVariables.filter.authorizeStatus =
+					authorizeStatus.value as OrderAuthorizeStatusEnum[];
+			else
+				filterVariables.filter.authorizeStatus = [
+					authorizeStatus.value,
+				] as OrderAuthorizeStatusEnum[];
 		}
 
-		return variables;
+		return filterVariables;
 	}}
 />

@@ -8,7 +8,8 @@
 	import { AppRoute } from '$lib/utils';
 	import { CHANNELS } from '$lib/utils/consts';
 	import { MAX_RATING, MIN_RATING } from '$lib/utils/consts';
-	import { clamp, formatMoney } from '$lib/utils/utils';
+	import { formatMoney } from '$lib/utils/utils';
+	import { clamp } from 'es-toolkit/compat';
 	import { fade } from 'svelte/transition';
 
 	type ProductProps = {

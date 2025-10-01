@@ -1,4 +1,5 @@
 import type { LanguageCodeEnum, ProductMediaType, QueryCheckoutArgs } from '$lib/gql/graphql';
+import { clamp } from 'es-toolkit';
 
 export type CustomQueryCheckoutArgs = { languageCode?: LanguageCodeEnum } & QueryCheckoutArgs;
 

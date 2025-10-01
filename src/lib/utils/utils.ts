@@ -375,10 +375,6 @@ export const constructUrlSearchParamsAndNavigate = async <T>(activeFilters: Filt
 	await goto(`${page.url.pathname}?${page.url.searchParams.toString()}`);
 };
 
-export const clamp = (value: number, min: number, max: number): number => {
-	return Math.min(Math.max(value, min), max);
-};
-
 type ClassArgs = Record<string, boolean> | string;
 
 /** works like clsx for class names */
