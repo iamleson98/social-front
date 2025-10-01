@@ -2,13 +2,13 @@
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { OrderDirection, ProductOrderField } from '$lib/gql/graphql';
-	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
+	import { productFilterParamStore, type ProductFilterParams } from '$lib/stores/app/product-filter.svelte';
 	import { SearchParamKey } from '$lib/utils/consts';
 	import { NUMBER_REGEX, parseUrlSearchParams } from '$lib/utils/utils';
 	import { get } from 'svelte/store';
 
 	afterNavigate(async () => {
-		const queryParams = parseUrlSearchParams(page.url);
+		const queryParams = parseUrlSearchParams<ProductFilterParams>(page.url);
 		const newProductQueryArgs = get(productFilterParamStore);
 
 		// parse sort by field:

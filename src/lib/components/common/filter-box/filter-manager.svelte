@@ -124,10 +124,10 @@
 	 */
 	afterNavigate(async () => {
 		const params = parseUrlSearchParams<T>(page.url);
-		if (!params || !Object.keys(params).length) {
-			isInitialLoad = false;
-			return;
-		}
+		// if (!params || !Object.keys(params).length) {
+		// 	isInitialLoad = false;
+		// 	return;
+		// }
 
 		scrollTo({ top: 0, behavior: 'smooth' });
 

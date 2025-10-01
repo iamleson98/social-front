@@ -49,10 +49,11 @@
 
 {#snippet selectAll({ items }: { items: Page[] })}
 	<Checkbox
-		checked={selectedBlogIds.size === items.length}
+		checked={selectedBlogIds.size === items.length && !!items.length}
 		onCheckChange={(checked) => {
 			selectedBlogIds = checked ? new SvelteSet(items.map((item) => item.id)) : new SvelteSet();
 		}}
+		disabled={!items.length}
 	/>
 {/snippet}
 

@@ -47,4 +47,15 @@
 	bind:variables
 	bind:forceReExecuteGraphqlQuery
 	searchKey="filter.search"
+	variablePatchingCallbackAfterReload={(filterVariables, params) => {
+		const { pageTypes, search } = params;
+
+		if (!filterVariables.filter) filterVariables.filter = {};
+
+		if (pageTypes && Array.isArray(pageTypes.value))
+			filterVariables.filter.pageTypes = pageTypes.value as string[];
+		if (search && search.value) filterVariables.filter.search = search.value as string;
+
+		return filterVariables;
+	}}
 />
