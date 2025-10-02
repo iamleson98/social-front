@@ -119,5 +119,6 @@
 		resultKey="products"
 		bind:variables
 		bind:forceReExecuteGraphqlQuery
+		autoRefetchOnVariableChange
 	/>
 </Modal>

@@ -61,14 +61,13 @@
 	filterOptions={FilterOptions}
 	searchKey={'filter.search' as keyof QueryProductTypesArgs}
 	variablePatchingCallbackAfterReload={(newVariables, params) => {
-		const { productType, configurable, search } = params;
+		const { productType, configurable } = params;
 
 		if (!newVariables.filter) newVariables.filter = {};
 
 		if (productType) newVariables.filter.productType = productType.value as ProductTypeEnum;
 		if (configurable)
 			newVariables.filter.configurable = configurable.value as ProductTypeConfigurable;
-		if (search) newVariables.filter.search = search.value as string;
 
 		return newVariables;
 	}}

@@ -280,7 +280,6 @@
 			metadata,
 			chargeStatus,
 			ids,
-			search,
 			channels,
 			created,
 			updatedAt,
@@ -312,7 +311,6 @@
 			filterVariables.filter.chargeStatus = value;
 		}
 		if (ids && Array.isArray(ids.value)) filterVariables.filter.ids = ids.value as string[];
-		if (search) filterVariables.filter.search = search.value as string;
 		if (channels && Array.isArray(channels.value))
 			filterVariables.filter.channels = channels.value as string[];
 		if (created) {

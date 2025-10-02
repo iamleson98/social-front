@@ -391,7 +391,7 @@ export const PROMOTION_RULE_DELETE_MUTATION = gql`
 	}
 `;
 
-export const PROMOTION_RULE_CONDITIONS_SELECTED_OPTIONS_DETAILS = gql`
+export const PROMOTION_RULE_CONDITIONS_SELECTED_OPTIONS_DETAILS_QUERY = gql`
 	query PromotionRuleConditionsSelectedOptionsDetails(
 		$categoriesIds: [ID!]
 		$collectionsIds: [ID!]

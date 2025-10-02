@@ -424,5 +424,6 @@
 		disabled={shouldDisable}
 		bind:variables={availableAttributeVariables}
 		bind:forceReExecuteGraphqlQuery={forceFetchAvailableAttributes}
+		autoRefetchOnVariableChange
 	/>
 </Modal>

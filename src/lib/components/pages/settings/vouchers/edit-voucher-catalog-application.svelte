@@ -297,6 +297,7 @@
 
 	{#if activeTab === 'collections'}
 		<GraphqlPaginableTable
+			autoRefetchOnVariableChange
 			query={VOUCHER_COLLECTIONS_QUERY}
 			bind:variables={voucherRelationVars}
 			bind:forceReExecuteGraphqlQuery
@@ -306,6 +307,7 @@
 		/>
 	{:else if activeTab === 'products'}
 		<GraphqlPaginableTable
+			autoRefetchOnVariableChange
 			query={VOUCHER_PRODUCTS_QUERY}
 			bind:variables={voucherRelationVars}
 			bind:forceReExecuteGraphqlQuery
@@ -315,6 +317,7 @@
 		/>
 	{:else if activeTab === 'categories'}
 		<GraphqlPaginableTable
+			autoRefetchOnVariableChange
 			query={VOUCHER_CATEGORIES_QUERY}
 			bind:variables={voucherRelationVars}
 			disabled={disabled || loading}
@@ -324,6 +327,7 @@
 		/>
 	{:else if activeTab === 'variants'}
 		<GraphqlPaginableTable
+			autoRefetchOnVariableChange
 			query={VOUCHER_VARIANTS_QUERY}
 			disabled={disabled || loading}
 			bind:variables={voucherRelationVars}

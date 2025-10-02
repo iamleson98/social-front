@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
 	import {
-		PROMOTION_RULE_CONDITIONS_SELECTED_OPTIONS_DETAILS,
+		PROMOTION_RULE_CONDITIONS_SELECTED_OPTIONS_DETAILS_QUERY,
 		PROMOTION_RULE_CREATE_MUTATION,
 		PROMOTION_RULE_DELETE_MUTATION,
 		PROMOTION_RULE_UPDATE_MUTATION,
@@ -63,8 +62,8 @@
 	let rulesActiveCatalogueTabs = $state<TabKey[]>(new Array(rules.length).fill('products'));
 	let ruleUpsertInput = $state<PromotionRuleUpdateInput & { id?: string }>();
 
-	const rulePredicateQuery = operationStore<QueryData>({
-		query: PROMOTION_RULE_CONDITIONS_SELECTED_OPTIONS_DETAILS,
+	const RulePredicateQuery = operationStore<QueryData>({
+		query: PROMOTION_RULE_CONDITIONS_SELECTED_OPTIONS_DETAILS_QUERY,
 		variables: {},
 		pause: true,
 	});
@@ -91,7 +90,7 @@
 		}
 
 		if (productsIds.length || variantsIds.length || categoriesIds.length || collectionsIds.length) {
-			rulePredicateQuery.reexecute({
+			RulePredicateQuery.reexecute({
 				variables: {
 					productsIds,
 					variantsIds,
@@ -104,7 +103,7 @@
 
 	const handleDeleteRule = async (ruleId: string) => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: $tranFunc('common.confirmDel'),
+			content: $CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true;
 				const result = await GRAPHQL_CLIENT.mutation<
@@ -277,13 +276,13 @@
 					<div class="space-y-2">
 						<div class="text-sm font-medium text-gray-700">Predicates</div>
 
-						{#if $rulePredicateQuery.fetching}
+						{#if $RulePredicateQuery.fetching}
 							<TableSkeleton numColumns={4} numOfRows={1} />
-						{:else if $rulePredicateQuery.error}
-							<Alert size="sm" bordered variant="error">{$rulePredicateQuery.error.message}</Alert>
-						{:else if $rulePredicateQuery.data}
+						{:else if $RulePredicateQuery.error}
+							<Alert size="sm" bordered variant="error">{$RulePredicateQuery.error.message}</Alert>
+						{:else if $RulePredicateQuery.data}
 							{@const { ruleCategories, ruleCollections, ruleProducts, ruleVariants } =
-								classifyRuleCatalog(rule.cataloguePredicate, $rulePredicateQuery.data)}
+								classifyRuleCatalog(rule.cataloguePredicate, $RulePredicateQuery.data)}
 							{@const tabs: {key: TabKey, display: string}[] = [
 								{
 									key: 'products',

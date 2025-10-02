@@ -11,7 +11,6 @@
 	import { FilterManager } from '$lib/components/common/filter-box';
 	import { CommonSnippets } from '$lib/components/common/filter-box/snippets.svelte';
 	import ShopCurrenciesSelect from '$lib/components/common/shop-currencies-select.svelte';
-	import { Input } from '$lib/components/ui/Input';
 	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
 	import {
 		type GiftCardFilterInput,
@@ -92,16 +91,6 @@
 		placeholder={$tranFunc('common.currency')}
 		value={initialValue}
 		inputDebounceOption={{ onInput: (evt) => onValue((evt.target as HTMLInputElement).value) }}
-	/>
-{/snippet}
-
-{#snippet numberSnippet({ onValue, initialValue, placeholder }: FilterComponentType)}
-	<Input
-		type="number"
-		{placeholder}
-		value={initialValue}
-		inputDebounceOption={{ onInput: (evt) => onValue((evt.target as HTMLInputElement).value) }}
-		size="xs"
 	/>
 {/snippet}
 

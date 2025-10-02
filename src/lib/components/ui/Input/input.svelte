@@ -57,7 +57,7 @@
 				{
 					'text-gray-400! cursor-not-allowed!': !!rest.disabled,
 					'ps-8': !!startIcon,
-					'pe-7': !!action,
+					'pe-8': !!action,
 				},
 			)}
 			{...rest}

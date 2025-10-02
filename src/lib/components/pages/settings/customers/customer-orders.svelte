@@ -82,5 +82,6 @@
 		resultKey={'user.orders' as keyof Query}
 		bind:forceReExecuteGraphqlQuery
 		{disabled}
+		autoRefetchOnVariableChange
 	/>
 </div>

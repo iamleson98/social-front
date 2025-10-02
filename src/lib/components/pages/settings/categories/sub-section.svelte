@@ -96,6 +96,7 @@
 				variables={{ first: 10, id: categoryId } as QueryCategoriesArgs}
 				bind:forceReExecuteGraphqlQuery
 				columns={CATEGORY_CHILDREN_COLUMNS}
+				autoRefetchOnVariableChange
 			/>
 		</div>
 	</div>
@@ -109,6 +110,7 @@
 				variables={{ first: 10, filter: { categories: [categoryId] } } as QueryProductsArgs}
 				bind:forceReExecuteGraphqlQuery
 				columns={PRODUCTS_COLUMNS}
+				autoRefetchOnVariableChange
 			/>
 		</div>
 	</div>

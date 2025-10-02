@@ -316,7 +316,7 @@
 		},
 		{
 			icon: LockCog,
-			name: 'Permission groups',
+			name: $tranFunc('permissionGroup.permGroups'),
 			href: AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUPS(),
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUPS(),

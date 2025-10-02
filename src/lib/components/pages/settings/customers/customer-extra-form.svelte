@@ -89,6 +89,7 @@
 			resultKey={'user.giftCards' as keyof Query}
 			columns={UserGiftcardColumns}
 			{disabled}
+			autoRefetchOnVariableChange
 		/>
 
 		<Button size="xs" class="mt-3" onclick={() => (openAddGiftcardModal = true)} {disabled}>

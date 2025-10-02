@@ -315,6 +315,7 @@
 					bind:forceReExecuteGraphqlQuery
 					onDragEnd={handleArrangeValues}
 					dragEffectType="move-position"
+					autoRefetchOnVariableChange
 				/>
 			{/if}
 		{:else}

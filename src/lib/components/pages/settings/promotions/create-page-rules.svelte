@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PROMOTION_RULE_CONDITIONS_SELECTED_OPTIONS_DETAILS } from '$lib/api/admin/discount';
+	import { PROMOTION_RULE_CONDITIONS_SELECTED_OPTIONS_DETAILS_QUERY } from '$lib/api/admin/discount';
 	import { CHANNELS_QUERY } from '$lib/api/channels';
 	import { operationStore } from '$lib/api/operation';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
@@ -49,7 +49,7 @@
 	let selectedCollections = $state<Record<string, Collection>>({});
 
 	const RulePredicateQuery = operationStore<QueryData>({
-		query: PROMOTION_RULE_CONDITIONS_SELECTED_OPTIONS_DETAILS,
+		query: PROMOTION_RULE_CONDITIONS_SELECTED_OPTIONS_DETAILS_QUERY,
 		variables: {},
 		pause: true,
 		requestPolicy: 'cache-and-network',

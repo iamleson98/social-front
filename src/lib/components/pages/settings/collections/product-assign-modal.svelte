@@ -145,6 +145,7 @@
 			bind:forceReExecuteGraphqlQuery
 			columns={PRODUCT_MODAL_COLUMNS}
 			disabled={shouldDisable}
+			autoRefetchOnVariableChange
 		/>
 	{/if}
 </Modal>

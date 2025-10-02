@@ -126,6 +126,7 @@ export default {
 		order: 'Đơn hàng',
 		fileExporting:
 			'Chúng tôi đang xuất file bạn yêu cầu. File sẽ được gửi đến địa chỉ email của bạn',
+		search: 'Tìm kiếm',
 	},
 	product: {
 		chooseAddress: 'Vui lòng chọn địa chỉ',
@@ -324,7 +325,7 @@ export default {
 		staffs: 'Nhân viên',
 		channelLinkHelpTxt: 'Tạo và khai báo các kênh bán hàng',
 		staffLinkHelpTxt: 'Quản lý nhân viên và phân quyền',
-		users: 'Users',
+		users: 'Người dùng',
 	},
 	payment: {
 		clickAndCollectShippingMethod: 'click&collect',
@@ -584,5 +585,17 @@ export default {
 		eligibleVariants: 'Các phân loại sản phẩm đủ điều kiện',
 		eligibleCollections: 'Các bộ sưu tập đủ điều kiện',
 		eligibleCategories: 'Các danh mục đủ điều kiện',
+	},
+	permissionGroup: {
+		restrictChanAccess: 'Giới hạn truy cập vào các kênh',
+		visibleOrderChanLabel: 'Chọn các kênh hiển thị với đơn hàng',
+		groupMembers: 'Các thành viên nhóm',
+		unassignUsers: 'Bỏ gán nhóm người này',
+		assignUsers: 'Gán nhóm người này',
+		yourPerms: 'Các quyền của bạn',
+		assignAllPerms: 'Gán tất cả các quyền',
+		assignAllPermsSubtext: 'Chọn ô này để gán tất cả các quyền cho nhóm này',
+		permGroups: 'Các nhóm quyền',
+		newGroup: 'Thêm nhóm quyền',
 	},
 };

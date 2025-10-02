@@ -237,5 +237,6 @@
 		bind:variables
 		bind:forceReExecuteGraphqlQuery
 		disabled={loading}
+		autoRefetchOnVariableChange
 	/>
 </Modal>

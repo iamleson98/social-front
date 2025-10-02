@@ -126,6 +126,7 @@ export default {
 		order: 'Order',
 		fileExporting:
 			'We are currently exporting your requested file. As soon as it is available it will be sent to your email address',
+		search: 'Search',
 	},
 	product: {
 		chooseAddress: 'Please choose address',
@@ -583,5 +584,17 @@ export default {
 		eligibleVariants: 'Eligible variants',
 		eligibleCollections: 'Eligible collections',
 		eligibleCategories: 'Eligibe categories',
+	},
+	permissionGroup: {
+		restrictChanAccess: 'Restricted access to channels',
+		visibleOrderChanLabel: 'Select visible order channels',
+		groupMembers: 'Group members',
+		unassignUsers: 'Unassign users',
+		assignUsers: 'Assign users',
+		yourPerms: 'Your permissions',
+		assignAllPerms: 'Assign all permissions',
+		assignAllPermsSubtext: 'Select this checkbox to assign all permissions to this group',
+		permGroups: 'Permission groups',
+		newGroup: 'New permission group',
 	},
 };

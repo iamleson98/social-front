@@ -240,6 +240,7 @@
 			onDragEnd={handleReOrderProductsInCollection}
 			dragEffectType="move-position"
 			disabled={shouldDisable}
+			autoRefetchOnVariableChange
 		/>
 	</div>
 </div>

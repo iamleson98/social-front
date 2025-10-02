@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { PERMISSION_GROUP_LIST_QUERY } from '$lib/api/admin/users';
 	import { FilterManager } from '$lib/components/common/filter-box';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
@@ -11,12 +12,12 @@
 
 	const PermissionGroupColumns: TableColumnProps<Group, PermissionGroupSortField>[] = [
 		{
-			title: 'Name',
+			title: $tranFunc('common.name'),
 			child: name,
 			key: PermissionGroupSortField.Name,
 		},
 		{
-			title: 'Users',
+			title: $tranFunc('settings.users'),
 			child: users,
 		},
 	];

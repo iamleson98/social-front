@@ -46,6 +46,7 @@
 		columns={ShippingColumns}
 		bind:variables={warehouseShippingZonesVariables}
 		{disabled}
+		autoRefetchOnVariableChange
 	/>
 </div>
 

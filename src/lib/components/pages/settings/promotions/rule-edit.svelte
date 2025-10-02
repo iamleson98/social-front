@@ -40,12 +40,10 @@
 		disabled,
 	}: Props = $props();
 
-	const POSITIVE_ERROR = $tranFunc('error.negativeNumber');
-
 	const RuleSchema = object({
 		name: string().nonempty($CommonState.FieldRequiredError),
 		addChannels: array(string()).nonempty($CommonState.FieldRequiredError),
-		rewardValue: number().nonnegative(POSITIVE_ERROR),
+		rewardValue: number().nonnegative($CommonState.NonNegativeError),
 		rewardValueType: z.enum([RewardValueTypeEnum.Fixed, RewardValueTypeEnum.Percentage]),
 	});
 

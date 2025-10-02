@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Checkbox } from '$lib/components/ui/Input';
 	import type { Permission, PermissionEnum } from '$lib/gql/graphql';
@@ -58,11 +59,11 @@
 </script>
 
 <div class="w-2/5 {SitenameCommonClassName}">
-	<SectionHeader>Your Permissions</SectionHeader>
+	<SectionHeader>{$tranFunc('permissionGroup.yourPerms')}</SectionHeader>
 
 	<Checkbox
-		label="Assign all permissions"
-		subText="Select this checkbox to assign all permissions to this group"
+		label={$tranFunc('permissionGroup.assignAllPerms')}
+		subText={$tranFunc('permissionGroup.assignAllPermsSubtext')}
 		checked={permissions.length === $ShopStoreManager?.permissions?.length}
 		readonly={!editable || disabled}
 		onCheckChange={handleToggleAssignAllPermissions}

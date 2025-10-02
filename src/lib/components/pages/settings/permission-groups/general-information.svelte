@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { STAFFS_QUERY } from '$lib/api/admin/staff';
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
@@ -87,20 +88,20 @@
 		},
 	];
 
-	const UserColumns: TableColumnProps<User>[] = [
+	const UserColumns: TableColumnProps<User>[] = $derived([
 		{
-			title: 'Avatar',
+			title: $tranFunc('staff.avatar'),
 			child: avatar,
 		},
 		{
-			title: 'Name',
+			title: $tranFunc('common.name'),
 			child: userName,
 		},
 		{
-			title: 'Email',
+			title: $tranFunc('common.email'),
 			child: email,
 		},
-	];
+	]);
 
 	const validate = () => {
 		const result = GroupSchema.safeParse({
@@ -197,11 +198,11 @@
 
 <div class="w-3/5 space-y-2">
 	<div class={SitenameCommonClassName}>
-		<SectionHeader>General information</SectionHeader>
+		<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
 
 		<Input
-			placeholder="Name"
-			label="Name"
+			placeholder={$tranFunc('common.name')}
+			label={$tranFunc('common.name')}
 			bind:value={name}
 			required
 			{disabled}
@@ -212,15 +213,15 @@
 			subText={permissionGroupErrors?.name?.[0]}
 		/>
 		<Checkbox
-			label="Restricted access to channels"
+			label={$tranFunc('permissionGroup.restrictChanAccess')}
 			bind:checked={restrictedAccessToChannels}
 			readonly={!editable}
 			{disabled}
 		/>
 		{#if restrictedAccessToChannels}
 			<ChannelSelect
-				placeholder="Select channels"
-				label="Select visible order channels"
+				placeholder={$tranFunc('channel.channels')}
+				label={$tranFunc('permissionGroup.visibleOrderChanLabel')}
 				required
 				bind:value={selectedChannels}
 				{disabled}
@@ -236,7 +237,7 @@
 
 	<div class={SitenameCommonClassName}>
 		<SectionHeader>
-			<div>Group members</div>
+			<div>{$tranFunc('permissionGroup.groupMembers')}</div>
 
 			<div class="flex gap-1">
 				<Button
@@ -247,7 +248,7 @@
 					disabled={disabled || !innerSelectedUsersToUnassign.size || !editable}
 					onclick={handleUnassignUsers}
 				>
-					Unassign users
+					{$tranFunc('permissionGroup.unassignUsers')}
 				</Button>
 				<Button
 					size="xs"
@@ -259,7 +260,7 @@
 					}}
 					disabled={disabled || !editable}
 				>
-					Assign users
+					{$tranFunc('permissionGroup.assignUsers')}
 				</Button>
 			</div>
 		</SectionHeader>
@@ -270,7 +271,7 @@
 
 <Modal
 	open={openAssignUserModal}
-	header="Assign users"
+	header={$tranFunc('permissionGroup.assignUsers')}
 	closeOnEscape
 	closeOnOutsideClick
 	onClose={() => (openAssignUserModal = false)}
@@ -279,7 +280,7 @@
 	onOk={handleAssignUsers}
 >
 	<Input
-		placeholder="Search"
+		placeholder={$tranFunc('common.search')}
 		class="mb-2"
 		bind:value={staffUsersVariables.filter!.search}
 		startIcon={Search}
@@ -294,5 +295,6 @@
 		resultKey="staffUsers"
 		bind:variables={staffUsersVariables}
 		bind:forceReExecuteGraphqlQuery
+		autoRefetchOnVariableChange
 	/>
 </Modal>

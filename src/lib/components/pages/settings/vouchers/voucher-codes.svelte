@@ -216,6 +216,7 @@
 			}}
 			bind:forceReExecuteGraphqlQuery
 			columns={TABLE_COLUMNS}
+			autoRefetchOnVariableChange
 		/>
 	{/if}
 </div>

@@ -152,6 +152,7 @@
 
 		{#if activeTab === 'categories'}
 			<GraphqlPaginableTable
+				autoRefetchOnVariableChange
 				columns={SelectCol.concat(CATEGORY_COLUMNS)}
 				query={CATEGORIES_LIST_QUERY_STORE}
 				resultKey="categories"
@@ -161,6 +162,7 @@
 			/>
 		{:else if activeTab === 'collections'}
 			<GraphqlPaginableTable
+				autoRefetchOnVariableChange
 				columns={SelectCol.concat(COLLECTION_COLUMNS)}
 				query={COLLECTIONS_QUERY}
 				resultKey="collections"
@@ -170,6 +172,7 @@
 			/>
 		{:else if activeTab === 'products'}
 			<GraphqlPaginableTable
+				autoRefetchOnVariableChange
 				columns={SelectCol.concat(PRODUCT_COLUMNS)}
 				query={PRODUCT_LIST_QUERY}
 				resultKey="products"
@@ -179,6 +182,7 @@
 			/>
 		{:else if activeTab === 'variants'}
 			<GraphqlPaginableTable
+				autoRefetchOnVariableChange
 				columns={SelectCol.concat(VARIANT_COLUMNS)}
 				query={PRODUCT_VARIANTS_QUERY}
 				resultKey="productVariants"
