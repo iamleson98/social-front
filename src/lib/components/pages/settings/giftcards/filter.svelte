@@ -9,8 +9,9 @@
 		FilterProps,
 	} from '$lib/components/common/filter-box';
 	import { FilterManager } from '$lib/components/common/filter-box';
+	import { CommonSnippets } from '$lib/components/common/filter-box/snippets.svelte';
 	import ShopCurrenciesSelect from '$lib/components/common/shop-currencies-select.svelte';
-	import { Checkbox, Input } from '$lib/components/ui/Input';
+	import { Input } from '$lib/components/ui/Input';
 	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
 	import {
 		type GiftCardFilterInput,
@@ -38,18 +39,18 @@
 			label: $tranFunc('giftcard.currentBalance'),
 			mustPairWith: 'currency',
 			operations: {
-				lte: balanceLte,
-				gte: balanceGte,
-				range: balanceRange,
+				lte: CommonSnippets.singleNumber,
+				gte: CommonSnippets.singleNumber,
+				range: CommonSnippets.numberRange,
 			},
 		},
 		initialBalance: {
 			label: $tranFunc('giftcard.initialBalance'),
 			mustPairWith: 'currency',
 			operations: {
-				lte: balanceLte,
-				gte: balanceGte,
-				range: balanceRange,
+				lte: CommonSnippets.singleNumber,
+				gte: CommonSnippets.singleNumber,
+				range: CommonSnippets.numberRange,
 			},
 		},
 		products: {
@@ -61,7 +62,7 @@
 		isActive: {
 			label: $tranFunc('staff.active'),
 			operations: {
-				eq: isActive,
+				eq: CommonSnippets.yesNo,
 			},
 		},
 		tags: {
@@ -79,7 +80,7 @@
 		used: {
 			label: $tranFunc('giftcard.usedAmount'),
 			operations: {
-				eq: isUsed,
+				eq: CommonSnippets.yesNo,
 			},
 		},
 	});
@@ -94,23 +95,6 @@
 	/>
 {/snippet}
 
-{#snippet balanceLte({ onValue, initialValue = '' }: FilterComponentType)}
-	{@render numberSnippet({ onValue, initialValue, placeholder: $tranFunc('common.lte') })}
-{/snippet}
-
-{#snippet isUsed({ onValue, initialValue = false }: FilterComponentType)}
-	<Checkbox
-		size="sm"
-		label={$tranFunc('common.yes')}
-		checked={initialValue as boolean}
-		onchange={(evt) => onValue(evt.currentTarget.checked)}
-	/>
-{/snippet}
-
-{#snippet balanceGte({ onValue, initialValue = '' }: FilterComponentType)}
-	{@render numberSnippet({ onValue, initialValue, placeholder: $tranFunc('common.gte') })}
-{/snippet}
-
 {#snippet numberSnippet({ onValue, initialValue, placeholder }: FilterComponentType)}
 	<Input
 		type="number"
@@ -119,28 +103,6 @@
 		inputDebounceOption={{ onInput: (evt) => onValue((evt.target as HTMLInputElement).value) }}
 		size="xs"
 	/>
-{/snippet}
-
-{#snippet balanceRange({ onValue, initialValue = [] }: FilterComponentType)}
-	{@const range = (initialValue || []) as number[]}
-	<div class="flex flex-col gap-1">
-		{@render numberSnippet({
-			onValue: (value) => {
-				range[0] = value as number;
-				onValue(range);
-			},
-			initialValue,
-			placeholder: $tranFunc('common.lte'),
-		})}
-		{@render numberSnippet({
-			onValue: (value) => {
-				range[1] = value as number;
-				onValue(range);
-			},
-			initialValue,
-			placeholder: $tranFunc('common.gte'),
-		})}
-	</div>
 {/snippet}
 
 {#snippet products({ onValue, initialValue = [] }: FilterComponentType)}
@@ -191,15 +153,6 @@
 		placeholder={$tranFunc('common.user')}
 		onchange={(opts) =>
 			onValue((opts as SelectOption[])?.map((item) => item.value) as FilterItemValue)}
-	/>
-{/snippet}
-
-{#snippet isActive({ onValue, initialValue = false }: FilterComponentType)}
-	<Checkbox
-		size="sm"
-		label="Yes"
-		checked={initialValue as boolean}
-		onchange={(evt) => onValue(evt.currentTarget.checked)}
 	/>
 {/snippet}
 

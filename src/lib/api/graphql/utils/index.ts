@@ -36,6 +36,8 @@ export const RFC3339TimeFormat = 'YYYY-MM-DDTHH:mm:ssZ';
 
 export const RFC3339TimeRegex = new RegExp(RFC3339TimeFormat);
 
+export const ISO8061TimeFormat = 'YYYY-MM-DDTHH:mm';
+
 export const encodeBase64Cursor = (kclass: string, key: unknown) => {
 	return btoa(`${kclass}:${key}`);
 };

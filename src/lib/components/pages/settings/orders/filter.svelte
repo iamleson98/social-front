@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { SHOP_ORDERS_QUERY } from '$lib/api/admin/orders';
 	import { CUSTOMER_LIST_QUERY } from '$lib/api/admin/users';
-	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import { FilterManager } from '$lib/components/common/filter-box';
+	import { CommonSnippets } from '$lib/components/common/filter-box/snippets.svelte';
 	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box/types';
-	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
-	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { GraphqlPaginableSelect, Select, type SelectOption } from '$lib/components/ui/select';
 	import {
 		OrderAuthorizeStatusEnum,
@@ -16,9 +14,7 @@
 		type OrderFilterInput,
 		type QueryOrdersArgs,
 	} from '$lib/gql/graphql';
-	import { BASIC_DATE_FORMAT } from '$lib/utils/consts';
 	import { orderStatusBadgeClass, paymentStatusBadgeClass } from '$lib/utils/utils';
-	import dayjs from 'dayjs';
 
 	type Props = {
 		variables: QueryOrdersArgs;
@@ -47,23 +43,23 @@
 		channels: {
 			label: 'Channels',
 			operations: {
-				oneOf: channels,
+				oneOf: CommonSnippets.multiChannelIds,
 			},
 		},
 		created: {
 			label: 'Creation date',
 			operations: {
-				lte: creationDate,
-				gte: creationDate,
-				range: creationDateRange,
+				lte: CommonSnippets.singleDate,
+				gte: CommonSnippets.singleDate,
+				range: CommonSnippets.dateRange,
 			},
 		},
 		updatedAt: {
 			label: 'Updated at',
 			operations: {
-				lte: updatedAt,
-				gte: updatedAt,
-				range: updatedAtRange,
+				lte: CommonSnippets.singleDate,
+				gte: CommonSnippets.singleDate,
+				range: CommonSnippets.dateRange,
 			},
 		},
 		paymentStatus: {
@@ -83,25 +79,25 @@
 		isClickAndCollect: {
 			label: 'Click and collect',
 			operations: {
-				eq: yesNo,
+				eq: CommonSnippets.yesNo,
 			},
 		},
 		isPreorder: {
 			label: 'Is preorder',
 			operations: {
-				eq: yesNo,
+				eq: CommonSnippets.yesNo,
 			},
 		},
 		giftCardUsed: {
 			label: 'Gift card used',
 			operations: {
-				eq: yesNo,
+				eq: CommonSnippets.yesNo,
 			},
 		},
 		giftCardBought: {
 			label: 'Gift card bought',
 			operations: {
-				eq: yesNo,
+				eq: CommonSnippets.yesNo,
 			},
 		},
 		authorizeStatus: {
@@ -121,7 +117,7 @@
 		metadata: {
 			label: 'Metadata',
 			operations: {
-				eq: metadataComponent,
+				eq: CommonSnippets.metadata,
 			},
 		},
 		customer: {
@@ -223,77 +219,6 @@
 	/>
 {/snippet}
 
-{#snippet creationDate({ onValue, initialValue = '' }: FilterComponentType)}
-	<EaseDatePicker
-		size="xs"
-		placeholder="Date"
-		value={{ date: initialValue as string }}
-		onchange={(vl) => onValue(dayjs(vl.date).format(BASIC_DATE_FORMAT))}
-	/>
-{/snippet}
-
-{#snippet creationDateRange({ onValue, initialValue = ['', ''] }: FilterComponentType)}
-	{@const range = initialValue as string[]}
-	<EaseDatePicker
-		size="xs"
-		placeholder="Date range"
-		value={{ start: range[0], end: range[1] }}
-		onchange={(vl) => {
-			range[0] = dayjs(vl.start).format(BASIC_DATE_FORMAT);
-			range[1] = dayjs(vl.end).format(BASIC_DATE_FORMAT);
-			onValue(range);
-		}}
-		allowSelectRange
-	/>
-{/snippet}
-
-{#snippet updatedAt({ onValue, initialValue = '' }: FilterComponentType)}
-	<EaseDatePicker
-		size="xs"
-		placeholder="Date"
-		value={{ date: initialValue as string }}
-		onchange={(vl) => onValue(dayjs(vl.date).format(BASIC_DATE_FORMAT))}
-	/>
-{/snippet}
-
-{#snippet updatedAtRange({ onValue, initialValue = ['', ''] }: FilterComponentType)}
-	{@const range = initialValue as string[]}
-	<EaseDatePicker
-		size="xs"
-		placeholder="Date range"
-		value={{ start: range[0], end: range[1] }}
-		onchange={(vl) => {
-			range[0] = dayjs(vl.start).format(BASIC_DATE_FORMAT);
-			range[1] = dayjs(vl.end).format(BASIC_DATE_FORMAT);
-			onValue(range);
-		}}
-		allowSelectRange
-	/>
-{/snippet}
-
-{#snippet channels({ onValue, initialValue = [] }: FilterComponentType)}
-	<ChannelSelect
-		size="xs"
-		multiple
-		onchange={(opt) => {
-			if (opt && Array.isArray(opt)) {
-				onValue(opt.map((opt) => opt.slug as string));
-			}
-		}}
-		value={initialValue as string[]}
-		valueType="slug"
-	/>
-{/snippet}
-
-{#snippet yesNo({ onValue, initialValue = false }: FilterComponentType)}
-	<Checkbox
-		size="sm"
-		label="Yes?"
-		checked={initialValue as boolean}
-		onchange={(evt) => onValue(evt.currentTarget.checked)}
-	/>
-{/snippet}
-
 {#snippet paymentStatus({ onValue, initialValue = '' }: FilterComponentType)}
 	<Select
 		options={paymentStatusOptions}
@@ -342,32 +267,6 @@
 		}}
 		size="xs"
 	/>
-{/snippet}
-
-{#snippet metadataComponent({ onValue, initialValue = [] }: FilterComponentType)}
-	{@const keyValue = [(initialValue as string[])[0] || '', (initialValue as string[])[1] || '']}
-	<div class="flex flex-col gap-1.5">
-		<Input
-			size="xs"
-			placeholder="key"
-			value={keyValue[0]}
-			onchange={(evt) => {
-				const { value } = evt.target as HTMLInputElement;
-				keyValue[0] = value;
-				onValue(keyValue);
-			}}
-		/>
-		<Input
-			size="xs"
-			placeholder="value"
-			value={keyValue[1]}
-			onchange={(evt) => {
-				const { value } = evt.target as HTMLInputElement;
-				keyValue[1] = value;
-				onValue(keyValue);
-			}}
-		/>
-	</div>
 {/snippet}
 
 <FilterManager

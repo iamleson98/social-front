@@ -2,17 +2,15 @@
 	import { CATEGORIES_LIST_QUERY_STORE } from '$lib/api';
 	import { PRODUCT_TYPES_QUERY } from '$lib/api/admin/product';
 	import { COLLECTIONS_QUERY } from '$lib/api/collections';
-	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import { FilterManager } from '$lib/components/common/filter-box';
+	import { CommonSnippets } from '$lib/components/common/filter-box/snippets.svelte';
 	import type {
 		FilterComponentType,
 		FilterItemValue,
 		FilterProps,
 	} from '$lib/components/common/filter-box/types';
-	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
 	import type {
-		Channel,
 		ProductFilterInput,
 		QueryCategoriesArgs,
 		QueryCollectionsArgs,
@@ -32,10 +30,10 @@
 			label: 'Price',
 			mustPairWith: 'channel', //
 			operations: {
-				eq: priceCmp,
-				lte: priceCmp,
-				gte: priceCmp,
-				range: priceBetween,
+				eq: CommonSnippets.singleNumber,
+				lte: CommonSnippets.singleNumber,
+				gte: CommonSnippets.singleNumber,
+				range: CommonSnippets.numberRange,
 			},
 		},
 		categories: {
@@ -54,7 +52,7 @@
 		channel: {
 			label: 'Channel',
 			operations: {
-				eq: channelComp,
+				eq: CommonSnippets.singleChannelSlug,
 			},
 		},
 		productTypes: {
@@ -68,33 +66,33 @@
 			label: 'Is available',
 			mustPairWith: 'channel',
 			operations: {
-				eq: yesNo,
+				eq: CommonSnippets.yesNo,
 			},
 		},
 		isPublished: {
 			label: 'Is published',
 			mustPairWith: 'channel',
 			operations: {
-				eq: yesNo,
+				eq: CommonSnippets.yesNo,
 			},
 		},
 		isVisibleInListing: {
 			label: 'Visible in listing',
 			mustPairWith: 'channel',
 			operations: {
-				eq: yesNo,
+				eq: CommonSnippets.yesNo,
 			},
 		},
 		hasCategory: {
 			label: 'Has category',
 			operations: {
-				eq: yesNo,
+				eq: CommonSnippets.yesNo,
 			},
 		},
 		giftCard: {
 			label: 'Is giftcard',
 			operations: {
-				eq: yesNo,
+				eq: CommonSnippets.yesNo,
 			},
 		},
 	};
@@ -185,59 +183,6 @@
 			onValue((opt as SelectOption[]).map((item) => item.value) as FilterItemValue)}
 		multiple
 		size="xs"
-	/>
-{/snippet}
-
-{#snippet priceCmp({ onValue, initialValue }: FilterComponentType)}
-	<Input
-		size="xs"
-		placeholder="Enter price"
-		type="number"
-		min="0"
-		value={initialValue}
-		inputDebounceOption={{
-			onInput: (evt) => onValue(((evt as Event).target as HTMLInputElement).value),
-		}}
-	/>
-{/snippet}
-
-{#snippet priceBetween({ onValue, initialValue }: FilterComponentType)}
-	{@const bounds = (initialValue || ['', '']) as string[]}
-	<div class="flex gap-1 flex-col">
-		{@render priceCmp({
-			onValue: (value) => {
-				bounds[0] = value as string;
-				onValue(bounds);
-			},
-			initialValue: bounds[0],
-			placeholder: '>=',
-		})}
-		{@render priceCmp({
-			onValue: (value) => {
-				bounds[1] = value as string;
-				onValue(bounds);
-			},
-			initialValue: bounds[1],
-			placeholder: '<=',
-		})}
-	</div>
-{/snippet}
-
-{#snippet channelComp({ onValue, initialValue = '' }: FilterComponentType)}
-	<ChannelSelect
-		size="xs"
-		valueType="slug"
-		value={initialValue as string}
-		onchange={(opt) => onValue((opt as Channel)?.slug as FilterItemValue)}
-	/>
-{/snippet}
-
-{#snippet yesNo({ onValue, initialValue = false }: FilterComponentType)}
-	<Checkbox
-		size="sm"
-		label="Yes?"
-		checked={initialValue as boolean}
-		onchange={(evt) => onValue(evt.currentTarget.checked)}
 	/>
 {/snippet}
 

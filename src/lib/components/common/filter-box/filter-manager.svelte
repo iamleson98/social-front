@@ -24,7 +24,7 @@
 		forceReExecuteGraphqlQuery: boolean;
 		disabled?: boolean;
 		/** 
-		 * In tabular pages, we support all kind of search params, filtering, sortings, paginations. those things reflects directly on the URL bar.
+		 * In pages that show tabular data, we support all kind of search params, filtering, sortings, paginations. those things reflect directly on the URL bar.
 		 * This callback serves as a means to plug those search params into the variables.
 		 * the parent component should handle update extra filters setting on the variables, on their own.
 		 * NOTE: Please do not try to update pagination fields (first, last, before, after, order_by_field, order_direction) within this callback. They are handled automatically.
@@ -124,10 +124,6 @@
 	 */
 	afterNavigate(async () => {
 		const params = parseUrlSearchParams<T>(page.url);
-		// if (!params || !Object.keys(params).length) {
-		// 	isInitialLoad = false;
-		// 	return;
-		// }
 
 		scrollTo({ top: 0, behavior: 'smooth' });
 

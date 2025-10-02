@@ -1,10 +1,8 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box';
 	import { FilterManager } from '$lib/components/common/filter-box';
-	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
-	import { Input } from '$lib/components/ui/Input';
+	import { CommonSnippets } from '$lib/components/common/filter-box/snippets.svelte';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import {
 		DiscountStatusEnum,
@@ -61,7 +59,7 @@
 			label: $tranFunc('product.channel'),
 			key: 'channel' as keyof VoucherFilterInput,
 			operations: {
-				eq: channel,
+				eq: CommonSnippets.singleChannelSlug,
 			},
 		},
 		discountType: {
@@ -76,9 +74,9 @@
 			label: $tranFunc('common.startAt'),
 			key: 'started',
 			operations: {
-				lte: started,
-				gte: started,
-				range: startedRange,
+				lte: CommonSnippets.singleDatetime,
+				gte: CommonSnippets.singleDatetime,
+				range: CommonSnippets.datetimeRange,
 			},
 		},
 		status: {
@@ -93,44 +91,12 @@
 			label: $tranFunc('voucher.timeUsed'),
 			key: 'timesUsed',
 			operations: {
-				eq: numberSnippet,
+				eq: CommonSnippets.singleNumber,
+				range: CommonSnippets.numberRange,
 			},
 		},
 	});
 </script>
-
-{#snippet channel({ onValue, initialValue = '' }: FilterComponentType)}
-	<ChannelSelect
-		size="xs"
-		placeholder={$tranFunc('product.channel')}
-		value={initialValue}
-		inputDebounceOption={{ onInput: (evt) => onValue((evt.target as HTMLInputElement).value) }}
-	/>
-{/snippet}
-
-{#snippet started({ onValue, initialValue = '' }: FilterComponentType)}
-	<EaseDatePicker
-		size="xs"
-		placeholder={$tranFunc('common.time')}
-		value={{ date: initialValue as string }}
-		onchange={(val) => onValue(val.date!.toString())}
-	/>
-{/snippet}
-
-{#snippet startedRange({ onValue, initialValue = [] }: FilterComponentType)}
-	{@const range = initialValue as string[]}
-	<EaseDatePicker
-		size="xs"
-		placeholder={$tranFunc('common.time')}
-		allowSelectRange
-		value={{ start: range[0], end: range[1] }}
-		onchange={(val) => {
-			range[0] = val.start!.toString();
-			range[1] = val.end!.toString();
-			onValue(range);
-		}}
-	/>
-{/snippet}
 
 {#snippet discountType({ onValue, initialValue = '' }: FilterComponentType)}
 	<Select
@@ -174,19 +140,51 @@
 	/>
 {/snippet}
 
-{#snippet numberSnippet({ onValue, initialValue, placeholder }: FilterComponentType)}
-	<Input
-		type="number"
-		{placeholder}
-		value={initialValue}
-		inputDebounceOption={{ onInput: (evt) => onValue((evt.target as HTMLInputElement).value) }}
-		size="xs"
-	/>
-{/snippet}
-
 <FilterManager
 	filterOptions={FilterOptions}
 	bind:variables
 	bind:forceReExecuteGraphqlQuery
 	searchKey={'filter.search' as keyof QueryVouchersArgs}
+	variablePatchingCallbackAfterReload={(filterVariables, params) => {
+		if (!filterVariables.filter) filterVariables.filter = {};
+		const { discountType, started, status, timesUsed } = params;
+
+		if (params['channel' as keyof VoucherFilterInput])
+			filterVariables.channel = params['channel' as keyof VoucherFilterInput].value as string;
+		if (discountType) {
+			if (discountType.operator === 'oneOf' && Array.isArray(discountType.value))
+				filterVariables.filter.discountType = discountType.value as VoucherDiscountType[];
+			else if (discountType.operator === 'eq')
+				filterVariables.filter.discountType = [discountType.value as VoucherDiscountType];
+		}
+		if (started) {
+			if (started.operator === 'range' && Array.isArray(started.value))
+				filterVariables.filter.started = {
+					gte: started.value[0],
+					lte: started.value[1],
+				};
+			else if (['gte', 'lte'].includes(started.operator))
+				filterVariables.filter.started = { [started.operator]: started.value };
+		}
+		if (status) {
+			if (status.operator === 'oneOf' && Array.isArray(status.value))
+				filterVariables.filter.status = status.value as DiscountStatusEnum[];
+			else if (status.operator === 'eq')
+				filterVariables.filter.status = [status.value as DiscountStatusEnum];
+		}
+		if (timesUsed) {
+			if (timesUsed.operator === 'range' && Array.isArray(timesUsed.value))
+				filterVariables.filter.timesUsed = {
+					gte: timesUsed.value[0] as number,
+					lte: timesUsed.value[1] as number,
+				};
+			else if (timesUsed.operator === 'eq')
+				filterVariables.filter.timesUsed = {
+					gte: timesUsed.value as number,
+					lte: timesUsed.value as number,
+				};
+		}
+
+		return filterVariables;
+	}}
 />

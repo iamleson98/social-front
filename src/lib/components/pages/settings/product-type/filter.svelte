@@ -5,7 +5,7 @@
 		type FilterComponentType,
 		type FilterProps,
 	} from '$lib/components/common/filter-box';
-	import { Checkbox } from '$lib/components/ui/Input';
+	import { CommonSnippets } from '$lib/components/common/filter-box/snippets.svelte';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import {
 		ProductTypeConfigurable,
@@ -25,7 +25,7 @@
 		configurable: {
 			label: $tranFunc('prdType.hasVariantAttrs'),
 			operations: {
-				eq: yesNo,
+				eq: CommonSnippets.yesNo,
 			},
 		},
 		productType: {
@@ -44,16 +44,6 @@
 		value: item,
 	}));
 </script>
-
-{#snippet yesNo({ initialValue, onValue }: FilterComponentType)}
-	<Checkbox
-		size="sm"
-		label="yes"
-		checked={initialValue === ProductTypeConfigurable.Configurable}
-		onCheckChange={(checked) =>
-			onValue(checked ? ProductTypeConfigurable.Configurable : ProductTypeConfigurable.Simple)}
-	/>
-{/snippet}
 
 {#snippet productType({ initialValue, onValue }: FilterComponentType)}
 	<Select

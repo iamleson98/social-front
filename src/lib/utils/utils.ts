@@ -219,7 +219,7 @@ export const BOOL_REGEX = /(true|false)/;
  * regex for range like: `<gte,null>`, `<null,lte>` or `<gte,lte>`.
  */
 // eslint-disable-next-line no-useless-escape
-export const FILTER_COMPARE_RANGE_REGEX = /^\<([\w\d\.-]+)\,([\w\d\.-]+)\>$/;
+export const FILTER_COMPARE_RANGE_REGEX = /^<([\w\d.\-:+]+),([\w\d.\-:+]+)>$/;
 /**
  * regex for `key-value` pair matching: `{key,value}`
  */
@@ -250,7 +250,7 @@ export const parseUrlSearchParams = <T>(url: URL) => {
 		if (!key) continue;
 
 		const value = url.searchParams.get(key)?.trim();
-		if (value === undefined || value === null) continue;
+		if (value == null) continue;
 
 		if (NUMBER_REGEX.test(value)) {
 			result[key as keyof T] = {

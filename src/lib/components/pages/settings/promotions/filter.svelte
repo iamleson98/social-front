@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { RFC3339TimeFormat } from '$lib/api/graphql/utils';
-	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box';
+	import type { FilterProps } from '$lib/components/common/filter-box';
 	import { FilterManager } from '$lib/components/common/filter-box';
-	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
+	import { CommonSnippets } from '$lib/components/common/filter-box/snippets.svelte';
 	import { type QueryPromotionsArgs, type PromotionWhereInput } from '$lib/gql/graphql';
-	import dayjs from 'dayjs';
+	import { set } from 'es-toolkit/compat';
 
 	type Props = {
 		variables: QueryPromotionsArgs;
@@ -17,15 +16,15 @@
 		startDate: {
 			label: 'Start date',
 			operations: {
-				lte: date,
-				gte: date,
+				lte: CommonSnippets.singleDatetime,
+				gte: CommonSnippets.singleDatetime,
 			},
 		},
 		endDate: {
 			label: 'End date',
 			operations: {
-				gte: date,
-				lte: date,
+				gte: CommonSnippets.singleDatetime,
+				lte: CommonSnippets.singleDatetime,
 			},
 		},
 	};
@@ -36,31 +35,18 @@
 	});
 </script>
 
-{#snippet date({ onValue, initialValue = '' }: FilterComponentType)}
-	<EaseDatePicker
-		size="xs"
-		placeholder="Time"
-		value={{ date: initialValue as string }}
-		onchange={(val) => onValue(dayjs(val.date).format(RFC3339TimeFormat))}
-		timeConfig={{
-			stepMinutes: 1,
-			format: 24,
-			stepHours: 1,
-		}}
-		allowSelectMonthYears={{
-			showMonths: true,
-			showResetBtn: true,
-			showYears: {
-				min: 2020,
-				max: 2050,
-			},
-		}}
-	/>
-{/snippet}
-
 <FilterManager
 	filterOptions={FilterOptions}
 	bind:variables
 	bind:forceReExecuteGraphqlQuery
 	searchKey="where.name.eq"
+	variablePatchingCallbackAfterReload={(filterVariables, params) => {
+		const { startDate, endDate } = params;
+
+		if (startDate)
+			set(filterVariables, 'where.startDate.range', { [startDate.operator]: startDate.value });
+		if (endDate) set(filterVariables, 'where.endDate.range', { [endDate.operator]: endDate.value });
+
+		return filterVariables;
+	}}
 />

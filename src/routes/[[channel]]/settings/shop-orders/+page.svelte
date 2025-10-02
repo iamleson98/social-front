@@ -109,6 +109,7 @@
 	query={SHOP_ORDERS_QUERY}
 	bind:variables={filterVariables}
 	resultKey="orders"
+	requestPolicy="network-only"
 	bind:forceReExecuteGraphqlQuery
 	columns={ORDER_TABLE_COLUMNS}
 />
