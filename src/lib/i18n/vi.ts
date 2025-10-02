@@ -598,4 +598,10 @@ export default {
 		permGroups: 'Các nhóm quyền',
 		newGroup: 'Thêm nhóm quyền',
 	},
+	customer: {
+		isStaff: 'Là nhân viên',
+		customers: 'Khách hàng',
+		newCustomer: 'Thêm mới khách hàng',
+		info: 'Thông tin khách hàng',
+	},
 };

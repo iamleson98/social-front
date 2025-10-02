@@ -8,4 +8,5 @@ export const CommonState = derived(tranFunc, ($func) => ({
 	CreateSuccess: $func('common.createSuccess'),
 	ConfirmDelete: $func('common.confirmDel'),
 	NonNegativeError: $func('error.negativeNumber'),
+	InvalidEmail: $func('error.invalidEmail'),
 }));

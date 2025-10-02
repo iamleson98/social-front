@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { CUSTOMER_LIST_QUERY } from '$lib/api/admin/users';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import CustomerFilter from '$lib/components/pages/settings/customers/filter.svelte';
@@ -7,6 +8,7 @@
 	import GraphqlPaginableTable from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { UserSortField, type QueryCustomersArgs, type User } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
+	import { BASIC_DATE_FORMAT, CommonEaseDatePickerFormat } from '$lib/utils/consts';
 	import dayjs from 'dayjs';
 
 	let filterVariables = $state<QueryCustomersArgs>({
@@ -17,35 +19,35 @@
 	});
 	let forceReExecuteGraphqlQuery = $state(true);
 
-	const USER_TABLE_COLUMNS: TableColumnProps<User, UserSortField>[] = [
+	const USER_TABLE_COLUMNS: TableColumnProps<User, UserSortField>[] = $derived([
 		{
-			title: 'Avatar',
+			title: $tranFunc('staff.avatar'),
 			child: avatar,
 		},
 		{
-			title: 'Customer name',
+			title: $tranFunc('common.name'),
 			child: customerName,
 			key: UserSortField.FirstName,
 		},
 		{
-			title: 'Email',
+			title: $tranFunc('common.email'),
 			child: email,
 			key: UserSortField.Email,
 		},
 		{
-			title: 'Status',
+			title: $tranFunc('staff.status'),
 			child: isActive,
 		},
 		{
-			title: 'Is Staff',
+			title: $tranFunc('customer.isStaff'),
 			child: isStaff,
 		},
 		{
-			title: 'Joined At',
+			title: $tranFunc('staff.joinedSince'),
 			child: dateJoined,
 			key: UserSortField.CreatedAt,
 		},
-	];
+	]);
 </script>
 
 {#snippet avatar({ item }: { item: User })}
@@ -71,25 +73,23 @@
 {/snippet}
 
 {#snippet isActive({ item }: { item: User })}
-	{#if item.isActive}
-		<Badge text="Active" color="green" />
-	{:else}
-		<Badge text="Inactive" color="red" />
-	{/if}
+	<Badge
+		text={$tranFunc(item.isActive ? 'staff.active' : 'staff.inactive')}
+		color={item.isActive ? 'green' : 'red'}
+	/>
 {/snippet}
 
 {#snippet isStaff({ item }: { item: User })}
 	<div class="text-center">
-		{#if item.isStaff}
-			<Badge text="Yes" color="green" variant="light" />
-		{:else}
-			<Badge text="No" color="red" variant="light" />
-		{/if}
+		<Badge
+			text={$tranFunc(item.isStaff ? 'common.yes' : 'common.no')}
+			color={item.isStaff ? 'green' : 'red'}
+		/>
 	</div>
 {/snippet}
 
 {#snippet dateJoined({ item }: { item: User })}
-	<span>{dayjs(item.dateJoined).format('DD/MM/YYYY HH:mm')}</span>
+	<span>{dayjs(item.dateJoined).format(CommonEaseDatePickerFormat)}</span>
 {/snippet}
 
 <div class="mb-2">

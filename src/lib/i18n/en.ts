@@ -597,4 +597,10 @@ export default {
 		permGroups: 'Permission groups',
 		newGroup: 'New permission group',
 	},
+	customer: {
+		isStaff: 'Is staff',
+		customers: 'Customers',
+		newCustomer: 'New Customer',
+		info: 'Customer Information',
+	},
 };

@@ -42,9 +42,7 @@
 	const customerSchema = object({
 		firstName: string().nonempty($CommonState.FieldRequiredError),
 		lastName: string().nonempty($CommonState.FieldRequiredError),
-		email: string()
-			.nonempty($CommonState.FieldRequiredError)
-			.email($tranFunc('error.invalidEmail')),
+		email: string().nonempty($CommonState.FieldRequiredError).email($CommonState.InvalidEmail),
 		note: string().nonempty($CommonState.FieldRequiredError),
 	});
 
@@ -69,16 +67,17 @@
 
 <div class={SitenameCommonClassName}>
 	<SectionHeader>
-		<div>Customer Information</div>
+		<div>{$tranFunc('customer.info')}</div>
 		<Toggle
 			bind:checked={isActive}
-			label="Active"
+			label={$tranFunc('staff.active')}
 			disabled={!CurrentUserCanUpdateCustomer || disabled}
 		/>
 	</SectionHeader>
 	<div class="flex flex-row gap-3 items-start">
 		<Input
-			label="First Name"
+			label={$tranFunc('common.firstName')}
+			placeholder={$tranFunc('common.firstName')}
 			bind:value={firstName}
 			required
 			disabled={shouldDisable}
@@ -89,7 +88,8 @@
 			subText={customerFormErrors.firstName?.length ? customerFormErrors.firstName[0] : undefined}
 		/>
 		<Input
-			label="Last Name"
+			label={$tranFunc('common.lastName')}
+			placeholder={$tranFunc('common.lastName')}
 			bind:value={lastName}
 			required
 			disabled={shouldDisable}
@@ -101,7 +101,8 @@
 		/>
 	</div>
 	<Input
-		label="Email"
+		label={$tranFunc('common.email')}
+		placeholder={$tranFunc('common.email')}
 		bind:value={email}
 		required
 		disabled={shouldDisable}
@@ -112,8 +113,8 @@
 	/>
 	<TextArea
 		bind:value={note}
-		placeholder="Note"
-		label="Note"
+		placeholder={$tranFunc('giftcard.form.note')}
+		label={$tranFunc('giftcard.form.note')}
 		required
 		disabled={shouldDisable}
 		inputClass="min-h-20"

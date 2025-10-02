@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import HeadBar from '$lib/components/pages/settings/common/head-bar.svelte';
 	import { AppRoute } from '$lib/utils';
 	import type { Snippet } from 'svelte';
@@ -12,9 +13,9 @@
 
 <HeadBar
 	listingPageHref={AppRoute.SETTINGS_CONFIGS_USERS()}
-	listingPageLabel="Customers"
+	listingPageLabel={$tranFunc('customer.customers')}
 	newPageHref={AppRoute.SETTINGS_CONFIGS_USER_NEW()}
-	newPageLabel="New customer"
+	newPageLabel={$tranFunc('customer.newCustomer')}
 	detailRouteID="/[[channel]]/settings/customers/[id]"
 	detailPageLabelGetter={(page) => page.params.id}
 />

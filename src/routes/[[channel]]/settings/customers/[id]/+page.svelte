@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
 	import { USER_UPDATE_MUTATION } from '$lib/api/account';
 	import { USER_DETAIL_QUERY } from '$lib/api/admin/users';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
@@ -21,6 +20,7 @@
 	} from '$lib/gql/graphql';
 	import { type MutationCustomerUpdateArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
@@ -78,7 +78,7 @@
 		loading = false;
 		if (hasErr) return;
 
-		toast.success($tranFunc('common.editSuccess'));
+		toast.success($CommonState.EditSuccess);
 		userDetailQuery.reexecute({ variables: { id: page.params.id } });
 	};
 </script>
