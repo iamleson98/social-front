@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { Plus } from '$lib/components/icons';
+	import { ClipboardCopy, Plus } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
+	import { IconButton } from '$lib/components/ui/Button';
 	import type { Page } from '@sveltejs/kit';
-	import type { MouseEventHandler } from 'svelte/elements';
 
 	type Props = {
 		listingPageHref: string;
@@ -28,18 +28,45 @@
 		onNewPageBtnClick,
 		disabled,
 	}: Props = $props();
+
+	let copyTooltip = $state('Copy');
+
+	const handleCopy = (content: string) => {
+		navigator.clipboard.writeText(content).then(() => {
+			copyTooltip = 'Copied!';
+
+			setTimeout(() => (copyTooltip = 'Copy'), 3000);
+		});
+	};
 </script>
 
 <div
 	class="rounded-lg bg-white border border-gray-200 px-3 py-2 flex items-center justify-between mb-3"
 >
-	<div class="breadcrumbs text-sm">
+	<div class="breadcrumbs text-sm overflow-x-visible">
 		<ul>
-			<li><a href={listingPageHref} class="link text-blue-600 font-medium">{listingPageLabel}</a></li>
+			<li>
+				<a href={listingPageHref} class="link text-blue-600 font-medium">{listingPageLabel}</a>
+			</li>
 			{#if page.url.pathname === newPageHref}
 				<li>{newPageLabel}</li>
 			{:else if page.route.id === detailRouteID}
-				<li>{detailPageLabelGetter(page)}</li>
+				{@const id = detailPageLabelGetter(page)}
+				<li class="flex items-center gap-1">
+					<span>
+						{id}
+					</span>
+					<IconButton
+						onclick={() => handleCopy(id)}
+						icon={ClipboardCopy}
+						rounded
+						class="tooltip tooltip-right"
+						data-tip={copyTooltip}
+						size="xs"
+						color="gray"
+						variant="light"
+					/>
+				</li>
 			{/if}
 		</ul>
 	</div>
