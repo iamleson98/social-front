@@ -10,6 +10,7 @@
 		TransactionFlowStrategyEnum,
 		type CountryCode,
 	} from '$lib/gql/graphql';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import slugify from 'slugify';
 	import { boolean, number, object, string, z } from 'zod';
 
@@ -48,7 +49,6 @@
 		isCreatePage = false,
 	}: Props = $props();
 
-	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 	const MIN_EXPIRE_DAY = 1;
 	const MAX_EXPIRE_DAY = 120;
 	const EXPIRE_ORDER_DEL_ERR = $tranFunc('channel.delExprOrdersErrSubTxt', {
@@ -57,19 +57,19 @@
 	});
 
 	const channelSchema = object({
-		name: string().nonempty(REQUIRED_ERROR),
-		slug: string().nonempty(REQUIRED_ERROR),
+		name: string().nonempty($CommonState.FieldRequiredError),
+		slug: string().nonempty($CommonState.FieldRequiredError),
 		isActive: boolean(),
 		defaultCountry: string()
-			.nonempty(REQUIRED_ERROR)
+			.nonempty($CommonState.FieldRequiredError)
 			.optional()
-			.refine((val) => val !== undefined, REQUIRED_ERROR),
+			.refine((val) => val !== undefined, $CommonState.FieldRequiredError),
 		orderSettings: object({
 			deleteExpiredOrdersAfter: number()
 				.min(MIN_EXPIRE_DAY, EXPIRE_ORDER_DEL_ERR)
 				.max(MAX_EXPIRE_DAY, EXPIRE_ORDER_DEL_ERR),
 		}),
-		currencyCode: string().nonempty(REQUIRED_ERROR),
+		currencyCode: string().nonempty($CommonState.FieldRequiredError),
 	});
 
 	type ChannelSchema = z.infer<typeof channelSchema>;

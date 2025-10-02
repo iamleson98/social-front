@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { tranFunc } from '$i18n';
 	import { CHANNEL_CREATE_MUTATION } from '$lib/api/admin/channels';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import ChannelForm from '$lib/components/pages/settings/channel/channel-form.svelte';
@@ -17,6 +16,7 @@
 		type MutationChannelCreateArgs,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 
 	let loading = $state(false);
@@ -60,8 +60,7 @@
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'channelCreate', $tranFunc('channel.newSuccess')))
-			return;
+		if (checkIfGraphqlResultHasError(result, 'channelCreate', $CommonState.CreateSuccess)) return;
 
 		await goto(AppRoute.SETTINGS_CONFIGS_CHANNELS());
 	};

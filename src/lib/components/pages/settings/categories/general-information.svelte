@@ -4,6 +4,7 @@
 	import FileInputContainer from '$lib/components/common/file-input-container.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Input, TextArea } from '$lib/components/ui/Input';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import type { MediaObject } from '$lib/utils/types';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import type { OutputData } from '@editorjs/editorjs';
@@ -34,7 +35,6 @@
 		loading,
 	}: Props = $props();
 
-	const REQUIRED_ERROR = $tranFunc('helpText.fieldRequired');
 	const MAX_ERROR = $tranFunc('error.itemsExceed', { max: 1 });
 	const SEO_DESCRIPTION_MAX = 300;
 	let categoryFormErrors = $state.raw<Partial<Record<keyof CategorySchema, string[]>>>({});
@@ -51,18 +51,18 @@
 	});
 
 	const categorySchema = object({
-		name: string().nonempty(REQUIRED_ERROR),
-		slug: string().nonempty(REQUIRED_ERROR),
-		seoTitle: string().nonempty(REQUIRED_ERROR),
+		name: string().nonempty($CommonState.FieldRequiredError),
+		slug: string().nonempty($CommonState.FieldRequiredError),
+		seoTitle: string().nonempty($CommonState.FieldRequiredError),
 		seoDescription: string()
-			.nonempty(REQUIRED_ERROR)
+			.nonempty($CommonState.FieldRequiredError)
 			.max(
 				SEO_DESCRIPTION_MAX,
 				$tranFunc('error.lengthInvalid', { max: SEO_DESCRIPTION_MAX, min: 1 }),
 			),
-		media: array(any()).max(1, MAX_ERROR).nonempty(REQUIRED_ERROR),
+		media: array(any()).max(1, MAX_ERROR).nonempty($CommonState.FieldRequiredError),
 		description: object({
-			blocks: array(any()).nonempty(REQUIRED_ERROR),
+			blocks: array(any()).nonempty($CommonState.FieldRequiredError),
 		}),
 	});
 	type CategorySchema = z.infer<typeof categorySchema>;

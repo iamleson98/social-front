@@ -1,4 +1,4 @@
-import { JapanFlag, KoreaFlag, UsaFlag, VietnamFlag } from '$lib/components/icons/SvgOuterIcon';
+import { UsaFlag, VietnamFlag } from '$lib/components/icons/SvgOuterIcon';
 import { LanguageCodeEnum } from '$lib/gql/graphql';
 import { LANGUAGE_KEY } from '$lib/utils/consts';
 import { default as vietnamese } from './vi';
@@ -13,8 +13,8 @@ type LanguageProps = { code: LanguageCode; name: string; icon: Component };
 export const SUPPORTED_LANGUAGES: LanguageProps[] = [
 	{ icon: UsaFlag, name: 'English', code: LanguageCodeEnum.En },
 	{ icon: VietnamFlag, name: 'Tiếng Việt', code: LanguageCodeEnum.Vi },
-	{ icon: KoreaFlag, name: '한국어', code: LanguageCodeEnum.Ko },
-	{ icon: JapanFlag, name: '日本語', code: LanguageCodeEnum.Ja },
+	// { icon: KoreaFlag, name: '한국어', code: LanguageCodeEnum.Ko },
+	// { icon: JapanFlag, name: '日本語', code: LanguageCodeEnum.Ja },
 ];
 
 const findTemplatePlaceholders = (template: string): string[] => {
@@ -54,8 +54,8 @@ const parseTranslationObject = (
 
 export type LanguageCode =
 	| LanguageCodeEnum.Vi
-	| LanguageCodeEnum.Ja
-	| LanguageCodeEnum.Ko
+	// | LanguageCodeEnum.Ja
+	// | LanguageCodeEnum.Ko
 	| LanguageCodeEnum.En
 	| 'vi-VN'
 	| 'en-US';
@@ -68,10 +68,10 @@ export const languageSupportInfer = (language: LanguageCode | LanguageCodeEnum) 
 		case LanguageCodeEnum.Vi:
 		case 'vi-VN':
 			return LanguageCodeEnum.Vi;
-		case LanguageCodeEnum.Ko:
-			return LanguageCodeEnum.Ko;
-		case LanguageCodeEnum.Ja:
-			return LanguageCodeEnum.Ja;
+		// case LanguageCodeEnum.Ko:
+		// 	return LanguageCodeEnum.Ko;
+		// case LanguageCodeEnum.Ja:
+		// 	return LanguageCodeEnum.Ja;
 
 		default:
 			return LanguageCodeEnum.En;
@@ -98,12 +98,12 @@ const getTranslation = async (lang: LanguageCodeEnum) => {
 	let imp = undefined;
 
 	switch (inferLang) {
-		case LanguageCodeEnum.Ko:
-			imp = await import('./ko');
-			break;
-		case LanguageCodeEnum.Ja:
-			imp = await import('./ja');
-			break;
+		// case LanguageCodeEnum.Ko:
+		// 	imp = await import('./ko');
+		// 	break;
+		// case LanguageCodeEnum.Ja:
+		// 	imp = await import('./ja');
+		// 	break;
 		case LanguageCodeEnum.En:
 			imp = await import('./en');
 			break;

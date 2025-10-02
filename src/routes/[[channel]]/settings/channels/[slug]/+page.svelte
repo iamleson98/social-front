@@ -27,7 +27,8 @@
 		type Query,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
+	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { omit } from 'es-toolkit';
 	import { onMount } from 'svelte';
 
@@ -146,8 +147,7 @@
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'channelDelete', $tranFunc('channel.delSuccess')))
-			return;
+		if (checkIfGraphqlResultHasError(result, 'channelDelete', $CommonState.DeleteSuccess)) return;
 
 		await goto(AppRoute.SETTINGS_CONFIGS_CHANNELS());
 	};
@@ -166,8 +166,7 @@
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'channelUpdate', $tranFunc('channel.editSuccess')))
-			return;
+		if (checkIfGraphqlResultHasError(result, 'channelUpdate', $CommonState.EditSuccess)) return;
 
 		await goto(AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(channelValues.slug as string), {
 			replaceState: true,
@@ -201,7 +200,7 @@
 		<div class="flex flex-row gap-2">
 			<!-- MARK: general information -->
 
-			<div class="w-2/3 rounded-lg bg-white border border-gray-200 p-4 h-fit">
+			<div class="w-2/3 {SitenameCommonClassName}">
 				<ChannelForm
 					bind:name={channelValues.name as string}
 					bind:slug={channelValues.slug as string}

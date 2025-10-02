@@ -9,6 +9,7 @@
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
 	import type { Query, QueryShippingZonesArgs, ShippingZone } from '$lib/gql/graphql';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 
 	type Props = {
@@ -73,7 +74,7 @@
 <Accordion
 	open
 	header={`${$tranFunc('channel.shipZones')} (${shippingZonesOfChannel.length})`}
-	class="rounded-lg border border-gray-200 bg-white mb-3 p-3"
+	class="mb-3 {SitenameCommonClassName}"
 >
 	<Alert variant="info" size="sm" bordered class="mb-3">
 		{$tranFunc('channel.shipZonesAlert')}

@@ -20,6 +20,7 @@
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import type { Channel, Mutation, MutationChannelDeleteArgs, Query } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 
@@ -108,8 +109,7 @@
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'channelDelete', $tranFunc('channel.delSuccess')))
-			return;
+		if (checkIfGraphqlResultHasError(result, 'channelDelete', $CommonState.DeleteSuccess)) return;
 
 		channelToDeleteId = '';
 		channelToReplaceId = '';
