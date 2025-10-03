@@ -2,6 +2,7 @@
 	import { tranFunc } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import type { GiftCard } from '$lib/gql/graphql';
+	import { BASIC_DATE_FORMAT } from '$lib/utils/consts';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 
@@ -14,7 +15,7 @@
 	const SECTIONS = [
 		{
 			title: $tranFunc('giftcard.creationDate'),
-			content: dayjs(giftcard.created).format('YYYY/MM/DD'),
+			content: dayjs(giftcard.created).format(BASIC_DATE_FORMAT),
 		},
 		{
 			title: $tranFunc('giftcard.issuedBy'),

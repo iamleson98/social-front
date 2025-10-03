@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import { tranFunc } from '$i18n';
 	import { RFC3339TimeFormat } from '$lib/api/graphql/utils';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
@@ -7,6 +8,7 @@
 	import ChannelSelect from '../channel-select/channel-select.svelte';
 	import { type FilterComponentType, type FilterItemValue } from './types';
 	import dayjs from 'dayjs';
+	import { get } from 'svelte/store';
 
 	export const CommonSnippets = {
 		singleNumber,
@@ -22,6 +24,8 @@
 		dateRange,
 		datetimeRange,
 	};
+
+	const funcTran = $derived(get(tranFunc));
 </script>
 
 {#snippet singleNumber({ onValue, initialValue, placeholder }: FilterComponentType)}
@@ -57,13 +61,19 @@
 {/snippet}
 
 {#snippet yesNo({ onValue, initialValue = false }: FilterComponentType)}
-	<Checkbox size="sm" label="Yes?" checked={initialValue as boolean} onCheckChange={onValue} />
+	<Checkbox
+		size="sm"
+		label={funcTran('common.yes')}
+		checked={initialValue as boolean}
+		onCheckChange={onValue}
+	/>
 {/snippet}
 
 {#snippet singleChannelSlug({ onValue, initialValue = '' }: FilterComponentType)}
 	<ChannelSelect
 		size="xs"
 		valueType="slug"
+		placeholder={funcTran('voucher.specifyChan')}
 		value={initialValue as string}
 		onchange={(opt) => onValue((opt as Channel)?.slug as FilterItemValue)}
 	/>
@@ -73,6 +83,7 @@
 	<ChannelSelect
 		size="xs"
 		multiple
+		placeholder={funcTran('voucher.specifyChan')}
 		onchange={(opt) => {
 			if (opt && Array.isArray(opt)) {
 				onValue(opt.map((opt) => opt.slug as string));
@@ -87,6 +98,7 @@
 	<ChannelSelect
 		size="xs"
 		multiple
+		placeholder={funcTran('voucher.specifyChan')}
 		onchange={(opt) => {
 			if (opt && Array.isArray(opt)) {
 				onValue(opt.map((opt) => opt.id as string));
@@ -101,6 +113,7 @@
 	<ChannelSelect
 		size="xs"
 		valueType="id"
+		placeholder={funcTran('voucher.specifyChan')}
 		value={initialValue as string}
 		onchange={(opt) => onValue((opt as Channel)?.id as FilterItemValue)}
 	/>
@@ -109,7 +122,7 @@
 {#snippet singleDatetime({ onValue, initialValue = '' }: FilterComponentType)}
 	<EaseDatePicker
 		size="xs"
-		placeholder="Time"
+		placeholder={funcTran('common.time')}
 		value={{ date: initialValue as string }}
 		onchange={(val) => onValue(dayjs(val.date).format(RFC3339TimeFormat))}
 		timeConfig={{
@@ -132,7 +145,7 @@
 	{@const range = initialValue as string[]}
 	<EaseDatePicker
 		size="xs"
-		placeholder="Time range"
+		placeholder={funcTran('common.range')}
 		value={{ start: range[0], end: range[1] }}
 		onchange={(value) => {
 			range[0] = dayjs(value.start).format(RFC3339TimeFormat);
@@ -159,7 +172,7 @@
 {#snippet singleDate({ onValue, initialValue = '' }: FilterComponentType)}
 	<EaseDatePicker
 		size="xs"
-		placeholder="Date"
+		placeholder={funcTran('settings.date')}
 		value={{ date: initialValue as string }}
 		onchange={(vl) => onValue(dayjs(vl.date).format(BASIC_DATE_FORMAT))}
 	/>
@@ -169,7 +182,7 @@
 	{@const range = initialValue as string[]}
 	<EaseDatePicker
 		size="xs"
-		placeholder="Date range"
+		placeholder={funcTran('common.range')}
 		value={{ start: range[0], end: range[1] }}
 		onchange={(vl) => {
 			range[0] = dayjs(vl.start).format(BASIC_DATE_FORMAT);
@@ -185,7 +198,7 @@
 	<div class="flex flex-col gap-1.5">
 		<Input
 			size="xs"
-			placeholder="key"
+			placeholder={funcTran('common.key')}
 			value={keyValue[0]}
 			onchange={(evt) => {
 				const { value } = evt.target as HTMLInputElement;
@@ -195,7 +208,7 @@
 		/>
 		<Input
 			size="xs"
-			placeholder="value"
+			placeholder={funcTran('common.value')}
 			value={keyValue[1]}
 			onchange={(evt) => {
 				const { value } = evt.target as HTMLInputElement;

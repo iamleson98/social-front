@@ -13,18 +13,17 @@
 	} from '$lib/gql/graphql';
 	import { ME_PAGE_USER_STORE } from '$lib/stores/app/me';
 	import { UserStoreManager } from '$lib/stores/auth';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
+	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { object, string, z } from 'zod';
 
-	const FIELD_REQUIRED = $tranFunc('helpText.fieldRequired');
-
 	const UserInfoSchema = object({
-		firstName: string().nonempty(FIELD_REQUIRED),
-		lastName: string().nonempty(FIELD_REQUIRED),
+		firstName: string().nonempty($CommonState.FieldRequiredError),
+		lastName: string().nonempty($CommonState.FieldRequiredError),
 		languageCode: string()
-			.nonempty(FIELD_REQUIRED)
+			.nonempty($CommonState.FieldRequiredError)
 			.optional()
-			.refine((val) => val !== undefined, FIELD_REQUIRED),
+			.refine((val) => val !== undefined, $CommonState.FieldRequiredError),
 	});
 	type InfoProps = z.infer<typeof UserInfoSchema>;
 
@@ -92,7 +91,7 @@
 	};
 </script>
 
-<div class="rounded-lg bg-white border border-gray-200 p-4">
+<div class={SitenameCommonClassName}>
 	<Label size="lg" label={$tranFunc('settings.basicInfo')} />
 
 	<div class="flex items-start mt-3 gap-2 w-full tablet:flex-wrap flex-nowrap">

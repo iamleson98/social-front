@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { tranFunc } from '$i18n';
 	import { ClipboardCopy, Plus } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { IconButton } from '$lib/components/ui/Button';
@@ -29,13 +30,13 @@
 		disabled,
 	}: Props = $props();
 
-	let copyTooltip = $state('Copy');
+	let copyTooltip = $state($tranFunc('common.copy'));
 
 	const handleCopy = (content: string) => {
 		navigator.clipboard.writeText(content).then(() => {
-			copyTooltip = 'Copied!';
+			copyTooltip = $tranFunc('common.copied');
 
-			setTimeout(() => (copyTooltip = 'Copy'), 3000);
+			setTimeout(() => (copyTooltip = $tranFunc('common.copy')), 3000);
 		});
 	};
 </script>

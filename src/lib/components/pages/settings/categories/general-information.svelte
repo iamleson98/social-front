@@ -118,8 +118,8 @@
 	/>
 	<SectionHeader>{$tranFunc('common.seoInfo')}</SectionHeader>
 	<Input
-		placeholder="Slug"
-		label="Slug"
+		placeholder={$tranFunc('common.slug')}
+		label={$tranFunc('common.slug')}
 		required
 		bind:value={slug}
 		inputDebounceOption={{ onInput: validate }}

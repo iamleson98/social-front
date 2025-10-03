@@ -70,9 +70,9 @@
 			)
 			.optional(),
 		addTags: array(string().nonempty($CommonState.FieldRequiredError)),
-		amount: number().min(1, $tranFunc('error.negativeNumber')),
+		amount: number().min(1, $CommonState.NonNegativeError),
 		currency: string().nonempty($CommonState.FieldRequiredError),
-		userEmail: string().email($tranFunc('error.invalidEmail')).optional(),
+		userEmail: string().email($CommonState.InvalidEmail).optional(),
 	});
 
 	type GiftcardSchema = z.infer<typeof giftcardSchema>;

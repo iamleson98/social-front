@@ -4,7 +4,7 @@
 	import { operationStore } from '$lib/api/operation';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
-	import { ArrowDown, CalendarClock, ChevronDown, ChevronUp, Send } from '$lib/components/icons';
+	import { CalendarClock, ChevronDown, ChevronUp, Send } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';

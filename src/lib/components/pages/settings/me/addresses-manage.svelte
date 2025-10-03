@@ -28,7 +28,7 @@
 	import { DEFAULT_CHANNEL } from '$lib/utils/consts';
 	import { CHANNEL_KEY } from '$lib/utils/consts';
 	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 
 	let showAddressCreateForm = $state(false);
 	let loading = $state(false);
@@ -157,7 +157,7 @@
 	};
 </script>
 
-<div class="rounded-lg bg-white p-4 border border-gray-200 mt-2">
+<div class="{SitenameCommonClassName} mt-2">
 	<Label label={$tranFunc('settings.addrManage')} size="lg" />
 
 	<div class="mt-2">

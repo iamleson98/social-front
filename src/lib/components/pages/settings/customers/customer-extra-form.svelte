@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { USER_GIFTCARDS_QUERY } from '$lib/api/admin/giftcards';
 	import UserAddress from '$lib/components/common/user-address/user-address.svelte';
 	import { Button } from '$lib/components/ui';
@@ -30,11 +31,11 @@
 
 	const UserGiftcardColumns: TableColumnProps<GiftCard>[] = [
 		{
-			title: 'Code',
+			title: $tranFunc('common.code'),
 			child: giftcardCode,
 		},
 		{
-			title: 'Used at',
+			title: $tranFunc('giftcard.usedAt'),
 			child: lastUsedOn,
 		},
 	];
@@ -49,23 +50,25 @@
 {/snippet}
 
 <div class="flex flex-col gap-2 flex-1 w-4/10">
-	<Accordion header="Address information" class={SitenameCommonClassName}>
+	<Accordion header={$tranFunc('customer.addrInfo')} class={SitenameCommonClassName}>
 		{#if user.addresses.length}
 			{#each user.addresses as address, idx (idx)}
 				<UserAddress {address} class="w-full mb-2" />
 			{/each}
 		{:else}
-			<Alert variant="info" size="sm" bordered>This customer has no address</Alert>
+			<Alert variant="info" size="sm" bordered>{$tranFunc('customer.hasNoAddr')}</Alert>
 		{/if}
 	</Accordion>
 
-	<Accordion header="Customer history" class={SitenameCommonClassName}>
+	<Accordion header={$tranFunc('customer.history')} class={SitenameCommonClassName}>
 		<div class="flex flex-col gap-2 text-sm">
 			<span>
-				Last login: {user.lastLogin ? dayjs(user.lastLogin).format(SitenameTimeFormat) : '-'}
+				{$tranFunc('customer.lastLogin')}: {user.lastLogin
+					? dayjs(user.lastLogin).format(SitenameTimeFormat)
+					: '-'}
 			</span>
 			<span>
-				Last order: {user.orders?.edges[0]?.node?.created
+				{$tranFunc('customer.lastOrder')}: {user.orders?.edges[0]?.node?.created
 					? dayjs(user.orders?.edges[0]?.node?.created).format(SitenameTimeFormat)
 					: '-'}
 			</span>
@@ -75,8 +78,8 @@
 	<Accordion class={SitenameCommonClassName}>
 		{#snippet header()}
 			<div class="flex items-center gap-2">
-				<span>Gift cards</span>
-				<Badge variant="outline" size="xs" text="Preview" rounded />
+				<span>{$tranFunc('customer.giftcards')}</span>
+				<Badge variant="outline" size="xs" text={$tranFunc('settings.preview')} rounded />
 			</div>
 		{/snippet}
 
@@ -93,14 +96,14 @@
 		/>
 
 		<Button size="xs" class="mt-3" onclick={() => (openAddGiftcardModal = true)} {disabled}>
-			Issue new card
+			{$tranFunc('giftcard.newIssue')}
 		</Button>
 	</Accordion>
 </div>
 
 <Modal
 	open={openAddGiftcardModal}
-	header="Issue new gift card"
+	header={$tranFunc('giftcard.newIssue')}
 	onClose={() => (openAddGiftcardModal = false)}
 	onOk={() => (triggerCreate = true)}
 	onCancel={() => (openAddGiftcardModal = false)}

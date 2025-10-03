@@ -124,9 +124,12 @@ export default {
 		variants: 'Variants',
 		user: 'User',
 		order: 'Order',
-		fileExporting:
-			'We are currently exporting your requested file. As soon as it is available it will be sent to your email address',
+		fileExporting: 'We are currently exporting your requested file. As soon as it is available it will be sent to your email address',
 		search: 'Search',
+		slug: 'Slug',
+		copy: 'Copy',
+		copied: 'Copied!',
+		number: 'Number',
 	},
 	product: {
 		chooseAddress: 'Please choose address',
@@ -414,7 +417,7 @@ export default {
 		submitNote: 'Submit Note',
 		filterByType: 'Filter by event type',
 		by: 'By',
-		duration: 'Number',
+		duration: 'Duration',
 		specifyChannel: 'Please specify channel',
 		addNote: 'Add giftcard note',
 		filter: {
@@ -602,5 +605,14 @@ export default {
 		customers: 'Customers',
 		newCustomer: 'New Customer',
 		info: 'Customer Information',
+		addrInfo: 'Address Information',
+		hasNoAddr: 'Customer has no address',
+		history: 'Customer history',
+		lastLogin: 'Last login',
+		lastOrder: 'Last order',
+		giftcards: 'Gift cards',
+		recentOrders: 'Recent orders',
+		viewOrders: 'View all orders',
+		numOfOrders: 'Number of orders',
 	},
 };

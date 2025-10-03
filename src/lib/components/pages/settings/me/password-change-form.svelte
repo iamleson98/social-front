@@ -7,15 +7,14 @@
 	import { Label, PasswordInput } from '$lib/components/ui/Input';
 	import type { Mutation, MutationPasswordChangeArgs } from '$lib/gql/graphql';
 	import { handleLogout } from '$lib/utils/auth.svelte';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
+	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { object, string, z } from 'zod';
 
-	const FIELD_REQUIRED = $tranFunc('helpText.fieldRequired');
-
 	const PasswordSchema = object({
-		oldPassword: string().min(1, { message: FIELD_REQUIRED }),
-		newPassword: string().min(1, { message: FIELD_REQUIRED }),
-		confirmPassword: string().min(1, { message: FIELD_REQUIRED }),
+		oldPassword: string().min(1, { message: $CommonState.FieldRequiredError }),
+		newPassword: string().min(1, { message: $CommonState.FieldRequiredError }),
+		confirmPassword: string().min(1, { message: $CommonState.FieldRequiredError }),
 	}).refine((data) => data.newPassword === data.confirmPassword, {
 		message: $tranFunc('error.passwordsNotMatch'),
 		path: ['confirmPassword'],
@@ -78,7 +77,7 @@
 	<Label size="lg" label={$tranFunc('settings.pwdUpdate')} class="cursor-pointer!" />
 {/snippet}
 
-<Accordion header={label} class="bg-white p-4! mt-2 border border-gray-200" open={false}>
+<Accordion header={label} class={SitenameCommonClassName} open={false}>
 	<PasswordInput
 		class="mt-2"
 		required

@@ -146,13 +146,14 @@ const buildTranslationText = (trans: Translation, key: string, args?: Record<str
 	return result;
 };
 
+export type TranFunc = (key: string, args?: Record<string, unknown>) => string;
+
 /**a svelte store for translation.
  * On client side (in .svelte files), use it like: const result = $tranFunc('`<your_key>`').
  * On server side or utils fies (**.ts files), use it like: const result = get(tranFunc)('`<your_key>`')
  */
-export const tranFunc = derived(innerStore, ($trans) => {
-	return (key: string, args?: Record<string, unknown>) => buildTranslationText($trans, key, args);
-});
+export const tranFunc = derived(innerStore, ($trans) => (key: string, args?: Record<string, unknown>) => buildTranslationText($trans, key, args));
+
 
 /**
  * translation json should be in the format of:

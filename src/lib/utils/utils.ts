@@ -1,5 +1,6 @@
 import { goto } from '$app/navigation';
 import { page } from '$app/state';
+import type { TranFunc } from '$i18n';
 import type { FilterConditions, FilterItemValue, FilterOperator } from '$lib/components/common/filter-box';
 import type { BadgeProps } from '$lib/components/ui/Badge/types';
 import {

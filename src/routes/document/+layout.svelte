@@ -37,6 +37,10 @@
 			name: 'Select',
 			path: '/document/select',
 		},
+		{
+			name: 'Translations',
+			path: '/document/translations',
+		},
 		// {
 		// 	name: 'GraphiQL',
 		// 	path: '/document/graphql',

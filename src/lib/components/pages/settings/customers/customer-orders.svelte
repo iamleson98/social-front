@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { CUSTOMER_ORDERS_QUERY } from '$lib/api/admin/orders';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
@@ -22,19 +23,19 @@
 
 	const ORDER_TABLE_COLUMNS: TableColumnProps<Order, OrderSortField>[] = [
 		{
-			title: 'Number',
+			title: $tranFunc('common.number'),
 			child: number,
 		},
 		{
-			title: 'Date',
+			title: $tranFunc('settings.date'),
 			child: date,
 		},
 		{
-			title: 'Status',
+			title: $tranFunc('settings.status'),
 			child: status,
 		},
 		{
-			title: 'Total',
+			title: $tranFunc('settings.total'),
 			child: total,
 		},
 	];
@@ -60,7 +61,7 @@
 
 <div class={SitenameCommonClassName}>
 	<SectionHeader class="mb-3">
-		<div>Recent Orders</div>
+		<div>{$tranFunc('customer.recentOrders')}</div>
 		<Button
 			variant="light"
 			size="xs"
@@ -69,7 +70,7 @@
 			target="_blank"
 			endIcon={ExternalLink}
 		>
-			View all orders
+			{$tranFunc('customer.viewOrders')}
 		</Button>
 	</SectionHeader>
 	<GraphqlPaginableTable
