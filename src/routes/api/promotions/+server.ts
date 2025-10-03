@@ -1,42 +1,28 @@
-import { PROMOTION_MANAGER_EMAIL, PROMOTION_MANAGER_PWD } from '$env/static/private';
-import { USER_LOGIN_MUTATION_STORE } from '$lib/api';
 import { GRAPHQL_CLIENT } from '$lib/api/client';
 import { PROMOTIONS_QUERY } from '$lib/api/discount';
 import type {
-	Mutation,
-	MutationTokenCreateArgs,
 	PromotionCountableConnection,
 	Query,
 	QueryPromotionsArgs,
 } from '$lib/gql/graphql';
+import { getmiddleAccountAccessToken } from '$lib/utils/server-side-only.js';
 import { json } from '@sveltejs/kit';
 
-let token: string;
 
 export const POST = async (event) => {
 	const body: QueryPromotionsArgs = await event.request.json();
 
-	if (!token) {
-		const signinResult = await GRAPHQL_CLIENT.mutation<
-			Pick<Mutation, 'tokenCreate'>,
-			MutationTokenCreateArgs
-		>(USER_LOGIN_MUTATION_STORE, {
-			email: PROMOTION_MANAGER_EMAIL,
-			password: PROMOTION_MANAGER_PWD,
+	const token = await getmiddleAccountAccessToken();
+	if (token == null)
+		return json({
+			promotions: {
+				edges: [],
+				pageInfo: {
+					hasNextPage: false,
+					hasPreviousPage: false,
+				},
+			} satisfies PromotionCountableConnection,
 		});
-		if (signinResult.error || !signinResult.data?.tokenCreate?.token)
-			return json({
-				promotions: {
-					edges: [],
-					pageInfo: {
-						hasNextPage: false,
-						hasPreviousPage: false,
-					},
-				} satisfies PromotionCountableConnection,
-			});
-
-		token = signinResult.data?.tokenCreate.token;
-	}
 
 	const result = await GRAPHQL_CLIENT.query<Pick<Query, 'promotions'>, QueryPromotionsArgs>(
 		PROMOTIONS_QUERY,

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { CATEGORY_DETAIL_QUERY } from '$lib/api';
-	import { CHANNEL_DETAILS_QUERY } from '$lib/api/channels';
 	import { operationStore } from '$lib/api/operation';
 	import {
 		ArrowDown,
@@ -26,13 +25,14 @@
 		OrderDirection,
 		ProductOrderField,
 		type CategoryCountableEdge,
+		type Channel,
 		type Query,
 		type QueryCategoryArgs,
-		type QueryChannelArgs,
 	} from '$lib/gql/graphql';
 	import { AppRoute, getCookieByKey } from '$lib/utils';
 	import { CHANNEL_KEY } from '$lib/utils/consts';
 	import { flipDirection, SitenameCommonClassName } from '$lib/utils/utils';
+	import { onMount } from 'svelte';
 
 	const CategoryQuery = operationStore<
 		Pick<Query, 'category'>,
@@ -51,13 +51,32 @@
 		pause: !page.params.slug,
 		requestPolicy: 'cache-and-network',
 	});
+	let channels = $state<Channel[]>([]);
+	let loading = $state(true);
+	let showError = $state(false);
 
-	const ChannelQuery = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
-		query: CHANNEL_DETAILS_QUERY,
-		variables: {
-			slug: page.params.channel || getCookieByKey(CHANNEL_KEY),
-		},
-		requestPolicy: 'cache-and-network',
+	// const ChannelQuery = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
+	// 	query: CHANNEL_DETAILS_QUERY,
+	// 	variables: {
+	// 		slug: page.params.channel || getCookieByKey(CHANNEL_KEY),
+	// 	},
+	// 	requestPolicy: 'cache-and-network',
+	// });
+	onMount(async () => {
+		const result = await fetch('/api/channels', {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		});
+		loading = false;
+
+		if (result.ok) {
+			const data = await result.json();
+			channels = data.channels;
+		} else {
+			showError = true;
+		}
 	});
 	let sortField = $state<ProductOrderField>();
 	let orderDirection = $state<OrderDirection>(OrderDirection.Asc);
@@ -125,17 +144,17 @@
 
 		<div class="w-3/4 tablet:w-full space-y-2">
 			<!-- Filter Bar -->
-			{#if $ChannelQuery.fetching}
+			{#if loading}
 				<SkeletonContainer class="flex items-center gap-4 p-3! rounded-lg!">
 					<Skeleton class="w-1/3 h-5" />
 					<Skeleton class="w-1/3 h-5" />
 				</SkeletonContainer>
-			{:else if $ChannelQuery.error}
-				<Alert size="xs" variant="error">{$ChannelQuery.error.message}</Alert>
-			{:else if $ChannelQuery.data?.channel}
+			{:else if channels.length > 0}
 				{#snippet action()}
 					<span class="text-[10px] font-semibold text-gray-600">
-						{$ChannelQuery.data?.channel?.currencyCode || 'VND'}
+						{channels.find(
+							(chan) => chan.slug === (page.params.channel || getCookieByKey(CHANNEL_KEY)),
+						)?.currencyCode || 'VND'}
 					</span>
 				{/snippet}
 				<div
@@ -193,6 +212,8 @@
 
 					<Button startIcon={Search} size="xs">Search</Button>
 				</div>
+			{:else if showError}
+				<Alert size="xs" variant="error">Error occured when fetching channels data</Alert>
 			{/if}
 
 			<div class={SitenameCommonClassName}>

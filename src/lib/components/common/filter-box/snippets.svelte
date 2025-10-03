@@ -133,10 +133,10 @@
 	<EaseDatePicker
 		size="xs"
 		placeholder="Time range"
-		value={{ date: initialValue as string }}
-		onchange={(vl) => {
-			range[0] = dayjs(vl.start).format(RFC3339TimeFormat);
-			range[1] = dayjs(vl.end).format(RFC3339TimeFormat);
+		value={{ start: range[0], end: range[1] }}
+		onchange={(value) => {
+			range[0] = dayjs(value.start).format(RFC3339TimeFormat);
+			range[1] = dayjs(value.end).format(RFC3339TimeFormat);
 			onValue(range);
 		}}
 		timeConfig={{
@@ -144,6 +144,7 @@
 			format: 24,
 			stepHours: 1,
 		}}
+		allowSelectRange
 		allowSelectMonthYears={{
 			showMonths: true,
 			showResetBtn: true,

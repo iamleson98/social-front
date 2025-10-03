@@ -41,7 +41,7 @@
 </script>
 
 <div
-	class="rounded-lg bg-white border border-gray-200 px-3 py-2 flex items-center justify-between mb-3"
+	class="rounded-lg bg-white border border-gray-200 px-3 py-1 flex items-center justify-between mb-3"
 >
 	<div class="breadcrumbs text-sm overflow-x-visible">
 		<ul>
