@@ -52,9 +52,7 @@
 		<Icon icon={VariantMap[variant].icon} size="lg" />
 	</div>
 
-	<div class="flex justify-center text-center wrap-anywhere">
-		{@render children()}
-	</div>
+	{@render children()}
 
 	<div class="flex gap-2 justify-center mt-5">
 		<Button size="sm" color={['success', 'info'].includes(variant) ? 'blue' : 'red'} onclick={onOk}>

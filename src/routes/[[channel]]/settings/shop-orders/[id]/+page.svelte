@@ -8,6 +8,7 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
+	import { Ban, SettingCog } from '$lib/components/icons';
 	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
@@ -17,8 +18,12 @@
 	import OrderHistory from '$lib/components/pages/settings/orders/order-history.svelte';
 	import OrderNormalDetails from '$lib/components/pages/settings/orders/order-normal-details.svelte';
 	import Sidebar from '$lib/components/pages/settings/orders/sidebar.svelte';
+	import { OrderUtilsInstance } from '$lib/components/pages/settings/orders/utils.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/Badge';
+	import { IconButton } from '$lib/components/ui/Button';
+	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import {
 		AddressTypeEnum,
 		OrderStatus,
@@ -31,6 +36,7 @@
 		type Query,
 		type QueryOrderArgs,
 	} from '$lib/gql/graphql';
+	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
@@ -149,6 +155,16 @@
 		}
 		loading = false;
 	};
+
+	const handleCancelOrder = async () => {
+		ALERT_MODAL_STORE.openAlertModal({
+			content: 'Are you sure you want to cancel this order?',
+			onOk: async () => {
+				const hasErr = await OrderUtilsInstance.orderCancel(page.params.id!);
+				if (!hasErr) toast.success('Order cancelled successfully');
+			},
+		});
+	};
 </script>
 
 {#if $orderQuery.fetching}
@@ -157,62 +173,13 @@
 	<Alert variant="error" size="sm" bordered>{$orderQuery.error?.message}</Alert>
 {:else if $orderQuery.data?.order}
 	{@const { order } = $orderQuery.data}
-	<!-- {@const unfulfilledOrderLines = differenceBy(
-		order.lines,
-		order.fulfillments
-			.filter((item) => item.status === FulfillmentStatus.Fulfilled)
-			.flatMap((item) => item.lines || [])
-			.map((item) => item.orderLine)
-			.filter(Boolean),
-		(item) => item?.id,
-	)} -->
-	<div class="flex flex-row gap-2">
-		<div class="space-y-2 w-7/10">
-			<SectionHeader class={SitenameCommonClassName}>
-				<div class="flex items-center gap-2">
-					<div>Order #{order.number}</div>
-					<Badge {...orderStatusBadgeClass(order.status)} rounded />
-					<div class="text-xs text-gray-500 font-medium">
-						{dayjs(order.created).format(SitenameTimeFormat)}
-					</div>
-				</div>
-			</SectionHeader>
 
-			{#if ![OrderStatus.Draft, OrderStatus.Unconfirmed].includes(order.status)}
-				<OrderNormalDetails {order} />
-			{:else if order.status === OrderStatus.Draft}
-				<!-- <OrderLinesAssignSection {order} onAddedVariants={reexecuteQuery} /> -->
-				<OrderDraftDetails {order} />
-			{/if}
-			<!-- {#if order.status === OrderStatus.Draft}
-				<OrderLinesAssignSection {order} onAddedVariants={reexecuteQuery} />
-			{/if} -->
-			<!-- {#if unfulfilledOrderLines.length}
-				<OrderLines orderLines={unfulfilledOrderLines} {order} onFulfillSuccess={reexecuteQuery} />
-			{/if} -->
-			{#if order.fulfillments.length}
-				<OrderFulfillment {order} onUpdateTrackingCode={reexecuteQuery} />
-			{/if}
-
-			<!-- <OrderPaymentBalance {order} /> -->
-			<GeneralMetadataEditor
-				metadata={order.metadata}
-				privateMetadata={order.privateMetadata}
-				objectId={order.id}
-				disabled={loading}
-				bind:this={metaRef}
-			/>
-			<OrderHistory id={order.id} />
-		</div>
-
-		<Sidebar
-			{order}
-			onDoneCustomerUpdate={reexecuteQuery}
-			{handleUpdateCustomer}
-			disabled={loading}
-			setAddress={handleUpdateAddress}
-		/>
-	</div>
-
-	<ActionBar backButtonUrl={AppRoute.SETTINGS_ORDERS()} {onUpdateClick} disabled={loading} />
+	{#if ![OrderStatus.Draft, OrderStatus.Unconfirmed].includes(order.status)}
+		<OrderNormalDetails {order} />
+	{:else if order.status === OrderStatus.Draft}
+		<OrderDraftDetails {order} />
+	{/if}
+	{#if order.fulfillments.length}
+		<OrderFulfillment {order} onUpdateTrackingCode={reexecuteQuery} />
+	{/if}
 {/if}

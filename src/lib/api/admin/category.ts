@@ -9,6 +9,7 @@ export const CATEGORIES_LIST_QUERY = gql`
 		$level: Int
 		$filter: CategoryFilterInput
 		$sortBy: CategorySortingInput
+		$countCatalog: Boolean = true # NOTE: this is custom param, to prevent performing extra db queries in some cases
 	) {
 		categories(
 			first: $first
@@ -30,10 +31,10 @@ export const CATEGORIES_LIST_QUERY = gql`
 						url
 						alt
 					}
-					products {
+					products @include(if: $countCatalog) {
 						totalCount
 					}
-					children {
+					children @include(if: $countCatalog) {
 						totalCount
 					}
 				}
@@ -85,7 +86,7 @@ export const CATEGORY_UPDATE_MUTATION = gql`
 `;
 
 export const CATEGORY_CHILDREN_LIST_QUERY = gql`
-	query CategoryChildren($id: ID!, $first: Int, $last: Int, $before: String, $after: String) {
+	query CategoryChildren($id: ID!, $first: Int, $last: Int, $before: String, $after: String, $countCatalog: Boolean = true) {
 		category(id: $id) {
 			children(first: $first, last: $last, before: $before, after: $after) {
 				edges {
@@ -98,10 +99,10 @@ export const CATEGORY_CHILDREN_LIST_QUERY = gql`
 							url
 							alt
 						}
-						products {
+						products @include(if: $countCatalog) {
 							totalCount
 						}
-						children {
+						children @include(if: $countCatalog) {
 							totalCount
 						}
 					}

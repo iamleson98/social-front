@@ -1,11 +1,13 @@
 <script lang="ts">
+	import { scrollToEnd } from '$lib/actions/scroll-end';
 	import { ChevronRight } from '$lib/components/icons';
 	import Icon from '$lib/components/icons/icon.svelte';
 	import type { MenuProps } from './types';
+	import { noop } from 'es-toolkit';
 	import { fly } from 'svelte/transition';
 
-	let { items, onSelect, disabled }: MenuProps = $props();
-	let activeItemIndex = $state(-1);
+	let { items, onSelect, disabled, onScrollToEnd = noop }: MenuProps = $props();
+	let activeItemIndex = $state<number>();
 	const itemCursorClass = $derived(disabled ? 'cursor-not-allowed!' : 'cursor-pointer');
 
 	const handleItemSelect = (index: number) => {
@@ -16,7 +18,10 @@
 	};
 </script>
 
-<div class="rounded-lg overflow-y-auto max-h-60 w-1/3 p-2 sitename-scrollbar">
+<div
+	class="rounded-lg overflow-y-auto max-h-60 p-2 sitename-scrollbar"
+	use:scrollToEnd={{ onScrollToEnd }}
+>
 	{#each items as item, idx (idx)}
 		{@const colorClasses =
 			activeItemIndex === idx
@@ -31,7 +36,7 @@
 			aria-disabled={disabled}
 		>
 			<span>{item.title}</span>
-			{#if activeItemIndex === idx && item.children?.length}
+			{#if activeItemIndex === idx && item.children}
 				<span transition:fly={{ x: -10 }}>
 					<Icon icon={ChevronRight} />
 				</span>
