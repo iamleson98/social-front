@@ -33,6 +33,7 @@
 		defaultSortState = {} as SortState<K>,
 		disabled = false,
 		onDragEnd,
+		headless,
 	}: TableProps<T, K> = $props();
 
 	const DEFAULT_SORT_STATE = columns.reduce<SortState<K>>((acc, column) => {
@@ -91,52 +92,55 @@
 
 <div class={[className, 'min-w-fit']}>
 	<table class="table" class:disable-table={disabled}>
-		<thead>
-			<tr>
-				{#if onDragEnd}
-					<th></th>
-				{/if}
-				{#each columns as column, idx (idx)}
-					{@const props = column?.key
-						? {
-								onclick: () => handleSortClick(column.key!),
-								onkeyup: (evt: KeyboardEvent) =>
-									evt.key === 'Enter' && handleSortClick(column.key!),
-								disabled,
-							}
-						: {}}
-					<th class="p-[unset]!">
-						<svelte:element
-							this={column?.key ? 'button' : 'div'}
-							class={classNames('flex items-center gap-2 w-full h-full p-2 justify-between', {
-								'cursor-pointer hover:bg-gray-100 active:bg-gray-200 focus:bg-gray-200':
-									!!column?.key,
-							})}
-							{...props}
-						>
-							<div class="flex items-center gap-1">
-								{#if column?.startIcon}
-									<Icon icon={column.startIcon} size="sm" />
+		{#if !headless}
+			<thead>
+				<tr>
+					{#if onDragEnd}
+						<th></th>
+					{/if}
+					{#each columns as column, idx (idx)}
+						{@const props = column?.key
+							? {
+									onclick: () => handleSortClick(column.key!),
+									onkeyup: (evt: KeyboardEvent) =>
+										evt.key === 'Enter' && handleSortClick(column.key!),
+									disabled,
+								}
+							: {}}
+						<th class="p-[unset]!">
+							<svelte:element
+								this={column?.key ? 'button' : 'div'}
+								class={[
+									!!column?.key &&
+										'cursor-pointer hover:bg-gray-100 active:bg-gray-200 focus:bg-gray-200',
+									'flex items-center gap-2 w-full h-full p-2 justify-between',
+								]}
+								{...props}
+							>
+								<div class="flex items-center gap-1">
+									{#if column?.startIcon}
+										<Icon icon={column.startIcon} size="sm" />
+									{/if}
+									{#if typeof column.title === 'string'}
+										<span>{column.title}</span>
+									{:else}
+										{@render column.title({ items })}
+									{/if}
+									{#if column?.endIcon}
+										<Icon icon={column.endIcon} size="sm" />
+									{/if}
+								</div>
+								{#if column?.key}
+									<span>
+										<Icon icon={SortIconsMap[sortState[column.key!]]} size="sm" />
+									</span>
 								{/if}
-								{#if typeof column.title === 'string'}
-									<span>{column.title}</span>
-								{:else}
-									{@render column.title({ items })}
-								{/if}
-								{#if column?.endIcon}
-									<Icon icon={column.endIcon} size="sm" />
-								{/if}
-							</div>
-							{#if column?.key}
-								<span>
-									<Icon icon={SortIconsMap[sortState[column.key!]]} size="sm" />
-								</span>
-							{/if}
-						</svelte:element>
-					</th>
-				{/each}
-			</tr>
-		</thead>
+							</svelte:element>
+						</th>
+					{/each}
+				</tr>
+			</thead>
+		{/if}
 		{#if items.length}
 			<tbody>
 				{#if onDragEnd}

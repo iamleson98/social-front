@@ -764,66 +764,57 @@
 							</td>
 							<!-- PRICE -->
 							<td class="price-td">
-								<div class="max-h-28 overflow-y-auto p-1">
-									<div class="flex flex-col gap-1">
-										{#each variantInputDetail.channelListings || [] as channelListing, idx (idx)}
-											<Input
-												type="number"
-												min={0}
-												disabled={loading}
-												size="xs"
-												placeholder={channelListing[
-													'currency' as keyof ProductVariantChannelListingAddInput
-												]}
-												bind:value={variantInputDetail.channelListings![idx].price}
-												variant={channelListing.price < 0 ? 'error' : 'info'}
-												subText={typeof channelListing.price === 'number' &&
-												channelListing.price < 0
-													? $CommonState.NonNegativeError
-													: ''}
-											>
-												{#snippet action()}
-													<span class="font-bold text-[9px]">
-														{channelListing[
-															'currency' as keyof ProductVariantChannelListingAddInput
-														]}
-													</span>
-												{/snippet}
-											</Input>
-										{/each}
-									</div>
+								<div class="space-y-1">
+									{#each variantInputDetail.channelListings || [] as channelListing, idx (idx)}
+										<Input
+											type="number"
+											min={0}
+											disabled={loading}
+											size="xs"
+											placeholder={channelListing[
+												'currency' as keyof ProductVariantChannelListingAddInput
+											]}
+											bind:value={variantInputDetail.channelListings![idx].price}
+											variant={channelListing.price < 0 ? 'error' : 'info'}
+											subText={typeof channelListing.price === 'number' && channelListing.price < 0
+												? $CommonState.NonNegativeError
+												: ''}
+										>
+											{#snippet action()}
+												<span class="font-bold text-[9px]">
+													{channelListing['currency' as keyof ProductVariantChannelListingAddInput]}
+												</span>
+											{/snippet}
+										</Input>
+									{/each}
 								</div>
 							</td>
 							<!-- COST PRICE -->
 							<td class="cost-price-td">
-								<div class="max-h-28 overflow-y-auto p-1">
-									<div class="flex flex-col gap-1">
-										{#each variantInputDetail.channelListings || [] as channelListing, idx (idx)}
-											<Input
-												type="number"
-												min={0}
-												disabled={loading}
-												size="xs"
-												placeholder={channelListing[
-													'currency' as keyof ProductVariantChannelListingAddInput
-												]}
-												bind:value={variantInputDetail.channelListings![idx].costPrice}
-												variant={channelListing.costPrice < 0 ? 'error' : 'info'}
-												subText={typeof channelListing.costPrice === 'number' &&
-												channelListing.costPrice < 0
-													? $CommonState.NonNegativeError
-													: ''}
-											>
-												{#snippet action()}
-													<span class="font-bold text-[9px]">
-														{channelListing[
-															'currency' as keyof ProductVariantChannelListingAddInput
-														]}
-													</span>
-												{/snippet}
-											</Input>
-										{/each}
-									</div>
+								<div class="space-y-1">
+									{#each variantInputDetail.channelListings || [] as channelListing, idx (idx)}
+										<Input
+											type="number"
+											min={0}
+											disabled={loading}
+											size="xs"
+											placeholder={channelListing[
+												'currency' as keyof ProductVariantChannelListingAddInput
+											]}
+											bind:value={variantInputDetail.channelListings![idx].costPrice}
+											variant={channelListing.costPrice < 0 ? 'error' : 'info'}
+											subText={typeof channelListing.costPrice === 'number' &&
+											channelListing.costPrice < 0
+												? $CommonState.NonNegativeError
+												: ''}
+										>
+											{#snippet action()}
+												<span class="font-bold text-[9px]">
+													{channelListing['currency' as keyof ProductVariantChannelListingAddInput]}
+												</span>
+											{/snippet}
+										</Input>
+									{/each}
 								</div>
 							</td>
 							<!-- WEIGHT -->
@@ -842,7 +833,6 @@
 							</td>
 							<!-- PREORDER -->
 							<td class="preorder-td">
-								<div class="p-1">
 									<Input
 										type="number"
 										min={0}
@@ -877,12 +867,11 @@
 											maxDate: DAYJS_NOW.add(MAX_DAYS_FOR_PREORDER, 'day').toDate(),
 										}}
 									/>
-								</div>
 							</td>
 							<!-- STOCK -->
 							<td class="stock-td">
 								<div
-									class="p-1.5 space-y-1.5 border border-gray-200 rounded-lg max-h-28 overflow-y-auto"
+									class="space-y-1.5 border border-gray-200 rounded-lg max-h-28 overflow-y-auto p-1"
 								>
 									{#each variantInputDetail.stocks || [] as stock, idx (idx)}
 										<Input

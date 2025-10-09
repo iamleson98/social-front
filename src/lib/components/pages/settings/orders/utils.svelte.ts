@@ -61,7 +61,6 @@ import type {
 import { CommonState } from '$lib/utils/common.svelte';
 import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 import { get } from 'svelte/store';
-import { writable } from 'svelte/store';
 
 export class OrderUtils {
 	loading = false;

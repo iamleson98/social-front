@@ -26,6 +26,7 @@ export type TableProps<T extends Record<string, unknown>, K extends string = str
 	disabled?: boolean;
 	/** If provided, you can exchange places of rows of your table. Default to `undefined` */
 	onDragEnd?: (dragIndex: number, dropIndex: number) => void;
+	headless?: boolean;
 };
 
 export type TableColumnProps<T extends Record<string, unknown>, K extends string = string> = {

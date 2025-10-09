@@ -16,6 +16,8 @@
 		disableUpdateButton?: boolean;
 		disableDeleteButton?: boolean;
 		disableBackButton?: boolean;
+		updateButtonText?: string;
+		createButtonText?: string;
 	};
 
 	let {
@@ -29,6 +31,8 @@
 		disableUpdateButton,
 		disableDeleteButton,
 		disableBackButton,
+		updateButtonText,
+		createButtonText,
 	}: Props = $props();
 </script>
 
@@ -61,11 +65,11 @@
 		{/if}
 		{#if onUpdateClick}
 			<Button disabled={disableUpdateButton || disabled} onclick={onUpdateClick} endIcon={Send}>
-				{$tranFunc('btn.update')}
+				{updateButtonText || $tranFunc('btn.update')}
 			</Button>
 		{:else if onAddClick}
 			<Button disabled={disableCreateButton || disabled} onclick={onAddClick} endIcon={Send}>
-				{$tranFunc('btn.create')}
+				{createButtonText || $tranFunc('btn.create')}
 			</Button>
 		{/if}
 	</div>

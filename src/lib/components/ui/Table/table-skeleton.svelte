@@ -7,6 +7,7 @@
 		numOfRows?: number;
 		showPagination?: boolean;
 		class?: string;
+		headless?: boolean;
 	};
 
 	type Item = {
@@ -18,14 +19,13 @@
 		numOfRows = 3,
 		showPagination = false,
 		class: className = '',
+		headless = false,
 	}: Props = $props();
 
-	let columns = $derived.by(() =>
-		new Array(numColumns).fill(null).map(() => ({
-			title: '',
-			child: nooptd,
-		})),
-	);
+	const Columns = new Array(numColumns).fill(null).map(() => ({
+		title: '',
+		child: nooptd,
+	}));
 </script>
 
 {#snippet nooptd({}: { item: Item })}
@@ -35,7 +35,12 @@
 {/snippet}
 
 <div class="bg-white rounded-lg p-3 border border-gray-200 {className}">
-	<Table {columns} items={new Array(numOfRows).fill(null).map(() => ({}))} class="" />
+	<Table
+		columns={Columns}
+		items={new Array(numOfRows).fill(null).map(() => ({}))}
+		{headless}
+		class=""
+	/>
 	{#if showPagination}
 		<div class="flex items-center justify-between p-2">
 			<Skeleton class="h-4 w-20" />

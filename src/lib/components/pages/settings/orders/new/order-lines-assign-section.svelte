@@ -9,7 +9,11 @@
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Checkbox, DebounceInput } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
-	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import {
+		GraphqlPaginableTable,
+		ROW_OPTIONS,
+		type TableColumnProps,
+	} from '$lib/components/ui/Table';
 	import {
 		type AddressInput,
 		type Mutation,
@@ -36,7 +40,7 @@
 	type Variables = QueryProductsArgs & {
 		address?: AddressInput;
 	};
-	const BATCH = 15;
+	const BATCH = ROW_OPTIONS[0];
 
 	let { order, onAddedVariants }: Props = $props();
 
@@ -138,21 +142,13 @@
 <div class={SitenameCommonClassName}>
 	<SectionHeader>
 		<div>Order Details</div>
-		<Button
-			endIcon={Plus}
-			size="xs"
-			variant="outline"
-			color="gray"
-			onclick={handleClickAddProductVariants}
-		>
-			Add Products
-		</Button>
+		<Button endIcon={Plus} size="xs" onclick={handleClickAddProductVariants}>Add Products</Button>
 	</SectionHeader>
 
 	{#if !order.lines.length}
-		<Alert size="sm" bordered variant="warning"
-			>This order has no product yet. Please add more.</Alert
-		>
+		<Alert size="sm" bordered variant="warning">
+			This order has no product yet. Please add more.
+		</Alert>
 	{/if}
 </div>
 
@@ -219,7 +215,7 @@
 	onOk={handleAddOrderLine}
 	disableElements={loading}
 >
-	<Alert size="xs" bordered class="mb-1.5">
+	<Alert size="sm" bordered class="mb-1.5">
 		You can only add products available for the order's channel
 	</Alert>
 	<DebounceInput
