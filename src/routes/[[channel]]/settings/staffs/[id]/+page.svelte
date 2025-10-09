@@ -41,15 +41,21 @@
 		isActive: false,
 		addGroups: [],
 		removeGroups: [],
+		firstName: '',
+		lastName: '',
+		email: '',
 	});
 
 	onMount(() =>
 		staffDetailQuery.subscribe((result) => {
 			if (result.data?.user) {
-				const { isActive } = result.data.user;
+				const { isActive, firstName, lastName, email } = result.data.user;
 				staffUpdateInput = {
 					...staffUpdateInput,
 					isActive,
+					firstName,
+					lastName,
+					email,
 				};
 			}
 		}),
@@ -106,13 +112,13 @@
 {:else if $staffDetailQuery.error}
 	<Alert variant="error" bordered size="sm">{$staffDetailQuery.error.message}</Alert>
 {:else if $staffDetailQuery.data?.user}
-	{@const { avatar, firstName, lastName, email, dateJoined, permissionGroups } =
+	{@const { avatar, dateJoined, permissionGroups } =
 		$staffDetailQuery.data.user}
 	<StaffForm
 		avatar={avatar?.url}
-		{firstName}
-		{lastName}
-		{email}
+		bind:firstName={staffUpdateInput.firstName!}
+		bind:lastName={staffUpdateInput.lastName!}
+		bind:email={staffUpdateInput.email!}
 		bind:isActive={staffUpdateInput.isActive!}
 		bind:addGroups={staffUpdateInput.addGroups!}
 		bind:removeGroups={staffUpdateInput.removeGroups!}

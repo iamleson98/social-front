@@ -55,7 +55,7 @@
 		firstName: string().nonempty($CommonState.FieldRequiredError),
 		email: string()
 			.nonempty($CommonState.FieldRequiredError)
-			.email($tranFunc('error.invalidEmail')),
+			.email($CommonState.InvalidEmail),
 		isActive: boolean(),
 	});
 
