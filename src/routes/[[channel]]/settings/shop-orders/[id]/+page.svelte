@@ -13,7 +13,7 @@
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
 	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import DetailOrderSkeleton from '$lib/components/pages/settings/orders/detail-order-skeleton.svelte';
-	import OrderDraftDetails from '$lib/components/pages/settings/orders/order-draft-details.svelte';
+	import OrderDraftDetails from '$lib/components/pages/settings/orders/draft-order-details/order-draft-details.svelte';
 	import OrderFulfillment from '$lib/components/pages/settings/orders/order-fulfillment.svelte';
 	import OrderHistory from '$lib/components/pages/settings/orders/order-history.svelte';
 	import OrderNormalDetails from '$lib/components/pages/settings/orders/order-normal-details.svelte';
@@ -49,8 +49,8 @@
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 
-	let loading = $state(false);
-	let metaRef = $state<GeneralMetadataEditorRef>();
+	// let loading = $state(false);
+	// let metaRef = $state<GeneralMetadataEditorRef>();
 
 	const orderQuery = operationStore<Pick<Query, 'order'>, QueryOrderArgs>({
 		query: ORDER_DETAIL_QUERY,
@@ -79,92 +79,92 @@
 			// context: { requestPolicy: 'network-only' },
 		});
 
-	const onUpdateClick = async () => {
-		loading = true;
-		const result = await GRAPHQL_CLIENT.mutation<
-			Pick<Mutation, 'orderUpdate'>,
-			MutationOrderUpdateArgs
-		>(ORDER_UPDATE_MUTATION, { id: page.params.id, input: orderUpdateInput });
+	// const onUpdateClick = async () => {
+	// 	loading = true;
+	// 	const result = await GRAPHQL_CLIENT.mutation<
+	// 		Pick<Mutation, 'orderUpdate'>,
+	// 		MutationOrderUpdateArgs
+	// 	>(ORDER_UPDATE_MUTATION, { id: page.params.id, input: orderUpdateInput });
 
-		if (checkIfGraphqlResultHasError(result, 'orderUpdate')) {
-			loading = false;
-			return;
-		}
+	// 	if (checkIfGraphqlResultHasError(result, 'orderUpdate')) {
+	// 		loading = false;
+	// 		return;
+	// 	}
 
-		const hasErr = await metaRef?.handleUpdate();
-		loading = false;
-		if (hasErr) return;
+	// 	const hasErr = await metaRef?.handleUpdate();
+	// 	loading = false;
+	// 	if (hasErr) return;
 
-		toast.success($CommonState.EditSuccess);
-		reexecuteQuery();
-	};
+	// 	toast.success($CommonState.EditSuccess);
+	// 	reexecuteQuery();
+	// };
 
 	/** only draft orders can update customer */
-	const handleUpdateCustomer = async (userId: string) => {
-		loading = true;
-		const result = await GRAPHQL_CLIENT.mutation<
-			Pick<Mutation, 'draftOrderUpdate'>,
-			MutationDraftOrderUpdateArgs
-		>(DRAFT_ORDER_UPDATE_MUTATION, {
-			id: page.params.id,
-			input: {
-				user: userId,
-				shippingAddress: null,
-				billingAddress: null,
-			},
-		});
-		loading = false;
+	// const handleUpdateCustomer = async (userId: string) => {
+	// 	loading = true;
+	// 	const result = await GRAPHQL_CLIENT.mutation<
+	// 		Pick<Mutation, 'draftOrderUpdate'>,
+	// 		MutationDraftOrderUpdateArgs
+	// 	>(DRAFT_ORDER_UPDATE_MUTATION, {
+	// 		id: page.params.id,
+	// 		input: {
+	// 			user: userId,
+	// 			shippingAddress: null,
+	// 			billingAddress: null,
+	// 		},
+	// 	});
+	// 	loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'draftOrderUpdate', 'Customer updated successfully'))
-			return;
+	// 	if (checkIfGraphqlResultHasError(result, 'draftOrderUpdate', 'Customer updated successfully'))
+	// 		return;
 
-		reexecuteQuery();
-	};
+	// 	reexecuteQuery();
+	// };
 
-	const handleUpdateAddress = async (
-		type: AddressTypeEnum,
-		addr: AddressInput,
-		alsoSetForTheRest: boolean,
-	) => {
-		if (!$orderQuery.data?.order) return;
+	// const handleUpdateAddress = async (
+	// 	type: AddressTypeEnum,
+	// 	addr: AddressInput,
+	// 	alsoSetForTheRest: boolean,
+	// ) => {
+	// 	if (!$orderQuery.data?.order) return;
 
-		const isDraftOrder = $orderQuery.data.order.status === OrderStatus.Draft;
+	// 	const isDraftOrder = $orderQuery.data.order.status === OrderStatus.Draft;
 
-		const input: Pick<DraftOrderInput, 'billingAddress' | 'shippingAddress'> = {};
-		if (type === AddressTypeEnum.Billing) {
-			input.billingAddress = addr;
-			if (alsoSetForTheRest) input.shippingAddress = addr;
-		} else {
-			input.shippingAddress = addr;
-			if (alsoSetForTheRest) input.billingAddress = addr;
-		}
+	// 	const input: Pick<DraftOrderInput, 'billingAddress' | 'shippingAddress'> = {};
+	// 	if (type === AddressTypeEnum.Billing) {
+	// 		input.billingAddress = addr;
+	// 		if (alsoSetForTheRest) input.shippingAddress = addr;
+	// 	} else {
+	// 		input.shippingAddress = addr;
+	// 		if (alsoSetForTheRest) input.billingAddress = addr;
+	// 	}
 
-		loading = true;
-		if (isDraftOrder) {
-			const result = await GRAPHQL_CLIENT.mutation<
-				Pick<Mutation, 'draftOrderUpdate'>,
-				MutationDraftOrderUpdateArgs
-			>(DRAFT_ORDER_UPDATE_MUTATION, { id: page.params.id, input });
-			checkIfGraphqlResultHasError(result, 'draftOrderUpdate', $CommonState.EditSuccess);
-		} else {
-			const result = await GRAPHQL_CLIENT.mutation<
-				Pick<Mutation, 'orderUpdate'>,
-				MutationOrderUpdateArgs
-			>(ORDER_UPDATE_MUTATION, { id: page.params.id, input: input });
-			checkIfGraphqlResultHasError(result, 'orderUpdate', $CommonState.EditSuccess);
-		}
-		loading = false;
-	};
+	// 	loading = true;
+	// 	if (isDraftOrder) {
+	// 		const result = await GRAPHQL_CLIENT.mutation<
+	// 			Pick<Mutation, 'draftOrderUpdate'>,
+	// 			MutationDraftOrderUpdateArgs
+	// 		>(DRAFT_ORDER_UPDATE_MUTATION, { id: page.params.id, input });
+	// 		checkIfGraphqlResultHasError(result, 'draftOrderUpdate', $CommonState.EditSuccess);
+	// 	} else {
+	// 		const result = await GRAPHQL_CLIENT.mutation<
+	// 			Pick<Mutation, 'orderUpdate'>,
+	// 			MutationOrderUpdateArgs
+	// 		>(ORDER_UPDATE_MUTATION, { id: page.params.id, input: input });
+	// 		checkIfGraphqlResultHasError(result, 'orderUpdate', $CommonState.EditSuccess);
+	// 	}
+	// 	loading = false;
+	// };
 
-	const handleCancelOrder = async () => {
-		ALERT_MODAL_STORE.openAlertModal({
-			content: 'Are you sure you want to cancel this order?',
-			onOk: async () => {
-				const hasErr = await OrderUtilsInstance.orderCancel(page.params.id!);
-				if (!hasErr) toast.success('Order cancelled successfully');
-			},
-		});
-	};
+	// const handleCancelOrder = async () => {
+	// 	ALERT_MODAL_STORE.openAlertModal({
+	// 		content: 'Are you sure you want to cancel this order?',
+	// 		onOk: async () => {
+	// 			const hasErr = await OrderUtilsInstance.orderCancel(page.params.id!);
+	// 			if (!hasErr) toast.success('Order cancelled successfully');
+	// 		},
+	// 	});
+	// };
 </script>
 
 {#if $orderQuery.fetching}
@@ -177,7 +177,7 @@
 	{#if ![OrderStatus.Draft, OrderStatus.Unconfirmed].includes(order.status)}
 		<OrderNormalDetails {order} />
 	{:else if order.status === OrderStatus.Draft}
-		<OrderDraftDetails {order} />
+		<OrderDraftDetails {order} onRefetchOrder={reexecuteQuery} />
 	{/if}
 	{#if order.fulfillments.length}
 		<OrderFulfillment {order} onUpdateTrackingCode={reexecuteQuery} />

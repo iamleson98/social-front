@@ -35,7 +35,7 @@
 	let { order, handleUpdateCustomer, disabled, setAddress }: Props = $props();
 
 	let currentSetAddressType = $state<AddressTypeEnum>();
-	let alsoSetSeLectedAddressAsTheRest = $state(false);
+	let alsoUseSelectedAddressForTheOther = $state(false);
 	let selectedAddress = $state<Address>();
 	let selectedAddressId = $state<string>();
 
@@ -104,8 +104,9 @@
 					endIcon={Plus}
 					color="gray"
 					onclick={() => handleClickSetAddress(AddressTypeEnum.Shipping)}
-					>Set shipping address</Button
 				>
+					Set shipping address
+				</Button>
 			</div>
 		</Accordion>
 
@@ -121,8 +122,10 @@
 					fullWidth
 					endIcon={Plus}
 					color="gray"
-					onclick={() => handleClickSetAddress(AddressTypeEnum.Billing)}>Set billing address</Button
+					onclick={() => handleClickSetAddress(AddressTypeEnum.Billing)}
 				>
+					Set billing address
+				</Button>
 			</div>
 		</Accordion>
 	</div>
@@ -138,19 +141,21 @@
 		</a>
 	</div>
 
-	<div class={SitenameCommonClassName}>
-		<SectionHeader>
-			<span>Invoices</span>
-			<Button size="xs" variant="light">Generate</Button>
-		</SectionHeader>
-		{#if order.invoices.length}
-			{#each order.invoices as invoice, idx (idx)}
-				<div>{invoice.number}</div>
-			{/each}
-		{:else}
-			<Alert size="sm" bordered>No invoice to show</Alert>
-		{/if}
-	</div>
+	{#if order.status !== OrderStatus.Draft}
+		<div class={SitenameCommonClassName}>
+			<SectionHeader>
+				<span>Invoices</span>
+				<Button size="xs" variant="light">Generate</Button>
+			</SectionHeader>
+			{#if order.invoices.length}
+				{#each order.invoices as invoice, idx (idx)}
+					<div>{invoice.number}</div>
+				{/each}
+			{:else}
+				<Alert size="sm" bordered>No invoice to show</Alert>
+			{/if}
+		</div>
+	{/if}
 
 	<div class={SitenameCommonClassName}>
 		<SectionHeader>Customer note</SectionHeader>
@@ -176,7 +181,7 @@
 			setAddress(
 				currentSetAddressType!,
 				convertAddressToAddressInput(selectedAddress),
-				alsoSetSeLectedAddressAsTheRest,
+				alsoUseSelectedAddressForTheOther,
 			);
 		}
 	}}
@@ -187,7 +192,7 @@
 		<Alert size="sm" variant="error">{$CustomerQuery.error.message}</Alert>
 	{:else if $CustomerQuery.data?.user}
 		{#if $CustomerQuery.data.user.addresses.length}
-			<div class="mb-2">
+			<div class="mb-2 space-y-2">
 				{#each $CustomerQuery.data.user.addresses as address, idx (idx)}
 					<label class="cursor-pointer my-1" for={address.id}>
 						<UserAddress {address} class="relative">
@@ -210,7 +215,7 @@
 						? 'billing'
 						: 'shipping'} address ?"
 					{disabled}
-					bind:checked={alsoSetSeLectedAddressAsTheRest}
+					bind:checked={alsoUseSelectedAddressForTheOther}
 				/>
 			{/if}
 		{:else}

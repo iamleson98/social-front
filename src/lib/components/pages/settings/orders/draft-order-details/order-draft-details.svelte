@@ -4,7 +4,7 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Ban, Plus, SettingCog } from '$lib/components/icons';
+	import { Ban, PencilMinus, Plus, SettingCog } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/Badge';
@@ -35,13 +35,14 @@
 		orderStatusBadgeClass,
 		SitenameCommonClassName,
 	} from '$lib/utils/utils';
-	import { GeneralMetadataEditor, type GeneralMetadataEditorRef } from '../common';
-	import ActionBar from '../common/action-bar.svelte';
-	import OrderLinesAssignSection from './new/order-lines-assign-section.svelte';
-	import OrderHistory from './order-history.svelte';
-	import OrderLines from './order-lines.svelte';
-	import Sidebar from './sidebar.svelte';
-	import { OrderUtilsInstance } from './utils.svelte';
+	import { GeneralMetadataEditor, type GeneralMetadataEditorRef } from '../../common';
+	import ActionBar from '../../common/action-bar.svelte';
+	import DiscountPopup from '../discount-popup.svelte';
+	import OrderLinesAssignSection from '../new/order-lines-assign-section.svelte';
+	import OrderHistory from '../order-history.svelte';
+	import OrderLines from '../order-lines.svelte';
+	import Sidebar from '../sidebar.svelte';
+	import { OrderUtilsInstance } from '../utils.svelte';
 	import dayjs from 'dayjs';
 	import { noop } from 'es-toolkit';
 	import { toast } from 'svelte-sonner';
@@ -49,11 +50,12 @@
 	type Props = {
 		loading?: boolean;
 		order: Order;
+		onRefetchOrder?: () => void;
 	};
 
-	let { loading, order }: Props = $props();
+	let { loading, order, onRefetchOrder }: Props = $props();
 
-	const orderDiscountManual = $derived(
+	const OrderDiscountManual = $derived(
 		order.discounts.find((discount) => discount.type === OrderDiscountType.Manual),
 	);
 	const ShippingMethodChoices = $derived(
@@ -63,24 +65,24 @@
 			disabled: !method.active,
 		})),
 	);
-	let orderDiscountInput = $state<OrderDiscountCommonInput>({
-		value: 0,
-		valueType: DiscountValueTypeEnum.Fixed,
-		reason: '',
-	});
-	let alreadyHasManualDiscount = $state(false);
+	// let orderDiscountInput = $state<OrderDiscountCommonInput>({
+	// 	value: 0,
+	// 	valueType: DiscountValueTypeEnum.Fixed,
+	// 	reason: '',
+	// });
+	// let alreadyHasManualDiscount = $state(false);
 	let metaRef = $state<GeneralMetadataEditorRef>();
 
-	$effect(() => {
-		if (orderDiscountManual) {
-			orderDiscountInput = {
-				value: orderDiscountManual.value,
-				valueType: orderDiscountManual.valueType,
-				reason: orderDiscountManual.reason,
-			};
-			alreadyHasManualDiscount = true;
-		}
-	});
+	// $effect(() => {
+	// 	if (OrderDiscountManual) {
+	// 		orderDiscountInput = {
+	// 			value: OrderDiscountManual.value,
+	// 			valueType: OrderDiscountManual.valueType,
+	// 			reason: OrderDiscountManual.reason,
+	// 		};
+	// 		alreadyHasManualDiscount = true;
+	// 	}
+	// });
 
 	const handleCancelOrder = async () => {
 		ALERT_MODAL_STORE.openAlertModal({
@@ -150,72 +152,6 @@
 	const handleFinalizeOrder = async () => {};
 </script>
 
-{#snippet addDiscountDialog()}
-	<Popover placement="bottom-start">
-		{#snippet trigger({ onclick }: DropdownTriggerInterface)}
-			<Button size="xs" disabled={loading} variant="light" color="blue" {onclick}
-				>Add discount</Button
-			>
-		{/snippet}
-
-		<div class="{SitenameCommonClassName} shadow-md w-64">
-			<SectionHeader>Discount this order by:</SectionHeader>
-			<div class="space-y-1">
-				{#each Object.values(DiscountValueTypeEnum) as type, idx (idx)}
-					<RadioButton
-						label={type.toLowerCase()}
-						value={type}
-						size="sm"
-						bind:group={orderDiscountInput.valueType}
-						disabled={OrderUtilsInstance.loading || loading}
-					/>
-				{/each}
-			</div>
-			<Input
-				size="sm"
-				placeholder="Discount value"
-				label="Discount value"
-				type="number"
-				required
-				bind:value={orderDiscountInput.value}
-				disabled={OrderUtilsInstance.loading || loading}
-			>
-				{#snippet action()}
-					<span class="text-xs">
-						{orderDiscountInput.valueType === DiscountValueTypeEnum.Fixed
-							? order.channel.currencyCode
-							: '%'}
-					</span>
-				{/snippet}
-			</Input>
-			<TextArea
-				size="sm"
-				placeholder="Reason"
-				label="Reason"
-				bind:value={orderDiscountInput.reason}
-				disabled={OrderUtilsInstance.loading || loading}
-				inputClass="min-h-20"
-			/>
-			<div class="justify-end flex gap-1">
-				{#if alreadyHasManualDiscount}
-					<Button size="xs" color="red" onclick={() => {}}>Remove</Button>
-				{/if}
-				<Button
-					size="xs"
-					color="blue"
-					disabled={orderDiscountInput.value < 0 ||
-						!orderDiscountInput.value ||
-						OrderUtilsInstance.loading ||
-						loading}
-					onclick={() => OrderUtilsInstance.orderAddDiscount(order.id, orderDiscountInput)}
-				>
-					Confirm
-				</Button>
-			</div>
-		</div>
-	</Popover>
-{/snippet}
-
 {#snippet shippingMethodModal()}
 	<Popover placement="bottom-start">
 		{#snippet trigger({ onclick }: DropdownTriggerInterface)}
@@ -228,7 +164,7 @@
 			<Select
 				label="Please specify a shipping method"
 				options={ShippingMethodChoices}
-				disabled={OrderUtilsInstance.loading || loading}
+				disabled={OrderUtilsInstance.state.loading || loading}
 				value={order.deliveryMethod?.id}
 				size="sm"
 				onchange={(opt) => {
@@ -244,6 +180,7 @@
 
 <div class="flex flex-row gap-2">
 	<div class="space-y-2 w-7/10">
+		<!-- MARK: header -->
 		<SectionHeader class={SitenameCommonClassName}>
 			<div class="flex items-center gap-2">
 				<div>Order #{order.number}</div>
@@ -258,57 +195,90 @@
 					<IconButton icon={SettingCog} size="sm" color="gray" variant="light" {onclick} />
 				{/snippet}
 
-				<MenuItem class="text-red-500" startIcon={Ban} onclick={handleCancelOrder}
-					>Cancel order</MenuItem
-				>
+				<MenuItem class="text-red-500" startIcon={Ban} onclick={handleCancelOrder}>
+					Cancel order
+				</MenuItem>
 			</DropDown>
 		</SectionHeader>
 
-		<OrderLinesAssignSection {order} onAddedVariants={console.log} />
+		<!-- MARK: order lines -->
+		<OrderLinesAssignSection {order} onAddedVariants={onRefetchOrder} />
 
-		<div class="{SitenameCommonClassName} text-sm text-gray-700">
-			<div class="flex justify-between">
-				<div>{@render addDiscountDialog()}</div>
-				<div>
-					{#if orderDiscountManual}
-						<span class="flex items-center gap-2">
-							<span>
-								{orderDiscountManual.valueType === DiscountValueTypeEnum.Percentage
-									? `${orderDiscountManual.value}%`
-									: ''}
+		<!-- MARK: summary -->
+		{#if order.lines.length}
+			<div class="{SitenameCommonClassName} text-sm text-gray-700">
+				<div class="flex justify-between">
+					<div>
+						<Popover placement="bottom-start">
+							{#snippet trigger({ onclick }: DropdownTriggerInterface)}
+								<Button
+									size="xs"
+									disabled={loading}
+									variant="light"
+									color="blue"
+									{onclick}
+									endIcon={PencilMinus}
+								>
+									Add discount
+								</Button>
+							{/snippet}
+							<DiscountPopup
+								{order}
+								existingDiscount={OrderDiscountManual}
+								onOk={async (discount) => {
+									const ok = await OrderUtilsInstance.orderAddDiscount(order.id, discount);
+									if (ok) onRefetchOrder?.();
+								}}
+								onRemove={async () => {
+									if (OrderDiscountManual?.id) {
+										const ok = await OrderUtilsInstance.orderDiscountDelete(OrderDiscountManual.id);
+										if (ok) onRefetchOrder?.();
+									}
+								}}
+							/>
+						</Popover>
+					</div>
+					<div>
+						{#if OrderDiscountManual}
+							<span class="flex items-center gap-2">
+								<span>
+									{OrderDiscountManual.valueType === DiscountValueTypeEnum.Percentage
+										? `${OrderDiscountManual.value}%`
+										: ''}
+								</span>
+								<PriceDisplay {...OrderDiscountManual.total} />
 							</span>
-							<PriceDisplay {...orderDiscountManual.total} />
-						</span>
-					{:else}
-						<span>---</span>
-					{/if}
+						{:else}
+							<span>---</span>
+						{/if}
+					</div>
+				</div>
+				<div class="flex justify-between">
+					<div>Subtotal</div>
+					<div>
+						<PriceDisplay {...order.subtotal.gross} />
+					</div>
+				</div>
+				<div class="flex justify-between">
+					<div>{@render shippingMethodModal()}</div>
+					<div>
+						<PriceDisplay {...order.shippingPrice.gross} />
+					</div>
+				</div>
+				<div class="flex justify-between">
+					<div>Taxes (VAT included)</div>
+					<div>
+						<PriceDisplay {...order.total.tax} />
+					</div>
+				</div>
+				<div class="flex justify-between">
+					<div>Total</div>
+					<div>
+						<PriceDisplay {...order.total.gross} />
+					</div>
 				</div>
 			</div>
-			<div class="flex justify-between">
-				<div>Subtotal</div>
-				<div>
-					<PriceDisplay {...order.subtotal.gross} />
-				</div>
-			</div>
-			<div class="flex justify-between">
-				<div>{@render shippingMethodModal()}</div>
-				<div>
-					<PriceDisplay {...order.shippingPrice.gross} />
-				</div>
-			</div>
-			<div class="flex justify-between">
-				<div>Taxes (VAT included)</div>
-				<div>
-					<PriceDisplay {...order.total.tax} />
-				</div>
-			</div>
-			<div class="flex justify-between">
-				<div>Total</div>
-				<div>
-					<PriceDisplay {...order.total.gross} />
-				</div>
-			</div>
-		</div>
+		{/if}
 
 		<GeneralMetadataEditor
 			metadata={order.metadata}
@@ -335,17 +305,3 @@
 	updateButtonText="Finalize"
 	disabled={loading}
 />
-
-<style lang="postcss">
-	@reference "tailwindcss";
-
-	tr > td:nth-child(2) {
-		@apply text-right;
-	}
-	tr > td:first-child {
-		@apply text-gray-700;
-	}
-	tr > td:nth-child(2) > * {
-		@apply inline-flex;
-	}
-</style>

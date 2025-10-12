@@ -29,6 +29,11 @@ export type TableProps<T extends Record<string, unknown>, K extends string = str
 	headless?: boolean;
 };
 
+export type TableCellProps<T> = {
+	item: T;
+	idx: number;
+};
+
 export type TableColumnProps<T extends Record<string, unknown>, K extends string = string> = {
 	/** the head title of each column */
 	title: string | Snippet<[{ items: T[] }]>;
@@ -43,7 +48,7 @@ export type TableColumnProps<T extends Record<string, unknown>, K extends string
 	 * The content of each row in the column.
 	 * @param item the item of the row
 	 */
-	child: Snippet<[{ item: T; idx: number }]>;
+	child: Snippet<[TableCellProps<T>]>;
 };
 
 export type SortDirection = OrderDirection | 'NEUTRAL';

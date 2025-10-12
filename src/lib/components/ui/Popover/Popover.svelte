@@ -28,19 +28,7 @@
 	let menuElemRef = $state<HTMLElement>();
 	let triggerRef = $state<HTMLElement>();
 
-	let flyOpts = $derived.by<FlyParams>(() => {
-		switch (placement) {
-			case 'left':
-			case 'right':
-			case 'left-end':
-			case 'right-end':
-			case 'left-start':
-			case 'right-start':
-				return { x: 10 };
-			default:
-				return { y: 10 };
-		}
-	});
+	let flyOpts = $derived<FlyParams>(/(left|right)/.test(placement) ? { x: 10 } : { y: 10 });
 
 	const computeStyle = async () => {
 		if (!triggerRef || !menuElemRef) return;
@@ -49,10 +37,8 @@
 			middleware: [offset(4), flip(), shift()],
 		});
 
-		Object.assign(menuElemRef.style, {
-			left: `${x}px`,
-			top: `${y}px`,
-		});
+		menuElemRef.style.left = `${x}px`;
+		menuElemRef.style.top = `${y}px`;
 	};
 
 	const handleTriggerClick = async () => {
@@ -67,7 +53,14 @@
 	});
 </script>
 
-<div bind:this={triggerRef} class="relative inline-block">
+<div
+	bind:this={triggerRef}
+	class="relative inline-block"
+	use:clickOutside={{ onOutclick: () => (open = false) }}
+	onkeyup={(e) => e.key === 'Escape' && (open = false)}
+	role="menu"
+	tabindex="-1"
+>
 	{@render trigger({
 		onclick: handleTriggerClick,
 		onfocus: handleTriggerClick,
@@ -75,14 +68,8 @@
 	})}
 	<div class="absolute z-100 min-w-full" bind:this={menuElemRef}>
 		{#if open}
-			<div
-				use:clickOutside={{ onOutclick: () => (open = false) }}
-				transition:fly={flyOpts}
-				onclick={computeStyle}
-				onkeyup={(e) => e.key === 'Escape' && (open = false)}
-				role="menu"
-				tabindex="-1"
-			>
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<div transition:fly={flyOpts}>
 				{@render children()}
 			</div>
 		{/if}

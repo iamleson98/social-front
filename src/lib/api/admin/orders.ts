@@ -894,3 +894,37 @@ export const ORDER_DISCOUNT_UPDATE_MUTATION = gql`
 		}
 	}
 `;
+
+export const ORDER_LINE_DISCOUNT_UPDATE_MUTATION = gql`
+	mutation OrderLineDiscountUpdate($orderLineId: ID!, $input: OrderDiscountCommonInput!) {
+		orderLineDiscountUpdate(orderLineId: $orderLineId, input: $input) {
+			errors {
+				field
+				message
+			}
+		}
+	}
+`;
+
+export const ORDER_LINE_DISCOUNT_REMOVE_MUTATION = gql`
+	mutation OrderLineDiscountRemove($orderLineId: ID!) {
+		orderLineDiscountRemove(orderLineId: $orderLineId) {
+			errors {
+				field
+				message
+			}
+		}
+	}
+`;
+
+
+export const ORDER_DISCOUNT_DELETE_MUTATION = gql`
+	mutation OrderDiscountDelete($discountId: ID!) {
+		orderDiscountDelete(discountId: $discountId) {
+			errors {
+				field
+				message
+			}
+		}
+	}
+`;

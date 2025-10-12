@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { OrderStatus, type Order } from '$lib/gql/graphql';
-	import OrderDraftDetails from './order-draft-details.svelte';
+	import OrderDraftDetails from './draft-order-details/order-draft-details.svelte';
 
 	type Props = {
 		order: Order;

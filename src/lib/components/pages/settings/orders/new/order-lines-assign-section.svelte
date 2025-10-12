@@ -29,12 +29,12 @@
 		SitenameCommonClassName,
 		stringSlicer,
 	} from '$lib/utils/utils';
-	import { omit } from 'es-toolkit';
-	import { get, set } from 'es-toolkit/compat';
+	import OrderLines from '../order-lines.svelte';
+	import { SvelteSet } from 'svelte/reactivity';
 
 	type Props = {
 		order: Order;
-		onAddedVariants: () => void;
+		onAddedVariants?: () => void;
 	};
 
 	type Variables = QueryProductsArgs & {
@@ -53,7 +53,7 @@
 	});
 	let searchProductsQuery = $state('');
 	let forceReExecuteGraphqlQuery = $state(true);
-	let addVariantIds = $state.raw<Record<string, boolean>>({});
+	let addVariantIds = $state(new SvelteSet<string>());
 	let loading = $state(false);
 
 	const COLUMNS: TableColumnProps<Product>[] = [
@@ -76,53 +76,32 @@
 	];
 
 	const handleClickAddProductVariants = async () => {
-		addVariantIds = {};
+		addVariantIds.clear();
 		openVariantsModal = true;
 		forceReExecuteGraphqlQuery = true;
 	};
 
 	$effect(() => {
-		if (searchProductsQuery !== get(variables, 'filter.search')) {
-			const newVariables = { ...variables };
-			set(newVariables, 'filter.search', searchProductsQuery);
-			variables = newVariables;
+		if (searchProductsQuery !== variables.filter?.search) {
+			variables = {
+				...variables,
+				filter: { search: searchProductsQuery },
+			};
 			forceReExecuteGraphqlQuery = true;
 		}
 	});
 
-	const handleToggleVariants = async (check: boolean, ...variantIds: string[]) => {
-		if (!variantIds.length) return;
-
-		if (check) {
-			const newObj = variantIds.reduce(
-				(acc, cur) => ({ ...acc, [cur]: true }),
-				{} as Record<string, boolean>,
-			);
-
-			addVariantIds = {
-				...addVariantIds,
-				...newObj,
-			};
-		} else {
-			addVariantIds = omit(addVariantIds, variantIds);
-		}
-	};
-
 	const handleAddOrderLine = async () => {
-		const variantIds = Object.keys(addVariantIds);
-
-		if (!variantIds.length) return;
+		if (!addVariantIds.size) return;
 
 		loading = true;
-
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'orderLinesCreate'>,
 			MutationOrderLinesCreateArgs
 		>(ORDER_LINES_CREATE_MUTATION, {
 			id: order.id,
-			input: variantIds.map((id) => ({ variantId: id, quantity: 1 })),
+			input: [...addVariantIds].map((id) => ({ variantId: id, quantity: 1 })),
 		});
-
 		loading = false;
 
 		if (
@@ -134,7 +113,7 @@
 		)
 			return;
 
-		onAddedVariants();
+		onAddedVariants?.();
 		openVariantsModal = false;
 	};
 </script>
@@ -149,20 +128,22 @@
 		<Alert size="sm" bordered variant="warning">
 			This order has no product yet. Please add more.
 		</Alert>
+	{:else}
+		<OrderLines orderLines={order.lines} {order} />
 	{/if}
 </div>
 
 {#snippet checkbox({ item }: { item: Product })}
-	{@const checked =
-		!!item.variants?.length && item.variants.every((variant) => addVariantIds[variant.id])}
+	{@const checked = item.variants?.length
+		? item.variants.every((variant) => addVariantIds.has(variant.id))
+		: false}
 	<Checkbox
 		size="sm"
 		{checked}
-		onchange={(evt) =>
-			handleToggleVariants(
-				evt.currentTarget.checked,
-				...(item.variants || []).map((item) => item.id),
-			)}
+		onCheckChange={(check) => {
+			const operator = check ? 'add' : 'delete';
+			item.variants?.forEach((variant) => addVariantIds[operator](variant.id));
+		}}
 		disabled={loading}
 	/>
 {/snippet}
@@ -189,8 +170,8 @@
 					size="sm"
 					label={variant.name}
 					subText={`SKU: ${variant.sku}`}
-					checked={addVariantIds[variant.id]}
-					onchange={(evt) => handleToggleVariants(evt.currentTarget.checked, variant.id)}
+					checked={addVariantIds.has(variant.id)}
+					onCheckChange={(checked) => addVariantIds[checked ? 'add' : 'delete'](variant.id)}
 					disabled={loading}
 				/>
 				<PriceDisplay

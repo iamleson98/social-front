@@ -8,19 +8,20 @@
 	import { type Query, type QueryOrderArgs } from '$lib/gql/graphql';
 	import type { GeneralMetadataEditorRef } from '../common';
 	import GeneralMetadataEditor from '../common/general-metadata-editor.svelte';
+	import { toast } from 'svelte-sonner';
 
 	type Props = {
-		orderID: string;
-		orderLineID?: string;
-		onClose: () => void;
+		orderId: string;
 	};
 
-	let { orderID, orderLineID, onClose }: Props = $props();
+	let { orderId }: Props = $props();
 
 	let orderLineMetaRef = $state<GeneralMetadataEditorRef>();
 	let orderLineVariantMetaRef = $state<GeneralMetadataEditorRef>();
+	let open = $state(false);
+	let orderLineId = $state<string>();
 
-	const lineMetaQuery = operationStore<
+	const OrderLineMetadataQuery = operationStore<
 		Pick<Query, 'order'>,
 		QueryOrderArgs & { hasManageProductPerms: boolean }
 	>({
@@ -29,37 +30,46 @@
 		pause: true,
 	});
 
-	$effect(() => {
-		if (orderID && orderLineID)
-			lineMetaQuery.reexecute({
-				variables: {
-					id: orderID,
-					hasManageProductPerms: true,
-				},
-			});
-	});
+	export const performFetchingMetadata = async (newOrderLineId: string) => {
+		open = true;
+		orderLineId = newOrderLineId;
+
+		OrderLineMetadataQuery.reexecute({
+			variables: {
+				id: orderId,
+				hasManageProductPerms: true,
+			},
+		});
+	};
+
+	const innerClose = () => {
+		open = false;
+	};
 
 	const handleUpdateMetadatas = async () => {
 		const jobs = [orderLineMetaRef?.handleUpdate(), orderLineVariantMetaRef?.handleUpdate()];
-		await Promise.all(jobs);
+		const results = await Promise.all(jobs);
+		if (results.every((item) => item)) toast.success('Metadata updated successfully');
 	};
 </script>
 
 <Modal
 	size="sm"
-	open={!!orderID && !!orderLineID}
+	{open}
 	header="Order line metadata"
-	onCancel={onClose}
-	{onClose}
+	onCancel={innerClose}
+	onClose={innerClose}
 	onOk={handleUpdateMetadatas}
 	closeOnOutsideClick
 >
-	{#if $lineMetaQuery.fetching}
+	{#if $OrderLineMetadataQuery.fetching}
 		<SelectSkeleton label />
-	{:else if $lineMetaQuery.error}
-		<Alert variant="error" size="sm" bordered>{$lineMetaQuery.error.message}</Alert>
-	{:else if $lineMetaQuery.data?.order}
-		{@const orderLine = $lineMetaQuery.data.order.lines.find((line) => line.id === orderLineID)!}
+	{:else if $OrderLineMetadataQuery.error}
+		<Alert variant="error" size="sm" bordered>{$OrderLineMetadataQuery.error.message}</Alert>
+	{:else if $OrderLineMetadataQuery.data?.order}
+		{@const orderLine = $OrderLineMetadataQuery.data.order.lines.find(
+			(line) => line.id === orderLineId,
+		)!}
 		<div class="flex flex-col gap-2">
 			<div class="flex items-center gap-2">
 				<div class="avatar">
