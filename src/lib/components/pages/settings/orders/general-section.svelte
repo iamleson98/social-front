@@ -17,7 +17,6 @@
 	let { channelSlug, showChannelNotSetError = $bindable() }: Props = $props();
 
 	let openVariantsModal = $state(false);
-	// let selectedChannelSlug = $state('');
 
 	const handleClickAddProduct = async () => {
 		if (!channelSlug) {

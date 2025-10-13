@@ -1,56 +1,19 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import {
-		DRAFT_ORDER_UPDATE_MUTATION,
-		ORDER_DETAIL_QUERY,
-		ORDER_UPDATE_MUTATION,
-	} from '$lib/api/admin/orders';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { ORDER_DETAIL_QUERY } from '$lib/api/admin/orders';
 	import { operationStore } from '$lib/api/operation';
-	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Ban, SettingCog } from '$lib/components/icons';
-	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
-	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
-	import GeneralMetadataEditor from '$lib/components/pages/settings/common/general-metadata-editor.svelte';
 	import DetailOrderSkeleton from '$lib/components/pages/settings/orders/detail-order-skeleton.svelte';
 	import OrderDraftDetails from '$lib/components/pages/settings/orders/draft-order-details/order-draft-details.svelte';
 	import OrderFulfillment from '$lib/components/pages/settings/orders/order-fulfillment.svelte';
-	import OrderHistory from '$lib/components/pages/settings/orders/order-history.svelte';
 	import OrderNormalDetails from '$lib/components/pages/settings/orders/order-normal-details.svelte';
-	import Sidebar from '$lib/components/pages/settings/orders/sidebar.svelte';
-	import { OrderUtilsInstance } from '$lib/components/pages/settings/orders/utils.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { Badge } from '$lib/components/ui/Badge';
-	import { IconButton } from '$lib/components/ui/Button';
-	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import {
-		AddressTypeEnum,
 		OrderStatus,
-		type AddressInput,
-		type DraftOrderInput,
-		type Mutation,
-		type MutationDraftOrderUpdateArgs,
-		type MutationOrderUpdateArgs,
 		type OrderUpdateInput,
 		type Query,
 		type QueryOrderArgs,
 	} from '$lib/gql/graphql';
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
-	import { AppRoute } from '$lib/utils';
-	import { CommonState } from '$lib/utils/common.svelte';
-	import { SitenameTimeFormat } from '$lib/utils/consts';
-	import {
-		checkIfGraphqlResultHasError,
-		orderStatusBadgeClass,
-		SitenameCommonClassName,
-	} from '$lib/utils/utils';
-	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
-	import { toast } from 'svelte-sonner';
-
-	// let loading = $state(false);
-	// let metaRef = $state<GeneralMetadataEditorRef>();
 
 	const orderQuery = operationStore<Pick<Query, 'order'>, QueryOrderArgs>({
 		query: ORDER_DETAIL_QUERY,

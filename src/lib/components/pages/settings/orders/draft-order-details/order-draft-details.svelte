@@ -4,13 +4,11 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Ban, PencilMinus, Plus, SettingCog } from '$lib/components/icons';
+	import { Ban, PencilMinus, SettingCog } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
-	import { Input, RadioButton, TextArea } from '$lib/components/ui/Input';
 	import { Popover, type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import {
@@ -24,27 +22,20 @@
 		type MutationDraftOrderUpdateArgs,
 		type MutationOrderUpdateArgs,
 		type Order,
-		type OrderDiscountCommonInput,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
-	import {
-		checkIfGraphqlResultHasError,
-		orderStatusBadgeClass,
-		SitenameCommonClassName,
-	} from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { GeneralMetadataEditor, type GeneralMetadataEditorRef } from '../../common';
 	import ActionBar from '../../common/action-bar.svelte';
 	import DiscountPopup from '../discount-popup.svelte';
-	import OrderLinesAssignSection from '../new/order-lines-assign-section.svelte';
+	import OrderLinesAssignSection from '../order-lines-assign-section.svelte';
 	import OrderHistory from '../order-history.svelte';
-	import OrderLines from '../order-lines.svelte';
 	import Sidebar from '../sidebar.svelte';
 	import { OrderUtilsInstance } from '../utils.svelte';
 	import dayjs from 'dayjs';
-	import { noop } from 'es-toolkit';
 	import { toast } from 'svelte-sonner';
 
 	type Props = {
@@ -65,24 +56,7 @@
 			disabled: !method.active,
 		})),
 	);
-	// let orderDiscountInput = $state<OrderDiscountCommonInput>({
-	// 	value: 0,
-	// 	valueType: DiscountValueTypeEnum.Fixed,
-	// 	reason: '',
-	// });
-	// let alreadyHasManualDiscount = $state(false);
 	let metaRef = $state<GeneralMetadataEditorRef>();
-
-	// $effect(() => {
-	// 	if (OrderDiscountManual) {
-	// 		orderDiscountInput = {
-	// 			value: OrderDiscountManual.value,
-	// 			valueType: OrderDiscountManual.valueType,
-	// 			reason: OrderDiscountManual.reason,
-	// 		};
-	// 		alreadyHasManualDiscount = true;
-	// 	}
-	// });
 
 	const handleCancelOrder = async () => {
 		ALERT_MODAL_STORE.openAlertModal({

@@ -29,7 +29,7 @@
 		SitenameCommonClassName,
 		stringSlicer,
 	} from '$lib/utils/utils';
-	import OrderLines from '../order-lines.svelte';
+	import OrderLines from './order-lines.svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 
 	type Props = {

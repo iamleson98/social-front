@@ -53,10 +53,10 @@
 
 <!-- @component
 	This component behaves like Popover in that it sticks to provided target and auto calculates its position.
-	It is different from Popover in that it does not have trigger and does not close when clicking outside.
+	It is different from Popover in that it opens whenever the target prop is provided.
 
 	The way it works:
 
-	In some places where overflow-x/y is set to auto or scroll, using just Popover does not work.
+	In some places where overflow-x/y is set to `auto` or `scroll`, using just `Popover` does not work.
 	This component solves that by using floating-ui to calculate position. Fixed css position makes it can be anywhere without being affected by overflow-x/y.
  -->

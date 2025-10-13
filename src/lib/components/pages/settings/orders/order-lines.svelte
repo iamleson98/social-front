@@ -6,7 +6,7 @@
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
-	import { Beggar, type DropdownTriggerInterface } from '$lib/components/ui/Popover';
+	import { Sticky, type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import type { TableCellProps, TableColumnProps } from '$lib/components/ui/Table';
 	import Table from '$lib/components/ui/Table/table.svelte';
 	import {
@@ -18,6 +18,7 @@
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { stringSlicer } from '$lib/utils/utils';
+	import { tick } from 'svelte';
 	import DiscountPopup from './discount-popup.svelte';
 	import OrderLineMetadataModal from './order-line-metadata-modal.svelte';
 	import { OrderUtilsInstance } from './utils.svelte';
@@ -84,9 +85,11 @@
 	 * sets active order line id
 	 * if the order line has discount, set existing discount. Otherwise set existing discount to undefined
 	 */
-	const handleOpenDiscountModalForOrderLine = (index: number) => {
+	const handleOpenDiscountModalForOrderLine = async (index: number) => {
 		targetButtonForItemDiscount = discountItemsRef[index];
 		activeOrderLineId = orderLines[index].id;
+
+		await tick();
 
 		if (orderLines[index] && orderLines[index].unitDiscountValue) {
 			existingDiscountOfLine = {
@@ -186,13 +189,16 @@
 
 <OrderLineMetadataModal orderId={order.id} bind:this={metadataModelRef} />
 
-<Beggar placement="bottom-start" bind:target={targetButtonForItemDiscount}>
-	<DiscountPopup
-		{order}
-		existingDiscount={existingDiscountOfLine}
-		onOk={async (discount) => {
-			const ok = await OrderUtilsInstance.orderLineDiscountUpdate(activeOrderLineId!, discount)
-			// if (ok) onRefetchOrder?.();
-		}}
-	/>
-</Beggar>
+<Sticky placement="bottom-start" bind:target={targetButtonForItemDiscount}>
+	<!-- NOTE: using #key here so DiscountPopup would re-init when value of existingDiscountOfLine change -->
+	{#key existingDiscountOfLine}
+		<DiscountPopup
+			{order}
+			existingDiscount={existingDiscountOfLine}
+			onOk={async (discount) => {
+				const ok = await OrderUtilsInstance.orderLineDiscountUpdate(activeOrderLineId!, discount);
+				// if (ok) onRefetchOrder?.();
+			}}
+		/>
+	{/key}
+</Sticky>
