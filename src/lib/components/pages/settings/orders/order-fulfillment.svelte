@@ -242,9 +242,7 @@
 </div>
 
 <OrderLineMetadataModal
-	orderID={order.id}
-	orderLineID={orderLineIDForMetadataView}
-	onClose={() => (orderLineIDForMetadataView = undefined)}
+	orderId={order.id}
 />
 
 <FulfillmentCancelModal

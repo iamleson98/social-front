@@ -18,7 +18,6 @@
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { stringSlicer } from '$lib/utils/utils';
-	import { tick } from 'svelte';
 	import DiscountPopup from './discount-popup.svelte';
 	import OrderLineMetadataModal from './order-line-metadata-modal.svelte';
 	import { OrderUtilsInstance } from './utils.svelte';
@@ -88,8 +87,6 @@
 	const handleOpenDiscountModalForOrderLine = async (index: number) => {
 		targetButtonForItemDiscount = discountItemsRef[index];
 		activeOrderLineId = orderLines[index].id;
-
-		await tick();
 
 		if (orderLines[index] && orderLines[index].unitDiscountValue) {
 			existingDiscountOfLine = {

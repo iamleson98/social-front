@@ -27,9 +27,9 @@
 	type Props = {
 		order: Order;
 		onDoneCustomerUpdate?: () => void;
-		handleUpdateCustomer: (id: string) => void;
+		handleUpdateCustomer?: (id: string) => void;
 		disabled?: boolean;
-		setAddress: (type: AddressTypeEnum, addr: AddressInput, alsoSetForTheRest: boolean) => void;
+		setAddress?: (type: AddressTypeEnum, addr: AddressInput, alsoSetForTheRest: boolean) => void;
 	};
 
 	let { order, handleUpdateCustomer, disabled, setAddress }: Props = $props();
@@ -72,7 +72,7 @@
 				onchange={(opt) =>
 					opt &&
 					(opt as SelectOption).value !== order.user?.id &&
-					handleUpdateCustomer((opt as SelectOption).value as string)}
+					handleUpdateCustomer?.((opt as SelectOption).value as string)}
 			/>
 		{:else if order.userEmail}
 			<p class="text-sm">{order.userEmail}</p>
@@ -178,7 +178,7 @@
 	disableElements={disabled}
 	onOk={() => {
 		if (selectedAddress) {
-			setAddress(
+			setAddress?.(
 				currentSetAddressType!,
 				convertAddressToAddressInput(selectedAddress),
 				alsoUseSelectedAddressForTheOther,

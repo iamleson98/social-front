@@ -2,7 +2,6 @@
 	import { ORDER_LINES_CREATE_MUTATION, VARIANTS_FOR_ORDER_QUERY } from '$lib/api/admin/orders';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
-	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { Plus, Search } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
@@ -14,47 +13,23 @@
 		ROW_OPTIONS,
 		type TableColumnProps,
 	} from '$lib/components/ui/Table';
-	import {
-		type AddressInput,
-		type Mutation,
-		type MutationOrderLinesCreateArgs,
-		type Order,
-		type Product,
-		type QueryProductsArgs,
+	import type {
+		Mutation,
+		MutationOrderLinesCreateArgs,
+		Product,
+		QueryProductsArgs,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import {
-		checkIfGraphqlResultHasError,
-		classNames,
-		SitenameCommonClassName,
-		stringSlicer,
-	} from '$lib/utils/utils';
-	import OrderLines from './order-lines.svelte';
+	import { checkIfGraphqlResultHasError, classNames, stringSlicer } from '$lib/utils/utils';
 	import { SvelteSet } from 'svelte/reactivity';
 
 	type Props = {
-		order: Order;
-		onAddedVariants?: () => void;
+		orderId: string;
+		orderChannelSlug: string;
+		onAddedOrderLines?: () => void;
 	};
 
-	type Variables = QueryProductsArgs & {
-		address?: AddressInput;
-	};
-	const BATCH = ROW_OPTIONS[0];
-
-	let { order, onAddedVariants }: Props = $props();
-
-	let openVariantsModal = $state(false);
-
-	let variables = $state.raw<Variables>({
-		first: BATCH,
-		channel: order.channel.slug,
-		filter: { search: '' },
-	});
-	let searchProductsQuery = $state('');
-	let forceReExecuteGraphqlQuery = $state(true);
-	let addVariantIds = $state(new SvelteSet<string>());
-	let loading = $state(false);
+	let { orderId, onAddedOrderLines, orderChannelSlug }: Props = $props();
 
 	const COLUMNS: TableColumnProps<Product>[] = [
 		{
@@ -75,13 +50,20 @@
 		},
 	];
 
-	const handleClickAddProductVariants = async () => {
-		addVariantIds.clear();
-		openVariantsModal = true;
-		forceReExecuteGraphqlQuery = true;
-	};
+	const BATCH = ROW_OPTIONS[0];
 
-	$effect(() => {
+	let addVariantIds = $state(new SvelteSet<string>());
+	let loading = $state(false);
+	let openVariantsModal = $state(false);
+	let forceReExecuteGraphqlQuery = $state(true);
+	let variables = $state.raw<QueryProductsArgs>({
+		first: BATCH,
+		channel: orderChannelSlug,
+		filter: { search: '' },
+	});
+	let searchProductsQuery = $state('');
+
+  $effect(() => {
 		if (searchProductsQuery !== variables.filter?.search) {
 			variables = {
 				...variables,
@@ -99,7 +81,7 @@
 			Pick<Mutation, 'orderLinesCreate'>,
 			MutationOrderLinesCreateArgs
 		>(ORDER_LINES_CREATE_MUTATION, {
-			id: order.id,
+			id: orderId,
 			input: [...addVariantIds].map((id) => ({ variantId: id, quantity: 1 })),
 		});
 		loading = false;
@@ -113,25 +95,17 @@
 		)
 			return;
 
-		onAddedVariants?.();
+		addVariantIds.clear();
+		onAddedOrderLines?.();
 		openVariantsModal = false;
 	};
+
+	const handleClickAddProductVariants = async () => {
+		addVariantIds.clear();
+		openVariantsModal = true;
+		forceReExecuteGraphqlQuery = true;
+	};
 </script>
-
-<div class={SitenameCommonClassName}>
-	<SectionHeader>
-		<div>Order Details</div>
-		<Button endIcon={Plus} size="xs" onclick={handleClickAddProductVariants}>Add Products</Button>
-	</SectionHeader>
-
-	{#if !order.lines.length}
-		<Alert size="sm" bordered variant="warning">
-			This order has no product yet. Please add more.
-		</Alert>
-	{:else}
-		<OrderLines orderLines={order.lines} {order} />
-	{/if}
-</div>
 
 {#snippet checkbox({ item }: { item: Product })}
 	{@const checked = item.variants?.length
@@ -184,6 +158,8 @@
 		<div>-</div>
 	{/if}
 {/snippet}
+
+<Button endIcon={Plus} size="xs" onclick={handleClickAddProductVariants}>Add Products</Button>
 
 <Modal
 	closeOnEscape
