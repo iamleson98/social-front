@@ -109,7 +109,7 @@
 			checkIfGraphqlResultHasError(
 				channelListingUpdateResult,
 				'voucherChannelListingUpdate',
-				$tranFunc('common.createSuccess'),
+				$CommonState.CreateSuccess,
 			)
 		)
 			return;

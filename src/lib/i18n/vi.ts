@@ -130,6 +130,8 @@ export default {
 		copy: 'Sao chép',
 		copied: 'Đã sao chép!',
 		number: 'Số',
+		select: 'Chọn',
+		unassign: 'Bỏ gán',
 	},
 	product: {
 		chooseAddress: 'Vui lòng chọn địa chỉ',
@@ -206,6 +208,7 @@ export default {
 			'Hàng đặt trước là khi bạn phải lấy hàng từ một nhà cung cấp khác. Thời gian để giao hàng phải từ {{min}} tới {{max}} ngày làm việc.',
 		prdCreated: 'Sản phẩm đã được tạo mới thành công',
 		prdUpdated: 'Sản phẩm đã được cập nhật thành công',
+		cateName: 'Tên danh mục',
 	},
 	error: {
 		invalidSlug: 'Giá trị slug không hợp lệ',
@@ -588,6 +591,9 @@ export default {
 		eligibleVariants: 'Các phân loại sản phẩm đủ điều kiện',
 		eligibleCollections: 'Các bộ sưu tập đủ điều kiện',
 		eligibleCategories: 'Các danh mục đủ điều kiện',
+		minSpent: 'Giá trị đơn hàng tối thiểu',
+		newVoucher: 'Thêm phiếu giảm giá',
+		vouchers: 'Phiếu giảm giá',
 	},
 	permissionGroup: {
 		restrictChanAccess: 'Giới hạn truy cập vào các kênh',

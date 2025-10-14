@@ -33,8 +33,9 @@
 		QueryProductsArgs,
 		QueryProductVariantsArgs,
 	} from '$lib/gql/graphql';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError, toggleItemNoDup } from '$lib/utils/utils';
-	import { TABS, type TabName } from './consts';
+	import { TABS_OPTIONS, type TabName } from './consts';
 	import {
 		CATEGORY_COLUMNS,
 		COLLECTION_COLUMNS,
@@ -54,14 +55,14 @@
 	/**  catalog item select checkbox */
 	const SelectCol: TableColumnProps<any>[] = [
 		{
-			title: 'Select',
+			title: $tranFunc('common.select'),
 			child: catalogAssignSelect,
 		},
 	];
 
 	const CatalogUnassignSelectCol: TableColumnProps<any>[] = [
 		{
-			title: 'Select',
+			title: $tranFunc('common.select'),
 			child: catalogUnassignSelect,
 		},
 	];
@@ -153,13 +154,7 @@
 		});
 		loading = false;
 
-		if (
-			checkIfGraphqlResultHasError(
-				result,
-				'voucherCataloguesRemove',
-				$tranFunc('common.editSuccess'),
-			)
-		)
+		if (checkIfGraphqlResultHasError(result, 'voucherCataloguesRemove', $CommonState.EditSuccess))
 			return;
 
 		removeProducts = [];
@@ -185,9 +180,7 @@
 		});
 		loading = false;
 
-		if (
-			checkIfGraphqlResultHasError(result, 'voucherCataloguesAdd', $tranFunc('common.editSuccess'))
-		)
+		if (checkIfGraphqlResultHasError(result, 'voucherCataloguesAdd', $CommonState.EditSuccess))
 			return;
 
 		addProducts = [];
@@ -242,22 +235,23 @@
 {/snippet}
 
 <div role="tablist" class="tabs tabs-border">
-	{#each TABS as tab, idx (idx)}
+	{#each $TABS_OPTIONS as tab, idx (idx)}
 		<a
 			role="tab"
 			class="tab"
-			class:tab-active={activeTab === tab}
-			href="?tab={tab}"
+			class:tab-active={activeTab === tab.value}
+			href="?tab={tab.value}"
 			data-sveltekit-noscroll
 		>
-			{tab}
+			{tab.label}
 		</a>
 	{/each}
 </div>
 
-{#snippet commonHeader(name: string)}
+{#snippet commonHeader(name: TabName)}
+	{@const tabTran = $TABS_OPTIONS.find((item) => item.value === name)}
 	<SectionHeader>
-		<span>Eligible {name}</span>
+		<span>{tabTran?.eligibleLabel}</span>
 		<div class="flex gap-1">
 			<Button
 				size="xs"
@@ -266,13 +260,14 @@
 				endIcon={Trash}
 				disabled={disabled ||
 					loading ||
-					(activeTab === 'categories' && removeCategories.length === 0) ||
-					(activeTab === 'collections' && removeCollections.length === 0) ||
-					(activeTab === 'products' && removeProducts.length === 0) ||
-					(activeTab === 'variants' && removeVariants.length === 0)}
+					(name === 'categories' && !removeCategories.length) ||
+					(name === 'collections' && !removeCollections.length) ||
+					(name === 'products' && !removeProducts.length) ||
+					(name === 'variants' && !removeVariants.length)}
 				onclick={handleUnassignItems}
 			>
-				Unassign {name}
+				{$tranFunc('common.unassign')}
+				{tabTran?.label}
 			</Button>
 			<Button
 				size="xs"
@@ -284,7 +279,8 @@
 				{disabled}
 				endIcon={Plus}
 			>
-				Assign {name}
+				{$tranFunc('common.assign')}
+				{tabTran?.label}
 			</Button>
 		</div>
 	</SectionHeader>
@@ -303,7 +299,13 @@
 			bind:forceReExecuteGraphqlQuery
 			resultKey={'voucher.collections' as keyof Query}
 			disabled={disabled || loading}
-			columns={CatalogUnassignSelectCol.concat(COLLECTION_COLUMNS)}
+			columns={CatalogUnassignSelectCol.concat(
+				COLLECTION_COLUMNS(
+					$tranFunc('common.pic'),
+					$tranFunc('common.name'),
+					$tranFunc('collection.noOfPrds'),
+				),
+			)}
 		/>
 	{:else if activeTab === 'products'}
 		<GraphqlPaginableTable
@@ -313,7 +315,14 @@
 			bind:forceReExecuteGraphqlQuery
 			disabled={disabled || loading}
 			resultKey={'voucher.products' as keyof Query}
-			columns={CatalogUnassignSelectCol.concat(PRODUCT_COLUMNS)}
+			columns={CatalogUnassignSelectCol.concat(
+				PRODUCT_COLUMNS(
+					$tranFunc('common.pic'),
+					$tranFunc('product.prdName'),
+					$tranFunc('product.prdType'),
+					$tranFunc('settings.availability'),
+				),
+			)}
 		/>
 	{:else if activeTab === 'categories'}
 		<GraphqlPaginableTable
@@ -323,7 +332,13 @@
 			disabled={disabled || loading}
 			bind:forceReExecuteGraphqlQuery
 			resultKey={'voucher.categories' as keyof Query}
-			columns={CatalogUnassignSelectCol.concat(CATEGORY_COLUMNS)}
+			columns={CatalogUnassignSelectCol.concat(
+				CATEGORY_COLUMNS(
+					$tranFunc('common.pic'),
+					$tranFunc('product.cateName'),
+					$tranFunc('collection.noOfPrds'),
+				),
+			)}
 		/>
 	{:else if activeTab === 'variants'}
 		<GraphqlPaginableTable
@@ -333,7 +348,13 @@
 			bind:variables={voucherRelationVars}
 			bind:forceReExecuteGraphqlQuery
 			resultKey={'voucher.variants' as keyof Query}
-			columns={CatalogUnassignSelectCol.concat(VARIANT_COLUMNS)}
+			columns={CatalogUnassignSelectCol.concat(
+				VARIANT_COLUMNS(
+					$tranFunc('common.pic'),
+					$tranFunc('product.prdName'),
+					$tranFunc('product.variantName'),
+				),
+			)}
 		/>
 	{/if}
 </div>
@@ -343,14 +364,14 @@
 	closeOnEscape
 	closeOnOutsideClick
 	onClose={() => (openAssignCatalogFeature = false)}
-	header="Assign {activeTab}"
+	header="{$tranFunc('common.assign')} {activeTab}"
 	onCancel={() => (openAssignCatalogFeature = false)}
 	size="sm"
 	onOk={handleAssignItems}
 	disableElements={disabled || loading}
 >
 	<Input
-		placeholder="Enter query"
+		placeholder={$tranFunc('common.search')}
 		class="mb-1.5"
 		bind:value={catalogQueryValue}
 		inputDebounceOption={{
@@ -362,7 +383,13 @@
 	/>
 	{#if activeTab === 'categories'}
 		<GraphqlPaginableTable
-			columns={SelectCol.concat(CATEGORY_COLUMNS)}
+			columns={SelectCol.concat(
+				CATEGORY_COLUMNS(
+					$tranFunc('common.pic'),
+					$tranFunc('product.cateName'),
+					$tranFunc('collection.noOfPrds'),
+				),
+			)}
 			query={CATEGORIES_LIST_QUERY_STORE}
 			resultKey="categories"
 			bind:variables={queryCategoriesVariables}
@@ -371,7 +398,13 @@
 		/>
 	{:else if activeTab === 'collections'}
 		<GraphqlPaginableTable
-			columns={SelectCol.concat(COLLECTION_COLUMNS)}
+			columns={SelectCol.concat(
+				COLLECTION_COLUMNS(
+					$tranFunc('common.pic'),
+					$tranFunc('common.name'),
+					$tranFunc('collection.noOfPrds'),
+				),
+			)}
 			query={COLLECTIONS_QUERY}
 			resultKey="collections"
 			bind:variables={queryCollectionsVariables}
@@ -380,7 +413,14 @@
 		/>
 	{:else if activeTab === 'products'}
 		<GraphqlPaginableTable
-			columns={SelectCol.concat(PRODUCT_COLUMNS)}
+			columns={SelectCol.concat(
+				PRODUCT_COLUMNS(
+					$tranFunc('common.pic'),
+					$tranFunc('product.prdName'),
+					$tranFunc('product.prdType'),
+					$tranFunc('settings.availability'),
+				),
+			)}
 			query={PRODUCT_LIST_QUERY}
 			resultKey="products"
 			bind:variables={queryProductsVariables}
@@ -389,7 +429,13 @@
 		/>
 	{:else if activeTab === 'variants'}
 		<GraphqlPaginableTable
-			columns={SelectCol.concat(VARIANT_COLUMNS)}
+			columns={SelectCol.concat(
+				VARIANT_COLUMNS(
+					$tranFunc('common.pic'),
+					$tranFunc('product.prdName'),
+					$tranFunc('product.variantName'),
+				),
+			)}
 			query={PRODUCT_VARIANTS_QUERY}
 			resultKey="productVariants"
 			bind:variables={queryVariantsVariables}

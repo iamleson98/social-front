@@ -6,66 +6,94 @@
 	import { AppRoute } from '$lib/utils';
 	import { stringSlicer } from '$lib/utils/utils';
 
-	export const COLLECTION_COLUMNS: TableColumnProps<Collection, string>[] = [
+	/**
+	 * NOTE: Svelte v5.25.7 does not support store subscription inside <script module> blocks:
+	 * https://svelte.dev/e/store_invalid_subscription
+	 *
+	 * TODO: If this is supported now, please refactor my code. Thank you.
+	 */
+
+	/** please provide arguments under form of `$tranFunc(...)` */
+	export const COLLECTION_COLUMNS = (
+		pictureTitle: string,
+		nameTitle: string,
+		noOfProductsTitle: string,
+	): TableColumnProps<Collection, string>[] => [
 		{
-			title: 'Image',
+			title: pictureTitle,
 			child: collectionImage,
 		},
 		{
-			title: 'Name',
+			title: nameTitle,
 			child: name,
 		},
 		{
-			title: 'No. of products',
+			title: noOfProductsTitle,
 			child: collectionProducts,
 		},
 	];
 
-	export const PRODUCT_COLUMNS: TableColumnProps<Product, string>[] = [
+	/** please provide arguments under form of `$tranFunc(...)` */
+	export const PRODUCT_COLUMNS = (
+		pictureTitle: string,
+		productNameTitle: string,
+		productTypeTitle: string,
+		availabilityTitle: string,
+	): TableColumnProps<Product, string>[] => [
 		{
-			title: 'Image',
+			title: pictureTitle,
 			child: prdImage,
 		},
 		{
-			title: 'Name',
+			title: productNameTitle,
 			child: prdName,
 		},
 		{
-			title: 'Product type',
+			title: productTypeTitle,
 			child: productType,
 		},
 		{
-			title: 'Availability',
+			title: availabilityTitle,
 			child: availability,
 		},
 	];
 
-	export const CATEGORY_COLUMNS: TableColumnProps<Category, string>[] = [
+	/** please provide arguments under form of `$tranFunc(...)` */
+	export const CATEGORY_COLUMNS = (
+		categoryImageTitle: string,
+		categoryNameTitle: string,
+		numberOfProductsTitle: string,
+	): TableColumnProps<Category, string>[] => [
 		{
-			title: 'Image',
+			title: categoryImageTitle,
 			child: categoryImage,
 		},
 		{
-			title: 'Name',
+			title: categoryNameTitle,
 			child: categoryName,
 		},
 		{
-			title: 'No. of products',
+			title: numberOfProductsTitle,
 			child: categoryNoOfProducts,
 		},
 	];
 
-	export const VARIANT_COLUMNS: TableColumnProps<ProductVariant, string>[] = [
+	/** please provide arguments under form of `$tranFunc(...)` */
+	export const VARIANT_COLUMNS = (
+		variantImageTitle: string,
+		productNameTitle: string,
+		variantNameTitle: string,
+	): TableColumnProps<ProductVariant, string>[] => [
 		{
-			title: 'Image',
+			title: variantImageTitle,
 			child: variantImage,
 		},
 		{
-			title: 'Product name',
+			title: productNameTitle,
 			child: variantPrdName,
 		},
 		{
-			title: 'Variant name',
+			title: variantNameTitle,
 			child: variantName,
 		},
 	];

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
+	import { tranFunc } from '$i18n';
 	import {
 		CATEGORIES_LIST_QUERY_STORE,
 		PRODUCT_LIST_QUERY,
@@ -18,7 +19,7 @@
 		type QueryProductVariantsArgs,
 	} from '$lib/gql/graphql';
 	import { toggleItemNoDup } from '$lib/utils/utils';
-	import { TABS, type TabName } from './consts';
+	import { TABS_OPTIONS, type TabName } from './consts';
 	import {
 		CATEGORY_COLUMNS,
 		COLLECTION_COLUMNS,
@@ -48,7 +49,7 @@
 	/**  catalog item select checkbox */
 	const SelectCol: TableColumnProps<any>[] = [
 		{
-			title: 'Select',
+			title: $tranFunc('common.select'),
 			child: catalogAssignSelect,
 		},
 	];
@@ -92,9 +93,10 @@
 	});
 </script>
 
-{#snippet commonHeader(name: string)}
+{#snippet commonHeader(name: TabName)}
+	{@const tabTran = $TABS_OPTIONS.find((item) => item.value === name)}
 	<SectionHeader>
-		<span>Eligible {name}</span>
+		<span>{tabTran?.eligibleLabel}</span>
 	</SectionHeader>
 {/snippet}
 
@@ -121,15 +123,15 @@
 
 <div class="space-y-2">
 	<div role="tablist" class="tabs tabs-border">
-		{#each TABS as tab, idx (idx)}
+		{#each $TABS_OPTIONS as tab, idx (idx)}
 			<a
 				role="tab"
 				class="tab"
-				class:tab-active={activeTab === tab}
-				href="?tab={tab}"
+				class:tab-active={activeTab === tab.value}
+				href="?tab={tab.value}"
 				data-sveltekit-noscroll
 			>
-				{tab}
+				{tab.label}
 			</a>
 		{/each}
 	</div>
@@ -139,7 +141,7 @@
 
 	{#if !!activeTab}
 		<Input
-			placeholder="Enter query"
+			placeholder={$tranFunc('common.search')}
 			class="mb-1.5"
 			bind:value={catalogQueryValue}
 			inputDebounceOption={{
@@ -153,7 +155,13 @@
 		{#if activeTab === 'categories'}
 			<GraphqlPaginableTable
 				autoRefetchOnVariableChange
-				columns={SelectCol.concat(CATEGORY_COLUMNS)}
+				columns={SelectCol.concat(
+					CATEGORY_COLUMNS(
+						$tranFunc('common.pic'),
+						$tranFunc('product.cateName'),
+						$tranFunc('collection.noOfPrds'),
+					),
+				)}
 				query={CATEGORIES_LIST_QUERY_STORE}
 				resultKey="categories"
 				bind:variables={queryCategoriesVariables}
@@ -163,7 +171,13 @@
 		{:else if activeTab === 'collections'}
 			<GraphqlPaginableTable
 				autoRefetchOnVariableChange
-				columns={SelectCol.concat(COLLECTION_COLUMNS)}
+				columns={SelectCol.concat(
+					COLLECTION_COLUMNS(
+						$tranFunc('common.pic'),
+						$tranFunc('common.name'),
+						$tranFunc('collection.noOfPrds'),
+					),
+				)}
 				query={COLLECTIONS_QUERY}
 				resultKey="collections"
 				bind:variables={queryCollectionsVariables}
@@ -173,7 +187,14 @@
 		{:else if activeTab === 'products'}
 			<GraphqlPaginableTable
 				autoRefetchOnVariableChange
-				columns={SelectCol.concat(PRODUCT_COLUMNS)}
+				columns={SelectCol.concat(
+					PRODUCT_COLUMNS(
+						$tranFunc('common.pic'),
+						$tranFunc('product.prdName'),
+						$tranFunc('product.prdType'),
+						$tranFunc('settings.availability'),
+					),
+				)}
 				query={PRODUCT_LIST_QUERY}
 				resultKey="products"
 				bind:variables={queryProductsVariables}
@@ -183,7 +204,13 @@
 		{:else if activeTab === 'variants'}
 			<GraphqlPaginableTable
 				autoRefetchOnVariableChange
-				columns={SelectCol.concat(VARIANT_COLUMNS)}
+				columns={SelectCol.concat(
+					VARIANT_COLUMNS(
+						$tranFunc('common.pic'),
+						$tranFunc('product.prdName'),
+						$tranFunc('product.variantName'),
+					),
+				)}
 				query={PRODUCT_VARIANTS_QUERY}
 				resultKey="productVariants"
 				bind:variables={queryVariantsVariables}

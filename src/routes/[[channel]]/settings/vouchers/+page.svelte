@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { VOUCHER_LIST_QUERY } from '$lib/api/admin/discount';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import Filter from '$lib/components/pages/settings/vouchers/filter.svelte';
@@ -19,33 +20,33 @@
 
 	const VOUCHER_COLUMNS: TableColumnProps<Voucher, VoucherSortField>[] = [
 		{
-			title: 'Voucher',
+			title: $tranFunc('common.name'),
 			child: title,
 			key: VoucherSortField.Name,
 		},
 		{
-			title: 'Min. Spent',
+			title: $tranFunc('voucher.minSpent'),
 			child: minSpent,
 		},
 		{
-			title: 'Value',
+			title: $tranFunc('common.value'),
 			child: value,
 		},
 		{
-			title: 'Usage limit',
+			title: $tranFunc('voucher.useLimit'),
 			child: useLimit,
 		},
 		{
-			title: 'Availability',
+			title: $tranFunc('settings.availability'),
 			child: availability,
 		},
 		{
-			title: 'Start date',
+			title: $tranFunc('common.startAt'),
 			child: startDate,
 			key: VoucherSortField.StartDate,
 		},
 		{
-			title: 'End date',
+			title: $tranFunc('common.endAt'),
 			child: endDate,
 			key: VoucherSortField.EndDate,
 		},
@@ -64,7 +65,7 @@
 
 {#snippet availability({ item }: { item: Voucher })}
 	<Badge
-		text="{item.channelListings?.length || 0} channels"
+		text="{item.channelListings?.length || 0} {$tranFunc('channel.channels')}"
 		color="green"
 		class="tooltip tooltip-top"
 		data-tip={item.channelListings?.map((list) => list.channel.slug).join(', ')}

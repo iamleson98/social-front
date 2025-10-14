@@ -130,6 +130,8 @@ export default {
 		copy: 'Copy',
 		copied: 'Copied!',
 		number: 'Number',
+		select: 'Select',
+		unassign: 'Unassign',
 	},
 	product: {
 		chooseAddress: 'Please choose address',
@@ -148,7 +150,7 @@ export default {
 		prdDescription: 'Product Description',
 		prdVariant: 'Product Variant',
 		variant: 'Variant',
-		variantName: 'Name',
+		variantName: 'Variant Name',
 		delVariant: 'Delete Variant',
 		delValue: 'Delete Value',
 		addVariant: 'Add Variant',
@@ -205,6 +207,7 @@ export default {
 			'Pre-order is when you must order the product from other suppliers. The number of days it takes to delivery must be between {{min}} to {{max}} working days.',
 		prdCreated: 'Product created successfully',
 		prdUpdated: 'Product updated successfully',
+		cateName: 'Category Name',
 	},
 	error: {
 		invalidSlug: 'Invalid slug value',
@@ -587,6 +590,9 @@ export default {
 		eligibleVariants: 'Eligible variants',
 		eligibleCollections: 'Eligible collections',
 		eligibleCategories: 'Eligibe categories',
+		minSpent: 'Min. Spent',
+		newVoucher: 'New Voucher',
+		vouchers: 'Shop Vouchers',
 	},
 	permissionGroup: {
 		restrictChanAccess: 'Restricted access to channels',

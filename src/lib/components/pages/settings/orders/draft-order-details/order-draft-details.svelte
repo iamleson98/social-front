@@ -68,8 +68,6 @@
 		});
 	};
 
-	const reexecuteQuery = () => {};
-
 	/** only draft orders can update customer */
 	const handleUpdateCustomer = async (userId: string) => {
 		loading = true;
@@ -89,7 +87,7 @@
 		if (checkIfGraphqlResultHasError(result, 'draftOrderUpdate', 'Customer updated successfully'))
 			return;
 
-		reexecuteQuery();
+		onRefetchOrder?.();
 	};
 
 	const handleUpdateAddress = async (
@@ -123,7 +121,10 @@
 		loading = false;
 	};
 
-	const handleFinalizeOrder = async () => {};
+	const handleFinalizeOrder = async () => {
+		const hasErr = await OrderUtilsInstance.finalizeDraftOrder(order.id);
+		if (!hasErr) onRefetchOrder?.();
+	};
 </script>
 
 {#snippet shippingMethodModal()}
@@ -266,7 +267,7 @@
 
 	<Sidebar
 		{order}
-		onDoneCustomerUpdate={reexecuteQuery}
+		onDoneCustomerUpdate={onRefetchOrder}
 		{handleUpdateCustomer}
 		disabled={loading}
 		setAddress={handleUpdateAddress}

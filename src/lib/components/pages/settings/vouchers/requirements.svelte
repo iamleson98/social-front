@@ -5,6 +5,7 @@
 	import { RadioButton } from '$lib/components/ui/Input';
 	import { Input } from '$lib/components/ui/Input';
 	import type { VoucherChannelListing } from '$lib/gql/graphql';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { array, number, object } from 'zod';
 
@@ -42,12 +43,11 @@
 		},
 	];
 
-	const NON_NEGATIVE = $tranFunc('error.negativeNumber');
 
 	const ValueSchema = array(
 		object({
 			minSpent: object({
-				amount: number().nonnegative(NON_NEGATIVE),
+				amount: number().nonnegative($CommonState.NonNegativeError),
 			}),
 		}),
 	);
@@ -122,8 +122,8 @@
 	{#if requirementType === 'min_order_value'}
 		<div class="space-y-2">
 			<div class="grid grid-cols-2 gap-2 text-sm font-semibold text-gray-600">
-				<div>Channel</div>
-				<div>Minimum order value</div>
+				<div>{$tranFunc('product.channel')}</div>
+				<div>{$tranFunc('voucher.minOrderPrice')}</div>
 			</div>
 			{#each activeChannelListings as listing, idx (idx)}
 				<div class="grid grid-cols-2 gap-2">
@@ -160,7 +160,7 @@
 			{disabled}
 			bind:value={minimumQuantityOfItems}
 			variant={error ? 'error' : 'info'}
-			subText={error ? NON_NEGATIVE : undefined}
+			subText={error ? $CommonState.NonNegativeError : undefined}
 		/>
 	{/if}
 </div>

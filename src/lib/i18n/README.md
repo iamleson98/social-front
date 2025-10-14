@@ -8,7 +8,7 @@
 //
 // ⬇️ this is the key, translators NEVER touch this
 //         ⬇️ This is the value text, translator can make changes
-{ "key": "This is sample tránlation for {{key}}." }
+{ "key": "This is sample translation for {{key}}." }
 //                                       ⬆️ This is the parameter: {{key}}. You MUST keep it in your translation.
 
 
@@ -19,3 +19,14 @@
 ```
 
 <h2>If you have any question, please ask me.</h2>
+
+<!-- TODO: consider update translations for Korean and Japanese as well -->
+
+Document:
+
+You can make tran func usage key type safe, by:
+
+1) cd <path_to_this_folder>
+2) bun run .\translations_validator.ts --trans=en,vi
+
+The result will be the file ./type.ts

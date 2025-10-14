@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
+	import type { TranslationKey } from '$i18n/types';
 	import { VOUCHER_CODE_LIST_QUERY } from '$lib/api/admin/discount';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Plus, Trash } from '$lib/components/icons';
@@ -10,6 +11,8 @@
 	import { Modal } from '$lib/components/ui/Modal';
 	import { GraphqlPaginableTable, Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import { type Query, type VoucherCode } from '$lib/gql/graphql';
+	import { CommonState } from '$lib/utils/common.svelte';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { v4 as uuid } from 'uuid';
 	import { number, string } from 'zod';
 
@@ -51,11 +54,10 @@
 	const MAX_AUTO_CODES = 50;
 
 	const MAX_ITEMS_EXCEED = $tranFunc('error.itemsExceed', { max: MAX_AUTO_CODES });
-	const FIELD_REQUIRED = $tranFunc('helpText.fieldRequired');
 
 	type CodeGenerationType = 'manual' | 'auto';
 
-	const NEW_CODE_TYPES: { value: CodeGenerationType; label: string }[] = [
+	const NEW_CODE_TYPES: { value: CodeGenerationType; label: TranslationKey }[] = [
 		{
 			value: 'manual',
 			label: 'common.manual',
@@ -67,14 +69,14 @@
 	];
 
 	const AutoGenerateCodesSchema = number()
-		.nonnegative($tranFunc('error.negativeNumber'))
+		.nonnegative($CommonState.NonNegativeError)
 		.max(MAX_AUTO_CODES, MAX_ITEMS_EXCEED);
 
-	const ManualCodeSchema = string().nonempty(FIELD_REQUIRED);
+	const ManualCodeSchema = string().nonempty($CommonState.FieldRequiredError);
 
 	let openAddCodeModal = $state(false);
 	let forceReExecuteGraphqlQuery = $state(true);
-	let addCodeType = $state<'manual' | 'auto'>('manual');
+	let addCodeType = $state<CodeGenerationType>('manual');
 	let addVoucherCodes = $state.raw<AddVoucherCodeProps[]>([]);
 	let numberOfAutoGenerateCodesError = $state<string>();
 	let manualVoucherCodeError = $state<string>();
@@ -183,7 +185,7 @@
 	/>
 {/snippet}
 
-<div class="rounded-lg p-3 border border-gray-200 bg-white space-y-2">
+<div class="{SitenameCommonClassName}">
 	<SectionHeader>
 		<div>{$tranFunc('voucher.voucherCodes')}</div>
 		<Button

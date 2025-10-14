@@ -145,7 +145,7 @@
 		loading = false;
 		if (isThereError) return;
 
-		toast.success($tranFunc('common.editSuccess'));
+		toast.success($CommonState.EditSuccess);
 		voucherQuery.reexecute({
 			variables: { id: page.params.id! },
 		});
@@ -153,7 +153,7 @@
 
 	const handleDeleteVoucher = async () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: $tranFunc('common.confirmDel'),
+			content: $CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true;
 				const result = await GRAPHQL_CLIENT.mutation<
@@ -162,7 +162,7 @@
 				>(VOUCHER_DELETE_MUTATION, { id: page.params.id! });
 				loading = false;
 
-				if (checkIfGraphqlResultHasError(result, 'voucherDelete', $tranFunc('common.delSuccess')))
+				if (checkIfGraphqlResultHasError(result, 'voucherDelete', $CommonState.DeleteSuccess))
 					return;
 
 				await goto(AppRoute.SETTINGS_CONFIGS_VOUCHERS());

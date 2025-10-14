@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import {
 		PROMOTION_RULE_CONDITIONS_SELECTED_OPTIONS_DETAILS_QUERY,
 		PROMOTION_RULE_CREATE_MUTATION,
@@ -318,13 +319,42 @@
 							</div>
 
 							{#if rulesActiveCatalogueTabs[ruleIdx] === 'categories'}
-								<Table columns={CATEGORY_COLUMNS} items={ruleCategories} />
+								<Table
+									columns={CATEGORY_COLUMNS(
+										$tranFunc('common.pic'),
+										$tranFunc('product.cateName'),
+										$tranFunc('collection.noOfPrds'),
+									)}
+									items={ruleCategories}
+								/>
 							{:else if rulesActiveCatalogueTabs[ruleIdx] === 'collections'}
-								<Table columns={COLLECTION_COLUMNS} items={ruleCollections} />
+								<Table
+									columns={COLLECTION_COLUMNS(
+										$tranFunc('common.pic'),
+										$tranFunc('common.name'),
+										$tranFunc('collection.noOfPrds'),
+									)}
+									items={ruleCollections}
+								/>
 							{:else if rulesActiveCatalogueTabs[ruleIdx] === 'products'}
-								<Table columns={PRODUCT_COLUMNS} items={ruleProducts} />
+								<Table
+									columns={PRODUCT_COLUMNS(
+										$tranFunc('common.pic'),
+										$tranFunc('product.prdName'),
+										$tranFunc('product.prdType'),
+										$tranFunc('settings.availability'),
+									)}
+									items={ruleProducts}
+								/>
 							{:else if rulesActiveCatalogueTabs[ruleIdx] === 'variants'}
-								<Table columns={VARIANT_COLUMNS} items={ruleVariants} />
+								<Table
+									columns={VARIANT_COLUMNS(
+										$tranFunc('common.pic'),
+										$tranFunc('product.prdName'),
+										$tranFunc('product.variantName'),
+									)}
+									items={ruleVariants}
+								/>
 							{/if}
 						{/if}
 					</div>

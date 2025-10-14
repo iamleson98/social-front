@@ -43,11 +43,10 @@
 	/** keeps track of channels already in use with voucher */
 	const ExistingUsedChannelIDs = existingChannelListings.map((item) => item.channel.id);
 
-	const NON_NEGATIVE = $tranFunc('error.negativeNumber');
 
 	const ChannelListingSchema = array(
 		object({
-			discountValue: number().nonnegative(NON_NEGATIVE),
+			discountValue: number().nonnegative($CommonState.NonNegativeError),
 		}),
 	).nonempty($CommonState.FieldRequiredError);
 
@@ -174,8 +173,8 @@
 			<div class="space-y-2">
 				<SectionHeader>{$tranFunc('common.value')}</SectionHeader>
 				<div class="grid grid-cols-2 gap-2 text-sm font-semibold text-gray-600">
-					<div>Channel</div>
-					<div>Value</div>
+					<div>{$tranFunc('product.channel')}</div>
+					<div>{$tranFunc('common.value')}</div>
 				</div>
 				{#each activeChannelListings as listing, idx (idx)}
 					<div class="grid grid-cols-2 gap-2">

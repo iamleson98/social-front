@@ -66,7 +66,7 @@ import type {
 } from '$lib/gql/graphql';
 import { CommonState } from '$lib/utils/common.svelte';
 import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-import { get, writable } from 'svelte/store';
+import { get } from 'svelte/store';
 
 function OrderUtils() {
 	const state = $state({

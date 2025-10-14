@@ -1,6 +1,7 @@
 import { UsaFlag, VietnamFlag } from '$lib/components/icons/SvgOuterIcon';
 import { LanguageCodeEnum } from '$lib/gql/graphql';
 import { LANGUAGE_KEY } from '$lib/utils/consts';
+import type { TranslationKey } from './types';
 import { default as vietnamese } from './vi';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { Component } from 'svelte';
@@ -29,7 +30,8 @@ const findTemplatePlaceholders = (template: string): string[] => {
 	return res;
 };
 
-const parseTranslationObject = (
+/** recursively parsing translation files */
+export const parseTranslationObject = (
 	obj: Record<string, unknown>,
 	trans: Translation,
 	prefix: string = '',
@@ -117,7 +119,7 @@ const getTranslation = async (lang: LanguageCodeEnum) => {
 
 export const serverSideTranslate = async <T extends RequestEvent>(
 	event: T,
-	key: string,
+	key: TranslationKey,
 	args?: Record<string, unknown>,
 ) => {
 	const languageCookie =
@@ -127,7 +129,7 @@ export const serverSideTranslate = async <T extends RequestEvent>(
 	return buildTranslationText(trans!, key, args);
 };
 
-const buildTranslationText = (trans: Translation, key: string, args?: Record<string, unknown>) => {
+const buildTranslationText = (trans: Translation, key: TranslationKey, args?: Record<string, unknown>) => {
 	const tranObject = trans[key];
 	if (tranObject === undefined) {
 		throw new Error(`Translation key ${key} not found in translations`);
@@ -146,14 +148,13 @@ const buildTranslationText = (trans: Translation, key: string, args?: Record<str
 	return result;
 };
 
-export type TranFunc = (key: string, args?: Record<string, unknown>) => string;
+export type TranFunc = (key: TranslationKey, args?: Record<string, unknown>) => string;
 
 /**a svelte store for translation.
  * On client side (in .svelte files), use it like: const result = $tranFunc('`<your_key>`').
  * On server side or utils fies (**.ts files), use it like: const result = get(tranFunc)('`<your_key>`')
  */
-export const tranFunc = derived(innerStore, ($trans) => (key: string, args?: Record<string, unknown>) => buildTranslationText($trans, key, args));
-
+export const tranFunc = derived(innerStore, ($trans) => (key: TranslationKey, args?: Record<string, unknown>) => buildTranslationText($trans, key, args));
 
 /**
  * translation json should be in the format of:
@@ -167,7 +168,7 @@ export const tranFunc = derived(innerStore, ($trans) => (key: string, args?: Rec
  *    }
  *  }
  */
-type Translation = {
+export type Translation = {
 	[key: string]: {
 		template: string;
 		args: Set<string> | null;
