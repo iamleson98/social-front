@@ -5,6 +5,7 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Plus, Trash } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
+	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Input, RadioButton } from '$lib/components/ui/Input';
@@ -205,6 +206,10 @@
 			items={addVoucherCodes}
 			{disabled}
 		/>
+	{:else if !addVoucherCodes.length && !voucherId}
+		<Alert variant="warning" size="sm">
+			{$tranFunc('voucher.noCodesWarning')}
+		</Alert>
 	{/if}
 
 	{#if voucherId}

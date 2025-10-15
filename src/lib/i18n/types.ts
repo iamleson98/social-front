@@ -518,6 +518,7 @@ export type TranslationKey =
 | 'voucher.minSpent'
 | 'voucher.newVoucher'
 | 'voucher.vouchers'
+| 'voucher.noCodesWarning'
 | 'permissionGroup.restrictChanAccess'
 | 'permissionGroup.visibleOrderChanLabel'
 | 'permissionGroup.groupMembers'

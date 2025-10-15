@@ -594,6 +594,7 @@ export default {
 		minSpent: 'Giá trị đơn hàng tối thiểu',
 		newVoucher: 'Thêm phiếu giảm giá',
 		vouchers: 'Phiếu giảm giá',
+		noCodesWarning: 'Phiếu giảm giá này chưa có mã giảm giá. Bạn vui lòng thêm mới.',
 	},
 	permissionGroup: {
 		restrictChanAccess: 'Giới hạn truy cập vào các kênh',

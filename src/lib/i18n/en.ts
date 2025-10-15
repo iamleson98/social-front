@@ -593,6 +593,7 @@ export default {
 		minSpent: 'Min. Spent',
 		newVoucher: 'New Voucher',
 		vouchers: 'Shop Vouchers',
+		noCodesWarning: 'This voucher has no codes. Please add more codes.',
 	},
 	permissionGroup: {
 		restrictChanAccess: 'Restricted access to channels',

@@ -166,6 +166,11 @@ const authExchangeInner = async (utils: AuthUtilities) => {
 			}),
 		});
 
+		if (!refreshResult.ok) {
+			isTokenRefreshingInProgress = false;
+			return;
+		}
+
 		const result: Record<string, unknown> = await refreshResult.json();
 		UserStoreManager.setValue(result.user as User);
 
@@ -175,7 +180,7 @@ const authExchangeInner = async (utils: AuthUtilities) => {
 	return {
 		addAuthToOperation,
 		refreshAuth,
-		didAuthError: (error: CombinedError) => isAuthenError(error) || isAuthorError(error),
+		didAuthError: (error: CombinedError) => isAuthenError(error),
 	};
 };
 
@@ -200,7 +205,7 @@ export const GRAPHQL_CLIENT = new Client({
 });
 
 const tryRefreshToken = async (
-	event: RequestEvent<Partial<Record<string, string>>, string | null>,
+	event: RequestEvent,
 ) => {
 	const refreshToken = event.cookies.get(REFRESH_TOKEN_KEY);
 	const csrfToken = event.cookies.get(CSRF_TOKEN_KEY);
@@ -229,7 +234,7 @@ const checkIsAuthenAuthorErrorAndRedirectIfNeeded = async <
 	Variables extends AnyVariables = AnyVariables,
 >(
 	result: OperationResult<Data, Variables>,
-	event: RequestEvent<Partial<Record<string, string>>, string | null>,
+	event: RequestEvent,
 ): Promise<boolean> => {
 	const { error } = result;
 
@@ -240,7 +245,7 @@ const checkIsAuthenAuthorErrorAndRedirectIfNeeded = async <
 };
 
 const attachAuthorizationHeaderToRequestIfNeeded = (
-	event: RequestEvent<Partial<Record<string, string>>, string | null>,
+	event: RequestEvent,
 	context?: Partial<OperationContext>,
 ) => {
 	const newContext = context || {};
@@ -266,7 +271,7 @@ export const performServerSideGraphqlRequest = async <
 >(
 	query: DocumentInput<Data, Variables>,
 	variables: Variables,
-	event: RequestEvent<Partial<Record<string, string>>, string | null>,
+	event: RequestEvent,
 	context?: Partial<OperationContext>,
 ): Promise<OperationResult<Data, Variables>> => {
 	const operationType = (query as TypedDocumentNode<Data, Variables>).definitions[0][
@@ -292,7 +297,7 @@ export const performServerSideGraphqlRequest = async <
  * @returns
  */
 export const pageRequiresAuthentication = async (
-	event: RequestEvent<Partial<Record<string, string>>, string | null>,
+	event: RequestEvent,
 ) => {
 	const accessToken = event.cookies.get(ACCESS_TOKEN_KEY);
 
@@ -329,7 +334,7 @@ export const pageRequiresAuthentication = async (
  * Make sure user is authenticated AND has all given permisions
  */
 export const pageRequiresPermissions = async (
-	event: RequestEvent<Partial<Record<string, string>>, string | null>,
+	event: RequestEvent,
 	...permissions: PermissionEnum[]
 ) => {
 	const authenticatedUser = await pageRequiresAuthentication(event);

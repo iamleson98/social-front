@@ -38,11 +38,14 @@ const main = async () => {
   try {
     const { trans } = parseArgs();
 
-    const translations = await Promise.all<{ name: string, trans: Translation }>(trans.map(name => {
-      return new Promise((resolve, reject) => {
-        import(`./${name}`).then(raw => resolve({ name, trans: parseTranslationObject(raw.default, {}) })).catch(console.error)
-      });
-    }));
+    const translations = await Promise.all<{ name: string, trans: Translation }>(
+      trans.map(name => new Promise((resolve, reject) => {
+        import(`./${name}`)
+          .then(raw => resolve({ name, trans: parseTranslationObject(raw.default, {}) }))
+          .catch(err => {
+            throw new Error(err);
+          });
+      })));
 
     let hasError = false;
 
@@ -71,8 +74,10 @@ const main = async () => {
               console.error(`tran file "${tran.name}", key: "${key}" missing arguments`);
               hasError = true;
             } else {
-              const diff1 = difference([...tranObj.args!], [...innerTranObj.args!]);
-              const diff2 = difference([...innerTranObj.args!], [...tranObj.args!]);
+              const tranObjArgs = [...tranObj.args!];
+              const innerTranObjArgs = [...innerTranObj.args!];
+              const diff1 = difference(tranObjArgs, innerTranObjArgs);
+              const diff2 = difference(innerTranObjArgs, tranObjArgs);
 
               if (diff1.length) {
                 console.error(`tran file "${innerTran.name}", key: "${key}" missing arguments "${diff1.toString()}"`);

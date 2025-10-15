@@ -13,8 +13,8 @@
 		"format": "prettier --write .",
 		"test:integration": "playwright test",
 		"test:unit": "vitest",
-		"typesafe-i18n": "typesafe-i18n",
-		"gql": "graphql-codegen -c codegen.ts -e -v -d"
+		"gql": "graphql-codegen -c codegen.ts -e -v -d",
+		"i18n-gen": "bun run ./src/lib/i18n/translations_validator.ts --trans=en,vi"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",
