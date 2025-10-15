@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { RFC3339TimeFormat } from '$lib/api/graphql/utils';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
@@ -70,12 +71,12 @@
 {void ok}
 
 <div class={SitenameCommonClassName}>
-	<SectionHeader>General information</SectionHeader>
+	<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
 
 	<div class="flex gap-2 items-start">
 		<Select
 			options={DiscountTypeOptions}
-			label="Discount type"
+			label={$tranFunc('voucher.discountType')}
 			required
 			class="flex-1/3"
 			size="md"
@@ -87,8 +88,8 @@
 			subText={promotionFormErrors?.type?.[0]}
 		/>
 		<Input
-			placeholder="Promotion name"
-			label="Promotion name"
+			placeholder={$tranFunc('common.name')}
+			label={$tranFunc('common.name')}
 			required
 			class="flex-2/3"
 			size="md"
@@ -102,9 +103,9 @@
 	</div>
 
 	<EditorJSComponent
-		label="Promotion description"
+		label={$tranFunc('settings.description')}
 		required
-		placeholder="Promotion description"
+		placeholder={$tranFunc('settings.description')}
 		bind:value={description}
 		{disabled}
 		variant={promotionFormErrors?.description?.length ? 'error' : 'info'}
@@ -115,8 +116,8 @@
 	<div class="gap-2 grid grid-cols-2">
 		<EaseDatePicker
 			required
-			label="Start date"
-			placeholder="Start date"
+			label={$tranFunc('common.startAt')}
+			placeholder={$tranFunc('common.startAt')}
 			value={{ date: startDate }}
 			{disabled}
 			onchange={(value) => {
@@ -141,8 +142,8 @@
 			}}
 		/>
 		<EaseDatePicker
-			label="End date"
-			placeholder="End date"
+			label={$tranFunc('common.endAt')}
+			placeholder={$tranFunc('common.endAt')}
 			value={{ date: endDate }}
 			{disabled}
 			onchange={(value) => {

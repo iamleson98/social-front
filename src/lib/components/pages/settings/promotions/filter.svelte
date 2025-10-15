@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import type { FilterProps } from '$lib/components/common/filter-box';
 	import { FilterManager } from '$lib/components/common/filter-box';
 	import { CommonSnippets } from '$lib/components/common/filter-box/snippets.svelte';
@@ -14,14 +15,14 @@
 
 	const FilterOptions: FilterProps<PromotionWhereInput> = {
 		startDate: {
-			label: 'Start date',
+			label: $tranFunc('common.startAt'),
 			operations: {
 				lte: CommonSnippets.singleDatetime,
 				gte: CommonSnippets.singleDatetime,
 			},
 		},
 		endDate: {
-			label: 'End date',
+			label: $tranFunc('common.endAt'),
 			operations: {
 				gte: CommonSnippets.singleDatetime,
 				lte: CommonSnippets.singleDatetime,

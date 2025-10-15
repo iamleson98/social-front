@@ -108,8 +108,8 @@
 <div class="space-y-3">
 	<div class="flex items-start gap-2">
 		<Input
-			label="Rule name"
-			placeholder="Name"
+			label={$tranFunc('common.name')}
+			placeholder={$tranFunc('common.name')}
 			class="flex-1"
 			bind:value={name}
 			inputDebounceOption={{ onInput: validate }}
@@ -120,7 +120,7 @@
 			{disabled}
 		/>
 		<ChannelSelect
-			label="Application channel"
+			label={$tranFunc('promotion.applyChan')}
 			bind:value={addChannels[0]}
 			variant={ruleFormErrors.addChannels?.length ? 'error' : 'info'}
 			subText={ruleFormErrors.addChannels?.[0]}
@@ -139,12 +139,12 @@
 
 	{#if addChannels.length}
 		<div class="text-sm space-y-2">
-			<dir class="font-medium text-gray-700">Conditions</dir>
+			<dir class="font-medium text-gray-700">{$tranFunc('promotion.conditions')}</dir>
 			<div class="space-y-2">
 				<div class="flex items-center gap-1">
 					<Checkbox
 						{disabled}
-						label="Products"
+						label={$tranFunc('product.products')}
 						bind:checked={useProductsWithPromotion}
 						onCheckChange={(checked) => {
 							performProductsFetching = checked; // if checked, we perform fetching product list
@@ -170,7 +170,7 @@
 
 				<div class="flex items-center gap-1">
 					<Checkbox
-						label="Product variants"
+						label={$tranFunc('common.variants')}
 						bind:checked={useProductVariantsWithPromotion}
 						onCheckChange={(checked) => {
 							performProductVariantsFetching = checked;
@@ -197,7 +197,7 @@
 
 				<div class="flex items-center gap-1">
 					<Checkbox
-						label="Categories"
+						label={$tranFunc('common.categories')}
 						bind:checked={useCategoriesWithPromotion}
 						onCheckChange={(checked) => {
 							performCategoriesFetching = checked;
@@ -224,7 +224,7 @@
 
 				<div class="flex items-center gap-1">
 					<Checkbox
-						label="Collections"
+						label={$tranFunc('common.collections')}
 						bind:checked={useCollectionsWithPromotion}
 						onCheckChange={(checked) => {
 							performCollectionsFetching = checked;
@@ -254,7 +254,7 @@
 
 	<div class="flex items-start gap-2">
 		<div class="text-sm flex-1/4">
-			<div class="font-medium text-gray-800 mb-1">Reward type</div>
+			<div class="font-medium text-gray-800 mb-1">{$tranFunc('promotion.rewardType')}</div>
 			<div class="space-y-1">
 				{#each Object.values(RewardValueTypeEnum) as value, idx (idx)}
 					<RadioButton
@@ -269,8 +269,8 @@
 		</div>
 
 		<Input
-			label="Reward value"
-			placeholder="Reward value"
+			label={$tranFunc('promotion.rewardValue')}
+			placeholder={$tranFunc('promotion.rewardValue')}
 			class="flex-3/4"
 			bind:value={rewardValue}
 			inputDebounceOption={{ onInput: validate }}
@@ -292,8 +292,8 @@
 
 	<EditorJSComponent
 		{disabled}
-		label="Description"
-		placeholder="Description"
+		label={$tranFunc('settings.description')}
+		placeholder={$tranFunc('settings.description')}
 		bind:value={description}
 	/>
 </div>

@@ -13,7 +13,7 @@
 
 <HeadBar
 	listingPageHref={AppRoute.SETTINGS_CONFIGS_COLLECTIONS()}
-	listingPageLabel={$tranFunc('collection.cols')}
+	listingPageLabel={$tranFunc('common.collections')}
 	newPageHref={AppRoute.SETTINGS_CONFIGS_COLLECTION_NEW()}
 	newPageLabel={$tranFunc('collection.newCol')}
 	detailRouteID="/[[channel]]/settings/collections/[id]"

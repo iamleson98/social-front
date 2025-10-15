@@ -142,9 +142,9 @@
 
 <div class={SitenameCommonClassName}>
 	<SectionHeader>
-		<div>Rules</div>
+		<div>{$tranFunc('promotion.rules')}</div>
 		<Button endIcon={Plus} size="xs" variant="light" onclick={handleClickAddAnotherRule}>
-			Add rule
+			{$tranFunc('promotion.addRule')}
 		</Button>
 	</SectionHeader>
 
@@ -164,7 +164,7 @@
 					: undefined}
 				<div class={SitenameCommonClassName}>
 					<SectionHeader>
-						<div>Catalog rule</div>
+						<div>{$tranFunc('promotion.catalogRule')}</div>
 						<div class="flex gap-1.5">
 							<IconButton
 								size="xs"
@@ -188,12 +188,12 @@
 						</div>
 					</SectionHeader>
 					<div>
-						<div class="text-sm font-medium text-gray-700">Name</div>
+						<div class="text-sm font-medium text-gray-700">{$tranFunc('common.name')}</div>
 						<div class="text-xs">{rule.name}</div>
 					</div>
 
 					<div>
-						<div class="text-sm font-medium text-gray-700">Description</div>
+						<div class="text-sm font-medium text-gray-700">{$tranFunc('settings.description')}</div>
 						{#if rule.description}
 							<div class="text-xs">
 								{#each parseEditorJsString(rule.description) as para, idx (idx)}
@@ -206,7 +206,7 @@
 					</div>
 
 					<div class="flex items-center justify-between">
-						<div class="text-sm font-medium text-gray-700">Discount amount</div>
+						<div class="text-sm font-medium text-gray-700">{$tranFunc('voucher.discountValue')}</div>
 						<Badge
 							text={rule.rewardValueType === RewardValueTypeEnum.Percentage
 								? `${rule.rewardValue}%`
@@ -215,12 +215,12 @@
 					</div>
 
 					<div class="flex items-center justify-between">
-						<div class="text-sm font-medium text-gray-700">Apply on channels</div>
+						<div class="text-sm font-medium text-gray-700">{$tranFunc('promotion.applyChans')}</div>
 						<Badge text={channelInfo ? channelInfo.name : '?'} />
 					</div>
 
 					<div class="space-y-2">
-						<div class="text-sm font-medium text-gray-700">Predicates</div>
+						<div class="text-sm font-medium text-gray-700">{$tranFunc('promotion.predicates')}</div>
 
 						{#if $RulePredicateQuery.fetching}
 							<TableSkeleton numColumns={4} numOfRows={1} />
@@ -229,26 +229,26 @@
 						{:else if $RulePredicateQuery.data}
 							{@const { ruleCategories, ruleCollections, ruleProducts, ruleVariants } =
 								classifyRuleCatalog(rule.cataloguePredicate!, $RulePredicateQuery.data)}
-							{@const tabs: {key: TabKey, display: string}[] = [
+							{@const TABS: {key: TabKey, display: string}[] = [
 								{
 									key: 'products',
-									display: `Products ${ruleProducts.length}`
+									display: `${$tranFunc('common.products')} (${ruleProducts.length})`
 								},
 								{
 									key: 'variants',
-									display: `Variants ${ruleVariants.length}`,
+									display: `${$tranFunc('common.variants')} (${ruleVariants.length})`,
 								},
 								{
 									key: 'collections',
-									display: `Collections ${ruleCollections.length}`,
+									display: `${$tranFunc('common.collections')} (${ruleCollections.length})`,
 								},
 								{
 									key: 'categories',
-									display: `Categories ${ruleCategories.length}`,
+									display: `${$tranFunc('common.categories')} (${ruleCategories.length})`,
 								}
 							]}
 							<div role="tablist" class="tabs tabs-border tabs-xs">
-								{#each tabs as tab, idx (idx)}
+								{#each TABS as tab, idx (idx)}
 									<span
 										role="tab"
 										tabindex="0"
@@ -310,16 +310,16 @@
 
 	{#if !rules.length}
 		<div class="text-center text-gray-400 text-sm">
-			<div>There is no rule, please add more</div>
+			<div>{$tranFunc('promotion.noRuleHint')}</div>
 		</div>
 	{/if}
 </div>
 
 <Modal
 	open={openEditingModal}
-	header="Upsert promotion rule"
-	okText={'Create'}
-	cancelText="Cancel"
+	header={$tranFunc('promotion.upsertRule')}
+	okText={$tranFunc('btn.create')}
+	cancelText={$tranFunc('common.cancel')}
 	disableElements={disabled}
 	onOk={handleDoneEditingRule}
 	onCancel={() => (openEditingModal = false)}

@@ -6,7 +6,7 @@
 	import { DropDown, type MenuItemProps } from '$lib/components/ui/Dropdown';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { OrderDirection } from '$lib/gql/graphql';
-	import { classNames, SitenameCommonClassName } from '$lib/utils/utils';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import {
 		ROW_OPTIONS,
 		SortIconsMap,
@@ -90,7 +90,7 @@
 	{/each}
 {/snippet}
 
-<div class={[className, 'min-w-fit']}>
+<div class={[className, 'w-full overflow-x-auto']}>
 	<table class="table" class:disable-table={disabled}>
 		{#if !headless}
 			<thead>
