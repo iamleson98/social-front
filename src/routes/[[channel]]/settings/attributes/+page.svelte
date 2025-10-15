@@ -30,26 +30,26 @@
 
 	const AttributeColumns: TableColumnProps<Attribute, AttributeSortField>[] = [
 		{
-			title: 'Name',
+			title: $tranFunc('common.name'),
 			child: name,
 			key: AttributeSortField.Name,
 		},
 		{
-			title: 'Visible in store front',
+			title: $tranFunc('attributes.visibleInStore'),
 			child: visible,
 			key: AttributeSortField.VisibleInStorefront,
 		},
 		{
-			title: 'Filterable in dashboard',
+			title: $tranFunc('attributes.filterableInAdmin'),
 			child: filterable,
 			key: AttributeSortField.FilterableInDashboard,
 		},
 		{
-			title: 'Input type',
+			title: $tranFunc('attributes.inputType'),
 			child: isInputType,
 		},
 		{
-			title: 'Action',
+			title: $tranFunc('common.action'),
 			child: action,
 		},
 	];
@@ -101,14 +101,14 @@
 
 {#snippet visible({ item }: { item: Attribute })}
 	<Badge
-		text={item.visibleInStorefront ? 'yes' : 'no'}
+		text={item.visibleInStorefront ? $tranFunc('common.yes') : $tranFunc('common.no')}
 		color={item.visibleInStorefront ? 'green' : 'red'}
 	/>
 {/snippet}
 
 {#snippet filterable({ item }: { item: Attribute })}
 	<Badge
-		text={item.filterableInDashboard ? 'yes' : 'no'}
+		text={item.filterableInDashboard ? $tranFunc('common.yes') : $tranFunc('common.no')}
 		color={item.filterableInDashboard ? 'green' : 'red'}
 	/>
 {/snippet}

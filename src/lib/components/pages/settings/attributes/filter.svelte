@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import {
 		FilterManager,
 		type FilterComponentType,
@@ -21,37 +22,37 @@
 
 	const FilterOptions: FilterProps<AttributeFilterInput> = {
 		filterableInStorefront: {
-			label: 'Filterable in storefront',
+			label: $tranFunc('attributes.filterableInStore'),
 			operations: {
 				eq: CommonSnippets.yesNo,
 			},
 		},
 		isVariantOnly: {
-			label: 'Variant only',
+			label: $tranFunc('attributes.variantOnly'),
 			operations: {
 				eq: CommonSnippets.yesNo,
 			},
 		},
 		valueRequired: {
-			label: 'Is required',
+			label: $tranFunc('attributes.valRequired'),
 			operations: {
 				eq: CommonSnippets.yesNo,
 			},
 		},
 		visibleInStorefront: {
-			label: 'Visible in storefront',
+			label: $tranFunc('attributes.visibleInStore'),
 			operations: {
 				eq: CommonSnippets.yesNo,
 			},
 		},
 		type: {
-			label: 'Type',
+			label: $tranFunc('prdType.type'),
 			operations: {
 				eq: type,
 			},
 		},
 		channel: {
-			label: 'Channel',
+			label: $tranFunc('product.channel'),
 			operations: {
 				eq: CommonSnippets.singleChannelSlug,
 			},
@@ -59,8 +60,8 @@
 	};
 
 	const TypeOptions = Object.values(AttributeTypeEnum).map((value) => ({
-		label: value.toLowerCase().replace('_', ' '),
-		value: value,
+		label: $tranFunc(`attributes.${value}`),
+		value,
 	}));
 </script>
 
@@ -68,7 +69,7 @@
 	<Select
 		size="xs"
 		options={TypeOptions}
-		placeholder="Type"
+		placeholder={$tranFunc('prdType.type')}
 		value={initialValue as string}
 		onchange={(value) => onValue((value as SelectOption).value)}
 	/>

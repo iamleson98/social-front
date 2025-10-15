@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import {
 		ATTRIBUTE_VALUE_CREATE_MUTATION,
 		ATTRIBUTE_VALUE_DELETE_MUTATION,
@@ -80,15 +81,15 @@
 
 	const ValueColumns: TableColumnProps<AttributeValue>[] = $derived([
 		{
-			title: 'name',
+			title: $tranFunc('common.name'),
 			child: name,
 		},
 		{
-			title: inputType === AttributeInputTypeEnum.Swatch ? 'value' : 'slug',
+			title: inputType === AttributeInputTypeEnum.Swatch ? $tranFunc('common.value') : $tranFunc('common.slug'),
 			child: value,
 		},
 		{
-			title: 'action',
+			title: $tranFunc('common.action'),
 			child: action,
 		},
 	]);
@@ -292,7 +293,7 @@
 	<div class={SitenameCommonClassName}>
 		{#if inputType !== AttributeInputTypeEnum.Numeric}
 			<SectionHeader>
-				<div>Attribute values</div>
+				<div>{$tranFunc('attributes.attrVals')}</div>
 				<Button
 					size="xs"
 					variant="light"
@@ -300,7 +301,7 @@
 					onclick={handleClickAddValue}
 					disabled={loading || !inputType || disabled}
 				>
-					Add value
+					{$tranFunc('product.addValue')}
 				</Button>
 			</SectionHeader>
 

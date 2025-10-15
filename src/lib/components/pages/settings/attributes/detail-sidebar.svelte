@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Checkbox, Label, RadioButton } from '$lib/components/ui/Input';
 	import { AttributeTypeEnum } from '$lib/gql/graphql';
@@ -21,19 +22,19 @@
 
 <div class="tablet:w-full space-y-2">
 	<div class={SitenameCommonClassName}>
-		<SectionHeader>Organization</SectionHeader>
+		<SectionHeader>{$tranFunc('common.org')}</SectionHeader>
 
 		<div class="text-sm text-gray-700 space-y-1.5">
 			<Label required label="Type" />
 			<div class="text-[10px] text-gray-600">
-				Define where this attribute should be used in App system
+				{$tranFunc('attributes.defineUseinApps')}
 			</div>
 			{#each Object.values(AttributeTypeEnum) as value, idx (idx)}
 				<RadioButton
 					size="sm"
 					{value}
 					bind:group={type}
-					label={value.toLowerCase().replace('_', ' ')}
+					label={$tranFunc(`attributes.${value}`)}
 					disabled={!isCreatePage || disabled}
 				/>
 			{/each}
@@ -41,12 +42,12 @@
 	</div>
 
 	<div class={SitenameCommonClassName}>
-		<SectionHeader>Properties</SectionHeader>
+		<SectionHeader>{$tranFunc('attributes.props')}</SectionHeader>
 
 		<Checkbox
-			label="Visible in storefront"
+			label={$tranFunc('attributes.visibleInStore')}
 			size="sm"
-			subText="If enabled, attribute will be accessible to customers."
+			subText={$tranFunc('attributes.visibleInStoreHint')}
 			bind:checked={visibleInStorefront}
 			{disabled}
 		/>

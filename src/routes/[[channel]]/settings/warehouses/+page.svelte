@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { WAREHOUSE_DELETE_MUTATION, WAREHOUSE_LIST_QUERY } from '$lib/api/admin/warehouse';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { FilterManager } from '$lib/components/common/filter-box';
@@ -27,23 +28,23 @@
 
 	const WarehouseColumns: TableColumnProps<Warehouse, WarehouseSortField>[] = [
 		{
-			title: 'Name',
+			title: $tranFunc('common.name'),
 			child: name,
 			key: WarehouseSortField.Name,
 		},
 		{
-			title: 'Shipping zones',
+			title: $tranFunc('channel.shipZones'),
 			child: shippingZones,
 		},
 		{
-			title: 'Action',
+			title: $tranFunc('common.action'),
 			child: action,
 		},
 	];
 
 	const handleClickDelete = async (id: string) => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: `Are you sure to delete warehouse ${id}?`,
+			content: $CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true; //
 

@@ -91,7 +91,7 @@
 		},
 		{
 			icon: Gift,
-			name: 'My Giftcards',
+			name: $tranFunc('customer.giftcards'),
 			href: AppRoute.MY_GIFTCARDS(),
 			shouldActive: page.url.pathname === AppRoute.MY_GIFTCARDS(),
 		},
@@ -136,7 +136,7 @@
 		},
 		{
 			icon: Category,
-			name: 'Categories',
+			name: $tranFunc('common.categories'),
 			href: AppRoute.SETTINGS_CONFIGS_CATEGORIES(),
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_CATEGORIES(),
@@ -145,7 +145,7 @@
 			].includes(page.url.pathname),
 		},
 		{
-			name: 'Collections',
+			name: $tranFunc('common.collections'),
 			href: AppRoute.SETTINGS_CONFIGS_COLLECTIONS(),
 			icon: FolderHeart,
 			shouldActive: [
@@ -169,7 +169,7 @@
 	const SHOP_DISCOUNTS_TAB_ITEMS: TabItem[] = $derived([
 		{
 			icon: Discount,
-			name: 'Promotions',
+			name: $tranFunc('promotion.promotions'),
 			href: AppRoute.SETTINGS_CONFIGS_PROMOTIONS(),
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_PROMOTIONS(),
@@ -179,7 +179,7 @@
 		},
 		{
 			icon: Ticket,
-			name: 'Vouchers',
+			name: $tranFunc('voucher.vouchers'),
 			href: AppRoute.SETTINGS_CONFIGS_VOUCHERS(),
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_VOUCHERS(),
@@ -248,7 +248,7 @@
 		},
 		{
 			icon: Thingiverse,
-			name: 'Product types',
+			name: $tranFunc('prdType.prdTypes'),
 			href: AppRoute.SETTINGS_PRODUCT_TYPES(),
 			shouldActive: [
 				AppRoute.SETTINGS_PRODUCT_TYPES(),
@@ -278,7 +278,7 @@
 		},
 		{
 			icon: BuildingWarehouse,
-			name: 'Warehouses',
+			name: $tranFunc('channel.warehouse'),
 			href: AppRoute.SETTINGS_CONFIGS_WAREHOUSES(),
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_WAREHOUSES(),
@@ -288,7 +288,7 @@
 		},
 		{
 			icon: Dimension,
-			name: 'Attributes',
+			name: $tranFunc('product.tabAttributes'),
 			href: AppRoute.SETTINGS_CONFIGS_ATTRIBUTES(),
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_ATTRIBUTES(),
@@ -298,7 +298,7 @@
 		},
 		{
 			icon: TruckDelivery,
-			name: 'Shipping zones',
+			name: $tranFunc('channel.shipZones'),
 			href: AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONES(),
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONES(),
@@ -343,7 +343,7 @@
 		{/if}
 		<span>{item.name}</span>
 		{#if item.isPreview}
-			<Badge text="Preview" color="orange" size="xs" rounded />
+			<Badge text={$tranFunc('settings.preview')} color="orange" size="xs" rounded />
 		{/if}
 	</svelte:element>
 {/snippet}
@@ -374,7 +374,7 @@
 					<div class="flex items-center gap-1">
 						{#if $ME_PAGE_USER_STORE?.isConfirmed}
 							<Icon icon={RosetteDiscountChecked} class="text-blue-500" size="md" />
-							<span class="text-sm text-gray-500">Verified</span>
+							<span class="text-sm text-gray-500">{$tranFunc('settings.verified')}</span>
 						{:else}
 							<Icon icon={CheckOff} class="text-red-500" size="md" />
 							<span class="text-sm text-gray-500">Unverified</span>
@@ -401,7 +401,7 @@
 
 			{#if $UserStoreManager && userIsShopAdmin($UserStoreManager)}
 				<AccordionList
-					header="Catalog"
+					header={$tranFunc('promotion.CATALOGUE')}
 					child={sidebarItem}
 					items={CATALOG_TAB_ITEMS}
 					class="w-full p-3"

@@ -4,6 +4,7 @@
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { AttributeInputTypeEnum } from '$lib/gql/graphql';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { ValidSlugRegex } from '$lib/utils/consts';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import slugify from 'slugify';
@@ -29,12 +30,12 @@
 		formOk = $bindable(),
 	}: Props = $props();
 
-	const RequiredErr = $tranFunc('helpText.fieldRequired');
-
 	const AttributeSchema = object({
-		name: string().nonempty(RequiredErr),
-		inputType: string().nonempty(RequiredErr),
-		slug: string().nonempty(RequiredErr).regex(ValidSlugRegex, $tranFunc('error.invalidSlug')),
+		name: string().nonempty($CommonState.FieldRequiredError),
+		inputType: string().nonempty($CommonState.FieldRequiredError),
+		slug: string()
+			.nonempty($CommonState.FieldRequiredError)
+			.regex(ValidSlugRegex, $tranFunc('error.invalidSlug')),
 	});
 
 	type AttributeProps = z.infer<typeof AttributeSchema>;
@@ -65,11 +66,11 @@
 </script>
 
 <div class={SitenameCommonClassName}>
-	<SectionHeader>General information</SectionHeader>
+	<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
 
 	<Input
-		label="Attribute name"
-		placeholder="Attribute name"
+		label={$tranFunc('common.name')}
+		placeholder={$tranFunc('common.name')}
 		bind:value={name}
 		variant={attributeErrors.name?.length ? 'error' : 'info'}
 		subText={attributeErrors.name?.[0]}
@@ -79,8 +80,8 @@
 		{disabled}
 	/>
 	<Input
-		label="Attribute slug"
-		placeholder="Attribute slug"
+		label={$tranFunc('common.slug')}
+		placeholder={$tranFunc('common.slug')}
 		bind:value={slug}
 		variant={attributeErrors.slug?.length ? 'error' : 'info'}
 		subText={attributeErrors.slug?.[0]}
@@ -91,8 +92,8 @@
 	/>
 	<Select
 		options={AttributeInputTypeOptions}
-		label="Input type"
-		placeholder="Input type"
+		label={$tranFunc('attributes.inputType')}
+		placeholder={$tranFunc('attributes.inputType')}
 		bind:value={inputType}
 		disabled={disabled || !isCreatePage}
 		required
@@ -101,9 +102,9 @@
 		subText={attributeErrors.inputType?.[0]}
 	/>
 	<Checkbox
-		label="Value required"
+		label={$tranFunc('attributes.valRequired')}
 		bind:checked={valueRequired}
-		subText="If checked, this attribute is required"
+		subText={$tranFunc('attributes.valRequireHint')}
 		required
 		{disabled}
 	/>
