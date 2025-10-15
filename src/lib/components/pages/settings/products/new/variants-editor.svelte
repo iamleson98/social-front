@@ -8,7 +8,7 @@
 	import { CHANNELS_QUERY } from '$lib/api/channels';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
-	import { Icon, MdiWeightKg, Plus, Trash } from '$lib/components/icons';
+	import { Icon, Plus, Trash } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
@@ -542,14 +542,13 @@
 							</div>
 							<div class="max-h-32 overflow-y-auto border border-gray-200 bg-white p-2 rounded-lg">
 								{#each quickFillingValues.channels as channel, idx (idx)}
-									{#snippet action()}
+									<!-- {#snippet action()}
 										<span class="font-bold text-[9px]">{channel.currency}</span>
-									{/snippet}
+									{/snippet} -->
 									<div class="flex gap-1 mt-1">
 										<Input
 											type="number"
 											disabled={loading}
-											{action}
 											min={0}
 											placeholder={channel.currency}
 											size="xs"
@@ -562,7 +561,6 @@
 										<Input
 											type="number"
 											min={0}
-											{action}
 											placeholder={channel.currency}
 											disabled={loading}
 											size="xs"
@@ -586,7 +584,6 @@
 							min={0}
 							disabled={loading}
 							label={$tranFunc('product.weight')}
-							startIcon={MdiWeightKg}
 							onfocus={() => handleFocusHighlightQuickFilling('td-weight-hl')}
 							variant={typeof quickFillingValues.weight === 'number' &&
 							quickFillingValues.weight < 0
@@ -596,7 +593,11 @@
 							quickFillingValues.weight < 0
 								? $CommonState.NonNegativeError
 								: undefined}
-						/>
+						>
+							{#snippet action()}
+								<span class="text-[8px] font-semibold">kg</span>
+							{/snippet}
+						</Input>
 					</div>
 					<!-- PRE-ORDER -->
 					<div class="w-1/6">
@@ -780,11 +781,11 @@
 												? $CommonState.NonNegativeError
 												: ''}
 										>
-											{#snippet action()}
+											<!-- {#snippet action()}
 												<span class="font-bold text-[9px]">
 													{channelListing['currency' as keyof ProductVariantChannelListingAddInput]}
 												</span>
-											{/snippet}
+											{/snippet} -->
 										</Input>
 									{/each}
 								</div>
@@ -808,11 +809,11 @@
 												? $CommonState.NonNegativeError
 												: ''}
 										>
-											{#snippet action()}
+											<!-- {#snippet action()}
 												<span class="font-bold text-[9px]">
 													{channelListing['currency' as keyof ProductVariantChannelListingAddInput]}
 												</span>
-											{/snippet}
+											{/snippet} -->
 										</Input>
 									{/each}
 								</div>
@@ -825,48 +826,51 @@
 									min={0}
 									placeholder="kg"
 									disabled={loading}
-									startIcon={MdiWeightKg}
 									bind:value={variantInputDetail.weight}
 									variant={variantInputDetail.weight >= 0 ? 'info' : 'error'}
 									subText={variantInputDetail.weight >= 0 ? '' : $CommonState.NonNegativeError}
-								/>
+								>
+									{#snippet action()}
+										<span class="text-[8px] font-semibold">kg</span>
+									{/snippet}
+								</Input>
 							</td>
 							<!-- PREORDER -->
 							<td class="preorder-td">
-									<Input
-										type="number"
-										min={0}
-										label={$tranFunc('product.qtyLimit')}
-										size="xs"
-										class="mb-2"
-										disabled={loading}
-										bind:value={variantInputDetail.preorder!.globalThreshold}
-										variant={typeof variantInputDetail.preorder?.globalThreshold === 'number' &&
-										variantInputDetail.preorder.globalThreshold % 1 !== 0
-											? 'error'
-											: 'info'}
-										subText={typeof variantInputDetail.preorder?.globalThreshold === 'number' &&
-										variantInputDetail.preorder.globalThreshold % 1 !== 0
-											? $CommonState.NonNegativeError
-											: undefined}
-									/>
-									<EaseDatePicker
-										size="xs"
-										label={$tranFunc('product.preOrderEndDate')}
-										allowSelectMonthYears={{
-											showMonths: true,
-											showYears: { min: 2020, max: DAYJS_NOW.year() + 1 },
-										}}
-										disabled={loading}
-										timeConfig={false}
-										onchange={(date) => (variantInputDetail.preorder!.endDate = date.date)}
-										value={{ date: variantInputDetail.preorder!.endDate }}
-										class="mb-2"
-										timeLock={{
-											minDate: DAYJS_NOW.add(MIN_DAYS_FOR_PREORDER, 'day').toDate(),
-											maxDate: DAYJS_NOW.add(MAX_DAYS_FOR_PREORDER, 'day').toDate(),
-										}}
-									/>
+								<Input
+									type="number"
+									min={0}
+									label={$tranFunc('product.qtyLimit')}
+									size="xs"
+									class="mb-2"
+									disabled={loading}
+									bind:value={variantInputDetail.preorder!.globalThreshold}
+									variant={typeof variantInputDetail.preorder?.globalThreshold === 'number' &&
+									variantInputDetail.preorder.globalThreshold % 1 !== 0
+										? 'error'
+										: 'info'}
+									subText={typeof variantInputDetail.preorder?.globalThreshold === 'number' &&
+									variantInputDetail.preorder.globalThreshold % 1 !== 0
+										? $CommonState.NonNegativeError
+										: undefined}
+								/>
+								<EaseDatePicker
+									size="xs"
+									label={$tranFunc('product.preOrderEndDate')}
+									allowSelectMonthYears={{
+										showMonths: true,
+										showYears: { min: 2020, max: DAYJS_NOW.year() + 1 },
+									}}
+									disabled={loading}
+									timeConfig={false}
+									onchange={(date) => (variantInputDetail.preorder!.endDate = date.date)}
+									value={{ date: variantInputDetail.preorder!.endDate }}
+									class="mb-2"
+									timeLock={{
+										minDate: DAYJS_NOW.add(MIN_DAYS_FOR_PREORDER, 'day').toDate(),
+										maxDate: DAYJS_NOW.add(MAX_DAYS_FOR_PREORDER, 'day').toDate(),
+									}}
+								/>
 							</td>
 							<!-- STOCK -->
 							<td class="stock-td">

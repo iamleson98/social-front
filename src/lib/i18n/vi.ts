@@ -170,7 +170,7 @@ export default {
 		prdPolicyDetail:
 			'Sitename luôn lỗ lực để mang tới cho khách hàng sản phẩm với chất lượng tốt nhất. Sitename hoàn tiền 100% nếu sản phẩm không đạt chất lượng tiêu chuẩn.',
 		quickFilling: 'Nhập nhanh',
-		price: 'giá',
+		price: 'giá bán',
 		costPrice: 'giá nhập',
 		channel: 'kênh',
 		stock: 'tồn kho',

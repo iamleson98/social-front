@@ -172,7 +172,7 @@
 	onOk={handleAddOrderLine}
 	disableElements={loading}
 >
-	<Alert size="sm" bordered class="mb-1.5">
+	<Alert size="sm" class="mb-1.5">
 		You can only add products available for the order's channel
 	</Alert>
 	<DebounceInput
