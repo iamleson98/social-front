@@ -3,9 +3,11 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
 	import { SHOP_QUERY } from '$lib/api/shop';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
-	import { Input } from '$lib/components/ui/Input';
+	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
+	import { Sticky } from '$lib/components/ui/Popover';
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import type {
@@ -20,16 +22,18 @@
 		Query,
 	} from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import {
+		checkIfGraphqlResultHasError,
+		stringSlicer,
+	} from '$lib/utils/utils';
 
 	type Props = {
-		orderLines: OrderLine[];
 		open: boolean;
 		order: Order;
 		onFulfillSuccess: () => void;
 	};
 
-	let { orderLines, open = $bindable(), order, onFulfillSuccess }: Props = $props();
+	let { open = $bindable(), order, onFulfillSuccess }: Props = $props();
 
 	const TABLE_COLUMNS: TableColumnProps<OrderLine, any>[] = [
 		{
@@ -45,7 +49,7 @@
 			child: sku,
 		},
 		{
-			title: 'Quantity',
+			title: 'Quantity to fulfill',
 			child: quantity,
 		},
 		{
@@ -63,9 +67,13 @@
 	const shopQuery = operationStore<Pick<Query, 'shop'>>({
 		query: SHOP_QUERY,
 	});
+	const UnfulfilledOrderLines = order.lines.filter((item) => item.quantityToFulfill > 0);
+	let activeWarehousesForCurrentOrderLine = $state<SelectOption[]>([]);
+	let activeTargetForWarehouseSelect = $state<HTMLInputElement>();
+	let defaultWarehouseIdForSelect = $state<string>();
 
 	let orderFulfillInput = $state<OrderFulfillInput>({
-		lines: orderLines.map<OrderFulfillLineInput>((item) => {
+		lines: UnfulfilledOrderLines.map<OrderFulfillLineInput>((item) => {
 			let stocks: OrderFulfillStockInput[] = [];
 
 			if (!item.variant?.preorder) {
@@ -151,6 +159,20 @@
 		open = false;
 		onFulfillSuccess();
 	};
+
+	const handleFocusOpenWarehouseDropdown = (
+		idx: number,
+		target: HTMLInputElement,
+		currentWarehouseId?: string,
+	) => {
+		defaultWarehouseIdForSelect = currentWarehouseId;
+		activeTargetForWarehouseSelect = target;
+		activeWarehousesForCurrentOrderLine =
+			UnfulfilledOrderLines[idx].variant?.stocks?.map<SelectOption>((item) => ({
+				label: item.warehouse.name,
+				value: item.warehouse.id,
+			})) || [];
+	};
 </script>
 
 {#snippet image({ item }: { item: OrderLine })}
@@ -158,7 +180,7 @@
 {/snippet}
 
 {#snippet name({ item }: { item: OrderLine })}
-	<span>{item.productName}</span>
+	<span title={item.productName}>{stringSlicer(item.productName, 50)}</span>
 {/snippet}
 
 {#snippet sku({ item }: { item: OrderLine })}
@@ -185,56 +207,81 @@
 	{#if item.variant?.preorder}
 		<span>-</span>
 	{:else}
-		{@const selectOptions =
-			item.variant?.stocks?.map<SelectOption>((item) => ({
-				label: item.warehouse.name,
-				value: item.warehouse.id,
-			})) || []}
 		{@const defaultWarehouseID = orderFulfillInput.lines[idx].stocks[0]?.warehouse}
-		<Select
-			options={selectOptions}
+		<Input
 			placeholder="Choose warehouse"
 			size="sm"
+			readonly
 			value={defaultWarehouseID}
-			onchange={(opt) => handleWarehouseChange(idx, (opt as SelectOption)?.value as string)}
-			disabled={loading}
+			onfocus={(evt) =>
+				handleFocusOpenWarehouseDropdown(idx, evt.target as HTMLInputElement, defaultWarehouseID)}
 		/>
 	{/if}
 {/snippet}
 
 {#snippet quantity({ item, idx }: { item: OrderLine; idx: number })}
-	<div class="flex items-center gap-1">
-		<Input
-			placeholder="Set order line quantity"
-			type="number"
-			value={item.quantityToFulfill}
-			min={0}
-			max={item.quantityToFulfill}
-			size="sm"
-			disabled={loading}
-			inputDebounceOption={{
-				onInput: (evt) => handleQuantityChange(idx, evt),
-			}}
-		>
-			{#snippet action()}
-				<span>/ {item.quantity}</span>
-			{/snippet}
-		</Input>
-	</div>
+	<Input
+		placeholder="Set order line quantity"
+		type="number"
+		value={item.quantityToFulfill}
+		min={0}
+		max={item.quantityToFulfill}
+		size="sm"
+		disabled={loading}
+		inputDebounceOption={{
+			onInput: (evt) => handleQuantityChange(idx, evt),
+		}}
+	>
+		{#snippet action()}
+			<span>/ {item.quantity}</span>
+		{/snippet}
+	</Input>
 {/snippet}
 
 <Modal
 	{open}
-	size="lg"
+	size="xl"
 	onClose={() => (open = false)}
 	onCancel={() => (open = false)}
 	closeOnOutsideClick
 	closeOnEscape
-	header="Items ready to ship"
+	header="Fulfill order #{order.number}"
 	okText="Save"
 	onOk={handleFulfill}
 	disableOkBtn={!shouldEnableSaveBtn || loading}
 	disableElements={loading}
 >
-	<Table columns={TABLE_COLUMNS} items={orderLines} />
+	<div class="space-y-3">
+		<SectionHeader>Items ready to ship</SectionHeader>
+		<Table columns={TABLE_COLUMNS} items={UnfulfilledOrderLines} />
+
+		<SectionHeader>Shipment information</SectionHeader>
+		<Input
+			label="Tracking number"
+			placeholder="Tracking number"
+			subText="Optionally provide a tracking number for this fulfillment"
+		/>
+		<Checkbox label="Send fulfillment email to customer" />
+	</div>
+
+	<!-- 
+	NOTE: We now have problem with dropdown/popover within table.
+	Table is wrapped within a div that handles content overflow-x: scroll.
+	This unexpectedly hide overflow y as well.
+	So this method is workaround for that issue.
+
+	Also, this sticky must be placed within this modal to avoid z-index issue. and not close the modal
+-->
+	<Sticky
+		bind:target={activeTargetForWarehouseSelect}
+		placement="bottom-start"
+	>
+		<Select
+			options={activeWarehousesForCurrentOrderLine}
+			placeholder="Choose warehouse"
+			size="sm"
+			value={defaultWarehouseIdForSelect}
+			disabled={loading}
+		/>
+	</Sticky>
 </Modal>

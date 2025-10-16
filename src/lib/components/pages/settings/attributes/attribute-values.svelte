@@ -361,13 +361,13 @@
 	size="sm"
 	open={openUpsertModal}
 	header={$tranFunc('attributes.upsertValue')}
-	closeOnEscape
-	closeOnOutsideClick
 	disableElements={loading}
 	onOk={() => (valueItemToEdit ? handleUpdateAttributeValue() : handleCreateAttributeValue())}
 	onClose={() => (openUpsertModal = false)}
 	onCancel={() => (openUpsertModal = false)}
 	disableOkBtn={shouldDisableOkButton || disabled}
+	okText={valueItemToEdit ? $tranFunc('btn.update') : $tranFunc('btn.add')}
+	cancelText={$tranFunc('common.cancel')}
 >
 	{#if valueItemToEdit}
 		<!-- edit value -->

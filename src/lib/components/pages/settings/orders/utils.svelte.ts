@@ -10,6 +10,7 @@ import {
 	ORDER_DISCOUNT_ADD_MUTATION,
 	ORDER_DISCOUNT_DELETE_MUTATION,
 	ORDER_DRAFT_FINALIZE_MUTATION,
+	ORDER_FULFILL_MUTATION,
 	ORDER_FULFILLMENT_APPROVE_MUTATION,
 	ORDER_FULFILLMENT_UPDATE_TRACKING_MUTATION,
 	ORDER_LINE_DELETE_MUTATION,
@@ -40,6 +41,7 @@ import type {
 	MutationOrderCaptureArgs,
 	MutationOrderDiscountAddArgs,
 	MutationOrderDiscountDeleteArgs,
+	MutationOrderFulfillArgs,
 	MutationOrderFulfillmentApproveArgs,
 	MutationOrderFulfillmentCancelArgs,
 	MutationOrderFulfillmentUpdateTrackingArgs,
@@ -56,6 +58,7 @@ import type {
 	MutationTransactionRequestActionArgs,
 	OrderAddNoteInput,
 	OrderDiscountCommonInput,
+	OrderFulfillInput,
 	OrderLineCreateInput,
 	OrderLineInput,
 	OrderNoteInput,
@@ -419,6 +422,19 @@ function OrderUtils() {
 		return checkIfGraphqlResultHasError(result, 'orderDiscountDelete', get(CommonState).EditSuccess);
 	}
 
+	const fulfillOrder = async (id: string, input: OrderFulfillInput) => {
+		state.loading = (true);
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'orderFulfill'>,
+			MutationOrderFulfillArgs
+		>(ORDER_FULFILL_MUTATION, {
+			order: id,
+			input,
+		});
+		state.loading = (false);
+		return checkIfGraphqlResultHasError(result, 'orderFulfill', get(CommonState).EditSuccess);
+	};
+
 	return {
 		state,
 		approveFulfillment,
@@ -445,7 +461,8 @@ function OrderUtils() {
 		updateShippingMethod,
 		orderLineDiscountRemove,
 		orderDiscountDelete,
-	}
+		fulfillOrder,
+	};
 }
 
 export const OrderUtilsInstance = OrderUtils();

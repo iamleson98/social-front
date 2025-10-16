@@ -25,9 +25,11 @@
 	type Props = {
 		orderLines: OrderLine[];
 		order: Order;
+		/** draft orders can add line discounts, other orders CAN'T */
+		allowAddDiscountToLines?: boolean;
 	};
 
-	let { orderLines, order }: Props = $props();
+	let { orderLines, order, allowAddDiscountToLines }: Props = $props();
 
 	const PRODUCT_MODAL_COLUMNS: TableColumnProps<OrderLine, any>[] = [
 		{
@@ -145,7 +147,7 @@
 			<PriceDisplay {...item.undiscountedUnitPrice.gross} class="line-through" />
 		{/if}
 		<PriceDisplay {...item.unitPrice.gross} />
-		<div>
+		{#if allowAddDiscountToLines}
 			<Button
 				size="xs"
 				variant="light"
@@ -155,7 +157,7 @@
 			>
 				Add discount
 			</Button>
-		</div>
+		{/if}
 	</div>
 {/snippet}
 
@@ -186,16 +188,18 @@
 
 <OrderLineMetadataModal orderId={order.id} bind:this={metadataModelRef} />
 
-<Sticky placement="bottom-start" bind:target={targetButtonForItemDiscount}>
-	<!-- NOTE: using #key here so DiscountPopup would re-init when value of existingDiscountOfLine change -->
-	{#key existingDiscountOfLine}
-		<DiscountPopup
-			{order}
-			existingDiscount={existingDiscountOfLine}
-			onOk={async (discount) => {
-				const ok = await OrderUtilsInstance.orderLineDiscountUpdate(activeOrderLineId!, discount);
-				// if (ok) onRefetchOrder?.();
-			}}
-		/>
-	{/key}
-</Sticky>
+{#if allowAddDiscountToLines}
+	<Sticky placement="bottom-start" bind:target={targetButtonForItemDiscount}>
+		<!-- NOTE: using #key here so DiscountPopup would re-init when value of existingDiscountOfLine change -->
+		{#key existingDiscountOfLine}
+			<DiscountPopup
+				{order}
+				existingDiscount={existingDiscountOfLine}
+				onOk={async (discount) => {
+					const ok = await OrderUtilsInstance.orderLineDiscountUpdate(activeOrderLineId!, discount);
+					// if (ok) onRefetchOrder?.();
+				}}
+			/>
+		{/key}
+	</Sticky>
+{/if}

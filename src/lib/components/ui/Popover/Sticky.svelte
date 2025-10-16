@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { clickOutside } from '$lib/actions/click-outside';
 	import { dropdownResizeDebounce } from './types';
-	import { computePosition, flip, offset, shift, type Placement } from '@floating-ui/dom';
-	import type { Snippet } from 'svelte';
+	import { computePosition, flip, offset, shift, type Placement, size } from '@floating-ui/dom';
+	import { onMount, type Snippet } from 'svelte';
 	import { fly, type FlyParams } from 'svelte/transition';
 
 	type Props = {
@@ -10,9 +10,16 @@
 		/** Target element to stick to. Will show if provided */
 		target?: HTMLElement;
 		placement?: Placement;
+		/** to control the z-index level of your component. Default to `10000` */
+		zIndex?: number;
 	};
 
-	let { children, target = $bindable(), placement = 'bottom' }: Props = $props();
+	let {
+		children,
+		target = $bindable(),
+		placement = 'bottom',
+		zIndex = 10000,
+	}: Props = $props();
 
 	let ContainerRef = $state<HTMLElement>();
 	let flyOpts = $derived<FlyParams>(/(left|right)/.test(placement) ? { x: 10 } : { y: 10 });
@@ -22,7 +29,16 @@
 		const { x, y } = await computePosition(target, ContainerRef, {
 			placement,
 			strategy: 'fixed',
-			middleware: [offset(4), flip(), shift()],
+			middleware: [
+				offset(4),
+				flip(),
+				shift(),
+				size({
+					apply: ({ rects, elements }) => {
+						elements.floating.style.width = `${rects.reference.width}px`;
+					},
+				}),
+			],
 		});
 
 		ContainerRef.style.left = `${x}px`;
@@ -30,17 +46,28 @@
 	};
 
 	$effect(() => {
-		if (!!target) computeStyle();
+		if (target) computeStyle();
+	});
 
+	onMount(() => {
 		return dropdownResizeDebounce(window, { onFire: computeStyle });
 	});
+
+	const handleInnerClose = (evt: Event) => {
+		if (
+			(evt instanceof KeyboardEvent && evt.key === 'Escape') ||
+			(target && evt instanceof MouseEvent && evt.target !== target)
+		)
+			target = undefined;
+	};
 </script>
 
 <div
-	class="fixed! z-10000 inline-block"
+	class="fixed! inline-block min-w-fit!"
+	style:z-index={zIndex}
 	bind:this={ContainerRef}
-	use:clickOutside={{ onOutclick: () => (target = undefined) }}
-	onkeyup={(e) => e.key === 'Escape' && (target = undefined)}
+	use:clickOutside={{ onOutclick: handleInnerClose }}
+	onkeyup={(e) => e.key === 'Escape' && handleInnerClose(e)}
 	role="menu"
 	tabindex="-1"
 >

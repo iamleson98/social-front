@@ -1,5 +1,4 @@
 <script lang="ts" generics="T extends Record<string, unknown>, K extends string">
-	import { tranFunc } from '$i18n';
 	import { ChevronLeft, ChevronRight, GripVertical, Icon } from '$lib/components/icons';
 	import { IconButton } from '$lib/components/ui/Button';
 	import Button from '$lib/components/ui/Button/Button.svelte';
@@ -91,7 +90,7 @@
 {/snippet}
 
 <div class={[className, 'w-full overflow-x-auto']}>
-	<table class="table" class:disable-table={disabled}>
+	<table class="table overflow-y-visible" class:disable-table={disabled}>
 		{#if !headless}
 			<thead>
 				<tr>
@@ -186,7 +185,7 @@
 			<tbody>
 				<tr>
 					<td class="text-sm select-none! text-gray-400 text-center" colspan={columns.length}>
-						{$tranFunc('helpText.noData')}
+						No data
 					</td>
 				</tr>
 			</tbody>
@@ -216,7 +215,7 @@
 					disabled={!pagination.hasPreviousPage || disabled}
 					aria-label="Previous page"
 					class="tooltip tooltip-top"
-					data-tip={$tranFunc('common.prevPage')}
+					title="Previous page"
 					color="gray"
 					variant="light"
 					onclick={() => handleNavigateClick(-1)}
@@ -226,8 +225,8 @@
 					size="xs"
 					disabled={!pagination.hasNextPage || disabled}
 					aria-label="Next page"
+					title="Next page"
 					class="tooltip tooltip-top"
-					data-tip={$tranFunc('common.nextPage')}
 					color="gray"
 					variant="light"
 					onclick={() => handleNavigateClick(1)}

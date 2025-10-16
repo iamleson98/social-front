@@ -1,12 +1,16 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
+	import { DRAFT_ORDER_UPDATE_MUTATION, ORDER_UPDATE_MUTATION } from '$lib/api/admin/orders';
 	import { CUSTOMER_LIST_QUERY, USER_DETAIL_QUERY } from '$lib/api/admin/users';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import UserAddress from '$lib/components/common/user-address/user-address.svelte';
-	import { Plus } from '$lib/components/icons';
+	import { PencilMinus } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
+	import { IconButton } from '$lib/components/ui/Button';
 	import { Checkbox, RadioButton, TextArea } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
 	import { TableSkeleton } from '$lib/components/ui/Table';
@@ -15,29 +19,39 @@
 		AddressTypeEnum,
 		OrderStatus,
 		type Address,
-		type AddressInput,
+		type DraftOrderInput,
+		type Mutation,
+		type MutationDraftOrderUpdateArgs,
+		type MutationOrderUpdateArgs,
 		type Order,
 		type Query,
 		type QueryCustomersArgs,
 		type QueryUserArgs,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { convertAddressToAddressInput, SitenameCommonClassName } from '$lib/utils/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
+	import {
+		checkIfGraphqlResultHasError,
+		convertAddressToAddressInput,
+		SitenameCommonClassName,
+	} from '$lib/utils/utils';
 
 	type Props = {
 		order: Order;
-		onDoneCustomerUpdate?: () => void;
-		handleUpdateCustomer?: (id: string) => void;
+		onRefetchOrder?: () => void;
 		disabled?: boolean;
-		setAddress?: (type: AddressTypeEnum, addr: AddressInput, alsoSetForTheRest: boolean) => void;
 	};
 
-	let { order, handleUpdateCustomer, disabled, setAddress }: Props = $props();
+	let { order, onRefetchOrder, disabled }: Props = $props();
 
 	let currentSetAddressType = $state<AddressTypeEnum>();
 	let alsoUseSelectedAddressForTheOther = $state(false);
 	let selectedAddress = $state<Address>();
 	let selectedAddressId = $state<string>();
+	let enableEditCustomer = $state(false);
+	let loading = $state(false);
+
+	const ShouldDisable = $derived(disabled || loading);
 
 	const CustomerQuery = operationStore<Pick<Query, 'user'>, QueryUserArgs>({
 		query: USER_DETAIL_QUERY,
@@ -50,43 +64,110 @@
 		CustomerQuery.reexecute({ variables: { id: order.user?.id } });
 		currentSetAddressType = type;
 	};
+
+	/** only draft orders can update customer */
+	const handleUpdateCustomer = async (option?: SelectOption | SelectOption[]) => {
+		if (!option || order.status !== OrderStatus.Draft) return;
+
+		loading = true;
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'draftOrderUpdate'>,
+			MutationDraftOrderUpdateArgs
+		>(DRAFT_ORDER_UPDATE_MUTATION, {
+			id: order.id,
+			input: {
+				user: (option as SelectOption).value as string,
+				shippingAddress: null,
+				billingAddress: null,
+			},
+		});
+		loading = false;
+
+		if (checkIfGraphqlResultHasError(result, 'draftOrderUpdate', 'Customer updated successfully'))
+			return;
+
+		onRefetchOrder?.();
+	};
+
+	const handleSetUserAddresses = async () => {
+		if (selectedAddress) {
+			const addrInput = convertAddressToAddressInput(selectedAddress);
+
+			const input: Pick<DraftOrderInput, 'billingAddress' | 'shippingAddress'> = {};
+			if (currentSetAddressType === AddressTypeEnum.Billing) {
+				input.billingAddress = addrInput;
+				if (alsoUseSelectedAddressForTheOther) input.shippingAddress = addrInput;
+			} else {
+				input.shippingAddress = addrInput;
+				if (alsoUseSelectedAddressForTheOther) input.billingAddress = addrInput;
+			}
+
+			loading = true;
+			if (order.status === OrderStatus.Draft) {
+				const result = await GRAPHQL_CLIENT.mutation<
+					Pick<Mutation, 'draftOrderUpdate'>,
+					MutationDraftOrderUpdateArgs
+				>(DRAFT_ORDER_UPDATE_MUTATION, { id: order.id, input });
+				checkIfGraphqlResultHasError(result, 'draftOrderUpdate', $CommonState.EditSuccess);
+			} else {
+				const result = await GRAPHQL_CLIENT.mutation<
+					Pick<Mutation, 'orderUpdate'>,
+					MutationOrderUpdateArgs
+				>(ORDER_UPDATE_MUTATION, { id: order.id, input: input });
+				checkIfGraphqlResultHasError(result, 'orderUpdate', $CommonState.EditSuccess);
+			}
+			loading = false;
+		}
+		currentSetAddressType = undefined;
+		onRefetchOrder?.();
+	};
 </script>
 
 <div class="space-y-2 w-3/10">
 	<div class={SitenameCommonClassName}>
-		<SectionHeader>Customer</SectionHeader>
-		{#if order.status === OrderStatus.Draft}
+		<SectionHeader>
+			<div>Customer</div>
+			{#if order.status === OrderStatus.Draft}
+				<IconButton
+					size="xs"
+					icon={PencilMinus}
+					variant="light"
+					onclick={() => (enableEditCustomer = true)}
+					disabled={ShouldDisable}
+				/>
+			{/if}
+		</SectionHeader>
+
+		{#if order.userEmail && !enableEditCustomer}
+			<p class="text-sm">{order.userEmail}</p>
+		{:else if enableEditCustomer && order.status === OrderStatus.Draft}
 			<GraphqlPaginableSelect
 				query={CUSTOMER_LIST_QUERY}
 				optionLabelKey="email"
-				{disabled}
 				optionValueKey="id"
 				placeholder="Select customer"
 				label="Specify order customer"
+				disabled={ShouldDisable}
 				required
 				variables={{ first: 20, filter: { search: '' } } as QueryCustomersArgs}
 				variableSearchQueryPath="filter.search"
 				size="sm"
 				resultKey="customers"
 				value={order.user?.id}
-				onchange={(opt) =>
-					opt &&
-					(opt as SelectOption).value !== order.user?.id &&
-					handleUpdateCustomer?.((opt as SelectOption).value as string)}
+				onchange={handleUpdateCustomer}
 			/>
-		{:else if order.userEmail}
-			<p class="text-sm">{order.userEmail}</p>
 		{/if}
 		{#if order.user}
 			<a
-				class="link text-xs text-blue-500 block"
+				class="link text-xs text-blue-500"
 				href={AppRoute.SETTINGS_CONFIGS_USER_DETAILS(order.user?.id)}
+				target="_blank"
 			>
 				View profile
 			</a>
 		{/if}
 		{#if order.userEmail}
-			<a class="link text-xs text-blue-500 block" href={`mailto:${order.userEmail}`}>Send email</a>
+			<a class="link text-xs text-blue-500" href={`mailto:${order.userEmail}`}>Send email</a>
 		{/if}
 	</div>
 
@@ -99,11 +180,12 @@
 					<Alert variant="info" size="sm" bordered>This order has no shipping address</Alert>
 				{/if}
 				<Button
-					size="xs"
+					size="sm"
 					fullWidth
-					endIcon={Plus}
+					endIcon={PencilMinus}
 					color="gray"
 					onclick={() => handleClickSetAddress(AddressTypeEnum.Shipping)}
+					disabled={ShouldDisable}
 				>
 					Set shipping address
 				</Button>
@@ -118,11 +200,12 @@
 					<Alert variant="info" size="sm" bordered>This order has no billing address</Alert>
 				{/if}
 				<Button
-					size="xs"
+					size="sm"
 					fullWidth
-					endIcon={Plus}
+					endIcon={PencilMinus}
 					color="gray"
 					onclick={() => handleClickSetAddress(AddressTypeEnum.Billing)}
+					disabled={ShouldDisable}
 				>
 					Set billing address
 				</Button>
@@ -145,7 +228,7 @@
 		<div class={SitenameCommonClassName}>
 			<SectionHeader>
 				<span>Invoices</span>
-				<Button size="xs" variant="light">Generate</Button>
+				<Button size="xs" variant="light" disabled={ShouldDisable}>Generate</Button>
 			</SectionHeader>
 			{#if order.invoices.length}
 				{#each order.invoices as invoice, idx (idx)}
@@ -160,7 +243,7 @@
 	<div class={SitenameCommonClassName}>
 		<SectionHeader>Customer note</SectionHeader>
 		{#if order.customerNote}
-			<TextArea readonly value={order.customerNote} />
+			<TextArea readonly value={order.customerNote} disabled={ShouldDisable} />
 		{:else}
 			<Alert size="sm" bordered>This order has no customer note</Alert>
 		{/if}
@@ -175,16 +258,10 @@
 	closeOnOutsideClick
 	onClose={() => (currentSetAddressType = undefined)}
 	onCancel={() => (currentSetAddressType = undefined)}
-	disableElements={disabled}
-	onOk={() => {
-		if (selectedAddress) {
-			setAddress?.(
-				currentSetAddressType!,
-				convertAddressToAddressInput(selectedAddress),
-				alsoUseSelectedAddressForTheOther,
-			);
-		}
-	}}
+	disableElements={ShouldDisable}
+	okText={$tranFunc('common.ok')}
+	cancelText={$tranFunc('common.cancel')}
+	onOk={handleSetUserAddresses}
 >
 	{#if $CustomerQuery.fetching}
 		<TableSkeleton numColumns={2} />
@@ -192,19 +269,19 @@
 		<Alert size="sm" variant="error">{$CustomerQuery.error.message}</Alert>
 	{:else if $CustomerQuery.data?.user}
 		{#if $CustomerQuery.data.user.addresses.length}
-			<div class="mb-2 space-y-2">
+			<div>
 				{#each $CustomerQuery.data.user.addresses as address, idx (idx)}
-					<label class="cursor-pointer my-1" for={address.id}>
-						<UserAddress {address} class="relative">
-							<RadioButton
-								value={address.id}
-								bind:group={selectedAddressId}
-								checked={address.id === selectedAddressId}
-								{disabled}
-								class="absolute right-2 top-4"
-								onchange={() => address.id === selectedAddressId && (selectedAddress = address)}
-							/>
-						</UserAddress>
+					<label class="cursor-pointer relative" for={address.id}>
+						<UserAddress {address} class="mb-2" />
+						<RadioButton
+							value={address.id}
+							id={address.id}
+							bind:group={selectedAddressId}
+							checked={address.id === selectedAddressId}
+							disabled={ShouldDisable}
+							class="absolute right-2 top-4"
+							onchange={() => address.id === selectedAddressId && (selectedAddress = address)}
+						/>
 					</label>
 				{/each}
 			</div>
@@ -214,7 +291,7 @@
 					label="Also use this address as {currentSetAddressType === AddressTypeEnum.Shipping
 						? 'billing'
 						: 'shipping'} address ?"
-					{disabled}
+					disabled={ShouldDisable}
 					bind:checked={alsoUseSelectedAddressForTheOther}
 				/>
 			{/if}

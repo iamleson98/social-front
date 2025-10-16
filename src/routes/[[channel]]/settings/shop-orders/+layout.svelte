@@ -9,7 +9,7 @@
 	import { Modal } from '$lib/components/ui/Modal';
 	import type { Mutation, MutationDraftOrderCreateArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, stringSlicer } from '$lib/utils/utils';
 	import type { Snippet } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import type { MouseEventHandler } from 'svelte/elements';
@@ -68,7 +68,7 @@
 	newPageHref={AppRoute.SETTINGS_ORDERS_NEW()}
 	newPageLabel={$tranFunc('settings.newOrder')}
 	detailRouteID="/[[channel]]/settings/shop-orders/[id]"
-	detailPageLabelGetter={(page) => page.params.id}
+	detailPageLabelGetter={(page) => stringSlicer(page.params.id, 30)}
 	onNewPageBtnClick={handleClickCreateOrder}
 	disabled={loading}
 />

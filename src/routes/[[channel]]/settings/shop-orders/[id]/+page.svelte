@@ -5,7 +5,7 @@
 	import DetailOrderSkeleton from '$lib/components/pages/settings/orders/detail-order-skeleton.svelte';
 	import OrderDraftDetails from '$lib/components/pages/settings/orders/draft-order-details/order-draft-details.svelte';
 	import OrderFulfillment from '$lib/components/pages/settings/orders/order-fulfillment.svelte';
-	import OrderNormalDetails from '$lib/components/pages/settings/orders/order-normal-details.svelte';
+	import OrderNormalDetails from '$lib/components/pages/settings/orders/order-normal-details/order-normal-details.svelte';
 	import UnconfirmedOrderDetails from '$lib/components/pages/settings/orders/unconfirmed-order-details/unconfirmed-order-details.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import {
@@ -139,7 +139,7 @@
 	{@const { order } = $orderQuery.data}
 
 	{#if ![OrderStatus.Draft, OrderStatus.Unconfirmed].includes(order.status)}
-		<OrderNormalDetails {order} />
+		<OrderNormalDetails {order} onRefetchOrder={reexecuteQuery} />
 	{:else if order.status === OrderStatus.Draft}
 		<OrderDraftDetails {order} onRefetchOrder={reexecuteQuery} />
 	{:else if order.status === OrderStatus.Unconfirmed}
