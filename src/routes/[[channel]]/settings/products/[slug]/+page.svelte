@@ -215,7 +215,7 @@
 			{privateMetadata}
 			objectId={id}
 		/>
-		<PackagingAndDelivery bind:metadata={product.metadata} bind:weight={attributes.Weight} {loading} />
+		<PackagingAndDelivery bind:metadata={product.metadata} bind:weight={product.weight} {loading} />
 	</div>
 
 	<ActionBar
