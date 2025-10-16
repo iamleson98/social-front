@@ -723,7 +723,7 @@
 							</div>
 							<!-- WEIGHT -->
 							<div class="w-1/6">
-								<div class="text-xs">{$tranFunc('product.weight')}</div>
+								<div class="text-xs">{$tranFunc('attributes.Weight')}</div>
 								<Input
 									size="sm"
 									type="number"
@@ -886,7 +886,7 @@
 								<th>{$tranFunc('product.channel')}</th>
 								<th>{$tranFunc('product.price')}</th>
 								<th>{$tranFunc('product.costPrice')}</th>
-								<th>{$tranFunc('product.weight')}</th>
+								<th>{$tranFunc('attributes.Weight')}</th>
 								<th>{$tranFunc('common.preorder')}</th>
 								<th>{$tranFunc('product.stock')}</th>
 								<th>{$tranFunc('product.sku')}</th>

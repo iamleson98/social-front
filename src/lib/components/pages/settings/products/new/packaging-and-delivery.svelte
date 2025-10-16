@@ -34,8 +34,8 @@
 	<div class="flex items-start gap-2">
 		<Input
 			type="number"
-			placeholder={$tranFunc('product.weight')}
-			label={$tranFunc('product.weight')}
+			placeholder={$tranFunc('attributes.Weight')}
+			label={$tranFunc('attributes.Weight')}
 			bind:value={weight}
 			startIcon={MdiWeightKg}
 			size="sm"

@@ -1,11 +1,12 @@
 import { invalidateAll } from '$app/navigation';
+import type { TranFunc } from '$i18n';
 import { UserStoreManager } from '$lib/stores/auth';
 import { HTTPStatusSuccess } from './consts';
 import { AppRoute } from './routes';
 import { toast } from 'svelte-sonner';
 
 export const handleLogout = async (
-	translationFunc: (key: string, args?: Record<string, unknown>) => string,
+	translationFunc: TranFunc,
 ) => {
 	const result = await fetch(AppRoute.AUTH_SIGNOUT(), { method: 'POST' });
 	const parsedResult = await result.json();

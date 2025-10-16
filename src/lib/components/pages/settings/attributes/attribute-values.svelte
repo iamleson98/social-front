@@ -69,13 +69,13 @@
 		].includes(inputType),
 	);
 
-	const MetricSystems = Object.keys(MetricSystem).map<SelectOption>((value) => ({
-		label: value,
+	const MetricSystems = Object.values(MetricSystem).map<SelectOption>((value) => ({
+		label: $tranFunc(`attributes.${value}`),
 		value,
 	}));
 
-	const MetricUnits = Object.keys(MetricUnit).map<SelectOption>((value) => ({
-		label: value,
+	const MetricUnits = Object.values(MetricUnit).map<SelectOption>((value) => ({
+		label: $tranFunc(`attributes.${value}`),
 		value,
 	}));
 
@@ -85,7 +85,10 @@
 			child: name,
 		},
 		{
-			title: inputType === AttributeInputTypeEnum.Swatch ? $tranFunc('common.value') : $tranFunc('common.slug'),
+			title:
+				inputType === AttributeInputTypeEnum.Swatch
+					? $tranFunc('common.value')
+					: $tranFunc('common.slug'),
 			child: value,
 		},
 		{
@@ -321,29 +324,29 @@
 			{/if}
 		{:else}
 			<SectionHeader>
-				<div>Select unit</div>
+				<div>{$tranFunc('attributes.selectUnit')}</div>
 			</SectionHeader>
 
 			<div class="grid grid-cols-3 gap-2">
 				<Select
-					label="System"
-					placeholder="system"
+					label={$tranFunc('attributes.system')}
+					placeholder={$tranFunc('attributes.system')}
 					options={MetricSystems}
 					size="sm"
 					bind:value={metricSystem}
 					disabled={loading || disabled}
 				/>
 				<Select
-					label="Units of"
-					placeholder="units of"
+					label={$tranFunc('attributes.unitsOf')}
+					placeholder={$tranFunc('attributes.unitsOf')}
 					options={MetricUnits}
 					size="sm"
 					bind:value={metricUnitsOf}
 					disabled={loading || !metricSystem || disabled}
 				/>
 				<Select
-					label="Unit"
-					placeholder="unit"
+					label={$tranFunc('giftcard.form.unit')}
+					placeholder={$tranFunc('giftcard.form.unit')}
 					size="sm"
 					disabled={loading || !metricUnitsOf || disabled}
 					bind:value={unit as string}
@@ -357,7 +360,7 @@
 <Modal
 	size="sm"
 	open={openUpsertModal}
-	header="Upsert attribute value"
+	header={$tranFunc('attributes.upsertValue')}
 	closeOnEscape
 	closeOnOutsideClick
 	disableElements={loading}
@@ -378,16 +381,16 @@
 			/>
 		{:else if inputType === AttributeInputTypeEnum.Dropdown}
 			<Input
-				label="Please provide value"
-				placeholder="Please provide value"
+				label={$tranFunc('placeholders.valuePlaceholder')}
+				placeholder={$tranFunc('placeholders.valuePlaceholder')}
 				bind:value={valueItemToEdit.name}
 				{disabled}
 			/>
 		{:else if inputType === AttributeInputTypeEnum.Multiselect}
 			<Input
 				{disabled}
-				label="Please provide value"
-				placeholder="Please provide value"
+				label={$tranFunc('placeholders.valuePlaceholder')}
+				placeholder={$tranFunc('placeholders.valuePlaceholder')}
 				bind:value={valueItemToEdit.name}
 			/>
 		{/if}
@@ -404,15 +407,15 @@
 		{:else if inputType === AttributeInputTypeEnum.Dropdown}
 			<Input
 				{disabled}
-				label="Please provide value"
-				placeholder="Please provide value"
+				label={$tranFunc('placeholders.valuePlaceholder')}
+				placeholder={$tranFunc('placeholders.valuePlaceholder')}
 				bind:value={valueItemToCreate.name}
 			/>
 		{:else if inputType === AttributeInputTypeEnum.Multiselect}
 			<Input
 				{disabled}
-				label="Please provide value"
-				placeholder="Please provide value"
+				label={$tranFunc('placeholders.valuePlaceholder')}
+				placeholder={$tranFunc('placeholders.valuePlaceholder')}
 				bind:value={valueItemToCreate.name}
 			/>
 		{/if}

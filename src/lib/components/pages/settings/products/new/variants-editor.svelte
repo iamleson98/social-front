@@ -583,7 +583,7 @@
 							bind:value={quickFillingValues.weight}
 							min={0}
 							disabled={loading}
-							label={$tranFunc('product.weight')}
+							label={$tranFunc('attributes.Weight')}
 							onfocus={() => handleFocusHighlightQuickFilling('td-weight-hl')}
 							variant={typeof quickFillingValues.weight === 'number' &&
 							quickFillingValues.weight < 0
@@ -724,7 +724,7 @@
 						<th>{$tranFunc('product.channel')}</th>
 						<th>{$tranFunc('product.price')}</th>
 						<th>{$tranFunc('product.costPrice')}</th>
-						<th>{$tranFunc('product.weight')}</th>
+						<th>{$tranFunc('attributes.Weight')}</th>
 						<th>{$tranFunc('common.preorder')}</th>
 						<th>{$tranFunc('product.stock')}</th>
 						<th>{$tranFunc('product.sku')}</th>
