@@ -7,6 +7,7 @@ import {
 	FulfillmentStatus,
 	type OrderLine,
 	type Fulfillment,
+	MarkAsPaidStrategyEnum,
 } from '$lib/gql/graphql';
 import { subtractMoney } from '$lib/utils/utils';
 
@@ -250,4 +251,13 @@ export const getMiscellaneousAmountValues = (order: Order): PaymentSubmitCardVal
 		maxRefund,
 		previouslyRefunded,
 	};
+};
+
+export const orderHasTransactions = (order: Order) => order.transactions.length > 0;
+const orderHasPayments = (order: Order) => order.payments.length > 0;
+
+export const orderShouldUseTransactions = (order: Order) => {
+	if (orderHasTransactions(order)) return true;
+	if (orderHasPayments(order)) return false;
+	return order.channel.orderSettings.markAsPaidStrategy === MarkAsPaidStrategyEnum.TransactionFlow;
 };
