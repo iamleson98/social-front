@@ -96,10 +96,10 @@
 <div class="flex flex-row gap-2">
 	<div class="space-y-2 w-7/10">
 		<!-- MARK: header -->
-		<SectionHeader class={SitenameCommonClassName}>
+		<SectionHeader>
 			<div class="flex items-center gap-2">
 				<div>Order #{order.number}</div>
-				<Badge text={order.status} color="gray" variant="outline" rounded />
+				<Badge text={order.status} color="gray" size="sm" variant="outline" rounded />
 				<div class="text-xs text-gray-500 font-medium">
 					{dayjs(order.created).format(SitenameTimeFormat)}
 				</div>
@@ -107,7 +107,7 @@
 
 			<DropDown placement="bottom-end">
 				{#snippet trigger({ onclick }: DropdownTriggerInterface)}
-					<IconButton icon={SettingCog} size="sm" color="gray" variant="light" {onclick} />
+					<IconButton icon={SettingCog} size="xs" color="gray" {onclick} />
 				{/snippet}
 
 				<MenuItem class="text-red-500" startIcon={Ban} onclick={handleCancelOrder}>

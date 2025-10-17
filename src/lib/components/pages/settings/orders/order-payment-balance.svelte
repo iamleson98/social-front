@@ -6,11 +6,16 @@
 		extractRefundedAmount,
 		extractOrderGiftCardUsedAmount,
 	} from '$lib/components/pages/settings/orders/utils';
+	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/Badge';
 	import Button from '$lib/components/ui/Button/Button.svelte';
+	import { Input } from '$lib/components/ui/Input';
+	import { Modal } from '$lib/components/ui/Modal';
 	import { OrderAction, OrderDiscountType, OrderStatus, type Order } from '$lib/gql/graphql';
-	import { paymentStatusBadgeClass } from '$lib/utils/utils';
+	import { paymentStatusBadgeClass, SitenameCommonClassName } from '$lib/utils/utils';
 	import OrderRefundModal from './order-refund-modal.svelte';
+	import { OrderUtilsInstance } from './utils.svelte';
+	import { toast } from 'svelte-sonner';
 
 	type Props = {
 		order: Order;
@@ -18,14 +23,18 @@
 		onMarkAsPaid?: () => void;
 		onRefund?: () => void;
 		onVoid?: () => void;
+		onRefetchOrder: () => void;
 	};
 
-	let { order, onCapture, onMarkAsPaid, onVoid }: Props = $props();
+	let { order, onCapture, onMarkAsPaid, onVoid, onRefetchOrder }: Props = $props();
 
 	const refundedAmount = extractRefundedAmount(order);
 	const usedGiftCardAmount = extractOrderGiftCardUsedAmount(order);
 
 	let openRefundModal = $state(false);
+
+	let openMarkAsPaidModal = $state(false);
+	let markAsPaidReferenceTransaction = $state<string>();
 
 	let deliveryMethodName = $derived.by(() => {
 		if (!order.shippingMethodName && !order.shippingPrice && !order.collectionPointName) {
@@ -43,7 +52,7 @@
 	});
 </script>
 
-<div class="bg-white rounded-lg border border-gray-200 p-3 space-y-3">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>
 		<div class="flex items-center gap-2">
 			<span>{$tranFunc('payment.paymentTitle')}</span>
@@ -54,18 +63,20 @@
 			class:invisible={!order.paymentStatus || order.status === OrderStatus.Canceled}
 		>
 			{#if order.actions.includes(OrderAction.Capture)}
-				<Button size="sm" onclick={onCapture}>{$tranFunc('payment.capture')}</Button>
+				<Button size="xs" onclick={onCapture}>{$tranFunc('payment.capture')}</Button>
 			{/if}
 			{#if order.actions.includes(OrderAction.Refund)}
-				<Button size="sm" onclick={() => (openRefundModal = true)}>
+				<Button size="xs" onclick={() => (openRefundModal = true)}>
 					{$tranFunc('payment.refund')}
 				</Button>
 			{/if}
 			{#if order.actions.includes(OrderAction.Void)}
-				<Button size="sm" onclick={onVoid}>{$tranFunc('payment.void')}</Button>
+				<Button size="xs" onclick={onVoid}>{$tranFunc('payment.void')}</Button>
 			{/if}
 			{#if order.actions.includes(OrderAction.MarkAsPaid)}
-				<Button size="sm" onclick={onMarkAsPaid}>{$tranFunc('payment.markAsPaid')}</Button>
+				<Button size="xs" onclick={() => (openMarkAsPaidModal = true)}
+					>{$tranFunc('payment.markAsPaid')}</Button
+				>
 			{/if}
 		</div>
 	</SectionHeader>
@@ -192,3 +203,32 @@
 </div>
 
 <OrderRefundModal bind:open={openRefundModal} {order} />
+
+<Modal
+	header="Mark order as paid"
+	size="sm"
+	bind:open={openMarkAsPaidModal}
+	okText={$tranFunc('common.ok')}
+	cancelText={$tranFunc('common.cancel')}
+	onOk={async () => {
+		const ok = await OrderUtilsInstance.markAsPaid(order.id, markAsPaidReferenceTransaction);
+		if (ok) {
+			toast.success('Order merked as paid successfully');
+			openMarkAsPaidModal = false;
+			onRefetchOrder();
+		}
+	}}
+	disableElements={OrderUtilsInstance.state.loading}
+>
+	<Alert size="sm" class="mb-2">
+		You're going to mark this order as paid. Please provide a transaction reference using the input
+		below:
+	</Alert>
+
+	<Input
+		placeholder="transaction reference"
+		bind:value={markAsPaidReferenceTransaction}
+		label="Transaction reference"
+		disabled={OrderUtilsInstance.state.loading}
+	/>
+</Modal>

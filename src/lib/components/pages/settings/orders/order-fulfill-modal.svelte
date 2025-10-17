@@ -240,7 +240,7 @@
 
 <Modal
 	{open}
-	size="xl"
+	size="lg"
 	onClose={() => (open = false)}
 	onCancel={() => (open = false)}
 	closeOnOutsideClick

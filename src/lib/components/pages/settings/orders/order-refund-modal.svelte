@@ -64,9 +64,10 @@
 	{open}
 	onClose={() => (open = false)}
 	header="Refund"
-	size="xl"
+	size="lg"
 	closeOnEscape
 	closeOnOutsideClick
+	hideFooter
 >
 	<div class="flex gap-2">
 		<div class="w-7/10 space-y-2">

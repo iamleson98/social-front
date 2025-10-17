@@ -23,7 +23,7 @@
 
 <div class={SitenameCommonClassName}>
 	<SectionHeader>
-		<Badge text="Unfulfilled" color="violet" size="md" rounded />
+		<Badge text="Unfulfilled" color="violet" size="sm" rounded />
 		<!-- {#if allowAddOrderLines}
 			<OrderLineAssignModal
 				{onAddedOrderLines}
@@ -42,7 +42,7 @@
 	{/if}
 
 	<div class="text-right">
-		<Button size="sm" onclick={() => (openFulfillModal = true)}>Fulfill</Button>
+		<Button size="xs" color="gray" onclick={() => (openFulfillModal = true)}>Fulfill lines</Button>
 	</div>
 </div>
 

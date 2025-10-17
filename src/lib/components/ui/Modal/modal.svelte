@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
 	import { clickOutside } from '$lib/actions/click-outside';
 	import { focusOutside } from '$lib/actions/focus-outside';
 	import { CloseX } from '$lib/components/icons';
@@ -10,7 +9,7 @@
 
 	let {
 		size = 'md',
-		open,
+		open = $bindable(),
 		header,
 		children,
 		okText = 'Ok',
@@ -27,6 +26,19 @@
 		disableCancelBtn,
 		disableOkBtn,
 	}: ModalProps = $props();
+
+	const innerClose = (evt: 'escape' | 'outside' | 'x' | 'cancel') => {
+		open = false;
+		if (
+			(evt === 'outside' && closeOnOutsideClick) ||
+			(evt === 'escape' && closeOnEscape) ||
+			evt === 'x'
+		) {
+			onClose();
+		} else if (evt === 'cancel') {
+			onCancel();
+		}
+	};
 </script>
 
 {#if open}
@@ -36,11 +48,11 @@
 		<div
 			class={`relative w-full max-h-full ${modalSizeMap[size]}`}
 			use:clickOutside={{
-				onOutclick: () => closeOnOutsideClick && onClose(),
-				onEscape: () => closeOnEscape && onClose,
+				onOutclick: () => innerClose('outside'),
+				onEscape: () => innerClose('escape'),
 			}}
 			use:focusOutside={{
-				onFocusOut: () => closeOnOutsideClick && onClose(),
+				onFocusOut: () => innerClose('outside'),
 			}}
 		>
 			<!-- content -->
@@ -57,7 +69,7 @@
 								size="xs"
 								variant="light"
 								color="gray"
-								onclick={onClose}
+								onclick={() => innerClose('x')}
 								rounded
 								disabled={disableElements || disableCloseBtn}
 							/>
@@ -86,7 +98,7 @@
 								color="red"
 								size="sm"
 								class="mr-1"
-								onclick={onCancel}
+								onclick={() => innerClose('cancel')}
 								disabled={disableElements || disableCancelBtn}
 							>
 								{cancelText}

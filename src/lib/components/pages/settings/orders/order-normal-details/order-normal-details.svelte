@@ -20,8 +20,10 @@
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { GeneralMetadataEditor, type GeneralMetadataEditorRef } from '../../common';
 	import DiscountPopup from '../discount-popup.svelte';
+	import OrderFulfillments from '../order-fulfillments.svelte';
 	import OrderHistory from '../order-history.svelte';
 	import OrderLinesSection from '../order-lines-section.svelte';
+	import OrderPaymentBalance from '../order-payment-balance.svelte';
 	import Sidebar from '../sidebar.svelte';
 	import { Components } from '../snippets.svelte';
 	import UnfulfilledOrderLinesSection from '../unfulfilled-order-lines-section.svelte';
@@ -32,7 +34,7 @@
 	type Props = {
 		order: Order;
 		loading?: boolean;
-		onRefetchOrder?: () => void;
+		onRefetchOrder: () => void;
 	};
 
 	let { order, loading, onRefetchOrder }: Props = $props();
@@ -55,10 +57,10 @@
 
 <div class="flex flex-row gap-2">
 	<div class="space-y-2 w-7/10">
-		<SectionHeader class={SitenameCommonClassName}>
+		<SectionHeader>
 			<div class="flex items-center gap-2">
 				<div>Order #{order.number}</div>
-				<Badge text={order.status} color="gray" variant="outline" rounded />
+				<Badge text={order.status} color="blue" size="sm" variant="outline" rounded />
 				<div class="text-xs text-gray-500 font-medium">
 					{dayjs(order.created).format(SitenameTimeFormat)}
 				</div>
@@ -66,7 +68,7 @@
 
 			<DropDown placement="bottom-end">
 				{#snippet trigger({ onclick }: DropdownTriggerInterface)}
-					<IconButton icon={SettingCog} size="sm" color="gray" variant="light" {onclick} />
+					<IconButton icon={SettingCog} size="xs" color="gray" {onclick} />
 				{/snippet}
 
 				{#if order.status !== OrderStatus.Canceled}
@@ -165,18 +167,24 @@
 					</div>
 				</div>
 			{/if}
-
-			<!-- MARK: fulfillment -->
-
-			<GeneralMetadataEditor
-				metadata={order.metadata}
-				privateMetadata={order.privateMetadata}
-				objectId={order.id}
-				disabled={loading}
-				bind:this={metaRef}
-			/>
-			<OrderHistory id={order.id} />
 		{/if}
+
+		<!-- MARK: fulfillments -->
+		{#if order.fulfillments.length}
+			<OrderFulfillments {order} onUpdateTrackingCode={onRefetchOrder} />
+		{/if}
+
+		<!-- MARK: order payment balance -->
+		<OrderPaymentBalance {order} {onRefetchOrder} />
+
+		<GeneralMetadataEditor
+			metadata={order.metadata}
+			privateMetadata={order.privateMetadata}
+			objectId={order.id}
+			disabled={loading}
+			bind:this={metaRef}
+		/>
+		<OrderHistory id={order.id} />
 	</div>
 
 	<Sidebar {order} {onRefetchOrder} disabled={loading} />

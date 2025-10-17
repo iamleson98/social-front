@@ -33,7 +33,7 @@
 
 	type Props = {
 		order: Order;
-		onUpdateTrackingCode: () => void;
+		onUpdateTrackingCode?: () => void;
 	};
 
 	let { order, onUpdateTrackingCode }: Props = $props();
@@ -115,7 +115,7 @@
 		) {
 			openTrackingModal = false;
 			trackingCode = '';
-			onUpdateTrackingCode();
+			onUpdateTrackingCode?.();
 		}
 	};
 </script>
@@ -196,7 +196,7 @@
 			<SectionHeader>
 				<div class="flex items-center gap-2">
 					<span>#{order.number}-{fulfillment.fulfillmentOrder}</span>
-					<Badge {...fulfillmentStatusBadgeClass(fulfillment.status)} rounded />
+					<Badge {...fulfillmentStatusBadgeClass(fulfillment.status)} rounded size="sm" />
 				</div>
 				<div class="flex items-center gap-2">
 					<span class="text-xs text-gray-500 font-medium">
@@ -241,9 +241,7 @@
 	{/each}
 </div>
 
-<OrderLineMetadataModal
-	orderId={order.id}
-/>
+<OrderLineMetadataModal orderId={order.id} />
 
 <FulfillmentCancelModal
 	fulfillmentID={fulfillmentToCancelWarehouseID}
