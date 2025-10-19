@@ -16651,6 +16651,12 @@ type OrderGrantedRefund @doc(category: "Orders") {
 	Added in Saleor 3.20.
 	"""
 	transaction: TransactionItem
+	"""
+	Reason Model (Page) reference for refund.
+
+	Added in Saleor 3.22.
+	"""
+	reasonReference: Page
 }
 
 """
@@ -16756,6 +16762,13 @@ type TransactionEvent implements Node @doc(category: "Payments") {
 	Added in Saleor 3.14.
 	"""
 	idempotencyKey: String
+
+	"""
+	Reason Model (Page) reference for refund.
+
+	Added in Saleor 3.22.
+	"""
+	reasonReference: Page
 }
 
 """

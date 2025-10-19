@@ -58,27 +58,26 @@
 			<span>{$tranFunc('payment.paymentTitle')}</span>
 			<Badge {...paymentStatusBadgeClass(order.paymentStatus)} rounded />
 		</div>
-		<div
-			class="flex gap-2"
-			class:invisible={!order.paymentStatus || order.status === OrderStatus.Canceled}
-		>
-			{#if order.actions.includes(OrderAction.Capture)}
-				<Button size="xs" onclick={onCapture}>{$tranFunc('payment.capture')}</Button>
-			{/if}
-			{#if order.actions.includes(OrderAction.Refund)}
-				<Button size="xs" onclick={() => (openRefundModal = true)}>
-					{$tranFunc('payment.refund')}
-				</Button>
-			{/if}
-			{#if order.actions.includes(OrderAction.Void)}
-				<Button size="xs" onclick={onVoid}>{$tranFunc('payment.void')}</Button>
-			{/if}
-			{#if order.actions.includes(OrderAction.MarkAsPaid)}
-				<Button size="xs" onclick={() => (openMarkAsPaidModal = true)}
-					>{$tranFunc('payment.markAsPaid')}</Button
-				>
-			{/if}
-		</div>
+		{#if order.paymentStatus && order.status !== OrderStatus.Canceled && (order.actions.includes(OrderAction.Capture) || order.actions.includes(OrderAction.Refund) || order.actions.includes(OrderAction.Void) || order.actions.includes(OrderAction.MarkAsPaid))}
+			<div class="flex gap-2">
+				{#if order.actions.includes(OrderAction.Capture)}
+					<Button size="xs" onclick={onCapture}>{$tranFunc('payment.capture')}</Button>
+				{/if}
+				{#if order.actions.includes(OrderAction.Refund)}
+					<Button size="xs" onclick={() => (openRefundModal = true)}>
+						{$tranFunc('payment.refund')}
+					</Button>
+				{/if}
+				{#if order.actions.includes(OrderAction.Void)}
+					<Button size="xs" onclick={onVoid}>{$tranFunc('payment.void')}</Button>
+				{/if}
+				{#if order.actions.includes(OrderAction.MarkAsPaid)}
+					<Button size="xs" onclick={() => (openMarkAsPaidModal = true)}>
+						{$tranFunc('payment.markAsPaid')}
+					</Button>
+				{/if}
+			</div>
+		{/if}
 	</SectionHeader>
 
 	<!-- Discount -->

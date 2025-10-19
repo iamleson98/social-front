@@ -18,12 +18,14 @@
 	import { GeneralMetadataEditor, type GeneralMetadataEditorRef } from '../../common';
 	import ActionBar from '../../common/action-bar.svelte';
 	import DiscountPopup from '../discount-popup.svelte';
+	import HeaderSection from '../header-section.svelte';
 	import OrderHistory from '../order-history.svelte';
 	import OrderLinesSection from '../order-lines-section.svelte';
 	import Sidebar from '../sidebar.svelte';
 	import { OrderUtilsInstance } from '../utils.svelte';
 	import dayjs from 'dayjs';
 	import { toast } from 'svelte-sonner';
+	import { Components } from '../snippets.svelte';
 
 	type Props = {
 		loading?: boolean;
@@ -65,56 +67,9 @@
 	};
 </script>
 
-{#snippet shippingMethodModal()}
-	<Popover placement="bottom-start">
-		{#snippet trigger({ onclick }: DropdownTriggerInterface)}
-			<Button size="xs" variant="light" color="blue" {onclick} disabled={loading}>
-				{order.shippingMethodName || 'Shipping Method'}
-			</Button>
-		{/snippet}
-
-		<div class="{SitenameCommonClassName} w-3xs shadow-md">
-			<Select
-				label="Please specify a shipping method"
-				options={ShippingMethodChoices}
-				disabled={OrderUtilsInstance.state.loading || loading}
-				value={order.deliveryMethod?.id}
-				size="sm"
-				onchange={async (opt) => {
-					if (opt) {
-						const ok = await OrderUtilsInstance.updateShippingMethod(order.id, {
-							shippingMethod: (opt as SelectOption).value as string,
-						});
-						if (ok) onRefetchOrder?.();
-					}
-				}}
-			/>
-		</div>
-	</Popover>
-{/snippet}
-
 <div class="flex flex-row gap-2">
 	<div class="space-y-2 w-7/10">
-		<!-- MARK: header -->
-		<SectionHeader>
-			<div class="flex items-center gap-2">
-				<div>Order #{order.number}</div>
-				<Badge text={order.status} color="gray" size="sm" variant="outline" rounded />
-				<div class="text-xs text-gray-500 font-medium">
-					{dayjs(order.created).format(SitenameTimeFormat)}
-				</div>
-			</div>
-
-			<DropDown placement="bottom-end">
-				{#snippet trigger({ onclick }: DropdownTriggerInterface)}
-					<IconButton icon={SettingCog} size="xs" color="gray" {onclick} />
-				{/snippet}
-
-				<MenuItem class="text-red-500" startIcon={Ban} onclick={handleCancelOrder}>
-					Cancel order
-				</MenuItem>
-			</DropDown>
-		</SectionHeader>
+		<HeaderSection {order} onCancelOrder={handleCancelOrder} />
 
 		<!-- MARK: order lines -->
 		<OrderLinesSection allowAddOrderLines onAddedOrderLines={onRefetchOrder} {order} />
@@ -175,7 +130,7 @@
 					</div>
 				</div>
 				<div class="flex justify-between">
-					<div>{@render shippingMethodModal()}</div>
+					<div>{@render Components.shippingMethodModal(order, onRefetchOrder)}</div>
 					<div>
 						<PriceDisplay {...order.shippingPrice.gross} />
 					</div>

@@ -1,3 +1,4 @@
+import type { TranFunc } from '$i18n';
 import {
 	type GiftCardEvent,
 	type Order,
@@ -8,6 +9,16 @@ import {
 	type OrderLine,
 	type Fulfillment,
 	MarkAsPaidStrategyEnum,
+	type OrderDiscount,
+	OrderDiscountType,
+	type Transaction,
+	type TransactionItem,
+	TransactionActionEnum,
+	type OrderGrantedRefund,
+	OrderGrantedRefundStatusEnum,
+	type TransactionEvent,
+	TransactionEventTypeEnum,
+	type UserOrApp,
 } from '$lib/gql/graphql';
 import { subtractMoney } from '$lib/utils/utils';
 
@@ -261,3 +272,288 @@ export const orderShouldUseTransactions = (order: Order) => {
 	if (orderHasPayments(order)) return false;
 	return order.channel.orderSettings.markAsPaidStrategy === MarkAsPaidStrategyEnum.TransactionFlow;
 };
+
+export const getDeliveryMethodName = (order: Order, tranFunc: TranFunc) => {
+	if (order.shippingMethodName === undefined && order.shippingPrice === undefined && order.collectionPointName === undefined) return undefined;
+
+	if (order.shippingMethodName === null)
+		return order.collectionPointName == null ? 'doe not apply' : 'click and collect';
+
+	return order.shippingMethodName;
+};
+
+export const getTaxTypeText = (order: Order, tranFunc: TranFunc) => {
+	if (order.total.tax === undefined) return '';
+
+	if (order.total.tax.amount > 0) return 'vat included';
+	return 'vat not included';
+};
+
+const NAME_SEPARATOR = ":";
+
+const getDiscountNameLabel = (name: string) => {
+	if (name.includes(NAME_SEPARATOR)) {
+		const [promotionName] = name.split(NAME_SEPARATOR);
+
+		return promotionName.trim() || "-";
+	}
+
+	return name;
+};
+
+export const getDiscountTypeLabel = (discount: OrderDiscount, tranFunc: TranFunc) => {
+	switch (discount.type) {
+		case OrderDiscountType.Manual:
+			return "staff added"
+		case OrderDiscountType.OrderPromotion:
+			return getDiscountNameLabel(discount.name ?? "");
+		case OrderDiscountType.Voucher:
+			return "voucher: " + discount.name;
+
+		case OrderDiscountType.Promotion:
+			return 'promotion';
+
+		case OrderDiscountType.Sale:
+			return 'sale';
+	}
+};
+
+export const getShouldDisplayAmounts = (order: Order) => {
+	if (!order) {
+		return {
+			authorized: false,
+			charged: false,
+			cancelled: false,
+			authorizedPending: false,
+			chargedPending: false,
+			cancelledPending: false,
+		};
+	}
+
+	const authorized = order.totalAuthorized?.amount ?? 0;
+	const authorizePending = order.totalAuthorizePending?.amount ?? 0;
+	const charged = order.totalCharged?.amount ?? 0;
+	const chargePending = order.totalChargePending?.amount ?? 0;
+	const cancelled = order.totalCanceled?.amount ?? 0;
+	const cancelPending = order.totalCancelPending?.amount ?? 0;
+	const total = order.total.gross?.amount ?? 0;
+	const anyPending = authorizePending > 0 || chargePending > 0 || cancelPending > 0;
+
+	if (anyPending) {
+		return {
+			authorized: !!authorized || !!authorizePending,
+			charged: true,
+			cancelled: true,
+			authorizedPending: authorizePending > 0,
+			chargedPending: chargePending > 0,
+			cancelledPending: cancelPending > 0,
+		};
+	}
+
+	if (authorized && charged) {
+		return {
+			authorized: true,
+			charged: true,
+			cancelled: !!cancelled,
+			authorizedPending: false,
+			chargedPending: false,
+			cancelledPending: false,
+		};
+	}
+
+	if (charged !== 0 && charged !== total) {
+		return {
+			authorized: false,
+			charged: true,
+			cancelled: !!cancelled,
+			authorizedPending: false,
+			chargedPending: false,
+			cancelledPending: false,
+		};
+	}
+
+	if (authorized !== 0) {
+		return {
+			authorized: true,
+			charged: false,
+			cancelled: !!cancelled,
+			authorizedPending: false,
+			chargedPending: false,
+			cancelledPending: false,
+		};
+	}
+
+	if (cancelled) {
+		return {
+			authorized: false,
+			charged: false,
+			cancelled: true,
+			authorizedPending: false,
+			chargedPending: false,
+			cancelledPending: false,
+		};
+	}
+
+	return {
+		charged: false,
+		authorized: false,
+		cancelled: false,
+		authorizedPending: false,
+		chargedPending: false,
+		cancelledPending: false,
+	};
+};
+
+export type OrderRefundDisplay = OrderGrantedRefund & {
+	type: "standard" | "manual";
+	reasonNote?: string | null;
+	reasonType: string | null;
+};
+
+export type OrderRefundState =
+	| "noTransactionsToRefund"
+	| "allTransactionsNonRefundable"
+	| "refundable";
+
+export const getRefundState = (transactions: TransactionItem[]): OrderRefundState => {
+	if (!transactions.length) return "noTransactionsToRefund";
+
+	if (transactions.every((transaction) => transaction.actions.includes(TransactionActionEnum.Refund)))
+		return "allTransactionsNonRefundable";
+
+	return "refundable";
+};
+
+const convertGrantedRefundsToOrderRefunds = (grantedRefunds: OrderGrantedRefund[]) => {
+	return grantedRefunds.map<OrderRefundDisplay>(refund => ({
+		...refund,
+		type: "standard",
+		reasonType: refund.reasonReference?.title ?? null,
+		reasonNote: refund.reason,
+	}));
+};
+
+const groupEventsByPspReference = (events: TransactionEvent[]) => {
+	return events?.reduce<Record<string, TransactionEvent[]>>((acc, event) => {
+		if (!acc[event.pspReference]) {
+			acc[event.pspReference] = [];
+		}
+
+		acc[event.pspReference].push(event);
+
+		return acc;
+	}, {});
+}
+
+const findLatestEventWithUserAuthor = (
+	eventGroup: TransactionEvent[],
+): TransactionEvent | null => {
+	return eventGroup.find(event => event.createdBy?.__typename === "User") || null;
+};
+
+const mapEventToRefundStatus = (
+	event: TransactionEvent,
+): OrderGrantedRefundStatusEnum => {
+	switch (event.type) {
+		case TransactionEventTypeEnum.RefundSuccess:
+			return OrderGrantedRefundStatusEnum.Success;
+		case TransactionEventTypeEnum.RefundFailure:
+			return OrderGrantedRefundStatusEnum.Failure;
+		case TransactionEventTypeEnum.RefundRequest:
+			return OrderGrantedRefundStatusEnum.Pending;
+		default:
+			return OrderGrantedRefundStatusEnum.None;
+	}
+};
+
+const determineCreatorDisplay = (
+	creator?: UserOrApp | null,
+) => {
+	if (creator?.__typename === "User") {
+		return {
+			email: creator.email,
+			firstName: creator.firstName,
+			lastName: creator.lastName,
+		};
+	}
+
+	return null;
+};
+
+const mapEventGroupsToOrderManualRefunds = (
+	eventsByPspReference: Record<string, TransactionEvent[]>,
+): OrderRefundDisplay[] => {
+	return Object.values(eventsByPspReference).map(eventGroup => {
+		const sortedEvents = eventGroup.sort(
+			(a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+		);
+		const latestEvent = sortedEvents[0];
+		const latestEventWithAuthor =
+			findLatestEventWithUserAuthor(sortedEvents);
+
+		const resultModel: OrderRefundDisplay = {
+			id: latestEvent.id,
+			type: "manual" as const,
+			status: mapEventToRefundStatus(latestEvent),
+			amount: latestEvent.amount,
+			createdAt: latestEvent.createdAt,
+			user: determineCreatorDisplay(
+				latestEventWithAuthor?.createdBy,
+			),
+			reasonNote: null,
+			reasonType: null,
+		};
+
+		// Only REQUEST contains a reason, that is attached when transactionRequestAction("refund") is executed
+		const eventRequestType = sortedEvents.find(e => e.type === TransactionEventTypeEnum.RefundRequest);
+
+		if (eventRequestType) {
+			resultModel.reasonNote = eventRequestType.message ?? null;
+			resultModel.reasonType = eventRequestType.reasonReference?.title ?? null;
+		}
+
+		return resultModel;
+	});
+}
+
+const convertManualRefundsToOrderRefunds = (
+	transactionsEvents: TransactionEvent[],
+	grantedRefunds: OrderGrantedRefund[],
+): OrderRefundDisplay[] => {
+	const supportedRefunds = new Set([
+		TransactionEventTypeEnum.RefundSuccess,
+		TransactionEventTypeEnum.RefundFailure,
+		TransactionEventTypeEnum.RefundRequest,
+	]);
+	const refundEvents = transactionsEvents.filter(
+		event => event.type && supportedRefunds.has(event.type),
+	);
+
+	const idsOfEventsAssociatedToGrantedRefunds = new Set(
+		grantedRefunds.flatMap(refund => refund.transactionEvents?.map(te => te.id)),
+	);
+
+	const manualRefundEvents =
+		refundEvents?.filter(event => !idsOfEventsAssociatedToGrantedRefunds.has(event.id)) ?? [];
+
+	const eventsByPspReference =
+		groupEventsByPspReference(manualRefundEvents);
+
+	return mapEventGroupsToOrderManualRefunds(eventsByPspReference);
+}
+
+export const prepareOrderRefundDisplayList = (transactionsEvents: TransactionEvent[], grantedRefunds: OrderGrantedRefund[]) => {
+	return [
+		...convertGrantedRefundsToOrderRefunds(grantedRefunds),
+		...convertManualRefundsToOrderRefunds(transactionsEvents, grantedRefunds),
+	].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+};
+
+export function canEditRefund(refund: OrderRefundDisplay): boolean {
+	const isSuccessful = refund.status === OrderGrantedRefundStatusEnum.Success;
+	const isPending = refund.status === OrderGrantedRefundStatusEnum.Pending;
+	const isManual = refund.type === "manual";
+
+	// Can only edit refunds that are not successful, not pending, and not manual
+	return !isSuccessful && !isPending && !isManual;
+}

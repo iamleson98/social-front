@@ -20,13 +20,17 @@
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { GeneralMetadataEditor, type GeneralMetadataEditorRef } from '../../common';
 	import DiscountPopup from '../discount-popup.svelte';
+	import HeaderSection from '../header-section.svelte';
 	import OrderFulfillments from '../order-fulfillments.svelte';
 	import OrderHistory from '../order-history.svelte';
 	import OrderLinesSection from '../order-lines-section.svelte';
-	import OrderPaymentBalance from '../order-payment-balance.svelte';
+	import OrderPayment from '../order-payment.svelte';
+	import OrderPaymentBalance from '../order-payment.svelte';
+	import OrderTransactionWrapper from '../order-transaction-wrapper.svelte';
 	import Sidebar from '../sidebar.svelte';
 	import { Components } from '../snippets.svelte';
 	import UnfulfilledOrderLinesSection from '../unfulfilled-order-lines-section.svelte';
+	import { orderShouldUseTransactions } from '../utils';
 	import { OrderUtilsInstance } from '../utils.svelte';
 	import dayjs from 'dayjs';
 	import { toast } from 'svelte-sonner';
@@ -57,27 +61,7 @@
 
 <div class="flex flex-row gap-2">
 	<div class="space-y-2 w-7/10">
-		<SectionHeader>
-			<div class="flex items-center gap-2">
-				<div>Order #{order.number}</div>
-				<Badge text={order.status} color="blue" size="sm" variant="outline" rounded />
-				<div class="text-xs text-gray-500 font-medium">
-					{dayjs(order.created).format(SitenameTimeFormat)}
-				</div>
-			</div>
-
-			<DropDown placement="bottom-end">
-				{#snippet trigger({ onclick }: DropdownTriggerInterface)}
-					<IconButton icon={SettingCog} size="xs" color="gray" {onclick} />
-				{/snippet}
-
-				{#if order.status !== OrderStatus.Canceled}
-					<MenuItem class="text-red-500" startIcon={Ban} onclick={handleCancelOrder}>
-						Cancel order
-					</MenuItem>
-				{/if}
-			</DropDown>
-		</SectionHeader>
+		<HeaderSection {order} onCancelOrder={handleCancelOrder} />
 
 		{#if order.status !== OrderStatus.Unconfirmed}
 			<UnfulfilledOrderLinesSection {order} />
@@ -175,7 +159,11 @@
 		{/if}
 
 		<!-- MARK: order payment balance -->
-		<OrderPaymentBalance {order} {onRefetchOrder} />
+		{#if orderShouldUseTransactions(order)}
+			<OrderTransactionWrapper {order} />
+		{:else}
+			<OrderPayment {order} {onRefetchOrder} />
+		{/if}
 
 		<GeneralMetadataEditor
 			metadata={order.metadata}

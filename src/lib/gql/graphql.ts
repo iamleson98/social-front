@@ -17204,6 +17204,8 @@ export type OrderGrantedRefund = {
   updatedAt: Scalars['DateTime']['output'];
   /** User who performed the action. Requires of of the following permissions: MANAGE_USERS, MANAGE_STAFF, OWNER. */
   user?: Maybe<User>;
+
+  reasonReference?: Page;
 };
 
 /**
@@ -29412,6 +29414,8 @@ export type TransactionEvent = Node & {
    * Added in Saleor 3.13.
    */
   type?: Maybe<TransactionEventTypeEnum>;
+
+  reasonReference?: Page;
 };
 
 export type TransactionEventInput = {

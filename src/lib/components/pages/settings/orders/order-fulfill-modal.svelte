@@ -129,10 +129,10 @@
 		return !overFulfill && isAtleastOneFulfilled && areWarehousesSet;
 	});
 
-	const handleWarehouseChange = (lineIndex: number, warehouseId?: string) => {
-		if (orderFulfillInput.lines[lineIndex].stocks.length)
-			orderFulfillInput.lines[lineIndex].stocks[0].warehouse = warehouseId as string;
-	};
+	// const handleWarehouseChange = (lineIndex: number, warehouseId?: string) => {
+	// 	if (orderFulfillInput.lines[lineIndex].stocks.length)
+	// 		orderFulfillInput.lines[lineIndex].stocks[0].warehouse = warehouseId as string;
+	// };
 
 	const handleQuantityChange = (lineIndex: number, evt: Event) => {
 		if (orderFulfillInput.lines[lineIndex].stocks.length)

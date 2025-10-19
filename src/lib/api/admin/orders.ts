@@ -219,6 +219,24 @@ export const ORDER_DETAIL_QUERY = gql`
 			userEmail
 			customerNote
 			isPaid
+			transactions {
+				id
+				message
+				name
+				events {
+					type
+				}
+				actions
+			}
+			payments {
+				id
+				isActive
+				partial
+			}
+			grantedRefunds {
+				id
+				reason
+			}
 			discounts {
 				id
 				type
