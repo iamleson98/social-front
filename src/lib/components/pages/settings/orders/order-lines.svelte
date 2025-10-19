@@ -126,7 +126,7 @@
 {/snippet}
 
 {#snippet product({ item }: TableCellProps<OrderLine>)}
-	<span title={item.productName}>{stringSlicer(item.productName, 60)}</span>
+	<span title={item.productName}>{stringSlicer(item.productName, 35)}</span>
 {/snippet}
 
 {#snippet sku({ item }: TableCellProps<OrderLine>)}

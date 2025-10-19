@@ -129,7 +129,7 @@
 {/snippet}
 
 {#snippet product({ item }: { item: FulfillmentLine })}
-	<span title={item.orderLine?.productName}>{stringSlicer(item.orderLine?.productName, 60)}</span>
+	<span title={item.orderLine?.productName}>{stringSlicer(item.orderLine?.productName, 35)}</span>
 {/snippet}
 
 {#snippet sku({ item }: { item: FulfillmentLine })}
@@ -180,7 +180,7 @@
 
 {#snippet metadata({ item }: { item: FulfillmentLine })}
 	<Button
-		size="sm"
+		size="xs"
 		color="gray"
 		variant="outline"
 		onclick={() => (orderLineIDForMetadataView = item.orderLine!.id)}>View Metadata</Button

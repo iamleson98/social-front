@@ -108,7 +108,7 @@
 {/snippet}
 
 {#snippet OrderSummaryLine(text: string, money: Money, subText?: string)}
-	<div class="flex items-start justify-between text-gray-600">
+	<div class="flex items-start justify-between text-gray-700">
 		<div>
 			<div class="text-sm">{text}</div>
 			{#if subText}
@@ -215,7 +215,8 @@
 
 		<Button
 			endIcon={Plus}
-			size="sm"
+			size="xs"
+			color="gray"
 			class="tooltip tooltip-top"
 			disabled={RefundState !== 'refundable'}
 			data-tip={RefundTooltip}>New refund</Button
@@ -232,6 +233,6 @@
 <div class={SitenameCommonClassName}>
 	<SectionHeader>
 		<div>Transactions</div>
-		<Button size="sm" endIcon={Plus}>Add transaction</Button>
+		<Button size="xs" color="gray" endIcon={Plus}>Add transaction</Button>
 	</SectionHeader>
 </div>

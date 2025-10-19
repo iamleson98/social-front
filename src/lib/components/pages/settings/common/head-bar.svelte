@@ -4,6 +4,7 @@
 	import { ClipboardCopy, Plus } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { IconButton } from '$lib/components/ui/Button';
+	import { stringSlicer } from '$lib/utils/utils';
 	import type { Page } from '@sveltejs/kit';
 
 	type Props = {
@@ -52,7 +53,7 @@
 			{#if page.url.pathname === newPageHref}
 				<li>{newPageLabel}</li>
 			{:else if page.route.id === detailRouteID}
-				{@const id = detailPageLabelGetter(page)}
+				{@const id = stringSlicer(detailPageLabelGetter(page), 40)}
 				<li class="flex items-center gap-1">
 					<span>
 						{id}
