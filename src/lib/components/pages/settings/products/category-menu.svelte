@@ -3,8 +3,7 @@
 	import { CATEGORIES_LIST_QUERY, CATEGORY_CHILDREN_LIST_QUERY } from '$lib/api/admin/category';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { ChevronRight, Icon } from '$lib/components/icons';
-	import { type SelectItemProps } from '$lib/components/ui/MegaMenu/types';
-	import { TableSkeleton, type CountableConnection } from '$lib/components/ui/Table';
+	import { TableSkeleton } from '$lib/components/ui/Table';
 	import type {
 		CategoryCountableConnection,
 		PageInfo,
@@ -12,35 +11,31 @@
 		QueryCategoriesArgs,
 		QueryCategoryArgs,
 	} from '$lib/gql/graphql';
-	import Comp from './com.svelte';
+	import CategoryMenu from './category-menu.svelte';
+	import type { CategorySelectItemProps } from './new/utils';
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 
 	type Props = {
 		connection: CategoryCountableConnection;
-		selectedItems: SelectItemProps[];
+		selectedItems: CategorySelectItemProps[];
 		disabled?: boolean;
-		onSelect?: (item: SelectItemProps) => void;
+		onSelect?: (item: CategorySelectItemProps) => void;
 	};
 
-	let {
-		connection,
-		selectedItems = $bindable(),
-		disabled,
-		onSelect,
-	}: Props = $props();
+	let { connection, selectedItems = $bindable(), disabled, onSelect }: Props = $props();
 
 	const Batch = 50;
 
 	let pageInfo = $state<PageInfo>(connection.pageInfo);
 	let meetMap = new Map<string, boolean>();
-	let itemsOptions = $state<SelectItemProps[]>([]);
+	let itemsOptions = $state<CategorySelectItemProps[]>([]);
 	let loading = $state(false);
 	let activeItemIndex = $state<number>();
 	const itemCursorClass = $derived(disabled ? 'cursor-not-allowed!' : 'cursor-pointer');
 
 	const addConnectionToItems = (connection: CategoryCountableConnection) => {
-		const addItems: SelectItemProps[] = [];
+		const addItems: CategorySelectItemProps[] = [];
 
 		for (const edge of connection.edges) {
 			if (!meetMap.has(edge.node.id)) {
@@ -96,7 +91,7 @@
 			: result.data.category.children;
 	};
 
-	const handleSelectItem = async (item: SelectItemProps, idx: number) => {
+	const handleSelectItem = async (item: CategorySelectItemProps, idx: number) => {
 		activeItemIndex = idx;
 		item.children = await fetchChildren(item.value as string);
 
@@ -134,7 +129,10 @@
 </div>
 {#if itemsOptions.length && selectedItems[itemsOptions[0].level]?.children}
 	{#key selectedItems[itemsOptions[0].level]?.children}
-		<Comp connection={selectedItems[selectedItems.length - 1].children!} bind:selectedItems />
+		<CategoryMenu
+			connection={selectedItems[selectedItems.length - 1].children!}
+			bind:selectedItems
+		/>
 	{/key}
 {:else if loading}
 	<TableSkeleton numOfRows={4} numColumns={1} headless />

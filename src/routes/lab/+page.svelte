@@ -6,7 +6,7 @@
 	import type { SelectItemProps } from '$lib/components/ui/MegaMenu/types';
 	import { TableSkeleton } from '$lib/components/ui/Table';
 	import type { Query, QueryCategoriesArgs } from '$lib/gql/graphql';
-	import Com from './com.svelte';
+	import Com from '../../lib/components/pages/settings/products/category-menu.svelte';
 	import { computePosition, flip, offset, shift } from '@floating-ui/dom';
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
@@ -49,7 +49,7 @@
 	// let open = $state(false);
 </script>
 
-<!-- {#if $CategoriesStore.fetching}
+{#if $CategoriesStore.fetching}
 	<TableSkeleton numOfRows={4} numColumns={1} />
 {:else if $CategoriesStore.error}
 	<Alert variant="error" bordered size="sm">
@@ -59,9 +59,9 @@
 	<div class="grid grid-cols-4 gap-1.5 w-full">
 		<Com connection={$CategoriesStore.data.categories} bind:selectedItems />
 	</div>
-{/if} -->
+{/if}
 
-<div bind:this={triggerRef} class="p-2 bg-green-200 border border-gray-200">open here</div>
+<!-- <div bind:this={triggerRef} class="p-2 bg-green-200 border border-gray-200">open here</div>
 
 <div class="h-dvh border border-gray-200 bg-red-200"></div>
 
@@ -70,4 +70,4 @@
 	bind:this={menuElemRef}
 >
 	lol
-</div>
+</div> -->

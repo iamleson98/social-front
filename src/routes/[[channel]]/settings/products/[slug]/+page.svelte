@@ -172,7 +172,7 @@
 			isCreatePage
 		/>
 		<CategorySelector
-			bind:categoryID={product.category}
+			bind:categoryID={product.category!}
 			bind:formOk={productInputError.category}
 			{loading}
 		/>

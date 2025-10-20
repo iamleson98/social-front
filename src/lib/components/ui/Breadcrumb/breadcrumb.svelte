@@ -15,11 +15,11 @@
 	let { items, class: className = '' }: Props = $props();
 </script>
 
-<ol class={`flex items-center flex-row gap-2 ${className}`}>
+<ol class={`flex items-center flex-row gap-1 ${className}`}>
 	{#each items as item, idx (idx)}
 		{@const attrs = item.url ? { href: item.url } : {}}
 
-		<li class="flex items-center gap-2">
+		<li class="flex items-center gap-1">
 			<svelte:element this={item.url ? 'a' : 'span'} {...attrs} class="flex items-center gap-1">
 				{#if item.icon}
 					<Icon icon={item.icon} />
