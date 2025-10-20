@@ -1,19 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
-	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Ban, PencilMinus, SettingCog } from '$lib/components/icons';
+	import { PencilMinus } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import { Badge } from '$lib/components/ui/Badge';
-	import { IconButton } from '$lib/components/ui/Button';
-	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
 	import { Popover, type DropdownTriggerInterface } from '$lib/components/ui/Popover';
-	import { Select, type SelectOption } from '$lib/components/ui/select';
+	import { type SelectOption } from '$lib/components/ui/select';
 	import { DiscountValueTypeEnum, OrderDiscountType, type Order } from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
-	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { GeneralMetadataEditor, type GeneralMetadataEditorRef } from '../../common';
 	import ActionBar from '../../common/action-bar.svelte';
@@ -23,7 +18,6 @@
 	import OrderLinesSection from '../order-lines-section.svelte';
 	import Sidebar from '../sidebar.svelte';
 	import { OrderUtilsInstance } from '../utils.svelte';
-	import dayjs from 'dayjs';
 	import { toast } from 'svelte-sonner';
 	import { Components } from '../snippets.svelte';
 
@@ -38,13 +32,13 @@
 	const OrderDiscountManual = $derived(
 		order.discounts.find((discount) => discount.type === OrderDiscountType.Manual),
 	);
-	const ShippingMethodChoices = $derived(
-		order.shippingMethods.map<SelectOption>((method) => ({
-			label: `${method.name} : ${method.price.currency} ${method.price.amount}`,
-			value: method.id,
-			disabled: !method.active,
-		})),
-	);
+	// const ShippingMethodChoices = $derived(
+	// 	order.shippingMethods.map<SelectOption>((method) => ({
+	// 		label: `${method.name} : ${method.price.currency} ${method.price.amount}`,
+	// 		value: method.id,
+	// 		disabled: !method.active,
+	// 	})),
+	// );
 	let metaRef = $state<GeneralMetadataEditorRef>();
 
 	/** we delete draft orders, not cancel them */

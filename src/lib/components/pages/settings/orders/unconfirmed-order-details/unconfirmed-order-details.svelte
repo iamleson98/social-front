@@ -1,16 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
-	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Ban, PencilMinus, SettingCog } from '$lib/components/icons';
-	import { Badge } from '$lib/components/ui/Badge';
-	import { Button, IconButton } from '$lib/components/ui/Button';
-	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
+	import { PencilMinus } from '$lib/components/icons';
+	import { Button } from '$lib/components/ui/Button';
 	import { type DropdownTriggerInterface, Popover } from '$lib/components/ui/Popover';
-	import { Select, type SelectOption } from '$lib/components/ui/select';
+	import { type SelectOption } from '$lib/components/ui/select';
 	import type { Order } from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
-	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { GeneralMetadataEditor, type GeneralMetadataEditorRef } from '../../common';
 	import HeaderSection from '../header-section.svelte';
@@ -19,7 +15,6 @@
 	import Sidebar from '../sidebar.svelte';
 	import { Components } from '../snippets.svelte';
 	import { OrderUtilsInstance } from '../utils.svelte';
-	import dayjs from 'dayjs';
 	import { toast } from 'svelte-sonner';
 
 	type Props = {
@@ -32,13 +27,13 @@
 	let loading = $state(false);
 	let metaRef = $state<GeneralMetadataEditorRef>();
 
-	const ShippingMethodChoices = $derived(
-		order.shippingMethods.map<SelectOption>((method) => ({
-			label: `${method.name} : ${method.price.currency} ${method.price.amount}`,
-			value: method.id,
-			disabled: !method.active,
-		})),
-	);
+	// const ShippingMethodChoices = $derived(
+	// 	order.shippingMethods.map<SelectOption>((method) => ({
+	// 		label: `${method.name} : ${method.price.currency} ${method.price.amount}`,
+	// 		value: method.id,
+	// 		disabled: !method.active,
+	// 	})),
+	// );
 
 	const reexecuteQuery = () => {};
 

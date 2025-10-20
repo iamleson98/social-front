@@ -1,11 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
-	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Ban, PencilMinus, SettingCog } from '$lib/components/icons';
-	import { Badge } from '$lib/components/ui/Badge';
-	import { Button, IconButton } from '$lib/components/ui/Button';
-	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
+	import { PencilMinus } from '$lib/components/icons';
+	import { Button } from '$lib/components/ui/Button';
 	import { Popover, type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import {
 		DiscountValueTypeEnum,
@@ -16,7 +13,6 @@
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
-	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { GeneralMetadataEditor, type GeneralMetadataEditorRef } from '../../common';
 	import DiscountPopup from '../discount-popup.svelte';
@@ -25,14 +21,12 @@
 	import OrderHistory from '../order-history.svelte';
 	import OrderLinesSection from '../order-lines-section.svelte';
 	import OrderPayment from '../order-payment.svelte';
-	import OrderPaymentBalance from '../order-payment.svelte';
 	import OrderTransactionWrapper from '../order-transaction-wrapper.svelte';
 	import Sidebar from '../sidebar.svelte';
 	import { Components } from '../snippets.svelte';
 	import UnfulfilledOrderLinesSection from '../unfulfilled-order-lines-section.svelte';
 	import { orderShouldUseTransactions } from '../utils';
 	import { OrderUtilsInstance } from '../utils.svelte';
-	import dayjs from 'dayjs';
 	import { toast } from 'svelte-sonner';
 
 	type Props = {

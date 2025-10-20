@@ -225,8 +225,56 @@ export const ORDER_DETAIL_QUERY = gql`
 				name
 				events {
 					type
+					amount {
+						amount
+						currency
+					}
+					createdBy {
+						... on User {
+							avatar {
+								alt
+								url
+							}
+							email
+						}
+					}
+					createdAt
+					pspReference
+					message
 				}
 				actions
+				cancelPendingAmount {
+					amount
+					currency
+				}
+				canceledAmount {
+					amount
+					currency
+				}
+				refundPendingAmount {
+					amount
+					currency
+				}
+				refundedAmount {
+					amount
+					currency
+				}
+				chargePendingAmount {
+					amount
+					currency
+				}
+				chargedAmount {
+					amount
+					currency
+				}
+				authorizePendingAmount {
+					amount
+					currency
+				}
+				authorizedAmount {
+					amount
+					currency
+				}
 			}
 			payments {
 				id

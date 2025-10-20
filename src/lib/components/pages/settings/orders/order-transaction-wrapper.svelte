@@ -7,9 +7,18 @@
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/Badge';
+	import { Input } from '$lib/components/ui/Input';
+	import { Modal } from '$lib/components/ui/Modal';
 	import { Table, type TableCellProps, type TableColumnProps } from '$lib/components/ui/Table';
-	import { OrderAction, OrderChargeStatusEnum, type Money, type Order } from '$lib/gql/graphql';
-	import { CommonEaseDatePickerFormat } from '$lib/utils/consts';
+	import {
+		OrderAction,
+		OrderChargeStatusEnum,
+		TransactionActionEnum,
+		type Money,
+		type Order,
+		type TransactionEvent,
+	} from '$lib/gql/graphql';
+	import { CommonEaseDatePickerFormat, SitenameTimeFormat } from '$lib/utils/consts';
 	import { paymentStatusBadgeClass, SitenameCommonClassName } from '$lib/utils/utils';
 	import {
 		extractOrderGiftCardUsedAmount,
@@ -33,6 +42,7 @@
 	const FilteredPayments = order.payments.filter(
 		(payment) => payment.isActive || !!payment.transactions?.length,
 	);
+	let openCaptureTransactionModal = $state(false);
 	const hasAnyTransactions =
 		!!order.transactions.length || !!FilteredPayments.length || !!order.giftCards.length;
 
@@ -74,7 +84,65 @@
 			child: refundEdit,
 		},
 	];
+
+	const TransactionEventsColumns: TableColumnProps<TransactionEvent>[] = [
+		{
+			title: '',
+			child: eventStatus,
+		},
+		{
+			title: '',
+			child: eventAmount,
+		},
+		{
+			title: '',
+			child: eventMessage,
+		},
+		{
+			title: '',
+			child: eventPspReference,
+		},
+		{
+			title: '',
+			child: eventCreatedAt,
+		},
+		{
+			title: '',
+			child: eventCreatedBy,
+		},
+	];
 </script>
+
+{#snippet eventStatus({ item }: TableCellProps<TransactionEvent>)}
+	<Badge text={item.type || '-'} size="xs" rounded />
+{/snippet}
+
+{#snippet eventCreatedAt({ item }: TableCellProps<TransactionEvent>)}
+	<div class="text-xs">{dayjs(item.createdAt).format(SitenameTimeFormat)}</div>
+{/snippet}
+
+{#snippet eventCreatedBy({ item }: TableCellProps<TransactionEvent>)}
+	{#if item.createdBy?.__typename === 'User'}
+		<Thumbnail
+			src={item.createdBy.avatar?.url}
+			alt={item.createdBy.email}
+			size="xs"
+			radius="rounded-full"
+		/>
+	{/if}
+{/snippet}
+
+{#snippet eventPspReference({ item }: TableCellProps<TransactionEvent>)}
+	{item.pspReference}
+{/snippet}
+
+{#snippet eventMessage({ item }: TableCellProps<TransactionEvent>)}
+	{item.message}
+{/snippet}
+
+{#snippet eventAmount({ item }: TableCellProps<TransactionEvent>)}
+	<PriceDisplay {...item.amount} />
+{/snippet}
 
 {#snippet refundStatus({ item }: TableCellProps<OrderRefundDisplay>)}
 	<Badge text={item.status} />
@@ -204,6 +272,75 @@
 	</div>
 {/snippet}
 
+{#snippet MoneyWithTitle(amount: Money, title: string)}
+	<div class="text-sm text-gray-600">
+		<div>{title}</div>
+		<PriceDisplay {...amount} />
+	</div>
+{/snippet}
+
+{#snippet OrderTransactions(order: Order)}
+	{#each order.transactions as transaction, idx (idx)}
+		{@const actions = transaction.actions.filter((act) => act !== TransactionActionEnum.Refund)}
+		<div>
+			<div class="flex items-center justify-between">
+				<!-- MARK: title -->
+				<div class="text-sm font-medium">
+					<svelte:element
+						this={transaction.externalUrl ? 'a' : 'div'}
+						href={transaction.externalUrl}
+						class="inline-block"
+					>
+						Transaction #{idx + 1} on {dayjs(transaction.createdAt).format(SitenameTimeFormat)}
+					</svelte:element>
+					{#if transaction.name}
+						<div class="tet-xs text-gray-500">
+							{transaction.name}
+						</div>
+					{/if}
+				</div>
+
+				<div class="flex items-center justify-between gap-2">
+					{#if transaction.cancelPendingAmount.amount > 0}
+						{@render MoneyWithTitle(transaction.cancelPendingAmount, 'Cancel pending')}
+					{/if}
+					{#if transaction.canceledAmount.amount > 0}
+						{@render MoneyWithTitle(transaction.canceledAmount, 'Cancel')}
+					{/if}
+					{#if transaction.refundPendingAmount.amount > 0}
+						{@render MoneyWithTitle(transaction.refundPendingAmount, 'Refund pending')}
+					{/if}
+					{#if transaction.refundedAmount.amount > 0}
+						{@render MoneyWithTitle(transaction.refundedAmount, 'Refunded')}
+					{/if}
+					{#if transaction.chargePendingAmount.amount > 0}
+						{@render MoneyWithTitle(transaction.chargePendingAmount, 'Charged pending')}
+					{/if}
+					{#if transaction.chargedAmount.amount > 0}
+						{@render MoneyWithTitle(transaction.chargedAmount, 'Charged')}
+					{/if}
+					{#if transaction.authorizePendingAmount.amount > 0}
+						{@render MoneyWithTitle(transaction.authorizePendingAmount, 'Authorized pending')}
+					{/if}
+					{#if transaction.authorizedAmount.amount > 0}
+						{@render MoneyWithTitle(transaction.authorizedAmount, 'Authorized')}
+					{/if}
+
+					{#if actions.length}
+						<div class="flex items-center gap-1">
+							{#each actions as action, idx (idx)}
+								<Button size="xs" color="gray">{action}</Button>
+							{/each}
+						</div>
+					{/if}
+				</div>
+			</div>
+
+			<Table items={transaction.events} headless columns={TransactionEventsColumns} />
+		</div>
+	{/each}
+{/snippet}
+
 <div class="grid grid-cols-2 gap-2">
 	{@render OrderSummaryCard(order)}
 	{@render OrderPaymentSummaryCard(order)}
@@ -233,6 +370,26 @@
 <div class={SitenameCommonClassName}>
 	<SectionHeader>
 		<div>Transactions</div>
-		<Button size="xs" color="gray" endIcon={Plus}>Add transaction</Button>
+		<Button
+			size="xs"
+			color="gray"
+			endIcon={Plus}
+			onclick={() => (openCaptureTransactionModal = true)}>Add transaction</Button
+		>
 	</SectionHeader>
+
+	{@render OrderTransactions(order)}
 </div>
+
+<Modal size="xs" open={openCaptureTransactionModal} header="Capture manual transaction">
+	<div class="space-y-2">
+		<Alert size="xs">Create a manual transaction for non-integrated payments</Alert>
+		<Input label="Description" required size="sm" placeholder="description" />
+		<Input label="Psp reference" size="sm" placeholder="psp reference" />
+		<Input label="Amount" required size="sm" type="number">
+			{#snippet action()}
+				<span class="text-[10px] font-bold">{order.channel.currencyCode}</span>
+			{/snippet}
+		</Input>
+	</div>
+</Modal>

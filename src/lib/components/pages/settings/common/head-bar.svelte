@@ -53,13 +53,13 @@
 			{#if page.url.pathname === newPageHref}
 				<li>{newPageLabel}</li>
 			{:else if page.route.id === detailRouteID}
-				{@const id = stringSlicer(detailPageLabelGetter(page), 40)}
+				{@const detailLabel = detailPageLabelGetter(page)}
 				<li class="flex items-center gap-1">
 					<span>
-						{id}
+						{stringSlicer(detailLabel, 40)}
 					</span>
 					<IconButton
-						onclick={() => handleCopy(id)}
+						onclick={() => handleCopy(detailLabel)}
 						icon={ClipboardCopy}
 						rounded
 						class="tooltip tooltip-right"
