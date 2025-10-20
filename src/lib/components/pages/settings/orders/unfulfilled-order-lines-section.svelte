@@ -6,17 +6,13 @@
 	import { type Order } from '$lib/gql/graphql';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import OrderFulfillModal from './order-fulfill-modal.svelte';
-	import OrderLineAssignModal from './order-line-assign-modal.svelte';
 	import OrderLines from './order-lines.svelte';
 
 	type Props = {
 		order: Order;
-		onAddedOrderLines?: () => void;
-		/** only in draft order this prop should be true */
-		allowAddOrderLines?: boolean;
 	};
 
-	let { order, onAddedOrderLines, allowAddOrderLines }: Props = $props();
+	let { order }: Props = $props();
 
 	let openFulfillModal = $state(false);
 </script>
@@ -24,13 +20,6 @@
 <div class={SitenameCommonClassName}>
 	<SectionHeader>
 		<Badge text="Unfulfilled" color="violet" size="sm" rounded />
-		<!-- {#if allowAddOrderLines}
-			<OrderLineAssignModal
-				{onAddedOrderLines}
-				orderId={order.id}
-				orderChannelSlug={order.channel.slug}
-			/>
-		{/if} -->
 	</SectionHeader>
 
 	{#if !order.lines.length}
@@ -39,11 +28,12 @@
 		</Alert>
 	{:else}
 		<OrderLines orderLines={order.lines} {order} />
+		<div class="text-right">
+			<Button size="xs" color="gray" onclick={() => (openFulfillModal = true)}>
+				Fulfill lines
+			</Button>
+		</div>
+
+		<OrderFulfillModal bind:open={openFulfillModal} {order} onFulfillSuccess={() => {}} />
 	{/if}
-
-	<div class="text-right">
-		<Button size="xs" color="gray" onclick={() => (openFulfillModal = true)}>Fulfill lines</Button>
-	</div>
 </div>
-
-<OrderFulfillModal bind:open={openFulfillModal} {order} onFulfillSuccess={() => {}} />

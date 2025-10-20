@@ -3,6 +3,7 @@
 	import { RadioButton } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
 	import type { Order } from '$lib/gql/graphql';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import OrderRefundFulfilledProduct from './order-refund-fulfilled-product.svelte';
 	import OrderRefundUnfulfilledProduct from './order-refund-unfulfilled-product.svelte';
 	import PaymentSubmitCard from './payent-submit-card.svelte';
@@ -96,7 +97,7 @@
 			{/if}
 		</div>
 
-		<div class="w-3/10 rounded-lg border border-gray-200 p-3 space-y-2">
+		<div class="w-3/10 {SitenameCommonClassName}">
 			<PaymentSubmitCard
 				bind:refundShipmentCosts
 				disableRefundButton={false}

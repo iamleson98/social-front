@@ -10,7 +10,7 @@
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
-	import type { TableColumnProps } from '$lib/components/ui/Table';
+	import type { TableCellProps, TableColumnProps } from '$lib/components/ui/Table';
 	import Table from '$lib/components/ui/Table/table.svelte';
 	import { FulfillmentStatus } from '$lib/gql/graphql';
 	import type {
@@ -84,9 +84,9 @@
 	let openTrackingModal = $state(false);
 	let loading = $state(false);
 	let trackingCode = $state('');
-	let orderLineIDForMetadataView = $state<string>();
 	let fulfillmentToCancelWarehouseID = $state<string>();
 	let selectedFulfillment = $state<Fulfillment>();
+	let metadataModelRef = $state<ReturnType<typeof OrderLineMetadataModal>>();
 
 	const editTrackingCode = async () => {
 		if (!selectedFulfillment) return;
@@ -120,7 +120,7 @@
 	};
 </script>
 
-{#snippet image({ item }: { item: FulfillmentLine })}
+{#snippet image({ item }: TableCellProps<FulfillmentLine>)}
 	<Thumbnail
 		src={item.orderLine?.thumbnail?.url}
 		alt={item.orderLine?.thumbnail?.alt || item.orderLine?.productName || '-'}
@@ -128,19 +128,19 @@
 	/>
 {/snippet}
 
-{#snippet product({ item }: { item: FulfillmentLine })}
+{#snippet product({ item }: TableCellProps<FulfillmentLine>)}
 	<span title={item.orderLine?.productName}>{stringSlicer(item.orderLine?.productName, 35)}</span>
 {/snippet}
 
-{#snippet sku({ item }: { item: FulfillmentLine })}
+{#snippet sku({ item }: TableCellProps<FulfillmentLine>)}
 	<span>{item.orderLine?.productSku || '-'}</span>
 {/snippet}
 
-{#snippet variant({ item }: { item: FulfillmentLine })}
+{#snippet variant({ item }: TableCellProps<FulfillmentLine>)}
 	<span>{item.orderLine?.variant?.name || '-'}</span>
 {/snippet}
 
-{#snippet actions({ item }: { item: FulfillmentLine })}
+{#snippet actions({ item }: TableCellProps<FulfillmentLine>)}
 	<a
 		href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.orderLine!.variant!.product.slug)}
 		class="flex justify-center text-blue-600"
@@ -150,25 +150,25 @@
 	</a>
 {/snippet}
 
-{#snippet quantity({ item }: { item: FulfillmentLine })}
+{#snippet quantity({ item }: TableCellProps<FulfillmentLine>)}
 	<div class="text-center">{item.quantity}</div>
 {/snippet}
 
-{#snippet price({ item }: { item: FulfillmentLine })}
+{#snippet price({ item }: TableCellProps<FulfillmentLine>)}
 	<PriceDisplay
 		amount={item.orderLine?.unitPrice.gross.amount || 0}
 		currency={item.orderLine?.unitPrice.gross.currency || ''}
 	/>
 {/snippet}
 
-{#snippet total({ item }: { item: FulfillmentLine })}
+{#snippet total({ item }: TableCellProps<FulfillmentLine>)}
 	<PriceDisplay
 		amount={item.orderLine?.totalPrice.gross.amount || 0}
 		currency={item.orderLine?.totalPrice.gross.currency || ''}
 	/>
 {/snippet}
 
-{#snippet isGift({ item }: { item: FulfillmentLine })}
+{#snippet isGift({ item }: TableCellProps<FulfillmentLine>)}
 	<div class="text-center">
 		<Badge
 			size="xs"
@@ -178,12 +178,13 @@
 	</div>
 {/snippet}
 
-{#snippet metadata({ item }: { item: FulfillmentLine })}
+{#snippet metadata({ item }: TableCellProps<FulfillmentLine>)}
 	<Button
 		size="xs"
 		color="gray"
 		variant="outline"
-		onclick={() => (orderLineIDForMetadataView = item.orderLine!.id)}>View Metadata</Button
+		onclick={() => item.orderLine && metadataModelRef?.performFetchingMetadata(item.orderLine.id)}
+		>View Metadata</Button
 	>
 {/snippet}
 
@@ -241,7 +242,7 @@
 	{/each}
 </div>
 
-<OrderLineMetadataModal orderId={order.id} />
+<OrderLineMetadataModal orderId={order.id} bind:this={metadataModelRef} />
 
 <FulfillmentCancelModal
 	fulfillmentID={fulfillmentToCancelWarehouseID}
