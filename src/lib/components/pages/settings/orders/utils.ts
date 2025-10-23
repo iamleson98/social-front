@@ -19,6 +19,11 @@ import {
 	type TransactionEvent,
 	TransactionEventTypeEnum,
 	type UserOrApp,
+	type Payment,
+	TransactionKind,
+	type PaymentGateway,
+	OrderAction,
+	type QueryOrderArgs,
 } from '$lib/gql/graphql';
 import { subtractMoney } from '$lib/utils/utils';
 
@@ -557,3 +562,169 @@ export function canEditRefund(refund: OrderRefundDisplay): boolean {
 	// Can only edit refunds that are not successful, not pending, and not manual
 	return !isSuccessful && !isPending && !isManual;
 }
+
+export type FakeTransaction = Omit<TransactionItem, "events" | "__typename"> & {
+	__typename: "FakeTransaction";
+};
+
+export type TransactionFakeEvent = Omit<Partial<TransactionEvent>, "type" | "__typename"> & {
+	__typename: "TransactionFakeEvent";
+	mappedResult: TransactionMappingResult;
+};
+
+/** Type of the trasaction event (e.g. CHARGE_SUCCESS -> CHARGE) */
+export type TransactionEventType =
+	| "REFUND"
+	| "CHARGE"
+	| "AUTHORIZATION"
+	| "CANCEL"
+	| "CHARGEBACK"
+	| "AUTHORIZATION_ADJUSTMENT"
+	| "REFUND_REVERSED"
+	| "INFO"
+	| null;
+
+/** Status of the transaction (e.g. CHARGE_SUCCESS -> SUCCESS) */
+export type TransactionEventStatus = "SUCCESS" | "FAILED" | "PENDING" | "REQUEST" | "INFO" | null;
+
+export interface TransactionMappingResult {
+	type: TransactionEventType;
+	status: TransactionEventStatus;
+}
+
+const mapPaymentKindToTransaction = (
+	kind: TransactionKind,
+	isSuccess: boolean,
+): TransactionMappingResult => {
+	const status: TransactionEventStatus = isSuccess ? "SUCCESS" : "FAILED";
+
+	switch (kind) {
+		case TransactionKind.Refund:
+			return {
+				type: "REFUND",
+				status,
+			};
+		case TransactionKind.RefundOngoing:
+			return {
+				type: "REFUND",
+				status: "PENDING",
+			};
+		case TransactionKind.Cancel:
+			return {
+				type: "CANCEL",
+				status,
+			};
+		case TransactionKind.Void:
+			return {
+				type: "CANCEL",
+				status,
+			};
+		case TransactionKind.Auth:
+			return {
+				type: "AUTHORIZATION",
+				status,
+			};
+		case TransactionKind.Capture:
+			return {
+				type: "CHARGE",
+				status,
+			};
+		case TransactionKind.Pending:
+			return {
+				type: "CHARGE",
+				status: "PENDING",
+			};
+		default:
+			return {
+				type: null,
+				status: null,
+			};
+	}
+};
+
+export const getTransactionAmount = (money: Money | null | undefined, fallbackCurrency: string): Money => {
+  if (!money) {
+    return {
+      currency: fallbackCurrency,
+      amount: 0,
+      __typename: "Money",
+    };
+  }
+
+  return money;
+};
+
+export const prepareMoney = (
+  amount: number,
+  currency: string,
+): Money => ({
+  __typename: "Money",
+  amount,
+  currency: currency ?? "VND",
+});
+
+export const mapOrderActionsToTransactionActions = (
+	orderActions: OrderAction[],
+): TransactionActionEnum[] =>
+	orderActions
+		.map(action => {
+			switch (action) {
+				case OrderAction.Void:
+					return TransactionActionEnum.Cancel;
+				case OrderAction.Capture:
+					return TransactionActionEnum.Charge;
+				case OrderAction.Refund:
+					return TransactionActionEnum.Refund;
+				default:
+					return null;
+			}
+		})
+		.filter(mappedAction => mappedAction !== null);
+
+export const findMethodName = (gatewayId: string, allMethods: PaymentGateway[]): string =>
+	allMethods.find(method => method.id === gatewayId)?.name ?? gatewayId;
+
+export const mapPaymentToTransactionEvents = (
+	payment: Payment,
+): TransactionFakeEvent[] => {
+	const transactions = payment.transactions ?? [];
+
+	if (transactions.length === 0) {
+		return [
+			{
+				id: "",
+				pspReference: "",
+				mappedResult: {
+					type: "AUTHORIZATION",
+					status: "REQUEST",
+				},
+				createdBy: null,
+				externalUrl: "",
+				message: "",
+				reasonReference: undefined,
+				createdAt: payment.modified ?? new Date(),
+				amount: undefined,
+				__typename: "TransactionFakeEvent" as const,
+			},
+		];
+	}
+
+	return transactions
+		.map(({ id, isSuccess, kind, created, token }) => {
+			const mappedResult = mapPaymentKindToTransaction(kind, isSuccess);
+
+			return {
+				id,
+				pspReference: token,
+				message: kind,
+				mappedResult,
+				createdBy: null,
+				reasonReference: null,
+				externalUrl: null,
+				createdAt: created,
+				amount: undefined,
+				__typename: "TransactionFakeEvent" as const,
+			};
+		})
+		.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+};
