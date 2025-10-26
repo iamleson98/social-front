@@ -150,7 +150,7 @@
 					>
 					</span>
 				{/snippet}
-				<DropDown placement="bottom-end" noReCalculateOnWindowResize>
+				<DropDown placement="bottom-end">
 					{#snippet trigger({ onclick, onfocus }: DropdownTriggerInterface)}
 						<Button variant="light" size="sm" class="space-x-2 uppercase" {onclick} {onfocus}>
 							{@render avatar()}

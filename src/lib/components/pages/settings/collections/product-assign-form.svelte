@@ -94,7 +94,7 @@
 			channel: item.channel.name,
 			published: item.isPublished,
 		})) || []}
-	<Popover placement="left" noReCalculateOnWindowResize>
+	<Popover placement="left">
 		{#snippet trigger({ onclick, onclose }: DropdownTriggerInterface)}
 			<Badge
 				text="{channels.length} {$tranFunc('product.channel')}"

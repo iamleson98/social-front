@@ -66,8 +66,8 @@ export type TableColumnProps<T extends Record<string, unknown>, K extends string
 	 * @param item the item of the row
 	 */
 	child: Snippet<[TableCellProps<T>]>;
-	/** plain number or percentage */
-	width?: string;
+	/** plain positive integer number */
+	width?: number;
 };
 
 export type SortDirection = OrderDirection | 'NEUTRAL';

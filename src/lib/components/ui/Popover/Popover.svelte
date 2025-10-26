@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { clickOutside } from '$lib/actions/click-outside';
-	import { dropdownResizeDebounce, type DropdownTriggerInterface } from './types';
+	import { elementResizeObserver, type DropdownTriggerInterface } from './types';
 	import { computePosition, offset, shift, flip, type Placement } from '@floating-ui/dom';
-	import { onMount, tick, type Snippet } from 'svelte';
+	import { tick, type Snippet } from 'svelte';
 	import { fly, type FlyParams } from 'svelte/transition';
 
 	type Props = {
@@ -12,18 +12,10 @@
 		placement?: Placement;
 		/** NOTE: children and options must be provided exclusively */
 		children: Snippet;
-		/** if `true`, will not recalculate position on window resize nor scroll */
-		noReCalculateOnWindowResize?: boolean;
 		open?: boolean;
 	};
 
-	let {
-		trigger,
-		placement = 'bottom',
-		children,
-		noReCalculateOnWindowResize = false,
-		open = $bindable(false),
-	}: Props = $props();
+	let { trigger, placement = 'bottom', children, open = $bindable(false) }: Props = $props();
 
 	let menuElemRef = $state<HTMLElement>();
 	let triggerRef = $state<HTMLElement>();
@@ -46,12 +38,9 @@
 		await tick();
 		await computeStyle();
 	};
-
-	onMount(() => {
-		if (!noReCalculateOnWindowResize)
-			return dropdownResizeDebounce(window, { onFire: computeStyle });
-	});
 </script>
+
+<svelte:window use:elementResizeObserver={{ onFire: computeStyle }} />
 
 <div
 	bind:this={triggerRef}
@@ -68,7 +57,6 @@
 	})}
 	<div class="absolute z-100 min-w-full" bind:this={menuElemRef}>
 		{#if open}
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<div transition:fly={flyOpts}>
 				{@render children()}
 			</div>
