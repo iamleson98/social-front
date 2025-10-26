@@ -6,11 +6,19 @@ export const ROW_OPTIONS = [10, 20, 30, 50, 100] as const;
 
 export type RowOptions = (typeof ROW_OPTIONS)[number];
 
+export type RestPagination = {
+	totalCount: number;
+	rowsPerPage: RowOptions;
+};
+
 export type TableProps<T extends Record<string, unknown>, K extends string = string> = {
 	items: T[];
 	columns: TableColumnProps<T, K>[];
 	class?: string;
-	pagination?: PageInfo;
+	/** Supports graphql pagination */
+	graphqlPagination?: PageInfo;
+	/** Supports restful pagination */
+	restPagination?: RestPagination;
 	onNextPagelick?: (afterCursor: string) => void;
 	onPreviousPagelick?: (beforeCursor: string) => void;
 	onChangeRowsPerPage?: (num: RowOptions) => void;
@@ -24,9 +32,18 @@ export type TableProps<T extends Record<string, unknown>, K extends string = str
 	defaultSortState?: SortState<K>;
 	/** for example when your data is fetching, it is batter to temporary disable interactive items within the table */
 	disabled?: boolean;
-	/** If provided, you can exchange places of rows of your table. Default to `undefined` */
+	/** 
+	 * If provided, you can exchange positions of rows of your table. Default to `undefined`
+	 * NOTE: If your row contains interactive elements, you should provide `data-interactive` attribute to their html element
+	 */
 	onDragEnd?: (dragIndex: number, dropIndex: number) => void;
 	headless?: boolean;
+	/** if provided, table will have fixed height. Table body will be scrollable, and table header will be sticky */
+	maxHeight?: number;
+
+	numOfRowsTitle?: string;
+	prevPageTitle?: string;
+	nextPageTitle?: string;
 };
 
 export type TableCellProps<T> = {
@@ -49,6 +66,8 @@ export type TableColumnProps<T extends Record<string, unknown>, K extends string
 	 * @param item the item of the row
 	 */
 	child: Snippet<[TableCellProps<T>]>;
+	/** plain number or percentage */
+	width?: string;
 };
 
 export type SortDirection = OrderDirection | 'NEUTRAL';

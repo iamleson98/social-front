@@ -4,26 +4,26 @@
 	import { operationStore } from '$lib/api/operation';
 	import { Alert } from '$lib/components/ui/Alert';
 	import type { SelectItemProps } from '$lib/components/ui/MegaMenu/types';
-	import { TableSkeleton } from '$lib/components/ui/Table';
+	import { Table, TableSkeleton, type TableCellProps } from '$lib/components/ui/Table';
 	import type { Query, QueryCategoriesArgs } from '$lib/gql/graphql';
 	import Com from '../../lib/components/pages/settings/products/category-menu.svelte';
 	import { computePosition, flip, offset, shift } from '@floating-ui/dom';
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 
-	const CategoriesStore = operationStore<
-		Pick<Query, 'categories'>,
-		QueryCategoriesArgs & { countCatalog?: boolean }
-	>({
-		query: CATEGORIES_LIST_QUERY,
-		variables: {
-			countCatalog: false,
-			first: 50,
-			level: 0,
-		},
-	});
+	// const CategoriesStore = operationStore<
+	// 	Pick<Query, 'categories'>,
+	// 	QueryCategoriesArgs & { countCatalog?: boolean }
+	// >({
+	// 	query: CATEGORIES_LIST_QUERY,
+	// 	variables: {
+	// 		countCatalog: false,
+	// 		first: 50,
+	// 		level: 0,
+	// 	},
+	// });
 
-	let selectedItems = $state<SelectItemProps[]>([]);
+	// let selectedItems = $state<SelectItemProps[]>([]);
 
 	const computeStyle = async () => {
 		if (!triggerRef || !menuElemRef) return;
@@ -47,27 +47,27 @@
 	let menuElemRef = $state<HTMLElement>();
 	let triggerRef = $state<HTMLElement>();
 	// let open = $state(false);
+
+	const items = new Array(100)
+		.fill(0)
+		.map((_, idx) => ({ id: idx.toString(), name: `Category ${idx}` }));
 </script>
 
-{#if $CategoriesStore.fetching}
-	<TableSkeleton numOfRows={4} numColumns={1} />
-{:else if $CategoriesStore.error}
-	<Alert variant="error" bordered size="sm">
-		{$CategoriesStore.error.message}
-	</Alert>
-{:else if $CategoriesStore.data?.categories}
-	<div class="grid grid-cols-4 gap-1.5 w-full">
-		<Com connection={$CategoriesStore.data.categories} bind:selectedItems />
-	</div>
-{/if}
+{#snippet name({ item }: TableCellProps<{ id: string; name: string }>)}
+	{item.name}
+{/snippet}
 
-<!-- <div bind:this={triggerRef} class="p-2 bg-green-200 border border-gray-200">open here</div>
+<Table
+	{items}
+	columns={[
+		{
+			title: 'Name',
+			child: name,
+		},
+	]}
+	restPagination={{
+		totalCount: 100,
+		rowsPerPage: 10,
+	}}
+/>
 
-<div class="h-dvh border border-gray-200 bg-red-200"></div>
-
-<div
-	class="fixed z-100 bg-black text-white h-20 w-20 border border-gray-200 shadow-md"
-	bind:this={menuElemRef}
->
-	lol
-</div> -->

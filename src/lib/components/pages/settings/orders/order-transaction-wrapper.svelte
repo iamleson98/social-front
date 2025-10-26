@@ -38,6 +38,7 @@
 		mapOrderActionsToTransactionActions,
 		getTransactionAmount,
 		prepareMoney,
+		type ExtendedOrderTransaction,
 	} from './utils';
 	import dayjs from 'dayjs';
 
@@ -288,7 +289,7 @@
 	</div>
 {/snippet}
 
-{#snippet OrderTransaction(transaction: TransactionItem, idx: number)}
+{#snippet OrderTransaction(transaction: ExtendedOrderTransaction, idx: number)}
 	{@const actions = transaction.actions.filter((act) => act !== TransactionActionEnum.Refund)}
 	<div>
 		<div class="flex items-center justify-between">

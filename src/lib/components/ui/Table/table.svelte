@@ -5,7 +5,7 @@
 	import { DropDown, type MenuItemProps } from '$lib/components/ui/Dropdown';
 	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { OrderDirection } from '$lib/gql/graphql';
-	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import { NUMBER_REGEX, SitenameCommonClassName } from '$lib/utils/utils';
 	import {
 		ROW_OPTIONS,
 		SortIconsMap,
@@ -15,6 +15,7 @@
 		type TableProps,
 	} from './types';
 	import { draggable, droppable, type DragDropState } from '@thisux/sveltednd';
+	import { Pagination } from 'bits-ui';
 	import { flip } from 'svelte/animate';
 	import { fade } from 'svelte/transition';
 
@@ -22,7 +23,8 @@
 		items = [],
 		columns,
 		class: className = SitenameCommonClassName,
-		pagination,
+		graphqlPagination,
+		restPagination,
 		onNextPagelick,
 		onPreviousPagelick,
 		onChangeRowsPerPage,
@@ -33,6 +35,10 @@
 		disabled = false,
 		onDragEnd,
 		headless,
+		maxHeight,
+		numOfRowsTitle,
+		prevPageTitle,
+		nextPageTitle,
 	}: TableProps<T, K> = $props();
 
 	const DEFAULT_SORT_STATE = columns.reduce<SortState<K>>((acc, column) => {
@@ -41,10 +47,12 @@
 	let innerRowsPerPage = $state<number>(rowsPerPage || ROW_OPTIONS[0]);
 	let sortState = $state.raw<SortState<K>>({ ...DEFAULT_SORT_STATE, ...defaultSortState });
 
-	const handleNavigateClick = (dir: 1 | -1) => {
-		if (!pagination) return;
-		if (dir === -1 && pagination.startCursor) onPreviousPagelick?.(pagination.startCursor);
-		else if (dir === 1 && pagination.endCursor) onNextPagelick?.(pagination.endCursor);
+	const handleGraphqlNavigationClick = (dir: 1 | -1) => {
+		if (!graphqlPagination) return;
+		if (dir === -1 && graphqlPagination.startCursor)
+			onPreviousPagelick?.(graphqlPagination.startCursor);
+		else if (dir === 1 && graphqlPagination.endCursor)
+			onNextPagelick?.(graphqlPagination.endCursor);
 	};
 
 	const handleSortClick = (columnKey: K) => {
@@ -79,6 +87,12 @@
 		const dropIndex = parseInt(targetContainer ?? '0');
 		onDragEnd(draggedItem, dropIndex);
 	};
+
+	const inferColumnWidth = (width?: string) => {
+		if (!width) return 'auto';
+		if (NUMBER_REGEX.test(width)) return `${width}px`;
+		return width;
+	};
 </script>
 
 {#snippet customTr(item: T, columns: TableColumnProps<T, K>[], itemIdx: number)}
@@ -89,9 +103,26 @@
 	{/each}
 {/snippet}
 
+{#snippet noData()}
+	<tr>
+		<td class="text-sm select-none! text-gray-400 text-center" colspan={columns.length}>
+			No data
+		</td>
+	</tr>
+{/snippet}
+
+{#snippet tableColgroup()}
+	<colgroup>
+		{#each columns as column, idx (idx)}
+			<col style:width={inferColumnWidth(column.width)} />
+		{/each}
+	</colgroup>
+{/snippet}
+
 <div class={[className, 'w-full overflow-x-auto']}>
-	<table class="table overflow-y-visible" class:disable-table={disabled}>
-		{#if !headless}
+	{#if !headless}
+		<table class="table table-md">
+			{@render tableColgroup()}
 			<thead>
 				<tr>
 					{#if onDragEnd}
@@ -139,8 +170,11 @@
 					{/each}
 				</tr>
 			</thead>
-		{/if}
-		{#if items.length}
+		</table>
+	{/if}
+	<div class="overflow-y-auto" style:max-height={maxHeight ? `${maxHeight}px !important` : 'unset'}>
+		<table class="table" class:disable-table={disabled}>
+			{@render tableColgroup()}
 			<tbody>
 				{#if onDragEnd}
 					{#each items as item, idx (idx)}
@@ -172,68 +206,119 @@
 							</td>
 							{@render customTr(item, columns, idx)}
 						</tr>
+					{:else}
+						{@render noData()}
 					{/each}
 				{:else}
 					{#each items as item, idx (idx)}
 						<tr>
 							{@render customTr(item, columns, idx)}
 						</tr>
+					{:else}
+						{@render noData()}
 					{/each}
 				{/if}
 			</tbody>
-		{:else}
-			<tbody>
-				<tr>
-					<td class="text-sm select-none! text-gray-400 text-center" colspan={columns.length}>
-						No data
-					</td>
-				</tr>
-			</tbody>
-		{/if}
-	</table>
+		</table>
+	</div>
 
 	<!-- MARK: pagination -->
-	{#if pagination}
-		{@const PAGIN_OPTIONS = ROW_OPTIONS.map<MenuItemProps>((num) => ({
-			children: `${num}`,
-			onclick: () => handleRowsPerPageChange(num),
-		}))}
-		<div class="mt-4 flex items-center justify-between">
-			<div>
-				<DropDown placement="bottom-start" options={PAGIN_OPTIONS}>
-					{#snippet trigger(opts: DropdownTriggerInterface)}
-						<Button size="xs" variant="light" {...opts} {disabled}>
-							No. of row {innerRowsPerPage}
-						</Button>
-					{/snippet}
-				</DropDown>
-			</div>
-			<div class="flex items-center gap-2 justify-end">
+	<div class="mt-4 flex justify-between items-center">
+		<DropDown
+			placement="bottom-start"
+			options={ROW_OPTIONS.map<MenuItemProps>((num) => ({
+				children: `${num}`,
+				onclick: () => handleRowsPerPageChange(num),
+			}))}
+		>
+			{#snippet trigger(opts: DropdownTriggerInterface)}
+				<Button size="sm" variant="light" {...opts} {disabled}>
+					{numOfRowsTitle || 'Rows per page'}:
+					{innerRowsPerPage}
+				</Button>
+			{/snippet}
+		</DropDown>
+		{#if graphqlPagination}
+			<div class="flex items-center gap-2">
 				<IconButton
 					icon={ChevronLeft}
-					size="xs"
-					disabled={!pagination.hasPreviousPage || disabled}
+					size="sm"
+					disabled={!graphqlPagination.hasPreviousPage || disabled}
 					aria-label="Previous page"
-					class="tooltip tooltip-top"
-					title="Previous page"
+					class="tooltip tooltip-left"
+					data-tip={prevPageTitle || 'Previous page'}
 					color="gray"
 					variant="light"
-					onclick={() => handleNavigateClick(-1)}
+					onclick={() => handleGraphqlNavigationClick(-1)}
 				/>
 				<IconButton
 					icon={ChevronRight}
-					size="xs"
-					disabled={!pagination.hasNextPage || disabled}
+					size="sm"
+					disabled={!graphqlPagination.hasNextPage || disabled}
 					aria-label="Next page"
-					title="Next page"
-					class="tooltip tooltip-top"
+					class="tooltip tooltip-left"
+					data-tip={nextPageTitle || 'Next page'}
 					color="gray"
 					variant="light"
-					onclick={() => handleNavigateClick(1)}
+					onclick={() => handleGraphqlNavigationClick(1)}
 				/>
 			</div>
-		</div>
-	{/if}
+		{:else if restPagination}
+			<Pagination.Root count={restPagination.totalCount} perPage={restPagination.rowsPerPage}>
+				{#snippet children({ pages })}
+					<div class="flex items-center">
+						<Pagination.PrevButton>
+							{#snippet child({ props })}
+								<IconButton
+									icon={ChevronLeft}
+									variant="light"
+									color="gray"
+									size="sm"
+									{...props}
+									class="mr-2 tooltip tooltip-left"
+									data-tip={prevPageTitle || 'Previous page'}
+								/>
+							{/snippet}
+						</Pagination.PrevButton>
+						<div class="flex items-center gap-2.5">
+							{#each pages as page (page.key)}
+								{#if page.type === 'ellipsis'}
+									<div class="text-foreground-alt select-none text-sm font-medium">...</div>
+								{:else}
+									<Pagination.Page {page}>
+										{#snippet child({ props })}
+											<IconButton
+												color="gray"
+												size="sm"
+												{...props}
+												variant="light"
+												class="mr-2 data-selected:bg-gray-600! data-selected:text-white!"
+											>
+												{page.value}
+											</IconButton>
+										{/snippet}
+									</Pagination.Page>
+								{/if}
+							{/each}
+						</div>
+						<Pagination.NextButton>
+							{#snippet child({ props })}
+								<IconButton
+									icon={ChevronRight}
+									variant="light"
+									color="gray"
+									size="sm"
+									class="ml-2 tooltip tooltip-left"
+									data-tip={nextPageTitle || 'Next page'}
+									{...props}
+								/>
+							{/snippet}
+						</Pagination.NextButton>
+					</div>
+				{/snippet}
+			</Pagination.Root>
+		{/if}
+	</div>
 </div>
 
 <style lang="postcss">

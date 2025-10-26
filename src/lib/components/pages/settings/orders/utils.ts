@@ -567,6 +567,12 @@ export type FakeTransaction = Omit<TransactionItem, "events" | "__typename"> & {
 	__typename: "FakeTransaction";
 };
 
+export type OrderTransaction = TransactionItem | FakeTransaction;
+
+export type ExtendedOrderTransaction = OrderTransaction & {
+  index?: number;
+};
+
 export type TransactionFakeEvent = Omit<Partial<TransactionEvent>, "type" | "__typename"> & {
 	__typename: "TransactionFakeEvent";
 	mappedResult: TransactionMappingResult;

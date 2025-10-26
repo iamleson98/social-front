@@ -4,7 +4,7 @@
 	import { ICON_BTN_SIZE_MAP } from './button.types';
 	import type { ButtonProps } from './button.types';
 
-	type Props = { icon: IconContent; rounded?: boolean } & Omit<
+	type Props = { icon?: IconContent; rounded?: boolean } & Omit<
 		ButtonProps,
 		'startIcon' | 'endIcon' | 'upper' | 'fullWidth' | 'radius'
 	>;
@@ -25,8 +25,8 @@
 	class={`${className} ${ICON_BTN_SIZE_MAP[size]} ${rounded ? 'rounded-full!' : ''}`}
 	style="padding: unset !important;"
 >
-	<Icon {icon} {size} />
-	{#if children}
-		{@render children()}
+	{#if icon}
+		<Icon {icon} {size} />
 	{/if}
+	{@render children?.()}
 </Button>
