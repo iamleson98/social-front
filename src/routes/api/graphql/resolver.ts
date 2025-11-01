@@ -5,10 +5,10 @@
  */
 import { resolvePromotions } from '$lib/api/graphql/resolvers/promotions';
 import { AppRoute } from '$lib/utils';
-import { typeDefs } from './schema';
 import type { RequestEvent } from '@sveltejs/kit';
 import { useCookies } from '@whatwg-node/server-plugin-cookies';
 import { createSchema, createYoga } from 'graphql-yoga';
+import { TypeDefs } from './t';
 
 const resolvers = {
 	Query: {
@@ -17,7 +17,7 @@ const resolvers = {
 };
 
 export const server = createYoga<RequestEvent>({
-	schema: createSchema({ typeDefs, resolvers }),
+	schema: createSchema({ typeDefs: TypeDefs, resolvers }),
 	graphqlEndpoint: AppRoute.GRAPHQL_API,
 	fetchAPI: { Response },
 	plugins: [useCookies()],
