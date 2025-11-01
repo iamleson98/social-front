@@ -1,73 +1,48 @@
 <script lang="ts">
-	import { clickOutside } from '$lib/actions/click-outside';
-	import { CATEGORIES_LIST_QUERY } from '$lib/api/admin/category';
-	import { operationStore } from '$lib/api/operation';
-	import { Alert } from '$lib/components/ui/Alert';
-	import type { SelectItemProps } from '$lib/components/ui/MegaMenu/types';
-	import { Table, TableSkeleton, type TableCellProps } from '$lib/components/ui/Table';
-	import type { Query, QueryCategoriesArgs } from '$lib/gql/graphql';
-	import Com from '../../lib/components/pages/settings/products/category-menu.svelte';
-	import { computePosition, flip, offset, shift } from '@floating-ui/dom';
-	import { onMount } from 'svelte';
-	import { fly } from 'svelte/transition';
+	import { Table } from '$lib/components/ui/Table-v2';
+	import type { ColumnDef } from '@tanstack/table-core';
 
-	// const CategoriesStore = operationStore<
-	// 	Pick<Query, 'categories'>,
-	// 	QueryCategoriesArgs & { countCatalog?: boolean }
-	// >({
-	// 	query: CATEGORIES_LIST_QUERY,
-	// 	variables: {
-	// 		countCatalog: false,
-	// 		first: 50,
-	// 		level: 0,
-	// 	},
-	// });
-
-	// let selectedItems = $state<SelectItemProps[]>([]);
-
-	const computeStyle = async () => {
-		if (!triggerRef || !menuElemRef) return;
-		const { x, y } = await computePosition(triggerRef, menuElemRef, {
-			placement: 'bottom-start',
-			middleware: [offset(4), flip(), shift()],
-		});
-
-		Object.assign(menuElemRef.style, {
-			left: `${x}px`,
-			top: `${y}px`,
-		});
+	type Person = {
+		name: string;
+		age: number;
+		email: string;
 	};
 
-	onMount(async () => {
-		await computeStyle();
-	});
+	const items: Person[] = [
+		{
+			name: 'John Doe',
+			age: 30,
+			email: 'john.doe@example.com',
+		},
+		{
+			name: 'Jane Smith',
+			age: 25,
+			email: 'jane.smith@example.com',
+		},
+		{
+			name: 'Bob Johnson',
+			age: 35,
+			email: 'bob.johnson@example.com',
+		},
+	];
 
-	// $inspect(selectedItems);
-
-	let menuElemRef = $state<HTMLElement>();
-	let triggerRef = $state<HTMLElement>();
-	// let open = $state(false);
-
-	const items = new Array(100)
-		.fill(0)
-		.map((_, idx) => ({ id: idx.toString(), name: `Category ${idx}` }));
+	const columns: ColumnDef<Person>[] = [
+		{
+			accessorKey: 'name',
+			header: 'Name',
+			// cell: ({ row }) => row.original.name,
+		},
+		{
+			accessorKey: 'age',
+			header: 'Age',
+			// cell: ({ row }) => row.original.age,
+		},
+		{
+			accessorKey: 'email',
+			header: 'Email',
+			// cell: ({ row }) => row.original.email,
+		},
+	];
 </script>
 
-{#snippet name({ item }: TableCellProps<{ id: string; name: string }>)}
-	{item.name}
-{/snippet}
-
-<Table
-	{items}
-	columns={[
-		{
-			title: 'Name',
-			child: name,
-		},
-	]}
-	restPagination={{
-		totalCount: 100,
-		rowsPerPage: 10,
-	}}
-/>
-
+<Table {items} {columns} />
