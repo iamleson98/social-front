@@ -198,9 +198,12 @@ importers:
       '@graphql-codegen/typescript-operations':
         specifier: ^4.6.1
         version: 4.6.1(encoding@0.1.13)(graphql-sock@1.0.1(graphql@16.11.0))(graphql@16.11.0)
+      '@internationalized/date':
+        specifier: ^3.10.0
+        version: 3.10.0
       '@lucide/svelte':
-        specifier: ^0.552.0
-        version: 0.552.0(svelte@5.43.2)
+        specifier: ^0.544.0
+        version: 0.544.0(svelte@5.43.2)
       '@playwright/test':
         specifier: ^1.56.1
         version: 1.56.1
@@ -1391,8 +1394,8 @@ packages:
   '@lexical/utils@0.23.1':
     resolution: {integrity: sha512-yXEkF6fj32+mJblCoP0ZT/vA0S05FA0nRUkVrvGX6sbZ9y+cIzuIbBoHi4z1ytutcWHQrwCK4TsN9hPYBIlb2w==}
 
-  '@lucide/svelte@0.552.0':
-    resolution: {integrity: sha512-8wQF1YUKgaXiFidPdHM5NKESArKHLrgf8A1EAOjvqRmdVlL2KFsPxTchez/lMUOJKxXeDgrRKfXQuaN1O5KlhQ==}
+  '@lucide/svelte@0.544.0':
+    resolution: {integrity: sha512-9f9O6uxng2pLB01sxNySHduJN3HTl5p0HDu4H26VR51vhZfiMzyOMe9Mhof3XAk4l813eTtl+/DYRvGyoRR+yw==}
     peerDependencies:
       svelte: ^5
 
@@ -7418,7 +7421,7 @@ snapshots:
       '@lexical/table': 0.23.1
       lexical: 0.23.1
 
-  '@lucide/svelte@0.552.0(svelte@5.43.2)':
+  '@lucide/svelte@0.544.0(svelte@5.43.2)':
     dependencies:
       svelte: 5.43.2
 

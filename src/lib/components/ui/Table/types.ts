@@ -1,4 +1,5 @@
-import { ChevronDown, ChevronSort, ChevronUp, type IconContent } from '$lib/components/icons';
+import { ArrowDown, ArrowUp, type IconContent } from '$lib/components/icons';
+import { TablerArrowDownUp } from '$lib/components/icons/consts';
 import type { OrderDirection, PageInfo } from '$lib/gql/graphql';
 import type { Snippet } from 'svelte';
 
@@ -74,9 +75,9 @@ export type SortDirection = OrderDirection | 'NEUTRAL';
 export type SortState<K extends string = string> = Record<K, SortDirection>;
 
 export const SortIconsMap: Record<SortDirection, IconContent> = {
-	ASC: ChevronUp,
-	DESC: ChevronDown,
-	NEUTRAL: ChevronSort,
+	ASC: ArrowUp,
+	DESC: ArrowDown,
+	NEUTRAL: TablerArrowDownUp,
 };
 
 export type CountableConnection<T> = {

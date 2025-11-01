@@ -3,7 +3,7 @@
 	import { IconButton } from '$lib/components/ui/Button';
 	import Button from '$lib/components/ui/Button/Button.svelte';
 	import { DropDown, type MenuItemProps } from '$lib/components/ui/Dropdown';
-	import { elementResizeObserver, type DropdownTriggerInterface } from '$lib/components/ui/Popover';
+	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { OrderDirection } from '$lib/gql/graphql';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import {
@@ -46,8 +46,6 @@
 	}, {} as SortState<K>);
 	let innerRowsPerPage = $state<number>(rowsPerPage || ROW_OPTIONS[0]);
 	let sortState = $state.raw<SortState<K>>({ ...DEFAULT_SORT_STATE, ...defaultSortState });
-	let tableContainerRef = $state<HTMLDivElement>();
-	let columnsWidth = $state(new Array<number>(columns.length));
 
 	const handleGraphqlNavigationClick = (dir: 1 | -1) => {
 		if (!graphqlPagination) return;
@@ -89,33 +87,11 @@
 		const dropIndex = parseInt(targetContainer ?? '0');
 		onDragEnd(draggedItem, dropIndex);
 	};
-
-	const inferColumnWidth = (width?: number): number => {
-		if (width != undefined) if (width < 0) return -width;
-
-		const parentWidth = tableContainerRef?.getBoundingClientRect().width || 50 * columns.length;
-		return Math.floor(parentWidth / columns.length);
-	};
-
-	const calculateColumnsWidth = async () => {
-		if (!tableContainerRef) return;
-
-		const { width } = tableContainerRef.getBoundingClientRect();
-		const averageColumnWidth = Math.floor(width / columns.length);
-
-		columnsWidth = columns.map((col) => {
-			if (col.width != undefined) {
-				if (col.width < 0) return -col.width;
-				return col.width;
-			}
-			return averageColumnWidth;
-		});
-	};
 </script>
 
 {#snippet customTr(item: T, columns: TableColumnProps<T, K>[], itemIdx: number)}
 	{#each columns as column, idx (idx)}
-		<td class="px-1! py-2!">
+		<td>
 			{@render column.child({ item, idx: itemIdx })}
 		</td>
 	{/each}
@@ -129,45 +105,18 @@
 	</tr>
 {/snippet}
 
-{#snippet tableColgroup()}
-	<colgroup>
-		{#each columns as column, idx (idx)}
-			<col width={columnsWidth[idx] || inferColumnWidth(column.width)} />
-		{/each}
-	</colgroup>
-{/snippet}
-
-<svelte:window use:elementResizeObserver={{ onFire: calculateColumnsWidth }} />
-
-<div bind:this={tableContainerRef}>
-	<div class={[className, 'w-full overflow-x-auto']}>
-		{#if !headless}
-			<table class="table table-md">
-				{@render tableColgroup()}
-				<thead>
+<div class={[className, 'w-full overflow-x-auto']}>
+	<div class="overflow-y-auto" style:max-height={maxHeight ? `${maxHeight}px !important` : 'unset'}>
+		<table class="table" class:disable-table={disabled}>
+			{#if !headless}
+				<thead class={[!!maxHeight && 'sticky! top-0! shadow-xs bg-inherit']}>
 					<tr>
 						{#if onDragEnd}
 							<th></th>
 						{/if}
 						{#each columns as column, idx (idx)}
-							{@const props = column?.key
-								? {
-										onclick: () => handleSortClick(column.key!),
-										onkeyup: (evt: KeyboardEvent) =>
-											evt.key === 'Enter' && handleSortClick(column.key!),
-										disabled,
-									}
-								: {}}
-							<th class="p-[unset]!">
-								<svelte:element
-									this={column?.key ? 'button' : 'div'}
-									class={[
-										!!column?.key &&
-											'cursor-pointer hover:bg-gray-100 active:bg-gray-200 focus:bg-gray-200',
-										'flex items-center gap-2 w-full h-full p-2 justify-between',
-									]}
-									{...props}
-								>
+							<th>
+								<div class="flex items-center justify-between">
 									<div class="flex items-center gap-1">
 										{#if column?.startIcon}
 											<Icon icon={column.startIcon} size="sm" />
@@ -181,171 +130,170 @@
 											<Icon icon={column.endIcon} size="sm" />
 										{/if}
 									</div>
-									{#if column?.key}
-										<span>
-											<Icon icon={SortIconsMap[sortState[column.key!]]} size="sm" />
-										</span>
+
+									{#if column.key}
+										<IconButton
+											size="xs"
+											variant="light"
+											color="gray"
+											onclick={() => handleSortClick(column.key!)}
+											{disabled}
+										>
+											<Icon icon={SortIconsMap[sortState[column.key!]]} size="xs" />
+										</IconButton>
 									{/if}
-								</svelte:element>
+								</div>
 							</th>
 						{/each}
 					</tr>
 				</thead>
-			</table>
-		{/if}
-		<div
-			class="overflow-y-auto"
-			style:max-height={maxHeight ? `${maxHeight}px !important` : 'unset'}
-		>
-			<table class="table" class:disable-table={disabled}>
-				{@render tableColgroup()}
-				<tbody>
-					{#if onDragEnd}
-						{#each items as item, idx (idx)}
-							<tr
-								use:droppable={{
-									container: idx.toString(),
-									callbacks: { onDrop: handleDrop },
-								}}
-								use:draggable={{
-									container: idx.toString(),
-									dragData: idx,
-									interactive: ['[data-interactive]'], // within cell definition, add `data-interactive` to the element if you want to exclude it from draggable
-								}}
-								animate:flip={{ duration: 200 }}
-								in:fade={{ duration: 150 }}
-								out:fade={{ duration: 150 }}
-								class="svelte-dnd-touch-feedback"
-							>
-								<td class="px-1! py-2!">
-									<div>
-										<IconButton
-											icon={GripVertical}
-											size="xs"
-											color="gray"
-											variant="light"
-											{disabled}
-										/>
-									</div>
-								</td>
-								{@render customTr(item, columns, idx)}
-							</tr>
-						{:else}
-							{@render noData()}
-						{/each}
-					{:else}
-						{#each items as item, idx (idx)}
-							<tr>
-								{@render customTr(item, columns, idx)}
-							</tr>
-						{:else}
-							{@render noData()}
-						{/each}
-					{/if}
-				</tbody>
-			</table>
-		</div>
-
-		<!-- MARK: pagination -->
-		{#if graphqlPagination || restPagination}
-			<div class="mt-4 flex justify-between items-center">
-				<DropDown
-					placement="bottom-start"
-					options={ROW_OPTIONS.map<MenuItemProps>((num) => ({
-						children: `${num}`,
-						onclick: () => handleRowsPerPageChange(num),
-					}))}
-				>
-					{#snippet trigger(opts: DropdownTriggerInterface)}
-						<Button size="xs" variant="light" {...opts} {disabled}>
-							{numOfRowsTitle || 'Rows per page'}:
-							{innerRowsPerPage}
-						</Button>
-					{/snippet}
-				</DropDown>
-				{#if graphqlPagination}
-					<div class="flex items-center gap-2">
-						<IconButton
-							icon={ChevronLeft}
-							size="xs"
-							disabled={!graphqlPagination.hasPreviousPage || disabled}
-							aria-label="Previous page"
-							class="tooltip tooltip-left"
-							data-tip={prevPageTitle || 'Previous page'}
-							color="gray"
-							variant="light"
-							onclick={() => handleGraphqlNavigationClick(-1)}
-						/>
-						<IconButton
-							icon={ChevronRight}
-							size="xs"
-							disabled={!graphqlPagination.hasNextPage || disabled}
-							aria-label="Next page"
-							class="tooltip tooltip-left"
-							data-tip={nextPageTitle || 'Next page'}
-							color="gray"
-							variant="light"
-							onclick={() => handleGraphqlNavigationClick(1)}
-						/>
-					</div>
-				{:else if restPagination}
-					<Pagination.Root count={restPagination.totalCount} perPage={restPagination.rowsPerPage}>
-						{#snippet children({ pages })}
-							<div class="flex items-center">
-								<Pagination.PrevButton>
-									{#snippet child({ props })}
-										<IconButton
-											icon={ChevronLeft}
-											variant="light"
-											color="gray"
-											size="xs"
-											{...props}
-											class="mr-2 tooltip tooltip-left"
-											data-tip={prevPageTitle || 'Previous page'}
-										/>
-									{/snippet}
-								</Pagination.PrevButton>
-								<div class="flex items-center gap-2.5">
-									{#each pages as page (page.key)}
-										{#if page.type === 'ellipsis'}
-											<div class="text-foreground-alt select-none text-sm font-medium">...</div>
-										{:else}
-											<Pagination.Page {page}>
-												{#snippet child({ props })}
-													<IconButton
-														color="gray"
-														size="xs"
-														{...props}
-														variant="light"
-														class="mr-2 data-selected:bg-gray-600! data-selected:text-white!"
-													>
-														{page.value}
-													</IconButton>
-												{/snippet}
-											</Pagination.Page>
-										{/if}
-									{/each}
+			{/if}
+			<tbody>
+				{#if onDragEnd}
+					{#each items as item, idx (idx)}
+						<tr
+							use:droppable={{
+								container: idx.toString(),
+								callbacks: { onDrop: handleDrop },
+							}}
+							use:draggable={{
+								container: idx.toString(),
+								dragData: idx,
+								interactive: ['[data-interactive]'], // within cell definition, add `data-interactive` to the element if you want to exclude it from draggable
+							}}
+							animate:flip={{ duration: 200 }}
+							in:fade={{ duration: 150 }}
+							out:fade={{ duration: 150 }}
+							class="svelte-dnd-touch-feedback"
+						>
+							<td>
+								<div>
+									<IconButton
+										icon={GripVertical}
+										size="xs"
+										color="gray"
+										variant="light"
+										{disabled}
+									/>
 								</div>
-								<Pagination.NextButton>
-									{#snippet child({ props })}
-										<IconButton
-											icon={ChevronRight}
-											variant="light"
-											color="gray"
-											size="xs"
-											class="ml-2 tooltip tooltip-left"
-											data-tip={nextPageTitle || 'Next page'}
-											{...props}
-										/>
-									{/snippet}
-								</Pagination.NextButton>
-							</div>
-						{/snippet}
-					</Pagination.Root>
+							</td>
+							{@render customTr(item, columns, idx)}
+						</tr>
+					{:else}
+						{@render noData()}
+					{/each}
+				{:else}
+					{#each items as item, idx (idx)}
+						<tr>
+							{@render customTr(item, columns, idx)}
+						</tr>
+					{:else}
+						{@render noData()}
+					{/each}
 				{/if}
-			</div>
-		{/if}
+			</tbody>
+		</table>
 	</div>
+
+	<!-- MARK: pagination -->
+	{#if graphqlPagination || restPagination}
+		<div class="mt-4 flex justify-between items-center">
+			<DropDown
+				placement="bottom-start"
+				options={ROW_OPTIONS.map<MenuItemProps>((num) => ({
+					children: `${num}`,
+					onclick: () => handleRowsPerPageChange(num),
+				}))}
+			>
+				{#snippet trigger(opts: DropdownTriggerInterface)}
+					<Button size="xs" variant="light" {...opts} {disabled}>
+						{numOfRowsTitle || 'Rows per page'}:
+						{innerRowsPerPage}
+					</Button>
+				{/snippet}
+			</DropDown>
+			{#if graphqlPagination}
+				<div class="flex items-center gap-2">
+					<IconButton
+						icon={ChevronLeft}
+						size="xs"
+						disabled={!graphqlPagination.hasPreviousPage || disabled}
+						aria-label="Previous page"
+						class="tooltip tooltip-left"
+						data-tip={prevPageTitle || 'Previous page'}
+						color="gray"
+						variant="light"
+						onclick={() => handleGraphqlNavigationClick(-1)}
+					/>
+					<IconButton
+						icon={ChevronRight}
+						size="xs"
+						disabled={!graphqlPagination.hasNextPage || disabled}
+						aria-label="Next page"
+						class="tooltip tooltip-left"
+						data-tip={nextPageTitle || 'Next page'}
+						color="gray"
+						variant="light"
+						onclick={() => handleGraphqlNavigationClick(1)}
+					/>
+				</div>
+			{:else if restPagination}
+				<Pagination.Root count={restPagination.totalCount} perPage={restPagination.rowsPerPage}>
+					{#snippet children({ pages })}
+						<div class="flex items-center">
+							<Pagination.PrevButton>
+								{#snippet child({ props })}
+									<IconButton
+										icon={ChevronLeft}
+										variant="light"
+										color="gray"
+										size="xs"
+										{...props}
+										class="mr-2 tooltip tooltip-left"
+										data-tip={prevPageTitle || 'Previous page'}
+									/>
+								{/snippet}
+							</Pagination.PrevButton>
+							<div class="flex items-center gap-2.5">
+								{#each pages as page (page.key)}
+									{#if page.type === 'ellipsis'}
+										<div class="text-foreground-alt select-none text-sm font-medium">...</div>
+									{:else}
+										<Pagination.Page {page}>
+											{#snippet child({ props })}
+												<IconButton
+													color="gray"
+													size="xs"
+													{...props}
+													variant="light"
+													class="mr-2 data-selected:bg-gray-600! data-selected:text-white!"
+												>
+													{page.value}
+												</IconButton>
+											{/snippet}
+										</Pagination.Page>
+									{/if}
+								{/each}
+							</div>
+							<Pagination.NextButton>
+								{#snippet child({ props })}
+									<IconButton
+										icon={ChevronRight}
+										variant="light"
+										color="gray"
+										size="xs"
+										class="ml-2 tooltip tooltip-left"
+										data-tip={nextPageTitle || 'Next page'}
+										{...props}
+									/>
+								{/snippet}
+							</Pagination.NextButton>
+						</div>
+					{/snippet}
+				</Pagination.Root>
+			{/if}
+		</div>
+	{/if}
 </div>
 
 <style lang="postcss">
@@ -367,8 +315,19 @@
 		@apply pointer-events-none! cursor-not-allowed!;
 	}
 
-	table {
-		table-layout: fixed;
-		border-collapse: separate;
+	th:not(:last-child) {
+		@apply border-r border-gray-200 py-1 px-1.5;
+	}
+
+	tr:nth-child(even) {
+		@apply bg-gray-50;
+	}
+
+	tbody > tr:hover {
+		@apply bg-gray-100;
+	}
+
+	td {
+		@apply p-1.5!;
 	}
 </style>

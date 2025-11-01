@@ -5,7 +5,16 @@
 	import { type RowOptions } from '$lib/components/ui/Table';
 	import { Table as TB } from '$lib/components/ui/Table-v2';
 	import { renderSnippet } from '$lib/components/ui/Table-v2/ui/data-table';
-	import type { ColumnDef, Row, Table, Column } from '@tanstack/table-core';
+	import type { RenderSnippetConfig } from '$lib/components/ui/Table-v2/ui/data-table/render-helpers';
+	import type {
+		ColumnDef,
+		Row,
+		Table,
+		Column,
+		HeaderContext,
+		CellContext,
+	} from '@tanstack/table-core';
+	import type { T } from 'vitest/dist/chunks/environment.d.cL3nLXbE.js';
 
 	type Person = {
 		name: string;
@@ -13,7 +22,8 @@
 		email: string;
 	};
 
-	const normal = '<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 3v18m-7-3l-3 3l-3-3m3 3V3m13 3l-3-3l-3 3"/>'
+	const normal =
+		'<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 3v18m-7-3l-3 3l-3-3m3 3V3m13 3l-3-3l-3 3"/>';
 
 	const items: Person[] = [
 		{
@@ -32,6 +42,14 @@
 			email: 'bob.johnson@example.com',
 		},
 	];
+
+	type TableColumnProps<T extends Record<string, unknown>> = {
+		id: string;
+		accessorKey: string;
+		header?: (props: HeaderContext<T, unknown>) => RenderSnippetConfig<Table<T>>;
+		cell?: (props: CellContext<T, unknown>) => RenderSnippetConfig<Row<T>>;
+		enableSorting?: boolean;
+	};
 
 	const columns: ColumnDef<Person>[] = [
 		{
@@ -65,12 +83,7 @@
 	{@const sortState = col.getIsSorted()}
 	<div class="flex items-center justify-between">
 		Age
-		<IconButton
-			size="xs"
-			color="gray"
-			variant="light"
-			onclick={col.getToggleSortingHandler()}
-		>
+		<IconButton size="xs" color="gray" variant="light" onclick={col.getToggleSortingHandler()}>
 			{#if !sortState}
 				<Icon icon={normal} size="xs" />
 			{:else if sortState === 'asc'}
