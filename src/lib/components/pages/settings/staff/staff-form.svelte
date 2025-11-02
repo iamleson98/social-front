@@ -9,9 +9,10 @@
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import dayjs from 'dayjs';
 	import { difference } from 'es-toolkit';
-	import { boolean, object, string, z } from 'zod';
+	import { boolean, object, string, email as zodEmail } from 'zod';
 
 	type Props = {
 		avatar?: string;
@@ -53,28 +54,18 @@
 		avatar: string().optional(),
 		lastName: string().nonempty($CommonState.FieldRequiredError),
 		firstName: string().nonempty($CommonState.FieldRequiredError),
-		email: string()
-			.nonempty($CommonState.FieldRequiredError)
-			.email($CommonState.InvalidEmail),
+		email: zodEmail($CommonState.InvalidEmail).nonempty($CommonState.FieldRequiredError),
 		isActive: boolean(),
 	});
 
-	type StaffSchema = z.infer<typeof staffSchema>;
+	const SchemaHandler = createSchemaHandler(staffSchema, () => ({
+		lastName,
+		firstName,
+		email,
+		isActive,
+	}));
 
-	let staffFormErrors = $state.raw<Partial<Record<keyof StaffSchema, string[]>>>({});
 	let displayingGroups = $state(existingGroups);
-
-	const validate = () => {
-		const parseResult = staffSchema.safeParse({
-			lastName,
-			firstName,
-			email,
-			isActive,
-		});
-
-		formOk = parseResult.success;
-		staffFormErrors = parseResult.success ? {} : parseResult.error?.formErrors.fieldErrors;
-	};
 
 	const handlePermissionGroupChange = (opts?: SelectOption | SelectOption[]) => {
 		if (!opts) return;
@@ -115,26 +106,26 @@
 		<Input
 			label={$tranFunc('common.lastName')}
 			bind:value={lastName}
-			inputDebounceOption={{ onInput: validate }}
-			variant={staffFormErrors?.lastName?.length ? 'error' : 'info'}
-			subText={staffFormErrors?.lastName?.length ? staffFormErrors.lastName[0] : ''}
+			inputDebounceOption={{ onInput: SchemaHandler.validate }}
+			variant={$SchemaHandler.lastName?.length ? 'error' : 'info'}
+			subText={$SchemaHandler.lastName?.[0]}
 			required
 			{disabled}
 			readonly={!isCreatePage && !canEdit}
 			class="flex-1"
-			onblur={validate}
+			onblur={SchemaHandler.validate}
 		/>
 		<Input
 			label={$tranFunc('common.firstName')}
 			bind:value={firstName}
-			inputDebounceOption={{ onInput: validate }}
-			variant={staffFormErrors?.firstName?.length ? 'error' : 'info'}
-			subText={staffFormErrors?.firstName?.length ? staffFormErrors.firstName[0] : ''}
+			inputDebounceOption={{ onInput: SchemaHandler.validate }}
+			variant={$SchemaHandler.firstName?.length ? 'error' : 'info'}
+			subText={$SchemaHandler.firstName?.[0]}
 			required
 			{disabled}
 			readonly={!isCreatePage && !canEdit}
 			class="flex-1"
-			onblur={validate}
+			onblur={SchemaHandler.validate}
 		/>
 	</div>
 	<Input
@@ -142,12 +133,12 @@
 		bind:value={email}
 		class="flex-1 mt-3"
 		required
-		variant={staffFormErrors?.email?.length ? 'error' : 'info'}
-		subText={staffFormErrors?.email?.length ? staffFormErrors.email[0] : ''}
+		variant={$SchemaHandler.email?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.email?.[0]}
 		{disabled}
 		readonly={!isCreatePage && !canEdit}
-		inputDebounceOption={{ onInput: validate }}
-		onblur={validate}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
 	/>
 
 	<Toggle

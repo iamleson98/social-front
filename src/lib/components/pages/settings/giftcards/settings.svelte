@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
+	import type { TranslationKey } from '$i18n/types';
 	import {
 		GIFT_CARD_TAGS_QUERY,
 		GIFTCARD_SETTINGS_QUERY,
@@ -43,9 +44,11 @@
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import GiftcardExpirationForm from './giftcard-expiration-form.svelte';
+	import { camelCase } from 'es-toolkit';
 	import { onMount } from 'svelte';
-	import z, { array, boolean, number, object, string } from 'zod';
+	import { array, boolean, number, object, string } from 'zod';
 
 	type Props = {
 		variables: QueryGiftCardsArgs;
@@ -86,9 +89,11 @@
 		isActive: boolean(),
 		expiryDate: string().optional(),
 	});
-
-	type GiftcardSchema = z.infer<typeof giftcardSchema>;
-	let giftcardFormErrors = $state.raw<Partial<Record<keyof GiftcardSchema, string[]>>>({});
+	const SchemaHandler = createSchemaHandler(giftcardSchema, () => ({
+		...bulkIssueInput,
+		amount: bulkIssueInput.balance.amount,
+		currency: bulkIssueInput.balance.currency,
+	}));
 
 	let giftcardSettingInput = $state<GiftCardSettingsUpdateInput>({
 		expiryType: GiftCardSettingsExpiryTypeEnum.ExpiryPeriod,
@@ -98,16 +103,13 @@
 		},
 	});
 
-	const camelCase = (enumValue: string) =>
-		enumValue.toLowerCase().replace(/_(\w)/g, (_, c) => c.toUpperCase());
-
 	const ExpiryTypes = Object.values(GiftCardSettingsExpiryTypeEnum).map<SelectOption>((value) => ({
 		value,
-		label: $tranFunc(`giftcard.expiryType.${camelCase(value)}`),
+		label: $tranFunc(`giftcard.expiryType.${camelCase(value)}` as TranslationKey),
 	}));
 	const ExpiryPeriodTypes = Object.values(TimePeriodTypeEnum).map<SelectOption>((value) => ({
 		value,
-		label: $tranFunc(`giftcard.periodType.${camelCase(value)}`),
+		label: $tranFunc(`giftcard.periodType.${camelCase(value)}` as TranslationKey),
 	}));
 
 	onMount(() =>
@@ -149,16 +151,6 @@
 			exportConfig.filter = variables.filter;
 		}
 	});
-
-	const validate = () => {
-		const parseResult = giftcardSchema.safeParse({
-			...bulkIssueInput,
-			amount: bulkIssueInput.balance.amount,
-			currency: bulkIssueInput.balance.currency,
-		});
-		giftcardFormErrors = parseResult.success ? {} : parseResult.error?.formErrors.fieldErrors;
-		return parseResult.success;
-	};
 
 	const handleClickOpenSetting = () => {
 		openSettingModal = true;
@@ -351,10 +343,10 @@
 			bind:value={bulkIssueInput.count}
 			disabled={loading}
 			required
-			onblur={validate}
-			inputDebounceOption={{ onInput: validate }}
-			variant={giftcardFormErrors.count?.length ? 'error' : 'info'}
-			subText={giftcardFormErrors.count?.[0]}
+			onblur={SchemaHandler.validate}
+			inputDebounceOption={{ onInput: SchemaHandler.validate }}
+			variant={$SchemaHandler.count?.length ? 'error' : 'info'}
+			subText={$SchemaHandler.count?.[0]}
 		/>
 		<div class="flex items-start gap-2">
 			<Input
@@ -366,10 +358,10 @@
 				bind:value={bulkIssueInput.balance.amount}
 				disabled={loading}
 				required
-				onblur={validate}
-				inputDebounceOption={{ onInput: validate }}
-				variant={giftcardFormErrors.amount?.length ? 'error' : 'info'}
-				subText={giftcardFormErrors.amount?.[0]}
+				onblur={SchemaHandler.validate}
+				inputDebounceOption={{ onInput: SchemaHandler.validate }}
+				variant={$SchemaHandler.amount?.length ? 'error' : 'info'}
+				subText={$SchemaHandler.amount?.[0]}
 			/>
 			<ShopCurrenciesSelect
 				label={$tranFunc('common.currency')}
@@ -378,10 +370,10 @@
 				placeholder={$tranFunc('common.currency')}
 				bind:value={bulkIssueInput.balance.currency}
 				disabled={loading}
-				onblur={validate}
-				onchange={validate}
-				variant={giftcardFormErrors.currency?.length ? 'error' : 'info'}
-				subText={giftcardFormErrors.currency?.[0]}
+				onblur={SchemaHandler.validate}
+				onchange={SchemaHandler.validate}
+				variant={$SchemaHandler.currency?.length ? 'error' : 'info'}
+				subText={$SchemaHandler.currency?.[0]}
 			/>
 		</div>
 		<GraphqlPaginableSelect

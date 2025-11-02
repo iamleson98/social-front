@@ -9,9 +9,10 @@
 	import { PromotionTypeEnum } from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import type { OutputData } from '@editorjs/editorjs';
 	import dayjs from 'dayjs';
-	import z, { any, array, object, string } from 'zod';
+	import { any, array, object, string } from 'zod';
 
 	type Props = {
 		/** indicate if current page is promotion create page */
@@ -44,31 +45,22 @@
 		}).nullable(),
 		startDate: string().nonempty($CommonState.FieldRequiredError),
 	});
-
-	type PromotionSchema = z.infer<typeof PromotionSchema>;
-
-	let promotionFormErrors = $state.raw<Partial<Record<keyof PromotionSchema, string[]>>>({});
+	const SchemaHandler = createSchemaHandler(PromotionSchema, () => ({
+		name,
+		type,
+		description,
+		startDate,
+	}));
 
 	const DiscountTypeOptions = Object.values(PromotionTypeEnum).map<SelectOption>((value) => ({
 		value,
 		label: value.toLowerCase(),
 	}));
 
-	const validate = () => {
-		const parseResult = PromotionSchema.safeParse({
-			name,
-			type,
-			description,
-			startDate,
-			endDate,
-		});
-		promotionFormErrors = parseResult.success ? {} : parseResult.error.formErrors.fieldErrors;
-		ok = parseResult.success;
-		return parseResult.success;
-	};
+	$effect(() => {
+		ok = !Object.values($SchemaHandler).some(Boolean);
+	});
 </script>
-
-{void ok}
 
 <div class={SitenameCommonClassName}>
 	<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
@@ -82,10 +74,10 @@
 			size="md"
 			bind:value={type}
 			disabled={!isCreatePage || disabled}
-			onblur={validate}
-			onchange={validate}
-			variant={promotionFormErrors?.type?.length ? 'error' : 'info'}
-			subText={promotionFormErrors?.type?.[0]}
+			onblur={SchemaHandler.validate}
+			onchange={SchemaHandler.validate}
+			variant={$SchemaHandler?.type?.length ? 'error' : 'info'}
+			subText={$SchemaHandler?.type?.[0]}
 		/>
 		<Input
 			placeholder={$tranFunc('common.name')}
@@ -95,10 +87,10 @@
 			size="md"
 			bind:value={name}
 			{disabled}
-			variant={promotionFormErrors?.name?.length ? 'error' : 'info'}
-			subText={promotionFormErrors?.name?.[0]}
-			onblur={validate}
-			inputDebounceOption={{ onInput: validate }}
+			variant={$SchemaHandler?.name?.length ? 'error' : 'info'}
+			subText={$SchemaHandler?.name?.[0]}
+			onblur={SchemaHandler.validate}
+			inputDebounceOption={{ onInput: SchemaHandler.validate }}
 		/>
 	</div>
 
@@ -108,9 +100,9 @@
 		placeholder={$tranFunc('settings.description')}
 		bind:value={description}
 		{disabled}
-		variant={promotionFormErrors?.description?.length ? 'error' : 'info'}
-		subText={promotionFormErrors?.description?.[0]}
-		onchange={validate}
+		variant={$SchemaHandler?.description?.length ? 'error' : 'info'}
+		subText={$SchemaHandler?.description?.[0]}
+		onchange={SchemaHandler.validate}
 	/>
 
 	<div class="gap-2 grid grid-cols-2">
@@ -122,11 +114,11 @@
 			{disabled}
 			onchange={(value) => {
 				startDate = dayjs(value.date).format(RFC3339TimeFormat);
-				validate();
+				SchemaHandler.validate();
 			}}
-			variant={promotionFormErrors?.startDate?.length ? 'error' : 'info'}
-			subText={promotionFormErrors?.startDate?.[0]}
-			onblur={validate}
+			variant={$SchemaHandler?.startDate?.length ? 'error' : 'info'}
+			subText={$SchemaHandler?.startDate?.[0]}
+			onblur={SchemaHandler.validate}
 			timeConfig={{
 				stepMinutes: 1,
 				format: 24,
@@ -148,14 +140,14 @@
 			{disabled}
 			onchange={(value) => {
 				endDate = dayjs(value.date).format(RFC3339TimeFormat);
-				validate();
+				SchemaHandler.validate();
 			}}
 			timeConfig={{
 				stepMinutes: 1,
 				format: 24,
 				stepHours: 1,
 			}}
-			onblur={validate}
+			onblur={SchemaHandler.validate}
 			allowSelectMonthYears={{
 				showMonths: true,
 				showYears: {

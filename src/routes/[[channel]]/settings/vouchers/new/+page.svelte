@@ -30,7 +30,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
-	import { string } from 'zod';
+	import { flattenError, string } from 'zod';
 
 	let voucherInput = $state<VoucherInput>({
 		name: '',
@@ -60,7 +60,7 @@
 
 	const validateName = () => {
 		const result = NameSchema.safeParse(voucherInput.name);
-		nameErrors = result.success ? [] : result.error.formErrors.formErrors;
+		nameErrors = result.success ? [] : flattenError(result.error).formErrors;
 		return result.success;
 	};
 

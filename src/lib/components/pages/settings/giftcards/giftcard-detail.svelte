@@ -22,10 +22,11 @@
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { GiftcardChannelMetadataKey, GiftcardUserEmailMetadataKey } from '$lib/utils/consts';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import GiftcardExpirationForm from './giftcard-expiration-form.svelte';
 	import { difference } from 'es-toolkit';
 	import { toast } from 'svelte-sonner';
-	import { array, number, object, string, z } from 'zod';
+	import { array, number, object, string } from 'zod';
 
 	type Props = {
 		id: string;
@@ -74,26 +75,17 @@
 		addTags: array(string().nonempty($CommonState.FieldRequiredError)).optional(),
 		removeTags: array(string().nonempty($CommonState.FieldRequiredError)).optional(),
 	});
-
-	type GiftcardUpdateSchema = z.infer<typeof GiftcardUpdateSchema>;
-
-	let giftcardFormErrors = $state.raw<Partial<Record<keyof GiftcardUpdateSchema, string[]>>>({});
-
-	const validate = () => {
-		const result = GiftcardUpdateSchema.safeParse({
-			balanceAmount,
-			expiryDate,
-			addTags,
-			removeTags,
-		});
-		giftcardFormErrors = result.success ? {} : result.error.formErrors.fieldErrors;
-		return result.success;
-	};
+	const SchemaHandler = createSchemaHandler(GiftcardUpdateSchema, () => ({
+		balanceAmount,
+		expiryDate,
+		addTags,
+		removeTags,
+	}));
 
 	const handleTagsChange = () => {
 		addTags = difference(activeTags, existingTags);
 		removeTags = difference(existingTags, activeTags);
-		validate();
+		SchemaHandler.validate();
 	};
 
 	const handleResendGiftcard = async () => {
@@ -171,9 +163,9 @@
 			bind:value={balanceAmount}
 			disabled={loading || disabled}
 			required
-			inputDebounceOption={{ onInput: validate }}
-			variant={giftcardFormErrors.balanceAmount?.length ? 'error' : 'info'}
-			subText={giftcardFormErrors.balanceAmount?.[0]}
+			inputDebounceOption={{ onInput: SchemaHandler.validate }}
+			variant={$SchemaHandler.balanceAmount?.length ? 'error' : 'info'}
+			subText={$SchemaHandler.balanceAmount?.[0]}
 		/>
 		<Input
 			readonly
@@ -240,7 +232,7 @@
 			bind:value={customerEmailOfGiftcard}
 			disabled={loading || disabled}
 			subText={$tranFunc('giftcard.form.customerSubtext')}
-			onchange={validate}
+			onchange={SchemaHandler.validate}
 		/>
 	</div>
 </Modal>

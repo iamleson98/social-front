@@ -13,9 +13,10 @@
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { addNoDup, SitenameCommonClassName } from '$lib/utils/utils';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import { difference } from 'es-toolkit';
 	import { SvelteSet } from 'svelte/reactivity';
-	import z, { array, object, string } from 'zod';
+	import { array, object, string } from 'zod';
 
 	type Props = {
 		name: string;
@@ -53,10 +54,8 @@
 		name: string().nonempty($CommonState.FieldRequiredError),
 		selectedChannels: array(string()).nonempty($CommonState.FieldRequiredError),
 	});
+	const SchemaHandler = createSchemaHandler(GroupSchema, () => ({ name, selectedChannels }));
 
-	type Group = z.infer<typeof GroupSchema>;
-
-	let permissionGroupErrors = $state<Partial<Record<keyof Group, string[]>>>({});
 	let openAssignUserModal = $state(false);
 	let staffUsersVariables = $state<QueryStaffUsersArgs>({
 		first: 10,
@@ -71,7 +70,7 @@
 	let innerSelectedUsersToAssign = $state<Record<string, User>>({});
 
 	$effect(() => {
-		formOk = !Object.values(permissionGroupErrors).length;
+		formOk = !Object.values($SchemaHandler).length;
 	});
 
 	const UnassignSelectColumn: TableColumnProps<User>[] = [
@@ -103,22 +102,13 @@
 		},
 	]);
 
-	const validate = () => {
-		const result = GroupSchema.safeParse({
-			name,
-			selectedChannels,
-		});
-		permissionGroupErrors = result.success ? {} : result.error.formErrors.fieldErrors;
-		return result.success;
-	};
-
 	const handleChannelsChange = async () => {
 		const newChansDiff = difference(selectedChannels, ExistingChannelIds);
 		const removeChansDiff = difference(ExistingChannelIds, selectedChannels);
 
 		if (newChansDiff.length) addChannels = addNoDup(addChannels, ...newChansDiff);
 		if (removeChansDiff.length) removeChannels = addNoDup(removeChannels, ...removeChansDiff);
-		validate();
+		SchemaHandler.validate();
 	};
 
 	const handleUnassignUsers = () => {
@@ -207,10 +197,10 @@
 			required
 			{disabled}
 			readonly={!editable}
-			onblur={validate}
-			inputDebounceOption={{ onInput: validate }}
-			variant={permissionGroupErrors?.name?.length ? 'error' : 'info'}
-			subText={permissionGroupErrors?.name?.[0]}
+			onblur={SchemaHandler.validate}
+			inputDebounceOption={{ onInput: SchemaHandler.validate }}
+			variant={$SchemaHandler.name?.length ? 'error' : 'info'}
+			subText={$SchemaHandler.name?.[0]}
 		/>
 		<Checkbox
 			label={$tranFunc('permissionGroup.restrictChanAccess')}
@@ -228,9 +218,9 @@
 				multiple
 				onchange={handleChannelsChange}
 				valueType="id"
-				onblur={validate}
-				variant={permissionGroupErrors?.selectedChannels?.length ? 'error' : 'info'}
-				subText={permissionGroupErrors?.selectedChannels?.[0]}
+				onblur={SchemaHandler.validate}
+				variant={$SchemaHandler.selectedChannels?.length ? 'error' : 'info'}
+				subText={$SchemaHandler.selectedChannels?.[0]}
 			/>
 		{/if}
 	</div>

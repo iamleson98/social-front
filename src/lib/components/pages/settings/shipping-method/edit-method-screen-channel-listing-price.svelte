@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Input } from '$lib/components/ui/Input';
 	import { Select } from '$lib/components/ui/select';
@@ -8,6 +7,7 @@
 		ShippingMethodChannelListing,
 		ShippingMethodChannelListingInput,
 	} from '$lib/gql/graphql';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { calculateZodErrors, type PriceErrors, type ZodErrors } from './utils';
 	import { array, number, object } from 'zod';
@@ -36,16 +36,16 @@
 	let innerAvailableChannelIds = $state(
 		shippingMethodChannelListings.map((item) => item.channel.id),
 	);
-	const FieldRequiredErr = $tranFunc('helpText.fieldRequired');
-	const NonNegativeErr = $tranFunc('error.negativeNumber');
-	const NoChannelError = $derived(!innerAvailableChannelIds.length ? FieldRequiredErr : undefined);
+	const NoChannelError = $derived(
+		!innerAvailableChannelIds.length ? $CommonState.FieldRequiredError : undefined,
+	);
 	let pricingErrors = $state<PriceErrors>({});
 
 	const PriceSchema = array(
 		object({
-			price: number().nonnegative(NonNegativeErr),
-			minimumOrderPrice: number().nonnegative(NonNegativeErr),
-			maximumOrderPrice: number().nonnegative(NonNegativeErr),
+			price: number().nonnegative($CommonState.NonNegativeError),
+			minimumOrderPrice: number().nonnegative($CommonState.NonNegativeError),
+			maximumOrderPrice: number().nonnegative($CommonState.NonNegativeError),
 		}).refine((item) => item.minimumOrderPrice <= item.maximumOrderPrice, {
 			message: 'min price >= max price',
 			path: ['minimumOrderPrice'],
@@ -56,7 +56,7 @@
 		const result = PriceSchema.safeParse(shippingMethodChannelListingsInput.addChannels);
 		pricingErrors = result.success
 			? {}
-			: calculateZodErrors(result.error?.errors as unknown as ZodErrors);
+			: calculateZodErrors(result.error.issues as unknown as ZodErrors);
 	};
 
 	// const PricingColumns: TableColumnProps<ShippingMethodChannelListing>[] = [

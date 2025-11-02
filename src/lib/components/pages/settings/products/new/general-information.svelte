@@ -23,11 +23,12 @@
 		THIS_TIME_NEXT_5_YEARS,
 	} from '$lib/utils/consts';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import type { OutputData } from '@editorjs/editorjs';
 	import dayjs from 'dayjs';
 	import { omit } from 'es-toolkit';
 	import { onMount } from 'svelte';
-	import z, { any, array, object, string } from 'zod';
+	import { any, array, object, string } from 'zod';
 
 	type Props = {
 		name: string;
@@ -171,44 +172,23 @@
 		return unsub;
 	});
 
-	// const checkAttributeValidity = (
-	// 	idx: number,
-	// 	validCheck: (attr: CustomAttributeInput) => boolean,
-	// ) => {
-	// 	if (attributeFieldsBlurs[idx]) {
-	// 		attributeErrors[idx] = validCheck(innerAttributes[idx])
-	// 			? undefined
-	// 			: $CommonState.FieldRequiredError;
-	// 	}
-	// };
-
 	const GeneralSchema = object({
 		name: string().nonempty($CommonState.FieldRequiredError),
 		productType: string().nonempty($CommonState.FieldRequiredError),
 		description: object({
 			blocks: array(any()).nonempty($CommonState.FieldRequiredError),
 		}),
-		// attributes: array(any()).nonempty($CommonState.FieldRequiredError),
 	});
 
-	type GeneralProps = z.infer<typeof GeneralSchema>;
-
-	let generalErrors = $state<Partial<Record<keyof GeneralProps, string[]>>>({});
+	const SchemaHandler = createSchemaHandler(GeneralSchema, () => ({
+		name,
+		productType,
+		description,
+	}));
 
 	$effect(() => {
-		formOk = !Object.keys(generalErrors).length;
+		formOk = !Object.keys($SchemaHandler).length;
 	});
-
-	const validate = () => {
-		const result = GeneralSchema.safeParse({
-			name,
-			productType,
-			description,
-		});
-
-		generalErrors = result.success ? {} : result.error.formErrors.fieldErrors;
-		return result.success;
-	};
 
 	$effect(() => {
 		if (productType) {
@@ -234,10 +214,10 @@
 	<Input
 		placeholder={$tranFunc('placeholders.enterPrdName')}
 		bind:value={name}
-		onblur={validate}
-		inputDebounceOption={{ onInput: validate }}
-		variant={generalErrors.name?.length ? 'error' : undefined}
-		subText={generalErrors.name?.[0]}
+		onblur={SchemaHandler.validate}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		variant={$SchemaHandler.name?.length ? 'error' : undefined}
+		subText={$SchemaHandler.name?.[0]}
 		required
 		label={$tranFunc('product.prdName')}
 		{disabled}
@@ -257,10 +237,10 @@
 		label={$tranFunc('product.prdType')}
 		required
 		bind:value={productType}
-		variant={generalErrors.productType?.length ? 'error' : 'info'}
-		subText={generalErrors.productType?.[0]}
-		onblur={validate}
-		onchange={validate}
+		variant={$SchemaHandler.productType?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.productType?.[0]}
+		onblur={SchemaHandler.validate}
+		onchange={SchemaHandler.validate}
 	/>
 
 	{#if productType}
@@ -503,11 +483,11 @@
 			},
 		}}
 		quote={{ inlineToolbar: true }}
-		onchange={validate}
+		onchange={SchemaHandler.validate}
 		placeholder={$tranFunc('placeholders.valuePlaceholder')}
 		bind:value={description}
-		variant={generalErrors.description?.length ? 'error' : 'info'}
-		subText={generalErrors.description?.[0]}
+		variant={$SchemaHandler.description?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.description?.[0]}
 		required
 		label="Product description"
 	/>

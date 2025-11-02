@@ -22,9 +22,9 @@
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { GiftcardChannelMetadataKey, GiftcardUserEmailMetadataKey } from '$lib/utils/consts';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import GiftcardExpirationForm from './giftcard-expiration-form.svelte';
-	import type z from 'zod';
-	import { array, number, object, string } from 'zod';
+	import { array, email, number, object, string } from 'zod';
 
 	type Props = {
 		toCustomerEmail?: string;
@@ -72,33 +72,17 @@
 		addTags: array(string().nonempty($CommonState.FieldRequiredError)),
 		amount: number().min(1, $CommonState.NonNegativeError),
 		currency: string().nonempty($CommonState.FieldRequiredError),
-		userEmail: string().email($CommonState.InvalidEmail).optional(),
+		userEmail: email($CommonState.InvalidEmail).optional(),
 	});
-
-	type GiftcardSchema = z.infer<typeof giftcardSchema>;
-	let giftcardFormErrors = $state.raw<Partial<Record<keyof GiftcardSchema, string[]>>>({});
-
-	const validate = () => {
-		const parseResult = giftcardSchema.safeParse({
-			channel: giftCardInput.channel,
-			note: giftCardInput.note,
-			addTags: giftCardInput.addTags,
-			amount: giftCardInput.balance.amount,
-			currency: giftCardInput.balance.currency,
-			userEmail: giftCardInput.userEmail,
-		});
-
-		giftcardFormErrors = parseResult.success ? {} : parseResult.error?.formErrors.fieldErrors;
-		return parseResult.success;
-	};
+	const SchemaHandler = createSchemaHandler(giftcardSchema, () => giftCardInput);
 
 	$effect(() => {
-		formOk = !Object.keys(giftcardFormErrors).length;
+		formOk = !Object.keys($SchemaHandler).length;
 	});
 
 	const handleIssueGiftcard = async () => {
 		// validate for error first
-		if (!validate()) return;
+		if (!SchemaHandler.validate()) return;
 
 		// perform creation
 		loading = true;
@@ -157,22 +141,23 @@
 			required
 			type="number"
 			class="flex-1"
-			inputDebounceOption={{ onInput: validate }}
-			onblur={validate}
+			inputDebounceOption={{ onInput: SchemaHandler.validate }}
+			onblur={SchemaHandler.validate}
 			{disabled}
 			min={0}
-			variant={giftcardFormErrors.amount?.length ? 'error' : 'info'}
-			subText={giftcardFormErrors.amount?.[0]}
+			variant={$SchemaHandler.amount?.length ? 'error' : 'info'}
+			subText={$SchemaHandler.amount?.[0]}
 			placeholder={$tranFunc('giftcard.form.amount')}
 		/>
 		<ShopCurrenciesSelect
 			label={$tranFunc('common.currency')}
 			class="flex-1"
-			variant={giftcardFormErrors.currency?.length ? 'error' : 'info'}
-			subText={giftcardFormErrors.currency?.[0]}
+			variant={$SchemaHandler.currency?.length ? 'error' : 'info'}
+			subText={$SchemaHandler.currency?.[0]}
 			required
 			placeholder={$tranFunc('common.currency')}
-			onchange={validate}
+			onchange={SchemaHandler.validate}
+			onblur={SchemaHandler.validate}
 			bind:value={giftCardInput.balance.currency}
 			{disabled}
 		/>
@@ -191,9 +176,9 @@
 		placeholder={$tranFunc('giftcard.form.tags')}
 		bind:value={giftCardInput.addTags}
 		{disabled}
-		variant={giftcardFormErrors.addTags?.length ? 'error' : 'info'}
-		subText={giftcardFormErrors.addTags?.[0]}
-		onchange={validate}
+		variant={$SchemaHandler.addTags?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.addTags?.[0]}
+		onchange={SchemaHandler.validate}
 	/>
 
 	<GraphqlPaginableSelect
@@ -207,9 +192,9 @@
 		requestPolicy="cache-and-network"
 		bind:value={giftCardInput.userEmail}
 		disabled={disabled || !!toCustomerEmail}
-		variant={giftcardFormErrors.userEmail?.length ? 'error' : 'info'}
-		subText={giftcardFormErrors.userEmail?.[0]}
-		onchange={validate}
+		variant={$SchemaHandler.userEmail?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.userEmail?.[0]}
+		onchange={SchemaHandler.validate}
 	/>
 
 	<Alert bordered size="sm">
@@ -222,22 +207,22 @@
 		label={$tranFunc('giftcard.form.channel')}
 		bind:value={giftCardInput.channel}
 		{disabled}
-		variant={giftcardFormErrors.channel?.length ? 'error' : 'info'}
-		subText={giftcardFormErrors.channel?.[0] ?? $tranFunc('giftcard.form.channelSubText')}
+		variant={$SchemaHandler.channel?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.channel?.[0] ?? $tranFunc('giftcard.form.channelSubText')}
 		placeholder={$tranFunc('giftcard.form.channel')}
 		required
-		onchange={validate}
+		onchange={SchemaHandler.validate}
 	/>
 
 	<TextArea
 		label={$tranFunc('giftcard.form.note')}
 		bind:value={giftCardInput.note}
-		inputDebounceOption={{ onInput: validate }}
-		onblur={validate}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
 		inputClass="min-h-20"
 		{disabled}
-		variant={giftcardFormErrors.note?.length ? 'error' : 'info'}
-		subText={giftcardFormErrors.note?.[0] ?? $tranFunc('giftcard.form.noteSubText')}
+		variant={$SchemaHandler.note?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.note?.[0] ?? $tranFunc('giftcard.form.noteSubText')}
 		placeholder={$tranFunc('giftcard.form.note')}
 	/>
 	<Checkbox

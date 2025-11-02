@@ -9,6 +9,7 @@
 	import type { Mutation, MutationSetPasswordArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import { omit } from 'es-toolkit';
 	import { object, string, z } from 'zod';
 
@@ -21,6 +22,12 @@
 		message: $tranFunc('error.passwordsNotMatch'),
 		path: ['confirmPassword'],
 	});
+	const SchemaHandler = createSchemaHandler(ChangePasswordSchema, () => ({
+		password: changePasswordForm.password,
+		confirmPassword: changePasswordForm.confirmPassword,
+		email: changePasswordForm.email,
+		token: changePasswordForm.token,
+	}));
 
 	type ChangePasswordForm = z.infer<typeof ChangePasswordSchema>;
 
@@ -35,21 +42,8 @@
 	});
 	let loading = $state(false);
 
-	let changePasswordErrors = $state<Partial<Record<keyof ChangePasswordForm, string[]>>>({});
-
-	const validateForm = () => {
-		const parseResult = ChangePasswordSchema.safeParse(changePasswordForm);
-		if (!parseResult.success) {
-			changePasswordErrors = parseResult.error.formErrors.fieldErrors;
-			return false;
-		}
-
-		changePasswordErrors = {};
-		return true;
-	};
-
 	const handleSubmit = async () => {
-		if (!validateForm()) return;
+		if (!SchemaHandler.validate()) return;
 
 		loading = true;
 		const result = await GRAPHQL_CLIENT.mutation<
@@ -73,11 +67,11 @@
 		bind:value={changePasswordForm.password}
 		required
 		disabled={loading}
-		variant={changePasswordErrors?.password?.length ? 'error' : 'info'}
-		subText={changePasswordErrors?.password?.length ? changePasswordErrors.password[0] : ''}
+		variant={$SchemaHandler?.password?.length ? 'error' : 'info'}
+		subText={$SchemaHandler?.password?.length ? $SchemaHandler.password[0] : ''}
 		class="mb-2"
-		inputDebounceOption={{ onInput: validateForm }}
-		onblur={validateForm}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
 		showAction
 	/>
 	<PasswordInput
@@ -86,14 +80,12 @@
 		bind:value={changePasswordForm.confirmPassword}
 		required
 		disabled={loading}
-		variant={changePasswordErrors?.confirmPassword?.length ? 'error' : 'info'}
-		subText={changePasswordErrors?.confirmPassword?.length
-			? changePasswordErrors.confirmPassword[0]
-			: ''}
+		variant={$SchemaHandler?.confirmPassword?.length ? 'error' : 'info'}
+		subText={$SchemaHandler?.confirmPassword?.length ? $SchemaHandler.confirmPassword[0] : ''}
 		showAction={false}
 		class="mb-2"
-		inputDebounceOption={{ onInput: validateForm }}
-		onblur={validateForm}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
 	/>
 	<Button variant="filled" size="sm" fullWidth onclick={handleSubmit} disabled={loading} {loading}>
 		{$tranFunc('changePassword.btnText')}

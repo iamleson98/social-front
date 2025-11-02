@@ -5,8 +5,9 @@
 	import type { SeoInput } from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import slugify from 'slugify';
-	import { z, object, string } from 'zod';
+	import { object, string } from 'zod';
 
 	type Props = {
 		name: string;
@@ -42,31 +43,22 @@
 				}),
 			),
 	});
-
-	type SeoSchema = z.infer<typeof seoSchema>;
-
-	let seoFormErrors = $state.raw<Partial<Record<keyof SeoSchema, string[]>>>({});
+	const SchemaHandler = createSchemaHandler(seoSchema, () => ({
+		slug,
+		title: seo.title,
+		description: seo.description,
+	}));
 
 	$effect(() => {
-		ok = !Object.keys(seoFormErrors).length;
+		ok = !Object.keys($SchemaHandler).length;
 	});
-
-	const validate = () => {
-		const parseResult = seoSchema.safeParse({
-			slug,
-			title: seo.title,
-			description: seo.description,
-		});
-		seoFormErrors = parseResult.success ? {} : parseResult.error.formErrors.fieldErrors;
-		return parseResult.success;
-	};
 
 	$effect(() => {
 		if (isCreatePage) {
 			slug = slugify(name, { lower: true, strict: true });
 			seo.title = name;
 		}
-		validate();
+		SchemaHandler.validate();
 	});
 </script>
 
@@ -77,22 +69,22 @@
 		placeholder="Slug"
 		bind:value={slug}
 		required
-		inputDebounceOption={{ onInput: validate }}
-		onblur={validate}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
 		{disabled}
-		variant={seoFormErrors.slug?.length ? 'error' : 'info'}
-		subText={seoFormErrors.slug?.[0]}
+		variant={$SchemaHandler.slug?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.slug?.[0]}
 	/>
 	<Input
 		label={$tranFunc('settings.name')}
 		bind:value={seo.title}
 		placeholder={$tranFunc('settings.name')}
 		required
-		inputDebounceOption={{ onInput: validate }}
-		onblur={validate}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
 		{disabled}
-		variant={seoFormErrors.title?.length ? 'error' : 'info'}
-		subText={seoFormErrors.title?.[0]}
+		variant={$SchemaHandler.title?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.title?.[0]}
 	/>
 	<TextArea
 		bind:value={seo.description}
@@ -101,10 +93,10 @@
 		required
 		{disabled}
 		inputClass="min-h-20"
-		inputDebounceOption={{ onInput: validate }}
-		onblur={validate}
-		variant={seoFormErrors.description?.length ? 'error' : 'info'}
-		subText={seoFormErrors.description?.[0] ??
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
+		variant={$SchemaHandler.description?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.description?.[0] ??
 			`${seo?.description?.length || 0} / ${DESCRIPTION_MAX_LENGTH}`}
 	/>
 </div>

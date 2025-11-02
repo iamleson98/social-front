@@ -10,9 +10,11 @@
 	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
 	import type { QueryTaxClassesArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import type { OutputData } from '@editorjs/editorjs';
-	import { any, array, number, object, string, z } from 'zod';
+	import { any, array, number, object, string } from 'zod';
 
 	type Props = {
 		name: string;
@@ -34,38 +36,26 @@
 		ok = $bindable(),
 	}: Props = $props();
 
-	const RequiredErr = $tranFunc('helpText.fieldRequired');
-	const NegativeErr = $tranFunc('error.negativeNumber');
-
 	const MethodSchema = object({
-		name: string().nonempty(RequiredErr),
+		name: string().nonempty($CommonState.FieldRequiredError),
 		description: object({
-			blocks: array(any()).nonempty(RequiredErr),
+			blocks: array(any()).nonempty($CommonState.FieldRequiredError),
 		}),
-		maximumDeliveryDays: number().nonnegative(NegativeErr),
-		minimumDeliveryDays: number().nonnegative(NegativeErr),
+		maximumDeliveryDays: number().nonnegative($CommonState.NonNegativeError),
+		minimumDeliveryDays: number().nonnegative($CommonState.NonNegativeError),
 	}).refine((data) => data.maximumDeliveryDays >= data.minimumDeliveryDays, {
 		message: 'max delivery days <= min delivery days',
 		path: ['maximumDeliveryDays'],
 	});
-
-	type MethodType = z.infer<typeof MethodSchema>;
-
-	let methodErrors = $state<Partial<Record<keyof MethodType, string[]>>>({});
-
-	const validate = () => {
-		const result = MethodSchema.safeParse({
-			name,
-			description,
-			maximumDeliveryDays,
-			minimumDeliveryDays,
-		});
-		methodErrors = result.success ? {} : result.error.formErrors.fieldErrors;
-		return result.success;
-	};
+	const SchemaHandler = createSchemaHandler(MethodSchema, () => ({
+		name,
+		description,
+		maximumDeliveryDays,
+		minimumDeliveryDays,
+	}));
 
 	$effect(() => {
-		ok = !Object.keys(methodErrors).length;
+		ok = !Object.keys($SchemaHandler).length;
 	});
 </script>
 
@@ -92,10 +82,10 @@
 		required
 		placeholder="Name"
 		{disabled}
-		variant={methodErrors.name?.length ? 'error' : 'info'}
-		subText={methodErrors.name?.[0]}
-		inputDebounceOption={{ onInput: validate }}
-		onblur={validate}
+		variant={$SchemaHandler.name?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.name?.[0]}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
 	/>
 	<EditorJSComponent
 		bind:value={description}
@@ -103,9 +93,9 @@
 		label="Description"
 		{disabled}
 		placeholder="Description"
-		variant={methodErrors.description?.length ? 'error' : 'info'}
-		subText={methodErrors.description?.[0]}
-		onchange={validate}
+		variant={$SchemaHandler.description?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.description?.[0]}
+		onchange={SchemaHandler.validate}
 	/>
 
 	<div class="flex gap-2">
@@ -116,10 +106,10 @@
 			type="number"
 			{disabled}
 			class="flex-1/2"
-			variant={methodErrors.minimumDeliveryDays?.length ? 'error' : 'info'}
-			subText={methodErrors.minimumDeliveryDays?.[0]}
-			onblur={validate}
-			inputDebounceOption={{ onInput: validate }}
+			variant={$SchemaHandler.minimumDeliveryDays?.length ? 'error' : 'info'}
+			subText={$SchemaHandler.minimumDeliveryDays?.[0]}
+			onblur={SchemaHandler.validate}
+			inputDebounceOption={{ onInput: SchemaHandler.validate }}
 			min={0}
 		/>
 		<Input
@@ -129,10 +119,10 @@
 			type="number"
 			{disabled}
 			class="flex-1/2"
-			variant={methodErrors.maximumDeliveryDays?.length ? 'error' : 'info'}
-			subText={methodErrors.maximumDeliveryDays?.[0]}
-			inputDebounceOption={{ onInput: validate }}
-			onblur={validate}
+			variant={$SchemaHandler.maximumDeliveryDays?.length ? 'error' : 'info'}
+			subText={$SchemaHandler.maximumDeliveryDays?.[0]}
+			inputDebounceOption={{ onInput: SchemaHandler.validate }}
+			onblur={SchemaHandler.validate}
 			min={0}
 		/>
 	</div>

@@ -7,9 +7,10 @@
 	import { CommonState } from '$lib/utils/common.svelte';
 	import type { MediaObject } from '$lib/utils/types';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import type { OutputData } from '@editorjs/editorjs';
 	import slugify from 'slugify';
-	import { any, array, object, string, z } from 'zod';
+	import { any, array, object, string } from 'zod';
 
 	type Props = {
 		name: string;
@@ -37,18 +38,6 @@
 
 	const MAX_ERROR = $tranFunc('error.itemsExceed', { max: 1 });
 	const SEO_DESCRIPTION_MAX = 300;
-	let categoryFormErrors = $state.raw<Partial<Record<keyof CategorySchema, string[]>>>({});
-
-	$effect(() => {
-		ok = !Object.keys(categoryFormErrors).length;
-	});
-
-	$effect(() => {
-		if (isCreatePage) {
-			slug = slugify(name, { lower: true, strict: true });
-			seoTitle = name;
-		}
-	});
 
 	const categorySchema = object({
 		name: string().nonempty($CommonState.FieldRequiredError),
@@ -65,21 +54,25 @@
 			blocks: array(any()).nonempty($CommonState.FieldRequiredError),
 		}),
 	});
-	type CategorySchema = z.infer<typeof categorySchema>;
+	const SchemaHandler = createSchemaHandler(categorySchema, () => ({
+		name,
+		slug,
+		seoTitle,
+		seoDescription,
+		media,
+		description,
+	}));
 
-	const validate = () => {
-		const result = categorySchema.safeParse({
-			name,
-			slug,
-			seoTitle,
-			seoDescription,
-			media,
-			description,
-		});
+	$effect(() => {
+		ok = !Object.keys($SchemaHandler).length;
+	});
 
-		categoryFormErrors = result.success ? {} : result.error.formErrors.fieldErrors;
-		return result.success;
-	};
+	$effect(() => {
+		if (isCreatePage) {
+			slug = slugify(name, { lower: true, strict: true });
+			seoTitle = name;
+		}
+	});
 </script>
 
 <div class={SitenameCommonClassName}>
@@ -90,19 +83,19 @@
 		bind:value={name}
 		label={$tranFunc('common.name')}
 		required
-		inputDebounceOption={{ onInput: validate }}
-		onblur={validate}
-		variant={categoryFormErrors.name?.length ? 'error' : 'info'}
-		subText={categoryFormErrors.name?.[0]}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
+		variant={$SchemaHandler.name?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.name?.[0]}
 	/>
 	<EditorJSComponent
 		label={$tranFunc('settings.description')}
 		required
 		placeholder={$tranFunc('settings.description')}
 		bind:value={description}
-		onchange={validate}
-		variant={categoryFormErrors.description?.length ? 'error' : 'info'}
-		subText={categoryFormErrors.description?.[0]}
+		onchange={SchemaHandler.validate}
+		variant={$SchemaHandler.description?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.description?.[0]}
 		disabled={loading}
 	/>
 	<FileInputContainer
@@ -111,10 +104,10 @@
 		label={$tranFunc('common.pic')}
 		required
 		bind:medias={media}
-		onchange={validate}
+		onchange={SchemaHandler.validate}
 		disabled={loading}
-		variant={categoryFormErrors.media?.length ? 'error' : 'info'}
-		subText={categoryFormErrors.media?.[0]}
+		variant={$SchemaHandler.media?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.media?.[0]}
 	/>
 	<SectionHeader>{$tranFunc('common.seoInfo')}</SectionHeader>
 	<Input
@@ -122,10 +115,10 @@
 		label={$tranFunc('common.slug')}
 		required
 		bind:value={slug}
-		inputDebounceOption={{ onInput: validate }}
-		onblur={validate}
-		variant={categoryFormErrors.slug?.length ? 'error' : 'info'}
-		subText={categoryFormErrors.slug?.[0]}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
+		variant={$SchemaHandler.slug?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.slug?.[0]}
 		disabled={loading}
 	/>
 	<Input
@@ -133,10 +126,10 @@
 		label={$tranFunc('settings.title')}
 		required
 		bind:value={seoTitle}
-		inputDebounceOption={{ onInput: validate }}
-		onblur={validate}
-		variant={categoryFormErrors.seoTitle?.length ? 'error' : 'info'}
-		subText={categoryFormErrors.seoTitle?.[0]}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
+		variant={$SchemaHandler.seoTitle?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.seoTitle?.[0]}
 		disabled={loading}
 	/>
 	<TextArea
@@ -144,10 +137,10 @@
 		label={$tranFunc('settings.description')}
 		placeholder={$tranFunc('settings.description')}
 		bind:value={seoDescription}
-		inputDebounceOption={{ onInput: validate }}
-		onblur={validate}
-		variant={categoryFormErrors.seoDescription?.length ? 'error' : 'info'}
-		subText={categoryFormErrors.seoDescription?.[0] ??
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
+		variant={$SchemaHandler.seoDescription?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.seoDescription?.[0] ??
 			`${seoDescription?.length} / ${SEO_DESCRIPTION_MAX}`}
 		inputClass="min-h-20"
 		disabled={loading}

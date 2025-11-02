@@ -6,7 +6,8 @@
 	import { UserStoreManager } from '$lib/stores/auth';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkUserHasPermissions, SitenameCommonClassName } from '$lib/utils/utils';
-	import { object, string, z } from 'zod';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
+	import { object, string, email as emailSchema } from 'zod';
 
 	type Props = {
 		firstName: string;
@@ -42,27 +43,20 @@
 	const customerSchema = object({
 		firstName: string().nonempty($CommonState.FieldRequiredError),
 		lastName: string().nonempty($CommonState.FieldRequiredError),
-		email: string().nonempty($CommonState.FieldRequiredError).email($CommonState.InvalidEmail),
+		email: emailSchema($CommonState.InvalidEmail).nonempty($CommonState.FieldRequiredError),
 		note: string().nonempty($CommonState.FieldRequiredError),
 	});
 
-	type CustomerSchema = z.infer<typeof customerSchema>;
-	let customerFormErrors = $state.raw<Partial<Record<keyof CustomerSchema, string[]>>>({});
+	const SchemaHandler = createSchemaHandler(customerSchema, () => ({
+		firstName,
+		lastName,
+		email,
+		note,
+	}));
 
 	$effect(() => {
-		ok = !Object.keys(customerFormErrors).length;
+		ok = !Object.keys($SchemaHandler).length;
 	});
-
-	const validate = () => {
-		const result = customerSchema.safeParse({
-			firstName,
-			lastName,
-			email,
-			note,
-		});
-		customerFormErrors = result.success ? {} : result.error.formErrors.fieldErrors;
-		return result.success;
-	};
 </script>
 
 <div class={SitenameCommonClassName}>
@@ -82,10 +76,10 @@
 			required
 			disabled={shouldDisable}
 			class="flex-1"
-			inputDebounceOption={{ onInput: validate }}
-			onblur={validate}
-			variant={customerFormErrors.firstName?.length ? 'error' : 'info'}
-			subText={customerFormErrors.firstName?.length ? customerFormErrors.firstName[0] : undefined}
+			inputDebounceOption={{ onInput: SchemaHandler.validate }}
+			onblur={SchemaHandler.validate}
+			variant={$SchemaHandler.firstName?.length ? 'error' : 'info'}
+			subText={$SchemaHandler.firstName?.length ? $SchemaHandler.firstName[0] : undefined}
 		/>
 		<Input
 			label={$tranFunc('common.lastName')}
@@ -94,10 +88,10 @@
 			required
 			disabled={shouldDisable}
 			class="flex-1"
-			inputDebounceOption={{ onInput: validate }}
-			onblur={validate}
-			variant={customerFormErrors.lastName?.length ? 'error' : 'info'}
-			subText={customerFormErrors.lastName?.length ? customerFormErrors.lastName[0] : undefined}
+			inputDebounceOption={{ onInput: SchemaHandler.validate }}
+			onblur={SchemaHandler.validate}
+			variant={$SchemaHandler.lastName?.length ? 'error' : 'info'}
+			subText={$SchemaHandler.lastName?.length ? $SchemaHandler.lastName[0] : undefined}
 		/>
 	</div>
 	<Input
@@ -106,10 +100,10 @@
 		bind:value={email}
 		required
 		disabled={shouldDisable}
-		inputDebounceOption={{ onInput: validate }}
-		onblur={validate}
-		variant={customerFormErrors.email?.length ? 'error' : 'info'}
-		subText={customerFormErrors.email?.length ? customerFormErrors.email[0] : undefined}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
+		variant={$SchemaHandler.email?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.email?.length ? $SchemaHandler.email[0] : undefined}
 	/>
 	<TextArea
 		bind:value={note}
@@ -118,9 +112,9 @@
 		required
 		disabled={shouldDisable}
 		inputClass="min-h-20"
-		inputDebounceOption={{ onInput: validate }}
-		onblur={validate}
-		variant={customerFormErrors.note?.length ? 'error' : 'info'}
-		subText={customerFormErrors.note?.length ? customerFormErrors.note[0] : undefined}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
+		variant={$SchemaHandler.note?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.note?.length ? $SchemaHandler.note[0] : undefined}
 	/>
 </div>

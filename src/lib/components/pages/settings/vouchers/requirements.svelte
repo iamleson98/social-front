@@ -7,7 +7,7 @@
 	import type { VoucherChannelListing } from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
-	import { array, number, object } from 'zod';
+	import { array, flattenError, number, object } from 'zod';
 
 	type Props = {
 		minimumQuantityOfItems?: number;
@@ -43,7 +43,6 @@
 		},
 	];
 
-
 	const ValueSchema = array(
 		object({
 			minSpent: object({
@@ -59,7 +58,7 @@
 
 	const validateOrderValues = () => {
 		const result = ValueSchema.safeParse(activeChannelListings);
-		valueErrors = result.error?.formErrors as any;
+		valueErrors = !result.success ? (flattenError(result.error) as any) : {};
 	};
 
 	const handleUpdateMinOrderPrice = (index: number, evt: Event) => {

@@ -7,8 +7,9 @@
 	import { CommonState } from '$lib/utils/common.svelte';
 	import type { MediaObject } from '$lib/utils/types';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import type { OutputData } from '@editorjs/editorjs';
-	import { any, array, object, string, z } from 'zod';
+	import { any, array, object, string } from 'zod';
 
 	type Props = {
 		name: string;
@@ -28,12 +29,6 @@
 
 	const MAX_ERROR = $tranFunc('error.itemsExceed', { max: 1 });
 
-	let collectionFormErrors = $state.raw<Partial<Record<keyof CollectionSchema, string[]>>>({});
-
-	$effect(() => {
-		ok = !Object.keys(collectionFormErrors).length;
-	});
-
 	const collectionSchema = object({
 		name: string().nonempty($CommonState.FieldRequiredError),
 		description: object({
@@ -41,18 +36,15 @@
 		}),
 		media: array(any()).max(1, MAX_ERROR).nonempty($CommonState.FieldRequiredError),
 	});
-	type CollectionSchema = z.infer<typeof collectionSchema>;
+	const SchemaHandler = createSchemaHandler(collectionSchema, () => ({
+		name,
+		description,
+		media,
+	}));
 
-	const validate = () => {
-		const result = collectionSchema.safeParse({
-			name,
-			description,
-			media,
-		});
-
-		collectionFormErrors = result.success ? {} : result.error.formErrors.fieldErrors;
-		return result.success;
-	};
+	$effect(() => {
+		ok = !Object.keys($SchemaHandler).length;
+	});
 </script>
 
 <div class={SitenameCommonClassName}>
@@ -61,10 +53,10 @@
 		label={$tranFunc('common.name')}
 		bind:value={name}
 		placeholder={$tranFunc('common.name')}
-		inputDebounceOption={{ onInput: validate }}
-		onblur={validate}
-		variant={collectionFormErrors.name?.length ? 'error' : 'info'}
-		subText={collectionFormErrors.name?.[0]}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
+		variant={$SchemaHandler.name?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.name?.[0]}
 		{disabled}
 		required
 	/>
@@ -72,9 +64,9 @@
 		label={$tranFunc('settings.description')}
 		placeholder={$tranFunc('settings.description')}
 		bind:value={description}
-		onchange={validate}
-		variant={collectionFormErrors.description?.length ? 'error' : 'info'}
-		subText={collectionFormErrors.description?.[0]}
+		onchange={SchemaHandler.validate}
+		variant={$SchemaHandler.description?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.description?.[0]}
 		{disabled}
 		required
 	/>
@@ -82,10 +74,10 @@
 		accept="image/*"
 		max={1}
 		bind:medias={media}
-		onchange={validate}
+		onchange={SchemaHandler.validate}
 		label={$tranFunc('common.pic')}
-		variant={collectionFormErrors.media?.length ? 'error' : 'info'}
-		subText={collectionFormErrors.media?.[0]}
+		variant={$SchemaHandler.media?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.media?.[0]}
 		{disabled}
 		required
 	/>

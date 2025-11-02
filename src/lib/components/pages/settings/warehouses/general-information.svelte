@@ -5,9 +5,10 @@
 	import type { Address } from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import AddressForm from '../../checkout/address-form.svelte';
 	import { noop } from 'es-toolkit';
-	import { object, string, z } from 'zod';
+	import { object, string } from 'zod';
 
 	type Props = {
 		name: string;
@@ -34,21 +35,12 @@
 		email: string().nonempty($CommonState.FieldRequiredError),
 		slug: string().nonempty($CommonState.FieldRequiredError),
 	});
-
-	type WarehouseProps = z.infer<typeof WarehouseSchema>;
-
-	let warehouseErrors = $state<Partial<Record<keyof WarehouseProps, string[]>>>({});
-
-	const validate = () => {
-		const result = WarehouseSchema.safeParse({ email, name, slug });
-		warehouseErrors = result.success ? {} : result.error.formErrors.fieldErrors;
-		formOk = !Object.keys(warehouseErrors).length;
-		return result.success;
-	};
+	const SchemaHandler = createSchemaHandler(WarehouseSchema, () => ({
+		name,
+		email,
+		slug,
+	}));
 </script>
-
-<!-- bypass linting warning -->
-{void formOk}
 
 <div class={SitenameCommonClassName}>
 	<SectionHeader>General information</SectionHeader>
@@ -57,29 +49,29 @@
 		placeholder="Warehouse name"
 		bind:value={name}
 		required
-		inputDebounceOption={{ onInput: validate }}
-		onblur={validate}
-		variant={warehouseErrors.name?.length ? 'error' : 'info'}
-		subText={warehouseErrors.name?.[0]}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
+		variant={$SchemaHandler.name?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.name?.[0]}
 	/>
 	<Input
 		label="Warehouse slug"
 		required
-		inputDebounceOption={{ onInput: validate }}
-		onblur={validate}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
 		placeholder="Warehouse slug"
 		bind:value={slug}
-		variant={warehouseErrors.slug?.length ? 'error' : 'info'}
-		subText={warehouseErrors.slug?.[0]}
+		variant={$SchemaHandler.slug?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.slug?.[0]}
 	/>
 	<Input
 		label="Warehouse email"
-		inputDebounceOption={{ onInput: validate }}
-		onblur={validate}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
 		placeholder="Warehouse email"
 		bind:value={email}
-		variant={warehouseErrors.email?.length ? 'error' : 'info'}
-		subText={warehouseErrors.email?.[0]}
+		variant={$SchemaHandler.email?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.email?.[0]}
 	/>
 
 	<SectionHeader>Address information</SectionHeader>

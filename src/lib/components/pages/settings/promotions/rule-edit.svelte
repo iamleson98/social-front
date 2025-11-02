@@ -17,6 +17,7 @@
 		RewardValueTypeEnum,
 	} from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import type { OutputData } from '@editorjs/editorjs';
 	import { array, number, object, string, z } from 'zod';
 
@@ -46,22 +47,14 @@
 		rewardValue: number().nonnegative($CommonState.NonNegativeError),
 		rewardValueType: z.enum([RewardValueTypeEnum.Fixed, RewardValueTypeEnum.Percentage]),
 	});
+	const SchemaHandler = createSchemaHandler(RuleSchema, () => ({
+		name,
+		addChannels,
+		rewardValue,
+		rewardValueType,
+	}));
 
-	type RuleType = z.infer<typeof RuleSchema>;
-
-	let ruleFormErrors = $state.raw<Partial<Record<keyof RuleType, string[]>>>({});
 	let selectedChannel = $state<Channel>();
-
-	const validate = () => {
-		const result = RuleSchema.safeParse({
-			name,
-			addChannels,
-			rewardValue,
-			rewardValueType,
-		});
-		ruleFormErrors = result.success ? {} : result.error.formErrors.fieldErrors;
-		return result.success;
-	};
 
 	let useProductsWithPromotion = $state(!!catalogPredicate?.productPredicate?.ids?.length);
 	let useProductVariantsWithPromotion = $state(!!catalogPredicate?.variantPredicate?.ids?.length);
@@ -112,27 +105,27 @@
 			placeholder={$tranFunc('common.name')}
 			class="flex-1"
 			bind:value={name}
-			inputDebounceOption={{ onInput: validate }}
-			onblur={validate}
-			variant={ruleFormErrors.name?.length ? 'error' : 'info'}
-			subText={ruleFormErrors.name?.[0]}
+			inputDebounceOption={{ onInput: SchemaHandler.validate }}
+			onblur={SchemaHandler.validate}
+			variant={$SchemaHandler.name?.length ? 'error' : 'info'}
+			subText={$SchemaHandler.name?.[0]}
 			required
 			{disabled}
 		/>
 		<ChannelSelect
 			label={$tranFunc('promotion.applyChan')}
 			bind:value={addChannels[0]}
-			variant={ruleFormErrors.addChannels?.length ? 'error' : 'info'}
-			subText={ruleFormErrors.addChannels?.[0]}
+			variant={$SchemaHandler.addChannels?.length ? 'error' : 'info'}
+			subText={$SchemaHandler.addChannels?.[0]}
 			required
 			{disabled}
 			valueType="id"
 			class="flex-1"
-			onblur={validate}
+			onblur={SchemaHandler.validate}
 			onchange={(value) => {
 				if (value) updateChannelsForVariables(value as Channel);
 				selectedChannel = value as Channel;
-				validate();
+				SchemaHandler.validate();
 			}}
 		/>
 	</div>
@@ -273,10 +266,10 @@
 			placeholder={$tranFunc('promotion.rewardValue')}
 			class="flex-3/4"
 			bind:value={rewardValue}
-			inputDebounceOption={{ onInput: validate }}
-			onblur={validate}
-			variant={ruleFormErrors.rewardValue?.length ? 'error' : 'info'}
-			subText={ruleFormErrors.rewardValue?.[0]}
+			inputDebounceOption={{ onInput: SchemaHandler.validate }}
+			onblur={SchemaHandler.validate}
+			variant={$SchemaHandler.rewardValue?.length ? 'error' : 'info'}
+			subText={$SchemaHandler.rewardValue?.[0]}
 			required
 			{disabled}
 			type="number"

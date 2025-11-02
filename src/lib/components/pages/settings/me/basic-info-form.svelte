@@ -15,6 +15,7 @@
 	import { UserStoreManager } from '$lib/stores/auth';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import { object, string, z } from 'zod';
 
 	const UserInfoSchema = object({
@@ -32,8 +33,8 @@
 		lastName: '',
 		languageCode: '',
 	});
+	const SchemaHandler = createSchemaHandler(UserInfoSchema, () => userInfoInputs);
 
-	let userInfoFormErrors = $state.raw<Partial<Record<keyof InfoProps, string[]>>>({});
 	let loading = $state(false);
 
 	$effect(() => {
@@ -54,18 +55,8 @@
 		);
 	});
 
-	const userValidate = () => {
-		const userInfoParse = UserInfoSchema.safeParse(userInfoInputs);
-		if (!userInfoParse.success) {
-			userInfoFormErrors = userInfoParse.error.formErrors.fieldErrors;
-			return false;
-		}
-		userInfoFormErrors = {};
-		return true;
-	};
-
 	const handleSubmit = async () => {
-		if (!userValidate()) return;
+		if (!SchemaHandler.validate()) return;
 
 		loading = true; //
 
@@ -101,9 +92,10 @@
 			class="w-1/2 tablet:w-full"
 			required
 			bind:value={userInfoInputs.firstName}
-			variant={userInfoFormErrors.firstName?.length ? 'error' : 'info'}
-			subText={userInfoFormErrors.firstName?.length ? userInfoFormErrors.firstName[0] : ''}
-			onblur={userValidate}
+			variant={$SchemaHandler.firstName?.length ? 'error' : 'info'}
+			subText={$SchemaHandler.firstName?.length ? $SchemaHandler.firstName[0] : ''}
+			onblur={SchemaHandler.validate}
+			inputDebounceOption={{ onInput: SchemaHandler.validate }}
 			disabled={loading}
 		/>
 		<Input
@@ -112,9 +104,10 @@
 			class="w-1/2 tablet:w-full"
 			required
 			bind:value={userInfoInputs.lastName}
-			variant={userInfoFormErrors.lastName?.length ? 'error' : 'info'}
-			subText={userInfoFormErrors.lastName?.length ? userInfoFormErrors.lastName[0] : ''}
-			onblur={userValidate}
+			variant={$SchemaHandler.lastName?.length ? 'error' : 'info'}
+			subText={$SchemaHandler.lastName?.length ? $SchemaHandler.lastName[0] : ''}
+			onblur={SchemaHandler.validate}
+			inputDebounceOption={{ onInput: SchemaHandler.validate }}
 			disabled={loading}
 		/>
 	</div>
@@ -129,9 +122,10 @@
 			label: lang.name,
 		}))}
 		bind:value={userInfoInputs.languageCode}
-		variant={userInfoFormErrors.languageCode?.length ? 'error' : 'info'}
-		subText={userInfoFormErrors.languageCode?.length ? userInfoFormErrors.languageCode[0] : ''}
-		onchange={userValidate}
+		variant={$SchemaHandler.languageCode?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.languageCode?.length ? $SchemaHandler.languageCode[0] : ''}
+		onchange={SchemaHandler.validate}
+		onblur={SchemaHandler.validate}
 		disabled={loading}
 	/>
 

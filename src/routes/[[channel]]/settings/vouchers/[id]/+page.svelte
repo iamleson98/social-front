@@ -44,7 +44,7 @@
 	import { pick } from 'es-toolkit';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import { string } from 'zod';
+	import { flattenError, string } from 'zod';
 
 	const voucherQuery = operationStore<Pick<Query, 'voucher'>, QueryVoucherArgs>({
 		query: VOUCHER_DETAIL_QUERY,
@@ -85,7 +85,7 @@
 
 	const validateName = () => {
 		const result = NameSchema.safeParse(voucherInput.name);
-		nameErrors = result.success ? [] : result.error.formErrors.formErrors;
+		nameErrors = result.success ? [] : flattenError(result.error).formErrors;
 	};
 
 	onMount(() =>

@@ -3,7 +3,7 @@
 	import { Input } from '$lib/components/ui/Input';
 	import type { ProductCreateInput } from '$lib/gql/graphql';
 	import { PRODUCT_NAME_MAX_LENGTH } from './utils';
-	import { string } from 'zod';
+	import { flattenError, string } from 'zod';
 
 	type Props = {
 		name: ProductCreateInput['name'];
@@ -32,7 +32,7 @@
 	const handleNameChange = () => {
 		const result = nameSchema.safeParse(name);
 		if (!result.success) {
-			nameError = result.error.formErrors.formErrors[0];
+			nameError = flattenError(result.error).formErrors[0];
 		} else {
 			nameError = '';
 		}

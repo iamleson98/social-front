@@ -8,16 +8,16 @@
 	import { FileInput, Input, TextArea } from '$lib/components/ui/Input';
 	import { GraphqlPaginableSelect, Select } from '$lib/components/ui/select';
 	import type { Query } from '$lib/gql/graphql';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { NUMBER_REGEX } from '$lib/utils/utils';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import { object, string, z } from 'zod';
 
-	const fieldRequired = $tranFunc('helpText.fieldRequired');
-
 	const TicketSchema = object({
-		title: string().min(1, fieldRequired),
-		tag: string().min(1, fieldRequired),
-		description: string().min(1, fieldRequired),
-		orderNo: string().min(1, fieldRequired),
+		title: string().min(1, $CommonState.FieldRequiredError),
+		tag: string().min(1, $CommonState.FieldRequiredError),
+		description: string().min(1, $CommonState.FieldRequiredError),
+		orderNo: string().min(1, $CommonState.FieldRequiredError),
 	});
 
 	type TicketInput = z.infer<typeof TicketSchema>;
@@ -28,6 +28,8 @@
 		description: '',
 		orderNo: '',
 	});
+
+	const SchemaHandler = createSchemaHandler(TicketSchema, () => ticketInput);
 
 	const BATCH_LOAD = 20;
 
@@ -40,20 +42,8 @@
 		}
 	});
 
-	let ticketErrors = $state<Partial<Record<keyof TicketInput, string[]>>>({});
-
-	const validate = () => {
-		const result = TicketSchema.safeParse(ticketInput);
-		if (!result.success) {
-			ticketErrors = result.error.formErrors.fieldErrors;
-			return false;
-		}
-		ticketErrors = {};
-		return true;
-	};
-
 	const handleSubmit = () => {
-		if (!validate()) return;
+		if (!SchemaHandler.validate()) return;
 	};
 </script>
 
@@ -63,8 +53,8 @@
 		label={$tranFunc('settings.title')}
 		required
 		bind:value={ticketInput.title}
-		variant={ticketErrors.title?.length ? 'error' : 'info'}
-		subText={ticketErrors.title?.length ? ticketErrors.title[0] : ''}
+		variant={$SchemaHandler.title?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.title?.length ? $SchemaHandler.title[0] : ''}
 	/>
 
 	<div class="mt-2 flex items-start gap-2 flex-row">
@@ -83,8 +73,8 @@
 				label={$tranFunc('settings.tag')}
 				required
 				bind:value={ticketInput.tag}
-				variant={ticketErrors.tag?.length ? 'error' : 'info'}
-				subText={ticketErrors.tag?.length ? ticketErrors.tag[0] : ''}
+				variant={$SchemaHandler.tag?.length ? 'error' : 'info'}
+				subText={$SchemaHandler.tag?.[0]}
 			/>
 		</div>
 		<div class="w-1/2">
@@ -97,8 +87,8 @@
 				bind:value={ticketInput.orderNo}
 				required
 				label={$tranFunc('settings.orderNo')}
-				variant={ticketErrors.orderNo?.length ? 'error' : 'info'}
-				subText={ticketErrors.orderNo?.length ? ticketErrors.orderNo[0] : ''}
+				variant={$SchemaHandler.orderNo?.length ? 'error' : 'info'}
+				subText={$SchemaHandler.orderNo?.[0]}
 			/>
 		</div>
 	</div>
@@ -119,8 +109,8 @@
 		inputClass="min-h-20"
 		required
 		bind:value={ticketInput.description}
-		variant={ticketErrors.description?.length ? 'error' : 'info'}
-		subText={ticketErrors.description?.length ? ticketErrors.description[0] : ''}
+		variant={$SchemaHandler.description?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.description?.[0]}
 	/>
 
 	<div class="text-right mt-2">
