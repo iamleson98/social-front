@@ -22,15 +22,15 @@ export type BadgeProps = {
 export const BADGE_SIZE_VARIANTS: Record<SocialSize | 'xxs', Record<'btn' | 'badge', string>> = {
 	xxs: {
 		btn: 'p-[1px]',
-		badge: 'text-[9px] py-0.5 px-0.5',
+		badge: 'text-[10px] py-0.5 px-1',
 	},
 	xs: {
 		btn: 'p-[1px]',
-		badge: 'text-[10px] py-0.5 px-1',
+		badge: 'text-[11px] py-0.5 px-1.5',
 	},
 	sm: {
 		btn: 'p-[1.5px]',
-		badge: 'text-xs py-[3px] px-1',
+		badge: 'text-xs py-[3px] px-1.5',
 	},
 	md: {
 		btn: 'p-[2px]',
