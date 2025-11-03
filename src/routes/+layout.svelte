@@ -5,12 +5,13 @@
 	import ShopQuery from '$lib/components/common/shop-query.svelte';
 	import Language from '$lib/components/plugins/language.svelte';
 	import { AlertListener } from '$lib/components/ui/Modal';
-	import dayjs from 'dayjs';
-	import relativeTime from 'dayjs/plugin/relativeTime';
-	import { onMount, type Snippet } from 'svelte';
-	import { Toaster } from 'svelte-sonner';
-	import '@fontsource-variable/inter/wght.css';
 	import '../app.css';
+	import '@fontsource-variable/inter/wght.css';
+	import dayjs from 'dayjs';
+	import duration from 'dayjs/plugin/duration';
+	import relativeTime from 'dayjs/plugin/relativeTime';
+	import { type Snippet } from 'svelte';
+	import { Toaster } from 'svelte-sonner';
 
 	interface Props {
 		children: Snippet;
@@ -18,9 +19,8 @@
 
 	let { children }: Props = $props();
 
-	onMount(async () => {
-		dayjs.extend(relativeTime);
-	});
+	dayjs.extend(duration);
+	dayjs.extend(relativeTime);
 </script>
 
 <svelte:head>

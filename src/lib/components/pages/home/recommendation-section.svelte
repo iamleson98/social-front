@@ -1,47 +1,22 @@
 <script lang="ts">
-	import { FlipTimer } from '$lib/components/common/flip-timer/index';
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
+	import { CountDown } from '$lib/components/ui/Countdown';
 	import { SelectSkeleton } from '$lib/components/ui/select';
-	import {
-		OrderDirection,
-		PromotionSortField,
-		type PromotionCountableConnection,
-		type QueryPromotionsArgs,
-	} from '$lib/gql/graphql';
+	import { OrderDirection, PromotionSortField } from '$lib/gql/graphql';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
-	import { onMount } from 'svelte';
+	import { getPromotions } from './promotions.remote';
+	import dayjs from 'dayjs';
 
-	const PROMOTION_FIRST = 5;
-
-	let promotions = $state<PromotionCountableConnection>();
-	let loading = $state(true);
-	let showError = $state(false);
-
-	onMount(async () => {
-		const result = await fetch('/api/promotions', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				first: PROMOTION_FIRST,
-				sortBy: {
-					field: PromotionSortField.EndDate,
-					direction: OrderDirection.Desc,
-				},
-			} as QueryPromotionsArgs),
-		});
-
-		loading = false;
-
-		if (result.ok) {
-			const data = await result.json();
-			promotions = data.promotions;
-		} else {
-			showError = true;
-		}
+	const Query = getPromotions({
+		first: 5,
+		sortBy: {
+			field: PromotionSortField.EndDate,
+			direction: OrderDirection.Desc,
+		},
 	});
+
+	const Now = dayjs();
 </script>
 
 <div class="space-y-2">
@@ -53,26 +28,30 @@
 	</div>
 
 	<div class={SitenameCommonClassName}>
-		{#if loading}
+		{#if Query.loading}
 			<div class="space-y-1.5">
 				<SelectSkeleton size="xs" />
 				<SelectSkeleton size="xs" />
 			</div>
-		{:else if showError}
+		{:else if Query.error}
 			<Alert variant="warning" size="xs">Failed to load promotions. Please try again later.</Alert>
-		{:else if promotions}
-			{#each promotions.edges as edge, idx (idx)}
+		{:else if Query.current}
+			{#each Query.current.edges as edge, idx (idx)}
 				<div>
-					<p class="text-gray-700 text-sm">{edge.node.name}</p>
-					<div class="flex text-gray-500 text-xs mt-2 space-x-4">
-						{#if edge.node.endDate}
-							<FlipTimer />
-						{/if}
-					</div>
+					<p class="text-gray-700 font-medium">{edge.node.name}</p>
+					{#if dayjs(edge.node.endDate).isBefore(Now)}
+						<span class="text-red-500">Promotion ended</span>
+					{:else}
+						<div class="flex justify-end mt-2">
+							<CountDown destination={edge.node.endDate} />
+						</div>
+					{/if}
 				</div>
+			{:else}
+				<div>No promotions</div>
 			{/each}
 		{/if}
 	</div>
 
-	<Button size="xs" fullWidth>View all</Button>
+	<Button size="sm" aria-label="View all promotions" fullWidth>View all</Button>
 </div>

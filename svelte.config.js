@@ -35,10 +35,16 @@ const config = {
 			concurrency: 5,
 			handleHttpError: 'ignore', // for not showing error when building
 		},
+		experimental: {
+			remoteFunctions: true,
+		},
 	},
 	compilerOptions: {
 		runes: true,
 		sourcemap: false,
+		experimental: {
+			async: true,
+		},
 	},
 };
 

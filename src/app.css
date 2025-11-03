@@ -5,7 +5,7 @@
 @plugin "daisyui" {
   include:
     menu, checkbox, tooltip, tab, radio, progress, calendar, loading, file, file-input, toggle,
-    table, badge, breadcrumbs, link, card, indicator, avatar;
+    table, badge, breadcrumbs, link, card, indicator, avatar, countdown;
   themes:
     light --default,
     dark --prefersdark;

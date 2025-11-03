@@ -1,12 +1,14 @@
 <script lang="ts">
-	import { func } from './c.svelte';
+    import { fly } from 'svelte/transition';
 
-	let v = $state(1);
-
-	const f = func(() => v);
+    let count = $state(0);
 </script>
 
-<button onclick={() => v++}>Add</button>
-<p>{v}</p>
+<button onclick={() => count++}>+1</button>
+<button onclick={() => count--}>-1</button>
 
-<button onclick={f}>Get value</button>
+<div>
+    {#key count}
+        <span in:fly out:fly>{count}</span>
+    {/key}
+</div>
