@@ -8,22 +8,22 @@
 	import type { Mutation, MutationRequestPasswordResetArgs } from '$lib/gql/graphql';
 	import { tranFunc } from '$lib/i18n';
 	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { DEFAULT_CHANNEL } from '$lib/utils/consts';
 	import { CHANNEL_KEY } from '$lib/utils/consts';
 	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { string } from 'zod';
+	import { flattenError, email as zodEmail } from 'zod';
 
 	let email = $state('');
 	let emailError = $state<string>();
 	let loading = $state(false);
 
-	const emailHint = $tranFunc('error.invalidEmail');
-	const emailSchema = string().email({ message: emailHint }).nonempty({ message: emailHint });
+	const emailSchema = zodEmail($CommonState.InvalidEmail).nonempty($CommonState.InvalidEmail);
 
 	const validateForm = () => {
 		const parseResult = emailSchema.safeParse(email);
-		emailError = parseResult.success ? undefined : parseResult.error.formErrors.formErrors[0];
+		emailError = parseResult.success ? undefined : flattenError(parseResult.error).formErrors?.[0];
 		return parseResult.success;
 	};
 

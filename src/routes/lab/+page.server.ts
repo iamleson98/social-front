@@ -5,9 +5,9 @@ import { redirect } from '@sveltejs/kit';
 // export const ssr = false;
 
 export const load = async () => {
-	if (!dev) {
-		return redirect(HTTPStatusPermanentRedirect, '/');
-	}
+	// if (!dev) {
+	// 	return redirect(HTTPStatusPermanentRedirect, '/');
+	// }
 
 	return {
 		meta: {

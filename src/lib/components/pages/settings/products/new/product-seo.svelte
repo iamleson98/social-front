@@ -5,9 +5,10 @@
 	import type { ProductCreateInput, SeoInput } from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import { PRODUCT_SLUG_MAX_LENGTH } from './utils';
 	import slugify from 'slugify';
-	import { object, string, z } from 'zod';
+	import { object, string } from 'zod';
 
 	type Props = {
 		seo?: SeoInput;
@@ -54,7 +55,11 @@
 			}),
 	});
 
-	type SeoProps = z.infer<typeof seoSchema>;
+	const SchemaHandler = createSchemaHandler(seoSchema, () => ({
+		slug,
+		title: seo.title,
+		description: seo.description,
+	}));
 
 	let {
 		productName,
@@ -64,29 +69,13 @@
 		loading,
 	}: Props = $props();
 
-	let seoErrors = $state.raw<Partial<Record<keyof SeoProps, string[]>>>({});
-
 	$effect(() => {
 		if (productName) {
 			slug = slugify(productName, { lower: true, strict: true });
 			seo.title = productName;
 		}
+		formOk = !Object.values($SchemaHandler).some(Boolean);
 	});
-
-	const handleValueChange = (): void => {
-		const parseResult = seoSchema.safeParse({
-			slug,
-			title: seo.title || '',
-			description: seo.description || '',
-		});
-
-		if (!parseResult.success) {
-			seoErrors = parseResult.error.formErrors.fieldErrors;
-		} else {
-			seoErrors = {};
-		}
-		formOk = !Object.values(seoErrors).some(Boolean);
-	};
 </script>
 
 <div class={SitenameCommonClassName}>
@@ -95,10 +84,10 @@
 		placeholder={$tranFunc('product.prdSlug')}
 		bind:value={slug}
 		class="mb-1"
-		inputDebounceOption={{ onInput: handleValueChange }}
-		onblur={handleValueChange}
-		variant={seoErrors?.slug?.length ? 'error' : 'info'}
-		subText={seoErrors?.slug?.[0]}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
+		variant={$SchemaHandler?.slug?.length ? 'error' : 'info'}
+		subText={$SchemaHandler?.slug?.[0]}
 		required
 		label={$tranFunc('product.prdSlug')}
 		disabled={loading}
@@ -108,10 +97,10 @@
 		placeholder={$tranFunc('product.seoTitle')}
 		type="text"
 		class="mb-1"
-		inputDebounceOption={{ onInput: handleValueChange }}
-		onblur={handleValueChange}
-		variant={seoErrors?.title?.length ? 'error' : 'info'}
-		subText={seoErrors?.title?.[0]}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
+		variant={$SchemaHandler?.title?.length ? 'error' : 'info'}
+		subText={$SchemaHandler?.title?.[0]}
 		label={$tranFunc('product.seoTitle')}
 		required
 		disabled={loading}
@@ -121,10 +110,10 @@
 		placeholder={$tranFunc('product.seoDescription')}
 		type="text"
 		inputClass="min-h-20"
-		onblur={handleValueChange}
-		inputDebounceOption={{ onInput: handleValueChange }}
-		variant={seoErrors?.description?.length ? 'error' : 'info'}
-		subText={seoErrors?.description?.[0] ||
+		onblur={SchemaHandler.validate}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		variant={$SchemaHandler?.description?.length ? 'error' : 'info'}
+		subText={$SchemaHandler?.description?.[0] ||
 			`${seo?.description?.length || 0} / ${SEO_DESCRIPTION_MAX_LENGTH}`}
 		label={$tranFunc('product.seoDescription')}
 		required

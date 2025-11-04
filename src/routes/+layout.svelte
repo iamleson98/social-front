@@ -6,9 +6,11 @@
 	import Language from '$lib/components/plugins/language.svelte';
 	import { AlertListener } from '$lib/components/ui/Modal';
 	import '../app.css';
+	import '@fontsource-variable/inter/wght.css';
 	import dayjs from 'dayjs';
+	import duration from 'dayjs/plugin/duration';
 	import relativeTime from 'dayjs/plugin/relativeTime';
-	import { onMount, type Snippet } from 'svelte';
+	import { type Snippet } from 'svelte';
 	import { Toaster } from 'svelte-sonner';
 
 	interface Props {
@@ -17,9 +19,8 @@
 
 	let { children }: Props = $props();
 
-	onMount(async () => {
-		dayjs.extend(relativeTime);
-	});
+	dayjs.extend(duration);
+	dayjs.extend(relativeTime);
 </script>
 
 <svelte:head>

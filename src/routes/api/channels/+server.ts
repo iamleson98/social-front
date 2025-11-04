@@ -2,13 +2,13 @@ import { GRAPHQL_CLIENT } from '$lib/api/client';
 import type {
   Query,
 } from '$lib/gql/graphql';
-import { getmiddleAccountAccessToken } from '$lib/utils/server-side-only.js';
+import { getMiddleAccountAccessToken } from '$lib/utils/server-side-only.js';
 import { json } from '@sveltejs/kit';
 import { CHANNELS_QUERY } from '$lib/api/channels';
 
 
 export const GET = async () => {
-  const token = await getmiddleAccountAccessToken();
+  const token = await getMiddleAccountAccessToken();
 
   if (token == null)
     return json({

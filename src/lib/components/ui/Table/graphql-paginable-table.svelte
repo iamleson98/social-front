@@ -182,7 +182,7 @@
 </script>
 
 {#if $queryOperationStore.fetching}
-	<TableSkeleton numColumns={columns.length} showPagination />
+	<TableSkeleton numColumns={columns.length} />
 {:else if $queryOperationStore.error}
 	<Alert variant="error" size="sm" bordered>
 		{$queryOperationStore.error.message}
@@ -191,7 +191,7 @@
 	<Table
 		{items}
 		{columns}
-		{pagination}
+		graphqlPagination={pagination}
 		onNextPagelick={handleNextPageClick}
 		onPreviousPagelick={handlePreviousPagelick}
 		onChangeRowsPerPage={handleRowsPerPageChange}

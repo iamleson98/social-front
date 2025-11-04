@@ -22,8 +22,9 @@
 	import { CHANNELS, DEFAULT_CHANNEL } from '$lib/utils/consts';
 	import { CHANNEL_KEY, COUNTRY_CODE_KEY, LANGUAGE_KEY } from '$lib/utils/consts';
 	import { clientSideGetCookieOrDefault, clientSideSetCookie } from '$lib/utils/cookies';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import { omit } from 'es-toolkit';
-	import { boolean, object, string, z } from 'zod';
+	import { boolean, email, object, string, z } from 'zod';
 
 	const CHANNEL_SLUG = clientSideGetCookieOrDefault(CHANNEL_KEY, DEFAULT_CHANNEL.slug);
 	const DEFAULT_COUNTRY =
@@ -34,9 +35,8 @@
 	let FIELD_REQUIRED_MSG = $tranFunc('helpText.fieldRequired');
 
 	const SignupZodSchema = object({
-		email: string()
+		email: email({ message: $tranFunc('error.invalidEmail') })
 			.nonempty(FIELD_REQUIRED_MSG)
-			.email({ message: $tranFunc('error.invalidEmail') })
 			.max(128, {
 				message: $tranFunc('error.lengthInvalid', {
 					name: $tranFunc('common.email'),
@@ -48,17 +48,17 @@
 		firstName: string().nonempty(FIELD_REQUIRED_MSG),
 		lastName: string().nonempty(FIELD_REQUIRED_MSG),
 		confirmPassword: string().nonempty(FIELD_REQUIRED_MSG),
-		termAndPoliciesAgree: boolean({ coerce: true }),
+		termAndPoliciesAgree: boolean(),
 		redirectUrl: string().min(1, FIELD_REQUIRED_MSG),
 		channel: string().min(1, FIELD_REQUIRED_MSG),
 		languageCode: string(),
 	})
 		.refine((data) => data.password === data.confirmPassword, {
-			message: $tranFunc('error.passwordsNotMatch'),
+			error: $tranFunc('error.passwordsNotMatch'),
 			path: ['confirmPassword'],
 		})
 		.refine((data) => !!data.termAndPoliciesAgree, {
-			message: $tranFunc('error.doYouAgree'),
+			error: $tranFunc('error.doYouAgree'),
 			path: ['termAndPoliciesAgree'],
 		});
 
@@ -76,9 +76,10 @@
 		languageCode: DEFAULT_LANGUAGE,
 	});
 	let countryCode = $state<CountryCode>(DEFAULT_COUNTRY);
-	let signupFormErrors = $state.raw<Partial<Record<keyof SignupProps, string[]>>>({});
 	let signupQueryStore =
 		$state<OperationResultStore<Pick<Mutation, 'accountRegister'>, MutationAccountRegisterArgs>>();
+
+	const SchemaHandler = createSchemaHandler(SignupZodSchema, () => signupInfo);
 
 	$effect(() => {
 		if (countryCode) {
@@ -115,15 +116,8 @@
 		}
 	});
 
-	const validateForm = () => {
-		const parseResult = SignupZodSchema.safeParse(signupInfo);
-
-		signupFormErrors = parseResult.success ? {} : parseResult.error.formErrors.fieldErrors;
-		return parseResult.success;
-	};
-
 	const handleSignup = async () => {
-		if (!validateForm()) return;
+		if (!SchemaHandler.validate()) return;
 
 		signupQueryStore = operationStore<
 			Pick<Mutation, 'accountRegister'>,
@@ -160,53 +154,50 @@
 	{/if}
 	<Alert class="mb-2" dismissable size="sm" bordered>{$tranFunc('signup.promtGeoAccessPerm')}</Alert
 	>
-	<div class="mb-4">
-		<div class="flex flex-row mobile-m:flex-col justify-between items-start gap-2 mb-2">
-			<div class="w-1/2">
-				<Input
-					size="sm"
-					type="text"
-					placeholder={$tranFunc('common.firstName')}
-					label={$tranFunc('common.firstName')}
-					required
-					disabled={$signupQueryStore?.fetching}
-					bind:value={signupInfo.firstName}
-					onblur={validateForm}
-					variant={signupFormErrors?.firstName?.length ? 'error' : 'info'}
-					subText={signupFormErrors?.firstName?.[0]}
-					inputDebounceOption={{ onInput: validateForm }}
-				/>
-			</div>
-			<div class="w-1/2">
-				<Input
-					size="sm"
-					type="text"
-					label={$tranFunc('common.lastName')}
-					placeholder={$tranFunc('common.lastName')}
-					required
-					disabled={$signupQueryStore?.fetching}
-					bind:value={signupInfo.lastName}
-					onblur={validateForm}
-					variant={signupFormErrors?.lastName?.length ? 'error' : 'info'}
-					subText={signupFormErrors?.lastName?.[0]}
-					inputDebounceOption={{ onInput: validateForm }}
-				/>
-			</div>
+	<div class="mb-4 space-y-2">
+		<div class="flex flex-row mobile-m:flex-col justify-between items-start gap-2">
+			<Input
+				size="sm"
+				type="text"
+				class="w-1/2"
+				placeholder={$tranFunc('common.firstName')}
+				label={$tranFunc('common.firstName')}
+				required
+				disabled={$signupQueryStore?.fetching}
+				bind:value={signupInfo.firstName}
+				onblur={SchemaHandler.validate}
+				variant={$SchemaHandler?.firstName?.length ? 'error' : 'info'}
+				subText={$SchemaHandler?.firstName?.[0]}
+				inputDebounceOption={{ onInput: SchemaHandler.validate }}
+			/>
+			<Input
+				size="sm"
+				type="text"
+				class="w-1/2"
+				label={$tranFunc('common.lastName')}
+				placeholder={$tranFunc('common.lastName')}
+				required
+				disabled={$signupQueryStore?.fetching}
+				bind:value={signupInfo.lastName}
+				onblur={SchemaHandler.validate}
+				variant={$SchemaHandler?.lastName?.length ? 'error' : 'info'}
+				subText={$SchemaHandler?.lastName?.[0]}
+				inputDebounceOption={{ onInput: SchemaHandler.validate }}
+			/>
 		</div>
 		<Input
 			size="sm"
 			type="email"
 			placeholder={$tranFunc('common.emailPlaceholder')}
-			class="mb-2"
 			required
 			label={$tranFunc('common.email')}
 			disabled={$signupQueryStore?.fetching}
 			bind:value={signupInfo.email}
 			startIcon={Email}
-			onblur={validateForm}
-			inputDebounceOption={{ onInput: validateForm }}
-			variant={signupFormErrors?.email?.length ? 'error' : 'info'}
-			subText={signupFormErrors?.email?.[0]}
+			onblur={SchemaHandler.validate}
+			inputDebounceOption={{ onInput: SchemaHandler.validate }}
+			variant={$SchemaHandler?.email?.length ? 'error' : 'info'}
+			subText={$SchemaHandler?.email?.[0]}
 		/>
 		<PasswordInput
 			size="sm"
@@ -214,13 +205,12 @@
 			bind:value={signupInfo.password}
 			label={$tranFunc('common.password')}
 			disabled={$signupQueryStore?.fetching}
-			class="mb-2"
-			variant={signupFormErrors?.password?.length ? 'error' : 'info'}
-			subText={signupFormErrors?.password?.[0]}
+			variant={$SchemaHandler?.password?.length ? 'error' : 'info'}
+			subText={$SchemaHandler?.password?.[0]}
 			required
 			showAction
-			inputDebounceOption={{ onInput: validateForm }}
-			onblur={validateForm}
+			inputDebounceOption={{ onInput: SchemaHandler.validate }}
+			onblur={SchemaHandler.validate}
 		/>
 		<PasswordInput
 			size="sm"
@@ -228,15 +218,14 @@
 			bind:value={signupInfo.confirmPassword}
 			disabled={$signupQueryStore?.fetching}
 			label={$tranFunc('common.confirmPwd')}
-			class="mb-2"
-			inputDebounceOption={{ onInput: validateForm }}
+			inputDebounceOption={{ onInput: SchemaHandler.validate }}
 			showAction={false}
-			variant={signupFormErrors?.confirmPassword?.length ? 'error' : 'info'}
-			subText={signupFormErrors?.confirmPassword?.[0]}
+			variant={$SchemaHandler?.confirmPassword?.length ? 'error' : 'info'}
+			subText={$SchemaHandler?.confirmPassword?.[0]}
 			required
-			onblur={validateForm}
+			onblur={SchemaHandler.validate}
 		/>
-		<div class="flex mb-2 items-start gap-2">
+		<div class="flex items-start gap-2">
 			<CountrySelect
 				size="sm"
 				class="w-1/2"
@@ -252,18 +241,16 @@
 			/>
 		</div>
 
-		<div class="mb-3">
-			<Checkbox
-				label={$tranFunc('signup.agreeToTerms')}
-				bind:checked={signupInfo.termAndPoliciesAgree}
-				required
-				disabled={$signupQueryStore?.fetching}
-				onchange={validateForm}
-				size="sm"
-				variant={signupFormErrors.termAndPoliciesAgree?.length ? 'error' : 'info'}
-				subText={signupFormErrors.termAndPoliciesAgree?.[0]}
-			/>
-		</div>
+		<Checkbox
+			label={$tranFunc('signup.agreeToTerms')}
+			bind:checked={signupInfo.termAndPoliciesAgree}
+			required
+			disabled={$signupQueryStore?.fetching}
+			onchange={SchemaHandler.validate}
+			size="sm"
+			variant={$SchemaHandler.termAndPoliciesAgree?.length ? 'error' : 'info'}
+			subText={$SchemaHandler.termAndPoliciesAgree?.[0]}
+		/>
 
 		<Button
 			variant="filled"

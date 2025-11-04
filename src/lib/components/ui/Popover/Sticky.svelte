@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { clickOutside } from '$lib/actions/click-outside';
-	import { dropdownResizeDebounce } from './types';
+	import { elementResizeObserver } from './types';
 	import { computePosition, flip, offset, shift, type Placement, size } from '@floating-ui/dom';
-	import { onMount, type Snippet } from 'svelte';
+	import { type Snippet } from 'svelte';
 	import { fly, type FlyParams } from 'svelte/transition';
 
 	type Props = {
@@ -14,12 +14,7 @@
 		zIndex?: number;
 	};
 
-	let {
-		children,
-		target = $bindable(),
-		placement = 'bottom',
-		zIndex = 10000,
-	}: Props = $props();
+	let { children, target = $bindable(), placement = 'bottom', zIndex = 10000 }: Props = $props();
 
 	let ContainerRef = $state<HTMLElement>();
 	let flyOpts = $derived<FlyParams>(/(left|right)/.test(placement) ? { x: 10 } : { y: 10 });
@@ -49,10 +44,6 @@
 		if (target) computeStyle();
 	});
 
-	onMount(() => {
-		return dropdownResizeDebounce(window, { onFire: computeStyle });
-	});
-
 	const handleInnerClose = (evt: Event) => {
 		if (
 			(evt instanceof KeyboardEvent && evt.key === 'Escape') ||
@@ -61,6 +52,8 @@
 			target = undefined;
 	};
 </script>
+
+<svelte:window use:elementResizeObserver={{ onFire: computeStyle }} />
 
 <div
 	class="fixed! inline-block min-w-fit!"

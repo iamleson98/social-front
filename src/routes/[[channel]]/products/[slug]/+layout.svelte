@@ -88,7 +88,7 @@
 <div>
 	<!-- breadcrumb -->
 	<nav class="flex mb-2" aria-label="Breadcrumb">
-		<ol class="inline-flex items-center space-x-1 breadcrumb text-sm">
+		<ol class="inline-flex items-center gap-1 breadcrumb text-sm">
 			<li>
 				<a href={AppRoute.HOME()} class="flex items-center">
 					<Icon icon={MingcuteHome} class="mr-1" />
@@ -145,6 +145,6 @@
 	@reference "tailwindcss";
 
 	.breadcrumb > li {
-		@apply flex items-center not-last:text-blue-700;
+		@apply flex items-center not-last:text-blue-600;
 	}
 </style>

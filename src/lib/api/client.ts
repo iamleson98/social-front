@@ -112,7 +112,7 @@ const isAuthorError = (err: CombinedError): boolean => {
 		}
 	],
  */
-const isAuthenError = (err: CombinedError): boolean => {
+export const isAuthenError = (err: CombinedError): boolean => {
 	// some APIimmediately show that you don't have permission to access the resource
 	// Actually that is because you are not authenticated
 	if (isAuthorError(err)) {

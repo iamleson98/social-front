@@ -15,7 +15,7 @@
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { v4 as uuid } from 'uuid';
-	import { number, string } from 'zod';
+	import { flattenError, number, string } from 'zod';
 
 	type Props = {
 		/** if not provided, meaning it is create page */
@@ -92,10 +92,14 @@
 	const validate = () => {
 		if (addCodeType === 'auto') {
 			const result = AutoGenerateCodesSchema.safeParse(numberOfAutoGenerateCodes);
-			numberOfAutoGenerateCodesError = result.success ? undefined : result.error.errors[0].message;
+			numberOfAutoGenerateCodesError = result.success
+				? undefined
+				: flattenError(result.error).formErrors?.[0];
 		} else {
 			const result = ManualCodeSchema.safeParse(manualVoucherCode);
-			manualVoucherCodeError = result.success ? undefined : result.error.errors[0].message;
+			manualVoucherCodeError = result.success
+				? undefined
+				: flattenError(result.error).formErrors?.[0];
 		}
 	};
 
@@ -186,7 +190,7 @@
 	/>
 {/snippet}
 
-<div class="{SitenameCommonClassName}">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>
 		<div>{$tranFunc('voucher.voucherCodes')}</div>
 		<Button

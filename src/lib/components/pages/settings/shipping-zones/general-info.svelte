@@ -4,7 +4,8 @@
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { ShopStoreManager } from '$lib/stores/shop';
 	import { CommonState } from '$lib/utils/common.svelte';
-	import { object, string, z } from 'zod';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
+	import { object, string } from 'zod';
 
 	type Props = {
 		name: string;
@@ -28,27 +29,14 @@
 		name: string().nonempty($CommonState.FieldRequiredError),
 		description: string().nonempty($CommonState.FieldRequiredError),
 	});
-
-	type ZoneType = z.infer<typeof ZoneSchema>;
-
-	let zoneErrors = $state<Partial<Record<keyof ZoneType, string[]>>>({});
-
-	const validate = () => {
-		const result = ZoneSchema.safeParse({ name, description });
-		zoneErrors = result.success ? {} : result.error.formErrors.fieldErrors;
-		return result.success;
-	};
+	const SchemaHandler = createSchemaHandler(ZoneSchema, () => ({
+		name,
+		description,
+	}));
 
 	$effect(() => {
-		formOk = !Object.keys(zoneErrors).length;
+		formOk = !Object.keys($SchemaHandler).length;
 	});
-
-	// const CountriesOptions = $derived(
-	// 	$ShopStoreManager?.countries.map<SelectOption>((item) => ({
-	// 		label: item.country,
-	// 		value: item.code,
-	// 	})) || [],
-	// );
 </script>
 
 {void formOk}
@@ -64,10 +52,10 @@
 		placeholder="Name"
 		bind:value={name}
 		{disabled}
-		variant={zoneErrors.name?.length ? 'error' : 'info'}
-		subText={zoneErrors.name?.[0]}
-		inputDebounceOption={{ onInput: validate }}
-		onblur={validate}
+		variant={$SchemaHandler.name?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.name?.[0]}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
 	/>
 	<TextArea
 		required
@@ -75,10 +63,10 @@
 		placeholder="Description"
 		bind:value={description}
 		inputClass="min-h-20"
-		variant={zoneErrors.description?.length ? 'error' : 'info'}
-		subText={zoneErrors.description?.[0]}
-		inputDebounceOption={{ onInput: validate }}
-		onblur={validate}
+		variant={$SchemaHandler.description?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.description?.[0]}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
 		{disabled}
 	/>
 	<Toggle label="Is default" bind:checked={isDefault} {disabled} />

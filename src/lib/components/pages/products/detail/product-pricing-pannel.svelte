@@ -2,14 +2,16 @@
 	import { tranFunc } from '$i18n';
 	import { CHECKOUT_ADD_LINE_MUTATION } from '$lib/api/checkout';
 	import { operationStore, type OperationResultStore } from '$lib/api/operation';
+	import UserAddress from '$lib/components/common/user-address/user-address.svelte';
 	import {
-		MapPin,
 		Minus,
 		Plus,
 		ShoppingBagPlus,
 		Discount,
 		Icon,
 		Check,
+		TruckDelivery,
+		PencilMinus,
 	} from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
@@ -73,17 +75,6 @@
 		);
 	});
 
-	let userShippingAddress = $derived.by(() => {
-		if (!$UserStoreManager || !$UserStoreManager?.addresses?.length)
-			return $tranFunc('product.chooseAddress');
-
-		const defaulShippingAddress =
-			$UserStoreManager.addresses.find((addr) => addr.isDefaultShippingAddress) ||
-			$UserStoreManager.addresses[0];
-
-		return `${defaulShippingAddress.streetAddress1 || defaulShippingAddress.streetAddress2}, ${defaulShippingAddress.cityArea}, ${defaulShippingAddress.city}`;
-	});
-
 	const toggleSelectVariant = (variant: ProductVariant) => {
 		if (!selectedVariant) {
 			selectedVariant = variant;
@@ -142,28 +133,91 @@
 			},
 		});
 	};
+
+	const MessageCircleFilled = `<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 14l-3-3h-7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1zm-7 1v2a1 1 0 0 1-1 1H6l-3 3V11a1 1 0 0 1 1-1h2"/>`;
+	const MessageReport = `<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-5l-5 3v-3H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3zm-6 4v3m0 3v.01"/>`;
+	const ThumbupFilled = `<path fill="currentColor" d="M13 3a3 3 0 0 1 2.995 2.824L16 6v4h2a3 3 0 0 1 2.98 2.65l.015.174L21 13l-.02.196l-1.006 5.032c-.381 1.626-1.502 2.796-2.81 2.78L17 21H9a1 1 0 0 1-.993-.883L8 20l.001-9.536a1 1 0 0 1 .5-.865a3 3 0 0 0 1.492-2.397L10 7V6a3 3 0 0 1 3-3m-8 7a1 1 0 0 1 .993.883L6 11v9a1 1 0 0 1-.883.993L5 21H4a2 2 0 0 1-1.995-1.85L2 19v-7a2 2 0 0 1 1.85-1.995L4 10z"/>`;
+	const RewindBack30 = `<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M19.007 16.466A6 6 0 0 0 15 6H4m8 9.5v3a1.5 1.5 0 0 0 3 0v-3a1.5 1.5 0 0 0-3 0M6 14h1.5a1.5 1.5 0 0 1 0 3H7h.5a1.5 1.5 0 0 1 0 3H6"/><path d="M7 9L4 6l3-3"/></g>`;
+	const ShieldFilled = `<path fill="currentColor" d="m11.998 2l.118.007l.059.008l.061.013l.111.034a1 1 0 0 1 .217.112l.104.082l.255.218a11 11 0 0 0 7.189 2.537l.342-.01a1 1 0 0 1 1.005.717a13 13 0 0 1-9.208 16.25a1 1 0 0 1-.502 0A13 13 0 0 1 2.54 5.718a1 1 0 0 1 1.005-.717a11 11 0 0 0 7.531-2.527l.263-.225l.096-.075a1 1 0 0 1 .217-.112l.112-.034a1 1 0 0 1 .119-.021zm3.71 7.293a1 1 0 0 0-1.415 0L11 12.585l-1.293-1.292l-.094-.083a1 1 0 0 0-1.32 1.497l2 2l.094.083a1 1 0 0 0 1.32-.083l4-4l.083-.094a1 1 0 0 0-.083-1.32z"/>`;
 </script>
 
-<div class="bg-white rounded-lg border p-4 h-full">
+<div class="bg-white rounded-lg border-gray-200 border p-4 h-full space-y-2">
+	<div class="flex items-center gap-1">
+		<Badge size="xs" startIcon={ShieldFilled} text="Authentic" variant="light" rounded />
+		<Badge
+			size="xs"
+			startIcon={RewindBack30}
+			text="30 days return"
+			variant="light"
+			rounded
+			color="grape"
+		/>
+		<Badge
+			size="xs"
+			startIcon={ThumbupFilled}
+			text="Top deal"
+			variant="light"
+			rounded
+			color="red"
+		/>
+		<Badge
+			size="xs"
+			startIcon={TruckDelivery}
+			text="Extra free ship"
+			variant="light"
+			rounded
+			color="green"
+		/>
+		{#if productInformation.attributes.some((attr) => attr.attribute.slug === 'brand')}
+			<Badge size="xs" text="Brand abc" variant="light" rounded color="blue" />
+		{/if}
+	</div>
+
 	<h1 class="text-gray-700 text-xl font-semibold mb-1">{productInformation.name}</h1>
+
 	<div class="flex items-center text-red-500 gap-2 mb-4">
-		{#snippet slotText()}
-			<p slot="text" class="text-sm font-medium underline ml-1 text-gray-700">
-				{typeof productInformation.rating === 'number' ? productInformation.rating : MAX_RATING} / {MAX_RATING}
-			</p>
-		{/snippet}
 		<Rating
 			total={5}
 			rating={typeof productInformation.rating === 'number'
 				? productInformation.rating
 				: MAX_RATING}
-			{slotText}
-		></Rating>
+		>
+			{#snippet slotText()}
+				<p class="text-sm font-medium underline ml-1 text-gray-700">
+					{typeof productInformation.rating === 'number' ? productInformation.rating : MAX_RATING} /
+					{MAX_RATING}
+				</p>
+			{/snippet}
+		</Rating>
+
+		<div class="w-px h-6 bg-gray-300"></div>
+
+		<IconButton
+			aria-label="Report product"
+			class="tooltip tooltip-bottom"
+			data-tip="Report this product"
+			icon={MessageReport}
+			size="xs"
+			color="gray"
+			variant="light"
+		/>
+
+		<div class="w-px h-6 bg-gray-300"></div>
+
+		<IconButton
+			aria-label="Contact seller"
+			class="tooltip tooltip-bottom"
+			data-tip="Contact seller"
+			icon={MessageCircleFilled}
+			size="xs"
+			color="blue"
+			variant="light"
+		/>
 	</div>
 
 	<div class="mb-5 bg-gray-100 rounded-sm px-5 py-2">
 		<!-- MARK: price -->
-		<div class="">
+		<div>
 			<div class="text-blue-700 font-semibold text-xl mb-1">
 				{displayPrice}
 			</div>
@@ -186,35 +240,15 @@
 		</div>
 	</div>
 
-	<!-- MARK: delivery -->
-	{#if !useForPreviewModal}
-		<div class="flex flex-row items-center mb-4 text-gray-600">
-			<span class="w-1/6 text-xs">{$tranFunc('product.delivery')}</span>
-			<div class="w-5/6 text-blue-700 font-normal flex items-center">
-				<span class="text-sm mr-1">
-					{userShippingAddress}
-				</span>
-				<IconButton
-					icon={MapPin}
-					rounded
-					size="xs"
-					variant="light"
-					disabled={$checkoutAddLineStore?.fetching}
-					onclick={() => (openDeliveryModal = true)}
-				/>
-			</div>
-		</div>
-	{/if}
-
 	<!-- MARK: variants -->
 	<div class="flex flex-row items-center mb-4 text-gray-600">
-		<span class="w-1/6 text-xs">{$tranFunc('product.variants')}</span>
+		<span class="w-1/6 text-sm">{$tranFunc('product.variants')}</span>
 		<div class="w-5/6">
 			<div class="flex gap-2 flex-wrap flex-row text-blue-600 text-sm">
 				{#each productInformation.variants || [] as variant, idx (idx)}
 					{@const isVariantActive = selectedVariant?.id === variant.id}
 					<Button
-						size="sm"
+						size="xs"
 						variant="outline"
 						onclick={() => toggleSelectVariant(variant)}
 						tabindex={0}
@@ -241,13 +275,14 @@
 
 	<!-- MARK: quantity selection -->
 	<div class="flex flex-row items-center mb-4 text-gray-600">
-		<span class="w-1/6 text-xs">{$tranFunc('product.quantity')}</span>
+		<span class="w-1/6 text-sm">{$tranFunc('product.quantity')}</span>
 		<div class="w-5/6 flex items-center flex-wrap flex-row">
 			<div class="flex items-start gap-1">
 				<IconButton
 					icon={Minus}
 					color="red"
 					variant="light"
+					aria-label="decrease quantity"
 					size="sm"
 					onclick={() => quantitySelected--}
 					disabled={quantitySelected < 2 || $checkoutAddLineStore?.fetching}
@@ -265,9 +300,9 @@
 				/>
 				<IconButton
 					icon={Plus}
-					color="indigo"
 					variant="light"
 					size="sm"
+					aria-label="increase quantity"
 					onclick={() => quantitySelected++}
 					disabled={quantitySelected >=
 						((selectedVariant?.quantityLimitPerCustomer ||
@@ -276,7 +311,7 @@
 			</div>
 			<!-- MARK: quantity available -->
 			{#if selectedVariant}
-				<span class="text-gray-600 text-xs ml-2" transition:fade={{ duration: 100 }}>
+				<span class="text-gray-600 text-sm ml-2" transition:fade={{ duration: 100 }}>
 					{$tranFunc('product.variantAvailable', {
 						quantity: selectedVariant.quantityLimitPerCustomer || selectedVariant.quantityAvailable,
 					})}
@@ -285,13 +320,37 @@
 		</div>
 	</div>
 
+	<!-- MARK: delivery -->
+	{#if !useForPreviewModal}
+		<div class="flex flex-row items-center mb-4 text-gray-600">
+			<span class="w-1/6 text-sm">{$tranFunc('product.delivery')}</span>
+			<div class="w-5/6 text-blue-700 font-normal flex items-center">
+				{#if $UserStoreManager?.addresses.length}
+					<UserAddress class="w-1/2 relative!" brief address={$UserStoreManager.addresses[0]}>
+						<IconButton
+							icon={PencilMinus}
+							rounded
+							class="absolute! top-3! right-3!"
+							size="xs"
+							variant="light"
+							disabled={$checkoutAddLineStore?.fetching}
+							onclick={() => (openDeliveryModal = true)}
+						/>
+					</UserAddress>
+				{:else}
+					<div class="w-3/4">{$tranFunc('product.chooseAddress')}</div>
+				{/if}
+			</div>
+		</div>
+	{/if}
+
 	<!-- customer policy -->
 	{#if !useForPreviewModal}
 		<div class="flex flex-row items-center mb-6 text-gray-600">
-			<span class="w-1/6 text-xs">{$tranFunc('product.prdPolicy')}</span>
+			<span class="w-1/6 text-sm">{$tranFunc('product.prdPolicy')}</span>
 			<div class="w-5/6 flex items-center flex-wrap flex-row">
 				<div class="w-2/3">
-					<Alert variant="info" size="xs">{$tranFunc('product.prdPolicyDetail')}</Alert>
+					<Alert variant="info" size="sm">{$tranFunc('product.prdPolicyDetail')}</Alert>
 				</div>
 			</div>
 		</div>
@@ -300,17 +359,18 @@
 	<!-- purchase button -->
 	<div class="flex flex-row items-center">
 		<span class="w-1/6"></span>
-		<div class="w-5/6">
+		<div class="w-5/6 flex items-center gap-2">
 			<Button
 				variant="filled"
 				type="submit"
-				startIcon={ShoppingBagPlus}
+				endIcon={ShoppingBagPlus}
 				onclick={handleAddVariantToCart}
-				size="lg"
+				size="md"
 				disabled={$checkoutAddLineStore?.fetching}
 			>
 				<span>{$tranFunc('product.addToCart')}</span>
 			</Button>
+			<Button size="md" variant="outline">Buy now</Button>
 		</div>
 	</div>
 </div>

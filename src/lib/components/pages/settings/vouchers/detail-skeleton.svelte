@@ -9,7 +9,7 @@
 	<div class="{SitenameCommonClassName} w-7/10">
 		<Skeleton class="w-1/4 h-4" />
 		<SelectSkeleton label />
-		<TableSkeleton numColumns={4} numOfRows={4} showPagination />
+		<TableSkeleton numColumns={4} numOfRows={4} />
 	</div>
 
 	<div class="{SitenameCommonClassName} w-3/10">

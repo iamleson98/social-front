@@ -22,8 +22,8 @@ const config = {
 			// precompress: true,
 			precompress: {
 				brotli: true,
-				// gzip: true,
-				files: ['htm', 'html'],
+				gzip: true,
+				files: ['.html', '.htm', '.js', '.css', '.json', '.svg', '.png', '.jpg', '.woff', '.woff2'],
 			},
 			// dynamic_origin: true,
 			// xff_depth: 1,
@@ -35,10 +35,18 @@ const config = {
 			concurrency: 5,
 			handleHttpError: 'ignore', // for not showing error when building
 		},
+		experimental: {
+			remoteFunctions: true,
+		},
 	},
 	compilerOptions: {
 		runes: true,
 		sourcemap: false,
+		// NOTE: Please do not turn this async feature on. It will cause issues with page navigation.
+
+		// experimental: {
+		// 	async: true,
+		// },
 	},
 };
 

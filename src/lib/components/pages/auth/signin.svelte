@@ -8,6 +8,7 @@
 	import { UserStoreManager } from '$lib/stores/auth/user';
 	import { AppRoute } from '$lib/utils';
 	import { HTTPStatusSuccess } from '$lib/utils/consts';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import { toast } from 'svelte-sonner';
 	import { boolean, object, string, z } from 'zod';
 
@@ -51,19 +52,14 @@
 		password: '',
 		rememberMe: false,
 	});
-	let signinFormErrors = $state.raw<Partial<Record<keyof SigninSchema, string[]>>>({});
 
 	let loading = $state(false);
 	let signinError = $state(null);
 
-	const validateForm = () => {
-		const parseResult = signinSchema.safeParse(signinValue);
-		signinFormErrors = parseResult.success ? {} : parseResult.error.formErrors.fieldErrors;
-		return parseResult.success;
-	};
+	const SchemaValidator = createSchemaHandler(signinSchema, () => signinValue);
 
 	const handleLogin = async () => {
-		if (!validateForm()) return;
+		if (!SchemaValidator.validate()) return;
 
 		loading = true;
 
@@ -111,28 +107,28 @@
 			type="email"
 			placeholder={$tranFunc('common.emailPlaceholder')}
 			label={$tranFunc('common.email')}
-			onblur={validateForm}
-			inputDebounceOption={{ onInput: validateForm }}
+			onblur={SchemaValidator.validate}
+			inputDebounceOption={{ onInput: SchemaValidator.validate }}
 			class="mb-2"
 			bind:value={signinValue.email}
 			required
 			disabled={loading}
 			startIcon={Email}
-			variant={signinFormErrors?.email?.length ? 'error' : 'info'}
-			subText={signinFormErrors?.email?.[0]}
+			variant={$SchemaValidator?.email?.length ? 'error' : 'info'}
+			subText={$SchemaValidator?.email?.[0]}
 		/>
 		<PasswordInput
 			placeholder={$tranFunc('common.passwordPlaceholder')}
 			label={$tranFunc('common.password')}
-			onblur={validateForm}
-			inputDebounceOption={{ onInput: validateForm }}
+			onblur={SchemaValidator.validate}
+			inputDebounceOption={{ onInput: SchemaValidator.validate }}
 			bind:value={signinValue.password}
 			class="mb-1"
 			disabled={loading}
-			variant={signinFormErrors?.password?.length ? 'error' : 'info'}
+			variant={$SchemaValidator?.password?.length ? 'error' : 'info'}
 			required
 			showAction
-			subText={signinFormErrors?.password?.[0]}
+			subText={$SchemaValidator?.password?.[0]}
 		/>
 		<a href={AppRoute.AUTH_RESET_PASSWORD()} class="text-xs text-right block text-blue-600 mb-4">
 			{$tranFunc('signin.forgotPassword')}

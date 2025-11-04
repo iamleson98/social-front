@@ -9,8 +9,9 @@
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { ValidSlugRegex } from '$lib/utils/consts';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import slugify from 'slugify';
-	import z, { boolean, object, string } from 'zod';
+	import { boolean, object, string } from 'zod';
 
 	type Props = {
 		name: string;
@@ -43,23 +44,20 @@
 		isShippingRequired: boolean(),
 	});
 
-	type ProductTypeType = z.infer<typeof ProductTypeSchema>;
-
-	let productTypeFormErrors = $state.raw<Partial<Record<keyof ProductTypeType, string[]>>>({});
-
-	const validate = () => {
-		const result = ProductTypeSchema.safeParse({ name, slug, kind, isShippingRequired });
-		productTypeFormErrors = result.success ? {} : result.error.formErrors.fieldErrors;
-		return result.success;
-	};
+	const SchemaHandler = createSchemaHandler(ProductTypeSchema, () => ({
+		name,
+		slug,
+		kind,
+		isShippingRequired,
+	}));
 
 	$effect(() => {
-		formOk = !Object.keys(productTypeFormErrors).length;
+		formOk = !Object.keys($SchemaHandler).length;
 	});
 
 	const handleNameChange = () => {
 		if (isCreatePage) slug = slugify(name, { trim: true, strict: true, lower: true });
-		validate();
+		SchemaHandler.validate();
 	};
 </script>
 
@@ -75,8 +73,8 @@
 			{disabled}
 			onblur={handleNameChange}
 			inputDebounceOption={{ onInput: handleNameChange }}
-			variant={productTypeFormErrors.name?.length ? 'error' : 'info'}
-			subText={productTypeFormErrors.name?.[0]}
+			variant={$SchemaHandler.name?.length ? 'error' : 'info'}
+			subText={$SchemaHandler.name?.[0]}
 		/>
 		<Input
 			label="Slug"
@@ -84,10 +82,10 @@
 			required
 			bind:value={slug}
 			{disabled}
-			onblur={validate}
-			inputDebounceOption={{ onInput: validate }}
-			variant={productTypeFormErrors.slug?.length ? 'error' : 'info'}
-			subText={productTypeFormErrors.slug?.[0]}
+			onblur={SchemaHandler.validate}
+			inputDebounceOption={{ onInput: SchemaHandler.validate }}
+			variant={$SchemaHandler.slug?.length ? 'error' : 'info'}
+			subText={$SchemaHandler.slug?.[0]}
 		/>
 	</div>
 
@@ -96,23 +94,23 @@
 			label="Product type"
 			required
 			requiredAtPos="end"
-			variant={productTypeFormErrors.kind?.length ? 'error' : 'info'}
+			variant={$SchemaHandler.kind?.length ? 'error' : 'info'}
 		/>
 		<RadioButton
 			label="Normal product type"
 			value={ProductTypeKindEnum.Normal}
 			bind:group={kind}
 			{disabled}
-			onchange={validate}
-			variant={productTypeFormErrors.kind?.length ? 'error' : 'info'}
+			onchange={SchemaHandler.validate}
+			variant={$SchemaHandler.kind?.length ? 'error' : 'info'}
 		/>
 		<RadioButton
 			value={ProductTypeKindEnum.GiftCard}
 			bind:group={kind}
 			subText="This product will act as payment method"
 			{disabled}
-			onchange={validate}
-			variant={productTypeFormErrors.kind?.length ? 'error' : 'info'}
+			onchange={SchemaHandler.validate}
+			variant={$SchemaHandler.kind?.length ? 'error' : 'info'}
 		>
 			{#snippet label()}
 				<div class="flex items-center gap-1">

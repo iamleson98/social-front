@@ -204,7 +204,7 @@
 			onmouseleave={onclose}
 		/>
 	{/snippet}
-	<Popover {trigger} placement="left" noReCalculateOnWindowResize>
+	<Popover {trigger} placement="left">
 		<div class="py-1 px-2 rounded-lg border border-gray-200 bg-white w-fit shadow-sm">
 			<div class="flex flex-nowrap font-medium gap-1 text-sm">
 				<span class="flex-1">{$tranFunc('product.channel')}</span>

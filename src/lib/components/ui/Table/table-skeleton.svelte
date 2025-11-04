@@ -5,7 +5,6 @@
 	type Props = {
 		numColumns: number;
 		numOfRows?: number;
-		showPagination?: boolean;
 		class?: string;
 		headless?: boolean;
 	};
@@ -14,13 +13,7 @@
 		[x: string]: unknown;
 	};
 
-	let {
-		numColumns,
-		numOfRows = 3,
-		showPagination = false,
-		class: className = '',
-		headless = false,
-	}: Props = $props();
+	let { numColumns, numOfRows = 3, class: className = '', headless = false }: Props = $props();
 
 	const Columns = new Array(numColumns).fill(null).map(() => ({
 		title: '',
@@ -41,10 +34,4 @@
 		{headless}
 		class=""
 	/>
-	{#if showPagination}
-		<div class="flex items-center justify-between p-2">
-			<Skeleton class="h-4 w-20" />
-			<Skeleton class="h-4 w-20" />
-		</div>
-	{/if}
 </div>

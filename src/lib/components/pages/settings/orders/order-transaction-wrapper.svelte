@@ -17,7 +17,9 @@
 		type Money,
 		type Order,
 		type TransactionEvent,
+		type TransactionItem,
 	} from '$lib/gql/graphql';
+	import { ShopStoreManager } from '$lib/stores/shop';
 	import { CommonEaseDatePickerFormat, SitenameTimeFormat } from '$lib/utils/consts';
 	import { paymentStatusBadgeClass, SitenameCommonClassName } from '$lib/utils/utils';
 	import {
@@ -30,6 +32,13 @@
 		prepareOrderRefundDisplayList,
 		type OrderRefundDisplay,
 		canEditRefund,
+		mapPaymentToTransactionEvents,
+		type FakeTransaction,
+		findMethodName,
+		mapOrderActionsToTransactionActions,
+		getTransactionAmount,
+		prepareMoney,
+		type ExtendedOrderTransaction,
 	} from './utils';
 	import dayjs from 'dayjs';
 
@@ -39,12 +48,13 @@
 
 	let { order }: Props = $props();
 
-	const FilteredPayments = order.payments.filter(
-		(payment) => payment.isActive || !!payment.transactions?.length,
+	const FilteredPayments = $derived(
+		order.payments.filter((payment) => payment.isActive || !!payment.transactions?.length),
 	);
 	let openCaptureTransactionModal = $state(false);
-	const hasAnyTransactions =
-		!!order.transactions.length || !!FilteredPayments.length || !!order.giftCards.length;
+	const hasAnyTransactions = $derived(
+		!!order.transactions.length || !!FilteredPayments.length || !!order.giftCards.length,
+	);
 
 	const RefundState = $derived(getRefundState(order.transactions));
 	const RefundTooltip = $derived.by(() => {
@@ -279,65 +289,90 @@
 	</div>
 {/snippet}
 
-{#snippet OrderTransactions(order: Order)}
-	{#each order.transactions as transaction, idx (idx)}
-		{@const actions = transaction.actions.filter((act) => act !== TransactionActionEnum.Refund)}
-		<div>
-			<div class="flex items-center justify-between">
-				<!-- MARK: title -->
-				<div class="text-sm font-medium">
-					<svelte:element
-						this={transaction.externalUrl ? 'a' : 'div'}
-						href={transaction.externalUrl}
-						class="inline-block"
-					>
-						Transaction #{idx + 1} on {dayjs(transaction.createdAt).format(SitenameTimeFormat)}
-					</svelte:element>
-					{#if transaction.name}
-						<div class="tet-xs text-gray-500">
-							{transaction.name}
-						</div>
-					{/if}
-				</div>
-
-				<div class="flex items-center justify-between gap-2">
-					{#if transaction.cancelPendingAmount.amount > 0}
-						{@render MoneyWithTitle(transaction.cancelPendingAmount, 'Cancel pending')}
-					{/if}
-					{#if transaction.canceledAmount.amount > 0}
-						{@render MoneyWithTitle(transaction.canceledAmount, 'Cancel')}
-					{/if}
-					{#if transaction.refundPendingAmount.amount > 0}
-						{@render MoneyWithTitle(transaction.refundPendingAmount, 'Refund pending')}
-					{/if}
-					{#if transaction.refundedAmount.amount > 0}
-						{@render MoneyWithTitle(transaction.refundedAmount, 'Refunded')}
-					{/if}
-					{#if transaction.chargePendingAmount.amount > 0}
-						{@render MoneyWithTitle(transaction.chargePendingAmount, 'Charged pending')}
-					{/if}
-					{#if transaction.chargedAmount.amount > 0}
-						{@render MoneyWithTitle(transaction.chargedAmount, 'Charged')}
-					{/if}
-					{#if transaction.authorizePendingAmount.amount > 0}
-						{@render MoneyWithTitle(transaction.authorizePendingAmount, 'Authorized pending')}
-					{/if}
-					{#if transaction.authorizedAmount.amount > 0}
-						{@render MoneyWithTitle(transaction.authorizedAmount, 'Authorized')}
-					{/if}
-
-					{#if actions.length}
-						<div class="flex items-center gap-1">
-							{#each actions as action, idx (idx)}
-								<Button size="xs" color="gray">{action}</Button>
-							{/each}
-						</div>
-					{/if}
-				</div>
+{#snippet OrderTransaction(transaction: ExtendedOrderTransaction, idx: number)}
+	{@const actions = transaction.actions.filter((act) => act !== TransactionActionEnum.Refund)}
+	<div>
+		<div class="flex items-center justify-between">
+			<!-- MARK: title -->
+			<div class="text-sm font-medium">
+				<svelte:element
+					this={transaction.externalUrl ? 'a' : 'div'}
+					href={transaction.externalUrl}
+					class="inline-block"
+				>
+					Transaction #{idx + 1} on {dayjs(transaction.createdAt).format(SitenameTimeFormat)}
+				</svelte:element>
+				{#if transaction.name}
+					<div class="tet-xs text-gray-500">
+						{transaction.name}
+					</div>
+				{/if}
 			</div>
 
-			<Table items={transaction.events} headless columns={TransactionEventsColumns} />
+			<div class="flex items-center justify-between gap-2">
+				{#if transaction.cancelPendingAmount.amount > 0}
+					{@render MoneyWithTitle(transaction.cancelPendingAmount, 'Cancel pending')}
+				{/if}
+				{#if transaction.canceledAmount.amount > 0}
+					{@render MoneyWithTitle(transaction.canceledAmount, 'Cancel')}
+				{/if}
+				{#if transaction.refundPendingAmount.amount > 0}
+					{@render MoneyWithTitle(transaction.refundPendingAmount, 'Refund pending')}
+				{/if}
+				{#if transaction.refundedAmount.amount > 0}
+					{@render MoneyWithTitle(transaction.refundedAmount, 'Refunded')}
+				{/if}
+				{#if transaction.chargePendingAmount.amount > 0}
+					{@render MoneyWithTitle(transaction.chargePendingAmount, 'Charged pending')}
+				{/if}
+				{#if transaction.chargedAmount.amount > 0}
+					{@render MoneyWithTitle(transaction.chargedAmount, 'Charged')}
+				{/if}
+				{#if transaction.authorizePendingAmount.amount > 0}
+					{@render MoneyWithTitle(transaction.authorizePendingAmount, 'Authorized pending')}
+				{/if}
+				{#if transaction.authorizedAmount.amount > 0}
+					{@render MoneyWithTitle(transaction.authorizedAmount, 'Authorized')}
+				{/if}
+
+				{#if actions.length}
+					<div class="flex items-center gap-1">
+						{#each actions as action, idx (idx)}
+							<Button size="xs" color="gray">{action}</Button>
+						{/each}
+					</div>
+				{/if}
+			</div>
 		</div>
+
+		<Table items={transaction.events} headless columns={TransactionEventsColumns} />
+	</div>
+{/snippet}
+
+{#snippet OrderTransactionPayments(order: Order)}
+	{#each FilteredPayments as payment, idx (idx)}
+		{@const refunded = (payment.total?.amount || 0) - (payment.capturedAmount?.amount || 0) - (payment.availableCaptureAmount?.amount || 0)}
+		{@const fakeEvents = mapPaymentToTransactionEvents(payment)}
+		{@const transactionFromPayment: FakeTransaction = {
+			id: payment.id,
+			name: findMethodName(payment.gateway, $ShopStoreManager?.availablePaymentGateways || []),
+			actions: mapOrderActionsToTransactionActions(payment.actions),
+			pspReference: '',
+			externalUrl: '',
+			chargedAmount: getTransactionAmount(payment.capturedAmount, payment.total?.currency || ''),
+			authorizedAmount: getTransactionAmount(payment.availableCaptureAmount, payment.total?.currency || ''),
+			refundedAmount: prepareMoney(refunded, payment.total?.currency || ''),
+			// Fake amounts
+			refundPendingAmount: prepareMoney(0, payment.total?.currency || ''),
+			canceledAmount: prepareMoney(0, payment.total?.currency || ''),
+			authorizePendingAmount: prepareMoney(0, payment.total?.currency || ''),
+			chargePendingAmount: prepareMoney(0, payment.total?.currency || ''),
+			cancelPendingAmount: prepareMoney(0, payment.total?.currency || ''),
+			createdAt: fakeEvents[0]?.createdAt,
+			__typename: 'FakeTransaction',
+		}}
+
+		{@render OrderTransaction(transactionFromPayment, idx)}
 	{/each}
 {/snippet}
 
@@ -356,8 +391,10 @@
 			color="gray"
 			class="tooltip tooltip-top"
 			disabled={RefundState !== 'refundable'}
-			data-tip={RefundTooltip}>New refund</Button
+			data-tip={RefundTooltip}
 		>
+			New refund
+		</Button>
 	</SectionHeader>
 
 	{#if !MergedRefunds.length}
@@ -378,7 +415,9 @@
 		>
 	</SectionHeader>
 
-	{@render OrderTransactions(order)}
+	{#each order.transactions as transaction, idx (idx)}
+		{@render OrderTransaction(transaction, idx)}
+	{/each}
 </div>
 
 <Modal size="xs" open={openCaptureTransactionModal} header="Capture manual transaction">

@@ -1,4 +1,5 @@
 import { DEBOUNCE_INPUT_TIME } from '$lib/utils/consts';
+import type { ActionReturn } from 'svelte/action';
 import type { EventHandler } from 'svelte/elements';
 import { debounce, fromDomEvent, merge, pipe, subscribe } from 'wonka';
 
@@ -21,10 +22,10 @@ type commonEventDebounceOpts = {
 const resizeSubscribers = new Set<() => void>();
 let unsub: (() => void) | null = null;
 
-export const dropdownResizeDebounce = (
+export const elementResizeObserver = (
 	node: HTMLElement | Window,
 	{ onFire }: commonEventDebounceOpts,
-) => {
+): ActionReturn => {
 	resizeSubscribers.add(onFire);
 	const destroy = () => {
 		resizeSubscribers.delete(onFire);
@@ -34,7 +35,7 @@ export const dropdownResizeDebounce = (
 		}
 	};
 
-	if (unsub) return destroy;
+	if (unsub) return { destroy };
 
 	const eventListeners = ['resize', 'scroll'].map((evt) => fromDomEvent(node as HTMLElement, evt));
 
@@ -45,5 +46,5 @@ export const dropdownResizeDebounce = (
 	);
 
 	unsub = unsubscribe;
-	return destroy;
+	return { destroy };
 };

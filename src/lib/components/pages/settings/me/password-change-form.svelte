@@ -9,6 +9,7 @@
 	import { handleLogout } from '$lib/utils/auth.svelte';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import { object, string, z } from 'zod';
 
 	const PasswordSchema = object({
@@ -27,7 +28,7 @@
 		newPassword: '',
 		confirmPassword: '',
 	});
-	let passwordFormErrors = $state.raw<Partial<Record<keyof PasswordProps, string[]>>>({});
+	const SchemaHandler = createSchemaHandler(PasswordSchema, () => passwordInputs);
 
 	let passwordChanged = $derived.by(() => {
 		return (
@@ -39,17 +40,8 @@
 	});
 	let loading = $state(false);
 
-	const passwordValidate = () => {
-		const passwordInfoParse = PasswordSchema.safeParse(passwordInputs);
-		passwordFormErrors = passwordInfoParse.success
-			? {}
-			: passwordInfoParse.error.formErrors.fieldErrors;
-
-		return passwordInfoParse.success;
-	};
-
 	const handleSubmit = async () => {
-		if (!passwordValidate()) return;
+		if (!SchemaHandler.validate()) return;
 
 		loading = true;
 
@@ -85,11 +77,11 @@
 		label={$tranFunc('settings.oldPwd')}
 		bind:value={passwordInputs.oldPassword}
 		showAction
-		variant={passwordFormErrors.oldPassword?.length ? 'error' : 'info'}
-		subText={passwordFormErrors.oldPassword?.[0]}
-		onblur={passwordValidate}
+		variant={$SchemaHandler.oldPassword?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.oldPassword?.[0]}
+		onblur={SchemaHandler.validate}
 		disabled={loading}
-		inputDebounceOption={{ onInput: passwordValidate }}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
 	/>
 	<PasswordInput
 		class="mt-2"
@@ -98,11 +90,11 @@
 		label={$tranFunc('settings.newPwd')}
 		bind:value={passwordInputs.newPassword}
 		showAction
-		variant={passwordFormErrors.newPassword?.length ? 'error' : 'info'}
-		subText={passwordFormErrors.newPassword?.[0]}
-		onblur={passwordValidate}
+		variant={$SchemaHandler.newPassword?.length ? 'error' : 'info'}
+		subText={$SchemaHandler.newPassword?.[0]}
+		onblur={SchemaHandler.validate}
 		disabled={loading}
-		inputDebounceOption={{ onInput: passwordValidate }}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
 	/>
 	<PasswordInput
 		class="mt-2"
@@ -110,11 +102,11 @@
 		placeholder={$tranFunc('settings.confirmPwd')}
 		label={$tranFunc('settings.confirmPwd')}
 		bind:value={passwordInputs.confirmPassword}
-		variant={passwordFormErrors.confirmPassword?.length ? 'error' : 'info'}
-		onblur={passwordValidate}
+		variant={$SchemaHandler.confirmPassword?.length ? 'error' : 'info'}
+		onblur={SchemaHandler.validate}
 		disabled={loading}
-		inputDebounceOption={{ onInput: passwordValidate }}
-		subText={passwordFormErrors.confirmPassword?.[0]}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		subText={$SchemaHandler.confirmPassword?.[0]}
 	/>
 
 	<div class="text-right mt-4">

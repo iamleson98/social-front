@@ -20,7 +20,5 @@ export type DropdownProps = {
 	placement?: Placement;
 	/** NOTE: children and options must be provided exclusively */
 	children?: Snippet;
-	/** if `true`, will not recalculate position on window resize nor scroll */
-	noReCalculateOnWindowResize?: boolean;
 	open?: boolean;
 };

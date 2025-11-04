@@ -11,6 +11,7 @@
 		type CountryCode,
 	} from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import slugify from 'slugify';
 	import { boolean, number, object, string, z } from 'zod';
 
@@ -71,39 +72,28 @@
 		}),
 		currencyCode: string().nonempty($CommonState.FieldRequiredError),
 	});
+	const SchemaHandler = createSchemaHandler(channelSchema, () => ({
+		name,
+		slug,
+		isActive,
+		defaultCountry,
+		orderSettings: {
+			deleteExpiredOrdersAfter,
+		},
+		currencyCode,
+	}));
 
 	type ChannelSchema = z.infer<typeof channelSchema>;
 
-	let channelFormErrors = $state.raw<Partial<Record<keyof ChannelSchema, string[]>>>({});
-
 	$effect(() => {
-		formOk = !Object.keys(channelFormErrors).length;
+		formOk = !Object.keys(SchemaHandler).length;
 	});
-
-	const validate = () => {
-		const parseResult = channelSchema.safeParse({
-			name,
-			slug,
-			isActive,
-			defaultCountry,
-			orderSettings: {
-				deleteExpiredOrdersAfter,
-			},
-			currencyCode,
-		});
-		if (!parseResult.success) {
-			channelFormErrors = parseResult.error.formErrors.fieldErrors;
-			return false;
-		}
-		channelFormErrors = {};
-		return true;
-	};
 
 	const handleFormChange = (field: keyof ChannelSchema) => {
 		if (field === 'name' && isCreatePage) {
 			slug = slugify(name, { lower: true, strict: true });
 		}
-		validate();
+		SchemaHandler.validate();
 	};
 </script>
 
@@ -114,23 +104,23 @@
 		label={$tranFunc('common.name')}
 		bind:value={name}
 		inputDebounceOption={{ onInput: () => handleFormChange('name') }}
-		variant={channelFormErrors?.name?.length ? 'error' : 'info'}
-		subText={channelFormErrors?.name?.[0]}
+		variant={$SchemaHandler?.name?.length ? 'error' : 'info'}
+		subText={$SchemaHandler?.name?.[0]}
 		required
 		{disabled}
 		class="flex-1"
-		onblur={validate}
+		onblur={SchemaHandler.validate}
 	/>
 	<Input
 		label="Slug"
 		bind:value={slug}
 		class="flex-1"
 		required
-		variant={channelFormErrors?.slug?.length ? 'error' : 'info'}
-		subText={channelFormErrors?.slug?.[0]}
+		variant={$SchemaHandler?.slug?.length ? 'error' : 'info'}
+		subText={$SchemaHandler?.slug?.[0]}
 		{disabled}
-		inputDebounceOption={{ onInput: validate }}
-		onblur={validate}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
 	/>
 </div>
 
@@ -143,11 +133,11 @@
 		type="number"
 		min={MIN_EXPIRE_DAY}
 		max={MAX_EXPIRE_DAY}
-		inputDebounceOption={{ onInput: validate }}
-		onblur={validate}
-		variant={channelFormErrors?.orderSettings?.length ? 'error' : 'info'}
-		subText={channelFormErrors?.orderSettings?.length
-			? channelFormErrors.orderSettings[0]
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
+		variant={$SchemaHandler?.orderSettings?.length ? 'error' : 'info'}
+		subText={$SchemaHandler?.orderSettings?.length
+			? $SchemaHandler.orderSettings[0]
 			: $tranFunc('channel.delExprOrdersSubTxt', { min: MIN_EXPIRE_DAY, max: MAX_EXPIRE_DAY })}
 	/>
 	<Checkbox
@@ -164,24 +154,24 @@
 		label={$tranFunc('common.currency')}
 		bind:value={currencyCode}
 		required
-		variant={channelFormErrors?.currencyCode?.length ? 'error' : 'info'}
-		subText={channelFormErrors?.currencyCode?.[0]}
+		variant={$SchemaHandler?.currencyCode?.length ? 'error' : 'info'}
+		subText={$SchemaHandler?.currencyCode?.[0]}
 		disabled={!isCreatePage}
 		class="flex-1"
-		inputDebounceOption={{ onInput: validate }}
-		onblur={validate}
+		inputDebounceOption={{ onInput: SchemaHandler.validate }}
+		onblur={SchemaHandler.validate}
 	/>
 
 	<CountrySelect
 		label={$tranFunc('common.country')}
 		bind:value={defaultCountry}
 		required
-		variant={channelFormErrors?.defaultCountry?.length ? 'error' : 'info'}
-		subText={channelFormErrors?.defaultCountry?.[0]}
+		variant={$SchemaHandler?.defaultCountry?.length ? 'error' : 'info'}
+		subText={$SchemaHandler?.defaultCountry?.[0]}
 		{disabled}
 		class="flex-1"
-		onchange={validate}
-		onblur={validate}
+		onchange={SchemaHandler.validate}
+		onblur={SchemaHandler.validate}
 	/>
 </div>
 

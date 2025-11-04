@@ -7,7 +7,7 @@
 	import type { MetadataInput } from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { addNoDup } from '$lib/utils/utils';
-	import { object, string, z } from 'zod';
+	import { flattenError, object, string, z } from 'zod';
 
 	type Props = {
 		title: string;
@@ -63,7 +63,7 @@
 			return;
 		}
 
-		dataFormErrors[index] = result.error?.formErrors.fieldErrors;
+		dataFormErrors[index] = flattenError(result.error).fieldErrors;
 	};
 
 	$effect(() => {

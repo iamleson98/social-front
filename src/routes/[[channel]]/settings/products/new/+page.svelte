@@ -56,6 +56,7 @@
 		description: {
 			blocks: [],
 		},
+		category: '',
 	});
 	let channelListingUpdateInput = $state.raw<ProductChannelListingUpdateInput>({});
 	let channelListingUpdateInputOk = $state(true);
@@ -217,9 +218,10 @@
 		disabled={loading}
 	/>
 	<CategorySelector
-		bind:categoryID={productCreateInput.category}
+		bind:categoryID={productCreateInput.category!}
 		bind:formOk={productInputError.category!}
 		{loading}
+		isCreatePage
 	/>
 	<FileInputContainer
 		accept="image/*"
