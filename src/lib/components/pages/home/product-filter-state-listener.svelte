@@ -12,11 +12,11 @@
 		const newProductQueryArgs = get(productFilterParamStore);
 
 		// parse sort by field:
-		let sortDirection = queryParams[SearchParamKey.ORDER_DIRECTION]
-			? (queryParams[SearchParamKey.ORDER_DIRECTION] as string).toUpperCase()
+		let sortDirection = queryParams[SearchParamKey.ORDER_DIRECTION as keyof ProductFilterParams]
+			? (queryParams[SearchParamKey.ORDER_DIRECTION as keyof ProductFilterParams].value as string).toUpperCase()
 			: OrderDirection.Asc;
-		let sortField = queryParams[SearchParamKey.ORDER_BY_FIELD]
-			? (queryParams[SearchParamKey.ORDER_BY_FIELD] as string).toUpperCase()
+		let sortField = queryParams[SearchParamKey.ORDER_BY_FIELD as keyof ProductFilterParams]
+			? (queryParams[SearchParamKey.ORDER_BY_FIELD as keyof ProductFilterParams].value as string).toUpperCase()
 			: ProductOrderField.Price;
 
 		newProductQueryArgs.sortBy!.direction = Object.values(OrderDirection).includes(
@@ -31,9 +31,9 @@
 			: ProductOrderField.Price;
 
 		// parse price range
-		const priceRangeParam = queryParams[SearchParamKey.PRICE_RANGE];
+		const priceRangeParam = queryParams[SearchParamKey.PRICE_RANGE as keyof ProductFilterParams];
 		if (priceRangeParam) {
-			const priceRangeSplit = (priceRangeParam as string)
+			const priceRangeSplit = (priceRangeParam.value as string)
 				.replace(/\s+/g, '')
 				.split(',')
 				.filter(Boolean);
@@ -52,10 +52,10 @@
 		const before = queryParams[SearchParamKey.BEFORE];
 		const after = queryParams[SearchParamKey.AFTER];
 		if (before) {
-			newProductQueryArgs.before = before as string;
+			newProductQueryArgs.before = before.value as string;
 			newProductQueryArgs.after = null;
 		} else if (after) {
-			newProductQueryArgs.after = after as string;
+			newProductQueryArgs.after = after.value as string;
 			newProductQueryArgs.before = null;
 		}
 

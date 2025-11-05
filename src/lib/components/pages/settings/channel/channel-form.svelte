@@ -46,7 +46,7 @@
 		automaticallyCompleteFullyPaidCheckouts = $bindable(false),
 		transactionFlowStrategy = $bindable(TransactionFlowStrategyEnum.Authorization),
 		allocationStrategy = $bindable(AllocationStrategyEnum.PrioritizeSortingOrder),
-		formOk = $bindable(false),
+		formOk = $bindable(),
 		isCreatePage = false,
 	}: Props = $props();
 
@@ -86,7 +86,7 @@
 	type ChannelSchema = z.infer<typeof channelSchema>;
 
 	$effect(() => {
-		formOk = !Object.keys(SchemaHandler).length;
+		formOk = !Object.keys($SchemaHandler).length;
 	});
 
 	const handleFormChange = (field: keyof ChannelSchema) => {

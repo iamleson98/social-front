@@ -19,7 +19,7 @@
 
 	let {
 		class: className,
-		icon: Icon,
+		icon,
 		title,
 		size = 'md',
 		viewBox = '0 0 24 24',
@@ -38,5 +38,5 @@
 	{#if title}
 		<title>{title}</title>
 	{/if}
-	{@html Icon}
+	{@html icon}
 </svg>

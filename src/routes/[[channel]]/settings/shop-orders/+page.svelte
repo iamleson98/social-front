@@ -66,11 +66,11 @@
 {/snippet}
 
 {#snippet payment({ item }: { item: Order })}
-	<Badge {...paymentStatusBadgeClass(item.paymentStatus)} />
+	<Badge rounded {...paymentStatusBadgeClass(item.paymentStatus)} />
 {/snippet}
 
 {#snippet status({ item }: { item: Order })}
-	<Badge {...orderStatusBadgeClass(item.status)} />
+	<Badge rounded {...orderStatusBadgeClass(item.status)} />
 {/snippet}
 
 {#snippet total({ item }: { item: Order })}

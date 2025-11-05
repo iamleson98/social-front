@@ -77,6 +77,7 @@
 	use:debounceClick={clickDebounceOptions}
 	{...restProps}
 	{...extraProps}
+	aria-label={restProps['aria-label'] || 'Button'}
 >
 	{#if loading}
 		<div class="absolute inset-0 z-10 flex items-center justify-center">

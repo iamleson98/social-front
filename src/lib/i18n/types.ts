@@ -606,4 +606,7 @@ export type TranslationKey =
 | 'attributes.Weight'
 | 'attributes.Volume'
 | 'attributes.Distance'
-| 'attributes.Area';
+| 'attributes.Area'
+| 'order.draftOders'
+| 'order.payStatus'
+| 'order.fulfillStatus';

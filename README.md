@@ -73,7 +73,20 @@ There are 2 types of dependencies
 - `Common components` - For example `Button`, `Loading` component is already created in the `lib/ui` folder. Since Daisyui's buttons don't satisfy this project requirements, so I developed some specific components.
 - `Daisyui` - daisyui is already installed. https://v5.daisyui.com/docs/v5-beta/ . `ALWAYS` refer to this document for available components first before trying to create your own component.
   Since it helps reduce the number of tailwind css utility classes used in the code -> maintainability ++, productivity ++.
-- NOTE: For example if you want to use specific component from daisy, you have to enable that component in `src/app.css`
+- NOTE: For example if you want to use specific component from daisy, you have to enable that component in `src/app.css`.
+- `I18n` - We have our own i18n support. It may be not completed, but light weight and efficient enough for our use within this project.
+The translation files are located at `src/lib/i18n` folder. For now we support `English` and `Vietnamse`. <br/>
+ 1) **usage in markup code (.svelte fies)**
+ - There is a `tranFunc` function, globally declared as an readonly store.
+ - You can simply use it like: `<h1>{$tranFunc('<level_1.level ...>')}</h1>`. This function is type-safe, meaning it will given you auto hint completion feature as you provide it your key.
+ 2) **usage in backend code**
+ - For the backend code. E.g `+page.server.ts`, `+layout.server.ts` files. we provide function `serverSideTranslate`. This function require `event` param, which simply provided to you in those server code `load` functions. The mechanism is it gets a cookie with `key='language'`, and perform translate from your server code.
+ 3) **Translation keys declarations**
+ - you can try the auto complete feature to find for your needed value.
+ If there seems to be no translation that suits your need, it's time to define your new one in `src/lib/i18n` files.
+
+ - NOTE: after you have done with your definition. `E.g: {your_new_key: "Translation value"}`, you must run this command: `npm run i18n-gen`.
+ This smart command checks for the missing in your translation files, auto add the translation key `"your_new_key"` to the type system, so next calls to `$tranFunc()` will auto hint your defined keys :)) Pretty useful, right ?
 
 ## Bugs and feature requests
 

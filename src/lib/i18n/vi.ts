@@ -113,10 +113,10 @@ export default {
 		suffix: 'Hậu tố',
 		time: 'Thời gian',
 		oneOf: 'một trong số',
-		lte: '<=',
-		gte: '>=',
+		lte: 'Nhỏ hơn hoặc bằng',
+		gte: 'Lớn hơn hoặc bằng',
 		range: 'trong phạm vi',
-		eq: '=',
+		eq: 'Bằng',
 		summary: 'Vắn tắt',
 		eligible: 'Đủ điều kiện',
 		products: 'Sản phẩm',
@@ -299,7 +299,7 @@ export default {
 		savings: 'Tiết kiệm',
 	},
 	settings: {
-		preview: 'Xem qua',
+		preview: 'Xem trước',
 		verified: 'Đã xác nhận',
 		account: 'Tài khoản',
 		preference: 'Tùy biến',
@@ -691,5 +691,10 @@ export default {
 		Volume: 'Thể tích',
 		Distance: 'Khoảng cách',
 		Area: 'Diện tích',
+	},
+	order: {
+		draftOders: 'Đơn nháp',
+		payStatus: 'Trạng thái thanh toán',
+		fulfillStatus: 'Trạn thái xử lý',
 	},
 };

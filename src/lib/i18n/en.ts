@@ -113,8 +113,8 @@ export default {
 		suffix: 'Suffix',
 		time: 'Time',
 		oneOf: 'One of',
-		lte: 'Lte',
-		gte: 'Gte',
+		lte: 'Less than or equal',
+		gte: 'Grater than or equal',
 		range: 'Range',
 		eq: 'Equal',
 		summary: 'Summary',
@@ -687,5 +687,10 @@ export default {
 		Volume: 'Volume',
 		Distance: 'Distance',
 		Area: 'Area',
+	},
+	order: {
+		draftOders: 'Draft orders',
+		payStatus: 'Payment status',
+		fulfillStatus: 'Fulfillment status',
 	},
 };

@@ -102,29 +102,29 @@
 		if (openDeleteModal) channelsQuery.resume();
 	});
 
-	let nothingChanged = $derived.by(() => {
-		if (!oldChannel) return true;
+	let SomeFieldsChanged = $derived.by(() => {
+		if (!oldChannel) return false;
 
 		return (
-			channelValues.name === oldChannel.name &&
-			channelValues.slug === oldChannel.slug &&
-			channelValues.isActive === oldChannel.isActive &&
-			channelValues.defaultCountry === oldChannel.defaultCountry?.code &&
-			!channelValues.addShippingZones?.length &&
-			!channelValues.removeShippingZones?.length &&
-			!channelValues.addWarehouses?.length &&
-			!channelValues.removeWarehouses?.length &&
-			channelValues.orderSettings?.markAsPaidStrategy ===
-				oldChannel.orderSettings.markAsPaidStrategy &&
-			channelValues.orderSettings?.allowUnpaidOrders ===
-				oldChannel.orderSettings.allowUnpaidOrders &&
-			channelValues.orderSettings?.deleteExpiredOrdersAfter ===
-				oldChannel.orderSettings.deleteExpiredOrdersAfter &&
-			channelValues.checkoutSettings?.automaticallyCompleteFullyPaidCheckouts ===
-				oldChannel.checkoutSettings.automaticallyCompleteFullyPaidCheckouts &&
-			channelValues.paymentSettings?.defaultTransactionFlowStrategy ===
-				oldChannel.paymentSettings.defaultTransactionFlowStrategy &&
-			channelValues.stockSettings?.allocationStrategy ===
+			channelValues.name !== oldChannel.name ||
+			channelValues.slug !== oldChannel.slug ||
+			channelValues.isActive !== oldChannel.isActive ||
+			channelValues.defaultCountry !== oldChannel.defaultCountry?.code ||
+			!!channelValues.addShippingZones?.length ||
+			!!channelValues.removeShippingZones?.length ||
+			!!channelValues.addWarehouses?.length ||
+			!!channelValues.removeWarehouses?.length ||
+			channelValues.orderSettings?.markAsPaidStrategy !==
+				oldChannel.orderSettings.markAsPaidStrategy ||
+			channelValues.orderSettings?.allowUnpaidOrders !==
+				oldChannel.orderSettings.allowUnpaidOrders ||
+			channelValues.orderSettings?.deleteExpiredOrdersAfter !==
+				oldChannel.orderSettings.deleteExpiredOrdersAfter ||
+			channelValues.checkoutSettings?.automaticallyCompleteFullyPaidCheckouts !==
+				oldChannel.checkoutSettings.automaticallyCompleteFullyPaidCheckouts ||
+			channelValues.paymentSettings?.defaultTransactionFlowStrategy !==
+				oldChannel.paymentSettings.defaultTransactionFlowStrategy ||
+			channelValues.stockSettings?.allocationStrategy !==
 				oldChannel.stockSettings?.allocationStrategy
 		);
 	});
@@ -248,7 +248,7 @@
 		<!-- MARK: channel detail actions -->
 		<ActionBar
 			onUpdateClick={handleUpdateChannel}
-			disableUpdateButton={nothingChanged || loading || !formOk}
+			disableUpdateButton={!SomeFieldsChanged || loading || !formOk}
 			onDeleteClick={() => (openDeleteModal = true)}
 			disableDeleteButton={loading}
 			backButtonUrl={AppRoute.SETTINGS_CONFIGS_CHANNELS()}

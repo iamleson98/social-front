@@ -117,6 +117,7 @@ const getTranslation = async (lang: LanguageCodeEnum) => {
 	return TRANS_MAP[lang];
 };
 
+/** counterpart of `tranFunc`, but for server side code only. It relies on given `event` param, usually provided to you in `+page.server.ts` or `+layout.server.ts` files. There is a cookie for user language, so it can get that value and support translate your key. */
 export const serverSideTranslate = async <T extends RequestEvent>(
 	event: T,
 	key: TranslationKey,

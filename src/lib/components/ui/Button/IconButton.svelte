@@ -24,6 +24,7 @@
 	{size}
 	class={`${className} ${ICON_BTN_SIZE_MAP[size]} ${rounded ? 'rounded-full!' : ''}`}
 	style="padding: unset !important;"
+	aria-label={rest['aria-label'] || 'Icon Button'}
 >
 	{#if icon}
 		<Icon {icon} {size} />
