@@ -95,7 +95,7 @@
 					size="sm"
 					color="gray"
 					onclick={handleOrderingButtonClick}
-					aria-label="order by"
+					aria-label={$tranFunc('common.orderBy')}
 				/>
 			</div>
 		</div>

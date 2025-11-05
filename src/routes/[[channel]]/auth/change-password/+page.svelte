@@ -52,7 +52,7 @@
 		>(USER_SET_PASSWORD_MUTATION_STORE, omit(changePasswordForm, ['confirmPassword']));
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'setPassword', 'Password reset successfully')) return;
+	if (checkIfGraphqlResultHasError(result, 'setPassword', $tranFunc('changePassword.success'))) return;
 
 		await goto(AppRoute.AUTH_SIGNIN(), { replaceState: true, invalidateAll: true });
 	};
@@ -62,8 +62,8 @@
 	<h1 class="p-2 mb-4">{$tranFunc('changePassword.title')}</h1>
 
 	<PasswordInput
-		placeholder="New Password"
-		label="New Password"
+		placeholder={$tranFunc('changePassword.newPwdPlaceholder')}
+		label={$tranFunc('changePassword.newPwdLabel')}
 		bind:value={changePasswordForm.password}
 		required
 		disabled={loading}
@@ -75,8 +75,8 @@
 		showAction
 	/>
 	<PasswordInput
-		placeholder="Confirm New Password"
-		label="Confirm New Password"
+		placeholder={$tranFunc('changePassword.confirmNewPwdPlaceholder')}
+		label={$tranFunc('changePassword.confirmNewPwdLabel')}
 		bind:value={changePasswordForm.confirmPassword}
 		required
 		disabled={loading}

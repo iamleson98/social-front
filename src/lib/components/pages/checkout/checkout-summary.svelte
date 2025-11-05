@@ -3,6 +3,7 @@
 	import { AccordionList } from '$lib/components/ui/Accordion';
 	import { Input } from '$lib/components/ui/Input';
 	import type { Checkout, CheckoutLine, Money, OrderLine } from '$lib/gql/graphql';
+	import { tranFunc } from '$lib/i18n';
 	import { defaultSlideShowState } from '$lib/stores/ui/slideshow';
 	import { classNames, formatMoney } from '$lib/utils/utils';
 	import MoneyComponent from './money.svelte';
@@ -60,7 +61,7 @@
 
 {#snippet checkoutLineEditable(line: CheckoutLine | OrderLine)}
 	<div class="flex flex-col items-end gap-1.5">
-		<p class="text-xs">quantity*</p>
+		<p class="text-xs">{$tranFunc('product.quantity')}*</p>
 		<Input
 			size="xs"
 			class="text-center max-w-20 bg-white!"
@@ -73,7 +74,7 @@
 
 {#snippet checkoutLine(line: CheckoutLine | OrderLine)}
 	<div class="flex flex-col items-end">
-		<p>quantity: <span class="font-bold">{line.quantity}</span></p>
+		<p>{$tranFunc('product.quantity')}: <span class="font-bold">{line.quantity}</span></p>
 		{@render SummaryMoneyInfo(line)}
 	</div>
 {/snippet}
@@ -104,7 +105,11 @@
 
 <div class="w-1/2 tablet:w-full">
 	<div class="bg-white rounded-lg border p-4">
-		<AccordionList header="Summary" items={checkout.lines} child={lineSummary} />
+		<AccordionList
+			header={$tranFunc('checkout.summary')}
+			items={checkout.lines}
+			child={lineSummary}
+		/>
 
 		<!-- discount code -->
 		{#if editable}
@@ -112,16 +117,18 @@
 				<Input
 					size="sm"
 					class="bg-white!"
-					placeholder="Add giftcard or discount code"
+					placeholder={$tranFunc('checkout.addCodePlaceholder')}
 					bind:value={discountCode}
 				/>
-				<Button size="sm" variant="filled" disabled={!discountCode.trim()}>Apply</Button>
+				<Button size="sm" variant="filled" disabled={!discountCode.trim()}
+					>{$tranFunc('btn.apply')}</Button
+				>
 			</div>
 		{/if}
 
 		<!-- price -->
 		<div class="flex items-center justify-between">
-			<div>Subtotal</div>
+			<div>{$tranFunc('payment.subtotal')}</div>
 			<MoneyComponent ariaLabel="subtotal price" money={checkout.subtotalPrice.gross} />
 		</div>
 
@@ -131,8 +138,8 @@
 				promoCode={checkout.voucherCode}
 				money={checkout.discount}
 				negative
-				ariaLabel="Voucher"
-				label={`Voucher code: ${checkout.voucherCode}`}
+				ariaLabel={$tranFunc('checkout.voucher')}
+				label={$tranFunc('checkout.voucherCodeLabel', { code: checkout.voucherCode })}
 				checkoutId={checkout.id}
 			/>
 		{/if}
@@ -141,8 +148,8 @@
 			<SummaryPromocodeRow
 				{editable}
 				promoCodeId={giftcard.id}
-				ariaLabel="Gift card"
-				label={`Gift Card: •••• •••• ${giftcard.displayCode}`}
+				ariaLabel={$tranFunc('checkout.giftCard')}
+				label={$tranFunc('checkout.giftCardLabel', { code: giftcard.displayCode })}
 				money={giftcard.currentBalance}
 				negative
 				checkoutId={checkout.id}
@@ -150,18 +157,20 @@
 		{/each}
 
 		<div class="flex items-center justify-between">
-			<div>Shipping cost</div>
+			<div>{$tranFunc('checkout.shippingCost')}</div>
 			<MoneyComponent ariaLabel="shipping cost" money={checkout.shippingPrice.gross} />
 		</div>
 
 		<div class="flex flex-row items-baseline justify-between pb-4">
 			<div class="flex flex-row items-baseline">
-				<p class="font-bold">Total price</p>
+				<p class="font-bold">{$tranFunc('checkout.totalPrice')}</p>
 				<p class="ml-2 font-black">
-					includes {formatMoney(
-						checkout.totalPrice.tax.currency as string,
-						checkout.totalPrice.tax.amount as number,
-					)} tax
+					{$tranFunc('checkout.includesTax', {
+						amount: formatMoney(
+							checkout.totalPrice.tax.currency as string,
+							checkout.totalPrice.tax.amount as number,
+						),
+					})}
 				</p>
 			</div>
 			<MoneyComponent ariaLabel="total price" money={checkout.totalPrice.gross} />

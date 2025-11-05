@@ -107,7 +107,7 @@
 
 		<!-- search -->
 		<div>
-			<Input placeholder="type something" startIcon={Search} size="sm" />
+			<Input placeholder={$tranFunc('common.search')} startIcon={Search} size="sm" />
 		</div>
 	</div>
 	<div class="w-1/2 flex justify-between">

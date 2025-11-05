@@ -97,7 +97,7 @@
 
 	const handleSubmit = () => {
 		if (!$ADDRESS_VALIDATION_RULES_STORE.data?.addressValidationRules) {
-			toast.error('Address validation rules are not available');
+			toast.error($tranFunc('checkout.addrRulesUnavailable'));
 			return;
 		}
 
@@ -187,17 +187,17 @@
 
 		<!-- MARK: address type -->
 		{#if showSetAsDefaultAddressField}
-			<Label label="Set as default address?" size="sm" />
+			<Label label={$tranFunc('settings.setAsDefaultAddress')} size="sm" />
 			<div class="flex items-center gap-2">
 				<RadioButton
-					label={AddressTypeEnum.Billing}
+					label={$tranFunc('common.billing')}
 					value={AddressTypeEnum.Billing}
 					bind:group={addressType}
 					disabled={updatingCheckoutAddresses}
 					size="sm"
 				/>
 				<RadioButton
-					label={AddressTypeEnum.Shipping}
+					label={$tranFunc('common.shipping')}
 					value={AddressTypeEnum.Shipping}
 					bind:group={addressType}
 					disabled={updatingCheckoutAddresses}

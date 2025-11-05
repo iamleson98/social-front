@@ -143,11 +143,11 @@
 
 <div class="bg-white rounded-lg border-gray-200 border p-4 h-full space-y-2">
 	<div class="flex items-center gap-1">
-		<Badge size="xs" startIcon={ShieldFilled} text="Authentic" variant="light" rounded />
+		<Badge size="xs" startIcon={ShieldFilled} text={$tranFunc('product.badgeAuthentic')} variant="light" rounded />
 		<Badge
 			size="xs"
 			startIcon={RewindBack30}
-			text="30 days return"
+			text={$tranFunc('product.badge30DaysReturn')}
 			variant="light"
 			rounded
 			color="grape"
@@ -155,7 +155,7 @@
 		<Badge
 			size="xs"
 			startIcon={ThumbupFilled}
-			text="Top deal"
+			text={$tranFunc('product.badgeTopDeal')}
 			variant="light"
 			rounded
 			color="red"
@@ -163,13 +163,13 @@
 		<Badge
 			size="xs"
 			startIcon={TruckDelivery}
-			text="Extra free ship"
+			text={$tranFunc('product.badgeFreeShip')}
 			variant="light"
 			rounded
 			color="green"
 		/>
 		{#if productInformation.attributes.some((attr) => attr.attribute.slug === 'brand')}
-			<Badge size="xs" text="Brand abc" variant="light" rounded color="blue" />
+			<Badge size="xs" text={$tranFunc('product.brand')} variant="light" rounded color="blue" />
 		{/if}
 	</div>
 
@@ -193,9 +193,9 @@
 		<div class="w-px h-6 bg-gray-300"></div>
 
 		<IconButton
-			aria-label="Report product"
+			aria-label={$tranFunc('product.reportProduct')}
 			class="tooltip tooltip-bottom"
-			data-tip="Report this product"
+			data-tip={$tranFunc('product.reportProduct')}
 			icon={MessageReport}
 			size="xs"
 			color="gray"
@@ -205,9 +205,9 @@
 		<div class="w-px h-6 bg-gray-300"></div>
 
 		<IconButton
-			aria-label="Contact seller"
+			aria-label={$tranFunc('product.contactSeller')}
 			class="tooltip tooltip-bottom"
-			data-tip="Contact seller"
+			data-tip={$tranFunc('product.contactSeller')}
 			icon={MessageCircleFilled}
 			size="xs"
 			color="blue"
@@ -370,7 +370,7 @@
 			>
 				<span>{$tranFunc('product.addToCart')}</span>
 			</Button>
-			<Button size="md" variant="outline">Buy now</Button>
+			<Button size="md" variant="outline">{$tranFunc('product.buyNow')}</Button>
 		</div>
 	</div>
 </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { SUPPORTED_LANGUAGES, switchTranslationLanguage } from '$i18n';
+  import { SUPPORTED_LANGUAGES, switchTranslationLanguage, tranFunc } from '$i18n';
 	import { Facebook, Instagram, Twitter } from '$lib/components/icons/SvgOuterIcon';
 	import { Button } from '$lib/components/ui';
 	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
@@ -49,48 +49,48 @@
 			<div class="grid grid-cols-4 gap-4 tablet:grid-cols-2">
 				<!-- resources -->
 				<div>
-					<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">Resources</h2>
+				<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">{$tranFunc('footer.socialMedia')}</h2>
 					<ul class="text-gray-600">
 						<li class="mb-4">
-							<a href={AppRoute.HOME()} class="hover:underline">Sitename</a>
+						<a href={AppRoute.HOME()} class="hover:underline">Sitename</a>
 						</li>
 						<li>
-							<a href="https://tailwindcss.com/" class="hover:underline">Tailwind CSS</a>
+						<a href="https://tailwindcss.com/" class="hover:underline">Tailwind CSS</a>
 						</li>
 					</ul>
 				</div>
 				<!-- social media -->
 				<div>
-					<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">Follow us</h2>
+				<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">{$tranFunc('footer.socialMedia')}</h2>
 					<ul class="text-gray-600">
 						<li class="mb-4">
 							<a
 								href="https://www.facebook.com/profile.php?id=61572273849445"
 								target="_blank"
-								class="hover:underline">Facebook</a
+							class="hover:underline">Facebook</a
 							>
 						</li>
 						<li>
-							<a href="https://discord.gg/4eeurUVvTy" class="hover:underline">Youtube</a>
+						<a href="https://discord.gg/4eeurUVvTy" class="hover:underline">Youtube</a>
 						</li>
 					</ul>
 				</div>
 
 				<div>
-					<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">Legal</h2>
+				<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">{$tranFunc('footer.legal')}</h2>
 					<ul class="text-gray-600">
 						<li class="mb-4">
-							<a href="/" class="hover:underline">Privacy Policy</a>
+						<a href="/" class="hover:underline">{$tranFunc('footer.policy')}</a>
 						</li>
 						<li>
-							<a href="/" class="hover:underline">Terms &amp; Conditions</a>
+						<a href="/" class="hover:underline">{$tranFunc('footer.policy')}</a>
 						</li>
 					</ul>
 				</div>
 
 				{#if !$UserStoreManager}
 					<div>
-						<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">Language</h2>
+						<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">{$tranFunc('footer.language')}</h2>
 						{#snippet trigger({ onclick, onfocus }: DropdownTriggerInterface)}
 							<Button {onclick} {onfocus} size="xs" variant="outline">
 								<activeLanguage.icon />

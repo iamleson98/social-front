@@ -144,7 +144,7 @@
 					</Button>
 
 					<div class="flex items-center justify-center gap-1 mt-2">
-						<span class="text-sm font-normal text-gray-500"> or </span>
+						<span class="text-sm font-normal text-gray-500"> {$tranFunc('cart.or')} </span>
 						<a href="/" class="flex items-center gap-1 text-xs font-medium text-gray-700 underline">
 							<span>{$tranFunc('cart.continueShopping')}</span>
 							<Icon icon={ArrowNarrowRight} />
@@ -155,10 +155,10 @@
 				<!-- coupon -->
 				<div class="rounded-lg bg-white p-4 border">
 					<Input
-						placeholder="Enter discount code"
+						placeholder={$tranFunc('cart.enterCode')}
 						size="md"
 						class="w-full mb-2"
-						label="Do you have a voucher or gift card?"
+						label={$tranFunc('cart.haveVoucherOrGiftcard')}
 					/>
 					<Button variant="filled" size="sm" fullWidth>{$tranFunc('cart.applyCode')}</Button>
 				</div>

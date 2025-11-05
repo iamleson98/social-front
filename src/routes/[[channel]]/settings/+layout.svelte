@@ -117,7 +117,7 @@
 		},
 		{
 			icon: BoxOff,
-			name: 'Draft orders',
+			name: $tranFunc('order.draftOders'),
 			href: AppRoute.SETTINGS_SHOP_DRAFT_ORDERS(),
 			shouldActive: page.url.pathname === AppRoute.SETTINGS_SHOP_DRAFT_ORDERS(),
 		},
@@ -192,7 +192,7 @@
 	const BLOG_TAB_ITEMS: TabItem[] = $derived([
 		{
 			icon: BrandBlogger,
-			name: 'Blogs',
+			name: $tranFunc('settings.blogs'),
 			href: AppRoute.SETTINGS_BLOGS(),
 			shouldActive: [
 				AppRoute.SETTINGS_BLOGS(),
@@ -205,19 +205,19 @@
 	const SHOP_CONFIG_TAB_ITEMS: TabItem[] = $derived([
 		{
 			icon: BuildingStore,
-			name: 'Shop Settings',
+			name: $tranFunc('settings.shopSettings'),
 			href: AppRoute.STORE_SETTINGS(),
 			shouldActive: [AppRoute.STORE_SETTINGS()].includes(page.url.pathname),
 		},
 		{
 			icon: BuildingStore,
-			name: 'Apps',
+			name: $tranFunc('settings.apps'),
 			href: AppRoute.APPS_SETTINGS(),
 			shouldActive: [AppRoute.APPS_SETTINGS()].includes(page.url.pathname),
 		},
 		{
 			icon: Tax,
-			name: 'Tax Settings',
+			name: $tranFunc('settings.taxSettings'),
 			href: AppRoute.TAX_SETTINGS_CHANNELS(),
 			shouldActive: [
 				AppRoute.TAX_SETTINGS_CHANNELS(),
@@ -367,7 +367,7 @@
 							<span class="text-sm text-gray-500">{$tranFunc('settings.verified')}</span>
 						{:else}
 							<Icon icon={CheckOff} class="text-red-500" size="md" />
-							<span class="text-sm text-gray-500">Unverified</span>
+						<span class="text-sm text-gray-500">{$tranFunc('settings.unverified')}</span>
 						{/if}
 					</div>
 				</div>
@@ -399,7 +399,7 @@
 				/>
 
 				<AccordionList
-					header="Fulfillments"
+					header={$tranFunc('settings.fulfillments')}
 					child={sidebarItem}
 					items={SHOP_ORDERS_TAB_ITEMS}
 					class="w-full p-3"
@@ -407,7 +407,7 @@
 				/>
 
 				<AccordionList
-					header="Discounts"
+					header={$tranFunc('settings.discounts')}
 					child={sidebarItem}
 					items={SHOP_DISCOUNTS_TAB_ITEMS}
 					class="w-full p-3"
@@ -415,7 +415,7 @@
 				/>
 
 				<AccordionList
-					header="BLogs"
+					header={$tranFunc('settings.blogs')}
 					child={sidebarItem}
 					items={BLOG_TAB_ITEMS}
 					class="w-full p-3"
@@ -423,7 +423,7 @@
 				/>
 
 				<AccordionList
-					header="Configurations"
+					header={$tranFunc('settings.configs')}
 					child={sidebarItem}
 					items={SHOP_CONFIG_TAB_ITEMS}
 					class="w-full p-3"

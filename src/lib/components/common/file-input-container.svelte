@@ -8,7 +8,7 @@
 	import { IconButton } from '../ui/Button';
 	import { FileInput, Input, INPUT_CLASSES, Label } from '../ui/Input';
 	import type { SocialSize } from '../ui/common';
-	import { array, object, string } from 'zod';
+	import { array, flattenError, object, string } from 'zod';
 
 	type Props = {
 		accept: string;
@@ -54,7 +54,7 @@
 
 	const validate = () => {
 		const result = Schema.safeParse(medias);
-		mediaErrors = result.success ? {} : result.error.formErrors.fieldErrors;
+		mediaErrors = result.success ? {} : flattenError(result.error).fieldErrors;
 		formOk = result.success;
 		return result.success;
 	};
