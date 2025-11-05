@@ -2,7 +2,6 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vitest/config';
-import { visualizer } from "rollup-plugin-visualizer";
 import { analyzer } from 'vite-bundle-analyzer'
 
 
@@ -16,11 +15,6 @@ export default defineConfig({
 		// }),
 		sveltekit(),
 		tailwindcss(),
-		visualizer({
-			emitFile: true,
-			filename: "stats.html",
-			open: true,
-		}),
 		analyzer(),
 	],
 	test: {
@@ -31,6 +25,17 @@ export default defineConfig({
 		port: 5173,
 		fs: {
 			strict: false,
+		},
+	},
+	build: {
+		rollupOptions: {
+			output: {
+				manualChunks: id => {
+					if (id.includes('node_modules')) {
+						return 'vendor';  // Chunk all deps into one file for better caching
+					}
+				},
+			},
 		},
 	},
 });

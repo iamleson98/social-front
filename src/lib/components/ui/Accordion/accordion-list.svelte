@@ -12,10 +12,7 @@
 		...rest
 	}: AccordionListProps<T> = $props();
 
-	const calculateNumOfItemsToShow = () =>
-		partialDisplay === 'all' ? items.length : partialDisplay;
-
-	let numOfItemsToShow = $state(calculateNumOfItemsToShow());
+	let numOfItemsToShow = $state(partialDisplay === 'all' ? items.length : partialDisplay);
 	let showingMore = $state(false);
 
 	const handleShowMore = () => {
@@ -29,10 +26,6 @@
 			showingMore = false;
 		}, loadingMoreTimeout);
 	};
-
-	$effect(() => {
-		numOfItemsToShow = calculateNumOfItemsToShow();
-	});
 </script>
 
 <Accordion {...rest}>

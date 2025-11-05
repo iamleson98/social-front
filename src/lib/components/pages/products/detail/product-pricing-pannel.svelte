@@ -2,10 +2,8 @@
 	import { tranFunc } from '$i18n';
 	import { CHECKOUT_ADD_LINE_MUTATION } from '$lib/api/checkout';
 	import { operationStore, type OperationResultStore } from '$lib/api/operation';
-	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import UserAddress from '$lib/components/common/user-address/user-address.svelte';
 	import {
-		MapPin,
 		Minus,
 		Plus,
 		ShoppingBagPlus,
@@ -76,17 +74,6 @@
 			selectedVariant.pricing?.price?.gross?.amount || 0,
 		);
 	});
-
-	// let userShippingAddress = $derived.by(() => {
-	// 	if (!$UserStoreManager || !$UserStoreManager?.addresses?.length)
-	// 		return $tranFunc('product.chooseAddress');
-
-	// 	const defaulShippingAddress =
-	// 		$UserStoreManager.addresses.find((addr) => addr.isDefaultShippingAddress) ||
-	// 		$UserStoreManager.addresses[0];
-
-	// 	return `${defaulShippingAddress.streetAddress1 || defaulShippingAddress.streetAddress2}, ${defaulShippingAddress.cityArea}, ${defaulShippingAddress.city}`;
-	// });
 
 	const toggleSelectVariant = (variant: ProductVariant) => {
 		if (!selectedVariant) {

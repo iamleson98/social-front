@@ -23,7 +23,7 @@ const config = {
 			precompress: {
 				brotli: true,
 				gzip: true,
-				files: ['htm', 'html'],
+				files: ['html', 'htm', 'js', 'css', 'json', 'svg', 'png', 'jpg', 'woff', 'woff2'],
 			},
 			// dynamic_origin: true,
 			// xff_depth: 1,
@@ -42,9 +42,11 @@ const config = {
 	compilerOptions: {
 		runes: true,
 		sourcemap: false,
-		experimental: {
-			async: true,
-		},
+		// NOTE: Please do not turn this async feature on. It will cause issues with page navigation.
+
+		// experimental: {
+		// 	async: true,
+		// },
 	},
 };
 

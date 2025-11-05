@@ -200,16 +200,6 @@
 				AppRoute.SETTINGS_BLOG_DETAILS(page.params.id!),
 			].includes(page.url.pathname),
 		},
-		// {
-		// 	icon: Ticket,
-		// 	name: 'Vouchers',
-		// 	href: AppRoute.SETTINGS_CONFIGS_VOUCHERS(),
-		// 	shouldActive: [
-		// 		AppRoute.SETTINGS_CONFIGS_VOUCHERS(),
-		// 		AppRoute.SETTINGS_CONFIGS_VOUCHER_NEW(),
-		// 		AppRoute.SETTINGS_CONFIGS_VOUCHER_DETAIL(page.params.id!),
-		// 	].includes(page.url.pathname),
-		// },
 	]);
 
 	const SHOP_CONFIG_TAB_ITEMS: TabItem[] = $derived([
@@ -329,7 +319,7 @@
 
 {#snippet sidebarItem(item: TabItem)}
 	{@const attrs = item.href ? { href: item.href } : {}}
-	{@const active = item.href == page.url.pathname || item.shouldActive}
+	{@const active = item.href === page.url.pathname || item.shouldActive}
 	<svelte:element
 		this={item.href ? 'a' : 'div'}
 		{...attrs}

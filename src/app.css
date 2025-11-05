@@ -14,7 +14,6 @@
 @config '../tailwind.config.js';
 
 @layer base {
-
   *,
   ::after,
   ::before,
