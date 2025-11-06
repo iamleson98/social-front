@@ -78,15 +78,15 @@ There are 2 types of dependencies
 The translation files are located at `src/lib/i18n` folder. For now we support `English` and `Vietnamse`. <br/>
  1) **usage in markup code (.svelte fies)**
  - There is a `tranFunc` function, globally declared as an readonly store.
- - You can simply use it like: `<h1>{$tranFunc('<level_1.level ...>')}</h1>`. This function is type-safe, meaning it will given you auto hint completion feature as you provide it your key.
+ - You can simply use it like: `<h1>{$tranFunc('<level_1.level ...>')}</h1>`. This function is type-safe, meaning it will show you auto hint completion feature as you type in your keys.
  2) **usage in backend code**
- - For the backend code. E.g `+page.server.ts`, `+layout.server.ts` files. we provide function `serverSideTranslate`. This function require `event` param, which simply provided to you in those server code `load` functions. The mechanism is it gets a cookie with `key='language'`, and perform translate from your server code.
+ - For the backend code. E.g `+page.server.ts`, `+layout.server.ts` files. we provide function `serverSideTranslate`. This function require `event` param, which is simply provided to you in those server code `load` functions. The mechanism is it gets a cookie with `key='language'`, and perform translates.
  3) **Translation keys declarations**
  - you can try the auto complete feature to find for your needed value.
  If there seems to be no translation that suits your need, it's time to define your new one in `src/lib/i18n` files.
 
  - NOTE: after you have done with your definition. `E.g: {your_new_key: "Translation value"}`, you must run this command: `npm run i18n-gen`.
- This smart command checks for the missing in your translation files, auto add the translation key `"your_new_key"` to the type system, so next calls to `$tranFunc()` will auto hint your defined keys :)) Pretty useful, right ?
+ This smart command checks for the missings in your translation files, auto add the translation key `"your_new_key"` to the type system, so next calls to `$tranFunc()` will auto hint your defined keys :)) Pretty useful, right ?
 
 ## Bugs and feature requests
 
@@ -122,4 +122,3 @@ Editor preferences are available in the [editor config](https://reponame/blob/ma
 ## Creators
 
 @iamleson98 is core maintainer
-@phuczk is co-founder, contributor
