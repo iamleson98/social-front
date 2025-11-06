@@ -22,7 +22,7 @@
 		value = $bindable<string | number>(),
 		required,
 		inputClass = '',
-		placeholder = 'provide value',
+		placeholder = label,
 		...rest
 	}: InputProps = $props();
 </script>

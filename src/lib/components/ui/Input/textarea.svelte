@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
 	import { debounceInput } from '$lib/actions/input-debounce';
 	import { shortcuts } from '$lib/actions/shortcut';
 	import Icon from '$lib/components/icons/icon.svelte';
@@ -12,7 +11,7 @@
 	let {
 		label,
 		id = randomID(),
-		placeholder = $tranFunc('placeholders.valuePlaceholder'),
+		placeholder = label,
 		variant = 'info',
 		subText,
 		startIcon,
@@ -29,7 +28,7 @@
 	}: InputProps & HTMLTextareaAttributes = $props();
 </script>
 
-<div class={`${className}`}>
+<div class={className}>
 	{#if label}
 		<Label {label} {id} {required} {size} {variant} requiredAtPos="end" />
 	{/if}

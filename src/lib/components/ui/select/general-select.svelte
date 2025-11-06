@@ -38,6 +38,7 @@
 		onclearInputField,
 		onNotFoundQuerySelected,
 		onblur,
+		placeholder = label,
 		...rest
 	}: SelectProps = $props();
 
@@ -248,10 +249,9 @@
 	>
 		<div class="flex flex-wrap items-center gap-1 flex-1">
 			{#if multiple && Array.isArray(value)}
-				{@const list = value.slice(0, maxDisplay || value.length)}
-				{#each list as option, idx (idx)}
+				{#each value.slice(0, maxDisplay || value.length) as option, idx (idx)}
 					<Badge
-						text={`${selectMapper[option]?.label}`}
+						text={selectMapper[option]?.label}
 						variant="light"
 						size={SIZE_REDUCE_MAP[size]}
 						onDismiss={() => handleDeselectOption(selectMapper[option])}
@@ -268,14 +268,16 @@
 			{/if}
 			<Input
 				{...rest}
+				{placeholder}
 				variant="ghost"
 				aria-controls={LISTBOX_ID}
 				aria-expanded={openSelect}
 				bind:ref={input}
 				aria-autocomplete="list"
 				autocomplete="off"
-				class={`flex-1 basis-[min-content]`}
+				class="flex-1 basis-[min-content]"
 				id={INPUT_ID}
+				inputClass={INPUT_CLASSES[variant].fg}
 				size={SIZE_REDUCE_MAP[size]}
 				onfocus={handleFocus}
 				value={inputDisplayText}
@@ -294,7 +296,11 @@
 							role="button"
 							tabindex="0"
 							onkeydown={(evt) => evt.key === 'Enter' && onClear()}
-							class={[disabled && 'cursor-not-allowed', !disabled && 'cursor-pointer', 'rounded-full bg-gray-50 text-gray-500 border border-gray-200']}
+							class={[
+								disabled && 'cursor-not-allowed',
+								!disabled && 'cursor-pointer',
+								'rounded-full bg-gray-50 text-gray-500 border border-gray-200',
+							]}
 							title="Clear"
 							aria-label="Clear"
 						>
