@@ -308,7 +308,7 @@ export const pageRequiresAuthentication = async (
 			await setJwtWithUser(result[ACCESS_TOKEN_KEY], result.user);
 			return result.user;
 		}
-		redirect(HTTPStatusTemporaryRedirect, `${AppRoute.AUTH_SIGNIN()}?next=${event.url.pathname}`);
+		redirect(HTTPStatusTemporaryRedirect, `${AppRoute.AUTH_SIGNIN()}?next=${event.url.pathname}${event.url.search}`);
 	}
 
 	// now we try looking up if the user existed in cache
@@ -324,7 +324,7 @@ export const pageRequiresAuthentication = async (
 	);
 
 	if (meQueryResult.error)
-		redirect(HTTPStatusTemporaryRedirect, `${AppRoute.AUTH_SIGNIN()}?next=${event.url.pathname}`);
+		redirect(HTTPStatusTemporaryRedirect, `${AppRoute.AUTH_SIGNIN()}?next=${event.url.pathname}${event.url.search}`);
 
 	await setJwtWithUser(accessToken!, meQueryResult.data!.me!);
 	return meQueryResult.data?.me as User;
