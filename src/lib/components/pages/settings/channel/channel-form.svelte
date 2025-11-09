@@ -52,7 +52,7 @@
 
 	const MIN_EXPIRE_DAY = 1;
 	const MAX_EXPIRE_DAY = 120;
-	const EXPIRE_ORDER_DEL_ERR = $tranFunc('channel.delExprOrdersErrSubTxt', {
+	const EXPIRE_ORDER_DEL_ERR = $tranFunc('channel.valueOutOfRange', {
 		min: MIN_EXPIRE_DAY,
 		max: MAX_EXPIRE_DAY,
 	});

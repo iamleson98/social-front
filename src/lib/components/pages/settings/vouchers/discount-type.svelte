@@ -18,7 +18,7 @@
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { difference } from 'es-toolkit';
-	import { array, number, object } from 'zod';
+	import { array, flattenError, number, object } from 'zod';
 
 	type Props = {
 		discountType: DiscountValueTypeEnum;
@@ -42,11 +42,19 @@
 
 	/** keeps track of channels already in use with voucher */
 	const ExistingUsedChannelIDs = existingChannelListings.map((item) => item.channel.id);
-
+	const Max100PercentErr = $tranFunc('channel.valueOutOfRange', { min: '0%', max: '100%' });
 
 	const ChannelListingSchema = array(
 		object({
-			discountValue: number().nonnegative($CommonState.NonNegativeError),
+			discountValue: number()
+				.nonnegative($CommonState.NonNegativeError)
+				.refine(
+					(value) => {
+						if (discountType === DiscountValueTypeEnum.Percentage) return value <= 100;
+						return true;
+					},
+					{ error: Max100PercentErr },
+				),
 		}),
 	).nonempty($CommonState.FieldRequiredError);
 
@@ -76,15 +84,13 @@
 		query: CHANNELS_QUERY,
 		requestPolicy: 'cache-and-network',
 	});
+	const DiscountValue = $tranFunc('voucher.discountValue');
 
-	let discountValueErrors = $state<{
-		formErrors?: string[];
-		fieldErrors?: Record<number, string[]>;
-	}>();
+	let discountValueErrors = $state<(string[] | undefined)[]>([]);
 
 	const validate = () => {
 		const result = ChannelListingSchema.safeParse(activeChannelListings);
-		discountValueErrors = result.error?.formErrors as any;
+		discountValueErrors = result.success ? [] : flattenError(result.error).fieldErrors;
 	};
 
 	$effect(() => {
@@ -183,15 +189,15 @@
 						</div>
 						<Input
 							bind:value={listing.discountValue}
-							placeholder={$tranFunc('voucher.discountValue')}
+							placeholder={DiscountValue}
 							type="number"
 							size="sm"
 							min={0}
 							{disabled}
 							inputDebounceOption={{ onInput: validate }}
 							onblur={validate}
-							variant={discountValueErrors?.fieldErrors?.[idx]?.length ? 'error' : 'info'}
-							subText={discountValueErrors?.fieldErrors?.[idx]?.[0]}
+							variant={discountValueErrors?.[idx]?.length ? 'error' : 'info'}
+							subText={discountValueErrors?.[idx]?.[0]}
 						>
 							{#snippet action()}
 								<span class="text-xs font-semibold text-gray-600">

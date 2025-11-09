@@ -38,7 +38,6 @@
 		onclearInputField,
 		onNotFoundQuerySelected,
 		onblur,
-		placeholder = label,
 		...rest
 	}: SelectProps = $props();
 
@@ -149,7 +148,7 @@
 
 	const toggleDropdown = (open: boolean) => (openSelect = open);
 
-	const onClear = async () => {
+	const onInputActionClear = async () => {
 		if (disabled) return;
 
 		input?.focus();
@@ -268,7 +267,6 @@
 			{/if}
 			<Input
 				{...rest}
-				{placeholder}
 				variant="ghost"
 				aria-controls={LISTBOX_ID}
 				aria-expanded={openSelect}
@@ -292,10 +290,10 @@
 				{#snippet action()}
 					{#if searchQuery || (!multiple && value)}
 						<span
-							onclick={onClear}
+							onclick={onInputActionClear}
 							role="button"
 							tabindex="0"
-							onkeydown={(evt) => evt.key === 'Enter' && onClear()}
+							onkeydown={(evt) => evt.key === 'Enter' && onInputActionClear()}
 							class={[
 								disabled && 'cursor-not-allowed',
 								!disabled && 'cursor-pointer',
@@ -319,20 +317,27 @@
 			id={LISTBOX_ID}
 			transition:fly={{ duration: 250, y: 10 }}
 			class={SELECT_CLASSES.selectMenu}
-			tabindex="0"
+			tabindex="-1"
 			use:scrollToEnd={{ onScrollToEnd }}
 			bind:this={optionListRef}
 		>
-			{#if !searchFilteredOptions.length}
+			{#each searchFilteredOptions as option, idx (idx)}
+				{@render selectOption({
+					idx,
+					optionClassName: classNames({
+						'cursor-not-allowed! text-gray-400!': !!option.disabled,
+						[SELECT_CLASSES.activeSelectOption]: !!selectMapper[option.value],
+					}),
+					onclick: () => handleSelect(option),
+					...option,
+				})}
+			{:else}
 				{#if onNotFoundQuerySelected && inputDisplayText && !showLoadingMore}
 					{@render selectOption({
 						idx: 0,
 						disabled: true,
 						optionClassName: 'cursor-default',
-						onclick: () => {
-							onNotFoundQuerySelected(inputDisplayText);
-							// toggleDropdown(false);
-						},
+						onclick: () => onNotFoundQuerySelected(inputDisplayText),
 						label: `Add "${inputDisplayText}"`,
 						value: inputDisplayText as any,
 					})}
@@ -346,19 +351,7 @@
 						value: '',
 					})}
 				{/if}
-			{:else}
-				{#each searchFilteredOptions as option, idx (idx)}
-					{@render selectOption({
-						idx,
-						optionClassName: classNames({
-							'cursor-not-allowed! text-gray-400!': !!option.disabled,
-							[SELECT_CLASSES.activeSelectOption]: !!selectMapper[option.value],
-						}),
-						onclick: () => handleSelect(option),
-						...option,
-					})}
-				{/each}
-			{/if}
+			{/each}
 
 			{#if showLoadingMore}
 				<li class={SELECT_CLASSES.selectOption}>

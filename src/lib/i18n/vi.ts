@@ -572,7 +572,7 @@ export default {
 		replaceChanHelpTxt:
 			'Khai báo kênh khác để gán các sản phẩm sang. Kênh thay thế phải có chung tiền tệ với kênh muốn xóa.',
 		channels: 'Các kênh',
-		delExprOrdersErrSubTxt: 'Giá trị này cần >= {{min}} và <= {{max}}',
+		valueOutOfRange: 'Giá trị này cần >= {{min}} và <= {{max}}',
 		orderExp: 'Thời hạn đơn hàng',
 		delExprOrdersSubTxt:
 			'Số ngày cho tới lúc xóa đơn hàng quá hạn. Giá trị cho phép trong khoản từ {{min}} tới {{max}}',

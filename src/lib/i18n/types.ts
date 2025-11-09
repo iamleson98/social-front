@@ -509,7 +509,7 @@ export type TranslationKey =
 | 'channel.chanToReplace'
 | 'channel.replaceChanHelpTxt'
 | 'channel.channels'
-| 'channel.delExprOrdersErrSubTxt'
+| 'channel.valueOutOfRange'
 | 'channel.orderExp'
 | 'channel.delExprOrdersSubTxt'
 | 'channel.allowUnpaidOrder'

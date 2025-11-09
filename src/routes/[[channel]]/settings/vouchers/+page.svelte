@@ -35,6 +35,7 @@
 		{
 			title: $tranFunc('voucher.useLimit'),
 			child: useLimit,
+			key: VoucherSortField.UsageLimit,
 		},
 		{
 			title: $tranFunc('settings.availability'),
@@ -65,8 +66,9 @@
 
 {#snippet availability({ item }: { item: Voucher })}
 	<Badge
-		text="{item.channelListings?.length || 0} {$tranFunc('channel.channels')}"
+		text="{item.channelListings?.length || 0} {$tranFunc('product.channel')}"
 		color="green"
+		rounded
 		class="tooltip tooltip-top"
 		data-tip={item.channelListings?.map((list) => list.channel.slug).join(', ')}
 	/>

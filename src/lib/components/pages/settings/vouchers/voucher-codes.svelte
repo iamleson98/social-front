@@ -2,6 +2,7 @@
 	import { tranFunc } from '$i18n';
 	import type { TranslationKey } from '$i18n/types';
 	import { VOUCHER_CODE_LIST_QUERY } from '$lib/api/admin/discount';
+	import CopyButton from '$lib/components/common/copy-button.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Plus, Trash } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
@@ -148,7 +149,10 @@
 {/snippet}
 
 {#snippet code({ item }: { item: AddVoucherCodeProps })}
-	<Badge color="blue" text={item.code || '-'} />
+	<div class="flex items-center justify-between">
+		<Badge rounded variant="light" text={item.code || '-'} />
+		<CopyButton copyContent={item.code || '-'} size="xs" />
+	</div>
 {/snippet}
 
 {#snippet usage({ item }: { item: AddVoucherCodeProps })}
@@ -187,6 +191,7 @@
 	<Badge
 		color={item.isActive ? 'green' : 'red'}
 		text={$tranFunc(item.isActive ? 'staff.active' : 'staff.inactive')}
+		rounded
 	/>
 {/snippet}
 

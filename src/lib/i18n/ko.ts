@@ -438,7 +438,7 @@ export default {
 		replaceChanHelpTxt:
 			'Specify a new channel to assign products to. The replace channel must have the same currency as deleting channel',
 		channels: 'Channels',
-		delExprOrdersErrSubTxt: 'This value must be >= {{min}} and <= {{max}}',
+		valueOutOfRange: 'This value must be >= {{min}} and <= {{max}}',
 		orderExp: 'Order expiration',
 		delExprOrdersSubTxt:
 			'The time in days after expired orders will be deleted. Allowed range between {{min}} to {{max}}',

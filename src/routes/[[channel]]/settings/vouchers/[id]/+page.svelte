@@ -36,6 +36,7 @@
 		type VoucherChannelListing,
 		type MutationVoucherUpdateArgs,
 		type MutationVoucherChannelListingUpdateArgs,
+		type VoucherChannelListingAddInput,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
@@ -126,7 +127,14 @@
 			MutationVoucherChannelListingUpdateArgs
 		>(VOUCHER_CHANNEL_LISTING_UPDATE_MUTATION, {
 			id: page.params.id!,
-			input: voucherChannelListingInput,
+			input: {
+				...voucherChannelListingInput,
+				addChannels: activeChannelListings.map<VoucherChannelListingAddInput>((item) => ({
+					channelId: item.channel.id,
+					discountValue: item.discountValue,
+					minAmountSpent: item.minSpent?.amount,
+				})),
+			},
 		}).toPromise();
 
 		loading = true;

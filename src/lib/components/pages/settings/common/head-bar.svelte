@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
-	import { ClipboardCopy, Plus } from '$lib/components/icons';
+	import CopyButton from '$lib/components/common/copy-button.svelte';
+	import { Plus } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import { IconButton } from '$lib/components/ui/Button';
 	import { stringSlicer } from '$lib/utils/utils';
 	import type { Page } from '@sveltejs/kit';
 
@@ -30,16 +29,6 @@
 		onNewPageBtnClick,
 		disabled,
 	}: Props = $props();
-
-	let copyTooltip = $state($tranFunc('common.copy'));
-
-	const handleCopy = (content: string) => {
-		navigator.clipboard.writeText(content).then(() => {
-			copyTooltip = $tranFunc('common.copied');
-
-			setTimeout(() => (copyTooltip = $tranFunc('common.copy')), 3000);
-		});
-	};
 </script>
 
 <div
@@ -58,16 +47,7 @@
 					<span>
 						{stringSlicer(detailLabel, 40)}
 					</span>
-					<IconButton
-						onclick={() => handleCopy(detailLabel)}
-						icon={ClipboardCopy}
-						rounded
-						class="tooltip tooltip-right"
-						data-tip={copyTooltip}
-						size="xs"
-						color="gray"
-						variant="light"
-					/>
+					<CopyButton copyContent={detailLabel} size="xs" />
 				</li>
 			{/if}
 		</ul>
