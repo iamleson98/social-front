@@ -83,10 +83,12 @@
 
 	const NameSchema = string().nonempty($CommonState.FieldRequiredError);
 	let nameErrors = $state<string[]>([]);
+	let generalFormOk = $state<boolean[]>([true, true]);
 
 	const validateName = () => {
 		const result = NameSchema.safeParse(voucherInput.name);
 		nameErrors = result.success ? [] : flattenError(result.error).formErrors;
+		generalFormOk[0] = result.success;
 	};
 
 	onMount(() =>
@@ -212,6 +214,7 @@
 				bind:activeChannelListings
 				existingChannelListings={channelListings || []}
 				disabled={loading}
+				bind:formOk={generalFormOk[1]}
 			/>
 			<ApplicationType
 				bind:applicationType={voucherInput.type!}
@@ -257,5 +260,6 @@
 		onDeleteClick={handleDeleteVoucher}
 		disabled={loading}
 		backButtonUrl={AppRoute.SETTINGS_CONFIGS_VOUCHERS()}
+		disableUpdateButton={generalFormOk.some((item) => item === false)}
 	/>
 {/if}

@@ -27,6 +27,7 @@
 		/** for displaying purpose */
 		activeChannelListings: VoucherChannelListing[];
 		disabled?: boolean;
+		formOk: boolean;
 	};
 
 	let {
@@ -38,6 +39,7 @@
 		existingChannelListings = [],
 		activeChannelListings = $bindable(),
 		disabled,
+		formOk = $bindable(true),
 	}: Props = $props();
 
 	/** keeps track of channels already in use with voucher */
@@ -91,6 +93,7 @@
 	const validate = () => {
 		const result = ChannelListingSchema.safeParse(activeChannelListings);
 		discountValueErrors = result.success ? [] : flattenError(result.error).fieldErrors;
+		formOk = result.success;
 	};
 
 	$effect(() => {
