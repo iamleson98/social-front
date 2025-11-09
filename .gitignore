@@ -11,7 +11,6 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 $houdini
 
-/study
 
 # cache folder
 /cacheDb

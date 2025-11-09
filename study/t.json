@@ -1,0 +1,845 @@
+{
+  "product": "UHJvZHVjdDozMzE=",
+  "variants": [
+    {
+      "attributes": [
+        {
+          "dropdown": {
+            "id": "QXR0cmlidXRlVmFsdWU6MTQ0"
+          },
+          "id": "QXR0cmlidXRlOjQy"
+        },
+        {
+          "id": "QXR0cmlidXRlOjQ4",
+          "swatch": {
+            "id": "QXR0cmlidXRlVmFsdWU6MTMy"
+          }
+        }
+      ],
+      "channelListings": [
+        {
+          "channelId": "Q2hhbm5lbDox",
+          "costPrice": 3,
+          "price": 3
+        },
+        {
+          "channelId": "Q2hhbm5lbDo0",
+          "costPrice": 3,
+          "price": 3
+        }
+      ],
+      "name": "Vinyl-red",
+      "preorder": {
+        "endDate": "2025-09-10T17:00:00.000Z",
+        "globalThreshold": 4
+      },
+      "sku": "Vinyl-red",
+      "stocks": [
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjNiN2FlMmVhLWEzMDQtNGFiZS1hY2QzLWVlZWU3ZDIxNmMyYw=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjc1MjYwYWRjLTJjZjAtNGQ0ZC1hOTM5LTBmZGY2Y2FlYjBjMQ=="
+        },
+        {
+          "quantity": 2,
+          "warehouse": "V2FyZWhvdXNlOjIyOTU1YzY1LTA2NGItNDRhNS04NGFkLTgzMzdkMmYxOGMyNQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjJjYjY1NTk2LTRiOTEtNGRkYS1iMWY4LTA3ZjczOTFiNGMxZA=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOmIxMWNkNGVlLWRkM2MtNGJiZi1hMDEwLTdkODYyNDNmYmI0OQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjllZjQ1MDgwLTJkMmItNDgxMi04MDVkLThmYzgyODg2MWI5Mw=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjI1YzdlZDNlLTljYjQtNDUzNi04ZGNjLTgzZTdlNDIzZTNjMQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjYzMmFmZWFkLWQwODMtNGI5ZC1iMmU2LTY1NGQyMDcyODkyMg=="
+        }
+      ],
+      "trackInventory": true,
+      "weight": 0.3
+    },
+    {
+      "attributes": [
+        {
+          "dropdown": {
+            "id": "QXR0cmlidXRlVmFsdWU6MTQ1"
+          },
+          "id": "QXR0cmlidXRlOjQy"
+        },
+        {
+          "id": "QXR0cmlidXRlOjQ4",
+          "swatch": {
+            "id": "QXR0cmlidXRlVmFsdWU6MTMy"
+          }
+        }
+      ],
+      "channelListings": [
+        {
+          "channelId": "Q2hhbm5lbDox",
+          "costPrice": 3,
+          "price": 3
+        },
+        {
+          "channelId": "Q2hhbm5lbDo0",
+          "costPrice": 3,
+          "price": 3
+        }
+      ],
+      "name": "Vinyl-black",
+      "preorder": {
+        "endDate": "2025-09-10T17:00:00.000Z",
+        "globalThreshold": 4
+      },
+      "sku": "Vinyl-black",
+      "stocks": [
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjNiN2FlMmVhLWEzMDQtNGFiZS1hY2QzLWVlZWU3ZDIxNmMyYw=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjc1MjYwYWRjLTJjZjAtNGQ0ZC1hOTM5LTBmZGY2Y2FlYjBjMQ=="
+        },
+        {
+          "quantity": 2,
+          "warehouse": "V2FyZWhvdXNlOjIyOTU1YzY1LTA2NGItNDRhNS04NGFkLTgzMzdkMmYxOGMyNQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjJjYjY1NTk2LTRiOTEtNGRkYS1iMWY4LTA3ZjczOTFiNGMxZA=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOmIxMWNkNGVlLWRkM2MtNGJiZi1hMDEwLTdkODYyNDNmYmI0OQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjllZjQ1MDgwLTJkMmItNDgxMi04MDVkLThmYzgyODg2MWI5Mw=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjI1YzdlZDNlLTljYjQtNDUzNi04ZGNjLTgzZTdlNDIzZTNjMQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjYzMmFmZWFkLWQwODMtNGI5ZC1iMmU2LTY1NGQyMDcyODkyMg=="
+        }
+      ],
+      "trackInventory": true,
+      "weight": 0.3
+    },
+    {
+      "attributes": [
+        {
+          "dropdown": {
+            "id": "QXR0cmlidXRlVmFsdWU6Mjcw"
+          },
+          "id": "QXR0cmlidXRlOjQy"
+        },
+        {
+          "id": "QXR0cmlidXRlOjQ4",
+          "swatch": {
+            "id": "QXR0cmlidXRlVmFsdWU6MTMy"
+          }
+        }
+      ],
+      "channelListings": [
+        {
+          "channelId": "Q2hhbm5lbDox",
+          "costPrice": 3,
+          "price": 3
+        },
+        {
+          "channelId": "Q2hhbm5lbDo0",
+          "costPrice": 3,
+          "price": 3
+        }
+      ],
+      "name": "Vinyl-gray",
+      "preorder": {
+        "endDate": "2025-09-10T17:00:00.000Z",
+        "globalThreshold": 4
+      },
+      "sku": "Vinyl-gray",
+      "stocks": [
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjNiN2FlMmVhLWEzMDQtNGFiZS1hY2QzLWVlZWU3ZDIxNmMyYw=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjc1MjYwYWRjLTJjZjAtNGQ0ZC1hOTM5LTBmZGY2Y2FlYjBjMQ=="
+        },
+        {
+          "quantity": 2,
+          "warehouse": "V2FyZWhvdXNlOjIyOTU1YzY1LTA2NGItNDRhNS04NGFkLTgzMzdkMmYxOGMyNQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjJjYjY1NTk2LTRiOTEtNGRkYS1iMWY4LTA3ZjczOTFiNGMxZA=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOmIxMWNkNGVlLWRkM2MtNGJiZi1hMDEwLTdkODYyNDNmYmI0OQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjllZjQ1MDgwLTJkMmItNDgxMi04MDVkLThmYzgyODg2MWI5Mw=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjI1YzdlZDNlLTljYjQtNDUzNi04ZGNjLTgzZTdlNDIzZTNjMQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjYzMmFmZWFkLWQwODMtNGI5ZC1iMmU2LTY1NGQyMDcyODkyMg=="
+        }
+      ],
+      "trackInventory": true,
+      "weight": 0.3
+    },
+    {
+      "attributes": [
+        {
+          "dropdown": {
+            "id": "QXR0cmlidXRlVmFsdWU6MTQ2"
+          },
+          "id": "QXR0cmlidXRlOjQy"
+        },
+        {
+          "id": "QXR0cmlidXRlOjQ4",
+          "swatch": {
+            "id": "QXR0cmlidXRlVmFsdWU6MTMy"
+          }
+        }
+      ],
+      "channelListings": [
+        {
+          "channelId": "Q2hhbm5lbDox",
+          "costPrice": 3,
+          "price": 3
+        },
+        {
+          "channelId": "Q2hhbm5lbDo0",
+          "costPrice": 3,
+          "price": 3
+        }
+      ],
+      "name": "Vinyl-blue",
+      "preorder": {
+        "endDate": "2025-09-10T17:00:00.000Z",
+        "globalThreshold": 4
+      },
+      "sku": "Vinyl-blue",
+      "stocks": [
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjNiN2FlMmVhLWEzMDQtNGFiZS1hY2QzLWVlZWU3ZDIxNmMyYw=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjc1MjYwYWRjLTJjZjAtNGQ0ZC1hOTM5LTBmZGY2Y2FlYjBjMQ=="
+        },
+        {
+          "quantity": 2,
+          "warehouse": "V2FyZWhvdXNlOjIyOTU1YzY1LTA2NGItNDRhNS04NGFkLTgzMzdkMmYxOGMyNQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjJjYjY1NTk2LTRiOTEtNGRkYS1iMWY4LTA3ZjczOTFiNGMxZA=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOmIxMWNkNGVlLWRkM2MtNGJiZi1hMDEwLTdkODYyNDNmYmI0OQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjllZjQ1MDgwLTJkMmItNDgxMi04MDVkLThmYzgyODg2MWI5Mw=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjI1YzdlZDNlLTljYjQtNDUzNi04ZGNjLTgzZTdlNDIzZTNjMQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjYzMmFmZWFkLWQwODMtNGI5ZC1iMmU2LTY1NGQyMDcyODkyMg=="
+        }
+      ],
+      "trackInventory": true,
+      "weight": 0.3
+    },
+    {
+      "attributes": [
+        {
+          "dropdown": {
+            "id": "QXR0cmlidXRlVmFsdWU6MTQ0"
+          },
+          "id": "QXR0cmlidXRlOjQy"
+        },
+        {
+          "id": "QXR0cmlidXRlOjQ4",
+          "swatch": {
+            "id": "QXR0cmlidXRlVmFsdWU6MTMz"
+          }
+        }
+      ],
+      "channelListings": [
+        {
+          "channelId": "Q2hhbm5lbDox",
+          "costPrice": 3,
+          "price": 3
+        },
+        {
+          "channelId": "Q2hhbm5lbDo0",
+          "costPrice": 3,
+          "price": 3
+        }
+      ],
+      "name": "DVD-red",
+      "preorder": {
+        "endDate": "2025-09-10T17:00:00.000Z",
+        "globalThreshold": 4
+      },
+      "sku": "DVD-red",
+      "stocks": [
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjNiN2FlMmVhLWEzMDQtNGFiZS1hY2QzLWVlZWU3ZDIxNmMyYw=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjc1MjYwYWRjLTJjZjAtNGQ0ZC1hOTM5LTBmZGY2Y2FlYjBjMQ=="
+        },
+        {
+          "quantity": 2,
+          "warehouse": "V2FyZWhvdXNlOjIyOTU1YzY1LTA2NGItNDRhNS04NGFkLTgzMzdkMmYxOGMyNQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjJjYjY1NTk2LTRiOTEtNGRkYS1iMWY4LTA3ZjczOTFiNGMxZA=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOmIxMWNkNGVlLWRkM2MtNGJiZi1hMDEwLTdkODYyNDNmYmI0OQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjllZjQ1MDgwLTJkMmItNDgxMi04MDVkLThmYzgyODg2MWI5Mw=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjI1YzdlZDNlLTljYjQtNDUzNi04ZGNjLTgzZTdlNDIzZTNjMQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjYzMmFmZWFkLWQwODMtNGI5ZC1iMmU2LTY1NGQyMDcyODkyMg=="
+        }
+      ],
+      "trackInventory": true,
+      "weight": 0.3
+    },
+    {
+      "attributes": [
+        {
+          "dropdown": {
+            "id": "QXR0cmlidXRlVmFsdWU6MTQ1"
+          },
+          "id": "QXR0cmlidXRlOjQy"
+        },
+        {
+          "id": "QXR0cmlidXRlOjQ4",
+          "swatch": {
+            "id": "QXR0cmlidXRlVmFsdWU6MTMz"
+          }
+        }
+      ],
+      "channelListings": [
+        {
+          "channelId": "Q2hhbm5lbDox",
+          "costPrice": 3,
+          "price": 3
+        },
+        {
+          "channelId": "Q2hhbm5lbDo0",
+          "costPrice": 3,
+          "price": 3
+        }
+      ],
+      "name": "DVD-black",
+      "preorder": {
+        "endDate": "2025-09-10T17:00:00.000Z",
+        "globalThreshold": 4
+      },
+      "sku": "DVD-black",
+      "stocks": [
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjNiN2FlMmVhLWEzMDQtNGFiZS1hY2QzLWVlZWU3ZDIxNmMyYw=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjc1MjYwYWRjLTJjZjAtNGQ0ZC1hOTM5LTBmZGY2Y2FlYjBjMQ=="
+        },
+        {
+          "quantity": 2,
+          "warehouse": "V2FyZWhvdXNlOjIyOTU1YzY1LTA2NGItNDRhNS04NGFkLTgzMzdkMmYxOGMyNQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjJjYjY1NTk2LTRiOTEtNGRkYS1iMWY4LTA3ZjczOTFiNGMxZA=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOmIxMWNkNGVlLWRkM2MtNGJiZi1hMDEwLTdkODYyNDNmYmI0OQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjllZjQ1MDgwLTJkMmItNDgxMi04MDVkLThmYzgyODg2MWI5Mw=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjI1YzdlZDNlLTljYjQtNDUzNi04ZGNjLTgzZTdlNDIzZTNjMQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjYzMmFmZWFkLWQwODMtNGI5ZC1iMmU2LTY1NGQyMDcyODkyMg=="
+        }
+      ],
+      "trackInventory": true,
+      "weight": 0.3
+    },
+    {
+      "attributes": [
+        {
+          "dropdown": {
+            "id": "QXR0cmlidXRlVmFsdWU6Mjcw"
+          },
+          "id": "QXR0cmlidXRlOjQy"
+        },
+        {
+          "id": "QXR0cmlidXRlOjQ4",
+          "swatch": {
+            "id": "QXR0cmlidXRlVmFsdWU6MTMz"
+          }
+        }
+      ],
+      "channelListings": [
+        {
+          "channelId": "Q2hhbm5lbDox",
+          "costPrice": 3,
+          "price": 3
+        },
+        {
+          "channelId": "Q2hhbm5lbDo0",
+          "costPrice": 3,
+          "price": 3
+        }
+      ],
+      "name": "DVD-gray",
+      "preorder": {
+        "endDate": "2025-09-10T17:00:00.000Z",
+        "globalThreshold": 4
+      },
+      "sku": "DVD-gray",
+      "stocks": [
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjNiN2FlMmVhLWEzMDQtNGFiZS1hY2QzLWVlZWU3ZDIxNmMyYw=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjc1MjYwYWRjLTJjZjAtNGQ0ZC1hOTM5LTBmZGY2Y2FlYjBjMQ=="
+        },
+        {
+          "quantity": 2,
+          "warehouse": "V2FyZWhvdXNlOjIyOTU1YzY1LTA2NGItNDRhNS04NGFkLTgzMzdkMmYxOGMyNQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjJjYjY1NTk2LTRiOTEtNGRkYS1iMWY4LTA3ZjczOTFiNGMxZA=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOmIxMWNkNGVlLWRkM2MtNGJiZi1hMDEwLTdkODYyNDNmYmI0OQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjllZjQ1MDgwLTJkMmItNDgxMi04MDVkLThmYzgyODg2MWI5Mw=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjI1YzdlZDNlLTljYjQtNDUzNi04ZGNjLTgzZTdlNDIzZTNjMQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjYzMmFmZWFkLWQwODMtNGI5ZC1iMmU2LTY1NGQyMDcyODkyMg=="
+        }
+      ],
+      "trackInventory": true,
+      "weight": 0.3
+    },
+    {
+      "attributes": [
+        {
+          "dropdown": {
+            "id": "QXR0cmlidXRlVmFsdWU6MTQ2"
+          },
+          "id": "QXR0cmlidXRlOjQy"
+        },
+        {
+          "id": "QXR0cmlidXRlOjQ4",
+          "swatch": {
+            "id": "QXR0cmlidXRlVmFsdWU6MTMz"
+          }
+        }
+      ],
+      "channelListings": [
+        {
+          "channelId": "Q2hhbm5lbDox",
+          "costPrice": 3,
+          "price": 3
+        },
+        {
+          "channelId": "Q2hhbm5lbDo0",
+          "costPrice": 3,
+          "price": 3
+        }
+      ],
+      "name": "DVD-blue",
+      "preorder": {
+        "endDate": "2025-09-10T17:00:00.000Z",
+        "globalThreshold": 4
+      },
+      "sku": "DVD-blue",
+      "stocks": [
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjNiN2FlMmVhLWEzMDQtNGFiZS1hY2QzLWVlZWU3ZDIxNmMyYw=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjc1MjYwYWRjLTJjZjAtNGQ0ZC1hOTM5LTBmZGY2Y2FlYjBjMQ=="
+        },
+        {
+          "quantity": 2,
+          "warehouse": "V2FyZWhvdXNlOjIyOTU1YzY1LTA2NGItNDRhNS04NGFkLTgzMzdkMmYxOGMyNQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjJjYjY1NTk2LTRiOTEtNGRkYS1iMWY4LTA3ZjczOTFiNGMxZA=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOmIxMWNkNGVlLWRkM2MtNGJiZi1hMDEwLTdkODYyNDNmYmI0OQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjllZjQ1MDgwLTJkMmItNDgxMi04MDVkLThmYzgyODg2MWI5Mw=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjI1YzdlZDNlLTljYjQtNDUzNi04ZGNjLTgzZTdlNDIzZTNjMQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjYzMmFmZWFkLWQwODMtNGI5ZC1iMmU2LTY1NGQyMDcyODkyMg=="
+        }
+      ],
+      "trackInventory": true,
+      "weight": 0.3
+    },
+    {
+      "attributes": [
+        {
+          "dropdown": {
+            "id": "QXR0cmlidXRlVmFsdWU6MTQ0"
+          },
+          "id": "QXR0cmlidXRlOjQy"
+        },
+        {
+          "id": "QXR0cmlidXRlOjQ4",
+          "swatch": {
+            "id": "QXR0cmlidXRlVmFsdWU6MTM0"
+          }
+        }
+      ],
+      "channelListings": [
+        {
+          "channelId": "Q2hhbm5lbDox",
+          "costPrice": 3,
+          "price": 3
+        },
+        {
+          "channelId": "Q2hhbm5lbDo0",
+          "costPrice": 3,
+          "price": 3
+        }
+      ],
+      "name": "VHS-red",
+      "preorder": {
+        "endDate": "2025-09-10T17:00:00.000Z",
+        "globalThreshold": 4
+      },
+      "sku": "VHS-red",
+      "stocks": [
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjNiN2FlMmVhLWEzMDQtNGFiZS1hY2QzLWVlZWU3ZDIxNmMyYw=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjc1MjYwYWRjLTJjZjAtNGQ0ZC1hOTM5LTBmZGY2Y2FlYjBjMQ=="
+        },
+        {
+          "quantity": 2,
+          "warehouse": "V2FyZWhvdXNlOjIyOTU1YzY1LTA2NGItNDRhNS04NGFkLTgzMzdkMmYxOGMyNQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjJjYjY1NTk2LTRiOTEtNGRkYS1iMWY4LTA3ZjczOTFiNGMxZA=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOmIxMWNkNGVlLWRkM2MtNGJiZi1hMDEwLTdkODYyNDNmYmI0OQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjllZjQ1MDgwLTJkMmItNDgxMi04MDVkLThmYzgyODg2MWI5Mw=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjI1YzdlZDNlLTljYjQtNDUzNi04ZGNjLTgzZTdlNDIzZTNjMQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjYzMmFmZWFkLWQwODMtNGI5ZC1iMmU2LTY1NGQyMDcyODkyMg=="
+        }
+      ],
+      "trackInventory": true,
+      "weight": 0.3
+    },
+    {
+      "attributes": [
+        {
+          "dropdown": {
+            "id": "QXR0cmlidXRlVmFsdWU6MTQ1"
+          },
+          "id": "QXR0cmlidXRlOjQy"
+        },
+        {
+          "id": "QXR0cmlidXRlOjQ4",
+          "swatch": {
+            "id": "QXR0cmlidXRlVmFsdWU6MTM0"
+          }
+        }
+      ],
+      "channelListings": [
+        {
+          "channelId": "Q2hhbm5lbDox",
+          "costPrice": 3,
+          "price": 3
+        },
+        {
+          "channelId": "Q2hhbm5lbDo0",
+          "costPrice": 3,
+          "price": 3
+        }
+      ],
+      "name": "VHS-black",
+      "preorder": {
+        "endDate": "2025-09-10T17:00:00.000Z",
+        "globalThreshold": 4
+      },
+      "sku": "VHS-black",
+      "stocks": [
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjNiN2FlMmVhLWEzMDQtNGFiZS1hY2QzLWVlZWU3ZDIxNmMyYw=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjc1MjYwYWRjLTJjZjAtNGQ0ZC1hOTM5LTBmZGY2Y2FlYjBjMQ=="
+        },
+        {
+          "quantity": 2,
+          "warehouse": "V2FyZWhvdXNlOjIyOTU1YzY1LTA2NGItNDRhNS04NGFkLTgzMzdkMmYxOGMyNQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjJjYjY1NTk2LTRiOTEtNGRkYS1iMWY4LTA3ZjczOTFiNGMxZA=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOmIxMWNkNGVlLWRkM2MtNGJiZi1hMDEwLTdkODYyNDNmYmI0OQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjllZjQ1MDgwLTJkMmItNDgxMi04MDVkLThmYzgyODg2MWI5Mw=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjI1YzdlZDNlLTljYjQtNDUzNi04ZGNjLTgzZTdlNDIzZTNjMQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjYzMmFmZWFkLWQwODMtNGI5ZC1iMmU2LTY1NGQyMDcyODkyMg=="
+        }
+      ],
+      "trackInventory": true,
+      "weight": 0.3
+    },
+    {
+      "attributes": [
+        {
+          "dropdown": {
+            "id": "QXR0cmlidXRlVmFsdWU6Mjcw"
+          },
+          "id": "QXR0cmlidXRlOjQy"
+        },
+        {
+          "id": "QXR0cmlidXRlOjQ4",
+          "swatch": {
+            "id": "QXR0cmlidXRlVmFsdWU6MTM0"
+          }
+        }
+      ],
+      "channelListings": [
+        {
+          "channelId": "Q2hhbm5lbDox",
+          "costPrice": 3,
+          "price": 3
+        },
+        {
+          "channelId": "Q2hhbm5lbDo0",
+          "costPrice": 3,
+          "price": 3
+        }
+      ],
+      "name": "VHS-gray",
+      "preorder": {
+        "endDate": "2025-09-10T17:00:00.000Z",
+        "globalThreshold": 4
+      },
+      "sku": "VHS-gray",
+      "stocks": [
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjNiN2FlMmVhLWEzMDQtNGFiZS1hY2QzLWVlZWU3ZDIxNmMyYw=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjc1MjYwYWRjLTJjZjAtNGQ0ZC1hOTM5LTBmZGY2Y2FlYjBjMQ=="
+        },
+        {
+          "quantity": 2,
+          "warehouse": "V2FyZWhvdXNlOjIyOTU1YzY1LTA2NGItNDRhNS04NGFkLTgzMzdkMmYxOGMyNQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjJjYjY1NTk2LTRiOTEtNGRkYS1iMWY4LTA3ZjczOTFiNGMxZA=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOmIxMWNkNGVlLWRkM2MtNGJiZi1hMDEwLTdkODYyNDNmYmI0OQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjllZjQ1MDgwLTJkMmItNDgxMi04MDVkLThmYzgyODg2MWI5Mw=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjI1YzdlZDNlLTljYjQtNDUzNi04ZGNjLTgzZTdlNDIzZTNjMQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjYzMmFmZWFkLWQwODMtNGI5ZC1iMmU2LTY1NGQyMDcyODkyMg=="
+        }
+      ],
+      "trackInventory": true,
+      "weight": 0.3
+    },
+    {
+      "attributes": [
+        {
+          "dropdown": {
+            "id": "QXR0cmlidXRlVmFsdWU6MTQ2"
+          },
+          "id": "QXR0cmlidXRlOjQy"
+        },
+        {
+          "id": "QXR0cmlidXRlOjQ4",
+          "swatch": {
+            "id": "QXR0cmlidXRlVmFsdWU6MTM0"
+          }
+        }
+      ],
+      "channelListings": [
+        {
+          "channelId": "Q2hhbm5lbDox",
+          "costPrice": 3,
+          "price": 3
+        },
+        {
+          "channelId": "Q2hhbm5lbDo0",
+          "costPrice": 3,
+          "price": 3
+        }
+      ],
+      "name": "VHS-blue",
+      "preorder": {
+        "endDate": "2025-09-10T17:00:00.000Z",
+        "globalThreshold": 4
+      },
+      "sku": "VHS-blue",
+      "stocks": [
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjNiN2FlMmVhLWEzMDQtNGFiZS1hY2QzLWVlZWU3ZDIxNmMyYw=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOjc1MjYwYWRjLTJjZjAtNGQ0ZC1hOTM5LTBmZGY2Y2FlYjBjMQ=="
+        },
+        {
+          "quantity": 2,
+          "warehouse": "V2FyZWhvdXNlOjIyOTU1YzY1LTA2NGItNDRhNS04NGFkLTgzMzdkMmYxOGMyNQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjJjYjY1NTk2LTRiOTEtNGRkYS1iMWY4LTA3ZjczOTFiNGMxZA=="
+        },
+        {
+          "quantity": 3,
+          "warehouse": "V2FyZWhvdXNlOmIxMWNkNGVlLWRkM2MtNGJiZi1hMDEwLTdkODYyNDNmYmI0OQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjllZjQ1MDgwLTJkMmItNDgxMi04MDVkLThmYzgyODg2MWI5Mw=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjI1YzdlZDNlLTljYjQtNDUzNi04ZGNjLTgzZTdlNDIzZTNjMQ=="
+        },
+        {
+          "quantity": 0,
+          "warehouse": "V2FyZWhvdXNlOjYzMmFmZWFkLWQwODMtNGI5ZC1iMmU2LTY1NGQyMDcyODkyMg=="
+        }
+      ],
+      "trackInventory": true,
+      "weight": 0.3
+    }
+  ]
+}
