@@ -24,6 +24,7 @@
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import GiftcardExpirationForm from './giftcard-expiration-form.svelte';
+	import { omit } from 'es-toolkit';
 	import { array, email, number, object, string } from 'zod';
 
 	type Props = {
@@ -69,14 +70,18 @@
 				}),
 			)
 			.optional(),
-		addTags: array(string().nonempty($CommonState.FieldRequiredError)),
 		amount: number().min(1, $CommonState.NonNegativeError),
 		currency: string().nonempty($CommonState.FieldRequiredError),
+		addTags: array(string().nonempty($CommonState.FieldRequiredError)),
 		userEmail: email($CommonState.InvalidEmail).optional(),
 	});
 	const SchemaHandler = createSchemaHandler(
 		giftcardSchema,
-		() => giftCardInput,
+		() => ({
+			...omit(giftCardInput, ['balance']),
+			amount: giftCardInput.balance.amount,
+			currency: giftCardInput.balance.currency,
+		}),
 		(ok) => (formOk = ok),
 	);
 
@@ -147,7 +152,6 @@
 			min={0}
 			variant={$SchemaHandler.amount?.length ? 'error' : 'info'}
 			subText={$SchemaHandler.amount?.[0]}
-			placeholder={$tranFunc('giftcard.form.amount')}
 		/>
 		<ShopCurrenciesSelect
 			label={$tranFunc('common.currency')}
@@ -155,7 +159,6 @@
 			variant={$SchemaHandler.currency?.length ? 'error' : 'info'}
 			subText={$SchemaHandler.currency?.[0]}
 			required
-			placeholder={$tranFunc('common.currency')}
 			onchange={SchemaHandler.validate}
 			onblur={SchemaHandler.validate}
 			bind:value={giftCardInput.balance.currency}
@@ -173,7 +176,6 @@
 		requestPolicy="cache-and-network"
 		multiple
 		label={$tranFunc('giftcard.form.tags')}
-		placeholder={$tranFunc('giftcard.form.tags')}
 		bind:value={giftCardInput.addTags}
 		{disabled}
 		variant={$SchemaHandler.addTags?.length ? 'error' : 'info'}
@@ -188,7 +190,6 @@
 		optionLabelKey="email"
 		optionValueKey="email"
 		label={$tranFunc('giftcard.form.customer')}
-		placeholder={$tranFunc('giftcard.form.customer')}
 		requestPolicy="cache-and-network"
 		bind:value={giftCardInput.userEmail}
 		disabled={disabled || !!toCustomerEmail}
@@ -209,7 +210,6 @@
 		{disabled}
 		variant={$SchemaHandler.channel?.length ? 'error' : 'info'}
 		subText={$SchemaHandler.channel?.[0] ?? $tranFunc('giftcard.form.channelSubText')}
-		placeholder={$tranFunc('giftcard.form.channel')}
 		required
 		onchange={SchemaHandler.validate}
 	/>
@@ -223,7 +223,6 @@
 		{disabled}
 		variant={$SchemaHandler.note?.length ? 'error' : 'info'}
 		subText={$SchemaHandler.note?.[0] ?? $tranFunc('giftcard.form.noteSubText')}
-		placeholder={$tranFunc('giftcard.form.note')}
 	/>
 	<Checkbox
 		label={$tranFunc('giftcard.activate')}

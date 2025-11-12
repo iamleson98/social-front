@@ -28,7 +28,7 @@ import z, { type ZodObject, type ZodRawShape, flattenError } from "zod";
  * Validator.validate();
  * ```
   */
-export const createSchemaHandler = <T extends ZodRawShape>(schema: ZodObject<T>, valueGetter: () => object, parseResultCallback?: (success: boolean) => void) => {
+export const createSchemaHandler = <T extends ZodRawShape>(schema: ZodObject<T>, valueGetter: () => Partial<{[key in keyof T]: unknown}>, parseResultCallback?: (success: boolean) => void) => {
   type SchemaType = z.infer<typeof schema>;
   type Error = Partial<Record<keyof SchemaType, string[]>>;
 
