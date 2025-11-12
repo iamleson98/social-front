@@ -162,7 +162,7 @@
 		if (variablePatchingCallbackAfterReload) {
 			// NOTE: reassign like this prevent the parent unexpectedly update pagination fields
 			newVariables = {
-				...variablePatchingCallbackAfterReload(newVariables, params),
+				...variablePatchingCallbackAfterReload({...newVariables}, params),
 				...newVariables,
 			};
 		}
