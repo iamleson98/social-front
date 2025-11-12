@@ -3,8 +3,7 @@
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import { PencilMinus } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import { Popover, type DropdownTriggerInterface } from '$lib/components/ui/Popover';
-	import { type SelectOption } from '$lib/components/ui/select';
+	import { Popover } from '$lib/components/ui/Popover';
 	import { DiscountValueTypeEnum, OrderDiscountType, type Order } from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
@@ -17,9 +16,9 @@
 	import OrderHistory from '../order-history.svelte';
 	import OrderLinesSection from '../order-lines-section.svelte';
 	import Sidebar from '../sidebar.svelte';
+	import { Components } from '../snippets.svelte';
 	import { OrderUtilsInstance } from '../utils.svelte';
 	import { toast } from 'svelte-sonner';
-	import { Components } from '../snippets.svelte';
 
 	type Props = {
 		loading?: boolean;
@@ -74,7 +73,7 @@
 				<div class="flex justify-between">
 					<div>
 						<Popover placement="bottom-start">
-							{#snippet trigger({ onclick }: DropdownTriggerInterface)}
+							{#snippet trigger({ onclick })}
 								<Button
 									size="xs"
 									disabled={loading}

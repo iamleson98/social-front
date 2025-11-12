@@ -35,11 +35,15 @@
 		email: string().nonempty($CommonState.FieldRequiredError),
 		slug: string().nonempty($CommonState.FieldRequiredError),
 	});
-	const SchemaHandler = createSchemaHandler(WarehouseSchema, () => ({
-		name,
-		email,
-		slug,
-	}));
+	const SchemaHandler = createSchemaHandler(
+		WarehouseSchema,
+		() => ({
+			name,
+			email,
+			slug,
+		}),
+		(ok) => (formOk = ok),
+	);
 </script>
 
 <div class={SitenameCommonClassName}>

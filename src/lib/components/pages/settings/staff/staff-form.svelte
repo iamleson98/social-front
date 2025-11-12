@@ -58,12 +58,16 @@
 		isActive: boolean(),
 	});
 
-	const SchemaHandler = createSchemaHandler(staffSchema, () => ({
-		lastName,
-		firstName,
-		email,
-		isActive,
-	}));
+	const SchemaHandler = createSchemaHandler(
+		staffSchema,
+		() => ({
+			lastName,
+			firstName,
+			email,
+			isActive,
+		}),
+		(ok) => (formOk = ok),
+	);
 
 	let displayingGroups = $state(existingGroups);
 

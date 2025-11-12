@@ -18,7 +18,6 @@
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown } from '$lib/components/ui/Dropdown';
 	import { Input } from '$lib/components/ui/Input';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
 	import { Select } from '$lib/components/ui/select';
 	import {
@@ -163,7 +162,7 @@
 					<Icon icon={FilterCog} size="md" class="text-gray-500" />
 					<div class="h-6 w-[2px] rounded-full bg-gray-300"></div>
 					<DropDown>
-						{#snippet trigger({ onclick }: DropdownTriggerInterface)}
+						{#snippet trigger({ onclick })}
 							<div>
 								<Button size="xs" variant="outline" color="gray" {onclick}>
 									Select sub category

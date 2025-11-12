@@ -29,14 +29,14 @@
 		name: string().nonempty($CommonState.FieldRequiredError),
 		description: string().nonempty($CommonState.FieldRequiredError),
 	});
-	const SchemaHandler = createSchemaHandler(ZoneSchema, () => ({
-		name,
-		description,
-	}));
-
-	$effect(() => {
-		formOk = !Object.keys($SchemaHandler).length;
-	});
+	const SchemaHandler = createSchemaHandler(
+		ZoneSchema,
+		() => ({
+			name,
+			description,
+		}),
+		(ok) => (formOk = ok),
+	);
 </script>
 
 {void formOk}

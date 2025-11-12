@@ -8,7 +8,6 @@
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown, type MenuItemProps } from '$lib/components/ui/Dropdown';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
 		type Collection,
@@ -115,10 +114,11 @@
 		}
 	]}
 	<div class="pl-2">
-		{#snippet trigger(opts: DropdownTriggerInterface)}
-			<IconButton icon={Dots} {...opts} size="xs" variant="light" color="gray" />
-		{/snippet}
-		<DropDown {trigger} options={MENU_OPTIONS} />
+		<DropDown options={MENU_OPTIONS}>
+			{#snippet trigger(opts)}
+				<IconButton icon={Dots} {...opts} size="xs" variant="light" color="gray" />
+			{/snippet}
+		</DropDown>
 	</div>
 {/snippet}
 

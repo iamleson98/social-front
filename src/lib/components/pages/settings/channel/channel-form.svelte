@@ -72,22 +72,22 @@
 		}),
 		currencyCode: string().nonempty($CommonState.FieldRequiredError),
 	});
-	const SchemaHandler = createSchemaHandler(channelSchema, () => ({
-		name,
-		slug,
-		isActive,
-		defaultCountry,
-		orderSettings: {
-			deleteExpiredOrdersAfter,
-		},
-		currencyCode,
-	}));
+	const SchemaHandler = createSchemaHandler(
+		channelSchema,
+		() => ({
+			name,
+			slug,
+			isActive,
+			defaultCountry,
+			orderSettings: {
+				deleteExpiredOrdersAfter,
+			},
+			currencyCode,
+		}),
+		(ok) => (formOk = ok),
+	);
 
 	type ChannelSchema = z.infer<typeof channelSchema>;
-
-	$effect(() => {
-		formOk = !Object.keys($SchemaHandler).length;
-	});
 
 	const handleFormChange = (field: keyof ChannelSchema) => {
 		if (field === 'name' && isCreatePage) {

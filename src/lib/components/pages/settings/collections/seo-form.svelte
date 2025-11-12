@@ -43,15 +43,15 @@
 				}),
 			),
 	});
-	const SchemaHandler = createSchemaHandler(seoSchema, () => ({
-		slug,
-		title: seo.title,
-		description: seo.description,
-	}));
-
-	$effect(() => {
-		ok = !Object.keys($SchemaHandler).length;
-	});
+	const SchemaHandler = createSchemaHandler(
+		seoSchema,
+		() => ({
+			slug,
+			title: seo.title,
+			description: seo.description,
+		}),
+		(success) => (ok = success),
+	);
 
 	$effect(() => {
 		if (isCreatePage) {

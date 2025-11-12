@@ -2,7 +2,6 @@
 	import { ChevronLeft, ChevronRight } from '$lib/components/icons';
 	import { Button, IconButton } from '../Button';
 	import { DropDown, type MenuItemProps } from '../Dropdown';
-	import { type DropdownTriggerInterface } from '../Popover';
 	import { ROW_OPTIONS } from '../Table/types';
 	import type { TableProps } from './types';
 	import { createSvelteTable, FlexRender } from './ui/data-table';
@@ -123,7 +122,7 @@
 				onclick: () => Table.setPageSize(num),
 			}))}
 		>
-			{#snippet trigger(opts: DropdownTriggerInterface)}
+			{#snippet trigger(opts)}
 				<Button size="xs" variant="light" {...opts} {disabled}>
 					{'Rows per page'}:
 					{pagination.pageSize}

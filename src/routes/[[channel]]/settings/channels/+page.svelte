@@ -10,7 +10,6 @@
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown, type MenuItemProps } from '$lib/components/ui/Dropdown';
 	import { Modal } from '$lib/components/ui/Modal';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import {
 		Table,
 		TableSkeleton,
@@ -154,10 +153,11 @@
 			class: 'text-red-600',
 		}
 	]}
-	{#snippet trigger(opts: DropdownTriggerInterface)}
-		<IconButton icon={Dots} {...opts} size="xs" variant="light" color="gray" />
-	{/snippet}
-	<DropDown {trigger} options={MENU_OPTIONS} />
+	<DropDown options={MENU_OPTIONS}>
+		{#snippet trigger(opts)}
+			<IconButton icon={Dots} {...opts} size="xs" variant="light" color="gray" />
+		{/snippet}
+	</DropDown>
 {/snippet}
 
 {#if $channelsQuery.fetching}

@@ -12,7 +12,6 @@
 	import { DropDown } from '$lib/components/ui/Dropdown';
 	import { CheckboxSkeleton, Label, RadioButton } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { GraphqlPaginableSelect, Select, type SelectOption } from '$lib/components/ui/select';
 	import {
 		type ExportProductsInput,
@@ -110,7 +109,7 @@
 		},
 	]}
 >
-	{#snippet trigger({ onclick }: DropdownTriggerInterface)}
+	{#snippet trigger({ onclick })}
 		<IconButton
 			size="sm"
 			icon={SettingCog}

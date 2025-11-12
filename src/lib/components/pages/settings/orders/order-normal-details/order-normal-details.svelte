@@ -3,7 +3,7 @@
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import { PencilMinus } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui/Button';
-	import { Popover, type DropdownTriggerInterface } from '$lib/components/ui/Popover';
+	import { Popover } from '$lib/components/ui/Popover';
 	import {
 		DiscountValueTypeEnum,
 		OrderDiscountType,
@@ -74,7 +74,7 @@
 					<div class="flex justify-between">
 						<div>
 							<Popover placement="bottom-start">
-								{#snippet trigger({ onclick }: DropdownTriggerInterface)}
+								{#snippet trigger({ onclick })}
 									<Button
 										size="xs"
 										disabled={loading}

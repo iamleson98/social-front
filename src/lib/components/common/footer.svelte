@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { SUPPORTED_LANGUAGES, switchTranslationLanguage, tranFunc } from '$i18n';
+	import { SUPPORTED_LANGUAGES, switchTranslationLanguage, tranFunc } from '$i18n';
 	import { Facebook, Instagram, Twitter } from '$lib/components/icons/SvgOuterIcon';
 	import { Button } from '$lib/components/ui';
 	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { LanguageCodeEnum } from '$lib/gql/graphql';
 	import { UserStoreManager } from '$lib/stores/auth';
 	import { AppRoute } from '$lib/utils';
@@ -49,55 +48,64 @@
 			<div class="grid grid-cols-4 gap-4 tablet:grid-cols-2">
 				<!-- resources -->
 				<div>
-				<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">{$tranFunc('footer.socialMedia')}</h2>
+					<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">
+						{$tranFunc('footer.socialMedia')}
+					</h2>
 					<ul class="text-gray-600">
 						<li class="mb-4">
-						<a href={AppRoute.HOME()} class="hover:underline">Sitename</a>
+							<a href={AppRoute.HOME()} class="hover:underline">Sitename</a>
 						</li>
 						<li>
-						<a href="https://tailwindcss.com/" class="hover:underline">Tailwind CSS</a>
+							<a href="https://tailwindcss.com/" class="hover:underline">Tailwind CSS</a>
 						</li>
 					</ul>
 				</div>
 				<!-- social media -->
 				<div>
-				<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">{$tranFunc('footer.socialMedia')}</h2>
+					<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">
+						{$tranFunc('footer.socialMedia')}
+					</h2>
 					<ul class="text-gray-600">
 						<li class="mb-4">
 							<a
 								href="https://www.facebook.com/profile.php?id=61572273849445"
 								target="_blank"
-							class="hover:underline">Facebook</a
+								class="hover:underline">Facebook</a
 							>
 						</li>
 						<li>
-						<a href="https://discord.gg/4eeurUVvTy" class="hover:underline">Youtube</a>
+							<a href="https://discord.gg/4eeurUVvTy" class="hover:underline">Youtube</a>
 						</li>
 					</ul>
 				</div>
 
 				<div>
-				<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">{$tranFunc('footer.legal')}</h2>
+					<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">
+						{$tranFunc('footer.legal')}
+					</h2>
 					<ul class="text-gray-600">
 						<li class="mb-4">
-						<a href="/" class="hover:underline">{$tranFunc('footer.policy')}</a>
+							<a href="/" class="hover:underline">{$tranFunc('footer.policy')}</a>
 						</li>
 						<li>
-						<a href="/" class="hover:underline">{$tranFunc('footer.policy')}</a>
+							<a href="/" class="hover:underline">{$tranFunc('footer.policy')}</a>
 						</li>
 					</ul>
 				</div>
 
 				{#if !$UserStoreManager}
 					<div>
-						<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">{$tranFunc('footer.language')}</h2>
-						{#snippet trigger({ onclick, onfocus }: DropdownTriggerInterface)}
-							<Button {onclick} {onfocus} size="xs" variant="outline">
-								<activeLanguage.icon />
-								{activeLanguage.name}
-							</Button>
-						{/snippet}
-						<DropDown {trigger} placement="bottom-end">
+						<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">
+							{$tranFunc('footer.language')}
+						</h2>
+
+						<DropDown placement="bottom-end">
+							{#snippet trigger({ onclick, onfocus })}
+								<Button {onclick} {onfocus} size="xs" variant="outline">
+									<activeLanguage.icon />
+									{activeLanguage.name}
+								</Button>
+							{/snippet}
 							{#each SUPPORTED_LANGUAGES as language, idx (idx)}
 								<MenuItem onclick={() => setLanguageByCode(idx)}>
 									<div class="flex items-center gap-2">

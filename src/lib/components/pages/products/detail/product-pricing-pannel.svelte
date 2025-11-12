@@ -13,6 +13,11 @@
 		TruckDelivery,
 		PencilMinus,
 	} from '$lib/components/icons';
+	import {
+		TablerCirclePercentage,
+		TablerMessageCircleFilled,
+		TablerMessageReportFilled,
+	} from '$lib/components/icons/consts';
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/Badge';
@@ -143,7 +148,13 @@
 
 <div class="bg-white rounded-lg border-gray-200 border p-4 h-full space-y-2">
 	<div class="flex items-center gap-1">
-		<Badge size="xs" startIcon={ShieldFilled} text={$tranFunc('product.badgeAuthentic')} variant="light" rounded />
+		<Badge
+			size="xs"
+			startIcon={ShieldFilled}
+			text={$tranFunc('product.badgeAuthentic')}
+			variant="light"
+			rounded
+		/>
 		<Badge
 			size="xs"
 			startIcon={RewindBack30}
@@ -154,7 +165,7 @@
 		/>
 		<Badge
 			size="xs"
-			startIcon={ThumbupFilled}
+			startIcon={TablerCirclePercentage}
 			text={$tranFunc('product.badgeTopDeal')}
 			variant="light"
 			rounded
@@ -196,7 +207,7 @@
 			aria-label={$tranFunc('product.reportProduct')}
 			class="tooltip tooltip-bottom"
 			data-tip={$tranFunc('product.reportProduct')}
-			icon={MessageReport}
+			icon={TablerMessageReportFilled}
 			size="xs"
 			color="gray"
 			variant="light"
@@ -208,7 +219,7 @@
 			aria-label={$tranFunc('product.contactSeller')}
 			class="tooltip tooltip-bottom"
 			data-tip={$tranFunc('product.contactSeller')}
-			icon={MessageCircleFilled}
+			icon={TablerMessageCircleFilled}
 			size="xs"
 			color="blue"
 			variant="light"

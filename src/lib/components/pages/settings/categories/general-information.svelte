@@ -54,18 +54,18 @@
 			blocks: array(any()).nonempty($CommonState.FieldRequiredError),
 		}),
 	});
-	const SchemaHandler = createSchemaHandler(categorySchema, () => ({
-		name,
-		slug,
-		seoTitle,
-		seoDescription,
-		media,
-		description,
-	}));
-
-	$effect(() => {
-		ok = !Object.keys($SchemaHandler).length;
-	});
+	const SchemaHandler = createSchemaHandler(
+		categorySchema,
+		() => ({
+			name,
+			slug,
+			seoTitle,
+			seoDescription,
+			media,
+			description,
+		}),
+		(success) => (ok = success),
+	);
 
 	$effect(() => {
 		if (isCreatePage) {

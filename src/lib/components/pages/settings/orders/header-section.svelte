@@ -4,7 +4,6 @@
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { OrderStatus, type Order } from '$lib/gql/graphql';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { orderStatusBadgeClass } from '$lib/utils/utils';
@@ -28,7 +27,7 @@
 	</div>
 
 	<DropDown placement="bottom-end">
-		{#snippet trigger({ onclick }: DropdownTriggerInterface)}
+		{#snippet trigger({ onclick })}
 			<IconButton icon={SettingCog} size="xs" color="gray" {onclick} />
 		{/snippet}
 

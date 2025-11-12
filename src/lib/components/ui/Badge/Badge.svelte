@@ -13,7 +13,7 @@
 		ref = $bindable(),
 		startIcon,
 		size = 'sm',
-		rounded = false,
+		rounded = true,
 		disabled = false,
 		...restProps
 	}: BadgeProps = $props();
@@ -27,7 +27,7 @@
 	{...restProps}
 >
 	{#if startIcon}
-		<Icon icon={startIcon} />
+		<Icon icon={startIcon} {size} />
 	{/if}
 	<span class="px-0.5">{text}</span>
 	{#if onDismiss}

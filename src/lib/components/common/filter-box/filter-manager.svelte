@@ -5,7 +5,7 @@
 	import { FilterCog, Search } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { Input } from '$lib/components/ui/Input';
-	import { type DropdownTriggerInterface, Popover } from '$lib/components/ui/Popover';
+	import { Popover } from '$lib/components/ui/Popover';
 	import { ROW_OPTIONS, type GraphqlPaginationArgs } from '$lib/components/ui/Table';
 	import { SearchParamKey } from '$lib/utils/consts';
 	import { parseUrlSearchParams, type SearchParamsType } from '$lib/utils/utils';
@@ -23,13 +23,16 @@
 		searchKey?: keyof Var | string;
 		forceReExecuteGraphqlQuery: boolean;
 		disabled?: boolean;
-		/** 
+		/**
 		 * In pages that show tabular data, we support all kind of search params, filtering, sortings, paginations. those things reflect directly on the URL bar.
 		 * This callback serves as a means to plug those search params into the variables.
 		 * the parent component should handle update extra filters setting on the variables, on their own.
 		 * NOTE: Please do not try to update pagination fields (first, last, before, after, order_by_field, order_direction) within this callback. They are handled automatically.
 		 */
-		variablePatchingCallbackAfterReload?: (variables: Var, searchParams: SearchParamsType<T>) => Var;
+		variablePatchingCallbackAfterReload?: (
+			variables: Var,
+			searchParams: SearchParamsType<T>,
+		) => Var;
 	};
 
 	let {
@@ -116,8 +119,15 @@
 		if (shouldNavigate) goto(`${pathname}?${searchParams.toString()}`, { replaceState: true });
 	});
 
+	const paginationKeys = [
+		SearchParamKey.FIRST,
+		SearchParamKey.LAST,
+		SearchParamKey.BEFORE,
+		SearchParamKey.AFTER,
+	];
+
 	/**
-	 * 2) - When the nevigation event occurs (pagination, extra filters change, F5 reload page), the `QyeryParamsStore` will also change.
+	 * 2) - When the navigation event occurs (pagination, extra filters change, F5 reload page), the `QyeryParamsStore` will also change.
 	 * 		We listen on those changes, to update pagination, extra filter fields of the variables.
 	 * 		The $effect will run again also, BUT if the pagination params does not differ from of the address bar, it will stop early and not cause infinite running.
 	 * 		- Also within this listener, we parse filter state for the filtering button, so the filter panel has the right state to display, even after F5 reload.
@@ -127,14 +137,6 @@
 
 		scrollTo({ top: 0, behavior: 'smooth' });
 
-		const paginationKeys = [
-			SearchParamKey.FIRST,
-			SearchParamKey.LAST,
-			SearchParamKey.BEFORE,
-			SearchParamKey.AFTER,
-		];
-
-		// which triggers running the $effect above infinitely.
 		let newVariables = {} as Var;
 		const newFilters = {} as FilterConditions<T>;
 		let foundAPaginationParam = false;
@@ -160,7 +162,7 @@
 		if (variablePatchingCallbackAfterReload) {
 			// NOTE: reassign like this prevent the parent unexpectedly update pagination fields
 			newVariables = {
-				...variablePatchingCallbackAfterReload({ ...newVariables }, params),
+				...variablePatchingCallbackAfterReload(newVariables, params),
 				...newVariables,
 			};
 		}
@@ -175,7 +177,7 @@
 <div class="flex items-center gap-2">
 	{#if Object.keys(filterOptions).length}
 		<Popover placement="bottom-start" bind:open={openFilterBox}>
-			{#snippet trigger(opts: DropdownTriggerInterface)}
+			{#snippet trigger(opts)}
 				<Button
 					variant="outline"
 					size="sm"

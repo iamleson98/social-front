@@ -36,15 +36,15 @@
 		}),
 		media: array(any()).max(1, MAX_ERROR).nonempty($CommonState.FieldRequiredError),
 	});
-	const SchemaHandler = createSchemaHandler(collectionSchema, () => ({
-		name,
-		description,
-		media,
-	}));
-
-	$effect(() => {
-		ok = !Object.keys($SchemaHandler).length;
-	});
+	const SchemaHandler = createSchemaHandler(
+		collectionSchema,
+		() => ({
+			name,
+			description,
+			media,
+		}),
+		(success) => (ok = success),
+	);
 </script>
 
 <div class={SitenameCommonClassName}>

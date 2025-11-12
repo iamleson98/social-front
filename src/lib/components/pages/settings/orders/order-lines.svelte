@@ -6,7 +6,7 @@
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
-	import { Sticky, type DropdownTriggerInterface } from '$lib/components/ui/Popover';
+	import { Sticky } from '$lib/components/ui/Popover';
 	import type { TableCellProps, TableColumnProps } from '$lib/components/ui/Table';
 	import Table from '$lib/components/ui/Table/table.svelte';
 	import {
@@ -107,7 +107,7 @@
 {#snippet actions({ item }: TableCellProps<OrderLine>)}
 	<div class="text-center">
 		<DropDown placement="left">
-			{#snippet trigger({ onclick }: DropdownTriggerInterface)}
+			{#snippet trigger({ onclick })}
 				<IconButton size="xs" icon={Dots} {onclick} variant="light" color="gray" />
 			{/snippet}
 

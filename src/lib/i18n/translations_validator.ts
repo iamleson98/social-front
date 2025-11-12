@@ -61,7 +61,6 @@ const main = async () => {
           if (!innerTran.trans[key]) {
             console.error(`tran file "${innerTran.name}" does not have key "${key}"`);
             hasError = true;
-            return;
           } else {
             const innerTranObj = innerTran.trans[key];
 

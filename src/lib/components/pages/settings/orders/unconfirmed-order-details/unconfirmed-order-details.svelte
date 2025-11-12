@@ -3,8 +3,7 @@
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import { PencilMinus } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui/Button';
-	import { type DropdownTriggerInterface, Popover } from '$lib/components/ui/Popover';
-	import { type SelectOption } from '$lib/components/ui/select';
+	import { Popover } from '$lib/components/ui/Popover';
 	import type { Order } from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
@@ -61,7 +60,7 @@
 				<div class="flex justify-between">
 					<div>
 						<Popover placement="bottom-start">
-							{#snippet trigger({ onclick }: DropdownTriggerInterface)}
+							{#snippet trigger({ onclick })}
 								<Button
 									size="xs"
 									disabled={loading}

@@ -180,15 +180,15 @@
 		}),
 	});
 
-	const SchemaHandler = createSchemaHandler(GeneralSchema, () => ({
-		name,
-		productType,
-		description,
-	}));
-
-	$effect(() => {
-		formOk = !Object.keys($SchemaHandler).length;
-	});
+	const SchemaHandler = createSchemaHandler(
+		GeneralSchema,
+		() => ({
+			name,
+			productType,
+			description,
+		}),
+		(ok) => (formOk = ok),
+	);
 
 	$effect(() => {
 		if (productType) {

@@ -44,16 +44,16 @@
 		isShippingRequired: boolean(),
 	});
 
-	const SchemaHandler = createSchemaHandler(ProductTypeSchema, () => ({
-		name,
-		slug,
-		kind,
-		isShippingRequired,
-	}));
-
-	$effect(() => {
-		formOk = !Object.keys($SchemaHandler).length;
-	});
+	const SchemaHandler = createSchemaHandler(
+		ProductTypeSchema,
+		() => ({
+			name,
+			slug,
+			kind,
+			isShippingRequired,
+		}),
+		(ok) => (formOk = ok),
+	);
 
 	const handleNameChange = () => {
 		if (isCreatePage) slug = slugify(name, { trim: true, strict: true, lower: true });

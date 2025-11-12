@@ -18,7 +18,6 @@
 	import Button from '$lib/components/ui/Button/Button.svelte';
 	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
 	import { Checkbox } from '$lib/components/ui/Input';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
 		GiftCardSortField,
@@ -223,7 +222,7 @@
 
 {#snippet action({ item }: { item: GiftCard })}
 	<DropDown>
-		{#snippet trigger({ onclick }: DropdownTriggerInterface)}
+		{#snippet trigger({ onclick })}
 			<IconButton icon={Dots} {onclick} size="xs" color="gray" variant="light" disabled={loading} />
 		{/snippet}
 		<MenuItem

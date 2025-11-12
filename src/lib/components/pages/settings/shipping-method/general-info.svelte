@@ -47,16 +47,16 @@
 		message: 'max delivery days <= min delivery days',
 		path: ['maximumDeliveryDays'],
 	});
-	const SchemaHandler = createSchemaHandler(MethodSchema, () => ({
-		name,
-		description,
-		maximumDeliveryDays,
-		minimumDeliveryDays,
-	}));
-
-	$effect(() => {
-		ok = !Object.keys($SchemaHandler).length;
-	});
+	const SchemaHandler = createSchemaHandler(
+		MethodSchema,
+		() => ({
+			name,
+			description,
+			maximumDeliveryDays,
+			minimumDeliveryDays,
+		}),
+		(success) => (ok = success),
+	);
 </script>
 
 {void ok}

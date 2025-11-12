@@ -45,21 +45,21 @@
 		}).nullable(),
 		startDate: string().nonempty($CommonState.FieldRequiredError),
 	});
-	const SchemaHandler = createSchemaHandler(PromotionSchema, () => ({
-		name,
-		type,
-		description,
-		startDate,
-	}));
+	const SchemaHandler = createSchemaHandler(
+		PromotionSchema,
+		() => ({
+			name,
+			type,
+			description,
+			startDate,
+		}),
+		(success) => (ok = success),
+	);
 
 	const DiscountTypeOptions = Object.values(PromotionTypeEnum).map<SelectOption>((value) => ({
 		value,
 		label: value.toLowerCase(),
 	}));
-
-	$effect(() => {
-		ok = !Object.values($SchemaHandler).some(Boolean);
-	});
 </script>
 
 <div class={SitenameCommonClassName}>

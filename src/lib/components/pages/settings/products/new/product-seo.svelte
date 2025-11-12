@@ -22,6 +22,14 @@
 	const SEO_DESCRIPTION_MAX_LENGTH = 300; // saleor reference
 	const SEO_TITLE_MAX_LENGTH = 70;
 
+	let {
+		productName,
+		slug = $bindable(),
+		seo = $bindable({}),
+		formOk = $bindable(),
+		loading,
+	}: Props = $props();
+
 	const seoSchema = object({
 		slug: string()
 			.min(1, $CommonState.FieldRequiredError)
@@ -55,26 +63,21 @@
 			}),
 	});
 
-	const SchemaHandler = createSchemaHandler(seoSchema, () => ({
-		slug,
-		title: seo.title,
-		description: seo.description,
-	}));
-
-	let {
-		productName,
-		slug = $bindable(),
-		seo = $bindable({}),
-		formOk = $bindable(),
-		loading,
-	}: Props = $props();
+	const SchemaHandler = createSchemaHandler(
+		seoSchema,
+		() => ({
+			slug,
+			title: seo.title,
+			description: seo.description,
+		}),
+		(ok) => (formOk = ok),
+	);
 
 	$effect(() => {
 		if (productName) {
 			slug = slugify(productName, { lower: true, strict: true });
 			seo.title = productName;
 		}
-		formOk = !Object.values($SchemaHandler).some(Boolean);
 	});
 </script>
 

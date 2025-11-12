@@ -54,7 +54,11 @@
 		name: string().nonempty($CommonState.FieldRequiredError),
 		selectedChannels: array(string()).nonempty($CommonState.FieldRequiredError),
 	});
-	const SchemaHandler = createSchemaHandler(GroupSchema, () => ({ name, selectedChannels }));
+	const SchemaHandler = createSchemaHandler(
+		GroupSchema,
+		() => ({ name, selectedChannels }),
+		(ok) => (formOk = ok),
+	);
 
 	let openAssignUserModal = $state(false);
 	let staffUsersVariables = $state<QueryStaffUsersArgs>({
@@ -68,10 +72,6 @@
 	let displayingUsers = $state(users);
 	let innerSelectedUsersToUnassign = $state<SvelteSet<string>>(new SvelteSet());
 	let innerSelectedUsersToAssign = $state<Record<string, User>>({});
-
-	$effect(() => {
-		formOk = !Object.values($SchemaHandler).length;
-	});
 
 	const UnassignSelectColumn: TableColumnProps<User>[] = [
 		{

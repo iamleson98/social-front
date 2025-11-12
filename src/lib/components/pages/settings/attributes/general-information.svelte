@@ -39,7 +39,11 @@
 			.regex(ValidSlugRegex, $tranFunc('error.invalidSlug')),
 	});
 
-	const SchemaHandler = createSchemaHandler(AttributeSchema, () => ({ name, slug, inputType }));
+	const SchemaHandler = createSchemaHandler(
+		AttributeSchema,
+		() => ({ name, slug, inputType }),
+		(ok) => (formOk = ok),
+	);
 
 	const AttributeInputTypeOptions = Object.values(AttributeInputTypeEnum).map<SelectOption>(
 		(value) => ({
@@ -52,10 +56,6 @@
 		if (isCreatePage) slug = slugify(name, { trim: true, strict: true, lower: true });
 		SchemaHandler.validate();
 	};
-
-	$effect(() => {
-		formOk = !Object.keys($SchemaHandler).length;
-	});
 </script>
 
 <div class={SitenameCommonClassName}>

@@ -7,7 +7,6 @@
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown } from '$lib/components/ui/Dropdown';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import { type Order, type Query } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
@@ -84,7 +83,7 @@
 				},
 			]}
 		>
-			{#snippet trigger({ ...rest }: DropdownTriggerInterface)}
+			{#snippet trigger({ ...rest })}
 				<IconButton icon={Dots} {...rest} size="xs" variant="light" color="gray" />
 			{/snippet}
 		</DropDown>

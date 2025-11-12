@@ -16,7 +16,6 @@
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
 	import { Input } from '$lib/components/ui/Input';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import type { Query, User } from '$lib/gql/graphql';
 	import { checkoutStore } from '$lib/stores/app';
 	import { UserStoreManager } from '$lib/stores/auth/user';
@@ -151,7 +150,7 @@
 					</span>
 				{/snippet}
 				<DropDown placement="bottom-end">
-					{#snippet trigger({ onclick, onfocus }: DropdownTriggerInterface)}
+					{#snippet trigger({ onclick, onfocus })}
 						<Button variant="light" size="sm" class="space-x-2 uppercase" {onclick} {onfocus}>
 							{@render avatar()}
 							<span>{SettingButtonText}</span>

@@ -4,7 +4,7 @@
 	import { Trash } from '$lib/components/icons';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
-	import { Popover, type DropdownTriggerInterface } from '$lib/components/ui/Popover';
+	import { Popover } from '$lib/components/ui/Popover';
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import type { Product, ProductOrderField } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
@@ -95,7 +95,7 @@
 			published: item.isPublished,
 		})) || []}
 	<Popover placement="left">
-		{#snippet trigger({ onclick, onclose }: DropdownTriggerInterface)}
+		{#snippet trigger({ onclick, onclose })}
 			<Badge
 				text="{channels.length} {$tranFunc('product.channel')}"
 				color={channels.length ? 'green' : 'orange'}

@@ -18,7 +18,6 @@
 	import { DropDown, type MenuItemProps } from '$lib/components/ui/Dropdown';
 	import { Checkbox, CheckboxSkeleton, Input, Label, RadioButton } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import {
 		GraphqlPaginableSelect,
 		Select,
@@ -254,7 +253,7 @@
 </script>
 
 <DropDown placement="bottom-end" options={SettingOptions}>
-	{#snippet trigger({ onclick }: DropdownTriggerInterface)}
+	{#snippet trigger({ onclick })}
 		<IconButton
 			icon={SettingCog}
 			{onclick}

@@ -47,16 +47,16 @@
 		note: string().nonempty($CommonState.FieldRequiredError),
 	});
 
-	const SchemaHandler = createSchemaHandler(customerSchema, () => ({
-		firstName,
-		lastName,
-		email,
-		note,
-	}));
-
-	$effect(() => {
-		ok = !Object.keys($SchemaHandler).length;
-	});
+	const SchemaHandler = createSchemaHandler(
+		customerSchema,
+		() => ({
+			firstName,
+			lastName,
+			email,
+			note,
+		}),
+		(success) => (ok = success),
+	);
 </script>
 
 <div class={SitenameCommonClassName}>

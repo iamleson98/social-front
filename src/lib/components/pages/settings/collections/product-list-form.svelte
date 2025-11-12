@@ -11,7 +11,7 @@
 	import { Trash } from '$lib/components/icons';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
-	import { Popover, type DropdownTriggerInterface } from '$lib/components/ui/Popover';
+	import { Popover } from '$lib/components/ui/Popover';
 	import type { TableColumnProps } from '$lib/components/ui/Table';
 	import { GraphqlPaginableTable } from '$lib/components/ui/Table';
 	import type {
@@ -194,17 +194,18 @@
 			channel: item.channel.name,
 			published: item.isPublished,
 		})) || []}
-	{#snippet trigger({ onclick, onclose }: DropdownTriggerInterface)}
-		<Badge
-			text={`${channels.length} ${$tranFunc('product.channel')}`}
-			color={channels.length ? 'green' : 'orange'}
-			variant={channels.length ? 'filled' : 'light'}
-			onmouseenter={onclick}
-			ontouchstart={onclick}
-			onmouseleave={onclose}
-		/>
-	{/snippet}
-	<Popover {trigger} placement="left">
+
+	<Popover placement="left">
+		{#snippet trigger({ onclick, onclose })}
+			<Badge
+				text={`${channels.length} ${$tranFunc('product.channel')}`}
+				color={channels.length ? 'green' : 'orange'}
+				variant={channels.length ? 'filled' : 'light'}
+				onmouseenter={onclick}
+				ontouchstart={onclick}
+				onmouseleave={onclose}
+			/>
+		{/snippet}
 		<div class="py-1 px-2 rounded-lg border border-gray-200 bg-white w-fit shadow-sm">
 			<div class="flex flex-nowrap font-medium gap-1 text-sm">
 				<span class="flex-1">{$tranFunc('product.channel')}</span>

@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	import { Button } from '$lib/components/ui';
-	import { Popover, type DropdownTriggerInterface } from '$lib/components/ui/Popover';
+	import { Popover } from '$lib/components/ui/Popover';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { type Order } from '$lib/gql/graphql';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
@@ -20,7 +20,7 @@
 		disabled: !method.active,
 	}))}
 	<Popover placement="bottom-start">
-		{#snippet trigger({ onclick }: DropdownTriggerInterface)}
+		{#snippet trigger({ onclick })}
 			<Button size="xs" variant="light" color="blue" {onclick} disabled={loading}>
 				{order.shippingMethodName || 'Shipping Method'}
 			</Button>

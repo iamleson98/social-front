@@ -2,7 +2,6 @@
 	import { ChevronDown } from '$lib/components/icons';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import {
 		LEXICAL_DEFAULT_BLOCK_FORMATS,
 		DEFAULT_INLINE_FORMATS,
@@ -134,12 +133,13 @@
 	class="inline-flex items-center gap-2 mb-2 sticky top-13 z-199 bg-white p-1.5 rounded-lg border border-gray-200"
 >
 	<!-- block format -->
-	{#snippet trigger({ onclick, onfocus }: DropdownTriggerInterface)}
-		<Button endIcon={ChevronDown} {onclick} {onfocus} size="sm" {disabled} variant="light">
-			{LEXICAL_DEFAULT_BLOCK_FORMATS[blockFormatType].tip}
-		</Button>
-	{/snippet}
-	<DropDown {trigger} placement="bottom-start" bind:open={__openBlockFormatDropdown}>
+
+	<DropDown placement="bottom-start" bind:open={__openBlockFormatDropdown}>
+		{#snippet trigger({ onclick, onfocus })}
+			<Button endIcon={ChevronDown} {onclick} {onfocus} size="sm" {disabled} variant="light">
+				{LEXICAL_DEFAULT_BLOCK_FORMATS[blockFormatType].tip}
+			</Button>
+		{/snippet}
 		{#each Object.keys(blockFormatState) as blockKey, idx (idx)}
 			{@const blockFormat = blockFormatState[blockKey as BlockType]}
 			<MenuItem

@@ -4,7 +4,6 @@
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown } from '$lib/components/ui/Dropdown';
-	import { type DropdownTriggerInterface } from '$lib/components/ui/Popover';
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
@@ -96,11 +95,7 @@
 {/snippet}
 
 {#snippet action({ item }: { item: SupportTicket })}
-	{#snippet trigger({ ...rest }: DropdownTriggerInterface)}
-		<IconButton icon={Dots} {...rest} size="xs" variant="light" color="gray" />
-	{/snippet}
 	<DropDown
-		{trigger}
 		options={[
 			{
 				children: $tranFunc('settings.editTicket'),
@@ -114,7 +109,11 @@
 				onclick: () => handleConfirmDeleteTicket(item.id),
 			},
 		]}
-	/>
+	>
+		{#snippet trigger({ ...rest })}
+			<IconButton icon={Dots} {...rest} size="xs" variant="light" color="gray" />
+		{/snippet}
+	</DropDown>
 {/snippet}
 
 <Table {items} columns={ORDER_TABLE_COLUMNS}></Table>

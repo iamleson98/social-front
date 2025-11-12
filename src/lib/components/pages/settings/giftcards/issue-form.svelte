@@ -74,11 +74,11 @@
 		currency: string().nonempty($CommonState.FieldRequiredError),
 		userEmail: email($CommonState.InvalidEmail).optional(),
 	});
-	const SchemaHandler = createSchemaHandler(giftcardSchema, () => giftCardInput);
-
-	$effect(() => {
-		formOk = !Object.keys($SchemaHandler).length;
-	});
+	const SchemaHandler = createSchemaHandler(
+		giftcardSchema,
+		() => giftCardInput,
+		(ok) => (formOk = ok),
+	);
 
 	const handleIssueGiftcard = async () => {
 		// validate for error first
