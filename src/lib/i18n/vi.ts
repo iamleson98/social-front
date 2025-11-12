@@ -337,7 +337,7 @@ export default {
 	},
 	settings: {
 		preview: 'Xem trước',
-		verified: 'Đã xác nhận',
+		verified: 'Đã xác minh',
 		unverified: 'Chưa xác minh',
 		account: 'Tài khoản',
 		preference: 'Tùy biến',

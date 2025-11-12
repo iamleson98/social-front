@@ -9,10 +9,12 @@
 	import { Modal } from '$lib/components/ui/Modal';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import type { GiftCard, Query, User } from '$lib/gql/graphql';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import IssueForm from '../giftcards/issue-form.svelte';
 	import dayjs from 'dayjs';
+	import { toast } from 'svelte-sonner';
 
 	type Props = {
 		user: User;
@@ -24,10 +26,7 @@
 	let openAddGiftcardModal = $state(false);
 	let giftcardFormOk = $state(false);
 	let triggerCreate = $state(false);
-
-	const handleCreateGiftcardSuccess = () => {
-		openAddGiftcardModal = false;
-	};
+	let loading = $state(false);
 
 	const UserGiftcardColumns: TableColumnProps<GiftCard>[] = [
 		{
@@ -107,7 +106,7 @@
 	onClose={() => (openAddGiftcardModal = false)}
 	onOk={() => (triggerCreate = true)}
 	onCancel={() => (openAddGiftcardModal = false)}
-	disableElements={!giftcardFormOk}
+	disableElements={!giftcardFormOk || loading}
 	closeOnEscape
 	closeOnOutsideClick
 >
@@ -115,6 +114,10 @@
 		toCustomerEmail={user.email}
 		bind:formOk={giftcardFormOk}
 		bind:triggerCreate
-		onCreateSuccess={handleCreateGiftcardSuccess}
+		onCreateSuccess={() => {
+			openAddGiftcardModal = false;
+			toast.success($CommonState.CreateSuccess);
+		}}
+		bind:loading
 	/>
 </Modal>

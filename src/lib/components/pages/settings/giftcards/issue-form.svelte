@@ -30,7 +30,7 @@
 	type Props = {
 		toCustomerEmail?: string;
 		onCreateSuccess?: (gc: GiftCard) => void;
-		disabled?: boolean;
+		loading?: boolean;
 		triggerCreate: boolean;
 		formOk: boolean;
 	};
@@ -38,12 +38,11 @@
 	let {
 		toCustomerEmail,
 		onCreateSuccess,
-		disabled,
+		loading = $bindable(),
 		triggerCreate = $bindable(),
 		formOk = $bindable(),
 	}: Props = $props();
 	const NOTE_MAX_LENGTH = 300;
-	let loading = $state(false);
 
 	let giftCardInput = $state<GiftCardCreateInput>({
 		addTags: [],
@@ -97,9 +96,11 @@
 		>(GIFT_CARD_CREATE_MUTATION, {
 			input: giftCardInput,
 		});
-		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'giftCardCreate')) return;
+		if (checkIfGraphqlResultHasError(result, 'giftCardCreate')) {
+			loading = false;
+			return;
+		}
 
 		// create metadata for this giftcard
 		const metas: MetadataInput[] = [];
@@ -125,6 +126,8 @@
 			id: result.data?.giftCardCreate?.giftCard?.id!,
 			input: metas,
 		});
+		loading = false;
+
 		if (checkIfGraphqlResultHasError(metaResult, 'updateMetadata', $CommonState.CreateSuccess))
 			return;
 
@@ -148,7 +151,7 @@
 			class="flex-1"
 			inputDebounceOption={{ onInput: SchemaHandler.validate }}
 			onblur={SchemaHandler.validate}
-			{disabled}
+			disabled={loading}
 			min={0}
 			variant={$SchemaHandler.amount?.length ? 'error' : 'info'}
 			subText={$SchemaHandler.amount?.[0]}
@@ -162,7 +165,7 @@
 			onchange={SchemaHandler.validate}
 			onblur={SchemaHandler.validate}
 			bind:value={giftCardInput.balance.currency}
-			{disabled}
+			disabled={loading}
 		/>
 	</div>
 
@@ -177,7 +180,7 @@
 		multiple
 		label={$tranFunc('giftcard.form.tags')}
 		bind:value={giftCardInput.addTags}
-		{disabled}
+		disabled={loading}
 		variant={$SchemaHandler.addTags?.length ? 'error' : 'info'}
 		subText={$SchemaHandler.addTags?.[0]}
 		onchange={SchemaHandler.validate}
@@ -192,7 +195,7 @@
 		label={$tranFunc('giftcard.form.customer')}
 		requestPolicy="cache-and-network"
 		bind:value={giftCardInput.userEmail}
-		disabled={disabled || !!toCustomerEmail}
+		disabled={loading || !!toCustomerEmail}
 		variant={$SchemaHandler.userEmail?.length ? 'error' : 'info'}
 		subText={$SchemaHandler.userEmail?.[0]}
 		onchange={SchemaHandler.validate}
@@ -202,16 +205,17 @@
 		{$tranFunc('giftcard.issueFormAlert')}
 	</Alert>
 
-	<GiftcardExpirationForm {disabled} bind:expiryDate={giftCardInput.expiryDate} />
+	<GiftcardExpirationForm disabled={loading} bind:expiryDate={giftCardInput.expiryDate} />
 
 	<ChannelSelect
 		label={$tranFunc('giftcard.form.channel')}
 		bind:value={giftCardInput.channel}
-		{disabled}
+		disabled={loading}
 		variant={$SchemaHandler.channel?.length ? 'error' : 'info'}
 		subText={$SchemaHandler.channel?.[0] ?? $tranFunc('giftcard.form.channelSubText')}
 		required
 		onchange={SchemaHandler.validate}
+		onblur={SchemaHandler.validate}
 	/>
 
 	<TextArea
@@ -220,14 +224,14 @@
 		inputDebounceOption={{ onInput: SchemaHandler.validate }}
 		onblur={SchemaHandler.validate}
 		inputClass="min-h-20"
-		{disabled}
+		disabled={loading}
 		variant={$SchemaHandler.note?.length ? 'error' : 'info'}
 		subText={$SchemaHandler.note?.[0] ?? $tranFunc('giftcard.form.noteSubText')}
 	/>
 	<Checkbox
 		label={$tranFunc('giftcard.activate')}
 		bind:checked={giftCardInput.isActive}
-		{disabled}
+		disabled={loading}
 		subText={$tranFunc('giftcard.form.activeSubText')}
 	/>
 </div>

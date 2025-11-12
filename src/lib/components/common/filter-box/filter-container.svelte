@@ -1,5 +1,6 @@
 <script lang="ts" generics="T">
 	import { tranFunc } from '$i18n';
+	import { type TranslationKey } from '$i18n/types';
 	import { CloseX, Plus, Trash } from '$lib/components/icons';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { Select, type Primitive, type SelectOption } from '$lib/components/ui/select';
@@ -112,7 +113,7 @@
 							{@const operatorOptions = Object.keys(
 								filterOptions[key as keyof T]?.operations || {},
 							).map<SelectOption>((operator) => ({
-								label: $tranFunc(`common.${operator}`),
+								label: $tranFunc(`common.${operator}` as TranslationKey),
 								value: operator,
 							}))}
 
