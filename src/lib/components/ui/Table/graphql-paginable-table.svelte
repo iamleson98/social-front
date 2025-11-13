@@ -4,10 +4,16 @@
 	import { type PageInfo, type Query } from '$lib/gql/graphql';
 	import TableSkeleton from './table-skeleton.svelte';
 	import Table from './table.svelte';
-	import type { GraphqlPaginationArgs, RowOptions, SortState, TableProps } from './types';
+	import type {
+		CountableConnection,
+		GraphqlPaginationArgs,
+		RowOptions,
+		SortState,
+		TableProps,
+	} from './types';
 	import type { AnyVariables, RequestPolicy, TypedDocumentNode } from '@urql/core';
 	import { get } from 'es-toolkit/compat';
-	import { tick } from 'svelte';
+	import { onMount, tick } from 'svelte';
 
 	type Props = {
 		query: TypedDocumentNode<any, AnyVariables & GraphqlPaginationArgs>;
@@ -74,27 +80,23 @@
 		pause: true, // to prevent unnecessary network call, this operation will be paused by default
 	});
 
-	let sortState = $derived.by(() => {
-		if (variables.sortBy?.field)
-			return {
-				[variables.sortBy.field]: variables.sortBy.direction,
-			};
-
-		return {};
-	});
+	let sortState = $derived(
+		variables.sortBy?.field ? { [variables.sortBy.field]: variables.sortBy.direction } : {},
+	);
 	let items = $state.raw<T[]>([]);
 	let pagination = $state.raw<PageInfo>();
 
-	$effect(() => {
-		if (!$queryOperationStore.error && $queryOperationStore.data) {
-			const connection = get($queryOperationStore.data, resultKey);
+	onMount(() =>
+		queryOperationStore.subscribe((result) => {
+			if (result.data) {
+				const connection: CountableConnection<T> = get(result.data, resultKey);
+				if (!connection) throw new Error(`invalid result key: ${resultKey}`);
 
-			if (!connection) throw new Error(`invalid result key: ${resultKey}`);
-
-			items = connection.edges.map((edge: any) => edge?.node) || [];
-			pagination = connection.pageInfo;
-		}
-	});
+				items = connection.edges.map((edge) => edge.node) || [];
+				pagination = connection.pageInfo;
+			}
+		}),
+	);
 
 	$effect(() => {
 		if (forceReExecuteGraphqlQuery) {
@@ -149,7 +151,7 @@
 
 		variables = {
 			...variables,
-			first: 10,
+			first: variables.first || variables.last || 10,
 			last: null,
 			before: null,
 			after: null,

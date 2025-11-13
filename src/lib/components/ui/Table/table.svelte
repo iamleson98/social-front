@@ -137,9 +137,8 @@
 											aria-label="Sort column"
 											onclick={() => handleSortClick(column.key!)}
 											{disabled}
-										>
-											<Icon icon={SortIconsMap[sortState[column.key!]]} size="xs" />
-										</IconButton>
+											icon={SortIconsMap[sortState[column.key]]}
+										/>
 									{/if}
 								</div>
 							</th>

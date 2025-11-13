@@ -44,32 +44,32 @@
 	bind:forceReExecuteGraphqlQuery
 	bind:variables
 	searchKey={'filter.search' as keyof QueryCustomersArgs}
-	variablePatchingCallbackAfterReload={(variables, searchParams) => {
+	variablePatchingCallbackAfterReload={(vars, searchParams) => {
 		const { dateJoined, numberOfOrders, metadata } = searchParams;
 
-		if (!variables.filter) variables.filter = {};
+		if (!vars.filter) vars.filter = {};
 
 		if (dateJoined) {
 			if (dateJoined.operator === 'range' && Array.isArray(dateJoined.value))
-				variables.filter.dateJoined = {
+				vars.filter.dateJoined = {
 					gte: dateJoined.value[0],
 					lte: dateJoined.value[1],
 				};
 			else if (['lte', 'gte'].includes(dateJoined.operator)) {
-				variables.filter.dateJoined = { [dateJoined.operator]: dateJoined.value };
+				vars.filter.dateJoined = { [dateJoined.operator]: dateJoined.value };
 			}
 		}
 
 		if (numberOfOrders) {
 			if (numberOfOrders.operator === 'eq')
-				variables.filter.numberOfOrders = {
+				vars.filter.numberOfOrders = {
 					gte: numberOfOrders.value as number,
 					lte: numberOfOrders.value as number,
 				};
 			else if (['lte', 'gte'].includes(numberOfOrders.operator))
-				variables.filter.numberOfOrders = { [numberOfOrders.operator]: numberOfOrders.value };
+				vars.filter.numberOfOrders = { [numberOfOrders.operator]: numberOfOrders.value };
 			else if (numberOfOrders.operator === 'range' && Array.isArray(numberOfOrders.value))
-				variables.filter.numberOfOrders = {
+				vars.filter.numberOfOrders = {
 					gte: numberOfOrders.value[0] as number,
 					lte: numberOfOrders.value[1] as number,
 				};
@@ -77,7 +77,7 @@
 
 		if (metadata) {
 			if (metadata.operator === 'eq') {
-				variables.filter.metadata = [
+				vars.filter.metadata = [
 					{
 						key: (metadata.value as string[])[0],
 						value: (metadata.value as string[])[1],
@@ -86,6 +86,6 @@
 			}
 		}
 
-		return variables;
+		return vars;
 	}}
 />

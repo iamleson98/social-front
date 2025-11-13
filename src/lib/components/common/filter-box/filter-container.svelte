@@ -91,19 +91,20 @@
 
 	<div class="p-2">
 		{#if Object.keys(activeFilters).length}
-			{#each Object.keys(activeFilters) as key, idx (idx)}
-				{@const filterOpt = activeFilters[key as keyof T]}
-				{@const disableDeleleButton = Object.keys(activeFilters).some(
-					(item) => filterOptions[item as keyof T]?.mustPairWith === key,
+			{@const activeKeys = Object.keys(activeFilters) as (keyof T)[]}
+			{#each activeKeys as key, idx (idx)}
+				{@const filterOpt = activeFilters[key]}
+				{@const disableDeleleButton = activeKeys.some(
+					(item) => filterOptions[item]?.mustPairWith === key,
 				)}
 				<div class="flex items-center gap-1 mt-1.5 justify-between">
 					<Select
 						options={availableFilters}
 						size="xs"
 						class="flex-2"
-						value={key}
+						value={key as string}
 						onchange={(vl) =>
-							handleFilterItemKeyChange(key as keyof T, (vl as SelectOption)?.value as keyof T)}
+							handleFilterItemKeyChange(key, (vl as SelectOption)?.value as keyof T)}
 						placeholder={$tranFunc('common.selectFilter')}
 						disabled={disableDeleleButton || disabled}
 					/>
@@ -111,7 +112,7 @@
 					<div class="flex-4 flex items-center gap-1">
 						{#if key && filterOpt}
 							{@const operatorOptions = Object.keys(
-								filterOptions[key as keyof T]?.operations || {},
+								filterOptions[key]?.operations || {},
 							).map<SelectOption>((operator) => ({
 								label: $tranFunc(`common.${operator}` as TranslationKey),
 								value: operator,
@@ -124,14 +125,13 @@
 								value={filterOpt.operator}
 								{disabled}
 								onchange={(vl) => {
-									setFilterItemValue(key as keyof T, (vl as SelectOption)?.value as FilterOperator);
+									setFilterItemValue(key, (vl as SelectOption)?.value as FilterOperator);
 								}}
 							/>
 							{#if filterOpt.operator}
 								<div class="flex-1">
-									{@render filterOptions[key as keyof T]?.operations[filterOpt.operator]?.({
-										onValue: (value) =>
-											setFilterItemValue(key as keyof T, filterOpt.operator, value),
+									{@render filterOptions[key]?.operations[filterOpt.operator]?.({
+										onValue: (value) => setFilterItemValue(key, filterOpt.operator, value),
 										initialValue: filterOpt.value,
 									})}
 								</div>
@@ -146,8 +146,7 @@
 							size="xs"
 							variant="light"
 							color="red"
-							onclick={() =>
-								(activeFilters = omit(activeFilters, [key as keyof T]) as FilterConditions<T>)}
+							onclick={() => (activeFilters = omit(activeFilters, [key]) as FilterConditions<T>)}
 							aria-label={$tranFunc('common.delFilter')}
 							disabled={disableDeleleButton || disabled}
 						/>

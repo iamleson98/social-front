@@ -162,7 +162,7 @@
 		if (variablePatchingCallbackAfterReload) {
 			// NOTE: reassign like this prevent the parent unexpectedly update pagination fields
 			newVariables = {
-				...variablePatchingCallbackAfterReload({ ...newVariables }, params),
+				...variablePatchingCallbackAfterReload(newVariables, params),
 				...newVariables,
 			};
 		}
@@ -177,11 +177,11 @@
 <div class="flex items-center gap-2">
 	{#if Object.keys(filterOptions).length}
 		<Popover placement="bottom-start" bind:open={openFilterBox}>
-			{#snippet trigger(opts)}
+			{#snippet trigger({ onclick })}
 				<Button
 					variant="outline"
 					size="sm"
-					{...opts}
+					{onclick}
 					class="indicator"
 					endIcon={FilterCog}
 					{disabled}

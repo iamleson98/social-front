@@ -192,7 +192,7 @@
 	bind:forceReExecuteGraphqlQuery
 	bind:variables
 	searchKey="search"
-	variablePatchingCallbackAfterReload={(variables, params) => {
+	variablePatchingCallbackAfterReload={(vars, params) => {
 		const {
 			giftCard,
 			hasCategory,
@@ -205,43 +205,43 @@
 			categories,
 			price,
 		} = params;
-		if (!variables.filter) variables.filter = {}; // create if not have
+		if (!vars.filter) vars.filter = {}; // create if not have
 
-		if (giftCard) variables.filter.giftCard = giftCard.value as boolean;
-		if (hasCategory) variables.filter.hasCategory = hasCategory.value as boolean;
+		if (giftCard) vars.filter.giftCard = giftCard.value as boolean;
+		if (hasCategory) vars.filter.hasCategory = hasCategory.value as boolean;
 		if (isVisibleInListing)
-			variables.filter.isVisibleInListing = isVisibleInListing.value as boolean;
-		if (isPublished) variables.filter.isPublished = isPublished.value as boolean;
-		if (isAvailable) variables.filter.isAvailable = isAvailable.value as boolean;
+			vars.filter.isVisibleInListing = isVisibleInListing.value as boolean;
+		if (isPublished) vars.filter.isPublished = isPublished.value as boolean;
+		if (isAvailable) vars.filter.isAvailable = isAvailable.value as boolean;
 
 		if (productTypes) {
 			if (productTypes.operator === 'eq')
-				variables.filter.productTypes = [productTypes.value as string];
+				vars.filter.productTypes = [productTypes.value as string];
 			else if (productTypes.operator === 'oneOf')
-				variables.filter.productTypes = productTypes.value as string[];
+				vars.filter.productTypes = productTypes.value as string[];
 		}
-		if (channel) variables.channel = channel.value as string;
-		if (collections) variables.filter.collections = collections.value as string[];
+		if (channel) vars.channel = channel.value as string;
+		if (collections) vars.filter.collections = collections.value as string[];
 		if (categories) {
-			if (categories.operator === 'eq') variables.filter.categories = [categories.value as string];
+			if (categories.operator === 'eq') vars.filter.categories = [categories.value as string];
 			else if (categories.operator === 'oneOf')
-				variables.filter.categories = categories.value as string[];
+				vars.filter.categories = categories.value as string[];
 		}
 		if (price) {
 			if (price.operator === 'eq')
-				variables.filter.price = {
+				vars.filter.price = {
 					gte: price.value as number,
 					lte: price.value as number,
 				};
-			else if (price.operator === 'gte') variables.filter.price = { gte: price.value as number };
-			else if (price.operator === 'lte') variables.filter.price = { lte: price.value as number };
+			else if (price.operator === 'gte') vars.filter.price = { gte: price.value as number };
+			else if (price.operator === 'lte') vars.filter.price = { lte: price.value as number };
 			else if (price.operator === 'range' && Array.isArray(price.value))
-				variables.filter.price = {
+				vars.filter.price = {
 					gte: price.value[0] as number,
 					lte: price.value[1] as number,
 				};
 		}
 
-		return variables;
+		return vars;
 	}}
 />

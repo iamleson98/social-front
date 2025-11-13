@@ -25,7 +25,7 @@
 		first: 10,
 		filter: { search: '' },
 	});
-	let forceReExecuteGraphqlQuery = $state(true);
+	let forceReExecuteGraphqlQuery = $state(false);
 
 	const COLLECTION_COLUMNS: TableColumnProps<Collection, CollectionSortField>[] = $derived([
 		{

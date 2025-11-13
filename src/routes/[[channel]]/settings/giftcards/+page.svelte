@@ -37,7 +37,7 @@
 	import dayjs from 'dayjs';
 
 	const giftcardUtil = new GiftcardUtil();
-	let forceReExecuteGraphqlQuery = $state(true);
+	let forceReExecuteGraphqlQuery = $state(false);
 	let giftcardFilterVariables = $state<QueryGiftCardsArgs>({
 		first: 10,
 		filter: {},
