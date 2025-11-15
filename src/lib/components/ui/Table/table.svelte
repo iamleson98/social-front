@@ -113,7 +113,7 @@
 							<th></th>
 						{/if}
 						{#each columns as column, idx (idx)}
-							<th>
+							<th style:width={column.width ? `${column.width}px` : 'unset'}>
 								<div class="flex items-center justify-between">
 									<div class="flex items-center gap-1">
 										{#if column?.startIcon}

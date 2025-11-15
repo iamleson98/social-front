@@ -39,6 +39,7 @@
 			title: $tranFunc('settings.name'),
 			child: name,
 			key: ProductOrderField.Name,
+			width: 300,
 		},
 		{
 			title: $tranFunc('settings.availability'),

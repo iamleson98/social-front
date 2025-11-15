@@ -69,20 +69,18 @@
 	if (Object.values(TableNameKeys).length !== new Set(Object.values(TableNameKeys)).size)
 		throw new Error('Duplicate key name found in TableNameKeys');
 
-	const registerInstanceByName = (name: TableNameKeys) => {
+	const registerKey = (name: TableNameKeys) => {
 		if (getStore(store)[name])
 			throw new Error(`Key name already existed: ${name}. Please specify a unique name`);
 
-		store.update((state) => ({ ...state, [name]: true }));
+		store.update((state) => ({ ...state, [name]: false }));
 	};
 
-	const unRegisterInstanceByName = (name: TableNameKeys) => {
+	const unregisterKey = (name: TableNameKeys) => {
 		store.set(omit(getStore(store), [name]));
 	};
 
 	const toggleFetchDataByKeyName = (keyName: TableNameKeys, enable: boolean) => {
-		if (!getStore(store)[keyName]) throw new Error(`Invalid key name: ${keyName}`);
-
 		store.update((state) => ({ ...state, [keyName]: enable }));
 	};
 
@@ -166,7 +164,6 @@
 			first: 10,
 		}),
 		requestPolicy = 'cache-and-network',
-		// forceReExecuteGraphqlQuery = $bindable(true),
 		resultKey,
 		columns,
 		onDragEnd,
@@ -207,6 +204,13 @@
 			}
 		}),
 	);
+
+	$effect.pre(() => {
+		registerKey(tableName);
+		return () => {
+			unregisterKey(tableName);
+		};
+	});
 
 	$effect(() => {
 		if ($store[tableName]) {
@@ -291,13 +295,6 @@
 		items = newItems;
 		onDragEnd?.(dragIdx, dragItem, dropIdx, dropItem);
 	};
-
-	onMount(() => {
-		registerInstanceByName(tableName);
-		return () => {
-			unRegisterInstanceByName(tableName);
-		};
-	});
 </script>
 
 {#if $queryOperationStore.fetching}
