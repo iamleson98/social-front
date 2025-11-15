@@ -5,6 +5,7 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import {
 		type Category,
 		type Product,
@@ -22,8 +23,6 @@
 	};
 
 	let { categoryId }: Props = $props();
-
-	let forceReExecuteGraphqlQuery = $state(true);
 
 	const CATEGORY_CHILDREN_COLUMNS: TableColumnProps<Category, any>[] = $derived([
 		{
@@ -91,10 +90,10 @@
 		<SectionHeader>{$tranFunc('product.subCategories')}</SectionHeader>
 		<div class="overflow-x-auto">
 			<GraphqlPaginableTable
+				tableName={TableNameKeys.CategorySubCategories}
 				query={CATEGORY_CHILDREN_LIST_QUERY}
 				resultKey={'category.children' as keyof Query}
 				variables={{ first: 10, id: categoryId } as QueryCategoriesArgs}
-				bind:forceReExecuteGraphqlQuery
 				columns={CATEGORY_CHILDREN_COLUMNS}
 				autoRefetchOnVariableChange
 			/>
@@ -105,10 +104,10 @@
 		<SectionHeader>{$tranFunc('product.products')}</SectionHeader>
 		<div class="overflow-x-auto">
 			<GraphqlPaginableTable
+				tableName={TableNameKeys.CategoryProducts}
 				query={PRODUCT_LIST_QUERY_ADMIN}
 				resultKey={'products' as keyof Query}
 				variables={{ first: 10, filter: { categories: [categoryId] } } as QueryProductsArgs}
-				bind:forceReExecuteGraphqlQuery
 				columns={PRODUCTS_COLUMNS}
 				autoRefetchOnVariableChange
 			/>

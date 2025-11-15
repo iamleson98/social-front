@@ -6,7 +6,12 @@
 	import Alert from '$lib/components/ui/Alert/alert.svelte';
 	import { Checkbox, DebounceInput } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
-	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import {
+		GraphqlPaginableTable,
+		reFetchTableData,
+		type TableColumnProps,
+	} from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { type AddressInput, type Product, type QueryProductsArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { classNames, stringSlicer } from '$lib/utils/utils';
@@ -31,7 +36,6 @@
 		filter: { search: '' },
 	});
 	let searchProductsQuery = $state('');
-	let forceReExecuteGraphqlQuery = $state(true);
 
 	const COLUMNS: TableColumnProps<Product>[] = [
 		{
@@ -57,7 +61,7 @@
 			const newVariables = { ...variables };
 			set(newVariables, 'filter.search', searchProductsQuery);
 			variables = newVariables;
-			forceReExecuteGraphqlQuery = true;
+			reFetchTableData(TableNameKeys.VariantForOrderTable);
 		}
 	});
 </script>
@@ -118,7 +122,7 @@
 		query={VARIANTS_FOR_ORDER_QUERY}
 		resultKey="products"
 		bind:variables
-		bind:forceReExecuteGraphqlQuery
+		tableName={TableNameKeys.VariantForOrderTable}
 		autoRefetchOnVariableChange
 	/>
 </Modal>

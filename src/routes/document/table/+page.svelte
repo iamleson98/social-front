@@ -6,6 +6,7 @@
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Checkbox } from '$lib/components/ui/Input';
 	import { GraphqlPaginableTable, Table, type TableColumnProps } from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { ProductOrderField, type Product, type Query } from '$lib/gql/graphql';
 	import { toast } from 'svelte-sonner';
 
@@ -106,7 +107,7 @@
 		columns={graphqlTableColumns}
 		disabled={disabledGraphqlTable}
 		sortMultiple={sortMultipleGraphqlTable}
-		forceReExecuteGraphqlQuery={true}
+		tableName={TableNameKeys.ProductListTable}
 	/>
 	<Button class="mt-2" onclick={handleCopyGraphqlTable}>Copy GraphQL Table</Button>
 </div>

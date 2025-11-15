@@ -4,6 +4,7 @@
 	import HeadBar from '$lib/components/pages/settings/common/head-bar.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import type { GiftCard, Query, QueryGiftCardsArgs } from '$lib/gql/graphql';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import dayjs from 'dayjs';
@@ -54,6 +55,7 @@
 			query={MY_GIFTCARDS_QUERY}
 			resultKey={'me.giftCards' as keyof Query}
 			columns={Columns}
+			tableName={TableNameKeys.MyGiftcardsTable}
 		/>
 	</div>
 

@@ -5,6 +5,7 @@
 	import { Badge } from '$lib/components/ui/Badge';
 	import { RadioButton } from '$lib/components/ui/Input';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import {
 		WarehouseClickAndCollectOptionEnum,
 		type Query,
@@ -47,6 +48,7 @@
 		bind:variables={warehouseShippingZonesVariables}
 		{disabled}
 		autoRefetchOnVariableChange
+		tableName={TableNameKeys.WarehouseShippingZonesTable}
 	/>
 </div>
 

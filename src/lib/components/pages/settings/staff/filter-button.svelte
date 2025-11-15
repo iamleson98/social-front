@@ -6,6 +6,8 @@
 		type FilterProps,
 	} from '$lib/components/common/filter-box';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
+	import { reFetchTableData } from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import {
 		StaffMemberStatus,
 		type QueryStaffUsersArgs,
@@ -15,10 +17,9 @@
 
 	type Props = {
 		variables: QueryStaffUsersArgs;
-		forceReExecuteGraphqlQuery: boolean;
 	};
 
-	let { variables = $bindable(), forceReExecuteGraphqlQuery = $bindable() }: Props = $props();
+	let { variables = $bindable() }: Props = $props();
 
 	const FilterOptions: FilterProps<StaffUserInput> = $derived({
 		status: {
@@ -48,7 +49,7 @@
 <FilterManager
 	filterOptions={FilterOptions}
 	bind:variables
-	bind:forceReExecuteGraphqlQuery
+	onRefetchData={() => reFetchTableData(TableNameKeys.StaffTable)}
 	searchKey="filter.search"
 	variablePatchingCallbackAfterReload={(vars, searchParams) => {
 		if (searchParams.status) {

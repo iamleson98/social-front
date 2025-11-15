@@ -8,6 +8,10 @@
 	import { IconButton } from '$lib/components/ui/Button';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
+		reFetchTableData,
+		TableNameKeys,
+	} from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import {
 		type Attribute,
 		AttributeSortField,
 		type Mutation,
@@ -25,7 +29,6 @@
 		},
 	});
 
-	let forceReExecuteGraphqlQuery = $state(true);
 	let loading = $state(false);
 
 	const AttributeColumns: TableColumnProps<Attribute, AttributeSortField>[] = [
@@ -72,7 +75,7 @@
 				if (checkIfGraphqlResultHasError(result, 'attributeDelete', $tranFunc('common.delSuccess')))
 					return;
 
-				forceReExecuteGraphqlQuery = true;
+				reFetchTableData(TableNameKeys.AttributesTable);
 			},
 		});
 	};
@@ -114,7 +117,7 @@
 {/snippet}
 
 <div class="mb-2">
-	<Filter bind:variables bind:forceReExecuteGraphqlQuery />
+	<Filter bind:variables />
 </div>
 
 <GraphqlPaginableTable
@@ -122,6 +125,6 @@
 	resultKey="attributes"
 	bind:variables
 	disabled={loading}
-	bind:forceReExecuteGraphqlQuery
 	columns={AttributeColumns}
+	tableName={TableNameKeys.AttributesTable}
 />

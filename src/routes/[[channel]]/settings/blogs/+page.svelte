@@ -6,6 +6,7 @@
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { Checkbox } from '$lib/components/ui/Input';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import type { Page, QueryPagesArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils/routes';
 	import { SvelteSet } from 'svelte/reactivity';
@@ -35,7 +36,7 @@
 			search: '',
 		},
 	});
-	let forceReExecuteGraphqlQuery = $state(true);
+	// let forceReExecuteGraphqlQuery = $state(true);
 	let selectedBlogIds = $state<SvelteSet<string>>(new SvelteSet());
 </script>
 
@@ -75,7 +76,7 @@
 {/snippet}
 
 <div class="mb-2 flex justify-between">
-	<Filter bind:variables bind:forceReExecuteGraphqlQuery />
+	<Filter bind:variables />
 
 	<div class="flex gap-1.5">
 		{#if selectedBlogIds.size}
@@ -91,5 +92,5 @@
 	resultKey="pages"
 	columns={PageColumns}
 	bind:variables
-	bind:forceReExecuteGraphqlQuery
+	tableName={TableNameKeys.BlogsTable}
 />

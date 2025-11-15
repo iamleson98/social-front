@@ -11,7 +11,13 @@
 	import { Button } from '$lib/components/ui';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
-	import { GraphqlPaginableTable, Table, type TableColumnProps } from '$lib/components/ui/Table';
+	import {
+		GraphqlPaginableTable,
+		reFetchTableData,
+		Table,
+		type TableColumnProps,
+	} from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import {
 		ProductAttributeType,
 		type AssignedVariantAttribute,
@@ -46,7 +52,6 @@
 		variantSelectionOperations = $bindable(),
 	}: Props = $props();
 
-	let forceFetchAvailableAttributes = $state(false);
 	let selectedProductAttributesToUnassign = $state<SvelteSet<string>>(new SvelteSet());
 	let selectedProductVariantAttributesToUnassign = $state<SvelteSet<string>>(new SvelteSet());
 	let selectedAttributesToAssign = $state<SvelteSet<string>>(new SvelteSet());
@@ -334,7 +339,7 @@
 				disabled={shouldDisable}
 				onclick={() => {
 					attributeAssignType = ProductAttributeType.Product;
-					forceFetchAvailableAttributes = true;
+					reFetchTableData(TableNameKeys.ProductTypesAttributesTable);
 				}}
 			>
 				Assign attributes
@@ -374,7 +379,7 @@
 					disabled={shouldDisable}
 					onclick={() => {
 						attributeAssignType = ProductAttributeType.Variant;
-						forceFetchAvailableAttributes = true;
+						reFetchTableData(TableNameKeys.ProductTypesAttributesTable);
 					}}
 				>
 					Assign attributes
@@ -412,9 +417,7 @@
 		bind:value={availableAttributeVariables.filter.search}
 		inputDebounceOption={{
 			debounceTime: 888,
-			onInput: () => {
-				forceFetchAvailableAttributes = true;
-			},
+			onInput: () => reFetchTableData(TableNameKeys.ProductTypesAttributesTable),
 		}}
 	/>
 	<GraphqlPaginableTable
@@ -423,7 +426,7 @@
 		columns={AssignTableColumns}
 		disabled={shouldDisable}
 		bind:variables={availableAttributeVariables}
-		bind:forceReExecuteGraphqlQuery={forceFetchAvailableAttributes}
+		tableName={TableNameKeys.ProductTypesAttributesTable}
 		autoRefetchOnVariableChange
 	/>
 </Modal>

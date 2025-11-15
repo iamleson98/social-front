@@ -4,7 +4,10 @@
 	import { FilterManager } from '$lib/components/common/filter-box';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import type { TableColumnProps } from '$lib/components/ui/Table';
-	import GraphqlPaginableTable from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import GraphqlPaginableTable, {
+		reFetchTableData,
+		TableNameKeys,
+	} from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { CategorySortField, type Category, type QueryCategoriesArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
@@ -36,7 +39,6 @@
 		},
 	]);
 
-	let forceReExecuteGraphqlQuery = $state(true);
 	let queryVariables = $state<QueryCategoriesArgs>({
 		first: 10,
 		level: 0,
@@ -74,7 +76,7 @@
 	<FilterManager
 		searchKey={'filter.search' as keyof QueryCategoriesArgs}
 		bind:variables={queryVariables}
-		bind:forceReExecuteGraphqlQuery
+		onRefetchData={() => reFetchTableData(TableNameKeys.CategoryListTable)}
 	/>
 </div>
 
@@ -83,6 +85,6 @@
 	columns={COLUMNS}
 	bind:variables={queryVariables}
 	resultKey="categories"
-	bind:forceReExecuteGraphqlQuery
+	tableName={TableNameKeys.CategoryListTable}
 	autoRefetchOnVariableChange={false}
 />

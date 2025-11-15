@@ -5,7 +5,7 @@
 	import CustomerFilter from '$lib/components/pages/settings/customers/filter.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { type TableColumnProps } from '$lib/components/ui/Table';
-	import GraphqlPaginableTable from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import GraphqlPaginableTable, { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { UserSortField, type QueryCustomersArgs, type User } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { BASIC_DATE_FORMAT, CommonEaseDatePickerFormat } from '$lib/utils/consts';
@@ -93,7 +93,7 @@
 {/snippet}
 
 <div class="mb-2">
-	<CustomerFilter bind:variables={filterVariables} bind:forceReExecuteGraphqlQuery />
+	<CustomerFilter bind:variables={filterVariables} />
 </div>
 
 <GraphqlPaginableTable
@@ -101,6 +101,6 @@
 	bind:variables={filterVariables}
 	resultKey="customers"
 	columns={USER_TABLE_COLUMNS}
-	bind:forceReExecuteGraphqlQuery
+	tableName={TableNameKeys.CustomerTable}
 	class="bg-white rounded-lg border border-gray-200 p-3"
 />

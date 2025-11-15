@@ -5,6 +5,7 @@
 	import Filter from '$lib/components/pages/settings/vouchers/filter.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { VoucherSortField, type QueryVouchersArgs, type Voucher } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
@@ -16,7 +17,6 @@
 			search: '',
 		},
 	});
-	let forceReExecuteGraphqlQuery = $state(true);
 
 	const VOUCHER_COLUMNS: TableColumnProps<Voucher, VoucherSortField>[] = [
 		{
@@ -99,7 +99,7 @@
 {/snippet}
 
 <div class="mb-2">
-	<Filter bind:variables bind:forceReExecuteGraphqlQuery />
+	<Filter bind:variables />
 </div>
 
 <GraphqlPaginableTable
@@ -107,5 +107,5 @@
 	columns={VOUCHER_COLUMNS}
 	resultKey="vouchers"
 	bind:variables
-	bind:forceReExecuteGraphqlQuery
+	tableName={TableNameKeys.VoucherTable}
 />

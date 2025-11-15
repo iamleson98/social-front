@@ -20,6 +20,10 @@
 	import { Checkbox } from '$lib/components/ui/Input';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
+		reFetchTableData,
+		TableNameKeys,
+	} from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import {
 		GiftCardSortField,
 		type GiftCard,
 		type Mutation,
@@ -37,7 +41,6 @@
 	import dayjs from 'dayjs';
 
 	const giftcardUtil = new GiftcardUtil();
-	let forceReExecuteGraphqlQuery = $state(false);
 	let giftcardFilterVariables = $state<QueryGiftCardsArgs>({
 		first: 10,
 		filter: {},
@@ -99,7 +102,7 @@
 				if (checkIfGraphqlResultHasError(result, 'giftCardDelete', $CommonState.DeleteSuccess))
 					return;
 
-				forceReExecuteGraphqlQuery = true; // trigger refetching table data
+				reFetchTableData(TableNameKeys.GiftcardsTable); // trigger refetching table data
 			},
 		});
 	};
@@ -123,7 +126,7 @@
 
 				loading = false;
 				selectedGiftcards = {};
-				forceReExecuteGraphqlQuery = true;
+				reFetchTableData(TableNameKeys.GiftcardsTable);
 			},
 		});
 	};
@@ -132,7 +135,7 @@
 		loading = true;
 		const hasErr = await giftcardUtil.handleToggleGiftcardStatus(id, active);
 		loading = false;
-		if (!hasErr) forceReExecuteGraphqlQuery = true;
+		if (!hasErr) reFetchTableData(TableNameKeys.GiftcardsTable);
 	};
 
 	const handleBulkDeactivateGiftcards = async () => {
@@ -152,7 +155,7 @@
 			return;
 
 		selectedGiftcards = {};
-		forceReExecuteGraphqlQuery = true;
+		reFetchTableData(TableNameKeys.GiftcardsTable);
 	};
 
 	const handleBulkActivateGiftcards = async () => {
@@ -172,7 +175,7 @@
 			return;
 
 		selectedGiftcards = {};
-		forceReExecuteGraphqlQuery = true;
+		reFetchTableData(TableNameKeys.GiftcardsTable);
 	};
 </script>
 
@@ -258,7 +261,7 @@
 {/snippet}
 
 <div class="flex items-center justify-between mb-2">
-	<Filter bind:variables={giftcardFilterVariables} bind:forceReExecuteGraphqlQuery />
+	<Filter bind:variables={giftcardFilterVariables} />
 	<div class="flex gap-1.5">
 		{#if Object.keys(selectedGiftcards).length}
 			<Button
@@ -294,7 +297,7 @@
 
 <GraphqlPaginableTable
 	query={GIFTCARD_LIST_QUERY}
-	bind:forceReExecuteGraphqlQuery
+	tableName={TableNameKeys.GiftcardsTable}
 	resultKey="giftCards"
 	bind:variables={giftcardFilterVariables}
 	columns={COLUMNS}

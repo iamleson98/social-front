@@ -8,6 +8,7 @@
 	import { Badge } from '$lib/components/ui/Badge';
 	import { Modal } from '$lib/components/ui/Modal';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import type { GiftCard, Query, User } from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
@@ -83,6 +84,7 @@
 		{/snippet}
 
 		<GraphqlPaginableTable
+			tableName={TableNameKeys.UserGistcardsTable}
 			query={USER_GIFTCARDS_QUERY}
 			variables={{
 				id: user.id,

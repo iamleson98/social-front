@@ -7,6 +7,7 @@
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import { reFetchTableData, TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import {
 		type Mutation,
 		type MutationProductTypeDeleteArgs,
@@ -24,7 +25,6 @@
 			search: '',
 		},
 	});
-	let forceReExecuteGraphqlQuery = $state(false);
 	let loading = $state(false);
 
 	const ProductTypesColumns: TableColumnProps<ProductType, ProductTypeSortField>[] = $derived([
@@ -68,7 +68,7 @@
 				)
 					return;
 
-				forceReExecuteGraphqlQuery = true;
+				reFetchTableData(TableNameKeys.ProductTypesTable);
 			},
 		});
 	};
@@ -103,13 +103,13 @@
 {/snippet}
 
 <div class="mb-2">
-	<Filter bind:variables bind:forceReExecuteGraphqlQuery />
+	<Filter bind:variables />
 </div>
 
 <GraphqlPaginableTable
 	query={PRODUCT_TYPES_QUERY}
 	bind:variables
-	bind:forceReExecuteGraphqlQuery
+	tableName={TableNameKeys.ProductTypesTable}
 	columns={ProductTypesColumns}
 	resultKey="productTypes"
 	disabled={loading}

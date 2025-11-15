@@ -13,6 +13,7 @@
 		ROW_OPTIONS,
 		type TableColumnProps,
 	} from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import type {
 		Mutation,
 		MutationOrderLinesCreateArgs,
@@ -63,7 +64,7 @@
 	});
 	let searchProductsQuery = $state('');
 
-  $effect(() => {
+	$effect(() => {
 		if (searchProductsQuery !== variables.filter?.search) {
 			variables = {
 				...variables,
@@ -188,7 +189,7 @@
 		query={VARIANTS_FOR_ORDER_QUERY}
 		resultKey="products"
 		bind:variables
-		bind:forceReExecuteGraphqlQuery
+		tableName={TableNameKeys.VariantForOrderTable}
 		disabled={loading}
 		autoRefetchOnVariableChange
 	/>

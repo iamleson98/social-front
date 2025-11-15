@@ -7,6 +7,8 @@
 	} from '$lib/components/common/filter-box';
 	import { CommonSnippets } from '$lib/components/common/filter-box/snippets.svelte';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
+	import { reFetchTableData } from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import {
 		AttributeTypeEnum,
 		type AttributeFilterInput,
@@ -15,10 +17,9 @@
 
 	type Props = {
 		variables: QueryAttributesArgs;
-		forceReExecuteGraphqlQuery: boolean;
 	};
 
-	let { variables = $bindable(), forceReExecuteGraphqlQuery = $bindable(false) }: Props = $props();
+	let { variables = $bindable() }: Props = $props();
 
 	const FilterOptions: FilterProps<AttributeFilterInput> = {
 		filterableInStorefront: {
@@ -77,7 +78,7 @@
 
 <FilterManager
 	filterOptions={FilterOptions}
-	bind:forceReExecuteGraphqlQuery
+	onRefetchData={() => reFetchTableData(TableNameKeys.AttributesTable)}
 	bind:variables
 	searchKey={'filter.search' as keyof QueryAttributesArgs}
 	variablePatchingCallbackAfterReload={(vars, params) => {
@@ -96,8 +97,7 @@
 			vars.filter.filterableInStorefront = filterableInStorefront.value as boolean;
 		if (isVariantOnly) vars.filter.isVariantOnly = isVariantOnly.value as boolean;
 		if (valueRequired) vars.filter.valueRequired = valueRequired.value as boolean;
-		if (visibleInStorefront)
-			vars.filter.visibleInStorefront = visibleInStorefront.value as boolean;
+		if (visibleInStorefront) vars.filter.visibleInStorefront = visibleInStorefront.value as boolean;
 		if (type) vars.filter.type = type.value as AttributeTypeEnum;
 		if (channel) vars.channel = channel.value as string;
 

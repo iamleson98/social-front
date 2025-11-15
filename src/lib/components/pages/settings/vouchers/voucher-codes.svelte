@@ -12,6 +12,7 @@
 	import { Input, RadioButton } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
 	import { GraphqlPaginableTable, Table, type TableColumnProps } from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { type Query, type VoucherCode } from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
@@ -77,7 +78,6 @@
 	const ManualCodeSchema = string().nonempty($CommonState.FieldRequiredError);
 
 	let openAddCodeModal = $state(false);
-	let forceReExecuteGraphqlQuery = $state(true);
 	let addCodeType = $state<CodeGenerationType>('manual');
 	let addVoucherCodes = $state.raw<AddVoucherCodeProps[]>([]);
 	let numberOfAutoGenerateCodesError = $state<string>();
@@ -230,7 +230,7 @@
 				id: voucherId,
 				first: 10,
 			}}
-			bind:forceReExecuteGraphqlQuery
+			tableName={TableNameKeys.VoucherCodesTable}
 			columns={TABLE_COLUMNS}
 			autoRefetchOnVariableChange
 		/>

@@ -7,6 +7,7 @@
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { type Order, OrderSortField, type Query, type QueryOrdersArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
@@ -39,8 +40,6 @@
 			child: total,
 		},
 	];
-
-	let forceReExecuteGraphqlQuery = $state(true);
 </script>
 
 {#snippet number({ item }: { item: Order })}
@@ -81,7 +80,7 @@
 		} as QueryOrdersArgs}
 		columns={ORDER_TABLE_COLUMNS}
 		resultKey={'user.orders' as keyof Query}
-		bind:forceReExecuteGraphqlQuery
+		tableName={TableNameKeys.CustomerOrdersTable}
 		{disabled}
 		autoRefetchOnVariableChange
 	/>

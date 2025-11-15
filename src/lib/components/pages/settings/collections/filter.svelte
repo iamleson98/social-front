@@ -7,6 +7,8 @@
 		FilterProps,
 	} from '$lib/components/common/filter-box/types';
 	import { Checkbox } from '$lib/components/ui/Input';
+	import { reFetchTableData } from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import {
 		CollectionPublished,
 		type CollectionFilterInput,
@@ -15,10 +17,9 @@
 
 	type Props = {
 		variables: QueryCollectionsArgs;
-		forceReExecuteGraphqlQuery: boolean;
 	};
 
-	let { variables = $bindable(), forceReExecuteGraphqlQuery = $bindable(false) }: Props = $props();
+	let { variables = $bindable() }: Props = $props();
 
 	const FilterOptions: FilterProps<CollectionFilterInput> = $derived({
 		published: {
@@ -60,7 +61,7 @@
 	filterOptions={FilterOptions}
 	bind:variables
 	searchKey={'filter.search' as keyof QueryCollectionsArgs}
-	bind:forceReExecuteGraphqlQuery
+	onRefetchData={() => reFetchTableData(TableNameKeys.CollectionListTable)}
 	variablePatchingCallbackAfterReload={(newVariables, params) => {
 		const { published, channel, metadata } = params;
 

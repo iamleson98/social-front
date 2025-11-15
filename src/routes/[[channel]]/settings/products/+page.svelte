@@ -8,6 +8,7 @@
 	import { Badge } from '$lib/components/ui/Badge';
 	import { Checkbox } from '$lib/components/ui/Input';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { ProductOrderField, type Product, type QueryProductsArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
@@ -22,7 +23,7 @@
 			search: '',
 		},
 	});
-	let forceReExecuteGraphqlQuery = $state(false);
+	// let forceReExecuteGraphqlQuery = $state(false);
 	let selectedProducts = $state<SvelteSet<string>>(new SvelteSet());
 
 	const productColumns: TableColumnProps<Product, ProductOrderField>[] = $derived([
@@ -117,7 +118,7 @@
 {/snippet}
 
 <div class="flex items-center justify-between mb-2">
-	<Filter bind:variables={productsFilterVariables} bind:forceReExecuteGraphqlQuery />
+	<Filter bind:variables={productsFilterVariables} />
 	<Settings bind:variables={productsFilterVariables} bind:selectedIds={selectedProducts} />
 </div>
 
@@ -126,5 +127,5 @@
 	bind:variables={productsFilterVariables}
 	resultKey="products"
 	columns={productColumns}
-	bind:forceReExecuteGraphqlQuery
+	tableName={TableNameKeys.ProductListTable}
 />

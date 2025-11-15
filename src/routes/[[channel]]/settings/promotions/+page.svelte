@@ -4,6 +4,7 @@
 	import Filter from '$lib/components/pages/settings/promotions/filter.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { PromotionSortField, type Promotion, type QueryPromotionsArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
@@ -12,7 +13,6 @@
 	let variables = $state<QueryPromotionsArgs>({
 		first: 10,
 	});
-	let forceReExecuteGraphqlQuery = $state(true);
 
 	const PROMOTION_COLUMNS: TableColumnProps<Promotion, PromotionSortField>[] = [
 		{
@@ -60,7 +60,7 @@
 {/snippet}
 
 <div class="mb-2">
-	<Filter bind:variables bind:forceReExecuteGraphqlQuery />
+	<Filter bind:variables />
 </div>
 
 <GraphqlPaginableTable
@@ -68,5 +68,5 @@
 	columns={PROMOTION_COLUMNS}
 	resultKey="promotions"
 	bind:variables
-	bind:forceReExecuteGraphqlQuery
+	tableName={TableNameKeys.PromotionsTable}
 />

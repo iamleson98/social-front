@@ -22,7 +22,12 @@
 	import { Button } from '$lib/components/ui';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
-	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import {
+		GraphqlPaginableTable,
+		reFetchTableData,
+		type TableColumnProps,
+	} from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import type {
 		Mutation,
 		MutationVoucherCataloguesAddArgs,
@@ -83,10 +88,10 @@
 		first: FIRST_100,
 	});
 	/** re-executing lock, for query existing products, variants, collections, categories of current voucher */
-	let forceReExecuteGraphqlQuery = $state(true);
+	// let forceReExecuteGraphqlQuery = $state(true);
 	let catalogQueryValue = $state('');
 	/** in the modal for assigning products, variants, categories, collections, each of them we have 1 graphql table. This lock controls query fetching of them */
-	let forceReExecuteCatalogQuery = $state(true);
+	// let forceReExecuteCatalogQuery = $state(true);
 	let openAssignCatalogFeature = $state(false);
 	let queryCategoriesVariables = $state<QueryCategoriesArgs>({
 		first: FIRST_10,
@@ -104,6 +109,7 @@
 		first: FIRST_10,
 		filter: { search: '' },
 	});
+
 	/**
 	 * Those are used when the voucher existed, you want to assign new items
 	 */
@@ -118,6 +124,20 @@
 	let removeVariants = $state.raw<string[]>([]);
 	let loading = $state(false);
 
+	const forceRefetchCatalogueData = () => {
+		reFetchTableData(TableNameKeys.CollectionListTable);
+		reFetchTableData(TableNameKeys.ProductListTable);
+		reFetchTableData(TableNameKeys.CategoryListTable);
+		reFetchTableData(TableNameKeys.VariantListTable);
+	};
+
+	const forceRefetchVoucherCatalogueData = () => {
+		reFetchTableData(TableNameKeys.VoucherProductCatalogTable);
+		reFetchTableData(TableNameKeys.VoucherProductCatalogTable);
+		reFetchTableData(TableNameKeys.VoucherCategoryCatalogTable);
+		reFetchTableData(TableNameKeys.VoucherVariantCatalogTable);
+	};
+
 	const handleCatalogQueryChange = async () => {
 		if (!activeTab) return;
 
@@ -127,7 +147,7 @@
 		else if (activeTab === 'products') queryProductsVariables.filter!.search = trimQueryValue;
 		else queryProductsVariables.filter!.search = trimQueryValue;
 
-		forceReExecuteCatalogQuery = true;
+		forceRefetchCatalogueData();
 	};
 
 	afterNavigate(() => {
@@ -135,7 +155,7 @@
 			voucherId: page.params.id!,
 			first: FIRST_100,
 		};
-		forceReExecuteGraphqlQuery = true;
+		forceRefetchVoucherCatalogueData();
 	});
 
 	const handleUnassignItems = async () => {
@@ -161,7 +181,7 @@
 		removeCollections = [];
 		removeCategories = [];
 		removeVariants = [];
-		forceReExecuteGraphqlQuery = true; // force re-execute graphql query to update table
+		forceRefetchVoucherCatalogueData(); // force re-execute graphql query to update table
 	};
 
 	const handleAssignItems = async () => {
@@ -187,7 +207,7 @@
 		addCollections = [];
 		addCategories = [];
 		addVariants = [];
-		forceReExecuteGraphqlQuery = true; // force re-execute graphql query to update table
+		forceRefetchVoucherCatalogueData(); // force re-execute graphql query to update table
 		openAssignCatalogFeature = false;
 	};
 </script>
@@ -274,7 +294,7 @@
 				variant="light"
 				onclick={() => {
 					openAssignCatalogFeature = true;
-					forceReExecuteCatalogQuery = true;
+					forceRefetchCatalogueData();
 				}}
 				{disabled}
 				endIcon={Plus}
@@ -296,7 +316,7 @@
 			autoRefetchOnVariableChange
 			query={VOUCHER_COLLECTIONS_QUERY}
 			bind:variables={voucherRelationVars}
-			bind:forceReExecuteGraphqlQuery
+			tableName={TableNameKeys.VoucherCollectionCatalogTable}
 			resultKey={'voucher.collections' as keyof Query}
 			disabled={disabled || loading}
 			columns={CatalogUnassignSelectCol.concat(
@@ -312,7 +332,7 @@
 			autoRefetchOnVariableChange
 			query={VOUCHER_PRODUCTS_QUERY}
 			bind:variables={voucherRelationVars}
-			bind:forceReExecuteGraphqlQuery
+			tableName={TableNameKeys.VoucherProductCatalogTable}
 			disabled={disabled || loading}
 			resultKey={'voucher.products' as keyof Query}
 			columns={CatalogUnassignSelectCol.concat(
@@ -330,7 +350,7 @@
 			query={VOUCHER_CATEGORIES_QUERY}
 			bind:variables={voucherRelationVars}
 			disabled={disabled || loading}
-			bind:forceReExecuteGraphqlQuery
+			tableName={TableNameKeys.VoucherCategoryCatalogTable}
 			resultKey={'voucher.categories' as keyof Query}
 			columns={CatalogUnassignSelectCol.concat(
 				CATEGORY_COLUMNS(
@@ -346,7 +366,7 @@
 			query={VOUCHER_VARIANTS_QUERY}
 			disabled={disabled || loading}
 			bind:variables={voucherRelationVars}
-			bind:forceReExecuteGraphqlQuery
+			tableName={TableNameKeys.VoucherVariantCatalogTable}
 			resultKey={'voucher.variants' as keyof Query}
 			columns={CatalogUnassignSelectCol.concat(
 				VARIANT_COLUMNS(
@@ -393,7 +413,7 @@
 			query={CATEGORIES_LIST_QUERY_STORE}
 			resultKey="categories"
 			bind:variables={queryCategoriesVariables}
-			bind:forceReExecuteGraphqlQuery={forceReExecuteCatalogQuery}
+			tableName={TableNameKeys.CategoryListTable}
 			disabled={disabled || loading}
 		/>
 	{:else if activeTab === 'collections'}
@@ -408,7 +428,7 @@
 			query={COLLECTIONS_QUERY}
 			resultKey="collections"
 			bind:variables={queryCollectionsVariables}
-			bind:forceReExecuteGraphqlQuery={forceReExecuteCatalogQuery}
+			tableName={TableNameKeys.CollectionListTable}
 			disabled={disabled || loading}
 		/>
 	{:else if activeTab === 'products'}
@@ -424,7 +444,7 @@
 			query={PRODUCT_LIST_QUERY}
 			resultKey="products"
 			bind:variables={queryProductsVariables}
-			bind:forceReExecuteGraphqlQuery={forceReExecuteCatalogQuery}
+			tableName={TableNameKeys.ProductListTable}
 			disabled={disabled || loading}
 		/>
 	{:else if activeTab === 'variants'}
@@ -439,7 +459,7 @@
 			query={PRODUCT_VARIANTS_QUERY}
 			resultKey="productVariants"
 			bind:variables={queryVariantsVariables}
-			bind:forceReExecuteGraphqlQuery={forceReExecuteCatalogQuery}
+			tableName={TableNameKeys.VariantListTable}
 			disabled={disabled || loading}
 		/>
 	{/if}

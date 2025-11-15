@@ -2,7 +2,12 @@
 	import { tranFunc } from '$i18n';
 	import { PERMISSION_GROUP_LIST_QUERY } from '$lib/api/admin/users';
 	import { FilterManager } from '$lib/components/common/filter-box';
-	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import {
+		GraphqlPaginableTable,
+		reFetchTableData,
+		type TableColumnProps,
+	} from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import {
 		type Group,
 		PermissionGroupSortField,
@@ -26,7 +31,6 @@
 		first: 10,
 		filter: { search: '' },
 	});
-	let forceReExecuteGraphqlQuery = $state(true);
 </script>
 
 {#snippet name({ item }: { item: Group })}
@@ -38,7 +42,11 @@
 {/snippet}
 
 <div class="mb-2">
-	<FilterManager bind:variables bind:forceReExecuteGraphqlQuery searchKey="filter.search" />
+	<FilterManager
+		bind:variables
+		onRefetchData={() => reFetchTableData(TableNameKeys.PermissionGroupsTable)}
+		searchKey="filter.search"
+	/>
 </div>
 
 <GraphqlPaginableTable
@@ -46,5 +54,5 @@
 	columns={PermissionGroupColumns}
 	resultKey="permissionGroups"
 	bind:variables
-	bind:forceReExecuteGraphqlQuery
+	tableName={TableNameKeys.PermissionGroupsTable}
 />

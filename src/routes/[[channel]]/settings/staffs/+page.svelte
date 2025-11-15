@@ -5,6 +5,7 @@
 	import FilterButton from '$lib/components/pages/settings/staff/filter-button.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { type QueryStaffUsersArgs, type User, UserSortField } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 
@@ -12,7 +13,6 @@
 		first: 10,
 		filter: { search: '' },
 	});
-	let forceReExecuteGraphqlQuery = $state(true);
 
 	const STAFF_COLUMNS: TableColumnProps<User, UserSortField>[] = $derived([
 		{
@@ -62,7 +62,7 @@
 {/snippet}
 
 <div class="mb-2">
-	<FilterButton bind:variables bind:forceReExecuteGraphqlQuery />
+	<FilterButton bind:variables />
 </div>
 
 <GraphqlPaginableTable
@@ -70,5 +70,5 @@
 	bind:variables
 	resultKey="staffUsers"
 	columns={STAFF_COLUMNS}
-	bind:forceReExecuteGraphqlQuery
+	tableName={TableNameKeys.StaffTable}
 />

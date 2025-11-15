@@ -21,7 +21,8 @@
 		variables: Var;
 		/** if provided, will display the text box for search query input as well */
 		searchKey?: keyof Var | string;
-		forceReExecuteGraphqlQuery: boolean;
+		/** This will be called, every times the url query params change */
+		onRefetchData: () => void;
 		disabled?: boolean;
 		/**
 		 * In pages that show tabular data, we support all kind of search params, filtering, sortings, paginations. those things reflect directly on the URL bar.
@@ -39,8 +40,8 @@
 		filterOptions = {},
 		variables = $bindable(),
 		searchKey,
-		forceReExecuteGraphqlQuery = $bindable(false),
 		disabled,
+		onRefetchData,
 		variablePatchingCallbackAfterReload,
 	}: Props = $props();
 
@@ -169,7 +170,7 @@
 
 		variables = newVariables;
 		filters = newFilters;
-		forceReExecuteGraphqlQuery = true;
+		onRefetchData();
 		isInitialLoad = false;
 	});
 </script>

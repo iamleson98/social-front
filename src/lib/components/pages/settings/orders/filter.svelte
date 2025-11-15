@@ -5,6 +5,8 @@
 	import { FilterManager } from '$lib/components/common/filter-box';
 	import { CommonSnippets } from '$lib/components/common/filter-box/snippets.svelte';
 	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box/types';
+	import { reFetchTableData } from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { GraphqlPaginableSelect, Select, type SelectOption } from '$lib/components/ui/select';
 	import {
 		OrderAuthorizeStatusEnum,
@@ -19,10 +21,9 @@
 
 	type Props = {
 		variables: QueryOrdersArgs;
-		forceReExecuteGraphqlQuery: boolean;
 	};
 
-	let { variables = $bindable(), forceReExecuteGraphqlQuery = $bindable(false) }: Props = $props();
+	let { variables = $bindable() }: Props = $props();
 
 	const AUTHORIZE_OPTIONS = Object.values(OrderAuthorizeStatusEnum).map<SelectOption>((value) => ({
 		value,
@@ -272,7 +273,7 @@
 
 <FilterManager
 	bind:variables
-	bind:forceReExecuteGraphqlQuery
+	onRefetchData={() => reFetchTableData(TableNameKeys.ShopOrdersTable)}
 	filterOptions={FilterOptions}
 	searchKey={'filter.search' as keyof QueryOrdersArgs}
 	variablePatchingCallbackAfterReload={(filterVariables, searchParams) => {

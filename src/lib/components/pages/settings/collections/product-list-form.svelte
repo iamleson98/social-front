@@ -13,7 +13,8 @@
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Popover } from '$lib/components/ui/Popover';
 	import type { TableColumnProps } from '$lib/components/ui/Table';
-	import { GraphqlPaginableTable } from '$lib/components/ui/Table';
+	import { GraphqlPaginableTable, reFetchTableData } from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import type {
 		Mutation,
 		MutationCollectionReorderProductsArgs,
@@ -39,8 +40,8 @@
 		first: 10,
 		id: collectionID,
 	});
+	// const TableNameKeys.CollectionProductListTable = 'collection_product_table';
 
-	let forceReExecuteGraphqlQuery = $state(collectionID ? true : false);
 	let loading = $state(false);
 	let shouldDisable = $derived(loading || disabled);
 
@@ -97,7 +98,7 @@
 			return;
 
 		// success, trigger refetching data
-		forceReExecuteGraphqlQuery = true;
+		reFetchTableData(TableNameKeys.CollectionProductListTable);
 	};
 
 	type TaskProps = {
@@ -151,7 +152,7 @@
 		);
 
 		// success, trigger refetching data
-		if (!hasErr) forceReExecuteGraphqlQuery = true;
+		if (!hasErr) reFetchTableData(TableNameKeys.CollectionProductListTable);
 	};
 </script>
 
@@ -236,7 +237,7 @@
 			query={COLLECTION_PRODUCTS_QUERY}
 			resultKey={'collection.products' as keyof Query}
 			bind:variables={filterVariables}
-			bind:forceReExecuteGraphqlQuery
+			tableName={TableNameKeys.CollectionProductListTable}
 			columns={PRODUCT_COLUMNS}
 			onDragEnd={handleReOrderProductsInCollection}
 			dragEffectType="move-position"

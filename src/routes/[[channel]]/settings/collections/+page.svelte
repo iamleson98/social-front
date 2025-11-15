@@ -10,6 +10,10 @@
 	import { DropDown, type MenuItemProps } from '$lib/components/ui/Dropdown';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
+		reFetchTableData,
+		TableNameKeys,
+	} from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import {
 		type Collection,
 		CollectionSortField,
 		type Mutation,
@@ -25,7 +29,6 @@
 		first: 10,
 		filter: { search: '' },
 	});
-	let forceReExecuteGraphqlQuery = $state(false);
 
 	const COLLECTION_COLUMNS: TableColumnProps<Collection, CollectionSortField>[] = $derived([
 		{
@@ -63,7 +66,7 @@
 		if (checkIfGraphqlResultHasError(result, 'collectionDelete', $CommonState.DeleteSuccess))
 			return;
 
-		forceReExecuteGraphqlQuery = true;
+		reFetchTableData(TableNameKeys.CollectionListTable);
 	};
 </script>
 
@@ -123,7 +126,7 @@
 {/snippet}
 
 <div class="mb-2">
-	<Filter bind:variables={filterVariables} bind:forceReExecuteGraphqlQuery />
+	<Filter bind:variables={filterVariables} />
 </div>
 
 <GraphqlPaginableTable
@@ -131,5 +134,5 @@
 	bind:variables={filterVariables}
 	resultKey="collections"
 	columns={COLLECTION_COLUMNS}
-	bind:forceReExecuteGraphqlQuery
+	tableName={TableNameKeys.CollectionListTable}
 />

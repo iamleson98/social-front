@@ -3,7 +3,12 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Search } from '$lib/components/icons';
 	import { Checkbox, Input, Toggle } from '$lib/components/ui/Input';
-	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import {
+		GraphqlPaginableTable,
+		reFetchTableData,
+		type TableColumnProps,
+	} from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import type { Attribute, QueryAttributesArgs } from '$lib/gql/graphql';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { canUseAttributeForVariantSelection } from './utils';
@@ -25,7 +30,6 @@
 	}: Props = $props();
 
 	let productAttrsVariables = $state<QueryAttributesArgs>({ first: 10, filter: { search: '' } });
-	let forceFetchAvailableAttributes = $state(true);
 
 	const AttributeColumns: TableColumnProps<Attribute>[] = [
 		{
@@ -103,9 +107,7 @@
 		bind:value={productAttrsVariables.filter!.search}
 		inputDebounceOption={{
 			debounceTime: 888,
-			onInput: () => {
-				forceFetchAvailableAttributes = true;
-			},
+			onInput: () => reFetchTableData(TableNameKeys.ProductAttributesTable),
 		}}
 	/>
 
@@ -115,7 +117,7 @@
 		columns={AttributeColumns}
 		{disabled}
 		bind:variables={productAttrsVariables}
-		bind:forceReExecuteGraphqlQuery={forceFetchAvailableAttributes}
+		tableName={TableNameKeys.ProductAttributesTable}
 		autoRefetchOnVariableChange={false}
 	/>
 </div>

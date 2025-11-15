@@ -10,6 +10,8 @@
 		FilterItemValue,
 		FilterProps,
 	} from '$lib/components/common/filter-box/types';
+	import { reFetchTableData } from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
 	import type {
 		ProductFilterInput,
@@ -20,11 +22,10 @@
 	} from '$lib/gql/graphql';
 
 	type Props = {
-		forceReExecuteGraphqlQuery: boolean;
 		variables: QueryProductsArgs;
 	};
 
-	let { forceReExecuteGraphqlQuery = $bindable(), variables = $bindable() }: Props = $props();
+	let { variables = $bindable() }: Props = $props();
 
 	const FilterOptions: FilterProps<ProductFilterInput> = {
 		price: {
@@ -189,7 +190,7 @@
 
 <FilterManager
 	filterOptions={FilterOptions}
-	bind:forceReExecuteGraphqlQuery
+	onRefetchData={() => reFetchTableData(TableNameKeys.ProductListTable)}
 	bind:variables
 	searchKey="search"
 	variablePatchingCallbackAfterReload={(vars, params) => {
@@ -209,14 +210,12 @@
 
 		if (giftCard) vars.filter.giftCard = giftCard.value as boolean;
 		if (hasCategory) vars.filter.hasCategory = hasCategory.value as boolean;
-		if (isVisibleInListing)
-			vars.filter.isVisibleInListing = isVisibleInListing.value as boolean;
+		if (isVisibleInListing) vars.filter.isVisibleInListing = isVisibleInListing.value as boolean;
 		if (isPublished) vars.filter.isPublished = isPublished.value as boolean;
 		if (isAvailable) vars.filter.isAvailable = isAvailable.value as boolean;
 
 		if (productTypes) {
-			if (productTypes.operator === 'eq')
-				vars.filter.productTypes = [productTypes.value as string];
+			if (productTypes.operator === 'eq') vars.filter.productTypes = [productTypes.value as string];
 			else if (productTypes.operator === 'oneOf')
 				vars.filter.productTypes = productTypes.value as string[];
 		}

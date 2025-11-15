@@ -8,6 +8,10 @@
 	import { IconButton } from '$lib/components/ui/Button';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
+		reFetchTableData,
+		TableNameKeys,
+	} from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import {
 		WarehouseSortField,
 		type Mutation,
 		type MutationDeleteWarehouseArgs,
@@ -23,7 +27,6 @@
 		first: 20,
 		filter: { search: '' },
 	});
-	let forceReExecuteGraphqlQuery = $state(true);
 	let loading = $state(false);
 
 	const WarehouseColumns: TableColumnProps<Warehouse, WarehouseSortField>[] = [
@@ -61,7 +64,7 @@
 					return;
 
 				// force reexecute query
-				forceReExecuteGraphqlQuery = true;
+				reFetchTableData(TableNameKeys.WarehousesTable);
 			},
 		});
 	};
@@ -97,7 +100,7 @@
 	<FilterManager
 		bind:variables
 		searchKey={'filter.search' as keyof QueryWarehousesArgs}
-		bind:forceReExecuteGraphqlQuery
+		onRefetchData={() => reFetchTableData(TableNameKeys.WarehousesTable)}
 		disabled={loading}
 	/>
 </div>
@@ -105,7 +108,7 @@
 <GraphqlPaginableTable
 	query={WAREHOUSE_LIST_QUERY}
 	bind:variables
-	bind:forceReExecuteGraphqlQuery
+	tableName={TableNameKeys.WarehousesTable}
 	resultKey="warehouses"
 	columns={WarehouseColumns}
 	disabled={loading}

@@ -11,7 +11,12 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Search } from '$lib/components/icons';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
-	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import {
+		GraphqlPaginableTable,
+		reFetchTableData,
+		type TableColumnProps,
+	} from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import {
 		type QueryCategoriesArgs,
 		type QueryCollectionsArgs,
@@ -73,7 +78,13 @@
 		filter: { search: '' },
 	});
 	let catalogQueryValue = $state('');
-	let forceReExecuteCatalogQuery = $state(true);
+
+	const forceReExecuteCatalogQuery = () => {
+		reFetchTableData(TableNameKeys.NewVoucherCategoryTableName);
+		reFetchTableData(TableNameKeys.NewVoucherCollectionTableName);
+		reFetchTableData(TableNameKeys.NewVoucherProductTableName);
+		reFetchTableData(TableNameKeys.NewVoucherVariantTableName);
+	};
 
 	const handleCatalogQueryChange = async () => {
 		if (!activeTab) return;
@@ -84,7 +95,7 @@
 		else if (activeTab === 'products') queryProductsVariables.filter!.search = trimQueryValue;
 		else queryProductsVariables.filter!.search = trimQueryValue;
 
-		forceReExecuteCatalogQuery = true;
+		forceReExecuteCatalogQuery();
 	};
 
 	afterNavigate(async () => {
@@ -165,7 +176,7 @@
 				query={CATEGORIES_LIST_QUERY_STORE}
 				resultKey="categories"
 				bind:variables={queryCategoriesVariables}
-				bind:forceReExecuteGraphqlQuery={forceReExecuteCatalogQuery}
+				tableName={TableNameKeys.NewVoucherCategoryTableName}
 				disabled={disabled || loading}
 			/>
 		{:else if activeTab === 'collections'}
@@ -181,7 +192,7 @@
 				query={COLLECTIONS_QUERY}
 				resultKey="collections"
 				bind:variables={queryCollectionsVariables}
-				bind:forceReExecuteGraphqlQuery={forceReExecuteCatalogQuery}
+				tableName={TableNameKeys.NewVoucherCollectionTableName}
 				disabled={disabled || loading}
 			/>
 		{:else if activeTab === 'products'}
@@ -198,7 +209,7 @@
 				query={PRODUCT_LIST_QUERY}
 				resultKey="products"
 				bind:variables={queryProductsVariables}
-				bind:forceReExecuteGraphqlQuery={forceReExecuteCatalogQuery}
+				tableName={TableNameKeys.NewVoucherProductTableName}
 				disabled={disabled || loading}
 			/>
 		{:else if activeTab === 'variants'}
@@ -214,7 +225,7 @@
 				query={PRODUCT_VARIANTS_QUERY}
 				resultKey="productVariants"
 				bind:variables={queryVariantsVariables}
-				bind:forceReExecuteGraphqlQuery={forceReExecuteCatalogQuery}
+				tableName={TableNameKeys.NewVoucherVariantTableName}
 				disabled={disabled || loading}
 			/>
 		{/if}

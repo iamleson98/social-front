@@ -13,7 +13,12 @@
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
-	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import {
+		GraphqlPaginableTable,
+		type TableColumnProps,
+		reFetchTableData,
+	} from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import {
 		AttributeInputTypeEnum,
@@ -104,7 +109,6 @@
 			search: '',
 		},
 	});
-	let forceReExecuteGraphqlQuery = $state(true);
 	let valueItemToEdit = $state<AttributeValue>();
 	let valueItemToCreate = $state<AttributeValueCreateInput>();
 	let loading = $state(false);
@@ -158,7 +162,7 @@
 				)
 					return;
 
-				forceReExecuteGraphqlQuery = true;
+				reFetchTableData(TableNameKeys.AttributeValuesTable);
 			},
 		});
 	};
@@ -186,7 +190,7 @@
 		if (checkIfGraphqlResultHasError(result, 'attributeReorderValues', $CommonState.EditSuccess))
 			return;
 
-		forceReExecuteGraphqlQuery = true;
+		reFetchTableData(TableNameKeys.AttributeValuesTable);
 	};
 
 	const handleUpdateAttributeValue = async () => {
@@ -210,7 +214,7 @@
 		if (checkIfGraphqlResultHasError(result, 'attributeValueUpdate', $CommonState.EditSuccess))
 			return;
 
-		forceReExecuteGraphqlQuery = true;
+		reFetchTableData(TableNameKeys.AttributeValuesTable);
 		valueItemToEdit = undefined;
 	};
 
@@ -234,7 +238,7 @@
 			if (checkIfGraphqlResultHasError(result, 'attributeValueCreate', $CommonState.CreateSuccess))
 				return;
 
-			forceReExecuteGraphqlQuery = true;
+			reFetchTableData(TableNameKeys.AttributeValuesTable);
 		} else {
 			addValues.push({ ...valueItemToCreate });
 		}
@@ -311,12 +315,12 @@
 			<!-- if this is edit page -->
 			{#if attributeID}
 				<GraphqlPaginableTable
+					tableName={TableNameKeys.AttributeValuesTable}
 					query={ATTRIBUTE_VALUES_QUERY}
 					resultKey={'attribute.choices' as keyof Query}
 					columns={ValueColumns}
 					bind:variables={attributeChoicesVariables}
 					disabled={loading || disabled}
-					bind:forceReExecuteGraphqlQuery
 					onDragEnd={handleArrangeValues}
 					dragEffectType="move-position"
 					autoRefetchOnVariableChange

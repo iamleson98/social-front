@@ -2,6 +2,10 @@
 	import { SHIPPING_ZONES_QUERY } from '$lib/api/admin/shipping';
 	import { FilterManager } from '$lib/components/common/filter-box';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import {
+		reFetchTableData,
+		TableNameKeys,
+	} from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { type QueryShippingZonesArgs, type ShippingZone } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 
@@ -11,7 +15,6 @@
 			search: '',
 		},
 	});
-	let forceReExecuteGraphqlQuery = $state(true);
 
 	const ShippingZoneColumns: TableColumnProps<ShippingZone>[] = [
 		{
@@ -36,13 +39,17 @@
 {/snippet}
 
 <div class="mb-2">
-	<FilterManager bind:variables bind:forceReExecuteGraphqlQuery searchKey="filter.search" />
+	<FilterManager
+		bind:variables
+		onRefetchData={() => reFetchTableData(TableNameKeys.ShippingZonesTable)}
+		searchKey="filter.search"
+	/>
 </div>
 
 <GraphqlPaginableTable
 	query={SHIPPING_ZONES_QUERY}
 	bind:variables
-	bind:forceReExecuteGraphqlQuery
+	tableName={TableNameKeys.ShippingZonesTable}
 	resultKey="shippingZones"
 	columns={ShippingZoneColumns}
 />

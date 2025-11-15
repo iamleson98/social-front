@@ -1,3 +1,104 @@
+<script lang="ts" module>
+	const store = writable<Record<string, boolean>>({});
+
+	/**
+	 * When define new variants, please make sure there is no duplication within this enum.
+	 */
+	export enum TableNameKeys {
+		VoucherProductCatalogTable = 'voucher_product_catalog',
+		VoucherCategoryCatalogTable = 'voucher_category_catalog',
+		VoucherCollectionCatalogTable = 'voucher_collection_catalog',
+		VoucherVariantCatalogTable = 'voucher_variant_catalog',
+
+		NewVoucherCategoryTableName = 'new_voucher_category_table_name',
+		NewVoucherCollectionTableName = 'new_voucher_collection_table_name',
+		NewVoucherProductTableName = 'new_voucher_product_table_name',
+		NewVoucherVariantTableName = 'new_voucher_variant_table_name',
+
+		CollectionListTable = 'collections_list',
+		ProductListTable = 'products_list',
+		CategoryListTable = 'categories_list',
+		VariantListTable = 'variants_list',
+
+		CategorySubCategories = 'category_subCategories',
+		CategoryProducts = 'category_products',
+
+		VoucherCodesTable = 'voucher_codes_list',
+
+		AttributeValuesTable = 'attribute_values',
+
+		WarehouseShippingZonesTable = 'warehouse_shipping_zones',
+
+		CollectionProductAssignTable = 'collection_product_assign',
+
+		CollectionProductListTable = 'collection_product_list',
+
+		UserGistcardsTable = 'user_giftcards',
+		CustomerOrdersTable = 'customer_orders',
+		VariantForOrderLinesTable = 'variants_for_order_lines',
+		VariantForOrderTable = 'variants_for_order',
+		PermissionGroupStaffTable = 'permission_group_staffs',
+		ProductAttributesTable = 'product_attributes',
+		ProductTypesAttributesTable = 'product_types_attributes',
+
+		AttributesTable = 'attributes_table',
+		BlogsTable = 'blogs_table',
+		DraftOrdersTable = 'draft_orders_table',
+
+		GiftcardsTable = 'giftcards_tables',
+
+		MyGiftcardsTable = 'my_giftcards_table',
+		MyOrdersTable = 'my_orders',
+
+		PermissionGroupsTable = 'permission_groups_table',
+
+		ProductTypesTable = 'product_types',
+		PromotionsTable = 'promotions_table',
+
+		ShippingZonesTable = 'shipping_zones_table',
+		ShopOrdersTable = 'shop_orders',
+
+		StaffTable = 'staff_table',
+		CustomerTable = 'customer_table',
+
+		VoucherTable = 'vouchers',
+
+		WarehousesTable = 'warehouses',
+	}
+
+	if (Object.values(TableNameKeys).length !== new Set(Object.values(TableNameKeys)).size)
+		throw new Error('Duplicate key name found in TableNameKeys');
+
+	const registerInstanceByName = (name: TableNameKeys) => {
+		if (getStore(store)[name])
+			throw new Error(`Key name already existed: ${name}. Please specify a unique name`);
+
+		store.update((state) => ({ ...state, [name]: true }));
+	};
+
+	const unRegisterInstanceByName = (name: TableNameKeys) => {
+		store.set(omit(getStore(store), [name]));
+	};
+
+	const toggleFetchDataByKeyName = (keyName: TableNameKeys, enable: boolean) => {
+		if (!getStore(store)[keyName]) throw new Error(`Invalid key name: ${keyName}`);
+
+		store.update((state) => ({ ...state, [keyName]: enable }));
+	};
+
+	/**
+	 * A method to re-fetch the table data.
+	 * @param keyName The name of the table instance.
+	 *
+	 * Example:
+	 * if you component use <GraphqlPaginableTable tableName="products" />
+	 * then you should call reFetchTableData('products')
+	 */
+	export const reFetchTableData = (keyName: TableNameKeys) => {
+		toggleFetchDataByKeyName(keyName, true);
+	};
+</script>
+
 <script lang="ts" generics="T extends Record<string, unknown>, K extends string">
 	import { operationStore } from '$lib/api/operation';
 	import { Alert } from '$lib/components/ui/Alert';
@@ -12,8 +113,10 @@
 		TableProps,
 	} from './types';
 	import type { AnyVariables, RequestPolicy, TypedDocumentNode } from '@urql/core';
+	import { omit } from 'es-toolkit';
 	import { get } from 'es-toolkit/compat';
 	import { onMount, tick } from 'svelte';
+	import { writable, get as getStore } from 'svelte/store';
 
 	type Props = {
 		query: TypedDocumentNode<any, AnyVariables & GraphqlPaginationArgs>;
@@ -25,7 +128,8 @@
 		/** a bindable prop, it acts as a lock to help you keep control of when to re-execute the graphql query, from parent component.
 		 * Please note that your query will be paused by default, so you should set this prop to true when you want to re-execute the query.
 		 */
-		forceReExecuteGraphqlQuery?: boolean;
+		// forceReExecuteGraphqlQuery?: boolean;
+
 		/**
 		 * tell the component how to reposition the items within the array list.
 		 *
@@ -39,6 +143,11 @@
 		 * if true, then the query will be re-executed when variable changes. Default to `false`
 		 */
 		autoRefetchOnVariableChange?: boolean;
+		/**
+		 * a unique name for the table instance. This is used to identify the table instance when re-fetching data.
+		 * Please note that the name must be unique within the application.
+		 */
+		tableName: TableNameKeys;
 	} & Omit<
 		TableProps<T, K>,
 		| 'items'
@@ -57,7 +166,7 @@
 			first: 10,
 		}),
 		requestPolicy = 'cache-and-network',
-		forceReExecuteGraphqlQuery = $bindable(true),
+		// forceReExecuteGraphqlQuery = $bindable(true),
 		resultKey,
 		columns,
 		onDragEnd,
@@ -65,6 +174,7 @@
 		disabled,
 		class: className,
 		autoRefetchOnVariableChange = false,
+		tableName,
 	}: Props = $props();
 
 	if ((dragEffectType && !onDragEnd) || (!dragEffectType && onDragEnd))
@@ -99,11 +209,11 @@
 	);
 
 	$effect(() => {
-		if (forceReExecuteGraphqlQuery) {
+		if ($store[tableName]) {
 			queryOperationStore.reexecute({ variables });
 
 			tick().then(() => {
-				forceReExecuteGraphqlQuery = false;
+				toggleFetchDataByKeyName(tableName, false);
 			});
 		}
 	});
@@ -116,7 +226,7 @@
 			first: variables.first || variables.last,
 			last: null,
 		};
-		forceReExecuteGraphqlQuery = autoRefetchOnVariableChange;
+		if (autoRefetchOnVariableChange) queryOperationStore.reexecute({ variables });
 	};
 
 	const handlePreviousPagelick = (before: string) => {
@@ -127,7 +237,7 @@
 			last: variables.last || variables.first,
 			first: null,
 		};
-		forceReExecuteGraphqlQuery = autoRefetchOnVariableChange;
+		if (autoRefetchOnVariableChange) queryOperationStore.reexecute({ variables });
 	};
 
 	const handleRowsPerPageChange = (num: RowOptions) => {
@@ -138,7 +248,7 @@
 			before: null,
 			after: null,
 		};
-		forceReExecuteGraphqlQuery = autoRefetchOnVariableChange;
+		if (autoRefetchOnVariableChange) queryOperationStore.reexecute({ variables });
 	};
 
 	const handleSortChange = (sort: SortState<K>) => {
@@ -160,7 +270,7 @@
 				direction,
 			},
 		};
-		forceReExecuteGraphqlQuery = autoRefetchOnVariableChange;
+		if (autoRefetchOnVariableChange) queryOperationStore.reexecute({ variables });
 	};
 
 	const innerHandleDragEnd = (dragIdx: number, dropIdx: number) => {
@@ -181,6 +291,13 @@
 		items = newItems;
 		onDragEnd?.(dragIdx, dragItem, dropIdx, dropItem);
 	};
+
+	onMount(() => {
+		registerInstanceByName(tableName);
+		return () => {
+			unRegisterInstanceByName(tableName);
+		};
+	});
 </script>
 
 {#if $queryOperationStore.fetching}

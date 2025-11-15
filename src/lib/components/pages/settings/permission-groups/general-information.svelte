@@ -8,7 +8,13 @@
 	import { Button } from '$lib/components/ui';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
-	import { GraphqlPaginableTable, Table, type TableColumnProps } from '$lib/components/ui/Table';
+	import {
+		GraphqlPaginableTable,
+		reFetchTableData,
+		Table,
+		type TableColumnProps,
+	} from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { type Channel, type QueryStaffUsersArgs, type User } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
@@ -67,7 +73,6 @@
 			search: '',
 		},
 	});
-	let forceReExecuteGraphqlQuery = $state(false);
 	let selectedChannels = $state<string[]>(ExistingChannelIds);
 	let displayingUsers = $state(users);
 	let innerSelectedUsersToUnassign = $state<SvelteSet<string>>(new SvelteSet());
@@ -246,7 +251,7 @@
 					endIcon={Plus}
 					onclick={() => {
 						openAssignUserModal = true;
-						forceReExecuteGraphqlQuery = true;
+						reFetchTableData(TableNameKeys.PermissionGroupStaffTable);
 					}}
 					disabled={disabled || !editable}
 				>
@@ -276,7 +281,7 @@
 		startIcon={Search}
 		inputDebounceOption={{
 			debounceTime: 888,
-			onInput: () => (forceReExecuteGraphqlQuery = true),
+			onInput: () => reFetchTableData(TableNameKeys.PermissionGroupStaffTable),
 		}}
 	/>
 	<GraphqlPaginableTable
@@ -284,7 +289,7 @@
 		query={STAFFS_QUERY}
 		resultKey="staffUsers"
 		bind:variables={staffUsersVariables}
-		bind:forceReExecuteGraphqlQuery
+		tableName={TableNameKeys.PermissionGroupStaffTable}
 		autoRefetchOnVariableChange
 	/>
 </Modal>

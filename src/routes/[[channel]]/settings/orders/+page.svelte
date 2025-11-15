@@ -8,6 +8,7 @@
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown } from '$lib/components/ui/Dropdown';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { type Order, type Query } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
@@ -23,7 +24,7 @@
 	let filterVariables = $state<PaginationOptions>({
 		first: BATCH_LOAD,
 	});
-	let forceReExecuteGraphqlQuery = $state<boolean>(true);
+	// let forceReExecuteGraphqlQuery = $state<boolean>(true);
 
 	const ORDER_TABLE_COLUMNS: TableColumnProps<Order, any>[] = $derived([
 		{
@@ -102,5 +103,5 @@
 	columns={ORDER_TABLE_COLUMNS}
 	bind:variables={filterVariables}
 	resultKey={'me.orders' as keyof Query}
-	bind:forceReExecuteGraphqlQuery
+	tableName={TableNameKeys.MyOrdersTable}
 />
