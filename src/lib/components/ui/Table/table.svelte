@@ -90,7 +90,11 @@
 {#snippet customTr(item: T, columns: TableColumnProps<T, K>[], itemIdx: number)}
 	{#each columns as column, idx (idx)}
 		<td>
-			{@render column.child({ item, idx: itemIdx })}
+			{#if typeof column.child === 'object'}
+				{column.child.render({ item, idx: itemIdx })}
+			{:else}
+				{@render column.child({ item, idx: itemIdx })}
+			{/if}
 		</td>
 	{/each}
 {/snippet}

@@ -2,16 +2,16 @@
 	import { tranFunc } from '$i18n';
 	import { Check, ClipboardCopy } from '../icons';
 	import { IconButton } from '../ui/Button';
-	import type { SocialSize } from '../ui/common';
+	import type { SocialColor, SocialSize } from '../ui/common';
 	import { toast } from 'svelte-sonner';
 
 	type Props = {
 		size?: SocialSize;
 		copyContent: string;
 		class?: string;
-    /**
-     * @default 'tooltip-right'
-     */
+		/**
+		 * @default 'tooltip-right'
+		 */
 		tooltipPlacement?: 'tooltip-top' | 'tooltip-bottom' | 'tooltip-left' | 'tooltip-right';
 	};
 
@@ -27,17 +27,22 @@
 
 	let copyTooltip = $state(CopyTran);
 	let copyIcon = $state(ClipboardCopy);
+	let copyColor = $state<SocialColor>('gray');
 
 	const handleCopy = () => {
+		if (copyTooltip === CopiedText) return;
+
 		navigator.clipboard
 			.writeText(copyContent)
 			.then(() => {
 				copyTooltip = CopiedText;
 				copyIcon = Check;
+				copyColor = 'green';
 
 				setTimeout(() => {
 					copyTooltip = CopyTran;
 					copyIcon = ClipboardCopy;
+					copyColor = 'gray';
 				}, 3000);
 			})
 			.catch((err) => toast.error(err));
@@ -51,6 +56,6 @@
 	class="tooltip {tooltipPlacement} {className}"
 	data-tip={copyTooltip}
 	{size}
-	color="gray"
+	color={copyColor}
 	variant="light"
 />

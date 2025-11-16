@@ -66,7 +66,7 @@ export type TableColumnProps<T extends Record<string, unknown>, K extends string
 	 * The content of each row in the column.
 	 * @param item the item of the row
 	 */
-	child: Snippet<[TableCellProps<T>]>;
+	child: Snippet<[TableCellProps<T>]> | {render: (props: TableCellProps<T>) => any};
 	/** plain positive integer number */
 	width?: number;
 };

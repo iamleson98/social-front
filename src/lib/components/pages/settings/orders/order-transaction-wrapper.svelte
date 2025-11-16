@@ -7,21 +7,24 @@
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/Badge';
-	import { Input } from '$lib/components/ui/Input';
-	import { Modal } from '$lib/components/ui/Modal';
+	import { Skeleton } from '$lib/components/ui/Skeleton';
 	import { Table, type TableCellProps, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
 		OrderAction,
 		OrderChargeStatusEnum,
 		TransactionActionEnum,
+		TransactionEventTypeEnum,
+		type GiftCard,
 		type Money,
 		type Order,
 		type TransactionEvent,
-		type TransactionItem,
 	} from '$lib/gql/graphql';
 	import { ShopStoreManager } from '$lib/stores/shop';
 	import { CommonEaseDatePickerFormat, SitenameTimeFormat } from '$lib/utils/consts';
 	import { paymentStatusBadgeClass, SitenameCommonClassName } from '$lib/utils/utils';
+	import OrderManualTransactionCaptureDialog from './order-manual-transaction-capture-dialog.svelte';
+	import OrderMarkAsPaidModal from './order-mark-as-paid-modal.svelte';
+	import OrderRefundModal from './order-refund-modal.svelte';
 	import {
 		extractOrderGiftCardUsedAmount,
 		getDeliveryMethodName,
@@ -39,6 +42,11 @@
 		getTransactionAmount,
 		prepareMoney,
 		type ExtendedOrderTransaction,
+		type TransactionFakeEvent,
+		mapTransactionEvent,
+		shouldShowAmount,
+		getUsedInGiftCardEvents,
+		getGiftCardAmount,
 	} from './utils';
 	import dayjs from 'dayjs';
 
@@ -57,6 +65,7 @@
 	);
 
 	const RefundState = $derived(getRefundState(order.transactions));
+
 	const RefundTooltip = $derived.by(() => {
 		if (RefundState === 'noTransactionsToRefund') return 'No transaction to refund';
 		if (RefundState === 'allTransactionsNonRefundable')
@@ -67,6 +76,8 @@
 		order.transactions.flatMap((t) => t.events),
 		order.grantedRefunds,
 	);
+	let openMarkOrderAsPaidModal = $state(false);
+	let openRefundModal = $state(false);
 
 	const RefundColumns: TableColumnProps<OrderRefundDisplay>[] = [
 		{
@@ -95,7 +106,7 @@
 		},
 	];
 
-	const TransactionEventsColumns: TableColumnProps<TransactionEvent>[] = [
+	const TransactionEventsColumns: TableColumnProps<TransactionEvent | TransactionFakeEvent>[] = [
 		{
 			title: '',
 			child: eventStatus,
@@ -106,15 +117,15 @@
 		},
 		{
 			title: '',
-			child: eventMessage,
+			child: { render: ({ item }) => item.message },
 		},
 		{
 			title: '',
-			child: eventPspReference,
+			child: { render: ({ item }) => item.pspReference },
 		},
 		{
 			title: '',
-			child: eventCreatedAt,
+			child: { render: ({ item }) => dayjs(item.createdAt).format(SitenameTimeFormat) },
 		},
 		{
 			title: '',
@@ -123,15 +134,12 @@
 	];
 </script>
 
-{#snippet eventStatus({ item }: TableCellProps<TransactionEvent>)}
-	<Badge text={item.type || '-'} size="xs" rounded />
+{#snippet eventStatus({ item }: TableCellProps<TransactionEvent | TransactionFakeEvent>)}
+	{@const { status } = mapTransactionEvent(item)}
+	<Badge text={status || '-'} size="xs" />
 {/snippet}
 
-{#snippet eventCreatedAt({ item }: TableCellProps<TransactionEvent>)}
-	<div class="text-xs">{dayjs(item.createdAt).format(SitenameTimeFormat)}</div>
-{/snippet}
-
-{#snippet eventCreatedBy({ item }: TableCellProps<TransactionEvent>)}
+{#snippet eventCreatedBy({ item }: TableCellProps<TransactionEvent | TransactionFakeEvent>)}
 	{#if item.createdBy?.__typename === 'User'}
 		<Thumbnail
 			src={item.createdBy.avatar?.url}
@@ -142,16 +150,10 @@
 	{/if}
 {/snippet}
 
-{#snippet eventPspReference({ item }: TableCellProps<TransactionEvent>)}
-	{item.pspReference}
-{/snippet}
-
-{#snippet eventMessage({ item }: TableCellProps<TransactionEvent>)}
-	{item.message}
-{/snippet}
-
-{#snippet eventAmount({ item }: TableCellProps<TransactionEvent>)}
-	<PriceDisplay {...item.amount} />
+{#snippet eventAmount({ item }: TableCellProps<TransactionEvent | TransactionFakeEvent>)}
+	{#if shouldShowAmount(item)}
+		<PriceDisplay {...item.amount!} />
+	{/if}
 {/snippet}
 
 {#snippet refundStatus({ item }: TableCellProps<OrderRefundDisplay>)}
@@ -263,7 +265,7 @@
 			<div class="font-semibold">This order has no payment yet.</div>
 
 			{#if canMarkAsPaid}
-				<Button>Mark as paid</Button>
+				<Button size="xs" onclick={() => (openMarkOrderAsPaidModal = true)}>Mark as paid</Button>
 			{/if}
 		{:else}
 			{@render OrderSummaryLine('Authorized', order.totalAuthorized)}
@@ -289,8 +291,13 @@
 	</div>
 {/snippet}
 
-{#snippet OrderTransaction(transaction: ExtendedOrderTransaction, idx: number)}
+{#snippet OrderTransaction(
+	transaction: ExtendedOrderTransaction,
+	idx: number,
+	fakeEvents?: TransactionFakeEvent[],
+)}
 	{@const actions = transaction.actions.filter((act) => act !== TransactionActionEnum.Refund)}
+	{@const events = transaction.__typename === 'FakeTransaction' ? fakeEvents : transaction.events}
 	<div>
 		<div class="flex items-center justify-between">
 			<!-- MARK: title -->
@@ -345,13 +352,16 @@
 			</div>
 		</div>
 
-		<Table items={transaction.events} headless columns={TransactionEventsColumns} />
+		<Table items={events || []} headless columns={TransactionEventsColumns} />
 	</div>
 {/snippet}
 
-{#snippet OrderTransactionPayments(order: Order)}
+{#snippet OrderTransactionPayments()}
 	{#each FilteredPayments as payment, idx (idx)}
-		{@const refunded = (payment.total?.amount || 0) - (payment.capturedAmount?.amount || 0) - (payment.availableCaptureAmount?.amount || 0)}
+		{@const refunded =
+			(payment.total?.amount || 0) -
+			(payment.capturedAmount?.amount || 0) -
+			(payment.availableCaptureAmount?.amount || 0)}
 		{@const fakeEvents = mapPaymentToTransactionEvents(payment)}
 		{@const transactionFromPayment: FakeTransaction = {
 			id: payment.id,
@@ -370,10 +380,66 @@
 			cancelPendingAmount: prepareMoney(0, payment.total?.currency || ''),
 			createdAt: fakeEvents[0]?.createdAt,
 			__typename: 'FakeTransaction',
-		}}
+		} as FakeTransaction}
 
 		{@render OrderTransaction(transactionFromPayment, idx)}
 	{/each}
+{/snippet}
+
+{#snippet OrderTransactionGiftCard({ order, giftCard }: { order: Order; giftCard: GiftCard })}
+	{#if !giftCard || !order}
+		<Skeleton class="h-8 w-full" />
+	{:else}
+		{@const usedInOrderEvents = getUsedInGiftCardEvents(giftCard, order.id)}
+		{@const amount = getGiftCardAmount(usedInOrderEvents)}
+		{#if !usedInOrderEvents.length}
+			<span>-</span>
+		{:else}
+			{@const currency = usedInOrderEvents[0]?.balance?.currentBalance?.currency || ''}
+			{@const fakeEvents = usedInOrderEvents.map<TransactionFakeEvent>((event) => ({
+				message: 'Used in order',
+				id: event.id,
+				pspReference: event.id,
+				type: TransactionEventTypeEnum.ChargeSuccess,
+				reasonReference: undefined,
+				createdAt: event.date,
+				amount: {
+					amount:
+						(event.balance?.oldCurrentBalance?.amount || 0) -
+						(event.balance?.currentBalance?.amount || 0),
+					currency: event.balance?.currentBalance?.currency || '',
+					__typename: 'Money',
+				},
+				mappedResult: {
+					type: 'CHARGE',
+					status: 'SUCCESS',
+				},
+				createdBy: null,
+				externalUrl: undefined,
+				__typename: 'TransactionFakeEvent',
+			}))}
+			{@const fakeTransaction = {
+				id: giftCard.id,
+				name: `Gift card (**** ${giftCard.last4CodeChars})`,
+				actions: [],
+				pspReference: giftCard.last4CodeChars,
+				externalUrl: '',
+				chargedAmount: prepareMoney(amount, currency),
+				createdAt: fakeEvents[0].createdAt,
+				// Fake amounts
+				authorizedAmount: prepareMoney(0, currency),
+				authorizePendingAmount: prepareMoney(0, currency),
+				chargePendingAmount: prepareMoney(0, currency),
+				refundedAmount: prepareMoney(0, currency),
+				refundPendingAmount: prepareMoney(0, currency),
+				canceledAmount: prepareMoney(0, currency),
+				cancelPendingAmount: prepareMoney(0, currency),
+				__typename: 'FakeTransaction',
+			} as unknown as FakeTransaction}
+
+			{@render OrderTransaction(fakeTransaction, 0, fakeEvents)}
+		{/if}
+	{/if}
 {/snippet}
 
 <div class="grid grid-cols-2 gap-2">
@@ -381,6 +447,7 @@
 	{@render OrderPaymentSummaryCard(order)}
 </div>
 
+<!-- refund section -->
 <div class={SitenameCommonClassName}>
 	<SectionHeader>
 		<div>Refunds</div>
@@ -392,6 +459,7 @@
 			class="tooltip tooltip-top"
 			disabled={RefundState !== 'refundable'}
 			data-tip={RefundTooltip}
+			onclick={() => (openRefundModal = true)}
 		>
 			New refund
 		</Button>
@@ -404,6 +472,7 @@
 	{/if}
 </div>
 
+<!-- mark as paid section -->
 <div class={SitenameCommonClassName}>
 	<SectionHeader>
 		<div>Transactions</div>
@@ -418,17 +487,16 @@
 	{#each order.transactions as transaction, idx (idx)}
 		{@render OrderTransaction(transaction, idx)}
 	{/each}
+	{@render OrderTransactionPayments()}
+	{#each order.giftCards as giftCard, idx (idx)}
+		{@render OrderTransactionGiftCard({ order, giftCard })}
+	{/each}
+
+	{#if !hasAnyTransactions}
+		<Alert size="sm" variant="info">There are no transactions for this order</Alert>
+	{/if}
 </div>
 
-<Modal size="xs" open={openCaptureTransactionModal} header="Capture manual transaction">
-	<div class="space-y-2">
-		<Alert size="xs">Create a manual transaction for non-integrated payments</Alert>
-		<Input label="Description" required size="sm" placeholder="description" />
-		<Input label="Psp reference" size="sm" placeholder="psp reference" />
-		<Input label="Amount" required size="sm" type="number">
-			{#snippet action()}
-				<span class="text-[10px] font-bold">{order.channel.currencyCode}</span>
-			{/snippet}
-		</Input>
-	</div>
-</Modal>
+<OrderManualTransactionCaptureDialog bind:open={openCaptureTransactionModal} {order} />
+<OrderMarkAsPaidModal bind:open={openMarkOrderAsPaidModal} {order} />
+<OrderRefundModal bind:open={openRefundModal} {order} />

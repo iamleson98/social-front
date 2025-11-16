@@ -12,6 +12,7 @@ export const modalSizeMap: Record<SocialSize, string> = {
 export type ModalProps = {
 	/** @default 'md'  */
 	size?: SocialSize;
+	/** Tells this component to open the modal, can be binded to a variable */
 	open: boolean;
 	header: string;
 	children: Snippet;

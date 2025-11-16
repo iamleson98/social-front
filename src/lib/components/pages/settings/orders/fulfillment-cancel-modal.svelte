@@ -69,7 +69,6 @@
 		optionLabelKey="name"
 		query={WAREHOUSE_LIST_QUERY}
 		bind:value={warehouseId}
-		placeholder="Select warehouse"
 		label="Select warehouse"
 		disabled={loading}
 		variables={{

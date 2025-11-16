@@ -38,6 +38,7 @@
 		onclearInputField,
 		onNotFoundQuerySelected,
 		onblur,
+		placeholder = label || 'Please select value',
 		...rest
 	}: SelectProps = $props();
 
@@ -275,6 +276,7 @@
 				autocomplete="off"
 				class="flex-1 basis-[min-content]"
 				id={INPUT_ID}
+				{placeholder}
 				inputClass={INPUT_CLASSES[variant].fg}
 				size={SIZE_REDUCE_MAP[size]}
 				onfocus={handleFocus}

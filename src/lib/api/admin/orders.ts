@@ -223,6 +223,7 @@ export const ORDER_DETAIL_QUERY = gql`
 				id
 				message
 				name
+				createdAt
 				events {
 					type
 					amount {
@@ -280,6 +281,7 @@ export const ORDER_DETAIL_QUERY = gql`
 				id
 				isActive
 				partial
+				actions
 			}
 			grantedRefunds {
 				id

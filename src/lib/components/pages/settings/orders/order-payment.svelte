@@ -13,6 +13,7 @@
 	import { Modal } from '$lib/components/ui/Modal';
 	import { OrderAction, OrderDiscountType, OrderStatus, type Order } from '$lib/gql/graphql';
 	import { paymentStatusBadgeClass, SitenameCommonClassName } from '$lib/utils/utils';
+	import OrderMarkAsPaidModal from './order-mark-as-paid-modal.svelte';
 	import OrderRefundModal from './order-refund-modal.svelte';
 	import { OrderUtilsInstance } from './utils.svelte';
 	import { toast } from 'svelte-sonner';
@@ -205,7 +206,7 @@
 
 <OrderRefundModal bind:open={openRefundModal} {order} />
 
-<Modal
+<!-- <Modal
 	header="Mark order as paid"
 	size="sm"
 	bind:open={openMarkAsPaidModal}
@@ -232,4 +233,6 @@
 		label="Transaction reference"
 		disabled={OrderUtilsInstance.state.loading}
 	/>
-</Modal>
+</Modal> -->
+
+<OrderMarkAsPaidModal bind:open={openMarkAsPaidModal} {order} {onRefetchOrder} />

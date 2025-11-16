@@ -23,7 +23,8 @@ import {
 	TransactionKind,
 	type PaymentGateway,
 	OrderAction,
-	type QueryOrderArgs,
+	type User,
+	type GiftCard,
 } from '$lib/gql/graphql';
 import { subtractMoney } from '$lib/utils/utils';
 
@@ -473,13 +474,9 @@ const mapEventToRefundStatus = (
 
 const determineCreatorDisplay = (
 	creator?: UserOrApp | null,
-) => {
+): User | null => {
 	if (creator?.__typename === "User") {
-		return {
-			email: creator.email,
-			firstName: creator.firstName,
-			lastName: creator.lastName,
-		};
+		return creator;
 	}
 
 	return null;
@@ -507,6 +504,8 @@ const mapEventGroupsToOrderManualRefunds = (
 			),
 			reasonNote: null,
 			reasonType: null,
+			shippingCostsIncluded: false,
+			updatedAt: latestEvent.createdAt,
 		};
 
 		// Only REQUEST contains a reason, that is attached when transactionRequestAction("refund") is executed
@@ -570,7 +569,7 @@ export type FakeTransaction = Omit<TransactionItem, "events" | "__typename"> & {
 export type OrderTransaction = TransactionItem | FakeTransaction;
 
 export type ExtendedOrderTransaction = OrderTransaction & {
-  index?: number;
+	index?: number;
 };
 
 export type TransactionFakeEvent = Omit<Partial<TransactionEvent>, "type" | "__typename"> & {
@@ -597,6 +596,89 @@ export interface TransactionMappingResult {
 	type: TransactionEventType;
 	status: TransactionEventStatus;
 }
+
+const typeMap: Record<TransactionEventTypeEnum, TransactionMappingResult> = {
+	INFO: {
+		type: "INFO",
+		status: "INFO",
+	},
+	CHARGE_BACK: {
+		type: "CHARGEBACK",
+		status: "INFO",
+	},
+	REFUND_REVERSE: {
+		type: "REFUND_REVERSED",
+		status: "INFO",
+	},
+	AUTHORIZATION_ADJUSTMENT: {
+		type: "AUTHORIZATION_ADJUSTMENT",
+		status: "INFO",
+	},
+
+	// Authorization
+	AUTHORIZATION_FAILURE: {
+		type: "AUTHORIZATION",
+		status: "FAILED",
+	},
+	AUTHORIZATION_ACTION_REQUIRED: {
+		type: "AUTHORIZATION",
+		status: "INFO",
+	},
+	AUTHORIZATION_REQUEST: {
+		type: "AUTHORIZATION",
+		status: "REQUEST",
+	},
+	AUTHORIZATION_SUCCESS: {
+		type: "AUTHORIZATION",
+		status: "SUCCESS",
+	},
+
+	// Charge
+	CHARGE_FAILURE: {
+		type: "CHARGE",
+		status: "FAILED",
+	},
+	CHARGE_ACTION_REQUIRED: {
+		type: "CHARGE",
+		status: "INFO",
+	},
+	CHARGE_REQUEST: {
+		type: "CHARGE",
+		status: "REQUEST",
+	},
+	CHARGE_SUCCESS: {
+		type: "CHARGE",
+		status: "SUCCESS",
+	},
+
+	// Cancel (previously void)
+	CANCEL_FAILURE: {
+		type: "CANCEL",
+		status: "FAILED",
+	},
+	CANCEL_REQUEST: {
+		type: "CANCEL",
+		status: "REQUEST",
+	},
+	CANCEL_SUCCESS: {
+		type: "CANCEL",
+		status: "SUCCESS",
+	},
+
+	// Refunds
+	REFUND_FAILURE: {
+		type: "REFUND",
+		status: "FAILED",
+	},
+	REFUND_REQUEST: {
+		type: "REFUND",
+		status: "REQUEST",
+	},
+	REFUND_SUCCESS: {
+		type: "REFUND",
+		status: "SUCCESS",
+	},
+};
 
 const mapPaymentKindToTransaction = (
 	kind: TransactionKind,
@@ -649,24 +731,24 @@ const mapPaymentKindToTransaction = (
 };
 
 export const getTransactionAmount = (money: Money | null | undefined, fallbackCurrency: string): Money => {
-  if (!money) {
-    return {
-      currency: fallbackCurrency,
-      amount: 0,
-      __typename: "Money",
-    };
-  }
+	if (!money) {
+		return {
+			currency: fallbackCurrency,
+			amount: 0,
+			__typename: "Money",
+		};
+	}
 
-  return money;
+	return money;
 };
 
 export const prepareMoney = (
-  amount: number,
-  currency: string,
+	amount: number,
+	currency: string,
 ): Money => ({
-  __typename: "Money",
-  amount,
-  currency: currency ?? "VND",
+	__typename: "Money",
+	amount,
+	currency: currency ?? "VND",
 });
 
 export const mapOrderActionsToTransactionActions = (
@@ -725,8 +807,8 @@ export const mapPaymentToTransactionEvents = (
 				message: kind,
 				mappedResult,
 				createdBy: null,
-				reasonReference: null,
-				externalUrl: null,
+				reasonReference: undefined,
+				externalUrl: undefined,
 				createdAt: created,
 				amount: undefined,
 				__typename: "TransactionFakeEvent" as const,
@@ -734,3 +816,64 @@ export const mapPaymentToTransactionEvents = (
 		})
 		.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 };
+
+export const mapTransactionEvent = (event: TransactionFakeEvent | TransactionEvent): TransactionMappingResult => {
+	if (!event) return {
+		type: null,
+		status: null,
+	};
+
+	if (event.__typename === 'TransactionFakeEvent') return event.mappedResult;
+
+	if (event.type && typeMap[event.type]) return typeMap[event.type];
+
+	return {
+		type: null,
+		status: "INFO",
+	};
+}
+
+const eventsWithoutAmount = [
+	TransactionEventTypeEnum.CancelSuccess,
+	TransactionEventTypeEnum.CancelRequest,
+	TransactionEventTypeEnum.CancelFailure,
+];
+
+export const shouldShowAmount = (event: TransactionEvent | TransactionFakeEvent) => {
+	if (!event || !event.amount?.currency)
+		return false;
+
+
+	if (
+		event.__typename === "TransactionEvent" &&
+		event.type &&
+		eventsWithoutAmount.includes(event.type)
+	) {
+		return false;
+	}
+
+	return true;
+};
+
+export const getUsedInGiftCardEvents = (giftCard: GiftCard, orderId: string) => {
+	if (!giftCard.events || !orderId) {
+		return [];
+	}
+
+	return giftCard.events.filter(
+		({ orderId: eventOrderId, type }) =>
+			type === GiftCardEventsEnum.UsedInOrder && eventOrderId === orderId,
+	);
+};
+
+export const getGiftCardAmount = (usedInOrderEvents: GiftCard["events"]) =>
+	usedInOrderEvents.reduce((resultAmount, { balance }) => {
+		if (!balance) return resultAmount;
+
+		const { currentBalance, oldCurrentBalance } = balance;
+		if (!oldCurrentBalance || !currentBalance) return resultAmount;
+
+		const amountToAdd = oldCurrentBalance.amount - currentBalance.amount;
+
+		return resultAmount + amountToAdd;
+	}, 0);
