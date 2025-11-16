@@ -1,4 +1,6 @@
 <script lang="ts" module>
+	import { writable, get as getStore } from 'svelte/store';
+
 	const store = writable<Record<string, boolean>>({});
 
 	/**
@@ -70,8 +72,8 @@
 		throw new Error('Duplicate key name found in TableNameKeys');
 
 	const registerKey = (name: TableNameKeys) => {
-		if (getStore(store)[name])
-			throw new Error(`Key name already existed: ${name}. Please specify a unique name`);
+		if (getStore(store)[name]) return;
+		// throw new Error(`Key name already existed: ${name}. Please specify a unique name`);
 
 		store.update((state) => ({ ...state, [name]: false }));
 	};
@@ -114,7 +116,6 @@
 	import { omit } from 'es-toolkit';
 	import { get } from 'es-toolkit/compat';
 	import { onMount, tick } from 'svelte';
-	import { writable, get as getStore } from 'svelte/store';
 
 	type Props = {
 		query: TypedDocumentNode<any, AnyVariables & GraphqlPaginationArgs>;
@@ -211,6 +212,8 @@
 			unregisterKey(tableName);
 		};
 	});
+
+	$inspect($store)
 
 	$effect(() => {
 		if ($store[tableName]) {

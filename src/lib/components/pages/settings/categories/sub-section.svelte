@@ -5,7 +5,10 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import {
+		reFetchTableData,
+		TableNameKeys,
+	} from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import {
 		type Category,
 		type Product,
@@ -17,6 +20,7 @@
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
+	import { onMount } from 'svelte';
 
 	type Props = {
 		categoryId: string;
@@ -53,6 +57,11 @@
 			child: productUpdatedAt,
 		},
 	]);
+
+	onMount(() => {
+		reFetchTableData(TableNameKeys.CategorySubCategories);
+		reFetchTableData(TableNameKeys.CategoryProducts);
+	});
 </script>
 
 {#snippet categoryName({ item }: { item: Category })}
