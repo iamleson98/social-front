@@ -26,7 +26,7 @@
 		},
 		{
 			title: $tranFunc('staff.email'),
-			child: email,
+			child: { render: ({ item }) => item.email },
 			key: UserSortField.Email,
 		},
 		{
@@ -48,10 +48,6 @@
 		{item.firstName}
 		{item.lastName}
 	</a>
-{/snippet}
-
-{#snippet email({ item }: { item: User })}
-	<span>{item.email}</span>
 {/snippet}
 
 {#snippet status({ item }: { item: User })}

@@ -242,7 +242,7 @@
 			onDragEnd={handleReOrderProductsInCollection}
 			dragEffectType="move-position"
 			disabled={shouldDisable}
-			autoRefetchOnVariableChange
+			autoRefetchOnPaginationParamsChange
 		/>
 	</div>
 </div>

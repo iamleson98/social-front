@@ -118,6 +118,6 @@
 		{disabled}
 		bind:variables={productAttrsVariables}
 		tableName={TableNameKeys.ProductAttributesTable}
-		autoRefetchOnVariableChange={false}
+		autoRefetchOnPaginationParamsChange={false}
 	/>
 </div>

@@ -4,11 +4,13 @@
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import CustomerFilter from '$lib/components/pages/settings/customers/filter.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
-	import { type TableColumnProps } from '$lib/components/ui/Table';
-	import GraphqlPaginableTable, { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import { type TableCellProps, type TableColumnProps } from '$lib/components/ui/Table';
+	import GraphqlPaginableTable, {
+		TableNameKeys,
+	} from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { UserSortField, type QueryCustomersArgs, type User } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { BASIC_DATE_FORMAT, CommonEaseDatePickerFormat } from '$lib/utils/consts';
+	import { CommonEaseDatePickerFormat } from '$lib/utils/consts';
 	import dayjs from 'dayjs';
 
 	let filterVariables = $state<QueryCustomersArgs>({
@@ -17,7 +19,6 @@
 		},
 		first: 10,
 	});
-	let forceReExecuteGraphqlQuery = $state(true);
 
 	const USER_TABLE_COLUMNS: TableColumnProps<User, UserSortField>[] = $derived([
 		{
@@ -50,7 +51,7 @@
 	]);
 </script>
 
-{#snippet avatar({ item }: { item: User })}
+{#snippet avatar({ item }: TableCellProps<User>)}
 	<Thumbnail
 		size="sm"
 		src={item.avatar?.url}
@@ -58,7 +59,7 @@
 	/>
 {/snippet}
 
-{#snippet customerName({ item }: { item: User })}
+{#snippet customerName({ item }: TableCellProps<User>)}
 	<a href={AppRoute.SETTINGS_CONFIGS_USER_DETAILS(item.id)} class="link">
 		{#if item.firstName || item.lastName}
 			<span>{item.firstName} {item.lastName}</span>
@@ -68,18 +69,18 @@
 	</a>
 {/snippet}
 
-{#snippet email({ item }: { item: User })}
+{#snippet email({ item }: TableCellProps<User>)}
 	<span>{item.email}</span>
 {/snippet}
 
-{#snippet isActive({ item }: { item: User })}
+{#snippet isActive({ item }: TableCellProps<User>)}
 	<Badge
 		text={$tranFunc(item.isActive ? 'staff.active' : 'staff.inactive')}
 		color={item.isActive ? 'green' : 'red'}
 	/>
 {/snippet}
 
-{#snippet isStaff({ item }: { item: User })}
+{#snippet isStaff({ item }: TableCellProps<User>)}
 	<div class="text-center">
 		<Badge
 			text={$tranFunc(item.isStaff ? 'common.yes' : 'common.no')}
@@ -88,7 +89,7 @@
 	</div>
 {/snippet}
 
-{#snippet dateJoined({ item }: { item: User })}
+{#snippet dateJoined({ item }: TableCellProps<User>)}
 	<span>{dayjs(item.dateJoined).format(CommonEaseDatePickerFormat)}</span>
 {/snippet}
 

@@ -24,16 +24,15 @@
 	let filterVariables = $state<PaginationOptions>({
 		first: BATCH_LOAD,
 	});
-	// let forceReExecuteGraphqlQuery = $state<boolean>(true);
 
 	const ORDER_TABLE_COLUMNS: TableColumnProps<Order, any>[] = $derived([
 		{
 			title: $tranFunc('settings.no'),
-			child: no,
+			child: { render: ({ item }) => item.number },
 		},
 		{
 			title: $tranFunc('settings.date'),
-			child: date,
+			child: { render: ({ item }) => dayjs(item.created).format(SitenameTimeFormat) },
 		},
 		{
 			title: $tranFunc('settings.payment'),
@@ -53,14 +52,6 @@
 		},
 	]);
 </script>
-
-{#snippet no({ item }: { item: Order })}
-	{item.number}
-{/snippet}
-
-{#snippet date({ item }: { item: Order })}
-	{dayjs(item.created).format(SitenameTimeFormat)}
-{/snippet}
 
 {#snippet payment({ item }: { item: Order })}
 	<Badge {...paymentStatusBadgeClass(item.paymentStatus)} rounded />

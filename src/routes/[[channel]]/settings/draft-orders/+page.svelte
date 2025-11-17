@@ -30,7 +30,7 @@
 	});
 	let loading = $state(false);
 
-	const COLUMNS: TableColumnProps<Order, OrderSortField>[] = [
+	const COLUMNS: TableColumnProps<Order, OrderSortField>[] = $derived([
 		{
 			title: $tranFunc('common.number'),
 			child: number,
@@ -49,7 +49,7 @@
 			title: $tranFunc('settings.total'),
 			child: total,
 		},
-	];
+	]);
 
 	const FilterOptions: FilterProps<OrderDraftFilterInput> = $derived({
 		customer: {

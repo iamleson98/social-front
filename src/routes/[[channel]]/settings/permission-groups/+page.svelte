@@ -15,7 +15,7 @@
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 
-	const PermissionGroupColumns: TableColumnProps<Group, PermissionGroupSortField>[] = [
+	const PermissionGroupColumns: TableColumnProps<Group, PermissionGroupSortField>[] = $derived([
 		{
 			title: $tranFunc('common.name'),
 			child: name,
@@ -23,9 +23,9 @@
 		},
 		{
 			title: $tranFunc('settings.users'),
-			child: users,
+			child: { render: ({ item }) => item.users?.length || 0 },
 		},
-	];
+	]);
 
 	let variables = $state<QueryPermissionGroupsArgs>({
 		first: 10,
@@ -35,10 +35,6 @@
 
 {#snippet name({ item }: { item: Group })}
 	<a href={AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUP_DETAIL(item.id)} class="link">{item.name}</a>
-{/snippet}
-
-{#snippet users({ item }: { item: Group })}
-	{item.users?.length || 0}
 {/snippet}
 
 <div class="mb-2">

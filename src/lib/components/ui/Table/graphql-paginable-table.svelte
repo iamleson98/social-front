@@ -71,11 +71,11 @@
 	if (Object.values(TableNameKeys).length !== new Set(Object.values(TableNameKeys)).size)
 		throw new Error('Duplicate key name found in TableNameKeys');
 
-	const registerKey = (name: TableNameKeys) => {
-		if (getStore(store)[name]) return;
+	const registerKey = (name: TableNameKeys, runNow: boolean = false) => {
+		if (getStore(store)[name] != undefined) return;
 		// throw new Error(`Key name already existed: ${name}. Please specify a unique name`);
 
-		store.update((state) => ({ ...state, [name]: false }));
+		store.update((state) => ({ ...state, [name]: runNow }));
 	};
 
 	const unregisterKey = (name: TableNameKeys) => {
@@ -124,11 +124,14 @@
 		requestPolicy?: RequestPolicy;
 		/** for example the products query support pagination, then you must pass 'products' as resultKey */
 		resultKey: keyof Query;
-		/** a bindable prop, it acts as a lock to help you keep control of when to re-execute the graphql query, from parent component.
-		 * Please note that your query will be paused by default, so you should set this prop to true when you want to re-execute the query.
+		/**
+		 * In some listing pages, url search params must be parsed before signalling the data fetching.
+		 * But in some places, the table data does not depends on those url params, and data fetching need to be done immediately, right after the component in mounted.
+		 * So instead of having to explicitly call to `reFetchTableData`, you can pass in this prop as `true`.
+		 * 
+		 * @default false
 		 */
-		// forceReExecuteGraphqlQuery?: boolean;
-
+		autoFetchDataOnMount?: boolean;
 		/**
 		 * tell the component how to reposition the items within the array list.
 		 *
@@ -141,7 +144,7 @@
 		/**
 		 * if true, then the query will be re-executed when variable changes. Default to `false`
 		 */
-		autoRefetchOnVariableChange?: boolean;
+		autoRefetchOnPaginationParamsChange?: boolean;
 		/**
 		 * a unique name for the table instance. This is used to identify the table instance when re-fetching data.
 		 * Please note that the name must be unique within the application.
@@ -171,8 +174,9 @@
 		dragEffectType,
 		disabled,
 		class: className,
-		autoRefetchOnVariableChange = false,
+		autoRefetchOnPaginationParamsChange = false,
 		tableName,
+		autoFetchDataOnMount = false,
 	}: Props = $props();
 
 	if ((dragEffectType && !onDragEnd) || (!dragEffectType && onDragEnd))
@@ -194,8 +198,10 @@
 	let items = $state.raw<T[]>([]);
 	let pagination = $state.raw<PageInfo>();
 
-	onMount(() =>
-		queryOperationStore.subscribe((result) => {
+	onMount(() => {
+		registerKey(tableName, autoFetchDataOnMount);
+
+		const unsub = queryOperationStore.subscribe((result) => {
 			if (result.data) {
 				const connection: CountableConnection<T> = get(result.data, resultKey);
 				if (!connection) throw new Error(`invalid result key: ${resultKey}`);
@@ -203,17 +209,13 @@
 				items = connection.edges.map((edge) => edge.node) || [];
 				pagination = connection.pageInfo;
 			}
-		}),
-	);
+		});
 
-	$effect.pre(() => {
-		registerKey(tableName);
 		return () => {
+			unsub();
 			unregisterKey(tableName);
 		};
 	});
-
-	$inspect($store)
 
 	$effect(() => {
 		if ($store[tableName]) {
@@ -233,7 +235,7 @@
 			first: variables.first || variables.last,
 			last: null,
 		};
-		if (autoRefetchOnVariableChange) queryOperationStore.reexecute({ variables });
+		if (autoRefetchOnPaginationParamsChange) queryOperationStore.reexecute({ variables });
 	};
 
 	const handlePreviousPagelick = (before: string) => {
@@ -244,7 +246,7 @@
 			last: variables.last || variables.first,
 			first: null,
 		};
-		if (autoRefetchOnVariableChange) queryOperationStore.reexecute({ variables });
+		if (autoRefetchOnPaginationParamsChange) queryOperationStore.reexecute({ variables });
 	};
 
 	const handleRowsPerPageChange = (num: RowOptions) => {
@@ -255,7 +257,7 @@
 			before: null,
 			after: null,
 		};
-		if (autoRefetchOnVariableChange) queryOperationStore.reexecute({ variables });
+		if (autoRefetchOnPaginationParamsChange) queryOperationStore.reexecute({ variables });
 	};
 
 	const handleSortChange = (sort: SortState<K>) => {
@@ -277,7 +279,7 @@
 				direction,
 			},
 		};
-		if (autoRefetchOnVariableChange) queryOperationStore.reexecute({ variables });
+		if (autoRefetchOnPaginationParamsChange) queryOperationStore.reexecute({ variables });
 	};
 
 	const innerHandleDragEnd = (dragIdx: number, dropIdx: number) => {

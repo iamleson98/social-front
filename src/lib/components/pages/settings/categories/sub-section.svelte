@@ -104,7 +104,7 @@
 				resultKey={'category.children' as keyof Query}
 				variables={{ first: 10, id: categoryId } as QueryCategoriesArgs}
 				columns={CATEGORY_CHILDREN_COLUMNS}
-				autoRefetchOnVariableChange
+				autoRefetchOnPaginationParamsChange
 			/>
 		</div>
 	</div>
@@ -118,7 +118,7 @@
 				resultKey={'products' as keyof Query}
 				variables={{ first: 10, filter: { categories: [categoryId] } } as QueryProductsArgs}
 				columns={PRODUCTS_COLUMNS}
-				autoRefetchOnVariableChange
+				autoRefetchOnPaginationParamsChange
 			/>
 		</div>
 	</div>

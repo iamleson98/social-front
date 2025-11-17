@@ -91,7 +91,7 @@
 		size="xs"
 		placeholder={$tranFunc('common.currency')}
 		value={initialValue}
-		inputDebounceOption={{ onInput: (evt) => onValue((evt.target as HTMLInputElement).value) }}
+		onchange={opt => onValue((opt as SelectOption).value)}
 	/>
 {/snippet}
 

@@ -48,7 +48,7 @@
 	let loading = $state(false);
 	let selectedGiftcards = $state<Record<string, boolean>>({});
 
-	const COLUMNS: TableColumnProps<GiftCard, GiftCardSortField>[] = [
+	const COLUMNS: TableColumnProps<GiftCard, GiftCardSortField>[] = $derived([
 		{
 			title: selectAll,
 			child: itemSelect,
@@ -83,7 +83,7 @@
 			title: $tranFunc('common.action'),
 			child: action,
 		},
-	];
+	]);
 
 	const handleDeleteGiftcard = (id: string) => {
 		ALERT_MODAL_STORE.openAlertModal({

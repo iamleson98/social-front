@@ -18,7 +18,7 @@
 		},
 	});
 
-	const VOUCHER_COLUMNS: TableColumnProps<Voucher, VoucherSortField>[] = [
+	const VOUCHER_COLUMNS: TableColumnProps<Voucher, VoucherSortField>[] = $derived([
 		{
 			title: $tranFunc('common.name'),
 			child: title,
@@ -51,7 +51,7 @@
 			child: endDate,
 			key: VoucherSortField.EndDate,
 		},
-	];
+	]);
 </script>
 
 {#snippet title({ item }: { item: Voucher })}

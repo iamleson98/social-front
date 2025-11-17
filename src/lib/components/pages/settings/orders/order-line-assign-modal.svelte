@@ -191,6 +191,6 @@
 		bind:variables
 		tableName={TableNameKeys.VariantForOrderTable}
 		disabled={loading}
-		autoRefetchOnVariableChange
+		autoRefetchOnPaginationParamsChange
 	/>
 </Modal>

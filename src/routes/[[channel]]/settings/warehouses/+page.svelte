@@ -29,7 +29,7 @@
 	});
 	let loading = $state(false);
 
-	const WarehouseColumns: TableColumnProps<Warehouse, WarehouseSortField>[] = [
+	const WarehouseColumns: TableColumnProps<Warehouse, WarehouseSortField>[] = $derived([
 		{
 			title: $tranFunc('common.name'),
 			child: name,
@@ -43,7 +43,7 @@
 			title: $tranFunc('common.action'),
 			child: action,
 		},
-	];
+	]);
 
 	const handleClickDelete = async (id: string) => {
 		ALERT_MODAL_STORE.openAlertModal({

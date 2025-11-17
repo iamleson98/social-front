@@ -123,6 +123,6 @@
 		resultKey="products"
 		bind:variables
 		tableName={TableNameKeys.VariantForOrderTable}
-		autoRefetchOnVariableChange
+		autoRefetchOnPaginationParamsChange
 	/>
 </Modal>

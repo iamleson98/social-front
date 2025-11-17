@@ -14,7 +14,7 @@
 		first: 10,
 	});
 
-	const PROMOTION_COLUMNS: TableColumnProps<Promotion, PromotionSortField>[] = [
+	const PROMOTION_COLUMNS: TableColumnProps<Promotion, PromotionSortField>[] = $derived([
 		{
 			title: $tranFunc('common.name'),
 			child: title,
@@ -34,7 +34,7 @@
 			child: endDate,
 			key: PromotionSortField.EndDate,
 		},
-	];
+	]);
 </script>
 
 {#snippet title({ item }: { item: Promotion })}

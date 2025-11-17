@@ -427,6 +427,6 @@
 		disabled={shouldDisable}
 		bind:variables={availableAttributeVariables}
 		tableName={TableNameKeys.ProductTypesAttributesTable}
-		autoRefetchOnVariableChange
+		autoRefetchOnPaginationParamsChange
 	/>
 </Modal>

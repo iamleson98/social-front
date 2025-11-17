@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { tranFunc } from '$i18n';
 	import { MY_GIFTCARDS_QUERY } from '$lib/api/auth';
 	import HeadBar from '$lib/components/pages/settings/common/head-bar.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
@@ -13,36 +14,31 @@
 		first: 20,
 	});
 
-	const Columns: TableColumnProps<GiftCard>[] = [
+	const Columns: TableColumnProps<GiftCard>[] = $derived([
 		{
-			title: 'Code',
-			child: code,
+			title: $tranFunc('common.code'),
+			child: { render: ({ item }) => item.code },
 		},
 		{
-			title: 'Expire at',
-			child: expireAt,
+			title: $tranFunc('giftcard.expiryDate'),
+			child: {
+				render: ({ item }) =>
+					item.expiryDate ? dayjs(item.expiryDate).format(SitenameTimeFormat) : '-',
+			},
 		},
 		{
-			title: 'Is active',
+			title: $tranFunc('staff.active'),
 			child: isActive,
 		},
-	];
+	]);
 </script>
-
-{#snippet code({ item }: { item: GiftCard })}
-	<span>{item.displayCode}</span>
-{/snippet}
-
-{#snippet expireAt({ item }: { item: GiftCard })}
-	<span>{item.expiryDate ? dayjs(item.expiryDate).format(SitenameTimeFormat) : '-'}</span>
-{/snippet}
 
 {#snippet isActive({ item }: { item: GiftCard })}
 	<Badge text={item.isActive ? 'Active' : 'Inactive'} color={item.isActive ? 'green' : 'red'} />
 {/snippet}
 
 <HeadBar
-	listingPageLabel="My giftcards"
+	listingPageLabel={$tranFunc('customer.giftcards')}
 	listingPageHref={page.url.pathname}
 	detailRouteID=""
 	detailPageLabelGetter={(page) => page.params.id}

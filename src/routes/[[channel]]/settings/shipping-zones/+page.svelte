@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { SHIPPING_ZONES_QUERY } from '$lib/api/admin/shipping';
 	import { FilterManager } from '$lib/components/common/filter-box';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
@@ -16,26 +17,22 @@
 		},
 	});
 
-	const ShippingZoneColumns: TableColumnProps<ShippingZone>[] = [
+	const ShippingZoneColumns: TableColumnProps<ShippingZone>[] = $derived([
 		{
-			title: 'Name',
+			title: $tranFunc('common.name'),
 			child: name,
 		},
 		{
-			title: 'Countries',
-			child: countries,
+			title: $tranFunc('common.countries'),
+			child: { render: ({ item }) => item.countries.length },
 		},
-	];
+	]);
 </script>
 
 {#snippet name({ item }: { item: ShippingZone })}
 	<a href={AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS(item.id)} class="link">
 		{item.name}
 	</a>
-{/snippet}
-
-{#snippet countries({ item }: { item: ShippingZone })}
-	<span>{item.countries.length}</span>
 {/snippet}
 
 <div class="mb-2">

@@ -86,5 +86,5 @@
 	bind:variables={queryVariables}
 	resultKey="categories"
 	tableName={TableNameKeys.CategoryListTable}
-	autoRefetchOnVariableChange={false}
+	autoRefetchOnPaginationParamsChange={false}
 />

@@ -7,7 +7,10 @@
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
-	import { reFetchTableData, TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import {
+		reFetchTableData,
+		TableNameKeys,
+	} from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import {
 		type Mutation,
 		type MutationProductTypeDeleteArgs,
@@ -40,7 +43,7 @@
 		},
 		{
 			title: $tranFunc('product.taxCls'),
-			child: taxClass,
+			child: { render: ({ item }) => item.taxClass?.name || '-' },
 		},
 		{
 			title: $tranFunc('common.action'),
@@ -78,10 +81,6 @@
 	<a href={AppRoute.SETTINGS_PRODUCT_TYPE_EDIT(item.id)} class="link">
 		{item.name}
 	</a>
-{/snippet}
-
-{#snippet taxClass({ item }: { item: ProductType })}
-	<span>{item.taxClass?.name || '-'}</span>
 {/snippet}
 
 {#snippet deleteItem({ item }: { item: ProductType })}

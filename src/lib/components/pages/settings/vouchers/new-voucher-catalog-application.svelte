@@ -165,7 +165,7 @@
 
 		{#if activeTab === 'categories'}
 			<GraphqlPaginableTable
-				autoRefetchOnVariableChange
+				autoRefetchOnPaginationParamsChange
 				columns={SelectCol.concat(
 					CATEGORY_COLUMNS(
 						$tranFunc('common.pic'),
@@ -181,7 +181,7 @@
 			/>
 		{:else if activeTab === 'collections'}
 			<GraphqlPaginableTable
-				autoRefetchOnVariableChange
+				autoRefetchOnPaginationParamsChange
 				columns={SelectCol.concat(
 					COLLECTION_COLUMNS(
 						$tranFunc('common.pic'),
@@ -197,7 +197,7 @@
 			/>
 		{:else if activeTab === 'products'}
 			<GraphqlPaginableTable
-				autoRefetchOnVariableChange
+				autoRefetchOnPaginationParamsChange
 				columns={SelectCol.concat(
 					PRODUCT_COLUMNS(
 						$tranFunc('common.pic'),
@@ -214,7 +214,7 @@
 			/>
 		{:else if activeTab === 'variants'}
 			<GraphqlPaginableTable
-				autoRefetchOnVariableChange
+				autoRefetchOnPaginationParamsChange
 				columns={SelectCol.concat(
 					VARIANT_COLUMNS(
 						$tranFunc('common.pic'),

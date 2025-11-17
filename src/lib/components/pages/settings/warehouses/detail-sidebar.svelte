@@ -47,7 +47,7 @@
 		columns={ShippingColumns}
 		bind:variables={warehouseShippingZonesVariables}
 		{disabled}
-		autoRefetchOnVariableChange
+		autoRefetchOnPaginationParamsChange
 		tableName={TableNameKeys.WarehouseShippingZonesTable}
 	/>
 </div>

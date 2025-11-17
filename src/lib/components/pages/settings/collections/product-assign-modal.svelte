@@ -149,7 +149,7 @@
 			tableName={TableNameKeys.CollectionProductAssignTable}
 			columns={PRODUCT_MODAL_COLUMNS}
 			disabled={shouldDisable}
-			autoRefetchOnVariableChange
+			autoRefetchOnPaginationParamsChange
 		/>
 	{/if}
 </Modal>

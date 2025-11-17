@@ -32,7 +32,13 @@
 				operator: FilterOperator;
 				value: FilterItemValue;
 			}>
-		>(activeFilters).some(([key, value]) => !key || !value.operator || value.value == undefined),
+		>(activeFilters).some(
+			([key, value]) =>
+				!key ||
+				!value.operator ||
+				value.value == undefined ||
+				(Array.isArray(value.value) && !value.value.length),
+		),
 	);
 
 	const setFilterItemValue = (key: keyof T, operator?: FilterOperator, value?: FilterItemValue) => {

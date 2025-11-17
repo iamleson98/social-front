@@ -11,6 +11,7 @@
 	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { OrderSortField, type Order, type QueryOrdersArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
+	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { orderStatusBadgeClass, paymentStatusBadgeClass } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 
@@ -31,7 +32,7 @@
 		},
 		{
 			title: $tranFunc('common.email'),
-			child: email,
+			child: { render: ({ item }) => item.userEmail },
 		},
 		{
 			title: $tranFunc('settings.payment'),
@@ -47,7 +48,7 @@
 		},
 		{
 			title: $tranFunc('settings.date'),
-			child: date,
+			child: { render: ({ item }) => dayjs(item.created).format(SitenameTimeFormat) },
 		},
 	]);
 </script>
@@ -60,10 +61,6 @@
 	</div>
 {/snippet}
 
-{#snippet date({ item }: { item: Order })}
-	{dayjs(item.created).format('DD/MM/YYYY h:mm A')}
-{/snippet}
-
 {#snippet payment({ item }: { item: Order })}
 	<Badge rounded {...paymentStatusBadgeClass(item.paymentStatus)} />
 {/snippet}
@@ -74,10 +71,6 @@
 
 {#snippet total({ item }: { item: Order })}
 	<PriceDisplay amount={item.total.gross.amount} currency={item.total.gross.currency} />
-{/snippet}
-
-{#snippet email({ item }: { item: Order })}
-	{item.userEmail}
 {/snippet}
 
 <div class="mb-2 flex items-center justify-between">

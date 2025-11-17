@@ -290,6 +290,6 @@
 		resultKey="staffUsers"
 		bind:variables={staffUsersVariables}
 		tableName={TableNameKeys.PermissionGroupStaffTable}
-		autoRefetchOnVariableChange
+		autoRefetchOnPaginationParamsChange
 	/>
 </Modal>

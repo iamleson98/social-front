@@ -232,7 +232,7 @@
 			}}
 			tableName={TableNameKeys.VoucherCodesTable}
 			columns={TABLE_COLUMNS}
-			autoRefetchOnVariableChange
+			autoRefetchOnPaginationParamsChange
 		/>
 	{/if}
 </div>

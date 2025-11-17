@@ -36,7 +36,6 @@
 			search: '',
 		},
 	});
-	// let forceReExecuteGraphqlQuery = $state(true);
 	let selectedBlogIds = $state<SvelteSet<string>>(new SvelteSet());
 </script>
 

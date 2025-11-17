@@ -82,6 +82,6 @@
 		resultKey={'user.orders' as keyof Query}
 		tableName={TableNameKeys.CustomerOrdersTable}
 		{disabled}
-		autoRefetchOnVariableChange
+		autoRefetchOnPaginationParamsChange
 	/>
 </div>

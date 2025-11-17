@@ -23,7 +23,6 @@
 			search: '',
 		},
 	});
-	// let forceReExecuteGraphqlQuery = $state(false);
 	let selectedProducts = $state<SvelteSet<string>>(new SvelteSet());
 
 	const productColumns: TableColumnProps<Product, ProductOrderField>[] = $derived([

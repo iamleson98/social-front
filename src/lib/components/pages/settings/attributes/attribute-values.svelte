@@ -323,7 +323,7 @@
 					disabled={loading || disabled}
 					onDragEnd={handleArrangeValues}
 					dragEffectType="move-position"
-					autoRefetchOnVariableChange
+					autoRefetchOnPaginationParamsChange
 				/>
 			{/if}
 		{:else}

@@ -31,7 +31,7 @@
 
 	let loading = $state(false);
 
-	const AttributeColumns: TableColumnProps<Attribute, AttributeSortField>[] = [
+	const AttributeColumns: TableColumnProps<Attribute, AttributeSortField>[] = $derived([
 		{
 			title: $tranFunc('common.name'),
 			child: name,
@@ -55,7 +55,7 @@
 			title: $tranFunc('common.action'),
 			child: action,
 		},
-	];
+	]);
 
 	const handleDeleteAttribute = (id: string) => {
 		ALERT_MODAL_STORE.openAlertModal({
