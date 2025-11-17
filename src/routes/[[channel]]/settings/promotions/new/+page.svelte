@@ -100,8 +100,6 @@
 	<GeneralMetadataEditor
 		objectId={''}
 		disabled={loading}
-		metadata={[]}
-		privateMetadata={[]}
 		bind:this={metadataRef}
 	/>
 	<ActionBar

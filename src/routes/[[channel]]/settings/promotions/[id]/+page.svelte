@@ -86,6 +86,7 @@
 		}
 
 		const hasErr = await metaRef?.handleUpdate();
+		loading = false;
 		if (hasErr) return;
 
 		toast.success($CommonState.EditSuccess);

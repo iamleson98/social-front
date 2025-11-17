@@ -45,7 +45,9 @@
 					copyColor = 'gray';
 				}, 3000);
 			})
-			.catch((err) => toast.error(err));
+			.catch((err) => {
+				toast.error(err);
+			});
 	};
 </script>
 
