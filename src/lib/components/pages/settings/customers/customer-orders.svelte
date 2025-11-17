@@ -83,5 +83,6 @@
 		tableName={TableNameKeys.CustomerOrdersTable}
 		{disabled}
 		autoRefetchOnPaginationParamsChange
+		autoFetchDataOnMount
 	/>
 </div>

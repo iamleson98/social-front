@@ -1,10 +1,13 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
 	import type { Order } from '$lib/gql/graphql';
+	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import { OrderUtilsInstance } from './utils.svelte';
 	import { toast } from 'svelte-sonner';
+	import { number, object, string } from 'zod';
 
 	type Props = {
 		open: boolean;
@@ -19,7 +22,16 @@
 		amount: 0,
 	});
 
+	const TransactionSchema = object({
+		description: string().nonempty($tranFunc('helpText.fieldRequired')),
+		amount: number().positive($tranFunc('error.negativeNumber')),
+	});
+
+	const SchemaHandler = createSchemaHandler(TransactionSchema, () => values);
+
 	const handleCaptureTransaction = async () => {
+		if (!SchemaHandler.validate()) return;
+
 		const success = await OrderUtilsInstance.transactionCreate(
 			order.id,
 			{
@@ -59,6 +71,10 @@
 			size="sm"
 			placeholder="description"
 			bind:value={values.description}
+			inputDebounceOption={{ onInput: SchemaHandler.validate }}
+			onblur={SchemaHandler.validate}
+			variant={$SchemaHandler.description?.length ? 'error' : 'info'}
+			subText={$SchemaHandler.description?.[0]}
 		/>
 		<Input
 			label="Psp reference"
@@ -66,7 +82,18 @@
 			placeholder="psp reference"
 			bind:value={values.pspReference}
 		/>
-		<Input label="Amount" required size="sm" type="number" bind:value={values.amount}>
+		<Input
+			label="Amount"
+			min={0}
+			required
+			inputDebounceOption={{ onInput: SchemaHandler.validate }}
+			onblur={SchemaHandler.validate}
+			variant={$SchemaHandler.amount?.length ? 'error' : 'info'}
+			subText={$SchemaHandler.amount?.[0]}
+			size="sm"
+			type="number"
+			bind:value={values.amount}
+		>
 			{#snippet action()}
 				<span class="text-[10px] font-bold">{order.channel.currencyCode}</span>
 			{/snippet}

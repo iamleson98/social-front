@@ -9,6 +9,7 @@
 	import { Badge } from '$lib/components/ui/Badge';
 	import { Skeleton } from '$lib/components/ui/Skeleton';
 	import { Table, type TableCellProps, type TableColumnProps } from '$lib/components/ui/Table';
+	import { type SocialColor } from '$lib/components/ui/common';
 	import {
 		OrderAction,
 		OrderChargeStatusEnum,
@@ -136,7 +137,14 @@
 
 {#snippet eventStatus({ item }: TableCellProps<TransactionEvent | TransactionFakeEvent>)}
 	{@const { status } = mapTransactionEvent(item)}
-	<Badge text={status || '-'} size="xs" />
+	{@const color: SocialColor = (() => {
+		if (status === 'INFO') return 'blue';
+		if (status === 'SUCCESS') return 'green';
+		if (status === 'FAILED') return 'red';
+		if (status === 'PENDING') return 'yellow';
+		return 'gray';
+	})()}
+	<Badge text={status || '-'} size="xs" {color} />
 {/snippet}
 
 {#snippet eventCreatedBy({ item }: TableCellProps<TransactionEvent | TransactionFakeEvent>)}

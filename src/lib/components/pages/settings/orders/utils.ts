@@ -843,7 +843,6 @@ export const shouldShowAmount = (event: TransactionEvent | TransactionFakeEvent)
 	if (!event || !event.amount?.currency)
 		return false;
 
-
 	if (
 		event.__typename === "TransactionEvent" &&
 		event.type &&
