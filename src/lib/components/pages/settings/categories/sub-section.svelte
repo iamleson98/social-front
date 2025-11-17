@@ -5,10 +5,7 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
-	import {
-		reFetchTableData,
-		TableNameKeys,
-	} from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import {
 		type Category,
 		type Product,
@@ -20,7 +17,6 @@
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
-	import { onMount } from 'svelte';
 
 	type Props = {
 		categoryId: string;
@@ -57,11 +53,6 @@
 			child: productUpdatedAt,
 		},
 	]);
-
-	onMount(() => {
-		reFetchTableData(TableNameKeys.CategorySubCategories);
-		reFetchTableData(TableNameKeys.CategoryProducts);
-	});
 </script>
 
 {#snippet categoryName({ item }: { item: Category })}
@@ -105,6 +96,7 @@
 				variables={{ first: 10, id: categoryId } as QueryCategoriesArgs}
 				columns={CATEGORY_CHILDREN_COLUMNS}
 				autoRefetchOnPaginationParamsChange
+				autoFetchDataOnMount
 			/>
 		</div>
 	</div>
@@ -119,6 +111,7 @@
 				variables={{ first: 10, filter: { categories: [categoryId] } } as QueryProductsArgs}
 				columns={PRODUCTS_COLUMNS}
 				autoRefetchOnPaginationParamsChange
+				autoFetchDataOnMount
 			/>
 		</div>
 	</div>

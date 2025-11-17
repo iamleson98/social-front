@@ -58,7 +58,7 @@
 		},
 		{
 			title: $tranFunc('settings.date'),
-			child: date,
+			child: { render: ({ item }) => dayjs(item.createdAt).format(SitenameTimeFormat) },
 			key: 'createdAt',
 		},
 		{
@@ -82,10 +82,6 @@
 	</a>
 {/snippet}
 
-{#snippet date({ item }: { item: SupportTicket })}
-	{dayjs(item.createdAt).format(SitenameTimeFormat)}
-{/snippet}
-
 {#snippet status({ item }: { item: SupportTicket })}
 	<Badge {...supportTicketStatusToBadgeClass(item.status)}>{item.status}</Badge>
 {/snippet}
@@ -96,6 +92,7 @@
 
 {#snippet action({ item }: { item: SupportTicket })}
 	<DropDown
+		placement="left"
 		options={[
 			{
 				children: $tranFunc('settings.editTicket'),

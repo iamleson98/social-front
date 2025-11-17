@@ -68,6 +68,7 @@
 {#snippet action({ item }: { item: Order })}
 	<div class="flex justify-center">
 		<DropDown
+			placement="bottom-end"
 			options={[
 				{
 					children: $tranFunc('settings.reqSupport'),
@@ -95,4 +96,5 @@
 	bind:variables={filterVariables}
 	resultKey={'me.orders' as keyof Query}
 	tableName={TableNameKeys.MyOrdersTable}
+	autoFetchDataOnMount
 />

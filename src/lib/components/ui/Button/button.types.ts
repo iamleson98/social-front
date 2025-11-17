@@ -7,6 +7,9 @@ import type { HTMLAnchorAttributes, HTMLButtonAttributes } from 'svelte/elements
 export type ButtonVariant = 'filled' | 'light' | 'outline' | 'gradient';
 
 export type ButtonProps = {
+	/**
+	 * @default filled
+	 */
 	variant?: ButtonVariant;
 	ref?: HTMLButtonElement | HTMLAnchorElement;
 	type?: 'button' | 'submit' | 'reset';

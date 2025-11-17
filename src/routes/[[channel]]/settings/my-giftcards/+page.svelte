@@ -52,6 +52,7 @@
 			resultKey={'me.giftCards' as keyof Query}
 			columns={Columns}
 			tableName={TableNameKeys.MyGiftcardsTable}
+			autoFetchDataOnMount
 		/>
 	</div>
 
