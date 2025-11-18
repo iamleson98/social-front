@@ -8,6 +8,7 @@
 		disabled,
 		onclick,
 		class: className = '',
+		isActive,
 		...rest
 	}: MenuItemProps = $props();
 
@@ -24,12 +25,16 @@
 <svelte:element
 	this={rest.href ? 'a' : 'div'}
 	{...rest}
-	class="flex items-center gap-2 py-1 px-2 text-sm flex-nowrap select-none! {disabled
-		? 'cursor-not-allowed! text-gray-400'
-		: 'cursor-pointer hover:bg-gray-100 text-gray-700'} {className}"
 	onclick={handleClick}
 	tabindex="0"
 	role="button"
+	class={[
+		'flex items-center gap-2 py-1 px-2 text-sm flex-nowrap select-none!',
+		disabled && 'cursor-not-allowed! text-gray-400',
+		className,
+		!disabled && 'cursor-pointer hover:bg-blue-100 hover:text-blue-500 transition-colors duration-100 ease-in-out text-gray-700',
+		isActive && 'bg-blue-100 text-blue-500!',
+	]}
 >
 	{#if startIcon}
 		<Icon icon={startIcon} />

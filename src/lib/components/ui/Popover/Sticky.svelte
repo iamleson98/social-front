@@ -7,7 +7,9 @@
 
 	type Props = {
 		children: Snippet;
-		/** Target element to stick to. Will show if provided */
+		/** If target is a valid DOM node, then sticky component will popup.
+		 * NOTE: must provided as bind:target=...
+		 */
 		target?: HTMLElement;
 		placement?: Placement;
 		/** to control the z-index level of your component. Default to `10000` */
@@ -77,6 +79,7 @@
 
 	The way it works:
 
-	In some places where overflow-x/y is set to `auto` or `scroll`, using just `Popover` does not work.
-	This component solves that by using floating-ui to calculate position. Fixed css position makes it can be anywhere without being affected by overflow-x/y.
+	In some places where overflow-x/y is set to `auto` or `scroll`, using just `Popover` or `Dropdown` does not work.
+	This component solves that by using `floating-ui` to calculate position, attach this component to the target, relative positioning works like Popover.
+	Fixed css position makes it can be put anywhere without being affected by overflow-x/y.
  -->

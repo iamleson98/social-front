@@ -35,7 +35,7 @@
 			.min(1, $CommonState.FieldRequiredError)
 			.nonempty($CommonState.FieldRequiredError)
 			.max(PRODUCT_SLUG_MAX_LENGTH, {
-				message: $tranFunc('error.lengthInvalid', {
+				error: $tranFunc('error.lengthInvalid', {
 					name: $tranFunc('product.prdSlug'),
 					min: 1,
 					max: PRODUCT_SLUG_MAX_LENGTH,
@@ -45,7 +45,7 @@
 			.min(1, $CommonState.FieldRequiredError)
 			.nonempty($CommonState.FieldRequiredError)
 			.max(SEO_TITLE_MAX_LENGTH, {
-				message: $tranFunc('error.lengthInvalid', {
+				error: $tranFunc('error.lengthInvalid', {
 					name: $tranFunc('product.seoTitle'),
 					min: 1,
 					max: SEO_TITLE_MAX_LENGTH,
@@ -55,7 +55,7 @@
 			.min(1, $CommonState.FieldRequiredError)
 			.nonempty($CommonState.FieldRequiredError)
 			.max(SEO_DESCRIPTION_MAX_LENGTH, {
-				message: $tranFunc('error.lengthInvalid', {
+				error: $tranFunc('error.lengthInvalid', {
 					name: $tranFunc('product.seoDescription'),
 					min: 1,
 					max: SEO_DESCRIPTION_MAX_LENGTH,

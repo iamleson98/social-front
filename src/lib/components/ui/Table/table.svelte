@@ -1,9 +1,10 @@
 <script lang="ts" generics="T extends Record<string, unknown>, K extends string">
 	import { ChevronLeft, ChevronRight, GripVertical, Icon } from '$lib/components/icons';
 	import { IconButton, Button } from '$lib/components/ui/Button';
-	import { DropDown, type MenuItemProps } from '$lib/components/ui/Dropdown';
+	import { MenuItem } from '$lib/components/ui/Dropdown';
 	import { OrderDirection } from '$lib/gql/graphql';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import { Sticky } from '$lib/components/ui/Popover';
 	import {
 		ROW_OPTIONS,
 		SortIconsMap,
@@ -44,6 +45,7 @@
 	}, {} as SortState<K>);
 	let innerRowsPerPage = $state<number>(rowsPerPage || ROW_OPTIONS[0]);
 	let sortState = $state.raw<SortState<K>>({ ...DEFAULT_SORT_STATE, ...defaultSortState });
+	let numPerPageButtonRef = $state<HTMLButtonElement>();
 
 	const handleGraphqlNavigationClick = (dir: 1 | -1) => {
 		if (!graphqlPagination) return;
@@ -106,6 +108,20 @@
 		</td>
 	</tr>
 {/snippet}
+
+<!--
+	NOTE: when table is empty, the number of items per page drop down will be affected by table overflow effect. 
+ 	Using a sticky component outside of table, and attach it to the num per page button, when it is clicked, solves this issue
+-->
+<Sticky bind:target={numPerPageButtonRef} placement="bottom-start">
+	<div class="py-2 rounded-lg border border-gray-200 bg-white shadow-sm">
+		{#each ROW_OPTIONS as num, idx (idx)}
+			<MenuItem onclick={() => handleRowsPerPageChange(num)} isActive={num === innerRowsPerPage}>
+				{num}
+			</MenuItem>
+		{/each}
+	</div>
+</Sticky>
 
 <div class={[className, 'w-full overflow-x-auto']}>
 	<div class="overflow-y-auto" style:max-height={maxHeight ? `${maxHeight}px !important` : 'unset'}>
@@ -200,21 +216,17 @@
 
 	<!-- MARK: pagination -->
 	{#if graphqlPagination || restPagination}
-		<div class="mt-4 flex justify-between items-center">
-			<DropDown
-				placement="bottom-start"
-				options={ROW_OPTIONS.map<MenuItemProps>((num) => ({
-					children: `${num}`,
-					onclick: () => handleRowsPerPageChange(num),
-				}))}
+		<div class="mt-4 flex justify-between w-full items-center">
+			<Button
+				size="xs"
+				variant="light"
+				{disabled}
+				onclick={(evt) => (numPerPageButtonRef = evt.currentTarget as HTMLButtonElement)}
 			>
-				{#snippet trigger(opts)}
-					<Button size="xs" variant="light" {...opts} {disabled}>
-						{numOfRowsTitle || 'Rows per page'}:
-						{innerRowsPerPage}
-					</Button>
-				{/snippet}
-			</DropDown>
+				{numOfRowsTitle || 'Rows per page'}:
+				{innerRowsPerPage}
+			</Button>
+
 			{#if graphqlPagination}
 				<div class="flex items-center gap-2">
 					<IconButton

@@ -11,6 +11,8 @@ export type MenuItemProps = {
 	disabled?: boolean;
 	onclick?: () => void;
 	class?: string;
+	/** Indicates if this item is currently selected */
+	isActive?: boolean;
 };
 
 export type DropdownProps = {

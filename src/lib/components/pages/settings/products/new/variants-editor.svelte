@@ -43,9 +43,9 @@
 		QuickFillingProps,
 	} from './utils';
 	import dayjs from 'dayjs';
-	import { omit } from 'es-toolkit';
+	import { intersectionBy, omit } from 'es-toolkit';
 	import { set } from 'es-toolkit/compat';
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { slide } from 'svelte/transition';
 
 	type Props = {
@@ -103,6 +103,14 @@
 		weight: 0,
 		trackInventory: true,
 	});
+	/**
+	 * If there is 1 variant, there will be 8 columns -> each column's width = 1/9 = 11.11%, 2 variants -> 9 columns -> each column's width = 1/8 = 12.5%;
+	 */
+	const ThClass = $derived.by(() => {
+		if (!variantManifests.length) return '';
+		if (variantManifests.length === 1) return 'w-[12.5%]!';
+		return 'w-[11.11%]!';
+	});
 
 	onMount(() => {
 		return channelsQueryStore.subscribe((result) => {
@@ -152,7 +160,12 @@
 	});
 
 	$effect(() => {
+		// when the given channels change, this function runs again,
+		// we must do these steps below, to make sure the logic works:
+
+		// 1) Update the logic for the channel select options
 		const newChannelSelectOptions: ChannelSelectOptionProps[] = [];
+		const channelIdsMap: Record<string, boolean> = {};
 
 		channelsListing?.updateChannels?.forEach((channelListing) => {
 			newChannelSelectOptions.push({
@@ -162,9 +175,34 @@
 				channelId: channelListing.channelId,
 				price: undefined,
 			});
+
+			channelIdsMap[channelListing.channelId] = true;
 		});
 
 		channelSelectOptions = newChannelSelectOptions;
+
+		if (quickFillingValues.channels.some((chan) => !channelIdsMap[chan.channelId]))
+			// 2) In case user already selected channels for some variant(s),
+			// we must check and keep them in sync with new selected channels.
+
+			// a) quick filling section
+			quickFillingValues.channels = quickFillingValues.channels.filter(
+				(chan) => channelIdsMap[chan.channelId],
+			);
+
+		if (
+			variantsInputDetails.some((inputDetail) =>
+				inputDetail.channelListings?.some((listing) => !channelIdsMap[listing.channelId]),
+			)
+		)
+			// b) variant detail sections
+			variantsInputDetails = variantsInputDetails.map((inputDetail) => {
+				inputDetail.channelListings = inputDetail.channelListings?.filter(
+					(chan) => channelIdsMap[chan.channelId],
+				);
+
+				return inputDetail;
+			});
 	});
 
 	/** check if quick filling form has any error */
@@ -430,6 +468,11 @@
 			};
 		});
 	};
+
+	const StyleMap: Record<number, string> = {
+		0: 'bg-blue-100 text-blue-600',
+		1: 'bg-amber-100 text-amber-600',
+	};
 </script>
 
 <div class="space-y-2">
@@ -540,7 +583,7 @@
 								<Label label={$tranFunc('product.price')} size="sm" />
 								<Label label={$tranFunc('product.costPrice')} size="sm" />
 							</div>
-							<div class="max-h-32 overflow-y-auto border border-gray-200 bg-white p-2 rounded-lg">
+							<div class="max-h-32 overflow-y-auto border border-gray-200 bg-white p-1 rounded-lg">
 								{#each quickFillingValues.channels as channel, idx (idx)}
 									<!-- {#snippet action()}
 										<span class="font-bold text-[9px]">{channel.currency}</span>
@@ -602,7 +645,7 @@
 					<!-- PRE-ORDER -->
 					<div class="w-1/6">
 						<Label label={$tranFunc('common.preorder')} size="sm" />
-						<div class="border border-gray-200 bg-white p-2 rounded-lg">
+						<div class="border border-gray-200 bg-white p-1 rounded-lg">
 							<!-- QUANTITY LIMIT -->
 							<Input
 								type="number"
@@ -649,7 +692,7 @@
 							<SelectSkeleton size="xs" />
 						{:else}
 							<div
-								class="max-h-32 overflow-y-auto border border-gray-200 bg-white p-2 rounded-lg space-y-1.5"
+								class="max-h-32 overflow-y-auto border border-gray-200 bg-white p-1 rounded-lg space-y-1.5"
 							>
 								{#each quickFillingValues.stocks as stockInput, idx (idx)}
 									{@const isError = stockInput.quantity % 1 !== 0}
@@ -713,21 +756,21 @@
 		</div>
 
 		<!-- MARK: DETAILS -->
-		<div class="relative h-fit w-full rounded-lg p-3 border border-gray-200 bg-white">
-			<table class="w-full text-sm h-fit text-left table table-zebra text-gray-600 mb-4">
+		<div class={SitenameCommonClassName}>
+			<table class="w-full text-sm h-fit text-left table text-gray-600">
 				<thead>
 					<tr>
-						<th>{variantManifests[0].attribute.name}</th>
+						<th class={ThClass}>{variantManifests[0].attribute.name}</th>
 						{#if variantManifests.length === MAX_VARIANT_TYPES}
-							<th>{variantManifests[1].attribute.name}</th>
+							<th class={ThClass}>{variantManifests[1].attribute.name}</th>
 						{/if}
-						<th>{$tranFunc('product.channel')}</th>
-						<th>{$tranFunc('product.price')}</th>
-						<th>{$tranFunc('product.costPrice')}</th>
-						<th>{$tranFunc('attributes.Weight')}</th>
-						<th>{$tranFunc('common.preorder')}</th>
-						<th>{$tranFunc('product.stock')}</th>
-						<th>{$tranFunc('product.sku')}</th>
+						<th class={ThClass}>{$tranFunc('product.channel')}</th>
+						<th class={ThClass}>{$tranFunc('product.price')}</th>
+						<th class={ThClass}>{$tranFunc('product.costPrice')}</th>
+						<th class={ThClass}>{$tranFunc('attributes.Weight')}</th>
+						<th class={ThClass}>{$tranFunc('common.preorder')}</th>
+						<th class={ThClass}>{$tranFunc('product.stock')}</th>
+						<th class={ThClass}>{$tranFunc('product.sku')}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -735,7 +778,10 @@
 						<tr class={`variant-table-row ${quickFillingHighlightClass} border-b border-gray-200`}>
 							{#if variantManifests.length === MAX_VARIANT_TYPES}
 								{#if detailIdx % variantManifests[1].values.length === 0}
-									<td class="text-center" rowspan={variantManifests[1].values.length}>
+									<td
+										class={['text-center font-medium text-blue-600 bg-blue-50']}
+										rowspan={variantManifests[1].values.length}
+									>
 										{variantInputDetail.name?.split('-')[0]}
 									</td>
 								{/if}
@@ -874,9 +920,7 @@
 							</td>
 							<!-- STOCK -->
 							<td class="stock-td">
-								<div
-									class="space-y-1.5 border border-gray-200 rounded-lg max-h-28 overflow-y-auto p-1"
-								>
+								<div class="space-y-1 max-h-28 overflow-y-auto p-0.5">
 									{#each variantInputDetail.stocks || [] as stock, idx (idx)}
 										<Input
 											size="xs"
@@ -915,19 +959,28 @@
 <style lang="postcss">
 	@reference "tailwindcss";
 
-	td {
-		@apply p-1 border-transparent border-l border-r;
-	}
-	th {
-		@apply px-1 py-3;
+	th:not(:last-child) {
+		@apply border-r border-gray-200 py-1 px-1.5;
 	}
 
-	.variant-table-row:last-child > td {
-		@apply border-b;
+	tr {
+		@apply border-b border-gray-300;
 	}
-	.variant-table-row:first-child > td {
-		@apply border-t;
+
+	tr:nth-child(even) {
+		@apply bg-gray-50;
 	}
+
+	td {
+		@apply p-1;
+	}
+
+	/* td[rowspan] {
+		@apply bg-blue-100 font-semibold text-blue-600;
+	}
+	td[rowspan] {
+		@apply bg-amber-100 font-semibold text-amber-600;
+	} */
 
 	/** price highlight */
 	.td-price-hl > .price-td,
@@ -938,11 +991,5 @@
 	.td-weight-hl > .weight-td,
 	.td-preorder-hl > .preorder-td {
 		@apply border-blue-500!;
-	}
-
-	table,
-	tr,
-	td {
-		border-collapse: initial !important;
 	}
 </style>
