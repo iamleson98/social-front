@@ -1,10 +1,11 @@
 <script lang="ts" generics="T extends Record<string, unknown>, K extends string">
+	import { dev } from '$app/environment';
 	import { ChevronLeft, ChevronRight, GripVertical, Icon } from '$lib/components/icons';
 	import { IconButton, Button } from '$lib/components/ui/Button';
 	import { MenuItem } from '$lib/components/ui/Dropdown';
+	import { Sticky } from '$lib/components/ui/Popover';
 	import { OrderDirection } from '$lib/gql/graphql';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
-	import { Sticky } from '$lib/components/ui/Popover';
 	import {
 		ROW_OPTIONS,
 		SortIconsMap,
@@ -17,7 +18,6 @@
 	import { Pagination } from 'bits-ui';
 	import { flip } from 'svelte/animate';
 	import { fade } from 'svelte/transition';
-	import { dev } from '$app/environment';
 
 	let {
 		items = [],
@@ -42,7 +42,9 @@
 	}: TableProps<T, K> = $props();
 
 	if (onDragEnd && dev) {
-		console.warn('NOTE: Seems like your table supports drag and drop. If some of your cell component are interactive E.g: (a, input, textarea, button, etc), you should add `data-interactive` attribute to them')
+		console.warn(
+			'NOTE: Seems like your table supports drag and drop. If some of your cell component are interactive E.g: (a, input, textarea, button, etc), you should add `data-interactive` attribute to them',
+		);
 	}
 
 	const DEFAULT_SORT_STATE = columns.reduce<SortState<K>>((acc, column) => {
@@ -138,7 +140,12 @@
 							<th></th>
 						{/if}
 						{#each columns as column, idx (idx)}
-							<th style:width={column.width ? `${column.width}px` : 'unset'}>
+							{@const width = !column.width
+								? 'unset'
+								: typeof column.width === 'number'
+									? `${column.width}px`
+									: column.width}
+							<th style:width>
 								<div class="flex items-center justify-between">
 									<div class="flex items-center gap-1">
 										{#if column?.startIcon}

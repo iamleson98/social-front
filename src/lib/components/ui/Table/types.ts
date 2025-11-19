@@ -68,7 +68,7 @@ export type TableColumnProps<T extends Record<string, unknown>, K extends string
 	 */
 	child: Snippet<[TableCellProps<T>]> | {render: (props: TableCellProps<T>) => any};
 	/** plain positive integer number */
-	width?: number;
+	width?: number | string;
 };
 
 export type SortDirection = OrderDirection | 'NEUTRAL';

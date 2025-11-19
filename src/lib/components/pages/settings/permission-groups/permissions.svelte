@@ -78,7 +78,7 @@
 			<div
 				class={classNames('ring ring-gray-200 p-2 rounded-lg text-xs text-gray-700 wrap-anywhere', {
 					'ring-red-300! bg-red-50': isRemoving,
-					'ring-blue-300! bg-blue-50': isAdding,
+					'ring-green-300! bg-green-50': isAdding,
 				})}
 			>
 				<Checkbox

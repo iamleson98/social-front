@@ -20,6 +20,7 @@
 			title: $tranFunc('common.name'),
 			child: name,
 			key: PermissionGroupSortField.Name,
+			width: '50%',
 		},
 		{
 			title: $tranFunc('settings.users'),

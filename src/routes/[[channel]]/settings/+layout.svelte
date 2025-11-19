@@ -302,7 +302,7 @@
 					page.params.id!,
 					page.params.method_id!,
 				),
-			].includes(page.url.pathname),
+			].some((path) => path === page.url.pathname || path === page.url.pathname + page.url.search),
 		},
 		{
 			icon: LockCog,
@@ -367,7 +367,7 @@
 							<span class="text-sm text-gray-500">{$tranFunc('settings.verified')}</span>
 						{:else}
 							<Icon icon={CheckOff} class="text-red-500" size="md" />
-						<span class="text-sm text-gray-500">{$tranFunc('settings.unverified')}</span>
+							<span class="text-sm text-gray-500">{$tranFunc('settings.unverified')}</span>
 						{/if}
 					</div>
 				</div>
