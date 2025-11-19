@@ -11,8 +11,7 @@
 	import { FilterManager } from '$lib/components/common/filter-box';
 	import { CommonSnippets } from '$lib/components/common/filter-box/snippets.svelte';
 	import ShopCurrenciesSelect from '$lib/components/common/shop-currencies-select.svelte';
-	import { reFetchTableData } from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import type { GraphqlPaginableTableInterface } from '$lib/components/ui/Table';
 	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
 	import {
 		type GiftCardFilterInput,
@@ -24,9 +23,10 @@
 
 	type Props = {
 		variables: QueryGiftCardsArgs;
+		tableRef?: GraphqlPaginableTableInterface;
 	};
 
-	let { variables = $bindable() }: Props = $props();
+	let { variables = $bindable(), tableRef }: Props = $props();
 
 	const FilterOptions: FilterProps<GiftCardFilterInput> = $derived({
 		currency: {
@@ -91,7 +91,7 @@
 		size="xs"
 		placeholder={$tranFunc('common.currency')}
 		value={initialValue}
-		onchange={opt => onValue((opt as SelectOption).value)}
+		onchange={(opt) => onValue((opt as SelectOption).value)}
 	/>
 {/snippet}
 
@@ -149,7 +149,7 @@
 <FilterManager
 	filterOptions={FilterOptions}
 	bind:variables
-	onRefetchData={() => reFetchTableData(TableNameKeys.GiftcardsTable)}
+	onRefetchData={() => tableRef?.triggerFetchData()}
 	searchKey="search"
 	variablePatchingCallbackAfterReload={(newVariables, params) => {
 		if (!newVariables.filter) newVariables.filter = {};

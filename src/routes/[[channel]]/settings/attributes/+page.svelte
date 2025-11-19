@@ -6,11 +6,11 @@
 	import Filter from '$lib/components/pages/settings/attributes/filter.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
-	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
-		reFetchTableData,
-		TableNameKeys,
-	} from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+		GraphqlPaginableTable,
+		type GraphqlPaginableTableInterface,
+		type TableColumnProps,
+	} from '$lib/components/ui/Table';
 	import {
 		type Attribute,
 		AttributeSortField,
@@ -29,6 +29,7 @@
 			search: '',
 		},
 	});
+	let tableRef = $state<GraphqlPaginableTableInterface>();
 
 	const AttributeColumns: TableColumnProps<Attribute, AttributeSortField>[] = $derived([
 		{
@@ -68,7 +69,7 @@
 		onResult: (result) => {
 			if (checkIfGraphqlResultHasError(result, 'attributeDelete')) return;
 			toast.success($tranFunc('common.delSuccess'));
-			reFetchTableData(TableNameKeys.AttributesTable);
+			tableRef?.triggerFetchData();
 		},
 	});
 
@@ -122,7 +123,7 @@
 {/snippet}
 
 <div class="mb-2">
-	<Filter bind:variables />
+	<Filter bind:variables {tableRef} />
 </div>
 
 <GraphqlPaginableTable
@@ -131,5 +132,5 @@
 	bind:variables
 	disabled={$AttributeDeleteStore.fetching}
 	columns={AttributeColumns}
-	tableName={TableNameKeys.AttributesTable}
+	bind:this={tableRef}
 />

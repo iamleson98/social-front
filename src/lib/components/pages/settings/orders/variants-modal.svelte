@@ -8,10 +8,9 @@
 	import { Modal } from '$lib/components/ui/Modal';
 	import {
 		GraphqlPaginableTable,
-		reFetchTableData,
+		type GraphqlPaginableTableInterface,
 		type TableColumnProps,
 	} from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { type AddressInput, type Product, type QueryProductsArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { classNames, stringSlicer } from '$lib/utils/utils';
@@ -36,6 +35,7 @@
 		filter: { search: '' },
 	});
 	let searchProductsQuery = $state('');
+	let tableRef = $state<GraphqlPaginableTableInterface>();
 
 	const COLUMNS: TableColumnProps<Product>[] = [
 		{
@@ -61,7 +61,7 @@
 			const newVariables = { ...variables };
 			set(newVariables, 'filter.search', searchProductsQuery);
 			variables = newVariables;
-			reFetchTableData(TableNameKeys.VariantForOrderTable);
+			tableRef?.triggerFetchData();
 		}
 	});
 </script>
@@ -122,7 +122,7 @@
 		query={VARIANTS_FOR_ORDER_QUERY}
 		resultKey="products"
 		bind:variables
-		tableName={TableNameKeys.VariantForOrderTable}
 		autoRefetchOnPaginationParamsChange
+		bind:this={tableRef}
 	/>
 </Modal>

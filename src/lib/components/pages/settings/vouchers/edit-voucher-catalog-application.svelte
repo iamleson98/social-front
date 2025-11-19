@@ -24,10 +24,9 @@
 	import { Modal } from '$lib/components/ui/Modal';
 	import {
 		GraphqlPaginableTable,
-		reFetchTableData,
+		type GraphqlPaginableTableInterface,
 		type TableColumnProps,
 	} from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import type {
 		Mutation,
 		MutationVoucherCataloguesAddArgs,
@@ -124,18 +123,28 @@
 	let removeVariants = $state.raw<string[]>([]);
 	let loading = $state(false);
 
+	let voucherCollectionTableRef = $state<GraphqlPaginableTableInterface>();
+	let voucherProductTableRef = $state<GraphqlPaginableTableInterface>();
+	let voucherCategoryTableRef = $state<GraphqlPaginableTableInterface>();
+	let voucherVariantTableRef = $state<GraphqlPaginableTableInterface>();
+
+	let collectionsTableRef = $state<GraphqlPaginableTableInterface>();
+	let productsTableRef = $state<GraphqlPaginableTableInterface>();
+	let categoriesTableRef = $state<GraphqlPaginableTableInterface>();
+	let variantsTableRef = $state<GraphqlPaginableTableInterface>();
+
 	const forceRefetchCatalogueData = () => {
-		reFetchTableData(TableNameKeys.CollectionListTable);
-		reFetchTableData(TableNameKeys.ProductListTable);
-		reFetchTableData(TableNameKeys.CategoryListTable);
-		reFetchTableData(TableNameKeys.VariantListTable);
+		collectionsTableRef?.triggerFetchData();
+		productsTableRef?.triggerFetchData();
+		categoriesTableRef?.triggerFetchData();
+		variantsTableRef?.triggerFetchData();
 	};
 
 	const forceRefetchVoucherCatalogueData = () => {
-		reFetchTableData(TableNameKeys.VoucherProductCatalogTable);
-		reFetchTableData(TableNameKeys.VoucherProductCatalogTable);
-		reFetchTableData(TableNameKeys.VoucherCategoryCatalogTable);
-		reFetchTableData(TableNameKeys.VoucherVariantCatalogTable);
+		voucherCollectionTableRef?.triggerFetchData();
+		voucherProductTableRef?.triggerFetchData();
+		voucherCategoryTableRef?.triggerFetchData();
+		voucherVariantTableRef?.triggerFetchData();
 	};
 
 	const handleCatalogQueryChange = async () => {
@@ -316,7 +325,7 @@
 			autoRefetchOnPaginationParamsChange
 			query={VOUCHER_COLLECTIONS_QUERY}
 			bind:variables={voucherRelationVars}
-			tableName={TableNameKeys.VoucherCollectionCatalogTable}
+			bind:this={voucherCollectionTableRef}
 			resultKey={'voucher.collections' as keyof Query}
 			disabled={disabled || loading}
 			columns={CatalogUnassignSelectCol.concat(
@@ -332,7 +341,7 @@
 			autoRefetchOnPaginationParamsChange
 			query={VOUCHER_PRODUCTS_QUERY}
 			bind:variables={voucherRelationVars}
-			tableName={TableNameKeys.VoucherProductCatalogTable}
+			bind:this={voucherProductTableRef}
 			disabled={disabled || loading}
 			resultKey={'voucher.products' as keyof Query}
 			columns={CatalogUnassignSelectCol.concat(
@@ -350,7 +359,7 @@
 			query={VOUCHER_CATEGORIES_QUERY}
 			bind:variables={voucherRelationVars}
 			disabled={disabled || loading}
-			tableName={TableNameKeys.VoucherCategoryCatalogTable}
+			bind:this={voucherCategoryTableRef}
 			resultKey={'voucher.categories' as keyof Query}
 			columns={CatalogUnassignSelectCol.concat(
 				CATEGORY_COLUMNS(
@@ -366,7 +375,7 @@
 			query={VOUCHER_VARIANTS_QUERY}
 			disabled={disabled || loading}
 			bind:variables={voucherRelationVars}
-			tableName={TableNameKeys.VoucherVariantCatalogTable}
+			bind:this={voucherVariantTableRef}
 			resultKey={'voucher.variants' as keyof Query}
 			columns={CatalogUnassignSelectCol.concat(
 				VARIANT_COLUMNS(
@@ -413,7 +422,7 @@
 			query={CATEGORIES_LIST_QUERY_STORE}
 			resultKey="categories"
 			bind:variables={queryCategoriesVariables}
-			tableName={TableNameKeys.CategoryListTable}
+			bind:this={categoriesTableRef}
 			disabled={disabled || loading}
 		/>
 	{:else if activeTab === 'collections'}
@@ -428,7 +437,7 @@
 			query={COLLECTIONS_QUERY}
 			resultKey="collections"
 			bind:variables={queryCollectionsVariables}
-			tableName={TableNameKeys.CollectionListTable}
+			bind:this={collectionsTableRef}
 			disabled={disabled || loading}
 		/>
 	{:else if activeTab === 'products'}
@@ -444,7 +453,7 @@
 			query={PRODUCT_LIST_QUERY}
 			resultKey="products"
 			bind:variables={queryProductsVariables}
-			tableName={TableNameKeys.ProductListTable}
+			bind:this={productsTableRef}
 			disabled={disabled || loading}
 		/>
 	{:else if activeTab === 'variants'}
@@ -459,7 +468,7 @@
 			query={PRODUCT_VARIANTS_QUERY}
 			resultKey="productVariants"
 			bind:variables={queryVariantsVariables}
-			tableName={TableNameKeys.VariantListTable}
+			bind:this={variantsTableRef}
 			disabled={disabled || loading}
 		/>
 	{/if}

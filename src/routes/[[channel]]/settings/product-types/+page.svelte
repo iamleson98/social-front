@@ -6,11 +6,11 @@
 	import Filter from '$lib/components/pages/settings/product-type/filter.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
-	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
-		reFetchTableData,
-		TableNameKeys,
-	} from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+		GraphqlPaginableTable,
+		type GraphqlPaginableTableInterface,
+		type TableColumnProps,
+	} from '$lib/components/ui/Table';
 	import {
 		type Mutation,
 		type MutationProductTypeDeleteArgs,
@@ -29,6 +29,7 @@
 		},
 	});
 	let loading = $state(false);
+	let tableRef = $state<GraphqlPaginableTableInterface>();
 
 	const ProductTypesColumns: TableColumnProps<ProductType, ProductTypeSortField>[] = $derived([
 		{
@@ -71,7 +72,7 @@
 				)
 					return;
 
-				reFetchTableData(TableNameKeys.ProductTypesTable);
+				tableRef?.triggerFetchData();
 			},
 		});
 	};
@@ -102,13 +103,13 @@
 {/snippet}
 
 <div class="mb-2">
-	<Filter bind:variables />
+	<Filter bind:variables {tableRef} />
 </div>
 
 <GraphqlPaginableTable
 	query={PRODUCT_TYPES_QUERY}
 	bind:variables
-	tableName={TableNameKeys.ProductTypesTable}
+	bind:this={tableRef}
 	columns={ProductTypesColumns}
 	resultKey="productTypes"
 	disabled={loading}

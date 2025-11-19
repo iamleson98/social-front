@@ -2,11 +2,13 @@
 	import { tranFunc } from '$i18n';
 	import {
 		CREATE_PRODUCT_MUTATION,
+		PRODUCT_DELETE_MUTATION,
 		PRODUCT_MEDIA_CREATE_MUTATION,
 		PRODUCT_VARIANTS_BULK_CREATE_MUTATION,
 		UPDATE_PRODUCT_CHANNEL_LISTINGS_MUTATION,
 	} from '$lib/api/admin/product';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { operationStore } from '$lib/api/operation';
 	import FileInputContainer from '$lib/components/common/file-input-container.svelte';
 	import {
 		GeneralMetadataEditor,
@@ -24,6 +26,7 @@
 		Mutation,
 		MutationProductChannelListingUpdateArgs,
 		MutationProductCreateArgs,
+		MutationProductDeleteArgs,
 		MutationProductMediaCreateArgs,
 		MutationProductVariantBulkCreateArgs,
 		ProductChannelListingAddInput,
@@ -74,8 +77,17 @@
 	let productVariantsInput = $state.raw<ProductVariantBulkCreateInput[]>([]);
 	let loading = $state(false);
 
+	const ProductDeleteStore = operationStore<
+		Pick<Mutation, 'productDelete'>,
+		MutationProductDeleteArgs
+	>({
+		query: PRODUCT_DELETE_MUTATION,
+		variables: { id: undefined },
+		pause: true,
+	});
+
 	const createProductMedias = async (productID: string) => {
-		if (!productMedias.length) return;
+		if (!productMedias.length) return 0;
 
 		const operations = productMedias.map((media) => {
 			return GRAPHQL_CLIENT.mutation<
@@ -95,6 +107,8 @@
 		for (const result of results) {
 			if (checkIfGraphqlResultHasError(result, 'productMediaCreate')) numFails++;
 		}
+
+		return numFails;
 
 		/**
 		 * In case user want to assign some media(s) to some variant(s),
@@ -160,6 +174,7 @@
 		if (
 			checkIfGraphqlResultHasError(updateProductChannelListingResult, 'productChannelListingUpdate')
 		) {
+			ProductDeleteStore.reexecute({ variables: { id: createdProductId } });
 			loading = false;
 			return;
 		}
@@ -173,6 +188,7 @@
 			variants: productVariantsInput,
 		});
 		if (checkIfGraphqlResultHasError(variantsBulkCreateResult, 'productVariantBulkCreate')) {
+			ProductDeleteStore.reexecute({ variables: { id: createdProductId } });
 			loading = false;
 			return;
 		}
@@ -191,11 +207,17 @@
 		}
 
 		// 4) create product medias
-		await createProductMedias(createdProductId);
+		const totalFails = await createProductMedias(createdProductId);
+		if (totalFails) {
+			ProductDeleteStore.reexecute({ variables: { id: createdProductId } });
+			loading = false;
+			return;
+		}
 
 		// 5) update metadatas
 		const metaHasErr = await metaRef?.handleUpdate(createdProductId);
 		if (metaHasErr) {
+			ProductDeleteStore.reexecute({ variables: { id: createdProductId } });
 			loading = false;
 			return;
 		}

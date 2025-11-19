@@ -10,11 +10,11 @@
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Checkbox } from '$lib/components/ui/Input';
-	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
-		reFetchTableData,
-		TableNameKeys,
-	} from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+		GraphqlPaginableTable,
+		type GraphqlPaginableTableInterface,
+		type TableColumnProps,
+	} from '$lib/components/ui/Table';
 	import {
 		ProductOrderField,
 		type Mutation,
@@ -38,6 +38,7 @@
 		},
 	});
 	let selectedProducts = $state(new SvelteSet<string>());
+	let tableRef = $state<GraphqlPaginableTableInterface>();
 
 	const ProductBulkDeleteStore = operationStore<
 		Pick<Mutation, 'productBulkDelete'>,
@@ -51,7 +52,7 @@
 				return;
 			}
 			selectedProducts.clear();
-			reFetchTableData(TableNameKeys.ProductListTable);
+			tableRef?.triggerFetchData();
 		},
 	});
 
@@ -157,7 +158,7 @@
 {/snippet}
 
 <div class="flex items-center justify-between mb-2">
-	<Filter bind:variables={productsFilterVariables} />
+	<Filter bind:variables={productsFilterVariables} {tableRef} />
 
 	<dir class="flex items-center gap-2">
 		{#if selectedProducts.size}
@@ -180,5 +181,5 @@
 	bind:variables={productsFilterVariables}
 	resultKey="products"
 	columns={productColumns}
-	tableName={TableNameKeys.ProductListTable}
+	bind:this={tableRef}
 />

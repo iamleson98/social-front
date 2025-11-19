@@ -18,11 +18,11 @@
 	import Button from '$lib/components/ui/Button/Button.svelte';
 	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
 	import { Checkbox } from '$lib/components/ui/Input';
-	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
-		reFetchTableData,
-		TableNameKeys,
-	} from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+		GraphqlPaginableTable,
+		type GraphqlPaginableTableInterface,
+		type TableColumnProps,
+	} from '$lib/components/ui/Table';
 	import {
 		GiftCardSortField,
 		type GiftCard,
@@ -47,6 +47,7 @@
 	});
 	let loading = $state(false);
 	let selectedGiftcards = $state<Record<string, boolean>>({});
+	let tableRef = $state<GraphqlPaginableTableInterface>();
 
 	const COLUMNS: TableColumnProps<GiftCard, GiftCardSortField>[] = $derived([
 		{
@@ -102,7 +103,7 @@
 				if (checkIfGraphqlResultHasError(result, 'giftCardDelete', $CommonState.DeleteSuccess))
 					return;
 
-				reFetchTableData(TableNameKeys.GiftcardsTable); // trigger refetching table data
+				tableRef?.triggerFetchData(); // trigger refetching table data
 			},
 		});
 	};
@@ -126,7 +127,7 @@
 
 				loading = false;
 				selectedGiftcards = {};
-				reFetchTableData(TableNameKeys.GiftcardsTable);
+				tableRef?.triggerFetchData();
 			},
 		});
 	};
@@ -135,7 +136,7 @@
 		loading = true;
 		const hasErr = await giftcardUtil.handleToggleGiftcardStatus(id, active);
 		loading = false;
-		if (!hasErr) reFetchTableData(TableNameKeys.GiftcardsTable);
+		if (!hasErr) tableRef?.triggerFetchData();
 	};
 
 	const handleBulkDeactivateGiftcards = async () => {
@@ -155,7 +156,7 @@
 			return;
 
 		selectedGiftcards = {};
-		reFetchTableData(TableNameKeys.GiftcardsTable);
+		tableRef?.triggerFetchData();
 	};
 
 	const handleBulkActivateGiftcards = async () => {
@@ -175,7 +176,7 @@
 			return;
 
 		selectedGiftcards = {};
-		reFetchTableData(TableNameKeys.GiftcardsTable);
+		tableRef?.triggerFetchData();
 	};
 </script>
 
@@ -261,7 +262,7 @@
 {/snippet}
 
 <div class="flex items-center justify-between mb-2">
-	<Filter bind:variables={giftcardFilterVariables} />
+	<Filter bind:variables={giftcardFilterVariables} {tableRef} />
 	<div class="flex gap-1.5">
 		{#if Object.keys(selectedGiftcards).length}
 			<Button
@@ -297,9 +298,9 @@
 
 <GraphqlPaginableTable
 	query={GIFTCARD_LIST_QUERY}
-	tableName={TableNameKeys.GiftcardsTable}
 	resultKey="giftCards"
 	bind:variables={giftcardFilterVariables}
 	columns={COLUMNS}
 	disabled={loading}
+	bind:this={tableRef}
 />

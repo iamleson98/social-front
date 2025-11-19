@@ -3,8 +3,11 @@
 	import { PROMOTION_LIST_QUERY } from '$lib/api/admin/discount';
 	import Filter from '$lib/components/pages/settings/promotions/filter.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
-	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import {
+		GraphqlPaginableTable,
+		type GraphqlPaginableTableInterface,
+		type TableColumnProps,
+	} from '$lib/components/ui/Table';
 	import { PromotionSortField, type Promotion, type QueryPromotionsArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
@@ -35,6 +38,8 @@
 			key: PromotionSortField.EndDate,
 		},
 	]);
+
+	let tableRef = $state<GraphqlPaginableTableInterface>();
 </script>
 
 {#snippet title({ item }: { item: Promotion })}
@@ -60,7 +65,7 @@
 {/snippet}
 
 <div class="mb-2">
-	<Filter bind:variables />
+	<Filter bind:variables {tableRef} />
 </div>
 
 <GraphqlPaginableTable
@@ -68,5 +73,5 @@
 	columns={PROMOTION_COLUMNS}
 	resultKey="promotions"
 	bind:variables
-	tableName={TableNameKeys.PromotionsTable}
+	bind:this={tableRef}
 />

@@ -6,11 +6,11 @@
 	import { Trash } from '$lib/components/icons';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
-	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
-		reFetchTableData,
-		TableNameKeys,
-	} from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+		GraphqlPaginableTable,
+		type GraphqlPaginableTableInterface,
+		type TableColumnProps,
+	} from '$lib/components/ui/Table';
 	import {
 		WarehouseSortField,
 		type Mutation,
@@ -44,6 +44,7 @@
 			child: action,
 		},
 	]);
+	let tableRef = $state<GraphqlPaginableTableInterface>();
 
 	const handleClickDelete = async (id: string) => {
 		ALERT_MODAL_STORE.openAlertModal({
@@ -64,7 +65,7 @@
 					return;
 
 				// force reexecute query
-				reFetchTableData(TableNameKeys.WarehousesTable);
+				tableRef?.triggerFetchData();
 			},
 		});
 	};
@@ -100,7 +101,7 @@
 	<FilterManager
 		bind:variables
 		searchKey={'filter.search' as keyof QueryWarehousesArgs}
-		onRefetchData={() => reFetchTableData(TableNameKeys.WarehousesTable)}
+		onRefetchData={() => tableRef?.triggerFetchData()}
 		disabled={loading}
 	/>
 </div>
@@ -108,8 +109,8 @@
 <GraphqlPaginableTable
 	query={WAREHOUSE_LIST_QUERY}
 	bind:variables
-	tableName={TableNameKeys.WarehousesTable}
 	resultKey="warehouses"
 	columns={WarehouseColumns}
 	disabled={loading}
+	bind:this={tableRef}
 />

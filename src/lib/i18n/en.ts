@@ -611,6 +611,7 @@ export default {
 		noPrdAssigned: 'No products assigned',
 		prdsInCol: 'Products in collection',
 		assignPrd: 'Assign product',
+		assignVariant: 'Assign variant',
 		searchPrd: 'Search products',
 		successReorder: 'Successfully reorderd products of collection',
 		successAssignedPrds: 'Successfully assigned products to collection',

@@ -8,11 +8,11 @@
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown, type MenuItemProps } from '$lib/components/ui/Dropdown';
-	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
-		reFetchTableData,
-		TableNameKeys,
-	} from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+		GraphqlPaginableTable,
+		type GraphqlPaginableTableInterface,
+		type TableColumnProps,
+	} from '$lib/components/ui/Table';
 	import {
 		type Collection,
 		CollectionSortField,
@@ -54,6 +54,7 @@
 			child: action,
 		},
 	]);
+	let tableRef = $state<GraphqlPaginableTableInterface>();
 
 	const handleDeleteCollection = async (id: string) => {
 		const result = await GRAPHQL_CLIENT.mutation<
@@ -66,7 +67,7 @@
 		if (checkIfGraphqlResultHasError(result, 'collectionDelete', $CommonState.DeleteSuccess))
 			return;
 
-		reFetchTableData(TableNameKeys.CollectionListTable);
+		tableRef?.triggerFetchData();
 	};
 </script>
 
@@ -126,7 +127,7 @@
 {/snippet}
 
 <div class="mb-2">
-	<Filter bind:variables={filterVariables} />
+	<Filter bind:variables={filterVariables} {tableRef} />
 </div>
 
 <GraphqlPaginableTable
@@ -134,5 +135,5 @@
 	bind:variables={filterVariables}
 	resultKey="collections"
 	columns={COLLECTION_COLUMNS}
-	tableName={TableNameKeys.CollectionListTable}
+	bind:this={tableRef}
 />

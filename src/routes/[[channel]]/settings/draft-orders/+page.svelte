@@ -7,11 +7,11 @@
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import HeadBar from '$lib/components/pages/settings/common/head-bar.svelte';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
-	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
-		reFetchTableData,
-		TableNameKeys,
-	} from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+		GraphqlPaginableTable,
+		type GraphqlPaginableTableInterface,
+		type TableColumnProps,
+	} from '$lib/components/ui/Table';
 	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
 	import {
 		OrderSortField,
@@ -29,6 +29,7 @@
 		filter: { search: '' },
 	});
 	let loading = $state(false);
+	let tableRef = $state<GraphqlPaginableTableInterface>();
 
 	const COLUMNS: TableColumnProps<Order, OrderSortField>[] = $derived([
 		{
@@ -146,7 +147,7 @@
 		bind:variables
 		searchKey={'filter.search' as keyof QueryDraftOrdersArgs}
 		filterOptions={FilterOptions}
-		onRefetchData={() => reFetchTableData(TableNameKeys.DraftOrdersTable)}
+		onRefetchData={() => tableRef?.triggerFetchData()}
 		variablePatchingCallbackAfterReload={(filterVariables, params) => {
 			if (!filterVariables.filter) filterVariables.filter = {};
 
@@ -172,7 +173,7 @@
 <GraphqlPaginableTable
 	query={DRAFT_ORDER_LIST_QUERY}
 	bind:variables
-	tableName={TableNameKeys.DraftOrdersTable}
+	bind:this={tableRef}
 	columns={COLUMNS}
 	resultKey="draftOrders"
 />

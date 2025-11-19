@@ -2,11 +2,11 @@
 	import { tranFunc } from '$i18n';
 	import { SHIPPING_ZONES_QUERY } from '$lib/api/admin/shipping';
 	import { FilterManager } from '$lib/components/common/filter-box';
-	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
-		reFetchTableData,
-		TableNameKeys,
-	} from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+		GraphqlPaginableTable,
+		type GraphqlPaginableTableInterface,
+		type TableColumnProps,
+	} from '$lib/components/ui/Table';
 	import { type QueryShippingZonesArgs, type ShippingZone } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 
@@ -16,6 +16,7 @@
 			search: '',
 		},
 	});
+	let tableRef = $state<GraphqlPaginableTableInterface>();
 
 	const ShippingZoneColumns: TableColumnProps<ShippingZone>[] = $derived([
 		{
@@ -38,7 +39,7 @@
 <div class="mb-2">
 	<FilterManager
 		bind:variables
-		onRefetchData={() => reFetchTableData(TableNameKeys.ShippingZonesTable)}
+		onRefetchData={() => tableRef?.triggerFetchData()}
 		searchKey="filter.search"
 	/>
 </div>
@@ -46,7 +47,7 @@
 <GraphqlPaginableTable
 	query={SHIPPING_ZONES_QUERY}
 	bind:variables
-	tableName={TableNameKeys.ShippingZonesTable}
+	bind:this={tableRef}
 	resultKey="shippingZones"
 	columns={ShippingZoneColumns}
 />

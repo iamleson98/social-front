@@ -4,8 +4,11 @@
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import FilterButton from '$lib/components/pages/settings/staff/filter-button.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
-	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import {
+		GraphqlPaginableTable,
+		type GraphqlPaginableTableInterface,
+		type TableColumnProps,
+	} from '$lib/components/ui/Table';
 	import { type QueryStaffUsersArgs, type User, UserSortField } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 
@@ -34,6 +37,7 @@
 			child: status,
 		},
 	]);
+	let tableRef = $state<GraphqlPaginableTableInterface>();
 </script>
 
 {#snippet avatar({ item }: { item: User })}
@@ -58,7 +62,7 @@
 {/snippet}
 
 <div class="mb-2">
-	<FilterButton bind:variables />
+	<FilterButton bind:variables {tableRef} />
 </div>
 
 <GraphqlPaginableTable
@@ -66,5 +70,5 @@
 	bind:variables
 	resultKey="staffUsers"
 	columns={STAFF_COLUMNS}
-	tableName={TableNameKeys.StaffTable}
+	bind:this={tableRef}
 />

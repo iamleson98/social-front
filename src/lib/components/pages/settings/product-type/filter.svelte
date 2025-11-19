@@ -6,8 +6,7 @@
 		type FilterProps,
 	} from '$lib/components/common/filter-box';
 	import { CommonSnippets } from '$lib/components/common/filter-box/snippets.svelte';
-	import { reFetchTableData } from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import type { GraphqlPaginableTableInterface } from '$lib/components/ui/Table';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import {
 		ProductTypeConfigurable,
@@ -18,9 +17,10 @@
 
 	type Props = {
 		variables: QueryProductTypesArgs;
+		tableRef?: GraphqlPaginableTableInterface;
 	};
 
-	let { variables = $bindable() }: Props = $props();
+	let { variables = $bindable(), tableRef }: Props = $props();
 
 	const FilterOptions: FilterProps<ProductTypeFilterInput> = $derived({
 		configurable: {
@@ -58,7 +58,7 @@
 
 <FilterManager
 	bind:variables
-	onRefetchData={() => reFetchTableData(TableNameKeys.ProductTypesTable)}
+	onRefetchData={() => tableRef?.triggerFetchData()}
 	filterOptions={FilterOptions}
 	searchKey={'filter.search' as keyof QueryProductTypesArgs}
 	variablePatchingCallbackAfterReload={(newVariables, params) => {

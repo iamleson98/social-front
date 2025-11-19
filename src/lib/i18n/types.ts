@@ -541,6 +541,7 @@ export type TranslationKey =
 | 'collection.noPrdAssigned'
 | 'collection.prdsInCol'
 | 'collection.assignPrd'
+| 'collection.assignVariant'
 | 'collection.searchPrd'
 | 'collection.successReorder'
 | 'collection.successAssignedPrds'

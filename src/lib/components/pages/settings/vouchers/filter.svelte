@@ -3,9 +3,8 @@
 	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box';
 	import { FilterManager } from '$lib/components/common/filter-box';
 	import { CommonSnippets } from '$lib/components/common/filter-box/snippets.svelte';
+	import type { GraphqlPaginableTableInterface } from '$lib/components/ui/Table';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
-	import { reFetchTableData } from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import {
 		DiscountStatusEnum,
 		VoucherDiscountType,
@@ -15,9 +14,10 @@
 
 	type Props = {
 		variables: QueryVouchersArgs;
+		tableRef?: GraphqlPaginableTableInterface;
 	};
 
-	let { variables = $bindable() }: Props = $props();
+	let { variables = $bindable(), tableRef }: Props = $props();
 
 	const DISCOUNT_TYPES: {
 		value: VoucherDiscountType;
@@ -144,7 +144,7 @@
 <FilterManager
 	filterOptions={FilterOptions}
 	bind:variables
-	onRefetchData={() => reFetchTableData(TableNameKeys.VoucherTable)}
+	onRefetchData={() => tableRef?.triggerFetchData()}
 	searchKey={'filter.search' as keyof QueryVouchersArgs}
 	variablePatchingCallbackAfterReload={(filterVariables, params) => {
 		if (!filterVariables.filter) filterVariables.filter = {};

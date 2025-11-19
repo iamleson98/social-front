@@ -2,13 +2,9 @@
 	import { tranFunc } from '$i18n';
 	import { FilterManager } from '$lib/components/common/filter-box';
 	import { CommonSnippets } from '$lib/components/common/filter-box/snippets.svelte';
-	import type {
-		FilterComponentType,
-		FilterProps,
-	} from '$lib/components/common/filter-box/types';
+	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box/types';
 	import { Checkbox } from '$lib/components/ui/Input';
-	import { reFetchTableData } from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import type { GraphqlPaginableTableInterface } from '$lib/components/ui/Table';
 	import {
 		CollectionPublished,
 		type CollectionFilterInput,
@@ -17,9 +13,10 @@
 
 	type Props = {
 		variables: QueryCollectionsArgs;
+		tableRef?: GraphqlPaginableTableInterface;
 	};
 
-	let { variables = $bindable() }: Props = $props();
+	let { variables = $bindable(), tableRef }: Props = $props();
 
 	const FilterOptions: FilterProps<CollectionFilterInput> = $derived({
 		published: {
@@ -61,7 +58,7 @@
 	filterOptions={FilterOptions}
 	bind:variables
 	searchKey={'filter.search' as keyof QueryCollectionsArgs}
-	onRefetchData={() => reFetchTableData(TableNameKeys.CollectionListTable)}
+	onRefetchData={() => tableRef?.triggerFetchData()}
 	variablePatchingCallbackAfterReload={(newVariables, params) => {
 		const { published, channel, metadata } = params;
 

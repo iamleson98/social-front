@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import {
 		PRODUCT_TYPE_ASSIGN_ATTRIBUTES_MUTATION,
 		PRODUCT_TYPE_AVAILABLE_ATTRIBUTES_QUERY,
@@ -13,11 +14,10 @@
 	import { Modal } from '$lib/components/ui/Modal';
 	import {
 		GraphqlPaginableTable,
-		reFetchTableData,
 		Table,
+		type GraphqlPaginableTableInterface,
 		type TableColumnProps,
 	} from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import {
 		ProductAttributeType,
 		type AssignedVariantAttribute,
@@ -58,6 +58,7 @@
 	let loading = $state(false);
 	let attributeAssignType = $state<ProductAttributeType>();
 	const shouldDisable = $derived(disabled || loading);
+	let tableRef = $state<GraphqlPaginableTableInterface>();
 
 	let availableAttributeVariables = $state({
 		id: productTypeId,
@@ -67,54 +68,54 @@
 		},
 	});
 
-	const ProductAttributeTableColumns = [
+	const ProductAttributeTableColumns = $derived([
 		{
 			title: productAttributeSelectAll,
 			child: productAttributeUnassignSelect,
 		},
 		{
-			title: 'Name',
+			title: $tranFunc('common.name'),
 			child: name,
 		},
 		{
-			title: 'Slug',
+			title: $tranFunc('common.slug'),
 			child: slug,
 		},
-	];
+	]);
 
-	const AssignTableColumns = [
+	const AssignTableColumns = $derived([
 		{
 			title: '',
 			child: assignSelect,
 		},
 		{
-			title: 'Name',
+			title: $tranFunc('common.name'),
 			child: name,
 		},
 		{
-			title: 'Slug',
+			title: $tranFunc('common.slug'),
 			child: slug,
 		},
-	];
+	]);
 
-	const VariantAttributeTableColumns: TableColumnProps<AssignedVariantAttribute>[] = [
+	const VariantAttributeTableColumns: TableColumnProps<AssignedVariantAttribute>[] = $derived([
 		{
 			title: productVariantAttributeSelectAll,
 			child: variantAttrUnassignSelect,
 		},
 		{
-			title: 'Name',
+			title: $tranFunc('common.name'),
 			child: variantAttrName,
 		},
 		{
-			title: 'Slug',
+			title: $tranFunc('common.slug'),
 			child: variantAttrSlug,
 		},
 		{
 			title: 'Variant selection',
 			child: attributeIsVariantSelection,
 		},
-	];
+	]);
 
 	const handleUnassignProductVariantAttributes = async () => {
 		if (!selectedProductVariantAttributesToUnassign.size) return;
@@ -339,7 +340,7 @@
 				disabled={shouldDisable}
 				onclick={() => {
 					attributeAssignType = ProductAttributeType.Product;
-					reFetchTableData(TableNameKeys.ProductTypesAttributesTable);
+					tableRef?.triggerFetchData();
 				}}
 			>
 				Assign attributes
@@ -379,7 +380,7 @@
 					disabled={shouldDisable}
 					onclick={() => {
 						attributeAssignType = ProductAttributeType.Variant;
-						reFetchTableData(TableNameKeys.ProductTypesAttributesTable);
+						tableRef?.triggerFetchData();
 					}}
 				>
 					Assign attributes
@@ -417,7 +418,7 @@
 		bind:value={availableAttributeVariables.filter.search}
 		inputDebounceOption={{
 			debounceTime: 888,
-			onInput: () => reFetchTableData(TableNameKeys.ProductTypesAttributesTable),
+			onInput: () => tableRef?.triggerFetchData(),
 		}}
 	/>
 	<GraphqlPaginableTable
@@ -426,7 +427,7 @@
 		columns={AssignTableColumns}
 		disabled={shouldDisable}
 		bind:variables={availableAttributeVariables}
-		tableName={TableNameKeys.ProductTypesAttributesTable}
+		bind:this={tableRef}
 		autoRefetchOnPaginationParamsChange
 	/>
 </Modal>

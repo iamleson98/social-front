@@ -5,9 +5,8 @@
 		type FilterComponentType,
 		type FilterProps,
 	} from '$lib/components/common/filter-box';
+	import { type GraphqlPaginableTableInterface } from '$lib/components/ui/Table';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
-	import { reFetchTableData } from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import {
 		StaffMemberStatus,
 		type QueryStaffUsersArgs,
@@ -17,9 +16,10 @@
 
 	type Props = {
 		variables: QueryStaffUsersArgs;
+		tableRef?: GraphqlPaginableTableInterface;
 	};
 
-	let { variables = $bindable() }: Props = $props();
+	let { variables = $bindable(), tableRef }: Props = $props();
 
 	const FilterOptions: FilterProps<StaffUserInput> = $derived({
 		status: {
@@ -49,7 +49,7 @@
 <FilterManager
 	filterOptions={FilterOptions}
 	bind:variables
-	onRefetchData={() => reFetchTableData(TableNameKeys.StaffTable)}
+	onRefetchData={() => tableRef?.triggerFetchData()}
 	searchKey="filter.search"
 	variablePatchingCallbackAfterReload={(vars, searchParams) => {
 		if (searchParams.status) {

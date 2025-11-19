@@ -8,7 +8,6 @@
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown } from '$lib/components/ui/Dropdown';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { type Order, type Query } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
@@ -95,6 +94,6 @@
 	columns={ORDER_TABLE_COLUMNS}
 	bind:variables={filterVariables}
 	resultKey={'me.orders' as keyof Query}
-	tableName={TableNameKeys.MyOrdersTable}
 	autoFetchDataOnMount
+	autoRefetchOnPaginationParamsChange
 />

@@ -7,8 +7,11 @@
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown } from '$lib/components/ui/Dropdown';
-	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import {
+		GraphqlPaginableTable,
+		type GraphqlPaginableTableInterface,
+		type TableColumnProps,
+	} from '$lib/components/ui/Table';
 	import { OrderSortField, type Order, type QueryOrdersArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
@@ -23,6 +26,8 @@
 			search: '',
 		},
 	});
+
+	let tableRef = $state<GraphqlPaginableTableInterface>();
 
 	const ORDER_TABLE_COLUMNS: TableColumnProps<Order, OrderSortField>[] = $derived([
 		{
@@ -74,7 +79,7 @@
 {/snippet}
 
 <div class="mb-2 flex items-center justify-between">
-	<Filter bind:variables={filterVariables} />
+	<Filter bind:variables={filterVariables} {tableRef} />
 	<DropDown
 		placement="bottom-end"
 		options={[
@@ -102,6 +107,6 @@
 	bind:variables={filterVariables}
 	resultKey="orders"
 	requestPolicy="network-only"
-	tableName={TableNameKeys.ShopOrdersTable}
+	bind:this={tableRef}
 	columns={ORDER_TABLE_COLUMNS}
 />

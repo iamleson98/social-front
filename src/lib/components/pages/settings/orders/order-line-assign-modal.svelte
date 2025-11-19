@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { ORDER_LINES_CREATE_MUTATION, VARIANTS_FOR_ORDER_QUERY } from '$lib/api/admin/orders';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
@@ -13,7 +14,6 @@
 		ROW_OPTIONS,
 		type TableColumnProps,
 	} from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import type {
 		Mutation,
 		MutationOrderLinesCreateArgs,
@@ -32,24 +32,24 @@
 
 	let { orderId, onAddedOrderLines, orderChannelSlug }: Props = $props();
 
-	const COLUMNS: TableColumnProps<Product>[] = [
+	const COLUMNS: TableColumnProps<Product>[] = $derived([
 		{
-			title: 'Action',
+			title: $tranFunc('common.action'),
 			child: checkbox,
 		},
 		{
-			title: 'Image',
+			title: $tranFunc('common.pic'),
 			child: image,
 		},
 		{
-			title: 'Name',
+			title: $tranFunc('common.name'),
 			child: name,
 		},
 		{
-			title: 'Variants',
+			title: $tranFunc('common.variants'),
 			child: variants,
 		},
-	];
+	]);
 
 	const BATCH = ROW_OPTIONS[0];
 
@@ -189,8 +189,8 @@
 		query={VARIANTS_FOR_ORDER_QUERY}
 		resultKey="products"
 		bind:variables
-		tableName={TableNameKeys.VariantForOrderTable}
 		disabled={loading}
 		autoRefetchOnPaginationParamsChange
+		autoFetchDataOnMount
 	/>
 </Modal>

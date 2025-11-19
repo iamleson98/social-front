@@ -3,15 +3,15 @@
 	import { FilterManager } from '$lib/components/common/filter-box';
 	import { CommonSnippets } from '$lib/components/common/filter-box/snippets.svelte';
 	import type { FilterProps } from '$lib/components/common/filter-box/types';
-	import { reFetchTableData } from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import type { GraphqlPaginableTableInterface } from '$lib/components/ui/Table';
 	import type { CustomerFilterInput, QueryCustomersArgs } from '$lib/gql/graphql';
 
 	type Props = {
 		variables: QueryCustomersArgs;
+		tableRef?: GraphqlPaginableTableInterface;
 	};
 
-	let { variables = $bindable() }: Props = $props();
+	let { variables = $bindable(), tableRef }: Props = $props();
 
 	const FilterOptions: FilterProps<CustomerFilterInput> = {
 		dateJoined: {
@@ -42,7 +42,7 @@
 
 <FilterManager
 	filterOptions={FilterOptions}
-	onRefetchData={() => reFetchTableData(TableNameKeys.CustomerTable)}
+	onRefetchData={() => tableRef?.triggerFetchData()}
 	bind:variables
 	searchKey={'filter.search' as keyof QueryCustomersArgs}
 	variablePatchingCallbackAfterReload={(vars, searchParams) => {

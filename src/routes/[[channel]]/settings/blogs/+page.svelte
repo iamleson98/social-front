@@ -5,8 +5,11 @@
 	import { Badge } from '$lib/components/ui/Badge';
 	import { Button, IconButton } from '$lib/components/ui/Button';
 	import { Checkbox } from '$lib/components/ui/Input';
-	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import {
+		GraphqlPaginableTable,
+		type GraphqlPaginableTableInterface,
+		type TableColumnProps,
+	} from '$lib/components/ui/Table';
 	import type { Page, QueryPagesArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils/routes';
 	import { SvelteSet } from 'svelte/reactivity';
@@ -37,6 +40,7 @@
 		},
 	});
 	let selectedBlogIds = $state<SvelteSet<string>>(new SvelteSet());
+	let tableRef = $state<GraphqlPaginableTableInterface>();
 </script>
 
 {#snippet title({ item }: { item: Page })}
@@ -75,7 +79,7 @@
 {/snippet}
 
 <div class="mb-2 flex justify-between">
-	<Filter bind:variables />
+	<Filter bind:variables {tableRef} />
 
 	<div class="flex gap-1.5">
 		{#if selectedBlogIds.size}
@@ -91,5 +95,5 @@
 	resultKey="pages"
 	columns={PageColumns}
 	bind:variables
-	tableName={TableNameKeys.BlogsTable}
+	bind:this={tableRef}
 />

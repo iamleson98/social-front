@@ -13,10 +13,9 @@
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import {
 		GraphqlPaginableTable,
-		reFetchTableData,
+		type GraphqlPaginableTableInterface,
 		type TableColumnProps,
 	} from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import {
 		type QueryCategoriesArgs,
 		type QueryCollectionsArgs,
@@ -79,11 +78,16 @@
 	});
 	let catalogQueryValue = $state('');
 
+	let categoryTableRef = $state<GraphqlPaginableTableInterface>();
+	let collectionTableRef = $state<GraphqlPaginableTableInterface>();
+	let productTableRef = $state<GraphqlPaginableTableInterface>();
+	let variantTableRef = $state<GraphqlPaginableTableInterface>();
+
 	const forceReExecuteCatalogQuery = () => {
-		reFetchTableData(TableNameKeys.NewVoucherCategoryTableName);
-		reFetchTableData(TableNameKeys.NewVoucherCollectionTableName);
-		reFetchTableData(TableNameKeys.NewVoucherProductTableName);
-		reFetchTableData(TableNameKeys.NewVoucherVariantTableName);
+		categoryTableRef?.triggerFetchData();
+		collectionTableRef?.triggerFetchData();
+		productTableRef?.triggerFetchData();
+		variantTableRef?.triggerFetchData();
 	};
 
 	const handleCatalogQueryChange = async () => {
@@ -176,7 +180,7 @@
 				query={CATEGORIES_LIST_QUERY_STORE}
 				resultKey="categories"
 				bind:variables={queryCategoriesVariables}
-				tableName={TableNameKeys.NewVoucherCategoryTableName}
+				bind:this={categoryTableRef}
 				disabled={disabled || loading}
 			/>
 		{:else if activeTab === 'collections'}
@@ -192,7 +196,7 @@
 				query={COLLECTIONS_QUERY}
 				resultKey="collections"
 				bind:variables={queryCollectionsVariables}
-				tableName={TableNameKeys.NewVoucherCollectionTableName}
+				bind:this={collectionTableRef}
 				disabled={disabled || loading}
 			/>
 		{:else if activeTab === 'products'}
@@ -209,7 +213,7 @@
 				query={PRODUCT_LIST_QUERY}
 				resultKey="products"
 				bind:variables={queryProductsVariables}
-				tableName={TableNameKeys.NewVoucherProductTableName}
+				bind:this={productTableRef}
 				disabled={disabled || loading}
 			/>
 		{:else if activeTab === 'variants'}
@@ -225,7 +229,7 @@
 				query={PRODUCT_VARIANTS_QUERY}
 				resultKey="productVariants"
 				bind:variables={queryVariantsVariables}
-				tableName={TableNameKeys.NewVoucherVariantTableName}
+				bind:this={variantTableRef}
 				disabled={disabled || loading}
 			/>
 		{/if}

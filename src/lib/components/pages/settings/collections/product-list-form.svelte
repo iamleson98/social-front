@@ -12,9 +12,8 @@
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Popover } from '$lib/components/ui/Popover';
-	import type { TableColumnProps } from '$lib/components/ui/Table';
-	import { GraphqlPaginableTable, reFetchTableData } from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import type { GraphqlPaginableTableInterface, TableColumnProps } from '$lib/components/ui/Table';
+	import { GraphqlPaginableTable } from '$lib/components/ui/Table';
 	import type {
 		Mutation,
 		MutationCollectionReorderProductsArgs,
@@ -40,10 +39,10 @@
 		first: 10,
 		id: collectionID,
 	});
-	// const TableNameKeys.CollectionProductListTable = 'collection_product_table';
 
 	let loading = $state(false);
 	let shouldDisable = $derived(loading || disabled);
+	let productTableRef = $state<GraphqlPaginableTableInterface>();
 
 	const PRODUCT_COLUMNS: TableColumnProps<Product, ProductOrderField>[] = $derived([
 		{
@@ -98,7 +97,7 @@
 			return;
 
 		// success, trigger refetching data
-		reFetchTableData(TableNameKeys.CollectionProductListTable);
+		productTableRef?.triggerFetchData();
 	};
 
 	type TaskProps = {
@@ -152,7 +151,7 @@
 		);
 
 		// success, trigger refetching data
-		if (!hasErr) reFetchTableData(TableNameKeys.CollectionProductListTable);
+		if (!hasErr) productTableRef?.triggerFetchData();
 	};
 </script>
 
@@ -237,8 +236,8 @@
 			query={COLLECTION_PRODUCTS_QUERY}
 			resultKey={'collection.products' as keyof Query}
 			bind:variables={filterVariables}
-			tableName={TableNameKeys.CollectionProductListTable}
 			columns={PRODUCT_COLUMNS}
+			bind:this={productTableRef}
 			onDragEnd={handleReOrderProductsInCollection}
 			dragEffectType="move-position"
 			disabled={shouldDisable}

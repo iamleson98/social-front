@@ -6,7 +6,6 @@
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Checkbox } from '$lib/components/ui/Input';
 	import { GraphqlPaginableTable, Table, type TableColumnProps } from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { ProductOrderField, type Product, type Query } from '$lib/gql/graphql';
 	import { toast } from 'svelte-sonner';
 
@@ -75,7 +74,7 @@
 		<Badge text="Not Available" color="red" />
 	{/if}
 {/snippet}
-{#snippet actionColumn({  }: { item: Product })}
+{#snippet actionColumn({}: { item: Product })}
 	<IconButton variant="outline" size="xs" onclick={() => {}} icon={OpenEye} />
 {/snippet}
 
@@ -107,7 +106,6 @@
 		columns={graphqlTableColumns}
 		disabled={disabledGraphqlTable}
 		sortMultiple={sortMultipleGraphqlTable}
-		tableName={TableNameKeys.ProductListTable}
 	/>
 	<Button class="mt-2" onclick={handleCopyGraphqlTable}>Copy GraphQL Table</Button>
 </div>

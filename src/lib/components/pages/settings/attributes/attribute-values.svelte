@@ -15,11 +15,10 @@
 	import { Modal } from '$lib/components/ui/Modal';
 	import {
 		GraphqlPaginableTable,
+		type GraphqlPaginableTableInterface,
 		type TableCellProps,
 		type TableColumnProps,
-		reFetchTableData,
 	} from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import {
 		AttributeInputTypeEnum,
@@ -74,6 +73,7 @@
 			AttributeInputTypeEnum.Swatch,
 		].includes(inputType),
 	);
+	let tableRef = $state<GraphqlPaginableTableInterface>();
 
 	const MetricSystems = Object.values(MetricSystem).map<SelectOption>((value) => ({
 		label: $tranFunc(`attributes.${value}`),
@@ -162,7 +162,7 @@
 				checkIfGraphqlResultHasError(result, 'attributeValueBulkDelete', $CommonState.DeleteSuccess)
 			)
 				return;
-			reFetchTableData(TableNameKeys.AttributeValuesTable);
+			tableRef?.triggerFetchData();
 			selectedAttributes.clear();
 		},
 	});
@@ -180,7 +180,7 @@
 		onResult: (result) => {
 			if (checkIfGraphqlResultHasError(result, 'attributeReorderValues', $CommonState.EditSuccess))
 				return;
-			reFetchTableData(TableNameKeys.AttributeValuesTable);
+			tableRef?.triggerFetchData();
 		},
 	});
 
@@ -197,7 +197,7 @@
 		onResult: (result) => {
 			if (checkIfGraphqlResultHasError(result, 'attributeValueUpdate', $CommonState.EditSuccess))
 				return;
-			reFetchTableData(TableNameKeys.AttributeValuesTable);
+			tableRef?.triggerFetchData();
 			valueItemToEdit = undefined;
 			openUpsertModal = false;
 		},
@@ -218,7 +218,7 @@
 		onResult: (result) => {
 			if (checkIfGraphqlResultHasError(result, 'attributeValueCreate', $CommonState.CreateSuccess))
 				return;
-			reFetchTableData(TableNameKeys.AttributeValuesTable);
+			tableRef?.triggerFetchData();
 			openUpsertModal = false;
 		},
 	});
@@ -373,7 +373,6 @@
 			<!-- if this is edit page -->
 			{#if attributeID}
 				<GraphqlPaginableTable
-					tableName={TableNameKeys.AttributeValuesTable}
 					query={ATTRIBUTE_VALUES_QUERY}
 					resultKey={'attribute.choices' as keyof Query}
 					columns={ValueColumns}
@@ -383,6 +382,7 @@
 					dragEffectType="move-position"
 					autoRefetchOnPaginationParamsChange
 					autoFetchDataOnMount
+					bind:this={tableRef}
 				/>
 			{/if}
 		{:else}

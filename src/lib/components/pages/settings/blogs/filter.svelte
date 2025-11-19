@@ -6,16 +6,16 @@
 		FilterProps,
 	} from '$lib/components/common/filter-box';
 	import { FilterManager } from '$lib/components/common/filter-box';
-	import { reFetchTableData } from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import type { GraphqlPaginableTableInterface } from '$lib/components/ui/Table';
 	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
 	import type { PageFilterInput, QueryPagesArgs, QueryPageTypesArgs } from '$lib/gql/graphql';
 
 	type Props = {
 		variables: QueryPagesArgs;
+		tableRef?: GraphqlPaginableTableInterface;
 	};
 
-	let { variables = $bindable() }: Props = $props();
+	let { variables = $bindable(), tableRef }: Props = $props();
 
 	const FilterOptions: FilterProps<PageFilterInput> = {
 		pageTypes: {
@@ -46,7 +46,7 @@
 <FilterManager
 	filterOptions={FilterOptions}
 	bind:variables
-	onRefetchData={() => reFetchTableData(TableNameKeys.BlogsTable)}
+	onRefetchData={() => tableRef?.triggerFetchData()}
 	searchKey="filter.search"
 	variablePatchingCallbackAfterReload={(filterVariables, params) => {
 		const { pageTypes, search } = params;

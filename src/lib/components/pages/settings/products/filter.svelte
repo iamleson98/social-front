@@ -10,8 +10,7 @@
 		FilterItemValue,
 		FilterProps,
 	} from '$lib/components/common/filter-box/types';
-	import { reFetchTableData } from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import type { GraphqlPaginableTableInterface } from '$lib/components/ui/Table';
 	import { GraphqlPaginableSelect, type SelectOption } from '$lib/components/ui/select';
 	import type {
 		ProductFilterInput,
@@ -23,9 +22,10 @@
 
 	type Props = {
 		variables: QueryProductsArgs;
+		tableRef?: GraphqlPaginableTableInterface;
 	};
 
-	let { variables = $bindable() }: Props = $props();
+	let { variables = $bindable(), tableRef }: Props = $props();
 
 	const FilterOptions: FilterProps<ProductFilterInput> = {
 		price: {
@@ -190,7 +190,7 @@
 
 <FilterManager
 	filterOptions={FilterOptions}
-	onRefetchData={() => reFetchTableData(TableNameKeys.ProductListTable)}
+	onRefetchData={() => tableRef?.triggerFetchData()}
 	bind:variables
 	searchKey="search"
 	variablePatchingCallbackAfterReload={(vars, params) => {

@@ -10,11 +10,10 @@
 	import { Modal } from '$lib/components/ui/Modal';
 	import {
 		GraphqlPaginableTable,
-		reFetchTableData,
 		Table,
+		type GraphqlPaginableTableInterface,
 		type TableColumnProps,
 	} from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { type Channel, type QueryStaffUsersArgs, type User } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
@@ -77,6 +76,7 @@
 	let displayingUsers = $state(users);
 	let innerSelectedUsersToUnassign = $state<SvelteSet<string>>(new SvelteSet());
 	let innerSelectedUsersToAssign = $state<Record<string, User>>({});
+	let tableRef = $state<GraphqlPaginableTableInterface>();
 
 	const UnassignSelectColumn: TableColumnProps<User>[] = [
 		{
@@ -251,7 +251,7 @@
 					endIcon={Plus}
 					onclick={() => {
 						openAssignUserModal = true;
-						reFetchTableData(TableNameKeys.PermissionGroupStaffTable);
+						tableRef?.triggerFetchData();
 					}}
 					disabled={disabled || !editable}
 				>
@@ -281,15 +281,15 @@
 		startIcon={Search}
 		inputDebounceOption={{
 			debounceTime: 888,
-			onInput: () => reFetchTableData(TableNameKeys.PermissionGroupStaffTable),
+			onInput: () => tableRef?.triggerFetchData(),
 		}}
 	/>
 	<GraphqlPaginableTable
 		columns={AssignSelectColumn.concat(UserColumns)}
 		query={STAFFS_QUERY}
 		resultKey="staffUsers"
+		bind:this={tableRef}
 		bind:variables={staffUsersVariables}
-		tableName={TableNameKeys.PermissionGroupStaffTable}
 		autoRefetchOnPaginationParamsChange
 	/>
 </Modal>

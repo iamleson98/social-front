@@ -4,10 +4,9 @@
 	import { FilterManager } from '$lib/components/common/filter-box';
 	import {
 		GraphqlPaginableTable,
-		reFetchTableData,
+		type GraphqlPaginableTableInterface,
 		type TableColumnProps,
 	} from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import {
 		type Group,
 		PermissionGroupSortField,
@@ -32,6 +31,7 @@
 		first: 10,
 		filter: { search: '' },
 	});
+	let tableRef = $state<GraphqlPaginableTableInterface>();
 </script>
 
 {#snippet name({ item }: { item: Group })}
@@ -41,7 +41,7 @@
 <div class="mb-2">
 	<FilterManager
 		bind:variables
-		onRefetchData={() => reFetchTableData(TableNameKeys.PermissionGroupsTable)}
+		onRefetchData={() => tableRef?.triggerFetchData()}
 		searchKey="filter.search"
 	/>
 </div>
@@ -51,5 +51,5 @@
 	columns={PermissionGroupColumns}
 	resultKey="permissionGroups"
 	bind:variables
-	tableName={TableNameKeys.PermissionGroupsTable}
+	bind:this={tableRef}
 />

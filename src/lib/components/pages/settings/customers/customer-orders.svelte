@@ -7,7 +7,6 @@
 	import { Button } from '$lib/components/ui';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { type Order, OrderSortField, type Query, type QueryOrdersArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
@@ -22,7 +21,7 @@
 
 	let { id, disabled, email }: Props = $props();
 
-	const ORDER_TABLE_COLUMNS: TableColumnProps<Order, OrderSortField>[] = [
+	const ORDER_TABLE_COLUMNS: TableColumnProps<Order, OrderSortField>[] = $derived([
 		{
 			title: $tranFunc('common.number'),
 			child: number,
@@ -39,7 +38,7 @@
 			title: $tranFunc('settings.total'),
 			child: total,
 		},
-	];
+	]);
 </script>
 
 {#snippet number({ item }: { item: Order })}
@@ -80,7 +79,7 @@
 		} as QueryOrdersArgs}
 		columns={ORDER_TABLE_COLUMNS}
 		resultKey={'user.orders' as keyof Query}
-		tableName={TableNameKeys.CustomerOrdersTable}
+		
 		{disabled}
 		autoRefetchOnPaginationParamsChange
 		autoFetchDataOnMount

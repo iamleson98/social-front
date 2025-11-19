@@ -1,14 +1,14 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { PRODUCT_ATTRIBUTES_QUERY } from '$lib/api/admin/attribute';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Search } from '$lib/components/icons';
 	import { Checkbox, Input, Toggle } from '$lib/components/ui/Input';
 	import {
 		GraphqlPaginableTable,
-		reFetchTableData,
+		type GraphqlPaginableTableInterface,
 		type TableColumnProps,
 	} from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import type { Attribute, QueryAttributesArgs } from '$lib/gql/graphql';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { canUseAttributeForVariantSelection } from './utils';
@@ -30,25 +30,26 @@
 	}: Props = $props();
 
 	let productAttrsVariables = $state<QueryAttributesArgs>({ first: 10, filter: { search: '' } });
+	let tableRef = $state<GraphqlPaginableTableInterface>();
 
-	const AttributeColumns: TableColumnProps<Attribute>[] = [
+	const AttributeColumns: TableColumnProps<Attribute>[] = $derived([
 		{
-			title: 'Name',
+			title: $tranFunc('common.name'),
 			child: name,
 		},
 		{
-			title: 'Slug',
+			title: $tranFunc('common.slug'),
 			child: slug,
 		},
 		{
-			title: 'Assign product',
+			title: $tranFunc('collection.assignPrd'),
 			child: productAttrAssignSelect,
 		},
 		{
-			title: 'Assign variant',
+			title: $tranFunc('collection.assignVariant'),
 			child: variantAttrAssignSelect,
 		},
-	];
+	]);
 
 	$effect(() => {
 		if (!hasVariants) variantAttributesToAssign = [];
@@ -107,7 +108,7 @@
 		bind:value={productAttrsVariables.filter!.search}
 		inputDebounceOption={{
 			debounceTime: 888,
-			onInput: () => reFetchTableData(TableNameKeys.ProductAttributesTable),
+			onInput: () => tableRef?.triggerFetchData(),
 		}}
 	/>
 
@@ -116,8 +117,8 @@
 		resultKey="attributes"
 		columns={AttributeColumns}
 		{disabled}
+		bind:this={tableRef}
 		bind:variables={productAttrsVariables}
-		tableName={TableNameKeys.ProductAttributesTable}
 		autoRefetchOnPaginationParamsChange={false}
 	/>
 </div>

@@ -4,10 +4,12 @@
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import CustomerFilter from '$lib/components/pages/settings/customers/filter.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
-	import { type TableCellProps, type TableColumnProps } from '$lib/components/ui/Table';
-	import GraphqlPaginableTable, {
-		TableNameKeys,
-	} from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import {
+		type GraphqlPaginableTableInterface,
+		type TableCellProps,
+		type TableColumnProps,
+	} from '$lib/components/ui/Table';
+	import GraphqlPaginableTable from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import { UserSortField, type QueryCustomersArgs, type User } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { CommonEaseDatePickerFormat } from '$lib/utils/consts';
@@ -49,6 +51,7 @@
 			key: UserSortField.CreatedAt,
 		},
 	]);
+	let tableRef = $state<GraphqlPaginableTableInterface>();
 </script>
 
 {#snippet avatar({ item }: TableCellProps<User>)}
@@ -94,7 +97,7 @@
 {/snippet}
 
 <div class="mb-2">
-	<CustomerFilter bind:variables={filterVariables} />
+	<CustomerFilter bind:variables={filterVariables} {tableRef} />
 </div>
 
 <GraphqlPaginableTable
@@ -102,6 +105,5 @@
 	bind:variables={filterVariables}
 	resultKey="customers"
 	columns={USER_TABLE_COLUMNS}
-	tableName={TableNameKeys.CustomerTable}
-	class="bg-white rounded-lg border border-gray-200 p-3"
+	bind:this={tableRef}
 />

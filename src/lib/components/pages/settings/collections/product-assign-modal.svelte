@@ -9,10 +9,9 @@
 	import { Modal } from '$lib/components/ui/Modal';
 	import {
 		GraphqlPaginableTable,
-		reFetchTableData,
+		type GraphqlPaginableTableInterface,
 		type TableColumnProps,
 	} from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
 	import type { Product, ProductOrderField, QueryProductsArgs } from '$lib/gql/graphql';
 	import { omit } from 'es-toolkit';
 
@@ -52,10 +51,11 @@
 	});
 
 	let openAssignProductModal = $state(false);
+	let productTableRef = $state<GraphqlPaginableTableInterface>();
 
 	const handleClickOpenProductListModal = () => {
 		openAssignProductModal = true;
-		reFetchTableData(TableNameKeys.CollectionProductAssignTable);
+		productTableRef?.triggerFetchData();
 	};
 
 	const handleAssignproducts = async () => {
@@ -135,7 +135,7 @@
 		startIcon={Search}
 		bind:value={filterAllProductsVariables.filter!.search}
 		inputDebounceOption={{
-			onInput: () => reFetchTableData(TableNameKeys.CollectionProductAssignTable), // force the result table to re-execute the query
+			onInput: () => productTableRef?.triggerFetchData(), // force the result table to re-execute the query
 			debounceTime: 800,
 		}}
 		disabled={shouldDisable}
@@ -146,10 +146,10 @@
 			query={PRODUCT_LIST_QUERY_ADMIN}
 			resultKey={'products'}
 			bind:variables={filterAllProductsVariables}
-			tableName={TableNameKeys.CollectionProductAssignTable}
 			columns={PRODUCT_MODAL_COLUMNS}
 			disabled={shouldDisable}
 			autoRefetchOnPaginationParamsChange
+			bind:this={productTableRef}
 		/>
 	{/if}
 </Modal>

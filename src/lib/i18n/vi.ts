@@ -614,6 +614,7 @@ export default {
 		noPrdAssigned: 'Chưa có sản phẩm nào',
 		prdsInCol: 'Các sản phẩm',
 		assignPrd: 'Gán sản phẩm',
+		assignVariant: 'Gán phân loại sản phẩm',
 		searchPrd: 'Tìm kiếm sản phẩm',
 		successReorder: 'Sắp xếp các sản phẩm thành công',
 		successAssignedPrds: 'Gán các sản phẩm vào bộ sưu tập thành công',
