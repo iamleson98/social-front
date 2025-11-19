@@ -14,6 +14,8 @@
 		class?: string;
 		subText?: string;
 		variant?: SocialVariant;
+		/** to make your component interactive, in drag-drop supported places */
+		['data-interactive']?: boolean;
 	} & Omit<HTMLInputAttributes, 'size' | 'hidden'>;
 
 	let {

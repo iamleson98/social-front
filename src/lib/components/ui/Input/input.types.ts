@@ -22,6 +22,8 @@ export type CustomInputProps = {
 	selectShortcutOptions?: ShortcutOptions<HTMLInputElement | HTMLTextAreaElement>[];
 	/** advanced option to delay the dispatch of typing events, to after specified time */
 	inputDebounceOption?: InputDebounceOpts;
+	/** to make your component interactive, in drag-drop supported places */
+	['data-interactive']?: boolean;
 };
 
 export type InputDebounceProps = Omit<InputProps, 'inputDebounceOption' | 'onchange'> & {

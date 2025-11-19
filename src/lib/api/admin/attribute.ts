@@ -149,6 +149,17 @@ export const REORDER_ATTRIBUTE_VALUES_MUTATION = gql`
 	}
 `;
 
+export const ATTRIBUTE_VALUES_BULK_DELETE = gql`
+	mutation AttributeValuesBulkDelete($ids: [ID!]!) {
+		attributeValueBulkDelete(ids: $ids) {
+			errors {
+				field
+				message
+			}
+		}
+	}
+`;
+
 export const ATTRIBUTE_VALUE_DELETE_MUTATION = gql`
 	mutation AttributeValueDelete($id: ID!) {
 		attributeValueDelete(id: $id) {

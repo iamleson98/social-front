@@ -1,5 +1,6 @@
 import { GRAPHQL_CLIENT } from '$lib/api/client';
 import {
+	CombinedError,
 	createRequest,
 	type AnyVariables,
 	type GraphQLRequestParams,
@@ -68,6 +69,7 @@ export type OperationArgs<Data = unknown, Variables extends AnyVariables = AnyVa
 	requestPolicy?: RequestPolicy;
 	pause?: boolean;
 	kind?: OperationType;
+	onResult?: (result: OperationResult<Data, Variables>) => void;
 } & GraphQLRequestParams<Data, Variables>;
 
 type ReexecuteProps<Variables extends AnyVariables = AnyVariables> = {
@@ -93,7 +95,7 @@ export function operationStore<Data = unknown, Variables extends AnyVariables = 
 
 	const operation = GRAPHQL_CLIENT.createRequestOperation<Data, Variables>(
 		(args.query as TypedDocumentNode<Data, Variables>).definitions[0][
-			'operation' as keyof DefinitionNode
+		'operation' as keyof DefinitionNode
 		] as unknown as OperationType,
 		request,
 		context,
@@ -123,14 +125,14 @@ export function operationStore<Data = unknown, Variables extends AnyVariables = 
 							fromValue({ fetching: true, stale: false }),
 							pipe(
 								GRAPHQL_CLIENT.executeRequestOperation(operation),
-								map(({ stale, data, error, extensions, operation }) => ({
-									fetching: false,
-									stale: !!stale,
-									data,
-									error,
-									operation,
-									extensions,
-								})),
+								map((result) => {
+									args.onResult?.(result);
+
+									return {
+										...result,
+										fetching: false
+									}
+								}),
 							),
 							fromValue({ fetching: false }),
 						]);

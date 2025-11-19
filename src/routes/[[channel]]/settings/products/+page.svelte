@@ -1,18 +1,32 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
+	import { PRODUCT_BULK_DELETE, PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
+	import { operationStore } from '$lib/api/operation';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
+	import { Trash } from '$lib/components/icons';
 	import ProductFilterStateListener from '$lib/components/pages/home/product-filter-state-listener.svelte';
 	import Filter from '$lib/components/pages/settings/products/filter.svelte';
 	import Settings from '$lib/components/pages/settings/products/settings.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
+	import { IconButton } from '$lib/components/ui/Button';
 	import { Checkbox } from '$lib/components/ui/Input';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
-	import { TableNameKeys } from '$lib/components/ui/Table/graphql-paginable-table.svelte';
-	import { ProductOrderField, type Product, type QueryProductsArgs } from '$lib/gql/graphql';
+	import {
+		reFetchTableData,
+		TableNameKeys,
+	} from '$lib/components/ui/Table/graphql-paginable-table.svelte';
+	import {
+		ProductOrderField,
+		type Mutation,
+		type MutationProductBulkDeleteArgs,
+		type Product,
+		type QueryProductsArgs,
+	} from '$lib/gql/graphql';
+	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
-	import { formatCurrency } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, formatCurrency } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 	import { SvelteSet } from 'svelte/reactivity';
 
@@ -23,7 +37,23 @@
 			search: '',
 		},
 	});
-	let selectedProducts = $state<SvelteSet<string>>(new SvelteSet());
+	let selectedProducts = $state(new SvelteSet<string>());
+
+	const ProductBulkDeleteStore = operationStore<
+		Pick<Mutation, 'productBulkDelete'>,
+		MutationProductBulkDeleteArgs
+	>({
+		query: PRODUCT_BULK_DELETE,
+		variables: { ids: [] },
+		pause: true,
+		onResult: (result) => {
+			if (checkIfGraphqlResultHasError(result, 'productBulkDelete', $CommonState.DeleteSuccess)) {
+				return;
+			}
+			selectedProducts.clear();
+			reFetchTableData(TableNameKeys.ProductListTable);
+		},
+	});
 
 	const productColumns: TableColumnProps<Product, ProductOrderField>[] = $derived([
 		{
@@ -54,6 +84,15 @@
 			key: ProductOrderField.CreatedAt,
 		},
 	]);
+
+	const handleClickDeleteSelectedProducts = () => {
+		ALERT_MODAL_STORE.openAlertModal({
+			content: $CommonState.ConfirmDelete,
+			onOk: async () => {
+				ProductBulkDeleteStore.reexecute({ variables: { ids: [...selectedProducts] } });
+			},
+		});
+	};
 </script>
 
 <ProductFilterStateListener />
@@ -119,7 +158,21 @@
 
 <div class="flex items-center justify-between mb-2">
 	<Filter bind:variables={productsFilterVariables} />
-	<Settings bind:variables={productsFilterVariables} bind:selectedIds={selectedProducts} />
+
+	<dir class="flex items-center gap-2">
+		{#if selectedProducts.size}
+			<IconButton
+				class="tooltip tooltip-left"
+				data-tip={$tranFunc('btn.delete')}
+				disabled={$ProductBulkDeleteStore.fetching}
+				size="sm"
+				icon={Trash}
+				color="red"
+				onclick={handleClickDeleteSelectedProducts}
+			/>
+		{/if}
+		<Settings bind:variables={productsFilterVariables} bind:selectedIds={selectedProducts} />
+	</dir>
 </div>
 
 <GraphqlPaginableTable

@@ -130,15 +130,12 @@
 	{/if}
 	<div class="flex flex-wrap gap-1.5 p-2 rounded-lg {INPUT_CLASSES[variant].bg}">
 		{#each medias as media, idx (idx)}
-			{@const props = {
-				style: `background-image: url('${media.type === ProductMediaType.Image ? media.url : documentIcon}')`,
-			}}
 			<div
 				class={[
 					!!mediaErrors?.[idx]?.length && INPUT_CLASSES['error'].bg,
 					'h-50 w-50 relative border border-gray-200 flex rounded-lg overflow-hidden bg-white bg-cover bg-center bg-no-repeat',
 				]}
-				{...props}
+				style:background-image={`url('${media.type === ProductMediaType.Image ? media.url : documentIcon}')`}
 			>
 				<div
 					class="absolute p-1.5 bottom-0 left-0 right-0 h-1/5 hover:h-1/2 hover:border-t hover:border-gray-300 bg-white opacity-50 transition-all hover:opacity-100 ease-in"
@@ -148,7 +145,7 @@
 						<Input
 							size="xs"
 							placeholder="Enter alt"
-							bind:value={media.alt}
+							bind:value={medias[idx].alt}
 							onblur={validate}
 							inputDebounceOption={{ onInput: validate }}
 							variant={mediaErrors?.[idx]?.length ? 'error' : 'info'}

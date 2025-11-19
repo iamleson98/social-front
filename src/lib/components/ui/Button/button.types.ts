@@ -25,8 +25,9 @@ export type ButtonProps = {
 	startIcon?: IconContent;
 	endIcon?: IconContent;
 	clickDebounceOptions?: ClickDebounceOpts;
-} & HTMLButtonAttributes &
-	HTMLAnchorAttributes;
+	/** to make your component interactive, in drag-drop supported places */
+	['data-interactive']?: boolean;
+} & HTMLButtonAttributes & HTMLAnchorAttributes;
 
 export const ICON_BTN_SIZE_MAP: Record<SocialSize, string> = {
 	xs: 'w-7!',

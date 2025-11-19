@@ -13,6 +13,7 @@
 	import { Checkbox, Label } from '$lib/components/ui/Input';
 	import { SelectSkeleton } from '$lib/components/ui/select';
 	import type { CategoryCountableConnection, Query, QueryCategoryArgs } from '$lib/gql/graphql';
+	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import CategoryMenu from '../category-menu.svelte';
 	import ErrorMsg from './error-msg.svelte';
@@ -29,12 +30,7 @@
 
 	const NUMBER_OF_CATEGORIES_PER_FETCH = 35;
 
-	let {
-		categoryID = $bindable<string | undefined>(),
-		formOk = $bindable(),
-		loading,
-		isCreatePage,
-	}: Props = $props();
+	let { categoryID = $bindable(), formOk = $bindable(), loading, isCreatePage }: Props = $props();
 	let categoryError = $state<string>();
 	let initialSelectedItems = $state<CategorySelectItemProps[]>([]);
 	let selectedItems = $state<CategorySelectItemProps[]>([]);
@@ -93,10 +89,25 @@
 	});
 
 	$effect(() => {
+		if (
+			selectedItems.length &&
+			(selectedItems[selectedItems.length - 1].children ||
+				(!selectedItems[selectedItems.length - 1].children && !categoryID))
+		) {
+			categoryError = $CommonState.FieldRequiredError;
+		} else {
+			categoryError = '';
+		}
 		formOk = !categoryError;
 	});
 
-	const handleCheckChange = (checked: boolean) => {};
+	const handleCheckChange = (checked: boolean) => {
+		if (checked) {
+			categoryID = selectedItems[selectedItems.length - 1].value as string;
+		} else {
+			categoryID = undefined;
+		}
+	};
 </script>
 
 {#snippet CategorySelector(connection: CategoryCountableConnection)}

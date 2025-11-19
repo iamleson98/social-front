@@ -243,6 +243,7 @@
 			dragEffectType="move-position"
 			disabled={shouldDisable}
 			autoRefetchOnPaginationParamsChange
+			autoFetchDataOnMount
 		/>
 	</div>
 </div>

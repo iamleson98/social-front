@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import { ATTRIBUTE_DELETE_MUTATION, PRODUCT_ATTRIBUTES_QUERY } from '$lib/api/admin/attribute';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { operationStore } from '$lib/api/operation';
 	import { Trash } from '$lib/components/icons';
 	import Filter from '$lib/components/pages/settings/attributes/filter.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
@@ -21,6 +21,7 @@
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { toast } from 'svelte-sonner';
 
 	let variables = $state<QueryAttributesArgs>({
 		first: 20,
@@ -28,8 +29,6 @@
 			search: '',
 		},
 	});
-
-	let loading = $state(false);
 
 	const AttributeColumns: TableColumnProps<Attribute, AttributeSortField>[] = $derived([
 		{
@@ -57,25 +56,31 @@
 		},
 	]);
 
+	const AttributeDeleteStore = operationStore<
+		Pick<Mutation, 'attributeDelete'>,
+		MutationAttributeDeleteArgs
+	>({
+		query: ATTRIBUTE_DELETE_MUTATION,
+		variables: {
+			id: undefined,
+		},
+		pause: true,
+		onResult: (result) => {
+			if (checkIfGraphqlResultHasError(result, 'attributeDelete')) return;
+			toast.success($tranFunc('common.delSuccess'));
+			reFetchTableData(TableNameKeys.AttributesTable);
+		},
+	});
+
 	const handleDeleteAttribute = (id: string) => {
 		ALERT_MODAL_STORE.openAlertModal({
 			content: $tranFunc('common.confirmDel'),
-			onOk: async () => {
-				loading = true;
-
-				const result = await GRAPHQL_CLIENT.mutation<
-					Pick<Mutation, 'attributeDelete'>,
-					MutationAttributeDeleteArgs
-				>(ATTRIBUTE_DELETE_MUTATION, {
-					id,
+			onOk: () => {
+				AttributeDeleteStore.reexecute({
+					variables: {
+						id,
+					},
 				});
-
-				loading = false;
-
-				if (checkIfGraphqlResultHasError(result, 'attributeDelete', $tranFunc('common.delSuccess')))
-					return;
-
-				reFetchTableData(TableNameKeys.AttributesTable);
 			},
 		});
 	};
@@ -94,7 +99,7 @@
 		variant="light"
 		color="red"
 		onclick={() => handleDeleteAttribute(item.id)}
-		disabled={loading}
+		disabled={$AttributeDeleteStore.fetching}
 	/>
 {/snippet}
 
@@ -124,7 +129,7 @@
 	query={PRODUCT_ATTRIBUTES_QUERY}
 	resultKey="attributes"
 	bind:variables
-	disabled={loading}
+	disabled={$AttributeDeleteStore.fetching}
 	columns={AttributeColumns}
 	tableName={TableNameKeys.AttributesTable}
 />

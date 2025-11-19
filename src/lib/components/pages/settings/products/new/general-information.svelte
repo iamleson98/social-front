@@ -187,7 +187,7 @@
 			productType,
 			description,
 		}),
-		(ok) => (formOk = ok),
+		(ok) => (formOk = ok && !attributeErrors.some(Boolean)),
 	);
 
 	$effect(() => {
@@ -212,11 +212,10 @@
 <div class={SitenameCommonClassName}>
 	<SectionHeader>General information</SectionHeader>
 	<Input
-		placeholder={$tranFunc('placeholders.enterPrdName')}
 		bind:value={name}
 		onblur={SchemaHandler.validate}
 		inputDebounceOption={{ onInput: SchemaHandler.validate }}
-		variant={$SchemaHandler.name?.length ? 'error' : undefined}
+		variant={$SchemaHandler.name?.length ? 'error' : 'info'}
 		subText={$SchemaHandler.name?.[0]}
 		required
 		label={$tranFunc('product.prdName')}

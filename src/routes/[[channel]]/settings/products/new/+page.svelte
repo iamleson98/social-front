@@ -61,17 +61,14 @@
 	let channelListingUpdateInput = $state.raw<ProductChannelListingUpdateInput>({});
 	let channelListingUpdateInputOk = $state(true);
 	let productMedias = $state.raw<MediaObject[]>([]);
-	let productMediasOk = $state(true);
 	let metaRef = $state<GeneralMetadataEditorRef>();
 
-	let productInputError = $state<Partial<Record<keyof ProductCreateInput, boolean>>>({
+	let productInputError = $state({
 		metadata: false,
-		productType: false,
-		description: false,
-		attributes: false,
+		generalInfo: false,
 		category: false,
-		name: false,
 		seo: false,
+		productMedias: false,
 	});
 
 	let productVariantsInput = $state.raw<ProductVariantBulkCreateInput[]>([]);
@@ -216,6 +213,7 @@
 		bind:description={productCreateInput.description}
 		bind:attributes={productCreateInput.attributes!}
 		disabled={loading}
+		bind:formOk={productInputError.generalInfo}
 	/>
 	<CategorySelector
 		bind:categoryID={productCreateInput.category!}
@@ -229,7 +227,7 @@
 		class={SitenameCommonClassName}
 		bind:medias={productMedias}
 		label={$tranFunc('common.pic')}
-		bind:formOk={productMediasOk}
+		bind:formOk={productInputError.productMedias}
 		disabled={loading}
 		required
 	/>
@@ -269,8 +267,6 @@
 
 <ActionBar
 	backButtonUrl={AppRoute.SETTINGS_PRODUCTS()}
-	disableCreateButton={loading ||
-		!Object.values(productInputError).every(Boolean) ||
-		!productMediasOk}
+	disableCreateButton={loading || !Object.values(productInputError).every(Boolean)}
 	onAddClick={handleSubmit}
 />

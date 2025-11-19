@@ -128,7 +128,7 @@
 		 * In some listing pages, url search params must be parsed before signalling the data fetching.
 		 * But in some places, the table data does not depends on those url params, and data fetching need to be done immediately, right after the component in mounted.
 		 * So instead of having to explicitly call to `reFetchTableData`, you can pass in this prop as `true`.
-		 * 
+		 *
 		 * @default false
 		 */
 		autoFetchDataOnMount?: boolean;
@@ -140,6 +140,11 @@
 		 * If `move-position`, then the drag item will move to the drop index
 		 */
 		dragEffectType?: 'swap-position' | 'move-position';
+		/**
+		 * A callback function that will be called when the drag and drop action is completed.
+		 * NOTE: If some of your columns contains interactive elements, like checkbox, input, link, textarea, select,
+		 * Then you must add the attribute `data-interactive` to it
+		 */
 		onDragEnd?: (dragIndex: number, dragItem: T, dropIndex: number, dropItem: T) => void;
 		/**
 		 * if true, then the query will be re-executed when variable changes. Default to `false`
@@ -283,7 +288,7 @@
 	};
 
 	const innerHandleDragEnd = (dragIdx: number, dropIdx: number) => {
-		if (dragIdx === dropIdx) return;
+		if (dragIdx === dropIdx || !onDragEnd) return;
 
 		const dragItem = items[dragIdx];
 		const dropItem = items[dropIdx];
@@ -298,7 +303,7 @@
 		}
 
 		items = newItems;
-		onDragEnd?.(dragIdx, dragItem, dropIdx, dropItem);
+		onDragEnd(dragIdx, dragItem, dropIdx, dropItem);
 	};
 </script>
 

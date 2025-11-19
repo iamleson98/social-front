@@ -17,6 +17,7 @@
 	import { Pagination } from 'bits-ui';
 	import { flip } from 'svelte/animate';
 	import { fade } from 'svelte/transition';
+	import { dev } from '$app/environment';
 
 	let {
 		items = [],
@@ -39,6 +40,10 @@
 		prevPageTitle,
 		nextPageTitle,
 	}: TableProps<T, K> = $props();
+
+	if (onDragEnd && dev) {
+		console.warn('NOTE: Seems like your table supports drag and drop. If some of your cell component are interactive E.g: (a, input, textarea, button, etc), you should add `data-interactive` attribute to them')
+	}
 
 	const DEFAULT_SORT_STATE = columns.reduce<SortState<K>>((acc, column) => {
 		return column.key ? { ...acc, [column.key]: 'NEUTRAL' } : acc;

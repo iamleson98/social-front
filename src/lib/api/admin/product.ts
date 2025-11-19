@@ -154,6 +154,18 @@ export const PRODUCT_TYPE_QUERY = gql`
 	}
 `;
 
+export const PRODUCT_BULK_DELETE = gql`
+	mutation ProductBulkDelete($ids: [ID!]!) {
+		productBulkDelete(ids: $ids) {
+			count
+			errors {
+				field
+				message
+			}
+		}
+	}
+`;
+
 export const PRODUCT_TYPE_AVAILABLE_ATTRIBUTES_QUERY = gql`
 	query ProductTypeAvailableAttributes(
 		$id: ID!

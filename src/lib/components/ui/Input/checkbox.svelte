@@ -13,6 +13,8 @@
 		subText?: string | Snippet;
 		variant?: SocialVariant;
 		onCheckChange?: (checked: boolean) => void;
+		/** to make your component interactive, in drag-drop supported places */
+		['data-interactive']?: boolean;
 	} & Omit<HTMLInputAttributes, 'size'>;
 
 	let {

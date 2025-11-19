@@ -35,6 +35,8 @@ export type SelectProps<T extends SelectOption = SelectOption> = {
 	variant?: SocialVariant;
 	/** If provided: When you query is not found, the option list shows exactly your query as the only option. You can decide the use of that option. Typically useful to create new option */
 	onNotFoundQuerySelected?: (query?: string) => void;
+	/** to make your component interactive, in drag-drop supported places */
+	['data-interactive']?: boolean;
 } & Omit<InputProps, 'value' | 'size' | 'onchange' | 'variant'> &
 	Omit<HTMLSelectAttributes, 'size' | 'onchange' | 'onblur' | 'multiple'>;
 
