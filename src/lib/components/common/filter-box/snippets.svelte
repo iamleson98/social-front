@@ -94,17 +94,19 @@
 	/>
 {/snippet}
 
-{#snippet multiChannelIds({ onValue, initialValue = '' }: FilterComponentType)}
+{#snippet multiChannelIds({ onValue, initialValue = [] }: FilterComponentType)}
 	<ChannelSelect
 		size="xs"
 		multiple
 		placeholder={funcTran('voucher.specifyChan')}
-		onchange={(opt) => {
-			if (opt && Array.isArray(opt)) {
-				onValue(opt.map((opt) => opt.id as string));
+		onchange={(opts) => {
+			let values: string[] = [];
+			if (opts && Array.isArray(opts)) {
+				values = opts.map((opt) => opt.id);
 			}
+			onValue(values);
 		}}
-		value={initialValue as string[]}
+		value={initialValue}
 		valueType="id"
 	/>
 {/snippet}
