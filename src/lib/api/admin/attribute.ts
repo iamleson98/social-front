@@ -54,6 +54,7 @@ export const ATTRIBUTE_DETAILS_QUERY = gql`
 			entityType
 			withChoices
 			unit
+			valueRequired
 			metadata {
 				key
 				value

@@ -77,14 +77,13 @@
 	let productVariantsInput = $state.raw<ProductVariantBulkCreateInput[]>([]);
 	let loading = $state(false);
 
-	const ProductDeleteStore = operationStore<
-		Pick<Mutation, 'productDelete'>,
-		MutationProductDeleteArgs
-	>({
-		query: PRODUCT_DELETE_MUTATION,
-		variables: { id: undefined },
-		pause: true,
-	});
+	const handleUndoCreateProduct = async (id: string) => {
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'productDelete'>,
+			MutationProductDeleteArgs
+		>(PRODUCT_DELETE_MUTATION, { id });
+		return !checkIfGraphqlResultHasError(result, 'productDelete');
+	};
 
 	const createProductMedias = async (productID: string) => {
 		if (!productMedias.length) return 0;
@@ -174,7 +173,7 @@
 		if (
 			checkIfGraphqlResultHasError(updateProductChannelListingResult, 'productChannelListingUpdate')
 		) {
-			ProductDeleteStore.reexecute({ variables: { id: createdProductId } });
+			await handleUndoCreateProduct(createdProductId);
 			loading = false;
 			return;
 		}
@@ -188,7 +187,7 @@
 			variants: productVariantsInput,
 		});
 		if (checkIfGraphqlResultHasError(variantsBulkCreateResult, 'productVariantBulkCreate')) {
-			ProductDeleteStore.reexecute({ variables: { id: createdProductId } });
+			await handleUndoCreateProduct(createdProductId);
 			loading = false;
 			return;
 		}
@@ -209,7 +208,7 @@
 		// 4) create product medias
 		const totalFails = await createProductMedias(createdProductId);
 		if (totalFails) {
-			ProductDeleteStore.reexecute({ variables: { id: createdProductId } });
+			await handleUndoCreateProduct(createdProductId);
 			loading = false;
 			return;
 		}
@@ -217,7 +216,7 @@
 		// 5) update metadatas
 		const metaHasErr = await metaRef?.handleUpdate(createdProductId);
 		if (metaHasErr) {
-			ProductDeleteStore.reexecute({ variables: { id: createdProductId } });
+			await handleUndoCreateProduct(createdProductId);
 			loading = false;
 			return;
 		}

@@ -110,9 +110,20 @@
 		};
 	});
 
+	let handleFetchData = $state(autoFetchDataOnMount);
+
 	export const triggerFetchData = () => {
-		queryOperationStore.reexecute({ variables });
+		// queryOperationStore.reexecute({ variables, context: { requestPolicy: 'network-only' } });
+		handleFetchData = true;
 	};
+
+	$effect(() => {
+		if (handleFetchData) {
+			queryOperationStore.reexecute({ variables, context: { requestPolicy: 'network-only' } });
+
+			handleFetchData = false;
+		}
+	});
 
 	const handleNextPageClick = (after: string) => {
 		variables = {
@@ -122,7 +133,7 @@
 			first: variables.first || variables.last,
 			last: null,
 		};
-		if (autoRefetchOnPaginationParamsChange) queryOperationStore.reexecute({ variables });
+		if (autoRefetchOnPaginationParamsChange) triggerFetchData();
 	};
 
 	const handlePreviousPagelick = (before: string) => {
@@ -133,7 +144,7 @@
 			last: variables.last || variables.first,
 			first: null,
 		};
-		if (autoRefetchOnPaginationParamsChange) queryOperationStore.reexecute({ variables });
+		if (autoRefetchOnPaginationParamsChange) triggerFetchData();
 	};
 
 	const handleRowsPerPageChange = (num: RowOptions) => {
@@ -144,7 +155,7 @@
 			before: null,
 			after: null,
 		};
-		if (autoRefetchOnPaginationParamsChange) queryOperationStore.reexecute({ variables });
+		if (autoRefetchOnPaginationParamsChange) triggerFetchData();
 	};
 
 	const handleSortChange = (sort: SortState<K>) => {
@@ -166,7 +177,7 @@
 				direction,
 			},
 		};
-		if (autoRefetchOnPaginationParamsChange) queryOperationStore.reexecute({ variables });
+		if (autoRefetchOnPaginationParamsChange) triggerFetchData();
 	};
 
 	const innerHandleDragEnd = (dragIdx: number, dropIdx: number) => {

@@ -16,6 +16,7 @@
 		GraphqlPaginableTable,
 		Table,
 		type GraphqlPaginableTableInterface,
+		type TableCellProps,
 		type TableColumnProps,
 	} from '$lib/components/ui/Table';
 	import {
@@ -29,6 +30,7 @@
 		type ProductAttributeAssignmentUpdateInput,
 		type Query,
 	} from '$lib/gql/graphql';
+	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { canUseAttributeForVariantSelection } from './utils';
@@ -68,7 +70,7 @@
 		},
 	});
 
-	const ProductAttributeTableColumns = $derived([
+	const ProductAttributeTableColumns: TableColumnProps<Attribute>[] = $derived([
 		{
 			title: productAttributeSelectAll,
 			child: productAttributeUnassignSelect,
@@ -79,11 +81,15 @@
 		},
 		{
 			title: $tranFunc('common.slug'),
-			child: slug,
+			child: { render: ({ item }) => item.slug },
+		},
+		{
+			title: $tranFunc('attributes.valRequired'),
+			child: attrValueRequired,
 		},
 	]);
 
-	const AssignTableColumns = $derived([
+	const AssignTableColumns: TableColumnProps<Attribute>[] = $derived([
 		{
 			title: '',
 			child: assignSelect,
@@ -94,7 +100,11 @@
 		},
 		{
 			title: $tranFunc('common.slug'),
-			child: slug,
+			child: { render: ({ item }) => item.slug },
+		},
+		{
+			title: $tranFunc('attributes.valRequired'),
+			child: attrValueRequired,
 		},
 	]);
 
@@ -109,11 +119,15 @@
 		},
 		{
 			title: $tranFunc('common.slug'),
-			child: variantAttrSlug,
+			child: { render: ({ item }) => item.attribute.slug },
 		},
 		{
-			title: 'Variant selection',
+			title: 'Is variant selection',
 			child: attributeIsVariantSelection,
+		},
+		{
+			title: $tranFunc('attributes.valRequired'),
+			child: variantAttrValueRequired,
 		},
 	]);
 
@@ -212,37 +226,38 @@
 	};
 </script>
 
-{#snippet variantAttrName({ item }: { item: AssignedVariantAttribute })}
-	<span>{item.attribute.name}</span>
+{#snippet variantAttrName({ item }: TableCellProps<AssignedVariantAttribute>)}
+	<a
+		class="link"
+		target="_blank"
+		data-interactive
+		href={AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_DETAILS(item.attribute.id)}>{item.attribute.name}</a
+	>
 {/snippet}
 
-{#snippet variantAttrSlug({ item }: { item: AssignedVariantAttribute })}
-	<span>{item.attribute.slug}</span>
+{#snippet attrValueRequired({ item }: TableCellProps<Attribute>)}
+	<Checkbox size="sm" checked={item.valueRequired} disabled />
+{/snippet}
+
+{#snippet variantAttrValueRequired({ item }: TableCellProps<AssignedVariantAttribute>)}
+	<Checkbox size="sm" checked={item.attribute.valueRequired} disabled />
 {/snippet}
 
 {#snippet name({ item }: { item: Attribute })}
-	<span>{item.name}</span>
+	<a
+		class="link"
+		target="_blank"
+		data-interactive
+		href={AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_DETAILS(item.id)}>{item.name}</a
+	>
 {/snippet}
 
-{#snippet slug({ item }: { item: Attribute })}
-	<span>{item.slug}</span>
-{/snippet}
-
-{#snippet attributeIsVariantSelection({ item }: { item: AssignedVariantAttribute })}
+{#snippet attributeIsVariantSelection({ item, idx }: TableCellProps<AssignedVariantAttribute>)}
 	{@const isNotVariantSelectable = !canUseAttributeForVariantSelection(item.attribute)}
 	<Checkbox
 		size="sm"
 		data-interactive
-		checked={variantSelectionOperations.some(
-			(selection) => selection.id === item.attribute.id && selection.variantSelection,
-		)}
-		onCheckChange={(checked) => {
-			variantSelectionOperations = variantSelectionOperations.map((selection) =>
-				selection.id === item.attribute.id
-					? { ...selection, variantSelection: checked }
-					: selection,
-			);
-		}}
+		bind:checked={variantSelectionOperations[idx].variantSelection}
 		disabled={shouldDisable || isNotVariantSelectable}
 		class={[isNotVariantSelectable && 'tooltip tooltip-top']}
 		data-tip={isNotVariantSelectable
@@ -281,14 +296,13 @@
 	/>
 {/snippet}
 
-{#snippet variantAttrUnassignSelect({ item }: { item: AssignedVariantAttribute })}
+{#snippet variantAttrUnassignSelect({ item }: TableCellProps<AssignedVariantAttribute>)}
 	<Checkbox
 		size="sm"
 		data-interactive
 		checked={selectedProductVariantAttributesToUnassign.has(item.attribute.id)}
 		onCheckChange={(checked) => {
-			if (checked) selectedProductVariantAttributesToUnassign.add(item.attribute.id);
-			else selectedProductVariantAttributesToUnassign.delete(item.attribute.id);
+			selectedProductVariantAttributesToUnassign[checked ? 'add' : 'delete'](item.attribute.id);
 		}}
 		disabled={shouldDisable}
 	/>
@@ -300,8 +314,7 @@
 		data-interactive
 		checked={selectedProductAttributesToUnassign.has(item.id)}
 		onCheckChange={(checked) => {
-			if (checked) selectedProductAttributesToUnassign.add(item.id);
-			else selectedProductAttributesToUnassign.delete(item.id);
+			selectedProductAttributesToUnassign[checked ? 'add' : 'delete'](item.id);
 		}}
 		disabled={shouldDisable}
 	/>
@@ -340,7 +353,6 @@
 				disabled={shouldDisable}
 				onclick={() => {
 					attributeAssignType = ProductAttributeType.Product;
-					tableRef?.triggerFetchData();
 				}}
 			>
 				Assign attributes
@@ -380,7 +392,6 @@
 					disabled={shouldDisable}
 					onclick={() => {
 						attributeAssignType = ProductAttributeType.Variant;
-						tableRef?.triggerFetchData();
 					}}
 				>
 					Assign attributes
@@ -418,7 +429,9 @@
 		bind:value={availableAttributeVariables.filter.search}
 		inputDebounceOption={{
 			debounceTime: 888,
-			onInput: () => tableRef?.triggerFetchData(),
+			onInput: () => {
+				tableRef?.triggerFetchData();
+			},
 		}}
 	/>
 	<GraphqlPaginableTable
@@ -429,5 +442,6 @@
 		bind:variables={availableAttributeVariables}
 		bind:this={tableRef}
 		autoRefetchOnPaginationParamsChange
+		autoFetchDataOnMount
 	/>
 </Modal>

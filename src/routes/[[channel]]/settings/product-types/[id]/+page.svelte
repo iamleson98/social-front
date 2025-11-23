@@ -57,7 +57,7 @@
 	});
 
 	let loading = $state(false);
-	let generalFormOk = $state(false);
+	let generalFormOk = $state(true);
 	let metadataRef = $state<GeneralMetadataEditorRef>();
 	let variantSelectionOperations = $state<ProductAttributeAssignmentUpdateInput[]>([]);
 
@@ -67,6 +67,10 @@
 	let initialHasVariants = $state(false);
 
 	const handleUpdateProductType = async () => {
+		// NOTE: we have to create a copy of current value of this state.
+		// Since the state will be reassigned right after update product type itself.
+		const variantSelectionOptionsSnapShot = $state.snapshot(variantSelectionOperations);
+
 		loading = true;
 		// update product type itself
 		const result = await GRAPHQL_CLIENT.mutation<
@@ -94,7 +98,7 @@
 			MutationProductAttributeAssignmentUpdateArgs
 		>(PRODUCT_TYPE_ATTRIBUTE_ASSIGNMENT_UPDATE_MUTATION, {
 			productTypeId: page.params.id as string,
-			operations: variantSelectionOperations,
+			operations: variantSelectionOptionsSnapShot,
 		});
 		loading = false;
 

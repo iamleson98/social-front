@@ -1,9 +1,9 @@
 import { GRAPHQL_CLIENT } from '$lib/api/client';
 import {
-	CombinedError,
 	createRequest,
 	type AnyVariables,
 	type GraphQLRequestParams,
+	type Operation,
 	type OperationContext,
 	type OperationResult,
 	type OperationType,
@@ -74,7 +74,7 @@ export type OperationArgs<Data = unknown, Variables extends AnyVariables = AnyVa
 
 type ReexecuteProps<Variables extends AnyVariables = AnyVariables> = {
 	context?: Partial<OperationContext>;
-	variables: Variables;
+	variables?: Variables;
 };
 
 /**
@@ -130,11 +130,12 @@ export function operationStore<Data = unknown, Variables extends AnyVariables = 
 
 									return {
 										...result,
-										fetching: false
+										fetching: false,
+										stale: !!result.stale,
 									}
 								}),
 							),
-							fromValue({ fetching: false }),
+							fromValue({ fetching: false, hasNext: false }),
 						]);
 					}),
 				);
@@ -154,10 +155,16 @@ export function operationStore<Data = unknown, Variables extends AnyVariables = 
 		return unsubscribe;
 	});
 
-	const reexecute = (args: ReexecuteProps<Variables>): void => {
-		const newContext = { ...context, ...args.context };
-		request.variables = args.variables as Variables;
-		const newOperation = GRAPHQL_CLIENT.createRequestOperation(operation.kind, request, newContext);
+	const reexecute = (newArgs: ReexecuteProps<Variables>): void => {
+		const newContext = { ...context, ...newArgs.context };
+
+		let newOperation: Operation<Data, Variables>;
+		if (newArgs.variables) {
+			const request = createRequest<Data, Variables>(args.query, newArgs.variables as Variables);
+			newOperation = GRAPHQL_CLIENT.createRequestOperation(operation.kind, request, newContext);
+		} else {
+			newOperation = GRAPHQL_CLIENT.createRequestOperation(operation.kind, request, newContext);
+		}
 
 		isPaused$.set(false);
 		operation$.set(newOperation);

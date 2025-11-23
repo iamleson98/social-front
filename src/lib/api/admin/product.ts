@@ -143,6 +143,7 @@ export const PRODUCT_TYPE_QUERY = gql`
 					slug
 					inputType
 					entityType
+					valueRequired
 				}
 				variantSelection
 			}

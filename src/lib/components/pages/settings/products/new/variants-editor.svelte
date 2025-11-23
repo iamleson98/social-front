@@ -43,9 +43,9 @@
 		QuickFillingProps,
 	} from './utils';
 	import dayjs from 'dayjs';
-	import { intersectionBy, omit } from 'es-toolkit';
+	import { omit } from 'es-toolkit';
 	import { set } from 'es-toolkit/compat';
-	import { onMount, untrack } from 'svelte';
+	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 
 	type Props = {
@@ -467,11 +467,6 @@
 				preorder: {},
 			};
 		});
-	};
-
-	const StyleMap: Record<number, string> = {
-		0: 'bg-blue-100 text-blue-600',
-		1: 'bg-amber-100 text-amber-600',
 	};
 </script>
 
