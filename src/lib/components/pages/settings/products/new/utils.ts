@@ -69,3 +69,9 @@ export type QuickFillingProps = {
 	trackInventory: boolean;
 	quantityLimitPerCustomer?: number;
 };
+
+/**
+ * Variants are defined by attributes combination. We keep track of those attributes information within private metadata, using this key.
+ * But we won't show the metadata of this key to the UI, the content of this etadata will be handled by fe logic
+ */
+export const ProductPrivateMetadataVariantAttributeUsedKey = 'variantAttributeUsed';

@@ -24,6 +24,9 @@
 		/** callback when update is done */
 		onDoneUpdate?: () => void;
 		formOk?: boolean;
+
+		privateMetadataKeysToHide?: string[];
+		metadataKeysToHide?: string[];
 	};
 
 	let {
@@ -34,6 +37,8 @@
 		performUpdateMetadata = $bindable(false),
 		onDoneUpdate = noop,
 		formOk = $bindable(true),
+		privateMetadataKeysToHide,
+		metadataKeysToHide,
 	}: Props = $props();
 
 	let metadataItemsToAdd = $state<MetadataInput[]>([]);
@@ -111,6 +116,7 @@
 		title={$tranFunc('common.metadata')}
 		data={metadata.map((item) => omit(item, ['__typename']))}
 		{disabled}
+		keysToHide={metadataKeysToHide}
 		bind:metadataItemsToAdd
 		bind:metadataKeysToRemove
 		bind:formOk={formMetaOk}
@@ -120,6 +126,7 @@
 		title={$tranFunc('common.privateMetadata')}
 		data={privateMetadata.map((item) => omit(item, ['__typename']))}
 		{disabled}
+		keysToHide={privateMetadataKeysToHide}
 		bind:metadataItemsToAdd={privateMetadataItemsToAdd}
 		bind:metadataKeysToRemove={privateMetadataKeysToRemove}
 		bind:formOk={formPrivateMetaOk}

@@ -23,6 +23,7 @@
 	import {
 		AttributeInputTypeEnum,
 		type BulkAttributeValueInput,
+		type MetadataInput,
 		type Mutation,
 		type MutationAttributeValueCreateArgs,
 		type ProductChannelListingAddInput,
@@ -35,12 +36,17 @@
 	} from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import type { MediaObject } from '$lib/utils/types';
-	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
-	import type {
-		ChannelSelectOptionProps,
-		CustomStockInput,
-		QuickFillHighlight,
-		QuickFillingProps,
+	import {
+		checkIfGraphqlResultHasError,
+		randomString,
+		SitenameCommonClassName,
+	} from '$lib/utils/utils';
+	import {
+		ProductPrivateMetadataVariantAttributeUsedKey,
+		type ChannelSelectOptionProps,
+		type CustomStockInput,
+		type QuickFillHighlight,
+		type QuickFillingProps,
 	} from './utils';
 	import dayjs from 'dayjs';
 	import { omit } from 'es-toolkit';
@@ -54,6 +60,7 @@
 		loading: boolean;
 		productMedias: MediaObject[];
 		productVariantsInput: ProductVariantBulkCreateInput[];
+		privateMetadata: MetadataInput[];
 	};
 
 	let {
@@ -62,6 +69,7 @@
 		loading,
 		// productMedias,
 		productVariantsInput = $bindable([]),
+		privateMetadata = $bindable(),
 	}: Props = $props();
 
 	type VariantManifest = {
@@ -111,6 +119,36 @@
 		if (variantManifests.length === 1) return 'w-[12.5%]!';
 		return 'w-[11.11%]!';
 	});
+
+	/**
+	 * This function helps setting the attribute usage by product variants, into private metadata
+	 */
+	const recalculateVariantAttributeMetadata = () => {
+		const setAttrValues = variantManifests.filter((item) => !!item.attribute.id);
+		if (!setAttrValues.length) return;
+
+		const attrInforValue = JSON.stringify(
+			setAttrValues.map((item) => ({
+				attrId: item.attribute.id,
+				attrValueIds: item.values.map((val) => val.value),
+			})),
+		);
+		if (
+			!privateMetadata.some((item) => item.key === ProductPrivateMetadataVariantAttributeUsedKey)
+		) {
+			privateMetadata.push({
+				key: ProductPrivateMetadataVariantAttributeUsedKey,
+				value: attrInforValue,
+			});
+		} else {
+			privateMetadata = privateMetadata.map((item) => {
+				if (item.key === ProductPrivateMetadataVariantAttributeUsedKey) {
+					item.value = attrInforValue;
+				}
+				return item;
+			});
+		}
+	};
 
 	onMount(() => {
 		return channelsQueryStore.subscribe((result) => {
@@ -256,6 +294,8 @@
 			},
 			values: [],
 		});
+
+		recalculateVariantAttributeMetadata();
 	};
 
 	const handleFocusHighlightQuickFilling = (highlight?: QuickFillHighlight) =>
@@ -324,13 +364,16 @@
 						id: variantManifests[0].attribute.id,
 					};
 
-					if (isSwatchAttribute) set(attributeProp, 'swatch.value', attrValue.value);
-					else set(attributeProp, 'dropdown.value', attrValue.value);
+					set(
+						attributeProp,
+						isSwatchAttribute ? 'swatch.value' : 'dropdown.value',
+						attrValue.value,
+					);
 
 					return {
 						attributes: [attributeProp],
-						name: `${attrValue.value}`,
-						sku: `${attrValue.value}`,
+						name: `${attrValue.label}`,
+						sku: `${attrValue.label}-${randomString(6)}`,
 						trackInventory: true,
 						channelListings: [],
 						weight: 0,
@@ -338,63 +381,62 @@
 					};
 				},
 			);
+		} else {
+			const newVariantDetails = [];
 
-			return;
-		}
+			for (const value1 of variantManifests[0].values) {
+				for (const value2 of variantManifests[1].values) {
+					// Check if a variant that already has 2 selected attributes.
+					// And also has according 1 attribute value for each attribute.
+					const existingVariant = variantsInputDetails.find((variantDetail) => {
+						if (variantDetail.attributes.length !== 2) return false;
 
-		const newVariantDetails = [];
+						let value1Used = false,
+							value2Used = false;
 
-		for (const value1 of variantManifests[0].values) {
-			for (const value2 of variantManifests[1].values) {
-				// Check if a variant that already has 2 selected attributes.
-				// And also has according 1 attribute value for each attribute.
-				const existingVariant = variantsInputDetails.find((variantDetail) => {
-					if (variantDetail.attributes.length !== 2) return false;
+						for (const attr of variantDetail.attributes) {
+							if (attr.dropdown?.id === value1.value || attr.swatch?.id === value1.value)
+								value1Used = true;
+							else if (attr.swatch?.id === value2.value || attr.swatch?.id === value2.value)
+								value2Used = true;
+						}
 
-					let value1Used = false,
-						value2Used = false;
+						return value1Used && value2Used;
+					});
 
-					for (const attr of variantDetail.attributes) {
-						if (attr.dropdown?.id === value1.value || attr.swatch?.id === value1.value)
-							value1Used = true;
-						else if (attr.swatch?.id === value2.value || attr.swatch?.id === value2.value)
-							value2Used = true;
+					if (existingVariant) {
+						newVariantDetails.push(existingVariant);
+						continue;
 					}
 
-					return value1Used && value2Used;
-				});
+					const attributes = variantManifests.map((manifest) => {
+						const isSwatchAttr = checkAttributeIsSwatch(manifest.attribute.id);
+						const attributeProps: BulkAttributeValueInput = {
+							id: manifest.attribute.id,
+						};
+						set(attributeProps, isSwatchAttr ? 'swatch.value' : 'dropdown.value', value1.value);
 
-				if (existingVariant) {
-					newVariantDetails.push(existingVariant);
-					continue;
-				}
+						return attributeProps;
+					});
 
-				const attributes = variantManifests.map((manifest) => {
-					const isSwatchAttr = checkAttributeIsSwatch(manifest.attribute.id);
-					const attributeProps: BulkAttributeValueInput = {
-						id: manifest.attribute.id,
+					const newVariant: ProductVariantBulkCreateInput = {
+						attributes,
+						name: `${value1.label}-${value2.label}`,
+						sku: `${value1.label}-${value2.label}-${randomString(6)}`,
+						trackInventory: true,
+						channelListings: [],
+						weight: 0,
+						preorder: {},
 					};
-					if (isSwatchAttr) set(attributeProps, 'swatch.value', value1.value);
-					else set(attributeProps, 'dropdown.value', value2.value);
 
-					return attributeProps;
-				});
-
-				const newVariant: ProductVariantBulkCreateInput = {
-					attributes,
-					name: `${value1.value}-${value2.value}`,
-					sku: `${value1.value}-${value2.value}`,
-					trackInventory: true,
-					channelListings: [],
-					weight: 0,
-					preorder: {},
-				};
-
-				newVariantDetails.push(newVariant);
+					newVariantDetails.push(newVariant);
+				}
 			}
+
+			variantsInputDetails = newVariantDetails;
 		}
 
-		variantsInputDetails = newVariantDetails;
+		recalculateVariantAttributeMetadata();
 	};
 
 	const handleQuickFillingClick = () => {
@@ -504,7 +546,7 @@
 								label="Attribute values"
 								resultKey={'attribute.choices' as keyof Query}
 								variableSearchQueryPath="filter.search"
-								optionValueKey="slug"
+								optionValueKey="id"
 								optionLabelKey="name"
 								multiple
 								value={manifest.values.map((item) => item.value)}
@@ -969,13 +1011,6 @@
 	td {
 		@apply p-1;
 	}
-
-	/* td[rowspan] {
-		@apply bg-blue-100 font-semibold text-blue-600;
-	}
-	td[rowspan] {
-		@apply bg-amber-100 font-semibold text-amber-600;
-	} */
 
 	/** price highlight */
 	.td-price-hl > .price-td,

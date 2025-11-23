@@ -130,7 +130,7 @@
 	};
 </script>
 
-<div class="mb-3">
+<div class={["p-2 rounded-lg", !ok && 'bg-red-50 border-red-200!']}>
 	<Label required requiredAtPos="end" label={$tranFunc('product.channel')} />
 
 	{#if $CHANNELS_QUERY_STORE.fetching}
@@ -138,7 +138,7 @@
 	{:else if $CHANNELS_QUERY_STORE.error}
 		<Alert variant="error" size="sm" bordered>{$CHANNELS_QUERY_STORE.error.message}</Alert>
 	{:else}
-		<div class={['grid grid-cols-4 gap-2', !ok && 'bg-red-50 border-red-200']}>
+		<div class={['grid grid-cols-4 gap-2']}>
 			{#each productChannelListingUpdateInput.updateChannels! as channelListing, idx (idx)}
 				<div class="">
 					<Accordion bind:open={channelListing.used} class={SitenameCommonClassName}>
@@ -199,5 +199,5 @@
 			{/each}
 		</div>
 	{/if}
-	<ErrorMsg error={!ok ? $tranFunc('error.thereIsError') : undefined} />
 </div>
+<ErrorMsg error={!ok ? $tranFunc('error.thereIsError') : undefined} />

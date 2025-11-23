@@ -18,6 +18,7 @@
 		metadataItemsToAdd?: MetadataInput[];
 		metadataKeysToRemove?: string[];
 		formOk?: boolean;
+		keysToHide?: string[];
 	};
 
 	let {
@@ -28,6 +29,7 @@
 		metadataItemsToAdd = $bindable([]),
 		metadataKeysToRemove = $bindable([]),
 		formOk = $bindable(true),
+		keysToHide,
 	}: Props = $props();
 
 	const DataSchema = object({
@@ -93,50 +95,52 @@
 
 <Accordion header={`${title} (${data.length})`} class={className}>
 	{#each activeMetadata as item, idx (idx)}
-		<!-- existing metadata should be read-only -->
-		{@const readonly = ExistingMetadataKeys.includes(item.key)}
-		<div class="flex gap-2 items-start mb-3">
-			<div class="flex items-start gap-2 flex-4/5">
-				<Input
-					placeholder={$tranFunc('common.key')}
-					size="sm"
-					bind:value={item.key}
-					{disabled}
-					required
-					{readonly}
-					class="flex-1"
-					onblur={() => validate(idx)}
-					inputDebounceOption={{ onInput: () => validate(idx) }}
-					variant={dataFormErrors[idx]?.key?.length ? 'error' : 'info'}
-					subText={dataFormErrors[idx]?.key?.[0]}
-				/>
+		{#if !keysToHide?.includes(item.key)}
+			<!-- existing metadata should be read-only -->
+			{@const readonly = ExistingMetadataKeys.includes(item.key)}
+			<div class="flex gap-2 items-start mb-3">
+				<div class="flex items-start gap-2 flex-4/5">
+					<Input
+						placeholder={$tranFunc('common.key')}
+						size="sm"
+						bind:value={item.key}
+						{disabled}
+						required
+						{readonly}
+						class="flex-1"
+						onblur={() => validate(idx)}
+						inputDebounceOption={{ onInput: () => validate(idx) }}
+						variant={dataFormErrors[idx]?.key?.length ? 'error' : 'info'}
+						subText={dataFormErrors[idx]?.key?.[0]}
+					/>
 
-				<Input
-					placeholder={$tranFunc('common.value')}
+					<Input
+						placeholder={$tranFunc('common.value')}
+						size="sm"
+						bind:value={item.value}
+						{disabled}
+						{readonly}
+						required
+						class="flex-1"
+						onblur={() => validate(idx)}
+						inputDebounceOption={{ onInput: () => validate(idx) }}
+						variant={dataFormErrors[idx]?.value?.length ? 'error' : 'info'}
+						subText={dataFormErrors[idx]?.value?.[0]}
+					/>
+				</div>
+
+				<Button
+					endIcon={Trash}
 					size="sm"
-					bind:value={item.value}
+					color="red"
+					variant="light"
+					onclick={() => handleRemoveAPair(idx)}
 					{disabled}
-					{readonly}
-					required
-					class="flex-1"
-					onblur={() => validate(idx)}
-					inputDebounceOption={{ onInput: () => validate(idx) }}
-					variant={dataFormErrors[idx]?.value?.length ? 'error' : 'info'}
-					subText={dataFormErrors[idx]?.value?.[0]}
-				/>
+				>
+					{$tranFunc('btn.delete')}
+				</Button>
 			</div>
-
-			<Button
-				endIcon={Trash}
-				size="sm"
-				color="red"
-				variant="light"
-				onclick={() => handleRemoveAPair(idx)}
-				{disabled}
-			>
-				{$tranFunc('btn.delete')}
-			</Button>
-		</div>
+		{/if}
 	{/each}
 
 	<Button variant="light" endIcon={Plus} size="xs" onclick={handleAddPair} {disabled}>

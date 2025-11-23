@@ -39,6 +39,8 @@
 		attributes: AttributeValueInput[];
 		formOk?: boolean;
 		isCreatePage?: boolean;
+		/** bindable, to help parant component to decide whether to show dimension metadata section */
+		productTypeRequiresShipping: boolean;
 	};
 
 	type CustomAttributeInput = AttributeValueInput & {
@@ -54,6 +56,7 @@
 		attributes = $bindable(),
 		formOk = $bindable(true),
 		isCreatePage,
+		productTypeRequiresShipping = $bindable(),
 	}: Props = $props();
 
 	const productTypeQuery = operationStore<Pick<Query, 'productType'>, QueryProductTypeArgs>({
@@ -166,6 +169,8 @@
 						return result;
 					},
 				);
+
+				productTypeRequiresShipping = result.data.productType?.isShippingRequired;
 			}
 		});
 

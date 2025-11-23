@@ -12,10 +12,13 @@
 		type GeneralMetadataEditorRef,
 	} from '$lib/components/pages/settings/common';
 	import CategorySelector from '$lib/components/pages/settings/products/new/category-selector.svelte';
+	import ChannelsSelector from '$lib/components/pages/settings/products/new/channels-selector.svelte';
 	import CollectionsAndTax from '$lib/components/pages/settings/products/new/collections-and-tax.svelte';
 	import GeneralInformation from '$lib/components/pages/settings/products/new/general-information.svelte';
 	import PackagingAndDelivery from '$lib/components/pages/settings/products/new/packaging-and-delivery.svelte';
 	import ProductSeo from '$lib/components/pages/settings/products/new/product-seo.svelte';
+	import { ProductPrivateMetadataVariantAttributeUsedKey } from '$lib/components/pages/settings/products/new/utils';
+	import VariantsEditor from '$lib/components/pages/settings/products/new/variants-editor.svelte';
 	import Skeleton from '$lib/components/pages/settings/products/skeleton.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import type {
@@ -25,6 +28,7 @@
 		ProductType,
 		Mutation,
 		MutationProductDeleteArgs,
+		ProductChannelListingUpdateInput,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
@@ -57,10 +61,11 @@
 		weight: 0,
 	});
 	let currentProductType = $state<ProductType>();
+	let productTypeRequiresShipping = $state(false);
 	let metaRef = $state<GeneralMetadataEditorRef>();
 	let productMediasOk = $state(true);
 	let productMedias = $state.raw<MediaObject[]>([]);
-	let productInputError = $state<Record<keyof ProductInput, boolean>>({
+	let productInputError = $state({
 		externalReference: true, // not supported yet
 		privateMetadata: true, // not supported yet
 		collections: true, // this field is optional
@@ -78,7 +83,9 @@
 		category: false,
 		name: false,
 		seo: false,
+		channelListing: true,
 	});
+	let channelListingUpdateInput = $state.raw<ProductChannelListingUpdateInput>({});
 
 	onMount(() => {
 		return ProductDetailStore.subscribe((result) => {
@@ -102,6 +109,7 @@
 				} = result.data.product;
 
 				currentProductType = productType;
+				productTypeRequiresShipping = productType.isShippingRequired;
 				product = {
 					category: category?.id || undefined,
 					collections: collections?.map((col) => col.id),
@@ -170,6 +178,7 @@
 			bind:attributes={product.attributes!}
 			disabled={loading}
 			isCreatePage
+			bind:productTypeRequiresShipping
 		/>
 		<CategorySelector
 			bind:categoryID={product.category!}
@@ -193,16 +202,21 @@
 			bind:formOk={productInputError.seo}
 			{loading}
 		/>
-		<!-- <div class={SitenameCommonClassName}>
-			<ChannelsSelector bind:channelListingUpdateInput ok={channelListingUpdateInputOk} {loading} />
+		<div class={SitenameCommonClassName}>
+			<ChannelsSelector
+				bind:channelListingUpdateInput
+				ok={productInputError.channelListing}
+				{loading}
+			/>
 			<VariantsEditor
 				{loading}
 				productTypeId={currentProductType.id}
 				{productMedias}
 				channelsListing={channelListingUpdateInput}
-				bind:productVariantsInput
+				productVariantsInput={[]}
+				bind:privateMetadata={product.privateMetadata!}
 			/>
-		</div> -->
+		</div>
 		<CollectionsAndTax
 			bind:collections={product.collections}
 			bind:taxClassID={product.taxClass}
@@ -214,8 +228,15 @@
 			{metadata}
 			{privateMetadata}
 			objectId={id}
+			privateMetadataKeysToHide={[ProductPrivateMetadataVariantAttributeUsedKey]}
 		/>
-		<PackagingAndDelivery bind:metadata={product.metadata} bind:weight={product.weight} {loading} />
+		{#if productTypeRequiresShipping}
+			<PackagingAndDelivery
+				bind:metadata={product.metadata}
+				bind:weight={product.weight}
+				{loading}
+			/>
+		{/if}
 	</div>
 
 	<ActionBar

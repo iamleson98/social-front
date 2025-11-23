@@ -62,9 +62,10 @@
 		category: '',
 	});
 	let channelListingUpdateInput = $state.raw<ProductChannelListingUpdateInput>({});
-	let channelListingUpdateInputOk = $state(true);
+	// let channelListingUpdateInputOk = $state(true);
 	let productMedias = $state.raw<MediaObject[]>([]);
 	let metaRef = $state<GeneralMetadataEditorRef>();
+	let productTypeRequiresShipping = $state(true);
 
 	let productInputError = $state({
 		metadata: false,
@@ -72,6 +73,7 @@
 		category: false,
 		seo: false,
 		productMedias: false,
+		channelListing: true,
 	});
 
 	let productVariantsInput = $state.raw<ProductVariantBulkCreateInput[]>([]);
@@ -123,7 +125,7 @@
 				(item) => item['used' as keyof ProductChannelListingAddInput],
 			)
 		) {
-			channelListingUpdateInputOk = false;
+			productInputError.channelListing = false;
 			return;
 		}
 
@@ -235,6 +237,7 @@
 		bind:attributes={productCreateInput.attributes!}
 		disabled={loading}
 		bind:formOk={productInputError.generalInfo}
+		bind:productTypeRequiresShipping
 	/>
 	<CategorySelector
 		bind:categoryID={productCreateInput.category!}
@@ -253,13 +256,18 @@
 		required
 	/>
 	<div class={SitenameCommonClassName}>
-		<ChannelsSelector bind:channelListingUpdateInput ok={channelListingUpdateInputOk} {loading} />
+		<ChannelsSelector
+			bind:channelListingUpdateInput
+			ok={productInputError.channelListing}
+			{loading}
+		/>
 		<VariantsEditor
 			{loading}
 			productTypeId={productCreateInput.productType}
 			{productMedias}
 			channelsListing={channelListingUpdateInput}
 			bind:productVariantsInput
+			bind:privateMetadata={productCreateInput.privateMetadata!}
 		/>
 	</div>
 	<ProductSeo
@@ -279,11 +287,13 @@
 		disabled={loading}
 		bind:formOk={productInputError.metadata}
 	/>
-	<PackagingAndDelivery
-		bind:metadata={productCreateInput.metadata}
-		bind:weight={productCreateInput.weight}
-		{loading}
-	/>
+	{#if productTypeRequiresShipping}
+		<PackagingAndDelivery
+			bind:metadata={productCreateInput.metadata}
+			bind:weight={productCreateInput.weight}
+			{loading}
+		/>
+	{/if}
 </div>
 
 <ActionBar
