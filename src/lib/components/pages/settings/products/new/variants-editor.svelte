@@ -111,7 +111,7 @@
 	 * With that said, after an attribute value is added, we must use this list, to trigger according select to refetch and find for created attribute values.
 	 */
 	let manifestPerformFetchingAttributeValues = $state([false, false]);
-	let variantsInputDetails = $state<ProductVariantBulkCreateInput[]>([]);
+	let variantsInputDetails = $state<ProductVariantBulkCreateInput[]>(productVariantsInput);
 	let quickFillingValues = $state<QuickFillingProps>({
 		channels: [],
 		stocks: [],

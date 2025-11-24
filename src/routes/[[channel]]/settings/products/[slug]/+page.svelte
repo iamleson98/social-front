@@ -30,6 +30,7 @@
 		MutationProductDeleteArgs,
 		ProductChannelListingUpdateInput,
 		ProductVariantBulkUpdateInput,
+		ProductVariantBulkCreateInput,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
@@ -87,7 +88,9 @@
 		channelListing: true,
 	});
 	let channelListingUpdateInput = $state.raw<ProductChannelListingUpdateInput>({});
-	// let productVariantBulkUpdateInput = $state<ProductVariantBulkUpdateInput>({})
+
+	// in product update screen
+	let productVariantBulkUpdateInput = $state<ProductVariantBulkCreateInput[]>([]);
 
 	onMount(() => {
 		return ProductDetailStore.subscribe((result) => {
@@ -108,6 +111,7 @@
 					weight,
 					productType,
 					media,
+					variants,
 				} = result.data.product;
 
 				currentProductType = productType;
@@ -137,6 +141,26 @@
 						url: item.url,
 						type: item.type,
 					}));
+				}
+
+				if (variants?.length) {
+					productVariantBulkUpdateInput = variants.map((variant) => {
+						return {
+							...variant,
+							attributes: variant.assignedAttributes.map((item) => item.attribute),
+							channelListings: variant.channelListings?.map((item) => ({
+								channelId: item.channel.id,
+								costPrice: item.costPrice,
+								preorderThreshold: item.preorderThreshold?.quantity,
+								price: item.price?.amount,
+								priorPrice: item.priorPrice?.amount,
+							})),
+							stocks: variant.stocks?.map((item) => ({
+								quantity: item.quantity,
+								warehouse: item.warehouse.id,
+							})),
+						};
+					});
 				}
 			}
 		});
@@ -217,7 +241,7 @@
 				productTypeId={currentProductType.id}
 				{productMedias}
 				channelsListing={channelListingUpdateInput}
-				productVariantsInput={[]}
+				bind:productVariantsInput={productVariantBulkUpdateInput}
 				bind:privateMetadata={product.privateMetadata!}
 			/>
 		</div>
