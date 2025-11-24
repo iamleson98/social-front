@@ -42,10 +42,12 @@
 		{
 			title: $tranFunc('settings.payment'),
 			child: payment,
+			key: OrderSortField.Payment,
 		},
 		{
 			title: $tranFunc('settings.status'),
 			child: status,
+			key: OrderSortField.Status,
 		},
 		{
 			title: $tranFunc('settings.total'),
@@ -54,6 +56,7 @@
 		{
 			title: $tranFunc('settings.date'),
 			child: { render: ({ item }) => dayjs(item.created).format(SitenameTimeFormat) },
+			key: OrderSortField.CreatedAt,
 		},
 	]);
 </script>

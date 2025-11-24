@@ -9,7 +9,15 @@
 </script>
 
 <div
-	class="font-semibold! text-gray-700! text-base! mb-2 flex items-center justify-between {className}"
+	class="container mb-2 flex items-center justify-between {className}"
 >
 	{@render children()}
 </div>
+
+<style lang="postcss">
+	@refernce "tailwindcss";
+
+	.container > * {
+		@apply font-semibold text-gray-700 text-base;
+	}
+</style>

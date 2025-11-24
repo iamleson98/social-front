@@ -52,18 +52,28 @@ export function extractOrderGiftCardUsedAmount(order?: Order): number | undefine
 
 export function extractOutstandingBalance(order: Order): Money {
 	const total = order.total?.gross;
-	if (!total || !order.totalCharged) return { amount: 0, currency: total?.currency ?? 'VND' };
+	if (!total || !order.totalCharged) return {
+		amount: 0,
+		currency: total?.currency ?? 'VND',
+		fractionDigits: 0,
+		fractionalAmount: 0
+	};
 
 	return {
 		amount: total.amount - order.totalCharged.amount,
 		currency: total.currency,
+		fractionDigits: 0,
+		fractionalAmount: 0
 	};
 }
 
 export function extractRefundedAmount(order: Order): Money {
 	const total = order.total?.gross;
 
-	if (!total) return { amount: 0, currency: 'VND' };
+	if (!total) return {
+		amount: 0, currency: 'VND', fractionDigits: 0,
+		fractionalAmount: 0
+	};
 
 	switch (order.paymentStatus) {
 		case PaymentChargeStatusEnum.FullyRefunded:
@@ -74,13 +84,15 @@ export function extractRefundedAmount(order: Order): Money {
 			return {
 				amount: 0,
 				currency: total.currency,
+				fractionDigits: 0,
+				fractionalAmount: 0
 			};
 	}
 }
 
 export const getAuthorizedAmount = (order: Order) => order?.total.gross;
 
-export const getShipmentCost = (order: Order) => {
+export const getShipmentCost = (order: Order): Money => {
 	if (order.shippingPrice.gross) {
 		return order.shippingPrice.gross;
 	}
@@ -89,12 +101,16 @@ export const getShipmentCost = (order: Order) => {
 		return {
 			amount: 0,
 			currency: order.total.gross.currency,
+			fractionDigits: 0,
+			fractionalAmount: 0
 		};
 	}
 
 	return {
 		amount: 0,
 		currency: '',
+		fractionDigits: 0,
+		fractionalAmount: 0
 	};
 };
 
@@ -235,16 +251,22 @@ export const getRefundProductsAmountValues = (
 	const selectedProductsValue: Money = {
 		amount: allLinesSum,
 		currency: authorizedAmount.currency,
+		fractionDigits: 0,
+		fractionalAmount: 0
 	};
 
 	const proposedRefundAmount: Money = {
 		amount: calculatedTotalAmount,
 		currency: authorizedAmount.currency,
+		fractionDigits: 0,
+		fractionalAmount: 0
 	};
 
 	const refundTotalAmount: Money = {
 		amount: calculatedTotalAmount,
 		currency: authorizedAmount.currency,
+		fractionDigits: 0,
+		fractionalAmount: 0
 	};
 
 	return {
@@ -736,6 +758,8 @@ export const getTransactionAmount = (money: Money | null | undefined, fallbackCu
 			currency: fallbackCurrency,
 			amount: 0,
 			__typename: "Money",
+			fractionDigits: 0,
+			fractionalAmount: 0
 		};
 	}
 
@@ -749,6 +773,8 @@ export const prepareMoney = (
 	__typename: "Money",
 	amount,
 	currency: currency ?? "VND",
+	fractionDigits: 0,
+	fractionalAmount: 0
 });
 
 export const mapOrderActionsToTransactionActions = (

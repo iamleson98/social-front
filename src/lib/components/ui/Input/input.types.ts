@@ -26,7 +26,7 @@ export type CustomInputProps = {
 	['data-interactive']?: boolean;
 };
 
-export type InputDebounceProps = Omit<InputProps, 'inputDebounceOption' | 'onchange'> & {
+export type InputDebounceProps = Omit<InputProps, 'inputDebounceOption'> & {
 	/** debounce time in ms, default to 333 */
 	debounceTime?: number;
 };

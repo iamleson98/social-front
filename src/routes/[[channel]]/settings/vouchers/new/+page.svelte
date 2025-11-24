@@ -57,6 +57,9 @@
 	let loading = $state(false);
 	let metadataRef = $state<GeneralMetadataEditorRef>();
 	let nameErrors = $state<string[]>([]);
+	let formErrors = $state({
+		discountType: false,
+	});
 
 	const validateName = () => {
 		const result = NameSchema.safeParse(voucherInput.name);
@@ -139,6 +142,7 @@
 			bind:discountType={voucherInput.discountValueType!}
 			bind:activeChannelListings
 			disabled={loading}
+			bind:formOk={formErrors.discountType}
 		/>
 		<ApplicationType
 			bind:applicationType={voucherInput.type!}
