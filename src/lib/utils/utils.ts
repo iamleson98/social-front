@@ -597,9 +597,11 @@ export const stringSlicer = (str?: string, len: number = 100) => {
 
 export function subtractMoney(init: Money, ...args: Money[]): Money {
 	return {
-		amount: args.reduce((acc, curr) => acc - curr.amount, init.amount),
-		currency: init.currency,
-	};
+	amount: args.reduce((acc, curr) => acc - curr.amount, init.amount),
+	currency: init.currency,
+	fractionDigits: 0,
+	fractionalAmount: 0
+};
 }
 
 export const convertAddressToAddressInput = (addr: Address): AddressInput => {

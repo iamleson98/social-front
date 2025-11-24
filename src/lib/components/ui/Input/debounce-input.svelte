@@ -6,6 +6,7 @@
 	let {
 		debounceTime = DEBOUNCE_INPUT_TIME,
 		value = $bindable(),
+		onchange,
 		...rest
 	}: InputDebounceProps = $props();
 </script>
@@ -15,6 +16,9 @@
 	{value}
 	inputDebounceOption={{
 		debounceTime,
-		onInput: (evt) => (value = (evt.target as HTMLInputElement).value),
+		onInput: (evt) => {
+			value = (evt.target as HTMLInputElement).value;
+			onchange?.(evt as any);
+		},
 	}}
 />

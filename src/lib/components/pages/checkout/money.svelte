@@ -6,7 +6,7 @@
 		ariaLabel: string;
 		negative?: boolean;
 		class?: string;
-		money?: Maybe<Money>;
+		money?: Maybe<Omit<Money, 'fractionDigits' | 'fractionalAmount'>>;
 	};
 
 	let { ariaLabel, negative = false, class: className = '', money }: Props = $props();

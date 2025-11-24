@@ -80,59 +80,41 @@
 			const attr = innerAttributes[idx];
 
 			if (!attr['required' as keyof AttributeValueInput]) continue;
-
+			const inputType = 'inputType' as keyof AttributeValueInput;
 			if (
-				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.Dropdown &&
+				attr[inputType] === AttributeInputTypeEnum.Dropdown &&
 				(!attr.dropdown || !Object.keys(attr.dropdown).length)
 			) {
 				result[idx] = $CommonState.FieldRequiredError;
 			} else if (
-				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.Boolean &&
+				attr[inputType] === AttributeInputTypeEnum.Boolean &&
 				typeof attr.boolean !== 'boolean'
 			) {
 				result[idx] = $CommonState.FieldRequiredError;
-			} else if (
-				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.Date &&
-				!attr.date
-			) {
+			} else if (attr[inputType] === AttributeInputTypeEnum.Date && !attr.date) {
+				result[idx] = $CommonState.FieldRequiredError;
+			} else if (attr[inputType] === AttributeInputTypeEnum.Numeric && !attr.numeric) {
+				result[idx] = $CommonState.FieldRequiredError;
+			} else if (attr[inputType] === AttributeInputTypeEnum.DateTime && !attr.dateTime) {
 				result[idx] = $CommonState.FieldRequiredError;
 			} else if (
-				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.Numeric &&
-				!attr.numeric
-			) {
-				result[idx] = $CommonState.FieldRequiredError;
-			} else if (
-				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.DateTime &&
-				!attr.dateTime
-			) {
-				result[idx] = $CommonState.FieldRequiredError;
-			} else if (
-				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.Reference &&
+				attr[inputType] === AttributeInputTypeEnum.Reference &&
 				(!attr.references || !attr.references.length)
 			) {
 				result[idx] = $CommonState.FieldRequiredError;
-			} else if (
-				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.RichText &&
-				!attr.richText
-			) {
+			} else if (attr[inputType] === AttributeInputTypeEnum.RichText && !attr.richText) {
+				result[idx] = $CommonState.FieldRequiredError;
+			} else if (attr[inputType] === AttributeInputTypeEnum.PlainText && !attr.plainText) {
 				result[idx] = $CommonState.FieldRequiredError;
 			} else if (
-				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.PlainText &&
-				!attr.plainText
-			) {
-				result[idx] = $CommonState.FieldRequiredError;
-			} else if (
-				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.Swatch &&
+				attr[inputType] === AttributeInputTypeEnum.Swatch &&
 				(!attr.swatch || !Object.keys(attr.swatch).length)
 			) {
 				result[idx] = $CommonState.FieldRequiredError;
-			} else if (
-				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.File &&
-				!attr.file
-			) {
+			} else if (attr[inputType] === AttributeInputTypeEnum.File && !attr.file) {
 				result[idx] = $CommonState.FieldRequiredError;
 			} else if (
-				attr['inputType' as keyof AttributeValueInput] === AttributeInputTypeEnum.Multiselect &&
+				attr[inputType] === AttributeInputTypeEnum.Multiselect &&
 				(!attr.multiselect || !attr.multiselect.length)
 			) {
 				result[idx] = $CommonState.FieldRequiredError;

@@ -69,6 +69,8 @@
 				minSpent: {
 					currency: listing.currency,
 					amount: Number((evt.target as HTMLInputElement).value),
+					fractionalAmount: 0,
+					fractionDigits: 0,
 				},
 			};
 		});
@@ -98,6 +100,8 @@
 					: {
 							currency: item.currency,
 							amount: 0,
+							fractionDigits: 0,
+							fractionalAmount: 0,
 						},
 			}));
 		}

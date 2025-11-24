@@ -113,7 +113,6 @@
 	let handleFetchData = $state(autoFetchDataOnMount);
 
 	export const triggerFetchData = () => {
-		// queryOperationStore.reexecute({ variables, context: { requestPolicy: 'network-only' } });
 		handleFetchData = true;
 	};
 

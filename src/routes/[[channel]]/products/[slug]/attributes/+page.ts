@@ -4,10 +4,10 @@ export const ssr = true;
 
 export const load: PageLoad = async (event) => {
 	const {
-		product: { attributes },
+		product: { assignedAttributes },
 	} = await event.parent();
 
 	return {
-		attributes,
+		attributes: assignedAttributes,
 	};
 };

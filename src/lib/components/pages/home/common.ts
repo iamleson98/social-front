@@ -12,7 +12,7 @@ export const ProductSortFields = derived(tranFunc, (func) => {
 		ProductOrderField.Price,
 		ProductOrderField.Rating,
 		ProductOrderField.Name,
-		ProductOrderField.PublicationDate,
+		ProductOrderField.PublishedAt,
 		ProductOrderField.MinimalPrice,
 	].map<SelectOption>((value) => ({
 		value,

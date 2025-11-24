@@ -12,6 +12,7 @@
 	import {
 		GraphqlPaginableTable,
 		ROW_OPTIONS,
+		type GraphqlPaginableTableInterface,
 		type TableColumnProps,
 	} from '$lib/components/ui/Table';
 	import type {
@@ -56,7 +57,7 @@
 	let addVariantIds = $state(new SvelteSet<string>());
 	let loading = $state(false);
 	let openVariantsModal = $state(false);
-	let forceReExecuteGraphqlQuery = $state(true);
+	let variantTableRef = $state<GraphqlPaginableTableInterface>();
 	let variables = $state.raw<QueryProductsArgs>({
 		first: BATCH,
 		channel: orderChannelSlug,
@@ -70,7 +71,7 @@
 				...variables,
 				filter: { search: searchProductsQuery },
 			};
-			forceReExecuteGraphqlQuery = true;
+			variantTableRef?.triggerFetchData();
 		}
 	});
 
@@ -104,7 +105,7 @@
 	const handleClickAddProductVariants = async () => {
 		addVariantIds.clear();
 		openVariantsModal = true;
-		forceReExecuteGraphqlQuery = true;
+		variantTableRef?.triggerFetchData();
 	};
 </script>
 
@@ -192,5 +193,6 @@
 		disabled={loading}
 		autoRefetchOnPaginationParamsChange
 		autoFetchDataOnMount
+		bind:this={variantTableRef}
 	/>
 </Modal>

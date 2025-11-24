@@ -179,7 +179,7 @@
 			rounded
 			color="green"
 		/>
-		{#if productInformation.attributes.some((attr) => attr.attribute.slug === 'brand')}
+		{#if productInformation.assignedAttributes.some((attr) => attr.attribute.slug === 'brand')}
 			<Badge size="xs" text={$tranFunc('product.brand')} variant="light" rounded color="blue" />
 		{/if}
 	</div>

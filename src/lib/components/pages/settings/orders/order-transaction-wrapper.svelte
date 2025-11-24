@@ -231,7 +231,7 @@
 		{#each order.discounts as discount, idx (idx)}
 			{@render OrderSummaryLine(
 				'Discount',
-				discount.amount,
+				discount.total,
 				getDiscountTypeLabel(discount, $tranFunc),
 			)}
 		{/each}
@@ -239,6 +239,8 @@
 			{@render OrderSummaryLine('Gift card', {
 				amount: giftcardAmount,
 				currency: order.total.gross.currency,
+				fractionDigits: 0,
+				fractionalAmount: 0
 			})}
 		{/if}
 
@@ -412,11 +414,12 @@
 				reasonReference: undefined,
 				createdAt: event.date,
 				amount: {
-					amount:
-						(event.balance?.oldCurrentBalance?.amount || 0) -
+					amount: (event.balance?.oldCurrentBalance?.amount || 0) -
 						(event.balance?.currentBalance?.amount || 0),
 					currency: event.balance?.currentBalance?.currency || '',
 					__typename: 'Money',
+					fractionDigits: 0,
+					fractionalAmount: 0
 				},
 				mappedResult: {
 					type: 'CHARGE',
