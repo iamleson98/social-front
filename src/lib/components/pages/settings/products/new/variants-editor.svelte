@@ -52,6 +52,7 @@
 	import { omit } from 'es-toolkit';
 	import { set } from 'es-toolkit/compat';
 	import { onMount } from 'svelte';
+	import { toast } from 'svelte-sonner';
 	import { slide } from 'svelte/transition';
 
 	type Props = {
@@ -102,6 +103,13 @@
 	let variantManifests = $state<VariantManifest[]>([]);
 	let quickFillingHighlightClass = $state<QuickFillHighlight>();
 	let channelSelectOptions = $state.raw<ChannelSelectOptionProps[]>([]);
+	/**
+	 * there are at most 2 attributes used for variants creation, so this list has 2 booleans.
+	 * If user can not find her desired attribute values, we support auto create feature,
+	 * so user do not have to visit the attribute detail page to add more values.
+	 *
+	 * With that said, after an attribute value is added, we must use this list, to trigger according select to refetch and find for created attribute values.
+	 */
 	let manifestPerformFetchingAttributeValues = $state([false, false]);
 	let variantsInputDetails = $state<ProductVariantBulkCreateInput[]>([]);
 	let quickFillingValues = $state<QuickFillingProps>({
@@ -127,12 +135,7 @@
 		const setAttrValues = variantManifests.filter((item) => !!item.attribute.id);
 		if (!setAttrValues.length) return;
 
-		const attrInforValue = JSON.stringify(
-			setAttrValues.map((item) => ({
-				attrId: item.attribute.id,
-				attrValueIds: item.values.map((val) => val.value),
-			})),
-		);
+		const attrInforValue = JSON.stringify(setAttrValues);
 		if (
 			!privateMetadata.some((item) => item.key === ProductPrivateMetadataVariantAttributeUsedKey)
 		) {
@@ -149,6 +152,134 @@
 			});
 		}
 	};
+
+	const handleVariantValuesChange = (
+		manifestIdx: number,
+		options?: SelectOption | SelectOption[],
+	) => {
+		variantManifests[manifestIdx].values = (options as SelectOption[]) || [];
+
+		if (variantManifests.length === 1) {
+			variantsInputDetails = variantManifests[0].values.map<ProductVariantBulkCreateInput>(
+				(attrValue) => {
+					const variantWithAttrValueExisted = variantsInputDetails.find((variantDetail) =>
+						variantDetail.attributes.some(
+							(attrInput) =>
+								attrInput.dropdown?.id === attrValue.value ||
+								attrInput.swatch?.id === attrValue.value,
+						),
+					);
+
+					if (variantWithAttrValueExisted) return variantWithAttrValueExisted;
+
+					const isSwatchAttribute =
+						$ProductTypeDetailQuery.data?.productType?.assignedVariantAttributes?.find(
+							(attr) => attr.attribute.id === variantManifests[0].attribute.id,
+						)?.attribute.inputType === AttributeInputTypeEnum.Swatch;
+
+					const attributeProp: BulkAttributeValueInput = {
+						id: variantManifests[0].attribute.id,
+					};
+
+					set(
+						attributeProp,
+						isSwatchAttribute ? 'swatch.value' : 'dropdown.value',
+						attrValue.value,
+					);
+
+					return {
+						attributes: [attributeProp],
+						name: `${attrValue.label}`,
+						sku: `${attrValue.label}-${randomString(6)}`,
+						trackInventory: true,
+						channelListings: [],
+						weight: 0,
+						preorder: {},
+					};
+				},
+			);
+		} else {
+			const newVariantDetails = [];
+
+			for (const value1 of variantManifests[0].values) {
+				for (const value2 of variantManifests[1].values) {
+					// Check if a variant that already has 2 selected attributes.
+					// And also has according 1 attribute value for each attribute.
+					const existingVariant = variantsInputDetails.find((variantDetail) => {
+						if (variantDetail.attributes.length !== 2) return false;
+
+						let value1Used = false,
+							value2Used = false;
+
+						for (const attr of variantDetail.attributes) {
+							if (attr.dropdown?.id === value1.value || attr.swatch?.id === value1.value)
+								value1Used = true;
+							else if (attr.swatch?.id === value2.value || attr.swatch?.id === value2.value)
+								value2Used = true;
+						}
+
+						return value1Used && value2Used;
+					});
+
+					if (existingVariant) {
+						newVariantDetails.push(existingVariant);
+						continue;
+					}
+
+					const attributes = variantManifests.map((manifest) => {
+						const isSwatchAttr = checkAttributeIsSwatch(manifest.attribute.id);
+						const attributeProps: BulkAttributeValueInput = {
+							id: manifest.attribute.id,
+						};
+						set(attributeProps, isSwatchAttr ? 'swatch.value' : 'dropdown.value', value1.value);
+
+						return attributeProps;
+					});
+
+					const newVariant: ProductVariantBulkCreateInput = {
+						attributes,
+						name: `${value1.label}-${value2.label}`,
+						sku: `${value1.label}-${value2.label}-${randomString(6)}`,
+						trackInventory: true,
+						channelListings: [],
+						weight: 0,
+						preorder: {},
+					};
+
+					newVariantDetails.push(newVariant);
+				}
+			}
+
+			variantsInputDetails = newVariantDetails;
+		}
+
+		recalculateVariantAttributeMetadata();
+	};
+
+	// Right after the page mounted, we must check if there is metadata information of attributes used by variants.
+	// If yes, perform parse that data, and apply it to `variantManifests`
+	onMount(async () => {
+		const attrMeta = privateMetadata.find(
+			(item) => item.key === ProductPrivateMetadataVariantAttributeUsedKey,
+		);
+		if (attrMeta) {
+			try {
+				const parsedAttrInfor = JSON.parse(attrMeta.value);
+				if (parsedAttrInfor.length) {
+					variantManifests = parsedAttrInfor;
+
+					// also trigger the <Select /> to fetch attribute values data
+					manifestPerformFetchingAttributeValues = [true, true];
+
+					// also update the variant details
+					variantManifests.forEach((item, idx) => handleVariantValuesChange(idx, item.values));
+				}
+			} catch (err) {
+				console.error(err);
+				toast.error(`Failed to load variant attribute information. Please try reload the page.`);
+			}
+		}
+	});
 
 	onMount(() => {
 		return channelsQueryStore.subscribe((result) => {
@@ -284,6 +415,7 @@
 	});
 
 	const handleAddVariantManifest = async () => {
+		// when a variant manifest is added, we must force the <Select /> to fetch attribute values
 		if (!variantManifests.length) manifestPerformFetchingAttributeValues[0] = true;
 		else manifestPerformFetchingAttributeValues[1] = true;
 
@@ -336,109 +468,6 @@
 		);
 	};
 
-	const handleVariantValuesChange = (
-		manifestIdx: number,
-		options?: SelectOption | SelectOption[],
-	) => {
-		variantManifests[manifestIdx].values = (options as SelectOption[]) || [];
-
-		if (variantManifests.length === 1) {
-			variantsInputDetails = variantManifests[0].values.map<ProductVariantBulkCreateInput>(
-				(attrValue) => {
-					const variantWithAttrValueExisted = variantsInputDetails.find((variantDetail) =>
-						variantDetail.attributes.some(
-							(attrInput) =>
-								attrInput.dropdown?.id === attrValue.value ||
-								attrInput.swatch?.id === attrValue.value,
-						),
-					);
-
-					if (variantWithAttrValueExisted) return variantWithAttrValueExisted;
-
-					const isSwatchAttribute =
-						$ProductTypeDetailQuery.data?.productType?.assignedVariantAttributes?.find(
-							(attr) => attr.attribute.id === variantManifests[0].attribute.id,
-						)?.attribute.inputType === AttributeInputTypeEnum.Swatch;
-
-					const attributeProp: BulkAttributeValueInput = {
-						id: variantManifests[0].attribute.id,
-					};
-
-					set(
-						attributeProp,
-						isSwatchAttribute ? 'swatch.value' : 'dropdown.value',
-						attrValue.value,
-					);
-
-					return {
-						attributes: [attributeProp],
-						name: `${attrValue.label}`,
-						sku: `${attrValue.label}-${randomString(6)}`,
-						trackInventory: true,
-						channelListings: [],
-						weight: 0,
-						preorder: {},
-					};
-				},
-			);
-		} else {
-			const newVariantDetails = [];
-
-			for (const value1 of variantManifests[0].values) {
-				for (const value2 of variantManifests[1].values) {
-					// Check if a variant that already has 2 selected attributes.
-					// And also has according 1 attribute value for each attribute.
-					const existingVariant = variantsInputDetails.find((variantDetail) => {
-						if (variantDetail.attributes.length !== 2) return false;
-
-						let value1Used = false,
-							value2Used = false;
-
-						for (const attr of variantDetail.attributes) {
-							if (attr.dropdown?.id === value1.value || attr.swatch?.id === value1.value)
-								value1Used = true;
-							else if (attr.swatch?.id === value2.value || attr.swatch?.id === value2.value)
-								value2Used = true;
-						}
-
-						return value1Used && value2Used;
-					});
-
-					if (existingVariant) {
-						newVariantDetails.push(existingVariant);
-						continue;
-					}
-
-					const attributes = variantManifests.map((manifest) => {
-						const isSwatchAttr = checkAttributeIsSwatch(manifest.attribute.id);
-						const attributeProps: BulkAttributeValueInput = {
-							id: manifest.attribute.id,
-						};
-						set(attributeProps, isSwatchAttr ? 'swatch.value' : 'dropdown.value', value1.value);
-
-						return attributeProps;
-					});
-
-					const newVariant: ProductVariantBulkCreateInput = {
-						attributes,
-						name: `${value1.label}-${value2.label}`,
-						sku: `${value1.label}-${value2.label}-${randomString(6)}`,
-						trackInventory: true,
-						channelListings: [],
-						weight: 0,
-						preorder: {},
-					};
-
-					newVariantDetails.push(newVariant);
-				}
-			}
-
-			variantsInputDetails = newVariantDetails;
-		}
-
-		recalculateVariantAttributeMetadata();
-	};
-
 	const handleQuickFillingClick = () => {
 		const canQuickFillingStocks = true;
 		const canQuickFillingChannels = quickFillingValues.channels.length > 0;
@@ -486,7 +515,7 @@
 		}
 
 		// trigger fetching attribute values again
-		if (variantIdx === 0 && currentNumberOfManifests === 2)
+		if (variantIdx === 0 && currentNumberOfManifests === MAX_VARIANT_TYPES)
 			manifestPerformFetchingAttributeValues[0] = true;
 
 		// update the variants input details

@@ -29,6 +29,7 @@
 		Mutation,
 		MutationProductDeleteArgs,
 		ProductChannelListingUpdateInput,
+		ProductVariantBulkUpdateInput,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
@@ -86,6 +87,7 @@
 		channelListing: true,
 	});
 	let channelListingUpdateInput = $state.raw<ProductChannelListingUpdateInput>({});
+	// let productVariantBulkUpdateInput = $state<ProductVariantBulkUpdateInput>({})
 
 	onMount(() => {
 		return ProductDetailStore.subscribe((result) => {
@@ -117,7 +119,8 @@
 					externalReference,
 					metadata: metadata?.map((item) => ({ key: item.key, value: item.value })),
 					name,
-					privateMetadata: privateMetadata?.map((item) => ({ key: item.key, value: item.value })),
+					privateMetadata:
+						privateMetadata?.map((item) => ({ key: item.key, value: item.value })) || [],
 					rating,
 					seo: {
 						title: seoTitle,
@@ -169,7 +172,7 @@
 {:else if $ProductDetailStore.error}
 	<Alert variant="error" size="sm" bordered>{$ProductDetailStore.error.message}</Alert>
 {:else if $ProductDetailStore.data?.product && currentProductType}
-	{@const { metadata, privateMetadata, id } = $ProductDetailStore.data.product}
+	{@const { metadata, privateMetadata, id, channelListings } = $ProductDetailStore.data.product}
 	<div class="space-y-2">
 		<GeneralInformation
 			bind:name={product.name!}
@@ -205,6 +208,7 @@
 		<div class={SitenameCommonClassName}>
 			<ChannelsSelector
 				bind:channelListingUpdateInput
+				channelListings={channelListings || []}
 				ok={productInputError.channelListing}
 				{loading}
 			/>

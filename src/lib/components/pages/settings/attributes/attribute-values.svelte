@@ -352,6 +352,7 @@
 							color="red"
 							variant="light"
 							icon={Trash}
+							disabled={loading}
 							onclick={() =>
 								AttrValuesBulkDeleteStore.reexecute({
 									variables: { ids: [...selectedAttributes] },

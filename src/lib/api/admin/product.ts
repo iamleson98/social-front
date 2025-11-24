@@ -411,6 +411,7 @@ export const PRODUCT_DETAIL_QUERY = gql`
 					slug
 					id
 					name
+					currencyCode
 				}
 				visibleInListings
 				availableForPurchaseAt
@@ -435,6 +436,10 @@ export const PRODUCT_DETAIL_QUERY = gql`
 				isAvailableForPurchase
 			}
 			metadata {
+				key
+				value
+			}
+			privateMetadata {
 				key
 				value
 			}

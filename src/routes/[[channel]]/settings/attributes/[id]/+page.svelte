@@ -43,7 +43,7 @@
 	});
 
 	let loading = $state(false);
-	let generalFormOk = $state(false);
+	let generalFormOk = $state(true);
 	let attributeInput = $state<AttributeUpdateInput>({
 		name: '',
 		valueRequired: true,

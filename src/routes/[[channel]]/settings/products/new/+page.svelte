@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { tranFunc } from '$i18n';
 	import {
 		CREATE_PRODUCT_MUTATION,
@@ -62,7 +63,6 @@
 		category: '',
 	});
 	let channelListingUpdateInput = $state.raw<ProductChannelListingUpdateInput>({});
-	// let channelListingUpdateInputOk = $state(true);
 	let productMedias = $state.raw<MediaObject[]>([]);
 	let metaRef = $state<GeneralMetadataEditorRef>();
 	let productTypeRequiresShipping = $state(true);
@@ -226,6 +226,8 @@
 		loading = false;
 
 		toast.success($tranFunc('product.prdCreated'));
+
+		await goto(AppRoute.PRODUCT_DETAILS(productCreateResult.data?.productCreate?.product?.slug!));
 	};
 </script>
 

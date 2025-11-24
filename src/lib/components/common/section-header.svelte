@@ -8,16 +8,14 @@
 	let { children, class: className = '' }: Props = $props();
 </script>
 
-<div
-	class="container mb-2 flex items-center justify-between {className}"
->
+<div class="container mb-2 flex items-center justify-between {className}">
 	{@render children()}
 </div>
 
 <style lang="postcss">
-	@refernce "tailwindcss";
+	@reference "tailwindcss";
 
-	.container > * {
+	.container,	.container > * {
 		@apply font-semibold text-gray-700 text-base;
 	}
 </style>
