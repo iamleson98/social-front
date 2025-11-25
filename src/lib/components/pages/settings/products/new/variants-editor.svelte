@@ -47,7 +47,10 @@
 		type CustomStockInput,
 		type QuickFillHighlight,
 		type QuickFillingProps,
+		type VariantManifest,
 	} from './utils';
+	import VariantManifestItem from './variant-manifest-item.svelte';
+	import VariantQuickFillingValues from './variant-quick-filling-values.svelte';
 	import dayjs from 'dayjs';
 	import { omit } from 'es-toolkit';
 	import { set } from 'es-toolkit/compat';
@@ -68,18 +71,9 @@
 		productTypeId,
 		channelsListing,
 		loading,
-		// productMedias,
 		productVariantsInput = $bindable([]),
 		privateMetadata = $bindable(),
 	}: Props = $props();
-
-	type VariantManifest = {
-		attribute: {
-			id: string;
-			name: string;
-		};
-		values: SelectOption[];
-	};
 
 	const MAX_VARIANT_TYPES = 2;
 	const MIN_DAYS_FOR_PREORDER = 5;
@@ -95,10 +89,10 @@
 		pause: true,
 	});
 
-	const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
-		query: CHANNELS_QUERY,
-		context: { requestPolicy: 'cache-and-network' },
-	});
+	// const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
+	// 	query: CHANNELS_QUERY,
+	// 	context: { requestPolicy: 'cache-and-network' },
+	// });
 
 	let variantManifests = $state<VariantManifest[]>([]);
 	let quickFillingHighlightClass = $state<QuickFillHighlight>();
@@ -279,34 +273,6 @@
 				toast.error(`Failed to load variant attribute information. Please try reload the page.`);
 			}
 		}
-	});
-
-	onMount(() => {
-		return channelsQueryStore.subscribe((result) => {
-			if (checkIfGraphqlResultHasError(result)) return;
-
-			const warehousesOfChannels: CustomStockInput[] = [];
-			const warehouseMeetMap: Record<string, boolean> = {};
-
-			for (const channel of result.data?.channels || []) {
-				for (const warehouse of channel.warehouses) {
-					if (!warehouseMeetMap[warehouse.id]) {
-						warehouseMeetMap[warehouse.id] = true;
-
-						warehousesOfChannels.push({
-							warehouse: warehouse.id,
-							warehouseName: warehouse.name,
-							quantity: 0,
-						});
-					}
-				}
-			}
-
-			quickFillingValues = {
-				...quickFillingValues,
-				stocks: warehousesOfChannels,
-			};
-		});
 	});
 
 	$effect(() => {
@@ -551,55 +517,16 @@
 		<Alert variant="error" size="sm">{$ProductTypeDetailQuery.error.message}</Alert>
 	{:else if $ProductTypeDetailQuery.data?.productType}
 		<div class="grid grid-cols-2 gap-2">
-			{#each variantManifests as manifest, idx (idx)}
-				<div class={SitenameCommonClassName}>
-					<Select
-						placeholder="Select an attribute"
-						label="Variant #{idx + 1}"
-						options={AvailableAttributeOptions}
-						bind:value={manifest.attribute.id}
-						onchange={(opt) => opt && (manifest.attribute.name = (opt as SelectOption).label)}
-						disabled={loading}
-					/>
-
-					{#if manifest.attribute.id}
-						{#key manifest.attribute.id}
-							<GraphqlPaginableSelect
-								disabled={loading}
-								query={ATTRIBUTE_VALUES_QUERY}
-								variables={{
-									id: manifest.attribute.id,
-									first: 15,
-									filter: { search: '' },
-								} as GraphqlPaginationArgs}
-								label="Attribute values"
-								resultKey={'attribute.choices' as keyof Query}
-								variableSearchQueryPath="filter.search"
-								optionValueKey="id"
-								optionLabelKey="name"
-								multiple
-								value={manifest.values.map((item) => item.value)}
-								onchange={(opt) => handleVariantValuesChange(idx, opt)}
-								size="sm"
-								bind:performDataFetching={manifestPerformFetchingAttributeValues[idx]}
-								onNotFoundQuerySelected={(newValue) =>
-									newValue && handleAddNewAttributeValue(idx, newValue)}
-							/>
-						{/key}
-					{/if}
-
-					<Button
-						endIcon={Trash}
-						size="sm"
-						disabled={loading}
-						fullWidth
-						variant="light"
-						color="red"
-						onclick={() => handleDeleteVariant(idx)}
-					>
-						{$tranFunc('product.delVariant')}
-					</Button>
-				</div>
+			{#each variantManifests as maniFest, idx (idx)}
+				<VariantManifestItem
+					index={idx}
+					bind:manifest={variantManifests[idx]}
+					onDeleteVariant={handleDeleteVariant}
+					onAttributeValuesChange={handleVariantValuesChange}
+					onSelectAddNewAttributeValue={handleAddNewAttributeValue}
+					attributeOptions={AvailableAttributeOptions}
+					bind:performFetchAttributeValues={manifestPerformFetchingAttributeValues[idx]}
+				/>
 			{/each}
 			{#if variantManifests.length < MAX_VARIANT_TYPES && AvailableAttributeOptions.some((opt) => !opt.disabled)}
 				<button
@@ -617,209 +544,12 @@
 	{/if}
 
 	{#if variantManifests.length}
-		<!-- MARK: QUICK FILLING -->
-		<div class={SitenameCommonClassName}>
-			<Label label={$tranFunc('product.quickFilling')} size="sm" />
-			<div class="flex gap-x-2 items-start flex-row w-full">
-				<div class="w-11/12 flex gap-1 items-start flex-row">
-					<!-- CHANNELS -->
-					<div class="w-1/6">
-						<Label label={$tranFunc('product.channel')} size="sm" />
-						{#if !channelSelectOptions?.length}
-							<SelectSkeleton size="sm" />
-						{:else}
-							<Select
-								size="sm"
-								options={channelSelectOptions}
-								onfocus={() => handleFocusHighlightQuickFilling('td-channel-hl')}
-								value={quickFillingValues.channels.map((item) => item.channelId)}
-								class="w-full"
-								disabled={loading}
-								multiple
-								onchange={(opts) => {
-									quickFillingValues.channels = opts as ChannelSelectOptionProps[];
-								}}
-							/>
-						{/if}
-					</div>
-					<!-- PRICING -->
-					<div class="w-2/6">
-						{#if quickFillingValues.channels.length}
-							<div class="grid grid-cols-2">
-								<Label label={$tranFunc('product.price')} size="sm" />
-								<Label label={$tranFunc('product.costPrice')} size="sm" />
-							</div>
-							<div class="max-h-32 overflow-y-auto border border-gray-200 bg-white p-1 rounded-lg">
-								{#each quickFillingValues.channels as channel, idx (idx)}
-									<!-- {#snippet action()}
-										<span class="font-bold text-[9px]">{channel.currency}</span>
-									{/snippet} -->
-									<div class="flex gap-1 mt-1">
-										<Input
-											type="number"
-											disabled={loading}
-											min={0}
-											placeholder={channel.currency}
-											size="xs"
-											class="w-1/2"
-											bind:value={channel.price}
-											variant={channel.price < 0 ? 'error' : 'info'}
-											subText={channel.price < 0 ? $CommonState.NonNegativeError : ''}
-											onfocus={() => handleFocusHighlightQuickFilling('td-price-hl')}
-										/>
-										<Input
-											type="number"
-											min={0}
-											placeholder={channel.currency}
-											disabled={loading}
-											size="xs"
-											class="w-1/2"
-											bind:value={channel.costPrice}
-											variant={channel.costPrice < 0 ? 'error' : 'info'}
-											subText={channel.costPrice < 0 ? $CommonState.NonNegativeError : ''}
-											onfocus={() => handleFocusHighlightQuickFilling('td-cost-price-hl')}
-										/>
-									</div>
-								{/each}
-							</div>
-						{/if}
-					</div>
-					<!-- WEIGHT -->
-					<div class="w-1/6">
-						<Input
-							size="sm"
-							type="number"
-							bind:value={quickFillingValues.weight}
-							min={0}
-							disabled={loading}
-							label={$tranFunc('attributes.Weight')}
-							onfocus={() => handleFocusHighlightQuickFilling('td-weight-hl')}
-							variant={typeof quickFillingValues.weight === 'number' &&
-							quickFillingValues.weight < 0
-								? 'error'
-								: 'info'}
-							subText={typeof quickFillingValues.weight === 'number' &&
-							quickFillingValues.weight < 0
-								? $CommonState.NonNegativeError
-								: undefined}
-						>
-							{#snippet action()}
-								<span class="text-[8px] font-semibold">kg</span>
-							{/snippet}
-						</Input>
-					</div>
-					<!-- PRE-ORDER -->
-					<div class="w-1/6">
-						<Label label={$tranFunc('common.preorder')} size="sm" />
-						<div class="border border-gray-200 bg-white p-1 rounded-lg">
-							<!-- QUANTITY LIMIT -->
-							<Input
-								type="number"
-								label={$tranFunc('product.qtyLimit')}
-								min={0}
-								size="xs"
-								disabled={loading}
-								class="mb-2"
-								bind:value={quickFillingValues.preOrder.globalThreshold}
-								variant={typeof quickFillingValues.preOrder.globalThreshold === 'number' &&
-								quickFillingValues.preOrder.globalThreshold % 1 !== 0
-									? 'error'
-									: 'info'}
-								subText={typeof quickFillingValues.preOrder.globalThreshold === 'number' &&
-								quickFillingValues.preOrder.globalThreshold % 1 !== 0
-									? $CommonState.NonNegativeError
-									: undefined}
-								onfocus={() => handleFocusHighlightQuickFilling('td-preorder-hl')}
-							/>
-							<!-- AVAILABLE DATE -->
-							<EaseDatePicker
-								size="xs"
-								disabled={loading}
-								onchange={(date) => (quickFillingValues.preOrder.endDate = date.date)}
-								value={quickFillingValues.preOrder.endDate}
-								onfocus={() => handleFocusHighlightQuickFilling('td-preorder-hl')}
-								label={$tranFunc('product.preOrderEndDate')}
-								allowSelectMonthYears={{
-									showMonths: true,
-									showYears: { min: 2020, max: DAYJS_NOW.year() + 1 },
-								}}
-								timeConfig={false}
-								timeLock={{
-									minDate: DAYJS_NOW.add(MIN_DAYS_FOR_PREORDER, 'day').toDate(),
-									maxDate: DAYJS_NOW.add(MAX_DAYS_FOR_PREORDER, 'day').toDate(),
-								}}
-							/>
-						</div>
-					</div>
-					<!-- STOCK -->
-					<div class="w-1/6">
-						<Label label={$tranFunc('product.stock')} size="sm" />
-						{#if !quickFillingValues.stocks.length}
-							<SelectSkeleton size="xs" />
-						{:else}
-							<div
-								class="max-h-32 overflow-y-auto border border-gray-200 bg-white p-1 rounded-lg space-y-1.5"
-							>
-								{#each quickFillingValues.stocks as stockInput, idx (idx)}
-									{@const isError = stockInput.quantity % 1 !== 0}
-									<Input
-										type="number"
-										placeholder="quantity"
-										label={stockInput.warehouseName}
-										min={0}
-										disabled={loading}
-										size="xs"
-										onfocus={() => handleFocusHighlightQuickFilling('td-stock-hl')}
-										bind:value={stockInput.quantity}
-										variant={isError ? 'error' : 'info'}
-										subText={isError ? $CommonState.NonNegativeError : ''}
-									/>
-								{/each}
-							</div>
-						{/if}
-					</div>
-				</div>
-				<!-- APPLY BUTTON -->
-				<div class="w-1/12">
-					<Label label={$tranFunc('common.action')} size="sm" />
-					<Button
-						class="btn btn-sm grow shrink"
-						size="sm"
-						disabled={quickFillingError || loading}
-						fullWidth
-						onclick={handleQuickFillingClick}
-						>{$tranFunc('btn.apply')}
-					</Button>
-				</div>
-			</div>
-
-			<!-- QUICK FILLING ADVANCED OPTIONS -->
-			<div class="mt-2 flex gap-2 items-start" transition:slide>
-				<Checkbox
-					bind:checked={quickFillingValues.trackInventory}
-					label={$tranFunc('product.trackInventory')}
-					size="sm"
-					disabled={loading}
-				/>
-				<Input
-					type="number"
-					bind:value={quickFillingValues.quantityLimitPerCustomer}
-					size="sm"
-					disabled={loading}
-					min="0"
-					label={$tranFunc('product.qtyLimit')}
-					placeholder={$tranFunc('placeholders.valuePlaceholder')}
-					variant={typeof quickFillingValues.quantityLimitPerCustomer === 'number' &&
-					quickFillingValues.quantityLimitPerCustomer % 1 !== 0
-						? 'error'
-						: 'info'}
-					subText={typeof quickFillingValues.quantityLimitPerCustomer === 'number' &&
-					quickFillingValues.quantityLimitPerCustomer % 1 !== 0
-						? $CommonState.NonNegativeError
-						: ''}
-				/>
-			</div>
-		</div>
+		<VariantQuickFillingValues
+			{channelSelectOptions}
+			disabled={loading}
+			bind:quickFillingValues
+			{handleQuickFillingClick}
+		/>
 
 		<!-- MARK: DETAILS -->
 		<div class={SitenameCommonClassName}>
@@ -892,13 +622,7 @@
 											subText={typeof channelListing.price === 'number' && channelListing.price < 0
 												? $CommonState.NonNegativeError
 												: ''}
-										>
-											<!-- {#snippet action()}
-												<span class="font-bold text-[9px]">
-													{channelListing['currency' as keyof ProductVariantChannelListingAddInput]}
-												</span>
-											{/snippet} -->
-										</Input>
+										></Input>
 									{/each}
 								</div>
 							</td>
@@ -920,13 +644,7 @@
 											channelListing.costPrice < 0
 												? $CommonState.NonNegativeError
 												: ''}
-										>
-											<!-- {#snippet action()}
-												<span class="font-bold text-[9px]">
-													{channelListing['currency' as keyof ProductVariantChannelListingAddInput]}
-												</span>
-											{/snippet} -->
-										</Input>
+										></Input>
 									{/each}
 								</div>
 							</td>
@@ -1039,16 +757,5 @@
 
 	td {
 		@apply p-1;
-	}
-
-	/** price highlight */
-	.td-price-hl > .price-td,
-	.td-channel-hl > .channel-td,
-	.td-stock-hl > .stock-td,
-	.td-sku-hl > .sku-td,
-	.td-cost-price-hl > .cost-price-td,
-	.td-weight-hl > .weight-td,
-	.td-preorder-hl > .preorder-td {
-		@apply border-blue-500!;
 	}
 </style>

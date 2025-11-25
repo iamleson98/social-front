@@ -29,6 +29,14 @@ export type CategorySelectItemProps = Omit<SelectItemProps, 'children'> & { chil
 // 	return items;
 // };
 
+export type VariantManifest = {
+	attribute: {
+		id: string;
+		name: string;
+	};
+	values: SelectOption[];
+};
+
 export const PRODUCT_NAME_MAX_LENGTH = 250;
 export const PRODUCT_SLUG_MAX_LENGTH = 255;
 

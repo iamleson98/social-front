@@ -18,6 +18,7 @@
 	import PackagingAndDelivery from '$lib/components/pages/settings/products/new/packaging-and-delivery.svelte';
 	import ProductSeo from '$lib/components/pages/settings/products/new/product-seo.svelte';
 	import { ProductPrivateMetadataVariantAttributeUsedKey } from '$lib/components/pages/settings/products/new/utils';
+	import VariantsEditEditor from '$lib/components/pages/settings/products/new/variants-edit-editor.svelte';
 	import VariantsEditor from '$lib/components/pages/settings/products/new/variants-editor.svelte';
 	import Skeleton from '$lib/components/pages/settings/products/skeleton.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
@@ -90,7 +91,7 @@
 	let channelListingUpdateInput = $state.raw<ProductChannelListingUpdateInput>({});
 
 	// in product update screen
-	let productVariantBulkUpdateInput = $state<ProductVariantBulkCreateInput[]>([]);
+	let productVariantBulkUpdateInput = $state<ProductVariantBulkUpdateInput[]>([]);
 
 	onMount(() => {
 		return ProductDetailStore.subscribe((result) => {
@@ -144,21 +145,23 @@
 				}
 
 				if (variants?.length) {
-					productVariantBulkUpdateInput = variants.map((variant) => {
+					productVariantBulkUpdateInput = variants.map<ProductVariantBulkUpdateInput>((variant) => {
 						return {
 							...variant,
 							attributes: variant.assignedAttributes.map((item) => item.attribute),
-							channelListings: variant.channelListings?.map((item) => ({
-								channelId: item.channel.id,
-								costPrice: item.costPrice,
-								preorderThreshold: item.preorderThreshold?.quantity,
-								price: item.price?.amount,
-								priorPrice: item.priorPrice?.amount,
-							})),
-							stocks: variant.stocks?.map((item) => ({
-								quantity: item.quantity,
-								warehouse: item.warehouse.id,
-							})),
+							// channelListings: variant.channelListings?.map((item) => ({
+							// 	channelId: item.channel.id,
+							// 	costPrice: item.costPrice,
+							// 	preorderThreshold: item.preorderThreshold?.quantity,
+							// 	price: item.price?.amount,
+							// 	priorPrice: item.priorPrice?.amount,
+							// })),
+							// stocks: variant.stocks?.map((item) => ({
+							// 	quantity: item.quantity,
+							// 	warehouse: item.warehouse.id,
+							// })),
+							channelListings: {},
+							stocks: {},
 						};
 					});
 				}
@@ -236,11 +239,8 @@
 				ok={productInputError.channelListing}
 				{loading}
 			/>
-			<VariantsEditor
-				{loading}
-				productTypeId={currentProductType.id}
-				{productMedias}
-				channelsListing={channelListingUpdateInput}
+			<VariantsEditEditor
+				disabled={loading}
 				bind:productVariantsInput={productVariantBulkUpdateInput}
 				bind:privateMetadata={product.privateMetadata!}
 			/>

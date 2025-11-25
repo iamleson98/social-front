@@ -9,7 +9,6 @@
 		UPDATE_PRODUCT_CHANNEL_LISTINGS_MUTATION,
 	} from '$lib/api/admin/product';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { operationStore } from '$lib/api/operation';
 	import FileInputContainer from '$lib/components/common/file-input-container.svelte';
 	import {
 		GeneralMetadataEditor,
