@@ -82,7 +82,7 @@ export default {
 		rating: 'Đánh giá',
 		name: 'Tên',
 		publicationDate: 'Ngày phát hành',
-		PublishedAt: 'Thời gian phát hành',
+		publishedAt: 'Thời gian phát hành',
 		minimalPrice: 'Giá tối thiểu',
 		price: 'Giá',
 		advanced: 'Nâng cao',

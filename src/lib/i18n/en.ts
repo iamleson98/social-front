@@ -82,7 +82,7 @@ export default {
 		rating: 'rating',
 		name: 'Name',
 		publicationDate: 'Publication date',
-		PublishedAt: 'Published at',
+		publishedAt: 'Published at',
 		minimalPrice: 'Minimal price',
 		price: 'Price',
 		advanced: 'Advanced',

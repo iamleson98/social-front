@@ -397,6 +397,38 @@ export const PRODUCT_DETAIL_QUERY = gql`
 						soldUnits
 					}
 				}
+				assignedAttributes(limit: 100) {
+					attribute {
+						id
+						name
+						slug
+						inputType
+						type
+						unit
+						valueRequired
+						visibleInStorefront
+						filterableInDashboard
+						withChoices
+						choices(first: 100) {
+							edges {
+								node {
+									id
+									name
+									slug
+									value
+									inputType
+									reference
+									richText
+									plainText
+									boolean
+									date
+									dateTime
+									externalReference
+								}
+							}
+						}
+					}
+				}
 			}
 			productType {
 				id

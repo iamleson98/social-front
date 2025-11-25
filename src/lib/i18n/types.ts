@@ -71,7 +71,7 @@ export type TranslationKey =
 | 'common.rating'
 | 'common.name'
 | 'common.publicationDate'
-| 'common.PublishedAt'
+| 'common.publishedAt'
 | 'common.minimalPrice'
 | 'common.price'
 | 'common.advanced'
