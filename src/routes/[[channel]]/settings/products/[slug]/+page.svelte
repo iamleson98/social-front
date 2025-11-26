@@ -30,7 +30,6 @@
 		Mutation,
 		MutationProductDeleteArgs,
 		ProductChannelListingUpdateInput,
-		ProductVariantBulkUpdateInput,
 		ProductVariantBulkCreateInput,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
