@@ -18,7 +18,10 @@
 	import PackagingAndDelivery from '$lib/components/pages/settings/products/new/packaging-and-delivery.svelte';
 	import ProductSeo from '$lib/components/pages/settings/products/new/product-seo.svelte';
 	import { ProductPrivateMetadataVariantAttributeUsedKey } from '$lib/components/pages/settings/products/new/utils';
-	import VariantsEditEditor from '$lib/components/pages/settings/products/new/variants-edit-editor.svelte';
+	import VariantsEditEditor, {
+		CurrentKey,
+		ExistingKey,
+	} from '$lib/components/pages/settings/products/new/variants-edit-editor.svelte';
 	import VariantsEditor from '$lib/components/pages/settings/products/new/variants-editor.svelte';
 	import Skeleton from '$lib/components/pages/settings/products/skeleton.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
@@ -32,6 +35,7 @@
 		ProductChannelListingUpdateInput,
 		ProductVariantBulkUpdateInput,
 		ProductVariantBulkCreateInput,
+		ProductVariantChannelListingUpdateInput,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
@@ -160,7 +164,12 @@
 							// 	quantity: item.quantity,
 							// 	warehouse: item.warehouse.id,
 							// })),
-							channelListings: {},
+							channelListings: {
+								// NOTE: we temporary force put this field here,
+								// to make it easier for the variant editor component to do reference
+								[ExistingKey]: (variant.channelListings || []).map((item) => item.channel.id),
+								[CurrentKey]: variant.channelListings || [],
+							} as ProductVariantChannelListingUpdateInput,
 							stocks: {},
 						};
 					});
@@ -241,6 +250,7 @@
 			/>
 			<VariantsEditEditor
 				disabled={loading}
+				channelsListing={channelListingUpdateInput}
 				bind:productVariantsInput={productVariantBulkUpdateInput}
 				bind:privateMetadata={product.privateMetadata!}
 			/>

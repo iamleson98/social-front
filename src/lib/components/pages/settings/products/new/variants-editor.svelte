@@ -60,6 +60,7 @@
 
 	type Props = {
 		productTypeId: string;
+		/** This is provided by the channel listing selector section */
 		channelsListing: ProductChannelListingUpdateInput;
 		loading: boolean;
 		productMedias: MediaObject[];
@@ -284,11 +285,7 @@
 				),
 				channelListings: item.channelListings?.map(
 					(listing) =>
-						omit(listing, [
-							'label' as keyof ProductVariantChannelListingAddInput,
-							'value' as keyof ProductVariantChannelListingAddInput,
-							'currency' as keyof ProductVariantChannelListingAddInput,
-						]) as ProductVariantChannelListingAddInput,
+						omit(listing, ['label', 'value', 'currency']) as ProductVariantChannelListingAddInput,
 				),
 			};
 		});
@@ -341,27 +338,27 @@
 	});
 
 	/** check if quick filling form has any error */
-	const quickFillingError = $derived.by(() => {
-		if (quickFillingValues.stocks.some((stock) => stock.quantity % 1 !== 0)) return true;
+	// const quickFillingError = $derived.by(() => {
+	// 	if (quickFillingValues.stocks.some((stock) => stock.quantity % 1 !== 0)) return true;
 
-		const {
-			preOrder: { globalThreshold, endDate },
-			quantityLimitPerCustomer,
-		} = quickFillingValues;
-		if (typeof globalThreshold === 'number' && globalThreshold % 1 !== 0) return true;
-		if (typeof quantityLimitPerCustomer === 'number' && quantityLimitPerCustomer % 1 !== 0)
-			return true;
+	// 	const {
+	// 		preOrder: { globalThreshold, endDate },
+	// 		quantityLimitPerCustomer,
+	// 	} = quickFillingValues;
+	// 	if (typeof globalThreshold === 'number' && globalThreshold % 1 !== 0) return true;
+	// 	if (typeof quantityLimitPerCustomer === 'number' && quantityLimitPerCustomer % 1 !== 0)
+	// 		return true;
 
-		if (endDate) {
-			try {
-				new Date(endDate);
-			} catch {
-				return true;
-			}
-		}
+	// 	if (endDate) {
+	// 		try {
+	// 			new Date(endDate);
+	// 		} catch {
+	// 			return true;
+	// 		}
+	// 	}
 
-		return false;
-	});
+	// 	return false;
+	// });
 
 	const AvailableAttributeOptions = $derived(
 		$ProductTypeDetailQuery.data?.productType?.assignedVariantAttributes
