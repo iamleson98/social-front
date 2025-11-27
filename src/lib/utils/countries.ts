@@ -16,6 +16,7 @@ for (const province of Object.keys(vietnam)) {
 		value: province,
 		type: 'province',
 		children: [],
+		level: 0
 	};
 	VIETNAM_COUNTRY_UNITS.push(provinceData);
 
@@ -25,6 +26,7 @@ for (const province of Object.keys(vietnam)) {
 			title: district,
 			value: district,
 			children: [],
+			level: 1
 		};
 
 		const wards: string[] = lowerLevelData[district as keyof typeof lowerLevelData];
@@ -33,6 +35,7 @@ for (const province of Object.keys(vietnam)) {
 				type: 'ward',
 				title: ward,
 				value: ward,
+				level: 2
 			};
 
 			districtData.children?.push(wardData);

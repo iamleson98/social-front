@@ -33,7 +33,6 @@
 		Mutation,
 		MutationProductDeleteArgs,
 		ProductChannelListingUpdateInput,
-		ProductVariantBulkUpdateInput,
 		ProductVariantBulkCreateInput,
 		ProductVariantChannelListingUpdateInput,
 	} from '$lib/gql/graphql';
