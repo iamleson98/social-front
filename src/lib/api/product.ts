@@ -296,9 +296,6 @@ export const PRODUCT_DETAIL_QUERY = gql`
 					inputType
 					type
 					unit
-					valueRequired
-					visibleInStorefront
-					filterableInDashboard
 					withChoices
 					choices(first: 100) {
 						edges {
