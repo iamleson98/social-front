@@ -19,10 +19,12 @@
 	import ProductSeo from '$lib/components/pages/settings/products/new/product-seo.svelte';
 	import { ProductPrivateMetadataVariantAttributeUsedKey } from '$lib/components/pages/settings/products/new/utils';
 	import VariantsEditEditor, {
-		CurrentKey,
-		ExistingKey,
+		ChannelListingCurrentKey,
+		ChannelListingExistingKey,
+		StockCurrentKey,
+		StockExistingKey,
+		StockWarehouseNameKey,
 	} from '$lib/components/pages/settings/products/new/variants-edit-editor.svelte';
-	import VariantsEditor from '$lib/components/pages/settings/products/new/variants-editor.svelte';
 	import Skeleton from '$lib/components/pages/settings/products/skeleton.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import type {
@@ -33,8 +35,9 @@
 		Mutation,
 		MutationProductDeleteArgs,
 		ProductChannelListingUpdateInput,
-		ProductVariantBulkCreateInput,
 		ProductVariantChannelListingUpdateInput,
+		ProductVariantBulkUpdateInput,
+		ProductVariantStocksUpdateInput,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
@@ -148,30 +151,35 @@
 				}
 
 				if (variants?.length) {
-					productVariantBulkUpdateInput = variants.map<ProductVariantBulkUpdateInput>((variant) => {
-						return {
-							...variant,
-							attributes: variant.assignedAttributes.map((item) => item.attribute),
-							// channelListings: variant.channelListings?.map((item) => ({
-							// 	channelId: item.channel.id,
-							// 	costPrice: item.costPrice,
-							// 	preorderThreshold: item.preorderThreshold?.quantity,
-							// 	price: item.price?.amount,
-							// 	priorPrice: item.priorPrice?.amount,
-							// })),
-							// stocks: variant.stocks?.map((item) => ({
-							// 	quantity: item.quantity,
-							// 	warehouse: item.warehouse.id,
-							// })),
-							channelListings: {
-								// NOTE: we temporary force put this field here,
-								// to make it easier for the variant editor component to do reference
-								[ExistingKey]: (variant.channelListings || []).map((item) => item.channel.id),
-								[CurrentKey]: variant.channelListings || [],
-							} as ProductVariantChannelListingUpdateInput,
-							stocks: {},
-						};
-					});
+					productVariantBulkUpdateInput = variants.map<ProductVariantBulkUpdateInput>(
+						({ assignedAttributes, preorder, channelListings, stocks, ...rest }) => {
+							return {
+								...rest,
+								attributes: assignedAttributes.map((item) => item.attribute),
+								preorder: preorder || {
+									globalThreshold: undefined,
+									globalSoldUnits: undefined,
+									endDate: undefined,
+								},
+								channelListings: {
+									// NOTE: we temporary force put this field here,
+									// to make it easier for the variant editor component to do reference
+									[ChannelListingExistingKey]: channelListings?.map((item) => item.id) || [],
+									[ChannelListingCurrentKey]: channelListings?.map(({ costPrice, ...rest }) => ({
+										...rest,
+										costPrice: costPrice || {
+											amount: 0,
+											currency: rest.channel.currencyCode,
+										},
+									})),
+								} as ProductVariantChannelListingUpdateInput,
+								stocks: {
+									[StockExistingKey]: stocks?.map((item) => item.id) || [],
+									[StockCurrentKey]: stocks,
+								} as ProductVariantStocksUpdateInput,
+							};
+						},
+					);
 				}
 			}
 		});

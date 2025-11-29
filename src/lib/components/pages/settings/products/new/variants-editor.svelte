@@ -1,25 +1,14 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import {
-		ATTRIBUTE_VALUE_CREATE_MUTATION,
-		ATTRIBUTE_VALUES_QUERY,
-	} from '$lib/api/admin/attribute';
+	import { ATTRIBUTE_VALUE_CREATE_MUTATION } from '$lib/api/admin/attribute';
 	import { PRODUCT_TYPE_QUERY } from '$lib/api/admin/product';
-	import { CHANNELS_QUERY } from '$lib/api/channels';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
-	import { Icon, Plus, Trash } from '$lib/components/icons';
-	import { Button } from '$lib/components/ui';
+	import { Icon, Plus } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
-	import { Checkbox, Input, Label } from '$lib/components/ui/Input';
-	import { type GraphqlPaginationArgs } from '$lib/components/ui/Table';
-	import {
-		GraphqlPaginableSelect,
-		Select,
-		SelectSkeleton,
-		type SelectOption,
-	} from '$lib/components/ui/select';
+	import { Input } from '$lib/components/ui/Input';
+	import { Select, SelectSkeleton, type SelectOption } from '$lib/components/ui/select';
 	import {
 		AttributeInputTypeEnum,
 		type BulkAttributeValueInput,
@@ -44,7 +33,6 @@
 	import {
 		ProductPrivateMetadataVariantAttributeUsedKey,
 		type ChannelSelectOptionProps,
-		type CustomStockInput,
 		type QuickFillHighlight,
 		type QuickFillingProps,
 		type VariantManifest,
@@ -54,9 +42,6 @@
 	import dayjs from 'dayjs';
 	import { omit } from 'es-toolkit';
 	import { set } from 'es-toolkit/compat';
-	import { onMount } from 'svelte';
-	import { toast } from 'svelte-sonner';
-	import { slide } from 'svelte/transition';
 
 	type Props = {
 		productTypeId: string;
@@ -76,6 +61,8 @@
 		privateMetadata = $bindable(),
 	}: Props = $props();
 
+	const WarehouseNameKey = 'warehouseName' as keyof StockInput;
+
 	const MAX_VARIANT_TYPES = 2;
 	const MIN_DAYS_FOR_PREORDER = 5;
 	const MAX_DAYS_FOR_PREORDER = 15;
@@ -89,11 +76,6 @@
 		requestPolicy: 'cache-and-network',
 		pause: true,
 	});
-
-	// const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
-	// 	query: CHANNELS_QUERY,
-	// 	context: { requestPolicy: 'cache-and-network' },
-	// });
 
 	let variantManifests = $state<VariantManifest[]>([]);
 	let quickFillingHighlightClass = $state<QuickFillHighlight>();
@@ -251,38 +233,11 @@
 		recalculateVariantAttributeMetadata();
 	};
 
-	// Right after the page mounted, we must check if there is metadata information of attributes used by variants.
-	// If yes, perform parse that data, and apply it to `variantManifests`
-	onMount(async () => {
-		const attrMeta = privateMetadata.find(
-			(item) => item.key === ProductPrivateMetadataVariantAttributeUsedKey,
-		);
-		if (attrMeta) {
-			try {
-				const parsedAttrInfor = JSON.parse(attrMeta.value);
-				if (parsedAttrInfor.length) {
-					variantManifests = parsedAttrInfor;
-
-					// also trigger the <Select /> to fetch attribute values data
-					manifestPerformFetchingAttributeValues = [true, true];
-
-					// also update the variant details
-					variantManifests.forEach((item, idx) => handleVariantValuesChange(idx, item.values));
-				}
-			} catch (err) {
-				console.error(err);
-				toast.error(`Failed to load variant attribute information. Please try reload the page.`);
-			}
-		}
-	});
-
 	$effect(() => {
 		productVariantsInput = variantsInputDetails.map((item) => {
 			return {
 				...item,
-				stocks: item.stocks?.map(
-					(stock) => omit(stock, ['warehouseName' as keyof StockInput]) as StockInput,
-				),
+				stocks: item.stocks?.map((stock) => omit(stock, [WarehouseNameKey]) as StockInput),
 				channelListings: item.channelListings?.map(
 					(listing) =>
 						omit(listing, ['label', 'value', 'currency']) as ProductVariantChannelListingAddInput,
@@ -393,8 +348,8 @@
 		recalculateVariantAttributeMetadata();
 	};
 
-	const handleFocusHighlightQuickFilling = (highlight?: QuickFillHighlight) =>
-		(quickFillingHighlightClass = highlight);
+	// const handleFocusHighlightQuickFilling = (highlight?: QuickFillHighlight) =>
+	// 	(quickFillingHighlightClass = highlight);
 
 	const handleAddNewAttributeValue = async (manifestIdx: number, value: string) => {
 		const attributeId = variantManifests[manifestIdx].attribute.id;
@@ -454,7 +409,7 @@
 					variantDetail.stocks = quickFillingValues.stocks.map((stock) => ({
 						warehouse: stock.warehouse,
 						quantity: stock.quantity,
-						warehouseName: stock.warehouseName, // this field is needed for displaying
+						[WarehouseNameKey]: stock.warehouseName, // this field is needed for displaying
 					}));
 				}
 
@@ -705,7 +660,7 @@
 									{#each variantInputDetail.stocks || [] as stock, idx (idx)}
 										<Input
 											size="xs"
-											label={stock['warehouseName' as keyof StockInput] as string}
+											label={stock[WarehouseNameKey] as string}
 											placeholder={$tranFunc('product.stock')}
 											bind:value={variantInputDetail.stocks![idx].quantity}
 											type="number"

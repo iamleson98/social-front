@@ -371,6 +371,15 @@ export const PRODUCT_DETAIL_QUERY = gql`
 					value
 					unit
 				}
+				stocks {
+					id
+					warehouse {
+						name
+						id
+					}
+					quantity
+					quantityAllocated
+				}
 				preorder {
 					globalThreshold
 					globalSoldUnits

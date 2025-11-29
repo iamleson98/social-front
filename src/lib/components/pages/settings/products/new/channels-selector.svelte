@@ -15,6 +15,7 @@
 	import { tranFunc } from '$lib/i18n';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import ErrorMsg from './error-msg.svelte';
+	import { omit } from 'es-toolkit';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 
@@ -58,7 +59,13 @@
 	$effect(() => {
 		channelListingUpdateInput = {
 			...productChannelListingUpdateInput,
-			updateChannels: productChannelListingUpdateInput.updateChannels.filter((chan) => chan.used),
+			updateChannels: productChannelListingUpdateInput.updateChannels.reduce((acc, cur) => {
+				if (!cur.used) return acc;
+
+				// omit extra added fields before passing back to parent component
+				acc.push(omit(cur, ['used', 'channelName', 'currency']));
+				return acc;
+			}, [] as ProductChannelListingAddInput[]),
 		};
 	});
 
@@ -74,15 +81,17 @@
 
 					return {
 						channelId: listing.channel.id,
-						used: ASSIGNED_CHANNEL_IDS_MAP[listing.channel.id],
-						channelName: listing.channel.name,
-						currency: listing.channel.currencyCode.toUpperCase(),
-
 						availableForPurchaseAt: listing.availableForPurchaseAt,
 						isAvailableForPurchase: listing.isAvailableForPurchase,
 						isPublished: listing.isPublished,
 						publishedAt: listing.publishedAt,
 						visibleInListings: listing.visibleInListings,
+
+						// NOTE: Three fields below is extra added for easy to handling within this component.
+						// They will be removed before passing back to parent component.
+						used: ASSIGNED_CHANNEL_IDS_MAP[listing.channel.id],
+						channelName: listing.channel.name,
+						currency: listing.channel.currencyCode.toUpperCase(),
 					};
 				}),
 			};
@@ -130,7 +139,7 @@
 	};
 </script>
 
-<div class={["p-2 rounded-lg", !ok && 'bg-red-50 border-red-200!']}>
+<div class={['p-2 rounded-lg', !ok && 'bg-red-50 border-red-200!']}>
 	<Label required requiredAtPos="end" label={$tranFunc('product.channel')} />
 
 	{#if $CHANNELS_QUERY_STORE.fetching}

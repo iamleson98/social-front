@@ -37,7 +37,6 @@
 	import { AppRoute } from '$lib/utils/routes';
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
-	import { omit } from 'es-toolkit';
 	import { toast } from 'svelte-sonner';
 
 	let productCreateInput = $state<ProductCreateInput>({
@@ -152,24 +151,13 @@
 		const createdProductId = productCreateResult.data?.productCreate?.product?.id as string;
 
 		// 2) assign product channel listings
-		// clean input
-		const cleanChannelListingUpdateInput: ProductChannelListingUpdateInput = {
-			...channelListingUpdateInput,
-			updateChannels: channelListingUpdateInput.updateChannels.map((item) =>
-				omit(item, [
-					'used' as keyof ProductChannelListingAddInput,
-					'channelName' as keyof ProductChannelListingAddInput,
-					'currency' as keyof ProductChannelListingAddInput,
-				]),
-			) as ProductChannelListingAddInput[],
-		};
 
 		const updateProductChannelListingResult = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'productChannelListingUpdate'>,
 			MutationProductChannelListingUpdateArgs
 		>(UPDATE_PRODUCT_CHANNEL_LISTINGS_MUTATION, {
 			id: createdProductId,
-			input: cleanChannelListingUpdateInput,
+			input: channelListingUpdateInput,
 		});
 		if (
 			checkIfGraphqlResultHasError(updateProductChannelListingResult, 'productChannelListingUpdate')
