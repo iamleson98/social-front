@@ -368,7 +368,6 @@
 								variantInputDetail.channelListings?.[ChannelListingCurrentKey]?.map(
 									(item) => (item as any).channel.id,
 								) || []}
-
 							<Select
 								size="sm"
 								{disabled}

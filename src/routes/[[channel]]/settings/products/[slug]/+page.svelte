@@ -242,13 +242,6 @@
 			disabled={loading}
 			required
 		/>
-		<ProductSeo
-			productName={product.name}
-			bind:seo={product.seo!}
-			bind:slug={product.slug}
-			bind:formOk={productInputError.seo}
-			{loading}
-		/>
 		<div class={SitenameCommonClassName}>
 			<ChannelsSelector
 				bind:channelListingUpdateInput
@@ -264,6 +257,13 @@
 				productTypeId={currentProductType.id}
 			/>
 		</div>
+		<ProductSeo
+			productName={product.name}
+			bind:seo={product.seo!}
+			bind:slug={product.slug}
+			bind:formOk={productInputError.seo}
+			{loading}
+		/>
 		<CollectionsAndTax
 			bind:collections={product.collections}
 			bind:taxClassID={product.taxClass}
