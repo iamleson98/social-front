@@ -1,16 +1,24 @@
 <script lang="ts">
 	import { ORDER_FULFILLMENT_UPDATE_TRACKING_MUTATION } from '$lib/api/admin/orders';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import CopyButton from '$lib/components/common/copy-button.svelte';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { ExternalLink, Icon, Trash } from '$lib/components/icons';
+	import {
+		TablerDots,
+		TablerForbid,
+		TablerTruck,
+		TablerTruckDelivery,
+	} from '$lib/components/icons/consts';
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
+	import { Popover } from '$lib/components/ui/Popover';
 	import type { TableCellProps, TableColumnProps } from '$lib/components/ui/Table';
 	import Table from '$lib/components/ui/Table/table.svelte';
 	import { FulfillmentStatus } from '$lib/gql/graphql';
@@ -23,6 +31,7 @@
 	} from '$lib/gql/graphql';
 	import { ShopStoreManager } from '$lib/stores/shop';
 	import { AppRoute } from '$lib/utils';
+	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import {
 		checkIfGraphqlResultHasError,
 		fulfillmentStatusBadgeClass,
@@ -34,6 +43,7 @@
 	import OrderLineMetadataModal from './order-line-metadata-modal.svelte';
 	import { orderHasTransactions } from './utils';
 	import { OrderUtilsInstance } from './utils.svelte';
+	import dayjs from 'dayjs';
 	import { toast } from 'svelte-sonner';
 
 	type Props = {
@@ -43,7 +53,7 @@
 
 	let { order, onUpdateTrackingCode }: Props = $props();
 
-	const PRODUCT_MODAL_COLUMNS: TableColumnProps<FulfillmentLine, any>[] = [
+	const PRODUCT_MODAL_COLUMNS: TableColumnProps<FulfillmentLine, any>[] = $derived([
 		{
 			title: 'Image',
 			child: image,
@@ -84,7 +94,7 @@
 			title: 'Actions',
 			child: actions,
 		},
-	];
+	]);
 
 	let openTrackingModal = $state(false);
 	let loading = $state(false);
@@ -216,14 +226,13 @@
 					<Badge {...fulfillmentStatusBadgeClass(fulfillment.status)} rounded size="sm" />
 				</div>
 				<div class="flex items-center gap-2">
-					<span class="text-xs text-gray-500 font-medium">
-						Fulfilled from {fulfillment.warehouse?.name}
-					</span>
 					{#if fulfillment.status === FulfillmentStatus.Fulfilled || fulfillment.status === FulfillmentStatus.WaitingForApproval}
 						<IconButton
-							icon={Trash}
+							icon={TablerForbid}
 							size="xs"
 							variant="light"
+							class="tooltip tooltip-top"
+							data-tip="Cancel fulfillment"
 							color="red"
 							onclick={() => (fulfillmentToCancelWarehouseID = fulfillment.id)}
 						/>
@@ -247,6 +256,7 @@
 							<Button
 								size="xs"
 								color="gray"
+								endIcon={TablerTruck}
 								onclick={() => {
 									trackingCode = fulfillment.trackingNumber;
 									openTrackingModal = true;
@@ -264,24 +274,43 @@
 							>
 						{/if}
 					{/if}
+					<Popover placement="left-start">
+						{#snippet trigger({ onclick })}
+							<IconButton variant="light" icon={TablerDots} {onclick} size="xs" color="gray" />
+						{/snippet}
+
+						<div class="w-lg shadow-sm">
+							<GeneralMetadataEditor
+								metadata={fulfillment.metadata}
+								privateMetadata={fulfillment.privateMetadata}
+								objectId={fulfillment.id}
+							/>
+						</div>
+					</Popover>
 				</div>
 			</SectionHeader>
 
 			<div class="overflow-x-auto">
 				<Table columns={PRODUCT_MODAL_COLUMNS} items={fulfillment.lines || []} />
 			</div>
-			{#if fulfillment.trackingNumber && fulfillment.warehouse}
-				<div class="text-xs text-gray-500">
-					<div class="mb-1">Fulfilled from: {fulfillment.warehouse.name}</div>
-					<div>Tracking code: {fulfillment.trackingNumber}</div>
-				</div>
-			{/if}
 
-			<GeneralMetadataEditor
-				metadata={fulfillment.metadata}
-				privateMetadata={fulfillment.privateMetadata}
-				objectId={fulfillment.id}
-			/>
+			<div class="flex items-center justify-between text-xs text-gray-600">
+				{#if fulfillment.warehouse}
+					<div class="mb-1">
+						Fulfilled from: <a
+							href={AppRoute.SETTINGS_CONFIGS_WAREHOUSE_DETAILS(fulfillment.warehouse.id)}
+							class="link font-semibold">{fulfillment.warehouse.name}</a
+						>
+						{dayjs(fulfillment.created).format(SitenameTimeFormat)}
+					</div>
+				{/if}
+				{#if fulfillment.trackingNumber}
+					<div class="flex items-center gap-1">
+						Tracking code: <span class="font-semibold">{fulfillment.trackingNumber}</span>
+						<CopyButton size="xs" copyContent={fulfillment.trackingNumber} />
+					</div>
+				{/if}
+			</div>
 		</div>
 	{/each}
 </div>

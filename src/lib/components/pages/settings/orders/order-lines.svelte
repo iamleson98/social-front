@@ -31,7 +31,7 @@
 
 	let { orderLines, order, allowAddDiscountToLines }: Props = $props();
 
-	const PRODUCT_MODAL_COLUMNS: TableColumnProps<OrderLine, any>[] = [
+	const PRODUCT_MODAL_COLUMNS: TableColumnProps<OrderLine, any>[] = $derived([
 		{
 			title: 'Image',
 			child: image,
@@ -72,7 +72,7 @@
 			title: 'Actions',
 			child: actions,
 		},
-	];
+	]);
 
 	let metadataModelRef = $state<ReturnType<typeof OrderLineMetadataModal>>();
 	let discountItemsRef = $state<HTMLButtonElement[]>([]);

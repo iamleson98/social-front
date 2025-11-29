@@ -318,6 +318,7 @@ export const ORDER_DETAIL_QUERY = gql`
 			}
 			fulfillments {
 				id
+				created
 				metadata {
 					key
 					value
