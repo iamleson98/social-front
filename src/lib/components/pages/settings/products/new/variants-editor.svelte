@@ -47,7 +47,7 @@
 		productTypeId: string;
 		/** This is provided by the channel listing selector section */
 		channelsListing: ProductChannelListingUpdateInput;
-		loading: boolean;
+		disabled?: boolean;
 		productMedias: MediaObject[];
 		productVariantsInput: ProductVariantBulkCreateInput[];
 		privateMetadata: MetadataInput[];
@@ -56,7 +56,7 @@
 	let {
 		productTypeId,
 		channelsListing,
-		loading,
+		disabled,
 		productVariantsInput = $bindable([]),
 		privateMetadata = $bindable(),
 	}: Props = $props();
@@ -96,6 +96,9 @@
 		weight: 0,
 		trackInventory: true,
 	});
+	let innerLoading = $state(false);
+	const ShouldDisable = $derived(disabled || innerLoading);
+
 	/**
 	 * If there is 1 variant, there will be 8 columns -> each column's width = 1/9 = 11.11%, 2 variants -> 9 columns -> each column's width = 1/8 = 12.5%;
 	 */
@@ -348,9 +351,6 @@
 		recalculateVariantAttributeMetadata();
 	};
 
-	// const handleFocusHighlightQuickFilling = (highlight?: QuickFillHighlight) =>
-	// 	(quickFillingHighlightClass = highlight);
-
 	const handleAddNewAttributeValue = async (manifestIdx: number, value: string) => {
 		const attributeId = variantManifests[manifestIdx].attribute.id;
 
@@ -359,7 +359,7 @@
 				(attr) => attr.attribute.id === attributeId,
 			)?.attribute.inputType === AttributeInputTypeEnum.Swatch;
 
-		loading = true;
+		innerLoading = true;
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'attributeValueCreate'>,
 			MutationAttributeValueCreateArgs
@@ -370,7 +370,7 @@
 				value: isSwatchAttribute ? value : undefined,
 			},
 		});
-		loading = false;
+		innerLoading = false;
 
 		if (checkIfGraphqlResultHasError(result, 'attributeValueCreate')) return;
 
@@ -498,7 +498,7 @@
 	{#if variantManifests.length}
 		<VariantQuickFillingValues
 			{channelSelectOptions}
-			disabled={loading}
+			disabled={ShouldDisable}
 			bind:quickFillingValues
 			{handleQuickFillingClick}
 		/>
@@ -546,7 +546,7 @@
 								{:else}
 									<Select
 										size="sm"
-										disabled={loading}
+										disabled={ShouldDisable}
 										options={channelSelectOptions}
 										value={variantInputDetail.channelListings?.map((item) => item.channelId)}
 										multiple
@@ -564,7 +564,7 @@
 										<Input
 											type="number"
 											min={0}
-											disabled={loading}
+											disabled={ShouldDisable}
 											size="xs"
 											placeholder={channelListing[
 												'currency' as keyof ProductVariantChannelListingAddInput
@@ -585,7 +585,7 @@
 										<Input
 											type="number"
 											min={0}
-											disabled={loading}
+											disabled={ShouldDisable}
 											size="xs"
 											placeholder={channelListing[
 												'currency' as keyof ProductVariantChannelListingAddInput
@@ -607,13 +607,13 @@
 									size="sm"
 									min={0}
 									placeholder="kg"
-									disabled={loading}
+									disabled={ShouldDisable}
 									bind:value={variantInputDetail.weight}
 									variant={variantInputDetail.weight >= 0 ? 'info' : 'error'}
 									subText={variantInputDetail.weight >= 0 ? '' : $CommonState.NonNegativeError}
 								>
 									{#snippet action()}
-										<span class="text-[8px] font-semibold">kg</span>
+										<span class="text-[10px] font-semibold">kg</span>
 									{/snippet}
 								</Input>
 							</td>
@@ -625,7 +625,7 @@
 									label={$tranFunc('product.qtyLimit')}
 									size="xs"
 									class="mb-2"
-									disabled={loading}
+									disabled={ShouldDisable}
 									bind:value={variantInputDetail.preorder!.globalThreshold}
 									variant={typeof variantInputDetail.preorder?.globalThreshold === 'number' &&
 									variantInputDetail.preorder.globalThreshold % 1 !== 0
@@ -643,7 +643,7 @@
 										showMonths: true,
 										showYears: { min: 2020, max: DAYJS_NOW.year() + 1 },
 									}}
-									disabled={loading}
+									disabled={ShouldDisable}
 									timeConfig={false}
 									onchange={(date) => (variantInputDetail.preorder!.endDate = date.date)}
 									value={{ date: variantInputDetail.preorder!.endDate }}
@@ -664,7 +664,7 @@
 											placeholder={$tranFunc('product.stock')}
 											bind:value={variantInputDetail.stocks![idx].quantity}
 											type="number"
-											disabled={loading}
+											disabled={ShouldDisable}
 											min={0}
 											variant={stock.quantity % 1 !== 0 ? 'error' : 'info'}
 											subText={stock.quantity % 1 !== 0 ? $CommonState.NonNegativeError : ''}
@@ -677,7 +677,7 @@
 								<Input
 									type="text"
 									size="sm"
-									disabled={loading}
+									disabled={ShouldDisable}
 									placeholder="SKU"
 									bind:value={variantInputDetail.sku}
 									variant={variantInputDetail.sku?.trim() ? 'info' : 'error'}

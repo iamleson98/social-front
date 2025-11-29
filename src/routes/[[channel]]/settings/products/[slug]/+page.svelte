@@ -23,21 +23,21 @@
 		ChannelListingExistingKey,
 		StockCurrentKey,
 		StockExistingKey,
-		StockWarehouseNameKey,
 	} from '$lib/components/pages/settings/products/new/variants-edit-editor.svelte';
 	import Skeleton from '$lib/components/pages/settings/products/skeleton.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
-	import type {
-		ProductInput,
-		Query,
-		QueryProductArgs,
-		ProductType,
-		Mutation,
-		MutationProductDeleteArgs,
-		ProductChannelListingUpdateInput,
-		ProductVariantChannelListingUpdateInput,
-		ProductVariantBulkUpdateInput,
-		ProductVariantStocksUpdateInput,
+	import {
+		type ProductInput,
+		type Query,
+		type QueryProductArgs,
+		type ProductType,
+		type Mutation,
+		type MutationProductDeleteArgs,
+		type ProductChannelListingUpdateInput,
+		type ProductVariantChannelListingUpdateInput,
+		type ProductVariantBulkUpdateInput,
+		type ProductVariantStocksUpdateInput,
+		WeightUnitsEnum,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
@@ -152,9 +152,10 @@
 
 				if (variants?.length) {
 					productVariantBulkUpdateInput = variants.map<ProductVariantBulkUpdateInput>(
-						({ assignedAttributes, preorder, channelListings, stocks, ...rest }) => {
+						({ assignedAttributes, preorder, channelListings, stocks, weight, ...rest }) => {
 							return {
 								...rest,
+								weight: weight || { value: 0, unit: WeightUnitsEnum.Kg },
 								attributes: assignedAttributes.map((item) => item.attribute),
 								preorder: preorder || {
 									globalThreshold: undefined,
@@ -260,6 +261,7 @@
 				channelsListing={channelListingUpdateInput}
 				bind:productVariantsInput={productVariantBulkUpdateInput}
 				bind:privateMetadata={product.privateMetadata!}
+				productTypeId={currentProductType.id}
 			/>
 		</div>
 		<CollectionsAndTax

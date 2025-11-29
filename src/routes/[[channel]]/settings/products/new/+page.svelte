@@ -251,7 +251,7 @@
 			{loading}
 		/>
 		<VariantsEditor
-			{loading}
+			disabled={loading}
 			productTypeId={productCreateInput.productType}
 			{productMedias}
 			channelsListing={channelListingUpdateInput}

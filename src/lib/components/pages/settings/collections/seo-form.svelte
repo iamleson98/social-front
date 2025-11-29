@@ -58,7 +58,6 @@
 			slug = slugify(name, { lower: true, strict: true });
 			seo.title = name;
 		}
-		SchemaHandler.validate();
 	});
 </script>
 

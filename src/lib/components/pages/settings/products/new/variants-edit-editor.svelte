@@ -13,26 +13,42 @@
 
 <script lang="ts">
 	import { tranFunc } from '$i18n';
+	import { ATTRIBUTE_VALUE_CREATE_MUTATION } from '$lib/api/admin/attribute';
+	import { PRODUCT_TYPE_QUERY } from '$lib/api/admin/product';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { operationStore } from '$lib/api/operation';
+	import { Icon, Plus } from '$lib/components/icons';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Input } from '$lib/components/ui/Input';
-	import { Select, SelectSkeleton } from '$lib/components/ui/select';
+	import { Select, SelectSkeleton, type SelectOption } from '$lib/components/ui/select';
 	import {
+		AttributeInputTypeEnum,
 		type Channel,
 		type MetadataInput,
+		type Mutation,
+		type MutationAttributeValueCreateArgs,
 		type ProductChannelListingAddInput,
 		type ProductChannelListingUpdateInput,
 		type ProductVariantBulkUpdateInput,
 		type ProductVariantChannelListing,
 		type ProductVariantChannelListingUpdateInput,
 		type ProductVariantStocksUpdateInput,
+		type Query,
+		type QueryProductTypeArgs,
 		type Stock,
 	} from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
-	import { SitenameCommonClassName } from '$lib/utils/utils';
-	import { toast } from 'svelte-sonner';
-	import { ProductPrivateMetadataVariantAttributeUsedKey, type ChannelSelectOptionProps, type QuickFillingProps, type VariantManifest } from './utils';
+	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
+	import {
+		ProductPrivateMetadataVariantAttributeUsedKey,
+		type ChannelSelectOptionProps,
+		type QuickFillingProps,
+		type VariantManifest,
+	} from './utils';
+	import VariantManifestItem from './variant-manifest-item.svelte';
 	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
+	import { toast } from 'svelte-sonner';
 
 	type Props = {
 		disabled?: boolean;
@@ -40,6 +56,7 @@
 		channelsListing: ProductChannelListingUpdateInput;
 		productVariantsInput: ProductVariantBulkUpdateInput[];
 		privateMetadata: MetadataInput[];
+		productTypeId: string;
 	};
 
 	let {
@@ -47,7 +64,27 @@
 		productVariantsInput = $bindable(),
 		privateMetadata = $bindable(),
 		channelsListing,
+		productTypeId,
 	}: Props = $props();
+
+	const ProductTypeDetailQuery = operationStore<Pick<Query, 'productType'>, QueryProductTypeArgs>({
+		query: PRODUCT_TYPE_QUERY,
+		variables: {
+			id: productTypeId,
+		},
+		requestPolicy: 'cache-and-network',
+		pause: !productTypeId,
+	});
+
+	const AvailableAttributeOptions = $derived(
+		$ProductTypeDetailQuery.data?.productType?.assignedVariantAttributes
+			?.filter((attr) => attr.variantSelection)
+			.map<SelectOption>((attr) => ({
+				value: attr.attribute.id,
+				label: (attr.attribute.name || attr.attribute.slug) as string,
+				disabled: variantManifests.some((manifest) => manifest.attribute.id === attr.attribute.id),
+			})) || [],
+	);
 
 	let variantManifests = $state<VariantManifest[]>([]);
 	let channelSelectOptions = $state.raw<ChannelSelectOptionProps[]>([]);
@@ -58,6 +95,7 @@
 		weight: 0,
 		trackInventory: true,
 	});
+	let loading = $state(false);
 	/**
 	 * there are at most 2 attributes used for variants creation, so this list has 2 booleans.
 	 * If user can not find her desired attribute values, we support auto create feature,
@@ -151,7 +189,140 @@
 		if (variantManifests.length === 1) return 'w-[12.5%]!';
 		return 'w-[11.11%]!';
 	});
+
+	const handleAddNewAttributeValue = async (manifestIdx: number, value: string) => {
+		const attributeId = variantManifests[manifestIdx].attribute.id;
+		const isSwatchAttribute =
+			$ProductTypeDetailQuery.data?.productType?.assignedVariantAttributes?.find(
+				(attr) => attr.attribute.id === attributeId,
+			)?.attribute.inputType === AttributeInputTypeEnum.Swatch;
+		loading = true;
+
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'attributeValueCreate'>,
+			MutationAttributeValueCreateArgs
+		>(ATTRIBUTE_VALUE_CREATE_MUTATION, {
+			attribute: attributeId,
+			input: {
+				name: value,
+				value: isSwatchAttribute ? value : undefined,
+			},
+		});
+		loading = false;
+
+		if (checkIfGraphqlResultHasError(result, 'attributeValueCreate')) return;
+		// added value success, perform refetching now
+		manifestPerformFetchingAttributeValues[manifestIdx] = true;
+	};
+
+	const handleDeleteVariant = (variantIdx: number) => {
+		const currentNumberOfManifests = variantManifests.length;
+
+		// remove the manifest
+		variantManifests = variantManifests.filter((_, idx) => idx !== variantIdx);
+		if (!variantManifests.length) {
+			// variantsInputDetails = [];
+			return;
+		}
+
+		// trigger fetching attribute values again
+		if (variantIdx === 0 && currentNumberOfManifests === MAX_VARIANT_TYPES)
+			manifestPerformFetchingAttributeValues[0] = true;
+
+		// update the variants input details
+		// variantsInputDetails = variantManifests[0].values.map((value) => {
+		// 	const isSwatchAttribute = checkAttributeIsSwatch(variantManifests[0].attribute.id);
+		// 	const attributeProp: BulkAttributeValueInput = {
+		// 		id: variantManifests[0].attribute.id,
+		// 	};
+
+		// 	if (isSwatchAttribute) set(attributeProp, 'swatch.value', value.value);
+		// 	else set(attributeProp, 'dropdown.value', value.value);
+
+		// 	return {
+		// 		attributes: [attributeProp],
+		// 		name: `${value.value}`,
+		// 		sku: `${value.value}`,
+		// 		trackInventory: true,
+		// 		channelListings: [],
+		// 		weight: 0,
+		// 		preorder: {},
+		// 	};
+		// });
+	};
+
+	const handleVariantValuesChange = (
+		manifestIdx: number,
+		options?: SelectOption | SelectOption[],
+	) => {};
+
+	/**
+	 * This function helps setting the attribute usage by product variants, into private metadata
+	 */
+	const recalculateVariantAttributeMetadata = () => {
+		const setAttrValues = variantManifests.filter((item) => !!item.attribute.id);
+		if (!setAttrValues.length) return;
+
+		const attrInforValue = JSON.stringify(setAttrValues);
+		if (
+			!privateMetadata.some((item) => item.key === ProductPrivateMetadataVariantAttributeUsedKey)
+		) {
+			privateMetadata.push({
+				key: ProductPrivateMetadataVariantAttributeUsedKey,
+				value: attrInforValue,
+			});
+		} else {
+			privateMetadata = privateMetadata.map((item) => {
+				if (item.key === ProductPrivateMetadataVariantAttributeUsedKey) {
+					item.value = attrInforValue;
+				}
+				return item;
+			});
+		}
+	};
+
+	const handleAddVariantManifest = async () => {
+		// when a variant manifest is added, we must force the <Select /> to fetch attribute values
+		if (!variantManifests.length) manifestPerformFetchingAttributeValues[0] = true;
+		else manifestPerformFetchingAttributeValues[1] = true;
+
+		variantManifests = variantManifests.concat({
+			attribute: {
+				id: '',
+				name: '',
+			},
+			values: [],
+		});
+
+		recalculateVariantAttributeMetadata();
+	};
 </script>
+
+<div class="grid grid-cols-2 gap-2">
+	{#each variantManifests as maniFest, idx (idx)}
+		<VariantManifestItem
+			index={idx}
+			bind:manifest={variantManifests[idx]}
+			onDeleteVariant={handleDeleteVariant}
+			onAttributeValuesChange={handleVariantValuesChange}
+			onSelectAddNewAttributeValue={handleAddNewAttributeValue}
+			attributeOptions={AvailableAttributeOptions}
+			bind:performFetchAttributeValues={manifestPerformFetchingAttributeValues[idx]}
+		/>
+	{/each}
+	{#if variantManifests.length < MAX_VARIANT_TYPES && AvailableAttributeOptions.some((opt) => !opt.disabled)}
+		<button
+			class={[
+				'border-dashed border w-full h-full flex items-center justify-center rounded-lg tooltip tooltip-top border-blue-500 text-blue-500 cursor-pointer py-5 hover:bg-blue-50 active:bg-blue-100 focus:bg-blue-50',
+			]}
+			onclick={handleAddVariantManifest}
+			data-tip={$tranFunc('product.addVariant')}
+			aria-label={$tranFunc('product.addVariant')}
+		>
+			<Icon icon={Plus} size="xl" />
+		</button>
+	{/if}
+</div>
 
 <div class={SitenameCommonClassName}>
 	<table class="w-full text-sm h-fit text-left table text-gray-600">
@@ -276,12 +447,12 @@
 							min={0}
 							placeholder="kg"
 							{disabled}
-							bind:value={variantInputDetail.weight}
-							variant={variantInputDetail.weight >= 0 ? 'info' : 'error'}
-							subText={variantInputDetail.weight >= 0 ? '' : $CommonState.NonNegativeError}
+							bind:value={variantInputDetail.weight!.value}
+							variant={variantInputDetail.weight!.value >= 0 ? 'info' : 'error'}
+							subText={variantInputDetail.weight!.value >= 0 ? '' : $CommonState.NonNegativeError}
 						>
 							{#snippet action()}
-								<span class="text-[8px] font-semibold">kg</span>
+								<span class="text-[10px] font-semibold">kg</span>
 							{/snippet}
 						</Input>
 					</td>
@@ -357,3 +528,23 @@
 		</tbody>
 	</table>
 </div>
+
+<style lang="postcss">
+	@reference "tailwindcss";
+
+	th:not(:last-child) {
+		@apply border-r border-gray-200 py-1 px-1.5;
+	}
+
+	tr {
+		@apply border-b border-gray-300;
+	}
+
+	tr:nth-child(even) {
+		@apply bg-gray-50;
+	}
+
+	td {
+		@apply p-1;
+	}
+</style>
