@@ -32,8 +32,8 @@
 		'flex items-center gap-2 py-1 px-2 text-sm flex-nowrap select-none!',
 		disabled && 'cursor-not-allowed! text-gray-400',
 		className,
-		!disabled && 'cursor-pointer hover:bg-blue-100 hover:text-blue-500 transition-colors duration-100 ease-in-out text-gray-700',
-		isActive && 'bg-blue-100 text-blue-500!',
+		!disabled && 'cursor-pointer hover:bg-gray-100 transition-colors duration-100 ease-in-out text-gray-700',
+		isActive && 'bg-blue-100! text-blue-600!',
 	]}
 >
 	{#if startIcon}

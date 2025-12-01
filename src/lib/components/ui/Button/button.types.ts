@@ -114,7 +114,7 @@ export const BUTTON_VARIANT_COLORS_MAP: Record<ButtonVariant, Record<SocialColor
 };
 
 export const ICON_OF_BUTTON_SIZE_MAP: Record<SocialSize | 'xxs', string> = {
-	xxs: 'size-3',
+	xxs: 'size-2',
 	xs: 'size-4',
 	sm: 'size-4',
 	md: 'size-5',

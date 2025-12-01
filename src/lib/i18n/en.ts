@@ -740,4 +740,7 @@ export default {
 		payStatus: 'Payment status',
 		fulfillStatus: 'Fulfillment status',
 	},
+	warehouse: {
+		addrInfo: 'Address information',
+	},
 };

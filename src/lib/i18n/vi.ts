@@ -744,4 +744,7 @@ export default {
 		payStatus: 'Trạng thái thanh toán',
 		fulfillStatus: 'Trạn thái xử lý',
 	},
+	warehouse: {
+		addrInfo: 'Thông tin địa chỉ',
+	},
 };

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { tranFunc } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Input } from '$lib/components/ui/Input';
 	import type { Address } from '$lib/gql/graphql';
@@ -47,10 +48,9 @@
 </script>
 
 <div class={SitenameCommonClassName}>
-	<SectionHeader>General information</SectionHeader>
+	<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
 	<Input
-		label="Warehouse name"
-		placeholder="Warehouse name"
+		label={$tranFunc('common.name')}
 		bind:value={name}
 		required
 		inputDebounceOption={{ onInput: SchemaHandler.validate }}
@@ -59,26 +59,24 @@
 		subText={$SchemaHandler.name?.[0]}
 	/>
 	<Input
-		label="Warehouse slug"
+		label={$tranFunc('common.slug')}
 		required
 		inputDebounceOption={{ onInput: SchemaHandler.validate }}
 		onblur={SchemaHandler.validate}
-		placeholder="Warehouse slug"
 		bind:value={slug}
 		variant={$SchemaHandler.slug?.length ? 'error' : 'info'}
 		subText={$SchemaHandler.slug?.[0]}
 	/>
 	<Input
-		label="Warehouse email"
+		label={$tranFunc('common.email')}
 		inputDebounceOption={{ onInput: SchemaHandler.validate }}
 		onblur={SchemaHandler.validate}
-		placeholder="Warehouse email"
 		bind:value={email}
 		variant={$SchemaHandler.email?.length ? 'error' : 'info'}
 		subText={$SchemaHandler.email?.[0]}
 	/>
 
-	<SectionHeader>Address information</SectionHeader>
+	<SectionHeader>{$tranFunc('warehouse.addrInfo')}</SectionHeader>
 	<AddressForm
 		defaultValue={address}
 		channelSlug={isCreatePage ? '' : page.params.channel!}

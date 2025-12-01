@@ -902,3 +902,5 @@ export const getGiftCardAmount = (usedInOrderEvents: GiftCard["events"]) =>
 
 		return resultAmount + amountToAdd;
 	}, 0);
+
+

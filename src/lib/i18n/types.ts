@@ -654,4 +654,5 @@ export type TranslationKey =
 | 'attributes.Area'
 | 'order.draftOders'
 | 'order.payStatus'
-| 'order.fulfillStatus';
+| 'order.fulfillStatus'
+| 'warehouse.addrInfo';

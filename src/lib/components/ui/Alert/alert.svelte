@@ -39,13 +39,11 @@
 
 {#if show}
 	<div
-		class={`flex items-start gap-2 wrap-anywhere rounded-lg alert-${size} ${className} ${ALERT_VARIANT_STYLE_MAP[variant]} ${bordered ? 'border' : 'border-none!'}`}
+		class={`flex items-start justify-between wrap-anywhere rounded-lg alert-${size} ${className} ${ALERT_VARIANT_STYLE_MAP[variant]} ${bordered ? 'border' : 'border-none!'}`}
 		in:fly={{ y: 10 }}
 	>
-		<span class="flex items-center">
+		<div class="flex items-start gap-2">
 			<Icon icon={SocialVariantIconsMap[variant]} {size} />
-		</span>
-		<div>
 			{@render children()}
 		</div>
 		{#if dismissable}

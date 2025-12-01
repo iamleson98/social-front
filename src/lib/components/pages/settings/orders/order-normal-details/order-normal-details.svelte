@@ -6,6 +6,7 @@
 	import { Popover } from '$lib/components/ui/Popover';
 	import {
 		DiscountValueTypeEnum,
+		FulfillmentStatus,
 		OrderDiscountType,
 		OrderStatus,
 		type Order,
@@ -16,6 +17,7 @@
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { GeneralMetadataEditor, type GeneralMetadataEditorRef } from '../../common';
 	import DiscountPopup from '../discount-popup.svelte';
+	import OrderDraftDetails from '../draft-order-details/order-draft-details.svelte';
 	import HeaderSection from '../header-section.svelte';
 	import OrderFulfillments from '../order-fulfillments.svelte';
 	import OrderHistory from '../order-history.svelte';
@@ -40,10 +42,15 @@
 	let metaRef = $state<GeneralMetadataEditorRef>();
 
 	const handleCancelOrder = async () => {
+		if (order.fulfillments.some(ful => ful.status === FulfillmentStatus.Fulfilled)) {
+			toast.error('Order has some fulfilled fulfillment(s). Please cancel them first to cancel this order.');
+			return;
+		}
+
 		ALERT_MODAL_STORE.openAlertModal({
 			content: $CommonState.ConfirmDelete,
 			onOk: async () => {
-				const hasErr = await OrderUtilsInstance.deleteDraftOrder(order.id);
+				const hasErr = await OrderUtilsInstance.orderCancel(order.id);
 				if (!hasErr) {
 					toast.success($CommonState.DeleteSuccess);
 					await goto(AppRoute.SETTINGS_SHOP_DRAFT_ORDERS());
@@ -57,95 +64,7 @@
 	<div class="space-y-2 w-7/10">
 		<HeaderSection {order} onCancelOrder={handleCancelOrder} />
 
-		{#if order.status !== OrderStatus.Unconfirmed}
-			<UnfulfilledOrderLinesSection {order} />
-		{:else}
-			{@const OrderDiscountManual = order.discounts.find(
-				(discount) => discount.type === OrderDiscountType.Manual,
-			)}
-			<!-- This section shares some similarities with draft order detail -->
-
-			<!-- MARK: order lines -->
-			<OrderLinesSection allowAddOrderLines onAddedOrderLines={onRefetchOrder} {order} />
-
-			<!-- MARK: summary -->
-			{#if order.lines.length}
-				<div class="{SitenameCommonClassName} text-sm text-gray-700">
-					<div class="flex justify-between">
-						<div>
-							<Popover placement="bottom-start">
-								{#snippet trigger({ onclick })}
-									<Button
-										size="xs"
-										disabled={loading}
-										variant="light"
-										color="blue"
-										{onclick}
-										endIcon={PencilMinus}
-									>
-										Add discount
-									</Button>
-								{/snippet}
-								<DiscountPopup
-									{order}
-									existingDiscount={OrderDiscountManual}
-									onOk={async (discount) => {
-										const ok = await OrderUtilsInstance.orderAddDiscount(order.id, discount);
-										if (ok) onRefetchOrder?.();
-									}}
-									onRemove={async () => {
-										if (OrderDiscountManual?.id) {
-											const ok = await OrderUtilsInstance.orderDiscountDelete(
-												OrderDiscountManual.id,
-											);
-											if (ok) onRefetchOrder?.();
-										}
-									}}
-								/>
-							</Popover>
-						</div>
-						<div>
-							{#if OrderDiscountManual}
-								<span class="flex items-center gap-2">
-									<span>
-										{OrderDiscountManual.valueType === DiscountValueTypeEnum.Percentage
-											? `${OrderDiscountManual.value}%`
-											: ''}
-									</span>
-									<PriceDisplay {...OrderDiscountManual.total} />
-								</span>
-							{:else}
-								<span>---</span>
-							{/if}
-						</div>
-					</div>
-					<div class="flex justify-between">
-						<div>Subtotal</div>
-						<div>
-							<PriceDisplay {...order.subtotal.gross} />
-						</div>
-					</div>
-					<div class="flex justify-between">
-						<div>{@render Components.shippingMethodModal(order, onRefetchOrder)}</div>
-						<div>
-							<PriceDisplay {...order.shippingPrice.gross} />
-						</div>
-					</div>
-					<div class="flex justify-between">
-						<div>Taxes (VAT included)</div>
-						<div>
-							<PriceDisplay {...order.total.tax} />
-						</div>
-					</div>
-					<div class="flex justify-between">
-						<div>Total</div>
-						<div>
-							<PriceDisplay {...order.total.gross} />
-						</div>
-					</div>
-				</div>
-			{/if}
-		{/if}
+		<UnfulfilledOrderLinesSection {order} />
 
 		<!-- MARK: fulfillments -->
 		{#if order.fulfillments.length}

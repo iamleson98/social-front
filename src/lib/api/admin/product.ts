@@ -5,6 +5,13 @@ export type CategoryListForCreateProductInput = {
 	level?: number;
 };
 
+export const CHANNEL_USABILITY_QUERY = gql`
+query ChannelUsability($channel: String!) {
+  products(channel: $channel) {
+		totalCount
+	}
+}`;
+
 export const CATEGORIES_LIST_FOR_CREATE_PRODUCT = gql`
 	query CategoriesWithChildren($first: Int, $level: Int) {
 		categories(first: $first, level: $level) {

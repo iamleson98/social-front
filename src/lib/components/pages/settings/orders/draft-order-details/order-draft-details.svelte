@@ -1,10 +1,20 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { CHANNEL_USABILITY_QUERY } from '$lib/api/admin/product';
+	import { operationStore } from '$lib/api/operation';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import { PencilMinus } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
+	import { Alert } from '$lib/components/ui/Alert';
 	import { Popover } from '$lib/components/ui/Popover';
-	import { DiscountValueTypeEnum, OrderDiscountType, type Order } from '$lib/gql/graphql';
+	import { SelectSkeleton } from '$lib/components/ui/select';
+	import {
+		DiscountValueTypeEnum,
+		OrderDiscountType,
+		type Order,
+		type Query,
+		type QueryProductsArgs,
+	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
@@ -31,14 +41,31 @@
 	const OrderDiscountManual = $derived(
 		order.discounts.find((discount) => discount.type === OrderDiscountType.Manual),
 	);
-	// const ShippingMethodChoices = $derived(
-	// 	order.shippingMethods.map<SelectOption>((method) => ({
-	// 		label: `${method.name} : ${method.price.currency} ${method.price.amount}`,
-	// 		value: method.id,
-	// 		disabled: !method.active,
-	// 	})),
-	// );
+
+	const ChannelUsabilityQuery = operationStore<Pick<Query, 'products'>, QueryProductsArgs>({
+		query: CHANNEL_USABILITY_QUERY,
+		variables: {
+			channel: order.channel.slug,
+		},
+	});
+
 	let metaRef = $state<GeneralMetadataEditorRef>();
+
+	const getAlerts = (totalProductsCount: number) => {
+		const canDetermineShippingMethods =
+			order?.shippingAddress?.country.code && !!order?.lines?.length;
+		const isChannelInactive = order && !order.channel.isActive;
+		const noShippingMethodsInChannel =
+			canDetermineShippingMethods && order?.shippingMethods.length === 0;
+
+		const alerts = [];
+
+		if (isChannelInactive) alerts.push('Channel is inactive');
+		if (totalProductsCount === 0) alerts.push('No products in channel');
+		if (noShippingMethodsInChannel) alerts.push(`${order.shippingAddress?.country.country} is not available as a shipping destination for this channel.`);
+
+		return alerts;
+	};
 
 	/** we delete draft orders, not cancel them */
 	const handleCancelOrder = async () => {
@@ -63,6 +90,27 @@
 <div class="flex flex-row gap-2">
 	<div class="space-y-2 w-7/10">
 		<HeaderSection {order} onCancelOrder={handleCancelOrder} />
+
+		{#if $ChannelUsabilityQuery.fetching}
+			<SelectSkeleton size="sm" label />
+		{:else if $ChannelUsabilityQuery.error}
+			<Alert variant="error" size="sm">{$ChannelUsabilityQuery.error.message}</Alert>
+		{:else if $ChannelUsabilityQuery.data?.products}
+			{@const alerts = getAlerts($ChannelUsabilityQuery.data.products.totalCount || 0)}
+			{#if alerts.length}
+				<Alert variant="warning" size="sm" dismissable>
+					{#if alerts.length === 1}
+						{alerts[0]}
+					{:else}
+						<ul>
+							{#each alerts as alert}
+								<li>{alert}</li>
+							{/each}
+						</ul>
+					{/if}
+				</Alert>
+			{/if}
+		{/if}
 
 		<!-- MARK: order lines -->
 		<OrderLinesSection allowAddOrderLines onAddedOrderLines={onRefetchOrder} {order} />
