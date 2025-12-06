@@ -100,6 +100,7 @@
 	});
 
 	$effect(() => {
+		// skip this effect on initial render
 		if (initialRender) return;
 		if (selectMapperChanged && onchange) {
 			if (multiple) {

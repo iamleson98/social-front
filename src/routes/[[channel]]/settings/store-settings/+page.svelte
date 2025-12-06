@@ -12,7 +12,6 @@
 	import { SelectSkeleton } from '$lib/components/ui/select';
 	import {
 		type Address,
-		// type AddressInput,
 		type Mutation,
 		type MutationShopSettingsUpdateArgs,
 		type Query,
@@ -39,7 +38,6 @@
 		enableAccountConfirmationByEmail: false,
 	});
 	let loading = $state(false);
-	// let shopAddressInput = $state<AddressInput>({});
 
 	onMount(() =>
 		ShopDetailQuery.subscribe((result) => {

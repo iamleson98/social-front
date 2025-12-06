@@ -295,29 +295,6 @@
 			});
 	});
 
-	/** check if quick filling form has any error */
-	// const quickFillingError = $derived.by(() => {
-	// 	if (quickFillingValues.stocks.some((stock) => stock.quantity % 1 !== 0)) return true;
-
-	// 	const {
-	// 		preOrder: { globalThreshold, endDate },
-	// 		quantityLimitPerCustomer,
-	// 	} = quickFillingValues;
-	// 	if (typeof globalThreshold === 'number' && globalThreshold % 1 !== 0) return true;
-	// 	if (typeof quantityLimitPerCustomer === 'number' && quantityLimitPerCustomer % 1 !== 0)
-	// 		return true;
-
-	// 	if (endDate) {
-	// 		try {
-	// 			new Date(endDate);
-	// 		} catch {
-	// 			return true;
-	// 		}
-	// 	}
-
-	// 	return false;
-	// });
-
 	const AvailableAttributeOptions = $derived(
 		$ProductTypeDetailQuery.data?.productType?.assignedVariantAttributes
 			?.filter((attr) => attr.variantSelection)
@@ -354,11 +331,6 @@
 	const handleAddNewAttributeValue = async (manifestIdx: number, value: string) => {
 		const attributeId = variantManifests[manifestIdx].attribute.id;
 
-		const isSwatchAttribute =
-			$ProductTypeDetailQuery.data?.productType?.assignedVariantAttributes?.find(
-				(attr) => attr.attribute.id === attributeId,
-			)?.attribute.inputType === AttributeInputTypeEnum.Swatch;
-
 		innerLoading = true;
 		const result = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'attributeValueCreate'>,
@@ -367,7 +339,7 @@
 			attribute: attributeId,
 			input: {
 				name: value,
-				value: isSwatchAttribute ? value : undefined,
+				value: checkAttributeIsSwatch(attributeId) ? value : undefined,
 			},
 		});
 		innerLoading = false;

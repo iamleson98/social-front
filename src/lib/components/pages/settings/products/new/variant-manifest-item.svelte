@@ -30,6 +30,8 @@
 		onSelectAddNewAttributeValue,
 		onDeleteVariant,
 	}: Props = $props();
+
+	$inspect(manifest.attribute.id, attributeOptions);
 </script>
 
 <div class={SitenameCommonClassName}>
@@ -38,7 +40,6 @@
 		label="Variant #{index + 1}"
 		options={attributeOptions}
 		bind:value={manifest.attribute.id}
-		onchange={(opt) => opt && (manifest.attribute.name = (opt as SelectOption).label)}
 		{disabled}
 	/>
 
