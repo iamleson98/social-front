@@ -7,11 +7,12 @@
 		ACCOUNT_SET_DEFAULT_ADDRESS_MUTATION,
 	} from '$lib/api/account';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import UserAddress from '$lib/components/common/user-address/user-address.svelte';
 	import { Edit, Plus, Trash } from '$lib/components/icons';
 	import AddressForm from '$lib/components/pages/checkout/address-form.svelte';
 	import { Button } from '$lib/components/ui';
-	import { Checkbox, Label } from '$lib/components/ui/Input';
+	import { Checkbox } from '$lib/components/ui/Input';
 	import type {
 		Address,
 		AddressInput,
@@ -158,7 +159,7 @@
 </script>
 
 <div class="{SitenameCommonClassName} mt-2">
-	<Label label={$tranFunc('settings.addrManage')} size="lg" />
+	<SectionHeader>{$tranFunc('settings.addrManage')}</SectionHeader>
 
 	<div class="mt-2">
 		{#if !$ME_PAGE_USER_STORE?.addresses?.length}

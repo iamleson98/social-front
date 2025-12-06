@@ -1,5 +1,6 @@
 <script lang="ts">
 	import CopyButton from '$lib/components/common/copy-button.svelte';
+	import EmojiPicker from '$lib/components/common/emojis/emoji-picker.svelte';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 
 	let value = $state([]);
@@ -10,4 +11,4 @@
 	title="W3Schools Free Online Web Tutorials"
 ></iframe> -->
 
-<CopyButton copyContent="Hello" />
+<EmojiPicker onEmojiClick={console.log} filter="" />

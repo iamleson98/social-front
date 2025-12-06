@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { SUPPORTED_LANGUAGES, tranFunc } from '$i18n';
 	import { ACCOUNT_UPDATE_MUTATION } from '$lib/api/account';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { operationStore } from '$lib/api/operation';
+	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Button } from '$lib/components/ui';
-	import { Input, Label } from '$lib/components/ui/Input';
+	import { Input } from '$lib/components/ui/Input';
 	import { Select } from '$lib/components/ui/select';
 	import {
 		type AccountInput,
@@ -35,8 +36,6 @@
 	});
 	const SchemaHandler = createSchemaHandler(UserInfoSchema, () => userInfoInputs);
 
-	let loading = $state(false);
-
 	$effect(() => {
 		if ($ME_PAGE_USER_STORE) {
 			userInfoInputs = {
@@ -47,43 +46,46 @@
 		}
 	});
 
-	let userInfoChanged = $derived.by(() => {
-		return (
-			userInfoInputs.firstName !== $ME_PAGE_USER_STORE?.firstName ||
+	let userInfoChanged = $derived(
+		userInfoInputs.firstName !== $ME_PAGE_USER_STORE?.firstName ||
 			userInfoInputs.lastName !== $ME_PAGE_USER_STORE?.lastName ||
-			userInfoInputs.languageCode !== $ME_PAGE_USER_STORE?.languageCode
-		);
+			userInfoInputs.languageCode !== $ME_PAGE_USER_STORE?.languageCode,
+	);
+
+	const AccountUpdateMutation = operationStore<
+		Pick<Mutation, 'accountUpdate'>,
+		MutationAccountUpdateArgs
+	>({
+		query: ACCOUNT_UPDATE_MUTATION,
+		pause: true,
+		onResult: async (result) => {
+			if (
+				checkIfGraphqlResultHasError(result, 'accountUpdate', $tranFunc('settings.accountUpdated'))
+			)
+				return;
+
+			$ME_PAGE_USER_STORE = {
+				...$ME_PAGE_USER_STORE,
+				...userInfoInputs,
+			} as User;
+
+			// in case user update display language , we need to update it for the whole UI also
+			UserStoreManager.setValue($ME_PAGE_USER_STORE);
+		},
 	});
 
 	const handleSubmit = async () => {
-		if (!SchemaHandler.validate()) return;
-
-		loading = true; //
-
-		const result = await GRAPHQL_CLIENT.mutation<
-			Pick<Mutation, 'accountUpdate'>,
-			MutationAccountUpdateArgs
-		>(ACCOUNT_UPDATE_MUTATION, {
-			input: userInfoInputs as AccountInput,
-		});
-
-		loading = false; //
-
-		if (checkIfGraphqlResultHasError(result, 'accountUpdate', $tranFunc('settings.accountUpdated')))
-			return;
-
-		$ME_PAGE_USER_STORE = {
-			...$ME_PAGE_USER_STORE,
-			...userInfoInputs,
-		} as User;
-
-		// in case user update display language , we need to update it for the whole UI also
-		UserStoreManager.setValue($ME_PAGE_USER_STORE);
+		if (SchemaHandler.validate())
+			AccountUpdateMutation.reexecute({
+				variables: {
+					input: userInfoInputs as AccountInput,
+				},
+			});
 	};
 </script>
 
 <div class={SitenameCommonClassName}>
-	<Label size="lg" label={$tranFunc('settings.basicInfo')} />
+	<SectionHeader>{$tranFunc('settings.basicInfo')}</SectionHeader>
 
 	<div class="flex items-start mt-3 gap-2 w-full tablet:flex-wrap flex-nowrap">
 		<Input
@@ -96,7 +98,7 @@
 			subText={$SchemaHandler.firstName?.length ? $SchemaHandler.firstName[0] : ''}
 			onblur={SchemaHandler.validate}
 			inputDebounceOption={{ onInput: SchemaHandler.validate }}
-			disabled={loading}
+			disabled={$AccountUpdateMutation.fetching}
 		/>
 		<Input
 			placeholder={$tranFunc('common.lastName')}
@@ -108,7 +110,7 @@
 			subText={$SchemaHandler.lastName?.length ? $SchemaHandler.lastName[0] : ''}
 			onblur={SchemaHandler.validate}
 			inputDebounceOption={{ onInput: SchemaHandler.validate }}
-			disabled={loading}
+			disabled={$AccountUpdateMutation.fetching}
 		/>
 	</div>
 
@@ -126,11 +128,14 @@
 		subText={$SchemaHandler.languageCode?.length ? $SchemaHandler.languageCode[0] : ''}
 		onchange={SchemaHandler.validate}
 		onblur={SchemaHandler.validate}
-		disabled={loading}
+		disabled={$AccountUpdateMutation.fetching}
 	/>
 
 	<div class="text-right mt-4">
-		<Button onclick={handleSubmit} {loading} disabled={loading || !userInfoChanged}
+		<Button
+			onclick={handleSubmit}
+			loading={$AccountUpdateMutation.fetching}
+			disabled={$AccountUpdateMutation.fetching || !userInfoChanged}
 			>{$tranFunc('btn.update')}</Button
 		>
 	</div>

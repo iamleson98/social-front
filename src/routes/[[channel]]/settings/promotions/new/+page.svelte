@@ -87,7 +87,7 @@
 
 <div class="space-y-2">
 	<GeneralInformation
-		bind:name={promotionInput.name!}
+		bind:name={promotionInput.name}
 		bind:type={promotionInput.type}
 		bind:description={promotionInput.description}
 		bind:startDate={promotionInput.startDate}
