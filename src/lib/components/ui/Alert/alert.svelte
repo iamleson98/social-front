@@ -43,8 +43,12 @@
 		in:fly={{ y: 10 }}
 	>
 		<div class="flex items-start gap-2">
-			<Icon icon={SocialVariantIconsMap[variant]} {size} />
-			{@render children()}
+			<div class="shrink-0">
+				<Icon icon={SocialVariantIconsMap[variant]} {size} />
+			</div>
+			<div>
+				{@render children()}
+			</div>
 		</div>
 		{#if dismissable}
 			<div>
