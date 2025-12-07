@@ -18,7 +18,7 @@
 		onAttributeValuesChange: (index: number, opts?: SelectOption | SelectOption[]) => void;
 		onSelectAddNewAttributeValue: (index: number, value: string) => void;
 		onDeleteVariant: (index: number) => void;
-		onAttributeChange?: (opt?: SelectOption | SelectOption[]) => void;
+		onAttributeChange: (opt?: SelectOption | SelectOption[]) => void;
 	};
 
 	let {

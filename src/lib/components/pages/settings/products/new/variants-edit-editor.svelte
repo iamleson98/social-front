@@ -18,13 +18,13 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
 	import { Icon, Plus } from '$lib/components/icons';
+	import { Badge } from '$lib/components/ui/Badge';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Input } from '$lib/components/ui/Input';
 	import { Select, SelectSkeleton, type SelectOption } from '$lib/components/ui/select';
 	import {
 		AttributeInputTypeEnum,
 		type BulkAttributeValueInput,
-		type Channel,
 		type MetadataInput,
 		type Mutation,
 		type MutationAttributeValueCreateArgs,
@@ -174,20 +174,6 @@
 			quickFillingValues.channels = quickFillingValues.channels.filter(
 				(chan) => channelIdsMap[chan.channelId],
 			);
-
-		// if (
-		// 	variantsInputDetails.some((inputDetail) =>
-		// 		inputDetail.channelListings?.some((listing) => !channelIdsMap[listing.channelId]),
-		// 	)
-		// )
-		// 	// b) variant detail sections
-		// 	variantsInputDetails = variantsInputDetails.map((inputDetail) => {
-		// 		inputDetail.channelListings = inputDetail.channelListings?.filter(
-		// 			(chan) => channelIdsMap[chan.channelId],
-		// 		);
-
-		// 		return inputDetail;
-		// 	});
 	});
 
 	/**
@@ -237,27 +223,6 @@
 		// trigger fetching attribute values again
 		if (manifestIdx === 0 && currentNumberOfManifests === MAX_VARIANT_TYPES)
 			manifestPerformFetchingAttributeValues[0] = true;
-
-		// update the variants input details
-		// variantsInputDetails = variantManifests[0].values.map((value) => {
-		// 	const isSwatchAttribute = checkAttributeIsSwatch(variantManifests[0].attribute.id);
-		// 	const attributeProp: BulkAttributeValueInput = {
-		// 		id: variantManifests[0].attribute.id,
-		// 	};
-
-		// 	if (isSwatchAttribute) set(attributeProp, 'swatch.value', value.value);
-		// 	else set(attributeProp, 'dropdown.value', value.value);
-
-		// 	return {
-		// 		attributes: [attributeProp],
-		// 		name: `${value.value}`,
-		// 		sku: `${value.value}`,
-		// 		trackInventory: true,
-		// 		channelListings: [],
-		// 		weight: 0,
-		// 		preorder: {},
-		// 	};
-		// });
 	};
 
 	const checkAttributeIsSwatch = (attributeId: string) => {
@@ -443,39 +408,49 @@
 		const canQuickFillingChannels = quickFillingValues.channels.length > 0;
 
 		if (canQuickFillingChannels || canQuickFillingStocks) {
-			productVariantsInput = productVariantsInput.map<ProductVariantBulkUpdateInput>((variantDetail) => {
-				if (canQuickFillingChannels) {
-					variantDetail.channelListings = {
-						[ChannelListingCurrentKey]: quickFillingValues.channels.map(
-							({ channelId, price, costPrice, label, value, currency }) => ({
-								channelId,
-								price,
-								costPrice,
+			productVariantsInput = productVariantsInput.map<ProductVariantBulkUpdateInput>(
+				(variantDetail) => {
+					if (canQuickFillingChannels) {
+						variantDetail.channelListings = {
+							[ChannelListingCurrentKey]: quickFillingValues.channels.map(
+								({ channelId, price, costPrice, label, value, currency }) => ({
+									channelId,
+									price: {
+										amount: price,
+										currency,
+									},
+									costPrice: {
+										amount: costPrice,
+										currency,
+									},
 
-								label, // extra field
-								value, // extra field
-								currency, // extra field
-								channel: { id: channelId, currencyCode: currency },
-							}),
-						),
+									label, // extra field
+									value, // extra field
+									currency, // extra field
+									channel: { id: channelId, currencyCode: currency },
+								}),
+							),
+						};
+					}
+					if (canQuickFillingStocks) {
+						variantDetail.stocks = {
+							[StockCurrentKey]: quickFillingValues.stocks.map((stock) => ({
+								warehouse: stock.warehouse,
+								quantity: stock.quantity,
+								[StockWarehouseNameKey]: stock.warehouseName, // this field is needed for displaying
+							})),
+						};
+					}
+
+					const { endDate, globalThreshold } = quickFillingValues.preOrder;
+					variantDetail.preorder = { endDate, globalThreshold };
+					variantDetail.weight = {
+						value: quickFillingValues.weight,
 					};
-				}
-				if (canQuickFillingStocks) {
-					variantDetail.stocks = {
-						[StockCurrentKey]: quickFillingValues.stocks.map((stock) => ({
-							warehouse: stock.warehouse,
-							quantity: stock.quantity,
-							[StockWarehouseNameKey]: stock.warehouseName, // this field is needed for displaying
-						})),
-					};
-				}
 
-				const { endDate, globalThreshold } = quickFillingValues.preOrder;
-				variantDetail.preorder = { endDate, globalThreshold };
-				variantDetail.weight = quickFillingValues.weight;
-
-				return variantDetail;
-			});
+					return variantDetail;
+				},
+			);
 		}
 	};
 </script>
@@ -519,9 +494,13 @@
 		<table class="w-full text-sm h-fit text-left table text-gray-600">
 			<thead>
 				<tr>
-					<th class={ThClass}>{variantManifests[0]?.attribute?.name}</th>
+					<th class={ThClass}>
+						<Badge text={variantManifests[0]?.attribute?.name} size="sm" />
+					</th>
 					{#if variantManifests.length === MAX_VARIANT_TYPES}
-						<th class={ThClass}>{variantManifests[1]?.attribute?.name}</th>
+						<th class={ThClass}>
+							<Badge text={variantManifests[1]?.attribute?.name} size="sm" />
+						</th>
 					{/if}
 					<th class={ThClass}>{$tranFunc('product.channel')}</th>
 					<th class={ThClass}>{$tranFunc('product.price')}</th>
@@ -701,7 +680,7 @@
 								{#each variantInputDetail.stocks?.[StockCurrentKey] as unknown as Stock[] as stock, idx (idx)}
 									<Input
 										size="xs"
-										label={stock.warehouse.name}
+										label={stock.warehouse.name || (stock as any)[StockWarehouseNameKey]}
 										placeholder={$tranFunc('product.stock')}
 										bind:value={stock.quantity}
 										type="number"

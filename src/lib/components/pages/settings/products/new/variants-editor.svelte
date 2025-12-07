@@ -435,6 +435,20 @@
 			};
 		});
 	};
+
+	/**
+	 * Handles when user change attribute of a manifest.
+	 * 1) If user really selected new attribute (selectedNewAttribute = true)
+	 *  +) force refetch attribute values of the new selected attribute
+	 * 	+) clear existing selected attribute values if have
+	 *
+	 * 2) If user just clear the select (selectedNewAttribute = false)
+	 *  +) clear existing select attribute values
+	 */
+	const handleAttributeSelectChange = (manifestIndex: number, selectedNewAttribute: boolean) => {
+		manifestPerformFetchingAttributeValues[manifestIndex] = selectedNewAttribute;
+		variantManifests[manifestIndex].values = [];
+	};
 </script>
 
 <div class="space-y-2">
@@ -456,6 +470,7 @@
 					onSelectAddNewAttributeValue={handleOnUserChoseToCreateNewAttributeValue}
 					attributeOptions={AvailableAttributeOptions}
 					bind:performFetchAttributeValues={manifestPerformFetchingAttributeValues[idx]}
+					onAttributeChange={(opt) => handleAttributeSelectChange(idx, !!opt)}
 				/>
 			{/each}
 			{#if variantManifests.length < MAX_VARIANT_TYPES && AvailableAttributeOptions.some((opt) => !opt.disabled)}
