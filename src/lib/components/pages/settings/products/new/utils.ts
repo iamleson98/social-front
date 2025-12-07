@@ -10,25 +10,6 @@ import {
 
 export type CategorySelectItemProps = Omit<SelectItemProps, 'children'> & { children?: CategoryCountableConnection }
 
-// export const convertCategoryEdgesToMenuSelect = (
-// 	connection: CategoryCountableConnection,
-// ): SelectItemProps[] => {
-// 	const items: SelectItemProps[] = [];
-
-// 	for (let i = 0; i < connection.edges.length; i++) {
-// 		const { node } = connection.edges[i];
-// 		const props: SelectItemProps = {
-// 			title: node.name,
-// 			value: node.id,
-// 			children: node.children ? convertCategoryEdgesToMenuSelect(node.children) : undefined,
-// 		};
-
-// 		items.push(props);
-// 	}
-
-// 	return items;
-// };
-
 export type VariantManifest = {
 	attribute: {
 		id: string;
