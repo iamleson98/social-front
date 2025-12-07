@@ -131,7 +131,7 @@
 	},
 	"engines": {
 		"pnpm": ">=9.4.0",
-		"node": ">=18"
+		"node": ">=24.0.0"
 	},
 	"pnpm": {
 		"ignoredBuiltDependencies": [
