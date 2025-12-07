@@ -46,7 +46,7 @@
 		},
 		{
 			title: 'Variant',
-			child: variant,
+			child: {render: ({item}) => item.variantName || '-'},
 		},
 		{
 			title: 'Quantity',
@@ -106,22 +106,24 @@
 
 {#snippet actions({ item }: TableCellProps<OrderLine>)}
 	<div class="text-center">
-		<DropDown placement="left">
-			{#snippet trigger({ onclick })}
-				<IconButton size="xs" icon={Dots} {onclick} variant="light" color="gray" />
-			{/snippet}
+		{#if item.variant}
+			<DropDown placement="left">
+				{#snippet trigger({ onclick })}
+					<IconButton size="xs" icon={Dots} {onclick} variant="light" color="gray" />
+				{/snippet}
 
-			<MenuItem
-				startIcon={ExternalLink}
-				href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.variant!.product.slug)}
-				class="text-blue-500"
-			>
-				View product
-			</MenuItem>
-			{#if order.status === OrderStatus.Draft}
-				<MenuItem startIcon={Trash} onclick={() => {}} class="text-red-500">Remove</MenuItem>
-			{/if}
-		</DropDown>
+				<MenuItem
+					startIcon={ExternalLink}
+					href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.variant.product.slug)}
+					class="text-blue-500"
+				>
+					View product
+				</MenuItem>
+				{#if order.status === OrderStatus.Draft}
+					<MenuItem startIcon={Trash} onclick={() => {}} class="text-red-500">Remove</MenuItem>
+				{/if}
+			</DropDown>
+		{/if}
 	</div>
 {/snippet}
 
@@ -130,12 +132,13 @@
 {/snippet}
 
 {#snippet sku({ item }: TableCellProps<OrderLine>)}
-	{item.productSku || '-'}
+	{#if item.variant}
+		{item.productSku || '-'}
+	{:else}
+		<Badge size="xs" color="orange" class="whitespace-nowrap" variant="outline" text="Variant no exist" />
+	{/if}
 {/snippet}
 
-{#snippet variant({ item }: TableCellProps<OrderLine>)}
-	{item.variant?.name || '-'}
-{/snippet}
 
 {#snippet quantity({ item }: TableCellProps<OrderLine>)}
 	<div class="text-center">{item.quantity}</div>
@@ -147,7 +150,7 @@
 			<PriceDisplay {...item.undiscountedUnitPrice.gross} class="line-through" />
 		{/if}
 		<PriceDisplay {...item.unitPrice.gross} />
-		{#if allowAddDiscountToLines}
+		{#if allowAddDiscountToLines && item.variant}
 			<Button
 				size="xs"
 				variant="light"
@@ -176,6 +179,7 @@
 		size="xs"
 		variant="outline"
 		color="gray"
+		disabled={!item.variant}
 		onclick={() => metadataModelRef?.performFetchingMetadata(item.id)}
 	>
 		View Metadata

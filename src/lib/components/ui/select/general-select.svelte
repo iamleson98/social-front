@@ -90,12 +90,10 @@
 			return;
 		}
 
-		if (!multiple && value !== undefined) {
-			if (!(value in selectMapper)) {
-				const opt = options.find((opt) => opt.value === value);
-				selectMapper = { [value]: opt || ({ value, label: value } as SelectOption) };
-				selectMapperChanged = true;
-			}
+		if (!multiple && value != undefined) {
+			const opt = options.find((opt) => opt.value === value);
+			selectMapper = { [value]: opt || ({ value, label: value } as SelectOption) };
+			selectMapperChanged = true;
 		}
 	});
 
@@ -113,13 +111,13 @@
 	});
 
 	/** display text for input */
-	let inputDisplayText = $derived.by(() => {
+	const InputDisplayText = $derived.by(() => {
 		if (multiple) return searchQuery;
 		return value !== undefined ? selectMapper[value as Primitive]?.label : undefined;
 	});
 
 	/** list of options that match search query */
-	let searchFilteredOptions = $derived.by(() => {
+	const SearchFilteredOptions = $derived.by(() => {
 		if (!searchQuery) return options;
 		return options.filter((opt) => opt.label.toLowerCase().includes(searchQuery.toLowerCase()));
 	});
@@ -281,7 +279,7 @@
 				inputClass={INPUT_CLASSES[variant].fg}
 				size={SIZE_REDUCE_MAP[size]}
 				onfocus={handleFocus}
-				value={inputDisplayText}
+				value={InputDisplayText}
 				type="text"
 				{disabled}
 				role="combobox"
@@ -324,7 +322,7 @@
 			use:scrollToEnd={{ onScrollToEnd }}
 			bind:this={optionListRef}
 		>
-			{#each searchFilteredOptions as option, idx (idx)}
+			{#each SearchFilteredOptions as option, idx (idx)}
 				{@render selectOption({
 					idx,
 					optionClassName: classNames({
@@ -335,14 +333,14 @@
 					...option,
 				})}
 			{:else}
-				{#if onNotFoundQuerySelected && inputDisplayText && !showLoadingMore}
+				{#if onNotFoundQuerySelected && InputDisplayText && !showLoadingMore}
 					{@render selectOption({
 						idx: 0,
 						disabled: true,
 						optionClassName: 'cursor-default',
-						onclick: () => onNotFoundQuerySelected(inputDisplayText),
-						label: `Add "${inputDisplayText}"`,
-						value: inputDisplayText as any,
+						onclick: () => onNotFoundQuerySelected(InputDisplayText),
+						label: `Add "${InputDisplayText}"`,
+						value: InputDisplayText as any,
 					})}
 				{:else}
 					{@render selectOption({

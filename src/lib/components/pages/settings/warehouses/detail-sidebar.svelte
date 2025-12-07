@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { tranFunc } from '$i18n';
 	import { WAREHOUSE_SHIPPING_ZONES_QUERY } from '$lib/api/admin/shipping';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
@@ -25,17 +26,13 @@
 		id: page.params.id,
 	});
 
-	const ShippingColumns: TableColumnProps<ShippingZone>[] = [
+	const ShippingColumns: TableColumnProps<ShippingZone>[] = $derived([
 		{
-			title: 'name',
-			child: name,
+			title: $tranFunc('common.name'),
+			child: { render: ({ item }) => item.name },
 		},
-	];
+	]);
 </script>
-
-{#snippet name({ item }: { item: ShippingZone })}
-	<span>{item.name}</span>
-{/snippet}
 
 <div class={SitenameCommonClassName}>
 	<SectionHeader>Shipping zones</SectionHeader>

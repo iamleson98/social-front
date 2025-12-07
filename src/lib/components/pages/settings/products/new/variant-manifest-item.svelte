@@ -18,6 +18,7 @@
 		onAttributeValuesChange: (index: number, opts?: SelectOption | SelectOption[]) => void;
 		onSelectAddNewAttributeValue: (index: number, value: string) => void;
 		onDeleteVariant: (index: number) => void;
+		onAttributeChange?: (opt?: SelectOption | SelectOption[]) => void;
 	};
 
 	let {
@@ -29,9 +30,8 @@
 		onAttributeValuesChange,
 		onSelectAddNewAttributeValue,
 		onDeleteVariant,
+		onAttributeChange,
 	}: Props = $props();
-
-	$inspect(manifest.attribute.id, attributeOptions);
 </script>
 
 <div class={SitenameCommonClassName}>
@@ -41,6 +41,7 @@
 		options={attributeOptions}
 		bind:value={manifest.attribute.id}
 		{disabled}
+		onchange={onAttributeChange}
 	/>
 
 	{#if manifest.attribute.id}

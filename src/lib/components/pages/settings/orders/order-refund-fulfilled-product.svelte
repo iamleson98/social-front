@@ -7,7 +7,7 @@
 	import type { TableColumnProps } from '$lib/components/ui/Table';
 	import Table from '$lib/components/ui/Table/table.svelte';
 	import type { Fulfillment, FulfillmentLine } from '$lib/gql/graphql';
-	import { stringSlicer } from '$lib/utils/utils';
+	import { SitenameCommonClassName, stringSlicer } from '$lib/utils/utils';
 	import type { RefundQuantityProps } from './utils';
 
 	type Props = {
@@ -126,7 +126,7 @@
 	{/if}
 {/snippet}
 
-<div class="bg-white rounded-lg border border-gray-200 p-3 space-y-3">
+<div class={SitenameCommonClassName}>
 	{#each fulfilledFulfillments as fulfillment, idx (idx)}
 		<div>
 			<SectionHeader>Fulfillment #{orderNumber}-{fulfillment.fulfillmentOrder}</SectionHeader>

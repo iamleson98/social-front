@@ -398,6 +398,7 @@ export const PRODUCT_DETAIL_QUERY = gql`
 						id
 						name
 						slug
+						currencyCode
 					}
 					price {
 						amount

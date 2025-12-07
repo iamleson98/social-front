@@ -1,16 +1,16 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { ORDER_FULFILLMENT_UPDATE_TRACKING_MUTATION } from '$lib/api/admin/orders';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import CopyButton from '$lib/components/common/copy-button.svelte';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
-	import { ExternalLink, Icon, Trash } from '$lib/components/icons';
+	import { ExternalLink, Icon } from '$lib/components/icons';
 	import {
 		TablerDots,
 		TablerForbid,
 		TablerTruck,
-		TablerTruckDelivery,
 	} from '$lib/components/icons/consts';
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
@@ -55,7 +55,7 @@
 
 	const PRODUCT_MODAL_COLUMNS: TableColumnProps<FulfillmentLine, any>[] = $derived([
 		{
-			title: 'Image',
+			title: $tranFunc('common.pic'),
 			child: image,
 		},
 		{

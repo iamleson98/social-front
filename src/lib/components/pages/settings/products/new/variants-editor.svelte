@@ -142,6 +142,8 @@
 		if (variantManifests.length === 1) {
 			variantsInputDetails = variantManifests[0].values.map<ProductVariantBulkCreateInput>(
 				(attrValue) => {
+					// check if there is some variant with those attribute values, already existed
+					// If there is, return it as is. (no need to recreate)
 					const variantWithAttrValueExisted = variantsInputDetails.find((variantDetail) =>
 						variantDetail.attributes.some(
 							(attrInput) =>
@@ -328,7 +330,11 @@
 		recalculateVariantAttributeMetadata();
 	};
 
-	const handleAddNewAttributeValue = async (manifestIdx: number, value: string) => {
+	/**
+	 * Handles when user search for an attribute value, but can not find ons that match.
+	 * Then they have an option of creating new attribute value with that input.
+	 */
+	const handleOnUserChoseToCreateNewAttributeValue = async (manifestIdx: number, value: string) => {
 		const attributeId = variantManifests[manifestIdx].attribute.id;
 
 		innerLoading = true;
@@ -447,7 +453,7 @@
 					bind:manifest={variantManifests[idx]}
 					onDeleteVariant={handleDeleteVariant}
 					onAttributeValuesChange={handleVariantValuesChange}
-					onSelectAddNewAttributeValue={handleAddNewAttributeValue}
+					onSelectAddNewAttributeValue={handleOnUserChoseToCreateNewAttributeValue}
 					attributeOptions={AvailableAttributeOptions}
 					bind:performFetchAttributeValues={manifestPerformFetchingAttributeValues[idx]}
 				/>

@@ -23,6 +23,7 @@
 	import { Select, SelectSkeleton, type SelectOption } from '$lib/components/ui/select';
 	import {
 		AttributeInputTypeEnum,
+		type BulkAttributeValueInput,
 		type Channel,
 		type MetadataInput,
 		type Mutation,
@@ -38,7 +39,11 @@
 		type Stock,
 	} from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
-	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
+	import {
+		checkIfGraphqlResultHasError,
+		randomString,
+		SitenameCommonClassName,
+	} from '$lib/utils/utils';
 	import {
 		ProductPrivateMetadataVariantAttributeUsedKey,
 		type ChannelSelectOptionProps,
@@ -46,7 +51,9 @@
 		type VariantManifest,
 	} from './utils';
 	import VariantManifestItem from './variant-manifest-item.svelte';
+	import VariantQuickFillingValues from './variant-quick-filling-values.svelte';
 	import dayjs from 'dayjs';
+	import { set } from 'es-toolkit/compat';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 
@@ -96,6 +103,8 @@
 		trackInventory: true,
 	});
 	let loading = $state(false);
+
+	const ShouldDisable = $derived(disabled || loading);
 	/**
 	 * there are at most 2 attributes used for variants creation, so this list has 2 booleans.
 	 * If user can not find her desired attribute values, we support auto create feature,
@@ -215,18 +224,18 @@
 		manifestPerformFetchingAttributeValues[manifestIdx] = true;
 	};
 
-	const handleDeleteVariant = (variantIdx: number) => {
+	const handleDeleteManifest = (manifestIdx: number) => {
 		const currentNumberOfManifests = variantManifests.length;
 
 		// remove the manifest
-		variantManifests = variantManifests.filter((_, idx) => idx !== variantIdx);
+		variantManifests = variantManifests.filter((_, idx) => idx !== manifestIdx);
 		if (!variantManifests.length) {
 			// variantsInputDetails = [];
 			return;
 		}
 
 		// trigger fetching attribute values again
-		if (variantIdx === 0 && currentNumberOfManifests === MAX_VARIANT_TYPES)
+		if (manifestIdx === 0 && currentNumberOfManifests === MAX_VARIANT_TYPES)
 			manifestPerformFetchingAttributeValues[0] = true;
 
 		// update the variants input details
@@ -251,10 +260,128 @@
 		// });
 	};
 
+	const checkAttributeIsSwatch = (attributeId: string) => {
+		return (
+			$ProductTypeDetailQuery.data?.productType?.assignedVariantAttributes?.find(
+				(attr) => attr.attribute.id === attributeId,
+			)?.attribute.inputType === AttributeInputTypeEnum.Swatch
+		);
+	};
+
 	const handleVariantValuesChange = (
 		manifestIdx: number,
 		options?: SelectOption | SelectOption[],
-	) => {};
+	) => {
+		variantManifests[manifestIdx].values = (options as SelectOption[]) || [];
+
+		if (variantManifests.length === 1) {
+			productVariantsInput = variantManifests[0].values.map<ProductVariantBulkUpdateInput>(
+				(attrValue) => {
+					// check if there is some variant with those attribute values, already existed
+					// If there is, return it as is. (no need to recreate)
+					const variantWithAttrValueExisted = productVariantsInput.find((variantDetail) =>
+						variantDetail.attributes?.some(
+							(attrInput) =>
+								attrInput.dropdown?.id === attrValue.value ||
+								attrInput.swatch?.id === attrValue.value,
+						),
+					);
+
+					if (variantWithAttrValueExisted) return variantWithAttrValueExisted;
+
+					const isSwatchAttribute =
+						$ProductTypeDetailQuery.data?.productType?.assignedVariantAttributes?.find(
+							(attr) => attr.attribute.id === variantManifests[0].attribute.id,
+						)?.attribute.inputType === AttributeInputTypeEnum.Swatch;
+
+					const attributeProp: BulkAttributeValueInput = {
+						id: variantManifests[0].attribute.id,
+					};
+
+					set(
+						attributeProp,
+						isSwatchAttribute ? 'swatch.value' : 'dropdown.value',
+						attrValue.value,
+					);
+
+					const res: ProductVariantBulkUpdateInput = {
+						attributes: [attributeProp],
+						name: `${attrValue.label}`,
+						sku: `${attrValue.label}-${randomString(6)}`,
+						trackInventory: true,
+						channelListings: {
+							[ChannelListingCurrentKey]: [],
+						},
+						weight: 0,
+						preorder: {},
+						// NOTE: Later when we come to handle update, all variants with empty IDs like below will be bulk created.
+						id: '',
+					};
+
+					return res;
+				},
+			);
+		} else {
+			const newVariantDetails = [];
+
+			for (const value1 of variantManifests[0].values) {
+				for (const value2 of variantManifests[1].values) {
+					// Check if a variant that already has 2 selected attributes.
+					// And also has according 1 attribute value for each attribute.
+					const existingVariant = productVariantsInput.find((variantDetail) => {
+						if (variantDetail.attributes?.length !== 2) return false;
+
+						let value1Used = false,
+							value2Used = false;
+
+						for (const attr of variantDetail.attributes) {
+							if (attr.dropdown?.id === value1.value || attr.swatch?.id === value1.value)
+								value1Used = true;
+							else if (attr.swatch?.id === value2.value || attr.swatch?.id === value2.value)
+								value2Used = true;
+						}
+
+						return value1Used && value2Used;
+					});
+
+					if (existingVariant) {
+						newVariantDetails.push(existingVariant);
+						continue;
+					}
+
+					const attributes = variantManifests.map((manifest) => {
+						const isSwatchAttr = checkAttributeIsSwatch(manifest.attribute.id);
+						const attributeProps: BulkAttributeValueInput = {
+							id: manifest.attribute.id,
+						};
+						set(attributeProps, isSwatchAttr ? 'swatch.value' : 'dropdown.value', value1.value);
+
+						return attributeProps;
+					});
+
+					const newVariant: ProductVariantBulkUpdateInput = {
+						attributes,
+						name: `${value1.label}-${value2.label}`,
+						sku: `${value1.label}-${value2.label}-${randomString(6)}`,
+						trackInventory: true,
+						channelListings: {
+							[ChannelListingCurrentKey]: [],
+						},
+						weight: 0,
+						preorder: {},
+						// NOTE: Later when we come to handle update, all variants with empty IDs like below will be bulk created.
+						id: '',
+					};
+
+					newVariantDetails.push(newVariant);
+				}
+			}
+
+			productVariantsInput = newVariantDetails;
+		}
+
+		recalculateVariantAttributeMetadata();
+	};
 
 	/**
 	 * This function helps setting the attribute usage by product variants, into private metadata
@@ -296,236 +423,313 @@
 
 		recalculateVariantAttributeMetadata();
 	};
+
+	/**
+	 * Handles when user change attribute of a manifest.
+	 * 1) If user really selected new attribute (selectedNewAttribute = true)
+	 *  +) force refetch attribute values of the new selected attribute
+	 * 	+) clear existing selected attribute values if have
+	 *
+	 * 2) If user just clear the select (selectedNewAttribute = false)
+	 *  +) clear existing select attribute values
+	 */
+	const handleAttributeSelectChange = (manifestIndex: number, selectedNewAttribute: boolean) => {
+		manifestPerformFetchingAttributeValues[manifestIndex] = selectedNewAttribute;
+		variantManifests[manifestIndex].values = [];
+	};
+
+	const handleQuickFillingClick = () => {
+		const canQuickFillingStocks = true;
+		const canQuickFillingChannels = quickFillingValues.channels.length > 0;
+
+		if (canQuickFillingChannels || canQuickFillingStocks) {
+			productVariantsInput = productVariantsInput.map<ProductVariantBulkUpdateInput>((variantDetail) => {
+				if (canQuickFillingChannels) {
+					variantDetail.channelListings = {
+						[ChannelListingCurrentKey]: quickFillingValues.channels.map(
+							({ channelId, price, costPrice, label, value, currency }) => ({
+								channelId,
+								price,
+								costPrice,
+
+								label, // extra field
+								value, // extra field
+								currency, // extra field
+								channel: { id: channelId, currencyCode: currency },
+							}),
+						),
+					};
+				}
+				if (canQuickFillingStocks) {
+					variantDetail.stocks = {
+						[StockCurrentKey]: quickFillingValues.stocks.map((stock) => ({
+							warehouse: stock.warehouse,
+							quantity: stock.quantity,
+							[StockWarehouseNameKey]: stock.warehouseName, // this field is needed for displaying
+						})),
+					};
+				}
+
+				const { endDate, globalThreshold } = quickFillingValues.preOrder;
+				variantDetail.preorder = { endDate, globalThreshold };
+				variantDetail.weight = quickFillingValues.weight;
+
+				return variantDetail;
+			});
+		}
+	};
 </script>
 
-<div class="grid grid-cols-2 gap-2">
-	{#each variantManifests as maniFest, idx (idx)}
-		<VariantManifestItem
-			index={idx}
-			bind:manifest={variantManifests[idx]}
-			onDeleteVariant={handleDeleteVariant}
-			onAttributeValuesChange={handleVariantValuesChange}
-			onSelectAddNewAttributeValue={handleAddNewAttributeValue}
-			attributeOptions={AvailableAttributeOptions}
-			bind:performFetchAttributeValues={manifestPerformFetchingAttributeValues[idx]}
-		/>
-	{/each}
-	{#if variantManifests.length < MAX_VARIANT_TYPES && AvailableAttributeOptions.some((opt) => !opt.disabled)}
-		<button
-			class={[
-				'border-dashed border w-full h-full flex items-center justify-center rounded-lg tooltip tooltip-top border-blue-500 text-blue-500 cursor-pointer py-5 hover:bg-blue-50 active:bg-blue-100 focus:bg-blue-50',
-			]}
-			onclick={handleAddVariantManifest}
-			data-tip={$tranFunc('product.addVariant')}
-			aria-label={$tranFunc('product.addVariant')}
-		>
-			<Icon icon={Plus} size="xl" />
-		</button>
-	{/if}
-</div>
+<div class="space-y-3">
+	<div class="grid grid-cols-2 gap-2">
+		{#each variantManifests as maniFest, idx (idx)}
+			<VariantManifestItem
+				index={idx}
+				bind:manifest={variantManifests[idx]}
+				onDeleteVariant={handleDeleteManifest}
+				onAttributeValuesChange={handleVariantValuesChange}
+				onSelectAddNewAttributeValue={handleAddNewAttributeValue}
+				attributeOptions={AvailableAttributeOptions}
+				bind:performFetchAttributeValues={manifestPerformFetchingAttributeValues[idx]}
+				onAttributeChange={(opt) => handleAttributeSelectChange(idx, !!opt)}
+			/>
+		{/each}
+		{#if variantManifests.length < MAX_VARIANT_TYPES && AvailableAttributeOptions.some((opt) => !opt.disabled)}
+			<button
+				class={[
+					'border-dashed border w-full h-full flex items-center justify-center rounded-lg tooltip tooltip-top border-blue-500 text-blue-500 cursor-pointer py-5 hover:bg-blue-50 active:bg-blue-100 focus:bg-blue-50',
+				]}
+				onclick={handleAddVariantManifest}
+				data-tip={$tranFunc('product.addVariant')}
+				aria-label={$tranFunc('product.addVariant')}
+			>
+				<Icon icon={Plus} size="xl" />
+			</button>
+		{/if}
+	</div>
 
-<div class={SitenameCommonClassName}>
-	<table class="w-full text-sm h-fit text-left table text-gray-600">
-		<thead>
-			<tr>
-				<th class={ThClass}>{variantManifests[0]?.attribute?.name}</th>
-				{#if variantManifests.length === MAX_VARIANT_TYPES}
-					<th class={ThClass}>{variantManifests[1]?.attribute?.name}</th>
-				{/if}
-				<th class={ThClass}>{$tranFunc('product.channel')}</th>
-				<th class={ThClass}>{$tranFunc('product.price')}</th>
-				<th class={ThClass}>{$tranFunc('product.costPrice')}</th>
-				<th class={ThClass}>{$tranFunc('attributes.Weight')}</th>
-				<th class={ThClass}>{$tranFunc('common.preorder')}</th>
-				<th class={ThClass}>{$tranFunc('product.stock')}</th>
-				<th class={ThClass}>{$tranFunc('product.sku')}</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each productVariantsInput as variantInputDetail, detailIdx (detailIdx)}
-				<tr class={`variant-table-row border-b border-gray-200`}>
+	<VariantQuickFillingValues
+		{channelSelectOptions}
+		disabled={ShouldDisable}
+		bind:quickFillingValues
+		{handleQuickFillingClick}
+	/>
+
+	<div class={SitenameCommonClassName}>
+		<table class="w-full text-sm h-fit text-left table text-gray-600">
+			<thead>
+				<tr>
+					<th class={ThClass}>{variantManifests[0]?.attribute?.name}</th>
 					{#if variantManifests.length === MAX_VARIANT_TYPES}
-						{#if detailIdx % variantManifests[1].values.length === 0}
-							<td
-								class={['text-center font-medium text-blue-600 bg-blue-50']}
-								rowspan={variantManifests[1].values.length}
-							>
-								{variantInputDetail.name?.split('-')[0]}
+						<th class={ThClass}>{variantManifests[1]?.attribute?.name}</th>
+					{/if}
+					<th class={ThClass}>{$tranFunc('product.channel')}</th>
+					<th class={ThClass}>{$tranFunc('product.price')}</th>
+					<th class={ThClass}>{$tranFunc('product.costPrice')}</th>
+					<th class={ThClass}>{$tranFunc('attributes.Weight')}</th>
+					<th class={ThClass}>{$tranFunc('common.preorder')}</th>
+					<th class={ThClass}>{$tranFunc('product.stock')}</th>
+					<th class={ThClass}>{$tranFunc('product.sku')}</th>
+				</tr>
+			</thead>
+			<tbody>
+				{#each productVariantsInput as variantInputDetail, detailIdx (detailIdx)}
+					<tr class={`variant-table-row border-b border-gray-200`}>
+						{#if variantManifests.length === MAX_VARIANT_TYPES}
+							{#if detailIdx % variantManifests[1].values.length === 0}
+								<td
+									class={['text-center font-medium text-blue-600 bg-blue-50']}
+									rowspan={variantManifests[1].values.length}
+								>
+									{variantInputDetail.name?.split('-')[0]}
+								</td>
+							{/if}
+							<td class="text-center">{variantInputDetail.name?.split('-')[1]}</td>
+						{:else}
+							<td class="text-center">
+								<dir>{variantInputDetail.name?.split('-')[0]}</dir>
 							</td>
 						{/if}
-						<td class="text-center">{variantInputDetail.name?.split('-')[1]}</td>
-					{:else}
-						<td class="text-center">
-							<dir>{variantInputDetail.name?.split('-')[0]}</dir>
+						<!-- CHANNELS -->
+						<td class="channel-td max-w-3xs min-w-28">
+							{#if !channelSelectOptions?.length}
+								<SelectSkeleton size="sm" />
+							{:else}
+								{@const currentChannelIds =
+									variantInputDetail.channelListings?.[ChannelListingCurrentKey]?.map(
+										(item) => (item as any).channel.id,
+									) || []}
+								<Select
+									size="sm"
+									{disabled}
+									options={channelSelectOptions}
+									value={currentChannelIds}
+									multiple
+									onchange={(opts) => {
+										const selectedOptions = (
+											!opts || !Array.isArray(opts) || !opts.length ? [] : opts
+										) as ChannelSelectOptionProps[];
+
+										variantInputDetail.channelListings![ChannelListingCurrentKey] =
+											selectedOptions.map((opt) => ({
+												channelId: opt.value as string,
+												costPrice: {
+													currency: opt.currency,
+													amount: 0,
+													fractionDigits: 0,
+													fractionalAmount: 0,
+												},
+												price: {
+													currency: opt.currency,
+													amount: 0,
+													fractionDigits: 0,
+													fractionalAmount: 0,
+												},
+
+												id: '',
+												channel: { currencyCode: opt.currency, id: opt.channelId },
+											})) as any;
+									}}
+								/>
+							{/if}
 						</td>
-					{/if}
-					<!-- CHANNELS -->
-					<td class="channel-td max-w-3xs min-w-28">
-						{#if !channelSelectOptions?.length}
-							<SelectSkeleton size="sm" />
-						{:else}
-							{@const currentChannelIds =
-								variantInputDetail.channelListings?.[ChannelListingCurrentKey]?.map(
-									(item) => (item as any).channel.id,
-								) || []}
-							<Select
+						<!-- PRICE -->
+						<td class="price-td">
+							<div class="space-y-1">
+								{#each variantInputDetail.channelListings?.[ChannelListingCurrentKey] as unknown as ProductVariantChannelListing[] as channelListing, idx (idx)}
+									<Input
+										type="number"
+										min={0}
+										{disabled}
+										size="xs"
+										placeholder={channelListing.channel.currencyCode}
+										bind:value={channelListing.price!.amount}
+										variant={channelListing.price!.amount < 0 ? 'error' : 'info'}
+										subText={channelListing.price!.amount < 0 ? $CommonState.NonNegativeError : ''}
+									>
+										{#snippet action()}
+											<span class="text-[8px] font-semibold"
+												>{channelListing.channel.currencyCode}</span
+											>
+										{/snippet}
+									</Input>
+								{/each}
+							</div>
+						</td>
+						<!-- COST PRICE -->
+						<td class="cost-price-td">
+							<div class="space-y-1">
+								{#each variantInputDetail.channelListings?.[ChannelListingCurrentKey] as unknown as ProductVariantChannelListing[] as channelListing, idx (idx)}
+									<Input
+										type="number"
+										min={0}
+										{disabled}
+										size="xs"
+										placeholder={channelListing.channel.currencyCode}
+										bind:value={channelListing.costPrice!.amount}
+										variant={channelListing.costPrice!.amount < 0 ? 'error' : 'info'}
+										subText={channelListing.costPrice!.amount < 0
+											? $CommonState.NonNegativeError
+											: ''}
+									>
+										{#snippet action()}
+											<span class="text-[8px] font-semibold"
+												>{channelListing.channel.currencyCode}</span
+											>
+										{/snippet}
+									</Input>
+								{/each}
+							</div>
+						</td>
+						<!-- WEIGHT -->
+						<td class="weight-td">
+							<Input
+								type="number"
 								size="sm"
+								min={0}
+								placeholder="kg"
 								{disabled}
-								options={channelSelectOptions}
-								value={currentChannelIds}
-								multiple
-								onchange={(opts) => {
-									const selectedOptions = (
-										!opts || !Array.isArray(opts) || !opts.length ? [] : opts
-									) as ChannelSelectOptionProps[];
-
-									variantInputDetail.channelListings![ChannelListingCurrentKey] =
-										selectedOptions.map<ProductVariantChannelListing>((opt) => ({
-											channelId: opt.value as string,
-											costPrice: {
-												currency: opt.currency,
-												amount: 0,
-												fractionDigits: 0,
-												fractionalAmount: 0,
-											},
-											price: {
-												currency: opt.currency,
-												amount: 0,
-												fractionDigits: 0,
-												fractionalAmount: 0,
-											},
-
-											id: null as unknown as string,
-											channel: null as unknown as Channel,
-										})) as any;
+								bind:value={variantInputDetail.weight!.value}
+								variant={variantInputDetail.weight!.value >= 0 ? 'info' : 'error'}
+								subText={variantInputDetail.weight!.value >= 0 ? '' : $CommonState.NonNegativeError}
+							>
+								{#snippet action()}
+									<span class="text-[8px] font-semibold">kg</span>
+								{/snippet}
+							</Input>
+						</td>
+						<!-- PREORDER -->
+						<td class="preorder-td">
+							<Input
+								type="number"
+								min={0}
+								label={$tranFunc('product.qtyLimit')}
+								size="xs"
+								class="mb-2"
+								{disabled}
+								bind:value={variantInputDetail.preorder!.globalThreshold}
+								variant={typeof variantInputDetail.preorder?.globalThreshold === 'number' &&
+								variantInputDetail.preorder.globalThreshold % 1 !== 0
+									? 'error'
+									: 'info'}
+								subText={typeof variantInputDetail.preorder?.globalThreshold === 'number' &&
+								variantInputDetail.preorder.globalThreshold % 1 !== 0
+									? $CommonState.NonNegativeError
+									: undefined}
+							/>
+							<EaseDatePicker
+								size="xs"
+								label={$tranFunc('product.preOrderEndDate')}
+								allowSelectMonthYears={{
+									showMonths: true,
+									showYears: { min: 2020, max: DAYJS_NOW.year() + 1 },
+								}}
+								{disabled}
+								timeConfig={false}
+								onchange={(date) => (variantInputDetail.preorder!.endDate = date.date)}
+								value={{ date: variantInputDetail.preorder!.endDate }}
+								class="mb-2"
+								timeLock={{
+									minDate: DAYJS_NOW.add(MIN_DAYS_FOR_PREORDER, 'day').toDate(),
+									maxDate: DAYJS_NOW.add(MAX_DAYS_FOR_PREORDER, 'day').toDate(),
 								}}
 							/>
-						{/if}
-					</td>
-					<!-- PRICE -->
-					<td class="price-td">
-						<div class="space-y-1">
-							{#each variantInputDetail.channelListings?.[ChannelListingCurrentKey] as unknown as ProductVariantChannelListing[] as channelListing, idx (idx)}
-								<Input
-									type="number"
-									min={0}
-									{disabled}
-									size="xs"
-									placeholder={channelListing.channel.currencyCode}
-									bind:value={channelListing.price!.amount}
-									variant={channelListing.price!.amount < 0 ? 'error' : 'info'}
-									subText={channelListing.price!.amount < 0 ? $CommonState.NonNegativeError : ''}
-								></Input>
-							{/each}
-						</div>
-					</td>
-					<!-- COST PRICE -->
-					<td class="cost-price-td">
-						<div class="space-y-1">
-							{#each variantInputDetail.channelListings?.[ChannelListingCurrentKey] as unknown as ProductVariantChannelListing[] as channelListing, idx (idx)}
-								<Input
-									type="number"
-									min={0}
-									{disabled}
-									size="xs"
-									placeholder={channelListing.channel.currencyCode}
-									bind:value={channelListing.costPrice!.amount}
-									variant={channelListing.costPrice!.amount < 0 ? 'error' : 'info'}
-									subText={channelListing.costPrice!.amount < 0
-										? $CommonState.NonNegativeError
-										: ''}
-								></Input>
-							{/each}
-						</div>
-					</td>
-					<!-- WEIGHT -->
-					<td class="weight-td">
-						<Input
-							type="number"
-							size="sm"
-							min={0}
-							placeholder="kg"
-							{disabled}
-							bind:value={variantInputDetail.weight!.value}
-							variant={variantInputDetail.weight!.value >= 0 ? 'info' : 'error'}
-							subText={variantInputDetail.weight!.value >= 0 ? '' : $CommonState.NonNegativeError}
-						>
-							{#snippet action()}
-								<span class="text-[10px] font-semibold">kg</span>
-							{/snippet}
-						</Input>
-					</td>
-					<!-- PREORDER -->
-					<td class="preorder-td">
-						<Input
-							type="number"
-							min={0}
-							label={$tranFunc('product.qtyLimit')}
-							size="xs"
-							class="mb-2"
-							{disabled}
-							bind:value={variantInputDetail.preorder!.globalThreshold}
-							variant={typeof variantInputDetail.preorder?.globalThreshold === 'number' &&
-							variantInputDetail.preorder.globalThreshold % 1 !== 0
-								? 'error'
-								: 'info'}
-							subText={typeof variantInputDetail.preorder?.globalThreshold === 'number' &&
-							variantInputDetail.preorder.globalThreshold % 1 !== 0
-								? $CommonState.NonNegativeError
-								: undefined}
-						/>
-						<EaseDatePicker
-							size="xs"
-							label={$tranFunc('product.preOrderEndDate')}
-							allowSelectMonthYears={{
-								showMonths: true,
-								showYears: { min: 2020, max: DAYJS_NOW.year() + 1 },
-							}}
-							{disabled}
-							timeConfig={false}
-							onchange={(date) => (variantInputDetail.preorder!.endDate = date.date)}
-							value={{ date: variantInputDetail.preorder!.endDate }}
-							class="mb-2"
-							timeLock={{
-								minDate: DAYJS_NOW.add(MIN_DAYS_FOR_PREORDER, 'day').toDate(),
-								maxDate: DAYJS_NOW.add(MAX_DAYS_FOR_PREORDER, 'day').toDate(),
-							}}
-						/>
-					</td>
-					<!-- STOCK -->
-					<td class="stock-td">
-						<div class="space-y-1 max-h-28 overflow-y-auto p-0.5">
-							{#each variantInputDetail.stocks?.[StockCurrentKey] as unknown as Stock[] as stock, idx (idx)}
-								<Input
-									size="xs"
-									label={stock.warehouse.name}
-									placeholder={$tranFunc('product.stock')}
-									bind:value={stock.quantity}
-									type="number"
-									{disabled}
-									min={0}
-									variant={stock.quantity % 1 !== 0 ? 'error' : 'info'}
-									subText={stock.quantity % 1 !== 0 ? $CommonState.NonNegativeError : ''}
-								/>
-							{/each}
-						</div>
-					</td>
-					<!-- SKU -->
-					<td class="sku-td">
-						<Input
-							type="text"
-							size="sm"
-							{disabled}
-							placeholder="SKU"
-							bind:value={variantInputDetail.sku}
-							variant={variantInputDetail.sku?.trim() ? 'info' : 'error'}
-							subText={variantInputDetail.sku?.trim() ? '' : $CommonState.FieldRequiredError}
-						/>
-					</td>
-				</tr>
-			{/each}
-		</tbody>
-	</table>
+						</td>
+						<!-- STOCK -->
+						<td class="stock-td">
+							<div class="space-y-1 max-h-28 overflow-y-auto p-0.5">
+								{#each variantInputDetail.stocks?.[StockCurrentKey] as unknown as Stock[] as stock, idx (idx)}
+									<Input
+										size="xs"
+										label={stock.warehouse.name}
+										placeholder={$tranFunc('product.stock')}
+										bind:value={stock.quantity}
+										type="number"
+										{disabled}
+										min={0}
+										variant={stock.quantity % 1 !== 0 ? 'error' : 'info'}
+										subText={stock.quantity % 1 !== 0 ? $CommonState.NonNegativeError : ''}
+									/>
+								{/each}
+							</div>
+						</td>
+						<!-- SKU -->
+						<td class="sku-td">
+							<Input
+								type="text"
+								size="sm"
+								{disabled}
+								placeholder="SKU"
+								bind:value={variantInputDetail.sku}
+								variant={variantInputDetail.sku?.trim() ? 'info' : 'error'}
+								subText={variantInputDetail.sku?.trim() ? '' : $CommonState.FieldRequiredError}
+							/>
+						</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
 </div>
 
 <style lang="postcss">

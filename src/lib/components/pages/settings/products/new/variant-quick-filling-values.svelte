@@ -32,13 +32,6 @@
 	const MIN_DAYS_FOR_PREORDER = 5;
 	const MAX_DAYS_FOR_PREORDER = 15;
 
-	// let quickFillingValues = $state<QuickFillingProps>({
-	// 	channels: [],
-	// 	stocks: [],
-	// 	preOrder: {},
-	// 	weight: 0,
-	// 	trackInventory: true,
-	// });
 	const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
 		query: CHANNELS_QUERY,
 		context: { requestPolicy: 'cache-and-network' },
@@ -128,9 +121,9 @@
 					</div>
 					<div class="max-h-32 overflow-y-auto border border-gray-200 bg-white p-1 rounded-lg">
 						{#each quickFillingValues.channels as channel, idx (idx)}
-							<!-- {#snippet action()}
-										<span class="font-bold text-[9px]">{channel.currency}</span>
-									{/snippet} -->
+							{#snippet action()}
+								<span class="font-semibold text-[9px]">{channel.currency}</span>
+							{/snippet}
 							<div class="flex gap-1 mt-1">
 								<Input
 									type="number"
@@ -142,6 +135,7 @@
 									bind:value={channel.price}
 									variant={channel.price < 0 ? 'error' : 'info'}
 									subText={channel.price < 0 ? $CommonState.NonNegativeError : ''}
+									{action}
 								/>
 								<Input
 									type="number"
@@ -153,6 +147,7 @@
 									bind:value={channel.costPrice}
 									variant={channel.costPrice < 0 ? 'error' : 'info'}
 									subText={channel.costPrice < 0 ? $CommonState.NonNegativeError : ''}
+									{action}
 								/>
 							</div>
 						{/each}
