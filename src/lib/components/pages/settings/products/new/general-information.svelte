@@ -263,8 +263,7 @@
 										label: name || id,
 									}),
 								)}
-								<!-- {@const value =
-									innerAttributes.find((attr) => attr.id === node.id)?.dropdown?.id || undefined} -->
+
 								<Select
 									{options}
 									label={node.name || '-'}
@@ -286,7 +285,7 @@
 									{disabled}
 									label={node.name || '-'}
 									required={node.valueRequired}
-									value={innerAttributes[idx].boolean}
+									value={innerAttributes[idx]?.boolean}
 									onchange={(evt) => {
 										innerAttributes[idx] = {
 											...innerAttributes[idx],
@@ -359,7 +358,7 @@
 									{disabled}
 									required={node.valueRequired}
 									label={node.name || '-'}
-									value={{ date: innerAttributes[idx].dateTime }}
+									value={{ date: innerAttributes[idx]?.dateTime }}
 									onchange={(value) => {
 										innerAttributes[idx] = {
 											...innerAttributes[idx],
@@ -391,7 +390,7 @@
 												richText: JSON.stringify(data),
 											};
 										}}
-										value={innerAttributes[idx].richText}
+										value={innerAttributes[idx]?.richText}
 										{disabled}
 										required={node.valueRequired}
 										variant={attributeFieldsBlurs[idx] && AttributeErrors[idx] ? 'error' : 'info'}
@@ -407,7 +406,7 @@
 											plainText: evt.currentTarget.value,
 										};
 									}}
-									value={innerAttributes[idx].plainText}
+									value={innerAttributes[idx]?.plainText}
 									label={node.name || '-'}
 									required={node.valueRequired}
 									onblur={() => (attributeFieldsBlurs[idx] = true)}
