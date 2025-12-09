@@ -11,6 +11,7 @@
 		id?: string | null;
 		variant?: SocialVariant | 'ghost';
 		label: Snippet | string;
+		/** designate the position of the aterisk mark (*), relative with the label */
 		requiredAtPos?: 'start' | 'end';
 	};
 

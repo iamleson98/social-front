@@ -239,6 +239,7 @@
 		disabled={loading}
 		bind:formOk={productInputError.generalInfo}
 		bind:productTypeRequiresShipping
+		isCreatePage
 	/>
 	<CategorySelector
 		bind:categoryID={productCreateInput.category!}

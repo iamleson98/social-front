@@ -38,12 +38,15 @@
 		type ProductVariantBulkUpdateInput,
 		type ProductVariantStocksUpdateInput,
 		WeightUnitsEnum,
+		type AttributeValueInput,
+		AttributeInputTypeEnum,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
+	import { pick } from 'es-toolkit';
 	import { onMount } from 'svelte';
 
 	const ProductDetailStore = operationStore<Pick<Query, 'product'>, QueryProductArgs>({
@@ -98,6 +101,7 @@
 
 	// in product update screen
 	let productVariantBulkUpdateInput = $state<ProductVariantBulkUpdateInput[]>([]);
+	let existingAttributeInput = $state<AttributeValueInput[]>([]);
 
 	onMount(() => {
 		return ProductDetailStore.subscribe((result) => {
@@ -119,11 +123,14 @@
 					productType,
 					media,
 					variants,
+					// assignedAttributes,
+					attributes,
 				} = result.data.product;
 
 				currentProductType = productType;
 				productTypeRequiresShipping = productType.isShippingRequired;
 				product = {
+					...product,
 					category: category?.id || undefined,
 					collections: collections?.map((col) => col.id),
 					description: description ? JSON.parse(description) : undefined,
@@ -141,6 +148,36 @@
 					taxClass: taxClass?.id,
 					weight,
 				};
+
+				existingAttributeInput = attributes.map(({ attribute, values }) => {
+					let res: AttributeValueInput = {
+						id: attribute.id,
+					};
+
+					if (attribute.inputType === AttributeInputTypeEnum.Dropdown && values.length) {
+						res.dropdown = pick(values[0], ['id', 'value']);
+					} else if (attribute.inputType === AttributeInputTypeEnum.Boolean && values.length) {
+						res.boolean = values[0].boolean;
+					} else if (attribute.inputType === AttributeInputTypeEnum.Date && values.length) {
+						res.date = values[0].date;
+					} else if (attribute.inputType === AttributeInputTypeEnum.File && values.length) {
+					} else if (attribute.inputType === AttributeInputTypeEnum.Numeric) {
+						// res.numeric = values[0].plainText
+					} else if (attribute.inputType === AttributeInputTypeEnum.DateTime && values.length) {
+						res.dateTime = values[0].dateTime;
+					} else if (attribute.inputType === AttributeInputTypeEnum.Reference && values.length) {
+					} else if (attribute.inputType === AttributeInputTypeEnum.RichText && values.length) {
+						res.richText = values[0].richText;
+					} else if (attribute.inputType === AttributeInputTypeEnum.PlainText && values.length) {
+						res.plainText = values[0].plainText;
+					} else if (attribute.inputType === AttributeInputTypeEnum.Multiselect) {
+						res.multiselect = values.map((vl) => pick(vl, ['id']));
+					} else if (attribute.inputType === AttributeInputTypeEnum.Swatch && values.length) {
+						res.swatch = pick(values[0], ['id', 'value']);
+					}
+
+					return res;
+				});
 
 				if (media?.length) {
 					productMedias = media.map<MediaObject>((item) => ({
@@ -224,8 +261,8 @@
 			bind:description={product.description}
 			bind:attributes={product.attributes!}
 			disabled={loading}
-			isCreatePage
 			bind:productTypeRequiresShipping
+			existingAttributes={existingAttributeInput}
 		/>
 		<CategorySelector
 			bind:categoryID={product.category!}

@@ -12,6 +12,7 @@
 	import {
 		AttributeInputTypeEnum,
 		type AttributeValueInput,
+		type BulkAttributeValueInput,
 		type Query,
 		type QueryProductTypeArgs,
 		type QueryProductTypesArgs,
@@ -37,6 +38,8 @@
 		productType: string;
 		description: OutputData;
 		attributes: AttributeValueInput[];
+		/** must provide in edit page */
+		existingAttributes?: AttributeValueInput[];
 		formOk?: boolean;
 		isCreatePage?: boolean;
 		/** bindable, to help parant component to decide whether to show dimension metadata section */
@@ -53,9 +56,10 @@
 		disabled,
 		productType = $bindable(),
 		description = $bindable(),
+		existingAttributes,
 		attributes = $bindable(),
 		formOk = $bindable(true),
-		isCreatePage,
+		isCreatePage = !existingAttributes?.length,
 		productTypeRequiresShipping = $bindable(),
 	}: Props = $props();
 
@@ -73,7 +77,7 @@
 	let innerAttributes = $state<CustomAttributeInput[]>([]);
 
 	/** asynchronously calculate attribute errors */
-	let attributeErrors = $derived.by<(string | undefined)[]>(() => {
+	const AttributeErrors = $derived.by<(string | undefined)[]>(() => {
 		const result = new Array(innerAttributes.length).fill(undefined);
 
 		for (let idx = 0; idx < innerAttributes.length; idx++) {
@@ -124,40 +128,50 @@
 		return result;
 	});
 
-	onMount(() => {
-		const unsub = productTypeQuery.subscribe((result) => {
+	onMount(() =>
+		productTypeQuery.subscribe((result) => {
 			if (result.data?.productType?.productAttributes?.length) {
 				attributeFieldsBlurs = new Array(result.data.productType.productAttributes.length).fill(
 					false,
 				);
 
 				innerAttributes = result.data.productType.productAttributes.map<CustomAttributeInput>(
-					({ valueRequired, inputType, id }) => {
+					(props) => {
 						const result: CustomAttributeInput = {
-							required: valueRequired,
-							inputType,
-							id,
+							inputType: props.inputType,
+							required: props.valueRequired,
 						};
 
-						if (inputType === AttributeInputTypeEnum.Dropdown) {
-							result.dropdown = {};
-						} else if (inputType === AttributeInputTypeEnum.Multiselect) {
-							result.multiselect = [];
-						} else if (inputType === AttributeInputTypeEnum.Swatch) {
-							result.swatch = {};
-						} else if (inputType === AttributeInputTypeEnum.Reference) {
-							result.references = [];
+						let existingAttribute: AttributeValueInput | undefined = undefined;
+						// if it is edit page, and product already has attributes assigned
+						// we must populate those existing attributes to inner attributes state
+						if (!isCreatePage && existingAttributes?.length) {
+							existingAttribute = existingAttributes.find((attr) => attr.id === props.id);
 						}
+
+						if (props.inputType === AttributeInputTypeEnum.Dropdown) {
+							result.dropdown = existingAttribute?.dropdown || {};
+						} else if (props.inputType === AttributeInputTypeEnum.Multiselect) {
+							result.multiselect = existingAttribute?.multiselect || [];
+						} else if (props.inputType === AttributeInputTypeEnum.Swatch) {
+							result.swatch = existingAttribute?.swatch || {};
+						} else if (props.inputType === AttributeInputTypeEnum.Reference) {
+							result.references = existingAttribute?.references || [];
+						} else if (props.inputType === AttributeInputTypeEnum.Date) {
+							result.date = existingAttribute?.date;
+						} else if (props.inputType === AttributeInputTypeEnum.DateTime) {
+							result.dateTime = existingAttribute?.dateTime;
+						}
+
+						// TODO: add support for other input types as well
 						return result;
 					},
 				);
 
 				productTypeRequiresShipping = result.data.productType?.isShippingRequired;
 			}
-		});
-
-		return unsub;
-	});
+		}),
+	);
 
 	const GeneralSchema = object({
 		name: string().nonempty($CommonState.FieldRequiredError),
@@ -174,7 +188,7 @@
 			productType,
 			description,
 		}),
-		(ok) => (formOk = ok && !attributeErrors.some(Boolean)),
+		(ok) => (formOk = ok && !AttributeErrors.some(Boolean)),
 	);
 
 	$effect(() => {
@@ -188,7 +202,7 @@
 	});
 
 	$effect(() => {
-		if (!attributeErrors.some(Boolean)) {
+		if (!AttributeErrors.some(Boolean)) {
 			attributes = innerAttributes.map<AttributeValueInput>((attr) =>
 				omit(attr, ['inputType', 'required']),
 			);
@@ -197,7 +211,7 @@
 </script>
 
 <div class={SitenameCommonClassName}>
-	<SectionHeader>General information</SectionHeader>
+	<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
 	<Input
 		bind:value={name}
 		onblur={SchemaHandler.validate}
@@ -249,47 +263,48 @@
 										label: name || id,
 									}),
 								)}
+								<!-- {@const value =
+									innerAttributes.find((attr) => attr.id === node.id)?.dropdown?.id || undefined} -->
 								<Select
 									{options}
 									label={node.name || '-'}
 									{disabled}
 									required={node.valueRequired}
+									value={innerAttributes[idx]?.dropdown?.id!}
 									onchange={(opt) => {
-										innerAttributes = innerAttributes.map((attr, i) => {
-											if (i !== idx) return attr;
-
-											return {
-												...attr,
-												dropdown: opt ? { id: (opt as SelectOption).value as string } : undefined,
-											};
-										});
+										innerAttributes[idx] = {
+											...innerAttributes[idx],
+											dropdown: opt ? { id: (opt as SelectOption).value as string } : undefined,
+										};
 									}}
 									onblur={() => (attributeFieldsBlurs[idx] = true)}
-									variant={attributeFieldsBlurs[idx] && attributeErrors[idx] ? 'error' : 'info'}
-									subText={attributeFieldsBlurs[idx] ? attributeErrors[idx] : undefined}
+									variant={attributeFieldsBlurs[idx] && AttributeErrors[idx] ? 'error' : 'info'}
+									subText={attributeFieldsBlurs[idx] ? AttributeErrors[idx] : undefined}
 								/>
 							{:else if node.inputType === AttributeInputTypeEnum.Boolean}
 								<Checkbox
 									{disabled}
 									label={node.name || '-'}
 									required={node.valueRequired}
+									value={innerAttributes[idx].boolean}
 									onchange={(evt) => {
-										innerAttributes = innerAttributes.map((attr, i) =>
-											i === idx ? { ...attr, boolean: evt.currentTarget.checked } : attr,
-										);
+										innerAttributes[idx] = {
+											...innerAttributes[idx],
+											boolean: evt.currentTarget.checked,
+										};
 									}}
 								/>
 							{:else if node.inputType === AttributeInputTypeEnum.Date}
 								<EaseDatePicker
 									{disabled}
 									required={node.valueRequired}
+									value={{ date: innerAttributes[idx]?.date }}
 									label={node.name || '-'}
 									onchange={(value) => {
-										innerAttributes = innerAttributes.map((attr, i) =>
-											i === idx
-												? { ...attr, date: dayjs(value.date).format(BASIC_DATE_FORMAT) }
-												: attr,
-										);
+										innerAttributes[idx] = {
+											...innerAttributes[idx],
+											date: dayjs(value.date).format(BASIC_DATE_FORMAT),
+										};
 									}}
 									timeConfig={false}
 									allowSelectMonthYears={{
@@ -300,8 +315,8 @@
 										},
 									}}
 									onblur={() => (attributeFieldsBlurs[idx] = true)}
-									variant={attributeFieldsBlurs[idx] && attributeErrors[idx] ? 'error' : 'info'}
-									subText={attributeFieldsBlurs[idx] ? attributeErrors[idx] : undefined}
+									variant={attributeFieldsBlurs[idx] && AttributeErrors[idx] ? 'error' : 'info'}
+									subText={attributeFieldsBlurs[idx] ? AttributeErrors[idx] : undefined}
 								/>
 							{:else if node.inputType === AttributeInputTypeEnum.File}
 								<Input
@@ -310,39 +325,46 @@
 									required={node.valueRequired}
 									label={node.name || '-'}
 									onchange={(evt) => {
-										innerAttributes = innerAttributes.map((attr, i) =>
-											i === idx ? { ...attr, file: evt.currentTarget.files?.[0].name } : attr,
-										);
+										innerAttributes[idx] = {
+											...innerAttributes[idx],
+											file: evt.currentTarget.files?.[0].name,
+										};
 									}}
 									onblur={() => (attributeFieldsBlurs[idx] = true)}
-									variant={attributeFieldsBlurs[idx] && attributeErrors[idx] ? 'error' : 'info'}
-									subText={attributeFieldsBlurs[idx] ? attributeErrors[idx] : undefined}
+									variant={attributeFieldsBlurs[idx] && AttributeErrors[idx] ? 'error' : 'info'}
+									subText={attributeFieldsBlurs[idx] ? AttributeErrors[idx] : undefined}
 								/>
 							{:else if node.inputType === AttributeInputTypeEnum.Numeric}
 								<Input
 									placeholder={$tranFunc('placeholders.valuePlaceholder')}
 									type="number"
 									{disabled}
+									value={innerAttributes[idx].numeric
+										? Number(innerAttributes[idx].numeric)
+										: undefined}
 									required={node.valueRequired}
 									label={node.name || '-'}
 									onchange={(evt) => {
-										innerAttributes = innerAttributes.map((attr, i) =>
-											i === idx ? { ...attr, numeric: evt.currentTarget.value } : attr,
-										);
+										innerAttributes[idx] = {
+											...innerAttributes[idx],
+											numeric: evt.currentTarget.value,
+										};
 									}}
 									onblur={() => (attributeFieldsBlurs[idx] = true)}
-									variant={attributeFieldsBlurs[idx] && attributeErrors[idx] ? 'error' : 'info'}
-									subText={attributeFieldsBlurs[idx] ? attributeErrors[idx] : undefined}
+									variant={attributeFieldsBlurs[idx] && AttributeErrors[idx] ? 'error' : 'info'}
+									subText={attributeFieldsBlurs[idx] ? AttributeErrors[idx] : undefined}
 								/>
 							{:else if node.inputType === AttributeInputTypeEnum.DateTime}
 								<EaseDatePicker
 									{disabled}
 									required={node.valueRequired}
 									label={node.name || '-'}
+									value={{ date: innerAttributes[idx].dateTime }}
 									onchange={(value) => {
-										innerAttributes = innerAttributes.map((attr, i) =>
-											i === idx ? { ...attr, dateTime: value.date } : attr,
-										);
+										innerAttributes[idx] = {
+											...innerAttributes[idx],
+											dateTime: value.date,
+										};
 									}}
 									autoApply={false}
 									allowSelectMonthYears={{
@@ -353,8 +375,8 @@
 										},
 									}}
 									onblur={() => (attributeFieldsBlurs[idx] = true)}
-									variant={attributeFieldsBlurs[idx] && attributeErrors[idx] ? 'error' : 'info'}
-									subText={attributeFieldsBlurs[idx] ? attributeErrors[idx] : undefined}
+									variant={attributeFieldsBlurs[idx] && AttributeErrors[idx] ? 'error' : 'info'}
+									subText={attributeFieldsBlurs[idx] ? AttributeErrors[idx] : undefined}
 								/>
 							{:else if node.inputType === AttributeInputTypeEnum.Reference}
 								<div>ref</div>
@@ -364,30 +386,34 @@
 										placeholder={$tranFunc('placeholders.valuePlaceholder')}
 										label={node.name || '-'}
 										onchange={(data) => {
-											innerAttributes = innerAttributes.map((attr, i) =>
-												i === idx ? { ...attr, richText: JSON.stringify(data) } : attr,
-											);
+											innerAttributes[idx] = {
+												...innerAttributes[idx],
+												richText: JSON.stringify(data),
+											};
 										}}
+										value={innerAttributes[idx].richText}
 										{disabled}
 										required={node.valueRequired}
-										variant={attributeFieldsBlurs[idx] && attributeErrors[idx] ? 'error' : 'info'}
-										subText={attributeFieldsBlurs[idx] ? attributeErrors[idx] : undefined}
+										variant={attributeFieldsBlurs[idx] && AttributeErrors[idx] ? 'error' : 'info'}
+										subText={attributeFieldsBlurs[idx] ? AttributeErrors[idx] : undefined}
 									/>
 								</div>
 							{:else if node.inputType === AttributeInputTypeEnum.PlainText}
 								<Input
 									type="text"
 									onchange={(evt) => {
-										innerAttributes = innerAttributes.map((attr, i) =>
-											i === idx ? { ...attr, plainText: evt.currentTarget.value } : attr,
-										);
+										innerAttributes[idx] = {
+											...innerAttributes[idx],
+											plainText: evt.currentTarget.value,
+										};
 									}}
+									value={innerAttributes[idx].plainText}
 									label={node.name || '-'}
 									required={node.valueRequired}
 									onblur={() => (attributeFieldsBlurs[idx] = true)}
 									{disabled}
-									variant={attributeFieldsBlurs[idx] && attributeErrors[idx] ? 'error' : 'info'}
-									subText={attributeFieldsBlurs[idx] ? attributeErrors[idx] : undefined}
+									variant={attributeFieldsBlurs[idx] && AttributeErrors[idx] ? 'error' : 'info'}
+									subText={attributeFieldsBlurs[idx] ? AttributeErrors[idx] : undefined}
 								/>
 							{:else if node.inputType === AttributeInputTypeEnum.Multiselect && node.choices}
 								{@const options = node.choices.edges.map(({ node: { id, name } }) => ({
@@ -397,23 +423,22 @@
 								<Select
 									{options}
 									multiple
+									value={innerAttributes[idx].multiselect?.map((item) => item.id!)}
 									required={node.valueRequired}
 									label={node.name || '-'}
 									{disabled}
 									onchange={(values) => {
-										innerAttributes = innerAttributes.map((attr, i) => {
-											if (i !== idx || !Array.isArray(values)) return attr;
-											return {
-												...attr,
+										if (Array.isArray(values))
+											innerAttributes[idx] = {
+												...innerAttributes[idx],
 												multiselect: values.map((vl) => ({
-													value: `${vl.value}`,
+													value: `${vl}`,
 												})),
 											};
-										});
 									}}
 									onblur={() => (attributeFieldsBlurs[idx] = true)}
-									variant={attributeFieldsBlurs[idx] && attributeErrors[idx] ? 'error' : 'info'}
-									subText={attributeFieldsBlurs[idx] ? attributeErrors[idx] : undefined}
+									variant={attributeFieldsBlurs[idx] && AttributeErrors[idx] ? 'error' : 'info'}
+									subText={attributeFieldsBlurs[idx] ? AttributeErrors[idx] : undefined}
 								/>
 							{:else if node.inputType === AttributeInputTypeEnum.Swatch}
 								<Label required={node.valueRequired} requiredAtPos="end" label={node.name || '-'} />
@@ -431,16 +456,12 @@
 													value={edge.node.value}
 													checked={edge.node.value === innerAttributes[idx]?.swatch?.value}
 													onchange={(evt) => {
-														innerAttributes = innerAttributes.map((attr, i) => {
-															if (i !== idx) return attr;
-
-															return {
-																...attr,
-																swatch: {
-																	value: evt.currentTarget.value,
-																},
-															};
-														});
+														innerAttributes[idx] = {
+															...innerAttributes[idx],
+															swatch: {
+																value: evt.currentTarget.value,
+															},
+														};
 													}}
 												/>
 											</div>
@@ -475,6 +496,6 @@
 		variant={$SchemaHandler.description?.length ? 'error' : 'info'}
 		subText={$SchemaHandler.description?.[0]}
 		required
-		label="Product description"
+		label={$tranFunc('product.prdDescription')}
 	/>
 </div>
