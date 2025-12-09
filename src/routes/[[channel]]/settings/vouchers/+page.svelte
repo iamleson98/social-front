@@ -7,6 +7,7 @@
 	import {
 		GraphqlPaginableTable,
 		type GraphqlPaginableTableInterface,
+		type TableCellProps,
 		type TableColumnProps,
 	} from '$lib/components/ui/Table';
 	import { VoucherSortField, type QueryVouchersArgs, type Voucher } from '$lib/gql/graphql';
@@ -58,17 +59,17 @@
 	let tableRef = $state<GraphqlPaginableTableInterface>();
 </script>
 
-{#snippet title({ item }: { item: Voucher })}
+{#snippet title({ item }: TableCellProps<Voucher>)}
 	<a href={AppRoute.SETTINGS_CONFIGS_VOUCHER_DETAIL(item.id)} class="link">
 		{item.name}
 	</a>
 {/snippet}
 
-{#snippet useLimit({ item }: { item: Voucher })}
+{#snippet useLimit({ item }: TableCellProps<Voucher>)}
 	<div class="text-sm font-medium text-gray-800 text-center">{item.usageLimit || '-'}</div>
 {/snippet}
 
-{#snippet availability({ item }: { item: Voucher })}
+{#snippet availability({ item }: TableCellProps<Voucher>)}
 	<Badge
 		text="{item.channelListings?.length || 0} {$tranFunc('product.channel')}"
 		color="green"
@@ -78,25 +79,25 @@
 	/>
 {/snippet}
 
-{#snippet minSpent({ item }: { item: Voucher })}
+{#snippet minSpent({ item }: TableCellProps<Voucher>)}
 	{#each item.channelListings || [] as listing, idx (idx)}
 		<PriceDisplay amount={listing.minSpent?.amount || 0} currency={listing.currency} />
 	{/each}
 {/snippet}
 
-{#snippet value({ item }: { item: Voucher })}
+{#snippet value({ item }: TableCellProps<Voucher>)}
 	{#each item.channelListings || [] as listing, idx (idx)}
 		<PriceDisplay amount={listing.discountValue} currency={listing.currency} />
 	{/each}
 {/snippet}
 
-{#snippet startDate({ item }: { item: Voucher })}
+{#snippet startDate({ item }: TableCellProps<Voucher>)}
 	<div class="text-sm font-medium text-gray-600">
 		{dayjs(item.startDate).format(SitenameTimeFormat)}
 	</div>
 {/snippet}
 
-{#snippet endDate({ item }: { item: Voucher })}
+{#snippet endDate({ item }: TableCellProps<Voucher>)}
 	<div class="text-sm font-medium text-gray-600 text-center">
 		{item.endDate ? dayjs(item.endDate).format(SitenameTimeFormat) : '-'}
 	</div>
