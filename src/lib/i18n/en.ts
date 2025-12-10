@@ -145,6 +145,7 @@ export default {
 		billing: 'Billing',
 		shipping: 'Shipping',
 		orderBy: 'order by',
+		addFile: 'Add file',
 	},
 	product: {
 		chooseAddress: 'Please choose address',
@@ -403,6 +404,8 @@ export default {
 		staffLinkHelpTxt: 'Manage your employees and their permissions',
 		users: 'Users',
 		taxClasses: 'Tax classes',
+		alt: 'Alt',
+		size: 'Size',
 	},
 	payment: {
 		clickAndCollectShippingMethod: 'click&collect',

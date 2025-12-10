@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { ProductMediaType } from '$lib/gql/graphql';
 	import type { SocialVariant } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
@@ -141,10 +142,9 @@
 					class="absolute p-1.5 bottom-0 left-0 right-0 h-1/5 hover:h-1/2 hover:border-t hover:border-gray-300 bg-white opacity-50 transition-all hover:opacity-100 ease-in"
 				>
 					<div class="text-gray-700 flex items-center text-xs mb-1">
-						<span class="font-semibold w-1/4">alt:</span>
 						<Input
+							placeholder={$tranFunc('settings.alt')}
 							size="xs"
-							placeholder="Enter alt"
 							bind:value={medias[idx].alt}
 							onblur={validate}
 							inputDebounceOption={{ onInput: validate }}
@@ -155,7 +155,7 @@
 					</div>
 					{#if media.file}
 						<div class="text-gray-700 flex items-center text-xs">
-							<span class="font-semibold w-1/4">Size:</span>
+							<span class="font-semibold w-1/4">{$tranFunc('settings.size')}:</span>
 							<span>{formatBytes(media.file.size)}</span>
 						</div>
 					{/if}
@@ -172,7 +172,7 @@
 							color="red"
 							variant="light"
 							class="tooltip tooltip-left"
-							data-tip="Remove"
+							data-tip={$tranFunc('btn.delete')}
 							onclick={() => deleteFileItem(idx)}
 							{disabled}
 						/>
@@ -187,7 +187,7 @@
 				<FileInput
 					{accept}
 					class="tooltip tooltip-top"
-					data-tip="Add File"
+					data-tip={$tranFunc('common.addFile')}
 					multiple
 					onChange={handleFileSelect}
 					icon={FileUpload}

@@ -145,6 +145,7 @@ export default {
 		billing: 'Thanh toán',
 		shipping: 'Giao hàng',
 		orderBy: 'sắp xếp theo',
+		addFile: 'Đính tệp',
 	},
 	product: {
 		chooseAddress: 'Vui lòng chọn địa chỉ',
@@ -404,6 +405,8 @@ export default {
 		staffLinkHelpTxt: 'Quản lý nhân viên và phân quyền',
 		users: 'Người dùng',
 		taxClasses: 'Các lớp thuế',
+		alt: 'Từ thay thế',
+		size: 'Kích thước',
 	},
 	payment: {
 		clickAndCollectShippingMethod: 'click&collect',

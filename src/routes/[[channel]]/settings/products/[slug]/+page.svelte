@@ -30,7 +30,6 @@
 		type ProductInput,
 		type Query,
 		type QueryProductArgs,
-		type ProductType,
 		type Mutation,
 		type MutationProductDeleteArgs,
 		type ProductChannelListingUpdateInput,
@@ -38,15 +37,12 @@
 		type ProductVariantBulkUpdateInput,
 		type ProductVariantStocksUpdateInput,
 		WeightUnitsEnum,
-		type AttributeValueInput,
-		AttributeInputTypeEnum,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
-	import { pick } from 'es-toolkit';
 	import { onMount } from 'svelte';
 
 	const ProductDetailStore = operationStore<Pick<Query, 'product'>, QueryProductArgs>({
@@ -72,12 +68,11 @@
 		chargeTaxes: true,
 		weight: 0,
 	});
-	let currentProductType = $state<ProductType>();
 	let productTypeRequiresShipping = $state(false);
 	let metaRef = $state<GeneralMetadataEditorRef>();
 	let productMediasOk = $state(true);
 	let productMedias = $state.raw<MediaObject[]>([]);
-	let productInputError = $state({
+	let productFormOk = $state({
 		externalReference: true, // not supported yet
 		privateMetadata: true, // not supported yet
 		collections: true, // this field is optional
@@ -89,19 +84,18 @@
 		weight: true,
 		slug: true,
 
-		// productType: false,
-		description: false,
-		attributes: false,
-		category: false,
-		name: false,
-		seo: false,
+		generalForm: true,
+		description: true,
+		attributes: true,
+		category: true,
+		name: true,
+		seo: true,
 		channelListing: true,
 	});
 	let channelListingUpdateInput = $state.raw<ProductChannelListingUpdateInput>({});
 
 	// in product update screen
 	let productVariantBulkUpdateInput = $state<ProductVariantBulkUpdateInput[]>([]);
-	let existingAttributeInput = $state<AttributeValueInput[]>([]);
 
 	onMount(() => {
 		return ProductDetailStore.subscribe((result) => {
@@ -123,11 +117,9 @@
 					productType,
 					media,
 					variants,
-					// assignedAttributes,
-					attributes,
 				} = result.data.product;
 
-				currentProductType = productType;
+				// currentProductType = productType;
 				productTypeRequiresShipping = productType.isShippingRequired;
 				product = {
 					...product,
@@ -148,36 +140,6 @@
 					taxClass: taxClass?.id,
 					weight,
 				};
-
-				existingAttributeInput = attributes.map(({ attribute, values }) => {
-					let res: AttributeValueInput = {
-						id: attribute.id,
-					};
-
-					if (attribute.inputType === AttributeInputTypeEnum.Dropdown && values.length) {
-						res.dropdown = pick(values[0], ['id', 'value']);
-					} else if (attribute.inputType === AttributeInputTypeEnum.Boolean && values.length) {
-						res.boolean = values[0].boolean;
-					} else if (attribute.inputType === AttributeInputTypeEnum.Date && values.length) {
-						res.date = values[0].date;
-					} else if (attribute.inputType === AttributeInputTypeEnum.File && values.length) {
-					} else if (attribute.inputType === AttributeInputTypeEnum.Numeric) {
-						// res.numeric = values[0].plainText
-					} else if (attribute.inputType === AttributeInputTypeEnum.DateTime && values.length) {
-						res.dateTime = values[0].dateTime;
-					} else if (attribute.inputType === AttributeInputTypeEnum.Reference && values.length) {
-					} else if (attribute.inputType === AttributeInputTypeEnum.RichText && values.length) {
-						res.richText = values[0].richText;
-					} else if (attribute.inputType === AttributeInputTypeEnum.PlainText && values.length) {
-						res.plainText = values[0].plainText;
-					} else if (attribute.inputType === AttributeInputTypeEnum.Multiselect) {
-						res.multiselect = values.map((vl) => pick(vl, ['id']));
-					} else if (attribute.inputType === AttributeInputTypeEnum.Swatch && values.length) {
-						res.swatch = pick(values[0], ['id', 'value']);
-					}
-
-					return res;
-				});
 
 				if (media?.length) {
 					productMedias = media.map<MediaObject>((item) => ({
@@ -252,21 +214,23 @@
 	<Skeleton />
 {:else if $ProductDetailStore.error}
 	<Alert variant="error" size="sm" bordered>{$ProductDetailStore.error.message}</Alert>
-{:else if $ProductDetailStore.data?.product && currentProductType}
-	{@const { metadata, privateMetadata, id, channelListings } = $ProductDetailStore.data.product}
+{:else if $ProductDetailStore.data?.product}
+	{@const { metadata, privateMetadata, id, channelListings, attributes, productType } =
+		$ProductDetailStore.data.product}
 	<div class="space-y-2">
 		<GeneralInformation
 			bind:name={product.name!}
-			bind:productType={currentProductType.id}
+			bind:productType={productType.id}
 			bind:description={product.description}
 			bind:attributes={product.attributes!}
-			disabled={loading}
 			bind:productTypeRequiresShipping
-			existingAttributes={existingAttributeInput}
+			bind:formOk={productFormOk.generalForm}
+			disabled={loading}
+			existingAttributes={attributes}
 		/>
 		<CategorySelector
 			bind:categoryID={product.category!}
-			bind:formOk={productInputError.category}
+			bind:formOk={productFormOk.category}
 			{loading}
 		/>
 		<FileInputContainer
@@ -283,7 +247,7 @@
 			<ChannelsSelector
 				bind:channelListingUpdateInput
 				channelListings={channelListings || []}
-				ok={productInputError.channelListing}
+				ok={productFormOk.channelListing}
 				{loading}
 			/>
 			<VariantsEditEditor
@@ -291,14 +255,14 @@
 				channelsListing={channelListingUpdateInput}
 				bind:productVariantsInput={productVariantBulkUpdateInput}
 				bind:privateMetadata={product.privateMetadata!}
-				productTypeId={currentProductType.id}
+				productTypeId={productType.id}
 			/>
 		</div>
 		<ProductSeo
 			productName={product.name}
 			bind:seo={product.seo!}
 			bind:slug={product.slug}
-			bind:formOk={productInputError.seo}
+			bind:formOk={productFormOk.seo}
 			{loading}
 		/>
 		<CollectionsAndTax

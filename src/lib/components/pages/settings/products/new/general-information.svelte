@@ -12,10 +12,10 @@
 	import {
 		AttributeInputTypeEnum,
 		type AttributeValueInput,
-		type BulkAttributeValueInput,
 		type Query,
 		type QueryProductTypeArgs,
 		type QueryProductTypesArgs,
+		type SelectedAttribute,
 	} from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import {
@@ -27,7 +27,7 @@
 	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import type { OutputData } from '@editorjs/editorjs';
 	import dayjs from 'dayjs';
-	import { omit } from 'es-toolkit';
+	import { omit, pick } from 'es-toolkit';
 	import { onMount } from 'svelte';
 	import { any, array, object, string } from 'zod';
 
@@ -39,7 +39,7 @@
 		description: OutputData;
 		attributes: AttributeValueInput[];
 		/** must provide in edit page */
-		existingAttributes?: AttributeValueInput[];
+		existingAttributes?: SelectedAttribute[];
 		formOk?: boolean;
 		isCreatePage?: boolean;
 		/** bindable, to help parant component to decide whether to show dimension metadata section */
@@ -63,7 +63,7 @@
 		productTypeRequiresShipping = $bindable(),
 	}: Props = $props();
 
-	const productTypeQuery = operationStore<Pick<Query, 'productType'>, QueryProductTypeArgs>({
+	const ProductTypeQuery = operationStore<Pick<Query, 'productType'>, QueryProductTypeArgs>({
 		query: PRODUCT_TYPE_QUERY,
 		requestPolicy: 'cache-and-network',
 		variables: {
@@ -83,42 +83,42 @@
 		for (let idx = 0; idx < innerAttributes.length; idx++) {
 			const attr = innerAttributes[idx];
 
-			if (!attr['required' as keyof AttributeValueInput]) continue;
-			const inputType = 'inputType' as keyof AttributeValueInput;
+			if (!attr['required']) continue;
+
 			if (
-				attr[inputType] === AttributeInputTypeEnum.Dropdown &&
+				attr.inputType === AttributeInputTypeEnum.Dropdown &&
 				(!attr.dropdown || !Object.keys(attr.dropdown).length)
 			) {
 				result[idx] = $CommonState.FieldRequiredError;
 			} else if (
-				attr[inputType] === AttributeInputTypeEnum.Boolean &&
+				attr.inputType === AttributeInputTypeEnum.Boolean &&
 				typeof attr.boolean !== 'boolean'
 			) {
 				result[idx] = $CommonState.FieldRequiredError;
-			} else if (attr[inputType] === AttributeInputTypeEnum.Date && !attr.date) {
+			} else if (attr.inputType === AttributeInputTypeEnum.Date && !attr.date) {
 				result[idx] = $CommonState.FieldRequiredError;
-			} else if (attr[inputType] === AttributeInputTypeEnum.Numeric && !attr.numeric) {
+			} else if (attr.inputType === AttributeInputTypeEnum.Numeric && !attr.numeric) {
 				result[idx] = $CommonState.FieldRequiredError;
-			} else if (attr[inputType] === AttributeInputTypeEnum.DateTime && !attr.dateTime) {
+			} else if (attr.inputType === AttributeInputTypeEnum.DateTime && !attr.dateTime) {
 				result[idx] = $CommonState.FieldRequiredError;
 			} else if (
-				attr[inputType] === AttributeInputTypeEnum.Reference &&
+				attr.inputType === AttributeInputTypeEnum.Reference &&
 				(!attr.references || !attr.references.length)
 			) {
 				result[idx] = $CommonState.FieldRequiredError;
-			} else if (attr[inputType] === AttributeInputTypeEnum.RichText && !attr.richText) {
+			} else if (attr.inputType === AttributeInputTypeEnum.RichText && !attr.richText) {
 				result[idx] = $CommonState.FieldRequiredError;
-			} else if (attr[inputType] === AttributeInputTypeEnum.PlainText && !attr.plainText) {
+			} else if (attr.inputType === AttributeInputTypeEnum.PlainText && !attr.plainText) {
 				result[idx] = $CommonState.FieldRequiredError;
 			} else if (
-				attr[inputType] === AttributeInputTypeEnum.Swatch &&
+				attr.inputType === AttributeInputTypeEnum.Swatch &&
 				(!attr.swatch || !Object.keys(attr.swatch).length)
 			) {
 				result[idx] = $CommonState.FieldRequiredError;
-			} else if (attr[inputType] === AttributeInputTypeEnum.File && !attr.file) {
+			} else if (attr.inputType === AttributeInputTypeEnum.File && !attr.file) {
 				result[idx] = $CommonState.FieldRequiredError;
 			} else if (
-				attr[inputType] === AttributeInputTypeEnum.Multiselect &&
+				attr.inputType === AttributeInputTypeEnum.Multiselect &&
 				(!attr.multiselect || !attr.multiselect.length)
 			) {
 				result[idx] = $CommonState.FieldRequiredError;
@@ -129,7 +129,7 @@
 	});
 
 	onMount(() =>
-		productTypeQuery.subscribe((result) => {
+		ProductTypeQuery.subscribe((result) => {
 			if (result.data?.productType?.productAttributes?.length) {
 				attributeFieldsBlurs = new Array(result.data.productType.productAttributes.length).fill(
 					false,
@@ -142,28 +142,43 @@
 							required: props.valueRequired,
 						};
 
-						let existingAttribute: AttributeValueInput | undefined = undefined;
-						// if it is edit page, and product already has attributes assigned
-						// we must populate those existing attributes to inner attributes state
+						let existingAttribute: SelectedAttribute | undefined = undefined;
+						// if it is edit page, and product already has attributes assigned.
+						// we must populate those existing attributes to innerAttributes state.
 						if (!isCreatePage && existingAttributes?.length) {
-							existingAttribute = existingAttributes.find((attr) => attr.id === props.id);
+							existingAttribute = existingAttributes.find(
+								(attr) => attr.attribute.id === props.id && attr.values.length,
+							);
 						}
 
 						if (props.inputType === AttributeInputTypeEnum.Dropdown) {
-							result.dropdown = existingAttribute?.dropdown || {};
+							result.dropdown = existingAttribute
+								? pick(existingAttribute.values[0], ['id', 'value'])
+								: {};
 						} else if (props.inputType === AttributeInputTypeEnum.Multiselect) {
-							result.multiselect = existingAttribute?.multiselect || [];
+							result.multiselect = existingAttribute?.values?.map(({ id }) => ({ id })) || [];
 						} else if (props.inputType === AttributeInputTypeEnum.Swatch) {
-							result.swatch = existingAttribute?.swatch || {};
+							result.swatch = existingAttribute
+								? pick(existingAttribute?.values[0], ['value', 'id'])
+								: {};
 						} else if (props.inputType === AttributeInputTypeEnum.Reference) {
-							result.references = existingAttribute?.references || [];
+							result.references = existingAttribute?.values.map(({ id }) => id) || [];
 						} else if (props.inputType === AttributeInputTypeEnum.Date) {
-							result.date = existingAttribute?.date;
+							result.date = existingAttribute?.values?.[0]?.date;
 						} else if (props.inputType === AttributeInputTypeEnum.DateTime) {
-							result.dateTime = existingAttribute?.dateTime;
+							result.dateTime = existingAttribute?.values?.[0]?.dateTime;
+						} else if (props.inputType === AttributeInputTypeEnum.Boolean) {
+							result.boolean = existingAttribute?.values?.[0]?.boolean;
+						} else if (props.inputType === AttributeInputTypeEnum.Numeric) {
+							result.numeric = existingAttribute?.values?.[0]?.value;
+						} else if (props.inputType === AttributeInputTypeEnum.RichText) {
+							result.richText = existingAttribute?.values?.[0]?.richText;
+						} else if (props.inputType === AttributeInputTypeEnum.File) {
+							result.file = existingAttribute?.values?.[0].file?.url;
+						} else if (props.inputType === AttributeInputTypeEnum.SingleReference) {
+							result.reference = existingAttribute?.values?.[0].reference;
 						}
 
-						// TODO: add support for other input types as well
 						return result;
 					},
 				);
@@ -193,7 +208,7 @@
 
 	$effect(() => {
 		if (productType) {
-			productTypeQuery.reexecute({
+			ProductTypeQuery.reexecute({
 				variables: {
 					id: productType,
 				},
@@ -245,16 +260,16 @@
 
 	{#if productType}
 		<div>
-			{#if $productTypeQuery.fetching}
+			{#if $ProductTypeQuery.fetching}
 				<TableSkeleton numOfRows={2} numColumns={2} />
-			{:else if $productTypeQuery.error}
+			{:else if $ProductTypeQuery.error}
 				<Alert variant="error" size="sm" bordered>
-					{$productTypeQuery.error.message}
+					{$ProductTypeQuery.error.message}
 				</Alert>
-			{:else if $productTypeQuery.data?.productType?.productAttributes}
+			{:else if $ProductTypeQuery.data?.productType?.productAttributes}
 				<Label required requiredAtPos="end" label="Attributes" />
 				<div class="grid grid-cols-2 gap-2 rounded-lg p-3 border border-gray-200">
-					{#each $productTypeQuery.data?.productType?.productAttributes as node, idx (idx)}
+					{#each $ProductTypeQuery.data?.productType?.productAttributes as node, idx (idx)}
 						<div>
 							{#if node.inputType === AttributeInputTypeEnum.Dropdown && node.choices}
 								{@const options = node.choices.edges.map<SelectOption>(
@@ -378,7 +393,18 @@
 									subText={attributeFieldsBlurs[idx] ? AttributeErrors[idx] : undefined}
 								/>
 							{:else if node.inputType === AttributeInputTypeEnum.Reference}
-								<div>ref</div>
+								<Input
+									type="text"
+									label={node.name || '-'}
+									value={innerAttributes[idx]?.reference}
+									inputDebounceOption={{
+										onInput: (evt) =>
+											(innerAttributes[idx] = {
+												...innerAttributes[idx],
+												reference: (evt.currentTarget as HTMLInputElement).value,
+											}),
+									}}
+								/>
 							{:else if node.inputType === AttributeInputTypeEnum.RichText}
 								<div>
 									<EditorJSComponent
@@ -400,11 +426,12 @@
 							{:else if node.inputType === AttributeInputTypeEnum.PlainText}
 								<Input
 									type="text"
-									onchange={(evt) => {
-										innerAttributes[idx] = {
-											...innerAttributes[idx],
-											plainText: evt.currentTarget.value,
-										};
+									inputDebounceOption={{
+										onInput: (evt) =>
+											(innerAttributes[idx] = {
+												...innerAttributes[idx],
+												plainText: (evt.currentTarget as HTMLInputElement).value,
+											}),
 									}}
 									value={innerAttributes[idx]?.plainText}
 									label={node.name || '-'}

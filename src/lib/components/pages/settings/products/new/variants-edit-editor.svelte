@@ -62,6 +62,7 @@
 		/** This is provided by the channel listing selector section */
 		channelsListing: ProductChannelListingUpdateInput;
 		productVariantsInput: ProductVariantBulkUpdateInput[];
+		/** To set the attribute informations used by variants */
 		privateMetadata: MetadataInput[];
 		productTypeId: string;
 	};
@@ -612,9 +613,9 @@
 											: ''}
 									>
 										{#snippet action()}
-											<span class="text-[8px] font-semibold"
-												>{channelListing.channel.currencyCode}</span
-											>
+											<span class="text-[8px] font-semibold">
+												{channelListing.channel.currencyCode}
+											</span>
 										{/snippet}
 									</Input>
 								{/each}
@@ -633,7 +634,7 @@
 								subText={variantInputDetail.weight!.value >= 0 ? '' : $CommonState.NonNegativeError}
 							>
 								{#snippet action()}
-									<span class="text-[8px] font-semibold">kg</span>
+									<span class="text-[9px] font-semibold">kg</span>
 								{/snippet}
 							</Input>
 						</td>
