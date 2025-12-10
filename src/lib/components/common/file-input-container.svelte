@@ -35,7 +35,7 @@
 		variant = 'info',
 		required,
 		labelSize,
-		medias = $bindable([]),
+		medias = $bindable(),
 		class: className = '',
 		disabled,
 		subText,
@@ -145,12 +145,18 @@
 						<Input
 							placeholder={$tranFunc('settings.alt')}
 							size="xs"
-							bind:value={medias[idx].alt}
+							value={medias[idx].alt}
 							onblur={validate}
-							inputDebounceOption={{ onInput: validate }}
+							inputDebounceOption={{
+								onInput: (evt) => {
+									medias[idx].alt = (evt.currentTarget as HTMLInputElement).value.trim();
+									validate();
+								},
+							}}
 							variant={mediaErrors?.[idx]?.length ? 'error' : 'info'}
 							subText={mediaErrors?.[idx]?.[0]}
 							{disabled}
+							type="text"
 						/>
 					</div>
 					{#if media.file}

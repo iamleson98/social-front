@@ -37,12 +37,14 @@
 		type ProductVariantBulkUpdateInput,
 		type ProductVariantStocksUpdateInput,
 		WeightUnitsEnum,
+		type Weight,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
+	import { pick } from 'es-toolkit';
 	import { onMount } from 'svelte';
 
 	const ProductDetailStore = operationStore<Pick<Query, 'product'>, QueryProductArgs>({
@@ -66,7 +68,9 @@
 		collections: [],
 		rating: 5,
 		chargeTaxes: true,
-		weight: 0,
+		weight: {
+			value: 0,
+		},
 	});
 	let productTypeRequiresShipping = $state(false);
 	let metaRef = $state<GeneralMetadataEditorRef>();
@@ -96,6 +100,8 @@
 
 	// in product update screen
 	let productVariantBulkUpdateInput = $state<ProductVariantBulkUpdateInput[]>([]);
+
+	$inspect(productVariantBulkUpdateInput, product.privateMetadata);
 
 	onMount(() => {
 		return ProductDetailStore.subscribe((result) => {
@@ -138,7 +144,7 @@
 					},
 					slug,
 					taxClass: taxClass?.id,
-					weight,
+					weight: pick(weight || ({} as Weight), ['value', 'unit']),
 				};
 
 				if (media?.length) {
@@ -220,7 +226,7 @@
 	<div class="space-y-2">
 		<GeneralInformation
 			bind:name={product.name!}
-			bind:productType={productType.id}
+			productType={productType.id}
 			bind:description={product.description}
 			bind:attributes={product.attributes!}
 			bind:productTypeRequiresShipping
