@@ -17,6 +17,7 @@
 		type Primitive,
 	} from './types';
 	import { difference, noop } from 'es-toolkit';
+	import { untrack } from 'svelte';
 	import type { FocusEventHandler } from 'svelte/elements';
 	import { fly } from 'svelte/transition';
 
@@ -78,7 +79,7 @@
 
 				for (const diff of diffs1) {
 					const opt = options.find((opt) => opt.value === diff);
-					newMapper[diff] = opt ? opt : { value: diff, label: diff };
+					newMapper[diff] = opt || { value: diff, label: diff };
 				}
 				for (const diff of diffs2) {
 					delete newMapper[diff];
@@ -90,11 +91,32 @@
 			return;
 		}
 
-		if (!multiple && value != undefined) {
+		if (!multiple) {
 			const opt = options.find((opt) => opt.value === value);
 			selectMapper = { [value]: opt || ({ value, label: value } as SelectOption) };
 			selectMapperChanged = true;
 		}
+	});
+
+	/**
+	 * Sometimes when a initial values list is provided, in multiple select.
+	 * But the `options` prop is not ready yet but still under the process of construction.
+	 * => This results in the labels of selected values will fallback to the actual values.
+	 * This is good but not quite good for UX.
+	 * 
+	 * This effect listens for the options prop to be ready, make the UI shows exact labels of selected values,
+	 * This results in better UX
+	*/
+	$effect(() => {
+		const mapper = untrack(() => selectMapper);
+		const newMapper: typeof selectMapper = {};
+
+		for (const value of Object.keys(mapper)) {
+			const opt = options.find((opt) => opt.value === value);
+			newMapper[value] = opt || { value, label: value };
+		}
+
+		selectMapper = newMapper;
 	});
 
 	$effect(() => {
