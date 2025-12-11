@@ -1,14 +1,21 @@
 <script lang="ts" generics="T extends Record<string, unknown>, K extends string">
 	import { dev } from '$app/environment';
-	import { ChevronLeft, ChevronRight, GripVertical, Icon } from '$lib/components/icons';
+	import {
+		ArrowDown,
+		ArrowUp,
+		ChevronLeft,
+		ChevronRight,
+		GripVertical,
+		Icon,
+	} from '$lib/components/icons';
+	import { TablerDots } from '$lib/components/icons/consts';
 	import { IconButton, Button } from '$lib/components/ui/Button';
-	import { MenuItem } from '$lib/components/ui/Dropdown';
+	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
 	import { Sticky } from '$lib/components/ui/Popover';
 	import { OrderDirection } from '$lib/gql/graphql';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import {
 		ROW_OPTIONS,
-		SortIconsMap,
 		type RowOptions,
 		type SortState,
 		type TableColumnProps,
@@ -62,15 +69,17 @@
 			onNextPagelick?.(graphqlPagination.endCursor);
 	};
 
-	const handleSortClick = (columnKey: K) => {
-		const colSortState: SortState<K> = {} as SortState<K>;
-		if (sortState[columnKey] === 'NEUTRAL') {
-			colSortState[columnKey] = OrderDirection.Asc;
-		} else if (sortState[columnKey] === OrderDirection.Asc) {
-			colSortState[columnKey] = OrderDirection.Desc;
-		} else {
-			colSortState[columnKey] = 'NEUTRAL';
-		}
+	const handleSortClick = (columnKey: K, dir: OrderDirection) => {
+		const colSortState: SortState<K> = {
+			[columnKey]: dir,
+		} as SortState<K>;
+		// if (sortState[columnKey] === 'NEUTRAL') {
+		// 	colSortState[columnKey] = OrderDirection.Asc;
+		// } else if (sortState[columnKey] === OrderDirection.Asc) {
+		// 	colSortState[columnKey] = OrderDirection.Desc;
+		// } else {
+		// 	colSortState[columnKey] = 'NEUTRAL';
+		// }
 		if (sortMultiple) {
 			sortState = { ...sortState, ...colSortState };
 			onSortChange?.(sortState);
@@ -117,7 +126,7 @@
 {/snippet}
 
 <!--
-	NOTE: when table is empty, the number of items per page drop down will be affected by table overflow effect. 
+	NOTE: when table is empty, the "rows-per-page" dropdown will be affected by table overflow effect. 
  	Using a sticky component outside of table, and attach it to the num per page button, when it is clicked, solves this issue
 -->
 <Sticky bind:target={numPerPageButtonRef} placement="bottom-start">
@@ -162,15 +171,40 @@
 									</div>
 
 									{#if column.key}
-										<IconButton
-											size="xs"
-											variant="light"
-											color="gray"
-											aria-label="Sort column"
-											onclick={() => handleSortClick(column.key!)}
-											{disabled}
-											icon={SortIconsMap[sortState[column.key]]}
-										/>
+										<DropDown
+											options={[
+												{
+													children: 'Sort Asc',
+													startIcon: ArrowUp,
+													onclick: () => handleSortClick(column.key!, OrderDirection.Asc),
+													class:
+														sortState[column.key] === OrderDirection.Asc
+															? 'bg-gray-100'
+															: undefined,
+												},
+												{
+													children: 'Sort Desc',
+													startIcon: ArrowDown,
+													onclick: () => handleSortClick(column.key!, OrderDirection.Desc),
+													class:
+														sortState[column.key] === OrderDirection.Desc
+															? 'bg-gray-100'
+															: undefined,
+												},
+											]}
+										>
+											{#snippet trigger({ onclick })}
+												<IconButton
+													size="xs"
+													variant="light"
+													color="gray"
+													aria-label="Sort column"
+													{onclick}
+													disabled={disabled || !items.length}
+													icon={TablerDots}
+												/>
+											{/snippet}
+										</DropDown>
 									{/if}
 								</div>
 							</th>
@@ -232,7 +266,7 @@
 			<Button
 				size="xs"
 				variant="light"
-				{disabled}
+				disabled={disabled || !items.length}
 				onclick={(evt) => (numPerPageButtonRef = evt.currentTarget as HTMLButtonElement)}
 			>
 				{numOfRowsTitle || 'Rows per page'}:
