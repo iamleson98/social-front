@@ -3,7 +3,7 @@
 	import { shortcuts } from '$lib/actions/shortcut';
 	import Icon from '$lib/components/icons/icon.svelte';
 	import { INPUT_BUTTON_SIZE_MAP } from '$lib/components/ui/Button/button.types';
-	import { classNames, randomID } from '$lib/utils/utils';
+	import { randomID } from '$lib/utils/utils';
 	import { INPUT_CLASSES, type InputProps } from './input.types';
 	import Label from './label.svelte';
 
@@ -27,11 +27,7 @@
 	}: InputProps = $props();
 </script>
 
-<div
-	class={classNames(className as string, {
-		'text-gray-300! cursor-not-allowed!': !!rest.disabled,
-	})}
->
+<div class={[className, rest.disabled && 'text-gray-300! cursor-not-allowed!']}>
 	{#if label}
 		<Label {label} {id} {required} {size} {variant} requiredAtPos="end" />
 	{/if}
@@ -49,17 +45,15 @@
 			bind:value
 			use:shortcuts={selectShortcutOptions}
 			use:debounceInput={inputDebounceOption}
-			class={classNames(
+			class={[
 				'w-full text-sm rounded-lg placeholder:opacity-55 inline-block px-1.5 transition-all duration-200 ease-in-out hover:ring-2 focus:ring-2 ring-1',
 				inputClass,
 				INPUT_BUTTON_SIZE_MAP[size],
 				INPUT_CLASSES[variant].bg,
-				{
-					'text-gray-400! cursor-not-allowed!': !!rest.disabled,
-					'ps-8': !!startIcon,
-					'pe-8': !!action,
-				},
-			)}
+				rest.disabled && 'text-gray-400! cursor-not-allowed!',
+				!!startIcon && 'ps-8',
+				!!action && 'pe-8',
+			]}
 			{...rest}
 		/>
 

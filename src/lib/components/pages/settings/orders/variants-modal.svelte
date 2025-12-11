@@ -13,7 +13,7 @@
 	} from '$lib/components/ui/Table';
 	import { type AddressInput, type Product, type QueryProductsArgs } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { classNames, stringSlicer } from '$lib/utils/utils';
+	import { stringSlicer } from '$lib/utils/utils';
 	import { get, set } from 'es-toolkit/compat';
 
 	type Props = {
@@ -84,9 +84,10 @@
 	{#if item.variants?.length}
 		{#each item.variants as variant, idx (idx)}
 			<div
-				class={classNames('flex justify-between items-center py-1', {
-					'border-b border-gray-200': idx < item.variants.length - 1,
-				})}
+				class={[
+					'flex justify-between items-center py-1',
+					idx < item.variants.length - 1 && 'border-b border-gray-200',
+				]}
 			>
 				<Checkbox size="sm" label={variant.name} subText={`SKU: ${variant.sku}`} />
 				<PriceDisplay

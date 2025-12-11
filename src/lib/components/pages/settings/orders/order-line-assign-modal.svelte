@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import { ORDER_LINES_CREATE_MUTATION, VARIANTS_FOR_ORDER_QUERY } from '$lib/api/admin/orders';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
+	import { operationStore } from '$lib/api/operation';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { Plus, Search } from '$lib/components/icons';
@@ -13,6 +13,7 @@
 		GraphqlPaginableTable,
 		ROW_OPTIONS,
 		type GraphqlPaginableTableInterface,
+		type TableCellProps,
 		type TableColumnProps,
 	} from '$lib/components/ui/Table';
 	import type {
@@ -22,7 +23,7 @@
 		QueryProductsArgs,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { checkIfGraphqlResultHasError, classNames, stringSlicer } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, stringSlicer } from '$lib/utils/utils';
 	import { SvelteSet } from 'svelte/reactivity';
 
 	type Props = {
@@ -55,7 +56,6 @@
 	const BATCH = ROW_OPTIONS[0];
 
 	let addVariantIds = $state(new SvelteSet<string>());
-	let loading = $state(false);
 	let openVariantsModal = $state(false);
 	let variantTableRef = $state<GraphqlPaginableTableInterface>();
 	let variables = $state.raw<QueryProductsArgs>({
@@ -75,31 +75,41 @@
 		}
 	});
 
+	const CreateOrderLineMutation = operationStore<
+		Pick<Mutation, 'orderLinesCreate'>,
+		MutationOrderLinesCreateArgs
+	>({
+		query: ORDER_LINES_CREATE_MUTATION,
+		variables: {
+			id: orderId,
+			input: [],
+		},
+		pause: true,
+		onResult: (result) => {
+			if (
+				checkIfGraphqlResultHasError(
+					result,
+					'orderLinesCreate',
+					'Successfully added variants to order',
+				)
+			)
+				return;
+
+			addVariantIds.clear();
+			onAddedOrderLines?.();
+			openVariantsModal = false;
+		},
+	});
+
 	const handleAddOrderLine = async () => {
 		if (!addVariantIds.size) return;
 
-		loading = true;
-		const result = await GRAPHQL_CLIENT.mutation<
-			Pick<Mutation, 'orderLinesCreate'>,
-			MutationOrderLinesCreateArgs
-		>(ORDER_LINES_CREATE_MUTATION, {
-			id: orderId,
-			input: [...addVariantIds].map((id) => ({ variantId: id, quantity: 1 })),
+		CreateOrderLineMutation.reexecute({
+			variables: {
+				id: orderId,
+				input: [...addVariantIds].map((id) => ({ variantId: id, quantity: 1 })),
+			},
 		});
-		loading = false;
-
-		if (
-			checkIfGraphqlResultHasError(
-				result,
-				'orderLinesCreate',
-				'Successfully added variants to order',
-			)
-		)
-			return;
-
-		addVariantIds.clear();
-		onAddedOrderLines?.();
-		openVariantsModal = false;
 	};
 
 	const handleClickAddProductVariants = async () => {
@@ -109,7 +119,7 @@
 	};
 </script>
 
-{#snippet checkbox({ item }: { item: Product })}
+{#snippet checkbox({ item }: TableCellProps<Product>)}
 	{@const checked = item.variants?.length
 		? item.variants.every((variant) => addVariantIds.has(variant.id))
 		: false}
@@ -120,27 +130,28 @@
 			const operator = check ? 'add' : 'delete';
 			item.variants?.forEach((variant) => addVariantIds[operator](variant.id));
 		}}
-		disabled={loading}
+		disabled={$CreateOrderLineMutation.fetching}
 	/>
 {/snippet}
 
-{#snippet image({ item }: { item: Product })}
+{#snippet image({ item }: TableCellProps<Product>)}
 	<Thumbnail size="sm" src={item.thumbnail?.url} alt={item.thumbnail?.alt || item.name} />
 {/snippet}
 
-{#snippet name({ item }: { item: Product })}
+{#snippet name({ item }: TableCellProps<Product>)}
 	<a href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.slug)} class="link" title={item.name}>
 		{stringSlicer(item.name, 50)}
 	</a>
 {/snippet}
 
-{#snippet variants({ item }: { item: Product })}
+{#snippet variants({ item }: TableCellProps<Product>)}
 	{#if item.variants?.length}
 		{#each item.variants as variant, idx (idx)}
 			<div
-				class={classNames('flex justify-between items-center py-1', {
-					'border-b border-gray-200': idx < item.variants.length - 1,
-				})}
+				class={[
+					'flex justify-between items-center py-1',
+					idx < item.variants.length - 1 && 'border-b border-gray-200',
+				]}
 			>
 				<Checkbox
 					size="sm"
@@ -148,7 +159,7 @@
 					subText={`SKU: ${variant.sku}`}
 					checked={addVariantIds.has(variant.id)}
 					onCheckChange={(checked) => addVariantIds[checked ? 'add' : 'delete'](variant.id)}
-					disabled={loading}
+					disabled={$CreateOrderLineMutation.fetching}
 				/>
 				<PriceDisplay
 					amount={variant.pricing?.price?.gross.amount || 0}
@@ -172,7 +183,7 @@
 	onClose={() => (openVariantsModal = false)}
 	onCancel={() => (openVariantsModal = false)}
 	onOk={handleAddOrderLine}
-	disableElements={loading}
+	disableElements={$CreateOrderLineMutation.fetching}
 >
 	<Alert size="sm" class="mb-1.5">
 		You can only add products available for the order's channel
@@ -183,14 +194,14 @@
 		class="mb-1.5"
 		debounceTime={888}
 		bind:value={searchProductsQuery}
-		disabled={loading}
+		disabled={$CreateOrderLineMutation.fetching}
 	/>
 	<GraphqlPaginableTable
 		columns={COLUMNS}
 		query={VARIANTS_FOR_ORDER_QUERY}
 		resultKey="products"
 		bind:variables
-		disabled={loading}
+		disabled={$CreateOrderLineMutation.fetching}
 		autoRefetchOnPaginationParamsChange
 		autoFetchDataOnMount
 		bind:this={variantTableRef}

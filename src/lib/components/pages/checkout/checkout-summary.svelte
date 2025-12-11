@@ -98,7 +98,7 @@
 				currency: line.unitPrice.gross.currency,
 				amount: line.unitPrice.gross.amount * line.quantity,
 			}}
-			class={classNames({ 'text-red-600!': onSale })}
+			class={{ 'text-red-600!': onSale }}
 		/>
 	</div>
 {/snippet}

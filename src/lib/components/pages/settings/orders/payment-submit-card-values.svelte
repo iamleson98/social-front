@@ -1,8 +1,6 @@
 <script lang="ts">
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
-	import { Input } from '$lib/components/ui/Input';
 	import type { Money } from '$lib/gql/graphql';
-	import { classNames } from '$lib/utils/utils';
 	import type { PaymentSubmitCardValuesProps } from './utils';
 
 	let props: PaymentSubmitCardValuesProps = $props();
@@ -53,7 +51,7 @@
 
 <div class="text-sm space-y-1">
 	{#each items as item, idx (idx)}
-		<div class={classNames('flex justify-between text-right', { 'font-bold': item.highlighted })}>
+		<div class={['flex justify-between text-right', item.highlighted && 'font-bold']}>
 			{MESSAGE_MAPPING[item.key]}
 			<PriceDisplay {...item.data} />
 		</div>

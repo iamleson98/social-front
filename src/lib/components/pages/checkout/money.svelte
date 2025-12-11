@@ -1,11 +1,12 @@
 <script lang="ts">
 	import type { Maybe, Money } from '$lib/gql/graphql';
 	import { formatMoney } from '$lib/utils/utils';
+	import type { ClassValue } from 'svelte/elements';
 
 	type Props = {
 		ariaLabel: string;
 		negative?: boolean;
-		class?: string;
+		class?: ClassValue;
 		money?: Maybe<Omit<Money, 'fractionDigits' | 'fractionalAmount'>>;
 	};
 
@@ -18,7 +19,7 @@
 </script>
 
 {#if money}
-	<p class={`${className}`} aria-label={ariaLabel}>
+	<p class={className} aria-label={ariaLabel}>
 		{formatMoney(money.currency, amount)}
 	</p>
 {/if}

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { debounceClick } from '$lib/actions/input-debounce';
 	import { Icon, type IconContent } from '$lib/components/icons';
-	import { classNames } from '$lib/utils/utils';
 	import { BUTTON_VARIANT_COLORS_MAP, type ButtonProps } from './button.types';
 	import { INPUT_BUTTON_SIZE_MAP } from './button.types';
 
@@ -61,18 +60,17 @@
 <svelte:element
 	this={href ? 'a' : 'button'}
 	bind:this={ref}
-	class={classNames(
-		{
-			uppercase: upper,
-			'w-full': fullWidth,
-			'!text-gray-500 !bg-gray-200 !cursor-not-allowed !pointer-events-none !touch-none':
-				!!disabled || loading,
-			[BUTTON_VARIANT_COLORS_MAP[variant][color]]: !disabled && !loading,
-		},
-		`button button-${size} ${className}`,
+	class={[
+		upper && 'uppercase',
+		fullWidth && 'w-full',
+		(!!disabled || loading) &&
+			'!text-gray-500 !bg-gray-200 !cursor-not-allowed !pointer-events-none !touch-none',
+		!disabled && !loading && BUTTON_VARIANT_COLORS_MAP[variant][color],
+		`button button-${size}`,
+		className,
 		INPUT_BUTTON_SIZE_MAP[size],
 		radius,
-	)}
+	]}
 	{type}
 	use:debounceClick={clickDebounceOptions}
 	{...restProps}

@@ -4,7 +4,7 @@
 	import { Checkbox } from '$lib/components/ui/Input';
 	import type { Permission, PermissionEnum } from '$lib/gql/graphql';
 	import { ShopStoreManager } from '$lib/stores/shop';
-	import { addNoDup, classNames, SitenameCommonClassName } from '$lib/utils/utils';
+	import { addNoDup, SitenameCommonClassName } from '$lib/utils/utils';
 
 	type Props = {
 		/** permission set of this group only */
@@ -76,10 +76,11 @@
 			{@const isRemoving = removePermissions.includes(permission.code)}
 			{@const checked = permissions.some((perm) => perm.code === permission.code) || isAdding}
 			<div
-				class={classNames('ring ring-gray-200 p-2 rounded-lg text-xs text-gray-700 wrap-anywhere', {
-					'ring-red-300! bg-red-50': isRemoving,
-					'ring-green-300! bg-green-50': isAdding,
-				})}
+				class={[
+					'ring ring-gray-200 p-2 rounded-lg text-xs text-gray-700 wrap-anywhere',
+					isRemoving && 'ring-red-300! bg-red-50',
+					isAdding && 'ring-green-300! bg-green-50',
+				]}
 			>
 				<Checkbox
 					size="sm"

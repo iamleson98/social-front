@@ -377,7 +377,10 @@ export const constructUrlSearchParamsAndNavigate = async <T>(activeFilters: Filt
 
 type ClassArgs = Record<string, boolean> | string;
 
-/** works like clsx for class names */
+/** works like clsx for class names.
+ * 
+ * NOTE: Highly recommend you to refer to https://svelte.dev/docs/svelte/class first before using this.
+ */
 export const classNames = (...classes: ClassArgs[]): string => {
 	let result = '';
 
