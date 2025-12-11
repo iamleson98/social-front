@@ -36,43 +36,43 @@
 	);
 	let loading = $state(false);
 
-	const PriceBasedColumns: TableColumnProps<ShippingMethodType>[] = [
+	const PriceBasedColumns: TableColumnProps<ShippingMethodType>[] = $derived([
 		{
-			title: 'name',
+			title: $tranFunc('common.name'),
 			child: name,
 		},
 		{
-			title: 'value range',
+			title: $tranFunc('common.valueRange'),
 			child: valueRange,
 		},
 		{
-			title: 'price',
+			title: $tranFunc('common.price'),
 			child: price,
 		},
 		{
-			title: 'action',
+			title: $tranFunc('common.action'),
 			child: action,
 		},
-	];
+	]);
 
-	const WeightBasedColumns: TableColumnProps<ShippingMethodType>[] = [
+	const WeightBasedColumns: TableColumnProps<ShippingMethodType>[] = $derived([
 		{
-			title: 'name',
+			title: $tranFunc('common.name'),
 			child: name,
 		},
 		{
-			title: 'weight range',
+			title: $tranFunc('common.weightRange'),
 			child: weightRange,
 		},
 		{
-			title: 'price',
+			title: $tranFunc('common.price'),
 			child: price,
 		},
 		{
-			title: 'action',
+			title: $tranFunc('common.action'),
 			child: action,
 		},
-	];
+	]);
 
 	const handleDeleteMethod = (id: string) => {
 		ALERT_MODAL_STORE.openAlertModal({
@@ -166,7 +166,7 @@
 
 <div class={SitenameCommonClassName}>
 	<SectionHeader>
-		<div>Price based methods</div>
+		<div>{$tranFunc('ship.priceMethods')}</div>
 
 		<Button
 			endIcon={Plus}
@@ -178,14 +178,14 @@
 			)}
 			disabled={disabled || loading}
 		>
-			Create price based method
+			{$tranFunc('ship.addPriceMethod')}
 		</Button>
 	</SectionHeader>
 
 	<Table columns={PriceBasedColumns} items={PriceBasedMethods} disabled={disabled || loading} />
 
 	<SectionHeader>
-		<div>Weight based methods</div>
+		<div>{$tranFunc('ship.weightMethods')}</div>
 		<Button
 			endIcon={Plus}
 			variant="light"
@@ -196,7 +196,7 @@
 			)}
 			disabled={disabled || loading}
 		>
-			Create weight based method
+			{$tranFunc('ship.addWeightMethod')}
 		</Button>
 	</SectionHeader>
 

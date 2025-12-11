@@ -148,7 +148,7 @@
 			bind:inclusionType={shippingMethodInput.inclusionType!}
 			deletePostalCodeRules={[]}
 		/>
-		<GeneralMetadataEditor objectId={''} bind:this={metaRef} />
+		<GeneralMetadataEditor bind:this={metaRef} />
 	</div>
 
 	<ActionBar

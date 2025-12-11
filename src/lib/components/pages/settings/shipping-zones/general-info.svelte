@@ -1,9 +1,11 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Input, TextArea, Toggle } from '$lib/components/ui/Input';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { ShopStoreManager } from '$lib/stores/shop';
 	import { CommonState } from '$lib/utils/common.svelte';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import { object, string } from 'zod';
 
@@ -41,15 +43,14 @@
 
 {void formOk}
 
-<div class="bg-white border border-gray-200 p-3 space-y-2 rounded-lg">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>
-		<dir>General information</dir>
+		<dir>{$tranFunc('common.generalInfo')}</dir>
 	</SectionHeader>
 
 	<Input
 		required
-		label="Name"
-		placeholder="Name"
+		label={$tranFunc('common.name')}
 		bind:value={name}
 		{disabled}
 		variant={$SchemaHandler.name?.length ? 'error' : 'info'}
@@ -59,8 +60,7 @@
 	/>
 	<TextArea
 		required
-		label="Description"
-		placeholder="Description"
+		label={$tranFunc('settings.description')}
 		bind:value={description}
 		inputClass="min-h-20"
 		variant={$SchemaHandler.description?.length ? 'error' : 'info'}
@@ -69,15 +69,14 @@
 		onblur={SchemaHandler.validate}
 		{disabled}
 	/>
-	<Toggle label="Is default" bind:checked={isDefault} {disabled} />
+	<Toggle label={$tranFunc('common.isDefault')} bind:checked={isDefault} {disabled} />
 
 	<SectionHeader>
-		<div>Countries ({countries.length})</div>
+		<div>{$tranFunc('common.countries')} ({countries.length})</div>
 	</SectionHeader>
 
 	<Select
-		label="Countries"
-		placeholder="Shipping zone countries"
+		label={$tranFunc('common.countries')}
 		multiple
 		required
 		bind:value={countries}

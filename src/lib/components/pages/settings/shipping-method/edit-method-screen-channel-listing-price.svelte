@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Input } from '$lib/components/ui/Input';
 	import { Select } from '$lib/components/ui/select';
@@ -47,7 +48,7 @@
 			minimumOrderPrice: number().nonnegative($CommonState.NonNegativeError),
 			maximumOrderPrice: number().nonnegative($CommonState.NonNegativeError),
 		}).refine((item) => item.minimumOrderPrice <= item.maximumOrderPrice, {
-			message: 'min price >= max price',
+			message: $tranFunc('ship.minPriceLessThanMaxPrice'),
 			path: ['minimumOrderPrice'],
 		}),
 	);
@@ -122,15 +123,14 @@
 {/snippet} -->
 
 <div class={SitenameCommonClassName}>
-	<SectionHeader>Distribution and Pricing</SectionHeader>
+	<SectionHeader>{$tranFunc('ship.distributionAndPrice')}</SectionHeader>
 	<Select
 		options={availableChannels.map((chan) => ({
 			value: chan.id,
 			label: chan.name,
 		}))}
 		multiple
-		label="Channels available"
-		placeholder="channels available"
+		label={$tranFunc('ship.chansAvailable')}
 		bind:value={innerAvailableChannelIds}
 		required
 		variant={NoChannelError ? 'error' : 'info'}
@@ -138,10 +138,10 @@
 	/>
 
 	<div class="flex gap-2 items-start flex-row font-medium text-sm text-gray-600">
-		<div class="flex-1/10">Channel</div>
-		<div class="flex-3/10">Min order value</div>
-		<div class="flex-3/10">Max order value</div>
-		<div class="flex-3/10">Shipping cost</div>
+		<div class="flex-1/10">{$tranFunc('product.channel')}</div>
+		<div class="flex-3/10">{$tranFunc('ship.minOrderValue')}</div>
+		<div class="flex-3/10">{$tranFunc('ship.maxOrderValue')}</div>
+		<div class="flex-3/10">{$tranFunc('checkout.shippingCost')}</div>
 	</div>
 
 	{#each shippingMethodChannelListings as listing, idx (idx)}
@@ -149,7 +149,7 @@
 			<div class="flex-1/10">{listing.channel.name}</div>
 			<Input
 				size="sm"
-				placeholder="min order value"
+				placeholder={$tranFunc('ship.minOrderValue')}
 				type="number"
 				class="flex-3/10"
 				bind:value={listing.minimumOrderPrice}
@@ -167,7 +167,7 @@
 			</Input>
 			<Input
 				size="sm"
-				placeholder="max order value"
+				placeholder={$tranFunc('ship.maxOrderValue')}
 				type="number"
 				class="flex-3/10"
 				bind:value={listing.maximumOrderPrice}
@@ -185,7 +185,7 @@
 			</Input>
 			<Input
 				size="sm"
-				placeholder="shipping cost"
+				placeholder={$tranFunc('checkout.shippingCost')}
 				type="number"
 				class="flex-3/10"
 				bind:value={listing.price}

@@ -165,7 +165,7 @@
 
 					set(
 						attributeProp,
-						isSwatchAttribute ? 'swatch.value' : 'dropdown.value',
+						isSwatchAttribute ? 'swatch.id' : 'dropdown.id',
 						attrValue.value,
 					);
 
@@ -213,7 +213,7 @@
 						const attributeProps: BulkAttributeValueInput = {
 							id: manifest.attribute.id,
 						};
-						set(attributeProps, isSwatchAttr ? 'swatch.value' : 'dropdown.value', value1.value);
+						set(attributeProps, isSwatchAttr ? 'swatch.id' : 'dropdown.id', value1.value);
 
 						return attributeProps;
 					});

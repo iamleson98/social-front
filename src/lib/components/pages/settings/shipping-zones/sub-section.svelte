@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tranFunc } from '$i18n';
 	import { WAREHOUSE_LIST_QUERY } from '$lib/api/admin/warehouse';
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
@@ -51,15 +52,14 @@
 
 <div class="space-y-2 w-4/10">
 	<div class={SitenameCommonClassName}>
-		<SectionHeader>Channels</SectionHeader>
+		<SectionHeader>{$tranFunc('channel.channels')}</SectionHeader>
 
 		<Alert size="sm" bordered>
-			Assign channels to this shipping zone so we know which orders will be supported
+			{$tranFunc('ship.assignChansHelpText')}
 		</Alert>
 
 		<ChannelSelect
-			placeholder="Channels"
-			label="Channels"
+			label={$tranFunc('channel.channels')}
 			required
 			valueType="id"
 			bind:value={channelIds}
@@ -70,19 +70,17 @@
 	</div>
 
 	<div class={SitenameCommonClassName}>
-		<SectionHeader>Warehouses</SectionHeader>
+		<SectionHeader>{$tranFunc('channel.warehouse')}</SectionHeader>
 
 		<Alert size="sm" bordered>
-			Select warehouse from which you will ship products for this shipping zone. This warehouse
-			address will also be used to calculate taxes.
+			{$tranFunc('ship.selectWarehouseHelpText')}
 		</Alert>
 
 		<GraphqlPaginableSelect
 			optionValueKey="id"
 			optionLabelKey="name"
 			query={WAREHOUSE_LIST_QUERY}
-			placeholder="Warehouses"
-			label="Warehouses"
+			label={$tranFunc('channel.warehouse')}
 			required
 			bind:value={warehouseIds}
 			onchange={handleSelectionChange}
@@ -99,9 +97,9 @@
 
 		<data class="text-right text-xs">
 			<div>
-				Not found a warehouse? <a
-					href={AppRoute.SETTINGS_CONFIGS_WAREHOUSE_NEW()}
-					class="link font-medium">Create one</a
+				{$tranFunc('common.notFound')}?
+				<a href={AppRoute.SETTINGS_CONFIGS_WAREHOUSE_NEW()} class="link font-medium"
+					>{$tranFunc('btn.create')}</a
 				>
 			</div>
 		</data>

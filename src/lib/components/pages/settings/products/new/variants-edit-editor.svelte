@@ -295,12 +295,12 @@
 					// Check if a variant that already has 2 selected attributes.
 					// And also has according 1 attribute value for each attribute.
 					const existingVariant = productVariantsInput.find((variantDetail) => {
-						if (variantDetail.attributes?.length !== 2) return false;
+						if ((variantDetail.attributes?.length || 0) < 2) return false;
 
 						let value1Used = false,
 							value2Used = false;
 
-						for (const attr of variantDetail.attributes) {
+						for (const attr of variantDetail.attributes || []) {
 							if (attr.dropdown?.id === value1.value || attr.swatch?.id === value1.value)
 								value1Used = true;
 							else if (attr.swatch?.id === value2.value || attr.swatch?.id === value2.value)
@@ -333,7 +333,7 @@
 						channelListings: {
 							[ChannelListingCurrentKey]: [],
 						},
-						weight: 0,
+						weight: { value: 0 },
 						preorder: {},
 						// NOTE: Later when we come to handle update, all variants with empty IDs like below will be bulk created.
 						id: '',

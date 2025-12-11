@@ -38,6 +38,9 @@
 		type ProductVariantStocksUpdateInput,
 		WeightUnitsEnum,
 		type Weight,
+		type BulkAttributeValueInput,
+		type AttributeValueInput,
+		AttributeInputTypeEnum,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
@@ -101,7 +104,7 @@
 	// in product update screen
 	let productVariantBulkUpdateInput = $state<ProductVariantBulkUpdateInput[]>([]);
 
-	$inspect(productVariantBulkUpdateInput, product.privateMetadata);
+	// $inspect(productVariantBulkUpdateInput, product.privateMetadata);
 
 	onMount(() => {
 		return ProductDetailStore.subscribe((result) => {
@@ -157,11 +160,45 @@
 
 				if (variants?.length) {
 					productVariantBulkUpdateInput = variants.map<ProductVariantBulkUpdateInput>(
-						({ assignedAttributes, preorder, channelListings, stocks, weight, ...rest }) => {
+						({
+							assignedAttributes,
+							preorder,
+							channelListings,
+							stocks,
+							weight,
+							attributes,
+							...rest
+						}) => {
 							return {
 								...rest,
 								weight: weight || { value: 0, unit: WeightUnitsEnum.Kg },
-								attributes: assignedAttributes.map((item) => item.attribute),
+								attributes: attributes.map<BulkAttributeValueInput>(({ attribute, values }) => {
+									const res: AttributeValueInput = {
+										id: attribute.id,
+									};
+
+									switch (attribute.inputType) {
+										case AttributeInputTypeEnum.Dropdown:
+											res.dropdown = values.length
+												? {
+														value: values[0].value,
+														id: values[0].id,
+													}
+												: {};
+											break;
+
+										case AttributeInputTypeEnum.Swatch:
+											res.swatch = values.length
+												? {
+														value: values[0].value,
+														id: values[0].id,
+													}
+												: {};
+											break;
+									}
+
+									return res;
+								}),
 								preorder: preorder || {
 									globalThreshold: undefined,
 									globalSoldUnits: undefined,

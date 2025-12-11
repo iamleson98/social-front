@@ -42,7 +42,7 @@ const config = {
 	compilerOptions: {
 		runes: true,
 		sourcemap: false,
-		// NOTE: Please do not turn this async feature on. It will cause issues with page navigation.
+		// NOTE: Please do not turn this async feature on. It will cause issues with links auto navigation when hover.
 
 		// experimental: {
 		// 	async: true,

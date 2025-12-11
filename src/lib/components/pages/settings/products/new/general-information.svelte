@@ -47,7 +47,7 @@
 	};
 
 	type CustomAttributeInput = AttributeValueInput & {
-		required: boolean;
+		valueRequired: boolean;
 		inputType?: AttributeInputTypeEnum | null;
 	};
 
@@ -83,7 +83,7 @@
 		for (let idx = 0; idx < innerAttributes.length; idx++) {
 			const attr = innerAttributes[idx];
 
-			if (!attr['required']) continue;
+			if (!attr.valueRequired) continue;
 
 			if (
 				attr.inputType === AttributeInputTypeEnum.Dropdown &&
@@ -137,10 +137,7 @@
 
 				innerAttributes = result.data.productType.productAttributes.map<CustomAttributeInput>(
 					(props) => {
-						const result: CustomAttributeInput = {
-							inputType: props.inputType,
-							required: props.valueRequired,
-						};
+						const result: CustomAttributeInput = pick(props, ['id', 'inputType', 'valueRequired']);
 
 						let existingAttribute: SelectedAttribute | undefined = undefined;
 						// if it is edit page, and product already has attributes assigned.
@@ -219,7 +216,7 @@
 	$effect(() => {
 		if (!AttributeErrors.some(Boolean)) {
 			attributes = innerAttributes.map<AttributeValueInput>((attr) =>
-				omit(attr, ['inputType', 'required']),
+				omit(attr, ['inputType', 'valueRequired']),
 			);
 		}
 	});
@@ -245,7 +242,7 @@
 				search: '',
 			},
 		} as QueryProductTypesArgs}
-		disabled={disabled || isCreatePage}
+		disabled={disabled || !isCreatePage}
 		resultKey="productTypes"
 		optionValueKey="id"
 		optionLabelKey="name"

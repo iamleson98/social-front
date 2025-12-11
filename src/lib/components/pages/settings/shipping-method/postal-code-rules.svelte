@@ -30,24 +30,24 @@
 		inclusionType = $bindable(),
 	}: Props = $props();
 
-	const RuleColumns: TableColumnProps<PartialShippingMethodPostalCodeRule>[] = [
+	const RuleColumns: TableColumnProps<PartialShippingMethodPostalCodeRule>[] = $derived([
 		{
-			title: 'start',
+			title: $tranFunc('common.startAt'),
 			child: start,
 		},
 		{
-			title: 'end',
+			title: $tranFunc('common.endAt'),
 			child: end,
 		},
 		{
-			title: 'inclusion type',
+			title: $tranFunc('ship.postalCodeInclusionType'),
 			child: inclusionTypeSnippet,
 		},
 		{
-			title: 'action',
+			title: $tranFunc('common.action'),
 			child: action,
 		},
-	];
+	]);
 
 	let displayingPostalCodeRules = $state<PartialShippingMethodPostalCodeRule[]>(existingCodeRules);
 	let openAddRuleRangeModal = $state(false);
@@ -95,7 +95,7 @@
 	<span>{item.end || '-'}</span>
 {/snippet}
 
-{#snippet inclusionTypeSnippet({ }: { item: PartialShippingMethodPostalCodeRule })}
+{#snippet inclusionTypeSnippet({}: { item: PartialShippingMethodPostalCodeRule })}
 	<Badge
 		text={inclusionType || '-'}
 		color={inclusionType === PostalCodeRuleInclusionTypeEnum.Include ? 'green' : 'red'}
@@ -114,9 +114,9 @@
 
 <div class={SitenameCommonClassName}>
 	<SectionHeader>
-		<div>Postal code rules</div>
+		<div>{$tranFunc('ship.postalCodeRules')}</div>
 		<Button size="xs" endIcon={Plus} variant="light" onclick={() => (openAddRuleRangeModal = true)}>
-			Add range
+			{$tranFunc('ship.addRange')}
 		</Button>
 	</SectionHeader>
 
@@ -124,7 +124,7 @@
 </div>
 
 <Modal
-	header="Add range"
+	header={$tranFunc('ship.addRange')}
 	open={openAddRuleRangeModal}
 	size="sm"
 	onClose={() => {
@@ -142,23 +142,22 @@
 		<div class="space-y-2">
 			<RadioButton
 				value={PostalCodeRuleInclusionTypeEnum.Include}
-				label="Include"
+				label={$tranFunc('common.include')}
 				bind:group={inclusionType}
-				subText="Added postal codes will be excluded from using this delivery methods. If none are added all postal codes will be able to use that shipping rate"
+				subText={$tranFunc('ship.includeHelpText')}
 			/>
 			<RadioButton
 				value={PostalCodeRuleInclusionTypeEnum.Exclude}
-				label="Exclude"
+				label={$tranFunc('common.exclude')}
 				bind:group={inclusionType}
-				subText="Only added postal codes will be able to use this shipping rate"
+				subText={$tranFunc('ship.excludeHelpText')}
 			/>
 		</div>
 
 		<div class="grid grid-cols-2 gap-2">
 			<Input
-				placeholder="start"
 				type="text"
-				label="Start"
+				label={$tranFunc('common.startAt')}
 				bind:value={addCodeRangeInput.start}
 				inputDebounceOption={{ onInput: validateDuplication }}
 				required
@@ -168,9 +167,8 @@
 					: undefined}
 			/>
 			<Input
-				placeholder="end"
 				type="text"
-				label="End"
+				label={$tranFunc('common.endAt')}
 				bind:value={addCodeRangeInput.end}
 				inputDebounceOption={{ onInput: validateDuplication }}
 				variant={ruleDuplicated ? 'error' : 'info'}

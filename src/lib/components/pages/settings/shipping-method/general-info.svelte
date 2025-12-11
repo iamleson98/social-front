@@ -44,7 +44,7 @@
 		maximumDeliveryDays: number().nonnegative($CommonState.NonNegativeError),
 		minimumDeliveryDays: number().nonnegative($CommonState.NonNegativeError),
 	}).refine((data) => data.maximumDeliveryDays >= data.minimumDeliveryDays, {
-		message: 'max delivery days <= min delivery days',
+		message: $tranFunc('ship.maxDeliveryLessThanMinDelivery'),
 		path: ['maximumDeliveryDays'],
 	});
 	const SchemaHandler = createSchemaHandler(
@@ -71,16 +71,15 @@
 				variant="light"
 				color="gray"
 			>
-				Back
+				{$tranFunc('btn.back')}
 			</Button>
-			<span>General information</span>
+			<span>{$tranFunc('common.generalInfo')}</span>
 		</div>
 	</SectionHeader>
 	<Input
-		label="Name"
+		label={$tranFunc('common.name')}
 		bind:value={name}
 		required
-		placeholder="Name"
 		{disabled}
 		variant={$SchemaHandler.name?.length ? 'error' : 'info'}
 		subText={$SchemaHandler.name?.[0]}
@@ -90,9 +89,8 @@
 	<EditorJSComponent
 		bind:value={description}
 		required
-		label="Description"
+		label={$tranFunc('settings.description')}
 		{disabled}
-		placeholder="Description"
 		variant={$SchemaHandler.description?.length ? 'error' : 'info'}
 		subText={$SchemaHandler.description?.[0]}
 		onchange={SchemaHandler.validate}
@@ -100,7 +98,7 @@
 
 	<div class="flex gap-2">
 		<Input
-			label="Minimum delivery days"
+			label={$tranFunc('ship.minDeliveryDays')}
 			bind:value={minimumDeliveryDays}
 			required
 			type="number"
@@ -113,7 +111,7 @@
 			min={0}
 		/>
 		<Input
-			label="Maximum delivery days"
+			label={$tranFunc('ship.maxDeliveryDays')}
 			bind:value={maximumDeliveryDays}
 			required
 			type="number"

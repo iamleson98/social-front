@@ -374,6 +374,18 @@ export const PRODUCT_DETAIL_QUERY = gql`
 				sku
 				trackInventory
 				quantityLimitPerCustomer
+				attributes {
+					attribute {
+						id
+						name
+						inputType
+					}
+					values {
+						id
+						name
+						value
+					}
+				}
 				weight {
 					value
 					unit
