@@ -16,7 +16,11 @@
 	import { CommonState } from '$lib/utils/common.svelte';
 	import type { MediaObject } from '$lib/utils/types';
 	import { randomString, SitenameCommonClassName } from '$lib/utils/utils';
+	import './table.css';
 	import {
+		MAX_DAYS_FOR_PREORDER,
+		MAX_VARIANT_TYPES,
+		MIN_DAYS_FOR_PREORDER,
 		type ChannelSelectOptionProps,
 		type QuickFillHighlight,
 		type QuickFillingProps,
@@ -48,9 +52,6 @@
 
 	const WarehouseNameKey = 'warehouseName' as keyof StockInput;
 
-	const MAX_VARIANT_TYPES = 2;
-	const MIN_DAYS_FOR_PREORDER = 5;
-	const MAX_DAYS_FOR_PREORDER = 15;
 	const DAYJS_NOW = dayjs();
 
 	let manifestEditor = $state<ReturnType<typeof VariantManifests>>();
@@ -73,8 +74,6 @@
 		weight: 0,
 		trackInventory: true,
 	});
-	let innerLoading = $state(false);
-	const ShouldDisable = $derived(disabled || innerLoading);
 
 	/**
 	 * If there is 1 variant, there will be 8 columns -> each column's width = 1/9 = 11.11%, 2 variants -> 9 columns -> each column's width = 1/8 = 12.5%;
@@ -136,9 +135,9 @@
 							value2Used = false;
 
 						for (const attr of variantDetail.attributes) {
-							if (attr.dropdown?.id === value1.value || attr.swatch?.id === value1.value)
+							if ([attr.dropdown?.id, attr.swatch?.id].includes(value1.value as any))
 								value1Used = true;
-							else if (attr.swatch?.id === value2.value || attr.swatch?.id === value2.value)
+							else if ([attr.dropdown?.id, attr.swatch?.id].includes(value2.value as any))
 								value2Used = true;
 						}
 
@@ -321,12 +320,13 @@
 		{onManifestDeleted}
 		bind:privateMetadata
 		bind:this={manifestEditor}
+		{disabled}
 	/>
 
 	{#if variantManifests.length}
 		<VariantQuickFillingValues
 			{channelSelectOptions}
-			disabled={ShouldDisable}
+			{disabled}
 			bind:quickFillingValues
 			{handleQuickFillingClick}
 		/>
@@ -378,7 +378,7 @@
 								{:else}
 									<Select
 										size="sm"
-										disabled={ShouldDisable}
+										{disabled}
 										options={channelSelectOptions}
 										value={variantInputDetail.channelListings?.map((item) => item.channelId)}
 										multiple
@@ -398,7 +398,7 @@
 										<Input
 											type="number"
 											min={0}
-											disabled={ShouldDisable}
+											{disabled}
 											size="xs"
 											placeholder={currency}
 											bind:value={variantInputDetail.channelListings![idx].price}
@@ -425,7 +425,7 @@
 										<Input
 											type="number"
 											min={0}
-											disabled={ShouldDisable}
+											{disabled}
 											size="xs"
 											placeholder={currency}
 											bind:value={variantInputDetail.channelListings![idx].costPrice}
@@ -451,7 +451,7 @@
 									size="sm"
 									min={0}
 									placeholder="kg"
-									disabled={ShouldDisable}
+									{disabled}
 									bind:value={variantInputDetail.weight}
 									variant={variantInputDetail.weight >= 0 ? 'info' : 'error'}
 									subText={variantInputDetail.weight >= 0 ? '' : $CommonState.NonNegativeError}
@@ -469,7 +469,7 @@
 									label={$tranFunc('product.qtyLimit')}
 									size="xs"
 									class="mb-2"
-									disabled={ShouldDisable}
+									{disabled}
 									bind:value={variantInputDetail.preorder!.globalThreshold}
 									variant={typeof variantInputDetail.preorder?.globalThreshold === 'number' &&
 									variantInputDetail.preorder.globalThreshold % 1 !== 0
@@ -487,7 +487,7 @@
 										showMonths: true,
 										showYears: { min: 2020, max: DAYJS_NOW.year() + 1 },
 									}}
-									disabled={ShouldDisable}
+									{disabled}
 									timeConfig={false}
 									onchange={(date) => (variantInputDetail.preorder!.endDate = date.date)}
 									value={{ date: variantInputDetail.preorder!.endDate }}
@@ -508,7 +508,7 @@
 											placeholder={$tranFunc('product.stock')}
 											bind:value={variantInputDetail.stocks![idx].quantity}
 											type="number"
-											disabled={ShouldDisable}
+											{disabled}
 											min={0}
 											variant={stock.quantity % 1 !== 0 ? 'error' : 'info'}
 											subText={stock.quantity % 1 !== 0 ? $CommonState.NonNegativeError : ''}
@@ -521,7 +521,7 @@
 								<Input
 									type="text"
 									size="sm"
-									disabled={ShouldDisable}
+									{disabled}
 									placeholder="SKU"
 									bind:value={variantInputDetail.sku}
 									variant={variantInputDetail.sku?.trim() ? 'info' : 'error'}
@@ -535,23 +535,3 @@
 		</div>
 	{/if}
 </div>
-
-<style lang="postcss">
-	@reference "tailwindcss";
-
-	th:not(:last-child) {
-		@apply border-r border-gray-200 py-1 px-1.5;
-	}
-
-	tr {
-		@apply border-b border-gray-300;
-	}
-
-	tr:nth-child(even) {
-		@apply bg-gray-50;
-	}
-
-	td {
-		@apply p-1;
-	}
-</style>

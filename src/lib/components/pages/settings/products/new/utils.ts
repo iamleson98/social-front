@@ -64,3 +64,7 @@ export type QuickFillingProps = {
  * But we won't show the metadata of this key to the UI, the content of this etadata will be handled by fe logic
  */
 export const ProductPrivateMetadataVariantAttributeUsedKey = 'variantAttributeUsed';
+
+export const MAX_VARIANT_TYPES = 2;
+export const MIN_DAYS_FOR_PREORDER = 5;
+export const MAX_DAYS_FOR_PREORDER = 15;

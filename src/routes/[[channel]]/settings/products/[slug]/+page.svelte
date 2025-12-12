@@ -104,8 +104,6 @@
 	// in product update screen
 	let productVariantBulkUpdateInput = $state<ProductVariantBulkUpdateInput[]>([]);
 
-	// $inspect(productVariantBulkUpdateInput, product.privateMetadata);
-
 	onMount(() => {
 		return ProductDetailStore.subscribe((result) => {
 			if (result.data?.product) {
@@ -228,6 +226,8 @@
 		});
 	});
 
+	$inspect(productVariantBulkUpdateInput);
+
 	const handleSubmit = async () => {
 		const hasErr = await metaRef?.handleUpdate($ProductDetailStore.data?.product?.id);
 		if (hasErr) return;
@@ -242,7 +242,7 @@
 					Pick<Mutation, 'productDelete'>,
 					MutationProductDeleteArgs
 				>(PRODUCT_DELETE_MUTATION, {
-					id: page.params.slug!,
+					id: $ProductDetailStore.data?.product?.id,
 				});
 				loading = false;
 

@@ -30,7 +30,11 @@
 	} from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { randomString, SitenameCommonClassName } from '$lib/utils/utils';
+	import './table.css';
 	import {
+		MAX_DAYS_FOR_PREORDER,
+		MAX_VARIANT_TYPES,
+		MIN_DAYS_FOR_PREORDER,
 		type ChannelSelectOptionProps,
 		type QuickFillingProps,
 		type VariantManifest,
@@ -68,13 +72,7 @@
 		weight: 0,
 		trackInventory: true,
 	});
-	let loading = $state(false);
 
-	const ShouldDisable = $derived(disabled || loading);
-
-	const MAX_VARIANT_TYPES = 2;
-	const MIN_DAYS_FOR_PREORDER = 5;
-	const MAX_DAYS_FOR_PREORDER = 15;
 	const DAYJS_NOW = dayjs();
 
 	$effect(() => {
@@ -182,9 +180,9 @@
 							value2Used = false;
 
 						for (const attr of variantDetail.attributes || []) {
-							if (attr.dropdown?.id === value1.value || attr.swatch?.id === value1.value)
+							if ([attr.dropdown?.id, attr.swatch?.id].includes(value1.value as any))
 								value1Used = true;
-							else if (attr.swatch?.id === value2.value || attr.swatch?.id === value2.value)
+							else if ([attr.dropdown?.id, attr.swatch?.id].includes(value2.value as any))
 								value2Used = true;
 						}
 
@@ -297,11 +295,12 @@
 		{onManifestDeleted}
 		bind:privateMetadata
 		bind:this={manifestEditor}
+		{disabled}
 	/>
 
 	<VariantQuickFillingValues
 		{channelSelectOptions}
-		disabled={ShouldDisable}
+		{disabled}
 		bind:quickFillingValues
 		{handleQuickFillingClick}
 	/>
@@ -526,23 +525,3 @@
 		</table>
 	</div>
 </div>
-
-<style lang="postcss">
-	@reference "tailwindcss";
-
-	th:not(:last-child) {
-		@apply border-r border-gray-200 py-1 px-1.5;
-	}
-
-	tr {
-		@apply border-b border-gray-300;
-	}
-
-	tr:nth-child(even) {
-		@apply bg-gray-50;
-	}
-
-	td {
-		@apply p-1;
-	}
-</style>

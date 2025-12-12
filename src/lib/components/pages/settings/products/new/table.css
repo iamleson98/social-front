@@ -1,0 +1,17 @@
+@reference "tailwindcss";
+
+th:not(:last-child) {
+  @apply border-r border-gray-200 py-1 px-1.5;
+}
+
+tr {
+  @apply border-b border-gray-300;
+}
+
+tr:nth-child(even) {
+  @apply bg-gray-50;
+}
+
+td {
+  @apply p-1;
+}
