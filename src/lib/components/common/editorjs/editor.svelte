@@ -144,10 +144,11 @@
 			data: value,
 
 			onChange(api, _event) {
-				api.saver.save().then((dt) => {
-					value = dt;
-					onchange?.(dt);
-				});
+				if (!disabled)
+					api.saver.save().then((dt) => {
+						value = dt;
+						onchange?.(dt);
+					});
 			},
 		});
 

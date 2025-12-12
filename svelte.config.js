@@ -41,7 +41,11 @@ const config = {
 	},
 	compilerOptions: {
 		runes: true,
-		sourcemap: false,
+		sourcemap: true,
+		warningFilter: (w) => {
+			// this disable warnings for state reference locally warning
+			return !['state_referenced_locally', 'css_unused_selector'].includes(w.code);
+		},
 		// NOTE: Please do not turn this async feature on. It will cause issues with links auto navigation when hover.
 
 		// experimental: {

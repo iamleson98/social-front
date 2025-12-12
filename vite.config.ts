@@ -24,15 +24,16 @@ export default defineConfig(({ mode }) => {
 			},
 		},
 		build: {
-			sourcemap: false,
+			minify: mode !== 'development',
+			sourcemap: mode === 'development',
 			rollupOptions: {
 				output: {
-					manualChunks: id => {
+					manualChunks: (id) => {
 						if (id.includes('node_modules')) {
 							return 'vendor';  // Chunk all deps into one file for better caching
 						}
 					},
-					sourcemap: false,
+					// sourcemap: true,
 				},
 			},
 		},

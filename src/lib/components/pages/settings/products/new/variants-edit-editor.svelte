@@ -13,49 +13,32 @@
 
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { ATTRIBUTE_VALUE_CREATE_MUTATION } from '$lib/api/admin/attribute';
-	import { PRODUCT_TYPE_QUERY } from '$lib/api/admin/product';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { operationStore } from '$lib/api/operation';
-	import { Icon, Plus } from '$lib/components/icons';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Input } from '$lib/components/ui/Input';
-	import { Select, SelectSkeleton, type SelectOption } from '$lib/components/ui/select';
+	import { Select, SelectSkeleton } from '$lib/components/ui/select';
 	import {
-		AttributeInputTypeEnum,
 		type BulkAttributeValueInput,
 		type MetadataInput,
-		type Mutation,
-		type MutationAttributeValueCreateArgs,
 		type ProductChannelListingAddInput,
 		type ProductChannelListingUpdateInput,
 		type ProductVariantBulkUpdateInput,
 		type ProductVariantChannelListing,
 		type ProductVariantChannelListingUpdateInput,
 		type ProductVariantStocksUpdateInput,
-		type Query,
-		type QueryProductTypeArgs,
 		type Stock,
 	} from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
+	import { randomString, SitenameCommonClassName } from '$lib/utils/utils';
 	import {
-		checkIfGraphqlResultHasError,
-		randomString,
-		SitenameCommonClassName,
-	} from '$lib/utils/utils';
-	import {
-		ProductPrivateMetadataVariantAttributeUsedKey,
 		type ChannelSelectOptionProps,
 		type QuickFillingProps,
 		type VariantManifest,
 	} from './utils';
-	import VariantManifestItem from './variant-manifest-item.svelte';
+	import VariantManifests from './variant-manifests.svelte';
 	import VariantQuickFillingValues from './variant-quick-filling-values.svelte';
 	import dayjs from 'dayjs';
 	import { set } from 'es-toolkit/compat';
-	import { onMount } from 'svelte';
-	import { toast } from 'svelte-sonner';
 
 	type Props = {
 		disabled?: boolean;
@@ -75,25 +58,7 @@
 		productTypeId,
 	}: Props = $props();
 
-	const ProductTypeDetailQuery = operationStore<Pick<Query, 'productType'>, QueryProductTypeArgs>({
-		query: PRODUCT_TYPE_QUERY,
-		variables: {
-			id: productTypeId,
-		},
-		requestPolicy: 'cache-and-network',
-		pause: !productTypeId,
-	});
-
-	const AvailableAttributeOptions = $derived(
-		$ProductTypeDetailQuery.data?.productType?.assignedVariantAttributes
-			?.filter((attr) => attr.variantSelection)
-			.map<SelectOption>((attr) => ({
-				value: attr.attribute.id,
-				label: (attr.attribute.name || attr.attribute.slug) as string,
-				disabled: variantManifests.some((manifest) => manifest.attribute.id === attr.attribute.id),
-			})) || [],
-	);
-
+	let manifestEditor = $state<ReturnType<typeof VariantManifests>>();
 	let variantManifests = $state<VariantManifest[]>([]);
 	let channelSelectOptions = $state.raw<ChannelSelectOptionProps[]>([]);
 	let quickFillingValues = $state<QuickFillingProps>({
@@ -106,44 +71,11 @@
 	let loading = $state(false);
 
 	const ShouldDisable = $derived(disabled || loading);
-	/**
-	 * there are at most 2 attributes used for variants creation, so this list has 2 booleans.
-	 * If user can not find her desired attribute values, we support auto create feature,
-	 * so user do not have to visit the attribute detail page to add more values.
-	 *
-	 * With that said, after an attribute value is added, we must use this list, to trigger according select to refetch and find for created attribute values.
-	 */
-	let manifestPerformFetchingAttributeValues = $state([false, false]);
 
 	const MAX_VARIANT_TYPES = 2;
 	const MIN_DAYS_FOR_PREORDER = 5;
 	const MAX_DAYS_FOR_PREORDER = 15;
 	const DAYJS_NOW = dayjs();
-
-	// Right after the page mounted, we must check if there is metadata information of attributes used by variants.
-	// If yes, perform parse that data, and apply it to `variantManifests`
-	onMount(async () => {
-		const attrMeta = privateMetadata.find(
-			(item) => item.key === ProductPrivateMetadataVariantAttributeUsedKey,
-		);
-		if (attrMeta) {
-			try {
-				const parsedAttrInfor = JSON.parse(attrMeta.value);
-				if (parsedAttrInfor.length) {
-					variantManifests = parsedAttrInfor;
-
-					// also trigger the <Select /> to fetch attribute values data
-					manifestPerformFetchingAttributeValues = [true, true];
-
-					// also update the variant details
-					// variantManifests.forEach((item, idx) => handleVariantValuesChange(idx, item.values));
-				}
-			} catch (err) {
-				console.error(err);
-				toast.error(`Failed to load variant attribute information. Please try reload the page.`);
-			}
-		}
-	});
 
 	$effect(() => {
 		// when the given channels change, this function runs again,
@@ -186,60 +118,14 @@
 		return 'w-[11.11%]!';
 	});
 
-	const handleAddNewAttributeValue = async (manifestIdx: number, value: string) => {
-		const attributeId = variantManifests[manifestIdx].attribute.id;
-		const isSwatchAttribute =
-			$ProductTypeDetailQuery.data?.productType?.assignedVariantAttributes?.find(
-				(attr) => attr.attribute.id === attributeId,
-			)?.attribute.inputType === AttributeInputTypeEnum.Swatch;
-		loading = true;
-
-		const result = await GRAPHQL_CLIENT.mutation<
-			Pick<Mutation, 'attributeValueCreate'>,
-			MutationAttributeValueCreateArgs
-		>(ATTRIBUTE_VALUE_CREATE_MUTATION, {
-			attribute: attributeId,
-			input: {
-				name: value,
-				value: isSwatchAttribute ? value : undefined,
-			},
-		});
-		loading = false;
-
-		if (checkIfGraphqlResultHasError(result, 'attributeValueCreate')) return;
-		// added value success, perform refetching now
-		manifestPerformFetchingAttributeValues[manifestIdx] = true;
-	};
-
-	const handleDeleteManifest = (manifestIdx: number) => {
-		const currentNumberOfManifests = variantManifests.length;
-
-		// remove the manifest
-		variantManifests = variantManifests.filter((_, idx) => idx !== manifestIdx);
+	const onManifestDeleted = () => {
 		if (!variantManifests.length) {
-			// variantsInputDetails = [];
+			productVariantsInput = [];
 			return;
 		}
-
-		// trigger fetching attribute values again
-		if (manifestIdx === 0 && currentNumberOfManifests === MAX_VARIANT_TYPES)
-			manifestPerformFetchingAttributeValues[0] = true;
 	};
 
-	const checkAttributeIsSwatch = (attributeId: string) => {
-		return (
-			$ProductTypeDetailQuery.data?.productType?.assignedVariantAttributes?.find(
-				(attr) => attr.attribute.id === attributeId,
-			)?.attribute.inputType === AttributeInputTypeEnum.Swatch
-		);
-	};
-
-	const handleVariantValuesChange = (
-		manifestIdx: number,
-		options?: SelectOption | SelectOption[],
-	) => {
-		variantManifests[manifestIdx].values = (options as SelectOption[]) || [];
-
+	const onVariantValuesChange = () => {
 		if (variantManifests.length === 1) {
 			productVariantsInput = variantManifests[0].values.map<ProductVariantBulkUpdateInput>(
 				(attrValue) => {
@@ -255,20 +141,15 @@
 
 					if (variantWithAttrValueExisted) return variantWithAttrValueExisted;
 
-					const isSwatchAttribute =
-						$ProductTypeDetailQuery.data?.productType?.assignedVariantAttributes?.find(
-							(attr) => attr.attribute.id === variantManifests[0].attribute.id,
-						)?.attribute.inputType === AttributeInputTypeEnum.Swatch;
+					const isSwatchAttribute = manifestEditor?.checkAttributeIsSwatch(
+						variantManifests[0].attribute.id,
+					);
 
 					const attributeProp: BulkAttributeValueInput = {
 						id: variantManifests[0].attribute.id,
 					};
 
-					set(
-						attributeProp,
-						isSwatchAttribute ? 'swatch.value' : 'dropdown.value',
-						attrValue.value,
-					);
+					set(attributeProp, isSwatchAttribute ? 'swatch.id' : 'dropdown.id', attrValue.value);
 
 					const res: ProductVariantBulkUpdateInput = {
 						attributes: [attributeProp],
@@ -315,18 +196,27 @@
 						continue;
 					}
 
-					const attributes = variantManifests.map((manifest) => {
-						const isSwatchAttr = checkAttributeIsSwatch(manifest.attribute.id);
-						const attributeProps: BulkAttributeValueInput = {
-							id: manifest.attribute.id,
-						};
-						set(attributeProps, isSwatchAttr ? 'swatch.value' : 'dropdown.value', value1.value);
-
-						return attributeProps;
-					});
+					const attr1: BulkAttributeValueInput = set(
+						{
+							id: variantManifests[0].attribute.id,
+						},
+						manifestEditor?.checkAttributeIsSwatch(variantManifests[0].attribute.id)
+							? 'swatch.id'
+							: 'dropdown.id',
+						value1.value,
+					);
+					const attr2: BulkAttributeValueInput = set(
+						{
+							id: variantManifests[1].attribute.id,
+						},
+						manifestEditor?.checkAttributeIsSwatch(variantManifests[1].attribute.id)
+							? 'swatch.id'
+							: 'dropdown.id',
+						value2.value,
+					);
 
 					const newVariant: ProductVariantBulkUpdateInput = {
-						attributes,
+						attributes: [attr1, attr2],
 						name: `${value1.label}-${value2.label}`,
 						sku: `${value1.label}-${value2.label}-${randomString(6)}`,
 						trackInventory: true,
@@ -345,63 +235,6 @@
 
 			productVariantsInput = newVariantDetails;
 		}
-
-		recalculateVariantAttributeMetadata();
-	};
-
-	/**
-	 * This function helps setting the attribute usage by product variants, into private metadata
-	 */
-	const recalculateVariantAttributeMetadata = () => {
-		const setAttrValues = variantManifests.filter((item) => !!item.attribute.id);
-		if (!setAttrValues.length) return;
-
-		const attrInforValue = JSON.stringify(setAttrValues);
-		if (
-			!privateMetadata.some((item) => item.key === ProductPrivateMetadataVariantAttributeUsedKey)
-		) {
-			privateMetadata.push({
-				key: ProductPrivateMetadataVariantAttributeUsedKey,
-				value: attrInforValue,
-			});
-		} else {
-			privateMetadata = privateMetadata.map((item) => {
-				if (item.key === ProductPrivateMetadataVariantAttributeUsedKey) {
-					item.value = attrInforValue;
-				}
-				return item;
-			});
-		}
-	};
-
-	const handleAddVariantManifest = async () => {
-		// when a variant manifest is added, we must force the <Select /> to fetch attribute values
-		if (!variantManifests.length) manifestPerformFetchingAttributeValues[0] = true;
-		else manifestPerformFetchingAttributeValues[1] = true;
-
-		variantManifests = variantManifests.concat({
-			attribute: {
-				id: '',
-				name: '',
-			},
-			values: [],
-		});
-
-		recalculateVariantAttributeMetadata();
-	};
-
-	/**
-	 * Handles when user change attribute of a manifest.
-	 * 1) If user really selected new attribute (selectedNewAttribute = true)
-	 *  +) force refetch attribute values of the new selected attribute
-	 * 	+) clear existing selected attribute values if have
-	 *
-	 * 2) If user just clear the select (selectedNewAttribute = false)
-	 *  +) clear existing select attribute values
-	 */
-	const handleAttributeSelectChange = (manifestIndex: number, selectedNewAttribute: boolean) => {
-		manifestPerformFetchingAttributeValues[manifestIndex] = selectedNewAttribute;
-		variantManifests[manifestIndex].values = [];
 	};
 
 	const handleQuickFillingClick = () => {
@@ -456,33 +289,15 @@
 	};
 </script>
 
-<div class="space-y-3">
-	<div class="grid grid-cols-2 gap-2">
-		{#each variantManifests as maniFest, idx (idx)}
-			<VariantManifestItem
-				index={idx}
-				bind:manifest={variantManifests[idx]}
-				onDeleteVariant={handleDeleteManifest}
-				onAttributeValuesChange={handleVariantValuesChange}
-				onSelectAddNewAttributeValue={handleAddNewAttributeValue}
-				attributeOptions={AvailableAttributeOptions}
-				bind:performFetchAttributeValues={manifestPerformFetchingAttributeValues[idx]}
-				onAttributeChange={(opt) => handleAttributeSelectChange(idx, !!opt)}
-			/>
-		{/each}
-		{#if variantManifests.length < MAX_VARIANT_TYPES && AvailableAttributeOptions.some((opt) => !opt.disabled)}
-			<button
-				class={[
-					'border-dashed border w-full h-full flex items-center justify-center rounded-lg tooltip tooltip-top border-blue-500 text-blue-500 cursor-pointer py-5 hover:bg-blue-50 active:bg-blue-100 focus:bg-blue-50',
-				]}
-				onclick={handleAddVariantManifest}
-				data-tip={$tranFunc('product.addVariant')}
-				aria-label={$tranFunc('product.addVariant')}
-			>
-				<Icon icon={Plus} size="xl" />
-			</button>
-		{/if}
-	</div>
+<div class="space-y-2">
+	<VariantManifests
+		bind:variantManifests
+		{productTypeId}
+		{onVariantValuesChange}
+		{onManifestDeleted}
+		bind:privateMetadata
+		bind:this={manifestEditor}
+	/>
 
 	<VariantQuickFillingValues
 		{channelSelectOptions}
@@ -588,9 +403,9 @@
 										subText={channelListing.price!.amount < 0 ? $CommonState.NonNegativeError : ''}
 									>
 										{#snippet action()}
-											<span class="text-[8px] font-semibold"
-												>{channelListing.channel.currencyCode}</span
-											>
+											<span class="text-[8px] font-semibold">
+												{channelListing.channel.currencyCode}
+											</span>
 										{/snippet}
 									</Input>
 								{/each}

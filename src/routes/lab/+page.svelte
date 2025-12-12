@@ -4,7 +4,7 @@
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { onMount } from 'svelte';
 
-	let value = $state(['12']);
+	let value = $state('12');
 
 	let options = $state<SelectOption[]>([]);
 
@@ -33,4 +33,4 @@
 
 <!-- <EmojiPicker onEmojiClick={console.log} filter="" /> -->
 
-<Select {options} multiple bind:value label="Selector" />
+<Select {options} bind:value label="Selector" />

@@ -91,7 +91,7 @@
 			return;
 		}
 
-		if (!multiple) {
+		if (!multiple && !(value in selectMapper)) {
 			const opt = options.find((opt) => opt.value === value);
 			selectMapper = { [value]: opt || ({ value, label: value } as SelectOption) };
 			selectMapperChanged = true;
@@ -103,10 +103,10 @@
 	 * But the `options` prop is not ready yet but still under the process of construction.
 	 * => This results in the labels of selected values will fallback to the actual values.
 	 * This is good but not quite good for UX.
-	 * 
+	 *
 	 * This effect listens for the options prop to be ready, make the UI shows exact labels of selected values,
 	 * This results in better UX
-	*/
+	 */
 	$effect(() => {
 		const mapper = untrack(() => selectMapper);
 		const newMapper: typeof selectMapper = {};

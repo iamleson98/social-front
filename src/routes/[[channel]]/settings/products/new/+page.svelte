@@ -226,7 +226,7 @@
 
 		toast.success($tranFunc('product.prdCreated'));
 
-		await goto(AppRoute.PRODUCT_DETAILS(productCreateResult.data?.productCreate?.product?.slug!));
+		await goto(AppRoute.SETTINGS_PRODUCTS_EDIT(productCreateResult.data?.productCreate?.product?.slug!));
 	};
 </script>
 
@@ -263,14 +263,16 @@
 			ok={productInputError.channelListing}
 			{loading}
 		/>
-		<VariantsEditor
-			disabled={loading}
-			productTypeId={productCreateInput.productType}
-			{productMedias}
-			channelsListing={channelListingUpdateInput}
-			bind:productVariantsInput
-			bind:privateMetadata={productCreateInput.privateMetadata!}
-		/>
+		{#if productCreateInput.productType}
+			<VariantsEditor
+				disabled={loading}
+				productTypeId={productCreateInput.productType}
+				{productMedias}
+				channelsListing={channelListingUpdateInput}
+				bind:productVariantsInput
+				bind:privateMetadata={productCreateInput.privateMetadata!}
+			/>
+		{/if}
 	</div>
 	<ProductSeo
 		productName={productCreateInput.name}
