@@ -23,6 +23,7 @@
 		MAX_DAYS_FOR_PREORDER,
 		MAX_VARIANT_TYPES,
 		MIN_DAYS_FOR_PREORDER,
+		RandomStringLength,
 		type ChannelSelectOptionProps,
 		type CustomStockInput,
 		type QuickFillHighlight,
@@ -117,7 +118,7 @@
 					return {
 						attributes: [attributeProp],
 						name: `${attrValue.label}`,
-						sku: `${attrValue.label}-${randomString(6)}`,
+						sku: `${attrValue.label}-${randomString(RandomStringLength)}`,
 						trackInventory: true,
 						channelListings: [],
 						weight: 0,
@@ -176,7 +177,7 @@
 					const newVariant: ProductVariantBulkCreateInput = {
 						attributes: [attr1, attr2],
 						name: `${value1.label}-${value2.label}`,
-						sku: `${value1.label}-${value2.label}-${randomString(6)}`,
+						sku: `${value1.label}-${value2.label}-${randomString(RandomStringLength)}`,
 						trackInventory: true,
 						channelListings: [],
 						weight: 0,

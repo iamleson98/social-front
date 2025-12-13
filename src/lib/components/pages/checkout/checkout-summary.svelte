@@ -5,7 +5,7 @@
 	import type { Checkout, CheckoutLine, Money, OrderLine } from '$lib/gql/graphql';
 	import { tranFunc } from '$lib/i18n';
 	import { defaultSlideShowState } from '$lib/stores/ui/slideshow';
-	import { classNames, formatMoney } from '$lib/utils/utils';
+	import { formatMoney } from '$lib/utils/utils';
 	import MoneyComponent from './money.svelte';
 	import SummaryPromocodeRow from './summary-promocode-row.svelte';
 	import {

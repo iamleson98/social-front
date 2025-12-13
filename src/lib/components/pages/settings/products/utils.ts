@@ -110,4 +110,6 @@ export const calculateTableColumnWidth = (manifests: VariantManifest[]) => {
 	if (!manifests.length) return '';
 	if (manifests.length === 1) return 'w-[12.5%]!';
 	return 'w-[11.11%]!';
-}
+};
+
+export const RandomStringLength = 10;
