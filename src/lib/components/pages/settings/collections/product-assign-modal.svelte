@@ -150,6 +150,7 @@
 			disabled={shouldDisable}
 			autoRefetchOnPaginationParamsChange
 			bind:this={productTableRef}
+			autoFetchDataOnMount
 		/>
 	{/if}
 </Modal>

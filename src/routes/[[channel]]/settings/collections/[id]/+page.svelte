@@ -49,14 +49,18 @@
 		privateMetadata: [],
 	});
 	let media = $state<MediaObject[]>([]);
-	let generalFormOk = $state(false);
-	let seoFormOk = $state(false);
+	let generalFormOk = $state(true);
+	let seoFormOk = $state(true);
+	let metaFormOk = $state(true);
 	let collectionChannelListingUpdateInput = $state<CollectionChannelListingUpdateInput>({
 		addChannels: [],
 		removeChannels: [],
 	});
 	let loading = $state(false);
 	let metaRef = $state<GeneralMetadataEditorRef>();
+	const ShouldEnableActionBar = $derived(
+		generalFormOk && seoFormOk && metaFormOk && !loading,
+	);
 
 	const collectionDetailQuery = operationStore<Pick<Query, 'collection'>, QueryCollectionArgs>({
 		query: COLLECTION_DETAIL_QUERY,
@@ -64,7 +68,7 @@
 			id: page.params.id,
 		},
 		pause: !page.params.id,
-		requestPolicy: 'network-only',
+		requestPolicy: 'cache-and-network',
 	});
 
 	onMount(() =>
@@ -170,7 +174,6 @@
 
 		toast.success($CommonState.EditSuccess);
 		collectionDetailQuery.reexecute({
-			context: { requestPolicy: 'network-only' },
 			variables: {
 				id: page.params.id,
 			},
@@ -209,6 +212,7 @@
 				disabled={loading}
 				objectId={id}
 				bind:this={metaRef}
+				bind:formOk={metaFormOk}
 			/>
 		</div>
 
@@ -223,6 +227,6 @@
 		backButtonUrl={AppRoute.SETTINGS_CONFIGS_COLLECTIONS()}
 		{onDeleteClick}
 		{onUpdateClick}
-		disabled={loading}
+		disabled={!ShouldEnableActionBar}
 	/>
 {/if}

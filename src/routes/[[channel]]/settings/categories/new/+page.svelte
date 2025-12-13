@@ -15,7 +15,7 @@
 
 	let media = $state<MediaObject[]>([]);
 	let generalFormOk = $state(false);
-	let createdCategoryId = $state<string>('');
+	let metadataOk = $state(true);
 	let loading = $state(false);
 	let metaRef = $state<GeneralMetadataEditorRef>();
 
@@ -54,7 +54,12 @@
 		const hasErr = await metaRef?.handleUpdate(result.data?.categoryCreate?.category?.id!);
 		loading = false;
 
-		if (!hasErr) toast.success($CommonState.CreateSuccess);
+		if (hasErr) return;
+
+		toast.success($CommonState.CreateSuccess);
+		await goto(
+			AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(result.data?.categoryCreate?.category?.id!),
+		);
 	};
 </script>
 
@@ -71,17 +76,12 @@
 		isCreatePage
 	/>
 
-	<GeneralMetadataEditor
-		objectId={createdCategoryId}
-		disabled={loading}
-		bind:this={metaRef}
-		onDoneUpdate={() => goto(AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(createdCategoryId))}
-	/>
+	<GeneralMetadataEditor disabled={loading} bind:this={metaRef} bind:formOk={metadataOk} />
 </div>
 
 <ActionBar
 	onAddClick={handleCreate}
 	disabled={loading}
 	backButtonUrl={AppRoute.SETTINGS_CONFIGS_CATEGORIES()}
-	disableCreateButton={loading || !generalFormOk}
+	disableCreateButton={loading || !generalFormOk || !metadataOk}
 />

@@ -105,9 +105,8 @@
 
 		const results = await Promise.all(operations);
 		let numFails = 0;
-		for (const result of results) {
+		for (const result of results)
 			if (checkIfGraphqlResultHasError(result, 'productMediaCreate')) numFails++;
-		}
 
 		return numFails;
 
@@ -128,6 +127,7 @@
 			productInputError.channelListing = false;
 			return;
 		}
+		if (!Object.values(productInputError).every(Boolean)) return;
 
 		loading = true;
 

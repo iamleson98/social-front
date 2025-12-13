@@ -29,7 +29,8 @@
 	import { toast } from 'svelte-sonner';
 
 	let media = $state<MediaObject[]>([]);
-	let generalFormOk = $state(false);
+	let generalFormOk = $state(true);
+	let metaFormOk = $state(true);
 	let metaRef = $state<GeneralMetadataEditorRef>();
 	let loading = $state(false);
 
@@ -139,7 +140,6 @@
 		toast.success($CommonState.EditSuccess);
 		categoryQuery.reexecute({
 			variables: { id: page.params.id },
-			context: { requestPolicy: 'network-only' },
 		});
 	};
 </script>
@@ -168,6 +168,7 @@
 				objectId={id}
 				bind:this={metaRef}
 				disabled={loading}
+				bind:formOk={metaFormOk}
 			/>
 		</div>
 
@@ -179,6 +180,6 @@
 		onDeleteClick={handleDeleteClick}
 		disabled={loading}
 		backButtonUrl={AppRoute.SETTINGS_CONFIGS_CATEGORIES()}
-		disableUpdateButton={loading || !generalFormOk}
+		disableUpdateButton={loading || !generalFormOk || !metaFormOk}
 	/>
 {/if}

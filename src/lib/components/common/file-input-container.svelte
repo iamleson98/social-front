@@ -149,7 +149,7 @@
 							onblur={validate}
 							inputDebounceOption={{
 								onInput: (evt) => {
-									medias[idx].alt = (evt.currentTarget as HTMLInputElement).value.trim();
+									medias[idx].alt = (evt.target as HTMLInputElement).value.trim();
 									validate();
 								},
 							}}

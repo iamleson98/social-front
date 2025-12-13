@@ -255,6 +255,9 @@
 	});
 
 	const handleSubmit = async () => {
+		// validate:
+		if (!Object.values(productFormOk).every(Boolean)) return;
+
 		// create copy value to prevent the store subscribe auto re-execute
 		const copiedProductVariantBulkUpdateInput = $state.snapshot(productVariantBulkUpdateInput);
 
@@ -372,8 +375,6 @@
 			},
 		);
 
-		console.log(actualProductVariantBulkUpdateInput);
-
 		const variantsUpdateResult = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'productVariantBulkUpdate'>,
 			MutationProductVariantBulkUpdateArgs
@@ -399,7 +400,6 @@
 		} else {
 			ProductDetailStore.reexecute({
 				variables: { slug: productInput.slug },
-				// context: { requestPolicy: 'network-only' },
 			});
 		}
 	};
@@ -429,7 +429,7 @@
 {:else if $ProductDetailStore.error}
 	<Alert variant="error" size="sm" bordered>{$ProductDetailStore.error.message}</Alert>
 {:else if $ProductDetailStore.data?.product}
-	{@const { metadata, privateMetadata, id, channelListings, attributes, productType } =
+	{@const { metadata, id, channelListings, attributes, productType } =
 		$ProductDetailStore.data.product}
 	<div class="space-y-2">
 		<GeneralInformation
@@ -491,6 +491,7 @@
 			bind:privateMetadata={productInput.privateMetadata!}
 			objectId={id}
 			privateMetadataKeysToHide={[ProductPrivateMetadataVariantAttributeUsedKey]}
+			bind:formOk={productFormOk.metadata}
 		/>
 		{#if productTypeRequiresShipping}
 			<PackagingAndDelivery
