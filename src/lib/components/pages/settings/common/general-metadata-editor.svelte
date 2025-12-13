@@ -30,8 +30,8 @@
 	};
 
 	let {
-		metadata = [],
-		privateMetadata = [],
+		metadata = $bindable([]),
+		privateMetadata = $bindable([]),
 		disabled,
 		objectId,
 		performUpdateMetadata = $bindable(false),

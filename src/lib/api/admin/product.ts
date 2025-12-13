@@ -759,7 +759,7 @@ mutation ProductUpdate($id: ID!, $input: ProductInput!) {
 }`;
 
 export const ProductVariantBulkUpdateMutation = gql`
-mutation productVariantBulkUpdate($product: ID!, $variants: [ProductVariantBulkUpdateInput!]!, $errorPolicy: ErrorPolicyEnum!) {
+mutation productVariantBulkUpdate($product: ID!, $variants: [ProductVariantBulkUpdateInput!]!, $errorPolicy: ErrorPolicyEnum) {
 	productVariantBulkUpdate(product: $product, variants: $variants, errorPolicy: $errorPolicy) {
 		errors {
 			field

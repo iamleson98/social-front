@@ -60,6 +60,7 @@
 			blocks: [],
 		},
 		category: '',
+		weight: 0,
 	});
 	let channelListingUpdateInput = $state.raw<ProductChannelListingUpdateInput>({});
 	let productMedias = $state.raw<MediaObject[]>([]);
@@ -156,11 +157,7 @@
 		const cleanChannelListingUpdateInput: ProductChannelListingUpdateInput = {
 			...channelListingUpdateInput,
 			updateChannels: channelListingUpdateInput.updateChannels.map((item) =>
-				omit(item, [
-					'used' as keyof ProductChannelListingAddInput,
-					'channelName' as keyof ProductChannelListingAddInput,
-					'currency' as keyof ProductChannelListingAddInput,
-				]),
+				omit(item, ['used', 'channelName', 'currency']),
 			) as ProductChannelListingAddInput[],
 		};
 
@@ -226,7 +223,9 @@
 
 		toast.success($tranFunc('product.prdCreated'));
 
-		await goto(AppRoute.SETTINGS_PRODUCTS_EDIT(productCreateResult.data?.productCreate?.product?.slug!));
+		await goto(
+			AppRoute.SETTINGS_PRODUCTS_EDIT(productCreateResult.data?.productCreate?.product?.slug!),
+		);
 	};
 </script>
 

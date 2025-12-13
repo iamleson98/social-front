@@ -12,7 +12,7 @@
 		QueryCategoryArgs,
 	} from '$lib/gql/graphql';
 	import CategoryMenu from './category-menu.svelte';
-	import type { CategorySelectItemProps } from './new/utils';
+	import type { CategorySelectItemProps } from './utils';
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 
@@ -92,6 +92,7 @@
 	};
 
 	const handleSelectItem = async (item: CategorySelectItemProps, idx: number) => {
+		if (disabled) return;
 		activeItemIndex = idx;
 		item.children = await fetchChildren(item.value as string);
 

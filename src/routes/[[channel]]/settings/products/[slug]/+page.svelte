@@ -55,6 +55,7 @@
 		type MutationProductVariantBulkUpdateArgs,
 		AttributeInputTypeEnum,
 		WeightUnitsEnum,
+		type ProductChannelListingAddInput,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
@@ -160,7 +161,7 @@
 					},
 					slug,
 					taxClass: taxClass?.id,
-					weight: pick(weight || ({} as Weight), ['value', 'unit']),
+					weight: weight?.value || 0,
 				};
 
 				if (media?.length) {
@@ -180,11 +181,23 @@
 							stocks,
 							weight,
 							attributes,
+							__typename,
 							...rest
 						}) => {
+							const innerWeight = weight
+								? pick(weight, ['unit', 'value'])
+								: { value: 0, unit: WeightUnitsEnum.Kg };
+
+							const innerPreorder = preorder
+								? pick(preorder, ['globalThreshold', 'endDate'])
+								: {
+										globalThreshold: undefined,
+										endDate: undefined,
+									};
+
 							return {
 								...rest,
-								weight: weight || { value: 0, unit: WeightUnitsEnum.Kg },
+								weight: innerWeight,
 								attributes: attributes.map<BulkAttributeValueInput>(({ attribute, values }) => {
 									const res: AttributeValueInput = {
 										id: attribute.id,
@@ -212,11 +225,7 @@
 
 									return res;
 								}),
-								preorder: preorder || {
-									globalThreshold: undefined,
-									globalSoldUnits: undefined,
-									endDate: undefined,
-								},
+								preorder: innerPreorder,
 								channelListings: {
 									// NOTE: we temporary force put this field here,
 									// to make it easier for the variant editor component to do reference
@@ -246,15 +255,22 @@
 	});
 
 	const handleSubmit = async () => {
-		loading = true;
+		// create copy value to prevent the store subscribe auto re-execute
+		const copiedProductVariantBulkUpdateInput = $state.snapshot(productVariantBulkUpdateInput);
 
+		loading = true;
 		// 1) Update product itself
 		const productUpdateResult = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'productUpdate'>,
 			MutationProductUpdateArgs
 		>(ProductUpdateMutation, {
 			id: $ProductDetailStore.data?.product?.id,
-			input: productInput,
+			input: {
+				...productInput,
+				description: productInput.description
+					? JSON.stringify(productInput.description)
+					: undefined,
+			},
 		});
 
 		if (checkIfGraphqlResultHasError(productUpdateResult, 'productUpdate')) {
@@ -263,12 +279,18 @@
 		}
 
 		// 2) Update product channel listing
+		const cleanChannelListingUpdateInput: ProductChannelListingUpdateInput = {
+			...channelListingUpdateInput,
+			updateChannels: channelListingUpdateInput.updateChannels?.map((item) =>
+				omit(item, ['used', 'channelName', 'currency'] as any),
+			) as ProductChannelListingAddInput[],
+		};
 		const productChannelListingUpdateResult = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'productChannelListingUpdate'>,
 			MutationProductChannelListingUpdateArgs
 		>(UPDATE_PRODUCT_CHANNEL_LISTINGS_MUTATION, {
 			id: $ProductDetailStore.data?.product?.id!,
-			input: channelListingUpdateInput,
+			input: cleanChannelListingUpdateInput,
 		});
 
 		if (
@@ -279,11 +301,13 @@
 		}
 
 		// 3) Update variants
-		const actualProductVariantBulkUpdateInput = productVariantBulkUpdateInput.map(
+		const actualProductVariantBulkUpdateInput = copiedProductVariantBulkUpdateInput.map(
 			(variantInput) => {
 				const res: ProductVariantBulkUpdateInput = omit(variantInput, [
 					'channelListings',
 					'stocks',
+					'metadata',
+					'privateMetadata',
 				]);
 
 				// 1) parse channel listing
@@ -348,6 +372,8 @@
 			},
 		);
 
+		console.log(actualProductVariantBulkUpdateInput);
+
 		const variantsUpdateResult = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'productVariantBulkUpdate'>,
 			MutationProductVariantBulkUpdateArgs
@@ -368,7 +394,14 @@
 		if (hasErr) return;
 
 		toast.success($CommonState.EditSuccess);
-		ProductDetailStore.reexecute({ variables: { id: $ProductDetailStore.data?.product?.id } });
+		if (productInput.slug !== $ProductDetailStore.data?.product?.slug) {
+			await goto(AppRoute.SETTINGS_PRODUCTS_EDIT(productInput.slug!));
+		} else {
+			ProductDetailStore.reexecute({
+				variables: { slug: productInput.slug },
+				// context: { requestPolicy: 'network-only' },
+			});
+		}
 	};
 
 	const handleDelete = () => {
@@ -455,7 +488,7 @@
 			bind:this={metaRef}
 			disabled={loading}
 			{metadata}
-			{privateMetadata}
+			bind:privateMetadata={productInput.privateMetadata!}
 			objectId={id}
 			privateMetadataKeysToHide={[ProductPrivateMetadataVariantAttributeUsedKey]}
 		/>

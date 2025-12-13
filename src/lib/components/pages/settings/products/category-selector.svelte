@@ -112,7 +112,7 @@
 
 {#snippet CategorySelector(connection: CategoryCountableConnection)}
 	<div class="grid grid-cols-4 gap-1.5 w-full mb-2">
-		<CategoryMenu {connection} bind:selectedItems />
+		<CategoryMenu {connection} bind:selectedItems disabled={loading} />
 	</div>
 	<div class="flex items-center gap-2">
 		<BreadCrumb
@@ -153,8 +153,9 @@
 					size="xs"
 					color="gray"
 					variant="light"
+					disabled={loading}
 					class="tooltip tooltip-top"
-					data-tip="Edit category"
+					data-tip={$tranFunc('btn.update')}
 					onclick={async () => {
 						CategoriesStore.resume();
 						await tick();
@@ -168,12 +169,13 @@
 				size="xs"
 				variant="light"
 				color="red"
+				disabled={loading}
 				onclick={() => {
 					showEditCategory = false;
 					selectedItems = initialSelectedItems;
 				}}
 			>
-				Cancel
+				{$tranFunc('common.cancel')}
 			</Button>
 		{/if}
 	{/if}
