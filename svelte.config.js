@@ -41,7 +41,7 @@ const config = {
 	},
 	compilerOptions: {
 		runes: true,
-		sourcemap: true,
+		sourcemap: false,
 		warningFilter: (w) => {
 			// this disable warnings for state reference locally warning
 			return !['state_referenced_locally', 'css_unused_selector'].includes(w.code);

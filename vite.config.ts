@@ -33,7 +33,7 @@ export default defineConfig(({ mode }) => {
 							return 'vendor';  // Chunk all deps into one file for better caching
 						}
 					},
-					// sourcemap: true,
+					sourcemap: mode === 'development',
 				},
 			},
 		},
