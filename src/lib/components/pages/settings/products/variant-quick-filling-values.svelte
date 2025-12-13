@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { CHANNELS_QUERY } from '$lib/api/channels';
-	import { operationStore } from '$lib/api/operation';
 	import { Button } from '$lib/components/ui';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Checkbox, Input, Label } from '$lib/components/ui/Input';
 	import { Select, SelectSkeleton } from '$lib/components/ui/select';
-	import type { Query } from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
-	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
-	import type { ChannelSelectOptionProps, CustomStockInput, QuickFillingProps } from './utils';
+	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import {
+		calculateStockInputForChannels,
+		type ChannelSelectOptionProps,
+		type QuickFillingProps,
+	} from './utils';
 	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
@@ -31,11 +32,6 @@
 	const DAYJS_NOW = dayjs();
 	const MIN_DAYS_FOR_PREORDER = 5;
 	const MAX_DAYS_FOR_PREORDER = 15;
-
-	const channelsQueryStore = operationStore<Pick<Query, 'channels'>>({
-		query: CHANNELS_QUERY,
-		context: { requestPolicy: 'cache-and-network' },
-	});
 
 	/** check if quick filling form has any error */
 	const quickFillingError = $derived.by(() => {
@@ -61,31 +57,7 @@
 	});
 
 	onMount(() => {
-		return channelsQueryStore.subscribe((result) => {
-			if (checkIfGraphqlResultHasError(result)) return;
-
-			const warehousesOfChannels: CustomStockInput[] = [];
-			const warehouseMeetMap: Record<string, boolean> = {};
-
-			for (const channel of result.data?.channels || []) {
-				for (const warehouse of channel.warehouses) {
-					if (!warehouseMeetMap[warehouse.id]) {
-						warehouseMeetMap[warehouse.id] = true;
-
-						warehousesOfChannels.push({
-							warehouse: warehouse.id,
-							warehouseName: warehouse.name,
-							quantity: 0,
-						});
-					}
-				}
-			}
-
-			quickFillingValues = {
-				...quickFillingValues,
-				stocks: warehousesOfChannels,
-			};
-		});
+		calculateStockInputForChannels().then((value) => (quickFillingValues.stocks = value));
 	});
 </script>
 

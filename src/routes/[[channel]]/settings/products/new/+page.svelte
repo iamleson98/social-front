@@ -15,13 +15,13 @@
 		type GeneralMetadataEditorRef,
 	} from '$lib/components/pages/settings/common';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
-	import CategorySelector from '$lib/components/pages/settings/products/new/category-selector.svelte';
-	import ChannelsSelector from '$lib/components/pages/settings/products/new/channels-selector.svelte';
-	import CollectionAndTax from '$lib/components/pages/settings/products/new/collections-and-tax.svelte';
-	import GeneralInformation from '$lib/components/pages/settings/products/new/general-information.svelte';
-	import PackagingAndDelivery from '$lib/components/pages/settings/products/new/packaging-and-delivery.svelte';
-	import ProductSeo from '$lib/components/pages/settings/products/new/product-seo.svelte';
-	import VariantsEditor from '$lib/components/pages/settings/products/new/variants-editor.svelte';
+	import CategorySelector from '$lib/components/pages/settings/products/category-selector.svelte';
+	import ChannelsSelector from '$lib/components/pages/settings/products/channels-selector.svelte';
+	import CollectionAndTax from '$lib/components/pages/settings/products/collections-and-tax.svelte';
+	import GeneralInformation from '$lib/components/pages/settings/products/general-information.svelte';
+	import PackagingAndDelivery from '$lib/components/pages/settings/products/packaging-and-delivery.svelte';
+	import ProductSeo from '$lib/components/pages/settings/products/product-seo.svelte';
+	import VariantsEditor from '$lib/components/pages/settings/products/variants-editor.svelte';
 	import type {
 		Mutation,
 		MutationProductChannelListingUpdateArgs,

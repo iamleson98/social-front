@@ -32,10 +32,13 @@
 	import { randomString, SitenameCommonClassName } from '$lib/utils/utils';
 	import './table.css';
 	import {
+		calculateStockInputForChannels,
+		calculateTableColumnWidth,
 		MAX_DAYS_FOR_PREORDER,
 		MAX_VARIANT_TYPES,
 		MIN_DAYS_FOR_PREORDER,
 		type ChannelSelectOptionProps,
+		type CustomStockInput,
 		type QuickFillingProps,
 		type VariantManifest,
 	} from './utils';
@@ -43,6 +46,7 @@
 	import VariantQuickFillingValues from './variant-quick-filling-values.svelte';
 	import dayjs from 'dayjs';
 	import { set } from 'es-toolkit/compat';
+	import { onMount } from 'svelte';
 
 	type Props = {
 		disabled?: boolean;
@@ -71,6 +75,10 @@
 		preOrder: {},
 		weight: 0,
 		trackInventory: true,
+	});
+	let customStockInputs = $state<CustomStockInput[]>([]);
+	onMount(async () => {
+		calculateStockInputForChannels().then((value) => (customStockInputs = value));
 	});
 
 	const DAYJS_NOW = dayjs();
@@ -110,11 +118,7 @@
 	/**
 	 * If there is 1 variant, there will be 8 columns -> each column's width = 1/9 = 11.11%, 2 variants -> 9 columns -> each column's width = 1/8 = 12.5%;
 	 */
-	const ThClass = $derived.by(() => {
-		if (!variantManifests.length) return '';
-		if (variantManifests.length === 1) return 'w-[12.5%]!';
-		return 'w-[11.11%]!';
-	});
+	const ThClass = $derived(calculateTableColumnWidth(variantManifests));
 
 	const onManifestDeleted = () => {
 		if (!variantManifests.length) {
@@ -161,6 +165,9 @@
 						preorder: {},
 						// NOTE: Later when we come to handle update, all variants with empty IDs like below will be bulk created.
 						id: '',
+						stocks: {
+							[StockCurrentKey]: customStockInputs,
+						},
 					};
 
 					return res;
@@ -225,6 +232,9 @@
 						preorder: {},
 						// NOTE: Later when we come to handle update, all variants with empty IDs like below will be bulk created.
 						id: '',
+						stocks: {
+							[StockCurrentKey]: customStockInputs,
+						},
 					};
 
 					newVariantDetails.push(newVariant);
@@ -360,29 +370,35 @@
 									value={currentChannelIds}
 									multiple
 									onchange={(opts) => {
-										const selectedOptions = (
-											!opts || !Array.isArray(opts) || !opts.length ? [] : opts
-										) as ChannelSelectOptionProps[];
+										const selectedOptions = (opts || []) as ChannelSelectOptionProps[];
 
 										variantInputDetail.channelListings![ChannelListingCurrentKey] =
-											selectedOptions.map((opt) => ({
-												channelId: opt.value as string,
-												costPrice: {
-													currency: opt.currency,
-													amount: 0,
-													fractionDigits: 0,
-													fractionalAmount: 0,
-												},
-												price: {
-													currency: opt.currency,
-													amount: 0,
-													fractionDigits: 0,
-													fractionalAmount: 0,
-												},
+											selectedOptions.map((opt) => {
+												const existingValue = variantInputDetail.channelListings![
+													ChannelListingCurrentKey
+												]?.find((item: any) => item.channel.id === opt.value);
 
-												id: '',
-												channel: { currencyCode: opt.currency, id: opt.channelId },
-											})) as any;
+												if (existingValue) return existingValue;
+
+												return {
+													channelId: opt.value as string,
+													costPrice: {
+														currency: opt.currency,
+														amount: 0,
+														fractionDigits: 0,
+														fractionalAmount: 0,
+													},
+													price: {
+														currency: opt.currency,
+														amount: 0,
+														fractionDigits: 0,
+														fractionalAmount: 0,
+													},
+
+													id: '',
+													channel: { currencyCode: opt.currency, id: opt.channelId },
+												};
+											}) as any;
 									}}
 								/>
 							{/if}

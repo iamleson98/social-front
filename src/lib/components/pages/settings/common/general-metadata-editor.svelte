@@ -57,10 +57,18 @@
 		variables: Record<string, unknown>;
 	};
 
+	/**
+	 * NOTE: either `newObjectId` or `objectId` prop MUST be provided
+	 */
 	export const handleUpdate = async (newObjectId?: string) => {
 		const taskKeys: (keyof Mutation)[] = [];
 		const taskProps: TaskProps[] = [];
 		const actualObjectId = newObjectId || objectId;
+
+		if (!actualObjectId) {
+			console.error('`newObjectId` or `objectId` prop MUST be provided');
+			return;
+		}
 
 		if (metadataItemsToAdd.length) {
 			taskProps.push({

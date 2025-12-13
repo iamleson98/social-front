@@ -18,10 +18,13 @@
 	import { randomString, SitenameCommonClassName } from '$lib/utils/utils';
 	import './table.css';
 	import {
+		calculateStockInputForChannels,
+		calculateTableColumnWidth,
 		MAX_DAYS_FOR_PREORDER,
 		MAX_VARIANT_TYPES,
 		MIN_DAYS_FOR_PREORDER,
 		type ChannelSelectOptionProps,
+		type CustomStockInput,
 		type QuickFillHighlight,
 		type QuickFillingProps,
 		type VariantManifest,
@@ -31,6 +34,7 @@
 	import dayjs from 'dayjs';
 	import { omit } from 'es-toolkit';
 	import { set } from 'es-toolkit/compat';
+	import { onMount } from 'svelte';
 
 	type Props = {
 		productTypeId: string;
@@ -74,15 +78,15 @@
 		weight: 0,
 		trackInventory: true,
 	});
+	let customStockInputs = $state<CustomStockInput[]>([]);
+	onMount(async () => {
+		calculateStockInputForChannels().then((value) => (customStockInputs = value));
+	});
 
 	/**
 	 * If there is 1 variant, there will be 8 columns -> each column's width = 1/9 = 11.11%, 2 variants -> 9 columns -> each column's width = 1/8 = 12.5%;
 	 */
-	const ThClass = $derived.by(() => {
-		if (!variantManifests.length) return '';
-		if (variantManifests.length === 1) return 'w-[12.5%]!';
-		return 'w-[11.11%]!';
-	});
+	const ThClass = $derived(calculateTableColumnWidth(variantManifests));
 
 	const onVariantValuesChange = () => {
 		if (variantManifests.length === 1) {
@@ -118,7 +122,8 @@
 						channelListings: [],
 						weight: 0,
 						preorder: {},
-					};
+						stocks: customStockInputs,
+					} as ProductVariantBulkCreateInput;
 				},
 			);
 		} else {
@@ -176,6 +181,7 @@
 						channelListings: [],
 						weight: 0,
 						preorder: {},
+						stocks: customStockInputs,
 					};
 
 					newVariantDetails.push(newVariant);
@@ -310,6 +316,8 @@
 			};
 		});
 	};
+
+	$inspect(variantsInputDetails);
 </script>
 
 <div class="space-y-2">

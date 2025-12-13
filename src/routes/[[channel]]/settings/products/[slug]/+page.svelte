@@ -2,7 +2,13 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { tranFunc } from '$i18n';
-	import { PRODUCT_DELETE_MUTATION, PRODUCT_DETAIL_QUERY } from '$lib/api/admin/product';
+	import {
+		PRODUCT_DELETE_MUTATION,
+		PRODUCT_DETAIL_QUERY,
+		ProductUpdateMutation,
+		ProductVariantBulkUpdateMutation,
+		UPDATE_PRODUCT_CHANNEL_LISTINGS_MUTATION,
+	} from '$lib/api/admin/product';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
 	import FileInputContainer from '$lib/components/common/file-input-container.svelte';
@@ -11,20 +17,23 @@
 		GeneralMetadataEditor,
 		type GeneralMetadataEditorRef,
 	} from '$lib/components/pages/settings/common';
-	import CategorySelector from '$lib/components/pages/settings/products/new/category-selector.svelte';
-	import ChannelsSelector from '$lib/components/pages/settings/products/new/channels-selector.svelte';
-	import CollectionsAndTax from '$lib/components/pages/settings/products/new/collections-and-tax.svelte';
-	import GeneralInformation from '$lib/components/pages/settings/products/new/general-information.svelte';
-	import PackagingAndDelivery from '$lib/components/pages/settings/products/new/packaging-and-delivery.svelte';
-	import ProductSeo from '$lib/components/pages/settings/products/new/product-seo.svelte';
-	import { ProductPrivateMetadataVariantAttributeUsedKey } from '$lib/components/pages/settings/products/new/utils';
+	import CategorySelector from '$lib/components/pages/settings/products/category-selector.svelte';
+	import ChannelsSelector from '$lib/components/pages/settings/products/channels-selector.svelte';
+	import CollectionsAndTax from '$lib/components/pages/settings/products/collections-and-tax.svelte';
+	import GeneralInformation from '$lib/components/pages/settings/products/general-information.svelte';
+	import PackagingAndDelivery from '$lib/components/pages/settings/products/packaging-and-delivery.svelte';
+	import ProductSeo from '$lib/components/pages/settings/products/product-seo.svelte';
+	import Skeleton from '$lib/components/pages/settings/products/skeleton.svelte';
+	import {
+		ProductPrivateMetadataVariantAttributeUsedKey,
+		type CustomStockInput,
+	} from '$lib/components/pages/settings/products/utils';
 	import VariantsEditEditor, {
 		ChannelListingCurrentKey,
 		ChannelListingExistingKey,
 		StockCurrentKey,
 		StockExistingKey,
-	} from '$lib/components/pages/settings/products/new/variants-edit-editor.svelte';
-	import Skeleton from '$lib/components/pages/settings/products/skeleton.svelte';
+	} from '$lib/components/pages/settings/products/variants-edit-editor.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import {
 		type ProductInput,
@@ -36,19 +45,25 @@
 		type ProductVariantChannelListingUpdateInput,
 		type ProductVariantBulkUpdateInput,
 		type ProductVariantStocksUpdateInput,
-		WeightUnitsEnum,
 		type Weight,
 		type BulkAttributeValueInput,
 		type AttributeValueInput,
+		type ProductVariantChannelListing,
+		type Stock,
+		type MutationProductUpdateArgs,
+		type MutationProductChannelListingUpdateArgs,
+		type MutationProductVariantBulkUpdateArgs,
 		AttributeInputTypeEnum,
+		WeightUnitsEnum,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
-	import { pick } from 'es-toolkit';
+	import { difference, omit, pick } from 'es-toolkit';
 	import { onMount } from 'svelte';
+	import { toast } from 'svelte-sonner';
 
 	const ProductDetailStore = operationStore<Pick<Query, 'product'>, QueryProductArgs>({
 		query: PRODUCT_DETAIL_QUERY,
@@ -59,7 +74,7 @@
 	});
 
 	let loading = $state(false);
-	let product = $state<ProductInput>({
+	let productInput = $state<ProductInput>({
 		name: '',
 		description: '',
 		attributes: [],
@@ -128,8 +143,8 @@
 
 				// currentProductType = productType;
 				productTypeRequiresShipping = productType.isShippingRequired;
-				product = {
-					...product,
+				productInput = {
+					...productInput,
 					category: category?.id || undefined,
 					collections: collections?.map((col) => col.id),
 					description: description ? JSON.parse(description) : undefined,
@@ -206,13 +221,17 @@
 									// NOTE: we temporary force put this field here,
 									// to make it easier for the variant editor component to do reference
 									[ChannelListingExistingKey]: channelListings?.map((item) => item.id) || [],
-									[ChannelListingCurrentKey]: channelListings?.map(({ costPrice, ...rest }) => ({
-										...rest,
-										costPrice: costPrice || {
-											amount: 0,
-											currency: rest.channel.currencyCode,
-										},
-									})),
+									[ChannelListingCurrentKey]: channelListings?.map<ProductVariantChannelListing>(
+										({ costPrice, ...rest }) => ({
+											...rest,
+											costPrice: costPrice || {
+												amount: 0,
+												currency: rest.channel.currencyCode,
+												fractionDigits: 0,
+												fractionalAmount: 0,
+											},
+										}),
+									),
 								} as ProductVariantChannelListingUpdateInput,
 								stocks: {
 									[StockExistingKey]: stocks?.map((item) => item.id) || [],
@@ -226,11 +245,130 @@
 		});
 	});
 
-	$inspect(productVariantBulkUpdateInput);
-
 	const handleSubmit = async () => {
-		const hasErr = await metaRef?.handleUpdate($ProductDetailStore.data?.product?.id);
+		loading = true;
+
+		// 1) Update product itself
+		const productUpdateResult = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'productUpdate'>,
+			MutationProductUpdateArgs
+		>(ProductUpdateMutation, {
+			id: $ProductDetailStore.data?.product?.id,
+			input: productInput,
+		});
+
+		if (checkIfGraphqlResultHasError(productUpdateResult, 'productUpdate')) {
+			loading = false;
+			return;
+		}
+
+		// 2) Update product channel listing
+		const productChannelListingUpdateResult = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'productChannelListingUpdate'>,
+			MutationProductChannelListingUpdateArgs
+		>(UPDATE_PRODUCT_CHANNEL_LISTINGS_MUTATION, {
+			id: $ProductDetailStore.data?.product?.id!,
+			input: channelListingUpdateInput,
+		});
+
+		if (
+			checkIfGraphqlResultHasError(productChannelListingUpdateResult, 'productChannelListingUpdate')
+		) {
+			loading = false;
+			return;
+		}
+
+		// 3) Update variants
+		const actualProductVariantBulkUpdateInput = productVariantBulkUpdateInput.map(
+			(variantInput) => {
+				const res: ProductVariantBulkUpdateInput = omit(variantInput, [
+					'channelListings',
+					'stocks',
+				]);
+
+				// 1) parse channel listing
+				const channelListingsRemoved = difference(
+					variantInput.channelListings?.[ChannelListingExistingKey] as string[],
+					variantInput.channelListings?.[ChannelListingCurrentKey]?.map(
+						(item: any) => item.id,
+					) as string[],
+				);
+
+				const channelListingsCreated = variantInput.channelListings?.[
+					ChannelListingCurrentKey
+				]?.filter((item: any) => !item.id) as unknown as ProductVariantChannelListing[];
+
+				const channelListingsUpdated = variantInput.channelListings?.[
+					ChannelListingCurrentKey
+				]?.filter((item: any) => item.id) as unknown as ProductVariantChannelListing[];
+
+				res.channelListings = {
+					remove: channelListingsRemoved,
+					create: channelListingsCreated?.map((item) => ({
+						channelId: item.channel.id,
+						costPrice: item.costPrice?.amount || 0,
+						price: item.price?.amount || 0,
+						preorderThreshold: item.preorderThreshold?.quantity,
+					})),
+					update: channelListingsUpdated.map((item) => ({
+						channelListing: item.id,
+						costPrice: item.costPrice?.amount || 0,
+						price: item.price?.amount || 0,
+						preorderThreshold: item.preorderThreshold?.quantity,
+					})),
+				};
+
+				// 2) parse stocks
+				const stocksRemoved = difference(
+					variantInput.stocks?.[StockExistingKey] as string[],
+					variantInput.stocks?.[StockCurrentKey]?.map((item: any) => item.id) as string[],
+				);
+
+				const stocksCreated = variantInput.stocks?.[StockCurrentKey]?.filter(
+					(item: any) => !item?.id,
+				) as CustomStockInput[];
+
+				const stocksUpdated = variantInput.stocks?.[StockCurrentKey]?.filter(
+					(item: any) => item.id,
+				) as unknown as Stock[];
+
+				res.stocks = {
+					remove: stocksRemoved,
+					create: stocksCreated?.map((item) => ({
+						quantity: item.quantity,
+						warehouse: item.warehouse,
+					})),
+					update: stocksUpdated?.map((item) => ({
+						quantity: item.quantity,
+						stock: item.id,
+					})),
+				};
+
+				return res;
+			},
+		);
+
+		const variantsUpdateResult = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'productVariantBulkUpdate'>,
+			MutationProductVariantBulkUpdateArgs
+		>(ProductVariantBulkUpdateMutation, {
+			product: $ProductDetailStore.data?.product?.id!,
+			variants: actualProductVariantBulkUpdateInput,
+			// errorPolicy: ErrorPolicyEnum.RejectEverything,
+		});
+
+		if (checkIfGraphqlResultHasError(variantsUpdateResult, 'productVariantBulkUpdate')) {
+			loading = false;
+			return;
+		}
+
+		// 4) Update metadata
+		const hasErr = await metaRef?.handleUpdate();
+		loading = false;
 		if (hasErr) return;
+
+		toast.success($CommonState.EditSuccess);
+		ProductDetailStore.reexecute({ variables: { id: $ProductDetailStore.data?.product?.id } });
 	};
 
 	const handleDelete = () => {
@@ -262,17 +400,17 @@
 		$ProductDetailStore.data.product}
 	<div class="space-y-2">
 		<GeneralInformation
-			bind:name={product.name!}
+			bind:name={productInput.name!}
 			productType={productType.id}
-			bind:description={product.description}
-			bind:attributes={product.attributes!}
+			bind:description={productInput.description}
+			bind:attributes={productInput.attributes!}
 			bind:productTypeRequiresShipping
 			bind:formOk={productFormOk.generalForm}
 			disabled={loading}
 			existingAttributes={attributes}
 		/>
 		<CategorySelector
-			bind:categoryID={product.category!}
+			bind:categoryID={productInput.category!}
 			bind:formOk={productFormOk.category}
 			{loading}
 		/>
@@ -297,20 +435,20 @@
 				disabled={loading}
 				channelsListing={channelListingUpdateInput}
 				bind:productVariantsInput={productVariantBulkUpdateInput}
-				bind:privateMetadata={product.privateMetadata!}
+				bind:privateMetadata={productInput.privateMetadata!}
 				productTypeId={productType.id}
 			/>
 		</div>
 		<ProductSeo
-			productName={product.name}
-			bind:seo={product.seo!}
-			bind:slug={product.slug}
+			productName={productInput.name}
+			bind:seo={productInput.seo!}
+			bind:slug={productInput.slug}
 			bind:formOk={productFormOk.seo}
 			{loading}
 		/>
 		<CollectionsAndTax
-			bind:collections={product.collections}
-			bind:taxClassID={product.taxClass}
+			bind:collections={productInput.collections}
+			bind:taxClassID={productInput.taxClass}
 			{loading}
 		/>
 		<GeneralMetadataEditor
@@ -323,8 +461,8 @@
 		/>
 		{#if productTypeRequiresShipping}
 			<PackagingAndDelivery
-				bind:metadata={product.metadata}
-				bind:weight={product.weight}
+				bind:metadata={productInput.metadata}
+				bind:weight={productInput.weight}
 				{loading}
 			/>
 		{/if}

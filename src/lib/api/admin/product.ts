@@ -747,3 +747,23 @@ export const CATEGORY_WITH_PARENTS_QUERY = gql`
 		}
 	}
 `;
+
+export const ProductUpdateMutation = gql`
+mutation ProductUpdate($id: ID!, $input: ProductInput!) {
+	productUpdate(id: $id, input: $input) {
+		errors {
+			field
+			message
+		}
+	}
+}`;
+
+export const ProductVariantBulkUpdateMutation = gql`
+mutation productVariantBulkUpdate($product: ID!, $variants: [ProductVariantBulkUpdateInput!]!, $errorPolicy: ErrorPolicyEnum!) {
+	productVariantBulkUpdate(product: $product, variants: $variants, errorPolicy: $errorPolicy) {
+		errors {
+			field
+			message
+		}
+	}
+}`;

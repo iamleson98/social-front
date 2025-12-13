@@ -1,11 +1,15 @@
+import { CHANNELS_QUERY } from '$lib/api/channels';
+import { GRAPHQL_CLIENT } from '$lib/api/client';
 import type { SelectItemProps } from '$lib/components/ui/MegaMenu/types';
 import type { SelectOption } from '$lib/components/ui/select';
 import {
 	type CategoryCountableConnection,
 	type PreorderSettingsInput,
 	type ProductVariantChannelListingAddInput,
+	type Query,
 	type StockInput,
 } from '$lib/gql/graphql';
+import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 
 
 export type CategorySelectItemProps = Omit<SelectItemProps, 'children'> & { children?: CategoryCountableConnection }
@@ -68,3 +72,42 @@ export const ProductPrivateMetadataVariantAttributeUsedKey = 'variantAttributeUs
 export const MAX_VARIANT_TYPES = 2;
 export const MIN_DAYS_FOR_PREORDER = 5;
 export const MAX_DAYS_FOR_PREORDER = 15;
+
+export const calculateStockInputForChannels = async () => {
+	const result = await GRAPHQL_CLIENT.query<Pick<Query, 'channels'>>(
+		CHANNELS_QUERY,
+		{},
+		{
+			requestPolicy: 'cache-and-network',
+		},
+	);
+
+	if (checkIfGraphqlResultHasError(result)) return [];
+
+	const warehousesOfChannels: CustomStockInput[] = [];
+	const warehouseMeetMap: Record<string, boolean> = {};
+
+	for (const channel of result.data?.channels || []) {
+		// if (!channels.includes(channel.id)) continue;
+
+		for (const warehouse of channel.warehouses) {
+			if (!warehouseMeetMap[warehouse.id]) {
+				warehouseMeetMap[warehouse.id] = true;
+
+				warehousesOfChannels.push({
+					warehouse: warehouse.id,
+					warehouseName: warehouse.name,
+					quantity: 0,
+				});
+			}
+		}
+	}
+
+	return warehousesOfChannels;
+};
+
+export const calculateTableColumnWidth = (manifests: VariantManifest[]) => {
+	if (!manifests.length) return '';
+	if (manifests.length === 1) return 'w-[12.5%]!';
+	return 'w-[11.11%]!';
+}

@@ -26,18 +26,16 @@
 		type QueryProductTypeArgs,
 	} from '$lib/gql/graphql';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
-	import { ProductPrivateMetadataVariantAttributeUsedKey, type VariantManifest } from './utils';
+	import { MAX_VARIANT_TYPES, ProductPrivateMetadataVariantAttributeUsedKey, type VariantManifest } from './utils';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
-
-	const MAX_VARIANT_TYPES = 2;
 
 	type Props = {
 		variantManifests: VariantManifest[];
 		disabled?: boolean;
 		productTypeId: string;
+		/** required, to auto set the private metadata of variant attributes */
 		privateMetadata: MetadataInput[];
-
 		onVariantValuesChange: () => void;
 		onManifestDeleted: () => void;
 	};

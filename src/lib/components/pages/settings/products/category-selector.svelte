@@ -15,7 +15,7 @@
 	import type { CategoryCountableConnection, Query, QueryCategoryArgs } from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
-	import CategoryMenu from '../category-menu.svelte';
+	import CategoryMenu from './category-menu.svelte';
 	import ErrorMsg from './error-msg.svelte';
 	import { type CategorySelectItemProps } from './utils';
 	import { onMount, tick } from 'svelte';
