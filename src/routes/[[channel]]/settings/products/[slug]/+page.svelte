@@ -71,7 +71,7 @@
 		variables: {
 			slug: page.params.slug,
 		},
-		requestPolicy: 'cache-and-network',
+		requestPolicy: 'network-only',
 	});
 
 	let loading = $state(false);
@@ -400,6 +400,9 @@
 		} else {
 			ProductDetailStore.reexecute({
 				variables: { slug: productInput.slug },
+				context: {
+					requestPolicy: 'cache-and-network',
+				},
 			});
 		}
 	};
