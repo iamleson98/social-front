@@ -13,7 +13,7 @@
 	import { HTTPStatusSuccess } from '$lib/utils/consts';
 	import { formatMoney } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
-	import { toast } from 'svelte-sonner';
+	import toast from 'svelte-french-toast';
 
 	afterNavigate(() => {
 		scrollTo({

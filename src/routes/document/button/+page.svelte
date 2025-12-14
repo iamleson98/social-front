@@ -3,7 +3,7 @@
 	import { Button, IconButton, type ButtonVariant } from '$lib/components/ui/Button';
 	import { Checkbox, RadioButton } from '$lib/components/ui/Input';
 	import type { SocialColor, SocialSize } from '$lib/components/ui/common';
-	import { toast } from 'svelte-sonner';
+	import toast from 'svelte-french-toast';
 
 	const socialColors: SocialColor[] = [
 		'dark',

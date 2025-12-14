@@ -23,7 +23,7 @@
 	import { CommonState } from '$lib/utils/common.svelte';
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { toast } from 'svelte-sonner';
+	import toast from 'svelte-french-toast';
 
 	let generalFormOk = $state(false);
 	let seoFormOk = $state(false);

@@ -25,7 +25,7 @@
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
-	import { toast } from 'svelte-sonner';
+	import toast from 'svelte-french-toast';
 
 	const giftcardUtils = new GiftcardUtil();
 

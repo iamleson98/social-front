@@ -21,7 +21,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { toast } from 'svelte-sonner';
+	import toast from 'svelte-french-toast';
 
 	let promotionInput = $state<PromotionCreateInput>({
 		name: '',

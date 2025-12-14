@@ -14,7 +14,7 @@
 	import Sidebar from '../sidebar.svelte';
 	import { Components } from '../snippets.svelte';
 	import { OrderUtilsInstance } from '../utils.svelte';
-	import { toast } from 'svelte-sonner';
+	import toast from 'svelte-french-toast';
 
 	type Props = {
 		order: Order;

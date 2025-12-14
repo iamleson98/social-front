@@ -35,7 +35,7 @@
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
-	import { toast } from 'svelte-sonner';
+	import toast from 'svelte-french-toast';
 
 	let collectionUpdateInput = $state<CollectionInput>({
 		name: '',

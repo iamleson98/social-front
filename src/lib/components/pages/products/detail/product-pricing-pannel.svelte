@@ -40,7 +40,7 @@
 	import { HTTPStatusSuccess, MAX_RATING } from '$lib/utils/consts';
 	import { VIETNAM_COUNTRY_UNITS } from '$lib/utils/countries';
 	import { formatMoney, checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { toast } from 'svelte-sonner';
+	import toast from 'svelte-french-toast';
 	import { fade } from 'svelte/transition';
 
 	type Props = {

@@ -5,7 +5,7 @@
 	import { Modal } from '$lib/components/ui/Modal';
 	import type { Order } from '$lib/gql/graphql';
 	import { OrderUtilsInstance } from './utils.svelte';
-	import { toast } from 'svelte-sonner';
+	import toast from 'svelte-french-toast';
 
 	type Props = {
 		open: boolean;

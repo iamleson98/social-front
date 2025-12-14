@@ -13,16 +13,15 @@
 			{variantName}
 		</div>
 		<IconButton
-			color="gray"
+		color="gray"
 			icon={TablerPhoto}
 			size="xl"
 			{style}
-			class="{style ? 'text-gray-600/0 hover:text-gray-600' : ''} tooltip tooltip-top"
+			class="{style ? 'text-gray-600/0 hover:text-gray-600' : ''} tooltip tooltip-top border border-gray-200!"
 			data-tip="Assign media"
 			{disabled}
 			{onclick}
 			variant="outline"
-
 		/>
 	</dir>
 {/snippet}

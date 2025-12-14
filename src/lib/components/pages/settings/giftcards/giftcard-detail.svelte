@@ -25,7 +25,7 @@
 	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import GiftcardExpirationForm from './giftcard-expiration-form.svelte';
 	import { difference } from 'es-toolkit';
-	import { toast } from 'svelte-sonner';
+	import toast from 'svelte-french-toast';
 	import { array, number, object, string } from 'zod';
 
 	type Props = {

@@ -3,7 +3,7 @@ import type { TranFunc } from '$i18n';
 import { UserStoreManager } from '$lib/stores/auth';
 import { HTTPStatusSuccess } from './consts';
 import { AppRoute } from './routes';
-import { toast } from 'svelte-sonner';
+import toast from 'svelte-french-toast';
 
 export const handleLogout = async (
 	translationFunc: TranFunc,

@@ -5,7 +5,7 @@
 	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
 	import { Select } from '$lib/components/ui/select';
 	import { type QueryProductsArgs } from '$lib/gql/graphql';
-	import { toast } from 'svelte-sonner';
+	import toast from 'svelte-french-toast';
 
 	const variants = ['info', 'success', 'warning', 'error'] as const;
 	const sizes = ['xs', 'sm', 'md', 'lg', 'xl'] as const;

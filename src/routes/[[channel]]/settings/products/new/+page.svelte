@@ -41,7 +41,7 @@
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { omit } from 'es-toolkit';
-	import { toast } from 'svelte-sonner';
+	import toast from 'svelte-french-toast';
 
 	let productCreateInput = $state<ProductCreateInput>({
 		productType: '',

@@ -5,7 +5,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
-	import { toast } from 'svelte-sonner';
+	import toast from 'svelte-french-toast';
 
 	let triggerCreate = $state(false);
 	let formOk = $state(false);

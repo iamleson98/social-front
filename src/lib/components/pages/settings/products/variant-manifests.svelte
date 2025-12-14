@@ -28,7 +28,7 @@
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { MAX_VARIANT_TYPES, ProductPrivateMetadataVariantAttributeUsedKey, type VariantManifest } from './utils';
 	import { onMount } from 'svelte';
-	import { toast } from 'svelte-sonner';
+	import toast from 'svelte-french-toast';
 
 	type Props = {
 		variantManifests: VariantManifest[];

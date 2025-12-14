@@ -304,8 +304,6 @@
 			);
 		}
 	};
-
-	$inspect(productVariantsMediaMap);
 </script>
 
 <div class="space-y-2">

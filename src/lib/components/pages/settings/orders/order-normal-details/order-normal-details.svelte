@@ -29,7 +29,7 @@
 	import UnfulfilledOrderLinesSection from '../unfulfilled-order-lines-section.svelte';
 	import { orderShouldUseTransactions } from '../utils';
 	import { OrderUtilsInstance } from '../utils.svelte';
-	import { toast } from 'svelte-sonner';
+	import toast from 'svelte-french-toast';
 
 	type Props = {
 		order: Order;

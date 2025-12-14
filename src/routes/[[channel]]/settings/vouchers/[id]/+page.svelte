@@ -44,7 +44,7 @@
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { pick } from 'es-toolkit';
 	import { onMount } from 'svelte';
-	import { toast } from 'svelte-sonner';
+	import toast from 'svelte-french-toast';
 	import { flattenError, string } from 'zod';
 
 	const voucherQuery = operationStore<Pick<Query, 'voucher'>, QueryVoucherArgs>({

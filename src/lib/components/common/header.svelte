@@ -24,7 +24,7 @@
 	import { ACCESS_TOKEN_KEY, HTTPStatusSuccess } from '$lib/utils/consts';
 	import { buildHomePageLink, checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
-	import { toast } from 'svelte-sonner';
+	import toast from 'svelte-french-toast';
 	import { cubicOut } from 'svelte/easing';
 	import { Tween } from 'svelte/motion';
 	import { scale } from 'svelte/transition';
@@ -89,10 +89,12 @@
 	});
 </script>
 
-<header class="fixed top-0 left-0 right-0 flex p-2 bg-white shadow-xs z-100000001 w-full">
+<!-- NOTE: the svelte-french-toast lib has z-index of 9999, so please keep every z-indexes of this project lower than 9999 -->
+
+<header class="fixed top-0 left-0 right-0 flex p-2 bg-white shadow-xs z-9998 w-full">
 	{#if loading}
 		<progress
-			class="progress h-[3px]! text-blue-400 fixed z-100000002 left-0 right-0 top-0"
+			class="progress h-[3px]! text-blue-400 fixed z-9999 left-0 right-0 top-0"
 			value={loadingProgress.current}
 			max="100"
 		></progress>

@@ -11,7 +11,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import type { Snippet } from 'svelte';
-	import { toast } from 'svelte-sonner';
+	import toast from 'svelte-french-toast';
 
 	type Props = {
 		children: Snippet;

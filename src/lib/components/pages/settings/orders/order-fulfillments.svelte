@@ -44,7 +44,7 @@
 	import { orderHasTransactions } from './utils';
 	import { OrderUtilsInstance } from './utils.svelte';
 	import dayjs from 'dayjs';
-	import { toast } from 'svelte-sonner';
+	import toast from 'svelte-french-toast';
 
 	type Props = {
 		order: Order;

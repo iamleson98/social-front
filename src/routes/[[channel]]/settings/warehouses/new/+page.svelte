@@ -14,7 +14,7 @@
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import { toast } from 'svelte-sonner';
+	import toast from 'svelte-french-toast';
 
 	let warehouseInput = $state<WarehouseCreateInput>({
 		name: '',

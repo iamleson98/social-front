@@ -27,7 +27,7 @@ import type { AnyVariables, OperationResult } from '@urql/core';
 import dayjs from 'dayjs';
 import editorJsToHtml from 'editorjs-html';
 import { lowerCase, pick, startCase } from 'es-toolkit';
-import { toast } from 'svelte-sonner';
+import toast from 'svelte-french-toast';
 import xss from 'xss';
 
 export const editorJsParser = editorJsToHtml();

@@ -6,7 +6,7 @@
 	import type { Order } from '$lib/gql/graphql';
 	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import { OrderUtilsInstance } from './utils.svelte';
-	import { toast } from 'svelte-sonner';
+	import toast from 'svelte-french-toast';
 	import { number, object, string } from 'zod';
 
 	type Props = {
