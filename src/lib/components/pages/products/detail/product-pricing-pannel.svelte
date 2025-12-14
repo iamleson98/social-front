@@ -144,14 +144,14 @@
 <div class="bg-white rounded-lg border-gray-200 border p-4 h-full space-y-2">
 	<div class="flex items-center gap-1">
 		<Badge
-			size="xs"
+			size="sm"
 			startIcon={TablerShieldCheckFilled}
 			text={$tranFunc('product.badgeAuthentic')}
 			variant="light"
 			rounded
 		/>
 		<Badge
-			size="xs"
+			size="sm"
 			startIcon={TablerRewindBackward30}
 			text={$tranFunc('product.badge30DaysReturn')}
 			variant="light"
@@ -159,7 +159,7 @@
 			color="grape"
 		/>
 		<Badge
-			size="xs"
+			size="sm"
 			startIcon={TablerCirclePercentage}
 			text={$tranFunc('product.badgeTopDeal')}
 			variant="light"
@@ -167,7 +167,7 @@
 			color="red"
 		/>
 		<Badge
-			size="xs"
+			size="sm"
 			startIcon={TruckDelivery}
 			text={$tranFunc('product.badgeFreeShip')}
 			variant="light"
