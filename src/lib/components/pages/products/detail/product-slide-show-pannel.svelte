@@ -81,7 +81,6 @@
 						role="button"
 					>
 						<div class="relative w-full pb-[100%]">
-							<picture class="contents">
 							<picture>
 								<source
 									srcset={picture.url}
