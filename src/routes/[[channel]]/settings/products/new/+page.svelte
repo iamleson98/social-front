@@ -7,6 +7,7 @@
 		PRODUCT_MEDIA_CREATE_MUTATION,
 		PRODUCT_VARIANTS_BULK_CREATE_MUTATION,
 		UPDATE_PRODUCT_CHANNEL_LISTINGS_MUTATION,
+		VariantMediaAssignMutation,
 	} from '$lib/api/admin/product';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import FileInputContainer from '$lib/components/common/file-input-container.svelte';
@@ -21,6 +22,7 @@
 	import GeneralInformation from '$lib/components/pages/settings/products/general-information.svelte';
 	import PackagingAndDelivery from '$lib/components/pages/settings/products/packaging-and-delivery.svelte';
 	import ProductSeo from '$lib/components/pages/settings/products/product-seo.svelte';
+	import type { VariantMedia } from '$lib/components/pages/settings/products/utils';
 	import VariantsEditor from '$lib/components/pages/settings/products/variants-editor.svelte';
 	import type {
 		Mutation,
@@ -29,6 +31,7 @@
 		MutationProductDeleteArgs,
 		MutationProductMediaCreateArgs,
 		MutationProductVariantBulkCreateArgs,
+		MutationVariantMediaAssignArgs,
 		ProductChannelListingAddInput,
 		ProductChannelListingUpdateInput,
 		ProductCreateInput,
@@ -66,7 +69,7 @@
 	let productMedias = $state.raw<MediaObject[]>([]);
 	let metaRef = $state<GeneralMetadataEditorRef>();
 	let productTypeRequiresShipping = $state(true);
-
+	let productVariantsMediaMap = $state<VariantMedia>({});
 	let productInputError = $state({
 		metadata: false,
 		generalInfo: false,
@@ -88,9 +91,20 @@
 	};
 
 	const createProductMedias = async (productID: string) => {
-		if (!productMedias.length) return 0;
+		if (!productMedias.length) return { numFails: 0, variantsMediaMap: {} };
 
-		const operations = productMedias.map((media) => {
+		const variantMediaIndexMap: Record<number, string[]> = {};
+		const variantMediaEntries = Object.entries(productVariantsMediaMap);
+
+		const operations = productMedias.map((media, idx) => {
+			const mediasForVariant = variantMediaEntries.filter(
+				(pair) => pair[1].alt === media.alt && pair[1].file?.name === media.file?.name,
+			);
+			for (const pair of mediasForVariant) {
+				if (!variantMediaIndexMap[idx]) variantMediaIndexMap[idx] = [];
+				variantMediaIndexMap[idx].push(pair[0]);
+			}
+
 			return GRAPHQL_CLIENT.mutation<
 				Pick<Mutation, 'productMediaCreate'>,
 				MutationProductMediaCreateArgs
@@ -105,16 +119,18 @@
 
 		const results = await Promise.all(operations);
 		let numFails = 0;
-		for (const result of results)
+		const variantsMediaMap: Record<string, string> = {};
+
+		results.forEach((result, idx) => {
 			if (checkIfGraphqlResultHasError(result, 'productMediaCreate')) numFails++;
+			else if (variantMediaIndexMap[idx].length) {
+				variantMediaIndexMap[idx].forEach(
+					(slug) => (variantsMediaMap[slug] = result.data?.productMediaCreate?.media?.id!),
+				);
+			}
+		});
 
-		return numFails;
-
-		/**
-		 * In case user want to assign some media(s) to some variant(s),
-		 * For that API to work, we have to assign just created media images to media state,
-		 * So the variant editors know how to mapping them
-		 */
+		return { numFails, variantsMediaMap };
 	};
 
 	const handleSubmit = async () => {
@@ -204,25 +220,54 @@
 		}
 
 		// 4) create product medias
-		const totalFails = await createProductMedias(createdProductId);
-		if (totalFails) {
+		const { numFails, variantsMediaMap } = await createProductMedias(createdProductId);
+		if (numFails) {
 			await handleUndoCreateProduct(createdProductId);
 			loading = false;
 			return;
 		}
 
-		// 5) update metadatas
+		console.log(variantsMediaMap);
+
+		// 5) assign variant medias if have
+		if (Object.keys(productVariantsMediaMap).length) {
+			const promises = [];
+
+			for (const variant of variantsBulkCreateResult.data?.productVariantBulkCreate?.results ||
+				[]) {
+				if (variantsMediaMap[variant.productVariant?.sku!]) {
+					const prm = GRAPHQL_CLIENT.mutation<
+						Pick<Mutation, 'variantMediaAssign'>,
+						MutationVariantMediaAssignArgs
+					>(VariantMediaAssignMutation, {
+						variantId: variant.productVariant?.id!,
+						mediaId: variantsMediaMap[variant.productVariant?.sku!],
+					}).toPromise();
+
+					promises.push(prm);
+				}
+			}
+
+			const results = await Promise.all(promises);
+			for (const result of results) {
+				if (checkIfGraphqlResultHasError(result, 'variantMediaAssign')) {
+					await handleUndoCreateProduct(createdProductId);
+					loading = false;
+					return;
+				}
+			}
+		}
+
+		// 6) update metadatas
 		const metaHasErr = await metaRef?.handleUpdate(createdProductId);
-		if (metaHasErr) {
-			await handleUndoCreateProduct(createdProductId);
-			loading = false;
-			return;
-		}
-
 		loading = false;
 
-		toast.success($tranFunc('product.prdCreated'));
+		if (metaHasErr) {
+			await handleUndoCreateProduct(createdProductId);
+			return;
+		}
 
+		toast.success($tranFunc('product.prdCreated'));
 		await goto(
 			AppRoute.SETTINGS_PRODUCTS_EDIT(productCreateResult.data?.productCreate?.product?.slug!),
 		);
@@ -263,14 +308,17 @@
 			{loading}
 		/>
 		{#if productCreateInput.productType}
-			<VariantsEditor
-				disabled={loading}
-				productTypeId={productCreateInput.productType}
-				{productMedias}
-				channelsListing={channelListingUpdateInput}
-				bind:productVariantsInput
-				bind:privateMetadata={productCreateInput.privateMetadata!}
-			/>
+			{#key productCreateInput.productType}
+				<VariantsEditor
+					disabled={loading}
+					productTypeId={productCreateInput.productType}
+					{productMedias}
+					channelsListing={channelListingUpdateInput}
+					bind:productVariantsInput
+					bind:privateMetadata={productCreateInput.privateMetadata!}
+					bind:productVariantsMediaMap
+				/>
+			{/key}
 		{/if}
 	</div>
 	<ProductSeo

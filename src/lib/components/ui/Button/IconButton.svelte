@@ -15,6 +15,7 @@
 		children,
 		class: className = '',
 		size = 'md',
+		style,
 		...rest
 	}: Props = $props();
 </script>
@@ -23,7 +24,7 @@
 	{...rest}
 	{size}
 	class={`${className} ${ICON_BTN_SIZE_MAP[size]} ${rounded ? 'rounded-full!' : ''}`}
-	style="padding: unset !important;"
+	style="padding: unset !important; {style}"
 	aria-label={rest['aria-label'] || 'Icon Button'}
 >
 	{#if icon}

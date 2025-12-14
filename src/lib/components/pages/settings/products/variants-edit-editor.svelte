@@ -13,9 +13,12 @@
 
 <script lang="ts">
 	import { tranFunc } from '$i18n';
+	import { TablerPhoto } from '$lib/components/icons/consts';
 	import { Badge } from '$lib/components/ui/Badge';
+	import { IconButton } from '$lib/components/ui/Button';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Input } from '$lib/components/ui/Input';
+	import { Modal } from '$lib/components/ui/Modal';
 	import { Select, SelectSkeleton } from '$lib/components/ui/select';
 	import {
 		type BulkAttributeValueInput,
@@ -77,6 +80,7 @@
 		weight: 0,
 		trackInventory: true,
 	});
+	let openVariantMediaModal = $state(false);
 	let customStockInputs = $state<CustomStockInput[]>([]);
 	onMount(async () => {
 		calculateStockInputForChannels().then((value) => (customStockInputs = value));
@@ -315,7 +319,6 @@
 		bind:quickFillingValues
 		{handleQuickFillingClick}
 	/>
-
 	<div class={SitenameCommonClassName}>
 		<table class="w-full text-sm h-fit text-left table text-gray-600">
 			<thead>
@@ -349,10 +352,39 @@
 									{variantInputDetail.name?.split('-')[0]}
 								</td>
 							{/if}
-							<td class="text-center">{variantInputDetail.name?.split('-')[1]}</td>
+							<td class="text-center">
+								<dir class="flex flex-col items-center">
+									<div>
+										{variantInputDetail.name?.split('-')[1]}
+									</div>
+									<div
+										class="w-12 h-12 rounded-lg border border-gray-200 flex items-center justify-center"
+									>
+										<IconButton
+											icon={TablerPhoto}
+											variant="light"
+											class="bg-transparent!"
+											size="xs"
+											color="gray"
+										/>
+									</div>
+								</dir>
+							</td>
 						{:else}
 							<td class="text-center">
-								<dir>{variantInputDetail.name?.split('-')[0]}</dir>
+								<dir class="text-center">
+									<div>
+										{variantInputDetail.name?.split('-')[0]}
+									</div>
+									<div>
+										<IconButton
+											icon={TablerPhoto}
+											size="xs"
+											variant="light"
+											class="bg-transparent!"
+										/>
+									</div>
+								</dir>
 							</td>
 						{/if}
 						<!-- CHANNELS -->
@@ -542,3 +574,16 @@
 		</table>
 	</div>
 </div>
+
+<Modal
+	header="Assign media to variant"
+	open={openVariantMediaModal}
+	onCancel={() => (openVariantMediaModal = false)}
+	onClose={() => (openVariantMediaModal = false)}
+
+>
+	<!-- {#each  as }
+		
+	{/each} -->
+	<div></div>
+</Modal>

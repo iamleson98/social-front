@@ -16,6 +16,7 @@
 	import { CommonState } from '$lib/utils/common.svelte';
 	import type { MediaObject } from '$lib/utils/types';
 	import { randomString, SitenameCommonClassName } from '$lib/utils/utils';
+	import { VariantMediaSnippets } from './snippets.svelte';
 	import './table.css';
 	import {
 		calculateStockInputForChannels,
@@ -29,6 +30,7 @@
 		type QuickFillHighlight,
 		type QuickFillingProps,
 		type VariantManifest,
+		type VariantMedia,
 	} from './utils';
 	import VariantManifests from './variant-manifests.svelte';
 	import VariantQuickFillingValues from './variant-quick-filling-values.svelte';
@@ -42,9 +44,11 @@
 		/** This is provided by the channel listing selector section */
 		channelsListing: ProductChannelListingUpdateInput;
 		disabled?: boolean;
+		/** A variant can have 1 media, inherit from its parent */
 		productMedias: MediaObject[];
 		productVariantsInput: ProductVariantBulkCreateInput[];
 		privateMetadata: MetadataInput[];
+		productVariantsMediaMap: VariantMedia;
 	};
 
 	let {
@@ -53,6 +57,8 @@
 		disabled,
 		productVariantsInput = $bindable([]),
 		privateMetadata = $bindable(),
+		productMedias,
+		productVariantsMediaMap = $bindable(),
 	}: Props = $props();
 
 	const WarehouseNameKey = 'warehouseName' as keyof StockInput;
@@ -63,6 +69,7 @@
 	let variantManifests = $state<VariantManifest[]>([]);
 	let quickFillingHighlightClass = $state<QuickFillHighlight>();
 	let channelSelectOptions = $state.raw<ChannelSelectOptionProps[]>([]);
+	let currentVariantSkuToAssignMedia = $state<string>();
 	/**
 	 * there are at most 2 attributes used for variants creation, so this list has 2 booleans.
 	 * If user can not find her desired attribute values, we support auto create feature,
@@ -317,8 +324,6 @@
 			};
 		});
 	};
-
-	$inspect(variantsInputDetails);
 </script>
 
 <div class="space-y-2">
@@ -364,6 +369,9 @@
 				</thead>
 				<tbody>
 					{#each variantsInputDetails as variantInputDetail, detailIdx (detailIdx)}
+						{@const style = productVariantsMediaMap[variantInputDetail.sku!]
+							? `background-image: url(${productVariantsMediaMap[variantInputDetail.sku!].url}); background-size: cover; background-position: center;`
+							: ''}
 						<tr class={`variant-table-row ${quickFillingHighlightClass} border-b border-gray-200`}>
 							{#if variantManifests.length === MAX_VARIANT_TYPES}
 								{#if detailIdx % variantManifests[1].values.length === 0}
@@ -374,10 +382,22 @@
 										{variantInputDetail.name?.split('-')[0]}
 									</td>
 								{/if}
-								<td class="text-center">{variantInputDetail.name?.split('-')[1]}</td>
+								<td class="text-center">
+									{@render VariantMediaSnippets.VariantImageBtn(
+										variantInputDetail.name?.split('-')[1]!,
+										style,
+										() => (currentVariantSkuToAssignMedia = variantInputDetail.sku!),
+										disabled,
+									)}
+								</td>
 							{:else}
 								<td class="text-center">
-									<dir>{variantInputDetail.name?.split('-')[0]}</dir>
+									{@render VariantMediaSnippets.VariantImageBtn(
+										variantInputDetail.name?.split('-')[0]!,
+										style,
+										() => (currentVariantSkuToAssignMedia = variantInputDetail.sku!),
+										disabled,
+									)}
 								</td>
 							{/if}
 							<!-- CHANNELS -->
@@ -544,3 +564,10 @@
 		</div>
 	{/if}
 </div>
+
+{@render VariantMediaSnippets.VariantMediaModal(
+	!!currentVariantSkuToAssignMedia,
+	productMedias,
+	(media) => (productVariantsMediaMap[currentVariantSkuToAssignMedia!] = media),
+	() => (currentVariantSkuToAssignMedia = undefined),
+)}

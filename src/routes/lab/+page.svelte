@@ -1,6 +1,8 @@
 <script lang="ts">
 	import CopyButton from '$lib/components/common/copy-button.svelte';
 	import EmojiPicker from '$lib/components/common/emojis/emoji-picker.svelte';
+	import { TablerPhoto } from '$lib/components/icons/consts';
+	import { IconButton } from '$lib/components/ui/Button';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { onMount } from 'svelte';
 
@@ -34,3 +36,5 @@
 <!-- <EmojiPicker onEmojiClick={console.log} filter="" /> -->
 
 <Select {options} bind:value label="Selector" />
+
+<IconButton icon={TablerPhoto} variant="light" size="sm" color="gray" />

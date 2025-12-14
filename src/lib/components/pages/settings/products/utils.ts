@@ -9,6 +9,7 @@ import {
 	type Query,
 	type StockInput,
 } from '$lib/gql/graphql';
+import type { MediaObject } from '$lib/utils/types';
 import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 
 
@@ -113,3 +114,5 @@ export const calculateTableColumnWidth = (manifests: VariantManifest[]) => {
 };
 
 export const RandomStringLength = 10;
+
+export type VariantMedia = Record<string, MediaObject>;

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { IconContent } from '$lib/components/icons';
+	import { TablerPhoto } from '$lib/components/icons/consts';
 	import { IconButton } from '$lib/components/ui/Button';
 	import type { SocialColor, SocialSize } from '$lib/components/ui/common';
 	import { randomID } from '$lib/utils/utils';
@@ -7,12 +8,14 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	type Props = {
-		icon: IconContent;
-		accept: string;
+		/** @default TablerPhoto */
+		icon?: IconContent;
+		accept?: string;
+		/** @default 'blue'  */
 		color?: SocialColor;
 		size?: SocialSize;
 		multiple?: boolean;
-		onChange: (fileList: FileList) => void;
+		onChange?: (fileList: FileList) => void;
 		disabled?: boolean;
 		label?: string;
 		required?: boolean;
@@ -22,8 +25,8 @@
 	let input = $state<HTMLInputElement>();
 
 	let {
-		icon,
-		accept,
+		icon = TablerPhoto,
+		accept = '*',
 		color = 'blue',
 		size = 'xl',
 		multiple = false,
@@ -46,8 +49,8 @@
 		{accept}
 		onchange={(evt) => {
 			if (evt.currentTarget.files) {
-				onChange(evt.currentTarget.files);
-				evt.currentTarget.files = null;
+				onChange?.(evt.currentTarget.files);
+				// evt.currentTarget.files = null;
 			}
 		}}
 		id={INPUT_ID}

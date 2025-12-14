@@ -242,6 +242,7 @@ export const CREATE_PRODUCT_MUTATION = gql`
 			}
 			product {
 				id
+				slug
 			}
 		}
 	}
@@ -268,6 +269,7 @@ export const PRODUCT_VARIANTS_BULK_CREATE_MUTATION = gql`
 			results {
 				productVariant {
 					id
+					sku
 				}
 				errors {
 					field
@@ -761,6 +763,16 @@ mutation ProductUpdate($id: ID!, $input: ProductInput!) {
 export const ProductVariantBulkUpdateMutation = gql`
 mutation productVariantBulkUpdate($product: ID!, $variants: [ProductVariantBulkUpdateInput!]!, $errorPolicy: ErrorPolicyEnum) {
 	productVariantBulkUpdate(product: $product, variants: $variants, errorPolicy: $errorPolicy) {
+		errors {
+			field
+			message
+		}
+	}
+}`;
+
+export const VariantMediaAssignMutation = gql`
+mutation VariantMediaAssign($mediaId: ID!, $variantId: ID!) {
+	variantMediaAssign(mediaId: $mediaId, variantId: $variantId) {
 		errors {
 			field
 			message
