@@ -46,7 +46,6 @@
 		type ProductVariantChannelListingUpdateInput,
 		type ProductVariantBulkUpdateInput,
 		type ProductVariantStocksUpdateInput,
-		type Weight,
 		type BulkAttributeValueInput,
 		type AttributeValueInput,
 		type ProductVariantChannelListing,
@@ -117,6 +116,7 @@
 		channelListing: true,
 	});
 	let channelListingUpdateInput = $state.raw<ProductChannelListingUpdateInput>({});
+	/** keeps track of medias assigned to variants */
 	let productVariantsMediaMap = $state<VariantMedia>({});
 	// in product update screen
 	let productVariantBulkUpdateInput = $state<ProductVariantBulkUpdateInput[]>([]);
@@ -143,7 +143,6 @@
 					variants,
 				} = result.data.product;
 
-				// currentProductType = productType;
 				productTypeRequiresShipping = productType.isShippingRequired;
 				productInput = {
 					...productInput,
@@ -200,6 +199,7 @@
 										endDate: undefined,
 									};
 
+							// parse variant medias
 							if (media?.length && productMediasMap[media[0].id]) {
 								productVariantsMediaMap[rest.sku!] = media[0];
 							}
