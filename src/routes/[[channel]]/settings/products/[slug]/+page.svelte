@@ -27,6 +27,7 @@
 	import {
 		ProductPrivateMetadataVariantAttributeUsedKey,
 		type CustomStockInput,
+		type VariantMedia,
 	} from '$lib/components/pages/settings/products/utils';
 	import VariantsEditEditor, {
 		ChannelListingCurrentKey,
@@ -116,7 +117,7 @@
 		channelListing: true,
 	});
 	let channelListingUpdateInput = $state.raw<ProductChannelListingUpdateInput>({});
-
+	let productVariantsMediaMap = $state<VariantMedia>({});
 	// in product update screen
 	let productVariantBulkUpdateInput = $state<ProductVariantBulkUpdateInput[]>([]);
 
@@ -164,12 +165,15 @@
 					weight: weight?.value || 0,
 				};
 
+				const productMediasMap: Record<string, boolean> = {};
+
 				if (media?.length) {
-					productMedias = media.map<MediaObject>((item) => ({
-						alt: item.alt,
-						url: item.url,
-						type: item.type,
-					}));
+					productMedias = media.map<MediaObject>((item) => {
+						const res = pick(item, ['alt', 'url', 'type', 'id']);
+						productMediasMap[item.id] = true;
+
+						return res;
+					});
 				}
 
 				if (variants?.length) {
@@ -181,6 +185,7 @@
 							stocks,
 							weight,
 							attributes,
+							media,
 							__typename,
 							...rest
 						}) => {
@@ -194,6 +199,10 @@
 										globalThreshold: undefined,
 										endDate: undefined,
 									};
+
+							if (media?.length && productMediasMap[media[0].id]) {
+								productVariantsMediaMap[rest.sku!] = media[0];
+							}
 
 							return {
 								...rest,
@@ -473,6 +482,8 @@
 				bind:productVariantsInput={productVariantBulkUpdateInput}
 				bind:privateMetadata={productInput.privateMetadata!}
 				productTypeId={productType.id}
+				{productMedias}
+				bind:productVariantsMediaMap
 			/>
 		</div>
 		<ProductSeo

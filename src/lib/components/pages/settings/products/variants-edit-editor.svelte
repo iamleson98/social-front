@@ -13,12 +13,9 @@
 
 <script lang="ts">
 	import { tranFunc } from '$i18n';
-	import { TablerPhoto } from '$lib/components/icons/consts';
 	import { Badge } from '$lib/components/ui/Badge';
-	import { IconButton } from '$lib/components/ui/Button';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Input } from '$lib/components/ui/Input';
-	import { Modal } from '$lib/components/ui/Modal';
 	import { Select, SelectSkeleton } from '$lib/components/ui/select';
 	import {
 		type BulkAttributeValueInput,
@@ -32,7 +29,9 @@
 		type Stock,
 	} from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
+	import type { MediaObject } from '$lib/utils/types';
 	import { randomString, SitenameCommonClassName } from '$lib/utils/utils';
+	import { VariantMediaSnippets } from './snippets.svelte';
 	import './table.css';
 	import {
 		calculateStockInputForChannels,
@@ -45,6 +44,7 @@
 		type CustomStockInput,
 		type QuickFillingProps,
 		type VariantManifest,
+		type VariantMedia,
 	} from './utils';
 	import VariantManifests from './variant-manifests.svelte';
 	import VariantQuickFillingValues from './variant-quick-filling-values.svelte';
@@ -60,6 +60,8 @@
 		/** To set the attribute informations used by variants */
 		privateMetadata: MetadataInput[];
 		productTypeId: string;
+		productMedias: MediaObject[];
+		productVariantsMediaMap: VariantMedia;
 	};
 
 	let {
@@ -68,6 +70,8 @@
 		privateMetadata = $bindable(),
 		channelsListing,
 		productTypeId,
+		productMedias,
+		productVariantsMediaMap = $bindable(),
 	}: Props = $props();
 
 	let manifestEditor = $state<ReturnType<typeof VariantManifests>>();
@@ -80,7 +84,7 @@
 		weight: 0,
 		trackInventory: true,
 	});
-	let openVariantMediaModal = $state(false);
+	let currentVariantSkuToAssignMedia = $state<string>();
 	let customStockInputs = $state<CustomStockInput[]>([]);
 	onMount(async () => {
 		calculateStockInputForChannels().then((value) => (customStockInputs = value));
@@ -300,6 +304,8 @@
 			);
 		}
 	};
+
+	$inspect(productVariantsMediaMap);
 </script>
 
 <div class="space-y-2">
@@ -342,6 +348,9 @@
 			</thead>
 			<tbody>
 				{#each productVariantsInput as variantInputDetail, detailIdx (detailIdx)}
+					{@const style = productVariantsMediaMap[variantInputDetail.sku!]
+						? `background-image: url(${productVariantsMediaMap[variantInputDetail.sku!].url}); background-size: cover; background-position: center;`
+						: ''}
 					<tr class={`variant-table-row border-b border-gray-200`}>
 						{#if variantManifests.length === MAX_VARIANT_TYPES}
 							{#if detailIdx % variantManifests[1].values.length === 0}
@@ -354,37 +363,22 @@
 							{/if}
 							<td class="text-center">
 								<dir class="flex flex-col items-center">
-									<div>
-										{variantInputDetail.name?.split('-')[1]}
-									</div>
-									<div
-										class="w-12 h-12 rounded-lg border border-gray-200 flex items-center justify-center"
-									>
-										<IconButton
-											icon={TablerPhoto}
-											variant="light"
-											class="bg-transparent!"
-											size="xs"
-											color="gray"
-										/>
-									</div>
+									{@render VariantMediaSnippets.VariantImageBtn(
+										variantInputDetail.name?.split('-')[1] || '-',
+										style,
+										() => (currentVariantSkuToAssignMedia = variantInputDetail.sku!),
+										disabled,
+									)}
 								</dir>
 							</td>
 						{:else}
 							<td class="text-center">
-								<dir class="text-center">
-									<div>
-										{variantInputDetail.name?.split('-')[0]}
-									</div>
-									<div>
-										<IconButton
-											icon={TablerPhoto}
-											size="xs"
-											variant="light"
-											class="bg-transparent!"
-										/>
-									</div>
-								</dir>
+								{@render VariantMediaSnippets.VariantImageBtn(
+									variantInputDetail.name?.split('-')[0] || '-',
+									style,
+									() => (currentVariantSkuToAssignMedia = variantInputDetail.sku!),
+									disabled,
+								)}
 							</td>
 						{/if}
 						<!-- CHANNELS -->
@@ -575,15 +569,9 @@
 	</div>
 </div>
 
-<Modal
-	header="Assign media to variant"
-	open={openVariantMediaModal}
-	onCancel={() => (openVariantMediaModal = false)}
-	onClose={() => (openVariantMediaModal = false)}
-
->
-	<!-- {#each  as }
-		
-	{/each} -->
-	<div></div>
-</Modal>
+{@render VariantMediaSnippets.VariantMediaModal(
+	!!currentVariantSkuToAssignMedia,
+	productMedias,
+	(media) => (productVariantsMediaMap[currentVariantSkuToAssignMedia!] = media),
+	() => (currentVariantSkuToAssignMedia = undefined),
+)}

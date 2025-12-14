@@ -301,6 +301,7 @@ export const PRODUCT_DETAIL_QUERY = gql`
 				url(format: WEBP, size: 500)
 				alt
 				type
+				id
 			}
 			collections {
 				id
@@ -376,6 +377,11 @@ export const PRODUCT_DETAIL_QUERY = gql`
 				sku
 				trackInventory
 				quantityLimitPerCustomer
+				media {
+					id
+					alt
+					url(format: WEBP, size: 100)
+				}
 				attributes {
 					attribute {
 						id
