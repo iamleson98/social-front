@@ -17,9 +17,12 @@
 			icon={TablerPhoto}
 			size="xl"
 			{style}
+			class="{style ? 'text-gray-600/0 hover:text-gray-600' : ''} tooltip tooltip-top"
+			data-tip="Assign media"
 			{disabled}
 			{onclick}
 			variant="outline"
+
 		/>
 	</dir>
 {/snippet}
