@@ -68,7 +68,7 @@
 			.sort((a, b) => a.level - b.level);
 	});
 
-	onMount(() => {
+	onMount(async () => {
 		let allProductMedias: ProductMedia[] = [];
 
 		if (product?.media) allProductMedias = allProductMedias.concat(product.media);

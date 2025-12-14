@@ -17,6 +17,8 @@
 		TablerCirclePercentage,
 		TablerMessageCircleFilled,
 		TablerMessageReportFilled,
+		TablerRewindBackward30,
+		TablerShieldCheckFilled,
 	} from '$lib/components/icons/consts';
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
@@ -45,7 +47,6 @@
 
 	type Props = {
 		productInformation: Product;
-
 		/** this component is used for product detail screen and preview modal.
 		 * If `true`, only some important parts would be rendered */
 		useForPreviewModal?: boolean;
@@ -138,26 +139,20 @@
 			},
 		});
 	};
-
-	const MessageCircleFilled = `<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 14l-3-3h-7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1zm-7 1v2a1 1 0 0 1-1 1H6l-3 3V11a1 1 0 0 1 1-1h2"/>`;
-	const MessageReport = `<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-5l-5 3v-3H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3zm-6 4v3m0 3v.01"/>`;
-	const ThumbupFilled = `<path fill="currentColor" d="M13 3a3 3 0 0 1 2.995 2.824L16 6v4h2a3 3 0 0 1 2.98 2.65l.015.174L21 13l-.02.196l-1.006 5.032c-.381 1.626-1.502 2.796-2.81 2.78L17 21H9a1 1 0 0 1-.993-.883L8 20l.001-9.536a1 1 0 0 1 .5-.865a3 3 0 0 0 1.492-2.397L10 7V6a3 3 0 0 1 3-3m-8 7a1 1 0 0 1 .993.883L6 11v9a1 1 0 0 1-.883.993L5 21H4a2 2 0 0 1-1.995-1.85L2 19v-7a2 2 0 0 1 1.85-1.995L4 10z"/>`;
-	const RewindBack30 = `<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M19.007 16.466A6 6 0 0 0 15 6H4m8 9.5v3a1.5 1.5 0 0 0 3 0v-3a1.5 1.5 0 0 0-3 0M6 14h1.5a1.5 1.5 0 0 1 0 3H7h.5a1.5 1.5 0 0 1 0 3H6"/><path d="M7 9L4 6l3-3"/></g>`;
-	const ShieldFilled = `<path fill="currentColor" d="m11.998 2l.118.007l.059.008l.061.013l.111.034a1 1 0 0 1 .217.112l.104.082l.255.218a11 11 0 0 0 7.189 2.537l.342-.01a1 1 0 0 1 1.005.717a13 13 0 0 1-9.208 16.25a1 1 0 0 1-.502 0A13 13 0 0 1 2.54 5.718a1 1 0 0 1 1.005-.717a11 11 0 0 0 7.531-2.527l.263-.225l.096-.075a1 1 0 0 1 .217-.112l.112-.034a1 1 0 0 1 .119-.021zm3.71 7.293a1 1 0 0 0-1.415 0L11 12.585l-1.293-1.292l-.094-.083a1 1 0 0 0-1.32 1.497l2 2l.094.083a1 1 0 0 0 1.32-.083l4-4l.083-.094a1 1 0 0 0-.083-1.32z"/>`;
 </script>
 
 <div class="bg-white rounded-lg border-gray-200 border p-4 h-full space-y-2">
 	<div class="flex items-center gap-1">
 		<Badge
 			size="xs"
-			startIcon={ShieldFilled}
+			startIcon={TablerShieldCheckFilled}
 			text={$tranFunc('product.badgeAuthentic')}
 			variant="light"
 			rounded
 		/>
 		<Badge
 			size="xs"
-			startIcon={RewindBack30}
+			startIcon={TablerRewindBackward30}
 			text={$tranFunc('product.badge30DaysReturn')}
 			variant="light"
 			rounded

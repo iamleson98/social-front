@@ -91,12 +91,16 @@
 									src={picture.url}
 									alt={picture.alt}
 									class="absolute h-full left-0 object-contain object-center right-0 w-full"
+									fetchpriority="high"
 								/>
 							</picture>
 						</div>
 
 						<div
-							class="absolute left-0 top-0 bottom-0 right-0 rounded-md {idx === slideShowImages.activeIndex ? 'border-2 border-blue-500' : 'border-1 border-gray-200'}"
+							class="absolute left-0 top-0 bottom-0 right-0 rounded-md {idx ===
+							slideShowImages.activeIndex
+								? 'border-2 border-blue-500'
+								: 'border-1 border-gray-200'}"
 						></div>
 					</div>
 				</div>
