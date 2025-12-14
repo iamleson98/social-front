@@ -2,7 +2,6 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vitest/config';
 import { analyzer } from 'vite-bundle-analyzer'
-import type { UserConfig } from 'vite';
 
 
 export default defineConfig(({ mode }) => {
@@ -37,5 +36,11 @@ export default defineConfig(({ mode }) => {
 				},
 			},
 		},
-	} as UserConfig;
+		// resolve: {
+		// 	alias: {
+		// 		'node:crypto': false,
+		// 		crypto: false,
+		// 	},
+		// },
+	};
 });

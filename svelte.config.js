@@ -1,7 +1,6 @@
 import autoAdapter from '@sveltejs/adapter-auto';
-import nodeAdapter from '@sveltejs/adapter-node';
-// import adapter from '@sveltejs/adapter-vercel';
-// import adapter from 'svelte-adapter-bun';
+// import nodeAdapter from '@sveltejs/adapter-node';
+import cloudFlareAdapter from '@sveltejs/adapter-cloudflare';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -14,7 +13,7 @@ const config = {
 		// adapter-auto only supports some environments, see https://kit.svelte.dev/docs/adapter-auto for a list.
 		// If your environment is not supported or you settled on a specific environment, switch out the adapter.
 		// See https://kit.svelte.dev/docs/adapters for more information about adapters.
-		adapter: (process.env.RUNTIME === 'node' ? nodeAdapter : autoAdapter)({
+		adapter: (process.env.RUNTIME === 'cloudflare' ? cloudFlareAdapter : autoAdapter)({
 			// out: "./.svelte-kit/output",
 			// assets: true,
 			// envPrefix: "MY_CUSTOM_",
