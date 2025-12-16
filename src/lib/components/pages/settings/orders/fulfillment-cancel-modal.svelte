@@ -21,7 +21,7 @@
 
 	const handleChangeWarehouse = async () => {
 		if (!warehouseId) {
-			toast.warning('Please select a warehouse');
+			toast.error('Please select a warehouse');
 			return;
 		}
 
@@ -32,7 +32,7 @@
 		>(ORDER_CANCEL_FULFILLMENT_MUTATION, {
 			id: fulfillmentID!,
 			input: {
-				warehouseId: warehouseId,
+				warehouseId,
 			},
 		});
 

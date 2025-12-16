@@ -63,7 +63,7 @@
 						class="flex items-center justify-between px-4 py-3 tablet:p-5 border-b rounded-t dark:border-gray-600"
 					>
 						<h3 class="text-lg font-medium text-gray-900 dark:text-white">{header}</h3>
-						<div class="">
+						<div>
 							<IconButton
 								icon={CloseX}
 								size="xs"

@@ -30,7 +30,7 @@
 
 	const handleCreateOrder = async () => {
 		if (!channelId) {
-			toast.warning('Please specify a channel first');
+			toast.error('Please specify a channel first');
 			return;
 		}
 		loading = true;

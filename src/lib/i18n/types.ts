@@ -244,6 +244,8 @@ export type TranslationKey =
 | 'product.reportProduct'
 | 'product.contactSeller'
 | 'product.buyNow'
+| 'product.assignMedia'
+| 'product.assignModalHead'
 | 'error.invalidSlug'
 | 'error.invalidEmailAndPassword'
 | 'error.invalidEmail'

@@ -90,7 +90,7 @@
 
 	const handleResendGiftcard = async () => {
 		if (!giftCardChannel) {
-			toast.warning($tranFunc('giftcard.specifyChannel'));
+			toast.error($tranFunc('giftcard.specifyChannel'));
 			return;
 		}
 

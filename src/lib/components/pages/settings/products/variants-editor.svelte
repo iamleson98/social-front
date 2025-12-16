@@ -570,4 +570,5 @@
 	productMedias,
 	(media) => (productVariantsMediaMap[currentVariantSkuToAssignMedia!] = media),
 	() => (currentVariantSkuToAssignMedia = undefined),
+	() => delete productVariantsMediaMap[currentVariantSkuToAssignMedia!],
 )}

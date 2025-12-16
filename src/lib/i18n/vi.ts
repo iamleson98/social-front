@@ -255,6 +255,8 @@ export default {
 		reportProduct: 'Báo cáo sản phẩm',
 		contactSeller: 'Liên hệ người bán',
 		buyNow: 'Mua ngay',
+		assignMedia: 'Gán ảnh',
+		assignModalHead: 'Gán ảnh cho phân loại',
 	},
 	error: {
 		invalidSlug: 'Giá trị slug không hợp lệ',

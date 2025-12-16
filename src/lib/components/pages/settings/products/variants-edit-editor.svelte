@@ -1,16 +1,3 @@
-<script lang="ts" module>
-	// defined as const to make it easier to use
-	export const ChannelListingExistingKey =
-		'existing' as keyof ProductVariantChannelListingUpdateInput;
-	export const ChannelListingCurrentKey =
-		'current' as keyof ProductVariantChannelListingUpdateInput;
-
-	export const StockExistingKey = 'existing' as keyof ProductVariantStocksUpdateInput;
-	export const StockCurrentKey = 'current' as keyof ProductVariantStocksUpdateInput;
-
-	export const StockWarehouseNameKey = 'warehouseName' as keyof ProductVariantStocksUpdateInput;
-</script>
-
 <script lang="ts">
 	import { tranFunc } from '$i18n';
 	import { Badge } from '$lib/components/ui/Badge';
@@ -24,22 +11,24 @@
 		type ProductChannelListingUpdateInput,
 		type ProductVariantBulkUpdateInput,
 		type ProductVariantChannelListing,
-		type ProductVariantChannelListingUpdateInput,
-		type ProductVariantStocksUpdateInput,
 		type Stock,
 	} from '$lib/gql/graphql';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import type { MediaObject } from '$lib/utils/types';
 	import { randomString, SitenameCommonClassName } from '$lib/utils/utils';
+	import MediaModal from './media-modal.svelte';
 	import { VariantMediaSnippets } from './snippets.svelte';
 	import './table.css';
 	import {
 		calculateStockInputForChannels,
 		calculateTableColumnWidth,
+		ChannelListingCurrentKey,
 		MAX_DAYS_FOR_PREORDER,
 		MAX_VARIANT_TYPES,
 		MIN_DAYS_FOR_PREORDER,
 		RandomStringLength,
+		StockCurrentKey,
+		StockWarehouseNameKey,
 		type ChannelSelectOptionProps,
 		type CustomStockInput,
 		type QuickFillingProps,
@@ -62,6 +51,8 @@
 		productTypeId: string;
 		productMedias: MediaObject[];
 		productVariantsMediaMap: VariantMedia;
+		/** existing variant media map, used as reference */
+		existingVariantMedias: VariantMedia;
 	};
 
 	let {
@@ -72,6 +63,7 @@
 		productTypeId,
 		productMedias,
 		productVariantsMediaMap = $bindable(),
+		existingVariantMedias,
 	}: Props = $props();
 
 	let manifestEditor = $state<ReturnType<typeof VariantManifests>>();
@@ -572,4 +564,7 @@
 	productMedias,
 	(media) => (productVariantsMediaMap[currentVariantSkuToAssignMedia!] = media),
 	() => (currentVariantSkuToAssignMedia = undefined),
+	() =>
+		(productVariantsMediaMap[currentVariantSkuToAssignMedia!] =
+			existingVariantMedias[currentVariantSkuToAssignMedia!]),
 )}

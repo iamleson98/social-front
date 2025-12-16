@@ -222,8 +222,7 @@ export default {
 		promptPublicationTime: 'If not, please specify publidation time',
 		availForPurchase: 'Available for purchase',
 		promptAvailTime: 'If not, please specify availability time',
-		preorderHint:
-			'Pre-order is when you must order the product from other suppliers. The number of days it takes to delivery must be between {{min}} to {{max}} working days.',
+		preorderHint: 'Pre-order is when you must order the product from other suppliers. The number of days it takes to delivery must be between {{min}} to {{max}} working days.',
 		prdCreated: 'Product created successfully',
 		prdUpdated: 'Product updated successfully',
 		cateName: 'Category Name',
@@ -258,6 +257,8 @@ export default {
 		reportProduct: 'Report product',
 		contactSeller: 'Contact seller',
 		buyNow: 'Buy now',
+		assignMedia: 'Assign media',
+		assignModalHead: 'Assign media to variant',
 	},
 	error: {
 		invalidSlug: 'Invalid slug value',

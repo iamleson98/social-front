@@ -25,16 +25,15 @@
 	import ProductSeo from '$lib/components/pages/settings/products/product-seo.svelte';
 	import Skeleton from '$lib/components/pages/settings/products/skeleton.svelte';
 	import {
+		ChannelListingCurrentKey,
+		ChannelListingExistingKey,
 		ProductPrivateMetadataVariantAttributeUsedKey,
+		StockCurrentKey,
+		StockExistingKey,
 		type CustomStockInput,
 		type VariantMedia,
 	} from '$lib/components/pages/settings/products/utils';
-	import VariantsEditEditor, {
-		ChannelListingCurrentKey,
-		ChannelListingExistingKey,
-		StockCurrentKey,
-		StockExistingKey,
-	} from '$lib/components/pages/settings/products/variants-edit-editor.svelte';
+	import VariantsEditEditor from '$lib/components/pages/settings/products/variants-edit-editor.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import {
 		type ProductInput,
@@ -56,6 +55,7 @@
 		AttributeInputTypeEnum,
 		WeightUnitsEnum,
 		type ProductChannelListingAddInput,
+		type MutationVariantMediaAssignArgs,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
@@ -118,6 +118,7 @@
 	let channelListingUpdateInput = $state.raw<ProductChannelListingUpdateInput>({});
 	/** keeps track of medias assigned to variants */
 	let productVariantsMediaMap = $state<VariantMedia>({});
+	let existingVariantMedias = $state<VariantMedia>({});
 	// in product update screen
 	let productVariantBulkUpdateInput = $state<ProductVariantBulkUpdateInput[]>([]);
 
@@ -202,6 +203,7 @@
 							// parse variant medias
 							if (media?.length && productMediasMap[media[0].id]) {
 								productVariantsMediaMap[rest.sku!] = media[0];
+								existingVariantMedias[rest.sku!] = media[0];
 							}
 
 							return {
@@ -262,6 +264,16 @@
 			}
 		});
 	});
+
+	// const updateVariantsMedia = async () => {
+	// 	const promises = [];
+
+	// 	for (let key in productVariantsMediaMap) {
+	// 		if (productVariantsMediaMap[key].id !== existingVariantMedias[key].id) {
+	// 			const prm = GRAPHQL_CLIENT.mutation<Pick<Mutation, 'variantMediaAssign'>, MutationVariantMediaAssignArgs>()
+	// 		}
+	// 	}
+	// };
 
 	const handleSubmit = async () => {
 		// validate:
@@ -398,7 +410,10 @@
 			return;
 		}
 
-		// 4) Update metadata
+		// 4) Update variant medias
+		// await updateVariantsMedia()
+
+		// 5) Update metadata
 		const hasErr = await metaRef?.handleUpdate();
 		loading = false;
 		if (hasErr) return;
@@ -484,6 +499,7 @@
 				productTypeId={productType.id}
 				{productMedias}
 				bind:productVariantsMediaMap
+				{existingVariantMedias}
 			/>
 		</div>
 		<ProductSeo

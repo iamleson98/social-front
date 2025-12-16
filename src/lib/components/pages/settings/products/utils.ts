@@ -6,11 +6,24 @@ import {
 	type CategoryCountableConnection,
 	type PreorderSettingsInput,
 	type ProductVariantChannelListingAddInput,
+	type ProductVariantChannelListingUpdateInput,
+	type ProductVariantStocksUpdateInput,
 	type Query,
 	type StockInput,
 } from '$lib/gql/graphql';
 import type { MediaObject } from '$lib/utils/types';
 import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+
+
+export const ChannelListingExistingKey =
+	'existing' as keyof ProductVariantChannelListingUpdateInput;
+export const ChannelListingCurrentKey =
+	'current' as keyof ProductVariantChannelListingUpdateInput;
+
+export const StockExistingKey = 'existing' as keyof ProductVariantStocksUpdateInput;
+export const StockCurrentKey = 'current' as keyof ProductVariantStocksUpdateInput;
+
+export const StockWarehouseNameKey = 'warehouseName' as keyof ProductVariantStocksUpdateInput;
 
 
 export type CategorySelectItemProps = Omit<SelectItemProps, 'children'> & { children?: CategoryCountableConnection }
