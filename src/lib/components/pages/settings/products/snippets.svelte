@@ -20,7 +20,7 @@
 			size="xl"
 			{style}
 			class="{style
-				? 'text-gray-600/0 hover:text-gray-600'
+				? 'text-gray-600/0! hover:text-gray-600!'
 				: ''} tooltip tooltip-top border border-gray-200!"
 			data-tip={get(tranFunc)('product.assignMedia')}
 			{disabled}

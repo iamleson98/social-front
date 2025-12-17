@@ -94,7 +94,7 @@
 	/**
 	 * If there is 1 variant, there will be 8 columns -> each column's width = 1/9 = 11.11%, 2 variants -> 9 columns -> each column's width = 1/8 = 12.5%;
 	 */
-	const ThClass = $derived(calculateTableColumnWidth(variantManifests));
+	const ThClass = $derived.by(() => calculateTableColumnWidth(variantManifests));
 
 	const onVariantValuesChange = () => {
 		if (variantManifests.length === 1) {
