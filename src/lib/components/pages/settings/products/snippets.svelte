@@ -1,7 +1,7 @@
 <script lang="ts" module>
 	import { tranFunc } from '$i18n';
 	import { TablerPhoto } from '$lib/components/icons/consts';
-	import { Button, IconButton } from '$lib/components/ui/Button';
+	import { IconButton } from '$lib/components/ui/Button';
 	import { Modal } from '$lib/components/ui/Modal';
 	import { type MediaObject } from '$lib/utils/types';
 	import { get } from 'svelte/store';
