@@ -36,7 +36,7 @@
 
 	const giftcardQuery = operationStore<Pick<Query, 'giftCard'>, QueryGiftCardArgs>({
 		query: GIFT_CARD_DETAIL_QUERY,
-		requestPolicy: 'network-only',
+		requestPolicy: 'cache-and-network',
 		variables: {
 			id: page.params.id as string,
 		},
