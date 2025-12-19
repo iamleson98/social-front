@@ -173,7 +173,7 @@
 					<MenuItem href={AppRoute.ME()} startIcon={UserCog}>
 						{$tranFunc('common.settings')}
 					</MenuItem>
-					<MenuItem href={AppRoute.ME()} startIcon={Logout} onclick={() => handleLogout($tranFunc)}>
+					<MenuItem startIcon={Logout} onclick={() => handleLogout($tranFunc)}>
 						{$tranFunc('common.logout')}
 					</MenuItem>
 				</DropDown>
