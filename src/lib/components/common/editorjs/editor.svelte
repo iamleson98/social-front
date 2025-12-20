@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import Alert from '$lib/components/ui/Alert/alert.svelte';
 	import { INPUT_CLASSES, Label } from '$lib/components/ui/Input';
 	import { Skeleton, SkeletonContainer } from '$lib/components/ui/Skeleton';
@@ -153,7 +153,7 @@
 		});
 
 		editor.isReady
-			.catch(() => (editorInitError = $tranFunc('error.initEditorErr')))
+			.catch(() => (editorInitError = $T('error.initEditorErr')))
 			.finally(() => {
 				editorInitializing = false;
 			});

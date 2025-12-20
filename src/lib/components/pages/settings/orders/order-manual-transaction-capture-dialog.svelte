@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
@@ -23,8 +23,8 @@
 	});
 
 	const TransactionSchema = object({
-		description: string().nonempty($tranFunc('helpText.fieldRequired')),
-		amount: number().positive($tranFunc('error.negativeNumber')),
+		description: string().nonempty($T('helpText.fieldRequired')),
+		amount: number().positive($T('error.negativeNumber')),
 	});
 
 	const SchemaHandler = createSchemaHandler(TransactionSchema, () => values);

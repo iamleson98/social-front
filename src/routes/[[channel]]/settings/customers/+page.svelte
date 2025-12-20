@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { CUSTOMER_LIST_QUERY } from '$lib/api/admin/users';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import CustomerFilter from '$lib/components/pages/settings/customers/filter.svelte';
@@ -24,29 +24,29 @@
 
 	const USER_TABLE_COLUMNS: TableColumnProps<User, UserSortField>[] = $derived([
 		{
-			title: $tranFunc('staff.avatar'),
+			title: $T('staff.avatar'),
 			child: avatar,
 		},
 		{
-			title: $tranFunc('common.name'),
+			title: $T('common.name'),
 			child: customerName,
 			key: UserSortField.FirstName,
 		},
 		{
-			title: $tranFunc('common.email'),
+			title: $T('common.email'),
 			child: email,
 			key: UserSortField.Email,
 		},
 		{
-			title: $tranFunc('staff.status'),
+			title: $T('staff.status'),
 			child: isActive,
 		},
 		{
-			title: $tranFunc('customer.isStaff'),
+			title: $T('customer.isStaff'),
 			child: isStaff,
 		},
 		{
-			title: $tranFunc('staff.joinedSince'),
+			title: $T('staff.joinedSince'),
 			child: dateJoined,
 			key: UserSortField.CreatedAt,
 		},
@@ -78,7 +78,7 @@
 
 {#snippet isActive({ item }: TableCellProps<User>)}
 	<Badge
-		text={$tranFunc(item.isActive ? 'staff.active' : 'staff.inactive')}
+		text={$T(item.isActive ? 'staff.active' : 'staff.inactive')}
 		color={item.isActive ? 'green' : 'red'}
 	/>
 {/snippet}
@@ -86,7 +86,7 @@
 {#snippet isStaff({ item }: TableCellProps<User>)}
 	<div class="text-center">
 		<Badge
-			text={$tranFunc(item.isStaff ? 'common.yes' : 'common.no')}
+			text={$T(item.isStaff ? 'common.yes' : 'common.no')}
 			color={item.isStaff ? 'green' : 'red'}
 		/>
 	</div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { PROMOTION_LIST_QUERY } from '$lib/api/admin/discount';
 	import Filter from '$lib/components/pages/settings/promotions/filter.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
@@ -19,21 +19,21 @@
 
 	const PROMOTION_COLUMNS: TableColumnProps<Promotion, PromotionSortField>[] = $derived([
 		{
-			title: $tranFunc('common.name'),
+			title: $T('common.name'),
 			child: title,
 			key: PromotionSortField.Name,
 		},
 		{
-			title: $tranFunc('voucher.discountType'),
+			title: $T('voucher.discountType'),
 			child: discountType,
 		},
 		{
-			title: $tranFunc('common.startAt'),
+			title: $T('common.startAt'),
 			child: startDate,
 			key: PromotionSortField.StartDate,
 		},
 		{
-			title: $tranFunc('common.endAt'),
+			title: $T('common.endAt'),
 			child: endDate,
 			key: PromotionSortField.EndDate,
 		},
@@ -49,7 +49,7 @@
 {/snippet}
 
 {#snippet discountType({ item }: { item: Promotion })}
-	<Badge color="green" text={item.type ? $tranFunc(`promotion.${item.type}`) : '-'} />
+	<Badge color="green" text={item.type ? $T(`promotion.${item.type}`) : '-'} />
 {/snippet}
 
 {#snippet startDate({ item }: { item: Promotion })}

@@ -1,5 +1,5 @@
 /** those constants are used for product search query params */
-import { tranFunc } from '$i18n';
+import { T } from '$i18n';
 import type { SelectOption } from '$lib/components/ui/select';
 import { ProductOrderField, type Product } from '$lib/gql/graphql';
 import { derived, writable } from 'svelte/store';
@@ -7,7 +7,7 @@ import { derived, writable } from 'svelte/store';
 
 export const PRODUCT_PREVIEW_STORE = writable<Product | null>(null);
 
-export const ProductSortFields = derived(tranFunc, (func) => {
+export const ProductSortFields = derived(T, (func) => {
 	return [
 		ProductOrderField.Price,
 		ProductOrderField.Rating,

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { STAFF_CREATE_MUTATION } from '$lib/api/admin/staff';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import ActionBar from '$lib/components/pages/settings/common/action-bar.svelte';
@@ -41,7 +41,7 @@
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'staffCreate', $tranFunc('staff.staffCreated')))
+		if (checkIfGraphqlResultHasError(result, 'staffCreate', $T('staff.staffCreated')))
 			return;
 
 		await goto(AppRoute.SETTINGS_CONFIGS_STAFF_DETAILS(result.data?.staffCreate?.user?.id!));

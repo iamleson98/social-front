@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { Modal } from '$lib/components/ui/Modal';
 	import type { MediaObject } from '$lib/utils/types';
 
@@ -21,7 +21,7 @@
 </script>
 
 <Modal
-	header={$tranFunc('product.assignModalHead')}
+	header={$T('product.assignModalHead')}
 	{open}
 	onCancel={handleCancel}
 	onClose={handleCancel}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { PRODUCT_TYPE_QUERY, PRODUCT_TYPES_QUERY } from '$lib/api/admin/product';
 	import { operationStore } from '$lib/api/operation';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
@@ -223,7 +223,7 @@
 </script>
 
 <div class={SitenameCommonClassName}>
-	<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
+	<SectionHeader>{$T('common.generalInfo')}</SectionHeader>
 	<Input
 		bind:value={name}
 		onblur={SchemaHandler.validate}
@@ -231,7 +231,7 @@
 		variant={$SchemaHandler.name?.length ? 'error' : 'info'}
 		subText={$SchemaHandler.name?.[0]}
 		required
-		label={$tranFunc('product.prdName')}
+		label={$T('product.prdName')}
 		{disabled}
 	/>
 	<GraphqlPaginableSelect
@@ -246,7 +246,7 @@
 		resultKey="productTypes"
 		optionValueKey="id"
 		optionLabelKey="name"
-		label={$tranFunc('product.prdType')}
+		label={$T('product.prdType')}
 		required
 		bind:value={productType}
 		variant={$SchemaHandler.productType?.length ? 'error' : 'info'}
@@ -347,7 +347,7 @@
 								/>
 							{:else if node.inputType === AttributeInputTypeEnum.Numeric}
 								<Input
-									placeholder={$tranFunc('placeholders.valuePlaceholder')}
+									placeholder={$T('placeholders.valuePlaceholder')}
 									type="number"
 									{disabled}
 									value={innerAttributes[idx].numeric
@@ -405,7 +405,7 @@
 							{:else if node.inputType === AttributeInputTypeEnum.RichText}
 								<div>
 									<EditorJSComponent
-										placeholder={$tranFunc('placeholders.valuePlaceholder')}
+										placeholder={$T('placeholders.valuePlaceholder')}
 										label={node.name || '-'}
 										onchange={(data) => {
 											innerAttributes[idx] = {
@@ -514,11 +514,11 @@
 		}}
 		quote={{ inlineToolbar: true }}
 		onchange={SchemaHandler.validate}
-		placeholder={$tranFunc('placeholders.valuePlaceholder')}
+		placeholder={$T('placeholders.valuePlaceholder')}
 		bind:value={description}
 		variant={$SchemaHandler.description?.length ? 'error' : 'info'}
 		subText={$SchemaHandler.description?.[0]}
 		required
-		label={$tranFunc('product.prdDescription')}
+		label={$T('product.prdDescription')}
 	/>
 </div>

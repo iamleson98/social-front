@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { ORDER_FULFILLMENT_UPDATE_TRACKING_MUTATION } from '$lib/api/admin/orders';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import CopyButton from '$lib/components/common/copy-button.svelte';
@@ -55,7 +55,7 @@
 
 	const PRODUCT_MODAL_COLUMNS: TableColumnProps<FulfillmentLine, any>[] = $derived([
 		{
-			title: $tranFunc('common.pic'),
+			title: $T('common.pic'),
 			child: image,
 		},
 		{

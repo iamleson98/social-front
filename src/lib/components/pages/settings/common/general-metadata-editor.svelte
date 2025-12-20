@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import {
 		METADATA_DELETE_MUTATION,
 		METADATA_UPDATE_MUTATION,
@@ -121,7 +121,7 @@
 
 <div class={SitenameCommonClassName}>
 	<MetadataEditor
-		title={$tranFunc('common.metadata')}
+		title={$T('common.metadata')}
 		data={metadata.map((item) => omit(item, ['__typename']))}
 		{disabled}
 		keysToHide={metadataKeysToHide}
@@ -131,7 +131,7 @@
 	/>
 
 	<MetadataEditor
-		title={$tranFunc('common.privateMetadata')}
+		title={$T('common.privateMetadata')}
 		data={privateMetadata.map((item) => omit(item, ['__typename']))}
 		{disabled}
 		keysToHide={privateMetadataKeysToHide}

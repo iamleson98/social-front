@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { GIFT_CARD_TAGS_QUERY } from '$lib/api/admin/giftcards';
 	import { PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
 	import { CUSTOMER_LIST_QUERY } from '$lib/api/admin/users';
@@ -30,13 +30,13 @@
 
 	const FilterOptions: FilterProps<GiftCardFilterInput> = $derived({
 		currency: {
-			label: $tranFunc('common.currency'),
+			label: $T('common.currency'),
 			operations: {
 				eq: currencyIs,
 			},
 		},
 		currentBalance: {
-			label: $tranFunc('giftcard.currentBalance'),
+			label: $T('giftcard.currentBalance'),
 			mustPairWith: 'currency',
 			operations: {
 				lte: CommonSnippets.singleNumber,
@@ -45,7 +45,7 @@
 			},
 		},
 		initialBalance: {
-			label: $tranFunc('giftcard.initialBalance'),
+			label: $T('giftcard.initialBalance'),
 			mustPairWith: 'currency',
 			operations: {
 				lte: CommonSnippets.singleNumber,
@@ -54,31 +54,31 @@
 			},
 		},
 		products: {
-			label: $tranFunc('common.products'),
+			label: $T('common.products'),
 			operations: {
 				oneOf: products,
 			},
 		},
 		isActive: {
-			label: $tranFunc('staff.active'),
+			label: $T('staff.active'),
 			operations: {
 				eq: CommonSnippets.yesNo,
 			},
 		},
 		tags: {
-			label: $tranFunc('giftcard.form.tags'),
+			label: $T('giftcard.form.tags'),
 			operations: {
 				oneOf: tags,
 			},
 		},
 		usedBy: {
-			label: $tranFunc('giftcard.filter.usedBy'),
+			label: $T('giftcard.filter.usedBy'),
 			operations: {
 				oneOf: usedBy,
 			},
 		},
 		used: {
-			label: $tranFunc('giftcard.usedAmount'),
+			label: $T('giftcard.usedAmount'),
 			operations: {
 				eq: CommonSnippets.yesNo,
 			},
@@ -89,7 +89,7 @@
 {#snippet currencyIs({ onValue, initialValue = '' }: FilterComponentType)}
 	<ShopCurrenciesSelect
 		size="xs"
-		placeholder={$tranFunc('common.currency')}
+		placeholder={$T('common.currency')}
 		value={initialValue}
 		onchange={(opt) => onValue((opt as SelectOption).value)}
 	/>
@@ -106,7 +106,7 @@
 		variables={{ first: 20, filter: { search: '' } } as QueryProductsArgs}
 		variableSearchQueryPath="filter.search"
 		value={initialValue}
-		placeholder={$tranFunc('common.products')}
+		placeholder={$T('common.products')}
 		onchange={(opts) =>
 			onValue((opts as SelectOption[])?.map((item) => item.value) as FilterItemValue)}
 	/>
@@ -123,7 +123,7 @@
 		variables={{ first: 20, filter: { search: '' } } as QueryGiftCardTagsArgs}
 		variableSearchQueryPath="filter.search"
 		value={initialValue}
-		placeholder={$tranFunc('giftcard.form.tags')}
+		placeholder={$T('giftcard.form.tags')}
 		onchange={(opts) =>
 			onValue((opts as SelectOption[])?.map((item) => item.value) as FilterItemValue)}
 	/>
@@ -140,7 +140,7 @@
 		variables={{ first: 20, filter: { search: '' } } as QueryCustomersArgs}
 		variableSearchQueryPath="filter.search"
 		value={initialValue}
-		placeholder={$tranFunc('common.user')}
+		placeholder={$T('common.user')}
 		onchange={(opts) =>
 			onValue((opts as SelectOption[])?.map((item) => item.value) as FilterItemValue)}
 	/>

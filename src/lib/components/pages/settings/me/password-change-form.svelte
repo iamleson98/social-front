@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { PASSWORD_UPDATE_MUTATION } from '$lib/api/account';
 	import { operationStore } from '$lib/api/operation';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
@@ -19,7 +19,7 @@
 		newPassword: string().min(1, { message: $CommonState.FieldRequiredError }),
 		confirmPassword: string().min(1, { message: $CommonState.FieldRequiredError }),
 	}).refine((data) => data.newPassword === data.confirmPassword, {
-		message: $tranFunc('error.passwordsNotMatch'),
+		message: $T('error.passwordsNotMatch'),
 		path: ['confirmPassword'],
 	});
 
@@ -50,12 +50,12 @@
 				checkIfGraphqlResultHasError(
 					result,
 					'passwordChange',
-					$tranFunc('settings.passwordUpdated'),
+					$T('settings.passwordUpdated'),
 				)
 			)
 				return;
 
-			await handleLogout($tranFunc);
+			await handleLogout($T);
 		},
 	});
 
@@ -69,13 +69,13 @@
 
 <Accordion class={SitenameCommonClassName} open={false}>
 	{#snippet header()}
-		<SectionHeader>{$tranFunc('settings.pwdUpdate')}</SectionHeader>
+		<SectionHeader>{$T('settings.pwdUpdate')}</SectionHeader>
 	{/snippet}
 	<PasswordInput
 		class="mt-2"
 		required
-		placeholder={$tranFunc('settings.oldPwd')}
-		label={$tranFunc('settings.oldPwd')}
+		placeholder={$T('settings.oldPwd')}
+		label={$T('settings.oldPwd')}
 		bind:value={passwordInputs.oldPassword}
 		showAction
 		variant={$SchemaHandler.oldPassword?.length ? 'error' : 'info'}
@@ -87,8 +87,8 @@
 	<PasswordInput
 		class="mt-2"
 		required
-		placeholder={$tranFunc('settings.newPwd')}
-		label={$tranFunc('settings.newPwd')}
+		placeholder={$T('settings.newPwd')}
+		label={$T('settings.newPwd')}
 		bind:value={passwordInputs.newPassword}
 		showAction
 		variant={$SchemaHandler.newPassword?.length ? 'error' : 'info'}
@@ -100,8 +100,8 @@
 	<PasswordInput
 		class="mt-2"
 		required
-		placeholder={$tranFunc('settings.confirmPwd')}
-		label={$tranFunc('settings.confirmPwd')}
+		placeholder={$T('settings.confirmPwd')}
+		label={$T('settings.confirmPwd')}
 		bind:value={passwordInputs.confirmPassword}
 		variant={$SchemaHandler.confirmPassword?.length ? 'error' : 'info'}
 		onblur={SchemaHandler.validate}
@@ -116,7 +116,7 @@
 			loading={$PasswordUpdateMutation.fetching}
 			disabled={$PasswordUpdateMutation.fetching || !passwordChanged}
 		>
-			{$tranFunc('btn.update')}
+			{$T('btn.update')}
 		</Button>
 	</div>
 </Accordion>

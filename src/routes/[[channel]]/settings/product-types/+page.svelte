@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { PRODUCT_TYPE_DELETE_MUTATION, PRODUCT_TYPES_QUERY } from '$lib/api/admin/product';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { Trash } from '$lib/components/icons';
@@ -33,28 +33,28 @@
 
 	const ProductTypesColumns: TableColumnProps<ProductType, ProductTypeSortField>[] = $derived([
 		{
-			title: $tranFunc('common.name'),
+			title: $T('common.name'),
 			child: name,
 			key: ProductTypeSortField.Name,
 		},
 		{
-			title: $tranFunc('prdType.requireShip'),
+			title: $T('prdType.requireShip'),
 			child: shippable,
 			key: ProductTypeSortField.ShippingRequired,
 		},
 		{
-			title: $tranFunc('product.taxCls'),
+			title: $T('product.taxCls'),
 			child: { render: ({ item }) => item.taxClass?.name || '-' },
 		},
 		{
-			title: $tranFunc('common.action'),
+			title: $T('common.action'),
 			child: deleteItem,
 		},
 	]);
 
 	const handleClickDelItem = async (id: string) => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: $tranFunc('common.confirmDel'),
+			content: $T('common.confirmDel'),
 			onOk: async () => {
 				loading = true;
 
@@ -68,7 +68,7 @@
 				loading = false;
 
 				if (
-					checkIfGraphqlResultHasError(result, 'productTypeDelete', $tranFunc('common.delSuccess'))
+					checkIfGraphqlResultHasError(result, 'productTypeDelete', $T('common.delSuccess'))
 				)
 					return;
 
@@ -98,7 +98,7 @@
 {#snippet shippable({ item }: { item: ProductType })}
 	<Badge
 		color={item.isShippingRequired ? 'green' : 'red'}
-		text={item.isShippingRequired ? $tranFunc('common.yes') : $tranFunc('common.no')}
+		text={item.isShippingRequired ? $T('common.yes') : $T('common.no')}
 	/>
 {/snippet}
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { DELETE_SHIPPING_METHOD_MUTATION } from '$lib/api/admin/shipping';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
@@ -38,45 +38,45 @@
 
 	const PriceBasedColumns: TableColumnProps<ShippingMethodType>[] = $derived([
 		{
-			title: $tranFunc('common.name'),
+			title: $T('common.name'),
 			child: name,
 		},
 		{
-			title: $tranFunc('common.valueRange'),
+			title: $T('common.valueRange'),
 			child: valueRange,
 		},
 		{
-			title: $tranFunc('common.price'),
+			title: $T('common.price'),
 			child: price,
 		},
 		{
-			title: $tranFunc('common.action'),
+			title: $T('common.action'),
 			child: action,
 		},
 	]);
 
 	const WeightBasedColumns: TableColumnProps<ShippingMethodType>[] = $derived([
 		{
-			title: $tranFunc('common.name'),
+			title: $T('common.name'),
 			child: name,
 		},
 		{
-			title: $tranFunc('common.weightRange'),
+			title: $T('common.weightRange'),
 			child: weightRange,
 		},
 		{
-			title: $tranFunc('common.price'),
+			title: $T('common.price'),
 			child: price,
 		},
 		{
-			title: $tranFunc('common.action'),
+			title: $T('common.action'),
 			child: action,
 		},
 	]);
 
 	const handleDeleteMethod = (id: string) => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: $tranFunc('common.confirmDel'),
+			content: $T('common.confirmDel'),
 			onOk: async () => {
 				loading = true;
 
@@ -91,7 +91,7 @@
 					checkIfGraphqlResultHasError(
 						result,
 						'shippingPriceDelete',
-						$tranFunc('common.delSuccess'),
+						$T('common.delSuccess'),
 					)
 				)
 					return;
@@ -166,7 +166,7 @@
 
 <div class={SitenameCommonClassName}>
 	<SectionHeader>
-		<div>{$tranFunc('ship.priceMethods')}</div>
+		<div>{$T('ship.priceMethods')}</div>
 
 		<Button
 			endIcon={Plus}
@@ -178,14 +178,14 @@
 			)}
 			disabled={disabled || loading}
 		>
-			{$tranFunc('ship.addPriceMethod')}
+			{$T('ship.addPriceMethod')}
 		</Button>
 	</SectionHeader>
 
 	<Table columns={PriceBasedColumns} items={PriceBasedMethods} disabled={disabled || loading} />
 
 	<SectionHeader>
-		<div>{$tranFunc('ship.weightMethods')}</div>
+		<div>{$T('ship.weightMethods')}</div>
 		<Button
 			endIcon={Plus}
 			variant="light"
@@ -196,7 +196,7 @@
 			)}
 			disabled={disabled || loading}
 		>
-			{$tranFunc('ship.addWeightMethod')}
+			{$T('ship.addWeightMethod')}
 		</Button>
 	</SectionHeader>
 

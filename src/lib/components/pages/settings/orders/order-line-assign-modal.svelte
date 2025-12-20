@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { ORDER_LINES_CREATE_MUTATION, VARIANTS_FOR_ORDER_QUERY } from '$lib/api/admin/orders';
 	import { operationStore } from '$lib/api/operation';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
@@ -36,19 +36,19 @@
 
 	const COLUMNS: TableColumnProps<Product>[] = $derived([
 		{
-			title: $tranFunc('common.action'),
+			title: $T('common.action'),
 			child: checkbox,
 		},
 		{
-			title: $tranFunc('common.pic'),
+			title: $T('common.pic'),
 			child: image,
 		},
 		{
-			title: $tranFunc('common.name'),
+			title: $T('common.name'),
 			child: name,
 		},
 		{
-			title: $tranFunc('common.variants'),
+			title: $T('common.variants'),
 			child: variants,
 		},
 	]);

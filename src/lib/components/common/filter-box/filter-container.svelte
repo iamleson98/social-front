@@ -1,5 +1,5 @@
 <script lang="ts" generics="T">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { type TranslationKey } from '$i18n/types';
 	import { CloseX, Plus, Trash } from '$lib/components/icons';
 	import { Button, IconButton } from '$lib/components/ui/Button';
@@ -84,7 +84,7 @@
 
 <div class="bg-white rounded-lg p-2 shadow-md border border-gray-200 min-w-110">
 	<dir class="flex items-center justify-between">
-		<span class="text-sm font-medium">{$tranFunc('common.filter')}</span>
+		<span class="text-sm font-medium">{$T('common.filter')}</span>
 		<IconButton
 			{disabled}
 			icon={CloseX}
@@ -109,7 +109,7 @@
 					value={key}
 					onchange={(vl) =>
 						handleFilterItemKeyChange(key as keyof T, (vl as SelectOption)?.value as keyof T)}
-					placeholder={$tranFunc('common.selectFilter')}
+					placeholder={$T('common.selectFilter')}
 					disabled={disableDeleleButton || disabled}
 				/>
 
@@ -118,7 +118,7 @@
 						{@const operatorOptions = Object.keys(
 							filterOptions[key as keyof T]?.operations || {},
 						).map<SelectOption>((operator) => ({
-							label: $tranFunc(`common.${operator}` as TranslationKey),
+							label: $T(`common.${operator}` as TranslationKey),
 							value: operator,
 						}))}
 
@@ -152,14 +152,14 @@
 						color="red"
 						onclick={() =>
 							(activeFilters = omit(activeFilters, [key as keyof T]) as FilterConditions<T>)}
-						aria-label={$tranFunc('common.delFilter')}
+						aria-label={$T('common.delFilter')}
 						disabled={disableDeleleButton || disabled}
 					/>
 				</div>
 			</div>
 		{:else}
 			<div class="flex items-center justify-center text-sm text-gray-500">
-				<span>{$tranFunc('common.addFilter')}</span>
+				<span>{$T('common.addFilter')}</span>
 			</div>
 		{/each}
 	</div>
@@ -174,18 +174,18 @@
 				onclick={() => (activeFilters = { ...activeFilters, '': {} })}
 				disabled={disableAddFilterBtn || disabled}
 			>
-				{$tranFunc('common.addFilter')}
+				{$T('common.addFilter')}
 			</Button>
 			<div class="gap-1">
 				<Button size="xs" variant="light" color="gray" onclick={handleClickResetFilter} {disabled}>
-					{$tranFunc('common.reset')}
+					{$T('common.reset')}
 				</Button>
 				<Button
 					size="xs"
 					disabled={disableAddFilterBtn || disabled}
 					onclick={handleApplyCustomFilter}
 				>
-					{$tranFunc('btn.apply')}
+					{$T('btn.apply')}
 				</Button>
 			</div>
 		</div>

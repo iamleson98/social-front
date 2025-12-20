@@ -301,7 +301,7 @@ export const orderShouldUseTransactions = (order: Order) => {
 	return order.channel.orderSettings.markAsPaidStrategy === MarkAsPaidStrategyEnum.TransactionFlow;
 };
 
-export const getDeliveryMethodName = (order: Order, tranFunc: TranFunc) => {
+export const getDeliveryMethodName = (order: Order, T: TranFunc) => {
 	if (order.shippingMethodName === undefined && order.shippingPrice === undefined && order.collectionPointName === undefined) return undefined;
 
 	if (order.shippingMethodName === null)
@@ -310,7 +310,7 @@ export const getDeliveryMethodName = (order: Order, tranFunc: TranFunc) => {
 	return order.shippingMethodName;
 };
 
-export const getTaxTypeText = (order: Order, tranFunc: TranFunc) => {
+export const getTaxTypeText = (order: Order, T: TranFunc) => {
 	if (order.total.tax === undefined) return '';
 
 	if (order.total.tax.amount > 0) return 'vat included';
@@ -329,7 +329,7 @@ const getDiscountNameLabel = (name: string) => {
 	return name;
 };
 
-export const getDiscountTypeLabel = (discount: OrderDiscount, tranFunc: TranFunc) => {
+export const getDiscountTypeLabel = (discount: OrderDiscount, T: TranFunc) => {
 	switch (discount.type) {
 		case OrderDiscountType.Manual:
 			return "staff added"

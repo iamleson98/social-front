@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box';
 	import { FilterManager } from '$lib/components/common/filter-box';
 	import { CommonSnippets } from '$lib/components/common/filter-box/snippets.svelte';
@@ -25,15 +25,15 @@
 	}[] = [
 		{
 			value: VoucherDiscountType.Fixed,
-			label: $tranFunc('voucher.discountFixed'),
+			label: $T('voucher.discountFixed'),
 		},
 		{
 			value: VoucherDiscountType.Percentage,
-			label: $tranFunc('voucher.discountPercent'),
+			label: $T('voucher.discountPercent'),
 		},
 		{
 			value: VoucherDiscountType.Shipping,
-			label: $tranFunc('voucher.discountShip'),
+			label: $T('voucher.discountShip'),
 		},
 	];
 
@@ -43,28 +43,28 @@
 	}[] = [
 		{
 			value: DiscountStatusEnum.Active,
-			label: $tranFunc('staff.active'),
+			label: $T('staff.active'),
 		},
 		{
 			value: DiscountStatusEnum.Expired,
-			label: $tranFunc('voucher.expired'),
+			label: $T('voucher.expired'),
 		},
 		{
 			value: DiscountStatusEnum.Scheduled,
-			label: $tranFunc('voucher.scheduled'),
+			label: $T('voucher.scheduled'),
 		},
 	];
 
 	const FilterOptions: FilterProps<VoucherFilterInput> = $derived({
 		channel: {
-			label: $tranFunc('product.channel'),
+			label: $T('product.channel'),
 			key: 'channel' as keyof VoucherFilterInput,
 			operations: {
 				eq: CommonSnippets.singleChannelSlug,
 			},
 		},
 		discountType: {
-			label: $tranFunc('voucher.discountType'),
+			label: $T('voucher.discountType'),
 			key: 'discountType',
 			operations: {
 				eq: discountType,
@@ -72,7 +72,7 @@
 			},
 		},
 		started: {
-			label: $tranFunc('common.startAt'),
+			label: $T('common.startAt'),
 			key: 'started',
 			operations: {
 				lte: CommonSnippets.singleDatetime,
@@ -81,7 +81,7 @@
 			},
 		},
 		status: {
-			label: $tranFunc('settings.status'),
+			label: $T('settings.status'),
 			key: 'status',
 			operations: {
 				eq: status,
@@ -89,7 +89,7 @@
 			},
 		},
 		timesUsed: {
-			label: $tranFunc('voucher.timeUsed'),
+			label: $T('voucher.timeUsed'),
 			key: 'timesUsed',
 			operations: {
 				eq: CommonSnippets.singleNumber,
@@ -102,7 +102,7 @@
 {#snippet discountType({ onValue, initialValue = '' }: FilterComponentType)}
 	<Select
 		size="xs"
-		placeholder={$tranFunc('voucher.discountType')}
+		placeholder={$T('voucher.discountType')}
 		options={DISCOUNT_TYPES}
 		value={initialValue as string}
 		onchange={(opt) => onValue((opt as SelectOption).value)}
@@ -112,7 +112,7 @@
 {#snippet discountTypeIn({ onValue, initialValue = [] }: FilterComponentType)}
 	<Select
 		size="xs"
-		placeholder={$tranFunc('voucher.discountType')}
+		placeholder={$T('voucher.discountType')}
 		multiple
 		options={DISCOUNT_TYPES}
 		value={initialValue as string[]}
@@ -123,7 +123,7 @@
 {#snippet status({ onValue, initialValue = '' }: FilterComponentType)}
 	<Select
 		size="xs"
-		placeholder={$tranFunc('settings.status')}
+		placeholder={$T('settings.status')}
 		options={DISCOUNT_STATUSES}
 		value={initialValue as string}
 		onchange={(opt) => onValue((opt as SelectOption).value)}
@@ -133,7 +133,7 @@
 {#snippet statusIn({ onValue, initialValue = [] }: FilterComponentType)}
 	<Select
 		size="xs"
-		placeholder={$tranFunc('settings.status')}
+		placeholder={$T('settings.status')}
 		multiple
 		options={DISCOUNT_STATUSES}
 		value={initialValue as string[]}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { COLLECTION_DELETE_MUTATION, COLLECTIONS_QUERY } from '$lib/api/collections';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
@@ -32,25 +32,25 @@
 
 	const COLLECTION_COLUMNS: TableColumnProps<Collection, CollectionSortField>[] = $derived([
 		{
-			title: $tranFunc('common.pic'),
+			title: $T('common.pic'),
 			child: image,
 		},
 		{
-			title: $tranFunc('common.name'),
+			title: $T('common.name'),
 			key: CollectionSortField.Name,
 			child: collectionName,
 		},
 		{
-			title: $tranFunc('settings.availability'),
+			title: $T('settings.availability'),
 			child: availability,
 		},
 		{
-			title: $tranFunc('collection.noOfPrds'),
+			title: $T('collection.noOfPrds'),
 			child: noOfProducts,
 			key: CollectionSortField.ProductCount,
 		},
 		{
-			title: $tranFunc('common.action'),
+			title: $T('common.action'),
 			child: action,
 		},
 	]);
@@ -73,7 +73,7 @@
 
 {#snippet availability({ item }: { item: Collection })}
 	<Badge
-		text="{item.channelListings?.length ?? 0} {$tranFunc('product.channel')}"
+		text="{item.channelListings?.length ?? 0} {$T('product.channel')}"
 		color="green"
 		class="tooltip-top tooltip"
 		data-tip={item.channelListings?.map((list) => list.channel.name).join(', ')}
@@ -101,16 +101,16 @@
 {#snippet action({ item }: { item: Collection })}
 	{@const MENU_OPTIONS: MenuItemProps[] = [
 		{
-			children: $tranFunc('btn.update'),
+			children: $T('btn.update'),
 			startIcon: Edit,
 			href: AppRoute.SETTINGS_CONFIGS_COLLECTION_DETAILS(item.id)
 		},
 		{
-			children: $tranFunc('btn.delete'),
+			children: $T('btn.delete'),
 			startIcon: Trash,
 			onclick: () => {
 				ALERT_MODAL_STORE.openAlertModal({
-				content: $tranFunc('common.confirmDel'),
+				content: $T('common.confirmDel'),
 				onOk: () => handleDeleteCollection(item.id)
 			});
 			},

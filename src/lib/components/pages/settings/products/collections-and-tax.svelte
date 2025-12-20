@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { COLLECTIONS_QUERY } from '$lib/api/collections';
 	import { TAX_CLASSES_QUERY } from '$lib/api/tax';
 	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
@@ -27,7 +27,7 @@
 			optionLabelKey="name"
 			disabled={loading}
 			multiple
-			label={$tranFunc('product.collection')}
+			label={$T('product.collection')}
 			bind:value={collections as string[]}
 		/>
 	</div>
@@ -41,7 +41,7 @@
 			optionValueKey="id"
 			optionLabelKey="name"
 			disabled={loading}
-			label={$tranFunc('product.taxCls')}
+			label={$T('product.taxCls')}
 			bind:value={taxClassID as string}
 		/>
 	</div>

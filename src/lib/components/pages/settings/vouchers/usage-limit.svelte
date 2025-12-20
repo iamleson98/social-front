@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
@@ -31,10 +31,10 @@
 </script>
 
 <div class={SitenameCommonClassName}>
-	<SectionHeader>{$tranFunc('voucher.useLimit')}</SectionHeader>
+	<SectionHeader>{$T('voucher.useLimit')}</SectionHeader>
 	<div class="space-y-2.5">
 		<Checkbox
-			label={$tranFunc('voucher.limitUseTimes')}
+			label={$T('voucher.limitUseTimes')}
 			{disabled}
 			bind:checked={limitNumberOfTimesUsed}
 		/>
@@ -42,7 +42,7 @@
 			<div class="flex items-center gap-2">
 				<Input
 					bind:value={usageLimit}
-					placeholder={$tranFunc('voucher.numOfUsesLimit')}
+					placeholder={$T('voucher.numOfUsesLimit')}
 					type="number"
 					min={voucherUsedTimes}
 					{disabled}
@@ -50,20 +50,20 @@
 				<Badge
 					color="green"
 					text={typeof usageLimit === 'number' && usageLimit > voucherUsedTimes
-						? $tranFunc('voucher.usesLeft', { num: usageLimit - voucherUsedTimes })
-						: $tranFunc('voucher.usesLeft', { num: 0 })}
+						? $T('voucher.usesLeft', { num: usageLimit - voucherUsedTimes })
+						: $T('voucher.usesLeft', { num: 0 })}
 				/>
 			</div>
 		{/if}
 
 		<Checkbox
-			label={$tranFunc('voucher.limitOneUsePerUser')}
+			label={$T('voucher.limitOneUsePerUser')}
 			{disabled}
 			bind:checked={applyOncePerCustomer}
 		/>
-		<Checkbox label={$tranFunc('voucher.limitToStaff')} {disabled} bind:checked={onlyForStaff} />
+		<Checkbox label={$T('voucher.limitToStaff')} {disabled} bind:checked={onlyForStaff} />
 		<Checkbox
-			label={$tranFunc('voucher.limitVoucherCodeUseOnce')}
+			label={$T('voucher.limitVoucherCodeUseOnce')}
 			{disabled}
 			bind:checked={singleUse}
 		/>

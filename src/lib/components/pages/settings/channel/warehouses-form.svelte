@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { CHANNEL_WAREHOUSES_QUERY } from '$lib/api/admin/channels';
 	import { WAREHOUSE_LIST_QUERY } from '$lib/api/admin/warehouse';
 	import { operationStore } from '$lib/api/operation';
@@ -71,12 +71,12 @@
 </script>
 
 <Accordion
-	header={`${$tranFunc('channel.warehouse')} (${warehousesOfChannel.length})`}
+	header={`${$T('channel.warehouse')} (${warehousesOfChannel.length})`}
 	class="mb-3 {SitenameCommonClassName}"
 	open={false}
 >
 	<Alert variant="info" size="sm" bordered class="mb-3">
-		{$tranFunc('channel.warehouseAlert')}
+		{$T('channel.warehouseAlert')}
 	</Alert>
 
 	{#if $warehousesOfChannelQuery.fetching}
@@ -116,7 +116,7 @@
 				requestPolicy="network-only"
 				size="sm"
 				{disabled}
-				label={$tranFunc('channel.selectWh')}
+				label={$T('channel.selectWh')}
 				multiple
 				value={addWarehouses}
 				onchange={handleAddWarehouses}
@@ -130,7 +130,7 @@
 			class="mt-2"
 			onclick={() => (showAddWarehouses = true)}
 		>
-			{$tranFunc('channel.addWh')}
+			{$T('channel.addWh')}
 		</Button>
 	</div>
 </Accordion>

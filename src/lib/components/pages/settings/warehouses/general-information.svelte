@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Input } from '$lib/components/ui/Input';
 	import type { Address } from '$lib/gql/graphql';
@@ -48,9 +48,9 @@
 </script>
 
 <div class={SitenameCommonClassName}>
-	<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
+	<SectionHeader>{$T('common.generalInfo')}</SectionHeader>
 	<Input
-		label={$tranFunc('common.name')}
+		label={$T('common.name')}
 		bind:value={name}
 		required
 		inputDebounceOption={{ onInput: SchemaHandler.validate }}
@@ -59,7 +59,7 @@
 		subText={$SchemaHandler.name?.[0]}
 	/>
 	<Input
-		label={$tranFunc('common.slug')}
+		label={$T('common.slug')}
 		required
 		inputDebounceOption={{ onInput: SchemaHandler.validate }}
 		onblur={SchemaHandler.validate}
@@ -68,7 +68,7 @@
 		subText={$SchemaHandler.slug?.[0]}
 	/>
 	<Input
-		label={$tranFunc('common.email')}
+		label={$T('common.email')}
 		inputDebounceOption={{ onInput: SchemaHandler.validate }}
 		onblur={SchemaHandler.validate}
 		bind:value={email}
@@ -76,7 +76,7 @@
 		subText={$SchemaHandler.email?.[0]}
 	/>
 
-	<SectionHeader>{$tranFunc('warehouse.addrInfo')}</SectionHeader>
+	<SectionHeader>{$T('warehouse.addrInfo')}</SectionHeader>
 	<AddressForm
 		defaultValue={address}
 		channelSlug={isCreatePage ? '' : page.params.channel!}

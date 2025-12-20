@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Input, TextArea, Toggle } from '$lib/components/ui/Input';
 	import { PermissionEnum } from '$lib/gql/graphql';
@@ -61,17 +61,17 @@
 
 <div class={SitenameCommonClassName}>
 	<SectionHeader>
-		<div>{$tranFunc('customer.info')}</div>
+		<div>{$T('customer.info')}</div>
 		<Toggle
 			bind:checked={isActive}
-			label={$tranFunc('staff.active')}
+			label={$T('staff.active')}
 			disabled={!CurrentUserCanUpdateCustomer || disabled}
 		/>
 	</SectionHeader>
 	<div class="flex flex-row gap-3 items-start">
 		<Input
-			label={$tranFunc('common.firstName')}
-			placeholder={$tranFunc('common.firstName')}
+			label={$T('common.firstName')}
+			placeholder={$T('common.firstName')}
 			bind:value={firstName}
 			required
 			disabled={shouldDisable}
@@ -82,8 +82,8 @@
 			subText={$SchemaHandler.firstName?.length ? $SchemaHandler.firstName[0] : undefined}
 		/>
 		<Input
-			label={$tranFunc('common.lastName')}
-			placeholder={$tranFunc('common.lastName')}
+			label={$T('common.lastName')}
+			placeholder={$T('common.lastName')}
 			bind:value={lastName}
 			required
 			disabled={shouldDisable}
@@ -95,8 +95,8 @@
 		/>
 	</div>
 	<Input
-		label={$tranFunc('common.email')}
-		placeholder={$tranFunc('common.email')}
+		label={$T('common.email')}
+		placeholder={$T('common.email')}
 		bind:value={email}
 		required
 		disabled={shouldDisable}
@@ -107,8 +107,8 @@
 	/>
 	<TextArea
 		bind:value={note}
-		placeholder={$tranFunc('giftcard.form.note')}
-		label={$tranFunc('giftcard.form.note')}
+		placeholder={$T('giftcard.form.note')}
+		label={$T('giftcard.form.note')}
 		required
 		disabled={shouldDisable}
 		inputClass="min-h-20"

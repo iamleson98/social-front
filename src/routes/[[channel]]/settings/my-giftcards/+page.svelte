@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { MY_GIFTCARDS_QUERY } from '$lib/api/auth';
 	import HeadBar from '$lib/components/pages/settings/common/head-bar.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
@@ -15,18 +15,18 @@
 
 	const Columns: TableColumnProps<GiftCard>[] = $derived([
 		{
-			title: $tranFunc('common.code'),
+			title: $T('common.code'),
 			child: { render: ({ item }) => item.code },
 		},
 		{
-			title: $tranFunc('giftcard.expiryDate'),
+			title: $T('giftcard.expiryDate'),
 			child: {
 				render: ({ item }) =>
 					item.expiryDate ? dayjs(item.expiryDate).format(SitenameTimeFormat) : '-',
 			},
 		},
 		{
-			title: $tranFunc('staff.active'),
+			title: $T('staff.active'),
 			child: isActive,
 		},
 	]);
@@ -37,7 +37,7 @@
 {/snippet}
 
 <HeadBar
-	listingPageLabel={$tranFunc('customer.giftcards')}
+	listingPageLabel={$T('customer.giftcards')}
 	listingPageHref={page.url.pathname}
 	detailRouteID=""
 	detailPageLabelGetter={(page) => page.params.id}

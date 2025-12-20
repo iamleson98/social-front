@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import {
 		PRODUCT_TYPE_ASSIGN_ATTRIBUTES_MUTATION,
 		PRODUCT_TYPE_AVAILABLE_ATTRIBUTES_QUERY,
@@ -76,15 +76,15 @@
 			child: productAttributeUnassignSelect,
 		},
 		{
-			title: $tranFunc('common.name'),
+			title: $T('common.name'),
 			child: name,
 		},
 		{
-			title: $tranFunc('common.slug'),
+			title: $T('common.slug'),
 			child: { render: ({ item }) => item.slug },
 		},
 		{
-			title: $tranFunc('attributes.valRequired'),
+			title: $T('attributes.valRequired'),
 			child: attrValueRequired,
 		},
 	]);
@@ -95,15 +95,15 @@
 			child: assignSelect,
 		},
 		{
-			title: $tranFunc('common.name'),
+			title: $T('common.name'),
 			child: name,
 		},
 		{
-			title: $tranFunc('common.slug'),
+			title: $T('common.slug'),
 			child: { render: ({ item }) => item.slug },
 		},
 		{
-			title: $tranFunc('attributes.valRequired'),
+			title: $T('attributes.valRequired'),
 			child: attrValueRequired,
 		},
 	]);
@@ -114,11 +114,11 @@
 			child: variantAttrUnassignSelect,
 		},
 		{
-			title: $tranFunc('common.name'),
+			title: $T('common.name'),
 			child: variantAttrName,
 		},
 		{
-			title: $tranFunc('common.slug'),
+			title: $T('common.slug'),
 			child: { render: ({ item }) => item.attribute.slug },
 		},
 		{
@@ -126,7 +126,7 @@
 			child: attributeIsVariantSelection,
 		},
 		{
-			title: $tranFunc('attributes.valRequired'),
+			title: $T('attributes.valRequired'),
 			child: variantAttrValueRequired,
 		},
 	]);

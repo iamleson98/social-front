@@ -17,7 +17,7 @@
 		type Mutation,
 		type MutationAccountRegisterArgs,
 	} from '$lib/gql/graphql';
-	import { SUPPORTED_LANGUAGES, tranFunc } from '$lib/i18n';
+	import { SUPPORTED_LANGUAGES, T } from '$lib/i18n';
 	import { AppRoute } from '$lib/utils';
 	import { CHANNELS, DEFAULT_CHANNEL } from '$lib/utils/consts';
 	import { CHANNEL_KEY, COUNTRY_CODE_KEY, LANGUAGE_KEY } from '$lib/utils/consts';
@@ -32,14 +32,14 @@
 		DEFAULT_CHANNEL.defaultCountryCode;
 	const DEFAULT_LANGUAGE = clientSideGetCookieOrDefault(LANGUAGE_KEY, LanguageCodeEnum.En);
 
-	let FIELD_REQUIRED_MSG = $tranFunc('helpText.fieldRequired');
+	let FIELD_REQUIRED_MSG = $T('helpText.fieldRequired');
 
 	const SignupZodSchema = object({
-		email: email({ message: $tranFunc('error.invalidEmail') })
+		email: email({ message: $T('error.invalidEmail') })
 			.nonempty(FIELD_REQUIRED_MSG)
 			.max(128, {
-				message: $tranFunc('error.lengthInvalid', {
-					name: $tranFunc('common.email'),
+				message: $T('error.lengthInvalid', {
+					name: $T('common.email'),
 					max: 128,
 					min: 1,
 				}),
@@ -54,11 +54,11 @@
 		languageCode: string(),
 	})
 		.refine((data) => data.password === data.confirmPassword, {
-			error: $tranFunc('error.passwordsNotMatch'),
+			error: $T('error.passwordsNotMatch'),
 			path: ['confirmPassword'],
 		})
 		.refine((data) => !!data.termAndPoliciesAgree, {
-			error: $tranFunc('error.doYouAgree'),
+			error: $T('error.doYouAgree'),
 			path: ['termAndPoliciesAgree'],
 		});
 
@@ -137,7 +137,7 @@
 <Location forceAskLocation />
 
 <div class="w-md rounded-md p-2">
-	<h1 class="p-2 mb-4">{$tranFunc('signup.title')}</h1>
+	<h1 class="p-2 mb-4">{$T('signup.title')}</h1>
 
 	{#if $signupQueryStore?.error}
 		<Alert variant="error" class="mb-3" bordered size="sm">
@@ -149,10 +149,10 @@
 		</Alert>
 	{:else if $signupQueryStore?.data?.accountRegister?.user}
 		<Alert variant="success" class="mb-3" bordered size="sm">
-			{$tranFunc('signup.signupSuccess')}
+			{$T('signup.signupSuccess')}
 		</Alert>
 	{/if}
-	<Alert class="mb-2" dismissable size="sm" bordered>{$tranFunc('signup.promtGeoAccessPerm')}</Alert
+	<Alert class="mb-2" dismissable size="sm" bordered>{$T('signup.promtGeoAccessPerm')}</Alert
 	>
 	<div class="mb-4 space-y-2">
 		<div class="flex flex-row mobile-m:flex-col justify-between items-start gap-2">
@@ -160,8 +160,8 @@
 				size="sm"
 				type="text"
 				class="w-1/2"
-				placeholder={$tranFunc('common.firstName')}
-				label={$tranFunc('common.firstName')}
+				placeholder={$T('common.firstName')}
+				label={$T('common.firstName')}
 				required
 				disabled={$signupQueryStore?.fetching}
 				bind:value={signupInfo.firstName}
@@ -174,8 +174,8 @@
 				size="sm"
 				type="text"
 				class="w-1/2"
-				label={$tranFunc('common.lastName')}
-				placeholder={$tranFunc('common.lastName')}
+				label={$T('common.lastName')}
+				placeholder={$T('common.lastName')}
 				required
 				disabled={$signupQueryStore?.fetching}
 				bind:value={signupInfo.lastName}
@@ -188,9 +188,9 @@
 		<Input
 			size="sm"
 			type="email"
-			placeholder={$tranFunc('common.emailPlaceholder')}
+			placeholder={$T('common.emailPlaceholder')}
 			required
-			label={$tranFunc('common.email')}
+			label={$T('common.email')}
 			disabled={$signupQueryStore?.fetching}
 			bind:value={signupInfo.email}
 			startIcon={Email}
@@ -201,9 +201,9 @@
 		/>
 		<PasswordInput
 			size="sm"
-			placeholder={$tranFunc('common.passwordPlaceholder')}
+			placeholder={$T('common.passwordPlaceholder')}
 			bind:value={signupInfo.password}
-			label={$tranFunc('common.password')}
+			label={$T('common.password')}
 			disabled={$signupQueryStore?.fetching}
 			variant={$SchemaHandler?.password?.length ? 'error' : 'info'}
 			subText={$SchemaHandler?.password?.[0]}
@@ -214,10 +214,10 @@
 		/>
 		<PasswordInput
 			size="sm"
-			placeholder={$tranFunc('signup.confirmPasswordPlaceholder')}
+			placeholder={$T('signup.confirmPasswordPlaceholder')}
 			bind:value={signupInfo.confirmPassword}
 			disabled={$signupQueryStore?.fetching}
-			label={$tranFunc('common.confirmPwd')}
+			label={$T('common.confirmPwd')}
 			inputDebounceOption={{ onInput: SchemaHandler.validate }}
 			showAction={false}
 			variant={$SchemaHandler?.confirmPassword?.length ? 'error' : 'info'}
@@ -230,19 +230,19 @@
 				size="sm"
 				class="w-1/2"
 				bind:value={countryCode}
-				label={$tranFunc('common.country')}
+				label={$T('common.country')}
 			/>
 			<LanguageSelect
 				size="sm"
 				class="w-1/2"
 				autoDefault
 				bind:value={signupInfo.languageCode}
-				label={$tranFunc('footer.language')}
+				label={$T('footer.language')}
 			/>
 		</div>
 
 		<Checkbox
-			label={$tranFunc('signup.agreeToTerms')}
+			label={$T('signup.agreeToTerms')}
 			bind:checked={signupInfo.termAndPoliciesAgree}
 			required
 			disabled={$signupQueryStore?.fetching}
@@ -261,14 +261,14 @@
 			loading={$signupQueryStore?.fetching}
 			disabled={$signupQueryStore?.fetching}
 		>
-			{$tranFunc('signup.signupButton')}
+			{$T('signup.signupButton')}
 		</Button>
 	</div>
 
 	<div>
 		<span class="text-xs text-gray-500">
-			{$tranFunc('signup.alreadyHasAccount')}
-			<a href={AppRoute.AUTH_SIGNIN()} class="text-blue-600">{$tranFunc('signin.title')}</a>
+			{$T('signup.alreadyHasAccount')}
+			<a href={AppRoute.AUTH_SIGNIN()} class="text-blue-600">{$T('signin.title')}</a>
 		</span>
 	</div>
 </div>

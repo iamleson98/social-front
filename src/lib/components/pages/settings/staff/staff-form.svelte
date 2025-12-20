@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { PERMISSION_GROUP_LIST_QUERY } from '$lib/api/admin/users';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { BadgeOutline, Icon } from '$lib/components/icons';
@@ -97,10 +97,10 @@
 		<div>
 			<div class="flex items-center gap-1 text-sm text-gray-600">
 				<Icon icon={BadgeOutline} class="text-blue-600" size="lg" />
-				<span class="font-semibold">{$tranFunc('staff.staffs')}</span>
+				<span class="font-semibold">{$T('staff.staffs')}</span>
 			</div>
 			<div class="text-xs flex items-center gap-1 text-gray-600">
-				<span class="font-semibold">{$tranFunc('staff.joinedSince')}:</span>
+				<span class="font-semibold">{$T('staff.joinedSince')}:</span>
 				<span>{dateJoined ? dayjs(dateJoined).format(SitenameTimeFormat) : '-'}</span>
 			</div>
 		</div>
@@ -108,7 +108,7 @@
 
 	<div class="flex gap-2 items-start mt-5">
 		<Input
-			label={$tranFunc('common.lastName')}
+			label={$T('common.lastName')}
 			bind:value={lastName}
 			inputDebounceOption={{ onInput: SchemaHandler.validate }}
 			variant={$SchemaHandler.lastName?.length ? 'error' : 'info'}
@@ -120,7 +120,7 @@
 			onblur={SchemaHandler.validate}
 		/>
 		<Input
-			label={$tranFunc('common.firstName')}
+			label={$T('common.firstName')}
 			bind:value={firstName}
 			inputDebounceOption={{ onInput: SchemaHandler.validate }}
 			variant={$SchemaHandler.firstName?.length ? 'error' : 'info'}
@@ -133,7 +133,7 @@
 		/>
 	</div>
 	<Input
-		label={$tranFunc('common.email')}
+		label={$T('common.email')}
 		bind:value={email}
 		class="flex-1 mt-3"
 		required
@@ -146,7 +146,7 @@
 	/>
 
 	<Toggle
-		label={$tranFunc('staff.active')}
+		label={$T('staff.active')}
 		bind:checked={isActive}
 		disabled={!isStaffManager || disabled}
 		class="flex-1"

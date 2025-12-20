@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import {
 		CATEGORIES_LIST_FOR_CREATE_PRODUCT,
 		CATEGORY_WITH_PARENTS_QUERY,
@@ -132,7 +132,7 @@
 {/snippet}
 
 <div class={SitenameCommonClassName}>
-	<Label required requiredAtPos="end" label={$tranFunc('product.prdCategory')} />
+	<Label required requiredAtPos="end" label={$T('product.prdCategory')} />
 	{#if $CategoryWithAncestorsStore.fetching || $CategoriesStore.fetching}
 		<SelectSkeleton label />
 	{:else if $CategoriesStore.error || $CategoryWithAncestorsStore.error}
@@ -155,7 +155,7 @@
 					variant="light"
 					disabled={loading}
 					class="tooltip tooltip-top"
-					data-tip={$tranFunc('btn.update')}
+					data-tip={$T('btn.update')}
 					onclick={async () => {
 						CategoriesStore.resume();
 						await tick();
@@ -175,7 +175,7 @@
 					selectedItems = initialSelectedItems;
 				}}
 			>
-				{$tranFunc('common.cancel')}
+				{$T('common.cancel')}
 			</Button>
 		{/if}
 	{/if}

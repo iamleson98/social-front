@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { VOUCHER_LIST_QUERY } from '$lib/api/admin/discount';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import Filter from '$lib/components/pages/settings/vouchers/filter.svelte';
@@ -24,34 +24,34 @@
 
 	const VOUCHER_COLUMNS: TableColumnProps<Voucher, VoucherSortField>[] = $derived([
 		{
-			title: $tranFunc('common.name'),
+			title: $T('common.name'),
 			child: title,
 			key: VoucherSortField.Name,
 		},
 		{
-			title: $tranFunc('voucher.minSpent'),
+			title: $T('voucher.minSpent'),
 			child: minSpent,
 		},
 		{
-			title: $tranFunc('common.value'),
+			title: $T('common.value'),
 			child: value,
 		},
 		{
-			title: $tranFunc('voucher.useLimit'),
+			title: $T('voucher.useLimit'),
 			child: useLimit,
 			key: VoucherSortField.UsageLimit,
 		},
 		{
-			title: $tranFunc('settings.availability'),
+			title: $T('settings.availability'),
 			child: availability,
 		},
 		{
-			title: $tranFunc('common.startAt'),
+			title: $T('common.startAt'),
 			child: startDate,
 			key: VoucherSortField.StartDate,
 		},
 		{
-			title: $tranFunc('common.endAt'),
+			title: $T('common.endAt'),
 			child: endDate,
 			key: VoucherSortField.EndDate,
 		},
@@ -71,7 +71,7 @@
 
 {#snippet availability({ item }: TableCellProps<Voucher>)}
 	<Badge
-		text="{item.channelListings?.length || 0} {$tranFunc('product.channel')}"
+		text="{item.channelListings?.length || 0} {$T('product.channel')}"
 		color="green"
 		rounded
 		class="tooltip tooltip-top"

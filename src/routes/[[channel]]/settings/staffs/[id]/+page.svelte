@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { STAFF_DELETE_MUTATION, STAFF_UPDATE_MUTATION } from '$lib/api/admin/staff';
 	import { USER_DETAIL_QUERY } from '$lib/api/admin/users';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
@@ -73,7 +73,7 @@
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'staffUpdate', $tranFunc('staff.staffUpdated')))
+		if (checkIfGraphqlResultHasError(result, 'staffUpdate', $T('staff.staffUpdated')))
 			return;
 
 		staffDetailQuery.reexecute({
@@ -85,7 +85,7 @@
 
 	const handleOpenDeleteModal = () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: $tranFunc('staff.staffDeleteConfirm', { id: page.params.id }),
+			content: $T('staff.staffDeleteConfirm', { id: page.params.id }),
 			onOk: handleDeleteStaff,
 		});
 	};
@@ -101,7 +101,7 @@
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'staffDelete', $tranFunc('staff.staffDeleted')))
+		if (checkIfGraphqlResultHasError(result, 'staffDelete', $T('staff.staffDeleted')))
 			return;
 		await goto(AppRoute.SETTINGS_CONFIGS_STAFFS());
 	};

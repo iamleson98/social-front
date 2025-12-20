@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { USER_SET_PASSWORD_MUTATION_STORE } from '$lib/api/auth';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { Button } from '$lib/components/ui';
@@ -14,12 +14,12 @@
 	import { object, string, z } from 'zod';
 
 	const ChangePasswordSchema = object({
-		password: string().nonempty({ message: $tranFunc('helpText.fieldRequired') }),
-		confirmPassword: string().nonempty({ message: $tranFunc('helpText.fieldRequired') }),
+		password: string().nonempty({ message: $T('helpText.fieldRequired') }),
+		confirmPassword: string().nonempty({ message: $T('helpText.fieldRequired') }),
 		email: string(),
 		token: string(),
 	}).refine((data) => data.password === data.confirmPassword, {
-		message: $tranFunc('error.passwordsNotMatch'),
+		message: $T('error.passwordsNotMatch'),
 		path: ['confirmPassword'],
 	});
 	const SchemaHandler = createSchemaHandler(ChangePasswordSchema, () => ({
@@ -52,18 +52,18 @@
 		>(USER_SET_PASSWORD_MUTATION_STORE, omit(changePasswordForm, ['confirmPassword']));
 		loading = false;
 
-	if (checkIfGraphqlResultHasError(result, 'setPassword', $tranFunc('changePassword.success'))) return;
+	if (checkIfGraphqlResultHasError(result, 'setPassword', $T('changePassword.success'))) return;
 
 		await goto(AppRoute.AUTH_SIGNIN(), { replaceState: true, invalidateAll: true });
 	};
 </script>
 
 <div class="w-md rounded-md p-2">
-	<h1 class="p-2 mb-4">{$tranFunc('changePassword.title')}</h1>
+	<h1 class="p-2 mb-4">{$T('changePassword.title')}</h1>
 
 	<PasswordInput
-		placeholder={$tranFunc('changePassword.newPwdPlaceholder')}
-		label={$tranFunc('changePassword.newPwdLabel')}
+		placeholder={$T('changePassword.newPwdPlaceholder')}
+		label={$T('changePassword.newPwdLabel')}
 		bind:value={changePasswordForm.password}
 		required
 		disabled={loading}
@@ -75,8 +75,8 @@
 		showAction
 	/>
 	<PasswordInput
-		placeholder={$tranFunc('changePassword.confirmNewPwdPlaceholder')}
-		label={$tranFunc('changePassword.confirmNewPwdLabel')}
+		placeholder={$T('changePassword.confirmNewPwdPlaceholder')}
+		label={$T('changePassword.confirmNewPwdLabel')}
 		bind:value={changePasswordForm.confirmPassword}
 		required
 		disabled={loading}
@@ -88,6 +88,6 @@
 		onblur={SchemaHandler.validate}
 	/>
 	<Button variant="filled" size="sm" fullWidth onclick={handleSubmit} disabled={loading} {loading}>
-		{$tranFunc('changePassword.btnText')}
+		{$T('changePassword.btnText')}
 	</Button>
 </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { TAX_CLASSES_QUERY } from '$lib/api/tax';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
@@ -115,7 +115,7 @@
 			{#snippet label()}
 				<div class="flex items-center gap-1">
 					<span>Gift card product type</span>
-					<Badge size="xs" text={$tranFunc('settings.preview')} variant="outline" rounded />
+					<Badge size="xs" text={$T('settings.preview')} variant="outline" rounded />
 				</div>
 			{/snippet}
 		</RadioButton>
@@ -132,7 +132,7 @@
 			optionValueKey="id"
 			optionLabelKey="name"
 			{disabled}
-			label={$tranFunc('product.taxCls')}
+			label={$T('product.taxCls')}
 			bind:value={taxClass}
 		/>
 	</div>

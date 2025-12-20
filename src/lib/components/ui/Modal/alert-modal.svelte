@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import {
 		AlertCircle,
 		AlertHexagonFilled,
@@ -21,8 +21,8 @@
 		children,
 		onOk,
 		onCancel,
-		okText = $tranFunc('common.ok'),
-		cancelText = $tranFunc('common.cancel'),
+		okText = $T('common.ok'),
+		cancelText = $T('common.cancel'),
 		open,
 		variant = 'warning',
 	}: Props = $props();

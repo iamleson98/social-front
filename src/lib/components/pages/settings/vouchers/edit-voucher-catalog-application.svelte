@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import {
 		CATEGORIES_LIST_QUERY_STORE,
 		PRODUCT_LIST_QUERY,
@@ -59,14 +59,14 @@
 	/**  catalog item select checkbox */
 	const SelectCol: TableColumnProps<any>[] = [
 		{
-			title: $tranFunc('common.select'),
+			title: $T('common.select'),
 			child: catalogAssignSelect,
 		},
 	];
 
 	const CatalogUnassignSelectCol: TableColumnProps<any>[] = [
 		{
-			title: $tranFunc('common.select'),
+			title: $T('common.select'),
 			child: catalogUnassignSelect,
 		},
 	];
@@ -295,7 +295,7 @@
 					(name === 'variants' && !removeVariants.length)}
 				onclick={handleUnassignItems}
 			>
-				{$tranFunc('common.unassign')}
+				{$T('common.unassign')}
 				{tabTran?.label}
 			</Button>
 			<Button
@@ -308,7 +308,7 @@
 				{disabled}
 				endIcon={Plus}
 			>
-				{$tranFunc('common.assign')}
+				{$T('common.assign')}
 				{tabTran?.label}
 			</Button>
 		</div>
@@ -330,9 +330,9 @@
 			disabled={disabled || loading}
 			columns={CatalogUnassignSelectCol.concat(
 				COLLECTION_COLUMNS(
-					$tranFunc('common.pic'),
-					$tranFunc('common.name'),
-					$tranFunc('collection.noOfPrds'),
+					$T('common.pic'),
+					$T('common.name'),
+					$T('collection.noOfPrds'),
 				),
 			)}
 		/>
@@ -346,10 +346,10 @@
 			resultKey={'voucher.products' as keyof Query}
 			columns={CatalogUnassignSelectCol.concat(
 				PRODUCT_COLUMNS(
-					$tranFunc('common.pic'),
-					$tranFunc('product.prdName'),
-					$tranFunc('product.prdType'),
-					$tranFunc('settings.availability'),
+					$T('common.pic'),
+					$T('product.prdName'),
+					$T('product.prdType'),
+					$T('settings.availability'),
 				),
 			)}
 		/>
@@ -363,9 +363,9 @@
 			resultKey={'voucher.categories' as keyof Query}
 			columns={CatalogUnassignSelectCol.concat(
 				CATEGORY_COLUMNS(
-					$tranFunc('common.pic'),
-					$tranFunc('product.cateName'),
-					$tranFunc('collection.noOfPrds'),
+					$T('common.pic'),
+					$T('product.cateName'),
+					$T('collection.noOfPrds'),
 				),
 			)}
 		/>
@@ -379,9 +379,9 @@
 			resultKey={'voucher.variants' as keyof Query}
 			columns={CatalogUnassignSelectCol.concat(
 				VARIANT_COLUMNS(
-					$tranFunc('common.pic'),
-					$tranFunc('product.prdName'),
-					$tranFunc('product.variantName'),
+					$T('common.pic'),
+					$T('product.prdName'),
+					$T('product.variantName'),
 				),
 			)}
 		/>
@@ -393,14 +393,14 @@
 	closeOnEscape
 	closeOnOutsideClick
 	onClose={() => (openAssignCatalogFeature = false)}
-	header="{$tranFunc('common.assign')} {activeTab}"
+	header="{$T('common.assign')} {activeTab}"
 	onCancel={() => (openAssignCatalogFeature = false)}
 	size="sm"
 	onOk={handleAssignItems}
 	disableElements={disabled || loading}
 >
 	<Input
-		placeholder={$tranFunc('common.search')}
+		placeholder={$T('common.search')}
 		class="mb-1.5"
 		bind:value={catalogQueryValue}
 		inputDebounceOption={{
@@ -414,9 +414,9 @@
 		<GraphqlPaginableTable
 			columns={SelectCol.concat(
 				CATEGORY_COLUMNS(
-					$tranFunc('common.pic'),
-					$tranFunc('product.cateName'),
-					$tranFunc('collection.noOfPrds'),
+					$T('common.pic'),
+					$T('product.cateName'),
+					$T('collection.noOfPrds'),
 				),
 			)}
 			query={CATEGORIES_LIST_QUERY_STORE}
@@ -429,9 +429,9 @@
 		<GraphqlPaginableTable
 			columns={SelectCol.concat(
 				COLLECTION_COLUMNS(
-					$tranFunc('common.pic'),
-					$tranFunc('common.name'),
-					$tranFunc('collection.noOfPrds'),
+					$T('common.pic'),
+					$T('common.name'),
+					$T('collection.noOfPrds'),
 				),
 			)}
 			query={COLLECTIONS_QUERY}
@@ -444,10 +444,10 @@
 		<GraphqlPaginableTable
 			columns={SelectCol.concat(
 				PRODUCT_COLUMNS(
-					$tranFunc('common.pic'),
-					$tranFunc('product.prdName'),
-					$tranFunc('product.prdType'),
-					$tranFunc('settings.availability'),
+					$T('common.pic'),
+					$T('product.prdName'),
+					$T('product.prdType'),
+					$T('settings.availability'),
 				),
 			)}
 			query={PRODUCT_LIST_QUERY}
@@ -460,9 +460,9 @@
 		<GraphqlPaginableTable
 			columns={SelectCol.concat(
 				VARIANT_COLUMNS(
-					$tranFunc('common.pic'),
-					$tranFunc('product.prdName'),
-					$tranFunc('product.variantName'),
+					$T('common.pic'),
+					$T('product.prdName'),
+					$T('product.variantName'),
 				),
 			)}
 			query={PRODUCT_VARIANTS_QUERY}

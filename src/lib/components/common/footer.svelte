@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { SUPPORTED_LANGUAGES, switchTranslationLanguage, tranFunc } from '$i18n';
+	import { SUPPORTED_LANGUAGES, switchTranslationLanguage, T } from '$i18n';
 	import { Facebook, Instagram, Twitter } from '$lib/components/icons/SvgOuterIcon';
 	import { Button } from '$lib/components/ui';
 	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
@@ -49,7 +49,7 @@
 				<!-- resources -->
 				<div>
 					<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">
-						{$tranFunc('footer.socialMedia')}
+						{$T('footer.socialMedia')}
 					</h2>
 					<ul class="text-gray-600">
 						<li class="mb-4">
@@ -63,7 +63,7 @@
 				<!-- social media -->
 				<div>
 					<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">
-						{$tranFunc('footer.socialMedia')}
+						{$T('footer.socialMedia')}
 					</h2>
 					<ul class="text-gray-600">
 						<li class="mb-4">
@@ -81,14 +81,14 @@
 
 				<div>
 					<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">
-						{$tranFunc('footer.legal')}
+						{$T('footer.legal')}
 					</h2>
 					<ul class="text-gray-600">
 						<li class="mb-4">
-							<a href="/" class="hover:underline">{$tranFunc('footer.policy')}</a>
+							<a href="/" class="hover:underline">{$T('footer.policy')}</a>
 						</li>
 						<li>
-							<a href="/" class="hover:underline">{$tranFunc('footer.policy')}</a>
+							<a href="/" class="hover:underline">{$T('footer.policy')}</a>
 						</li>
 					</ul>
 				</div>
@@ -96,7 +96,7 @@
 				{#if !$UserStoreManager}
 					<div>
 						<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">
-							{$tranFunc('footer.language')}
+							{$T('footer.language')}
 						</h2>
 
 						<DropDown placement="bottom-end">

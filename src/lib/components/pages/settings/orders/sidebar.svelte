@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { DRAFT_ORDER_UPDATE_MUTATION, ORDER_UPDATE_MUTATION } from '$lib/api/admin/orders';
 	import { CUSTOMER_LIST_QUERY, USER_DETAIL_QUERY } from '$lib/api/admin/users';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
@@ -259,8 +259,8 @@
 	onClose={() => (currentSetAddressType = undefined)}
 	onCancel={() => (currentSetAddressType = undefined)}
 	disableElements={ShouldDisable}
-	okText={$tranFunc('common.ok')}
-	cancelText={$tranFunc('common.cancel')}
+	okText={$T('common.ok')}
+	cancelText={$T('common.cancel')}
 	onOk={handleSetUserAddresses}
 >
 	{#if $CustomerQuery.fetching}

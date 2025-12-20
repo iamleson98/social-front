@@ -117,7 +117,7 @@ const getTranslation = async (lang: LanguageCodeEnum) => {
 	return TRANS_MAP[lang];
 };
 
-/** counterpart of `tranFunc`, but for server side code only. It relies on given `event` param, usually provided to you in `+page.server.ts` or `+layout.server.ts` files. There is a cookie for user language, so it can get that value and support translate your key. */
+/** counterpart of `T`, but for server side code only. It relies on given `event` param, usually provided to you in `+page.server.ts` or `+layout.server.ts` files. There is a cookie for user language, so it can get that value and support translate your key. */
 export const serverSideTranslate = async <T extends RequestEvent>(
 	event: T,
 	key: TranslationKey,
@@ -152,10 +152,10 @@ const buildTranslationText = (trans: Translation, key: TranslationKey, args?: Re
 export type TranFunc = (key: TranslationKey, args?: Record<string, unknown>) => string;
 
 /**a svelte store for translation.
- * On client side (in .svelte files), use it like: const result = $tranFunc('`<your_key>`').
- * On server side or utils fies (**.ts files), use it like: const result = get(tranFunc)('`<your_key>`')
+ * On client side (in .svelte files), use it like: const result = $T('`<your_key>`').
+ * On server side or utils fies (**.ts files), use it like: const result = get(T)('`<your_key>`')
  */
-export const tranFunc = derived(innerStore, ($trans) => (key: TranslationKey, args?: Record<string, unknown>) => buildTranslationText($trans, key, args));
+export const T = derived(innerStore, ($trans) => (key: TranslationKey, args?: Record<string, unknown>) => buildTranslationText($trans, key, args));
 
 /**
  * translation json should be in the format of:

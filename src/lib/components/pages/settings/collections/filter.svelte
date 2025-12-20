@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { FilterManager } from '$lib/components/common/filter-box';
 	import { CommonSnippets } from '$lib/components/common/filter-box/snippets.svelte';
 	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box/types';
@@ -20,20 +20,20 @@
 
 	const FilterOptions: FilterProps<CollectionFilterInput> = $derived({
 		published: {
-			label: $tranFunc('product.published'),
+			label: $T('product.published'),
 			operations: {
 				eq: publishedComponent,
 			},
 			mustPairWith: 'channel',
 		},
 		channel: {
-			label: $tranFunc('product.channel'),
+			label: $T('product.channel'),
 			operations: {
 				eq: CommonSnippets.singleChannelSlug,
 			},
 		},
 		metadata: {
-			label: $tranFunc('common.metadata'),
+			label: $T('common.metadata'),
 			operations: {
 				eq: CommonSnippets.metadata,
 			},
@@ -44,7 +44,7 @@
 {#snippet publishedComponent({ onValue, initialValue }: FilterComponentType)}
 	<Checkbox
 		size="sm"
-		label={$tranFunc('product.published')}
+		label={$T('product.published')}
 		checked={initialValue === CollectionPublished.Published}
 		onchange={(evt) => {
 			onValue(

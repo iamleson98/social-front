@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { CHANNELS_QUERY } from '$lib/api/channels';
 	import { RFC3339TimeFormat } from '$lib/api/graphql/utils';
 	import { operationStore } from '$lib/api/operation';
@@ -135,10 +135,10 @@
 		<Alert size="sm" bordered variant="error">{$channelsQuery.error.message}</Alert>
 	{:else if $channelsQuery.data}
 		<div class={SitenameCommonClassName}>
-			<SectionHeader>{$tranFunc('settings.availability')}</SectionHeader>
+			<SectionHeader>{$T('settings.availability')}</SectionHeader>
 			<div class="text-xs text-gray-500">
 				{addChannelListings.length}
-				{$tranFunc('settings.availability')}
+				{$T('settings.availability')}
 			</div>
 			<Select
 				size="sm"
@@ -157,16 +157,16 @@
 			>
 				<Checkbox
 					bind:checked={listing.isPublished}
-					label={$tranFunc('common.visible')}
+					label={$T('common.visible')}
 					size="sm"
 					{disabled}
 				/>
 				{#if !listing.isPublished}
 					<div class="mt-2" transition:slide>
 						<EaseDatePicker
-							placeholder={$tranFunc('common.publicationDate')}
+							placeholder={$T('common.publicationDate')}
 							size="sm"
-							label={$tranFunc('common.publicationDate')}
+							label={$T('common.publicationDate')}
 							value={{ date: listing.publishedAt }}
 							onchange={(val) => (listing.publishedAt = dayjs(val.date).format(RFC3339TimeFormat))}
 							{disabled}
@@ -195,7 +195,7 @@
 						{disabled}
 						onclick={() => removeChannelListing(idx)}
 					>
-						{$tranFunc('btn.delete')}
+						{$T('btn.delete')}
 					</Button>
 				</div>
 			</Accordion>

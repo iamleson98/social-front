@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import {
 		ATTRIBUTE_VALUE_CREATE_MUTATION,
 		ATTRIBUTE_VALUES_QUERY,
@@ -278,7 +278,7 @@
 					color="red"
 					onclick={() => handleDeleteManifest(idx)}
 				>
-					{$tranFunc('product.delVariant')}
+					{$T('product.delVariant')}
 				</Button>
 			</div>
 		{/each}
@@ -288,8 +288,8 @@
 					'border-dashed border w-full h-full flex items-center justify-center rounded-lg tooltip tooltip-top border-blue-500 text-blue-500 cursor-pointer py-5 hover:bg-blue-50 active:bg-blue-100 focus:bg-blue-50',
 				]}
 				onclick={handleAddVariantManifest}
-				data-tip={$tranFunc('product.addVariant')}
-				aria-label={$tranFunc('product.addVariant')}
+				data-tip={$T('product.addVariant')}
+				aria-label={$T('product.addVariant')}
 				disabled={ShouldDisable}
 			>
 				<Icon icon={Plus} size="xl" />

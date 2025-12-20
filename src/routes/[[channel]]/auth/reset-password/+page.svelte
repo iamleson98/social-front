@@ -6,7 +6,7 @@
 	import { Button } from '$lib/components/ui';
 	import { Input } from '$lib/components/ui/Input';
 	import type { Mutation, MutationRequestPasswordResetArgs } from '$lib/gql/graphql';
-	import { tranFunc } from '$lib/i18n';
+	import { T } from '$lib/i18n';
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { DEFAULT_CHANNEL } from '$lib/utils/consts';
@@ -44,16 +44,16 @@
 		checkIfGraphqlResultHasError(
 			result,
 			'requestPasswordReset',
-			$tranFunc('resetPassword.emailSent'),
+			$T('resetPassword.emailSent'),
 		);
 	};
 </script>
 
 <div class="w-md">
-	<h1 class="p-2 mb-4">{$tranFunc('resetPassword.title')}</h1>
+	<h1 class="p-2 mb-4">{$T('resetPassword.title')}</h1>
 	<Input
 		type="email"
-		placeholder={$tranFunc('common.emailPlaceholder')}
+		placeholder={$T('common.emailPlaceholder')}
 		bind:value={email}
 		required
 		disabled={loading}
@@ -64,7 +64,7 @@
 		onblur={validateForm}
 	/>
 	<a href={AppRoute.AUTH_SIGNIN()} class="mb-3 text-right block text-xs text-blue-600">
-		{$tranFunc('signin.title')}
+		{$T('signin.title')}
 	</a>
 	<Button
 		variant="filled"
@@ -74,6 +74,6 @@
 		{loading}
 		onclick={handleRequestResetPassword}
 	>
-		{$tranFunc('resetPassword.btnText')}
+		{$T('resetPassword.btnText')}
 	</Button>
 </div>

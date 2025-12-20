@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { CHECKOUT_DETAILS_QUERY } from '$lib/api/checkout';
 	import { operationStore } from '$lib/api/operation';
 	import { CheckoutSteps } from '$lib/components/common/checkout-steps';
@@ -19,7 +19,7 @@
 
 <div>
 	{#if $checkoutQueryStore.fetching}
-		<div>{$tranFunc('common.loading')}</div>
+		<div>{$T('common.loading')}</div>
 	{:else if $checkoutQueryStore.error}
 		<Alert variant="error" size="sm" bordered>{$checkoutQueryStore.error.message}</Alert>
 	{:else if $checkoutQueryStore.data?.checkout}

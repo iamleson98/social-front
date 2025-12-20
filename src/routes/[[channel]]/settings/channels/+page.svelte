@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { CHANNEL_DELETE_MUTATION } from '$lib/api/admin/channels';
 	import { CHANNELS_QUERY } from '$lib/api/channels';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
@@ -30,20 +30,20 @@
 
 	const CHANNEL_COLUMNS: TableColumnProps<Channel, string>[] = $derived([
 		{
-			title: $tranFunc('common.name'),
+			title: $T('common.name'),
 			key: 'name',
 			child: name,
 		},
 		{
-			title: $tranFunc('common.currency'),
+			title: $T('common.currency'),
 			child: currency,
 		},
 		{
-			title: $tranFunc('staff.status'),
+			title: $T('staff.status'),
 			child: status,
 		},
 		{
-			title: $tranFunc('common.action'),
+			title: $T('common.action'),
 			child: action,
 		},
 	]);
@@ -130,7 +130,7 @@
 
 {#snippet status({ item }: { item: Channel })}
 	<Badge
-		text={item.isActive ? $tranFunc('staff.active') : $tranFunc('staff.inactive')}
+		text={item.isActive ? $T('staff.active') : $T('staff.inactive')}
 		color={item.isActive ? 'green' : 'red'}
 	/>
 {/snippet}
@@ -142,12 +142,12 @@
 {#snippet action({ item }: { item: Channel })}
 	{@const MENU_OPTIONS: MenuItemProps[] = [
 		{
-			children: $tranFunc('channel.edit'),
+			children: $T('channel.edit'),
 			startIcon: Edit,
       href: AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(item.id)
 		},
 		{
-			children: $tranFunc('channel.del'),
+			children: $T('channel.del'),
 			startIcon: Trash,
 			onclick: () => channelToDeleteId = item.id,
 			class: 'text-red-600',
@@ -172,26 +172,26 @@
 
 <Modal
 	open={!!channelToDeleteId}
-	header={$tranFunc('channel.confirmDelChannel', { id: channelToDeleteId })}
+	header={$T('channel.confirmDelChannel', { id: channelToDeleteId })}
 	onOk={handleDeleteChannel}
 	onCancel={() => (channelToDeleteId = '')}
 	onClose={() => (channelToDeleteId = '')}
 	closeOnOutsideClick
 	size="sm"
-	cancelText={$tranFunc('common.cancel')}
-	okText={$tranFunc('btn.delete')}
+	cancelText={$T('common.cancel')}
+	okText={$T('btn.delete')}
 	disableElements={loading}
 >
 	{#if channelsToReplaceOptions.length}
 		<Select
 			options={channelsToReplaceOptions}
 			bind:value={channelToReplaceId}
-			label={$tranFunc('channel.chanToReplace')}
-			placeholder={$tranFunc('channel.chanToReplace')}
+			label={$T('channel.chanToReplace')}
+			placeholder={$T('channel.chanToReplace')}
 			disabled={loading}
 		/>
 		<Alert variant="info" size="sm" bordered class="mt-3">
-			{$tranFunc('channel.replaceChanHelpTxt')}
+			{$T('channel.replaceChanHelpTxt')}
 		</Alert>
 	{/if}
 </Modal>

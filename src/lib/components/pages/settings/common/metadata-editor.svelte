@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { Plus, Trash } from '$lib/components/icons';
 	import { Accordion } from '$lib/components/ui/Accordion';
 	import Button from '$lib/components/ui/Button/Button.svelte';
@@ -56,7 +56,7 @@
 			// check for duplicate
 			for (let i = 0; i < activeMetadata.length && i !== index; i++) {
 				if (item.key === activeMetadata[i].key) {
-					dataFormErrors[index] = { key: [$tranFunc('common.duplicate', { val: item.key })] };
+					dataFormErrors[index] = { key: [$T('common.duplicate', { val: item.key })] };
 					return;
 				}
 			}
@@ -101,7 +101,7 @@
 			<div class="flex gap-2 items-start mb-3">
 				<div class="flex items-start gap-2 flex-4/5">
 					<Input
-						placeholder={$tranFunc('common.key')}
+						placeholder={$T('common.key')}
 						size="sm"
 						bind:value={item.key}
 						{disabled}
@@ -115,7 +115,7 @@
 					/>
 
 					<Input
-						placeholder={$tranFunc('common.value')}
+						placeholder={$T('common.value')}
 						size="sm"
 						bind:value={item.value}
 						{disabled}
@@ -137,13 +137,13 @@
 					onclick={() => handleRemoveAPair(idx)}
 					{disabled}
 				>
-					{$tranFunc('btn.delete')}
+					{$T('btn.delete')}
 				</Button>
 			</div>
 		{/if}
 	{/each}
 
 	<Button variant="light" endIcon={Plus} size="xs" onclick={handleAddPair} {disabled}>
-		{$tranFunc('btn.add')}
+		{$T('btn.add')}
 	</Button>
 </Accordion>

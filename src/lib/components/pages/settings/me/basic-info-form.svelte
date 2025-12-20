@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { SUPPORTED_LANGUAGES, tranFunc } from '$i18n';
+	import { SUPPORTED_LANGUAGES, T } from '$i18n';
 	import { ACCOUNT_UPDATE_MUTATION } from '$lib/api/account';
 	import { operationStore } from '$lib/api/operation';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
@@ -60,7 +60,7 @@
 		pause: true,
 		onResult: async (result) => {
 			if (
-				checkIfGraphqlResultHasError(result, 'accountUpdate', $tranFunc('settings.accountUpdated'))
+				checkIfGraphqlResultHasError(result, 'accountUpdate', $T('settings.accountUpdated'))
 			)
 				return;
 
@@ -85,12 +85,12 @@
 </script>
 
 <div class={SitenameCommonClassName}>
-	<SectionHeader>{$tranFunc('settings.basicInfo')}</SectionHeader>
+	<SectionHeader>{$T('settings.basicInfo')}</SectionHeader>
 
 	<div class="flex items-start mt-3 gap-2 w-full tablet:flex-wrap flex-nowrap">
 		<Input
-			placeholder={$tranFunc('common.firstName')}
-			label={$tranFunc('common.firstName')}
+			placeholder={$T('common.firstName')}
+			label={$T('common.firstName')}
 			class="w-1/2 tablet:w-full"
 			required
 			bind:value={userInfoInputs.firstName}
@@ -101,8 +101,8 @@
 			disabled={$AccountUpdateMutation.fetching}
 		/>
 		<Input
-			placeholder={$tranFunc('common.lastName')}
-			label={$tranFunc('common.lastName')}
+			placeholder={$T('common.lastName')}
+			label={$T('common.lastName')}
 			class="w-1/2 tablet:w-full"
 			required
 			bind:value={userInfoInputs.lastName}
@@ -115,10 +115,10 @@
 	</div>
 
 	<Select
-		placeholder={$tranFunc('footer.language')}
+		placeholder={$T('footer.language')}
 		class="mt-2"
 		required
-		label={$tranFunc('footer.language')}
+		label={$T('footer.language')}
 		options={SUPPORTED_LANGUAGES.map((lang) => ({
 			value: lang.code,
 			label: lang.name,
@@ -136,7 +136,7 @@
 			onclick={handleSubmit}
 			loading={$AccountUpdateMutation.fetching}
 			disabled={$AccountUpdateMutation.fetching || !userInfoChanged}
-			>{$tranFunc('btn.update')}</Button
+			>{$T('btn.update')}</Button
 		>
 	</div>
 </div>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import {
 		CREATE_PRODUCT_MUTATION,
 		PRODUCT_DELETE_MUTATION,
@@ -267,7 +267,7 @@
 			return;
 		}
 
-		toast.success($tranFunc('product.prdCreated'));
+		toast.success($T('product.prdCreated'));
 		await goto(
 			AppRoute.SETTINGS_PRODUCTS_EDIT(productCreateResult.data?.productCreate?.product?.slug!),
 		);
@@ -296,7 +296,7 @@
 		max={9}
 		class={SitenameCommonClassName}
 		bind:medias={productMedias}
-		label={$tranFunc('common.pic')}
+		label={$T('common.pic')}
 		bind:formOk={productInputError.productMedias}
 		disabled={loading}
 		required

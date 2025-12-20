@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { CREATE_DRAFT_ORDER_MUTATION } from '$lib/api/admin/orders';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
@@ -63,9 +63,9 @@
 
 <HeadBar
 	listingPageHref={AppRoute.SETTINGS_ORDERS()}
-	listingPageLabel={$tranFunc('settings.orders')}
+	listingPageLabel={$T('settings.orders')}
 	newPageHref={AppRoute.SETTINGS_ORDERS_NEW()}
-	newPageLabel={$tranFunc('settings.newOrder')}
+	newPageLabel={$T('settings.newOrder')}
 	detailRouteID="/[[channel]]/settings/shop-orders/[id]"
 	detailPageLabelGetter={(page) => page.params.id}
 	onNewPageBtnClick={handleClickCreateOrder}

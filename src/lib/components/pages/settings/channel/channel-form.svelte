@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import CountrySelect from '$lib/components/common/country-language/country-select.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
@@ -52,7 +52,7 @@
 
 	const MIN_EXPIRE_DAY = 1;
 	const MAX_EXPIRE_DAY = 120;
-	const EXPIRE_ORDER_DEL_ERR = $tranFunc('channel.valueOutOfRange', {
+	const EXPIRE_ORDER_DEL_ERR = $T('channel.valueOutOfRange', {
 		min: MIN_EXPIRE_DAY,
 		max: MAX_EXPIRE_DAY,
 	});
@@ -97,11 +97,11 @@
 	};
 </script>
 
-<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
+<SectionHeader>{$T('common.generalInfo')}</SectionHeader>
 
 <div class="flex gap-2 items-start">
 	<Input
-		label={$tranFunc('common.name')}
+		label={$T('common.name')}
 		bind:value={name}
 		inputDebounceOption={{ onInput: () => handleFormChange('name') }}
 		variant={$SchemaHandler?.name?.length ? 'error' : 'info'}
@@ -126,7 +126,7 @@
 
 <div class="mt-3 flex gap-3 items-center">
 	<Input
-		label={$tranFunc('channel.orderExp')}
+		label={$T('channel.orderExp')}
 		bind:value={deleteExpiredOrdersAfter}
 		{disabled}
 		class="flex-1"
@@ -138,10 +138,10 @@
 		variant={$SchemaHandler?.orderSettings?.length ? 'error' : 'info'}
 		subText={$SchemaHandler?.orderSettings?.length
 			? $SchemaHandler.orderSettings[0]
-			: $tranFunc('channel.delExprOrdersSubTxt', { min: MIN_EXPIRE_DAY, max: MAX_EXPIRE_DAY })}
+			: $T('channel.delExprOrdersSubTxt', { min: MIN_EXPIRE_DAY, max: MAX_EXPIRE_DAY })}
 	/>
 	<Checkbox
-		label={$tranFunc('staff.active')}
+		label={$T('staff.active')}
 		bind:checked={isActive}
 		{disabled}
 		size="sm"
@@ -151,7 +151,7 @@
 
 <div class="mt-3 flex gap-3 items-start">
 	<Input
-		label={$tranFunc('common.currency')}
+		label={$T('common.currency')}
 		bind:value={currencyCode}
 		required
 		variant={$SchemaHandler?.currencyCode?.length ? 'error' : 'info'}
@@ -163,7 +163,7 @@
 	/>
 
 	<CountrySelect
-		label={$tranFunc('common.country')}
+		label={$T('common.country')}
 		bind:value={defaultCountry}
 		required
 		variant={$SchemaHandler?.defaultCountry?.length ? 'error' : 'info'}
@@ -178,7 +178,7 @@
 {#snippet previewLabel(label: string)}
 	<div class="flex items-center gap-1">
 		<span>{label}</span>
-		<Badge size="xs" text={$tranFunc('settings.preview')} variant="outline" rounded />
+		<Badge size="xs" text={$T('settings.preview')} variant="outline" rounded />
 	</div>
 {/snippet}
 
@@ -187,11 +187,11 @@
 		bind:checked={allowUnpaidOrders}
 		{disabled}
 		size="sm"
-		subText={$tranFunc('channel.allowCompleteOrderBeforePay')}
+		subText={$T('channel.allowCompleteOrderBeforePay')}
 		class="mb-3"
 	>
 		{#snippet label()}
-			{@render previewLabel($tranFunc('channel.allowUnpaidOrder'))}
+			{@render previewLabel($T('channel.allowUnpaidOrder'))}
 		{/snippet}
 	</Checkbox>
 	<Checkbox
@@ -204,19 +204,19 @@
 				? MarkAsPaidStrategyEnum.TransactionFlow
 				: MarkAsPaidStrategyEnum.PaymentFlow;
 		}}
-		subText={$tranFunc('channel.markAsPaidSubTxt')}
+		subText={$T('channel.markAsPaidSubTxt')}
 	>
 		{#snippet label()}
-			{@render previewLabel($tranFunc('channel.useTranFlow'))}
+			{@render previewLabel($T('channel.useTranFlow'))}
 		{/snippet}
 	</Checkbox>
 	<Checkbox
-		label={$tranFunc('channel.autoCompleteCheckoutsWhenPaid')}
+		label={$T('channel.autoCompleteCheckoutsWhenPaid')}
 		bind:checked={automaticallyCompleteFullyPaidCheckouts}
 		{disabled}
 		size="sm"
 		class="mb-3"
-		subText={$tranFunc('channel.autoCompleteCheckoutWhenPaidSubTxt')}
+		subText={$T('channel.autoCompleteCheckoutWhenPaidSubTxt')}
 	></Checkbox>
 	<Checkbox
 		checked={transactionFlowStrategy === TransactionFlowStrategyEnum.Authorization}
@@ -227,26 +227,26 @@
 		}}
 		{disabled}
 		size="sm"
-		subText={$tranFunc('channel.authorizeTransSubTxt')}
+		subText={$T('channel.authorizeTransSubTxt')}
 	>
 		{#snippet label()}
-			{@render previewLabel($tranFunc('channel.authorizeTrans'))}
+			{@render previewLabel($T('channel.authorizeTrans'))}
 		{/snippet}
 	</Checkbox>
 </div>
 
 <div class="mt-3">
-	<Label label={$tranFunc('channel.allocStrategy')} />
+	<Label label={$T('channel.allocStrategy')} />
 	<RadioButton
 		value={AllocationStrategyEnum.PrioritizeHighStock}
-		label={$tranFunc('channel.prioritizeWarehouseWithMaxStock')}
+		label={$T('channel.prioritizeWarehouseWithMaxStock')}
 		bind:group={allocationStrategy}
 		size="sm"
 		{disabled}
 	/>
 	<RadioButton
 		value={AllocationStrategyEnum.PrioritizeSortingOrder}
-		label={$tranFunc('channel.prioritizeWarehouseByMaxOrder')}
+		label={$T('channel.prioritizeWarehouseByMaxOrder')}
 		bind:group={allocationStrategy}
 		size="sm"
 		{disabled}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import {
 		FilterManager,
 		type FilterComponentType,
@@ -24,13 +24,13 @@
 
 	const FilterOptions: FilterProps<ProductTypeFilterInput> = $derived({
 		configurable: {
-			label: $tranFunc('prdType.hasVariantAttrs'),
+			label: $T('prdType.hasVariantAttrs'),
 			operations: {
 				eq: CommonSnippets.yesNo,
 			},
 		},
 		productType: {
-			label: $tranFunc('prdType.type'),
+			label: $T('prdType.type'),
 			operations: {
 				eq: productType,
 			},

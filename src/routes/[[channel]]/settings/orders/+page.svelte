@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { USER_ORDERS_QUERY } from '$lib/api/orders';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import { Dots } from '$lib/components/icons';
@@ -26,27 +26,27 @@
 
 	const ORDER_TABLE_COLUMNS: TableColumnProps<Order, any>[] = $derived([
 		{
-			title: $tranFunc('settings.no'),
+			title: $T('settings.no'),
 			child: { render: ({ item }) => item.number },
 		},
 		{
-			title: $tranFunc('settings.date'),
+			title: $T('settings.date'),
 			child: { render: ({ item }) => dayjs(item.created).format(SitenameTimeFormat) },
 		},
 		{
-			title: $tranFunc('settings.payment'),
+			title: $T('settings.payment'),
 			child: payment,
 		},
 		{
-			title: $tranFunc('settings.status'),
+			title: $T('settings.status'),
 			child: status,
 		},
 		{
-			title: $tranFunc('settings.total'),
+			title: $T('settings.total'),
 			child: total,
 		},
 		{
-			title: $tranFunc('settings.action'),
+			title: $T('settings.action'),
 			child: action,
 		},
 	]);
@@ -70,7 +70,7 @@
 			placement="bottom-end"
 			options={[
 				{
-					children: $tranFunc('settings.reqSupport'),
+					children: $T('settings.reqSupport'),
 					href: `${AppRoute.ME_SUPPORT_NEW()}?order_number=${item.number}`,
 				},
 			]}
@@ -84,7 +84,7 @@
 
 <HeadBar
 	listingPageHref={AppRoute.SETTINGS_ORDERS()}
-	listingPageLabel={$tranFunc('settings.myOrders')}
+	listingPageLabel={$T('settings.myOrders')}
 	detailRouteID="/[[channel]]/settings/orders/[id]"
 	detailPageLabelGetter={(page) => page.params.id}
 />

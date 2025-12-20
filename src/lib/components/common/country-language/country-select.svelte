@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { operationStore } from '$lib/api/operation';
 	import { SHOP_QUERY } from '$lib/api/shop';
 	import { Alert } from '$lib/components/ui/Alert';
@@ -40,7 +40,7 @@
 			{size}
 			{label}
 			bind:value
-			placeholder={$tranFunc('placeholders.valuePlaceholder')}
+			placeholder={$T('placeholders.valuePlaceholder')}
 			{...rest}
 		/>
 	{/if}

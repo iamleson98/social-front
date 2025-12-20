@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import {
 		CATEGORIES_LIST_QUERY_STORE,
 		PRODUCT_LIST_QUERY,
@@ -53,7 +53,7 @@
 	/**  catalog item select checkbox */
 	const SelectCol: TableColumnProps<any>[] = [
 		{
-			title: $tranFunc('common.select'),
+			title: $T('common.select'),
 			child: catalogAssignSelect,
 		},
 	];
@@ -156,7 +156,7 @@
 
 	{#if !!activeTab}
 		<Input
-			placeholder={$tranFunc('common.search')}
+			placeholder={$T('common.search')}
 			class="mb-1.5"
 			bind:value={catalogQueryValue}
 			inputDebounceOption={{
@@ -172,9 +172,9 @@
 				autoRefetchOnPaginationParamsChange
 				columns={SelectCol.concat(
 					CATEGORY_COLUMNS(
-						$tranFunc('common.pic'),
-						$tranFunc('product.cateName'),
-						$tranFunc('collection.noOfPrds'),
+						$T('common.pic'),
+						$T('product.cateName'),
+						$T('collection.noOfPrds'),
 					),
 				)}
 				query={CATEGORIES_LIST_QUERY_STORE}
@@ -188,9 +188,9 @@
 				autoRefetchOnPaginationParamsChange
 				columns={SelectCol.concat(
 					COLLECTION_COLUMNS(
-						$tranFunc('common.pic'),
-						$tranFunc('common.name'),
-						$tranFunc('collection.noOfPrds'),
+						$T('common.pic'),
+						$T('common.name'),
+						$T('collection.noOfPrds'),
 					),
 				)}
 				query={COLLECTIONS_QUERY}
@@ -204,10 +204,10 @@
 				autoRefetchOnPaginationParamsChange
 				columns={SelectCol.concat(
 					PRODUCT_COLUMNS(
-						$tranFunc('common.pic'),
-						$tranFunc('product.prdName'),
-						$tranFunc('product.prdType'),
-						$tranFunc('settings.availability'),
+						$T('common.pic'),
+						$T('product.prdName'),
+						$T('product.prdType'),
+						$T('settings.availability'),
 					),
 				)}
 				query={PRODUCT_LIST_QUERY}
@@ -221,9 +221,9 @@
 				autoRefetchOnPaginationParamsChange
 				columns={SelectCol.concat(
 					VARIANT_COLUMNS(
-						$tranFunc('common.pic'),
-						$tranFunc('product.prdName'),
-						$tranFunc('product.variantName'),
+						$T('common.pic'),
+						$T('product.prdName'),
+						$T('product.variantName'),
 					),
 				)}
 				query={PRODUCT_VARIANTS_QUERY}

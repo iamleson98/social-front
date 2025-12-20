@@ -1,7 +1,7 @@
-import { tranFunc } from '$i18n';
+import { T } from '$i18n';
 import { derived } from 'svelte/store';
 
-export const CommonState = derived(tranFunc, (func) => ({
+export const CommonState = derived(T, (func) => ({
 	FieldRequiredError: func('helpText.fieldRequired'),
 	EditSuccess: func('common.editSuccess'),
 	DeleteSuccess: func('common.delSuccess'),

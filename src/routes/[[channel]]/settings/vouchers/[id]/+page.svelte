@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import {
 		VOUCHER_CHANNEL_LISTING_UPDATE_MUTATION,
 		VOUCHER_DELETE_MUTATION,
@@ -190,10 +190,10 @@
 	<div class="flex gap-2">
 		<div class="w-7/10 space-y-2">
 			<div class={SitenameCommonClassName}>
-				<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
+				<SectionHeader>{$T('common.generalInfo')}</SectionHeader>
 				<Input
-					placeholder={$tranFunc('common.name')}
-					label={$tranFunc('common.name')}
+					placeholder={$T('common.name')}
+					label={$T('common.name')}
 					required
 					disabled={loading}
 					bind:value={voucherInput.name}

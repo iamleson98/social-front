@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { ATTRIBUTE_DELETE_MUTATION, PRODUCT_ATTRIBUTES_QUERY } from '$lib/api/admin/attribute';
 	import { operationStore } from '$lib/api/operation';
 	import { Trash } from '$lib/components/icons';
@@ -33,26 +33,26 @@
 
 	const AttributeColumns: TableColumnProps<Attribute, AttributeSortField>[] = $derived([
 		{
-			title: $tranFunc('common.name'),
+			title: $T('common.name'),
 			child: name,
 			key: AttributeSortField.Name,
 		},
 		{
-			title: $tranFunc('attributes.visibleInStore'),
+			title: $T('attributes.visibleInStore'),
 			child: visible,
 			key: AttributeSortField.VisibleInStorefront,
 		},
 		{
-			title: $tranFunc('attributes.filterableInAdmin'),
+			title: $T('attributes.filterableInAdmin'),
 			child: filterable,
 			key: AttributeSortField.FilterableInDashboard,
 		},
 		{
-			title: $tranFunc('attributes.inputType'),
+			title: $T('attributes.inputType'),
 			child: isInputType,
 		},
 		{
-			title: $tranFunc('common.action'),
+			title: $T('common.action'),
 			child: action,
 		},
 	]);
@@ -68,14 +68,14 @@
 		pause: true,
 		onResult: (result) => {
 			if (checkIfGraphqlResultHasError(result, 'attributeDelete')) return;
-			toast.success($tranFunc('common.delSuccess'));
+			toast.success($T('common.delSuccess'));
 			tableRef?.triggerFetchData();
 		},
 	});
 
 	const handleDeleteAttribute = (id: string) => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: $tranFunc('common.confirmDel'),
+			content: $T('common.confirmDel'),
 			onOk: () => {
 				AttributeDeleteStore.reexecute({
 					variables: {
@@ -110,14 +110,14 @@
 
 {#snippet visible({ item }: { item: Attribute })}
 	<Badge
-		text={item.visibleInStorefront ? $tranFunc('common.yes') : $tranFunc('common.no')}
+		text={item.visibleInStorefront ? $T('common.yes') : $T('common.no')}
 		color={item.visibleInStorefront ? 'green' : 'red'}
 	/>
 {/snippet}
 
 {#snippet filterable({ item }: { item: Attribute })}
 	<Badge
-		text={item.filterableInDashboard ? $tranFunc('common.yes') : $tranFunc('common.no')}
+		text={item.filterableInDashboard ? $T('common.yes') : $T('common.no')}
 		color={item.filterableInDashboard ? 'green' : 'red'}
 	/>
 {/snippet}

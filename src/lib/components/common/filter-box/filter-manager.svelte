@@ -1,7 +1,7 @@
 <script lang="ts" generics="T, Var extends (AnyVariables & GraphqlPaginationArgs)">
 	import { afterNavigate, goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { FilterCog, Search } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { Input } from '$lib/components/ui/Input';
@@ -192,7 +192,7 @@
 							{filtersCount}
 						</span>
 					{/if}
-					{$tranFunc('common.filter')}
+					{$T('common.filter')}
 				</Button>
 			{/snippet}
 			<FilterContainer {filterOptions} bind:open={openFilterBox} {filters} />
@@ -200,7 +200,7 @@
 	{/if}
 	{#if searchKey}
 		<Input
-			placeholder={$tranFunc('placeholders.valuePlaceholder')}
+			placeholder={$T('placeholders.valuePlaceholder')}
 			size="sm"
 			{disabled}
 			value={get(variables, searchKey)}

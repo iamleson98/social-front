@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
 	import FileInputContainer from '$lib/components/common/file-input-container.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
@@ -27,7 +27,7 @@
 		ok = $bindable(),
 	}: Props = $props();
 
-	const MAX_ERROR = $tranFunc('error.itemsExceed', { max: 1 });
+	const MAX_ERROR = $T('error.itemsExceed', { max: 1 });
 
 	const collectionSchema = object({
 		name: string().nonempty($CommonState.FieldRequiredError),
@@ -48,11 +48,11 @@
 </script>
 
 <div class={SitenameCommonClassName}>
-	<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
+	<SectionHeader>{$T('common.generalInfo')}</SectionHeader>
 	<Input
-		label={$tranFunc('common.name')}
+		label={$T('common.name')}
 		bind:value={name}
-		placeholder={$tranFunc('common.name')}
+		placeholder={$T('common.name')}
 		inputDebounceOption={{ onInput: SchemaHandler.validate }}
 		onblur={SchemaHandler.validate}
 		variant={$SchemaHandler.name?.length ? 'error' : 'info'}
@@ -61,8 +61,8 @@
 		required
 	/>
 	<EditorJSComponent
-		label={$tranFunc('settings.description')}
-		placeholder={$tranFunc('settings.description')}
+		label={$T('settings.description')}
+		placeholder={$T('settings.description')}
 		bind:value={description}
 		onchange={SchemaHandler.validate}
 		variant={$SchemaHandler.description?.length ? 'error' : 'info'}
@@ -75,7 +75,7 @@
 		max={1}
 		bind:medias={media}
 		onchange={SchemaHandler.validate}
-		label={$tranFunc('common.pic')}
+		label={$T('common.pic')}
 		variant={$SchemaHandler.media?.length ? 'error' : 'info'}
 		subText={$SchemaHandler.media?.[0]}
 		{disabled}

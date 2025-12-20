@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import {
 		AdjustmentHorizontal,
 		BadgeOutline,
@@ -70,13 +70,13 @@
 	const ACCOUNT_TAB_ITEMS: TabItem[] = $derived([
 		{
 			icon: UserCog,
-			name: $tranFunc('settings.account'),
+			name: $T('settings.account'),
 			href: AppRoute.ME(),
 			shouldActive: page.url.pathname === AppRoute.ME(),
 		},
 		{
 			icon: AdjustmentHorizontal,
-			name: $tranFunc('settings.preference'),
+			name: $T('settings.preference'),
 			href: AppRoute.ME_PREFERENCES(),
 			shouldActive: page.url.pathname === AppRoute.ME_PREFERENCES(),
 		},
@@ -85,19 +85,19 @@
 	const SHOPPING_TAB_ITEMS: TabItem[] = $derived([
 		{
 			icon: Box,
-			name: $tranFunc('settings.myOrders'),
+			name: $T('settings.myOrders'),
 			href: AppRoute.MY_ORDERS(),
 			shouldActive: page.url.pathname === AppRoute.MY_ORDERS(),
 		},
 		{
 			icon: Gift,
-			name: $tranFunc('customer.giftcards'),
+			name: $T('customer.giftcards'),
 			href: AppRoute.MY_GIFTCARDS(),
 			shouldActive: page.url.pathname === AppRoute.MY_GIFTCARDS(),
 		},
 		{
 			icon: MailQuestion,
-			name: $tranFunc('settings.supports'),
+			name: $T('settings.supports'),
 			href: AppRoute.ME_SUPPORT(),
 			shouldActive: page.url.pathname === AppRoute.ME_SUPPORT(),
 		},
@@ -106,7 +106,7 @@
 	const SHOP_ORDERS_TAB_ITEMS: TabItem[] = $derived([
 		{
 			icon: Box,
-			name: $tranFunc('settings.orders'),
+			name: $T('settings.orders'),
 			href: AppRoute.SETTINGS_ORDERS(),
 			shouldActive: [
 				AppRoute.SETTINGS_ORDERS(),
@@ -117,7 +117,7 @@
 		},
 		{
 			icon: BoxOff,
-			name: $tranFunc('order.draftOders'),
+			name: $T('order.draftOders'),
 			href: AppRoute.SETTINGS_SHOP_DRAFT_ORDERS(),
 			shouldActive: page.url.pathname === AppRoute.SETTINGS_SHOP_DRAFT_ORDERS(),
 		},
@@ -126,7 +126,7 @@
 	const CATALOG_TAB_ITEMS: TabItem[] = $derived([
 		{
 			icon: Parking,
-			name: $tranFunc('product.products'),
+			name: $T('product.products'),
 			href: AppRoute.SETTINGS_PRODUCTS(),
 			shouldActive: [
 				AppRoute.SETTINGS_PRODUCTS(),
@@ -136,7 +136,7 @@
 		},
 		{
 			icon: Category,
-			name: $tranFunc('common.categories'),
+			name: $T('common.categories'),
 			href: AppRoute.SETTINGS_CONFIGS_CATEGORIES(),
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_CATEGORIES(),
@@ -145,7 +145,7 @@
 			].includes(page.url.pathname),
 		},
 		{
-			name: $tranFunc('common.collections'),
+			name: $T('common.collections'),
 			href: AppRoute.SETTINGS_CONFIGS_COLLECTIONS(),
 			icon: FolderHeart,
 			shouldActive: [
@@ -155,7 +155,7 @@
 			].includes(page.url.pathname),
 		},
 		{
-			name: $tranFunc('giftcard.title'),
+			name: $T('giftcard.title'),
 			href: AppRoute.SETTINGS_CONFIGS_GIFTCARDS(),
 			icon: Gift,
 			shouldActive: [
@@ -169,7 +169,7 @@
 	const SHOP_DISCOUNTS_TAB_ITEMS: TabItem[] = $derived([
 		{
 			icon: Discount,
-			name: $tranFunc('promotion.promotions'),
+			name: $T('promotion.promotions'),
 			href: AppRoute.SETTINGS_CONFIGS_PROMOTIONS(),
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_PROMOTIONS(),
@@ -179,7 +179,7 @@
 		},
 		{
 			icon: Ticket,
-			name: $tranFunc('voucher.vouchers'),
+			name: $T('voucher.vouchers'),
 			href: AppRoute.SETTINGS_CONFIGS_VOUCHERS(),
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_VOUCHERS(),
@@ -192,7 +192,7 @@
 	const BLOG_TAB_ITEMS: TabItem[] = $derived([
 		{
 			icon: BrandBlogger,
-			name: $tranFunc('settings.blogs'),
+			name: $T('settings.blogs'),
 			href: AppRoute.SETTINGS_BLOGS(),
 			shouldActive: [
 				AppRoute.SETTINGS_BLOGS(),
@@ -205,19 +205,19 @@
 	const SHOP_CONFIG_TAB_ITEMS: TabItem[] = $derived([
 		{
 			icon: BuildingStore,
-			name: $tranFunc('settings.shopSettings'),
+			name: $T('settings.shopSettings'),
 			href: AppRoute.STORE_SETTINGS(),
 			shouldActive: [AppRoute.STORE_SETTINGS()].includes(page.url.pathname),
 		},
 		{
 			icon: BuildingStore,
-			name: $tranFunc('settings.apps'),
+			name: $T('settings.apps'),
 			href: AppRoute.APPS_SETTINGS(),
 			shouldActive: [AppRoute.APPS_SETTINGS()].includes(page.url.pathname),
 		},
 		{
 			icon: Tax,
-			name: $tranFunc('settings.taxSettings'),
+			name: $T('settings.taxSettings'),
 			href: AppRoute.TAX_SETTINGS_CHANNELS(),
 			shouldActive: [
 				AppRoute.TAX_SETTINGS_CHANNELS(),
@@ -228,7 +228,7 @@
 		},
 		{
 			icon: Globe,
-			name: $tranFunc('channel.channels'),
+			name: $T('channel.channels'),
 			href: AppRoute.SETTINGS_CONFIGS_CHANNELS(),
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_CHANNELS(),
@@ -238,7 +238,7 @@
 		},
 		{
 			icon: Thingiverse,
-			name: $tranFunc('prdType.prdTypes'),
+			name: $T('prdType.prdTypes'),
 			href: AppRoute.SETTINGS_PRODUCT_TYPES(),
 			shouldActive: [
 				AppRoute.SETTINGS_PRODUCT_TYPES(),
@@ -248,7 +248,7 @@
 		},
 		{
 			icon: BadgeOutline,
-			name: $tranFunc('settings.staffs'),
+			name: $T('settings.staffs'),
 			href: AppRoute.SETTINGS_CONFIGS_STAFFS(),
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_STAFFS(),
@@ -258,7 +258,7 @@
 		},
 		{
 			icon: UsersGroup,
-			name: $tranFunc('settings.users'),
+			name: $T('settings.users'),
 			href: AppRoute.SETTINGS_CONFIGS_USERS(),
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_USERS(),
@@ -268,7 +268,7 @@
 		},
 		{
 			icon: BuildingWarehouse,
-			name: $tranFunc('channel.warehouse'),
+			name: $T('channel.warehouse'),
 			href: AppRoute.SETTINGS_CONFIGS_WAREHOUSES(),
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_WAREHOUSES(),
@@ -278,7 +278,7 @@
 		},
 		{
 			icon: Dimension,
-			name: $tranFunc('product.tabAttributes'),
+			name: $T('product.tabAttributes'),
 			href: AppRoute.SETTINGS_CONFIGS_ATTRIBUTES(),
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_ATTRIBUTES(),
@@ -288,7 +288,7 @@
 		},
 		{
 			icon: TruckDelivery,
-			name: $tranFunc('channel.shipZones'),
+			name: $T('channel.shipZones'),
 			href: AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONES(),
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONES(),
@@ -306,7 +306,7 @@
 		},
 		{
 			icon: LockCog,
-			name: $tranFunc('permissionGroup.permGroups'),
+			name: $T('permissionGroup.permGroups'),
 			href: AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUPS(),
 			shouldActive: [
 				AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUPS(),
@@ -333,7 +333,7 @@
 		{/if}
 		<span>{item.name}</span>
 		{#if item.isPreview}
-			<Badge text={$tranFunc('settings.preview')} color="orange" size="xs" rounded />
+			<Badge text={$T('settings.preview')} color="orange" size="xs" rounded />
 		{/if}
 	</svelte:element>
 {/snippet}
@@ -364,17 +364,17 @@
 					<div class="flex items-center gap-1">
 						{#if $ME_PAGE_USER_STORE?.isConfirmed}
 							<Icon icon={RosetteDiscountChecked} class="text-blue-500" size="md" />
-							<span class="text-sm text-gray-500">{$tranFunc('settings.verified')}</span>
+							<span class="text-sm text-gray-500">{$T('settings.verified')}</span>
 						{:else}
 							<Icon icon={CheckOff} class="text-red-500" size="md" />
-							<span class="text-sm text-gray-500">{$tranFunc('settings.unverified')}</span>
+							<span class="text-sm text-gray-500">{$T('settings.unverified')}</span>
 						{/if}
 					</div>
 				</div>
 			</div>
 
 			<AccordionList
-				header={$tranFunc('settings.account')}
+				header={$T('settings.account')}
 				child={sidebarItem}
 				items={ACCOUNT_TAB_ITEMS}
 				class="w-full p-3"
@@ -382,7 +382,7 @@
 			/>
 
 			<AccordionList
-				header={$tranFunc('settings.shopping')}
+				header={$T('settings.shopping')}
 				child={sidebarItem}
 				items={SHOPPING_TAB_ITEMS}
 				class="w-full p-3"
@@ -391,7 +391,7 @@
 
 			{#if $UserStoreManager && userIsShopAdmin($UserStoreManager)}
 				<AccordionList
-					header={$tranFunc('promotion.CATALOGUE')}
+					header={$T('promotion.CATALOGUE')}
 					child={sidebarItem}
 					items={CATALOG_TAB_ITEMS}
 					class="w-full p-3"
@@ -399,7 +399,7 @@
 				/>
 
 				<AccordionList
-					header={$tranFunc('settings.fulfillments')}
+					header={$T('settings.fulfillments')}
 					child={sidebarItem}
 					items={SHOP_ORDERS_TAB_ITEMS}
 					class="w-full p-3"
@@ -407,7 +407,7 @@
 				/>
 
 				<AccordionList
-					header={$tranFunc('settings.discounts')}
+					header={$T('settings.discounts')}
 					child={sidebarItem}
 					items={SHOP_DISCOUNTS_TAB_ITEMS}
 					class="w-full p-3"
@@ -415,7 +415,7 @@
 				/>
 
 				<AccordionList
-					header={$tranFunc('settings.blogs')}
+					header={$T('settings.blogs')}
 					child={sidebarItem}
 					items={BLOG_TAB_ITEMS}
 					class="w-full p-3"
@@ -423,7 +423,7 @@
 				/>
 
 				<AccordionList
-					header={$tranFunc('settings.configs')}
+					header={$T('settings.configs')}
 					child={sidebarItem}
 					items={SHOP_CONFIG_TAB_ITEMS}
 					class="w-full p-3"

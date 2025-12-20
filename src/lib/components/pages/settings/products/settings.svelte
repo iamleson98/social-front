@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { PRODUCT_ATTRIBUTES_QUERY } from '$lib/api/admin/attribute';
 	import { EXPORT_PRODUCTS_MUTATION, PRODUCT_TOTAL_COUNT_QUERY } from '$lib/api/admin/product';
 	import { WAREHOUSE_LIST_QUERY } from '$lib/api/admin/warehouse';
@@ -44,7 +44,7 @@
 	let openExportModal = $state(false);
 	const ProductFields = Object.values(ProductFieldEnum).map<SelectOption>((value) => ({
 		value,
-		label: $tranFunc(`product.${value}`),
+		label: $T(`product.${value}`),
 	}));
 	let loading = $state(false);
 	let exportConfig = $state<ExportProductsInput>({
@@ -91,7 +91,7 @@
 			checkIfGraphqlResultHasError(
 				result,
 				'exportProducts',
-				$tranFunc('product.exportSuccessMsg', { fileType: exportConfig.fileType }),
+				$T('product.exportSuccessMsg', { fileType: exportConfig.fileType }),
 			)
 		)
 			return;
@@ -104,7 +104,7 @@
 	placement="bottom-end"
 	options={[
 		{
-			children: $tranFunc('product.exportPrds'),
+			children: $T('product.exportPrds'),
 			onclick: handleClickExportProducts,
 		},
 	]}
@@ -116,19 +116,19 @@
 			color="gray"
 			{onclick}
 			class="tooltip tooltip-left"
-			data-tip={$tranFunc('common.settings')}
+			data-tip={$T('common.settings')}
 		/>
 	{/snippet}
 </DropDown>
 
 <Modal
-	header={$tranFunc('product.exportPrds')}
+	header={$T('product.exportPrds')}
 	open={openExportModal}
 	size="sm"
 	onCancel={() => (openExportModal = false)}
 	onClose={() => (openExportModal = false)}
 	closeOnEscape
-	okText={$tranFunc('common.export')}
+	okText={$T('common.export')}
 	onOk={handleExport}
 	closeOnOutsideClick
 	disableElements={loading}
@@ -136,8 +136,8 @@
 	<div class="space-y-2">
 		<ChannelSelect
 			multiple
-			label={$tranFunc('channel.channels')}
-			placeholder={$tranFunc('channel.channels')}
+			label={$T('channel.channels')}
+			placeholder={$T('channel.channels')}
 			valueType="id"
 			bind:value={exportConfig.exportInfo!.channels}
 			disabled={loading}
@@ -149,8 +149,8 @@
 			variableSearchQueryPath="filter.search"
 			optionValueKey="id"
 			optionLabelKey="name"
-			label={$tranFunc('attributes.attrs')}
-			placeholder={$tranFunc('attributes.attrs')}
+			label={$T('attributes.attrs')}
+			placeholder={$T('attributes.attrs')}
 			multiple
 			disabled={loading}
 			bind:value={exportConfig.exportInfo!.attributes}
@@ -162,21 +162,21 @@
 			variableSearchQueryPath="filter.search"
 			optionValueKey="id"
 			optionLabelKey="name"
-			label={$tranFunc('channel.warehouse')}
-			placeholder={$tranFunc('channel.warehouse')}
+			label={$T('channel.warehouse')}
+			placeholder={$T('channel.warehouse')}
 			multiple
 			disabled={loading}
 			bind:value={exportConfig.exportInfo!.warehouses}
 		/>
 		<Select
 			options={ProductFields}
-			label={$tranFunc('product.exportOrganization')}
-			placeholder={$tranFunc('product.exportOrganization')}
+			label={$T('product.exportOrganization')}
+			placeholder={$T('product.exportOrganization')}
 			bind:value={exportConfig.exportInfo!.fields as string[]}
 			multiple
 			disabled={loading}
 		/>
-		<Label label={$tranFunc('product.exportAs')} />
+		<Label label={$T('product.exportAs')} />
 		<div class="space-y-1.5">
 			{#each Object.values(FileTypesEnum) as value, idx (idx)}
 				<RadioButton
@@ -197,23 +197,23 @@
 		{:else if $ProductTotalCountQuery.error}
 			<Alert size="sm" variant="error">{$ProductTotalCountQuery.error.message}</Alert>
 		{:else if $ProductTotalCountQuery.data}
-			<Label label={$tranFunc('product.exportFor')} />
+			<Label label={$T('product.exportFor')} />
 			<div class="space-y-1.5">
 				<RadioButton
 					value={ExportScope.All}
-					label={`${$tranFunc('product.exportScopeAll')} (${$ProductTotalCountQuery.data.products?.totalCount})`}
+					label={`${$T('product.exportScopeAll')} (${$ProductTotalCountQuery.data.products?.totalCount})`}
 					bind:group={exportConfig.scope}
 					size="sm"
 				/>
 				<RadioButton
 					value={ExportScope.Ids}
-					label={`${$tranFunc('product.exportScopeIds')} (${selectedIds.size})`}
+					label={`${$T('product.exportScopeIds')} (${selectedIds.size})`}
 					bind:group={exportConfig.scope}
 					size="sm"
 				/>
 				<RadioButton
 					value={ExportScope.Filter}
-					label={$tranFunc('product.exportScopeFilter')}
+					label={$T('product.exportScopeFilter')}
 					bind:group={exportConfig.scope}
 					size="sm"
 				/>

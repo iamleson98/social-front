@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { SHOP_ORDERS_QUERY } from '$lib/api/admin/orders';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import { SettingCog } from '$lib/components/icons';
@@ -31,30 +31,30 @@
 
 	const ORDER_TABLE_COLUMNS: TableColumnProps<Order, OrderSortField>[] = $derived([
 		{
-			title: $tranFunc('settings.no'),
+			title: $T('settings.no'),
 			child: no,
 			key: OrderSortField.Number,
 		},
 		{
-			title: $tranFunc('common.email'),
+			title: $T('common.email'),
 			child: { render: ({ item }) => item.userEmail },
 		},
 		{
-			title: $tranFunc('settings.payment'),
+			title: $T('settings.payment'),
 			child: payment,
 			key: OrderSortField.Payment,
 		},
 		{
-			title: $tranFunc('settings.status'),
+			title: $T('settings.status'),
 			child: status,
 			key: OrderSortField.Status,
 		},
 		{
-			title: $tranFunc('settings.total'),
+			title: $T('settings.total'),
 			child: total,
 		},
 		{
-			title: $tranFunc('settings.date'),
+			title: $T('settings.date'),
 			child: { render: ({ item }) => dayjs(item.created).format(SitenameTimeFormat) },
 			key: OrderSortField.CreatedAt,
 		},

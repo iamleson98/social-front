@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
-	import type { TranslationKey } from '$i18n/types';
+	import { T } from '$i18n';
 	import { VOUCHER_CODE_LIST_QUERY } from '$lib/api/admin/discount';
 	import CopyButton from '$lib/components/common/copy-button.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
@@ -31,19 +30,19 @@
 
 	const TABLE_COLUMNS: TableColumnProps<AddVoucherCodeProps>[] = $derived([
 		{
-			title: $tranFunc('common.index'),
+			title: $T('common.index'),
 			child: no,
 		},
 		{
-			title: $tranFunc('common.code'),
+			title: $T('common.code'),
 			child: code,
 		},
 		{
-			title: $tranFunc('voucher.usage'),
+			title: $T('voucher.usage'),
 			child: usage,
 		},
 		{
-			title: $tranFunc('settings.status'),
+			title: $T('settings.status'),
 			child: status,
 		},
 	]);
@@ -55,20 +54,20 @@
 
 	const MAX_AUTO_CODES = 50;
 
-	const MAX_ITEMS_EXCEED = $tranFunc('error.itemsExceed', { max: MAX_AUTO_CODES });
+	const MAX_ITEMS_EXCEED = $T('error.itemsExceed', { max: MAX_AUTO_CODES });
 
 	type CodeGenerationType = 'manual' | 'auto';
 
-	const NEW_CODE_TYPES: { value: CodeGenerationType; label: TranslationKey }[] = [
+	const NEW_CODE_TYPES = $derived([
 		{
 			value: 'manual',
-			label: 'common.manual',
+			label: $T('common.manual'),
 		},
 		{
 			value: 'auto',
-			label: 'common.auto',
+			label: $T('common.auto'),
 		},
-	];
+	]);
 
 	const AutoGenerateCodesSchema = number()
 		.nonnegative($CommonState.NonNegativeError)
@@ -180,7 +179,7 @@
 			color="red"
 			variant="light"
 			class="tooltip tooltip-top"
-			data-tip={$tranFunc('common.delAll')}
+			data-tip={$T('common.delAll')}
 			onclick={() => removeCode()}
 		/>
 	</div>
@@ -189,14 +188,14 @@
 {#snippet status({ item }: { item: AddVoucherCodeProps })}
 	<Badge
 		color={item.isActive ? 'green' : 'red'}
-		text={$tranFunc(item.isActive ? 'staff.active' : 'staff.inactive')}
+		text={$T(item.isActive ? 'staff.active' : 'staff.inactive')}
 		rounded
 	/>
 {/snippet}
 
 <div class={SitenameCommonClassName}>
 	<SectionHeader>
-		<div>{$tranFunc('voucher.voucherCodes')}</div>
+		<div>{$T('voucher.voucherCodes')}</div>
 		<Button
 			size="xs"
 			variant="light"
@@ -204,7 +203,7 @@
 			{disabled}
 			onclick={() => (openAddCodeModal = true)}
 		>
-			{$tranFunc('voucher.newCodes')}
+			{$T('voucher.newCodes')}
 		</Button>
 	</SectionHeader>
 
@@ -216,7 +215,7 @@
 		/>
 	{:else if !addVoucherCodes.length && !voucherId}
 		<Alert variant="warning" size="sm">
-			{$tranFunc('voucher.noCodesWarning')}
+			{$T('voucher.noCodesWarning')}
 		</Alert>
 	{/if}
 
@@ -244,25 +243,20 @@
 	onCancel={() => (openAddCodeModal = false)}
 	onOk={handleAddVoucherCodes}
 	size="sm"
-	header={$tranFunc('voucher.newCodes')}
+	header={$T('voucher.newCodes')}
 	disableOkBtn={DisableAddCodeModelOkButton}
 >
 	<div class="grid grid-cols-2 mb-3">
 		{#each NEW_CODE_TYPES as type, idx (idx)}
-			<RadioButton
-				size="sm"
-				label={$tranFunc(type.label)}
-				bind:group={addCodeType}
-				value={type.value}
-			/>
+			<RadioButton size="sm" label={type.label} bind:group={addCodeType} value={type.value} />
 		{/each}
 	</div>
 
 	<div class="space-y-2">
 		{#if addCodeType === 'manual'}
 			<Input
-				label={$tranFunc('voucher.voucherCode')}
-				placeholder={$tranFunc('voucher.voucherCode')}
+				label={$T('voucher.voucherCode')}
+				placeholder={$T('voucher.voucherCode')}
 				required
 				bind:value={manualVoucherCode}
 				variant={manualVoucherCodeError ? 'error' : 'info'}
@@ -272,8 +266,8 @@
 			/>
 		{:else}
 			<Input
-				label={$tranFunc('voucher.noOfCodes')}
-				placeholder={$tranFunc('voucher.noOfCodes')}
+				label={$T('voucher.noOfCodes')}
+				placeholder={$T('voucher.noOfCodes')}
 				max={MAX_AUTO_CODES}
 				min={1}
 				required
@@ -286,8 +280,8 @@
 			/>
 
 			<Input
-				label={$tranFunc('common.prefix')}
-				placeholder={$tranFunc('common.prefix')}
+				label={$T('common.prefix')}
+				placeholder={$T('common.prefix')}
 				bind:value={autoCodePrefix}
 			/>
 		{/if}

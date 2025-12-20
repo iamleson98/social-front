@@ -1,4 +1,4 @@
-import { tranFunc } from '$i18n';
+import { T } from '$i18n';
 import type { TranslationKey } from '$i18n/types';
 import { VoucherTypeEnum } from '$lib/gql/graphql';
 import { derived } from 'svelte/store';
@@ -12,7 +12,7 @@ export const APPLICATION_TYPES: Record<VoucherTypeEnum, TranslationKey> = {
 export type TabName = 'categories' | 'products' | 'collections' | 'variants';
 // export const TABS: TabName[] = ['categories', 'products', 'collections', 'variants'];
 
-export const TABS_OPTIONS = derived(tranFunc, func => [
+export const TABS_OPTIONS = derived(T, func => [
 	{
 		value: 'categories' satisfies TabName,
 		label: func('common.categories'),

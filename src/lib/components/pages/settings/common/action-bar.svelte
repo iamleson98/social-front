@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { ChevronLeft, Send, Trash } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 
@@ -47,7 +47,7 @@
 				onclick={onDeleteClick}
 				endIcon={Trash}
 			>
-				{$tranFunc('btn.delete')}
+				{$T('btn.delete')}
 			</Button>
 		{/if}
 	</div>
@@ -60,16 +60,16 @@
 				href={backButtonUrl}
 				startIcon={ChevronLeft}
 			>
-				{$tranFunc('btn.back')}
+				{$T('btn.back')}
 			</Button>
 		{/if}
 		{#if onUpdateClick}
 			<Button disabled={disableUpdateButton || disabled} onclick={onUpdateClick} endIcon={Send}>
-				{updateButtonText || $tranFunc('btn.update')}
+				{updateButtonText || $T('btn.update')}
 			</Button>
 		{:else if onAddClick}
 			<Button disabled={disableCreateButton || disabled} onclick={onAddClick} endIcon={Send}>
-				{createButtonText || $tranFunc('btn.create')}
+				{createButtonText || $T('btn.create')}
 			</Button>
 		{/if}
 	</div>

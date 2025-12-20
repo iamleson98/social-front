@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { SHIPPING_ZONES_QUERY } from '$lib/api/admin/shipping';
 	import { FilterManager } from '$lib/components/common/filter-box';
 	import {
@@ -20,11 +20,11 @@
 
 	const ShippingZoneColumns: TableColumnProps<ShippingZone>[] = $derived([
 		{
-			title: $tranFunc('common.name'),
+			title: $T('common.name'),
 			child: name,
 		},
 		{
-			title: $tranFunc('common.countries'),
+			title: $T('common.countries'),
 			child: { render: ({ item }) => item.countries.length },
 		},
 	]);

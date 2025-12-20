@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { DRAFT_ORDER_LIST_QUERY } from '$lib/api/admin/orders';
 	import { CUSTOMER_LIST_QUERY } from '$lib/api/admin/users';
 	import type { FilterComponentType, FilterProps } from '$lib/components/common/filter-box';
@@ -33,35 +33,35 @@
 
 	const COLUMNS: TableColumnProps<Order, OrderSortField>[] = $derived([
 		{
-			title: $tranFunc('common.number'),
+			title: $T('common.number'),
 			child: number,
 			key: OrderSortField.Number,
 		},
 		{
-			title: $tranFunc('settings.date'),
+			title: $T('settings.date'),
 			child: date,
 		},
 		{
-			title: $tranFunc('giftcard.form.customer'),
+			title: $T('giftcard.form.customer'),
 			child: customer,
 			key: OrderSortField.Customer,
 		},
 		{
-			title: $tranFunc('settings.total'),
+			title: $T('settings.total'),
 			child: total,
 		},
 	]);
 
 	const FilterOptions: FilterProps<OrderDraftFilterInput> = $derived({
 		customer: {
-			label: $tranFunc('giftcard.form.customer'),
+			label: $T('giftcard.form.customer'),
 			key: 'customer',
 			operations: {
 				eq: customerFilter,
 			},
 		},
 		created: {
-			label: $tranFunc('giftcard.creationDate'),
+			label: $T('giftcard.creationDate'),
 			key: 'created',
 			operations: {
 				gte: dateSingle,
@@ -75,7 +75,7 @@
 {#snippet customerFilter({ onValue, initialValue = '' }: FilterComponentType)}
 	<GraphqlPaginableSelect
 		size="xs"
-		placeholder={$tranFunc('giftcard.form.customer')}
+		placeholder={$T('giftcard.form.customer')}
 		query={CUSTOMER_LIST_QUERY}
 		optionLabelKey="email"
 		optionValueKey="id"
@@ -101,7 +101,7 @@
 	{@const range = initialValue as string[]}
 	<EaseDatePicker
 		size="xs"
-		placeholder={$tranFunc('common.range')}
+		placeholder={$T('common.range')}
 		value={{ start: range[0], end: range[1] }}
 		onchange={(vl) => {
 			range[0] = dayjs(vl.start).format(BASIC_DATE_FORMAT);
@@ -134,9 +134,9 @@
 
 <HeadBar
 	listingPageHref={AppRoute.SETTINGS_ORDERS()}
-	listingPageLabel={$tranFunc('order.draftOders')}
+	listingPageLabel={$T('order.draftOders')}
 	newPageHref={AppRoute.SETTINGS_ORDERS_NEW()}
-	newPageLabel={$tranFunc('settings.newOrder')}
+	newPageLabel={$T('settings.newOrder')}
 	detailRouteID="/[[channel]]/settings/shop-orders/[id]"
 	detailPageLabelGetter={(page) => page.params.id}
 	disabled={loading}

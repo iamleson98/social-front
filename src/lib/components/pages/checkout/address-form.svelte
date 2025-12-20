@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { ADDRESS_VALIDATION_RULES_QUERY } from '$lib/api/account';
 	import { operationStore } from '$lib/api/operation';
 	import CountryByChannelSelect from '$lib/components/common/country-language/country-by-channel-select.svelte';
@@ -55,17 +55,17 @@
 
 	/** NOTE: this code must be use by client side since it contains client translation */
 	const addressFieldMessages: Record<AddressFieldLabel, string> = $derived({
-		city: $tranFunc('common.city'),
-		firstName: $tranFunc('common.firstName'),
-		countryArea: $tranFunc('common.countryArea'),
-		lastName: $tranFunc('common.lastName'),
-		country: $tranFunc('common.country'),
-		cityArea: $tranFunc('common.cityArea'),
-		postalCode: $tranFunc('common.postalCode'),
-		companyName: $tranFunc('common.companyName'),
-		streetAddress1: $tranFunc('common.streetAddress1'),
-		streetAddress2: $tranFunc('common.streetAddress2'),
-		phone: $tranFunc('common.phone'),
+		city: $T('common.city'),
+		firstName: $T('common.firstName'),
+		countryArea: $T('common.countryArea'),
+		lastName: $T('common.lastName'),
+		country: $T('common.country'),
+		cityArea: $T('common.cityArea'),
+		postalCode: $T('common.postalCode'),
+		companyName: $T('common.companyName'),
+		streetAddress1: $T('common.streetAddress1'),
+		streetAddress2: $T('common.streetAddress2'),
+		phone: $T('common.phone'),
 	});
 
 	const ADDRESS_VALIDATION_RULES_STORE = operationStore<
@@ -97,7 +97,7 @@
 
 	const handleSubmit = () => {
 		if (!$ADDRESS_VALIDATION_RULES_STORE.data?.addressValidationRules) {
-			toast.error($tranFunc('checkout.addrRulesUnavailable'));
+			toast.error($T('checkout.addrRulesUnavailable'));
 			return;
 		}
 
@@ -129,7 +129,7 @@
 	<div class="mb-2">
 		<CountryByChannelSelect
 			{channelSlug}
-			label={$tranFunc('settings.chooseCountry')}
+			label={$T('settings.chooseCountry')}
 			bind:value={formValues.countryCode.value}
 			disabled={$ADDRESS_VALIDATION_RULES_STORE.fetching}
 			size="sm"
@@ -187,17 +187,17 @@
 
 		<!-- MARK: address type -->
 		{#if showSetAsDefaultAddressField}
-			<Label label={$tranFunc('settings.setAsDefaultAddress')} size="sm" />
+			<Label label={$T('settings.setAsDefaultAddress')} size="sm" />
 			<div class="flex items-center gap-2">
 				<RadioButton
-					label={$tranFunc('common.billing')}
+					label={$T('common.billing')}
 					value={AddressTypeEnum.Billing}
 					bind:group={addressType}
 					disabled={updatingCheckoutAddresses}
 					size="sm"
 				/>
 				<RadioButton
-					label={$tranFunc('common.shipping')}
+					label={$T('common.shipping')}
 					value={AddressTypeEnum.Shipping}
 					bind:group={addressType}
 					disabled={updatingCheckoutAddresses}
@@ -214,13 +214,13 @@
 				disabled={updatingCheckoutAddresses}
 				loading={updatingCheckoutAddresses}
 			>
-				{$tranFunc('settings.useThisAddr')}
+				{$T('settings.useThisAddr')}
 			</Button>
 		</div>
 	{/if}
 	<div class="text-end mt-2">
 		<Button size="xs" onclick={onCancel} disabled={updatingCheckoutAddresses} color="red">
-			{$tranFunc('common.cancel')}
+			{$T('common.cancel')}
 		</Button>
 	</div>
 </div>

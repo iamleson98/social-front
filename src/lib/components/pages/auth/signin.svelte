@@ -4,7 +4,7 @@
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Checkbox, Input, PasswordInput } from '$lib/components/ui/Input';
-	import { tranFunc } from '$lib/i18n';
+	import { T } from '$lib/i18n';
 	import { UserStoreManager } from '$lib/stores/auth/user';
 	import { AppRoute } from '$lib/utils';
 	import { HTTPStatusSuccess } from '$lib/utils/consts';
@@ -24,20 +24,20 @@
 
 	const signinSchema = object({
 		email: string()
-			.nonempty({ message: $tranFunc('helpText.fieldRequired') })
-			.email({ message: $tranFunc('error.invalidEmail') })
+			.nonempty({ message: $T('helpText.fieldRequired') })
+			.email({ message: $T('error.invalidEmail') })
 			.max(EMAIL_MAX_LENGTH, {
-				message: $tranFunc('error.lengthInvalid', {
-					name: $tranFunc('common.email'),
+				message: $T('error.lengthInvalid', {
+					name: $T('common.email'),
 					min: 1,
 					max: EMAIL_MAX_LENGTH,
 				}),
 			}),
 		password: string()
-			.nonempty({ message: $tranFunc('helpText.fieldRequired') })
+			.nonempty({ message: $T('helpText.fieldRequired') })
 			.max(PASSWORD_MAX_LENGTH, {
-				message: $tranFunc('error.lengthInvalid', {
-					name: $tranFunc('common.password'),
+				message: $T('error.lengthInvalid', {
+					name: $T('common.password'),
 					min: 1,
 					max: PASSWORD_MAX_LENGTH,
 				}),
@@ -68,7 +68,7 @@
 			body: JSON.stringify(signinValue),
 		})
 			.then((res) => res.json())
-			.catch(() => toast.error($tranFunc('error.errorOccured')));
+			.catch(() => toast.error($T('error.errorOccured')));
 
 		loading = false;
 
@@ -79,7 +79,7 @@
 
 		UserStoreManager.setValue(loginResult.data);
 		toast.success(
-			$tranFunc('signin.welcomeBack', {
+			$T('signin.welcomeBack', {
 				name: loginResult.data.firstName + ' ' + loginResult.data.lastName,
 			}),
 		);
@@ -95,7 +95,7 @@
 </script>
 
 <div>
-	<h1 class="p-2 mb-4">{$tranFunc('signin.title')}</h1>
+	<h1 class="p-2 mb-4">{$T('signin.title')}</h1>
 
 	{#if signinError}
 		<Alert variant="error" class="mb-3" size="sm" bordered>
@@ -105,8 +105,8 @@
 	<div class="mb-3">
 		<Input
 			type="email"
-			placeholder={$tranFunc('common.emailPlaceholder')}
-			label={$tranFunc('common.email')}
+			placeholder={$T('common.emailPlaceholder')}
+			label={$T('common.email')}
 			onblur={SchemaValidator.validate}
 			inputDebounceOption={{ onInput: SchemaValidator.validate }}
 			class="mb-2"
@@ -118,8 +118,8 @@
 			subText={$SchemaValidator?.email?.[0]}
 		/>
 		<PasswordInput
-			placeholder={$tranFunc('common.passwordPlaceholder')}
-			label={$tranFunc('common.password')}
+			placeholder={$T('common.passwordPlaceholder')}
+			label={$T('common.password')}
 			onblur={SchemaValidator.validate}
 			inputDebounceOption={{ onInput: SchemaValidator.validate }}
 			bind:value={signinValue.password}
@@ -131,11 +131,11 @@
 			subText={$SchemaValidator?.password?.[0]}
 		/>
 		<a href={AppRoute.AUTH_RESET_PASSWORD()} class="text-xs text-right block text-blue-600 mb-4">
-			{$tranFunc('signin.forgotPassword')}
+			{$T('signin.forgotPassword')}
 		</a>
 
 		<Checkbox
-			label={$tranFunc('signin.rememberMe')}
+			label={$T('signin.rememberMe')}
 			size="sm"
 			class="mb-3"
 			bind:checked={signinValue.rememberMe}
@@ -143,14 +143,14 @@
 		/>
 
 		<Button variant="filled" onclick={handleLogin} size="sm" fullWidth {loading}>
-			{$tranFunc('signin.signinButton')}
+			{$T('signin.signinButton')}
 		</Button>
 	</div>
 
 	<div class="mb-4">
 		<span class="text-xs text-gray-500">
-			{$tranFunc('signin.noAccount')}
-			<a href={AppRoute.AUTH_REGISTER()} class="text-blue-600">{$tranFunc('signup.title')}</a>
+			{$T('signin.noAccount')}
+			<a href={AppRoute.AUTH_REGISTER()} class="text-blue-600">{$T('signup.title')}</a>
 		</span>
 	</div>
 

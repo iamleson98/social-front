@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { RFC3339TimeFormat } from '$lib/api/graphql/utils';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
@@ -25,7 +25,7 @@
 		datetimeRange,
 	};
 
-	const funcTran = $derived(get(tranFunc));
+	const funcTran = $derived(get(T));
 </script>
 
 {#snippet singleNumber({ onValue, initialValue, placeholder }: FilterComponentType)}

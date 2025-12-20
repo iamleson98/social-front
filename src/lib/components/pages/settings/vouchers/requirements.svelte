@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { RadioButton } from '$lib/components/ui/Input';
@@ -31,15 +31,15 @@
 	const REQUIREMENT_TYPES: { value: RequirementType; label: string }[] = [
 		{
 			value: 'none',
-			label: $tranFunc('common.no'),
+			label: $T('common.no'),
 		},
 		{
 			value: 'min_order_value',
-			label: $tranFunc('voucher.minOrderPrice'),
+			label: $T('voucher.minOrderPrice'),
 		},
 		{
 			value: 'min_qty_items',
-			label: $tranFunc('voucher.minQtyItems'),
+			label: $T('voucher.minQtyItems'),
 		},
 	];
 
@@ -109,7 +109,7 @@
 </script>
 
 <div class={SitenameCommonClassName}>
-	<SectionHeader>{$tranFunc('voucher.minRequirement')}</SectionHeader>
+	<SectionHeader>{$T('voucher.minRequirement')}</SectionHeader>
 	<div class="space-y-2.5 mb-2">
 		{#each REQUIREMENT_TYPES as type, idx (idx)}
 			<RadioButton
@@ -125,8 +125,8 @@
 	{#if requirementType === 'min_order_value'}
 		<div class="space-y-2">
 			<div class="grid grid-cols-2 gap-2 text-sm font-semibold text-gray-600">
-				<div>{$tranFunc('product.channel')}</div>
-				<div>{$tranFunc('voucher.minOrderPrice')}</div>
+				<div>{$T('product.channel')}</div>
+				<div>{$T('voucher.minOrderPrice')}</div>
 			</div>
 			{#each activeChannelListings as listing, idx (idx)}
 				<div class="grid grid-cols-2 gap-2">
@@ -135,7 +135,7 @@
 					</div>
 					<Input
 						value={listing.minSpent?.amount}
-						placeholder={$tranFunc('voucher.minOrderPrice')}
+						placeholder={$T('voucher.minOrderPrice')}
 						type="number"
 						min={0}
 						size="sm"
@@ -157,7 +157,7 @@
 	{:else if requirementType === 'min_qty_items'}
 		{@const error = typeof minimumQuantityOfItems === 'number' && minimumQuantityOfItems < 0}
 		<Input
-			placeholder={$tranFunc('voucher.minQtyItems')}
+			placeholder={$T('voucher.minQtyItems')}
 			type="number"
 			min={1}
 			{disabled}

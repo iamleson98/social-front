@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { CHANNELS_QUERY } from '$lib/api/channels';
 	import { operationStore } from '$lib/api/operation';
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
@@ -44,7 +44,7 @@
 
 	/** keeps track of channels already in use with voucher */
 	const ExistingUsedChannelIDs = existingChannelListings.map((item) => item.channel.id);
-	const Max100PercentErr = $tranFunc('channel.valueOutOfRange', { min: '0%', max: '100%' });
+	const Max100PercentErr = $T('channel.valueOutOfRange', { min: '0%', max: '100%' });
 
 	const ChannelListingSchema = array(
 		object({
@@ -62,20 +62,20 @@
 
 	const DISCOUNT_TYPE_SHIPPING = 'Shipping' as DiscountValueTypeEnum;
 
-	const VOUCHER_TYPES = [
+	const VOUCHER_TYPES = $derived([
 		{
 			value: DiscountValueTypeEnum.Fixed,
-			label: $tranFunc('voucher.discountFixed'),
+			label: $T('voucher.discountFixed'),
 		},
 		{
 			value: DiscountValueTypeEnum.Percentage,
-			label: $tranFunc('voucher.discountPercent'),
+			label: $T('voucher.discountPercent'),
 		},
 		{
 			value: DISCOUNT_TYPE_SHIPPING,
-			label: $tranFunc('voucher.discountShip'),
+			label: $T('voucher.discountShip'),
 		},
-	];
+	]);
 
 	let selectedChannelIds = $state<string[]>(ExistingUsedChannelIDs);
 	const SelectedChannelError = $derived(
@@ -86,7 +86,7 @@
 		query: CHANNELS_QUERY,
 		requestPolicy: 'cache-and-network',
 	});
-	const DiscountValue = $tranFunc('voucher.discountValue');
+	const DiscountValue = $T('voucher.discountValue');
 
 	let discountValueErrors = $state<(string[] | undefined)[]>([]);
 
@@ -127,6 +127,8 @@
 						minSpent: {
 							currency: channel.currencyCode,
 							amount: 0,
+							fractionalAmount: 0,
+							fractionDigits: 0,
 						},
 						discountValue: 0,
 						id: '',
@@ -154,14 +156,14 @@
 {:else if $channelsQuery.data}
 	<div class={SitenameCommonClassName}>
 		<div>
-			<SectionHeader>{$tranFunc('settings.availability')}</SectionHeader>
+			<SectionHeader>{$T('settings.availability')}</SectionHeader>
 			<ChannelSelect
-				label={$tranFunc('voucher.specifyChan')}
+				label={$T('voucher.specifyChan')}
 				required
 				multiple
 				{disabled}
 				valueType="id"
-				placeholder={$tranFunc('voucher.specifyChan')}
+				placeholder={$T('voucher.specifyChan')}
 				bind:value={selectedChannelIds}
 				variant={SelectedChannelError ? 'error' : 'info'}
 				subText={SelectedChannelError}
@@ -170,7 +172,7 @@
 		</div>
 
 		<div>
-			<SectionHeader>{$tranFunc('voucher.discountValueType')}</SectionHeader>
+			<SectionHeader>{$T('voucher.discountValueType')}</SectionHeader>
 			<div class="space-y-1.5">
 				{#each VOUCHER_TYPES as type, idx (idx)}
 					<RadioButton label={type.label} bind:group={discountType} {disabled} value={type.value} />
@@ -180,10 +182,10 @@
 
 		{#if discountType !== DISCOUNT_TYPE_SHIPPING}
 			<div class="space-y-2">
-				<SectionHeader>{$tranFunc('common.value')}</SectionHeader>
+				<SectionHeader>{$T('common.value')}</SectionHeader>
 				<div class="grid grid-cols-2 gap-2 text-sm font-semibold text-gray-600">
-					<div>{$tranFunc('product.channel')}</div>
-					<div>{$tranFunc('common.value')}</div>
+					<div>{$T('product.channel')}</div>
+					<div>{$T('common.value')}</div>
 				</div>
 				{#each activeChannelListings as listing, idx (idx)}
 					<div class="grid grid-cols-2 gap-2">

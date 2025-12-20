@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { GIFT_CARD_RESEND_MUTATION, GIFT_CARD_TAGS_QUERY } from '$lib/api/admin/giftcards';
 	import { CUSTOMER_LIST_QUERY } from '$lib/api/admin/users';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
@@ -90,7 +90,7 @@
 
 	const handleResendGiftcard = async () => {
 		if (!giftCardChannel) {
-			toast.error($tranFunc('giftcard.specifyChannel'));
+			toast.error($T('giftcard.specifyChannel'));
 			return;
 		}
 
@@ -111,7 +111,7 @@
 			checkIfGraphqlResultHasError(
 				result,
 				'giftCardResend',
-				$tranFunc('giftcard.events.giftcardResent'),
+				$T('giftcard.events.giftcardResent'),
 			)
 		)
 			return;
@@ -123,9 +123,9 @@
 <div class={SitenameCommonClassName}>
 	<SectionHeader>
 		<div>
-			<span>{$tranFunc('giftcard.title')}</span>
+			<span>{$T('giftcard.title')}</span>
 			<Badge
-				text={$tranFunc(isActive ? 'staff.active' : 'giftcard.status.deactivated')}
+				text={$T(isActive ? 'staff.active' : 'giftcard.status.deactivated')}
 				color={isActive ? 'green' : 'red'}
 				rounded
 				variant="light"
@@ -140,14 +140,14 @@
 				onclick={() => onActiveChange(!isActive)}
 				disabled={loading || disabled}
 			>
-				{$tranFunc(isActive ? 'giftcard.deactivate' : 'giftcard.activate')}
+				{$T(isActive ? 'giftcard.deactivate' : 'giftcard.activate')}
 			</Button>
 			<Button
 				size="xs"
 				endIcon={Send}
 				color="violet"
 				disabled={loading || disabled}
-				onclick={() => (openResendModal = true)}>{$tranFunc('giftcard.resendCode')}</Button
+				onclick={() => (openResendModal = true)}>{$T('giftcard.resendCode')}</Button
 			>
 		</div>
 	</SectionHeader>
@@ -157,8 +157,8 @@
 			size="sm"
 			type="number"
 			min={1}
-			placeholder={$tranFunc('giftcard.form.amount')}
-			label={$tranFunc('giftcard.form.amount')}
+			placeholder={$T('giftcard.form.amount')}
+			label={$T('giftcard.form.amount')}
 			class="flex-2/3"
 			bind:value={balanceAmount}
 			disabled={loading || disabled}
@@ -170,7 +170,7 @@
 		<Input
 			readonly
 			value={balanceCurrency}
-			label={$tranFunc('common.currency')}
+			label={$T('common.currency')}
 			required
 			size="sm"
 			class="flex-1/3"
@@ -187,8 +187,8 @@
 		size="sm"
 		requestPolicy="cache-and-network"
 		multiple
-		label={$tranFunc('giftcard.form.tags')}
-		placeholder={$tranFunc('giftcard.form.tags')}
+		label={$T('giftcard.form.tags')}
+		placeholder={$T('giftcard.form.tags')}
 		bind:value={activeTags}
 		onchange={handleTagsChange}
 		{disabled}
@@ -200,23 +200,23 @@
 <Modal
 	size="sm"
 	open={openResendModal}
-	header={$tranFunc('giftcard.resendCode')}
+	header={$T('giftcard.resendCode')}
 	onClose={() => (openResendModal = false)}
 	onCancel={() => (openResendModal = false)}
-	okText={$tranFunc('giftcard.resendCode')}
+	okText={$T('giftcard.resendCode')}
 	onOk={handleResendGiftcard}
 	disableElements={loading || disabled}
 >
 	<div class="flex flex-col gap-2">
 		<Alert size="sm">
-			{$tranFunc('giftcard.resendCodeAlert')}
+			{$T('giftcard.resendCodeAlert')}
 		</Alert>
 		<ChannelSelect
 			size="sm"
 			bind:value={giftCardChannel}
 			disabled={loading || disabled}
-			label={$tranFunc('giftcard.form.channel')}
-			placeholder={$tranFunc('giftcard.form.channel')}
+			label={$T('giftcard.form.channel')}
+			placeholder={$T('giftcard.form.channel')}
 			required
 		/>
 		<GraphqlPaginableSelect
@@ -226,12 +226,12 @@
 			optionLabelKey="email"
 			optionValueKey="email"
 			size="sm"
-			label={$tranFunc('giftcard.form.customer')}
-			placeholder={$tranFunc('giftcard.form.customer')}
+			label={$T('giftcard.form.customer')}
+			placeholder={$T('giftcard.form.customer')}
 			requestPolicy="cache-and-network"
 			bind:value={customerEmailOfGiftcard}
 			disabled={loading || disabled}
-			subText={$tranFunc('giftcard.form.customerSubtext')}
+			subText={$T('giftcard.form.customerSubtext')}
 			onchange={SchemaHandler.validate}
 		/>
 	</div>

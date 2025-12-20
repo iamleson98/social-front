@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { WAREHOUSE_SHIPPING_ZONES_QUERY } from '$lib/api/admin/shipping';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Badge } from '$lib/components/ui/Badge';
@@ -28,7 +28,7 @@
 
 	const ShippingColumns: TableColumnProps<ShippingZone>[] = $derived([
 		{
-			title: $tranFunc('common.name'),
+			title: $T('common.name'),
 			child: { render: ({ item }) => item.name },
 		},
 	]);

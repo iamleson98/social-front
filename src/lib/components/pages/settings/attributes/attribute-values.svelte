@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import {
 		ATTRIBUTE_VALUE_CREATE_MUTATION,
 		ATTRIBUTE_VALUE_UPDATE_MUTATION,
@@ -76,12 +76,12 @@
 	let tableRef = $state<GraphqlPaginableTableInterface>();
 
 	const MetricSystems = Object.values(MetricSystem).map<SelectOption>((value) => ({
-		label: $tranFunc(`attributes.${value}`),
+		label: $T(`attributes.${value}`),
 		value,
 	}));
 
 	const MetricUnits = Object.values(MetricUnit).map<SelectOption>((value) => ({
-		label: $tranFunc(`attributes.${value}`),
+		label: $T(`attributes.${value}`),
 		value,
 	}));
 
@@ -91,18 +91,18 @@
 			child: selectValue,
 		},
 		{
-			title: $tranFunc('common.name'),
+			title: $T('common.name'),
 			child: { render: ({ item }) => item.name },
 		},
 		{
 			title:
 				inputType === AttributeInputTypeEnum.Swatch
-					? $tranFunc('common.value')
-					: $tranFunc('common.slug'),
+					? $T('common.value')
+					: $T('common.slug'),
 			child: value,
 		},
 		{
-			title: $tranFunc('common.action'),
+			title: $T('common.action'),
 			child: action,
 		},
 	]);
@@ -343,7 +343,7 @@
 	<div class={SitenameCommonClassName}>
 		{#if inputType !== AttributeInputTypeEnum.Numeric}
 			<SectionHeader>
-				<div>{$tranFunc('attributes.attrVals')}</div>
+				<div>{$T('attributes.attrVals')}</div>
 
 				<div class="flex items-center gap-1">
 					{#if selectedAttributes.size}
@@ -366,7 +366,7 @@
 						onclick={handleClickAddValue}
 						disabled={loading || !inputType}
 					>
-						{$tranFunc('product.addValue')}
+						{$T('product.addValue')}
 					</Button>
 				</div>
 			</SectionHeader>
@@ -388,29 +388,29 @@
 			{/if}
 		{:else}
 			<SectionHeader>
-				<div>{$tranFunc('attributes.selectUnit')}</div>
+				<div>{$T('attributes.selectUnit')}</div>
 			</SectionHeader>
 
 			<div class="grid grid-cols-3 gap-2">
 				<Select
-					label={$tranFunc('attributes.system')}
-					placeholder={$tranFunc('attributes.system')}
+					label={$T('attributes.system')}
+					placeholder={$T('attributes.system')}
 					options={MetricSystems}
 					size="sm"
 					bind:value={metricSystem}
 					disabled={loading}
 				/>
 				<Select
-					label={$tranFunc('attributes.unitsOf')}
-					placeholder={$tranFunc('attributes.unitsOf')}
+					label={$T('attributes.unitsOf')}
+					placeholder={$T('attributes.unitsOf')}
 					options={MetricUnits}
 					size="sm"
 					bind:value={metricUnitsOf}
 					disabled={loading || !metricSystem}
 				/>
 				<Select
-					label={$tranFunc('giftcard.form.unit')}
-					placeholder={$tranFunc('giftcard.form.unit')}
+					label={$T('giftcard.form.unit')}
+					placeholder={$T('giftcard.form.unit')}
 					size="sm"
 					disabled={loading || !metricUnitsOf}
 					bind:value={unit as string}
@@ -424,14 +424,14 @@
 <Modal
 	size="sm"
 	open={openUpsertModal}
-	header={$tranFunc('attributes.upsertValue')}
+	header={$T('attributes.upsertValue')}
 	disableElements={loading}
 	onOk={() => (valueItemToEdit ? handleUpdateAttributeValue() : handleCreateAttributeValue())}
 	onClose={() => (openUpsertModal = false)}
 	onCancel={() => (openUpsertModal = false)}
 	disableOkBtn={shouldDisableOkButton}
-	okText={valueItemToEdit ? $tranFunc('btn.update') : $tranFunc('btn.add')}
-	cancelText={$tranFunc('common.cancel')}
+	okText={valueItemToEdit ? $T('btn.update') : $T('btn.add')}
+	cancelText={$T('common.cancel')}
 >
 	{#if valueItemToEdit}
 		<!-- edit value -->
@@ -445,16 +445,16 @@
 			/>
 		{:else if inputType === AttributeInputTypeEnum.Dropdown}
 			<Input
-				label={$tranFunc('placeholders.valuePlaceholder')}
-				placeholder={$tranFunc('placeholders.valuePlaceholder')}
+				label={$T('placeholders.valuePlaceholder')}
+				placeholder={$T('placeholders.valuePlaceholder')}
 				bind:value={valueItemToEdit.name}
 				{disabled}
 			/>
 		{:else if inputType === AttributeInputTypeEnum.Multiselect}
 			<Input
 				{disabled}
-				label={$tranFunc('placeholders.valuePlaceholder')}
-				placeholder={$tranFunc('placeholders.valuePlaceholder')}
+				label={$T('placeholders.valuePlaceholder')}
+				placeholder={$T('placeholders.valuePlaceholder')}
 				bind:value={valueItemToEdit.name}
 			/>
 		{/if}
@@ -471,15 +471,15 @@
 		{:else if inputType === AttributeInputTypeEnum.Dropdown}
 			<Input
 				{disabled}
-				label={$tranFunc('placeholders.valuePlaceholder')}
-				placeholder={$tranFunc('placeholders.valuePlaceholder')}
+				label={$T('placeholders.valuePlaceholder')}
+				placeholder={$T('placeholders.valuePlaceholder')}
 				bind:value={valueItemToCreate.name}
 			/>
 		{:else if inputType === AttributeInputTypeEnum.Multiselect}
 			<Input
 				{disabled}
-				label={$tranFunc('placeholders.valuePlaceholder')}
-				placeholder={$tranFunc('placeholders.valuePlaceholder')}
+				label={$T('placeholders.valuePlaceholder')}
+				placeholder={$T('placeholders.valuePlaceholder')}
 				bind:value={valueItemToCreate.name}
 			/>
 		{/if}

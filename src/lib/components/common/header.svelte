@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { afterNavigate, beforeNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { USER_ME_QUERY_STORE } from '$lib/api';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import {
@@ -108,19 +108,19 @@
 
 		<!-- search -->
 		<div>
-			<Input placeholder={$tranFunc('common.search')} startIcon={Search} size="sm" />
+			<Input placeholder={$T('common.search')} startIcon={Search} size="sm" />
 		</div>
 	</div>
 	<div class="w-1/2 flex justify-between">
 		<div class="flex gap-1">
 			<a href={buildHomePageLink()}>
 				<Button variant="light" size="sm" startIcon={MingcuteHome}>
-					<span class="tablet:hidden!">{$tranFunc('pages.home')}</span>
+					<span class="tablet:hidden!">{$T('pages.home')}</span>
 				</Button>
 			</a>
 			<a href={AppRoute.TRENDING()}>
 				<Button variant="light" size="sm" startIcon={IonFlame}>
-					<span class="tablet:hidden!">{$tranFunc('pages.trending')}</span>
+					<span class="tablet:hidden!">{$T('pages.trending')}</span>
 				</Button>
 			</a>
 		</div>
@@ -171,15 +171,15 @@
 					</MenuItem>
 					<div class="bg-gray-200 my-1 h-px"></div>
 					<MenuItem href={AppRoute.ME()} startIcon={UserCog}>
-						{$tranFunc('common.settings')}
+						{$T('common.settings')}
 					</MenuItem>
-					<MenuItem startIcon={Logout} onclick={() => handleLogout($tranFunc)}>
-						{$tranFunc('common.logout')}
+					<MenuItem startIcon={Logout} onclick={() => handleLogout($T)}>
+						{$T('common.logout')}
 					</MenuItem>
 				</DropDown>
 			{:else if !$UserStoreManager && !page.url.pathname.startsWith('/auth')}
 				<a href={AppRoute.AUTH_SIGNIN()}>
-					<Button variant="filled" size="sm">{$tranFunc('signin.title')}</Button>
+					<Button variant="filled" size="sm">{$T('signin.title')}</Button>
 				</a>
 			{/if}
 		</div>

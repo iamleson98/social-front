@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import {
@@ -44,9 +44,9 @@
 
 		if (!order.shippingMethodName) {
 			if (!order.collectionPointName) {
-				return $tranFunc('payment.shippingDoesNotApply');
+				return $T('payment.shippingDoesNotApply');
 			}
-			return $tranFunc('payment.clickAndCollectShippingMethod');
+			return $T('payment.clickAndCollectShippingMethod');
 		}
 
 		return order.shippingMethodName;
@@ -56,25 +56,25 @@
 <div class={SitenameCommonClassName}>
 	<SectionHeader>
 		<div class="flex items-center gap-2">
-			<span>{$tranFunc('payment.paymentTitle')}</span>
+			<span>{$T('payment.paymentTitle')}</span>
 			<Badge {...paymentStatusBadgeClass(order.paymentStatus)} rounded />
 		</div>
 		{#if order.paymentStatus && order.status !== OrderStatus.Canceled && (order.actions.includes(OrderAction.Capture) || order.actions.includes(OrderAction.Refund) || order.actions.includes(OrderAction.Void) || order.actions.includes(OrderAction.MarkAsPaid))}
 			<div class="flex gap-2">
 				{#if order.actions.includes(OrderAction.Capture)}
-					<Button size="xs" onclick={onCapture}>{$tranFunc('payment.capture')}</Button>
+					<Button size="xs" onclick={onCapture}>{$T('payment.capture')}</Button>
 				{/if}
 				{#if order.actions.includes(OrderAction.Refund)}
 					<Button size="xs" onclick={() => (openRefundModal = true)}>
-						{$tranFunc('payment.refund')}
+						{$T('payment.refund')}
 					</Button>
 				{/if}
 				{#if order.actions.includes(OrderAction.Void)}
-					<Button size="xs" onclick={onVoid}>{$tranFunc('payment.void')}</Button>
+					<Button size="xs" onclick={onVoid}>{$T('payment.void')}</Button>
 				{/if}
 				{#if order.actions.includes(OrderAction.MarkAsPaid)}
 					<Button size="xs" onclick={() => (openMarkAsPaidModal = true)}>
-						{$tranFunc('payment.markAsPaid')}
+						{$T('payment.markAsPaid')}
 					</Button>
 				{/if}
 			</div>
@@ -86,9 +86,9 @@
 		{#each order.discounts as discount (discount.id)}
 			<div class="flex justify-between">
 				<div class="flex gap-2">
-					<span>{$tranFunc('payment.discount')}</span>
+					<span>{$T('payment.discount')}</span>
 					<span>
-						{$tranFunc(
+						{$T(
 							discount.type === OrderDiscountType.Manual
 								? 'payment.includedInPrices'
 								: 'payment.includedInSubtotal',
@@ -101,7 +101,7 @@
 
 		<!-- Subtotal -->
 		<div class="flex justify-between items-center">
-			<span>{$tranFunc('payment.subtotal')}</span>
+			<span>{$T('payment.subtotal')}</span>
 			{#if order.subtotal?.gross}
 				<PriceDisplay {...order.subtotal.gross} />
 			{:else}
@@ -112,7 +112,7 @@
 		<!-- Shipping -->
 		<div class="flex justify-between items-center">
 			<div class="flex flex-row gap-5 items-center">
-				<span>{$tranFunc('payment.shipping')}</span>
+				<span>{$T('payment.shipping')}</span>
 				<small class="text-gray-500">{deliveryMethodName}</small>
 			</div>
 			{#if order.shippingPrice?.gross}
@@ -125,9 +125,9 @@
 		<!-- Taxes -->
 		<div class="flex justify-between items-center">
 			<div>
-				<span>{$tranFunc('payment.taxes')}</span>
+				<span>{$T('payment.taxes')}</span>
 				{#if order.total.tax.amount > 0}
-					<small class="text-gray-500 ml-2">{$tranFunc('payment.includedInPrices')}</small>
+					<small class="text-gray-500 ml-2">{$T('payment.includedInPrices')}</small>
 				{/if}
 			</div>
 			{#if order.total.tax}
@@ -139,7 +139,7 @@
 
 		<!-- Total -->
 		<div class="flex justify-between items-center font-semibold">
-			<span>{$tranFunc('payment.total')}</span>
+			<span>{$T('payment.total')}</span>
 			{#if order.total?.gross}
 				<PriceDisplay {...order.total.gross} />
 			{:else}
@@ -163,7 +163,7 @@
 
 		<!-- Total Authorized -->
 		<div class="flex justify-between items-center">
-			<span>{$tranFunc('payment.preauthorized')}</span>
+			<span>{$T('payment.preauthorized')}</span>
 			{#if order.totalAuthorized}
 				<PriceDisplay {...order.totalAuthorized} />
 			{:else}
@@ -173,7 +173,7 @@
 
 		<!-- Captured -->
 		<div class="flex justify-between items-center">
-			<span>{$tranFunc('payment.captured')}</span>
+			<span>{$T('payment.captured')}</span>
 			{#if order.totalCharged}
 				<PriceDisplay {...order.totalCharged} />
 			{:else}
@@ -184,7 +184,7 @@
 		<!-- Refunded -->
 		{#if refundedAmount?.amount}
 			<div class="flex justify-between items-center">
-				<span>{$tranFunc('payment.refunded')}</span>
+				<span>{$T('payment.refunded')}</span>
 				<PriceDisplay {...refundedAmount} />
 			</div>
 		{/if}
@@ -194,9 +194,9 @@
 			class="flex justify-between items-center font-semibold"
 			class:text-green-600={order.totalBalance?.amount === 0}
 		>
-			<span>{$tranFunc('payment.outstanding')}</span>
+			<span>{$T('payment.outstanding')}</span>
 			{#if order.totalBalance?.amount === 0}
-				<span>{$tranFunc('payment.settled')}</span>
+				<span>{$T('payment.settled')}</span>
 			{:else}
 				<PriceDisplay {...order.totalBalance} />
 			{/if}
@@ -210,8 +210,8 @@
 	header="Mark order as paid"
 	size="sm"
 	bind:open={openMarkAsPaidModal}
-	okText={$tranFunc('common.ok')}
-	cancelText={$tranFunc('common.cancel')}
+	okText={$T('common.ok')}
+	cancelText={$T('common.cancel')}
 	onOk={async () => {
 		const ok = await OrderUtilsInstance.markAsPaid(order.id, markAsPaidReferenceTransaction);
 		if (ok) {

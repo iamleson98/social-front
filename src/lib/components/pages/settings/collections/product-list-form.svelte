@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import {
 		ASSIGN_PRODUCTS_TO_COLLECTION_MUTATION,
 		COLLECTION_PRODUCTS_QUERY,
@@ -46,23 +46,23 @@
 
 	const PRODUCT_COLUMNS: TableColumnProps<Product, ProductOrderField>[] = $derived([
 		{
-			title: $tranFunc('common.pic'),
+			title: $T('common.pic'),
 			child: picture,
 		},
 		{
-			title: $tranFunc('common.name'),
+			title: $T('common.name'),
 			child: name,
 		},
 		{
-			title: $tranFunc('product.category'),
+			title: $T('product.category'),
 			child: category,
 		},
 		{
-			title: $tranFunc('settings.availability'),
+			title: $T('settings.availability'),
 			child: availability,
 		},
 		{
-			title: $tranFunc('settings.action'),
+			title: $T('settings.action'),
 			child: action,
 		},
 	]);
@@ -91,7 +91,7 @@
 			checkIfGraphqlResultHasError(
 				result,
 				'collectionReorderProducts',
-				$tranFunc('collection.successReorder'),
+				$T('collection.successReorder'),
 			)
 		)
 			return;
@@ -121,7 +121,7 @@
 				},
 			});
 			keys.push('collectionAddProducts');
-			successMessages.push($tranFunc('collection.successAssignedPrds'));
+			successMessages.push($T('collection.successAssignedPrds'));
 		}
 		if (removeProductIds.length) {
 			tasks.push({
@@ -132,7 +132,7 @@
 				},
 			});
 			keys.push('collectionRemoveProducts');
-			successMessages.push($tranFunc('collection.successUnassignedPrds'));
+			successMessages.push($T('collection.successUnassignedPrds'));
 		}
 
 		if (!tasks.length) return;
@@ -198,7 +198,7 @@
 	<Popover placement="left">
 		{#snippet trigger({ onclick, onclose })}
 			<Badge
-				text={`${channels.length} ${$tranFunc('product.channel')}`}
+				text={`${channels.length} ${$T('product.channel')}`}
 				color={channels.length ? 'green' : 'orange'}
 				variant={channels.length ? 'filled' : 'light'}
 				onmouseenter={onclick}
@@ -208,8 +208,8 @@
 		{/snippet}
 		<div class="py-1 px-2 rounded-lg border border-gray-200 bg-white w-fit shadow-sm">
 			<div class="flex flex-nowrap font-medium gap-1 text-sm">
-				<span class="flex-1">{$tranFunc('product.channel')}</span>
-				<span class="flex-1">{$tranFunc('settings.status')}</span>
+				<span class="flex-1">{$T('product.channel')}</span>
+				<span class="flex-1">{$T('settings.status')}</span>
 			</div>
 			{#each channels as chan, idx (idx)}
 				<div class="flex flex-nowrap mt-1 gap-1">
@@ -217,8 +217,8 @@
 					<div class="flex-1">
 						<Badge
 							text={chan.published
-								? $tranFunc('product.published')
-								: $tranFunc('product.unpublished')}
+								? $T('product.published')
+								: $T('product.unpublished')}
 							size="xs"
 							color={chan.published ? 'green' : 'red'}
 						/>

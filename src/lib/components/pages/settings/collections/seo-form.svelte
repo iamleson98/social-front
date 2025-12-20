@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Input, TextArea } from '$lib/components/ui/Input';
 	import type { SeoInput } from '$lib/gql/graphql';
@@ -36,10 +36,10 @@
 			.nonempty($CommonState.FieldRequiredError)
 			.max(
 				DESCRIPTION_MAX_LENGTH,
-				$tranFunc('error.lengthInvalid', {
+				$T('error.lengthInvalid', {
 					min: 1,
 					max: DESCRIPTION_MAX_LENGTH,
-					name: $tranFunc('settings.description'),
+					name: $T('settings.description'),
 				}),
 			),
 	});
@@ -62,7 +62,7 @@
 </script>
 
 <div class={SitenameCommonClassName}>
-	<SectionHeader>{$tranFunc('common.seoInfo')}</SectionHeader>
+	<SectionHeader>{$T('common.seoInfo')}</SectionHeader>
 	<Input
 		label="Slug"
 		placeholder="Slug"
@@ -75,9 +75,9 @@
 		subText={$SchemaHandler.slug?.[0]}
 	/>
 	<Input
-		label={$tranFunc('settings.name')}
+		label={$T('settings.name')}
 		bind:value={seo.title}
-		placeholder={$tranFunc('settings.name')}
+		placeholder={$T('settings.name')}
 		required
 		inputDebounceOption={{ onInput: SchemaHandler.validate }}
 		onblur={SchemaHandler.validate}
@@ -87,8 +87,8 @@
 	/>
 	<TextArea
 		bind:value={seo.description}
-		placeholder={$tranFunc('settings.description')}
-		label={$tranFunc('settings.description')}
+		placeholder={$T('settings.description')}
+		label={$T('settings.description')}
 		required
 		{disabled}
 		inputClass="min-h-20"

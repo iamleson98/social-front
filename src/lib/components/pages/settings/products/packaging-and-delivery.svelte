@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { MdiWeightKg } from '$lib/components/icons';
 	import { Input, Label } from '$lib/components/ui/Input';
 	import type { ProductInput } from '$lib/gql/graphql';
@@ -29,13 +29,13 @@
 {/snippet}
 
 <div class={SitenameCommonClassName}>
-	<Label required requiredAtPos="end" label={$tranFunc('common.packaging')} />
+	<Label required requiredAtPos="end" label={$T('common.packaging')} />
 
 	<div class="flex items-start gap-2">
 		<Input
 			type="number"
-			placeholder={$tranFunc('attributes.Weight')}
-			label={$tranFunc('attributes.Weight')}
+			placeholder={$T('attributes.Weight')}
+			label={$T('attributes.Weight')}
 			bind:value={weight}
 			startIcon={MdiWeightKg}
 			size="sm"
@@ -45,8 +45,8 @@
 		/>
 		<Input
 			type="number"
-			placeholder={$tranFunc('product.length')}
-			label={$tranFunc('product.length')}
+			placeholder={$T('product.length')}
+			label={$T('product.length')}
 			onchange={(evt) => handleMetaChange(0, evt.currentTarget.value.trim())}
 			size="sm"
 			action={cm}
@@ -56,8 +56,8 @@
 		/>
 		<Input
 			type="number"
-			placeholder={$tranFunc('product.width')}
-			label={$tranFunc('product.width')}
+			placeholder={$T('product.width')}
+			label={$T('product.width')}
 			onchange={(evt) => handleMetaChange(1, evt.currentTarget.value.trim())}
 			size="sm"
 			action={cm}
@@ -67,8 +67,8 @@
 		/>
 		<Input
 			type="number"
-			placeholder={$tranFunc('product.height')}
-			label={$tranFunc('product.height')}
+			placeholder={$T('product.height')}
+			label={$T('product.height')}
 			onchange={(evt) => handleMetaChange(2, evt.currentTarget.value.trim())}
 			size="sm"
 			action={cm}

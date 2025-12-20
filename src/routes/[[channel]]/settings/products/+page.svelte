@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { PRODUCT_BULK_DELETE, PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
 	import { operationStore } from '$lib/api/operation';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
@@ -62,25 +62,25 @@
 			child: itemSelect,
 		},
 		{
-			title: $tranFunc('common.pic'),
+			title: $T('common.pic'),
 			child: pic,
 		},
 		{
-			title: $tranFunc('settings.name'),
+			title: $T('settings.name'),
 			child: name,
 			key: ProductOrderField.Name,
 			width: 300,
 		},
 		{
-			title: $tranFunc('settings.availability'),
+			title: $T('settings.availability'),
 			child: availability,
 		},
 		{
-			title: $tranFunc('settings.prices'),
+			title: $T('settings.prices'),
 			child: prices,
 		},
 		{
-			title: $tranFunc('settings.createdAt'),
+			title: $T('settings.createdAt'),
 			child: createdAt,
 			key: ProductOrderField.CreatedAt,
 		},
@@ -164,7 +164,7 @@
 		{#if selectedProducts.size}
 			<IconButton
 				class="tooltip tooltip-left"
-				data-tip={$tranFunc('btn.delete')}
+				data-tip={$T('btn.delete')}
 				disabled={$ProductBulkDeleteStore.fetching}
 				size="sm"
 				icon={Trash}

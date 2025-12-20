@@ -13,7 +13,7 @@
 	 * TODO: If this is supported now, please refactor my code. Thank you.
 	 */
 
-	/** please provide arguments under form of `$tranFunc(...)` */
+	/** please provide arguments under form of `$T(...)` */
 	export const COLLECTION_COLUMNS = (
 		pictureTitle: string,
 		nameTitle: string,
@@ -33,7 +33,7 @@
 		},
 	];
 
-	/** please provide arguments under form of `$tranFunc(...)` */
+	/** please provide arguments under form of `$T(...)` */
 	export const PRODUCT_COLUMNS = (
 		pictureTitle: string,
 		productNameTitle: string,
@@ -58,7 +58,7 @@
 		},
 	];
 
-	/** please provide arguments under form of `$tranFunc(...)` */
+	/** please provide arguments under form of `$T(...)` */
 	export const CATEGORY_COLUMNS = (
 		categoryImageTitle: string,
 		categoryNameTitle: string,
@@ -78,7 +78,7 @@
 		},
 	];
 
-	/** please provide arguments under form of `$tranFunc(...)` */
+	/** please provide arguments under form of `$T(...)` */
 	export const VARIANT_COLUMNS = (
 		variantImageTitle: string,
 		productNameTitle: string,

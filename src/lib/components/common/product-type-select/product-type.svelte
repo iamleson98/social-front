@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { PRODUCT_TYPES_QUERY } from '$lib/api/admin/product';
 	import { GraphqlPaginableSelect, type SelectProps } from '$lib/components/ui/select';
 	import type { QueryProductTypesArgs } from '$lib/gql/graphql';
@@ -19,7 +19,7 @@
 	});
 
 	const handleBlur = () => {
-		error = value ? undefined : $tranFunc('helpText.fieldRequired');
+		error = value ? undefined : $T('helpText.fieldRequired');
 	};
 </script>
 
@@ -35,7 +35,7 @@
 		resultKey="productTypes"
 		optionValueKey="id"
 		optionLabelKey="name"
-		label={$tranFunc('product.prdType')}
+		label={$T('product.prdType')}
 		required
 		bind:value
 		variant={!ok && error ? 'error' : 'info'}

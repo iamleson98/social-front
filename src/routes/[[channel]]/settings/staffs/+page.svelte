@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { STAFFS_QUERY } from '$lib/api/admin/staff';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import FilterButton from '$lib/components/pages/settings/staff/filter-button.svelte';
@@ -19,21 +19,21 @@
 
 	const STAFF_COLUMNS: TableColumnProps<User, UserSortField>[] = $derived([
 		{
-			title: $tranFunc('staff.avatar'),
+			title: $T('staff.avatar'),
 			child: avatar,
 		},
 		{
-			title: $tranFunc('staff.fullName'),
+			title: $T('staff.fullName'),
 			key: UserSortField.FirstName,
 			child: fullName,
 		},
 		{
-			title: $tranFunc('staff.email'),
+			title: $T('staff.email'),
 			child: { render: ({ item }) => item.email },
 			key: UserSortField.Email,
 		},
 		{
-			title: $tranFunc('staff.status'),
+			title: $T('staff.status'),
 			child: status,
 		},
 	]);
@@ -56,7 +56,7 @@
 
 {#snippet status({ item }: { item: User })}
 	<Badge
-		text={item.isActive ? $tranFunc('staff.active') : $tranFunc('staff.inactive')}
+		text={item.isActive ? $T('staff.active') : $T('staff.inactive')}
 		color={item.isActive ? 'green' : 'red'}
 	/>
 {/snippet}

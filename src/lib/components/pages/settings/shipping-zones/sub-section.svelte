@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { WAREHOUSE_LIST_QUERY } from '$lib/api/admin/warehouse';
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
@@ -52,14 +52,14 @@
 
 <div class="space-y-2 w-4/10">
 	<div class={SitenameCommonClassName}>
-		<SectionHeader>{$tranFunc('channel.channels')}</SectionHeader>
+		<SectionHeader>{$T('channel.channels')}</SectionHeader>
 
 		<Alert size="sm" bordered>
-			{$tranFunc('ship.assignChansHelpText')}
+			{$T('ship.assignChansHelpText')}
 		</Alert>
 
 		<ChannelSelect
-			label={$tranFunc('channel.channels')}
+			label={$T('channel.channels')}
 			required
 			valueType="id"
 			bind:value={channelIds}
@@ -70,17 +70,17 @@
 	</div>
 
 	<div class={SitenameCommonClassName}>
-		<SectionHeader>{$tranFunc('channel.warehouse')}</SectionHeader>
+		<SectionHeader>{$T('channel.warehouse')}</SectionHeader>
 
 		<Alert size="sm" bordered>
-			{$tranFunc('ship.selectWarehouseHelpText')}
+			{$T('ship.selectWarehouseHelpText')}
 		</Alert>
 
 		<GraphqlPaginableSelect
 			optionValueKey="id"
 			optionLabelKey="name"
 			query={WAREHOUSE_LIST_QUERY}
-			label={$tranFunc('channel.warehouse')}
+			label={$T('channel.warehouse')}
 			required
 			bind:value={warehouseIds}
 			onchange={handleSelectionChange}
@@ -97,9 +97,9 @@
 
 		<data class="text-right text-xs">
 			<div>
-				{$tranFunc('common.notFound')}?
+				{$T('common.notFound')}?
 				<a href={AppRoute.SETTINGS_CONFIGS_WAREHOUSE_NEW()} class="link font-medium"
-					>{$tranFunc('btn.create')}</a
+					>{$T('btn.create')}</a
 				>
 			</div>
 		</data>

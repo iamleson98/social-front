@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { PERMISSION_GROUP_LIST_QUERY } from '$lib/api/admin/users';
 	import { FilterManager } from '$lib/components/common/filter-box';
 	import {
@@ -16,13 +16,13 @@
 
 	const PermissionGroupColumns: TableColumnProps<Group, PermissionGroupSortField>[] = $derived([
 		{
-			title: $tranFunc('common.name'),
+			title: $T('common.name'),
 			child: name,
 			key: PermissionGroupSortField.Name,
 			width: '50%',
 		},
 		{
-			title: $tranFunc('settings.users'),
+			title: $T('settings.users'),
 			child: { render: ({ item }) => item.users?.length || 0 },
 		},
 	]);

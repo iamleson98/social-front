@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { WAREHOUSE_CREATE_MUTATION } from '$lib/api/admin/warehouse';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import type { GeneralMetadataEditorRef } from '$lib/components/pages/settings/common';
@@ -48,7 +48,7 @@
 		loading = false;
 		if (hasErr) return;
 
-		toast.success($tranFunc('common.createSuccess'));
+		toast.success($T('common.createSuccess'));
 		await goto(AppRoute.SETTINGS_CONFIGS_WAREHOUSE_DETAILS(createdWarehouseID));
 	};
 </script>

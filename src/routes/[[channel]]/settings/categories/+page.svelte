@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { CATEGORIES_LIST_QUERY } from '$lib/api/admin/category';
 	import { FilterManager } from '$lib/components/common/filter-box';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
@@ -12,26 +12,26 @@
 
 	const COLUMNS: TableColumnProps<Category, CategorySortField>[] = $derived([
 		{
-			title: $tranFunc('common.pic'),
+			title: $T('common.pic'),
 			child: picture,
 		},
 		{
-			title: $tranFunc('common.name'),
+			title: $T('common.name'),
 			child: name,
 			key: CategorySortField.Name,
 		},
 		{
-			title: $tranFunc('collection.noOfPrds'),
+			title: $T('collection.noOfPrds'),
 			child: products,
 			key: CategorySortField.ProductCount,
 		},
 		{
-			title: $tranFunc('category.noOfChildren'),
+			title: $T('category.noOfChildren'),
 			child: children,
 			key: CategorySortField.SubcategoryCount,
 		},
 		{
-			title: $tranFunc('common.editAt'),
+			title: $T('common.editAt'),
 			child: updatedAt,
 		},
 	]);

@@ -1,5 +1,5 @@
 <script lang="ts" generics="T">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { ChevronDown, Icon } from '$lib/components/icons';
 	import Accordion from './accordion.svelte';
 	import type { AccordionListProps } from './types';
@@ -48,7 +48,7 @@
 					onclick={handleShowMore}
 					onkeyup={(evt) => evt.key === 'Enter' && handleShowMore()}
 				>
-					<span>{$tranFunc('common.more')}</span>
+					<span>{$T('common.more')}</span>
 					<Icon icon={ChevronDown} />
 				</li>
 			{/if}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
@@ -106,7 +106,7 @@
 {/snippet}
 
 <SectionHeader class="mb-3">
-	<div>{$tranFunc('collection.prdsInCol')}</div>
+	<div>{$T('collection.prdsInCol')}</div>
 	<Button
 		size="xs"
 		onclick={handleClickOpenProductListModal}
@@ -114,14 +114,14 @@
 		variant="light"
 		endIcon={Plus}
 	>
-		{$tranFunc('collection.assignPrd')}
+		{$T('collection.assignPrd')}
 	</Button>
 </SectionHeader>
 
 <Modal
-	header={$tranFunc('collection.assignPrd')}
+	header={$T('collection.assignPrd')}
 	open={openAssignProductModal}
-	okText={$tranFunc('common.assign')}
+	okText={$T('common.assign')}
 	onOk={handleAssignproducts}
 	onCancel={() => (openAssignProductModal = false)}
 	onClose={() => (openAssignProductModal = false)}
@@ -130,7 +130,7 @@
 	disableElements={shouldDisable}
 >
 	<Input
-		placeholder={$tranFunc('collection.searchPrd')}
+		placeholder={$T('collection.searchPrd')}
 		class="w-full mb-2"
 		startIcon={Search}
 		bind:value={filterAllProductsVariables.filter!.search}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import {
 		CHECKOUT_LINES_DELETE_MUTATION,
 		CHECKOUT_LINES_UPDATE_MUTATION,
@@ -127,7 +127,7 @@
 		// in case user want to remove the item
 		if (quantity <= 0) {
 			ALERT_MODAL_STORE.openAlertModal({
-				content: $tranFunc('common.confirmRemoveProduct'),
+				content: $T('common.confirmRemoveProduct'),
 				onOk: handleDeleteCheckoutLine,
 				onCancel: () => {
 					quantity = 1;

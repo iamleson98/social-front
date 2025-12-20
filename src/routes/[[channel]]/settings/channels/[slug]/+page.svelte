@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { afterNavigate, goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { CHANNEL_DELETE_MUTATION, CHANNEL_UPDATE_MUTATION } from '$lib/api/admin/channels';
 	import { CHANNEL_DETAILS_QUERY, CHANNELS_QUERY } from '$lib/api/channels';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
@@ -258,24 +258,24 @@
 
 	<Modal
 		open={openDeleteModal}
-		header={$tranFunc('channel.confirmDelChannel', { id: channelValues.name })}
+		header={$T('channel.confirmDelChannel', { id: channelValues.name })}
 		onOk={handleDeleteChannel}
 		onCancel={() => (openDeleteModal = false)}
 		onClose={() => (openDeleteModal = false)}
 		closeOnOutsideClick
 		size="sm"
-		cancelText={$tranFunc('common.cancel')}
-		okText={$tranFunc('btn.delete')}
+		cancelText={$T('common.cancel')}
+		okText={$T('btn.delete')}
 	>
 		<Select
 			options={replaceChannelOptions}
 			bind:value={channelToReplaceId}
-			label={$tranFunc('channel.chanToReplace')}
-			placeholder={$tranFunc('channel.chanToReplace')}
+			label={$T('channel.chanToReplace')}
+			placeholder={$T('channel.chanToReplace')}
 		/>
 
 		<Alert variant="info" size="sm" bordered class="mt-3">
-			{$tranFunc('channel.replaceChanHelpTxt')}
+			{$T('channel.replaceChanHelpTxt')}
 		</Alert>
 	</Modal>
 {/if}

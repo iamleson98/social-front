@@ -12,7 +12,7 @@
 		ProductChannelListingUpdateInput,
 		Query,
 	} from '$lib/gql/graphql';
-	import { tranFunc } from '$lib/i18n';
+	import { T } from '$lib/i18n';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import ErrorMsg from './error-msg.svelte';
 	import { onMount } from 'svelte';
@@ -133,7 +133,7 @@
 </script>
 
 <div class={['p-2 rounded-lg', !ok && 'bg-red-50 border-red-200!']}>
-	<Label required requiredAtPos="end" label={$tranFunc('product.channel')} />
+	<Label required requiredAtPos="end" label={$T('product.channel')} />
 
 	{#if $CHANNELS_QUERY_STORE.fetching}
 		<TableSkeleton numOfRows={2} numColumns={4} />
@@ -157,7 +157,7 @@
 						<Checkbox
 							bind:checked={channelListing.isPublished}
 							size="sm"
-							label={$tranFunc('product.published')}
+							label={$T('product.published')}
 							class="mb-2"
 							disabled={loading}
 						/>
@@ -170,7 +170,7 @@
 										showYears: { min: 2020 },
 										showMonths: true,
 									}}
-									label={$tranFunc('product.promptPublicationTime')}
+									label={$T('product.promptPublicationTime')}
 									disabled={loading}
 								/>
 							</div>
@@ -178,14 +178,14 @@
 						<Checkbox
 							bind:checked={channelListing.isAvailableForPurchase}
 							size="sm"
-							label={$tranFunc('product.availForPurchase')}
+							label={$T('product.availForPurchase')}
 							class="mb-2"
 							disabled={loading}
 						/>
 						{#if !channelListing.isAvailableForPurchase}
 							<div transition:fade>
 								<EaseDatePicker
-									label={$tranFunc('product.promptAvailTime')}
+									label={$T('product.promptAvailTime')}
 									size="xs"
 									onchange={(value) => (channelListing.availableForPurchaseAt = value.date)}
 									allowSelectMonthYears={{
@@ -202,4 +202,4 @@
 		</div>
 	{/if}
 </div>
-<ErrorMsg error={!ok ? $tranFunc('error.thereIsError') : undefined} />
+<ErrorMsg error={!ok ? $T('error.thereIsError') : undefined} />

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Input } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
@@ -22,8 +22,8 @@
 	header="Mark order as paid"
 	size="sm"
 	bind:open
-	okText={$tranFunc('common.ok')}
-	cancelText={$tranFunc('common.cancel')}
+	okText={$T('common.ok')}
+	cancelText={$T('common.cancel')}
 	onOk={async () => {
 		const ok = await OrderUtilsInstance.markAsPaid(order.id, transactionReference);
 		if (ok) {

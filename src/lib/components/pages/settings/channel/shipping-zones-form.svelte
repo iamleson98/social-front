@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { SHIPPING_ZONES_QUERY } from '$lib/api/admin/shipping';
 	import { operationStore } from '$lib/api/operation';
 	import { Plus, Trash } from '$lib/components/icons';
@@ -73,11 +73,11 @@
 
 <Accordion
 	open
-	header={`${$tranFunc('channel.shipZones')} (${shippingZonesOfChannel.length})`}
+	header={`${$T('channel.shipZones')} (${shippingZonesOfChannel.length})`}
 	class="mb-3 {SitenameCommonClassName}"
 >
 	<Alert variant="info" size="sm" bordered class="mb-3">
-		{$tranFunc('channel.shipZonesAlert')}
+		{$T('channel.shipZonesAlert')}
 	</Alert>
 
 	{#if $shippingZonesOfChanelQuery.fetching}
@@ -117,7 +117,7 @@
 				requestPolicy="network-only"
 				size="sm"
 				{disabled}
-				label={$tranFunc('channel.selectShipZone')}
+				label={$T('channel.selectShipZone')}
 				multiple
 				value={addShippingZones}
 				onchange={handleAddShippingZones}
@@ -131,7 +131,7 @@
 			{disabled}
 			onclick={() => (showAddShippingZones = true)}
 		>
-			{$tranFunc('channel.addShipZone')}
+			{$T('channel.addShipZone')}
 		</Button>
 	</div>
 </Accordion>

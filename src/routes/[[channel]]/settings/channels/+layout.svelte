@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import HeadBar from '$lib/components/pages/settings/common/head-bar.svelte';
 	import { AppRoute } from '$lib/utils';
 	import type { Snippet } from 'svelte';
@@ -13,9 +13,9 @@
 
 <HeadBar
 	listingPageHref={AppRoute.SETTINGS_CONFIGS_CHANNELS()}
-	listingPageLabel={$tranFunc('channel.channels')}
+	listingPageLabel={$T('channel.channels')}
 	newPageHref={AppRoute.SETTINGS_CONFIGS_CHANNEL_NEW()}
-	newPageLabel={$tranFunc('channel.new')}
+	newPageLabel={$T('channel.new')}
 	detailPageLabelGetter={(page) => page.params.slug}
 	detailRouteID="/[[channel]]/settings/channels/[slug]"
 />

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import {
 		WAREHOUSE_DELETE_MUTATION,
 		WAREHOUSE_DETAIL_QUERY,
@@ -69,7 +69,7 @@
 
 	const handleClickDelete = async () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: $tranFunc('common.confirmDel'),
+			content: $T('common.confirmDel'),
 			onOk: async () => {
 				loading = true;
 
@@ -82,7 +82,7 @@
 
 				loading = false;
 
-				if (checkIfGraphqlResultHasError(result, 'deleteWarehouse', $tranFunc('common.delSuccess')))
+				if (checkIfGraphqlResultHasError(result, 'deleteWarehouse', $T('common.delSuccess')))
 					return;
 
 				await goto(AppRoute.SETTINGS_CONFIGS_WAREHOUSES());
@@ -111,7 +111,7 @@
 		loading = false;
 		if (hasErr) return;
 
-		toast.success($tranFunc('common.editSuccess'));
+		toast.success($T('common.editSuccess'));
 		warehouseQuery.reexecute({
 			context: { requestPolicy: 'network-only' },
 			variables: { id: page.params.id },

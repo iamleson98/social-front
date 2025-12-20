@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
@@ -224,15 +224,15 @@
 		{@render OrderSummaryLine(
 			'Shipping',
 			order.shippingPrice.gross,
-			getDeliveryMethodName(order, $tranFunc),
+			getDeliveryMethodName(order, $T),
 		)}
-		{@render OrderSummaryLine('Taxes', order.total.tax, getTaxTypeText(order, $tranFunc))}
+		{@render OrderSummaryLine('Taxes', order.total.tax, getTaxTypeText(order, $T))}
 
 		{#each order.discounts as discount, idx (idx)}
 			{@render OrderSummaryLine(
 				'Discount',
 				discount.total,
-				getDiscountTypeLabel(discount, $tranFunc),
+				getDiscountTypeLabel(discount, $T),
 			)}
 		{/each}
 		{#if giftcardAmount && giftcardAmount > 0 && order.giftCards.length}

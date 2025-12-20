@@ -77,8 +77,8 @@ There are 2 types of dependencies
 - `I18n` - We have our own i18n support. It may be not completed, but light weight and efficient enough for our use within this project.
 The translation files are located at `src/lib/i18n` folder. For now we support `English` and `Vietnamse`. <br/>
  1) **usage in markup code (.svelte fies)**
- - There is a `tranFunc` function, globally declared as an readonly store.
- - You can simply use it like: `<h1>{$tranFunc('<level_1.level ...>')}</h1>`. This function is type-safe, meaning it will show you auto hint completion feature as you type in your keys.
+ - There is a `T` function, globally declared as an readonly store.
+ - You can simply use it like: `<h1>{$T('<level_1.level ...>')}</h1>`. This function is type-safe, meaning it will show you auto hint completion feature as you type in your keys.
  2) **usage in backend code**
  - For the backend code. E.g `+page.server.ts`, `+layout.server.ts` files. we provide function `serverSideTranslate`. This function require `event` param, which is simply provided to you in those server code `load` functions. The mechanism is it gets a cookie with `key='language'`, and perform translates.
  3) **Translation keys declarations**
@@ -86,7 +86,7 @@ The translation files are located at `src/lib/i18n` folder. For now we support `
  If there seems to be no translation that suits your need, it's time to define your new one in `src/lib/i18n` files.
 
  - NOTE: after you have done with your definition. `E.g: {your_new_key: "Translation value"}`, you must run this command: `npm run i18n-gen`.
- This smart command checks for the missings in your translation files, auto add the translation key `"your_new_key"` to the type system, so next calls to `$tranFunc()` will auto hint your defined keys :)) Pretty useful, right ?
+ This smart command checks for the missings in your translation files, auto add the translation key `"your_new_key"` to the type system, so next calls to `$T()` will auto hint your defined keys :)) Pretty useful, right ?
 
 ## Bugs and feature requests
 

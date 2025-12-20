@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
 	import FileInputContainer from '$lib/components/common/file-input-container.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
@@ -36,7 +36,7 @@
 		loading,
 	}: Props = $props();
 
-	const MAX_ERROR = $tranFunc('error.itemsExceed', { max: 1 });
+	const MAX_ERROR = $T('error.itemsExceed', { max: 1 });
 	const SEO_DESCRIPTION_MAX = 300;
 
 	const categorySchema = object({
@@ -47,7 +47,7 @@
 			.nonempty($CommonState.FieldRequiredError)
 			.max(
 				SEO_DESCRIPTION_MAX,
-				$tranFunc('error.lengthInvalid', { max: SEO_DESCRIPTION_MAX, min: 1 }),
+				$T('error.lengthInvalid', { max: SEO_DESCRIPTION_MAX, min: 1 }),
 			),
 		media: array(any()).max(1, MAX_ERROR).nonempty($CommonState.FieldRequiredError),
 		description: object({
@@ -76,12 +76,12 @@
 </script>
 
 <div class={SitenameCommonClassName}>
-	<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
+	<SectionHeader>{$T('common.generalInfo')}</SectionHeader>
 	<Input
-		placeholder={$tranFunc('common.name')}
+		placeholder={$T('common.name')}
 		disabled={loading}
 		bind:value={name}
-		label={$tranFunc('common.name')}
+		label={$T('common.name')}
 		required
 		inputDebounceOption={{ onInput: SchemaHandler.validate }}
 		onblur={SchemaHandler.validate}
@@ -89,9 +89,9 @@
 		subText={$SchemaHandler.name?.[0]}
 	/>
 	<EditorJSComponent
-		label={$tranFunc('settings.description')}
+		label={$T('settings.description')}
 		required
-		placeholder={$tranFunc('settings.description')}
+		placeholder={$T('settings.description')}
 		bind:value={description}
 		onchange={SchemaHandler.validate}
 		variant={$SchemaHandler.description?.length ? 'error' : 'info'}
@@ -101,7 +101,7 @@
 	<FileInputContainer
 		accept="image/*"
 		max={1}
-		label={$tranFunc('common.pic')}
+		label={$T('common.pic')}
 		required
 		bind:medias={media}
 		onchange={SchemaHandler.validate}
@@ -109,10 +109,10 @@
 		variant={$SchemaHandler.media?.length ? 'error' : 'info'}
 		subText={$SchemaHandler.media?.[0]}
 	/>
-	<SectionHeader>{$tranFunc('common.seoInfo')}</SectionHeader>
+	<SectionHeader>{$T('common.seoInfo')}</SectionHeader>
 	<Input
-		placeholder={$tranFunc('common.slug')}
-		label={$tranFunc('common.slug')}
+		placeholder={$T('common.slug')}
+		label={$T('common.slug')}
 		required
 		bind:value={slug}
 		inputDebounceOption={{ onInput: SchemaHandler.validate }}
@@ -122,8 +122,8 @@
 		disabled={loading}
 	/>
 	<Input
-		placeholder={$tranFunc('settings.title')}
-		label={$tranFunc('settings.title')}
+		placeholder={$T('settings.title')}
+		label={$T('settings.title')}
 		required
 		bind:value={seoTitle}
 		inputDebounceOption={{ onInput: SchemaHandler.validate }}
@@ -134,8 +134,8 @@
 	/>
 	<TextArea
 		required
-		label={$tranFunc('settings.description')}
-		placeholder={$tranFunc('settings.description')}
+		label={$T('settings.description')}
+		placeholder={$T('settings.description')}
 		bind:value={seoDescription}
 		inputDebounceOption={{ onInput: SchemaHandler.validate }}
 		onblur={SchemaHandler.validate}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Plus, Trash } from '$lib/components/icons';
 	import { Badge } from '$lib/components/ui/Badge';
@@ -32,19 +32,19 @@
 
 	const RuleColumns: TableColumnProps<PartialShippingMethodPostalCodeRule>[] = $derived([
 		{
-			title: $tranFunc('common.startAt'),
+			title: $T('common.startAt'),
 			child: start,
 		},
 		{
-			title: $tranFunc('common.endAt'),
+			title: $T('common.endAt'),
 			child: end,
 		},
 		{
-			title: $tranFunc('ship.postalCodeInclusionType'),
+			title: $T('ship.postalCodeInclusionType'),
 			child: inclusionTypeSnippet,
 		},
 		{
-			title: $tranFunc('common.action'),
+			title: $T('common.action'),
 			child: action,
 		},
 	]);
@@ -114,9 +114,9 @@
 
 <div class={SitenameCommonClassName}>
 	<SectionHeader>
-		<div>{$tranFunc('ship.postalCodeRules')}</div>
+		<div>{$T('ship.postalCodeRules')}</div>
 		<Button size="xs" endIcon={Plus} variant="light" onclick={() => (openAddRuleRangeModal = true)}>
-			{$tranFunc('ship.addRange')}
+			{$T('ship.addRange')}
 		</Button>
 	</SectionHeader>
 
@@ -124,7 +124,7 @@
 </div>
 
 <Modal
-	header={$tranFunc('ship.addRange')}
+	header={$T('ship.addRange')}
 	open={openAddRuleRangeModal}
 	size="sm"
 	onClose={() => {
@@ -142,38 +142,38 @@
 		<div class="space-y-2">
 			<RadioButton
 				value={PostalCodeRuleInclusionTypeEnum.Include}
-				label={$tranFunc('common.include')}
+				label={$T('common.include')}
 				bind:group={inclusionType}
-				subText={$tranFunc('ship.includeHelpText')}
+				subText={$T('ship.includeHelpText')}
 			/>
 			<RadioButton
 				value={PostalCodeRuleInclusionTypeEnum.Exclude}
-				label={$tranFunc('common.exclude')}
+				label={$T('common.exclude')}
 				bind:group={inclusionType}
-				subText={$tranFunc('ship.excludeHelpText')}
+				subText={$T('ship.excludeHelpText')}
 			/>
 		</div>
 
 		<div class="grid grid-cols-2 gap-2">
 			<Input
 				type="text"
-				label={$tranFunc('common.startAt')}
+				label={$T('common.startAt')}
 				bind:value={addCodeRangeInput.start}
 				inputDebounceOption={{ onInput: validateDuplication }}
 				required
 				variant={ruleDuplicated ? 'error' : 'info'}
 				subText={ruleDuplicated
-					? $tranFunc('common.duplicate', { val: addCodeRangeInput.start })
+					? $T('common.duplicate', { val: addCodeRangeInput.start })
 					: undefined}
 			/>
 			<Input
 				type="text"
-				label={$tranFunc('common.endAt')}
+				label={$T('common.endAt')}
 				bind:value={addCodeRangeInput.end}
 				inputDebounceOption={{ onInput: validateDuplication }}
 				variant={ruleDuplicated ? 'error' : 'info'}
 				subText={ruleDuplicated
-					? $tranFunc('common.duplicate', { val: addCodeRangeInput.end })
+					? $T('common.duplicate', { val: addCodeRangeInput.end })
 					: undefined}
 			/>
 		</div>

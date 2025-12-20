@@ -9,7 +9,7 @@
 	import GuestShippingAddress from './guest-shipping-address.svelte';
 	import PaymentForm from './payment-form.svelte';
 	import UserShippingAddress from './user-shipping-address.svelte';
-	import { tranFunc } from '$lib/i18n';
+	import { T } from '$lib/i18n';
 
 	type Props = {
 		checkout: Checkout;
@@ -26,7 +26,7 @@
 
 <div class="w-1/2 tablet:w-full flex flex-col gap-2">
 	<div class="bg-white rounded-lg p-3 border border-gray-200">
-		<SectionHeader>{$tranFunc('checkout.account')}</SectionHeader>
+		<SectionHeader>{$T('checkout.account')}</SectionHeader>
 
 		{#if $UserStoreManager}
 			<div>{$UserStoreManager.email}</div>
@@ -36,16 +36,16 @@
 					<Signin onSuccess={toggleLogin} hideSocial />
 				{:else}
 					<div>
-						<Input placeholder={$tranFunc('checkout.enterEmail')} startIcon={Email} />
+						<Input placeholder={$T('checkout.enterEmail')} startIcon={Email} />
 					</div>
 					<div class="text-right text-xs">
-						{$tranFunc('checkout.alreadyHasAccount')}
+						{$T('checkout.alreadyHasAccount')}
 						<span
 							tabindex="0"
 							role="button"
 							onkeydown={(evt) => evt.key === 'Enter' && toggleLogin()}
 							class="text-blue-600 font-semibold hover:underline cursor-pointer"
-							onclick={toggleLogin}>{$tranFunc('checkout.signin')}</span
+							onclick={toggleLogin}>{$T('checkout.signin')}</span
 						>
 					</div>
 				{/if}
@@ -55,7 +55,7 @@
 
 	{#if checkout.isShippingRequired}
 		<div class="mt-2 bg-white p-3 rounded-lg border border-gray-200">
-			<SectionHeader>{$tranFunc('checkout.deliveryAddress')}</SectionHeader>
+			<SectionHeader>{$T('checkout.deliveryAddress')}</SectionHeader>
 
 			{#if $UserStoreManager}
 				<UserShippingAddress {checkout} />

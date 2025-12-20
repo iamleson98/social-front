@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { CATEGORY_CHILDREN_LIST_QUERY } from '$lib/api/admin/category';
 	import { PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
@@ -25,30 +25,30 @@
 
 	const CATEGORY_CHILDREN_COLUMNS: TableColumnProps<Category, any>[] = $derived([
 		{
-			title: $tranFunc('common.name'),
+			title: $T('common.name'),
 			child: categoryName,
 		},
 		{
-			title: $tranFunc('collection.noOfPrds'),
+			title: $T('collection.noOfPrds'),
 			child: noOfProducts,
 		},
 		{
-			title: $tranFunc('product.subCategories'),
+			title: $T('product.subCategories'),
 			child: childCount,
 		},
 	]);
 
 	const PRODUCTS_COLUMNS: TableColumnProps<Product, any>[] = $derived([
 		{
-			title: $tranFunc('common.pic'),
+			title: $T('common.pic'),
 			child: image,
 		},
 		{
-			title: $tranFunc('common.name'),
+			title: $T('common.name'),
 			child: productName,
 		},
 		{
-			title: $tranFunc('common.editAt'),
+			title: $T('common.editAt'),
 			child: productUpdatedAt,
 		},
 	]);
@@ -86,7 +86,7 @@
 
 <div class="space-y-2 w-4/10 tablet:w-full">
 	<div class={[SitenameCommonClassName]}>
-		<SectionHeader>{$tranFunc('product.subCategories')}</SectionHeader>
+		<SectionHeader>{$T('product.subCategories')}</SectionHeader>
 		<div class="overflow-x-auto">
 			<GraphqlPaginableTable
 				query={CATEGORY_CHILDREN_LIST_QUERY}
@@ -100,7 +100,7 @@
 	</div>
 
 	<div class={[SitenameCommonClassName]}>
-		<SectionHeader>{$tranFunc('product.products')}</SectionHeader>
+		<SectionHeader>{$T('product.products')}</SectionHeader>
 		<div class="overflow-x-auto">
 			<GraphqlPaginableTable
 				query={PRODUCT_LIST_QUERY_ADMIN}

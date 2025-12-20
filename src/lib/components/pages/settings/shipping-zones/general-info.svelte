@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Input, TextArea, Toggle } from '$lib/components/ui/Input';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
@@ -45,12 +45,12 @@
 
 <div class={SitenameCommonClassName}>
 	<SectionHeader>
-		<dir>{$tranFunc('common.generalInfo')}</dir>
+		<dir>{$T('common.generalInfo')}</dir>
 	</SectionHeader>
 
 	<Input
 		required
-		label={$tranFunc('common.name')}
+		label={$T('common.name')}
 		bind:value={name}
 		{disabled}
 		variant={$SchemaHandler.name?.length ? 'error' : 'info'}
@@ -60,7 +60,7 @@
 	/>
 	<TextArea
 		required
-		label={$tranFunc('settings.description')}
+		label={$T('settings.description')}
 		bind:value={description}
 		inputClass="min-h-20"
 		variant={$SchemaHandler.description?.length ? 'error' : 'info'}
@@ -69,14 +69,14 @@
 		onblur={SchemaHandler.validate}
 		{disabled}
 	/>
-	<Toggle label={$tranFunc('common.isDefault')} bind:checked={isDefault} {disabled} />
+	<Toggle label={$T('common.isDefault')} bind:checked={isDefault} {disabled} />
 
 	<SectionHeader>
-		<div>{$tranFunc('common.countries')} ({countries.length})</div>
+		<div>{$T('common.countries')} ({countries.length})</div>
 	</SectionHeader>
 
 	<Select
-		label={$tranFunc('common.countries')}
+		label={$T('common.countries')}
 		multiple
 		required
 		bind:value={countries}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { ProductMediaType } from '$lib/gql/graphql';
 	import type { SocialVariant } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
@@ -143,7 +143,7 @@
 				>
 					<div class="text-gray-700 flex items-center text-xs mb-1">
 						<Input
-							placeholder={$tranFunc('settings.alt')}
+							placeholder={$T('settings.alt')}
 							size="xs"
 							value={medias[idx].alt}
 							onblur={validate}
@@ -161,7 +161,7 @@
 					</div>
 					{#if media.file}
 						<div class="text-gray-700 flex items-center text-xs">
-							<span class="font-semibold w-1/4">{$tranFunc('settings.size')}:</span>
+							<span class="font-semibold w-1/4">{$T('settings.size')}:</span>
 							<span>{formatBytes(media.file.size)}</span>
 						</div>
 					{/if}
@@ -178,7 +178,7 @@
 							color="red"
 							variant="light"
 							class="tooltip tooltip-left"
-							data-tip={$tranFunc('btn.delete')}
+							data-tip={$T('btn.delete')}
 							onclick={() => deleteFileItem(idx)}
 							{disabled}
 						/>
@@ -193,7 +193,7 @@
 				<FileInput
 					{accept}
 					class="tooltip tooltip-top"
-					data-tip={$tranFunc('common.addFile')}
+					data-tip={$T('common.addFile')}
 					multiple
 					onChange={handleFileSelect}
 					icon={FileUpload}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { CHECKOUT_ADD_LINE_MUTATION } from '$lib/api/checkout';
 	import { operationStore, type OperationResultStore } from '$lib/api/operation';
 	import UserAddress from '$lib/components/common/user-address/user-address.svelte';
@@ -62,7 +62,7 @@
 
 	let quantitySelectedErr = $derived.by(() => {
 		if (quantitySelected < 1 || quantitySelected % 1 !== 0)
-			return $tranFunc('error.positiveInteger');
+			return $T('error.positiveInteger');
 		return undefined;
 	});
 
@@ -146,14 +146,14 @@
 		<Badge
 			size="sm"
 			startIcon={TablerShieldCheckFilled}
-			text={$tranFunc('product.badgeAuthentic')}
+			text={$T('product.badgeAuthentic')}
 			variant="light"
 			rounded
 		/>
 		<Badge
 			size="sm"
 			startIcon={TablerRewindBackward30}
-			text={$tranFunc('product.badge30DaysReturn')}
+			text={$T('product.badge30DaysReturn')}
 			variant="light"
 			rounded
 			color="grape"
@@ -161,7 +161,7 @@
 		<Badge
 			size="sm"
 			startIcon={TablerCirclePercentage}
-			text={$tranFunc('product.badgeTopDeal')}
+			text={$T('product.badgeTopDeal')}
 			variant="light"
 			rounded
 			color="red"
@@ -169,13 +169,13 @@
 		<Badge
 			size="sm"
 			startIcon={TruckDelivery}
-			text={$tranFunc('product.badgeFreeShip')}
+			text={$T('product.badgeFreeShip')}
 			variant="light"
 			rounded
 			color="green"
 		/>
 		{#if productInformation.assignedAttributes.some((attr) => attr.attribute.slug === 'brand')}
-			<Badge size="xs" text={$tranFunc('product.brand')} variant="light" rounded color="blue" />
+			<Badge size="xs" text={$T('product.brand')} variant="light" rounded color="blue" />
 		{/if}
 	</div>
 
@@ -199,9 +199,9 @@
 		<div class="w-px h-6 bg-gray-300"></div>
 
 		<IconButton
-			aria-label={$tranFunc('product.reportProduct')}
+			aria-label={$T('product.reportProduct')}
 			class="tooltip tooltip-bottom"
-			data-tip={$tranFunc('product.reportProduct')}
+			data-tip={$T('product.reportProduct')}
 			icon={TablerMessageReportFilled}
 			size="xs"
 			color="gray"
@@ -211,9 +211,9 @@
 		<div class="w-px h-6 bg-gray-300"></div>
 
 		<IconButton
-			aria-label={$tranFunc('product.contactSeller')}
+			aria-label={$T('product.contactSeller')}
 			class="tooltip tooltip-bottom"
-			data-tip={$tranFunc('product.contactSeller')}
+			data-tip={$T('product.contactSeller')}
 			icon={TablerMessageCircleFilled}
 			size="xs"
 			color="blue"
@@ -248,7 +248,7 @@
 
 	<!-- MARK: variants -->
 	<div class="flex flex-row items-center mb-4 text-gray-600">
-		<span class="w-1/6 text-sm">{$tranFunc('product.variants')}</span>
+		<span class="w-1/6 text-sm">{$T('product.variants')}</span>
 		<div class="w-5/6">
 			<div class="flex gap-2 flex-wrap flex-row text-blue-600 text-sm">
 				{#each productInformation.variants || [] as variant, idx (idx)}
@@ -273,7 +273,7 @@
 
 			{#if showAlertSelectVariant}
 				<div class="w-1/2 mt-2">
-					<Alert size="xs" bordered variant="warning">{$tranFunc('error.noVariantSelected')}</Alert>
+					<Alert size="xs" bordered variant="warning">{$T('error.noVariantSelected')}</Alert>
 				</div>
 			{/if}
 		</div>
@@ -281,7 +281,7 @@
 
 	<!-- MARK: quantity selection -->
 	<div class="flex flex-row items-center mb-4 text-gray-600">
-		<span class="w-1/6 text-sm">{$tranFunc('product.quantity')}</span>
+		<span class="w-1/6 text-sm">{$T('product.quantity')}</span>
 		<div class="w-5/6 flex items-center flex-wrap flex-row">
 			<div class="flex items-start gap-1">
 				<IconButton
@@ -318,7 +318,7 @@
 			<!-- MARK: quantity available -->
 			{#if selectedVariant}
 				<span class="text-gray-600 text-sm ml-2" transition:fade={{ duration: 100 }}>
-					{$tranFunc('product.variantAvailable', {
+					{$T('product.variantAvailable', {
 						quantity: selectedVariant.quantityLimitPerCustomer || selectedVariant.quantityAvailable,
 					})}
 				</span>
@@ -329,7 +329,7 @@
 	<!-- MARK: delivery -->
 	{#if !useForPreviewModal}
 		<div class="flex flex-row items-center mb-4 text-gray-600">
-			<span class="w-1/6 text-sm">{$tranFunc('product.delivery')}</span>
+			<span class="w-1/6 text-sm">{$T('product.delivery')}</span>
 			<div class="w-5/6 text-blue-700 font-normal flex items-center">
 				{#if $UserStoreManager?.addresses.length}
 					<UserAddress class="w-1/2 relative!" brief address={$UserStoreManager.addresses[0]}>
@@ -344,7 +344,7 @@
 						/>
 					</UserAddress>
 				{:else}
-					<div class="w-3/4">{$tranFunc('product.chooseAddress')}</div>
+					<div class="w-3/4">{$T('product.chooseAddress')}</div>
 				{/if}
 			</div>
 		</div>
@@ -353,10 +353,10 @@
 	<!-- customer policy -->
 	{#if !useForPreviewModal}
 		<div class="flex flex-row items-center mb-6 text-gray-600">
-			<span class="w-1/6 text-sm">{$tranFunc('product.prdPolicy')}</span>
+			<span class="w-1/6 text-sm">{$T('product.prdPolicy')}</span>
 			<div class="w-5/6 flex items-center flex-wrap flex-row">
 				<div class="w-2/3">
-					<Alert variant="info" size="sm">{$tranFunc('product.prdPolicyDetail')}</Alert>
+					<Alert variant="info" size="sm">{$T('product.prdPolicyDetail')}</Alert>
 				</div>
 			</div>
 		</div>
@@ -374,9 +374,9 @@
 				size="md"
 				disabled={$checkoutAddLineStore?.fetching}
 			>
-				<span>{$tranFunc('product.addToCart')}</span>
+				<span>{$T('product.addToCart')}</span>
 			</Button>
-			<Button size="md" variant="outline">{$tranFunc('product.buyNow')}</Button>
+			<Button size="md" variant="outline">{$T('product.buyNow')}</Button>
 		</div>
 	</div>
 </div>
@@ -384,7 +384,7 @@
 {#if !useForPreviewModal}
 	<Modal
 		open={openDeliveryModal}
-		header={$tranFunc('helpText.chooseDeliveryAddress')}
+		header={$T('helpText.chooseDeliveryAddress')}
 		closeOnEscape
 		closeOnOutsideClick
 		onClose={() => (openDeliveryModal = false)}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import HeadBar from '$lib/components/pages/settings/common/head-bar.svelte';
 	import { AppRoute } from '$lib/utils';
 	import type { Snippet } from 'svelte';
@@ -13,9 +13,9 @@
 
 <HeadBar
 	listingPageHref={AppRoute.SETTINGS_CONFIGS_COLLECTIONS()}
-	listingPageLabel={$tranFunc('common.collections')}
+	listingPageLabel={$T('common.collections')}
 	newPageHref={AppRoute.SETTINGS_CONFIGS_COLLECTION_NEW()}
-	newPageLabel={$tranFunc('collection.newCol')}
+	newPageLabel={$T('collection.newCol')}
 	detailRouteID="/[[channel]]/settings/collections/[id]"
 	detailPageLabelGetter={(page) => page.params.id}
 />

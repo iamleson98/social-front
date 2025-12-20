@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { Dots, Edit, Trash } from '$lib/components/icons';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
@@ -45,31 +45,31 @@
 
 	const ORDER_TABLE_COLUMNS: TableColumnProps<SupportTicket, string>[] = $derived([
 		{
-			title: $tranFunc('settings.title'),
+			title: $T('settings.title'),
 			child: title,
 		},
 		{
-			title: $tranFunc('settings.tag'),
+			title: $T('settings.tag'),
 			child: tag,
 		},
 		{
-			title: $tranFunc('settings.status'),
+			title: $T('settings.status'),
 			child: status,
 		},
 		{
-			title: $tranFunc('settings.date'),
+			title: $T('settings.date'),
 			child: { render: ({ item }) => dayjs(item.createdAt).format(SitenameTimeFormat) },
 			key: 'createdAt',
 		},
 		{
-			title: $tranFunc('settings.action'),
+			title: $T('settings.action'),
 			child: action,
 		},
 	]);
 
 	const handleConfirmDeleteTicket = (id: string) => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: $tranFunc('settings.confirmDelRequest', { id }),
+			content: $T('settings.confirmDelRequest', { id }),
 			onOk: () => {},
 			onCancel: () => {},
 		});
@@ -95,12 +95,12 @@
 		placement="left"
 		options={[
 			{
-				children: $tranFunc('settings.editTicket'),
+				children: $T('settings.editTicket'),
 				href: `${AppRoute.ME_SUPPORT()}/${item.id}`,
 				startIcon: Edit,
 			},
 			{
-				children: $tranFunc('settings.deleteTicket'),
+				children: $T('settings.deleteTicket'),
 				startIcon: Trash,
 				class: 'text-red-600',
 				onclick: () => handleConfirmDeleteTicket(item.id),

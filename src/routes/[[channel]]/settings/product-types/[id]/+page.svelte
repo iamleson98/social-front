@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import {
 		PRODUCT_TYPE_ATTRIBUTE_ASSIGNMENT_UPDATE_MUTATION,
 		PRODUCT_TYPE_DELETE_MUTATION,
@@ -126,7 +126,7 @@
 
 	const onDeleteClick = async () => {
 		ALERT_MODAL_STORE.openAlertModal({
-			content: $tranFunc('common.confirmDel'),
+			content: $T('common.confirmDel'),
 			onOk: async () => {
 				loading = true;
 

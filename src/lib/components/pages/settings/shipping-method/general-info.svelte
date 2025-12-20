@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { TAX_CLASSES_QUERY } from '$lib/api/tax';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
@@ -44,7 +44,7 @@
 		maximumDeliveryDays: number().nonnegative($CommonState.NonNegativeError),
 		minimumDeliveryDays: number().nonnegative($CommonState.NonNegativeError),
 	}).refine((data) => data.maximumDeliveryDays >= data.minimumDeliveryDays, {
-		message: $tranFunc('ship.maxDeliveryLessThanMinDelivery'),
+		message: $T('ship.maxDeliveryLessThanMinDelivery'),
 		path: ['maximumDeliveryDays'],
 	});
 	const SchemaHandler = createSchemaHandler(
@@ -71,13 +71,13 @@
 				variant="light"
 				color="gray"
 			>
-				{$tranFunc('btn.back')}
+				{$T('btn.back')}
 			</Button>
-			<span>{$tranFunc('common.generalInfo')}</span>
+			<span>{$T('common.generalInfo')}</span>
 		</div>
 	</SectionHeader>
 	<Input
-		label={$tranFunc('common.name')}
+		label={$T('common.name')}
 		bind:value={name}
 		required
 		{disabled}
@@ -89,7 +89,7 @@
 	<EditorJSComponent
 		bind:value={description}
 		required
-		label={$tranFunc('settings.description')}
+		label={$T('settings.description')}
 		{disabled}
 		variant={$SchemaHandler.description?.length ? 'error' : 'info'}
 		subText={$SchemaHandler.description?.[0]}
@@ -98,7 +98,7 @@
 
 	<div class="flex gap-2">
 		<Input
-			label={$tranFunc('ship.minDeliveryDays')}
+			label={$T('ship.minDeliveryDays')}
 			bind:value={minimumDeliveryDays}
 			required
 			type="number"
@@ -111,7 +111,7 @@
 			min={0}
 		/>
 		<Input
-			label={$tranFunc('ship.maxDeliveryDays')}
+			label={$T('ship.maxDeliveryDays')}
 			bind:value={maximumDeliveryDays}
 			required
 			type="number"
@@ -132,7 +132,7 @@
 		optionValueKey="id"
 		optionLabelKey="name"
 		{disabled}
-		label={$tranFunc('product.taxCls')}
+		label={$T('product.taxCls')}
 		bind:value={taxClass}
 	/>
 </div>

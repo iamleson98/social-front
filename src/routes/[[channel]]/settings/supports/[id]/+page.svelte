@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { USER_ORDERS_QUERY } from '$lib/api/orders';
 	import { PhotoUp, Send } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
@@ -45,8 +45,8 @@
 
 <div class="mt-3 p-3 rounded-lg bg-white border border-gray-200">
 	<Input
-		placeholder={$tranFunc('settings.title')}
-		label={$tranFunc('settings.title')}
+		placeholder={$T('settings.title')}
+		label={$T('settings.title')}
 		required
 		bind:value={ticketInput.title}
 		variant={$SchemaHandler.title?.length ? 'error' : 'info'}
@@ -59,14 +59,14 @@
 				options={[
 					{
 						value: 'CONSULT',
-						label: $tranFunc('settings.consult'),
+						label: $T('settings.consult'),
 					},
 					{
 						value: 'WARRANTY',
-						label: $tranFunc('settings.warranty'),
+						label: $T('settings.warranty'),
 					},
 				]}
-				label={$tranFunc('settings.tag')}
+				label={$T('settings.tag')}
 				required
 				bind:value={ticketInput.tag}
 				variant={$SchemaHandler.tag?.length ? 'error' : 'info'}
@@ -82,7 +82,7 @@
 				optionValueKey="number"
 				bind:value={ticketInput.orderNo}
 				required
-				label={$tranFunc('settings.orderNo')}
+				label={$T('settings.orderNo')}
 				variant={$SchemaHandler.orderNo?.length ? 'error' : 'info'}
 				subText={$SchemaHandler.orderNo?.[0]}
 			/>
@@ -95,13 +95,13 @@
 		icon={PhotoUp}
 		accept="image/*"
 		onChange={() => {}}
-		label={$tranFunc('settings.attachments')}
+		label={$T('settings.attachments')}
 	/>
 
 	<TextArea
 		class="mt-2"
-		label={$tranFunc('settings.description')}
-		placeholder={$tranFunc('settings.description')}
+		label={$T('settings.description')}
+		placeholder={$T('settings.description')}
 		inputClass="min-h-20"
 		required
 		bind:value={ticketInput.description}
@@ -110,6 +110,6 @@
 	/>
 
 	<div class="text-right mt-2">
-		<Button size="sm" endIcon={Send} onclick={handleSubmit}>{$tranFunc('btn.create')}</Button>
+		<Button size="sm" endIcon={Send} onclick={handleSubmit}>{$T('btn.create')}</Button>
 	</div>
 </div>

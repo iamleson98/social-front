@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { CATEGORIES_LIST_QUERY_STORE } from '$lib/api';
 	import { operationStore } from '$lib/api/operation';
 	import { Category } from '$lib/components/icons';
@@ -41,18 +41,18 @@
 {/snippet}
 
 {#if $categoryStore.fetching}
-	<Accordion header={$tranFunc('common.categories')} headerIcon={Category} class="p-1">
+	<Accordion header={$T('common.categories')} headerIcon={Category} class="p-1">
 		{@render categorySkeleton()}
 		{@render categorySkeleton()}
 		{@render categorySkeleton()}
 	</Accordion>
 {:else if $categoryStore.error}
 	<Alert size="sm" bordered variant="warning">
-		{$tranFunc('error.failedToLoad')}
+		{$T('error.failedToLoad')}
 	</Alert>
 {:else if $categoryStore.data?.categories?.edges.length}
 	<AccordionList
-		header={$tranFunc('common.categories')}
+		header={$T('common.categories')}
 		headerIcon={Category}
 		items={$categoryStore.data?.categories?.edges}
 		partialDisplay={5}

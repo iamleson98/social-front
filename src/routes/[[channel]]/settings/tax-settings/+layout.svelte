@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { AppRoute } from '$lib/utils';
 	import type { Snippet } from 'svelte';
 
@@ -16,19 +16,19 @@
 		role="tab"
 		class="tab"
 		class:tab-active={page.url.pathname.startsWith(AppRoute.TAX_SETTINGS_CHANNELS())}
-		href={AppRoute.TAX_SETTINGS_CHANNELS()}>{$tranFunc('channel.channels')}</a
+		href={AppRoute.TAX_SETTINGS_CHANNELS()}>{$T('channel.channels')}</a
 	>
 	<a
 		role="tab"
 		class="tab tab-active"
 		class:tab-active={page.url.pathname.startsWith(AppRoute.TAX_SETTINGS_COUNTRIES())}
-		href={AppRoute.TAX_SETTINGS_COUNTRIES()}>{$tranFunc('common.countries')}</a
+		href={AppRoute.TAX_SETTINGS_COUNTRIES()}>{$T('common.countries')}</a
 	>
 	<a
 		role="tab"
 		class="tab"
 		class:tab-active={page.url.pathname.startsWith(AppRoute.TAX_SETTINGS_TAX_CLASSES())}
-		href={AppRoute.TAX_SETTINGS_TAX_CLASSES()}>{$tranFunc('settings.taxClasses')}</a
+		href={AppRoute.TAX_SETTINGS_TAX_CLASSES()}>{$T('settings.taxClasses')}</a
 	>
 </div>
 

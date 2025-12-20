@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { ArrowDown, ArrowUp, FilterCog, type IconContent } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { Accordion } from '$lib/components/ui/Accordion';
@@ -42,8 +42,8 @@
 		const { gte, lte } = $productFilterParamStore.filter?.price as PriceRangeInput;
 		if (typeof gte !== 'number' || typeof lte !== 'number') return null;
 
-		if (gte < 0 || (lte as number) < 0) return $tranFunc('error.negativeNumber');
-		if (gte >= (lte as number)) return $tranFunc('error.startGreaterEnd');
+		if (gte < 0 || (lte as number) < 0) return $T('error.negativeNumber');
+		if (gte >= (lte as number)) return $T('error.startGreaterEnd');
 
 		return null;
 	});
@@ -77,10 +77,10 @@
 	onMount(() => productFilterParamStore.reset); // reset filter params
 </script>
 
-<Accordion header={$tranFunc('common.filter')} headerIcon={FilterCog} class="p-1">
+<Accordion header={$T('common.filter')} headerIcon={FilterCog} class="p-1">
 	<!-- MARK: order -->
 	<div class="mb-4">
-		<div class="text-xs mb-2">{$tranFunc('common.ordering')}</div>
+		<div class="text-xs mb-2">{$T('common.ordering')}</div>
 		<div class="flex items-center gap-1">
 			<Select
 				options={$ProductSortFields}
@@ -95,7 +95,7 @@
 					size="sm"
 					color="gray"
 					onclick={handleOrderingButtonClick}
-					aria-label={$tranFunc('common.orderBy')}
+					aria-label={$T('common.orderBy')}
 				/>
 			</div>
 		</div>
@@ -103,10 +103,10 @@
 
 	<!-- MARK; price range filter -->
 	<div class="mb-4">
-		<div class="text-xs mb-2">{$tranFunc('common.priceRange')}</div>
+		<div class="text-xs mb-2">{$T('common.priceRange')}</div>
 		<div class="flex items-center gap-2 justify-between mb-1">
 			<Input
-				placeholder={$tranFunc('common.from')}
+				placeholder={$T('common.from')}
 				type="number"
 				min={0}
 				size="sm"
@@ -115,7 +115,7 @@
 				variant={priceRangeError ? 'error' : 'info'}
 			/>
 			<Input
-				placeholder={$tranFunc('common.to')}
+				placeholder={$T('common.to')}
 				type="number"
 				min={0}
 				size="sm"
@@ -133,12 +133,12 @@
 
 	<!-- rating filter -->
 	<div class="mb-4">
-		<div class="text-xs mb-2">{$tranFunc('common.score')}</div>
+		<div class="text-xs mb-2">{$T('common.score')}</div>
 		{#each RATINGS as rating, idx (idx)}
 			<div class="flex items-center gap-1 mb-1">
 				<span class="text-xs font-bold text-blue-600 w-1/4 text-nowrap">
 					{rating}
-					{$tranFunc('common.star')}
+					{$T('common.star')}
 				</span>
 				<div class="w-3/4">
 					<progress class="progress progress-warning" max="100" value={rating * 20}></progress>
@@ -150,6 +150,6 @@
 	</div>
 
 	<Button size="xs" fullWidth color="orange" onclick={applyFilter}>
-		{$tranFunc('common.filter')}
+		{$T('common.filter')}
 	</Button>
 </Accordion>

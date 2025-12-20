@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { Select, type SelectOption } from '$lib/components/ui/select';
@@ -36,7 +36,7 @@
 		inputType: string().nonempty($CommonState.FieldRequiredError),
 		slug: string()
 			.nonempty($CommonState.FieldRequiredError)
-			.regex(ValidSlugRegex, $tranFunc('error.invalidSlug')),
+			.regex(ValidSlugRegex, $T('error.invalidSlug')),
 	});
 
 	const SchemaHandler = createSchemaHandler(
@@ -59,11 +59,11 @@
 </script>
 
 <div class={SitenameCommonClassName}>
-	<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
+	<SectionHeader>{$T('common.generalInfo')}</SectionHeader>
 
 	<Input
-		label={$tranFunc('common.name')}
-		placeholder={$tranFunc('common.name')}
+		label={$T('common.name')}
+		placeholder={$T('common.name')}
 		bind:value={name}
 		variant={$SchemaHandler.name?.length ? 'error' : 'info'}
 		subText={$SchemaHandler.name?.[0]}
@@ -73,8 +73,8 @@
 		{disabled}
 	/>
 	<Input
-		label={$tranFunc('common.slug')}
-		placeholder={$tranFunc('common.slug')}
+		label={$T('common.slug')}
+		placeholder={$T('common.slug')}
 		bind:value={slug}
 		variant={$SchemaHandler.slug?.length ? 'error' : 'info'}
 		subText={$SchemaHandler.slug?.[0]}
@@ -85,8 +85,8 @@
 	/>
 	<Select
 		options={AttributeInputTypeOptions}
-		label={$tranFunc('attributes.inputType')}
-		placeholder={$tranFunc('attributes.inputType')}
+		label={$T('attributes.inputType')}
+		placeholder={$T('attributes.inputType')}
 		bind:value={inputType}
 		disabled={disabled || !isCreatePage}
 		required
@@ -96,9 +96,9 @@
 		subText={$SchemaHandler.inputType?.[0]}
 	/>
 	<Checkbox
-		label={$tranFunc('attributes.valRequired')}
+		label={$T('attributes.valRequired')}
 		bind:checked={valueRequired}
-		subText={$tranFunc('attributes.valRequireHint')}
+		subText={$T('attributes.valRequireHint')}
 		required
 		{disabled}
 	/>

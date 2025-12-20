@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { SHOP_ORDERS_QUERY } from '$lib/api/admin/orders';
 	import { CUSTOMER_LIST_QUERY } from '$lib/api/admin/users';
 	import { FilterManager } from '$lib/components/common/filter-box';
@@ -43,13 +43,13 @@
 			},
 		},
 		channels: {
-			label: $tranFunc('channel.channels'),
+			label: $T('channel.channels'),
 			operations: {
 				oneOf: CommonSnippets.multiChannelIds,
 			},
 		},
 		created: {
-			label: $tranFunc('giftcard.creationDate'),
+			label: $T('giftcard.creationDate'),
 			operations: {
 				lte: CommonSnippets.singleDate,
 				gte: CommonSnippets.singleDate,
@@ -57,7 +57,7 @@
 			},
 		},
 		updatedAt: {
-			label: $tranFunc('common.editAt'),
+			label: $T('common.editAt'),
 			operations: {
 				lte: CommonSnippets.singleDate,
 				gte: CommonSnippets.singleDate,
@@ -65,14 +65,14 @@
 			},
 		},
 		paymentStatus: {
-			label: $tranFunc('order.payStatus'),
+			label: $T('order.payStatus'),
 			operations: {
 				eq: paymentStatus,
 				oneOf: paymentStatuses,
 			},
 		},
 		status: {
-			label: $tranFunc('order.fulfillStatus'),
+			label: $T('order.fulfillStatus'),
 			operations: {
 				eq: fulfillmentStatus,
 				oneOf: fulfillmentStatuses,

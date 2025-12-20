@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import {
 		PRODUCT_DELETE_MUTATION,
 		PRODUCT_DETAIL_QUERY,
@@ -479,7 +479,7 @@
 			max={9}
 			class={SitenameCommonClassName}
 			bind:medias={productMedias}
-			label={$tranFunc('common.pic')}
+			label={$T('common.pic')}
 			bind:formOk={productMediasOk}
 			disabled={loading}
 			required

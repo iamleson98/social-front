@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import {
 		ACCOUNT_ADDRESS_CREATE_MUTATION,
 		ACCOUNT_ADDRESS_DELETE_MUTATION,
@@ -58,7 +58,7 @@
 			checkIfGraphqlResultHasError(
 				result,
 				'accountAddressUpdate',
-				$tranFunc('settings.addrUpdated'),
+				$T('settings.addrUpdated'),
 			)
 		)
 			return;
@@ -90,7 +90,7 @@
 			checkIfGraphqlResultHasError(
 				result,
 				'accountAddressCreate',
-				$tranFunc('settings.addrCreated'),
+				$T('settings.addrCreated'),
 			)
 		)
 			return;
@@ -118,7 +118,7 @@
 			checkIfGraphqlResultHasError(
 				result,
 				'accountAddressDelete',
-				$tranFunc('settings.addrDeleted'),
+				$T('settings.addrDeleted'),
 			)
 		)
 			return;
@@ -146,7 +146,7 @@
 			checkIfGraphqlResultHasError(
 				result,
 				'accountSetDefaultAddress',
-				$tranFunc('settings.addrUpdated'),
+				$T('settings.addrUpdated'),
 			)
 		)
 			return;
@@ -159,11 +159,11 @@
 </script>
 
 <div class="{SitenameCommonClassName} mt-2">
-	<SectionHeader>{$tranFunc('settings.addrManage')}</SectionHeader>
+	<SectionHeader>{$T('settings.addrManage')}</SectionHeader>
 
 	<div class="mt-2">
 		{#if !$ME_PAGE_USER_STORE?.addresses?.length}
-			<div class="text-sm">{$tranFunc('settings.havingNoAddress')}</div>
+			<div class="text-sm">{$T('settings.havingNoAddress')}</div>
 		{:else}
 			<div class="flex gap-2 flex-wrap">
 				{#each $ME_PAGE_USER_STORE?.addresses as address, idx (idx)}
@@ -171,7 +171,7 @@
 						<div class="flex items-center gap-2 text-gray-600!">
 							{#if !address.isDefaultBillingAddress}
 								<Checkbox
-									label={$tranFunc('settings.makeDefaultBillingAddr')}
+									label={$T('settings.makeDefaultBillingAddr')}
 									onchange={() => setDefaultAddress(address.id, AddressTypeEnum.Billing)}
 									size="sm"
 									disabled={loading}
@@ -179,7 +179,7 @@
 							{/if}
 							{#if !address.isDefaultShippingAddress}
 								<Checkbox
-									label={$tranFunc('settings.makeDefaultShippingAddr')}
+									label={$T('settings.makeDefaultShippingAddr')}
 									onchange={() => setDefaultAddress(address.id, AddressTypeEnum.Shipping)}
 									size="sm"
 									disabled={loading}
@@ -194,10 +194,10 @@
 								startIcon={Trash}
 								onclick={() =>
 									ALERT_MODAL_STORE.openAlertModal({
-										content: $tranFunc('settings.confirmDelAddr'),
+										content: $T('settings.confirmDelAddr'),
 										onOk: () => handleDeleteAddress(address.id),
 									})}
-								disabled={loading}>{$tranFunc('btn.delete')}</Button
+								disabled={loading}>{$T('btn.delete')}</Button
 							>
 							<Button
 								size="xs"
@@ -205,7 +205,7 @@
 								startIcon={Edit}
 								disabled={loading}
 								onclick={() => handleShowAddressForm(false, address)}
-								>{$tranFunc('btn.update')}</Button
+								>{$T('btn.update')}</Button
 							>
 						</div>
 					</UserAddress>
@@ -215,7 +215,7 @@
 		{#if !showAddressCreateForm && !addressUpdateInputInitValue && ($ME_PAGE_USER_STORE?.addresses?.length || 0) < MAX_USER_ADDRESSES}
 			<div class="mt-2 text-right">
 				<Button size="xs" onclick={() => handleShowAddressForm(true)} startIcon={Plus}>
-					{$tranFunc('settings.newAddr')}
+					{$T('settings.newAddr')}
 				</Button>
 			</div>
 		{/if}

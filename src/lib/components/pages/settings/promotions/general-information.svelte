@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { RFC3339TimeFormat } from '$lib/api/graphql/utils';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
@@ -63,12 +63,12 @@
 </script>
 
 <div class={SitenameCommonClassName}>
-	<SectionHeader>{$tranFunc('common.generalInfo')}</SectionHeader>
+	<SectionHeader>{$T('common.generalInfo')}</SectionHeader>
 
 	<div class="flex gap-2 items-start">
 		<Select
 			options={DiscountTypeOptions}
-			label={$tranFunc('voucher.discountType')}
+			label={$T('voucher.discountType')}
 			required
 			class="flex-1/3"
 			size="md"
@@ -80,8 +80,8 @@
 			subText={$SchemaHandler?.type?.[0]}
 		/>
 		<Input
-			placeholder={$tranFunc('common.name')}
-			label={$tranFunc('common.name')}
+			placeholder={$T('common.name')}
+			label={$T('common.name')}
 			required
 			class="flex-2/3"
 			size="md"
@@ -95,9 +95,9 @@
 	</div>
 
 	<EditorJSComponent
-		label={$tranFunc('settings.description')}
+		label={$T('settings.description')}
 		required
-		placeholder={$tranFunc('settings.description')}
+		placeholder={$T('settings.description')}
 		bind:value={description}
 		{disabled}
 		variant={$SchemaHandler?.description?.length ? 'error' : 'info'}
@@ -108,8 +108,8 @@
 	<div class="gap-2 grid grid-cols-2">
 		<EaseDatePicker
 			required
-			label={$tranFunc('common.startAt')}
-			placeholder={$tranFunc('common.startAt')}
+			label={$T('common.startAt')}
+			placeholder={$T('common.startAt')}
 			value={{ date: startDate }}
 			{disabled}
 			onchange={(value) => {
@@ -134,8 +134,8 @@
 			}}
 		/>
 		<EaseDatePicker
-			label={$tranFunc('common.endAt')}
-			placeholder={$tranFunc('common.endAt')}
+			label={$T('common.endAt')}
+			placeholder={$T('common.endAt')}
 			value={{ date: endDate }}
 			{disabled}
 			onchange={(value) => {

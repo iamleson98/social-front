@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { Badge } from '$lib/components/ui/Badge';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Input } from '$lib/components/ui/Input';
@@ -358,13 +358,13 @@
 								<Badge text={variantManifests[1].attribute.name} size="sm" />
 							</th>
 						{/if}
-						<th class={ThClass}>{$tranFunc('product.channel')}</th>
-						<th class={ThClass}>{$tranFunc('product.price')}</th>
-						<th class={ThClass}>{$tranFunc('product.costPrice')}</th>
-						<th class={ThClass}>{$tranFunc('attributes.Weight')}</th>
-						<th class={ThClass}>{$tranFunc('common.preorder')}</th>
-						<th class={ThClass}>{$tranFunc('product.stock')}</th>
-						<th class={ThClass}>{$tranFunc('product.sku')}</th>
+						<th class={ThClass}>{$T('product.channel')}</th>
+						<th class={ThClass}>{$T('product.price')}</th>
+						<th class={ThClass}>{$T('product.costPrice')}</th>
+						<th class={ThClass}>{$T('attributes.Weight')}</th>
+						<th class={ThClass}>{$T('common.preorder')}</th>
+						<th class={ThClass}>{$T('product.stock')}</th>
+						<th class={ThClass}>{$T('product.sku')}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -495,7 +495,7 @@
 								<Input
 									type="number"
 									min={0}
-									label={$tranFunc('product.qtyLimit')}
+									label={$T('product.qtyLimit')}
 									size="xs"
 									class="mb-2"
 									{disabled}
@@ -511,7 +511,7 @@
 								/>
 								<EaseDatePicker
 									size="xs"
-									label={$tranFunc('product.preOrderEndDate')}
+									label={$T('product.preOrderEndDate')}
 									allowSelectMonthYears={{
 										showMonths: true,
 										showYears: { min: 2020, max: DAYJS_NOW.year() + 1 },
@@ -534,7 +534,7 @@
 										<Input
 											size="xs"
 											label={stock[WarehouseNameKey] as string}
-											placeholder={$tranFunc('product.stock')}
+											placeholder={$T('product.stock')}
 											bind:value={variantInputDetail.stocks![idx].quantity}
 											type="number"
 											{disabled}

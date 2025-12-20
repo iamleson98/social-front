@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { WAREHOUSE_DELETE_MUTATION, WAREHOUSE_LIST_QUERY } from '$lib/api/admin/warehouse';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { FilterManager } from '$lib/components/common/filter-box';
@@ -31,16 +31,16 @@
 
 	const WarehouseColumns: TableColumnProps<Warehouse, WarehouseSortField>[] = $derived([
 		{
-			title: $tranFunc('common.name'),
+			title: $T('common.name'),
 			child: name,
 			key: WarehouseSortField.Name,
 		},
 		{
-			title: $tranFunc('channel.shipZones'),
+			title: $T('channel.shipZones'),
 			child: shippingZones,
 		},
 		{
-			title: $tranFunc('common.action'),
+			title: $T('common.action'),
 			child: action,
 		},
 	]);

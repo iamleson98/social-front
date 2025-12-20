@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { pushState, replaceState } from '$app/navigation';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { Modal } from '$lib/components/ui/Modal';
 	import { productFilterParamStore } from '$lib/stores/app/product-filter.svelte';
 	import { PRODUCT_PREVIEW_STORE } from './common';
@@ -68,8 +68,8 @@
 	closeOnOutsideClick
 	size="sm"
 	hideHeader
-	cancelText={$tranFunc('common.cancel')}
-	okText={$tranFunc('product.detail')}
+	cancelText={$T('common.cancel')}
+	okText={$T('product.detail')}
 >
 	{#if $PRODUCT_PREVIEW_STORE}
 		<ProductPreview productSlug={$PRODUCT_PREVIEW_STORE.slug} />

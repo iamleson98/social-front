@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { Discount, Heart, OpenEye } from '$lib/components/icons';
 	import { PRODUCT_PREVIEW_STORE } from '$lib/components/pages/home/common';
 	import { Badge } from '$lib/components/ui/Badge';
@@ -63,7 +63,7 @@
 				<div class="text-nowrap">
 					{rating
 						? `${clamp(rating, MIN_RATING, MAX_RATING)} / ${MAX_RATING}`
-						: $tranFunc('product.noVote')}
+						: $T('product.noVote')}
 				</div>
 				<progress
 					class="progress progress-warning min-w-24"
@@ -75,7 +75,7 @@
 
 		<!-- price -->
 		<div class="flex items-end flex-row gap-2 mb-2">
-			<p class="text-xs font-normal text-gray-500">{$tranFunc('common.startAt')}</p>
+			<p class="text-xs font-normal text-gray-500">{$T('common.startAt')}</p>
 			<p class="font-bold text-blue-700 text-xl underline">
 				{formatMoney(
 					pricing?.priceRange?.start?.gross.currency ||
@@ -87,7 +87,7 @@
 		</div>
 
 		<Button startIcon={OpenEye} variant="light" size="sm" fullWidth onclick={handlePreviewProduct}>
-			{$tranFunc('settings.preview')}
+			{$T('settings.preview')}
 		</Button>
 	</div>
 </div>

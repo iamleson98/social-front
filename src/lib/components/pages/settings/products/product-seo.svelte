@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Input, TextArea } from '$lib/components/ui/Input';
 	import type { ProductCreateInput, SeoInput } from '$lib/gql/graphql';
@@ -35,8 +35,8 @@
 			.min(1, $CommonState.FieldRequiredError)
 			.nonempty($CommonState.FieldRequiredError)
 			.max(PRODUCT_SLUG_MAX_LENGTH, {
-				error: $tranFunc('error.lengthInvalid', {
-					name: $tranFunc('product.prdSlug'),
+				error: $T('error.lengthInvalid', {
+					name: $T('product.prdSlug'),
 					min: 1,
 					max: PRODUCT_SLUG_MAX_LENGTH,
 				}),
@@ -45,8 +45,8 @@
 			.min(1, $CommonState.FieldRequiredError)
 			.nonempty($CommonState.FieldRequiredError)
 			.max(SEO_TITLE_MAX_LENGTH, {
-				error: $tranFunc('error.lengthInvalid', {
-					name: $tranFunc('product.seoTitle'),
+				error: $T('error.lengthInvalid', {
+					name: $T('product.seoTitle'),
 					min: 1,
 					max: SEO_TITLE_MAX_LENGTH,
 				}),
@@ -55,8 +55,8 @@
 			.min(1, $CommonState.FieldRequiredError)
 			.nonempty($CommonState.FieldRequiredError)
 			.max(SEO_DESCRIPTION_MAX_LENGTH, {
-				error: $tranFunc('error.lengthInvalid', {
-					name: $tranFunc('product.seoDescription'),
+				error: $T('error.lengthInvalid', {
+					name: $T('product.seoDescription'),
 					min: 1,
 					max: SEO_DESCRIPTION_MAX_LENGTH,
 				}),
@@ -84,7 +84,7 @@
 <div class={SitenameCommonClassName}>
 	<SectionHeader>Seo information</SectionHeader>
 	<Input
-		placeholder={$tranFunc('product.prdSlug')}
+		placeholder={$T('product.prdSlug')}
 		bind:value={slug}
 		class="mb-1"
 		inputDebounceOption={{ onInput: SchemaHandler.validate }}
@@ -92,25 +92,25 @@
 		variant={$SchemaHandler?.slug?.length ? 'error' : 'info'}
 		subText={$SchemaHandler?.slug?.[0]}
 		required
-		label={$tranFunc('product.prdSlug')}
+		label={$T('product.prdSlug')}
 		disabled={loading}
 	/>
 	<Input
 		bind:value={seo.title}
-		placeholder={$tranFunc('product.seoTitle')}
+		placeholder={$T('product.seoTitle')}
 		type="text"
 		class="mb-1"
 		inputDebounceOption={{ onInput: SchemaHandler.validate }}
 		onblur={SchemaHandler.validate}
 		variant={$SchemaHandler?.title?.length ? 'error' : 'info'}
 		subText={$SchemaHandler?.title?.[0]}
-		label={$tranFunc('product.seoTitle')}
+		label={$T('product.seoTitle')}
 		required
 		disabled={loading}
 	/>
 	<TextArea
 		bind:value={seo.description}
-		placeholder={$tranFunc('product.seoDescription')}
+		placeholder={$T('product.seoDescription')}
 		type="text"
 		inputClass="min-h-20"
 		onblur={SchemaHandler.validate}
@@ -118,7 +118,7 @@
 		variant={$SchemaHandler?.description?.length ? 'error' : 'info'}
 		subText={$SchemaHandler?.description?.[0] ||
 			`${seo?.description?.length || 0} / ${SEO_DESCRIPTION_MAX_LENGTH}`}
-		label={$tranFunc('product.seoDescription')}
+		label={$T('product.seoDescription')}
 		required
 		disabled={loading}
 	/>

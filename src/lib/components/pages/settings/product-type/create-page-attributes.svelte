@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { PRODUCT_ATTRIBUTES_QUERY } from '$lib/api/admin/attribute';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Search } from '$lib/components/icons';
@@ -34,19 +34,19 @@
 
 	const AttributeColumns: TableColumnProps<Attribute>[] = $derived([
 		{
-			title: $tranFunc('common.name'),
+			title: $T('common.name'),
 			child: name,
 		},
 		{
-			title: $tranFunc('common.slug'),
+			title: $T('common.slug'),
 			child: slug,
 		},
 		{
-			title: $tranFunc('collection.assignPrd'),
+			title: $T('collection.assignPrd'),
 			child: productAttrAssignSelect,
 		},
 		{
-			title: $tranFunc('collection.assignVariant'),
+			title: $T('collection.assignVariant'),
 			child: variantAttrAssignSelect,
 		},
 	]);

@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
+	import { type TranslationKey } from '$i18n/types';
 	import { GIFT_CARD_ADD_NOTE_MUTATION, GIFT_CARD_EVENTS_QUERY } from '$lib/api/admin/giftcards';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
@@ -67,13 +68,7 @@
 
 		loading = false; //
 
-		if (
-			checkIfGraphqlResultHasError(
-				result,
-				'giftCardAddNote',
-				$tranFunc('giftcard.events.noteAdded'),
-			)
-		)
+		if (checkIfGraphqlResultHasError(result, 'giftCardAddNote', $T('giftcard.events.noteAdded')))
 			return;
 
 		newNote = ''; // reset note
@@ -82,7 +77,7 @@
 </script>
 
 <div class={SitenameCommonClassName}>
-	<SectionHeader>{$tranFunc('giftcard.timeline')}</SectionHeader>
+	<SectionHeader>{$T('giftcard.timeline')}</SectionHeader>
 
 	{#if $eventsQuery.fetching}
 		<SelectSkeleton size="sm" label />
@@ -100,15 +95,12 @@
 			<div class="flex-3/4 flex items-center gap-2">
 				<div class="avatar">
 					<div class="w-9 rounded-lg">
-						<img
-							src={$UserStoreManager?.avatar?.url}
-							alt={$UserStoreManager?.avatar?.alt}
-						/>
+						<img src={$UserStoreManager?.avatar?.url} alt={$UserStoreManager?.avatar?.alt} />
 					</div>
 				</div>
 				<Input
 					size="sm"
-					placeholder={$tranFunc('giftcard.addNote')}
+					placeholder={$T('giftcard.addNote')}
 					class="w-full"
 					bind:value={newNote}
 					disabled={loading}
@@ -121,7 +113,7 @@
 					fullWidth
 					variant="light"
 					disabled={!newNote?.trim() || loading}
-					onclick={handleAddNote}>{$tranFunc('giftcard.filter.submit')}</Button
+					onclick={handleAddNote}>{$T('giftcard.filter.submit')}</Button
 				>
 			</div>
 		</div>
@@ -133,8 +125,8 @@
 				<Select
 					size="xs"
 					bind:value={filterType}
-					placeholder={$tranFunc('giftcard.filter.filterByType')}
-					label={$tranFunc('giftcard.filter.filterByType')}
+					placeholder={$T('giftcard.filter.filterByType')}
+					label={$T('giftcard.filter.filterByType')}
 					options={filterTypeOptions}
 					class="w-1/3"
 				/>
@@ -155,7 +147,7 @@
 							rounded
 						/>
 						<div class="mb-1 font-medium text-sm dark:text-white text-gray-700">
-							{event.type ? $tranFunc('giftcard.types.' + event.type) : ''}
+							{event.type ? $T(('giftcard.types.' + event.type) as TranslationKey) : ''}
 						</div>
 						<div class="text-xs font-normal leading-none text-gray-400 dark:text-gray-500 mb-1">
 							{dayjs(event.date).fromNow()}
@@ -166,7 +158,7 @@
 							</div>
 						{/if}
 						<div class="text-xs text-gray-600">
-							{$tranFunc('giftcard.by')}
+							{$T('giftcard.by')}
 							<a
 								class="text-blue-600 text-sm font-semibold"
 								href={AppRoute.SETTINGS_CONFIGS_STAFF_DETAILS(event.user?.id!)}

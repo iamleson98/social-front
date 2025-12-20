@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import HeadBar from '$lib/components/pages/settings/common/head-bar.svelte';
 	import { AppRoute } from '$lib/utils';
 	import type { Snippet } from 'svelte';
@@ -15,7 +15,7 @@
 
 <HeadBar
 	listingPageHref={AppRoute.SETTINGS_CONTRACTS()}
-	listingPageLabel={$tranFunc('settings.contracts')}
+	listingPageLabel={$T('settings.contracts')}
 	newPageHref={newContractPath}
 	newPageLabel="New Contract"
 	detailRouteID="/[[channel]]/settings/contracts/[id]"

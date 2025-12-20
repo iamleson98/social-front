@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Checkbox, RadioButton } from '$lib/components/ui/Input';
 	import { DiscountValueTypeEnum, VoucherTypeEnum } from '$lib/gql/graphql';
@@ -40,11 +40,11 @@
 {#if discountType !== DISCOUNT_TYPE_SHIPPING}
 	<div class={SitenameCommonClassName}>
 		<div>
-			<SectionHeader>{$tranFunc('voucher.applyType')}</SectionHeader>
+			<SectionHeader>{$T('voucher.applyType')}</SectionHeader>
 			<div class="space-y-2.5">
 				{#each Object.keys(APPLICATION_TYPES) as type, idx (idx)}
 					<RadioButton
-						label={$tranFunc(APPLICATION_TYPES[type as VoucherTypeEnum])}
+						label={$T(APPLICATION_TYPES[type as VoucherTypeEnum])}
 						bind:group={applicationType}
 						value={type}
 						{disabled}
@@ -52,8 +52,8 @@
 				{/each}
 
 				<Checkbox
-					label={$tranFunc('voucher.applyCheapPrd')}
-					subText={$tranFunc('voucher.applyCheapPrdHelpTxt')}
+					label={$T('voucher.applyCheapPrd')}
+					subText={$T('voucher.applyCheapPrdHelpTxt')}
 					bind:checked={applyOncePerOrder}
 					{disabled}
 				/>

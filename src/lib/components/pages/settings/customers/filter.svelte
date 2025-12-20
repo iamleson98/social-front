@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { FilterManager } from '$lib/components/common/filter-box';
 	import { CommonSnippets } from '$lib/components/common/filter-box/snippets.svelte';
 	import type { FilterProps } from '$lib/components/common/filter-box/types';
@@ -15,7 +15,7 @@
 
 	const FilterOptions: FilterProps<CustomerFilterInput> = {
 		dateJoined: {
-			label: $tranFunc('staff.joinedSince'),
+			label: $T('staff.joinedSince'),
 			operations: {
 				lte: CommonSnippets.singleDate,
 				gte: CommonSnippets.singleDate,
@@ -23,7 +23,7 @@
 			},
 		},
 		numberOfOrders: {
-			label: $tranFunc('customer.numOfOrders'),
+			label: $T('customer.numOfOrders'),
 			operations: {
 				eq: CommonSnippets.singleNumber,
 				gte: CommonSnippets.singleNumber,
@@ -32,7 +32,7 @@
 			},
 		},
 		metadata: {
-			label: $tranFunc('common.metadata'),
+			label: $T('common.metadata'),
 			operations: {
 				eq: CommonSnippets.metadata,
 			},

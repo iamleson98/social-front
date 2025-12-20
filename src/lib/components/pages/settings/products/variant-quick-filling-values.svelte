@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { Button } from '$lib/components/ui';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Checkbox, Input, Label } from '$lib/components/ui/Input';
@@ -62,12 +62,12 @@
 </script>
 
 <div class={SitenameCommonClassName}>
-	<Label label={$tranFunc('product.quickFilling')} size="sm" />
+	<Label label={$T('product.quickFilling')} size="sm" />
 	<div class="flex gap-x-2 items-start flex-row w-full">
 		<div class="w-11/12 flex gap-1 items-start flex-row">
 			<!-- CHANNELS -->
 			<div class="w-1/6">
-				<Label label={$tranFunc('product.channel')} size="sm" />
+				<Label label={$T('product.channel')} size="sm" />
 				{#if !channelSelectOptions?.length}
 					<SelectSkeleton size="sm" />
 				{:else}
@@ -88,8 +88,8 @@
 			<div class="w-2/6">
 				{#if quickFillingValues.channels.length}
 					<div class="grid grid-cols-2">
-						<Label label={$tranFunc('product.price')} size="sm" />
-						<Label label={$tranFunc('product.costPrice')} size="sm" />
+						<Label label={$T('product.price')} size="sm" />
+						<Label label={$T('product.costPrice')} size="sm" />
 					</div>
 					<div class="max-h-32 overflow-y-auto border border-gray-200 bg-white p-1 rounded-lg">
 						{#each quickFillingValues.channels as channel, idx (idx)}
@@ -134,7 +134,7 @@
 					bind:value={quickFillingValues.weight}
 					min={0}
 					{disabled}
-					label={$tranFunc('attributes.Weight')}
+					label={$T('attributes.Weight')}
 					variant={typeof quickFillingValues.weight === 'number' && quickFillingValues.weight < 0
 						? 'error'
 						: 'info'}
@@ -149,12 +149,12 @@
 			</div>
 			<!-- PRE-ORDER -->
 			<div class="w-1/6">
-				<Label label={$tranFunc('common.preorder')} size="sm" />
+				<Label label={$T('common.preorder')} size="sm" />
 				<div class="border border-gray-200 bg-white p-1 rounded-lg">
 					<!-- QUANTITY LIMIT -->
 					<Input
 						type="number"
-						label={$tranFunc('product.qtyLimit')}
+						label={$T('product.qtyLimit')}
 						min={0}
 						size="xs"
 						{disabled}
@@ -175,7 +175,7 @@
 						{disabled}
 						onchange={(date) => (quickFillingValues.preOrder.endDate = date.date)}
 						value={quickFillingValues.preOrder.endDate}
-						label={$tranFunc('product.preOrderEndDate')}
+						label={$T('product.preOrderEndDate')}
 						allowSelectMonthYears={{
 							showMonths: true,
 							showYears: { min: 2020, max: DAYJS_NOW.year() + 1 },
@@ -190,7 +190,7 @@
 			</div>
 			<!-- STOCK -->
 			<div class="w-1/6">
-				<Label label={$tranFunc('product.stock')} size="sm" />
+				<Label label={$T('product.stock')} size="sm" />
 				{#if !quickFillingValues.stocks.length}
 					<SelectSkeleton size="xs" />
 				{:else}
@@ -217,14 +217,14 @@
 		</div>
 		<!-- APPLY BUTTON -->
 		<div class="w-1/12">
-			<Label label={$tranFunc('common.action')} size="sm" />
+			<Label label={$T('common.action')} size="sm" />
 			<Button
 				class="btn btn-sm grow shrink"
 				size="sm"
 				disabled={quickFillingError || disabled}
 				fullWidth
 				onclick={handleQuickFillingClick}
-				>{$tranFunc('btn.apply')}
+				>{$T('btn.apply')}
 			</Button>
 		</div>
 	</div>
@@ -233,7 +233,7 @@
 	<div class="mt-2 flex gap-2 items-start" transition:slide>
 		<Checkbox
 			bind:checked={quickFillingValues.trackInventory}
-			label={$tranFunc('product.trackInventory')}
+			label={$T('product.trackInventory')}
 			size="sm"
 			{disabled}
 		/>
@@ -243,8 +243,8 @@
 			size="sm"
 			{disabled}
 			min="0"
-			label={$tranFunc('product.qtyLimit')}
-			placeholder={$tranFunc('placeholders.valuePlaceholder')}
+			label={$T('product.qtyLimit')}
+			placeholder={$T('placeholders.valuePlaceholder')}
 			variant={typeof quickFillingValues.quantityLimitPerCustomer === 'number' &&
 			quickFillingValues.quantityLimitPerCustomer % 1 !== 0
 				? 'error'

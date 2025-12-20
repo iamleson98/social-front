@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { CUSTOMER_ORDERS_QUERY } from '$lib/api/admin/orders';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
@@ -23,19 +23,19 @@
 
 	const ORDER_TABLE_COLUMNS: TableColumnProps<Order, OrderSortField>[] = $derived([
 		{
-			title: $tranFunc('common.number'),
+			title: $T('common.number'),
 			child: number,
 		},
 		{
-			title: $tranFunc('settings.date'),
+			title: $T('settings.date'),
 			child: date,
 		},
 		{
-			title: $tranFunc('settings.status'),
+			title: $T('settings.status'),
 			child: status,
 		},
 		{
-			title: $tranFunc('settings.total'),
+			title: $T('settings.total'),
 			child: total,
 		},
 	]);
@@ -59,7 +59,7 @@
 
 <div class={SitenameCommonClassName}>
 	<SectionHeader class="mb-3">
-		<div>{$tranFunc('customer.recentOrders')}</div>
+		<div>{$T('customer.recentOrders')}</div>
 		<Button
 			variant="light"
 			size="xs"
@@ -68,7 +68,7 @@
 			target="_blank"
 			endIcon={ExternalLink}
 		>
-			{$tranFunc('customer.viewOrders')}
+			{$T('customer.viewOrders')}
 		</Button>
 	</SectionHeader>
 	<GraphqlPaginableTable

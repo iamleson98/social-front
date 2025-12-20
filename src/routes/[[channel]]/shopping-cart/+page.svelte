@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { afterNavigate, goto } from '$app/navigation';
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { CheckoutSteps } from '$lib/components/common/checkout-steps';
 	import { ArrowNarrowRight, ChevronLeft, Icon } from '$lib/components/icons';
 	import { EmptyCart } from '$lib/components/icons/SvgOuterIcon';
@@ -74,7 +74,7 @@
 				</div>
 
 				<div class="mt-2">
-					{$tranFunc('cart.emptyCart')}
+					{$T('cart.emptyCart')}
 				</div>
 				<div class="mt-3">
 					<Button
@@ -83,7 +83,7 @@
 						variant="outline"
 						startIcon={ChevronLeft}
 					>
-						{$tranFunc('cart.continueShopping')}
+						{$T('cart.continueShopping')}
 					</Button>
 				</div>
 			</div>
@@ -106,20 +106,20 @@
 			<!-- MARK: SUMMARY -->
 			<div class="w-1/4 tablet:w-full">
 				<div class="p-4 mb-2 bg-white rounded-lg border">
-					<p class="text-lg font-semibold tet-gray-800 mb-4">{$tranFunc('cart.cartSummary')}</p>
+					<p class="text-lg font-semibold tet-gray-800 mb-4">{$T('cart.cartSummary')}</p>
 
 					<div class="mb-4">
 						{@render MoneyField(
 							subtotalPrice.gross.currency,
 							originalTotalPrice,
-							$tranFunc('cart.oldTotalPrice'),
+							$T('cart.oldTotalPrice'),
 							'gray',
 						)}
 
 						{@render MoneyField(
 							subtotalPrice.gross.currency,
 							originalTotalPrice - subtotalPrice.gross.amount,
-							$tranFunc('cart.savings'),
+							$T('cart.savings'),
 							'green',
 							true,
 						)}
@@ -129,7 +129,7 @@
 						{@render MoneyField(
 							subtotalPrice.gross.currency,
 							subtotalPrice.gross.amount,
-							$tranFunc('cart.tempoTotalPrice'),
+							$T('cart.tempoTotalPrice'),
 							'red',
 						)}
 					</div>
@@ -140,13 +140,13 @@
 						size="sm"
 						onclick={() => goto(`${AppRoute.CHECKOUT()}/${$checkoutStore.id}`)}
 					>
-						{$tranFunc('cart.proceedCheckout')}
+						{$T('cart.proceedCheckout')}
 					</Button>
 
 					<div class="flex items-center justify-center gap-1 mt-2">
-						<span class="text-sm font-normal text-gray-500"> {$tranFunc('cart.or')} </span>
+						<span class="text-sm font-normal text-gray-500"> {$T('cart.or')} </span>
 						<a href="/" class="flex items-center gap-1 text-xs font-medium text-gray-700 underline">
-							<span>{$tranFunc('cart.continueShopping')}</span>
+							<span>{$T('cart.continueShopping')}</span>
 							<Icon icon={ArrowNarrowRight} />
 						</a>
 					</div>
@@ -155,12 +155,12 @@
 				<!-- coupon -->
 				<div class="rounded-lg bg-white p-4 border">
 					<Input
-						placeholder={$tranFunc('cart.enterCode')}
+						placeholder={$T('cart.enterCode')}
 						size="md"
 						class="w-full mb-2"
-						label={$tranFunc('cart.haveVoucherOrGiftcard')}
+						label={$T('cart.haveVoucherOrGiftcard')}
 					/>
-					<Button variant="filled" size="sm" fullWidth>{$tranFunc('cart.applyCode')}</Button>
+					<Button variant="filled" size="sm" fullWidth>{$T('cart.applyCode')}</Button>
 				</div>
 			</div>
 		</div>

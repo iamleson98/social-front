@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { PRODUCT_LIST_QUERY } from '$lib/api';
 	import { operationStore } from '$lib/api/operation';
 	import ProductCardSkeleton from '$lib/components/common/product/product-card-skeleton.svelte';
@@ -35,7 +35,7 @@
 		</div>
 	{:else if $productFetchStore.error}
 		<Alert variant="warning" size="sm" bordered>
-			{$tranFunc('error.failedToLoad')}
+			{$T('error.failedToLoad')}
 		</Alert>
 	{:else if $productFetchStore.data?.products?.edges.length}
 		<div class="flex flex-wrap flex-row justify-between">
@@ -54,13 +54,13 @@
 					variant="outline"
 					size="xs"
 				>
-					{$tranFunc('common.loadMore')}
+					{$T('common.loadMore')}
 				</Button>
 			</div>
 		{/if}
 	{:else if $productFetchStore.data?.products?.edges.length === 0}
 		<Alert variant="info" size="sm" bordered>
-			{$tranFunc('error.noResult')}
+			{$T('error.noResult')}
 		</Alert>
 	{/if}
 </div>

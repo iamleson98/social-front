@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import type { GiftCard } from '$lib/gql/graphql';
 	import { BASIC_DATE_FORMAT } from '$lib/utils/consts';
@@ -14,23 +14,23 @@
 
 	const SECTIONS = [
 		{
-			title: $tranFunc('giftcard.creationDate'),
+			title: $T('giftcard.creationDate'),
 			content: dayjs(giftcard.created).format(BASIC_DATE_FORMAT),
 		},
 		{
-			title: $tranFunc('giftcard.issuedBy'),
+			title: $T('giftcard.issuedBy'),
 			content: giftcard.createdByEmail,
 		},
 		{
-			title: $tranFunc('giftcard.orderNumber'),
+			title: $T('giftcard.orderNumber'),
 			content: '-',
 		},
 		{
-			title: $tranFunc('giftcard.productBoughtToGetGiftCard'),
+			title: $T('giftcard.productBoughtToGetGiftCard'),
 			content: '-',
 		},
 		{
-			title: $tranFunc('giftcard.filter.usedBy'),
+			title: $T('giftcard.filter.usedBy'),
 			content: '-',
 		},
 	];
@@ -44,7 +44,7 @@
 {/snippet}
 
 <div class={[SitenameCommonClassName, 'w-3/10 tablet:w-full h-fit']}>
-	<SectionHeader>{$tranFunc('giftcard.cardInfo')}</SectionHeader>
+	<SectionHeader>{$T('giftcard.cardInfo')}</SectionHeader>
 
 	<div class="overflow-x-auto">
 		{#each SECTIONS as section, idx (idx)}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { Check, ClipboardCopy } from '../icons';
 	import { IconButton } from '../ui/Button';
 	import type { SocialColor, SocialSize } from '../ui/common';
@@ -22,8 +22,8 @@
 		tooltipPlacement = 'tooltip-right',
 	}: Props = $props();
 
-	const CopyTran = $tranFunc('common.copy');
-	const CopiedText = $tranFunc('common.copied');
+	const CopyTran = $T('common.copy');
+	const CopiedText = $T('common.copied');
 
 	let copyTooltip = $state(CopyTran);
 	let copyIcon = $state(ClipboardCopy);

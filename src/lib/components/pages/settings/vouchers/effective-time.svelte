@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { RFC3339TimeFormat } from '$lib/api/graphql/utils';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
@@ -17,13 +17,13 @@
 </script>
 
 <div class={SitenameCommonClassName}>
-	<SectionHeader>{$tranFunc('voucher.effectDate')}</SectionHeader>
+	<SectionHeader>{$T('voucher.effectDate')}</SectionHeader>
 
 	<div class="grid grid-cols-2 gap-2">
 		<EaseDatePicker
 			required
 			{disabled}
-			label={$tranFunc('common.startAt')}
+			label={$T('common.startAt')}
 			value={{ date: startDate }}
 			timeConfig={{
 				stepMinutes: 1,
@@ -33,7 +33,7 @@
 			onchange={(value) => {
 				startDate = dayjs(value.date).format(RFC3339TimeFormat);
 			}}
-			placeholder={$tranFunc('common.startAt')}
+			placeholder={$T('common.startAt')}
 			allowSelectMonthYears={{
 				showMonths: true,
 				showResetBtn: true,
@@ -46,8 +46,8 @@
 
 		<EaseDatePicker
 			{disabled}
-			label={$tranFunc('common.endAt')}
-			placeholder={$tranFunc('common.endAt')}
+			label={$T('common.endAt')}
+			placeholder={$T('common.endAt')}
 			value={{ date: endDate }}
 			timeConfig={{
 				stepMinutes: 1,

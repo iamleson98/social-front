@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tranFunc } from '$i18n';
+	import { T } from '$i18n';
 	import { CATEGORIES_LIST_QUERY_STORE } from '$lib/api';
 	import { PRODUCT_TYPES_QUERY } from '$lib/api/admin/product';
 	import { COLLECTIONS_QUERY } from '$lib/api/collections';
@@ -29,7 +29,7 @@
 
 	const FilterOptions: FilterProps<ProductFilterInput> = {
 		price: {
-			label: $tranFunc('product.price'),
+			label: $T('product.price'),
 			mustPairWith: 'channel', //
 			operations: {
 				eq: CommonSnippets.singleNumber,
@@ -39,60 +39,60 @@
 			},
 		},
 		categories: {
-			label: $tranFunc('product.category'),
+			label: $T('product.category'),
 			operations: {
 				eq: categoryIs,
 				oneOf: categoryOneOf,
 			},
 		},
 		collections: {
-			label: $tranFunc('product.collection'),
+			label: $T('product.collection'),
 			operations: {
 				oneOf: collectionOneOf,
 			},
 		},
 		channel: {
-			label: $tranFunc('product.channel'),
+			label: $T('product.channel'),
 			operations: {
 				eq: CommonSnippets.singleChannelSlug,
 			},
 		},
 		productTypes: {
-			label: $tranFunc('product.prdType'),
+			label: $T('product.prdType'),
 			operations: {
 				eq: productTypeIs,
 				oneOf: productTypeOneOf,
 			},
 		},
 		isAvailable: {
-			label: $tranFunc('product.availForPurchase'),
+			label: $T('product.availForPurchase'),
 			mustPairWith: 'channel',
 			operations: {
 				eq: CommonSnippets.yesNo,
 			},
 		},
 		isPublished: {
-			label: $tranFunc('product.published'),
+			label: $T('product.published'),
 			mustPairWith: 'channel',
 			operations: {
 				eq: CommonSnippets.yesNo,
 			},
 		},
 		isVisibleInListing: {
-			label: $tranFunc('product.visibleInListing'),
+			label: $T('product.visibleInListing'),
 			mustPairWith: 'channel',
 			operations: {
 				eq: CommonSnippets.yesNo,
 			},
 		},
 		hasCategory: {
-			label: $tranFunc('product.hasCategory'),
+			label: $T('product.hasCategory'),
 			operations: {
 				eq: CommonSnippets.yesNo,
 			},
 		},
 		giftCard: {
-			label: $tranFunc('product.isGiftcard'),
+			label: $T('product.isGiftcard'),
 			operations: {
 				eq: CommonSnippets.yesNo,
 			},
@@ -102,7 +102,7 @@
 
 {#snippet categoryIs({ onValue, initialValue = '' }: FilterComponentType)}
 	<GraphqlPaginableSelect
-		placeholder={$tranFunc('product.category')}
+		placeholder={$T('product.category')}
 		query={CATEGORIES_LIST_QUERY_STORE}
 		resultKey="categories"
 		optionValueKey="id"
@@ -118,7 +118,7 @@
 
 {#snippet categoryOneOf({ onValue, initialValue = [] }: FilterComponentType)}
 	<GraphqlPaginableSelect
-		placeholder={$tranFunc('product.category')}
+		placeholder={$T('product.category')}
 		query={CATEGORIES_LIST_QUERY_STORE}
 		resultKey="categories"
 		maxDisplay={6}
@@ -137,7 +137,7 @@
 
 {#snippet productTypeIs({ onValue, initialValue = '' }: FilterComponentType)}
 	<GraphqlPaginableSelect
-		placeholder={$tranFunc('product.prdType')}
+		placeholder={$T('product.prdType')}
 		query={PRODUCT_TYPES_QUERY}
 		resultKey="productTypes"
 		optionValueKey="id"
@@ -153,7 +153,7 @@
 
 {#snippet productTypeOneOf({ onValue, initialValue = [] }: FilterComponentType)}
 	<GraphqlPaginableSelect
-		placeholder={$tranFunc('product.prdType')}
+		placeholder={$T('product.prdType')}
 		query={PRODUCT_TYPES_QUERY}
 		resultKey="productTypes"
 		maxDisplay={6}
@@ -172,7 +172,7 @@
 
 {#snippet collectionOneOf({ onValue, initialValue = [] }: FilterComponentType)}
 	<GraphqlPaginableSelect
-		placeholder={$tranFunc('product.collection')}
+		placeholder={$T('product.collection')}
 		query={COLLECTIONS_QUERY}
 		resultKey="collections"
 		optionValueKey="id"
