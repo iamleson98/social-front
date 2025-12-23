@@ -8,9 +8,10 @@
 	} from '$lib/api/admin/product';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import { Plus, Search, Trash } from '$lib/components/icons';
+	import { Plus, Trash } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
-	import { Checkbox, Input } from '$lib/components/ui/Input';
+	import { Alert } from '$lib/components/ui/Alert';
+	import { Checkbox } from '$lib/components/ui/Input';
 	import { Modal } from '$lib/components/ui/Modal';
 	import {
 		GraphqlPaginableTable,
@@ -33,7 +34,11 @@
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
-	import { canUseAttributeForVariantSelection } from './utils';
+	import {
+		// canUseAttributeForVariantSelection,
+		MaximumVariantSelectionAttributes,
+	} from './utils';
+	import { set } from 'es-toolkit/compat';
 	import { SvelteSet } from 'svelte/reactivity';
 
 	type Props = {
@@ -65,8 +70,8 @@
 	let availableAttributeVariables = $state({
 		id: productTypeId,
 		first: 20,
-		filter: {
-			search: '',
+		where: {
+			withChoices: undefined,
 		},
 	});
 
@@ -121,10 +126,10 @@
 			title: $T('common.slug'),
 			child: { render: ({ item }) => item.attribute.slug },
 		},
-		{
-			title: 'Is variant selection',
-			child: attributeIsVariantSelection,
-		},
+		// {
+		// 	title: $T('attribute.isVariantSelection'),
+		// 	child: attributeIsVariantSelection,
+		// },
 		{
 			title: $T('attributes.valRequired'),
 			child: variantAttrValueRequired,
@@ -202,6 +207,16 @@
 			return;
 	};
 
+	const handleCloseAssignModal = () => {
+		// reset the withChoices filter so that when we open the assign product attributes modal, we can see all attributes
+		if (attributeAssignType === ProductAttributeType.Variant)
+			set(availableAttributeVariables, 'where.withChoices', undefined);
+
+		selectedAttributesToAssign.clear();
+
+		attributeAssignType = undefined;
+	};
+
 	const handleAssignAttributes = async () => {
 		if (!selectedAttributesToAssign.size || !attributeAssignType) return;
 
@@ -214,6 +229,7 @@
 			operations: [...selectedAttributesToAssign].map((id) => ({
 				id,
 				type: attributeAssignType!,
+				variantSelection: attributeAssignType === ProductAttributeType.Variant,
 			})),
 		});
 		loading = false;
@@ -221,8 +237,7 @@
 		if (checkIfGraphqlResultHasError(result, 'productAttributeAssign', $CommonState.EditSuccess))
 			return;
 
-		attributeAssignType = undefined;
-		selectedAttributesToAssign.clear();
+		handleCloseAssignModal();
 	};
 </script>
 
@@ -243,7 +258,7 @@
 	<Checkbox size="sm" checked={item.attribute.valueRequired} disabled />
 {/snippet}
 
-{#snippet name({ item }: { item: Attribute })}
+{#snippet name({ item }: TableCellProps<Attribute>)}
 	<a
 		class="link"
 		target="_blank"
@@ -252,19 +267,19 @@
 	>
 {/snippet}
 
-{#snippet attributeIsVariantSelection({ item, idx }: TableCellProps<AssignedVariantAttribute>)}
-	{@const isNotVariantSelectable = !canUseAttributeForVariantSelection(item.attribute)}
+<!-- {#snippet attributeIsVariantSelection({ item, idx }: TableCellProps<AssignedVariantAttribute>)}
+	{@const canUseAsVariantSelection = canUseAttributeForVariantSelection(item.attribute)}
 	<Checkbox
 		size="sm"
 		data-interactive
 		bind:checked={variantSelectionOperations[idx].variantSelection}
-		disabled={shouldDisable || isNotVariantSelectable}
-		class={[isNotVariantSelectable && 'tooltip tooltip-top']}
-		data-tip={isNotVariantSelectable
-			? `Attribute "${item.attribute.inputType}" can not be used as variant selection`
+		disabled={shouldDisable || !canUseAsVariantSelection}
+		class={[!canUseAsVariantSelection && 'tooltip tooltip-top']}
+		data-tip={!canUseAsVariantSelection
+			? $T('attribute.attrCanNotBeVariantSelection', { inputType: item.attribute.inputType })
 			: undefined}
 	/>
-{/snippet}
+{/snippet} -->
 
 {#snippet productAttributeSelectAll({ items }: { items: Attribute[] })}
 	<Checkbox
@@ -308,7 +323,7 @@
 	/>
 {/snippet}
 
-{#snippet productAttributeUnassignSelect({ item }: { item: Attribute })}
+{#snippet productAttributeUnassignSelect({ item }: TableCellProps<Attribute>)}
 	<Checkbox
 		size="sm"
 		data-interactive
@@ -320,13 +335,12 @@
 	/>
 {/snippet}
 
-{#snippet assignSelect({ item }: { item: Attribute })}
+{#snippet assignSelect({ item }: TableCellProps<Attribute>)}
 	<Checkbox
 		size="sm"
 		checked={selectedAttributesToAssign.has(item.id)}
 		onCheckChange={(checked) => {
-			if (checked) selectedAttributesToAssign.add(item.id);
-			else selectedAttributesToAssign.delete(item.id);
+			selectedAttributesToAssign[checked ? 'add' : 'delete'](item.id);
 		}}
 		disabled={shouldDisable}
 	/>
@@ -334,7 +348,7 @@
 
 <div class={SitenameCommonClassName}>
 	<SectionHeader>
-		<div>Product Attributes</div>
+		<div>{$T('attribute.prdAttributes')}</div>
 		<div class="flex gap-1">
 			<Button
 				size="xs"
@@ -344,7 +358,7 @@
 				onclick={handleUnassignProductAttributes}
 				disabled={shouldDisable || !selectedProductAttributesToUnassign.size}
 			>
-				Unassign attributes
+				{$T('attribute.unassignAttrs')}
 			</Button>
 			<Button
 				size="xs"
@@ -355,7 +369,7 @@
 					attributeAssignType = ProductAttributeType.Product;
 				}}
 			>
-				Assign attributes
+				{$T('attribute.assignAttr')}
 			</Button>
 		</div>
 	</SectionHeader>
@@ -369,10 +383,14 @@
 	/>
 
 	<!-- MARK: variant attributes -->
-	<Checkbox label="Has Variant attributes" bind:checked={hasVariants} disabled={shouldDisable} />
+	<Checkbox
+		label={$T('prdType.hasVariantAttrs')}
+		bind:checked={hasVariants}
+		disabled={shouldDisable}
+	/>
 	{#if hasVariants}
 		<SectionHeader>
-			<div>Variant Attributes</div>
+			<div>{$T('attribute.variantAttrs')}</div>
 
 			<div class="flex gap-1">
 				<Button
@@ -383,18 +401,30 @@
 					onclick={handleUnassignProductVariantAttributes}
 					disabled={shouldDisable || !selectedProductVariantAttributesToUnassign.size}
 				>
-					Unassign attributes
+					{$T('attribute.unassignAttrs')}
 				</Button>
 				<Button
 					size="xs"
 					endIcon={Plus}
 					variant="light"
-					disabled={shouldDisable}
+					disabled={shouldDisable ||
+						assignedVariantAttributes.length >= MaximumVariantSelectionAttributes}
 					onclick={() => {
+						/**
+						 * For variant selection attributes, we only fetch attributes with choices, like dropdown, swatch, multiselect.
+						 * the `AttributeWhereInput` type supports filtering by `withChoices` to achieve this.
+						 *
+						 * So:
+						 * 1) When we fetch selection variant attributes to a product type, we must enable `withChoices` option.
+						 * 2) When we fetch product attributes to product type, we must disable `withChoices` option.
+						 * 3) When we are done with assigning variant selection attributes, we must reset `withChoices` option to undefined,
+						 *    so that when we open the assign product attributes modal, we can see all attributes
+						 */
+						set(availableAttributeVariables, 'where.withChoices', true);
 						attributeAssignType = ProductAttributeType.Variant;
 					}}
 				>
-					Assign attributes
+					{$T('attribute.assignAttr')}
 				</Button>
 			</div>
 		</SectionHeader>
@@ -406,24 +436,28 @@
 			onDragEnd={(dragIndex, dropIndex) =>
 				handleReorderAttributes(ProductAttributeType.Variant, dragIndex, dropIndex)}
 		/>
+		<Alert size="sm">
+			{$T('prdType.canChooseAtMost2VariantAttrsAlert')}
+		</Alert>
 	{/if}
 </div>
 
 <Modal
-	header="Assign attribute"
+	header={$T('attribute.assignAttr')}
 	open={!!attributeAssignType}
 	closeOnEscape
 	closeOnOutsideClick
 	size="sm"
-	onClose={() => (attributeAssignType = undefined)}
-	onCancel={() => (attributeAssignType = undefined)}
+	onClose={handleCloseAssignModal}
+	onCancel={handleCloseAssignModal}
 	onOk={handleAssignAttributes}
 	disableElements={shouldDisable}
 	disableOkBtn={!selectedAttributesToAssign.size || shouldDisable}
+	cancelText={$T('common.cancel')}
 >
-	<Input
+	<!-- <Input
 		startIcon={Search}
-		placeholder="Search attribute"
+		placeholder={$T('common.search')}
 		class="mb-2"
 		disabled={shouldDisable}
 		bind:value={availableAttributeVariables.filter.search}
@@ -433,7 +467,7 @@
 				tableRef?.triggerFetchData();
 			},
 		}}
-	/>
+	/> -->
 	<GraphqlPaginableTable
 		query={PRODUCT_TYPE_AVAILABLE_ATTRIBUTES_QUERY}
 		resultKey={'productType.availableAttributes' as keyof Query}

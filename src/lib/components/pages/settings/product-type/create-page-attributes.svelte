@@ -3,15 +3,18 @@
 	import { PRODUCT_ATTRIBUTES_QUERY } from '$lib/api/admin/attribute';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Search } from '$lib/components/icons';
+	import { Alert } from '$lib/components/ui/Alert';
 	import { Checkbox, Input, Toggle } from '$lib/components/ui/Input';
 	import {
 		GraphqlPaginableTable,
 		type GraphqlPaginableTableInterface,
+		type TableCellProps,
 		type TableColumnProps,
 	} from '$lib/components/ui/Table';
 	import type { Attribute, QueryAttributesArgs } from '$lib/gql/graphql';
+	import { AppRoute } from '$lib/utils';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
-	import { canUseAttributeForVariantSelection } from './utils';
+	import { canUseAttributeForVariantSelection, MaximumVariantSelectionAttributes } from './utils';
 
 	type Props = {
 		hasVariants: boolean;
@@ -39,7 +42,7 @@
 		},
 		{
 			title: $T('common.slug'),
-			child: slug,
+			child: { render: ({ item }) => item.slug },
 		},
 		{
 			title: $T('collection.assignPrd'),
@@ -57,61 +60,59 @@
 	});
 </script>
 
-{#snippet productAttrAssignSelect({ item }: { item: Attribute })}
+{#snippet name({ item }: TableCellProps<Attribute>)}
+	<a class="link" href={AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_DETAILS(item.id)}>{item.name}</a>
+{/snippet}
+
+{#snippet productAttrAssignSelect({ item }: TableCellProps<Attribute>)}
 	{@const alreadyChecked = productAttributesToAssign.includes(item.id)}
-	<Toggle
+	<Checkbox
 		checked={alreadyChecked}
 		onCheckChange={(checked) =>
 			checked
 				? productAttributesToAssign.push(item.id)
 				: (productAttributesToAssign = productAttributesToAssign.filter((id) => id !== item.id))}
 		{disabled}
-		label={alreadyChecked ? 'Yes' : 'No'}
+		label={alreadyChecked ? $T('common.yes') : $T('common.no')}
 	/>
 {/snippet}
 
-{#snippet name({ item }: { item: Attribute })}
-	<span>{item.name}</span>
-{/snippet}
-
-{#snippet slug({ item }: { item: Attribute })}
-	<span>{item.slug}</span>
-{/snippet}
-
-{#snippet variantAttrAssignSelect({ item }: { item: Attribute })}
+{#snippet variantAttrAssignSelect({ item }: TableCellProps<Attribute>)}
 	{@const checked = variantAttributesToAssign.includes(item.id)}
-	{@const isNotVariantSelectable = !canUseAttributeForVariantSelection(item)}
-	<Toggle
+	{@const isVariantSelectable = canUseAttributeForVariantSelection(item)}
+	{@const disable =
+		!hasVariants ||
+		!isVariantSelectable ||
+		disabled ||
+		(variantAttributesToAssign.length === MaximumVariantSelectionAttributes && !checked)}
+	<Checkbox
 		{checked}
 		onCheckChange={(checked) =>
 			checked
 				? variantAttributesToAssign.push(item.id)
 				: (variantAttributesToAssign = variantAttributesToAssign.filter((id) => id !== item.id))}
-		disabled={disabled || !hasVariants || !isNotVariantSelectable}
-		label={checked ? 'Yes' : 'No'}
-		class={[isNotVariantSelectable && 'tooltip tooltip-top']}
-		data-tip={isNotVariantSelectable
-			? `Attribute "${item.inputType}" can not be used as variant selection`
+		disabled={disable}
+		label={checked ? $T('common.yes') : $T('common.no')}
+		subText={!isVariantSelectable
+			? $T('attribute.attrCanNotBeVariantSelection', { inputType: item.inputType })
 			: undefined}
 	/>
 {/snippet}
 
 <div class={SitenameCommonClassName}>
 	<SectionHeader>
-		<div>Attributes assign</div>
+		<div>{$T('attribute.assignAttr')}</div>
 	</SectionHeader>
-	<Checkbox label="Has Variant attributes" bind:checked={hasVariants} {disabled} />
-
+	<Checkbox label={$T('prdType.hasVariantAttrs')} bind:checked={hasVariants} {disabled} />
 	<Input
 		startIcon={Search}
-		placeholder="Search"
+		placeholder={$T('common.search')}
 		bind:value={productAttrsVariables.filter!.search}
 		inputDebounceOption={{
 			debounceTime: 888,
 			onInput: () => tableRef?.triggerFetchData(),
 		}}
 	/>
-
 	<GraphqlPaginableTable
 		query={PRODUCT_ATTRIBUTES_QUERY}
 		resultKey="attributes"
@@ -119,6 +120,10 @@
 		{disabled}
 		bind:this={tableRef}
 		bind:variables={productAttrsVariables}
-		autoRefetchOnPaginationParamsChange={false}
+		autoRefetchOnPaginationParamsChange
+		autoFetchDataOnMount
 	/>
+	<Alert size="sm">
+		{$T('prdType.canChooseAtMost2VariantAttrsAlert')}
+	</Alert>
 </div>

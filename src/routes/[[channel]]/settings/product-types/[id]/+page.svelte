@@ -78,7 +78,10 @@
 			MutationProductTypeUpdateArgs
 		>(PRODUCT_TYPE_UPDATE_MUTATION, {
 			id: page.params.id as string,
-			input: productTypeInput,
+			input: {
+				...productTypeInput,
+				taxClass: productTypeInput.taxClass || '',
+			},
 		});
 		if (checkIfGraphqlResultHasError(result, 'productTypeUpdate')) {
 			loading = false;
@@ -112,7 +115,7 @@
 			return;
 
 		productTypeQuery.reexecute({
-			context: { requestPolicy: 'network-only' },
+			// context: { requestPolicy: 'network-only' },
 			variables: { id: page.params.id as string, attributeChoicesFirst: 1 },
 		});
 	};
@@ -166,7 +169,7 @@
 				if (assignedVariantAttributes)
 					variantSelectionOperations =
 						assignedVariantAttributes?.map<ProductAttributeAssignmentUpdateInput>((attr) => ({
-							variantSelection: attr.variantSelection,
+							variantSelection: true,
 							id: attr.attribute.id,
 						}));
 

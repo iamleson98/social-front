@@ -615,6 +615,10 @@ export default {
 		requireShip: 'Shippable',
 		hasVariantAttrs: 'Has variant attributes',
 		type: 'Type',
+		normalPrdType: 'Normal product type',
+		giftcardPrdType: 'Gift card product type',
+		giftcardPrdTypeHint: 'This product will act as payment method',
+		canChooseAtMost2VariantAttrsAlert: 'You can choose at most 2 variant selection attributes',
 	},
 	collection: {
 		newCol: 'New collection',
@@ -773,5 +777,13 @@ export default {
 		addRange: 'Add range',
 		includeHelpText: 'Added postal codes will be excluded from using this delivery methods. If none are added all postal codes will be able to use that shipping rate',
 		excludeHelpText: 'Only added postal codes will be able to use this shipping rate',
+	},
+	attribute: {
+		assignAttr: 'Attributes assign',
+		attrCanNotBeVariantSelection: 'Attribute "{{inputType}}" can not be used as variant selection',
+		unassignAttrs: 'Unassign attributes',
+		variantAttrs: 'Variant attributes',
+		prdAttributes: 'Product attributes',
+		isVariantSelection: 'Is variant selection',
 	},
 };

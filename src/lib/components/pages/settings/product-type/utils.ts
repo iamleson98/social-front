@@ -10,3 +10,9 @@ export const canUseAttributeForVariantSelection = (attr: Attribute) => {
 		].includes(attr.inputType)
 	);
 };
+
+/**
+ * In the product creation/edit pages, we support selecting at most 2 attributes for variant selection.
+ * This constant defines that maximum number.
+ */
+export const MaximumVariantSelectionAttributes = 2;

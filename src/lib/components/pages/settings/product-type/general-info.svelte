@@ -39,7 +39,7 @@
 		name: string().nonempty($CommonState.FieldRequiredError),
 		slug: string()
 			.nonempty($CommonState.FieldRequiredError)
-			.regex(ValidSlugRegex, 'Please provide valid slug'),
+			.regex(ValidSlugRegex, $T('error.invalidSlug')),
 		kind: string().nonempty($CommonState.FieldRequiredError),
 		isShippingRequired: boolean(),
 	});
@@ -62,12 +62,11 @@
 </script>
 
 <div class={SitenameCommonClassName}>
-	<SectionHeader>General information</SectionHeader>
+	<SectionHeader>{$T('common.generalInfo')}</SectionHeader>
 
 	<div class="grid grid-cols-2 gap-2">
 		<Input
-			label="Name"
-			placeholder="Name"
+			label={$T('common.name')}
 			required
 			bind:value={name}
 			{disabled}
@@ -77,8 +76,7 @@
 			subText={$SchemaHandler.name?.[0]}
 		/>
 		<Input
-			label="Slug"
-			placeholder="Slug"
+			label={$T('common.slug')}
 			required
 			bind:value={slug}
 			{disabled}
@@ -91,13 +89,13 @@
 
 	<div class="space-y-1">
 		<Label
-			label="Product type"
+			label={$T('product.prdType')}
 			required
 			requiredAtPos="end"
 			variant={$SchemaHandler.kind?.length ? 'error' : 'info'}
 		/>
 		<RadioButton
-			label="Normal product type"
+			label={$T('prdType.normalPrdType')}
 			value={ProductTypeKindEnum.Normal}
 			bind:group={kind}
 			{disabled}
@@ -107,14 +105,14 @@
 		<RadioButton
 			value={ProductTypeKindEnum.GiftCard}
 			bind:group={kind}
-			subText="This product will act as payment method"
+			subText={$T('prdType.giftcardPrdTypeHint')}
 			{disabled}
 			onchange={SchemaHandler.validate}
 			variant={$SchemaHandler.kind?.length ? 'error' : 'info'}
 		>
 			{#snippet label()}
 				<div class="flex items-center gap-1">
-					<span>Gift card product type</span>
+					<span>{$T('prdType.giftcardPrdType')}</span>
 					<Badge size="xs" text={$T('settings.preview')} variant="outline" rounded />
 				</div>
 			{/snippet}
@@ -122,7 +120,12 @@
 	</div>
 
 	<div class="flex gap-2 items-center">
-		<Checkbox label="require shipping" bind:checked={isShippingRequired} class="w-1/3" {disabled} />
+		<Checkbox
+			label={$T('prdType.requireShip')}
+			bind:checked={isShippingRequired}
+			class="w-1/3"
+			{disabled}
+		/>
 
 		<GraphqlPaginableSelect
 			class="w-2/3"

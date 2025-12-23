@@ -548,6 +548,10 @@ export type TranslationKey =
 | 'prdType.requireShip'
 | 'prdType.hasVariantAttrs'
 | 'prdType.type'
+| 'prdType.normalPrdType'
+| 'prdType.giftcardPrdType'
+| 'prdType.giftcardPrdTypeHint'
+| 'prdType.canChooseAtMost2VariantAttrsAlert'
 | 'collection.newCol'
 | 'collection.noOfPrds'
 | 'collection.noPrdAssigned'
@@ -685,4 +689,10 @@ export type TranslationKey =
 | 'ship.postalCodeRules'
 | 'ship.addRange'
 | 'ship.includeHelpText'
-| 'ship.excludeHelpText';
+| 'ship.excludeHelpText'
+| 'attribute.assignAttr'
+| 'attribute.attrCanNotBeVariantSelection'
+| 'attribute.unassignAttrs'
+| 'attribute.variantAttrs'
+| 'attribute.prdAttributes'
+| 'attribute.isVariantSelection';

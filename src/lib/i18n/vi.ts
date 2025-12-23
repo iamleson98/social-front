@@ -257,6 +257,7 @@ export default {
 		buyNow: 'Mua ngay',
 		assignMedia: 'Gán ảnh',
 		assignModalHead: 'Gán ảnh cho phân loại',
+		
 	},
 	error: {
 		invalidSlug: 'Giá trị slug không hợp lệ',
@@ -610,6 +611,10 @@ export default {
 		requireShip: 'Yêu cầu giao vận',
 		hasVariantAttrs: 'Có thuộc tính phân loại sản phẩm',
 		type: 'Loại',
+		normalPrdType: 'Loại sản phẩm thông thường',
+		giftcardPrdType: 'Loại sản phẩm thẻ quà tặng',
+		giftcardPrdTypeHint: 'Sản phẩm này sẽ hoạt động như phương thức thanh toán',
+		canChooseAtMost2VariantAttrsAlert: 'Bạn chỉ có thể chọn tối đa 2 thuộc tính phân loại sản phẩm',
 	},
 	collection: {
 		newCol: 'Thêm bộ sưu tập',
@@ -769,5 +774,13 @@ export default {
 		addRange: 'Thêm phạm vi',
 		includeHelpText: 'Sử dụng phương thức giao vận này sẽ không bao gồm nhưng mã giao vận được thêm mới. Nếu không có mã nào được thêm, tất cả mã giao vận có thể được sử dụng cho tỷ giá giao hàng đó.',
 		excludeHelpText: 'Chỉ những mã giao vận thêm vào mới có thể sử dụng tỷ giá giao này',
+	},
+	attribute: {
+		assignAttr: 'Gán thuộc tính',
+		attrCanNotBeVariantSelection: 'Thuộc tính "{{inputType}}" không thể được dùng cho lựa chọn phân loại',
+		unassignAttrs: 'Bỏ gán thuộc tính',
+		variantAttrs: 'Thuộc tính phân loại',
+		prdAttributes: 'Thuộc tính sản phẩm',
+		isVariantSelection: 'Là lựa chọn phân loại',
 	},
 };

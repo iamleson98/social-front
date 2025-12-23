@@ -379,16 +379,17 @@
 										class={['text-center font-medium text-blue-600 bg-blue-50']}
 										rowspan={variantManifests[1].values.length}
 									>
-										{variantInputDetail.name?.split('-')[0]}
+										<!-- {variantInputDetail.name?.split('-')[0]} -->
+										{@render VariantMediaSnippets.VariantImageBtn(
+											variantInputDetail.name?.split('-')[0]!,
+											style,
+											() => (currentVariantSkuToAssignMedia = variantInputDetail.sku!),
+											disabled,
+										)}
 									</td>
 								{/if}
 								<td class="text-center">
-									{@render VariantMediaSnippets.VariantImageBtn(
-										variantInputDetail.name?.split('-')[1]!,
-										style,
-										() => (currentVariantSkuToAssignMedia = variantInputDetail.sku!),
-										disabled,
-									)}
+									{variantInputDetail.name?.split('-')[1]}
 								</td>
 							{:else}
 								<td class="text-center">
