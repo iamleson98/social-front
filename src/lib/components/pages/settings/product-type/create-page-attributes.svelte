@@ -4,7 +4,7 @@
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Search } from '$lib/components/icons';
 	import { Alert } from '$lib/components/ui/Alert';
-	import { Checkbox, Input, Toggle } from '$lib/components/ui/Input';
+	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import {
 		GraphqlPaginableTable,
 		type GraphqlPaginableTableInterface,

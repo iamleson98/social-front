@@ -110,19 +110,9 @@
 		};
 	});
 
-	let handleFetchData = $state(autoFetchDataOnMount);
-
 	export const triggerFetchData = () => {
-		handleFetchData = true;
+		queryOperationStore.reexecute({ variables, context: { requestPolicy: 'network-only' } });
 	};
-
-	$effect(() => {
-		if (handleFetchData) {
-			queryOperationStore.reexecute({ variables, context: { requestPolicy: 'network-only' } });
-
-			handleFetchData = false;
-		}
-	});
 
 	const handleNextPageClick = (after: string) => {
 		variables = {
