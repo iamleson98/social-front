@@ -3,14 +3,13 @@ import type { TranslationKey } from '$i18n/types';
 import { VoucherTypeEnum } from '$lib/gql/graphql';
 import { derived } from 'svelte/store';
 
-export const APPLICATION_TYPES: Record<VoucherTypeEnum, TranslationKey> = {
+export const APPLICATION_TYPES: Partial<Record<VoucherTypeEnum, TranslationKey>> = {
 	[VoucherTypeEnum.EntireOrder]: 'voucher.applyEntireOrder',
 	[VoucherTypeEnum.SpecificProduct]: 'voucher.applySpecificPrd',
-	[VoucherTypeEnum.Shipping]: 'voucher.discountShip',
+	// [VoucherTypeEnum.Shipping]: 'voucher.discountShip',
 };
 
 export type TabName = 'categories' | 'products' | 'collections' | 'variants';
-// export const TABS: TabName[] = ['categories', 'products', 'collections', 'variants'];
 
 export const TABS_OPTIONS = derived(T, func => [
 	{

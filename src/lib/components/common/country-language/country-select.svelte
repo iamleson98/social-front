@@ -19,19 +19,19 @@
 		...rest
 	}: Omit<SelectProps, 'options'> = $props();
 
-	const shopStore = operationStore<Pick<Query, 'shop'>>({
+	const ShopStore = operationStore<Pick<Query, 'shop'>>({
 		query: SHOP_QUERY,
 		requestPolicy: 'cache-and-network',
 	});
 </script>
 
 <div class={className}>
-	{#if $shopStore.fetching}
+	{#if $ShopStore.fetching}
 		<SelectSkeleton {size} label={!!label} />
-	{:else if $shopStore.error}
-		<Alert variant="error" {size} bordered>{$shopStore.error.message}</Alert>
-	{:else if $shopStore.data?.shop}
-		{@const options = $shopStore.data.shop.countries.map<SelectOption>((item) => ({
+	{:else if $ShopStore.error}
+		<Alert variant="error" {size} bordered>{$ShopStore.error.message}</Alert>
+	{:else if $ShopStore.data?.shop}
+		{@const options = $ShopStore.data.shop.countries.map<SelectOption>((item) => ({
 			label: item.country,
 			value: item.code,
 		}))}

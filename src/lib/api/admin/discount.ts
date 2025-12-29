@@ -112,6 +112,9 @@ export const VOUCHER_DETAIL_QUERY = gql`
 			minCheckoutItemsQuantity
 			applyOncePerOrder
 			applyOncePerCustomer
+			countries {
+				code
+			}
 			metadata {
 				key
 				value

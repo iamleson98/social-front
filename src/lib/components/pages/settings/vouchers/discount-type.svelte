@@ -3,6 +3,7 @@
 	import { CHANNELS_QUERY } from '$lib/api/channels';
 	import { operationStore } from '$lib/api/operation';
 	import ChannelSelect from '$lib/components/common/channel-select/channel-select.svelte';
+	import CountrySelect from '$lib/components/common/country-language/country-select.svelte';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { Badge } from '$lib/components/ui/Badge';
@@ -28,6 +29,7 @@
 		activeChannelListings: VoucherChannelListing[];
 		disabled?: boolean;
 		formOk: boolean;
+		countries?: string[];
 	};
 
 	let {
@@ -40,6 +42,7 @@
 		activeChannelListings = $bindable(),
 		disabled,
 		formOk = $bindable(true),
+		countries = $bindable([]),
 	}: Props = $props();
 
 	/** keeps track of channels already in use with voucher */
@@ -172,7 +175,7 @@
 		</div>
 
 		<div>
-			<SectionHeader>{$T('voucher.discountValueType')}</SectionHeader>
+			<SectionHeader>{$T('voucher.discountType')}</SectionHeader>
 			<div class="space-y-1.5">
 				{#each VOUCHER_TYPES as type, idx (idx)}
 					<RadioButton label={type.label} bind:group={discountType} {disabled} value={type.value} />
@@ -215,6 +218,15 @@
 					</div>
 				{/each}
 			</div>
+		{:else}
+			<CountrySelect
+				label={$T('settings.chooseCountry')}
+				size="sm"
+				bind:value={countries}
+				multiple
+				required
+				{disabled}
+			/>
 		{/if}
 	</div>
 {/if}

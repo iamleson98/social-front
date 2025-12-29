@@ -42,12 +42,11 @@
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
-	import { pick } from 'es-toolkit';
 	import { onMount } from 'svelte';
 	import toast from 'svelte-french-toast';
 	import { flattenError, string } from 'zod';
 
-	const voucherQuery = operationStore<Pick<Query, 'voucher'>, QueryVoucherArgs>({
+	const VoucherQuery = operationStore<Pick<Query, 'voucher'>, QueryVoucherArgs>({
 		query: VOUCHER_DETAIL_QUERY,
 		variables: {
 			id: page.params.id as string,
@@ -68,6 +67,7 @@
 		applyOncePerOrder: false,
 		singleUse: false,
 		addCodes: [],
+		countries: [],
 	});
 
 	/** for updating channel listing */
@@ -92,26 +92,41 @@
 	};
 
 	onMount(() =>
-		voucherQuery.subscribe((result) => {
-			if (!result.data?.voucher) return;
-			voucherInput = {
-				...voucherInput,
-				...pick(result.data.voucher, [
-					'name',
-					'startDate',
-					'endDate',
-					'usageLimit',
-					'type',
-					'discountValueType',
-					'applyOncePerCustomer',
-					'applyOncePerOrder',
-					'onlyForStaff',
-					'singleUse',
-					'minCheckoutItemsQuantity',
-				]),
-			};
+		VoucherQuery.subscribe((result) => {
+			if (result.data?.voucher) {
+				const {
+					name,
+					startDate,
+					endDate,
+					usageLimit,
+					type,
+					discountValueType,
+					applyOncePerCustomer,
+					applyOncePerOrder,
+					onlyForStaff,
+					singleUse,
+					minCheckoutItemsQuantity,
+					channelListings,
+					countries,
+				} = result.data.voucher;
+				voucherInput = {
+					...voucherInput,
+					name,
+					startDate,
+					endDate,
+					usageLimit: usageLimit,
+					type,
+					discountValueType,
+					applyOncePerCustomer,
+					applyOncePerOrder,
+					onlyForStaff,
+					singleUse,
+					minCheckoutItemsQuantity,
+					countries: countries?.map((item) => item.code) || [],
+				};
 
-			activeChannelListings = result.data.voucher.channelListings || [];
+				activeChannelListings = channelListings || [];
+			}
 		}),
 	);
 
@@ -156,7 +171,7 @@
 		if (isThereError) return;
 
 		toast.success($CommonState.EditSuccess);
-		voucherQuery.reexecute({
+		VoucherQuery.reexecute({
 			variables: { id: page.params.id! },
 		});
 	};
@@ -181,12 +196,12 @@
 	};
 </script>
 
-{#if $voucherQuery.fetching}
+{#if $VoucherQuery.fetching}
 	<DetailSkeleton />
-{:else if $voucherQuery.error}
-	<Alert variant="error" bordered size="sm">{$voucherQuery.error.message}</Alert>
-{:else if $voucherQuery.data?.voucher}
-	{@const { id, metadata, privateMetadata, channelListings, used } = $voucherQuery.data.voucher}
+{:else if $VoucherQuery.error}
+	<Alert variant="error" bordered size="sm">{$VoucherQuery.error.message}</Alert>
+{:else if $VoucherQuery.data?.voucher}
+	{@const { id, metadata, privateMetadata, channelListings, used } = $VoucherQuery.data.voucher}
 	<div class="flex gap-2">
 		<div class="w-7/10 space-y-2">
 			<div class={SitenameCommonClassName}>
@@ -215,6 +230,7 @@
 				existingChannelListings={channelListings || []}
 				disabled={loading}
 				bind:formOk={generalFormOk[1]}
+				bind:countries={voucherInput.countries!}
 			/>
 			<ApplicationType
 				bind:applicationType={voucherInput.type!}
@@ -251,7 +267,7 @@
 		</div>
 
 		<div class="w-3/10">
-			<Summary voucher={$voucherQuery.data.voucher} />
+			<Summary voucher={$VoucherQuery.data.voucher} />
 		</div>
 	</div>
 

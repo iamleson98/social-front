@@ -44,7 +44,7 @@
 			<div class="space-y-2.5">
 				{#each Object.keys(APPLICATION_TYPES) as type, idx (idx)}
 					<RadioButton
-						label={$T(APPLICATION_TYPES[type as VoucherTypeEnum])}
+						label={$T(APPLICATION_TYPES[type as VoucherTypeEnum]!)}
 						bind:group={applicationType}
 						value={type}
 						{disabled}
