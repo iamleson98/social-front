@@ -27,7 +27,7 @@
 			optionLabelKey="name"
 			disabled={loading}
 			multiple
-			label={$T('product.collection')}
+			label={$T('common.collections')}
 			bind:value={collections as string[]}
 		/>
 	</div>

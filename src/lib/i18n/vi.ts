@@ -257,7 +257,7 @@ export default {
 		buyNow: 'Mua ngay',
 		assignMedia: 'Gán ảnh',
 		assignModalHead: 'Gán ảnh cho phân loại',
-		
+		noMediaHint: 'Sản phẩm của bạn không có ảnh. Vui lòng thêm ảnh trước.',
 	},
 	error: {
 		invalidSlug: 'Giá trị slug không hợp lệ',

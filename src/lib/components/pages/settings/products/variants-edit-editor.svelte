@@ -16,8 +16,6 @@
 	import { CommonState } from '$lib/utils/common.svelte';
 	import type { MediaObject } from '$lib/utils/types';
 	import { randomString, SitenameCommonClassName } from '$lib/utils/utils';
-	import MediaModal from './media-modal.svelte';
-	import { VariantMediaSnippets } from './snippets.svelte';
 	import './table.css';
 	import {
 		calculateStockInputForChannels,
@@ -35,6 +33,8 @@
 		type VariantManifest,
 		type VariantMedia,
 	} from './utils';
+	import VariantImageAssignButton from './variant-image-assign-button.svelte';
+	import VariantImageAssignModal from './variant-image-assign-modal.svelte';
 	import VariantManifests from './variant-manifests.svelte';
 	import VariantQuickFillingValues from './variant-quick-filling-values.svelte';
 	import dayjs from 'dayjs';
@@ -76,7 +76,7 @@
 		weight: 0,
 		trackInventory: true,
 	});
-	let currentVariantSkuToAssignMedia = $state<string>();
+	let currentVariantIdsToAssignMedia = $state<string[]>();
 	let customStockInputs = $state<CustomStockInput[]>([]);
 	onMount(async () => {
 		calculateStockInputForChannels().then((value) => (customStockInputs = value));
@@ -296,6 +296,17 @@
 			);
 		}
 	};
+
+	const calculateVariantsIdsForMediaAssign = (variantIndex: number): string[] => {
+		if (variantManifests.length <= 1) return [productVariantsInput[variantIndex].id];
+
+		const maxVariantIndexAllowed = variantIndex + variantManifests[1].values.length;
+		return productVariantsInput
+			.filter((_, idx) => idx >= variantIndex && idx < maxVariantIndexAllowed)
+			.map((variant) => variant.id);
+	};
+
+	$inspect(productVariantsInput);
 </script>
 
 <div class="space-y-2">
@@ -338,37 +349,36 @@
 			</thead>
 			<tbody>
 				{#each productVariantsInput as variantInputDetail, detailIdx (detailIdx)}
-					{@const style = productVariantsMediaMap[variantInputDetail.sku!]
-						? `background-image: url(${productVariantsMediaMap[variantInputDetail.sku!].url}); background-size: cover; background-position: center;`
-						: ''}
 					<tr class={`variant-table-row border-b border-gray-200`}>
 						{#if variantManifests.length === MAX_VARIANT_TYPES}
 							{#if detailIdx % variantManifests[1].values.length === 0}
+								{@const variantIds = calculateVariantsIdsForMediaAssign(detailIdx)}
 								<td
 									class={['text-center font-medium text-blue-600 bg-blue-50']}
 									rowspan={variantManifests[1].values.length}
 								>
-									{variantInputDetail.name?.split('-')[0]}
+									<div>
+										{variantInputDetail.name?.split('-')[0]}
+									</div>
+									<VariantImageAssignButton
+										backgroundImageUrl={productVariantsMediaMap[variantInputDetail.id]?.url}
+										onclick={() => (currentVariantIdsToAssignMedia = variantIds)}
+										{disabled}
+									/>
 								</td>
 							{/if}
 							<td class="text-center">
-								<dir class="flex flex-col items-center">
-									{@render VariantMediaSnippets.VariantImageBtn(
-										variantInputDetail.name?.split('-')[1] || '-',
-										style,
-										() => (currentVariantSkuToAssignMedia = variantInputDetail.sku!),
-										disabled,
-									)}
-								</dir>
+								<div>{variantInputDetail.name?.split('-')[1]}</div>
 							</td>
 						{:else}
+							{@const variantIds = calculateVariantsIdsForMediaAssign(detailIdx)}
 							<td class="text-center">
-								{@render VariantMediaSnippets.VariantImageBtn(
-									variantInputDetail.name?.split('-')[0] || '-',
-									style,
-									() => (currentVariantSkuToAssignMedia = variantInputDetail.sku!),
-									disabled,
-								)}
+								<div>{variantInputDetail.name?.split('-')[0]}</div>
+								<VariantImageAssignButton
+									backgroundImageUrl={productVariantsMediaMap[variantInputDetail.id]?.url}
+									onclick={() => (currentVariantIdsToAssignMedia = variantIds)}
+									{disabled}
+								/>
 							</td>
 						{/if}
 						<!-- CHANNELS -->
@@ -559,12 +569,22 @@
 	</div>
 </div>
 
-{@render VariantMediaSnippets.VariantMediaModal(
-	!!currentVariantSkuToAssignMedia,
-	productMedias,
-	(media) => (productVariantsMediaMap[currentVariantSkuToAssignMedia!] = media),
-	() => (currentVariantSkuToAssignMedia = undefined),
-	() =>
-		(productVariantsMediaMap[currentVariantSkuToAssignMedia!] =
-			existingVariantMedias[currentVariantSkuToAssignMedia!]),
-)}
+<VariantImageAssignModal
+	{productMedias}
+	open={!!currentVariantIdsToAssignMedia}
+	selectedMedia={currentVariantIdsToAssignMedia?.length
+		? productVariantsMediaMap[currentVariantIdsToAssignMedia[0]]
+		: undefined}
+	onChooseMedia={(media) => {
+		currentVariantIdsToAssignMedia?.forEach((id) => {
+			if (media) productVariantsMediaMap[id] = media;
+			else delete productVariantsMediaMap[id];
+		});
+	}}
+	onClose={() => {
+		currentVariantIdsToAssignMedia = undefined;
+	}}
+	initialMedia={currentVariantIdsToAssignMedia?.length
+		? existingVariantMedias[currentVariantIdsToAssignMedia[0]]
+		: undefined}
+/>

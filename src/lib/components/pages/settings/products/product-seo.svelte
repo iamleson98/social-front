@@ -82,7 +82,7 @@
 </script>
 
 <div class={SitenameCommonClassName}>
-	<SectionHeader>Seo information</SectionHeader>
+	<SectionHeader>{$T('common.seoInfo')}</SectionHeader>
 	<Input
 		placeholder={$T('product.prdSlug')}
 		bind:value={slug}

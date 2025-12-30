@@ -40,7 +40,7 @@
 
 {#if show}
 	<div
-		class={`flex items-start justify-between wrap-anywhere rounded-lg alert-${size} ${className} ${ALERT_VARIANT_STYLE_MAP[variant]} ${bordered ? 'border' : 'border-none!'}`}
+		class={`flex items-start w-full justify-between wrap-anywhere rounded-lg alert-${size} ${className} ${ALERT_VARIANT_STYLE_MAP[variant]} ${bordered ? 'border' : 'border-none!'}`}
 		in:fly={{ y: 10 }}
 	>
 		<div class="flex items-start gap-2">

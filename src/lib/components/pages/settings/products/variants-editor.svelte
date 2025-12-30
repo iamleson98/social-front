@@ -16,7 +16,6 @@
 	import { CommonState } from '$lib/utils/common.svelte';
 	import type { MediaObject } from '$lib/utils/types';
 	import { randomString, SitenameCommonClassName } from '$lib/utils/utils';
-	import { VariantMediaSnippets } from './snippets.svelte';
 	import './table.css';
 	import {
 		calculateStockInputForChannels,
@@ -32,6 +31,8 @@
 		type VariantManifest,
 		type VariantMedia,
 	} from './utils';
+	import VariantImageAssignButton from './variant-image-assign-button.svelte';
+	import VariantImageAssignModal from './variant-image-assign-modal.svelte';
 	import VariantManifests from './variant-manifests.svelte';
 	import VariantQuickFillingValues from './variant-quick-filling-values.svelte';
 	import dayjs from 'dayjs';
@@ -69,7 +70,7 @@
 	let variantManifests = $state<VariantManifest[]>([]);
 	let quickFillingHighlightClass = $state<QuickFillHighlight>();
 	let channelSelectOptions = $state.raw<ChannelSelectOptionProps[]>([]);
-	let currentVariantSkuToAssignMedia = $state<string>();
+	let currentVariantSkusToAssignMedia = $state<string[]>();
 	/**
 	 * there are at most 2 attributes used for variants creation, so this list has 2 booleans.
 	 * If user can not find her desired attribute values, we support auto create feature,
@@ -324,6 +325,15 @@
 			};
 		});
 	};
+
+	const calculateVariantsSkusForMediaAssign = (variantIndex: number): string[] => {
+		if (variantManifests.length <= 1) return [variantsInputDetails[variantIndex].sku!];
+
+		const maxVariantIndexAllowed = variantIndex + variantManifests[1].values.length;
+		return variantsInputDetails
+			.filter((_, idx) => idx >= variantIndex && idx < maxVariantIndexAllowed)
+			.map((variant) => variant.sku!);
+	};
 </script>
 
 <div class="space-y-2">
@@ -369,36 +379,34 @@
 				</thead>
 				<tbody>
 					{#each variantsInputDetails as variantInputDetail, detailIdx (detailIdx)}
-						{@const style = productVariantsMediaMap[variantInputDetail.sku!]
-							? `background-image: url(${productVariantsMediaMap[variantInputDetail.sku!].url}); background-size: cover; background-position: center;`
-							: ''}
 						<tr class={`variant-table-row ${quickFillingHighlightClass} border-b border-gray-200`}>
 							{#if variantManifests.length === MAX_VARIANT_TYPES}
 								{#if detailIdx % variantManifests[1].values.length === 0}
+									{@const variantSkus = calculateVariantsSkusForMediaAssign(detailIdx)}
 									<td
 										class={['text-center font-medium text-blue-600 bg-blue-50']}
 										rowspan={variantManifests[1].values.length}
 									>
-										<!-- {variantInputDetail.name?.split('-')[0]} -->
-										{@render VariantMediaSnippets.VariantImageBtn(
-											variantInputDetail.name?.split('-')[0]!,
-											style,
-											() => (currentVariantSkuToAssignMedia = variantInputDetail.sku!),
-											disabled,
-										)}
+										<div>{variantInputDetail.name?.split('-')[0]}</div>
+										<VariantImageAssignButton
+											backgroundImageUrl={productVariantsMediaMap[variantInputDetail.sku!]?.url}
+											onclick={() => (currentVariantSkusToAssignMedia = variantSkus)}
+											{disabled}
+										/>
 									</td>
 								{/if}
 								<td class="text-center">
 									{variantInputDetail.name?.split('-')[1]}
 								</td>
 							{:else}
+								{@const variantSkus = calculateVariantsSkusForMediaAssign(detailIdx)}
 								<td class="text-center">
-									{@render VariantMediaSnippets.VariantImageBtn(
-										variantInputDetail.name?.split('-')[0]!,
-										style,
-										() => (currentVariantSkuToAssignMedia = variantInputDetail.sku!),
-										disabled,
-									)}
+									<div>{variantInputDetail.name?.split('-')[0]}</div>
+									<VariantImageAssignButton
+										backgroundImageUrl={productVariantsMediaMap[variantInputDetail.sku!]?.url}
+										onclick={() => (currentVariantSkusToAssignMedia = variantSkus)}
+										{disabled}
+									/>
 								</td>
 							{/if}
 							<!-- CHANNELS -->
@@ -566,10 +574,19 @@
 	{/if}
 </div>
 
-{@render VariantMediaSnippets.VariantMediaModal(
-	!!currentVariantSkuToAssignMedia,
-	productMedias,
-	(media) => (productVariantsMediaMap[currentVariantSkuToAssignMedia!] = media),
-	() => (currentVariantSkuToAssignMedia = undefined),
-	() => delete productVariantsMediaMap[currentVariantSkuToAssignMedia!],
-)}
+<VariantImageAssignModal
+	{productMedias}
+	open={!!currentVariantSkusToAssignMedia}
+	selectedMedia={currentVariantSkusToAssignMedia
+		? productVariantsMediaMap[currentVariantSkusToAssignMedia[0]]
+		: undefined}
+	onChooseMedia={(media) => {
+		currentVariantSkusToAssignMedia?.forEach((sku) => {
+			if (media) productVariantsMediaMap[sku] = media;
+			else delete productVariantsMediaMap[sku];
+		});
+	}}
+	onClose={() => {
+		currentVariantSkusToAssignMedia = undefined;
+	}}
+/>

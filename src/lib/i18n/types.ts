@@ -246,6 +246,7 @@ export type TranslationKey =
 | 'product.buyNow'
 | 'product.assignMedia'
 | 'product.assignModalHead'
+| 'product.noMediaHint'
 | 'error.invalidSlug'
 | 'error.invalidEmailAndPassword'
 | 'error.invalidEmail'

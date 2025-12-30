@@ -63,7 +63,7 @@ export default {
 		startAt: 'Start at',
 		discountRange: 'Discount range',
 		packaging: 'Packaging',
-		preorder: 'preorder',
+		preorder: 'Preorder',
 		ok: 'OK',
 		cancel: 'Cancel',
 		confirmRemoveProduct: 'Are you sure you want to remove this product from cart?',
@@ -259,6 +259,7 @@ export default {
 		buyNow: 'Buy now',
 		assignMedia: 'Assign media',
 		assignModalHead: 'Assign media to variant',
+		noMediaHint: 'Your product has no media. Please add more medias first.',
 	},
 	error: {
 		invalidSlug: 'Invalid slug value',

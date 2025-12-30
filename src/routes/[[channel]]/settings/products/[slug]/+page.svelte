@@ -8,6 +8,7 @@
 		ProductUpdateMutation,
 		ProductVariantBulkUpdateMutation,
 		UPDATE_PRODUCT_CHANNEL_LISTINGS_MUTATION,
+		VariantMediaAssignMutation,
 	} from '$lib/api/admin/product';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
@@ -121,10 +122,13 @@
 	let existingVariantMedias = $state<VariantMedia>({});
 	// in product update screen
 	let productVariantBulkUpdateInput = $state<ProductVariantBulkUpdateInput[]>([]);
+	/** prevent subscribing product details more than once */
+	let productLoadOnce = $state(false);
 
 	onMount(() => {
 		return ProductDetailStore.subscribe((result) => {
-			if (result.data?.product) {
+			if (result.data?.product && !productLoadOnce) {
+				productLoadOnce = true;
 				const {
 					category,
 					collections,
@@ -202,8 +206,9 @@
 
 							// parse variant medias
 							if (media?.length && productMediasMap[media[0].id]) {
-								productVariantsMediaMap[rest.sku!] = media[0];
-								existingVariantMedias[rest.sku!] = media[0];
+								const firstMedia = pick(media[0], ['id', 'url', 'alt']);
+								productVariantsMediaMap[rest.id] = firstMedia;
+								existingVariantMedias[rest.id] = firstMedia;
 							}
 
 							return {
@@ -265,15 +270,31 @@
 		});
 	});
 
-	// const updateVariantsMedia = async () => {
-	// 	const promises = [];
+	/** returns true if any error occurred, false otherwise */
+	const updateVariantsMedia = async () => {
+		const promises = [];
 
-	// 	for (let key in productVariantsMediaMap) {
-	// 		if (productVariantsMediaMap[key].id !== existingVariantMedias[key].id) {
-	// 			const prm = GRAPHQL_CLIENT.mutation<Pick<Mutation, 'variantMediaAssign'>, MutationVariantMediaAssignArgs>()
-	// 		}
-	// 	}
-	// };
+		console.log(productVariantsMediaMap);
+
+		for (let variantId in productVariantsMediaMap) {
+			if (productVariantsMediaMap[variantId].id !== existingVariantMedias[variantId].id) {
+				const work = GRAPHQL_CLIENT.mutation<
+					Pick<Mutation, 'variantMediaAssign'>,
+					MutationVariantMediaAssignArgs
+				>(VariantMediaAssignMutation, {
+					variantId,
+					mediaId: productVariantsMediaMap[variantId].id!,
+				}).toPromise();
+
+				promises.push(work);
+			}
+		}
+
+		if (!promises.length) return false;
+
+		const results = await Promise.all(promises);
+		return results.some((res) => checkIfGraphqlResultHasError(res, 'variantMediaAssign'));
+	};
 
 	const handleSubmit = async () => {
 		// validate:
@@ -411,7 +432,11 @@
 		}
 
 		// 4) Update variant medias
-		// await updateVariantsMedia()
+		const variantMediaUpdateErr = await updateVariantsMedia();
+		if (variantMediaUpdateErr) {
+			loading = false;
+			return;
+		}
 
 		// 5) Update metadata
 		const hasErr = await metaRef?.handleUpdate();

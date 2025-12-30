@@ -10,6 +10,7 @@
 	type Props = {
 		label?: string | Snippet;
 		group?: string | number | boolean;
+		/** Size of the radio button, default 'md' */
 		size?: SocialSize;
 		class?: string;
 		subText?: string;

@@ -90,6 +90,8 @@
 		return !checkIfGraphqlResultHasError(result, 'productDelete');
 	};
 
+	$inspect(productVariantsMediaMap);
+
 	const createProductMedias = async (productID: string) => {
 		if (!productMedias.length) return { numFails: 0, variantsMediaMap: {} };
 
@@ -114,7 +116,7 @@
 					alt: media.alt,
 					image: media.file,
 				},
-			});
+			}).toPromise();
 		});
 
 		const results = await Promise.all(operations);
@@ -125,7 +127,7 @@
 			if (checkIfGraphqlResultHasError(result, 'productMediaCreate')) numFails++;
 			else if (variantMediaIndexMap[idx].length) {
 				variantMediaIndexMap[idx].forEach(
-					(slug) => (variantsMediaMap[slug] = result.data?.productMediaCreate?.media?.id!),
+					(sku) => (variantsMediaMap[sku] = result.data?.productMediaCreate?.media?.id!),
 				);
 			}
 		});
@@ -226,8 +228,6 @@
 			loading = false;
 			return;
 		}
-
-		console.log(variantsMediaMap);
 
 		// 5) assign variant medias if have
 		if (Object.keys(productVariantsMediaMap).length) {
@@ -350,5 +350,6 @@
 <ActionBar
 	backButtonUrl={AppRoute.SETTINGS_PRODUCTS()}
 	disableCreateButton={loading || !Object.values(productInputError).every(Boolean)}
+	disableBackButton={loading}
 	onAddClick={handleSubmit}
 />
