@@ -785,3 +785,13 @@ mutation VariantMediaAssign($mediaId: ID!, $variantId: ID!) {
 		}
 	}
 }`;
+
+export const VariantMediaUnassignMutation = gql`
+mutation VariantMediaUnassign($variantId: ID!, $mediaId: ID!) {
+	variantMediaUnassign(variantId: $variantId, mediaId: $mediaId) {
+		errors {
+			field
+			message
+		}
+	}
+}`;

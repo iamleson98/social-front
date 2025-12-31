@@ -9,6 +9,7 @@
 		ProductVariantBulkUpdateMutation,
 		UPDATE_PRODUCT_CHANNEL_LISTINGS_MUTATION,
 		VariantMediaAssignMutation,
+		VariantMediaUnassignMutation,
 	} from '$lib/api/admin/product';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
@@ -57,6 +58,7 @@
 		WeightUnitsEnum,
 		type ProductChannelListingAddInput,
 		type MutationVariantMediaAssignArgs,
+		type MutationVariantMediaUnassignArgs,
 	} from '$lib/gql/graphql';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
@@ -257,27 +259,48 @@
 	});
 
 	/** returns true if any error occurred, false otherwise */
-	const updateVariantsMedia = async () => {
-		const promises = [];
+	const updateVariantsMedia = async (maps: VariantMedia) => {
+		const assignPromises = [];
+		const unassignPromises = [];
 
-		for (let variantId in productVariantsMediaMap) {
-			if (productVariantsMediaMap[variantId].id !== existingVariantMedias[variantId].id) {
-				const work = GRAPHQL_CLIENT.mutation<
-					Pick<Mutation, 'variantMediaAssign'>,
-					MutationVariantMediaAssignArgs
-				>(VariantMediaAssignMutation, {
-					variantId,
-					mediaId: productVariantsMediaMap[variantId].id!,
-				}).toPromise();
+		for (let variantId in maps) {
+			// only perform reassign variant media, if the media is changed
+			if (maps[variantId]?.id !== existingVariantMedias[variantId]?.id) {
+				if (maps[variantId]?.id) {
+					// if there was existing media assigned, must unassign first
+					if (existingVariantMedias[variantId]?.id) {
+						const unassignRequest = GRAPHQL_CLIENT.mutation<
+							Pick<Mutation, 'variantMediaUnassign'>,
+							MutationVariantMediaUnassignArgs
+						>(VariantMediaUnassignMutation, {
+							variantId,
+							mediaId: existingVariantMedias[variantId].id!,
+						}).toPromise();
 
-				promises.push(work);
+						unassignPromises.push(unassignRequest);
+					}
+
+					const assignRequest = GRAPHQL_CLIENT.mutation<
+						Pick<Mutation, 'variantMediaAssign'>,
+						MutationVariantMediaAssignArgs
+					>(VariantMediaAssignMutation, {
+						variantId,
+						mediaId: maps[variantId].id!,
+					}).toPromise();
+
+					assignPromises.push(assignRequest);
+				}
 			}
 		}
 
-		if (!promises.length) return false;
+		if (!assignPromises.length && !unassignPromises.length) return false;
 
-		const results = await Promise.all(promises);
-		return results.some((res) => checkIfGraphqlResultHasError(res, 'variantMediaAssign'));
+		const unassignResults = await Promise.all(unassignPromises);
+		const assignResults = await Promise.all(assignPromises);
+		return (
+			unassignResults.some((res) => checkIfGraphqlResultHasError(res, 'variantMediaUnassign')) ||
+			assignResults.some((res) => checkIfGraphqlResultHasError(res, 'variantMediaAssign'))
+		);
 	};
 
 	const handleSubmit = async () => {
@@ -286,6 +309,7 @@
 
 		// create copy value to prevent the store subscribe auto re-execute
 		const copiedProductVariantBulkUpdateInput = $state.snapshot(productVariantBulkUpdateInput);
+		const copiedVariantMediasMap = $state.snapshot(productVariantsMediaMap);
 
 		loading = true;
 		// 1) Update product itself
@@ -416,7 +440,7 @@
 		}
 
 		// 4) Update variant medias
-		const variantMediaUpdateErr = await updateVariantsMedia();
+		const variantMediaUpdateErr = await updateVariantsMedia(copiedVariantMediasMap);
 		if (variantMediaUpdateErr) {
 			loading = false;
 			return;
