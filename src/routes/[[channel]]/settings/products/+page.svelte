@@ -4,7 +4,7 @@
 	import { operationStore } from '$lib/api/operation';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { Trash } from '$lib/components/icons';
-	import { TablerLink } from '$lib/components/icons/consts';
+	import { TablerExternalLink } from '$lib/components/icons/consts';
 	import ProductFilterStateListener from '$lib/components/pages/home/product-filter-state-listener.svelte';
 	import Filter from '$lib/components/pages/settings/products/filter.svelte';
 	import Settings from '$lib/components/pages/settings/products/settings.svelte';
@@ -166,7 +166,7 @@
 {#snippet actions({ item }: TableCellProps<Product>)}
 	<div class="text-center">
 		<IconButton
-			icon={TablerLink}
+			icon={TablerExternalLink}
 			size="xs"
 			href={AppRoute.PRODUCT_DETAILS(item.slug)}
 			variant="light"
