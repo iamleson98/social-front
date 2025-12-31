@@ -13,7 +13,6 @@
 	} from '$lib/components/icons';
 	import ProductPricingPanel from '$lib/components/pages/products/detail/product-pricing-pannel.svelte';
 	import ProductMediaSlideShow from '$lib/components/pages/products/detail/product-slide-show-pannel.svelte';
-	import Button from '$lib/components/ui/Button/Button.svelte';
 	import { type ProductMedia } from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import type { LayoutServerData } from './$types';
@@ -120,23 +119,18 @@
 	</div>
 
 	<!-- product more details -->
-	<div class="bg-white border border-gray-200 rounded-lg p-6">
-		<div class="flex items-center gap-2 mb-4">
+	<div class="bg-white border border-gray-200 rounded-lg p-3">
+		<div role="tablist" class="tabs tabs-border tabs-md">
 			{#each tabs as tab, idx (idx)}
-				<a role="tab" class="inline" href={tab.href}>
-					<Button
-						class={`${page.url.pathname === tab.href ? '!bg-blue-100 !text-blue-600 hover:bg-blue-100' : ''} tablet:h-full tablet:py-1`}
-						startIcon={tab.icon}
-						size="xs"
-						variant="light"
-						color="gray"
-					>
-						{tab.title}
-					</Button>
+				<a
+					role="tab"
+					class={['tab', page.url.pathname === tab.href && 'tab-active']}
+					href={tab.href}
+				>
+					{tab.title}
 				</a>
 			{/each}
 		</div>
-
 		{@render children()}
 	</div>
 </div>
