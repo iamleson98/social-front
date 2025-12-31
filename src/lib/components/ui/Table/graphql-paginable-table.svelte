@@ -93,6 +93,7 @@
 	);
 	let items = $state.raw<T[]>([]);
 	let pagination = $state.raw<PageInfo>();
+	let enablePerformFetchData = $state(autoFetchDataOnMount);
 
 	onMount(() => {
 		const unsub = queryOperationStore.subscribe((result) => {
@@ -110,9 +111,14 @@
 		};
 	});
 
-	export const triggerFetchData = () => {
-		queryOperationStore.reexecute({ variables, context: { requestPolicy: 'network-only' } });
-	};
+	$effect(() => {
+		if (enablePerformFetchData) {
+			queryOperationStore.reexecute({ variables, context: { requestPolicy: 'network-only' } });
+			enablePerformFetchData = false;
+		}
+	});
+
+	export const triggerFetchData = () => (enablePerformFetchData = true);
 
 	const handleNextPageClick = (after: string) => {
 		variables = {
