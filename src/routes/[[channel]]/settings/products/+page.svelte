@@ -4,6 +4,7 @@
 	import { operationStore } from '$lib/api/operation';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { Trash } from '$lib/components/icons';
+	import { TablerLink } from '$lib/components/icons/consts';
 	import ProductFilterStateListener from '$lib/components/pages/home/product-filter-state-listener.svelte';
 	import Filter from '$lib/components/pages/settings/products/filter.svelte';
 	import Settings from '$lib/components/pages/settings/products/settings.svelte';
@@ -13,6 +14,7 @@
 	import {
 		GraphqlPaginableTable,
 		type GraphqlPaginableTableInterface,
+		type TableCellProps,
 		type TableColumnProps,
 	} from '$lib/components/ui/Table';
 	import {
@@ -84,6 +86,10 @@
 			child: createdAt,
 			key: ProductOrderField.CreatedAt,
 		},
+		{
+			title: $T('common.action'),
+			child: actions,
+		},
 	]);
 
 	const handleClickDeleteSelectedProducts = () => {
@@ -110,7 +116,7 @@
 	/>
 {/snippet}
 
-{#snippet itemSelect({ item }: { item: Product })}
+{#snippet itemSelect({ item }: TableCellProps<Product>)}
 	<Checkbox
 		size="sm"
 		onCheckChange={(checked) => selectedProducts[checked ? 'add' : 'delete'](item.id)}
@@ -118,17 +124,17 @@
 	/>
 {/snippet}
 
-{#snippet pic({ item }: { item: Product })}
+{#snippet pic({ item }: TableCellProps<Product>)}
 	<div class="text-center">
 		<Thumbnail size="sm" src={item.thumbnail?.url} alt={item.thumbnail?.alt || item.name} />
 	</div>
 {/snippet}
 
-{#snippet name({ item }: { item: Product })}
+{#snippet name({ item }: TableCellProps<Product>)}
 	<a class="link" href={AppRoute.SETTINGS_PRODUCTS_EDIT(item.slug)}>{item.name}</a>
 {/snippet}
 
-{#snippet availability({ item }: { item: Product })}
+{#snippet availability({ item }: TableCellProps<Product>)}
 	{@const tooltip = item.channelListings?.length
 		? item.channelListings.map((list) => list.channel.slug).join(', ')
 		: ''}
@@ -140,7 +146,7 @@
 	/>
 {/snippet}
 
-{#snippet prices({ item }: { item: Product })}
+{#snippet prices({ item }: TableCellProps<Product>)}
 	{#each item.channelListings || [] as channelListing}
 		{@const startAmount = channelListing.pricing?.priceRange?.start?.gross?.amount || 0}
 		{@const endAmount = channelListing.pricing?.priceRange?.stop?.gross?.amount || 0}
@@ -153,8 +159,20 @@
 	{/each}
 {/snippet}
 
-{#snippet createdAt({ item }: { item: Product })}
+{#snippet createdAt({ item }: TableCellProps<Product>)}
 	<span class="whitespace-nowrap">{dayjs(item.created).format(SitenameTimeFormat)}</span>
+{/snippet}
+
+{#snippet actions({ item }: TableCellProps<Product>)}
+	<div class="text-center">
+		<IconButton
+			icon={TablerLink}
+			size="xs"
+			href={AppRoute.PRODUCT_DETAILS(item.slug)}
+			variant="light"
+			target="_blank"
+		/>
+	</div>
 {/snippet}
 
 <div class="flex items-center justify-between mb-2">

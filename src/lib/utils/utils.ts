@@ -116,7 +116,7 @@ export const formatMoney = (currency: string, startAmount: number, endAmount?: n
 };
 
 export const formatSelectedAttributeValue = (attribute: SelectedAttribute) => {
-	if (!attribute.attribute.inputType || !attribute.values.length) {
+	if (!attribute.attribute.inputType || !attribute.values?.length) {
 		return '';
 	}
 
