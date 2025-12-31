@@ -122,13 +122,10 @@
 	let existingVariantMedias = $state<VariantMedia>({});
 	// in product update screen
 	let productVariantBulkUpdateInput = $state<ProductVariantBulkUpdateInput[]>([]);
-	/** prevent subscribing product details more than once */
-	let productLoadOnce = $state(false);
 
 	onMount(() => {
 		return ProductDetailStore.subscribe((result) => {
-			if (result.data?.product && !productLoadOnce) {
-				productLoadOnce = true;
+			if (result.data?.product) {
 				const {
 					category,
 					collections,
@@ -218,26 +215,15 @@
 									const res: AttributeValueInput = {
 										id: attribute.id,
 									};
-
-									switch (attribute.inputType) {
-										case AttributeInputTypeEnum.Dropdown:
-											res.dropdown = values.length
-												? {
-														value: values[0].value,
-														id: values[0].id,
-													}
-												: {};
-											break;
-
-										case AttributeInputTypeEnum.Swatch:
-											res.swatch = values.length
-												? {
-														value: values[0].value,
-														id: values[0].id,
-													}
-												: {};
-											break;
-									}
+									const value = values.length
+										? {
+												id: values[0].id,
+												value: values[0].value,
+											}
+										: {};
+									if (attribute.inputType === AttributeInputTypeEnum.Dropdown) res.dropdown = value;
+									else if (attribute.inputType === AttributeInputTypeEnum.Swatch)
+										res.swatch = value;
 
 									return res;
 								}),
@@ -273,8 +259,6 @@
 	/** returns true if any error occurred, false otherwise */
 	const updateVariantsMedia = async () => {
 		const promises = [];
-
-		console.log(productVariantsMediaMap);
 
 		for (let variantId in productVariantsMediaMap) {
 			if (productVariantsMediaMap[variantId].id !== existingVariantMedias[variantId].id) {

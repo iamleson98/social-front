@@ -90,8 +90,10 @@
 		return !checkIfGraphqlResultHasError(result, 'productDelete');
 	};
 
-	$inspect(productVariantsMediaMap);
-
+	/**
+	 * The idea is to have a mapping for media_index -> [variant skus].
+	 * from medias we have an array of same order, for the creation processes.
+	 */
 	const createProductMedias = async (productID: string) => {
 		if (!productMedias.length) return { numFails: 0, variantsMediaMap: {} };
 
@@ -125,7 +127,7 @@
 
 		results.forEach((result, idx) => {
 			if (checkIfGraphqlResultHasError(result, 'productMediaCreate')) numFails++;
-			else if (variantMediaIndexMap[idx].length) {
+			else if (variantMediaIndexMap[idx]?.length) {
 				variantMediaIndexMap[idx].forEach(
 					(sku) => (variantsMediaMap[sku] = result.data?.productMediaCreate?.media?.id!),
 				);
