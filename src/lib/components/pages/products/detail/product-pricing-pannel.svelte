@@ -41,7 +41,11 @@
 	import { CHANNELS } from '$lib/utils/consts';
 	import { HTTPStatusSuccess, MAX_RATING } from '$lib/utils/consts';
 	import { VIETNAM_COUNTRY_UNITS } from '$lib/utils/countries';
-	import { formatMoney, checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import {
+		formatMoney,
+		checkIfGraphqlResultHasError,
+		SitenameCommonClassName,
+	} from '$lib/utils/utils';
 	import toast from 'svelte-french-toast';
 	import { fade } from 'svelte/transition';
 
@@ -59,10 +63,14 @@
 	let selectedVariant = $state<ProductVariant>();
 	let showAlertSelectVariant = $state(false);
 	let openDeliveryModal = $state(false);
+	const BrandAttribute = $derived(
+		productInformation.attributes.find(
+			(attr) => attr.attribute.slug === 'brand' && attr.values.length > 0,
+		),
+	);
 
 	let quantitySelectedErr = $derived.by(() => {
-		if (quantitySelected < 1 || quantitySelected % 1 !== 0)
-			return $T('error.positiveInteger');
+		if (quantitySelected < 1 || quantitySelected % 1 !== 0) return $T('error.positiveInteger');
 		return undefined;
 	});
 
@@ -141,7 +149,7 @@
 	};
 </script>
 
-<div class="bg-white rounded-lg border-gray-200 border p-4 h-full space-y-2">
+<div class="{SitenameCommonClassName} h-full">
 	<div class="flex items-center gap-1">
 		<Badge
 			size="sm"
@@ -174,8 +182,14 @@
 			rounded
 			color="green"
 		/>
-		{#if productInformation.assignedAttributes.some((attr) => attr.attribute.slug === 'brand')}
-			<Badge size="xs" text={$T('product.brand')} variant="light" rounded color="blue" />
+		{#if BrandAttribute}
+			<Badge
+				size="xs"
+				text={`${$T('product.brand')}: ${BrandAttribute.values[0].name || BrandAttribute.values[0].value}`}
+				variant="light"
+				rounded
+				color="blue"
+			/>
 		{/if}
 	</div>
 
