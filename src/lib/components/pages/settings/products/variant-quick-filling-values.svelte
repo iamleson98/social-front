@@ -102,7 +102,7 @@
 									{disabled}
 									min={0}
 									placeholder={channel.currency}
-									size="xs"
+									size="sm"
 									class="w-1/2"
 									bind:value={channel.price}
 									variant={channel.price < 0 ? 'error' : 'info'}
@@ -114,7 +114,7 @@
 									min={0}
 									placeholder={channel.currency}
 									{disabled}
-									size="xs"
+									size="sm"
 									class="w-1/2"
 									bind:value={channel.costPrice}
 									variant={channel.costPrice < 0 ? 'error' : 'info'}
@@ -156,7 +156,7 @@
 						type="number"
 						label={$T('product.qtyLimit')}
 						min={0}
-						size="xs"
+						size="sm"
 						{disabled}
 						class="mb-2"
 						bind:value={quickFillingValues.preOrder.globalThreshold}
@@ -171,7 +171,7 @@
 					/>
 					<!-- AVAILABLE DATE -->
 					<EaseDatePicker
-						size="xs"
+						size="sm"
 						{disabled}
 						onchange={(date) => (quickFillingValues.preOrder.endDate = date.date)}
 						value={quickFillingValues.preOrder.endDate}
@@ -192,7 +192,7 @@
 			<div class="w-1/6">
 				<Label label={$T('product.stock')} size="sm" />
 				{#if !quickFillingValues.stocks.length}
-					<SelectSkeleton size="xs" />
+					<SelectSkeleton size="sm" />
 				{:else}
 					<div
 						class="max-h-32 overflow-y-auto border border-gray-200 bg-white p-1 rounded-lg space-y-1.5"
@@ -205,7 +205,7 @@
 								label={stockInput.warehouseName}
 								min={0}
 								{disabled}
-								size="xs"
+								size="sm"
 								bind:value={stockInput.quantity}
 								variant={isError ? 'error' : 'info'}
 								subText={isError ? $CommonState.NonNegativeError : ''}

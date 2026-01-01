@@ -437,7 +437,7 @@
 											type="number"
 											min={0}
 											{disabled}
-											size="xs"
+											size="sm"
 											placeholder={currency}
 											bind:value={variantInputDetail.channelListings![idx].price}
 											variant={channelListing.price < 0 ? 'error' : 'info'}
@@ -464,7 +464,7 @@
 											type="number"
 											min={0}
 											{disabled}
-											size="xs"
+											size="sm"
 											placeholder={currency}
 											bind:value={variantInputDetail.channelListings![idx].costPrice}
 											variant={channelListing.costPrice < 0 ? 'error' : 'info'}
@@ -505,7 +505,7 @@
 									type="number"
 									min={0}
 									label={$T('product.qtyLimit')}
-									size="xs"
+									size="sm"
 									class="mb-2"
 									{disabled}
 									bind:value={variantInputDetail.preorder!.globalThreshold}
@@ -519,7 +519,7 @@
 										: undefined}
 								/>
 								<EaseDatePicker
-									size="xs"
+									size="sm"
 									label={$T('product.preOrderEndDate')}
 									allowSelectMonthYears={{
 										showMonths: true,
@@ -541,7 +541,7 @@
 								<div class="space-y-1 max-h-28 overflow-y-auto p-0.5">
 									{#each variantInputDetail.stocks || [] as stock, idx (idx)}
 										<Input
-											size="xs"
+											size="sm"
 											label={stock[WarehouseNameKey] as string}
 											placeholder={$T('product.stock')}
 											bind:value={variantInputDetail.stocks![idx].quantity}

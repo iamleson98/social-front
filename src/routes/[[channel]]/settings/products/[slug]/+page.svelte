@@ -353,6 +353,8 @@
 			return;
 		}
 
+		console.log(copiedProductVariantBulkUpdateInput);
+
 		// 3) Update variants
 		const actualProductVariantBulkUpdateInput = copiedProductVariantBulkUpdateInput.map(
 			(variantInput) => {

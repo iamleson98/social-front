@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { T } from '$i18n';
 	import { ORDER_FULFILL_MUTATION } from '$lib/api/admin/orders';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore } from '$lib/api/operation';
@@ -35,17 +36,17 @@
 
 	let { open = $bindable(), order, onFulfillSuccess }: Props = $props();
 
-	const TABLE_COLUMNS: TableColumnProps<OrderLine, any>[] = [
+	const TableColumns: TableColumnProps<OrderLine, any>[] = $derived([
 		{
-			title: 'Image',
+			title: $T('common.pic'),
 			child: image,
 		},
 		{
-			title: 'Name',
+			title: $T('common.name'),
 			child: name,
 		},
 		{
-			title: 'SKU',
+			title: $T('product.sku'),
 			child: sku,
 		},
 		{
@@ -53,14 +54,14 @@
 			child: quantity,
 		},
 		{
-			title: 'Stock',
+			title: $T('product.stock'),
 			child: stock,
 		},
 		{
-			title: 'Warehouse',
+			title: $T('channel.warehouse'),
 			child: warehouse,
 		},
-	];
+	]);
 
 	let loading = $state(false);
 
@@ -253,7 +254,7 @@
 >
 	<div class="space-y-3">
 		<SectionHeader>Items ready to ship</SectionHeader>
-		<Table columns={TABLE_COLUMNS} items={UnfulfilledOrderLines} />
+		<Table columns={TableColumns} items={UnfulfilledOrderLines} />
 
 		<SectionHeader>Shipment information</SectionHeader>
 		<Input

@@ -305,8 +305,6 @@
 			.filter((_, idx) => idx >= variantIndex && idx < maxVariantIndexAllowed)
 			.map((variant) => variant.id);
 	};
-
-	$inspect(productVariantsInput);
 </script>
 
 <div class="space-y-2">
@@ -438,7 +436,7 @@
 										type="number"
 										min={0}
 										{disabled}
-										size="xs"
+										size="sm"
 										placeholder={channelListing.channel.currencyCode}
 										bind:value={channelListing.price!.amount}
 										variant={channelListing.price!.amount < 0 ? 'error' : 'info'}
@@ -461,7 +459,7 @@
 										type="number"
 										min={0}
 										{disabled}
-										size="xs"
+										size="sm"
 										placeholder={channelListing.channel.currencyCode}
 										bind:value={channelListing.costPrice!.amount}
 										variant={channelListing.costPrice!.amount < 0 ? 'error' : 'info'}
@@ -501,7 +499,7 @@
 								type="number"
 								min={0}
 								label={$T('product.qtyLimit')}
-								size="xs"
+								size="sm"
 								class="mb-2"
 								{disabled}
 								bind:value={variantInputDetail.preorder!.globalThreshold}
@@ -515,7 +513,7 @@
 									: undefined}
 							/>
 							<EaseDatePicker
-								size="xs"
+								size="sm"
 								label={$T('product.preOrderEndDate')}
 								allowSelectMonthYears={{
 									showMonths: true,
@@ -537,7 +535,7 @@
 							<div class="space-y-1 max-h-28 overflow-y-auto p-0.5">
 								{#each variantInputDetail.stocks?.[StockCurrentKey] as unknown as Stock[] as stock, idx (idx)}
 									<Input
-										size="xs"
+										size="sm"
 										label={stock.warehouse.name || (stock as any)[StockWarehouseNameKey]}
 										placeholder={$T('product.stock')}
 										bind:value={stock.quantity}
