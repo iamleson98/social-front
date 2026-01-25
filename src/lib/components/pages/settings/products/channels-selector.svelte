@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { CHANNELS_QUERY } from '$lib/api/channels';
+	import { RFC3339TimeFormat } from '$lib/api/graphql/utils';
 	import { operationStore } from '$lib/api/operation';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
@@ -14,6 +15,8 @@
 	import { T } from '$lib/i18n';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import ErrorMsg from './error-msg.svelte';
+	import type { ChannelSelectOptionProps } from './utils';
+	import dayjs from 'dayjs';
 	import { difference } from 'es-toolkit';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
@@ -26,6 +29,7 @@
 		channelListingUpdateInput: ProductChannelListingUpdateInput;
 		ok: boolean;
 		loading: boolean;
+		channelSelectOptions: ChannelSelectOptionProps[];
 	};
 
 	type CustomProductChannelListing = ProductChannelListing & {
@@ -39,6 +43,7 @@
 		channelListingUpdateInput = $bindable({}),
 		ok = $bindable(),
 		loading,
+		channelSelectOptions = $bindable(),
 	}: Props = $props();
 	// map of channels that are already assigned to a product
 	const AssignedChannelIdsMap: Record<string, ProductChannelListing> = (
@@ -63,6 +68,10 @@
 			ExistingChannelIds,
 			remainChannelListingIds,
 		);
+
+		// also recalculate channelSelectOptions for variant editor
+		const newChannelSelectOptions: ChannelSelectOptionProps[] = [];
+
 		channelListingUpdateInput.updateChannels = activeChannelListings.reduce((acc, cur) => {
 			if (cur.used) {
 				const value: ProductChannelListingAddInput = {
@@ -71,15 +80,23 @@
 					isAvailableForPurchase: cur.isAvailableForPurchase,
 					availableForPurchaseAt: cur.availableForPurchaseAt,
 					publishedAt: cur.publishedAt,
-					publicationDate: cur.publishedAt,
 					visibleInListings: cur.visibleInListings,
 				};
 
 				acc.push(value);
+				newChannelSelectOptions.push({
+					value: cur.channel.id,
+					label: cur.channel.name,
+					currency: cur.channel.currencyCode,
+					channelId: cur.channel.id,
+					price: undefined,
+				});
 			}
 
 			return acc;
 		}, [] as ProductChannelListingAddInput[]);
+
+		channelSelectOptions = newChannelSelectOptions;
 	});
 
 	onMount(() =>
@@ -129,7 +146,7 @@
 	{:else}
 		<div class={['grid grid-cols-4 gap-2']}>
 			{#each activeChannelListings as listing, idx (idx)}
-				<div class="space-y-2 rounded-lg bg-white overflow-hidden border border-gray-200 h-fit">
+				<div class="space-y-2 rounded-lg bg-white border border-gray-200 h-fit">
 					<!-- general channel use select checkbox -->
 					<div class="bg-gray-100 p-2">
 						<Checkbox
@@ -149,6 +166,7 @@
 					<div class="p-2 space-y-2">
 						<Checkbox
 							bind:checked={listing.isPublished}
+							onCheckChange={(checked) => checked && (listing.publishedAt = undefined)}
 							size="sm"
 							label={$T('product.published')}
 							class="mb-2"
@@ -158,7 +176,10 @@
 							<div transition:fade class="mb-2 pb-2 border-b border-gray-300">
 								<EaseDatePicker
 									size="xs"
-									onchange={(value) => (listing.publishedAt = value.date)}
+									onchange={(value) => {
+										listing.publishedAt = dayjs(value.date).format(RFC3339TimeFormat);
+									}}
+									value={{ date: listing.publishedAt }}
 									allowSelectMonthYears={{
 										showYears: { min: 2020 },
 										showMonths: true,
@@ -176,13 +197,17 @@
 							label={$T('product.availForPurchase')}
 							class="mb-2"
 							disabled={loading || !listing.used}
+							onCheckChange={(checked) => checked && (listing.availableForPurchaseAt = undefined)}
 						/>
 						{#if listing.used && !listing.isAvailableForPurchase}
 							<div transition:fade>
 								<EaseDatePicker
 									label={$T('product.promptAvailTime')}
 									size="xs"
-									onchange={(value) => (listing.availableForPurchaseAt = value.date)}
+									onchange={(value) => {
+										listing.availableForPurchaseAt = dayjs(value.date).format(RFC3339TimeFormat);
+									}}
+									value={{ date: listing.availableForPurchaseAt }}
 									allowSelectMonthYears={{
 										showYears: { min: 2020 },
 										showMonths: true,

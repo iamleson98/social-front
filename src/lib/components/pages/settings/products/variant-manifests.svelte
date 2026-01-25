@@ -26,7 +26,11 @@
 		type QueryProductTypeArgs,
 	} from '$lib/gql/graphql';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
-	import { MAX_VARIANT_TYPES, ProductPrivateMetadataVariantAttributeUsedKey, type VariantManifest } from './utils';
+	import {
+		MAX_VARIANT_TYPES,
+		ProductPrivateMetadataVariantAttributeUsedKey,
+		type VariantManifest,
+	} from './utils';
 	import { onMount } from 'svelte';
 	import toast from 'svelte-french-toast';
 
@@ -67,6 +71,15 @@
 			id: productTypeId,
 		},
 		requestPolicy: 'cache-and-network',
+	});
+
+	// listen on product type id change
+	$effect(() => {
+		ProductTypeDetailQuery.reexecute({
+			variables: {
+				id: productTypeId,
+			},
+		});
 	});
 
 	const AvailableAttributeOptions = $derived(

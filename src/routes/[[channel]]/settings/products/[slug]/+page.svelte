@@ -32,6 +32,7 @@
 		ProductPrivateMetadataVariantAttributeUsedKey,
 		StockCurrentKey,
 		StockExistingKey,
+		type ChannelSelectOptionProps,
 		type CustomStockInput,
 		type VariantMedia,
 	} from '$lib/components/pages/settings/products/utils';
@@ -118,10 +119,11 @@
 		seo: true,
 		channelListing: true,
 	});
-	let channelListingUpdateInput = $state.raw<ProductChannelListingUpdateInput>({});
+	let channelListingUpdateInput = $state<ProductChannelListingUpdateInput>({});
 	/** keeps track of medias assigned to variants */
 	let productVariantsMediaMap = $state<VariantMedia>({});
 	let existingVariantMedias = $state<VariantMedia>({});
+	let channelSelectOptions = $state<ChannelSelectOptionProps[]>([]);
 	// in product update screen
 	let productVariantBulkUpdateInput = $state<ProductVariantBulkUpdateInput[]>([]);
 
@@ -524,11 +526,12 @@
 				bind:channelListingUpdateInput
 				channelListings={channelListings || []}
 				bind:ok={productFormOk.channelListing}
+				bind:channelSelectOptions
 				{loading}
 			/>
 			<VariantsEditEditor
 				disabled={loading}
-				channelsListing={channelListingUpdateInput}
+				{channelSelectOptions}
 				bind:productVariantsInput={productVariantBulkUpdateInput}
 				bind:privateMetadata={productInput.privateMetadata!}
 				productTypeId={productType.id}

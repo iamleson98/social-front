@@ -7,8 +7,6 @@
 	import {
 		type BulkAttributeValueInput,
 		type MetadataInput,
-		type ProductChannelListingAddInput,
-		type ProductChannelListingUpdateInput,
 		type ProductVariantBulkCreateInput,
 		type ProductVariantChannelListingAddInput,
 		type StockInput,
@@ -42,24 +40,24 @@
 
 	type Props = {
 		productTypeId: string;
-		/** This is provided by the channel listing selector section */
-		channelsListing: ProductChannelListingUpdateInput;
 		disabled?: boolean;
 		/** A variant can have 1 media, inherit from its parent */
 		productMedias: MediaObject[];
 		productVariantsInput: ProductVariantBulkCreateInput[];
 		privateMetadata: MetadataInput[];
 		productVariantsMediaMap: VariantMedia;
+		/** pre-calculated channel options for select */
+		channelSelectOptions: ChannelSelectOptionProps[];
 	};
 
 	let {
 		productTypeId,
-		channelsListing,
 		disabled,
 		productVariantsInput = $bindable([]),
 		privateMetadata = $bindable(),
 		productMedias,
 		productVariantsMediaMap = $bindable(),
+		channelSelectOptions,
 	}: Props = $props();
 
 	const WarehouseNameKey = 'warehouseName' as keyof StockInput;
@@ -69,7 +67,6 @@
 	let manifestEditor = $state<ReturnType<typeof VariantManifests>>();
 	let variantManifests = $state<VariantManifest[]>([]);
 	let quickFillingHighlightClass = $state<QuickFillHighlight>();
-	let channelSelectOptions = $state.raw<ChannelSelectOptionProps[]>([]);
 	let currentVariantSkusToAssignMedia = $state<string[]>();
 	/**
 	 * there are at most 2 attributes used for variants creation, so this list has 2 booleans.
@@ -218,42 +215,26 @@
 		// when the given channels change, this function runs again,
 		// we must do these steps below, to make sure the logic works:
 
-		// 1) Update the logic for the channel select options
-		const newChannelSelectOptions: ChannelSelectOptionProps[] = [];
-		const channelIdsMap: Record<string, boolean> = {};
+		const channelIds = channelSelectOptions.map((item) => item.value as string);
 
-		channelsListing?.updateChannels?.forEach((channelListing) => {
-			newChannelSelectOptions.push({
-				value: channelListing.channelId,
-				label: channelListing['channelName' as keyof ProductChannelListingAddInput],
-				currency: channelListing['currency' as keyof ProductChannelListingAddInput],
-				channelId: channelListing.channelId,
-				price: undefined,
-			});
-
-			channelIdsMap[channelListing.channelId] = true;
-		});
-
-		channelSelectOptions = newChannelSelectOptions;
-
-		if (quickFillingValues.channels.some((chan) => !channelIdsMap[chan.channelId]))
+		if (quickFillingValues.channels.some((chan) => !channelIds.includes(chan.channelId)))
 			// 2) In case user already selected channels for some variant(s),
 			// we must check and keep them in sync with new selected channels.
 
 			// a) quick filling section
-			quickFillingValues.channels = quickFillingValues.channels.filter(
-				(chan) => channelIdsMap[chan.channelId],
+			quickFillingValues.channels = quickFillingValues.channels.filter((chan) =>
+				channelIds.includes(chan.channelId),
 			);
 
 		if (
 			variantsInputDetails.some((inputDetail) =>
-				inputDetail.channelListings?.some((listing) => !channelIdsMap[listing.channelId]),
+				inputDetail.channelListings?.some((listing) => !channelIds.includes(listing.channelId)),
 			)
 		)
 			// b) variant detail sections
 			variantsInputDetails = variantsInputDetails.map((inputDetail) => {
-				inputDetail.channelListings = inputDetail.channelListings?.filter(
-					(chan) => channelIdsMap[chan.channelId],
+				inputDetail.channelListings = inputDetail.channelListings?.filter((chan) =>
+					channelIds.includes(chan.channelId),
 				);
 
 				return inputDetail;

@@ -22,7 +22,10 @@
 	import GeneralInformation from '$lib/components/pages/settings/products/general-information.svelte';
 	import PackagingAndDelivery from '$lib/components/pages/settings/products/packaging-and-delivery.svelte';
 	import ProductSeo from '$lib/components/pages/settings/products/product-seo.svelte';
-	import type { VariantMedia } from '$lib/components/pages/settings/products/utils';
+	import type {
+		ChannelSelectOptionProps,
+		VariantMedia,
+	} from '$lib/components/pages/settings/products/utils';
 	import VariantsEditor from '$lib/components/pages/settings/products/variants-editor.svelte';
 	import type {
 		Mutation,
@@ -65,11 +68,12 @@
 		category: '',
 		weight: 0,
 	});
-	let channelListingUpdateInput = $state.raw<ProductChannelListingUpdateInput>({});
+	let channelListingUpdateInput = $state<ProductChannelListingUpdateInput>({});
 	let productMedias = $state.raw<MediaObject[]>([]);
 	let metaRef = $state<GeneralMetadataEditorRef>();
 	let productTypeRequiresShipping = $state(true);
 	let productVariantsMediaMap = $state<VariantMedia>({});
+	let channelSelectOptions = $state<ChannelSelectOptionProps[]>([]);
 	let productInputError = $state({
 		metadata: false,
 		generalInfo: false,
@@ -308,19 +312,18 @@
 			bind:channelListingUpdateInput
 			bind:ok={productInputError.channelListing}
 			{loading}
+			bind:channelSelectOptions
 		/>
 		{#if productCreateInput.productType}
-			{#key productCreateInput.productType}
-				<VariantsEditor
-					disabled={loading}
-					productTypeId={productCreateInput.productType}
-					{productMedias}
-					channelsListing={channelListingUpdateInput}
-					bind:productVariantsInput
-					bind:privateMetadata={productCreateInput.privateMetadata!}
-					bind:productVariantsMediaMap
-				/>
-			{/key}
+			<VariantsEditor
+				disabled={loading}
+				productTypeId={productCreateInput.productType}
+				{productMedias}
+				{channelSelectOptions}
+				bind:productVariantsInput
+				bind:privateMetadata={productCreateInput.privateMetadata!}
+				bind:productVariantsMediaMap
+			/>
 		{/if}
 	</div>
 	<ProductSeo
