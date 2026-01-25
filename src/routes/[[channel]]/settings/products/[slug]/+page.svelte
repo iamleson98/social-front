@@ -523,7 +523,7 @@
 			<ChannelsSelector
 				bind:channelListingUpdateInput
 				channelListings={channelListings || []}
-				ok={productFormOk.channelListing}
+				bind:ok={productFormOk.channelListing}
 				{loading}
 			/>
 			<VariantsEditEditor

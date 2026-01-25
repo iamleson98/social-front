@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { CHANNELS_QUERY } from '$lib/api/channels';
 	import { operationStore } from '$lib/api/operation';
-	import { Accordion } from '$lib/components/ui/Accordion';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Checkbox, Label } from '$lib/components/ui/Input';
@@ -13,8 +12,9 @@
 		Query,
 	} from '$lib/gql/graphql';
 	import { T } from '$lib/i18n';
-	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import ErrorMsg from './error-msg.svelte';
+	import { difference } from 'es-toolkit';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 
@@ -28,144 +28,137 @@
 		loading: boolean;
 	};
 
-	let { channelListings, channelListingUpdateInput = $bindable({}), ok, loading }: Props = $props();
-	// map of channels that are already assigned to a product
-	const ASSIGNED_CHANNEL_IDS_MAP: Record<string, boolean> = channelListings?.length
-		? channelListings.reduce((acc, cur) => ({ ...acc, [cur.channel.id]: true }), {})
-		: {};
+	type CustomProductChannelListing = ProductChannelListing & {
+		used: boolean;
+		channelName: string;
+		currency: string;
+	};
 
-	const CHANNELS_QUERY_STORE = operationStore<Pick<Query, 'channels'>>({
+	let {
+		channelListings = [],
+		channelListingUpdateInput = $bindable({}),
+		ok = $bindable(),
+		loading,
+	}: Props = $props();
+	// map of channels that are already assigned to a product
+	const AssignedChannelIdsMap: Record<string, ProductChannelListing> = (
+		channelListings || []
+	).reduce((acc, cur) => ({ ...acc, [cur.channel.id]: cur }), {});
+	const ExistingChannelIds = channelListings?.map((listing) => listing.channel.id) || [];
+	let activeChannelListings = $state<CustomProductChannelListing[]>([]);
+
+	const ChannelsQueryStore = operationStore<Pick<Query, 'channels'>>({
 		query: CHANNELS_QUERY,
 		requestPolicy: 'cache-and-network',
 	});
 
-	type CustomChannelListingAddInput = ProductChannelListingAddInput & {
-		used: boolean; // for checkbox binding
-		channelName: string; // for label displaying
-		currency: string;
-	};
-
-	type CustomProductChannelListingUpdateInput = {
-		removeChannels: string[];
-		updateChannels: CustomChannelListingAddInput[];
-	};
-
-	let productChannelListingUpdateInput = $state<CustomProductChannelListingUpdateInput>({
-		updateChannels: [],
-		removeChannels: [],
-	});
-
+	/** listen on activeListings changes, then re-calculate productChannelListingUpdateInput */
 	$effect(() => {
-		channelListingUpdateInput = {
-			...productChannelListingUpdateInput,
-			updateChannels: productChannelListingUpdateInput.updateChannels.filter((chan) => chan.used),
-		};
-	});
+		const remainChannelListingIds = activeChannelListings.reduce((acc, cur) => {
+			if (cur.used && cur.id) acc.push(cur.channel.id);
+			return acc;
+		}, [] as string[]);
 
-	onMount(() => {
-		const populatedChanelMap: Record<string, boolean> = {};
+		channelListingUpdateInput.removeChannels = difference(
+			ExistingChannelIds,
+			remainChannelListingIds,
+		);
+		channelListingUpdateInput.updateChannels = activeChannelListings.reduce((acc, cur) => {
+			if (cur.used) {
+				const value: ProductChannelListingAddInput = {
+					channelId: cur.channel.id,
+					isPublished: cur.isPublished,
+					isAvailableForPurchase: cur.isAvailableForPurchase,
+					availableForPurchaseAt: cur.availableForPurchaseAt,
+					publishedAt: cur.publishedAt,
+					publicationDate: cur.publishedAt,
+					visibleInListings: cur.visibleInListings,
+				};
 
-		// if the product already has channel listings, populate the map
-		if (channelListings?.length) {
-			productChannelListingUpdateInput = {
-				...productChannelListingUpdateInput,
-				updateChannels: channelListings.map((listing) => {
-					populatedChanelMap[listing.channel.id] = true;
-
-					return {
-						channelId: listing.channel.id,
-						availableForPurchaseAt: listing.availableForPurchaseAt,
-						isAvailableForPurchase: listing.isAvailableForPurchase,
-						isPublished: listing.isPublished,
-						publishedAt: listing.publishedAt,
-						visibleInListings: listing.visibleInListings,
-
-						// NOTE: Three fields below is extra added for easy to handling within this component.
-						// They will be removed before passing back to parent component.
-						used: ASSIGNED_CHANNEL_IDS_MAP[listing.channel.id],
-						channelName: listing.channel.name,
-						currency: listing.channel.currencyCode.toUpperCase(),
-					};
-				}),
-			};
-		}
-
-		// add not added channel(s) to the list for user to use
-		return CHANNELS_QUERY_STORE.subscribe((result) => {
-			if (checkIfGraphqlResultHasError(result)) return;
-
-			const newChannelListings = productChannelListingUpdateInput.updateChannels;
-			for (const chan of result.data?.channels || []) {
-				if (!populatedChanelMap[chan.id]) {
-					populatedChanelMap[chan.id] = true; // prevent adding again
-
-					newChannelListings.push({
-						channelId: chan.id,
-						used: false,
-						channelName: chan.name,
-						isPublished: true,
-						isAvailableForPurchase: true,
-						currency: chan.currencyCode.toUpperCase(),
-					});
-				}
+				acc.push(value);
 			}
 
-			productChannelListingUpdateInput = {
-				...productChannelListingUpdateInput,
-				updateChannels: newChannelListings,
-			};
-		});
+			return acc;
+		}, [] as ProductChannelListingAddInput[]);
 	});
 
-	/**
-	 * This happens when update product, user want to stop selling in specific channel
-	 */
-	const toggleSelectChannel = (channelID: string, checked: boolean) => {
-		if (!checked && ASSIGNED_CHANNEL_IDS_MAP[channelID]) {
-			productChannelListingUpdateInput = {
-				updateChannels: productChannelListingUpdateInput.updateChannels.filter(
-					(chan) => chan.channelId !== channelID,
-				),
-				removeChannels: productChannelListingUpdateInput.removeChannels.concat(channelID),
-			};
-		}
-	};
+	onMount(() =>
+		ChannelsQueryStore.subscribe((result) => {
+			if (checkIfGraphqlResultHasError(result)) return;
+
+			const newActiveChannelListings = [];
+
+			for (const channel of result.data?.channels || []) {
+				const listing: CustomProductChannelListing = {
+					id: '',
+					channel,
+					isPublished: false,
+					visibleInListings: false,
+					used: false,
+					channelName: channel.name,
+					currency: channel.currencyCode,
+				};
+
+				const assignedListing = AssignedChannelIdsMap[channel.id];
+
+				if (assignedListing) {
+					listing.used = true;
+					listing.id = assignedListing.id;
+					listing.isPublished = assignedListing.isPublished;
+					listing.isAvailableForPurchase = assignedListing.isAvailableForPurchase;
+					listing.publishedAt = assignedListing.publishedAt;
+					listing.availableForPurchaseAt = assignedListing.availableForPurchaseAt;
+					listing.visibleInListings = assignedListing.visibleInListings;
+				}
+
+				newActiveChannelListings.push(listing);
+			}
+
+			activeChannelListings = newActiveChannelListings;
+		}),
+	);
 </script>
 
-<div class={['p-2 rounded-lg', !ok && 'bg-red-50 border-red-200!']}>
+<div>
 	<Label required requiredAtPos="end" label={$T('product.channel')} />
 
-	{#if $CHANNELS_QUERY_STORE.fetching}
+	{#if $ChannelsQueryStore.fetching}
 		<TableSkeleton numOfRows={2} numColumns={4} />
-	{:else if $CHANNELS_QUERY_STORE.error}
-		<Alert variant="error" size="sm" bordered>{$CHANNELS_QUERY_STORE.error.message}</Alert>
+	{:else if $ChannelsQueryStore.error}
+		<Alert variant="error" size="sm" bordered>{$ChannelsQueryStore.error.message}</Alert>
 	{:else}
 		<div class={['grid grid-cols-4 gap-2']}>
-			{#each productChannelListingUpdateInput.updateChannels! as channelListing, idx (idx)}
-				<div class="">
-					<Accordion bind:open={channelListing.used} class={SitenameCommonClassName}>
-						{#snippet header()}
-							<Checkbox
-								label={channelListing.channelName}
-								bind:checked={channelListing.used}
-								disabled={loading}
-								onchange={(evt) =>
-									toggleSelectChannel(channelListing.channelId, evt.currentTarget.checked)}
-								size="sm"
-							/>
-						{/snippet}
+			{#each activeChannelListings as listing, idx (idx)}
+				<div class="space-y-2 rounded-lg bg-white overflow-hidden border border-gray-200 h-fit">
+					<!-- general channel use select checkbox -->
+					<div class="bg-gray-100 p-2">
 						<Checkbox
-							bind:checked={channelListing.isPublished}
+							label={listing.channel.name}
+							bind:checked={listing.used}
+							disabled={loading}
+							size="sm"
+							onCheckChange={(checked) => {
+								listing.visibleInListings = checked;
+								listing.isPublished = checked;
+								listing.isAvailableForPurchase = checked;
+							}}
+						/>
+					</div>
+
+					<!-- published checkbox -->
+					<div class="p-2 space-y-2">
+						<Checkbox
+							bind:checked={listing.isPublished}
 							size="sm"
 							label={$T('product.published')}
 							class="mb-2"
-							disabled={loading}
+							disabled={loading || !listing.used}
 						/>
-						{#if !channelListing.isPublished}
+						{#if listing.used && !listing.isPublished}
 							<div transition:fade class="mb-2 pb-2 border-b border-gray-300">
 								<EaseDatePicker
 									size="xs"
-									onchange={(value) => (channelListing.publishedAt = value.date)}
+									onchange={(value) => (listing.publishedAt = value.date)}
 									allowSelectMonthYears={{
 										showYears: { min: 2020 },
 										showMonths: true,
@@ -175,19 +168,21 @@
 								/>
 							</div>
 						{/if}
+
+						<!-- available for purchase checkbox -->
 						<Checkbox
-							bind:checked={channelListing.isAvailableForPurchase}
+							bind:checked={listing.isAvailableForPurchase}
 							size="sm"
 							label={$T('product.availForPurchase')}
 							class="mb-2"
-							disabled={loading}
+							disabled={loading || !listing.used}
 						/>
-						{#if !channelListing.isAvailableForPurchase}
+						{#if listing.used && !listing.isAvailableForPurchase}
 							<div transition:fade>
 								<EaseDatePicker
 									label={$T('product.promptAvailTime')}
 									size="xs"
-									onchange={(value) => (channelListing.availableForPurchaseAt = value.date)}
+									onchange={(value) => (listing.availableForPurchaseAt = value.date)}
 									allowSelectMonthYears={{
 										showYears: { min: 2020 },
 										showMonths: true,
@@ -196,7 +191,17 @@
 								/>
 							</div>
 						{/if}
-					</Accordion>
+
+						<!-- visible in listing checkbox -->
+						<Checkbox
+							bind:checked={listing.visibleInListings}
+							size="sm"
+							label={$T('product.visibleInListing')}
+							class="mb-2"
+							disabled={loading || !listing.used}
+							subText={$T('product.visibleInListingHint')}
+						/>
+					</div>
 				</div>
 			{/each}
 		</div>

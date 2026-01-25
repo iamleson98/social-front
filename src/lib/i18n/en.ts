@@ -227,6 +227,7 @@ export default {
 		prdUpdated: 'Product updated successfully',
 		cateName: 'Category Name',
 		visibleInListing: 'Visible in listing',
+		visibleInListingHint: 'Will be show in search, category and collection pages',
 		hasCategory: 'Has category',
 		isGiftcard: 'Is giftcard',
 		exportOrganization: 'Product organization',

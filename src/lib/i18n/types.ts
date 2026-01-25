@@ -214,6 +214,7 @@ export type TranslationKey =
 | 'product.prdUpdated'
 | 'product.cateName'
 | 'product.visibleInListing'
+| 'product.visibleInListingHint'
 | 'product.hasCategory'
 | 'product.isGiftcard'
 | 'product.exportOrganization'

@@ -225,6 +225,7 @@ export default {
 		prdUpdated: 'Sản phẩm đã được cập nhật thành công',
 		cateName: 'Tên danh mục',
 		visibleInListing: 'Hiển thị trong danh sách',
+		visibleInListingHint: 'Hiển thị trong danh sách tìm kiếm, danh mục và bộ sưu tập',
 		hasCategory: 'Có danh mục',
 		isGiftcard: 'Là thẻ quà tặng',
 		exportOrganization: 'Các trường',

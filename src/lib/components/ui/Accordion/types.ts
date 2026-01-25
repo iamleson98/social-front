@@ -9,6 +9,7 @@ export type AccordionProps = {
 	open?: boolean;
 	/** if `true`, the `open` stays the same as the current state */
 	fixed?: boolean;
+	onToggle?: (open: boolean) => void;
 };
 
 export type AccordionListProps<T> = Omit<AccordionProps, 'children'> & {

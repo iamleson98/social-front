@@ -10,10 +10,14 @@
 		open = $bindable(true),
 		fixed = false,
 		headerIcon,
+		onToggle,
 	}: AccordionProps = $props();
 
 	const toggle = () => {
-		if (!fixed) open = !open;
+		if (!fixed) {
+			open = !open;
+			onToggle?.(open);
+		}
 	};
 </script>
 

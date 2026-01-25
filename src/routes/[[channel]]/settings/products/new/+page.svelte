@@ -306,7 +306,7 @@
 	<div class={SitenameCommonClassName}>
 		<ChannelsSelector
 			bind:channelListingUpdateInput
-			ok={productInputError.channelListing}
+			bind:ok={productInputError.channelListing}
 			{loading}
 		/>
 		{#if productCreateInput.productType}
