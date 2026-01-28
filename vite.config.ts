@@ -24,7 +24,7 @@ export default defineConfig(({ mode }) => {
 		},
 		build: {
 			minify: mode !== 'development',
-			sourcemap: mode === 'development',
+			// sourcemap: mode === 'development',
 			rollupOptions: {
 				output: {
 					manualChunks: (id) => {
@@ -32,7 +32,7 @@ export default defineConfig(({ mode }) => {
 							return 'vendor';  // Chunk all deps into one file for better caching
 						}
 					},
-					sourcemap: mode === 'development',
+					// sourcemap: mode === 'development',
 				},
 			},
 		},

@@ -151,10 +151,11 @@
 					<div class="bg-gray-100 p-2">
 						<Checkbox
 							label={listing.channel.name}
-							bind:checked={listing.used}
+							checked={listing.used}
 							disabled={loading}
 							size="sm"
 							onCheckChange={(checked) => {
+								listing.used = checked;
 								listing.visibleInListings = checked;
 								listing.isPublished = checked;
 								listing.isAvailableForPurchase = checked;
