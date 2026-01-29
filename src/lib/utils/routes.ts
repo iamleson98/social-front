@@ -59,7 +59,8 @@ export const AppRoute = {
 	SETTINGS_CONFIGS_CATEGORIES: () => buildLinkWithRespectToChannel('settings/categories'),
 	SETTINGS_CONFIGS_CATEGORY_DETAILS: (id: string) =>
 		buildLinkWithRespectToChannel(`settings/categories/${id}`),
-	SETTINGS_CONFIGS_CATEGORY_NEW: () => buildLinkWithRespectToChannel('settings/categories/new'),
+	SETTINGS_CONFIGS_CATEGORY_NEW: (parentId?: string) =>
+		buildLinkWithRespectToChannel('settings/categories/new' + (parentId ? `?parent=${parentId}` : '')),
 
 	SETTINGS_CONFIGS_COLLECTIONS: () => buildLinkWithRespectToChannel('settings/collections'),
 	SETTINGS_CONFIGS_COLLECTION_DETAILS: (id: string) =>

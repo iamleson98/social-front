@@ -314,6 +314,7 @@
 			{loading}
 			bind:channelSelectOptions
 		/>
+		<!-- since product attributes are related to product types, so only when product type is set, user can edit product attributes -->
 		{#if productCreateInput.productType}
 			<VariantsEditor
 				disabled={loading}

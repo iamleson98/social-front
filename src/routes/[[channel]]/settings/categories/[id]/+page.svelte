@@ -34,7 +34,7 @@
 	let metaRef = $state<GeneralMetadataEditorRef>();
 	let loading = $state(false);
 
-	const categoryQuery = operationStore<
+	const CategoryQuery = operationStore<
 		Pick<Query, 'category'>,
 		QueryCategoryArgs & { backgroundSize?: number; isStaffUser?: boolean }
 	>({
@@ -44,8 +44,8 @@
 			backgroundSize: 500,
 			isStaffUser: true,
 		},
-		requestPolicy: 'cache-and-network',
 		pause: !page.params.id,
+		requestPolicy: 'cache-and-network',
 	});
 
 	let categoryInput = $state<CategoryInput>({
@@ -59,7 +59,7 @@
 	});
 
 	afterNavigate(() => {
-		categoryQuery.reexecute({
+		CategoryQuery.reexecute({
 			variables: {
 				id: page.params.id,
 			},
@@ -67,7 +67,7 @@
 	});
 
 	onMount(() =>
-		categoryQuery.subscribe((result) => {
+		CategoryQuery.subscribe((result) => {
 			if (result.data?.category) {
 				const { name, description, backgroundImage, slug, seoDescription, seoTitle } =
 					result.data.category;
@@ -90,7 +90,7 @@
 							type: ProductMediaType.Image,
 						},
 					];
-				}
+				} else media = [];
 			}
 		}),
 	);
@@ -138,18 +138,18 @@
 		if (hasError) return;
 
 		toast.success($CommonState.EditSuccess);
-		categoryQuery.reexecute({
+		CategoryQuery.reexecute({
 			variables: { id: page.params.id },
 		});
 	};
 </script>
 
-{#if $categoryQuery.fetching}
+{#if $CategoryQuery.fetching}
 	<DetailSkeleton />
-{:else if $categoryQuery.error}
-	<Alert size="sm" bordered variant="error">{$categoryQuery.error.message}</Alert>
-{:else if $categoryQuery.data?.category}
-	{@const { metadata, privateMetadata, id } = $categoryQuery.data.category}
+{:else if $CategoryQuery.error}
+	<Alert size="sm" bordered variant="error">{$CategoryQuery.error.message}</Alert>
+{:else if $CategoryQuery.data?.category}
+	{@const { metadata, privateMetadata, id } = $CategoryQuery.data.category}
 	<div class="flex flex-row gap-2 tablet:flex-col">
 		<div class="w-6/10 space-y-2 tablet:w-full">
 			<GeneralInformation
@@ -172,7 +172,7 @@
 			/>
 		</div>
 
-		<SubSection categoryId={id} />
+		<SubSection categoryId={id} disabled={loading} />
 	</div>
 
 	<ActionBar

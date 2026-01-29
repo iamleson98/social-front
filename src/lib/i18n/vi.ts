@@ -632,6 +632,7 @@ export default {
 	category: {
 		new: 'Thêm danh mục',
 		noOfChildren: 'Số mục con',
+		addChild: 'Thêm mục con',
 	},
 	voucher: {
 		useLimit: 'Giới hạn sử dụng',

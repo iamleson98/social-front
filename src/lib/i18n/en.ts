@@ -637,6 +637,7 @@ export default {
 	category: {
 		new: 'Add new category',
 		noOfChildren: 'No. of children',
+		addChild: 'Add child',
 	},
 	voucher: {
 		useLimit: 'Usage limit',

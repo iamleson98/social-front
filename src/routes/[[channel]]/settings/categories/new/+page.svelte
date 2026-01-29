@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import { CATEGORY_CREATE_MUTATION } from '$lib/api/admin/category';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import GeneralInformation from '$lib/components/pages/settings/categories/general-information.svelte';
@@ -18,6 +19,9 @@
 	let metadataOk = $state(true);
 	let loading = $state(false);
 	let metaRef = $state<GeneralMetadataEditorRef>();
+
+	/** categories are organized as tree, so when we want to create a child category of a parent, we need to provide query param 'parant' for it */
+	const ParentId = $derived(page.url.searchParams.get('parent') || undefined);
 
 	let categoryInput = $state<CategoryInput>({
 		name: '',
@@ -44,6 +48,7 @@
 				backgroundImage: media[0]?.file,
 				backgroundImageAlt: media[0]?.alt,
 			},
+			parent: ParentId
 		});
 
 		if (checkIfGraphqlResultHasError(result, 'categoryCreate')) {

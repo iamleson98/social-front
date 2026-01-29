@@ -566,6 +566,7 @@ export type TranslationKey =
 | 'collection.successUnassignedPrds'
 | 'category.new'
 | 'category.noOfChildren'
+| 'category.addChild'
 | 'voucher.useLimit'
 | 'voucher.limitUseTimes'
 | 'voucher.limitOneUsePerUser'

@@ -1,9 +1,12 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { T } from '$i18n';
 	import { CATEGORY_CHILDREN_LIST_QUERY } from '$lib/api/admin/category';
 	import { PRODUCT_LIST_QUERY_ADMIN } from '$lib/api/admin/product';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
+	import { Plus } from '$lib/components/icons';
+	import { Button } from '$lib/components/ui';
 	import { GraphqlPaginableTable, type TableColumnProps } from '$lib/components/ui/Table';
 	import {
 		type Category,
@@ -19,9 +22,10 @@
 
 	type Props = {
 		categoryId: string;
+		disabled: boolean;
 	};
 
-	let { categoryId }: Props = $props();
+	let { categoryId, disabled }: Props = $props();
 
 	const CATEGORY_CHILDREN_COLUMNS: TableColumnProps<Category, any>[] = $derived([
 		{
@@ -86,7 +90,18 @@
 
 <div class="space-y-2 w-4/10 tablet:w-full">
 	<div class={[SitenameCommonClassName]}>
-		<SectionHeader>{$T('product.subCategories')}</SectionHeader>
+		<SectionHeader>
+			<div>
+				{$T('product.subCategories')}
+			</div>
+			<Button
+				size="xs"
+				variant="light"
+				href={AppRoute.SETTINGS_CONFIGS_CATEGORY_NEW(page.params.id)}
+				endIcon={Plus}
+				{disabled}>{$T('category.addChild')}</Button
+			>
+		</SectionHeader>
 		<div class="overflow-x-auto">
 			<GraphqlPaginableTable
 				query={CATEGORY_CHILDREN_LIST_QUERY}
@@ -95,6 +110,7 @@
 				columns={CATEGORY_CHILDREN_COLUMNS}
 				autoRefetchOnPaginationParamsChange
 				autoFetchDataOnMount
+				{disabled}
 			/>
 		</div>
 	</div>
@@ -109,6 +125,7 @@
 				columns={PRODUCTS_COLUMNS}
 				autoRefetchOnPaginationParamsChange
 				autoFetchDataOnMount
+				{disabled}
 			/>
 		</div>
 	</div>
