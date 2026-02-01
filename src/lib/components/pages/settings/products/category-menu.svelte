@@ -20,10 +20,9 @@
 		connection: CategoryCountableConnection;
 		selectedItems: CategorySelectItemProps[];
 		disabled?: boolean;
-		onSelect?: (item: CategorySelectItemProps) => void;
 	};
 
-	let { connection, selectedItems = $bindable(), disabled, onSelect }: Props = $props();
+	let { connection, selectedItems = $bindable(), disabled }: Props = $props();
 
 	const Batch = 50;
 
@@ -32,7 +31,6 @@
 	let itemsOptions = $state<CategorySelectItemProps[]>([]);
 	let loading = $state(false);
 	let activeItemIndex = $state<number>();
-	const itemCursorClass = $derived(disabled ? 'cursor-not-allowed!' : 'cursor-pointer');
 
 	const addConnectionToItems = (connection: CategoryCountableConnection) => {
 		const addItems: CategorySelectItemProps[] = [];
@@ -100,6 +98,12 @@
 		newItems.push(item);
 		selectedItems = newItems;
 	};
+
+	const calculateColor = (active: boolean) => {
+		return active
+			? 'bg-blue-50 ring-2 text-blue-600 ring-blue-500'
+			: 'ring-gray-200 ring-1 text-gray-700 bg-white';
+	};
 </script>
 
 <div
@@ -107,12 +111,8 @@
 	use:scrollToEnd={{ onScrollToEnd: fetchNextPage }}
 >
 	{#each itemsOptions as item, idx (idx)}
-		{@const colorClasses =
-			activeItemIndex === idx
-				? 'bg-blue-50 ring-2 text-blue-600 ring-blue-500'
-				: 'ring-gray-200 ring-1 text-gray-700 bg-white'}
 		<div
-			class={`flex items-center select-none justify-between overflow-hidden rounded-lg mb-2 font-medium p-2 ${itemCursorClass} ${colorClasses}`}
+			class={`flex items-center select-none justify-between overflow-hidden rounded-lg mb-2 font-medium p-2 ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'} ${calculateColor(idx === activeItemIndex)}`}
 			role="button"
 			tabindex="0"
 			onclick={() => handleSelectItem(item, idx)}
