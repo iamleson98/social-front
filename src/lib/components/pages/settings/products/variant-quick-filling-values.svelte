@@ -13,7 +13,6 @@
 	} from './utils';
 	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
-	import { slide } from 'svelte/transition';
 
 	type Props = {
 		channelSelectOptions: ChannelSelectOptionProps[];
@@ -63,10 +62,10 @@
 
 <div class={SitenameCommonClassName}>
 	<Label label={$T('product.quickFilling')} size="sm" />
-	<div class="flex gap-x-2 items-start flex-row w-full">
-		<div class="w-11/12 flex gap-1 items-start flex-row">
+	<div class="flex gap-1 tablet:flex-wrap">
+		<div class="w-11/12 grid gap-1 items-start tablet:w-full grid-cols-6">
 			<!-- CHANNELS -->
-			<div class="w-1/6">
+			<div class="tablet:col-span-2 col-span-1">
 				<Label label={$T('product.channel')} size="sm" />
 				{#if !channelSelectOptions?.length}
 					<SelectSkeleton size="sm" />
@@ -85,7 +84,7 @@
 				{/if}
 			</div>
 			<!-- PRICING -->
-			<div class="w-2/6">
+			<div class="col-span-2 tablet:col-span-4">
 				{#if quickFillingValues.channels.length}
 					<div class="grid grid-cols-2">
 						<Label label={$T('product.price')} size="sm" />
@@ -127,7 +126,7 @@
 				{/if}
 			</div>
 			<!-- WEIGHT -->
-			<div class="w-1/6">
+			<div class="col-span-1 tablet:col-span-2">
 				<Input
 					size="sm"
 					type="number"
@@ -148,7 +147,7 @@
 				</Input>
 			</div>
 			<!-- PRE-ORDER -->
-			<div class="w-1/6">
+			<div class="col-span-1 tablet:col-span-2">
 				<Label label={$T('common.preorder')} size="sm" />
 				<div class="border border-gray-200 bg-white p-1 rounded-lg">
 					<!-- QUANTITY LIMIT -->
@@ -189,7 +188,7 @@
 				</div>
 			</div>
 			<!-- STOCK -->
-			<div class="w-1/6">
+			<div class="col-span-1 tablet:col-span-2">
 				<Label label={$T('product.stock')} size="sm" />
 				{#if !quickFillingValues.stocks.length}
 					<SelectSkeleton size="sm" />
@@ -214,12 +213,39 @@
 					</div>
 				{/if}
 			</div>
+
+			<div class="mt-2 grid gap-1 items-start grid-cols-6 col-span-6">
+				<Checkbox
+					class="col-span-2"
+					bind:checked={quickFillingValues.trackInventory}
+					label={$T('product.trackInventory')}
+					size="sm"
+					{disabled}
+				/>
+				<Input
+					type="number"
+					class="col-span-2!"
+					bind:value={quickFillingValues.quantityLimitPerCustomer}
+					size="sm"
+					{disabled}
+					min="0"
+					label={$T('product.qtyLimit')}
+					placeholder={$T('placeholders.valuePlaceholder')}
+					variant={typeof quickFillingValues.quantityLimitPerCustomer === 'number' &&
+					quickFillingValues.quantityLimitPerCustomer % 1 !== 0
+						? 'error'
+						: 'info'}
+					subText={typeof quickFillingValues.quantityLimitPerCustomer === 'number' &&
+					quickFillingValues.quantityLimitPerCustomer % 1 !== 0
+						? $CommonState.NonNegativeError
+						: ''}
+				/>
+			</div>
 		</div>
 		<!-- APPLY BUTTON -->
-		<div class="w-1/12">
-			<Label label={$T('common.action')} size="sm" />
+		<div class="w-1/12 tablet:w-full">
 			<Button
-				class="btn btn-sm grow shrink"
+				class="btn btn-sm grow shrink tablet:w-full!"
 				size="sm"
 				disabled={quickFillingError || disabled}
 				fullWidth
@@ -230,29 +256,4 @@
 	</div>
 
 	<!-- QUICK FILLING ADVANCED OPTIONS -->
-	<div class="mt-2 flex gap-2 items-start" transition:slide>
-		<Checkbox
-			bind:checked={quickFillingValues.trackInventory}
-			label={$T('product.trackInventory')}
-			size="sm"
-			{disabled}
-		/>
-		<Input
-			type="number"
-			bind:value={quickFillingValues.quantityLimitPerCustomer}
-			size="sm"
-			{disabled}
-			min="0"
-			label={$T('product.qtyLimit')}
-			placeholder={$T('placeholders.valuePlaceholder')}
-			variant={typeof quickFillingValues.quantityLimitPerCustomer === 'number' &&
-			quickFillingValues.quantityLimitPerCustomer % 1 !== 0
-				? 'error'
-				: 'info'}
-			subText={typeof quickFillingValues.quantityLimitPerCustomer === 'number' &&
-			quickFillingValues.quantityLimitPerCustomer % 1 !== 0
-				? $CommonState.NonNegativeError
-				: ''}
-		/>
-	</div>
 </div>

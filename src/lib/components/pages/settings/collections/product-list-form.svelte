@@ -12,7 +12,11 @@
 	import { Badge } from '$lib/components/ui/Badge';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Popover } from '$lib/components/ui/Popover';
-	import type { GraphqlPaginableTableInterface, TableColumnProps } from '$lib/components/ui/Table';
+	import type {
+		GraphqlPaginableTableInterface,
+		TableCellProps,
+		TableColumnProps,
+	} from '$lib/components/ui/Table';
 	import { GraphqlPaginableTable } from '$lib/components/ui/Table';
 	import type {
 		Mutation,
@@ -23,7 +27,11 @@
 		QueryProductsArgs,
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
-	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
+	import {
+		checkIfGraphqlResultHasError,
+		SitenameCommonClassName,
+		stringSlicer,
+	} from '$lib/utils/utils';
 	import ProductAssignModal from './product-assign-modal.svelte';
 	import type { AnyVariables, TypedDocumentNode } from '@urql/core';
 
@@ -155,7 +163,7 @@
 	};
 </script>
 
-{#snippet action({ item }: { item: Product })}
+{#snippet action({ item }: TableCellProps<Product>)}
 	<div class="text-center">
 		<IconButton
 			icon={Trash}
@@ -169,26 +177,27 @@
 	</div>
 {/snippet}
 
-{#snippet picture({ item }: { item: Product })}
+{#snippet picture({ item }: TableCellProps<Product>)}
 	<Thumbnail src={item.thumbnail?.url} alt={item.thumbnail?.alt || item.name} size="sm" />
 {/snippet}
 
-{#snippet name({ item }: { item: Product })}
+{#snippet name({ item }: TableCellProps<Product>)}
 	<a
 		href={AppRoute.PRODUCT_DETAILS(item.slug)}
 		aria-label={item.name}
 		data-interactive
 		class="link"
+		title={item.name}
 	>
-		{item.name}
+		{stringSlicer(item.name, 40)}
 	</a>
 {/snippet}
 
-{#snippet category({ item }: { item: Product })}
+{#snippet category({ item }: TableCellProps<Product>)}
 	<div>{item.category?.name || '-'}</div>
 {/snippet}
 
-{#snippet availability({ item }: { item: Product })}
+{#snippet availability({ item }: TableCellProps<Product>)}
 	{@const channels =
 		item.channelListings?.map((item) => ({
 			channel: item.channel.name,
@@ -216,9 +225,7 @@
 					<div class="flex-1">{chan.channel}</div>
 					<div class="flex-1">
 						<Badge
-							text={chan.published
-								? $T('product.published')
-								: $T('product.unpublished')}
+							text={chan.published ? $T('product.published') : $T('product.unpublished')}
 							size="xs"
 							color={chan.published ? 'green' : 'red'}
 						/>

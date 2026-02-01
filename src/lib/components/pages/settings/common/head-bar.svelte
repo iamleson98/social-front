@@ -45,7 +45,7 @@
 				{@const detailLabel = detailPageLabelGetter(page)}
 				<li class="flex items-center gap-1">
 					<span>
-						{stringSlicer(detailLabel, 40)}
+						{stringSlicer(detailLabel, 20)}
 					</span>
 					<CopyButton copyContent={detailLabel} size="xs" />
 				</li>

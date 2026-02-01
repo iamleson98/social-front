@@ -118,32 +118,41 @@
 {:else if $giftcardQuery.data?.giftCard}
 	{@const { id, currentBalance, isActive, tags, metadata, privateMetadata, initialBalance } =
 		$giftcardQuery.data.giftCard}
-	<div class="flex flex-row gap-2 tablet:flex-col">
-		<div class="w-7/10 space-y-2 tablet:w-full">
-			<GiftcardDetail
-				bind:balanceAmount={giftcardUpdateInput.balanceAmount}
-				bind:expiryDate={giftcardUpdateInput.expiryDate}
-				bind:addTags={giftcardUpdateInput.addTags!}
-				bind:removeTags={giftcardUpdateInput.removeTags!}
-				balanceCurrency={currentBalance.currency || initialBalance.currency}
-				existingTags={tags.map((item) => item.name)}
-				disabled={loading}
-				{onActiveChange}
-				{isActive}
-				{metadata}
-				{id}
-			/>
-			<GeneralMetadataEditor
-				{metadata}
-				{privateMetadata}
-				disabled={loading}
-				objectId={id}
-				bind:this={metaRef}
-			/>
-			<GiftcardEvents {id} bind:timelineReloadTrigger />
+	<div class="space-y-2">
+		<div class="flex gap-2 tablet:flex-wrap">
+			<div class="w-7/10 space-y-2 tablet:w-full">
+				<GiftcardDetail
+					bind:balanceAmount={giftcardUpdateInput.balanceAmount}
+					bind:expiryDate={giftcardUpdateInput.expiryDate}
+					bind:addTags={giftcardUpdateInput.addTags!}
+					bind:removeTags={giftcardUpdateInput.removeTags!}
+					balanceCurrency={currentBalance.currency || initialBalance.currency}
+					existingTags={tags.map((item) => item.name)}
+					disabled={loading}
+					{onActiveChange}
+					{isActive}
+					{metadata}
+					{id}
+				/>
+				<GeneralMetadataEditor
+					{metadata}
+					{privateMetadata}
+					disabled={loading}
+					objectId={id}
+					bind:this={metaRef}
+				/>
+			</div>
+			<GiftcardExtraInformation giftcard={$giftcardQuery.data.giftCard} />
 		</div>
 
-		<GiftcardExtraInformation giftcard={$giftcardQuery.data.giftCard} />
+		<div class="flex gap-2 tablet:flex-wrap">
+			<div class="w-7/10 tablet:w-full">
+				<GiftcardEvents {id} bind:timelineReloadTrigger />
+			</div>
+			<div class="w-3/10 tablet:w-full">
+				
+			</div>
+		</div>
 	</div>
 
 	<ActionBar

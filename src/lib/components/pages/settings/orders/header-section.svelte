@@ -32,9 +32,9 @@
 		{/snippet}
 
 		{#if order.status !== OrderStatus.Canceled}
-			<MenuItem class="text-red-500" startIcon={Ban} onclick={onCancelOrder}
-				>Cancel order</MenuItem
-			>
+			<MenuItem class="text-red-500" startIcon={Ban} onclick={onCancelOrder}>
+				Cancel order
+			</MenuItem>
 		{/if}
 	</DropDown>
 </SectionHeader>

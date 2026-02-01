@@ -337,7 +337,7 @@
 		/>
 
 		<!-- MARK: DETAILS -->
-		<div class={SitenameCommonClassName}>
+		<div class="{SitenameCommonClassName} overflow-x-auto">
 			<table class="w-full text-sm h-fit text-left table text-gray-600">
 				<thead>
 					<tr>

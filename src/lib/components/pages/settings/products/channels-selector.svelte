@@ -144,7 +144,7 @@
 	{:else if $ChannelsQueryStore.error}
 		<Alert variant="error" size="sm" bordered>{$ChannelsQueryStore.error.message}</Alert>
 	{:else}
-		<div class={['grid grid-cols-4 gap-2']}>
+		<div class={['grid grid-cols-4 gap-2 tablet:grid-cols-2 mobile-s:grid-cols-1']}>
 			{#each activeChannelListings as listing, idx (idx)}
 				<div class="space-y-2 rounded-lg bg-white border border-gray-200 h-fit">
 					<!-- general channel use select checkbox -->

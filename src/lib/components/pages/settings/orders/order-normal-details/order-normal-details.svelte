@@ -60,8 +60,8 @@
 	};
 </script>
 
-<div class="flex flex-row gap-2">
-	<div class="space-y-2 w-7/10">
+<div class="flex flex-row gap-2 tablet:flex-wrap">
+	<div class="space-y-2 w-7/10 tablet:w-full">
 		<HeaderSection {order} onCancelOrder={handleCancelOrder} />
 
 		<UnfulfilledOrderLinesSection {order} />
@@ -85,8 +85,9 @@
 			disabled={loading}
 			bind:this={metaRef}
 		/>
-		<OrderHistory id={order.id} />
 	</div>
-
+	
 	<Sidebar {order} {onRefetchOrder} disabled={loading} />
 </div>
+
+<OrderHistory id={order.id} />

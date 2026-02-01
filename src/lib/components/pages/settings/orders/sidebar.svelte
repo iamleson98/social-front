@@ -123,8 +123,8 @@
 	};
 </script>
 
-<div class="space-y-2 w-3/10">
-	<div class={SitenameCommonClassName}>
+<div class="space-y-2 w-3/10 tablet:w-full">
+	<div class="{SitenameCommonClassName} overflow-auto">
 		<SectionHeader>
 			<div>Customer</div>
 			{#if order.status === OrderStatus.Draft}
