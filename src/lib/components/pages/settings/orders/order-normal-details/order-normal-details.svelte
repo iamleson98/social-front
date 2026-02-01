@@ -42,8 +42,10 @@
 	let metaRef = $state<GeneralMetadataEditorRef>();
 
 	const handleCancelOrder = async () => {
-		if (order.fulfillments.some(ful => ful.status === FulfillmentStatus.Fulfilled)) {
-			toast.error('Order has some fulfilled fulfillment(s). Please cancel them first to cancel this order.');
+		if (order.fulfillments.some((ful) => ful.status === FulfillmentStatus.Fulfilled)) {
+			toast.error(
+				'Order has some fulfilled fulfillment(s). Please cancel them first to cancel this order.',
+			);
 			return;
 		}
 
@@ -86,8 +88,13 @@
 			bind:this={metaRef}
 		/>
 	</div>
-	
+
 	<Sidebar {order} {onRefetchOrder} disabled={loading} />
 </div>
 
-<OrderHistory id={order.id} />
+<div class="flex gap-2 tablet:flex-wrap mt-2 flex-row">
+	<div class="w-7/10 tablet:w-full">
+		<OrderHistory id={order.id} />
+	</div>
+	<div class="w-3/10 tablet:w-full"></div>
+</div>

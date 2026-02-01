@@ -18,7 +18,7 @@
 	} from '$lib/gql/graphql';
 	import { UserStoreManager } from '$lib/stores/auth';
 	import { AppRoute } from '$lib/utils';
-	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import dayjs from 'dayjs';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { slide } from 'svelte/transition';
@@ -97,11 +97,6 @@
 		}
 	};
 
-	// const filterTypeOptions = Object.values(OrderEventsEnum).map<SelectOption>((key) => ({
-	// 	value: key,
-	// 	label: key.toLowerCase().replace(/_/g, ' '),
-	// }));
-
 	const eventsQuery = operationStore<Pick<Query, 'order'>, QueryOrderArgs>({
 		query: ORDER_HISTORY_QUERY,
 		variables: { id },
@@ -134,7 +129,7 @@
 	};
 </script>
 
-<div class="p-3 rounded-lg border border-gray-200 bg-white flex flex-col gap-3">
+<div class={SitenameCommonClassName}>
 	<SectionHeader>Order timeline</SectionHeader>
 	<Alert size="sm">
 		The timeline below shows the history of all events related to this order. Each entry represents
