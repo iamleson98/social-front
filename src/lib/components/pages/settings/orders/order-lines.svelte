@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { T } from '$i18n';
 	import PriceDisplay from '$lib/components/common/price-display.svelte';
 	import Thumbnail from '$lib/components/common/thumbnail.svelte';
 	import { Dots, ExternalLink, PencilMinus, Trash } from '$lib/components/icons';
@@ -33,7 +34,7 @@
 
 	const PRODUCT_MODAL_COLUMNS: TableColumnProps<OrderLine, any>[] = $derived([
 		{
-			title: 'Image',
+			title: $T('common.pic'),
 			child: image,
 		},
 		{
