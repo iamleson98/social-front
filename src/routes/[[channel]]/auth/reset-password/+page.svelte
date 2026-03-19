@@ -52,6 +52,7 @@
 <div class="w-md">
 	<h1 class="p-2 mb-4">{$T('resetPassword.title')}</h1>
 	<Input
+		label={$T('common.email')}
 		type="email"
 		placeholder={$T('common.emailPlaceholder')}
 		bind:value={email}
