@@ -15,10 +15,12 @@
 	let sizeGraphqlPaginableSelect = $state<'xs' | 'sm' | 'md' | 'lg' | 'xl'>('md');
 	let selectValue = $state<string[]>();
 	let graphqlSelectValue = $state<string[]>();
+	let numberSelectValue = $state<number | number[]>();
 	let disabled = $state(false);
 	let isMultiple = $state(false);
 	let disabledGraphqlPaginableSelect = $state(false);
 	let isMultipleGraphqlPaginableSelect = $state(false);
+	let isMultipleNumber = $state(false);
 
 	const handleCopyGeneralSelect = () => {
 		let codeContent = `<Select
@@ -163,4 +165,34 @@
 	<Button class="mt-2" onclick={handleCopyGraphqlPaginableSelect}
 		>Copy GraphqlPaginableSelect</Button
 	>
+</div>
+
+<div class="bg-white rounded-md border border-gray-200 p-2 mt-5">
+	<h1 class="p-2">General Select with Number Values (Testing Fix)</h1>
+	<Checkbox bind:checked={isMultipleNumber} label="Multiple" class="mb-2" />
+
+	<Select
+		size="md"
+		label="Select with Number Values"
+		multiple={isMultipleNumber}
+		variant="info"
+		subText="Testing number type support"
+		onchange={(selected) => {
+			console.log('Selected:', selected);
+			toast.success(`Selected: ${JSON.stringify(selected)}`);
+		}}
+		maxDisplay={2}
+		options={[
+			{ label: 'Option 1', value: 1 },
+			{ label: 'Option 2', value: 2 },
+			{ label: 'Option 3', value: 3 },
+			{ label: 'Option 4', value: 4 },
+			{ label: 'Option 5', value: 5 },
+		]}
+		bind:value={numberSelectValue}
+	/>
+	<div class="mt-2 p-2 bg-gray-50 rounded">
+		<strong>Current Value:</strong>
+		{JSON.stringify(numberSelectValue)}
+	</div>
 </div>
