@@ -1,6 +1,10 @@
 import { goto } from '$app/navigation';
 import { page } from '$app/state';
-import type { FilterConditions, FilterItemValue, FilterOperator } from '$lib/components/common/filter-box';
+import type {
+	FilterConditions,
+	FilterItemValue,
+	FilterOperator,
+} from '$lib/components/common/filter-box';
 import type { BadgeProps } from '$lib/components/ui/Badge/types';
 import {
 	type Address,
@@ -235,10 +239,13 @@ export const parseBoolean = (expr: string) => {
 	return expr.toLowerCase() === 'true';
 };
 
-export type SearchParamsType<T> = Record<keyof T, {
-	operator: FilterOperator;
-	value: FilterItemValue;
-}>;
+export type SearchParamsType<T> = Record<
+	keyof T,
+	{
+		operator: FilterOperator;
+		value: FilterItemValue;
+	}
+>;
 
 /**
  * parse search query params, and auto performs type casting when the query param value is boolean or number
@@ -290,7 +297,7 @@ export const parseUrlSearchParams = <T>(url: URL) => {
 				};
 
 			continue;
-		};
+		}
 
 		const pairMatches = FILTER_KEY_VALUE_PAIR_REGEX.exec(value);
 		if (pairMatches) {
@@ -311,23 +318,25 @@ export const parseUrlSearchParams = <T>(url: URL) => {
 					operator: 'oneOf',
 					value: JSON.parse(value),
 				};
-			} catch { }
+			} catch {}
 			continue;
 		}
 
 		result[key as keyof T] = {
 			operator: 'eq',
-			value: value
+			value: value,
 		};
 	}
 
 	return result;
-}
+};
 
 /** This function converts filter conditions to URL search params. The reversed process of `parseUrlSearchParams`
  * NOTE: only used in client side since it calls `goto` function
  */
-export const constructUrlSearchParamsAndNavigate = async <T>(activeFilters: FilterConditions<T>) => {
+export const constructUrlSearchParamsAndNavigate = async <T>(
+	activeFilters: FilterConditions<T>,
+) => {
 	const keys = Object.keys(activeFilters);
 
 	const whiteListKeys = [
@@ -378,7 +387,7 @@ export const constructUrlSearchParamsAndNavigate = async <T>(activeFilters: Filt
 type ClassArgs = Record<string, boolean> | string;
 
 /** works like clsx for class names.
- * 
+ *
  * NOTE: Highly recommend you to refer to https://svelte.dev/docs/svelte/class first before using this.
  */
 export const classNames = (...classes: ClassArgs[]): string => {
@@ -600,11 +609,11 @@ export const stringSlicer = (str?: string, len: number = 100) => {
 
 export function subtractMoney(init: Money, ...args: Money[]): Money {
 	return {
-	amount: args.reduce((acc, curr) => acc - curr.amount, init.amount),
-	currency: init.currency,
-	fractionDigits: 0,
-	fractionalAmount: 0
-};
+		amount: args.reduce((acc, curr) => acc - curr.amount, init.amount),
+		currency: init.currency,
+		fractionDigits: 0,
+		fractionalAmount: 0,
+	};
 }
 
 export const convertAddressToAddressInput = (addr: Address): AddressInput => {
@@ -640,3 +649,12 @@ export const toggleItemNoDup = <T extends string | number>(
 
 	return array.filter((it) => it !== item);
 };
+
+export function normalizeVietnamese(str: string) {
+	return str
+		.normalize('NFD') // split letters + accents
+		.replace(/[\u0300-\u036f]/g, '') // remove accents
+		.replace(/đ/g, 'd')
+		.replace(/Đ/g, 'D')
+		.toLowerCase();
+}

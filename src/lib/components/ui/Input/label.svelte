@@ -26,11 +26,17 @@
 	}: Props = $props();
 </script>
 
+{#snippet Required()}
+	<strong class="font-black text-red-600!"> * </strong>
+{/snippet}
+
 <label
 	for={id}
-	class={`block select-none mb-1 ${INPUT_LABEL_SIZE_STYLE_MAP[size]} ${className} font-medium ${INPUT_CLASSES[variant].fg}`}
+	class={`block select-none font-medium mb-1 ${INPUT_LABEL_SIZE_STYLE_MAP[size]} ${className} ${INPUT_CLASSES[variant].fg}`}
 >
-	{#if required && requiredAtPos === 'start'}<strong class="font-bold text-red-600!">*</strong>{/if}
+	{#if required && requiredAtPos === 'start'}
+		{@render Required()}
+	{/if}
 
 	{#if typeof label === 'string'}
 		{label}
@@ -38,5 +44,7 @@
 		{@render label()}
 	{/if}
 
-	{#if required && requiredAtPos === 'end'}<strong class="font-bold text-red-600!">*</strong>{/if}
+	{#if required && requiredAtPos === 'end'}
+		{@render Required()}
+	{/if}
 </label>

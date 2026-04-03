@@ -62,7 +62,6 @@
 <!-- <ShopQuery /> -->
 
 <QueryClientProvider client={queryClient}>
-	{@render children()}
 	<main class="pt-16 mx-auto min-h-screen max-w-[1350px]">
 		{@render children()}
 	</main>

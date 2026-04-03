@@ -42,7 +42,7 @@ export const INPUT_CLASSES: Record<SocialVariant | 'ghost', Record<'bg' | 'fg', 
 		fg: 'text-gray-700! dark:text-white',
 	},
 	success: {
-		bg: 'bg-green-50 text-green-700 focus-within:ring-red-500 ring-green-200 focus:ring-green-500 dark:bg-green-700 dark:text-white dark:focus:ring-green-500',
+		bg: 'bg-green-50 text-green-700 focus-within:ring-green-500 ring-green-200 focus:ring-green-500 dark:bg-green-700 dark:text-white dark:focus:ring-green-500',
 		fg: 'text-green-600!',
 	},
 	error: {
@@ -50,11 +50,11 @@ export const INPUT_CLASSES: Record<SocialVariant | 'ghost', Record<'bg' | 'fg', 
 		fg: 'text-red-600!',
 	},
 	warning: {
-		bg: 'bg-orange-50 text-orange-700 focus-within:ring-red-500 ring-orange-200 focus:ring-orange-500 dark:bg-orange-700 dark:text-white dark:focus:ring-orange-500',
+		bg: 'bg-orange-50 text-orange-700 focus-within:ring-orange-500 ring-orange-200 focus:ring-orange-500 dark:bg-orange-700 dark:text-white dark:focus:ring-orange-500',
 		fg: 'text-orange-600!',
 	},
 	ghost: {
-		bg: 'bg-transparent text-gray-700 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 ring-0!',
+		bg: 'bg-transparent text-gray-700 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 ring-0! outline-none! border-none!',
 		fg: 'text-gray-700 dark:text-white',
 	},
 };

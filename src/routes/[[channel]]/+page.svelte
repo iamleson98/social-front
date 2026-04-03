@@ -14,65 +14,71 @@
 	import { Select, type SelectOption } from '$lib/components/ui/select';
 	import { States, type GeoResponse } from '$lib/utils/places';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
-	import { createQuery } from '@tanstack/svelte-query';
 	import { Datepicker } from 'flowbite-svelte';
 	import toast from 'svelte-french-toast';
 
 	let departureDate = $state<Date | undefined>(undefined);
 	let returnDate = $state<Date | undefined>(undefined);
+	let pickupLocation = $state<string>('');
+	let dropLocation = $state<string>('');
 
 	let pickPlaceSearchKeyword = $state('');
 	let dropPlaceSearchKeyword = $state('');
 
-	let states = $state<SelectOption[]>(States);
+	let fetchingPickupPlaces = $state(false);
+	let fetchingDropPlaces = $state(false);
 
-	const searchPlaces = async (keyword: string) => {
-		const params = new URLSearchParams({ q: keyword, limit: '60' });
-		const result = await fetch(`${PUBLIC_GEOCODER_API_URL}?${params.toString()}`, {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		});
+	let pickPlaceOptions = $state<SelectOption[]>(States);
+	let dropPlaceOptions = $state<SelectOption[]>(States);
 
-		if (result.ok) {
-			try {
-				const data: GeoResponse = await result.json();
-				const options: SelectOption[] = data.features.map((feature) => ({
-					label: feature.properties.name,
-					value: feature.geometry.coordinates.join(', '), // you can adjust this based on how you want to use the coordinates
-				}));
-				return options;
-			} catch (error) {
-				toast.error('Failed to parse places data');
-				return [];
-			}
+	const searchPlaces = async (keyword: string, place: 'pickup' | 'drop') => {
+		const trimmedKeyword = keyword.trim();
+
+		if (place === 'pickup') {
+			if (trimmedKeyword === pickPlaceSearchKeyword) return;
+			fetchingPickupPlaces = true;
 		} else {
-			toast.error('Failed to search places');
-			return [];
+			if (trimmedKeyword === dropPlaceSearchKeyword) return;
+			fetchingDropPlaces = true;
+		}
+
+		const params = new URLSearchParams({ q: trimmedKeyword, limit: '60' });
+		const fetchResult = await fetch(`${PUBLIC_GEOCODER_API_URL}?${params.toString()}`);
+
+		let result: SelectOption[] = States;
+
+		try {
+			if (!fetchResult.ok) throw new Error('Failed to fetch places data');
+
+			const data: GeoResponse = await fetchResult.json();
+			result = data.features.map((feature) => ({
+				label: feature.properties.name,
+				value: feature.geometry.coordinates.join(', '),
+			}));
+		} catch {
+			toast.error('Failed to parse places data');
+		} finally {
+			if (place === 'pickup') {
+				fetchingPickupPlaces = false;
+				pickPlaceOptions = result;
+			} else {
+				fetchingDropPlaces = false;
+				dropPlaceOptions = result;
+			}
 		}
 	};
-
-	const PickPlaceQuery = createQuery(() => ({
-		enabled: !!pickPlaceSearchKeyword,
-		queryKey: ['test-query', pickPlaceSearchKeyword],
-		queryFn: async () => {
-			const data = await searchPlaces(pickPlaceSearchKeyword);
-			states = data;
-		},
-	}));
 </script>
 
 <div
-	class="h-screen w-full bg-cover bg-center bg-no-repeat rounded-lg"
+	class="w-full bg-cover bg-center bg-no-repeat rounded-lg"
 	style="background-image: url('/hero-bg.jpg');"
 >
-	<div class="h-full bg-black/60 py-20 px-10">
+	<div class="h-full bg-black/70 py-20 px-10">
 		<div class="mb-20 text-white">
-			<h1 class="text-2xl md:text-6xl font-bold mb-2">
+			<h1 class="text-3xl laptop:text-6xl font-bold mb-2">
 				Mỗi một chuyến đi là một trải nghiệm thú vị
 			</h1>
-			<p class="mb-8 font-medium text-white/80 text-xl">
+			<p class="mb-8 font-medium text-white/80 text-lg">
 				Chúng tôi luôn không ngừng nỗ lực để đem tới cho quý khách hàng những sản phẩm chất lượng
 				nhất
 			</p>
@@ -108,41 +114,49 @@
 						startIcon={TablerCurrentLocation}
 						startIconClass="text-blue-500"
 						placeholder="Nhập điểm đón"
-						size="md"
+						size="sm"
 						required
-						options={states}
+						options={pickPlaceOptions}
 						inputDebounceOption={{
 							debounceTime: 888,
-							onInput: (evt) => (pickPlaceSearchKeyword = (evt.target as HTMLInputElement).value),
+							onInput: (evt) => searchPlaces((evt.target as HTMLInputElement).value, 'pickup'),
 						}}
-						showLoadingMore={PickPlaceQuery.isFetching}
+						showLoadingMore={fetchingPickupPlaces}
+						bind:value={pickupLocation}
 					/>
 					<Select
 						label="Điểm Đến"
 						startIcon={TablerMapPinFilled}
 						startIconClass="text-red-500"
 						placeholder="Nhập điểm đến"
-						size="md"
+						size="sm"
 						required
-						options={states}
+						options={dropPlaceOptions}
 						inputDebounceOption={{
 							debounceTime: 888,
-							onInput: (evt) => (dropPlaceSearchKeyword = (evt.target as HTMLInputElement).value),
+							onInput: (evt) => searchPlaces((evt.target as HTMLInputElement).value, 'drop'),
 						}}
-						// showLoadingMore={DropPlaceQuery.isFetching}
+						showLoadingMore={fetchingDropPlaces}
+						bind:value={dropLocation}
 					/>
 					<div>
-						<Label label="Chọn Ngày Đi" size="md" variant="info" required requiredAtPos="end" />
-						<Datepicker bind:value={departureDate} />
+						<Label label="Chọn Ngày Đi" size="sm" variant="info" required requiredAtPos="end" />
+						<Datepicker
+							bind:value={departureDate}
+							inputClass="focus:ring-blue-500! ring-gray-200 ring-1 bg-white hover:ring-2 border-0 transition-all duration-200"
+						/>
 					</div>
 
 					<div>
-						<Label label="Chọn Ngày Về" size="md" variant="info" />
-						<Datepicker bind:value={returnDate} />
+						<Label label="Chọn Ngày Về" size="sm" variant="info" />
+						<Datepicker
+							bind:value={returnDate}
+							inputClass="focus:ring-blue-500! ring-gray-200 ring-1 bg-white hover:ring-2 border-0 transition-all duration-200"
+						/>
 					</div>
 				</div>
 
-				<Button startIcon={TablerSearch} size="md">Tìm Kiếm</Button>
+				<Button startIcon={TablerSearch} size="sm">Tìm Kiếm</Button>
 			</div>
 		</div>
 	</div>

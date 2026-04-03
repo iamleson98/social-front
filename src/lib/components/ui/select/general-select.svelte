@@ -5,7 +5,7 @@
 	import { ChevronSort, CloseX, Icon } from '$lib/components/icons';
 	import { Input, Label } from '$lib/components/ui/Input';
 	import { INPUT_CLASSES } from '$lib/components/ui/Input/input.types';
-	import { classNames, randomID } from '$lib/utils/utils';
+	import { classNames, normalizeVietnamese, randomID } from '$lib/utils/utils';
 	import { Badge } from '../Badge';
 	import { INPUT_BUTTON_SIZE_MAP } from '../Button';
 	import {
@@ -141,7 +141,9 @@
 	/** list of options that match search query */
 	const SearchFilteredOptions = $derived.by(() => {
 		if (!searchQuery) return options;
-		return options.filter((opt) => opt.label.toLowerCase().includes(searchQuery.toLowerCase()));
+		return options.filter((opt) =>
+			normalizeVietnamese(opt.label).includes(normalizeVietnamese(searchQuery)),
+		);
 	});
 
 	const onInput = (evt: Event) => {
