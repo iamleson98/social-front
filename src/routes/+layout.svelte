@@ -2,11 +2,11 @@
 	import { page } from '$app/state';
 	import { Header } from '$lib/components/common';
 	import Footer from '$lib/components/common/footer.svelte';
-	import ShopQuery from '$lib/components/common/shop-query.svelte';
 	import Language from '$lib/components/plugins/language.svelte';
 	import { AlertListener } from '$lib/components/ui/Modal';
 	import '../app.css';
 	import '@fontsource-variable/inter/wght.css';
+	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
 	import dayjs from 'dayjs';
 	import duration from 'dayjs/plugin/duration';
 	import relativeTime from 'dayjs/plugin/relativeTime';
@@ -21,6 +21,16 @@
 
 	dayjs.extend(duration);
 	dayjs.extend(relativeTime);
+
+	export const queryClient = new QueryClient({
+		defaultOptions: {
+			queries: {
+				refetchOnWindowFocus: false,
+				refetchOnReconnect: false,
+				refetchInterval: false,
+			},
+		},
+	});
 </script>
 
 <svelte:head>
@@ -49,11 +59,14 @@
 
 <Language />
 
-<ShopQuery />
+<!-- <ShopQuery /> -->
 
-<main class="pt-16 mx-auto min-h-screen max-w-[1350px]">
+<QueryClientProvider client={queryClient}>
 	{@render children()}
-</main>
+	<main class="pt-16 mx-auto min-h-screen max-w-[1350px]">
+		{@render children()}
+	</main>
+</QueryClientProvider>
 
 <Footer />
 <AlertListener />

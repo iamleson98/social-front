@@ -24,6 +24,8 @@ export type CustomInputProps = {
 	inputDebounceOption?: InputDebounceOpts;
 	/** to make your component interactive, in drag-drop supported places */
 	['data-interactive']?: boolean;
+
+	startIconClass?: string;
 };
 
 export type InputDebounceProps = Omit<InputProps, 'inputDebounceOption'> & {

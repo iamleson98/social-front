@@ -113,7 +113,7 @@
 	</div>
 	<div class="w-1/2 flex justify-between">
 		<div class="flex gap-1">
-			<a href={buildHomePageLink()}>
+			<!-- <a href={buildHomePageLink()}>
 				<Button variant="light" size="sm" startIcon={MingcuteHome}>
 					<span class="tablet:hidden!">{$T('pages.home')}</span>
 				</Button>
@@ -122,7 +122,7 @@
 				<Button variant="light" size="sm" startIcon={IonFlame}>
 					<span class="tablet:hidden!">{$T('pages.trending')}</span>
 				</Button>
-			</a>
+			</a> -->
 		</div>
 
 		<div class="flex items-center gap-3.5">

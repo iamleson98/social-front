@@ -359,7 +359,7 @@
 					{@render selectOption({
 						idx: 0,
 						disabled: true,
-						optionClassName: 'cursor-default',
+						optionClassName: 'cursor-default text-gray-700',
 						onclick: () => onNotFoundQuerySelected(InputDisplayText),
 						label: `Add "${InputDisplayText}"`,
 						value: InputDisplayText as any,
@@ -368,7 +368,7 @@
 					{@render selectOption({
 						idx: 0,
 						disabled: true,
-						optionClassName: 'cursor-default',
+						optionClassName: 'cursor-default text-gray-700',
 						onclick: () => toggleDropdown(false),
 						label: `No data`,
 						value: '',

@@ -23,6 +23,7 @@
 		required,
 		inputClass = '',
 		placeholder = label || 'Provide value',
+		startIconClass = '',
 		...rest
 	}: InputProps = $props();
 </script>
@@ -34,7 +35,7 @@
 	<div class={`relative flex items-center ${INPUT_CLASSES[variant].fg}`}>
 		{#if startIcon}
 			<div class="absolute inset-y-0 start-0 flex items-center ps-2.5 pointer-events-none">
-				<Icon icon={startIcon} {size} />
+				<Icon icon={startIcon} {size} class={startIconClass} />
 			</div>
 		{/if}
 		<input

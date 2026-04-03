@@ -12,6 +12,7 @@ export default {
 			'desktop-l': { max: '2560px' },
 		},
 		fontFamily: {
+			sans: ['Inter', 'sans-serif'],
 			lobster: ['Lobster', 'cursive'],
 		},
 	},
