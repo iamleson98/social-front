@@ -25,6 +25,15 @@
 			"outFiles": ["${workspaceFolder}/build/**/*.js"],
 			"skipFiles": ["<node_internals>/**"],
 			"internalConsoleOptions": "neverOpen"
+		},
+		{
+			"name": "Debug Go Backend",
+			"type": "go",
+			"request": "launch",
+			"mode": "auto",
+			"program": "${workspaceFolder}/server/cmd/mattermost/main.go",
+			"cwd": "${workspaceFolder}",
+			"console": "integratedTerminal"
 		}
 	]
 }
