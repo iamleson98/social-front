@@ -29,14 +29,22 @@
 		UsersGroup,
 		type IconContent,
 	} from '$lib/components/icons';
+	import {
+		TablerBrandBlogger,
+		TablerBus,
+		TablerCar,
+		TablerRoad,
+		TablerRoute,
+		TablerUser,
+	} from '$lib/components/icons/consts';
 	import Skeleton from '$lib/components/pages/settings/skeleton.svelte';
 	import { AccordionList } from '$lib/components/ui/Accordion';
 	import { Badge } from '$lib/components/ui/Badge';
 	import type { ShippingMethodTypeEnum } from '$lib/gql/graphql';
-	import { ME_PAGE_USER_STORE } from '$lib/stores/app/me';
+	import { MePageUserStore } from '$lib/stores/app/me';
 	import { UserStoreManager } from '$lib/stores/auth';
 	import { AppRoute } from '$lib/utils';
-	import { userIsShopAdmin } from '$lib/utils/utils';
+	import { RoleSystemAdmin } from '$lib/utils/consts';
 	import type { LayoutServerData } from './$types';
 	import { onMount, type Snippet } from 'svelte';
 
@@ -48,16 +56,16 @@
 	let { children, data }: Props = $props();
 
 	onMount(() => {
-		ME_PAGE_USER_STORE.set(data.user);
+		MePageUserStore.set(data.user);
 	});
 
-	let userNameDisplay = $derived.by(() => {
-		if ($ME_PAGE_USER_STORE?.firstName && $ME_PAGE_USER_STORE?.lastName) {
-			return `${$ME_PAGE_USER_STORE?.firstName} ${$ME_PAGE_USER_STORE?.lastName}`;
-		}
+	// let userNameDisplay = $derived.by(() => {
+	// 	if ($MePageUserStore?.firstName && $MePageUserStore?.lastName) {
+	// 		return `${$MePageUserStore?.firstName} ${$MePageUserStore?.lastName}`;
+	// 	}
 
-		return $ME_PAGE_USER_STORE?.email;
-	});
+	// 	return $MePageUserStore?.email;
+	// });
 
 	type TabItem = {
 		icon?: IconContent;
@@ -315,6 +323,59 @@
 			].includes(page.url.pathname),
 		},
 	]);
+
+	const BookingTabItems: TabItem[] = $derived([
+		{
+			icon: TablerBrandBlogger,
+			name: 'Transport Brands',
+			href: AppRoute.BookingTransportBrands(),
+			shouldActive: [
+				AppRoute.BookingTransportBrands(),
+				AppRoute.BookingTransportBrandDetails(page.params.id!),
+				AppRoute.BookingTransportBrandNew(),
+			].includes(page.url.pathname),
+		},
+		{
+			icon: TablerRoute,
+			name: 'Transport Routes',
+			href: AppRoute.BookingRoutes(),
+			shouldActive: [
+				AppRoute.BookingRoutes(),
+				AppRoute.BookingRouteDetails(page.params.id!),
+				AppRoute.BookingRouteNew(),
+			].includes(page.url.pathname),
+		},
+		{
+			icon: TablerRoad,
+			name: 'Transport Trips',
+			href: AppRoute.BookingTrips(),
+			shouldActive: [
+				AppRoute.BookingTrips(),
+				AppRoute.BookingTripDetails(page.params.id!),
+				AppRoute.BookingTripNew(),
+			].includes(page.url.pathname),
+		},
+		{
+			icon: TablerBus,
+			name: 'Vehicles',
+			href: AppRoute.BookingVehicles(),
+			shouldActive: [
+				AppRoute.BookingVehicles(),
+				AppRoute.BookingVehicleDetails(page.params.id!),
+				AppRoute.BookingVehicleNew(),
+			].includes(page.url.pathname),
+		},
+		{
+			icon: TablerUser,
+			name: 'Users',
+			href: AppRoute.BookingUsers(),
+			shouldActive: [
+				AppRoute.BookingUsers(),
+				AppRoute.BookingUserDetails(page.params.id!),
+				AppRoute.BookingUserNew(),
+			].includes(page.url.pathname),
+		},
+	]);
 </script>
 
 {#snippet sidebarItem(item: TabItem)}
@@ -338,7 +399,7 @@
 	</svelte:element>
 {/snippet}
 
-{#if !$ME_PAGE_USER_STORE}
+{#if !$MePageUserStore}
 	<Skeleton />
 {:else}
 	<div class="flex flex-nowrap gap-2">
@@ -352,17 +413,17 @@
 			<div class="flex items-start gap-2 text-gray-700 p-3">
 				<div class="rounded-full h-16 w-16 overflow-hidden">
 					<img
-						src={$ME_PAGE_USER_STORE?.avatar?.url}
-						alt={$ME_PAGE_USER_STORE?.avatar?.alt}
+						src={$MePageUserStore?.profilePictureUrl}
+						alt={$MePageUserStore?.username}
 						class="h-full w-full"
 					/>
 				</div>
 				<div>
 					<div class="text-lg font-semibold">
-						{userNameDisplay}
+						{$MePageUserStore?.username}
 					</div>
 					<div class="flex items-center gap-1">
-						{#if $ME_PAGE_USER_STORE?.isConfirmed}
+						{#if $MePageUserStore.email}
 							<Icon icon={RosetteDiscountChecked} class="text-blue-500" size="md" />
 							<span class="text-sm text-gray-500">{$T('settings.verified')}</span>
 						{:else}
@@ -372,7 +433,6 @@
 					</div>
 				</div>
 			</div>
-
 			<AccordionList
 				header={$T('settings.account')}
 				child={sidebarItem}
@@ -380,7 +440,6 @@
 				class="w-full p-3"
 				open={ACCOUNT_TAB_ITEMS.some((item) => item.shouldActive)}
 			/>
-
 			<AccordionList
 				header={$T('settings.shopping')}
 				child={sidebarItem}
@@ -388,8 +447,7 @@
 				class="w-full p-3"
 				open={SHOPPING_TAB_ITEMS.some((item) => item.shouldActive)}
 			/>
-
-			{#if $UserStoreManager && userIsShopAdmin($UserStoreManager)}
+			{#if $UserStoreManager && $UserStoreManager.roles.includes(RoleSystemAdmin)}
 				<AccordionList
 					header={$T('promotion.CATALOGUE')}
 					child={sidebarItem}
@@ -397,7 +455,6 @@
 					class="w-full p-3"
 					open={CATALOG_TAB_ITEMS.some((item) => item.shouldActive)}
 				/>
-
 				<AccordionList
 					header={$T('settings.fulfillments')}
 					child={sidebarItem}
@@ -405,7 +462,6 @@
 					class="w-full p-3"
 					open={SHOP_ORDERS_TAB_ITEMS.some((item) => item.shouldActive)}
 				/>
-
 				<AccordionList
 					header={$T('settings.discounts')}
 					child={sidebarItem}
@@ -413,7 +469,6 @@
 					class="w-full p-3"
 					open={SHOP_DISCOUNTS_TAB_ITEMS.some((item) => item.shouldActive)}
 				/>
-
 				<AccordionList
 					header={$T('settings.blogs')}
 					child={sidebarItem}
@@ -421,13 +476,19 @@
 					class="w-full p-3"
 					open={BLOG_TAB_ITEMS.some((item) => item.shouldActive)}
 				/>
-
 				<AccordionList
 					header={$T('settings.configs')}
 					child={sidebarItem}
 					items={SHOP_CONFIG_TAB_ITEMS}
 					class="w-full p-3"
 					open={SHOP_CONFIG_TAB_ITEMS.some((item) => item.shouldActive)}
+				/>
+				<AccordionList
+					header="Trip Bookings"
+					child={sidebarItem}
+					items={BookingTabItems}
+					class="w-full p-3"
+					open={BookingTabItems.some((item) => item.shouldActive)}
 				/>
 			{/if}
 		</div>

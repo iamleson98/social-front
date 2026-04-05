@@ -12,7 +12,7 @@ export type RestPagination = {
 	rowsPerPage: RowOptions;
 };
 
-export type TableProps<T extends Record<string, unknown>, K extends string = string> = {
+export type TableProps<T, K extends string = string> = {
 	items: T[];
 	columns: TableColumnProps<T, K>[];
 	class?: string;
@@ -33,7 +33,7 @@ export type TableProps<T extends Record<string, unknown>, K extends string = str
 	defaultSortState?: SortState<K>;
 	/** for example when your data is fetching, it is batter to temporary disable interactive items within the table */
 	disabled?: boolean;
-	/** 
+	/**
 	 * If provided, you can exchange positions of rows of your table. Default to `undefined`
 	 * NOTE: If your row contains interactive elements, you should provide `data-interactive` attribute to their html element
 	 */
@@ -52,7 +52,7 @@ export type TableCellProps<T> = {
 	idx: number;
 };
 
-export type TableColumnProps<T extends Record<string, unknown>, K extends string = string> = {
+export type TableColumnProps<T, K extends string = string> = {
 	/** the head title of each column */
 	title: string | Snippet<[{ items: T[] }]>;
 	/**
@@ -66,7 +66,7 @@ export type TableColumnProps<T extends Record<string, unknown>, K extends string
 	 * The content of each row in the column.
 	 * @param item the item of the row
 	 */
-	child: Snippet<[TableCellProps<T>]> | {render: (props: TableCellProps<T>) => any};
+	child: Snippet<[TableCellProps<T>]> | { render: (props: TableCellProps<T>) => any };
 	/** plain positive integer number */
 	width?: number | string;
 };

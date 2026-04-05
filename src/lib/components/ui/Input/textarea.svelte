@@ -50,7 +50,7 @@
 				use:debounceInput={inputDebounceOption}
 				class={[
 					rest.disabled && 'text-gray-400! cursor-not-allowed!',
-					'w-full text-sm placeholder:opacity-55 rounded-lg ring-1 focus:ring-2 outline-none! field-sizing-content inline-block px-2.5 py-1 transition-all hover:ring-2 ease-in-out duration-200',
+					'w-full text-sm placeholder:opacity-55 rounded-lg ring-1 focus:ring-2 outline-none! field-sizing-content inline-block px-2.5 py-1 transition-all hover:ring-2 ease-in-out duration-200 min-h-20',
 					inputClass,
 					INPUT_CLASSES[variant].bg,
 					startIcon && 'ps-8',

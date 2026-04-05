@@ -15,7 +15,6 @@ import { type PaymentMethodsResponse } from '@adyen/adyen-web';
 import { AdyenCheckout } from '@adyen/adyen-web';
 import dayjs from 'dayjs';
 
-
 export const EASEPICK_CORE_STYLE_v1_2_1 = '/css/easepick-core/1.2.1.css';
 export const EASEPICK_AMP_STYLE_v1_2_1 = '/css/easepick-amp/1.2.1.css';
 export const EASEPICK_LOCK_STYLE_v1_2_1 = '/css/easepick-lock/1.2.1.css';
@@ -66,7 +65,7 @@ export enum SearchParamKey {
 	FIRST = 'first',
 	LAST = 'last',
 	SEARCH_QUERY = 'search',
-};
+}
 
 /**
  * NOTE: one channel has 1 country only
@@ -200,8 +199,10 @@ export type ParsedStripeGateway = ParsedPaymentGateway<StripeGatewayId, Record<s
 
 export type ParsedPaymentGateways = ReadonlyArray<ParsedAdyenGateway | ParsedStripeGateway>;
 
-export interface ParsedPaymentGateway<ID extends string, TData extends Record<string, unknown>>
-	extends Omit<PaymentGatewayConfig, 'data' | 'id'> {
+export interface ParsedPaymentGateway<
+	ID extends string,
+	TData extends Record<string, unknown>,
+> extends Omit<PaymentGatewayConfig, 'data' | 'id'> {
 	data: TData;
 	id: ID;
 }
@@ -245,3 +246,9 @@ export const BASIC_DATE_FORMAT = 'YYYY-MM-DD';
 export const NOW = dayjs();
 export const THIS_TIME_LAST_5_YEARS = NOW.subtract(5, 'year');
 export const THIS_TIME_NEXT_5_YEARS = NOW.add(5, 'year');
+
+export const MMAUTHTOKEN = 'MMAUTHTOKEN';
+export const Authorization = 'Authorization';
+
+export const RoleSystemAdmin = 'system_admin';
+export const RoleSystemUser = 'system_user';

@@ -60,7 +60,9 @@ export const AppRoute = {
 	SETTINGS_CONFIGS_CATEGORY_DETAILS: (id: string) =>
 		buildLinkWithRespectToChannel(`settings/categories/${id}`),
 	SETTINGS_CONFIGS_CATEGORY_NEW: (parentId?: string) =>
-		buildLinkWithRespectToChannel('settings/categories/new' + (parentId ? `?parent=${parentId}` : '')),
+		buildLinkWithRespectToChannel(
+			'settings/categories/new' + (parentId ? `?parent=${parentId}` : ''),
+		),
 
 	SETTINGS_CONFIGS_COLLECTIONS: () => buildLinkWithRespectToChannel('settings/collections'),
 	SETTINGS_CONFIGS_COLLECTION_DETAILS: (id: string) =>
@@ -154,6 +156,31 @@ export const AppRoute = {
 	CATEGORY_INFO: (slug: string) => buildLinkWithRespectToChannel(`categories/${slug}/info`),
 
 	CHECKOUT: () => buildLinkWithRespectToChannel('checkout'),
+
+	// Booking
+	BookingTransportBrands: () => buildLinkWithRespectToChannel('settings/transport-brands'),
+	BookingTransportBrandDetails: (id: string) =>
+		buildLinkWithRespectToChannel(`settings/transport-brands/${id}`),
+	BookingTransportBrandNew: () => buildLinkWithRespectToChannel('settings/transport-brands/new'),
+
+	BookingVehicles: () => buildLinkWithRespectToChannel('settings/vehicles'),
+	BookingVehicleDetails: (id: string) => buildLinkWithRespectToChannel(`settings/vehicles/${id}`),
+	BookingVehicleNew: () => buildLinkWithRespectToChannel('settings/vehicles/new'),
+
+	BookingUsers: () => buildLinkWithRespectToChannel('settings/transport-users'),
+	BookingUserDetails: (id: string) =>
+		buildLinkWithRespectToChannel(`settings/transport-users/${id}`),
+	BookingUserNew: () => buildLinkWithRespectToChannel('settings/transport-users/new'),
+
+	BookingRoutes: () => buildLinkWithRespectToChannel('settings/transport-routes'),
+	BookingRouteDetails: (id: string) =>
+		buildLinkWithRespectToChannel(`settings/transport-routes/${id}`),
+	BookingRouteNew: () => buildLinkWithRespectToChannel('settings/transport-routes/new'),
+
+	BookingTrips: () => buildLinkWithRespectToChannel('settings/transport-trips'),
+	BookingTripDetails: (id: string) =>
+		buildLinkWithRespectToChannel(`settings/transport-trips/${id}`),
+	BookingTripNew: () => buildLinkWithRespectToChannel('settings/transport-trips/new'),
 
 	/**
 	 * uris below are for API calls

@@ -1,3 +1,6 @@
+import { PUBLIC_BOOKING_API_URL } from '$env/static/public';
+import Client4 from './client4';
+
 /**
  * Some python backend APIs return result with additional `errors` field. This type is for those `errors`
  */
@@ -23,3 +26,11 @@ export type SvelteBackendResult<T extends PythonBackendResult> = {
 	data?: T | null;
 	loading: boolean;
 };
+
+/**
+ * http client for interacting with the backend.
+ */
+const BackendHttpClient = new Client4();
+BackendHttpClient.setUrl(PUBLIC_BOOKING_API_URL);
+
+export { BackendHttpClient };

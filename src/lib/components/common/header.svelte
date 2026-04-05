@@ -2,54 +2,31 @@
 	import { afterNavigate, beforeNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { T } from '$i18n';
-	import { USER_ME_QUERY_STORE } from '$lib/api';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import {
-		IonFlame,
-		Logout,
-		MingcuteHome,
-		Search,
-		ShoppingBag,
-		UserCog,
-	} from '$lib/components/icons';
+	import { Logout, Search, ShoppingBag, UserCog } from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
 	import { Input } from '$lib/components/ui/Input';
-	import type { Query, User } from '$lib/gql/graphql';
 	import { checkoutStore } from '$lib/stores/app';
 	import { UserStoreManager } from '$lib/stores/auth/user';
-	import { AppRoute, getCookieByKey } from '$lib/utils';
-	import { handleLogout } from '$lib/utils/auth.svelte';
-	import { ACCESS_TOKEN_KEY, HTTPStatusSuccess } from '$lib/utils/consts';
-	import { buildHomePageLink, checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import { AppRoute } from '$lib/utils';
+	import { BackendHttpClient } from '$lib/utils/api';
+	import { HTTPStatusSuccess } from '$lib/utils/consts';
+	import { buildHomePageLink } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import toast from 'svelte-french-toast';
 	import { cubicOut } from 'svelte/easing';
 	import { Tween } from 'svelte/motion';
 	import { scale } from 'svelte/transition';
 
-	const SettingButtonText = $derived.by(() => {
-		if ($UserStoreManager?.firstName && $UserStoreManager?.lastName)
-			return `${$UserStoreManager.firstName[0]}${$UserStoreManager.lastName[0]}`;
-		else if ($UserStoreManager?.email) return $UserStoreManager.email.slice(0, 2);
-
-		return '';
-	});
-
 	// load current user when page load
 	onMount(async () => {
-		const token = getCookieByKey(ACCESS_TOKEN_KEY);
-		if (!token) return;
-
-		const userResult = await GRAPHQL_CLIENT.query<Pick<Query, 'me'>>(
-			USER_ME_QUERY_STORE,
-			{},
-			{ requestPolicy: 'network-only' },
-		);
-
-		if (checkIfGraphqlResultHasError(userResult)) return;
-		UserStoreManager.setValue(userResult.data?.me as User);
+		try {
+			const me = await BackendHttpClient.getMe();
+			if (me) {
+				UserStoreManager.setValue(me);
+			}
+		} catch (error) {}
 	});
 
 	// load checkout when page load
@@ -87,10 +64,27 @@
 			loadingProgress.set(0);
 		}, 500);
 	});
+
+	const handleLogout = async () => {
+		const res = await BackendHttpClient.logout();
+		if (!res.ok) {
+			toast.error('Failed to logout');
+			return;
+		}
+
+		UserStoreManager.setValue(null);
+	};
 </script>
 
-<!-- NOTE: the svelte-french-toast lib has z-index of 9999, so please keep every z-indexes of this project lower than 9999 -->
+{#snippet avatar(url: string)}
+	<span
+		class="rounded-full w-6 h-6 bg-blue-300 flex items-center justify-center font-bold bg-cover bg-center bg-no-repeat"
+		style:background-image={url ? `url(${url})` : 'bg-blue-300'}
+	>
+	</span>
+{/snippet}
 
+<!-- NOTE: the svelte-french-toast lib has z-index of 9999, so please keep every z-indexes of this project lower than 9999 -->
 <header class="fixed top-0 left-0 right-0 flex p-2 bg-white shadow-xs z-9998 w-full">
 	{#if loading}
 		<progress
@@ -142,28 +136,19 @@
 				</IconButton>
 			</a>
 			{#if $UserStoreManager}
-				{#snippet avatar()}
-					<span
-						class="rounded-full w-6 h-6 bg-blue-300 flex items-center justify-center font-bold bg-cover bg-center bg-no-repeat"
-						style:background-image={$UserStoreManager.avatar
-							? `url(${$UserStoreManager.avatar.url})`
-							: 'bg-blue-300'}
-					>
-					</span>
-				{/snippet}
 				<DropDown placement="bottom-end">
 					{#snippet trigger({ onclick, onfocus })}
-						<Button variant="light" size="sm" class="space-x-2 uppercase" {onclick} {onfocus}>
-							{@render avatar()}
-							<span>{SettingButtonText}</span>
+						<Button variant="light" size="sm" class="space-x-2" {onclick} {onfocus}>
+							{@render avatar($UserStoreManager.profilePictureUrl)}
+							<span>{$UserStoreManager.username}</span>
 						</Button>
 					{/snippet}
 					<MenuItem>
 						<div class="flex items-center gap-1.5">
-							{@render avatar()}
+							{@render avatar($UserStoreManager.profilePictureUrl)}
 							<div>
 								<div class="font-semibold">
-									{`${$UserStoreManager.firstName} ${$UserStoreManager.lastName}`}
+									@{$UserStoreManager.username}
 								</div>
 								<div class="text-xs text-gray-500">{$UserStoreManager.email}</div>
 							</div>
@@ -173,11 +158,11 @@
 					<MenuItem href={AppRoute.ME()} startIcon={UserCog}>
 						{$T('common.settings')}
 					</MenuItem>
-					<MenuItem startIcon={Logout} onclick={() => handleLogout($T)}>
+					<MenuItem startIcon={Logout} onclick={handleLogout}>
 						{$T('common.logout')}
 					</MenuItem>
 				</DropDown>
-			{:else if !$UserStoreManager && !page.url.pathname.startsWith('/auth')}
+			{:else if !$UserStoreManager && !page.url.pathname.includes('/auth')}
 				<a href={AppRoute.AUTH_SIGNIN()}>
 					<Button variant="filled" size="sm">{$T('signin.title')}</Button>
 				</a>

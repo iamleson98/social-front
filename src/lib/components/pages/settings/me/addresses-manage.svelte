@@ -24,7 +24,7 @@
 		User,
 	} from '$lib/gql/graphql';
 	import { AddressTypeEnum } from '$lib/gql/graphql';
-	import { ME_PAGE_USER_STORE } from '$lib/stores/app/me';
+	import { MePageUserStore } from '$lib/stores/app/me';
 	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { DEFAULT_CHANNEL } from '$lib/utils/consts';
 	import { CHANNEL_KEY } from '$lib/utils/consts';
@@ -54,21 +54,15 @@
 
 		loading = false; //
 
-		if (
-			checkIfGraphqlResultHasError(
-				result,
-				'accountAddressUpdate',
-				$T('settings.addrUpdated'),
-			)
-		)
+		if (checkIfGraphqlResultHasError(result, 'accountAddressUpdate', $T('settings.addrUpdated')))
 			return;
 
 		// hide update form
 		addressUpdateInputInitValue = undefined;
 
 		// update user state
-		$ME_PAGE_USER_STORE = {
-			...$ME_PAGE_USER_STORE,
+		$MePageUserStore = {
+			...$MePageUserStore,
 			addresses: result.data?.accountAddressUpdate?.user?.addresses || [],
 		} as User;
 	};
@@ -86,17 +80,11 @@
 
 		loading = false; //
 
-		if (
-			checkIfGraphqlResultHasError(
-				result,
-				'accountAddressCreate',
-				$T('settings.addrCreated'),
-			)
-		)
+		if (checkIfGraphqlResultHasError(result, 'accountAddressCreate', $T('settings.addrCreated')))
 			return;
 
-		$ME_PAGE_USER_STORE = {
-			...$ME_PAGE_USER_STORE,
+		$MePageUserStore = {
+			...$MePageUserStore,
 			addresses: result.data?.accountAddressCreate?.user?.addresses || [],
 		} as User;
 		showAddressCreateForm = false;
@@ -114,18 +102,12 @@
 
 		loading = false; //
 
-		if (
-			checkIfGraphqlResultHasError(
-				result,
-				'accountAddressDelete',
-				$T('settings.addrDeleted'),
-			)
-		)
+		if (checkIfGraphqlResultHasError(result, 'accountAddressDelete', $T('settings.addrDeleted')))
 			return;
 
-		$ME_PAGE_USER_STORE = {
-			...$ME_PAGE_USER_STORE,
-			addresses: ($ME_PAGE_USER_STORE?.addresses || []).filter((address) => address.id !== id),
+		$MePageUserStore = {
+			...$MePageUserStore,
+			addresses: ($MePageUserStore?.addresses || []).filter((address) => address.id !== id),
 		} as User;
 	};
 
@@ -143,16 +125,12 @@
 		loading = false; //
 
 		if (
-			checkIfGraphqlResultHasError(
-				result,
-				'accountSetDefaultAddress',
-				$T('settings.addrUpdated'),
-			)
+			checkIfGraphqlResultHasError(result, 'accountSetDefaultAddress', $T('settings.addrUpdated'))
 		)
 			return;
 
-		$ME_PAGE_USER_STORE = {
-			...$ME_PAGE_USER_STORE,
+		$MePageUserStore = {
+			...$MePageUserStore,
 			addresses: result.data?.accountSetDefaultAddress?.user?.addresses || [],
 		} as User;
 	};
@@ -162,11 +140,11 @@
 	<SectionHeader>{$T('settings.addrManage')}</SectionHeader>
 
 	<div class="mt-2">
-		{#if !$ME_PAGE_USER_STORE?.addresses?.length}
+		{#if !$MePageUserStore?.addresses?.length}
 			<div class="text-sm">{$T('settings.havingNoAddress')}</div>
 		{:else}
 			<div class="flex gap-2 flex-wrap">
-				{#each $ME_PAGE_USER_STORE?.addresses as address, idx (idx)}
+				{#each $MePageUserStore?.addresses as address, idx (idx)}
 					<UserAddress {address} class="w-[49%] mobile-l:w-full">
 						<div class="flex items-center gap-2 text-gray-600!">
 							{#if !address.isDefaultBillingAddress}
@@ -204,15 +182,14 @@
 								variant="light"
 								startIcon={Edit}
 								disabled={loading}
-								onclick={() => handleShowAddressForm(false, address)}
-								>{$T('btn.update')}</Button
+								onclick={() => handleShowAddressForm(false, address)}>{$T('btn.update')}</Button
 							>
 						</div>
 					</UserAddress>
 				{/each}
 			</div>
 		{/if}
-		{#if !showAddressCreateForm && !addressUpdateInputInitValue && ($ME_PAGE_USER_STORE?.addresses?.length || 0) < MAX_USER_ADDRESSES}
+		{#if !showAddressCreateForm && !addressUpdateInputInitValue && ($MePageUserStore?.addresses?.length || 0) < MAX_USER_ADDRESSES}
 			<div class="mt-2 text-right">
 				<Button size="xs" onclick={() => handleShowAddressForm(true)} startIcon={Plus}>
 					{$T('settings.newAddr')}

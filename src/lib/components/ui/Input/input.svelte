@@ -47,7 +47,7 @@
 			use:shortcuts={selectShortcutOptions}
 			use:debounceInput={inputDebounceOption}
 			class={[
-				'w-full text-sm rounded-lg placeholder:opacity-55 inline-block px-1.5 transition-all duration-200 ease-in-out hover:ring-2 focus:ring-2 ring-1',
+				'w-full text-sm rounded-lg placeholder:opacity-55 inline-block px-1.5 transition-all duration-200 ease-in-out hover:ring-2 focus:ring-2 ring-1 outline-none! border-none!',
 				inputClass,
 				INPUT_BUTTON_SIZE_MAP[size],
 				INPUT_CLASSES[variant].bg,

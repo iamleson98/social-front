@@ -12,7 +12,7 @@
 		type MutationAccountUpdateArgs,
 		type User,
 	} from '$lib/gql/graphql';
-	import { ME_PAGE_USER_STORE } from '$lib/stores/app/me';
+	import { MePageUserStore } from '$lib/stores/app/me';
 	import { UserStoreManager } from '$lib/stores/auth';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
@@ -37,19 +37,19 @@
 	const SchemaHandler = createSchemaHandler(UserInfoSchema, () => userInfoInputs);
 
 	$effect(() => {
-		if ($ME_PAGE_USER_STORE) {
+		if ($MePageUserStore) {
 			userInfoInputs = {
-				firstName: $ME_PAGE_USER_STORE.firstName,
-				lastName: $ME_PAGE_USER_STORE.lastName,
-				languageCode: $ME_PAGE_USER_STORE.languageCode,
+				firstName: $MePageUserStore.firstName,
+				lastName: $MePageUserStore.lastName,
+				languageCode: $MePageUserStore.languageCode,
 			};
 		}
 	});
 
 	let userInfoChanged = $derived(
-		userInfoInputs.firstName !== $ME_PAGE_USER_STORE?.firstName ||
-			userInfoInputs.lastName !== $ME_PAGE_USER_STORE?.lastName ||
-			userInfoInputs.languageCode !== $ME_PAGE_USER_STORE?.languageCode,
+		userInfoInputs.firstName !== $MePageUserStore?.firstName ||
+			userInfoInputs.lastName !== $MePageUserStore?.lastName ||
+			userInfoInputs.languageCode !== $MePageUserStore?.languageCode,
 	);
 
 	const AccountUpdateMutation = operationStore<
@@ -59,18 +59,16 @@
 		query: ACCOUNT_UPDATE_MUTATION,
 		pause: true,
 		onResult: async (result) => {
-			if (
-				checkIfGraphqlResultHasError(result, 'accountUpdate', $T('settings.accountUpdated'))
-			)
+			if (checkIfGraphqlResultHasError(result, 'accountUpdate', $T('settings.accountUpdated')))
 				return;
 
-			$ME_PAGE_USER_STORE = {
-				...$ME_PAGE_USER_STORE,
+			$MePageUserStore = {
+				...$MePageUserStore,
 				...userInfoInputs,
 			} as User;
 
 			// in case user update display language , we need to update it for the whole UI also
-			UserStoreManager.setValue($ME_PAGE_USER_STORE);
+			UserStoreManager.setValue($MePageUserStore);
 		},
 	});
 
@@ -135,8 +133,7 @@
 		<Button
 			onclick={handleSubmit}
 			loading={$AccountUpdateMutation.fetching}
-			disabled={$AccountUpdateMutation.fetching || !userInfoChanged}
-			>{$T('btn.update')}</Button
+			disabled={$AccountUpdateMutation.fetching || !userInfoChanged}>{$T('btn.update')}</Button
 		>
 	</div>
 </div>

@@ -54,7 +54,7 @@ export const INPUT_CLASSES: Record<SocialVariant | 'ghost', Record<'bg' | 'fg', 
 		fg: 'text-orange-600!',
 	},
 	ghost: {
-		bg: 'bg-transparent text-gray-700 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 ring-0! outline-none! border-none!',
+		bg: 'bg-transparent text-gray-700 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 ring-0!',
 		fg: 'text-gray-700 dark:text-white',
 	},
 };

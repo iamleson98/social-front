@@ -106,9 +106,7 @@
 			}
 		});
 
-		return () => {
-			unsub();
-		};
+		return unsub;
 	});
 
 	$effect(() => {

@@ -7,7 +7,7 @@
 	import { T } from '$lib/i18n';
 	import { UserStoreManager } from '$lib/stores/auth/user';
 	import { AppRoute } from '$lib/utils';
-	import { HTTPStatusSuccess } from '$lib/utils/consts';
+	import { BackendHttpClient } from '$lib/utils/api';
 	import { createSchemaHandler } from '$lib/utils/zod.svelte';
 	import toast from 'svelte-french-toast';
 	import { boolean, object, string, z } from 'zod';
@@ -63,28 +63,24 @@
 
 		loading = true;
 
-		const loginResult = await fetch(AppRoute.AUTH_SIGNIN(), {
-			method: 'POST',
-			body: JSON.stringify(signinValue),
-		})
-			.then((res) => res.json())
-			.catch(() => toast.error($T('error.errorOccured')));
+		try {
+			const result = await BackendHttpClient.login(signinValue.email, signinValue.password);
+			if (result) {
+				UserStoreManager.setValue(result);
+				toast.success(
+					$T('signin.welcomeBack', {
+						name: result.username,
+					}),
+				);
 
-		loading = false;
-
-		if (loginResult.status !== HTTPStatusSuccess) {
-			signinError = loginResult.error;
+				onSuccess();
+			}
+		} catch (error) {
+			toast.error($T('error.errorOccured'));
 			return;
+		} finally {
+			loading = false;
 		}
-
-		UserStoreManager.setValue(loginResult.data);
-		toast.success(
-			$T('signin.welcomeBack', {
-				name: loginResult.data.firstName + ' ' + loginResult.data.lastName,
-			}),
-		);
-
-		onSuccess();
 	};
 
 	let socialIons = [
