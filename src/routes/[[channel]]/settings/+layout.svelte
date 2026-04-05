@@ -111,91 +111,91 @@
 		},
 	]);
 
-	const SHOP_ORDERS_TAB_ITEMS: TabItem[] = $derived([
-		{
-			icon: Box,
-			name: $T('settings.orders'),
-			href: AppRoute.SETTINGS_ORDERS(),
-			shouldActive: [
-				AppRoute.SETTINGS_ORDERS(),
-				AppRoute.SETTINGS_ORDERS_NEW(),
-				AppRoute.SETTINGS_ORDERS_DETAILS(page.params.id!),
-				AppRoute.SETTINGS_SHOP_ORDER_SETTINGS(),
-			].some((path) => path === page.url.pathname),
-		},
-		{
-			icon: BoxOff,
-			name: $T('order.draftOders'),
-			href: AppRoute.SETTINGS_SHOP_DRAFT_ORDERS(),
-			shouldActive: page.url.pathname === AppRoute.SETTINGS_SHOP_DRAFT_ORDERS(),
-		},
-	]);
+	// const SHOP_ORDERS_TAB_ITEMS: TabItem[] = $derived([
+	// 	{
+	// 		icon: Box,
+	// 		name: $T('settings.orders'),
+	// 		href: AppRoute.SETTINGS_ORDERS(),
+	// 		shouldActive: [
+	// 			AppRoute.SETTINGS_ORDERS(),
+	// 			AppRoute.SETTINGS_ORDERS_NEW(),
+	// 			AppRoute.SETTINGS_ORDERS_DETAILS(page.params.id!),
+	// 			AppRoute.SETTINGS_SHOP_ORDER_SETTINGS(),
+	// 		].some((path) => path === page.url.pathname),
+	// 	},
+	// 	{
+	// 		icon: BoxOff,
+	// 		name: $T('order.draftOders'),
+	// 		href: AppRoute.SETTINGS_SHOP_DRAFT_ORDERS(),
+	// 		shouldActive: page.url.pathname === AppRoute.SETTINGS_SHOP_DRAFT_ORDERS(),
+	// 	},
+	// ]);
 
-	const CATALOG_TAB_ITEMS: TabItem[] = $derived([
-		{
-			icon: Parking,
-			name: $T('product.products'),
-			href: AppRoute.SETTINGS_PRODUCTS(),
-			shouldActive: [
-				AppRoute.SETTINGS_PRODUCTS(),
-				AppRoute.SETTINGS_PRODUCTS_NEW(),
-				AppRoute.SETTINGS_PRODUCTS_EDIT(page.params.slug!),
-			].includes(page.url.pathname),
-		},
-		{
-			icon: Category,
-			name: $T('common.categories'),
-			href: AppRoute.SETTINGS_CONFIGS_CATEGORIES(),
-			shouldActive: [
-				AppRoute.SETTINGS_CONFIGS_CATEGORIES(),
-				AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(page.params.id!),
-				AppRoute.SETTINGS_CONFIGS_CATEGORY_NEW(),
-			].includes(page.url.pathname),
-		},
-		{
-			name: $T('common.collections'),
-			href: AppRoute.SETTINGS_CONFIGS_COLLECTIONS(),
-			icon: FolderHeart,
-			shouldActive: [
-				AppRoute.SETTINGS_CONFIGS_COLLECTIONS(),
-				AppRoute.SETTINGS_CONFIGS_COLLECTION_DETAILS(page.params.id!),
-				AppRoute.SETTINGS_CONFIGS_COLLECTION_NEW(),
-			].includes(page.url.pathname),
-		},
-		{
-			name: $T('giftcard.title'),
-			href: AppRoute.SETTINGS_CONFIGS_GIFTCARDS(),
-			icon: Gift,
-			shouldActive: [
-				AppRoute.SETTINGS_CONFIGS_GIFTCARDS(),
-				AppRoute.SETTINGS_CONFIGS_GIFTCARD_DETAIL(page.params.id!),
-				AppRoute.SETTINGS_CONFIGS_GIFTCARD_NEW(),
-			].includes(page.url.pathname),
-		},
-	]);
+	// const CATALOG_TAB_ITEMS: TabItem[] = $derived([
+	// 	{
+	// 		icon: Parking,
+	// 		name: $T('product.products'),
+	// 		href: AppRoute.SETTINGS_PRODUCTS(),
+	// 		shouldActive: [
+	// 			AppRoute.SETTINGS_PRODUCTS(),
+	// 			AppRoute.SETTINGS_PRODUCTS_NEW(),
+	// 			AppRoute.SETTINGS_PRODUCTS_EDIT(page.params.slug!),
+	// 		].includes(page.url.pathname),
+	// 	},
+	// 	{
+	// 		icon: Category,
+	// 		name: $T('common.categories'),
+	// 		href: AppRoute.SETTINGS_CONFIGS_CATEGORIES(),
+	// 		shouldActive: [
+	// 			AppRoute.SETTINGS_CONFIGS_CATEGORIES(),
+	// 			AppRoute.SETTINGS_CONFIGS_CATEGORY_DETAILS(page.params.id!),
+	// 			AppRoute.SETTINGS_CONFIGS_CATEGORY_NEW(),
+	// 		].includes(page.url.pathname),
+	// 	},
+	// 	{
+	// 		name: $T('common.collections'),
+	// 		href: AppRoute.SETTINGS_CONFIGS_COLLECTIONS(),
+	// 		icon: FolderHeart,
+	// 		shouldActive: [
+	// 			AppRoute.SETTINGS_CONFIGS_COLLECTIONS(),
+	// 			AppRoute.SETTINGS_CONFIGS_COLLECTION_DETAILS(page.params.id!),
+	// 			AppRoute.SETTINGS_CONFIGS_COLLECTION_NEW(),
+	// 		].includes(page.url.pathname),
+	// 	},
+	// 	{
+	// 		name: $T('giftcard.title'),
+	// 		href: AppRoute.SETTINGS_CONFIGS_GIFTCARDS(),
+	// 		icon: Gift,
+	// 		shouldActive: [
+	// 			AppRoute.SETTINGS_CONFIGS_GIFTCARDS(),
+	// 			AppRoute.SETTINGS_CONFIGS_GIFTCARD_DETAIL(page.params.id!),
+	// 			AppRoute.SETTINGS_CONFIGS_GIFTCARD_NEW(),
+	// 		].includes(page.url.pathname),
+	// 	},
+	// ]);
 
-	const SHOP_DISCOUNTS_TAB_ITEMS: TabItem[] = $derived([
-		{
-			icon: Discount,
-			name: $T('promotion.promotions'),
-			href: AppRoute.SETTINGS_CONFIGS_PROMOTIONS(),
-			shouldActive: [
-				AppRoute.SETTINGS_CONFIGS_PROMOTIONS(),
-				AppRoute.SETTINGS_CONFIGS_PROMOTION_NEW(),
-				AppRoute.SETTINGS_CONFIGS_PROMOTION_DETAIL(page.params.id!),
-			].includes(page.url.pathname),
-		},
-		{
-			icon: Ticket,
-			name: $T('voucher.vouchers'),
-			href: AppRoute.SETTINGS_CONFIGS_VOUCHERS(),
-			shouldActive: [
-				AppRoute.SETTINGS_CONFIGS_VOUCHERS(),
-				AppRoute.SETTINGS_CONFIGS_VOUCHER_NEW(),
-				AppRoute.SETTINGS_CONFIGS_VOUCHER_DETAIL(page.params.id!),
-			].includes(page.url.pathname),
-		},
-	]);
+	// const SHOP_DISCOUNTS_TAB_ITEMS: TabItem[] = $derived([
+	// 	{
+	// 		icon: Discount,
+	// 		name: $T('promotion.promotions'),
+	// 		href: AppRoute.SETTINGS_CONFIGS_PROMOTIONS(),
+	// 		shouldActive: [
+	// 			AppRoute.SETTINGS_CONFIGS_PROMOTIONS(),
+	// 			AppRoute.SETTINGS_CONFIGS_PROMOTION_NEW(),
+	// 			AppRoute.SETTINGS_CONFIGS_PROMOTION_DETAIL(page.params.id!),
+	// 		].includes(page.url.pathname),
+	// 	},
+	// 	{
+	// 		icon: Ticket,
+	// 		name: $T('voucher.vouchers'),
+	// 		href: AppRoute.SETTINGS_CONFIGS_VOUCHERS(),
+	// 		shouldActive: [
+	// 			AppRoute.SETTINGS_CONFIGS_VOUCHERS(),
+	// 			AppRoute.SETTINGS_CONFIGS_VOUCHER_NEW(),
+	// 			AppRoute.SETTINGS_CONFIGS_VOUCHER_DETAIL(page.params.id!),
+	// 		].includes(page.url.pathname),
+	// 	},
+	// ]);
 
 	const BLOG_TAB_ITEMS: TabItem[] = $derived([
 		{
@@ -210,119 +210,119 @@
 		},
 	]);
 
-	const SHOP_CONFIG_TAB_ITEMS: TabItem[] = $derived([
-		{
-			icon: BuildingStore,
-			name: $T('settings.shopSettings'),
-			href: AppRoute.STORE_SETTINGS(),
-			shouldActive: [AppRoute.STORE_SETTINGS()].includes(page.url.pathname),
-		},
-		{
-			icon: BuildingStore,
-			name: $T('settings.apps'),
-			href: AppRoute.APPS_SETTINGS(),
-			shouldActive: [AppRoute.APPS_SETTINGS()].includes(page.url.pathname),
-		},
-		{
-			icon: Tax,
-			name: $T('settings.taxSettings'),
-			href: AppRoute.TAX_SETTINGS_CHANNELS(),
-			shouldActive: [
-				AppRoute.TAX_SETTINGS_CHANNELS(),
-				AppRoute.TAX_SETTINGS_COUNTRIES(),
-				AppRoute.TAX_SETTINGS_TAX_CLASSES(),
-			].some((path) => page.url.pathname.startsWith(path)),
-			isPreview: true,
-		},
-		{
-			icon: Globe,
-			name: $T('channel.channels'),
-			href: AppRoute.SETTINGS_CONFIGS_CHANNELS(),
-			shouldActive: [
-				AppRoute.SETTINGS_CONFIGS_CHANNELS(),
-				AppRoute.SETTINGS_CONFIGS_CHANNEL_NEW(),
-				AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(page.params.slug!),
-			].includes(page.url.pathname),
-		},
-		{
-			icon: Thingiverse,
-			name: $T('prdType.prdTypes'),
-			href: AppRoute.SETTINGS_PRODUCT_TYPES(),
-			shouldActive: [
-				AppRoute.SETTINGS_PRODUCT_TYPES(),
-				AppRoute.SETTINGS_PRODUCT_TYPE_NEW(),
-				AppRoute.SETTINGS_PRODUCT_TYPE_EDIT(page.params.id!),
-			].includes(page.url.pathname),
-		},
-		{
-			icon: BadgeOutline,
-			name: $T('settings.staffs'),
-			href: AppRoute.SETTINGS_CONFIGS_STAFFS(),
-			shouldActive: [
-				AppRoute.SETTINGS_CONFIGS_STAFFS(),
-				AppRoute.SETTINGS_CONFIGS_STAFF_NEW(),
-				AppRoute.SETTINGS_CONFIGS_STAFF_DETAILS(page.params.id!),
-			].includes(page.url.pathname),
-		},
-		{
-			icon: UsersGroup,
-			name: $T('settings.users'),
-			href: AppRoute.SETTINGS_CONFIGS_USERS(),
-			shouldActive: [
-				AppRoute.SETTINGS_CONFIGS_USERS(),
-				AppRoute.SETTINGS_CONFIGS_USER_NEW(),
-				AppRoute.SETTINGS_CONFIGS_USER_DETAILS(page.params.id!),
-			].includes(page.url.pathname),
-		},
-		{
-			icon: BuildingWarehouse,
-			name: $T('channel.warehouse'),
-			href: AppRoute.SETTINGS_CONFIGS_WAREHOUSES(),
-			shouldActive: [
-				AppRoute.SETTINGS_CONFIGS_WAREHOUSES(),
-				AppRoute.SETTINGS_CONFIGS_WAREHOUSE_NEW(),
-				AppRoute.SETTINGS_CONFIGS_WAREHOUSE_DETAILS(page.params.id!),
-			].includes(page.url.pathname),
-		},
-		{
-			icon: Dimension,
-			name: $T('product.tabAttributes'),
-			href: AppRoute.SETTINGS_CONFIGS_ATTRIBUTES(),
-			shouldActive: [
-				AppRoute.SETTINGS_CONFIGS_ATTRIBUTES(),
-				AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_NEW(),
-				AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_DETAILS(page.params.id!),
-			].includes(page.url.pathname),
-		},
-		{
-			icon: TruckDelivery,
-			name: $T('channel.shipZones'),
-			href: AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONES(),
-			shouldActive: [
-				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONES(),
-				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_NEW(),
-				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS(page.params.id!),
-				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_NEW(
-					page.params.id!,
-					page.url.searchParams.get('type') as ShippingMethodTypeEnum,
-				),
-				AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_DETAILS(
-					page.params.id!,
-					page.params.method_id!,
-				),
-			].some((path) => path === page.url.pathname || path === page.url.pathname + page.url.search),
-		},
-		{
-			icon: LockCog,
-			name: $T('permissionGroup.permGroups'),
-			href: AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUPS(),
-			shouldActive: [
-				AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUPS(),
-				AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUP_NEW(),
-				AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUP_DETAIL(page.params.id!),
-			].includes(page.url.pathname),
-		},
-	]);
+	// const SHOP_CONFIG_TAB_ITEMS: TabItem[] = $derived([
+	// 	{
+	// 		icon: BuildingStore,
+	// 		name: $T('settings.shopSettings'),
+	// 		href: AppRoute.STORE_SETTINGS(),
+	// 		shouldActive: [AppRoute.STORE_SETTINGS()].includes(page.url.pathname),
+	// 	},
+	// 	{
+	// 		icon: BuildingStore,
+	// 		name: $T('settings.apps'),
+	// 		href: AppRoute.APPS_SETTINGS(),
+	// 		shouldActive: [AppRoute.APPS_SETTINGS()].includes(page.url.pathname),
+	// 	},
+	// 	{
+	// 		icon: Tax,
+	// 		name: $T('settings.taxSettings'),
+	// 		href: AppRoute.TAX_SETTINGS_CHANNELS(),
+	// 		shouldActive: [
+	// 			AppRoute.TAX_SETTINGS_CHANNELS(),
+	// 			AppRoute.TAX_SETTINGS_COUNTRIES(),
+	// 			AppRoute.TAX_SETTINGS_TAX_CLASSES(),
+	// 		].some((path) => page.url.pathname.startsWith(path)),
+	// 		isPreview: true,
+	// 	},
+	// 	{
+	// 		icon: Globe,
+	// 		name: $T('channel.channels'),
+	// 		href: AppRoute.SETTINGS_CONFIGS_CHANNELS(),
+	// 		shouldActive: [
+	// 			AppRoute.SETTINGS_CONFIGS_CHANNELS(),
+	// 			AppRoute.SETTINGS_CONFIGS_CHANNEL_NEW(),
+	// 			AppRoute.SETTINGS_CONFIGS_CHANNEL_DETAILS(page.params.slug!),
+	// 		].includes(page.url.pathname),
+	// 	},
+	// 	{
+	// 		icon: Thingiverse,
+	// 		name: $T('prdType.prdTypes'),
+	// 		href: AppRoute.SETTINGS_PRODUCT_TYPES(),
+	// 		shouldActive: [
+	// 			AppRoute.SETTINGS_PRODUCT_TYPES(),
+	// 			AppRoute.SETTINGS_PRODUCT_TYPE_NEW(),
+	// 			AppRoute.SETTINGS_PRODUCT_TYPE_EDIT(page.params.id!),
+	// 		].includes(page.url.pathname),
+	// 	},
+	// 	{
+	// 		icon: BadgeOutline,
+	// 		name: $T('settings.staffs'),
+	// 		href: AppRoute.SETTINGS_CONFIGS_STAFFS(),
+	// 		shouldActive: [
+	// 			AppRoute.SETTINGS_CONFIGS_STAFFS(),
+	// 			AppRoute.SETTINGS_CONFIGS_STAFF_NEW(),
+	// 			AppRoute.SETTINGS_CONFIGS_STAFF_DETAILS(page.params.id!),
+	// 		].includes(page.url.pathname),
+	// 	},
+	// 	{
+	// 		icon: UsersGroup,
+	// 		name: $T('settings.users'),
+	// 		href: AppRoute.SETTINGS_CONFIGS_USERS(),
+	// 		shouldActive: [
+	// 			AppRoute.SETTINGS_CONFIGS_USERS(),
+	// 			AppRoute.SETTINGS_CONFIGS_USER_NEW(),
+	// 			AppRoute.SETTINGS_CONFIGS_USER_DETAILS(page.params.id!),
+	// 		].includes(page.url.pathname),
+	// 	},
+	// 	{
+	// 		icon: BuildingWarehouse,
+	// 		name: $T('channel.warehouse'),
+	// 		href: AppRoute.SETTINGS_CONFIGS_WAREHOUSES(),
+	// 		shouldActive: [
+	// 			AppRoute.SETTINGS_CONFIGS_WAREHOUSES(),
+	// 			AppRoute.SETTINGS_CONFIGS_WAREHOUSE_NEW(),
+	// 			AppRoute.SETTINGS_CONFIGS_WAREHOUSE_DETAILS(page.params.id!),
+	// 		].includes(page.url.pathname),
+	// 	},
+	// 	{
+	// 		icon: Dimension,
+	// 		name: $T('product.tabAttributes'),
+	// 		href: AppRoute.SETTINGS_CONFIGS_ATTRIBUTES(),
+	// 		shouldActive: [
+	// 			AppRoute.SETTINGS_CONFIGS_ATTRIBUTES(),
+	// 			AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_NEW(),
+	// 			AppRoute.SETTINGS_CONFIGS_ATTRIBUTE_DETAILS(page.params.id!),
+	// 		].includes(page.url.pathname),
+	// 	},
+	// 	{
+	// 		icon: TruckDelivery,
+	// 		name: $T('channel.shipZones'),
+	// 		href: AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONES(),
+	// 		shouldActive: [
+	// 			AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONES(),
+	// 			AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_NEW(),
+	// 			AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_DETAILS(page.params.id!),
+	// 			AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_NEW(
+	// 				page.params.id!,
+	// 				page.url.searchParams.get('type') as ShippingMethodTypeEnum,
+	// 			),
+	// 			AppRoute.SETTINGS_CONFIGS_SHIPPING_ZONE_METHOD_DETAILS(
+	// 				page.params.id!,
+	// 				page.params.method_id!,
+	// 			),
+	// 		].some((path) => path === page.url.pathname || path === page.url.pathname + page.url.search),
+	// 	},
+	// 	{
+	// 		icon: LockCog,
+	// 		name: $T('permissionGroup.permGroups'),
+	// 		href: AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUPS(),
+	// 		shouldActive: [
+	// 			AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUPS(),
+	// 			AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUP_NEW(),
+	// 			AppRoute.SETTINGS_CONFIGS_PERMISSION_GROUP_DETAIL(page.params.id!),
+	// 		].includes(page.url.pathname),
+	// 	},
+	// ]);
 
 	const BookingTabItems: TabItem[] = $derived([
 		{
@@ -448,7 +448,7 @@
 				open={SHOPPING_TAB_ITEMS.some((item) => item.shouldActive)}
 			/>
 			{#if $UserStoreManager && $UserStoreManager.roles.includes(RoleSystemAdmin)}
-				<AccordionList
+				<!-- <AccordionList
 					header={$T('promotion.CATALOGUE')}
 					child={sidebarItem}
 					items={CATALOG_TAB_ITEMS}
@@ -468,7 +468,7 @@
 					items={SHOP_DISCOUNTS_TAB_ITEMS}
 					class="w-full p-3"
 					open={SHOP_DISCOUNTS_TAB_ITEMS.some((item) => item.shouldActive)}
-				/>
+				/> -->
 				<AccordionList
 					header={$T('settings.blogs')}
 					child={sidebarItem}
@@ -476,13 +476,13 @@
 					class="w-full p-3"
 					open={BLOG_TAB_ITEMS.some((item) => item.shouldActive)}
 				/>
-				<AccordionList
+				<!-- <AccordionList
 					header={$T('settings.configs')}
 					child={sidebarItem}
 					items={SHOP_CONFIG_TAB_ITEMS}
 					class="w-full p-3"
 					open={SHOP_CONFIG_TAB_ITEMS.some((item) => item.shouldActive)}
-				/>
+				/> -->
 				<AccordionList
 					header="Trip Bookings"
 					child={sidebarItem}

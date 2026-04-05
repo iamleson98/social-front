@@ -20,7 +20,7 @@
 		type MutationCollectionDeleteArgs,
 		type QueryCollectionsArgs,
 	} from '$lib/gql/graphql';
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { AlertModalStore } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
@@ -109,7 +109,7 @@
 			children: $T('btn.delete'),
 			startIcon: Trash,
 			onclick: () => {
-				ALERT_MODAL_STORE.openAlertModal({
+				AlertModalStore.openAlertModal({
 				content: $T('common.confirmDel'),
 				onOk: () => handleDeleteCollection(item.id)
 			});

@@ -33,7 +33,7 @@
 		type MutationGiftCardDeleteArgs,
 		type QueryGiftCardsArgs,
 	} from '$lib/gql/graphql';
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { AlertModalStore } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
@@ -87,7 +87,7 @@
 	]);
 
 	const handleDeleteGiftcard = (id: string) => {
-		ALERT_MODAL_STORE.openAlertModal({
+		AlertModalStore.openAlertModal({
 			content: $CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true; //
@@ -112,7 +112,7 @@
 		const ids = Object.keys(selectedGiftcards);
 		if (!ids.length) return;
 
-		ALERT_MODAL_STORE.openAlertModal({
+		AlertModalStore.openAlertModal({
 			content: $CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true;

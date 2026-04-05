@@ -17,7 +17,7 @@
 		type QueryShippingZoneArgs,
 		type ShippingPriceInput,
 	} from '$lib/gql/graphql';
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { AlertModalStore } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { onMount } from 'svelte';
@@ -72,12 +72,10 @@
 	};
 
 	const handleDelete = async () => {
-		ALERT_MODAL_STORE.openAlertModal({
+		AlertModalStore.openAlertModal({
 			content: $CommonState.ConfirmDelete,
-			onOk: async () => {
-
-			},
-		})
+			onOk: async () => {},
+		});
 	};
 </script>
 

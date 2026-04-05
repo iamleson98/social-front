@@ -38,7 +38,7 @@
 		type MutationVoucherChannelListingUpdateArgs,
 		type VoucherChannelListingAddInput,
 	} from '$lib/gql/graphql';
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { AlertModalStore } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
@@ -177,7 +177,7 @@
 	};
 
 	const handleDeleteVoucher = async () => {
-		ALERT_MODAL_STORE.openAlertModal({
+		AlertModalStore.openAlertModal({
 			content: $CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true;

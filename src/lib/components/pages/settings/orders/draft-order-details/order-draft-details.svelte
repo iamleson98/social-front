@@ -15,7 +15,7 @@
 		type Query,
 		type QueryProductsArgs,
 	} from '$lib/gql/graphql';
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { AlertModalStore } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
@@ -62,14 +62,17 @@
 
 		if (isChannelInactive) alerts.push('Channel is inactive');
 		if (totalProductsCount === 0) alerts.push('No products in channel');
-		if (noShippingMethodsInChannel) alerts.push(`${order.shippingAddress?.country.country} is not available as a shipping destination for this channel.`);
+		if (noShippingMethodsInChannel)
+			alerts.push(
+				`${order.shippingAddress?.country.country} is not available as a shipping destination for this channel.`,
+			);
 
 		return alerts;
 	};
 
 	/** we delete draft orders, not cancel them */
 	const handleCancelOrder = async () => {
-		ALERT_MODAL_STORE.openAlertModal({
+		AlertModalStore.openAlertModal({
 			content: $CommonState.ConfirmDelete,
 			onOk: async () => {
 				const hasErr = await OrderUtilsInstance.deleteDraftOrder(order.id);

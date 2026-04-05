@@ -25,7 +25,7 @@
 	} from '$lib/gql/graphql';
 	import { AddressTypeEnum } from '$lib/gql/graphql';
 	import { MePageUserStore } from '$lib/stores/app/me';
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { AlertModalStore } from '$lib/stores/ui/alert-modal';
 	import { DEFAULT_CHANNEL } from '$lib/utils/consts';
 	import { CHANNEL_KEY } from '$lib/utils/consts';
 	import { clientSideGetCookieOrDefault } from '$lib/utils/cookies';
@@ -171,7 +171,7 @@
 								variant="light"
 								startIcon={Trash}
 								onclick={() =>
-									ALERT_MODAL_STORE.openAlertModal({
+									AlertModalStore.openAlertModal({
 										content: $T('settings.confirmDelAddr'),
 										onOk: () => handleDeleteAddress(address.id),
 									})}

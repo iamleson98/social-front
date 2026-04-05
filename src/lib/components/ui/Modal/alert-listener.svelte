@@ -1,19 +1,19 @@
 <script lang="ts">
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { AlertModalStore } from '$lib/stores/ui/alert-modal';
 	import AlertModal from './alert-modal.svelte';
 </script>
 
 <AlertModal
-	open={!!$ALERT_MODAL_STORE}
-	onCancel={$ALERT_MODAL_STORE?.onCancel}
-	onOk={$ALERT_MODAL_STORE?.onOk}
-	variant={$ALERT_MODAL_STORE?.variant}
+	open={!!$AlertModalStore}
+	onCancel={$AlertModalStore?.onCancel}
+	onOk={$AlertModalStore?.onOk}
+	variant={$AlertModalStore?.variant}
 >
-	{#if $ALERT_MODAL_STORE}
-		{#if typeof $ALERT_MODAL_STORE.content === 'string'}
-			{$ALERT_MODAL_STORE.content}
+	{#if $AlertModalStore}
+		{#if typeof $AlertModalStore.content === 'string'}
+			{$AlertModalStore.content}
 		{:else}
-			{@render $ALERT_MODAL_STORE.content()}
+			{@render $AlertModalStore.content()}
 		{/if}
 	{/if}
 </AlertModal>

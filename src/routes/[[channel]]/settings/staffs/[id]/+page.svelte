@@ -18,7 +18,7 @@
 		type Query,
 		type QueryUserArgs,
 	} from '$lib/gql/graphql';
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { AlertModalStore } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import type { PageServerData } from './$types';
@@ -73,8 +73,7 @@
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'staffUpdate', $T('staff.staffUpdated')))
-			return;
+		if (checkIfGraphqlResultHasError(result, 'staffUpdate', $T('staff.staffUpdated'))) return;
 
 		staffDetailQuery.reexecute({
 			variables: {
@@ -84,7 +83,7 @@
 	};
 
 	const handleOpenDeleteModal = () => {
-		ALERT_MODAL_STORE.openAlertModal({
+		AlertModalStore.openAlertModal({
 			content: $T('staff.staffDeleteConfirm', { id: page.params.id }),
 			onOk: handleDeleteStaff,
 		});
@@ -101,8 +100,7 @@
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(result, 'staffDelete', $T('staff.staffDeleted')))
-			return;
+		if (checkIfGraphqlResultHasError(result, 'staffDelete', $T('staff.staffDeleted'))) return;
 		await goto(AppRoute.SETTINGS_CONFIGS_STAFFS());
 	};
 </script>
@@ -112,8 +110,7 @@
 {:else if $staffDetailQuery.error}
 	<Alert variant="error" bordered size="sm">{$staffDetailQuery.error.message}</Alert>
 {:else if $staffDetailQuery.data?.user}
-	{@const { avatar, dateJoined, permissionGroups } =
-		$staffDetailQuery.data.user}
+	{@const { avatar, dateJoined, permissionGroups } = $staffDetailQuery.data.user}
 	<StaffForm
 		avatar={avatar?.url}
 		bind:firstName={staffUpdateInput.firstName!}

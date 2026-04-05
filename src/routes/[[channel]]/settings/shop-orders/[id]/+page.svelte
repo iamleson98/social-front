@@ -120,7 +120,7 @@
 	// };
 
 	// const handleCancelOrder = async () => {
-	// 	ALERT_MODAL_STORE.openAlertModal({
+	// 	AlertModalStore.openAlertModal({
 	// 		content: 'Are you sure you want to cancel this order?',
 	// 		onOk: async () => {
 	// 			const hasErr = await OrderUtilsInstance.orderCancel(page.params.id!);

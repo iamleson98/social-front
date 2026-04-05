@@ -1,5 +1,6 @@
 export type State = {
 	label: string;
+	/** lat, long format */
 	value: string;
 };
 

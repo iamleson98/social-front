@@ -29,7 +29,7 @@
 		type Query,
 		type QueryCollectionArgs,
 	} from '$lib/gql/graphql';
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { AlertModalStore } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import type { MediaObject } from '$lib/utils/types';
@@ -58,9 +58,7 @@
 	});
 	let loading = $state(false);
 	let metaRef = $state<GeneralMetadataEditorRef>();
-	const ShouldEnableActionBar = $derived(
-		generalFormOk && seoFormOk && metaFormOk && !loading,
-	);
+	const ShouldEnableActionBar = $derived(generalFormOk && seoFormOk && metaFormOk && !loading);
 
 	const collectionDetailQuery = operationStore<Pick<Query, 'collection'>, QueryCollectionArgs>({
 		query: COLLECTION_DETAIL_QUERY,
@@ -113,7 +111,7 @@
 	);
 
 	const onDeleteClick = () => {
-		ALERT_MODAL_STORE.openAlertModal({
+		AlertModalStore.openAlertModal({
 			content: $CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true; //

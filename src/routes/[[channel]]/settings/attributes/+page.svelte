@@ -18,7 +18,7 @@
 		type MutationAttributeDeleteArgs,
 		type QueryAttributesArgs,
 	} from '$lib/gql/graphql';
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { AlertModalStore } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import toast from 'svelte-french-toast';
@@ -74,7 +74,7 @@
 	});
 
 	const handleDeleteAttribute = (id: string) => {
-		ALERT_MODAL_STORE.openAlertModal({
+		AlertModalStore.openAlertModal({
 			content: $T('common.confirmDel'),
 			onOk: () => {
 				AttributeDeleteStore.reexecute({

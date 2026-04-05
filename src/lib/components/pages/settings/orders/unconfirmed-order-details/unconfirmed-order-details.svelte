@@ -5,7 +5,7 @@
 	import { Button } from '$lib/components/ui/Button';
 	import { Popover } from '$lib/components/ui/Popover';
 	import type { Order } from '$lib/gql/graphql';
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { AlertModalStore } from '$lib/stores/ui/alert-modal';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { GeneralMetadataEditor, type GeneralMetadataEditorRef } from '../../common';
 	import HeaderSection from '../header-section.svelte';
@@ -37,7 +37,7 @@
 	const reexecuteQuery = () => {};
 
 	const handleCancelOrder = async () => {
-		ALERT_MODAL_STORE.openAlertModal({
+		AlertModalStore.openAlertModal({
 			content: 'Are you sure you want to cancel this order?',
 			onOk: async () => {
 				const hasErr = await OrderUtilsInstance.orderCancel(page.params.id!);

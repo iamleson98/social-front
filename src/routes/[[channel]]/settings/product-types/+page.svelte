@@ -18,7 +18,7 @@
 		ProductTypeSortField,
 		type QueryProductTypesArgs,
 	} from '$lib/gql/graphql';
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { AlertModalStore } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 
@@ -53,7 +53,7 @@
 	]);
 
 	const handleClickDelItem = async (id: string) => {
-		ALERT_MODAL_STORE.openAlertModal({
+		AlertModalStore.openAlertModal({
 			content: $T('common.confirmDel'),
 			onOk: async () => {
 				loading = true;
@@ -67,9 +67,7 @@
 
 				loading = false;
 
-				if (
-					checkIfGraphqlResultHasError(result, 'productTypeDelete', $T('common.delSuccess'))
-				)
+				if (checkIfGraphqlResultHasError(result, 'productTypeDelete', $T('common.delSuccess')))
 					return;
 
 				tableRef?.triggerFetchData();

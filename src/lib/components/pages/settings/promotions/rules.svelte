@@ -25,7 +25,7 @@
 		type PromotionRule,
 		type PromotionRuleUpdateInput,
 	} from '$lib/gql/graphql';
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { AlertModalStore } from '$lib/stores/ui/alert-modal';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import {
 		checkIfGraphqlResultHasError,
@@ -103,7 +103,7 @@
 	});
 
 	const handleDeleteRule = async (ruleId: string) => {
-		ALERT_MODAL_STORE.openAlertModal({
+		AlertModalStore.openAlertModal({
 			content: $CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true;
@@ -233,7 +233,7 @@
 								color="gray"
 								disabled={loading}
 								onclick={() => handleClickEditRule(ruleIdx)}
-								aria-label='Edit'
+								aria-label="Edit"
 							/>
 							<IconButton
 								size="xs"
@@ -242,7 +242,7 @@
 								variant="light"
 								disabled={loading}
 								onclick={() => handleDeleteRule(rule.id)}
-								aria-label='Delete'
+								aria-label="Delete"
 							/>
 						</div>
 					</SectionHeader>

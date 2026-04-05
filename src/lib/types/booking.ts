@@ -25,16 +25,16 @@ export type BookingRoute = {
 
 export type BookingTransportBrand = {
 	id: string;
-	createat: number;
-	updateat: number;
-	deleteat?: number | null;
+	createat?: number;
+	updateat?: number;
+	deleteat?: number;
 	name: string;
-	description?: string | null;
+	description?: string;
 	email: string;
-	phone?: string | null;
-	vehicle_types?: string | null;
+	phone: string;
+	vehicle_types?: string;
 	representor_id: string;
-	address_id?: string | null;
+	address_id?: string;
 };
 
 export type BookingVehicle = {

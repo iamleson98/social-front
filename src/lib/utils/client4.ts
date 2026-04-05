@@ -4732,7 +4732,7 @@ export default class Client4 {
 	};
 
 	createBookingTransportBrand = (brand: BookingTransportBrand) => {
-		return this.doFetch<BookingTransportBrand>(this.getBookingTransportBrandsRoute(), {
+		return this.doFetch<BookingTransportBrand>(`${this.getBookingTransportBrandsRoute()}/create`, {
 			method: 'post',
 			body: JSON.stringify(brand),
 		});

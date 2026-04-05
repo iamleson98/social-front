@@ -20,7 +20,7 @@
 		type Query,
 		type QueryGiftCardArgs,
 	} from '$lib/gql/graphql';
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { AlertModalStore } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
@@ -88,7 +88,7 @@
 	};
 
 	const onDeleteClick = async () => {
-		ALERT_MODAL_STORE.openAlertModal({
+		AlertModalStore.openAlertModal({
 			content: $CommonState.ConfirmDelete,
 			onOk: async () => {
 				loading = true;
@@ -149,9 +149,7 @@
 			<div class="w-7/10 tablet:w-full">
 				<GiftcardEvents {id} bind:timelineReloadTrigger />
 			</div>
-			<div class="w-3/10 tablet:w-full">
-				
-			</div>
+			<div class="w-3/10 tablet:w-full"></div>
 		</div>
 	</div>
 

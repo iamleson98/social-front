@@ -5,7 +5,7 @@
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown } from '$lib/components/ui/Dropdown';
 	import { Table, type TableColumnProps } from '$lib/components/ui/Table';
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { AlertModalStore } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { SitenameTimeFormat } from '$lib/utils/consts';
 	import { type SupportTicketStatus, type SupportTicketTag } from '$lib/utils/types';
@@ -68,7 +68,7 @@
 	]);
 
 	const handleConfirmDeleteTicket = (id: string) => {
-		ALERT_MODAL_STORE.openAlertModal({
+		AlertModalStore.openAlertModal({
 			content: $T('settings.confirmDelRequest', { id }),
 			onOk: () => {},
 			onCancel: () => {},

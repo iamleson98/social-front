@@ -40,7 +40,7 @@
 		type QueryGiftCardsArgs,
 		type QueryGiftCardTagsArgs,
 	} from '$lib/gql/graphql';
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { AlertModalStore } from '$lib/stores/ui/alert-modal';
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { createSchemaHandler } from '$lib/utils/zod.svelte';
@@ -194,7 +194,7 @@
 		openBulkIssueModal = false;
 
 		if (giftcardIssuedIds.length)
-			ALERT_MODAL_STORE.openAlertModal({
+			AlertModalStore.openAlertModal({
 				variant: 'info',
 				onOk: async () => {
 					loading = true;
@@ -210,13 +210,7 @@
 					});
 					loading = false;
 
-					if (
-						checkIfGraphqlResultHasError(
-							result,
-							'exportGiftCards',
-							$T('common.fileExporting'),
-						)
-					)
+					if (checkIfGraphqlResultHasError(result, 'exportGiftCards', $T('common.fileExporting')))
 						return;
 				},
 				content: $T('giftcard.events.bulkIssueSuccess'),

@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 /* @plugin 'flowbite/plugin'; */
-/* @source "../node_modules/flowbite-svelte/dist"; */
+@source "../node_modules/flowbite-svelte/dist";
 
 /* please do not add button of daisyui styles here since we already have button component. Doing that would cause conflict */
 @plugin "daisyui" {

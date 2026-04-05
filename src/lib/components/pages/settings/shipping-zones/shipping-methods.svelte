@@ -16,7 +16,7 @@
 		type MutationShippingPriceDeleteArgs,
 		type ShippingMethodType,
 	} from '$lib/gql/graphql';
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { AlertModalStore } from '$lib/stores/ui/alert-modal';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 
@@ -75,7 +75,7 @@
 	]);
 
 	const handleDeleteMethod = (id: string) => {
-		ALERT_MODAL_STORE.openAlertModal({
+		AlertModalStore.openAlertModal({
 			content: $T('common.confirmDel'),
 			onOk: async () => {
 				loading = true;
@@ -87,13 +87,7 @@
 
 				loading = false;
 
-				if (
-					checkIfGraphqlResultHasError(
-						result,
-						'shippingPriceDelete',
-						$T('common.delSuccess'),
-					)
-				)
+				if (checkIfGraphqlResultHasError(result, 'shippingPriceDelete', $T('common.delSuccess')))
 					return;
 
 				onDoneUpdate?.();

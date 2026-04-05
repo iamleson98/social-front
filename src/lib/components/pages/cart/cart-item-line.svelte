@@ -17,7 +17,7 @@
 		MutationCheckoutLinesUpdateArgs,
 	} from '$lib/gql/graphql';
 	import { checkoutStore } from '$lib/stores/app';
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
+	import { AlertModalStore } from '$lib/stores/ui/alert-modal';
 	import { defaultSlideShowState } from '$lib/stores/ui/slideshow';
 	import { AppRoute } from '$lib/utils';
 	import { formatMoney, checkIfGraphqlResultHasError } from '$lib/utils/utils';
@@ -126,7 +126,7 @@
 	$effect(() => {
 		// in case user want to remove the item
 		if (quantity <= 0) {
-			ALERT_MODAL_STORE.openAlertModal({
+			AlertModalStore.openAlertModal({
 				content: $T('common.confirmRemoveProduct'),
 				onOk: handleDeleteCheckoutLine,
 				onCancel: () => {
