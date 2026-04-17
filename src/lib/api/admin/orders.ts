@@ -280,7 +280,7 @@ export const ORDER_DETAIL_QUERY = gql`
 			payments {
 				id
 				isActive
-				partial
+				# partial
 				actions
 			}
 			grantedRefunds {
