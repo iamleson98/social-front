@@ -1,14 +1,12 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vitest/config';
-import { analyzer } from 'vite-bundle-analyzer';
 
 export default defineConfig(({ mode }) => {
 	return {
 		plugins: [
 			sveltekit(),
 			tailwindcss(),
-			analyzer(),
 		],
 		test: {
 			include: ['src/**/*.{test,spec}.{js,ts}'],
@@ -22,6 +20,7 @@ export default defineConfig(({ mode }) => {
 		},
 		build: {
 			minify: mode !== 'development',
+			sourcemap: false,
 		},
 	};
 });
