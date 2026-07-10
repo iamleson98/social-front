@@ -68,7 +68,7 @@
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { difference, omit, pick } from 'es-toolkit';
 	import { onMount } from 'svelte';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 
 	const ProductDetailStore = operationStore<Pick<Query, 'product'>, QueryProductArgs>({
 		query: PRODUCT_DETAIL_QUERY,

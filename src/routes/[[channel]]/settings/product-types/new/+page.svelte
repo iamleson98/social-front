@@ -16,7 +16,7 @@
 	} from '$lib/gql/graphql';
 	import { AppRoute } from '$lib/utils';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 
 	let productTypeInput = $state<ProductTypeInput>({
 		hasVariants: false,

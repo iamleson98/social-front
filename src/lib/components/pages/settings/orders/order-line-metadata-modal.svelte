@@ -8,7 +8,7 @@
 	import { type Query, type QueryOrderArgs } from '$lib/gql/graphql';
 	import type { GeneralMetadataEditorRef } from '../common';
 	import GeneralMetadataEditor from '../common/general-metadata-editor.svelte';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 
 	type Props = {
 		orderId: string;

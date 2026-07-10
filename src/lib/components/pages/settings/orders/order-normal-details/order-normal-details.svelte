@@ -29,7 +29,7 @@
 	import UnfulfilledOrderLinesSection from '../unfulfilled-order-lines-section.svelte';
 	import { orderShouldUseTransactions } from '../utils';
 	import { OrderUtilsInstance } from '../utils.svelte';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 
 	type Props = {
 		order: Order;
@@ -62,8 +62,8 @@
 	};
 </script>
 
-<div class="flex flex-row gap-2 tablet:flex-wrap">
-	<div class="space-y-2 w-7/10 tablet:w-full">
+<div class="flex flex-row gap-2 max-tablet:flex-wrap">
+	<div class="space-y-2 w-7/10 max-tablet:w-full">
 		<HeaderSection {order} onCancelOrder={handleCancelOrder} />
 
 		<UnfulfilledOrderLinesSection {order} />
@@ -92,9 +92,9 @@
 	<Sidebar {order} {onRefetchOrder} disabled={loading} />
 </div>
 
-<div class="flex gap-2 tablet:flex-wrap mt-2 flex-row">
-	<div class="w-7/10 tablet:w-full">
+<div class="flex gap-2 max-tablet:flex-wrap mt-2 flex-row">
+	<div class="w-7/10 max-tablet:w-full">
 		<OrderHistory id={order.id} />
 	</div>
-	<div class="w-3/10 tablet:w-full"></div>
+	<div class="w-3/10 max-tablet:w-full"></div>
 </div>

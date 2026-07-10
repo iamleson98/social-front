@@ -7,7 +7,7 @@
 	import { GraphqlPaginableSelect } from '$lib/components/ui/select';
 	import type { Mutation, MutationOrderFulfillmentCancelArgs } from '$lib/gql/graphql';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 
 	type Props = {
 		fulfillmentID?: string;

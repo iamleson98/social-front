@@ -62,10 +62,10 @@
 
 <div class={SitenameCommonClassName}>
 	<Label label={$T('product.quickFilling')} size="sm" />
-	<div class="flex gap-1 tablet:flex-wrap">
-		<div class="w-11/12 grid gap-1 items-start tablet:w-full grid-cols-6">
+	<div class="flex gap-1 max-tablet:flex-wrap">
+		<div class="w-11/12 grid gap-1 items-start max-tablet:w-full grid-cols-6">
 			<!-- CHANNELS -->
-			<div class="tablet:col-span-2 col-span-1">
+			<div class="max-tablet:col-span-2 col-span-1">
 				<Label label={$T('product.channel')} size="sm" />
 				{#if !channelSelectOptions?.length}
 					<SelectSkeleton size="sm" />
@@ -84,7 +84,7 @@
 				{/if}
 			</div>
 			<!-- PRICING -->
-			<div class="col-span-2 tablet:col-span-4">
+			<div class="col-span-2 max-tablet:col-span-4">
 				{#if quickFillingValues.channels.length}
 					<div class="grid grid-cols-2">
 						<Label label={$T('product.price')} size="sm" />
@@ -126,7 +126,7 @@
 				{/if}
 			</div>
 			<!-- WEIGHT -->
-			<div class="col-span-1 tablet:col-span-2">
+			<div class="col-span-1 max-tablet:col-span-2">
 				<Input
 					size="sm"
 					type="number"
@@ -147,7 +147,7 @@
 				</Input>
 			</div>
 			<!-- PRE-ORDER -->
-			<div class="col-span-1 tablet:col-span-2">
+			<div class="col-span-1 max-tablet:col-span-2">
 				<Label label={$T('common.preorder')} size="sm" />
 				<div class="border border-gray-200 bg-white p-1 rounded-lg">
 					<!-- QUANTITY LIMIT -->
@@ -188,7 +188,7 @@
 				</div>
 			</div>
 			<!-- STOCK -->
-			<div class="col-span-1 tablet:col-span-2">
+			<div class="col-span-1 max-tablet:col-span-2">
 				<Label label={$T('product.stock')} size="sm" />
 				{#if !quickFillingValues.stocks.length}
 					<SelectSkeleton size="sm" />
@@ -243,9 +243,9 @@
 			</div>
 		</div>
 		<!-- APPLY BUTTON -->
-		<div class="w-1/12 tablet:w-full">
+		<div class="w-1/12 max-tablet:w-full">
 			<Button
-				class="btn btn-sm grow shrink tablet:w-full!"
+				class="btn btn-sm grow shrink max-tablet:w-full!"
 				size="sm"
 				disabled={quickFillingError || disabled}
 				fullWidth

@@ -28,7 +28,7 @@
 	{@const { productImage, productName } = getSummaryLineProps(line)}
 	<div class="flex border-b py-1 last:border-none">
 		<div
-			class="aspect-square h-24 tablet:w-16 w-24 tablet:h-16 rounded-sm border overflow-hidden bg-white"
+			class="aspect-square h-24 max-tablet:w-16 w-24 max-tablet:h-16 rounded-sm border overflow-hidden bg-white"
 		>
 			{#if productImage}
 				<img
@@ -103,7 +103,7 @@
 	</div>
 {/snippet}
 
-<div class="w-1/2 tablet:w-full">
+<div class="w-1/2 max-tablet:w-full">
 	<div class="bg-white rounded-lg border p-4">
 		<AccordionList
 			header={$T('checkout.summary')}

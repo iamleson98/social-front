@@ -167,7 +167,7 @@
 		{:else}
 			<div class="flex gap-2 flex-wrap">
 				{#each $ME_PAGE_USER_STORE?.addresses as address, idx (idx)}
-					<UserAddress {address} class="w-[49%] mobile-l:w-full">
+					<UserAddress {address} class="w-[49%] max-mobile-l:w-full">
 						<div class="flex items-center gap-2 text-gray-600!">
 							{#if !address.isDefaultBillingAddress}
 								<Checkbox

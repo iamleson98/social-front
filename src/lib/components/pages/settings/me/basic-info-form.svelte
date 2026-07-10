@@ -87,11 +87,11 @@
 <div class={SitenameCommonClassName}>
 	<SectionHeader>{$T('settings.basicInfo')}</SectionHeader>
 
-	<div class="flex items-start mt-3 gap-2 w-full tablet:flex-wrap flex-nowrap">
+	<div class="flex items-start mt-3 gap-2 w-full max-tablet:flex-wrap flex-nowrap">
 		<Input
 			placeholder={$T('common.firstName')}
 			label={$T('common.firstName')}
-			class="w-1/2 tablet:w-full"
+			class="w-1/2 max-tablet:w-full"
 			required
 			bind:value={userInfoInputs.firstName}
 			variant={$SchemaHandler.firstName?.length ? 'error' : 'info'}
@@ -103,7 +103,7 @@
 		<Input
 			placeholder={$T('common.lastName')}
 			label={$T('common.lastName')}
-			class="w-1/2 tablet:w-full"
+			class="w-1/2 max-tablet:w-full"
 			required
 			bind:value={userInfoInputs.lastName}
 			variant={$SchemaHandler.lastName?.length ? 'error' : 'info'}

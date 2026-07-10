@@ -30,7 +30,7 @@
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { pick } from 'es-toolkit';
 	import { onMount } from 'svelte';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 
 	const warehouseQuery = operationStore<Pick<Query, 'warehouse'>, QueryWarehouseArgs>({
 		query: WAREHOUSE_DETAIL_QUERY,

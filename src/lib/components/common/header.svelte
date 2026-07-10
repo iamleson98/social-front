@@ -24,7 +24,7 @@
 	import { ACCESS_TOKEN_KEY, HTTPStatusSuccess } from '$lib/utils/consts';
 	import { buildHomePageLink, checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 	import { cubicOut } from 'svelte/easing';
 	import { Tween } from 'svelte/motion';
 	import { scale } from 'svelte/transition';
@@ -115,12 +115,12 @@
 		<div class="flex gap-1">
 			<a href={buildHomePageLink()}>
 				<Button variant="light" size="sm" startIcon={MingcuteHome}>
-					<span class="tablet:hidden!">{$T('pages.home')}</span>
+					<span class="max-tablet:hidden!">{$T('pages.home')}</span>
 				</Button>
 			</a>
 			<a href={AppRoute.TRENDING()}>
 				<Button variant="light" size="sm" startIcon={IonFlame}>
-					<span class="tablet:hidden!">{$T('pages.trending')}</span>
+					<span class="max-tablet:hidden!">{$T('pages.trending')}</span>
 				</Button>
 			</a>
 		</div>

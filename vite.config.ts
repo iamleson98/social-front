@@ -1,11 +1,9 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vitest/config';
-import { analyzer } from 'vite-bundle-analyzer'
-
+import { analyzer } from 'vite-bundle-analyzer';
 
 export default defineConfig(({ mode }) => {
-
 	return {
 		plugins: [
 			sveltekit(),
@@ -24,23 +22,6 @@ export default defineConfig(({ mode }) => {
 		},
 		build: {
 			minify: mode !== 'development',
-			// sourcemap: mode === 'development',
-			rollupOptions: {
-				output: {
-					manualChunks: (id) => {
-						if (id.includes('node_modules')) {
-							return 'vendor';  // Chunk all deps into one file for better caching
-						}
-					},
-					// sourcemap: mode === 'development',
-				},
-			},
 		},
-		// resolve: {
-		// 	alias: {
-		// 		'node:crypto': false,
-		// 		crypto: false,
-		// 	},
-		// },
 	};
 });

@@ -43,7 +43,7 @@
 	</div>
 {/snippet}
 
-<div class={[SitenameCommonClassName, 'w-3/10 tablet:w-full h-fit']}>
+<div class={[SitenameCommonClassName, 'w-3/10 max-tablet:w-full h-fit']}>
 	<SectionHeader>{$T('giftcard.cardInfo')}</SectionHeader>
 
 	<div class="overflow-x-auto">

@@ -17,7 +17,7 @@
 
 <div class={[SitenameCommonClassName, 'flex gap-2']}>
 	<!-- MARK: Collections -->
-	<div class="w-1/2 mobile-l:w-full">
+	<div class="w-1/2 max-mobile-l:w-full">
 		<GraphqlPaginableSelect
 			query={COLLECTIONS_QUERY}
 			resultKey="collections"
@@ -33,7 +33,7 @@
 	</div>
 
 	<!-- MARK: Tax classes -->
-	<div class="w-1/2 mobile-l:w-full">
+	<div class="w-1/2 max-mobile-l:w-full">
 		<GraphqlPaginableSelect
 			query={TAX_CLASSES_QUERY}
 			resultKey="taxClasses"

@@ -1,6 +1,20 @@
 @import 'tailwindcss';
 @import "tw-animate-css";
 
+/* Custom breakpoints (min-width definitions, used with max-* variants for desktop-first) */
+@theme {
+	--breakpoint-mobile-s: 320px;
+	--breakpoint-mobile-m: 375px;
+	--breakpoint-mobile-l: 425px;
+	--breakpoint-tablet: 768px;
+	--breakpoint-laptop: 1024px;
+	--breakpoint-desktop: 1440px;
+	--breakpoint-desktop-l: 2560px;
+}
+
+/* Dark mode via class selector (replaces darkMode: 'selector' from tailwind.config.js) */
+@custom-variant dark (&:is(.dark *));
+
 /* please do not add button of daisyui styles here since we already have button component. Doing that would cause conflict */
 @plugin "daisyui" {
   include:
@@ -10,8 +24,6 @@
     light --default,
     dark --prefersdark;
 }
-
-@config '../tailwind.config.js';
 
 @layer base {
 

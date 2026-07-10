@@ -12,7 +12,7 @@
 	import { CommonState } from '$lib/utils/common.svelte';
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 
 	let media = $state<MediaObject[]>([]);
 	let generalFormOk = $state(false);

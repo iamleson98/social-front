@@ -7,7 +7,7 @@
 	import { Checkbox } from '$lib/components/ui/Input';
 	import { GraphqlPaginableTable, Table, type TableColumnProps } from '$lib/components/ui/Table';
 	import { ProductOrderField, type Product, type Query } from '$lib/gql/graphql';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 
 	let disabledTable = $state(false);
 	let disabledGraphqlTable = $state(false);

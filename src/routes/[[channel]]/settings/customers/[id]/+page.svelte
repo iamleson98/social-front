@@ -23,7 +23,7 @@
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 
 	const userDetailQuery = operationStore<Pick<Query, 'user'>, QueryUserArgs>({
 		query: USER_DETAIL_QUERY,

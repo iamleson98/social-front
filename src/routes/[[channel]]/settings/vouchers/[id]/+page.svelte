@@ -43,7 +43,7 @@
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 	import { flattenError, string } from 'zod';
 
 	const VoucherQuery = operationStore<Pick<Query, 'voucher'>, QueryVoucherArgs>({

@@ -9,7 +9,7 @@
 	import { AppRoute } from '$lib/utils';
 	import { HTTPStatusSuccess } from '$lib/utils/consts';
 	import { createSchemaHandler } from '$lib/utils/zod.svelte';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 	import { boolean, object, string, z } from 'zod';
 
 	type Props = {

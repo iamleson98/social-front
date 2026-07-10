@@ -11,7 +11,7 @@
 	import duration from 'dayjs/plugin/duration';
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import { type Snippet } from 'svelte';
-	import { Toaster } from 'svelte-french-toast';
+	import { Toaster } from 'svelte-sonner';
 
 	interface Props {
 		children: Snippet;
@@ -57,4 +57,4 @@
 
 <Footer />
 <AlertListener />
-<Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+<Toaster position="top-right" duration={3000} />

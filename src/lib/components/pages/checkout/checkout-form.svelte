@@ -24,7 +24,7 @@
 	};
 </script>
 
-<div class="w-1/2 tablet:w-full flex flex-col gap-2">
+<div class="w-1/2 max-tablet:w-full flex flex-col gap-2">
 	<div class="bg-white rounded-lg p-3 border border-gray-200">
 		<SectionHeader>{$T('checkout.account')}</SectionHeader>
 

@@ -40,7 +40,7 @@
 			startIcon={MdiWeightKg}
 			size="sm"
 			min="0"
-			class="w-1/4 tablet:w-1/2 mobile-l:w-full"
+			class="w-1/4 max-tablet:w-1/2 max-mobile-l:w-full"
 			disabled={loading}
 		/>
 		<Input
@@ -51,7 +51,7 @@
 			size="sm"
 			action={cm}
 			min="0"
-			class="w-1/4 tablet:w-1/2 mobile-l:w-full"
+			class="w-1/4 max-tablet:w-1/2 max-mobile-l:w-full"
 			disabled={loading}
 		/>
 		<Input
@@ -62,7 +62,7 @@
 			size="sm"
 			action={cm}
 			min="0"
-			class="w-1/4 tablet:w-1/2 mobile-l:w-full"
+			class="w-1/4 max-tablet:w-1/2 max-mobile-l:w-full"
 			disabled={loading}
 		/>
 		<Input
@@ -73,7 +73,7 @@
 			size="sm"
 			action={cm}
 			min="0"
-			class="w-1/4 tablet:w-1/2 mobile-l:w-full"
+			class="w-1/4 max-tablet:w-1/2 max-mobile-l:w-full"
 			disabled={loading}
 		/>
 	</div>

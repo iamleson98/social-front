@@ -24,7 +24,7 @@
 		<Alert variant="error" size="sm" bordered>{$checkoutQueryStore.error.message}</Alert>
 	{:else if $checkoutQueryStore.data?.checkout}
 		<CheckoutSteps numberOfItemToEnable={2} />
-		<div class="flex flex-row gap-2 flex-nowrap tablet:flex-wrap tablet:flex-row-reverse">
+		<div class="flex flex-row gap-2 flex-nowrap max-tablet:flex-wrap max-tablet:flex-row-reverse">
 			<CheckoutForm checkout={$checkoutQueryStore.data.checkout} />
 			<CheckoutSummary checkout={$checkoutQueryStore.data.checkout} />
 		</div>

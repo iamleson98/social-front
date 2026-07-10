@@ -3,7 +3,7 @@
 	import { Check, ClipboardCopy } from '../icons';
 	import { IconButton } from '../ui/Button';
 	import type { SocialColor, SocialSize } from '../ui/common';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 
 	type Props = {
 		size?: SocialSize;

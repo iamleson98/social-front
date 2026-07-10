@@ -31,7 +31,7 @@
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 
 	const AttributeQuery = operationStore<Pick<Query, 'attribute'>, QueryAttributeArgs>({
 		query: ATTRIBUTE_DETAILS_QUERY,
@@ -131,8 +131,8 @@
 {:else if $AttributeQuery.data?.attribute}
 	{@const { metadata, privateMetadata, inputType, type, withChoices, id } =
 		$AttributeQuery.data.attribute}
-	<div class="flex gap-2 tablet:flex-col">
-		<div class="w-7/10 space-y-2 tablet:w-full">
+	<div class="flex gap-2 max-tablet:flex-col">
+		<div class="w-7/10 space-y-2 max-tablet:w-full">
 			<GeneralInformation
 				bind:name={attributeInput.name!}
 				bind:slug={attributeInput.slug!}

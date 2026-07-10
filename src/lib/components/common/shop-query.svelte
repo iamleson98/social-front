@@ -5,7 +5,7 @@
 	import { UserStoreManager } from '$lib/stores/auth';
 	import { ShopStoreManager } from '$lib/stores/shop';
 	import { onMount } from 'svelte';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 
 	onMount(async () => {
 		const result = await GRAPHQL_CLIENT.query<Pick<Query, 'shop'>>(

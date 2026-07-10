@@ -14,7 +14,7 @@
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import IssueForm from '../giftcards/issue-form.svelte';
 	import dayjs from 'dayjs';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 
 	type Props = {
 		user: User;

@@ -344,7 +344,7 @@
 	<div class="flex flex-nowrap gap-2">
 		<!-- side bar -->
 		<div
-			class="w-1/4 sticky top-16 h-[calc(100vh-4rem)] p-2 space-y-2 tablet:hidden overflow-auto"
+			class="w-1/4 sticky top-16 h-[calc(100vh-4rem)] p-2 space-y-2 max-tablet:hidden overflow-auto"
 			style="scrollbar-width: none; -ms-overflow-style: none;"
 			id="sidebar"
 		>
@@ -433,7 +433,7 @@
 		</div>
 
 		<!-- main content -->
-		<div class="w-3/4 tablet:w-full">
+		<div class="w-3/4 max-tablet:w-full">
 			{@render children()}
 		</div>
 	</div>

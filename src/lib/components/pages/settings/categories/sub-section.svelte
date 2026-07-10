@@ -88,7 +88,7 @@
 	<span class="text-xs">{dayjs(item.updatedAt).format(SitenameTimeFormat)}</span>
 {/snippet}
 
-<div class="space-y-2 w-4/10 tablet:w-full">
+<div class="space-y-2 w-4/10 max-tablet:w-full">
 	<div class={[SitenameCommonClassName]}>
 		<SectionHeader>
 			<div>

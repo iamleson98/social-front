@@ -220,7 +220,7 @@
 	</SectionHeader>
 
 	{#if rules.length}
-		<div class="grid grid-cols-2 gap-2 tablet:grid-cols-1">
+		<div class="grid grid-cols-2 gap-2 max-tablet:grid-cols-1">
 			{#each rules as rule, ruleIdx (ruleIdx)}
 				<div class={SitenameCommonClassName}>
 					<SectionHeader>

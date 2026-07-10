@@ -46,7 +46,7 @@
 		checkIfGraphqlResultHasError,
 		SitenameCommonClassName,
 	} from '$lib/utils/utils';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 	import { fade } from 'svelte/transition';
 
 	type Props = {

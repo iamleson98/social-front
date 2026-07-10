@@ -14,10 +14,8 @@
 		"declarationMap": false,
 		"inlineSourceMap": false,
 		"target": "ES2020",
-		"module": "ESNext",
-		"experimentalDecorators": true,
-		"emitDecoratorMetadata": true,
-		"noImplicitAny": true,
+			"module": "ESNext",
+			"noImplicitAny": true,
 		"strictNullChecks": true,
 		"noUnusedLocals": false, // for snippets defined within file, still get used in <script /> but still show not used errors
 		"noUnusedParameters": true,

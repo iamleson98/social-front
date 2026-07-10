@@ -23,7 +23,7 @@
 	import { CommonState } from '$lib/utils/common.svelte';
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 
 	let generalFormOk = $state(false);
 	let seoFormOk = $state(false);
@@ -95,8 +95,8 @@
 	};
 </script>
 
-<div class="flex gap-2 flex-row tablet:flex-col">
-	<div class="w-7/10 space-y-2 tablet:w-full">
+<div class="flex gap-2 flex-row max-tablet:flex-col">
+	<div class="w-7/10 space-y-2 max-tablet:w-full">
 		<GeneralInformationForm
 			bind:name={collectionCreateInput.name!}
 			bind:description={collectionCreateInput.description}

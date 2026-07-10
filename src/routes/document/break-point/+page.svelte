@@ -22,7 +22,7 @@
 		<p class="font-bold text-lg">laptop - 1024px</p>
 		<code>laptop</code>
 	</div>
-	<div class="tablet:bg-red-200! mb-2 common w-[1440px]">
+	<div class="max-tablet:bg-red-200! mb-2 common w-[1440px]">
 		<p class="font-bold text-lg">desktop - 1440px</p>
 		<code>desktop</code>
 	</div>

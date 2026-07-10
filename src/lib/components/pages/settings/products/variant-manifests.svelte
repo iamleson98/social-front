@@ -32,7 +32,7 @@
 		type VariantManifest,
 	} from './utils';
 	import { onMount } from 'svelte';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 
 	type Props = {
 		variantManifests: VariantManifest[];

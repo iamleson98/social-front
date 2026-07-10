@@ -25,7 +25,7 @@
 	import { CommonState } from '$lib/utils/common.svelte';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 
 	const giftcardUtils = new GiftcardUtil();
 
@@ -119,8 +119,8 @@
 	{@const { id, currentBalance, isActive, tags, metadata, privateMetadata, initialBalance } =
 		$giftcardQuery.data.giftCard}
 	<div class="space-y-2">
-		<div class="flex gap-2 tablet:flex-wrap">
-			<div class="w-7/10 space-y-2 tablet:w-full">
+		<div class="flex gap-2 max-tablet:flex-wrap">
+			<div class="w-7/10 space-y-2 max-tablet:w-full">
 				<GiftcardDetail
 					bind:balanceAmount={giftcardUpdateInput.balanceAmount}
 					bind:expiryDate={giftcardUpdateInput.expiryDate}
@@ -145,11 +145,11 @@
 			<GiftcardExtraInformation giftcard={$giftcardQuery.data.giftCard} />
 		</div>
 
-		<div class="flex gap-2 tablet:flex-wrap">
-			<div class="w-7/10 tablet:w-full">
+		<div class="flex gap-2 max-tablet:flex-wrap">
+			<div class="w-7/10 max-tablet:w-full">
 				<GiftcardEvents {id} bind:timelineReloadTrigger />
 			</div>
-			<div class="w-3/10 tablet:w-full">
+			<div class="w-3/10 max-tablet:w-full">
 				
 			</div>
 		</div>

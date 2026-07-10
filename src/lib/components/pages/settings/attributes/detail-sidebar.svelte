@@ -20,7 +20,7 @@
 	}: Props = $props();
 </script>
 
-<div class="tablet:w-full space-y-2">
+<div class="max-tablet:w-full space-y-2">
 	<div class={SitenameCommonClassName}>
 		<SectionHeader>{$T('common.org')}</SectionHeader>
 

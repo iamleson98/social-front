@@ -125,7 +125,7 @@
 	};
 </script>
 
-<div class={['w-3/10 tablet:w-full space-y-2']}>
+<div class={['w-3/10 max-tablet:w-full space-y-2']}>
 	{#if $channelsQuery.fetching}
 		<div class={SitenameCommonClassName}>
 			<Skeleton class="h-8 w-28 mb-2" />

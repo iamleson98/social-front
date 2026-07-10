@@ -26,7 +26,7 @@
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 
 	let media = $state<MediaObject[]>([]);
 	let generalFormOk = $state(true);
@@ -150,8 +150,8 @@
 	<Alert size="sm" bordered variant="error">{$CategoryQuery.error.message}</Alert>
 {:else if $CategoryQuery.data?.category}
 	{@const { metadata, privateMetadata, id } = $CategoryQuery.data.category}
-	<div class="flex flex-row gap-2 tablet:flex-col">
-		<div class="w-6/10 space-y-2 tablet:w-full">
+	<div class="flex flex-row gap-2 max-tablet:flex-col">
+		<div class="w-6/10 space-y-2 max-tablet:w-full">
 			<GeneralInformation
 				bind:name={categoryInput.name!}
 				bind:description={categoryInput.description}

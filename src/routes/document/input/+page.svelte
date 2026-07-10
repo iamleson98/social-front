@@ -4,7 +4,7 @@
 	import { Checkbox, Input, RadioButton } from '$lib/components/ui/Input';
 	import type { SocialSize } from '$lib/components/ui/common';
 	import type { SocialVariant } from '$lib/utils';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 
 	let label = $state(true);
 	let placeholder = $state(false);

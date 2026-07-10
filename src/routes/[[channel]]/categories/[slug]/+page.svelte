@@ -83,10 +83,10 @@
 
 {#if $CategoryQuery.fetching}
 	<div class="flex gap-2">
-		<div class="w-1/4 tablet:w-full space-y-2 sticky h-fit top-16">
+		<div class="w-1/4 max-tablet:w-full space-y-2 sticky h-fit top-16">
 			<Skeleton class="w-full h-66" />
 		</div>
-		<div class="w-3/4 tablet:w-full space-y-2 sticky h-fit top-16">
+		<div class="w-3/4 max-tablet:w-full space-y-2 sticky h-fit top-16">
 			<SkeletonContainer class="flex items-center gap-4 p-3! rounded-lg!">
 				<Skeleton class="w-1/3 h-5" />
 				<Skeleton class="w-1/3 h-5" />
@@ -99,7 +99,7 @@
 	{@const { category } = $CategoryQuery.data}
 	<div class="flex gap-2">
 		<!-- sidebar -->
-		<div class="w-1/4 tablet:w-full space-y-2 sticky h-fit top-16">
+		<div class="w-1/4 max-tablet:w-full space-y-2 sticky h-fit top-16">
 			<div class={SitenameCommonClassName}>
 				<div
 					class="h-66 mb-4 w-66 mx-auto rounded-sm bg-cover bg-center bg-no-repeat"
@@ -141,7 +141,7 @@
 			</AccordionList>
 		</div>
 
-		<div class="w-3/4 tablet:w-full space-y-2">
+		<div class="w-3/4 max-tablet:w-full space-y-2">
 			<!-- Filter Bar -->
 			{#if loading}
 				<SkeletonContainer class="flex items-center gap-4 p-3! rounded-lg!">

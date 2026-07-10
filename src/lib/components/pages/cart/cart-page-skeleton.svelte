@@ -21,11 +21,11 @@
 	</div>
 {/snippet}
 
-<div class="flex flex-row justify-between tablet:flex-wrap tablet:flex-col gap-2">
-	<div class="w-3/4 tablet:h-full">
+<div class="flex flex-row justify-between max-tablet:flex-wrap max-tablet:flex-col gap-2">
+	<div class="w-3/4 max-tablet:h-full">
 		{@render cartLineSkeleton()}
 		{@render cartLineSkeleton()}
 	</div>
 
-	<div class="w-1/4 tablet:w-full"></div>
+	<div class="w-1/4 max-tablet:w-full"></div>
 </div>

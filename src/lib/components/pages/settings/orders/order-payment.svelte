@@ -16,7 +16,7 @@
 	import OrderMarkAsPaidModal from './order-mark-as-paid-modal.svelte';
 	import OrderRefundModal from './order-refund-modal.svelte';
 	import { OrderUtilsInstance } from './utils.svelte';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 
 	type Props = {
 		order: Order;

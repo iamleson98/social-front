@@ -109,11 +109,11 @@
 		</ol>
 	</nav>
 
-	<div class="flex flex-row tablet:flex-col tablet:flex-wrap gap-2 w-full mb-2">
-		<div class="w-2/5 tablet:w-full">
+	<div class="flex flex-row max-tablet:flex-col max-tablet:flex-wrap gap-2 w-full mb-2">
+		<div class="w-2/5 max-tablet:w-full">
 			<ProductMediaSlideShow {medias} />
 		</div>
-		<div class="w-3/5 tablet:w-full">
+		<div class="w-3/5 max-tablet:w-full">
 			<ProductPricingPanel productInformation={product} />
 		</div>
 	</div>

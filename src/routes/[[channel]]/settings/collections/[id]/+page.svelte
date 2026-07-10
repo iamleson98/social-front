@@ -35,7 +35,7 @@
 	import type { MediaObject } from '$lib/utils/types';
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 
 	let collectionUpdateInput = $state<CollectionInput>({
 		name: '',
@@ -189,8 +189,8 @@
 	</Alert>
 {:else if $collectionDetailQuery.data?.collection}
 	{@const { metadata, privateMetadata, id } = $collectionDetailQuery.data.collection}
-	<div class="flex gap-2 flex-row tablet:flex-col">
-		<div class={['w-7/10 tablet:w-full space-y-2']}>
+	<div class="flex gap-2 flex-row max-tablet:flex-col">
+		<div class={['w-7/10 max-tablet:w-full space-y-2']}>
 			<GeneralInformationForm
 				bind:name={collectionUpdateInput.name!}
 				bind:description={collectionUpdateInput.description}

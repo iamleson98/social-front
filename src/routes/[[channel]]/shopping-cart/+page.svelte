@@ -13,7 +13,7 @@
 	import { HTTPStatusSuccess } from '$lib/utils/consts';
 	import { formatMoney } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 
 	afterNavigate(() => {
 		scrollTo({
@@ -95,16 +95,16 @@
 			.reduce((a, b) => a + b, 0)}
 		<CheckoutSteps numberOfItemToEnable={1} />
 
-		<div class="flex flex-row justify-between tablet:flex-wrap tablet:flex-col gap-2">
+		<div class="flex flex-row justify-between max-tablet:flex-wrap max-tablet:flex-col gap-2">
 			<!-- MARK: PREVIEW AREA -->
-			<div class="w-3/4 tablet:w-full">
+			<div class="w-3/4 max-tablet:w-full">
 				{#each lines as line, idx (idx)}
 					<CartItemLine {line} checkoutId={id} />
 				{/each}
 			</div>
 
 			<!-- MARK: SUMMARY -->
-			<div class="w-1/4 tablet:w-full">
+			<div class="w-1/4 max-tablet:w-full">
 				<div class="p-4 mb-2 bg-white rounded-lg border">
 					<p class="text-lg font-semibold tet-gray-800 mb-4">{$T('cart.cartSummary')}</p>
 

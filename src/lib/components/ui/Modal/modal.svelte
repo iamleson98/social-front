@@ -60,7 +60,7 @@
 				<!-- header -->
 				{#if !hideHeader}
 					<div
-						class="flex items-center justify-between px-4 py-3 tablet:p-5 border-b rounded-t dark:border-gray-600"
+						class="flex items-center justify-between px-4 py-3 max-tablet:p-5 border-b rounded-t dark:border-gray-600"
 					>
 						<h3 class="text-lg font-medium text-gray-900 dark:text-white">{header}</h3>
 						<div>
@@ -78,7 +78,7 @@
 				{/if}
 
 				<!-- modal body -->
-				<div class="p-4 tablet:p-5">
+				<div class="p-4 max-tablet:p-5">
 					{@render children()}
 				</div>
 

@@ -45,7 +45,7 @@
 					<img src="/logo.png" class="mr-3 h-8" alt="FlowBite Logo" />
 				</a>
 			</div>
-			<div class="grid grid-cols-4 gap-4 tablet:grid-cols-2">
+			<div class="grid grid-cols-4 gap-4 max-tablet:grid-cols-2">
 				<!-- resources -->
 				<div>
 					<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">

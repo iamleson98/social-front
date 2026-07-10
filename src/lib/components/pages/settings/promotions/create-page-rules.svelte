@@ -148,7 +148,7 @@
 		</Button>
 	</SectionHeader>
 
-	<div class="grid grid-cols-2 gap-2 tablet:grid-cols-1">
+	<div class="grid grid-cols-2 gap-2 max-tablet:grid-cols-1">
 		{#if $ChannelsQuery.fetching}
 			<div class="grid grid-cols-2 gap-2">
 				<TableSkeleton numOfRows={4} numColumns={1} />

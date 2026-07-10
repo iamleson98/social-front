@@ -26,7 +26,7 @@
 		type AddressFieldLabel,
 	} from '$lib/utils/address';
 	import { camelCase, uniqBy } from 'es-toolkit';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 
 	type Props = {
 		// countrySelectOptions?: SelectOption[];
