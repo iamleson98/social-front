@@ -141,11 +141,11 @@
 						name: `${attrValue.label}`,
 						sku: `${attrValue.label}-${randomString(RandomStringLength)}`,
 						trackInventory: true,
-						channelListings: {
-							[ChannelListingCurrentKey]: [],
-						},
-						weight: 0,
-						preorder: {},
+							channelListings: {
+								[ChannelListingCurrentKey]: [],
+							},
+							weight: { value: 0 },
+							preorder: {},
 						// NOTE: Later when we come to handle update, all variants with empty IDs like below will be bulk created.
 						id: '',
 						stocks: {
@@ -162,21 +162,28 @@
 			for (const value1 of variantManifests[0].values) {
 				for (const value2 of variantManifests[1].values) {
 					// Check if a variant that already has 2 selected attributes.
-					// And also has according 1 attribute value for each attribute.
-					const existingVariant = productVariantsInput.find((variantDetail) => {
-						if ((variantDetail.attributes?.length || 0) < 2) return false;
+						// And also has according 1 attribute value for each attribute.
+						const existingVariant = productVariantsInput.find((variantDetail) => {
+							if ((variantDetail.attributes?.length || 0) < 2) return false;
 
-						let value1Used = false,
-							value2Used = false;
+							let value1Used = false,
+								value2Used = false;
 
-						for (const attr of variantDetail.attributes || []) {
-							if ([attr.dropdown?.id, attr.swatch?.id].includes(value1.value as any))
-								value1Used = true;
-							else if ([attr.dropdown?.id, attr.swatch?.id].includes(value2.value as any))
-								value2Used = true;
-						}
+							for (const attr of variantDetail.attributes || []) {
+								if (attr.id === variantManifests[0].attribute.id) {
+									if (
+										[attr.dropdown?.id, attr.swatch?.id].includes(value1.value as any)
+									)
+										value1Used = true;
+								} else if (attr.id === variantManifests[1].attribute.id) {
+									if (
+										[attr.dropdown?.id, attr.swatch?.id].includes(value2.value as any)
+									)
+										value2Used = true;
+								}
+							}
 
-						return value1Used && value2Used;
+							return value1Used && value2Used;
 					});
 
 					if (existingVariant) {

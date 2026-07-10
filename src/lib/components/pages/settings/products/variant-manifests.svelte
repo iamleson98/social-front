@@ -165,9 +165,8 @@
 			return;
 		}
 
-		// 2) Trigger fetching attribute values again
-		if (manifestIdx === 0 && currentNumberOfManifests === MAX_VARIANT_TYPES)
-			manifestPerformFetchingAttributeValues[0] = true;
+		// 2) Reset fetch triggers for remaining manifests
+			manifestPerformFetchingAttributeValues = variantManifests.map(() => true);
 
 		onManifestDeleted();
 	};

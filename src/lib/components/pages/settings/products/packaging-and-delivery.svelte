@@ -4,6 +4,7 @@
 	import { Input, Label } from '$lib/components/ui/Input';
 	import type { ProductInput } from '$lib/gql/graphql';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
+	import { type Snippet } from 'svelte';
 
 	type Props = {
 		metadata: ProductInput['metadata'];
@@ -47,9 +48,10 @@
 			type="number"
 			placeholder={$T('product.length')}
 			label={$T('product.length')}
+			value={metadata?.[0]?.value}
 			onchange={(evt) => handleMetaChange(0, evt.currentTarget.value.trim())}
 			size="sm"
-			action={cm}
+			action={cm as Snippet<[]>}
 			min="0"
 			class="w-1/4 max-tablet:w-1/2 max-mobile-l:w-full"
 			disabled={loading}
@@ -58,9 +60,10 @@
 			type="number"
 			placeholder={$T('product.width')}
 			label={$T('product.width')}
+			value={metadata?.[1]?.value}
 			onchange={(evt) => handleMetaChange(1, evt.currentTarget.value.trim())}
 			size="sm"
-			action={cm}
+			action={cm as Snippet<[]>}
 			min="0"
 			class="w-1/4 max-tablet:w-1/2 max-mobile-l:w-full"
 			disabled={loading}
@@ -69,9 +72,10 @@
 			type="number"
 			placeholder={$T('product.height')}
 			label={$T('product.height')}
+			value={metadata?.[2]?.value}
 			onchange={(evt) => handleMetaChange(2, evt.currentTarget.value.trim())}
 			size="sm"
-			action={cm}
+			action={cm as Snippet<[]>}
 			min="0"
 			class="w-1/4 max-tablet:w-1/2 max-mobile-l:w-full"
 			disabled={loading}

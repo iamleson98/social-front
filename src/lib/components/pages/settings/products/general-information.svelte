@@ -214,11 +214,11 @@
 	});
 
 	$effect(() => {
-		if (!AttributeErrors.some(Boolean)) {
-			attributes = innerAttributes.map<AttributeValueInput>((attr) =>
-				omit(attr, ['inputType', 'valueRequired']),
-			);
-		}
+		// Always sync attributes to parent so the latest values are available on save.
+		// Validation errors are displayed independently via AttributeErrors.
+		attributes = innerAttributes.map<AttributeValueInput>((attr) =>
+			omit(attr, ['inputType', 'valueRequired']),
+		);
 	});
 </script>
 
@@ -479,13 +479,14 @@
 													value={edge.node.value}
 													checked={edge.node.value === innerAttributes[idx]?.swatch?.value}
 													onchange={(evt) => {
-														innerAttributes[idx] = {
-															...innerAttributes[idx],
-															swatch: {
-																value: evt.currentTarget.value,
-															},
-														};
-													}}
+															innerAttributes[idx] = {
+																...innerAttributes[idx],
+																swatch: {
+																	id: edge.node.id,
+																	value: evt.currentTarget.value,
+																},
+															};
+														}}
 												/>
 											</div>
 										</div>

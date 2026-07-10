@@ -8,6 +8,8 @@
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import {
 		calculateStockInputForChannels,
+		MAX_DAYS_FOR_PREORDER,
+		MIN_DAYS_FOR_PREORDER,
 		type ChannelSelectOptionProps,
 		type QuickFillingProps,
 	} from './utils';
@@ -29,8 +31,6 @@
 	}: Props = $props();
 
 	const DAYJS_NOW = dayjs();
-	const MIN_DAYS_FOR_PREORDER = 5;
-	const MAX_DAYS_FOR_PREORDER = 15;
 
 	/** check if quick filling form has any error */
 	const quickFillingError = $derived.by(() => {
