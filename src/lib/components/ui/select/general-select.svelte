@@ -71,15 +71,22 @@
 
 		if (multiple && Array.isArray(value)) {
 			const existingKeys = Object.keys(selectMapper);
-			const diffs1 = difference(value, existingKeys);
-			const diffs2 = difference(existingKeys, value);
+			const valueStrings = value.map(String);
+			const diffs1 = difference(valueStrings, existingKeys);
+			const diffs2 = difference(existingKeys, valueStrings);
 
 			if (diffs1.length || diffs2.length) {
 				const newMapper = { ...selectMapper };
 
 				for (const diff of diffs1) {
-					const opt = options.find((opt) => opt.value === diff);
-					newMapper[diff] = opt || { value: diff, label: diff };
+					const opt = options.find((opt) => String(opt.value) === diff);
+					if (opt) {
+						newMapper[diff] = opt;
+					} else {
+						// Try to parse back to number if it was originally a number
+						const originalValue = value.find((v) => String(v) === diff);
+						newMapper[diff] = { value: originalValue!, label: String(originalValue) };
+					}
 				}
 				for (const diff of diffs2) {
 					delete newMapper[diff];
@@ -91,9 +98,9 @@
 			return;
 		}
 
-		if (!multiple && !(value in selectMapper)) {
+		if (!multiple && !(String(value) in selectMapper)) {
 			const opt = options.find((opt) => opt.value === value);
-			selectMapper = { [value]: opt || ({ value, label: value } as SelectOption) };
+			selectMapper = { [String(value)]: opt || ({ value, label: String(value) } as SelectOption) };
 			selectMapperChanged = true;
 		}
 	});
@@ -112,8 +119,17 @@
 		const newMapper: typeof selectMapper = {};
 
 		for (const value of Object.keys(mapper)) {
-			const opt = options.find((opt) => opt.value === value);
-			newMapper[value] = opt || { value, label: value };
+			const opt = options.find((opt) => String(opt.value) === value);
+			if (opt) {
+				newMapper[value] = opt;
+			} else {
+				// Preserve the original value from the mapper
+				const originalOption = mapper[value];
+				newMapper[value] = originalOption || {
+					value: originalOption?.value || value,
+					label: value,
+				};
+			}
 		}
 
 		selectMapper = newMapper;
@@ -135,7 +151,7 @@
 	/** display text for input */
 	const InputDisplayText = $derived.by(() => {
 		if (multiple) return searchQuery;
-		return value !== undefined ? selectMapper[value as Primitive]?.label : undefined;
+		return value !== undefined ? selectMapper[String(value)]?.label : undefined;
 	});
 
 	/** list of options that match search query */
@@ -187,7 +203,7 @@
 	};
 
 	const handleSelect = async (option: SelectOption) => {
-		if (disabled || option.disabled || selectMapper[option.value]) return; // disabled options cant be selected
+		if (disabled || option.disabled || selectMapper[String(option.value)]) return; // disabled options cant be selected
 
 		if (multiple) {
 			if (value === undefined) {
@@ -272,10 +288,10 @@
 			{#if multiple && Array.isArray(value)}
 				{#each value.slice(0, maxDisplay || value.length) as option, idx (idx)}
 					<Badge
-						text={selectMapper[option]?.label}
+						text={selectMapper[String(option)]?.label}
 						variant="light"
 						size={SIZE_REDUCE_MAP[size]}
-						onDismiss={() => handleDeselectOption(selectMapper[option])}
+						onDismiss={() => handleDeselectOption(selectMapper[String(option)])}
 						{disabled}
 					/>
 				{/each}
@@ -349,7 +365,7 @@
 					idx,
 					optionClassName: classNames({
 						'cursor-not-allowed! text-gray-400!': !!option.disabled,
-						[SELECT_CLASSES.activeSelectOption]: !!selectMapper[option.value],
+						[SELECT_CLASSES.activeSelectOption]: !!selectMapper[String(option.value)],
 					}),
 					onclick: () => handleSelect(option),
 					...option,
