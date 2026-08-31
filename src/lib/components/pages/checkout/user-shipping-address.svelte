@@ -1,50 +1,44 @@
 <script lang="ts">
-	import { CHANNEL_DETAILS_QUERY } from '$lib/api/channels';
-	import { operationStore } from '$lib/api/operation';
-	import { Alert } from '$lib/components/ui/Alert';
-	import type { Checkout, CountryCode, Query, QueryChannelArgs } from '$lib/gql/graphql';
-	import AddressCreateForm from './address-create-form.svelte';
-	import AddressEditForm from './address-edit-form.svelte';
-	import AddressList from './address-list.svelte';
+        import { CHANNEL_DETAILS_QUERY } from '$lib/api/channels';
+        import { operationStore } from '$lib/api/operation';
+        import { Alert } from '$lib/components/ui/Alert';
+        import type { Checkout, Query, QueryChannelArgs } from '$lib/gql/graphql';
+        import AddressCreateForm from './address-create-form.svelte';
+        import AddressEditForm from './address-edit-form.svelte';
+        import AddressList from './address-list.svelte';
 
-	type Props = {
-		checkout: Checkout;
-	};
+        type Props = {
+                checkout: Checkout;
+        };
 
-	let { checkout }: Props = $props();
+        let { checkout }: Props = $props();
 
-	let displayAddressCreate = $state(false);
-	let editedAddressId = $state<string>();
-	let displayAddressEdit = $derived(!!editedAddressId);
-	let displayAddressList = $derived.by(() => !displayAddressCreate && !displayAddressEdit);
+        let displayAddressCreate = $state(false);
+        let editedAddressId = $state<string>();
+        let displayAddressEdit = $derived(!!editedAddressId);
+        let displayAddressList = $derived.by(() => !displayAddressCreate && !displayAddressEdit);
 
-	const channelStore = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
-		query: CHANNEL_DETAILS_QUERY,
-		variables: {
-			slug: checkout.channel.slug,
-		},
-	});
+        const channelStore = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
+                query: CHANNEL_DETAILS_QUERY,
+                variables: {
+                        slug: checkout.channel.slug,
+                },
+        });
 </script>
 
 {#if $channelStore.fetching}
-	<div>Loading..</div>
+        <div>Loading..</div>
 {:else if $channelStore.error}
-	<Alert variant="error" size="sm" bordered>{$channelStore.error.message}</Alert>
+        <Alert variant="error" size="sm" bordered>{$channelStore.error.message}</Alert>
 {:else}
-	{@const availableCountries =
-		$channelStore.data?.channel?.countries?.map(({ code }) => code as CountryCode) || []}
-	{#if displayAddressCreate}
-		<AddressCreateForm
-			{checkout}
-			{availableCountries}
-			onCancel={() => (displayAddressCreate = false)}
-		/>
-	{:else if displayAddressEdit}
-		<AddressEditForm />
-	{:else if displayAddressList}
-		<AddressList
-			onEditChange={(addrId) => (editedAddressId = addrId)}
-			onAddAddressClick={() => (displayAddressCreate = true)}
-		/>
-	{/if}
+        {#if displayAddressCreate}
+                <AddressCreateForm {checkout} onCancel={() => (displayAddressCreate = false)} />
+        {:else if displayAddressEdit}
+                <AddressEditForm />
+        {:else if displayAddressList}
+                <AddressList
+                        onEditChange={(addrId) => (editedAddressId = addrId)}
+                        onAddAddressClick={() => (displayAddressCreate = true)}
+                />
+        {/if}
 {/if}

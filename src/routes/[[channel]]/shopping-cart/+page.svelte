@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { afterNavigate, goto } from '$app/navigation';
 	import { T } from '$i18n';
+	import { CHECKOUT_ADD_PROMO_CODE_MUTATION } from '$lib/api/checkout';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { CheckoutSteps } from '$lib/components/common/checkout-steps';
 	import { ArrowNarrowRight, ChevronLeft, Icon } from '$lib/components/icons';
 	import { EmptyCart } from '$lib/components/icons/SvgOuterIcon';
@@ -8,12 +10,50 @@
 	import CartPageSkeleton from '$lib/components/pages/cart/cart-page-skeleton.svelte';
 	import { Button } from '$lib/components/ui';
 	import { Input } from '$lib/components/ui/Input';
+	import type { Checkout, Mutation, MutationCheckoutAddPromoCodeArgs } from '$lib/gql/graphql';
 	import { checkoutStore } from '$lib/stores/app';
 	import { AppRoute } from '$lib/utils';
 	import { HTTPStatusSuccess } from '$lib/utils/consts';
-	import { formatMoney } from '$lib/utils/utils';
+	import { checkIfGraphqlResultHasError, formatMoney } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
+
+	let promoCodeInput = $state('');
+	let applyingPromoCode = $state(false);
+
+	/** apply a voucher / gift card code to the current checkout */
+	const handleApplyPromoCode = async (): Promise<void> => {
+		const promoCode = promoCodeInput.trim();
+		if (!promoCode || applyingPromoCode || !$checkoutStore?.id) {
+			return;
+		}
+
+		applyingPromoCode = true;
+
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'checkoutAddPromoCode'>,
+			MutationCheckoutAddPromoCodeArgs
+		>(CHECKOUT_ADD_PROMO_CODE_MUTATION, { id: $checkoutStore.id, promoCode });
+
+		applyingPromoCode = false;
+
+		if (
+			checkIfGraphqlResultHasError(result, 'checkoutAddPromoCode') ||
+			result.data?.checkoutAddPromoCode?.errors?.length
+		) {
+			toast.error(
+				result.data?.checkoutAddPromoCode?.errors?.[0]?.message || $T('cart.codeInvalid'),
+			);
+			return;
+		}
+
+		const updatedCheckout = result.data?.checkoutAddPromoCode?.checkout as Checkout | null;
+		if (updatedCheckout) {
+			checkoutStore.set(updatedCheckout);
+		}
+		promoCodeInput = '';
+		toast.success($T('cart.codeApplied'));
+	};
 
 	afterNavigate(() => {
 		scrollTo({
@@ -106,7 +146,7 @@
 			<!-- MARK: SUMMARY -->
 			<div class="w-1/4 max-tablet:w-full">
 				<div class="p-4 mb-2 bg-white rounded-lg border">
-					<p class="text-lg font-semibold tet-gray-800 mb-4">{$T('cart.cartSummary')}</p>
+					<p class="text-lg font-semibold text-gray-800 mb-4">{$T('cart.cartSummary')}</p>
 
 					<div class="mb-4">
 						{@render MoneyField(
@@ -159,95 +199,20 @@
 						size="md"
 						class="w-full mb-2"
 						label={$T('cart.haveVoucherOrGiftcard')}
+						bind:value={promoCodeInput}
+						onkeydown={(evt) => evt.key === 'Enter' && handleApplyPromoCode()}
 					/>
-					<Button variant="filled" size="sm" fullWidth>{$T('cart.applyCode')}</Button>
+					<Button
+						variant="filled"
+						size="sm"
+						fullWidth
+						disabled={!promoCodeInput.trim() || applyingPromoCode}
+						onclick={handleApplyPromoCode}
+					>
+						{$T('cart.applyCode')}
+					</Button>
 				</div>
 			</div>
 		</div>
 	{/if}
-
-	<!-- recommend section -->
-	<!-- <div class="mt-6">
-		<h3 class="text-lg font-semibold tet-gray-800">People also bought</h3>
-		<div class="mt-6 grid grid-cols-3 gap-4 sm:mt-8">
-			<div class="space-y-6 overflow-hidden rounded-md-lg bg-white p-6">
-				<a href="/" class="overflow-hidden rounded-md">
-					<img
-						class="h-44 w-44 dark:hidden"
-						src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front.svg"
-						alt="imac image"
-						aria-hidden="true"
-					/>
-				</a>
-				<div>
-					<a href="#" class="text-lg font-semibold leading-tight tet-gray-800 hover:underline"
-						>iMac 27”</a
-					>
-					<p class="mt-2 text-base font-normal text-gray-500">
-						This generation has some improvements, including a longer continuous battery life.
-					</p>
-				</div>
-				<div>
-					<p class="text-lg font-bold tet-gray-800">
-						<span class="line-through"> $399,99 </span>
-					</p>
-					<p class="text-lg font-bold leading-tight text-red-600">$299</p>
-				</div>
-				<div class="mt-6 flex items-center gap-2.5">
-					<button
-						data-tooltip-target="favourites-tooltip-1"
-						type="button"
-						class="inline-flex items-center justify-center gap-2 rounded-md-lg border border-gray-200 bg-white p-2.5 text-sm font-medium tet-gray-800 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-hidden focus:ring-4 focus:ring-gray-100"
-					>
-						<svg
-							class="h-5 w-5"
-							aria-hidden="true"
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-						>
-							<path
-								stroke="currentColor"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M12 6C6.5 1 1 8 5.8 13l6.2 7 6.2-7C23 8 17.5 1 12 6Z"
-							></path>
-						</svg>
-					</button>
-					<div
-						id="favourites-tooltip-1"
-						role="tooltip"
-						class="tooltip invisible absolute z-10 inline-block rounded-md-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-xs transition-opacity duration-300"
-					>
-						Add to favourites
-						<div class="tooltip-arrow" data-popper-arrow></div>
-					</div>
-					<button
-						type="button"
-						class="inline-flex w-full items-center justify-center rounded-md-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-hidden focus:ring-4 focus:ring-primary-300"
-					>
-						<svg
-							class="-ms-2 me-2 h-5 w-5"
-							aria-hidden="true"
-							xmlns="http://www.w3.org/2000/svg"
-							width="24"
-							height="24"
-							fill="none"
-							viewBox="0 0 24 24"
-						>
-							<path
-								stroke="currentColor"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7h-1M8 7h-.688M13 5v4m-2-2h4"
-							/>
-						</svg>
-						Add to cart
-					</button>
-				</div>
-			</div>
-		</div>
-	</div> -->
 </div>

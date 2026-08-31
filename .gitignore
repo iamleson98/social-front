@@ -17,3 +17,8 @@ $houdini
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+# local env files
+.env.local
+.env*.local
+stats.html removed

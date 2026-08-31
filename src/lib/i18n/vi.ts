@@ -13,8 +13,10 @@ export default {
 		confirmPasswordPlaceholder: 'Vui lòng xác nhận mật khẩu',
 		agreeToTerms: 'Tôi đồng ý với các điều khoản và điều kiện',
 		alreadyHasAccount: 'Bạn đã có tài khoản?',
-		signupSuccess: 'Chào mừng bạn đến với Sitename. Vui lòng kiểm tra hòm thư để xác thực tài khoản.',
-		promtGeoAccessPerm: 'Chúng tôi cần nắm được khu vực bạn sinh sống để cung cấp trải nghiệm tốt hơn. Bạn vui lòng chấp nhận yêu cầu quyền truy cập vị trí. Cảm ơn bạn!',
+		signupSuccess:
+			'Chào mừng bạn đến với Sitename. Vui lòng kiểm tra hòm thư để xác thực tài khoản.',
+		promtGeoAccessPerm:
+			'Chúng tôi cần nắm được khu vực bạn sinh sống để cung cấp trải nghiệm tốt hơn. Bạn vui lòng chấp nhận yêu cầu quyền truy cập vị trí. Cảm ơn bạn!',
 	},
 	resetPassword: {
 		title: 'Yêu cầu đặt lại mật khẩu',
@@ -32,6 +34,7 @@ export default {
 		success: 'Đặt lại mật khẩu thành công',
 	},
 	common: {
+		saving: 'Đang lưu...',
 		home: 'Trang chủ',
 		emailPlaceholder: 'Vui lòng điền email',
 		passwordPlaceholder: 'Vui lòng điền mật khẩu',
@@ -128,7 +131,8 @@ export default {
 		variants: 'Phân loại sản phẩm',
 		user: 'Người dùng',
 		order: 'Đơn hàng',
-		fileExporting: 'Chúng tôi đang xuất file bạn yêu cầu. File sẽ được gửi đến địa chỉ email của bạn',
+		fileExporting:
+			'Chúng tôi đang xuất file bạn yêu cầu. File sẽ được gửi đến địa chỉ email của bạn',
 		search: 'Tìm kiếm',
 		slug: 'Đường dẫn rút gọn',
 		copy: 'Sao chép',
@@ -152,6 +156,10 @@ export default {
 		exclude: 'Không bao gồm',
 	},
 	product: {
+		onSale: 'Giảm giá',
+		quickView: 'Xem nhanh',
+		lowStock: 'Chỉ còn {{quantity}} sản phẩm',
+		outOfStock: 'Hết hàng',
 		chooseAddress: 'Vui lòng chọn địa chỉ',
 		delivery: 'Giao tới',
 		quantity: 'Số lượng',
@@ -185,7 +193,8 @@ export default {
 		noVote: 'Chưa có đánh giá',
 		noDescription: 'Chưa có mô tả',
 		prdPolicy: 'Chính sách bán hàng',
-		prdPolicyDetail: 'Sitename luôn lỗ lực để mang tới cho khách hàng sản phẩm với chất lượng tốt nhất. Sitename hoàn tiền 100% nếu sản phẩm không đạt chất lượng tiêu chuẩn.',
+		prdPolicyDetail:
+			'Sitename luôn lỗ lực để mang tới cho khách hàng sản phẩm với chất lượng tốt nhất. Sitename hoàn tiền 100% nếu sản phẩm không đạt chất lượng tiêu chuẩn.',
 		quickFilling: 'Nhập nhanh',
 		price: 'Giá bán',
 		costPrice: 'Giá nhập',
@@ -220,7 +229,8 @@ export default {
 		promptPublicationTime: 'Nếu chưa, vui lòng khai báo thời gian phát hành',
 		availForPurchase: 'Hàng có sẵn để bán',
 		promptAvailTime: 'Nếu chưa, vui lòng khai báo thời gian có hàng',
-		preorderHint: 'Hàng đặt trước là khi bạn phải lấy hàng từ một nhà cung cấp khác. Thời gian để giao hàng phải từ {{min}} tới {{max}} ngày làm việc.',
+		preorderHint:
+			'Hàng đặt trước là khi bạn phải lấy hàng từ một nhà cung cấp khác. Thời gian để giao hàng phải từ {{min}} tới {{max}} ngày làm việc.',
 		prdCreated: 'Sản phẩm đã được tạo mới thành công',
 		prdUpdated: 'Sản phẩm đã được cập nhật thành công',
 		cateName: 'Tên danh mục',
@@ -235,7 +245,8 @@ export default {
 		exportScopeIds: 'Đã chọn',
 		exportScopeFilter: 'Tìm kiếm hiện tại',
 		exportPrds: 'Xuất thông tin sản phẩm',
-		exportSuccessMsg: 'Chúng tôi đang xuất tệp {{ fileType }}. Tệp sẽ được gửi tới email của bạn khi đã sẵn sàng.',
+		exportSuccessMsg:
+			'Chúng tôi đang xuất tệp {{ fileType }}. Tệp sẽ được gửi tới email của bạn khi đã sẵn sàng.',
 		CATEGORY: 'Danh mục',
 		CHARGE_TAXES: 'Tính thuế',
 		COLLECTIONS: 'Bộ sưu tập',
@@ -261,6 +272,13 @@ export default {
 		noMediaHint: 'Sản phẩm của bạn không có ảnh. Vui lòng thêm ảnh trước.',
 	},
 	error: {
+		channelFetchFailed: 'Đã xảy ra lỗi khi tải dữ liệu kênh',
+		pageNotFound: 'Không tìm thấy trang',
+		pageNotFoundHint: 'Trang bạn đang tìm không tồn tại hoặc đã được di chuyển.',
+		serverError: 'Đã xảy ra lỗi',
+		serverErrorHint: 'Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau.',
+		backToHome: 'Về trang chủ',
+		contactSupport: 'Liên hệ hỗ trợ',
 		invalidSlug: 'Giá trị slug không hợp lệ',
 		invalidEmailAndPassword: 'Vui lòng cung cấp email và mật khẩu hợp lệ',
 		invalidEmail: 'Vui lòng cung cấp email hợp lệ',
@@ -314,6 +332,9 @@ export default {
 		blog: 'Blog',
 	},
 	cart: {
+		addedToCart: 'Đã thêm {{name}} vào giỏ hàng',
+		codeApplied: 'Áp dụng mã thành công',
+		codeInvalid: 'Mã không hợp lệ hoặc đã hết hạn',
 		proceedCheckout: 'Tiến hành thanh toán',
 		continueShopping: 'Tiếp tục mua sắm',
 		applyCode: 'Áp dụng mã giảm giá',
@@ -327,6 +348,11 @@ export default {
 		haveVoucherOrGiftcard: 'Bạn có voucher hoặc thẻ quà tặng không?',
 	},
 	checkout: {
+		paymentMethod: 'Phương thức thanh toán',
+		emailRequiredHint: 'Vui lòng nhập email trước khi thanh toán',
+		addressRequiredHint: 'Vui lòng chọn địa chỉ giao hàng trước',
+		deliveryMethodRequiredHint: 'Vui lòng chọn phương thức giao hàng trước',
+		processingOrder: 'Đang tạo đơn hàng...',
 		addrRulesUnavailable: 'Không có quy tắc kiểm tra địa chỉ',
 		account: 'Tài khoản',
 		enterEmail: 'Nhập email của bạn',
@@ -471,9 +497,12 @@ export default {
 		exportSelected: 'Thẻ đã chọn',
 		exportSearch: 'Tìm kiếm hiện tại',
 		durationType: 'Loại thời gian',
-		bulkIssueAlert: 'Sau khi tạo, Sitename sẽ tạo danh sách mã thẻ quà tặng mà bạn có thể tải xuống.',
-		issueFormAlert: 'Khách hàng được chọn sẽ nhận được mã thẻ quà tặng đã tạo. Người khác có thể đổi mã thẻ quà tặng. Thẻ quà tặng sẽ được gán cho tài khoản đã đổi mã.',
-		resendCodeAlert: 'Mã Thẻ Quà Tặng sẽ được gửi đến email bạn đã cung cấp khi thanh toán. Bạn có thể cung cấp một địa chỉ email khác nếu muốn: ',
+		bulkIssueAlert:
+			'Sau khi tạo, Sitename sẽ tạo danh sách mã thẻ quà tặng mà bạn có thể tải xuống.',
+		issueFormAlert:
+			'Khách hàng được chọn sẽ nhận được mã thẻ quà tặng đã tạo. Người khác có thể đổi mã thẻ quà tặng. Thẻ quà tặng sẽ được gán cho tài khoản đã đổi mã.',
+		resendCodeAlert:
+			'Mã Thẻ Quà Tặng sẽ được gửi đến email bạn đã cung cấp khi thanh toán. Bạn có thể cung cấp một địa chỉ email khác nếu muốn: ',
 		status: {
 			deactivated: 'Đã vô hiệu hóa',
 			used: 'Đã sử dụng',
@@ -539,7 +568,8 @@ export default {
 			expiryType: 'Loại hết hạn',
 			setExpirationDate: 'Cài đặt ngày hết hạn',
 			activeSubText: 'Tất cả các thẻ đã phát hành cần được kích hoạt trước khi sử dụng.',
-			noteSubText: 'Lý do phát hành thẻ. Ghi chú này sẽ không được hiển thị cho khách hàng. Ghi chú sẽ được lưu trong lịch sử thẻ.',
+			noteSubText:
+				'Lý do phát hành thẻ. Ghi chú này sẽ không được hiển thị cho khách hàng. Ghi chú sẽ được lưu trong lịch sử thẻ.',
 			channelSubText: 'Khách hàng sẽ nhận được mã thẻ qua email của kênh này',
 			customerSubtext: 'Khách hàng sẽ nhận được mã thẻ qua email này',
 		},
@@ -548,7 +578,8 @@ export default {
 			noEvents: 'Không có lịch sử cho thẻ này',
 			noteAdded: 'Đã thêm ghi chú vào thẻ',
 			giftcardResent: 'Thẻ quà tặng đã được gửi lại',
-			bulkIssueSuccess: 'Chúng tôi vừa phát hành xong số thẻ quà bạn yêu cầu. Bạn có thể chọn nút ok bên dưới để tải về danh sách thẻ quà đã tạo.',
+			bulkIssueSuccess:
+				'Chúng tôi vừa phát hành xong số thẻ quà bạn yêu cầu. Bạn có thể chọn nút ok bên dưới để tải về danh sách thẻ quà đã tạo.',
 		},
 		types: {
 			ACTIVATED: 'Thẻ quà tặng đã được kích hoạt',
@@ -630,6 +661,11 @@ export default {
 		successUnassignedPrds: 'Xóa các sản phẩm khỏi bộ sưu tập thành công',
 	},
 	category: {
+		title: 'Danh mục',
+		official: 'Chính hãng',
+		subCategories: 'Danh mục con',
+		selectSubCategory: 'Chọn danh mục con',
+		noProducts: 'Chưa có sản phẩm trong danh mục này',
 		new: 'Thêm danh mục',
 		noOfChildren: 'Số mục con',
 		addChild: 'Thêm mục con',
@@ -749,6 +785,17 @@ export default {
 		Area: 'Diện tích',
 	},
 	order: {
+		thankYou: 'Cảm ơn bạn đã đặt hàng!',
+		placedSuccessfully: 'Đơn hàng #{{number}} của bạn đã được đặt thành công',
+		placedSuccessfullyToast: 'Đặt hàng thành công',
+		confirmationHint:
+			'Chúng tôi đã nhận được đơn hàng và sẽ bắt đầu xử lý ngay. Bạn sẽ nhận được email xác nhận trong thời gian sớm nhất.',
+		orderNumber: 'Đơn hàng',
+		orderItems: 'Sản phẩm trong đơn',
+		fulfilled: 'Đã giao {{quantity}}',
+		fulfillments: 'Thông tin giao hàng',
+		trackingNumber: 'Mã vận đơn',
+		viewDetails: 'Xem chi tiết',
 		draftOders: 'Đơn nháp',
 		payStatus: 'Trạng thái thanh toán',
 		fulfillStatus: 'Trạn thái xử lý',
@@ -761,8 +808,10 @@ export default {
 		weightMethods: 'Phương thức theo cân nặng',
 		addPriceMethod: 'Tạo phương thức theo giá',
 		addWeightMethod: 'Tạo phương thức theo cân nặng',
-		assignChansHelpText: 'Thêm kênh vào khu vực giao hàng này, để chúng tôi biết đơn hàn nào sẽ được hỗ trợ.',
-		selectWarehouseHelpText: 'Chọn kho hàng thuộc khu vực giao vận này mà bạn sẽ gửi sản phẩm đi. Địa chỉ kho hàng cũng sẽ được sử dụng để tính thuế.',
+		assignChansHelpText:
+			'Thêm kênh vào khu vực giao hàng này, để chúng tôi biết đơn hàn nào sẽ được hỗ trợ.',
+		selectWarehouseHelpText:
+			'Chọn kho hàng thuộc khu vực giao vận này mà bạn sẽ gửi sản phẩm đi. Địa chỉ kho hàng cũng sẽ được sử dụng để tính thuế.',
 		maxDeliveryLessThanMinDelivery: 'Số ngày giao hàng tối đa <= số ngày giao tối thiểu',
 		maxDeliveryDays: 'Số ngày giao hàng tối đa',
 		minDeliveryDays: 'Số ngày giao hàng tối thiểu',
@@ -774,15 +823,42 @@ export default {
 		postalCodeInclusionType: 'Loại bao gồm',
 		postalCodeRules: 'Quy tắc mã giao vận',
 		addRange: 'Thêm phạm vi',
-		includeHelpText: 'Sử dụng phương thức giao vận này sẽ không bao gồm nhưng mã giao vận được thêm mới. Nếu không có mã nào được thêm, tất cả mã giao vận có thể được sử dụng cho tỷ giá giao hàng đó.',
+		includeHelpText:
+			'Sử dụng phương thức giao vận này sẽ không bao gồm nhưng mã giao vận được thêm mới. Nếu không có mã nào được thêm, tất cả mã giao vận có thể được sử dụng cho tỷ giá giao hàng đó.',
 		excludeHelpText: 'Chỉ những mã giao vận thêm vào mới có thể sử dụng tỷ giá giao này',
 	},
 	attribute: {
 		assignAttr: 'Gán thuộc tính',
-		attrCanNotBeVariantSelection: 'Thuộc tính "{{inputType}}" không thể được dùng cho lựa chọn phân loại',
+		attrCanNotBeVariantSelection:
+			'Thuộc tính "{{inputType}}" không thể được dùng cho lựa chọn phân loại',
 		unassignAttrs: 'Bỏ gán thuộc tính',
 		variantAttrs: 'Thuộc tính phân loại',
 		prdAttributes: 'Thuộc tính sản phẩm',
 		isVariantSelection: 'Là lựa chọn phân loại',
+	},
+
+	wishlist: {
+		title: 'Danh sách yêu thích',
+		empty: 'Danh sách yêu thích đang trống',
+		emptyHint: 'Nhấn vào trái tim trên sản phẩm để lưu lại xem sau.',
+		itemCount: 'Đã lưu {{count}} sản phẩm',
+		added: 'Đã thêm vào yêu thích',
+		removed: 'Đã xóa khỏi yêu thích',
+		toggleAria: 'Danh sách yêu thích',
+		unavailableItems: '{{count}} sản phẩm đã lưu hiện không có sẵn',
+		removeUnavailable: 'Xóa các sản phẩm không có sẵn',
+	},
+	trending: {
+		description: 'Những sản phẩm mới nhất vừa có mặt tại cửa hàng',
+	},
+
+	home: {
+		featured: 'Nổi bật',
+		selectedBy: 'lựa chọn bởi',
+		promotionsFailedToLoad: 'Không thể tải khuyến mãi. Vui lòng thử lại sau.',
+		promotionEnded: 'Đã kết thúc',
+		noPromotions: 'Không có khuyến mãi',
+		viewAll: 'Xem tất cả',
+		viewAllPromotions: 'Xem tất cả khuyến mãi',
 	},
 };

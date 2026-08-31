@@ -1,7 +1,12 @@
 import { goto } from '$app/navigation';
 import { page } from '$app/state';
-import type { FilterConditions, FilterItemValue, FilterOperator } from '$lib/components/common/filter-box';
+import type {
+	FilterConditions,
+	FilterItemValue,
+	FilterOperator,
+} from '$lib/components/common/filter-box';
 import type { BadgeProps } from '$lib/components/ui/Badge/types';
+import type { CountryCode } from '$lib/gql/graphql';
 import {
 	type Address,
 	type AddressInput,
@@ -11,7 +16,6 @@ import {
 	type SelectedAttribute,
 	type User,
 	AttributeInputTypeEnum,
-	CountryCode,
 	FulfillmentStatus,
 	OrderDirection,
 	PermissionEnum,
@@ -33,13 +37,13 @@ import xss from 'xss';
 export const editorJsParser = editorJsToHtml();
 
 let _counter = 0;
-export const randomID = () => (++_counter).toString(36);
+export const randomID = (): string => (++_counter).toString(36);
 
 /**
  * @param length default to 10
  * @returns
  */
-export function randomString(length: number = 10) {
+export function randomString(length: number = 10): string {
 	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 	let result = '';
 	for (let i = 0; i < length; i++) {
@@ -56,7 +60,9 @@ export function randomString(length: number = 10) {
 export const parseEditorJsString = (description: string | object): string[] => {
 	const result: string[] = [];
 
-	if (!description) return result;
+	if (!description) {
+		return result;
+	}
 
 	try {
 		const jsonData = typeof description === 'string' ? JSON.parse(description) : description;
@@ -64,8 +70,8 @@ export const parseEditorJsString = (description: string | object): string[] => {
 		for (const block of contentBlocks) {
 			result.push(xss(block));
 		}
-	} catch (err) {
-		console.error(`Failed parsing product description: ${err}`);
+	} catch {
+		// malformed editor.js content is non-fatal: render the product without parsed blocks
 	}
 
 	return result;
@@ -74,12 +80,12 @@ export const parseEditorJsString = (description: string | object): string[] => {
 /**
  * this type represents the graphql query params that are used for pagination.
  */
-export type PaginationOptions = {
+export interface PaginationOptions {
 	before?: string | null;
 	after?: string | null;
 	first?: number | null;
 	last?: number | null;
-};
+}
 
 /**
  * A helper method that takes any type that have `before`, `after`, `first`, `last` fields and construct a pagination object.
@@ -104,7 +110,7 @@ export function constructPaginationParams<T extends PaginationOptions>({
 	return pagination;
 }
 
-export const formatMoney = (currency: string, startAmount: number, endAmount?: number) => {
+export const formatMoney = (currency: string, startAmount: number, endAmount?: number): string => {
 	const formatter = new Intl.NumberFormat('en-US', {
 		style: 'currency',
 		currency,
@@ -115,31 +121,28 @@ export const formatMoney = (currency: string, startAmount: number, endAmount?: n
 	return formatter.format(startAmount);
 };
 
-export const formatSelectedAttributeValue = (attribute: SelectedAttribute) => {
+export const formatSelectedAttributeValue = (attribute: SelectedAttribute): string => {
 	if (!attribute.attribute.inputType || !attribute.values?.length) {
 		return '';
 	}
 
 	switch (attribute.attribute.inputType) {
 		case AttributeInputTypeEnum.Dropdown:
-			return attribute.values[0].name;
+			return attribute.values[0].name ?? '';
 		case AttributeInputTypeEnum.Boolean:
 			return attribute.values[0].boolean ? 'yes' : 'no';
 		case AttributeInputTypeEnum.PlainText:
-			return attribute.values[0].name;
+			return attribute.values[0].name ?? '';
 		case AttributeInputTypeEnum.Multiselect:
 			return attribute.values.join(', ');
 
 		default:
-			return attribute.values[0].value;
+			return attribute.values[0].value ?? '';
 	}
 };
 
-export const getPrefersReducedMotion = () => {
-	return (
-		typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-	);
-};
+export const getPrefersReducedMotion = (): boolean =>
+	typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /**
  * If given `result` has an error, it will show a toast message with the error message.
@@ -162,8 +165,9 @@ export const checkIfGraphqlResultHasError = <T, K extends AnyVariables>(
 		const key = apiErrorKey || Object.keys(result.data)[0];
 
 		const errors = (result.data as Record<string, Record<string, unknown>>)?.[key]?.errors;
-		if (!errors && apiErrorKey)
+		if (!errors && apiErrorKey) {
 			throw new Error('No errors field. You MUST check your GraphQL query.');
+		}
 
 		if (errors && Array.isArray(errors) && errors.length > 0) {
 			toast.error(errors[0].message);
@@ -171,20 +175,26 @@ export const checkIfGraphqlResultHasError = <T, K extends AnyVariables>(
 		}
 	}
 
-	if (successMessage) toast.success(successMessage);
+	if (successMessage) {
+		toast.success(successMessage);
+	}
 	return false;
 };
 
-export type PredicateFunc<T> = (obj: T) => boolean;
+export type PredicateFunc<T> = (_obj: T) => boolean;
 
 export const recursiveSearch = <T extends { children?: T[] }>(
 	arr: T[],
 	predicate: PredicateFunc<T>,
 ): T | null => {
-	if (arr.length === 0) return null;
+	if (arr.length === 0) {
+		return null;
+	}
 
 	for (const obj of arr) {
-		if (predicate(obj)) return obj;
+		if (predicate(obj)) {
+			return obj;
+		}
 
 		if (obj.children) {
 			const res = recursiveSearch(obj.children, predicate);
@@ -218,7 +228,7 @@ export const BOOL_REGEX = /(true|false)/;
 /**
  * regex for range like: `<gte,null>`, `<null,lte>` or `<gte,lte>`.
  */
-// eslint-disable-next-line no-useless-escape
+
 export const FILTER_COMPARE_RANGE_REGEX = /^<([\w\d.\-:+]+),([\w\d.\-:+]+)>$/;
 /**
  * regex for `key-value` pair matching: `{key,value}`
@@ -228,29 +238,34 @@ export const FILTER_KEY_VALUE_PAIR_REGEX = /^\{([\w\d\.-]+)\,([\w\d\.-]+)\}$/;
 /**
  * regex for include matching: `[1,2,3]`, `[one,two,3,efrstr=]`
  */
-// eslint-disable-next-line no-useless-escape
+
 export const FILTER_ONE_OF_RANGE_REGEX = /^\[(["'\w\d=,\s.]+)]$/;
 
-export const parseBoolean = (expr: string) => {
-	return expr.toLowerCase() === 'true';
-};
+export const parseBoolean = (expr: string): boolean => expr.toLowerCase() === 'true';
 
-export type SearchParamsType<T> = Record<keyof T, {
-	operator: FilterOperator;
-	value: FilterItemValue;
-}>;
+export type SearchParamsType<T> = Record<
+	keyof T,
+	{
+		operator: FilterOperator;
+		value: FilterItemValue;
+	}
+>;
 
 /**
  * parse search query params, and auto performs type casting when the query param value is boolean or number
  */
-export const parseUrlSearchParams = <T>(url: URL) => {
+export const parseUrlSearchParams = <T>(url: URL): SearchParamsType<T> => {
 	const result = {} as SearchParamsType<T>;
 
 	for (const key of url.searchParams.keys()) {
-		if (!key) continue;
+		if (!key) {
+			continue;
+		}
 
 		const value = url.searchParams.get(key)?.trim();
-		if (value == null) continue;
+		if (value === null || value === undefined) {
+			continue;
+		}
 
 		if (NUMBER_REGEX.test(value)) {
 			result[key as keyof T] = {
@@ -268,29 +283,34 @@ export const parseUrlSearchParams = <T>(url: URL) => {
 
 		const rangeMatches = FILTER_COMPARE_RANGE_REGEX.exec(value);
 		if (rangeMatches) {
-			let gte = rangeMatches[1].trim();
-			let lte = rangeMatches[2].trim();
-			if (NUMBER_REGEX.test(gte)) gte = Number(gte) as any;
-			if (NUMBER_REGEX.test(lte)) lte = Number(lte) as any;
+			const gteRaw = rangeMatches[1].trim();
+			const lteRaw = rangeMatches[2].trim();
+			const bothNumeric = NUMBER_REGEX.test(gteRaw) && NUMBER_REGEX.test(lteRaw);
+			const gteValue: string | number = bothNumeric ? Number(gteRaw) : gteRaw;
+			const lteValue: string | number = bothNumeric ? Number(lteRaw) : lteRaw;
+			const rangeValue: string[] | number[] = bothNumeric
+				? [Number(gteRaw), Number(lteRaw)]
+				: [gteRaw, lteRaw];
 
-			if (lte && lte !== 'null' && gte && gte !== 'null')
+			if (lteRaw && lteRaw !== 'null' && gteRaw && gteRaw !== 'null') {
 				result[key as keyof T] = {
 					operator: 'range',
-					value: [gte, lte],
+					value: rangeValue,
 				};
-			else if (lte && lte !== 'null')
+			} else if (lteRaw && lteRaw !== 'null') {
 				result[key as keyof T] = {
 					operator: 'lte',
-					value: lte,
+					value: lteValue,
 				};
-			else if (gte && gte !== 'null')
+			} else if (gteRaw && gteRaw !== 'null') {
 				result[key as keyof T] = {
 					operator: 'gte',
-					value: gte,
+					value: gteValue,
 				};
+			}
 
 			continue;
-		};
+		}
 
 		const pairMatches = FILTER_KEY_VALUE_PAIR_REGEX.exec(value);
 		if (pairMatches) {
@@ -311,23 +331,27 @@ export const parseUrlSearchParams = <T>(url: URL) => {
 					operator: 'oneOf',
 					value: JSON.parse(value),
 				};
-			} catch { }
+			} catch {
+				// value is not a valid JSON array: keep the raw string handling below
+			}
 			continue;
 		}
 
 		result[key as keyof T] = {
 			operator: 'eq',
-			value: value
+			value,
 		};
 	}
 
 	return result;
-}
+};
 
 /** This function converts filter conditions to URL search params. The reversed process of `parseUrlSearchParams`
  * NOTE: only used in client side since it calls `goto` function
  */
-export const constructUrlSearchParamsAndNavigate = async <T>(activeFilters: FilterConditions<T>) => {
+export const constructUrlSearchParamsAndNavigate = async <T>(
+	activeFilters: FilterConditions<T>,
+): Promise<void> => {
 	const keys = Object.keys(activeFilters);
 
 	const whiteListKeys = [
@@ -338,17 +362,22 @@ export const constructUrlSearchParamsAndNavigate = async <T>(activeFilters: Filt
 		SearchParamKey.LAST,
 		SearchParamKey.ORDER_BY_FIELD,
 		SearchParamKey.ORDER_DIRECTION,
+		SearchParamKey.SEARCH_QUERY,
 	];
 
 	const currentSearchParamKeys = [...page.url.searchParams.keys()];
 	// delete not used filter fields
 	for (const key of currentSearchParamKeys) {
-		if (!whiteListKeys.includes(key)) page.url.searchParams.delete(key);
+		if (!whiteListKeys.includes(key)) {
+			page.url.searchParams.delete(key);
+		}
 	}
 
 	for (const key of keys) {
 		const filterOpt = activeFilters[key as keyof T];
-		if (!filterOpt) continue;
+		if (!filterOpt) {
+			continue;
+		}
 
 		if (filterOpt.operator === 'lte') {
 			page.url.searchParams.set(key, `<null,${filterOpt.value}>`);
@@ -378,15 +407,17 @@ export const constructUrlSearchParamsAndNavigate = async <T>(activeFilters: Filt
 type ClassArgs = Record<string, boolean> | string;
 
 /** works like clsx for class names.
- * 
+ *
  * NOTE: Highly recommend you to refer to https://svelte.dev/docs/svelte/class first before using this.
  */
 export const classNames = (...classes: ClassArgs[]): string => {
 	let result = '';
 
-	for (let cls of classes) {
+	for (const cls of classes) {
 		if (typeof cls === 'string') {
-			if (cls) result += `${cls} `;
+			if (cls) {
+				result += `${cls} `;
+			}
 			continue;
 		}
 		for (const key in cls) {
@@ -406,7 +437,7 @@ export const SitenameCommonClassName = 'bg-white border border-gray-200 p-3 roun
  * Builds the link for the home page.
  * With respect to current channel
  */
-export const buildHomePageLink = (event?: ServerLoadEvent) => {
+export const buildHomePageLink = (event?: ServerLoadEvent): string => {
 	let channelSlug = event ? event.cookies.get(CHANNEL_KEY) : getCookieByKey(CHANNEL_KEY);
 
 	if (!channelSlug) {
@@ -416,17 +447,20 @@ export const buildHomePageLink = (event?: ServerLoadEvent) => {
 	return `/${channelSlug}`;
 };
 
-export const buildLinkWithRespectToChannel = (uri: string, event?: ServerLoadEvent) => {
-	return `${buildHomePageLink(event)}/${uri}`;
-};
+export const buildLinkWithRespectToChannel = (uri: string, event?: ServerLoadEvent): string =>
+	`${buildHomePageLink(event)}/${uri}`;
 
 /** Checks if given user has all given permission codes */
-export const checkUserHasPermissions = (user: User, ...perms: PermissionEnum[]) => {
-	if (!perms.length) return true;
+export const checkUserHasPermissions = (user: User, ...perms: PermissionEnum[]): boolean => {
+	if (!perms.length) {
+		return true;
+	}
 
 	let count = 0;
 	for (const perm of user.userPermissions || []) {
-		if (perms.includes(perm.code)) count++;
+		if (perms.includes(perm.code)) {
+			count++;
+		}
 	}
 
 	return count === perms.length;
@@ -435,14 +469,13 @@ export const checkUserHasPermissions = (user: User, ...perms: PermissionEnum[]) 
 /**
  * Checks if given user has 3 perms: manage settings, manage staff, manage users.
  */
-export const userIsShopAdmin = (user: User) => {
-	return checkUserHasPermissions(
+export const userIsShopAdmin = (user: User): boolean =>
+	checkUserHasPermissions(
 		user,
 		PermissionEnum.ManageSettings,
 		PermissionEnum.ManageStaff,
 		PermissionEnum.ManageUsers,
 	);
-};
 
 export function formatCurrency(value: number): string {
 	return value.toLocaleString('en-US', {
@@ -451,9 +484,13 @@ export function formatCurrency(value: number): string {
 	});
 }
 
-export const inferRowsPerPage = (paging: PaginationOptions) => {
-	if (paging.first) return paging.first;
-	if (paging.last) return paging.last;
+export const inferRowsPerPage = (paging: PaginationOptions): number | undefined => {
+	if (paging.first) {
+		return paging.first;
+	}
+	if (paging.last) {
+		return paging.last;
+	}
 	return undefined;
 };
 
@@ -571,17 +608,23 @@ new Date() satisfies TimeObject;
  * @param day1 Date | dayjs
  * @param day2 - Date | dayjs
  */
-export const compareTime = (day1: TimeObject, day2: TimeObject) => {
+export const compareTime = (day1: TimeObject, day2: TimeObject): number => {
 	const time1 = day1.valueOf();
 	const time2 = day2.valueOf();
-	if (time1 > time2) return 1;
-	if (time1 === time2) return 0;
+	if (time1 > time2) {
+		return 1;
+	}
+	if (time1 === time2) {
+		return 0;
+	}
 	return -1;
 };
 
 /** from raw byte numbers to human readable values */
 export function formatBytes(bytes: number): string {
-	if (bytes === 0) return '0 Bytes';
+	if (bytes === 0) {
+		return '0 Bytes';
+	}
 	const sizes: string[] = ['Bytes', 'KB', 'MB', 'GB'];
 	const i: number = Math.floor(Math.log(bytes) / Math.log(1024));
 	const formattedSize: string = (bytes / Math.pow(1024, i)).toFixed(2);
@@ -589,44 +632,50 @@ export function formatBytes(bytes: number): string {
 }
 
 /**
-	If the given `str` is longer than given len, cut the first len chars, append ... to the end
+        If the given `str` is longer than given len, cut the first len chars, append ... to the end
  */
-export const stringSlicer = (str?: string, len: number = 100) => {
-	if (len === 0 || !str) return '-';
-	if (str.length < len) return str;
+export const stringSlicer = (str?: string, len: number = 100): string => {
+	if (len === 0 || !str) {
+		return '-';
+	}
+	if (str.length < len) {
+		return str;
+	}
 
 	return str.slice(0, len) + '...';
 };
 
 export function subtractMoney(init: Money, ...args: Money[]): Money {
 	return {
-	amount: args.reduce((acc, curr) => acc - curr.amount, init.amount),
-	currency: init.currency,
-	fractionDigits: 0,
-	fractionalAmount: 0
-};
+		amount: args.reduce((acc, curr) => acc - curr.amount, init.amount),
+		currency: init.currency,
+		fractionDigits: 0,
+		fractionalAmount: 0,
+	};
 }
 
-export const convertAddressToAddressInput = (addr: Address): AddressInput => {
-	return {
-		city: addr.city,
-		cityArea: addr.cityArea,
-		companyName: addr.companyName,
-		country: addr.country.code.toUpperCase() as CountryCode,
-		countryArea: addr.countryArea,
-		firstName: addr.firstName,
-		lastName: addr.lastName,
-		metadata: addr.metadata.map((item) => pick(item, ['key', 'value'])),
-		phone: addr.phone,
-		postalCode: addr.postalCode,
-		streetAddress1: addr.streetAddress1,
-		streetAddress2: addr.streetAddress2,
-		skipValidation: false,
-	};
-};
+export const convertAddressToAddressInput = (addr: Address): AddressInput => ({
+	city: addr.city,
+	cityArea: addr.cityArea,
+	companyName: addr.companyName,
+	country: addr.country.code.toUpperCase() as CountryCode,
+	countryArea: addr.countryArea,
+	firstName: addr.firstName,
+	lastName: addr.lastName,
+	metadata: addr.metadata.map((item) => pick(item, ['key', 'value'])),
+	phone: addr.phone,
+	postalCode: addr.postalCode,
+	streetAddress1: addr.streetAddress1,
+	streetAddress2: addr.streetAddress2,
+	skipValidation: false,
+});
 
-export const addNoDup = <T extends string | number>(array: T[], ...items: T[]) => {
-	for (const item of items) if (!array.includes(item)) array.push(item);
+export const addNoDup = <T extends string | number>(array: T[], ...items: T[]): T[] => {
+	for (const item of items) {
+		if (!array.includes(item)) {
+			array.push(item);
+		}
+	}
 
 	return array;
 };
@@ -635,8 +684,10 @@ export const toggleItemNoDup = <T extends string | number>(
 	array: T[],
 	item: T,
 	add: boolean = true,
-) => {
-	if (add) return array.includes(item) ? array : array.concat(item);
+): T[] => {
+	if (add) {
+		return array.includes(item) ? array : array.concat(item);
+	}
 
 	return array.filter((it) => it !== item);
 };

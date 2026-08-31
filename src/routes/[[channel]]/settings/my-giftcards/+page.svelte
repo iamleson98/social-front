@@ -16,7 +16,7 @@
 	const Columns: TableColumnProps<GiftCard>[] = $derived([
 		{
 			title: $T('common.code'),
-			child: { render: ({ item }) => item.code },
+			child: { render: ({ item }) => item.displayCode },
 		},
 		{
 			title: $T('giftcard.expiryDate'),

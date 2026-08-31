@@ -33,3 +33,110 @@ export const USER_ORDERS_QUERY = gql`
 		}
 	}
 `;
+
+/** Order detail for the logged-in customer (owner access). Used by orders/[id] page */
+export const CUSTOMER_ORDER_QUERY = gql`
+	query CustomerOrder($id: ID!) {
+		order(id: $id) {
+			id
+			number
+			created
+			status
+			statusDisplay
+			paymentStatus
+			chargeStatus
+			isPaid
+			isShippingRequired
+			customerNote
+			total {
+				gross {
+					amount
+					currency
+				}
+				tax {
+					amount
+					currency
+				}
+			}
+			subtotal {
+				gross {
+					amount
+					currency
+				}
+			}
+			shippingPrice {
+				gross {
+					amount
+					currency
+				}
+			}
+			discounts {
+				name
+				amount {
+					amount
+					currency
+				}
+			}
+			voucherCode
+			giftCards {
+				displayCode
+				currentBalance {
+					amount
+					currency
+				}
+			}
+			shippingAddress {
+				firstName
+				lastName
+				companyName
+				streetAddress1
+				streetAddress2
+				city
+				cityArea
+				countryArea
+				postalCode
+				phone
+				country {
+					country
+					code
+				}
+			}
+			lines {
+				id
+				productName
+				variantName
+				productSku
+				quantity
+				quantityFulfilled
+				unitPrice {
+					gross {
+						amount
+						currency
+					}
+				}
+				totalPrice {
+					gross {
+						amount
+						currency
+					}
+				}
+				thumbnail(size: 128, format: WEBP) {
+					url
+					alt
+				}
+				variant {
+					id
+					product {
+						slug
+					}
+				}
+			}
+			fulfillments {
+				id
+				status
+				trackingNumber
+				created
+			}
+		}
+	}
+`;

@@ -1,26 +1,66 @@
 <script lang="ts">
+	import { T } from '$i18n';
+	import { CHECKOUT_EMAIL_UPDATE_MUTATION } from '$lib/api/checkout';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Email } from '$lib/components/icons';
 	import Signin from '$lib/components/pages/auth/signin.svelte';
 	import { Input } from '$lib/components/ui/Input';
-	import type { Checkout } from '$lib/gql/graphql';
+	import type { Checkout, Mutation, MutationCheckoutEmailUpdateArgs } from '$lib/gql/graphql';
 	import { UserStoreManager } from '$lib/stores/auth/user';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import DeliveryMethodForm from './delivery-method-form.svelte';
 	import GuestShippingAddress from './guest-shipping-address.svelte';
 	import PaymentForm from './payment-form.svelte';
 	import UserShippingAddress from './user-shipping-address.svelte';
-	import { T } from '$lib/i18n';
 
-	type Props = {
+	interface Props {
 		checkout: Checkout;
-	};
+	}
 
-	let { checkout }: Props = $props();
+	const { checkout }: Props = $props();
 
 	let showLoginForm = $state(false);
+	let guestEmail = $state('');
+	let emailSaving = $state(false);
+	let emailError = $state<string | undefined>();
 
-	const toggleLogin = () => {
+	const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+	const toggleLogin = (): void => {
 		showLoginForm = !showLoginForm;
+	};
+
+	/** persist the guest email on the checkout so `checkoutComplete` can create the order */
+	const handleGuestEmailChange = async (): Promise<void> => {
+		const email = guestEmail.trim();
+		emailError = undefined;
+
+		if (!email) {
+			return;
+		}
+		if (!EMAIL_REGEX.test(email)) {
+			emailError = $T('error.invalidEmail');
+			return;
+		}
+		if (email === checkout.email) {
+			return;
+		}
+
+		emailSaving = true;
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'checkoutEmailUpdate'>,
+			MutationCheckoutEmailUpdateArgs
+		>(CHECKOUT_EMAIL_UPDATE_MUTATION, { id: checkout.id, email });
+
+		emailSaving = false;
+
+		if (checkIfGraphqlResultHasError(result, 'checkoutEmailUpdate')) {
+			emailError =
+				(result.data?.checkoutEmailUpdate?.errors?.[0]?.message || result.error?.message) ??
+				'Invalid email';
+			return;
+		}
 	};
 </script>
 
@@ -36,7 +76,19 @@
 					<Signin onSuccess={toggleLogin} hideSocial />
 				{:else}
 					<div>
-						<Input placeholder={$T('checkout.enterEmail')} startIcon={Email} />
+						<Input
+							placeholder={$T('checkout.enterEmail')}
+							startIcon={Email}
+							type="email"
+							bind:value={guestEmail}
+							variant={emailError ? 'error' : 'info'}
+							subText={emailError}
+							onblur={handleGuestEmailChange}
+							onkeydown={(evt) => evt.key === 'Enter' && handleGuestEmailChange()}
+						/>
+						{#if emailSaving}
+							<div class="text-xs text-gray-400 mt-1">{$T('common.saving')}</div>
+						{/if}
 					</div>
 					<div class="text-right text-xs">
 						{$T('checkout.alreadyHasAccount')}
@@ -67,5 +119,5 @@
 		<DeliveryMethodForm {checkout} />
 	{/if}
 
-	<PaymentForm {checkout} />
+	<PaymentForm {checkout} guestEmail={guestEmail.trim()} />
 </div>

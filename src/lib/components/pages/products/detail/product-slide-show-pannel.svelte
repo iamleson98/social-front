@@ -4,11 +4,11 @@
 	import { type ProductMedia } from '$lib/gql/graphql';
 	import { defaultSlideShowState } from '$lib/stores/ui/slideshow';
 
-	type Props = {
+	interface Props {
 		medias: ProductMedia[];
-	};
+	}
 
-	let { medias }: Props = $props();
+	const { medias }: Props = $props();
 
 	let slideShowImages = $state.raw(defaultSlideShowState);
 
@@ -24,19 +24,23 @@
 		}
 	});
 
-	const handleNavigate = (dir: 1 | -1) => {
+	const handleNavigate = (dir: 1 | -1): void => {
 		const newImages = { ...slideShowImages };
 
 		const nextIndex = newImages.activeIndex + dir;
 
 		if (nextIndex < 0) {
-			if (newImages.slicing[0] === 0) return;
+			if (newImages.slicing[0] === 0) {
+				return;
+			}
 			newImages.slicing = newImages.slicing.map((i) => i - 1);
 			slideShowImages = newImages;
 			return;
 		}
 		if (nextIndex === newImages.slicing[1] - newImages.slicing[0]) {
-			if (newImages.slicing[1] === newImages.medias.length) return;
+			if (newImages.slicing[1] === newImages.medias.length) {
+				return;
+			}
 			newImages.slicing = newImages.slicing.map((i) => i + 1);
 			slideShowImages = newImages;
 			return;
@@ -46,18 +50,22 @@
 		slideShowImages = newImages;
 	};
 
-	const handleKeydown = (e: KeyboardEvent) => {
+	const handleKeydown = (e: KeyboardEvent): void => {
 		switch (e.key) {
 			case 'ArrowLeft':
 				handleNavigate(-1);
+				break;
 			case 'ArrowRight':
 				handleNavigate(1);
+				break;
 		}
 	};
 
-	const handleFocus = (index: number) => {
+	const handleFocus = (index: number): void => {
 		const newImages = { ...slideShowImages };
-		if (index !== newImages.activeIndex) slideShowImages = { ...newImages, activeIndex: index };
+		if (index !== newImages.activeIndex) {
+			slideShowImages = { ...newImages, activeIndex: index };
+		}
 	};
 </script>
 
@@ -67,6 +75,8 @@
 	<div
 		class="bg-no-repeat relative bg-contain bg-center bg-white justify-center pt-[100%] rounded-lg border w-full flex items-center"
 		style="background-image: url('{displayMedias[slideShowImages.activeIndex].url}');"
+		role="img"
+		aria-label={displayMedias[slideShowImages.activeIndex].alt || 'product image'}
 	></div>
 
 	<div class="w-full bg-white relative">

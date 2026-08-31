@@ -1,9 +1,11 @@
 <script lang="ts">
+	import { T } from '$i18n';
 	import { Button } from '$lib/components/ui';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { CountDown } from '$lib/components/ui/Countdown';
 	import { SelectSkeleton } from '$lib/components/ui/select';
 	import { OrderDirection, PromotionSortField } from '$lib/gql/graphql';
+	import { AppRoute } from '$lib/utils';
 	import { SitenameCommonClassName } from '$lib/utils/utils';
 	import { getPromotions } from './promotions.remote';
 	import dayjs from 'dayjs';
@@ -21,9 +23,9 @@
 
 <div class="space-y-2">
 	<div class="flex justify-between text-sm">
-		<span class="font-bold text-gray-800">Featured</span>
+		<span class="font-bold text-gray-800">{$T('home.featured')}</span>
 		<span class="text-xs text-gray-500 italic">
-			selected by <span class="text-red-500 font-bold">Sitename</span>
+			{$T('home.selectedBy')} <span class="text-red-500 font-bold">Sitename</span>
 		</span>
 	</div>
 
@@ -34,13 +36,13 @@
 				<SelectSkeleton size="xs" />
 			</div>
 		{:else if Query.error}
-			<Alert variant="warning" size="xs">Failed to load promotions. Please try again later.</Alert>
+			<Alert variant="warning" size="xs">{$T('home.promotionsFailedToLoad')}</Alert>
 		{:else if Query.current}
 			{#each Query.current.edges as edge, idx (idx)}
 				<div>
 					<p class="text-gray-700 font-medium">{edge.node.name}</p>
 					{#if dayjs(edge.node.endDate).isBefore(Now)}
-						<span class="text-red-500">Promotion ended</span>
+						<span class="text-red-500">{$T('home.promotionEnded')}</span>
 					{:else}
 						<div class="flex justify-end mt-2">
 							<CountDown destination={edge.node.endDate} />
@@ -48,10 +50,14 @@
 					{/if}
 				</div>
 			{:else}
-				<div>No promotions</div>
+				<div>{$T('home.noPromotions')}</div>
 			{/each}
 		{/if}
 	</div>
 
-	<Button size="sm" aria-label="View all promotions" fullWidth>View all</Button>
+	<a href={AppRoute.TRENDING()}>
+		<Button size="sm" aria-label={$T('home.viewAllPromotions')} fullWidth
+			>{$T('home.viewAll')}</Button
+		>
+	</a>
 </div>

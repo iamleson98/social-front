@@ -13,9 +13,9 @@
 
 	let activeLanguage = $state(SUPPORTED_LANGUAGES[0]);
 
-	const setLanguageByCode = (idx: number) => {
+	const setLanguageByCode = (idx: number): void => {
 		activeLanguage = SUPPORTED_LANGUAGES[idx];
-		switchTranslationLanguage(activeLanguage.code);
+		void switchTranslationLanguage(activeLanguage.code);
 		clientSideSetCookie(LANGUAGE_KEY, activeLanguage.code, {
 			secure: true,
 			path: '/',
@@ -32,7 +32,7 @@
 		const supportedLang = SUPPORTED_LANGUAGES.find((lang) => lang.code === cookieLang);
 		if (supportedLang) {
 			activeLanguage = supportedLang;
-			switchTranslationLanguage(activeLanguage.code);
+			void switchTranslationLanguage(activeLanguage.code);
 		}
 	});
 </script>
@@ -42,7 +42,7 @@
 		<div class="md:flex md:justify-between">
 			<div class="mb-6 md:mb-0">
 				<a href={buildHomePageLink()} class="flex items-center">
-					<img src="/logo.png" class="mr-3 h-8" alt="FlowBite Logo" />
+					<img src="/logo.png" class="mr-3 h-8" alt="Sitename logo" />
 				</a>
 			</div>
 			<div class="grid grid-cols-4 gap-4 max-tablet:grid-cols-2">
@@ -74,7 +74,7 @@
 							>
 						</li>
 						<li>
-							<a href="https://discord.gg/4eeurUVvTy" class="hover:underline">Youtube</a>
+							<a href="https://discord.gg/4eeurUVvTy" class="hover:underline">Discord</a>
 						</li>
 					</ul>
 				</div>

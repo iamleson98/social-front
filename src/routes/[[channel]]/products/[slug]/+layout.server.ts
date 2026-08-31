@@ -9,10 +9,11 @@ import {
 	HTTPStatusServerError,
 } from '$lib/utils/consts';
 import { AppRoute } from '$lib/utils/routes.js';
+import type { LayoutServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 import type { WithContext, Product } from 'schema-dts';
 
-export const load = async (event) => {
+export const load: LayoutServerLoad = async (event) => {
 	const slug = event.params.slug.trim();
 	const variantID = event.url.searchParams.get('variant')?.trim();
 
@@ -76,7 +77,9 @@ export const load = async (event) => {
 		product: product as TypeProduct,
 		productJsonLd,
 		meta: {
-			title: product?.name || product?.slug,
+			title: product?.name || product?.slug || '',
+			description: product?.seoDescription || product?.name || '',
+			imageUrl: product?.thumbnail?.url || undefined,
 		},
 		openGraph: product?.thumbnail
 			? {

@@ -1,6 +1,8 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { T } from '$i18n';
 	import { CHECKOUT_ADD_LINE_MUTATION } from '$lib/api/checkout';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { operationStore, type OperationResultStore } from '$lib/api/operation';
 	import UserAddress from '$lib/components/common/user-address/user-address.svelte';
 	import {
@@ -47,16 +49,17 @@
 		SitenameCommonClassName,
 	} from '$lib/utils/utils';
 	import { toast } from 'svelte-sonner';
+	import { get } from 'svelte/store';
 	import { fade } from 'svelte/transition';
 
-	type Props = {
+	interface Props {
 		productInformation: Product;
 		/** this component is used for product detail screen and preview modal.
 		 * If `true`, only some important parts would be rendered */
 		useForPreviewModal?: boolean;
-	};
+	}
 
-	let { productInformation, useForPreviewModal = false }: Props = $props();
+	const { productInformation, useForPreviewModal = false }: Props = $props();
 
 	/** user selected variant quantity */
 	let quantitySelected = $state(1);
@@ -69,19 +72,22 @@
 		),
 	);
 
-	let quantitySelectedErr = $derived.by(() => {
-		if (quantitySelected < 1 || quantitySelected % 1 !== 0) return $T('error.positiveInteger');
+	const quantitySelectedErr = $derived.by(() => {
+		if (quantitySelected < 1 || quantitySelected % 1 !== 0) {
+			return $T('error.positiveInteger');
+		}
 		return undefined;
 	});
 
-	let displayPrice = $derived.by(() => {
+	const displayPrice = $derived.by(() => {
 		const prdChannel = CHANNELS.find((chan) => chan.slug === productInformation.channel);
-		if (!selectedVariant)
+		if (!selectedVariant) {
 			return formatMoney(
 				productInformation.pricing?.priceRange?.start?.gross?.currency || prdChannel!.currency,
 				productInformation.pricing?.priceRange?.start?.gross?.amount || 0,
 				productInformation.pricing?.priceRange?.stop?.gross?.amount,
 			);
+		}
 
 		return formatMoney(
 			selectedVariant.pricing?.price?.gross?.currency || prdChannel!.currency,
@@ -89,7 +95,7 @@
 		);
 	});
 
-	const toggleSelectVariant = (variant: ProductVariant) => {
+	const toggleSelectVariant = (variant: ProductVariant): void => {
 		if (!selectedVariant) {
 			selectedVariant = variant;
 		} else {
@@ -103,32 +109,58 @@
 		>();
 
 	$effect(() => {
-		if (!checkoutAddLineStore) return;
+		if (!checkoutAddLineStore) {
+			return;
+		}
 
 		return checkoutAddLineStore.subscribe((result) => {
-			if (checkIfGraphqlResultHasError(result, 'checkoutLinesAdd')) return;
+			// skip the initial emission that has no data yet
+			if (!result.data) {
+				return;
+			}
+			if (checkIfGraphqlResultHasError(result, 'checkoutLinesAdd')) {
+				return;
+			}
 			checkoutStore.set(result.data?.checkoutLinesAdd?.checkout as Checkout);
+			toast.success(
+				$T('cart.addedToCart', { name: selectedVariant?.name || productInformation.name }),
+			);
 		});
 	});
 
-	const handleAddVariantToCart = async () => {
+	/** returns the current checkout id, creating a checkout when needed */
+	const ensureCheckoutId = async (): Promise<string | null> => {
+		let checkout = get(checkoutStore);
+		if (!checkout?.id) {
+			const fetchResult = await fetch(AppRoute.CHECKOUT_GET_OR_CREATE);
+			const fetchResultParsed = await fetchResult.json();
+
+			if (fetchResultParsed.status !== HTTPStatusSuccess || !fetchResultParsed.checkout) {
+				toast.error(fetchResultParsed.message || $T('error.failedToLoad'));
+				return null;
+			}
+
+			checkoutStore.set(fetchResultParsed.checkout);
+			checkout = fetchResultParsed.checkout;
+		}
+
+		return checkout?.id as string;
+	};
+
+	/** adds the selected variant to the cart. returns `true` on success */
+	const handleAddVariantToCart = async (): Promise<boolean> => {
 		// user must select a variant before he can add it to the cart
 		if (!selectedVariant) {
 			showAlertSelectVariant = true;
-			return;
+			return false;
 		}
 
 		showAlertSelectVariant = false;
 
-		if (!$checkoutStore) {
-			const fetchResult = await fetch(AppRoute.CHECKOUT_GET_OR_CREATE);
-			const fetchResultParsed = await fetchResult.json();
-
-			if (fetchResultParsed.status !== HTTPStatusSuccess) {
-				toast.error(fetchResultParsed.message);
-			}
-
-			checkoutStore.set(fetchResultParsed.checkout);
+		const checkoutId = await ensureCheckoutId();
+		if (!checkoutId) {
+			toast.error($T('error.failedToLoad'));
+			return false;
 		}
 
 		checkoutAddLineStore = operationStore<
@@ -137,7 +169,7 @@
 		>({
 			query: CHECKOUT_ADD_LINE_MUTATION,
 			variables: {
-				id: $checkoutStore?.id,
+				id: checkoutId,
 				lines: [
 					{
 						variantId: selectedVariant.id,
@@ -146,6 +178,42 @@
 				],
 			},
 		});
+
+		return true;
+	};
+
+	/** add to cart then navigate to the checkout page */
+	const handleBuyNow = async (): Promise<void> => {
+		if (!selectedVariant) {
+			showAlertSelectVariant = true;
+			return;
+		}
+		showAlertSelectVariant = false;
+
+		const checkoutId = await ensureCheckoutId();
+		if (!checkoutId) {
+			return;
+		}
+
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'checkoutLinesAdd'>,
+			MutationCheckoutLinesAddArgs
+		>(CHECKOUT_ADD_LINE_MUTATION, {
+			id: checkoutId,
+			lines: [
+				{
+					variantId: selectedVariant.id,
+					quantity: quantitySelected,
+				},
+			],
+		});
+
+		if (checkIfGraphqlResultHasError(result, 'checkoutLinesAdd')) {
+			return;
+		}
+
+		checkoutStore.set(result.data?.checkoutLinesAdd?.checkout as Checkout);
+		void goto(`${AppRoute.CHECKOUT()}/${checkoutId}`);
 	};
 </script>
 
@@ -198,14 +266,13 @@
 	<div class="flex items-center text-red-500 gap-2 mb-4">
 		<Rating
 			total={5}
-			rating={typeof productInformation.rating === 'number'
-				? productInformation.rating
-				: MAX_RATING}
+			rating={typeof productInformation.rating === 'number' ? productInformation.rating : 0}
 		>
 			{#snippet slotText()}
 				<p class="text-sm font-medium underline ml-1 text-gray-700">
-					{typeof productInformation.rating === 'number' ? productInformation.rating : MAX_RATING} /
-					{MAX_RATING}
+					{typeof productInformation.rating === 'number'
+						? `${productInformation.rating} / ${MAX_RATING}`
+						: $T('product.noVote')}
 				</p>
 			{/snippet}
 		</Rating>
@@ -332,9 +399,12 @@
 			<!-- MARK: quantity available -->
 			{#if selectedVariant}
 				<span class="text-gray-600 text-sm ml-2" transition:fade={{ duration: 100 }}>
-					{$T('product.variantAvailable', {
-						quantity: selectedVariant.quantityLimitPerCustomer || selectedVariant.quantityAvailable,
-					})}
+					{selectedVariant.quantityAvailable !== null &&
+					selectedVariant.quantityAvailable !== undefined
+						? selectedVariant.quantityAvailable <= 10
+							? $T('product.lowStock', { quantity: selectedVariant.quantityAvailable })
+							: $T('product.variantAvailable', { quantity: selectedVariant.quantityAvailable })
+						: $T('product.outOfStock')}
 				</span>
 			{/if}
 		</div>
@@ -390,7 +460,12 @@
 			>
 				<span>{$T('product.addToCart')}</span>
 			</Button>
-			<Button size="md" variant="outline">{$T('product.buyNow')}</Button>
+			<Button
+				size="md"
+				variant="outline"
+				onclick={handleBuyNow}
+				disabled={$checkoutAddLineStore?.fetching}>{$T('product.buyNow')}</Button
+			>
 		</div>
 	</div>
 </div>
@@ -405,6 +480,6 @@
 		onCancel={() => (openDeliveryModal = false)}
 		onOk={() => (openDeliveryModal = false)}
 	>
-		<MegaMenu items={VIETNAM_COUNTRY_UNITS} onSelectWhole={console.log} onDeselect={console.log} />
+		<MegaMenu items={VIETNAM_COUNTRY_UNITS} />
 	</Modal>
 {/if}

@@ -3,8 +3,8 @@
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { Trash } from '$lib/components/icons';
 	import { IconButton } from '$lib/components/ui/Button';
+	import type { LanguageCodeEnum } from '$lib/gql/graphql';
 	import {
-		LanguageCodeEnum,
 		type Maybe,
 		type Money as MoneyType,
 		type Mutation,
@@ -13,7 +13,7 @@
 	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import Money from './money.svelte';
 
-	type Props = {
+	interface Props {
 		editable?: boolean;
 		negative?: boolean;
 		money?: Maybe<MoneyType>;
@@ -22,17 +22,29 @@
 		promoCode?: string;
 		promoCodeId?: string;
 		checkoutId: string;
-	};
+		/** called after the promo code has been removed so the parent can refresh totals */
+		onCheckoutUpdated?: () => void;
+	}
 
 	type CustomMutationCheckoutRemovePromoCodeArgs = {
 		languageCode?: LanguageCodeEnum;
 	} & MutationCheckoutRemovePromoCodeArgs;
 
-	let { label, money, editable, checkoutId, ariaLabel, promoCode, promoCodeId }: Props = $props();
+	const {
+		label,
+		money,
+		editable,
+		checkoutId,
+		ariaLabel,
+		promoCode,
+		promoCodeId,
+		negative,
+		onCheckoutUpdated,
+	}: Props = $props();
 
 	let loading = $state(false);
 
-	const handleDeletePromocode = async () => {
+	const handleDeletePromocode = async (): Promise<void> => {
 		loading = true;
 
 		const variables: CustomMutationCheckoutRemovePromoCodeArgs = promoCode
@@ -47,8 +59,13 @@
 
 		loading = false;
 
-		if (checkIfGraphqlResultHasError(removeResult, 'checkoutRemovePromoCode', 'Promo code removed'))
+		if (
+			checkIfGraphqlResultHasError(removeResult, 'checkoutRemovePromoCode', 'Promo code removed')
+		) {
 			return;
+		}
+
+		onCheckoutUpdated?.();
 	};
 </script>
 
@@ -69,5 +86,5 @@
 		{/if}
 	</div>
 
-	<Money {money} {ariaLabel} />
+	<Money {money} {ariaLabel} {negative} />
 </div>

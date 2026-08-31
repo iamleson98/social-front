@@ -20,14 +20,16 @@
 
 	const BATCH_LOAD = 20;
 
-	let filterVariables = $state<PaginationOptions>({
+	type OrderFilterVariables = PaginationOptions & Record<string, unknown>;
+
+	let filterVariables = $state<OrderFilterVariables>({
 		first: BATCH_LOAD,
 	});
 
-	const ORDER_TABLE_COLUMNS: TableColumnProps<Order, any>[] = $derived([
+	const ORDER_TABLE_COLUMNS: TableColumnProps<Order, string>[] = $derived([
 		{
 			title: $T('settings.no'),
-			child: { render: ({ item }) => item.number },
+			child: orderNumberLink,
 		},
 		{
 			title: $T('settings.date'),
@@ -56,6 +58,12 @@
 	<Badge {...paymentStatusBadgeClass(item.paymentStatus)} rounded />
 {/snippet}
 
+{#snippet orderNumberLink({ item }: { item: Order })}
+	<a href={AppRoute.ORDER_DETAILS(item.id)} class="font-medium text-blue-700 hover:underline">
+		#{item.number}
+	</a>
+{/snippet}
+
 {#snippet status({ item }: { item: Order })}
 	<Badge {...orderStatusBadgeClass(item.status)} rounded />
 {/snippet}
@@ -69,6 +77,10 @@
 		<DropDown
 			placement="bottom-end"
 			options={[
+				{
+					children: $T('order.viewDetails'),
+					href: AppRoute.ORDER_DETAILS(item.id),
+				},
 				{
 					children: $T('settings.reqSupport'),
 					href: `${AppRoute.ME_SUPPORT_NEW()}?order_number=${item.number}`,

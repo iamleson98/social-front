@@ -34,6 +34,7 @@ export default {
 		success: 'Password reset successfully',
 	},
 	common: {
+		saving: 'Saving...',
 		home: 'Home',
 		emailPlaceholder: 'Please enter email',
 		yes: 'yes',
@@ -130,7 +131,8 @@ export default {
 		variants: 'Variants',
 		user: 'User',
 		order: 'Order',
-		fileExporting: 'We are currently exporting your requested file. As soon as it is available it will be sent to your email address',
+		fileExporting:
+			'We are currently exporting your requested file. As soon as it is available it will be sent to your email address',
 		search: 'Search',
 		slug: 'Slug',
 		copy: 'Copy',
@@ -154,6 +156,10 @@ export default {
 		exclude: 'Exclude',
 	},
 	product: {
+		onSale: 'Sale',
+		quickView: 'Quick view',
+		lowStock: 'Only {{quantity}} left',
+		outOfStock: 'Out of stock',
 		chooseAddress: 'Please choose address',
 		delivery: 'Deliver to',
 		quantity: 'Quantity',
@@ -222,7 +228,8 @@ export default {
 		promptPublicationTime: 'If not, please specify publidation time',
 		availForPurchase: 'Available for purchase',
 		promptAvailTime: 'If not, please specify availability time',
-		preorderHint: 'Pre-order is when you must order the product from other suppliers. The number of days it takes to delivery must be between {{min}} to {{max}} working days.',
+		preorderHint:
+			'Pre-order is when you must order the product from other suppliers. The number of days it takes to delivery must be between {{min}} to {{max}} working days.',
 		prdCreated: 'Product created successfully',
 		prdUpdated: 'Product updated successfully',
 		cateName: 'Category Name',
@@ -237,7 +244,8 @@ export default {
 		exportScopeIds: 'Selected products',
 		exportScopeFilter: 'Current search',
 		exportPrds: 'Export products information',
-		exportSuccessMsg: 'We are currently exporting your requested {{ fileType }}. As soon as it is available it will be sent to your email address.',
+		exportSuccessMsg:
+			'We are currently exporting your requested {{ fileType }}. As soon as it is available it will be sent to your email address.',
 		CATEGORY: 'Category',
 		CHARGE_TAXES: 'Charge taxes',
 		COLLECTIONS: 'Collections',
@@ -263,6 +271,13 @@ export default {
 		noMediaHint: 'Your product has no media. Please add more medias first.',
 	},
 	error: {
+		channelFetchFailed: 'Error occurred when fetching channels data',
+		pageNotFound: 'Page not found',
+		pageNotFoundHint: "The page you are looking for doesn't exist or has been moved.",
+		serverError: 'Something went wrong',
+		serverErrorHint: 'An unexpected error occurred. Please try again later.',
+		backToHome: 'Back to home',
+		contactSupport: 'Contact support',
 		invalidSlug: 'Invalid slug value',
 		invalidEmailAndPassword: 'Please, provide valid email and password',
 		invalidEmail: 'Please, provide valid email',
@@ -316,6 +331,9 @@ export default {
 		blog: 'Blog',
 	},
 	cart: {
+		addedToCart: '{{name}} added to cart',
+		codeApplied: 'Code applied successfully',
+		codeInvalid: 'Invalid or expired code',
 		proceedCheckout: 'Proceed to checkout',
 		continueShopping: 'Continue shopping',
 		applyCode: 'Apply code',
@@ -329,6 +347,11 @@ export default {
 		haveVoucherOrGiftcard: 'Do you have a voucher or gift card?',
 	},
 	checkout: {
+		paymentMethod: 'Payment method',
+		emailRequiredHint: 'Please enter your email before paying',
+		addressRequiredHint: 'Please choose a delivery address first',
+		deliveryMethodRequiredHint: 'Please choose a delivery method first',
+		processingOrder: 'Placing your order...',
 		addrRulesUnavailable: 'Address validation rules are not available',
 		account: 'Account',
 		enterEmail: 'Enter your email',
@@ -603,11 +626,13 @@ export default {
 		prioritizeWarehouseWithMaxStock: 'Prioritize warehouses with highest stock',
 		prioritizeWarehouseByMaxOrder: 'Prioritize warehouses by sorting order',
 		shipZones: 'Shipping zones',
-		shipZonesAlert: 'Select shipping zones that will be supplied via this channel. You can assign shipping zones to multiple channels.',
+		shipZonesAlert:
+			'Select shipping zones that will be supplied via this channel. You can assign shipping zones to multiple channels.',
 		addShipZone: 'Add Shipping Zone',
 		selectShipZone: 'Select shipping zone',
 		warehouse: 'Warehouses',
-		warehouseAlert: 'Assign and sort warehouses that will be used in this channel (warehouses can be assigned in multiple channels).',
+		warehouseAlert:
+			'Assign and sort warehouses that will be used in this channel (warehouses can be assigned in multiple channels).',
 		addWh: 'Add Warehouse',
 		selectWh: 'Select Warehouse',
 	},
@@ -635,6 +660,11 @@ export default {
 		successUnassignedPrds: 'Successfully unassigned products from collection',
 	},
 	category: {
+		title: 'Category',
+		official: 'Official',
+		subCategories: 'Sub categories',
+		selectSubCategory: 'Select sub category',
+		noProducts: 'No products in this category yet',
 		new: 'Add new category',
 		noOfChildren: 'No. of children',
 		addChild: 'Add child',
@@ -653,7 +683,8 @@ export default {
 		newCodes: 'Add voucher codes',
 		applyType: 'Application type',
 		applyCheapPrd: 'Apply only to a single cheapest eligible product',
-		applyCheapPrdHelpTxt: 'If this option is unchecked, discount will be counted for every eligible product',
+		applyCheapPrdHelpTxt:
+			'If this option is unchecked, discount will be counted for every eligible product',
 		applyEntireOrder: 'Entire order',
 		applySpecificPrd: 'Specific products and variants',
 		discountValue: 'Discount value',
@@ -753,6 +784,17 @@ export default {
 		Area: 'Area',
 	},
 	order: {
+		thankYou: 'Thank you for your order!',
+		placedSuccessfully: 'Your order #{{number}} has been placed successfully',
+		placedSuccessfullyToast: 'Order placed successfully',
+		confirmationHint:
+			"We've received your order and will start processing it right away. You will receive an email confirmation shortly.",
+		orderNumber: 'Order',
+		orderItems: 'Order items',
+		fulfilled: '{{quantity}} fulfilled',
+		fulfillments: 'Fulfillments',
+		trackingNumber: 'Tracking number',
+		viewDetails: 'View details',
 		draftOders: 'Draft orders',
 		payStatus: 'Payment status',
 		fulfillStatus: 'Fulfillment status',
@@ -765,8 +807,10 @@ export default {
 		weightMethods: 'Weight-based methods',
 		addPriceMethod: 'Create price-based method',
 		addWeightMethod: 'Create weight-based method',
-		assignChansHelpText: 'Assign channels to this shipping zone so we know which orders will be supported.',
-		selectWarehouseHelpText: 'Select warehouse from which you will ship products for this shipping zone. This warehouse	address will also be used to calculate taxes.',
+		assignChansHelpText:
+			'Assign channels to this shipping zone so we know which orders will be supported.',
+		selectWarehouseHelpText:
+			'Select warehouse from which you will ship products for this shipping zone. This warehouse	address will also be used to calculate taxes.',
 		maxDeliveryLessThanMinDelivery: 'Mã delivery days <= min delivery days',
 		maxDeliveryDays: 'Maximum delivery days',
 		minDeliveryDays: 'Minimum delivery days',
@@ -778,7 +822,8 @@ export default {
 		postalCodeInclusionType: 'Inclusion type',
 		postalCodeRules: 'Postal code rules',
 		addRange: 'Add range',
-		includeHelpText: 'Added postal codes will be excluded from using this delivery methods. If none are added all postal codes will be able to use that shipping rate',
+		includeHelpText:
+			'Added postal codes will be excluded from using this delivery methods. If none are added all postal codes will be able to use that shipping rate',
 		excludeHelpText: 'Only added postal codes will be able to use this shipping rate',
 	},
 	attribute: {
@@ -788,5 +833,30 @@ export default {
 		variantAttrs: 'Variant attributes',
 		prdAttributes: 'Product attributes',
 		isVariantSelection: 'Is variant selection',
+	},
+
+	wishlist: {
+		title: 'Wishlist',
+		empty: 'Your wishlist is empty',
+		emptyHint: 'Tap the heart on any product to save it here for later.',
+		itemCount: '{{count}} items saved',
+		added: 'Added to wishlist',
+		removed: 'Removed from wishlist',
+		toggleAria: 'Toggle wishlist',
+		unavailableItems: '{{count}} saved items are currently unavailable',
+		removeUnavailable: 'Remove unavailable items',
+	},
+	trending: {
+		description: 'The newest products just landed in our store',
+	},
+
+	home: {
+		featured: 'Featured',
+		selectedBy: 'selected by',
+		promotionsFailedToLoad: 'Failed to load promotions. Please try again later.',
+		promotionEnded: 'Promotion ended',
+		noPromotions: 'No promotions',
+		viewAll: 'View all',
+		viewAllPromotions: 'View all promotions',
 	},
 };

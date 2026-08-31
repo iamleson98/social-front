@@ -2,21 +2,28 @@
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { OrderDirection, ProductOrderField } from '$lib/gql/graphql';
-	import { productFilterParamStore, type ProductFilterParams } from '$lib/stores/app/product-filter.svelte';
+	import {
+		productFilterParamStore,
+		type ProductFilterParams,
+	} from '$lib/stores/app/product-filter.svelte';
 	import { SearchParamKey } from '$lib/utils/consts';
 	import { NUMBER_REGEX, parseUrlSearchParams } from '$lib/utils/utils';
 	import { get } from 'svelte/store';
 
-	afterNavigate(async () => {
+	const syncFiltersFromUrl = async (): Promise<void> => {
 		const queryParams = parseUrlSearchParams<ProductFilterParams>(page.url);
 		const newProductQueryArgs = get(productFilterParamStore);
 
 		// parse sort by field:
-		let sortDirection = queryParams[SearchParamKey.ORDER_DIRECTION as keyof ProductFilterParams]
-			? (queryParams[SearchParamKey.ORDER_DIRECTION as keyof ProductFilterParams].value as string).toUpperCase()
+		const sortDirection = queryParams[SearchParamKey.ORDER_DIRECTION as keyof ProductFilterParams]
+			? (
+					queryParams[SearchParamKey.ORDER_DIRECTION as keyof ProductFilterParams].value as string
+				).toUpperCase()
 			: OrderDirection.Asc;
-		let sortField = queryParams[SearchParamKey.ORDER_BY_FIELD as keyof ProductFilterParams]
-			? (queryParams[SearchParamKey.ORDER_BY_FIELD as keyof ProductFilterParams].value as string).toUpperCase()
+		const sortField = queryParams[SearchParamKey.ORDER_BY_FIELD as keyof ProductFilterParams]
+			? (
+					queryParams[SearchParamKey.ORDER_BY_FIELD as keyof ProductFilterParams].value as string
+				).toUpperCase()
 			: ProductOrderField.Price;
 
 		newProductQueryArgs.sortBy!.direction = Object.values(OrderDirection).includes(
@@ -48,6 +55,10 @@
 			}
 		}
 
+		// search query
+		const searchParam = queryParams[SearchParamKey.SEARCH_QUERY as keyof ProductFilterParams];
+		newProductQueryArgs.search = searchParam ? ((searchParam.value as string) ?? null) : null;
+
 		// before, after
 		const before = queryParams[SearchParamKey.BEFORE];
 		const after = queryParams[SearchParamKey.AFTER];
@@ -72,6 +83,10 @@
 
 		newProductQueryArgs.reload = true;
 		productFilterParamStore.set(newProductQueryArgs);
+	};
+
+	afterNavigate(() => {
+		void syncFiltersFromUrl();
 	});
 </script>
 

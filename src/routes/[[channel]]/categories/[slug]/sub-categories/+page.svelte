@@ -1,13 +1,14 @@
 <script lang="ts">
+	import { AppRoute } from '$lib/utils';
 	import type { PageData } from './$types';
 
-	type Props = {
+	interface Props {
 		data: PageData;
-	};
+	}
 
-	let { data }: Props = $props();
+	const { data }: Props = $props();
 
-	const { category } = data;
+	const category = $derived(data.category);
 </script>
 
 <div class="flex flex-row flex-wrap gap-2">
@@ -25,7 +26,7 @@
 
 					<div>
 						<div class="text-xs">
-							<a href="/">{node.name}</a>
+							<a href={AppRoute.CATEGORY_DETAILS(node.slug)}>{node.name}</a>
 						</div>
 					</div>
 				</div>

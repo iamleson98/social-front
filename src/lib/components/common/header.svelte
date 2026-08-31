@@ -5,24 +5,25 @@
 	import { USER_ME_QUERY_STORE } from '$lib/api';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import {
+		Heart,
 		IonFlame,
 		Logout,
 		MingcuteHome,
-		Search,
 		ShoppingBag,
 		UserCog,
 	} from '$lib/components/icons';
 	import { Button } from '$lib/components/ui';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
-	import { Input } from '$lib/components/ui/Input';
 	import type { Query, User } from '$lib/gql/graphql';
 	import { checkoutStore } from '$lib/stores/app';
+	import { wishlistStore } from '$lib/stores/app/wishlist';
 	import { UserStoreManager } from '$lib/stores/auth/user';
 	import { AppRoute, getCookieByKey } from '$lib/utils';
 	import { handleLogout } from '$lib/utils/auth.svelte';
 	import { ACCESS_TOKEN_KEY, HTTPStatusSuccess } from '$lib/utils/consts';
 	import { buildHomePageLink, checkIfGraphqlResultHasError } from '$lib/utils/utils';
+	import HeaderSearch from './header-search.svelte';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { cubicOut } from 'svelte/easing';
@@ -30,9 +31,11 @@
 	import { scale } from 'svelte/transition';
 
 	const SettingButtonText = $derived.by(() => {
-		if ($UserStoreManager?.firstName && $UserStoreManager?.lastName)
+		if ($UserStoreManager?.firstName && $UserStoreManager?.lastName) {
 			return `${$UserStoreManager.firstName[0]}${$UserStoreManager.lastName[0]}`;
-		else if ($UserStoreManager?.email) return $UserStoreManager.email.slice(0, 2);
+		} else if ($UserStoreManager?.email) {
+			return $UserStoreManager.email.slice(0, 2);
+		}
 
 		return '';
 	});
@@ -40,7 +43,9 @@
 	// load current user when page load
 	onMount(async () => {
 		const token = getCookieByKey(ACCESS_TOKEN_KEY);
-		if (!token) return;
+		if (!token) {
+			return;
+		}
 
 		const userResult = await GRAPHQL_CLIENT.query<Pick<Query, 'me'>>(
 			USER_ME_QUERY_STORE,
@@ -48,13 +53,17 @@
 			{ requestPolicy: 'network-only' },
 		);
 
-		if (checkIfGraphqlResultHasError(userResult)) return;
+		if (checkIfGraphqlResultHasError(userResult)) {
+			return;
+		}
 		UserStoreManager.setValue(userResult.data?.me as User);
 	});
 
 	// load checkout when page load
 	onMount(async () => {
-		if ($checkoutStore) return;
+		if ($checkoutStore) {
+			return;
+		}
 
 		const fetchResult = await fetch(AppRoute.CHECKOUT_GET_OR_CREATE);
 		const parsedResult = await fetchResult.json();
@@ -76,15 +85,15 @@
 
 	beforeNavigate(() => {
 		loading = true;
-		loadingProgress.set(10);
+		void loadingProgress.set(10);
 	});
 
 	afterNavigate(() => {
-		loadingProgress.set(100);
+		void loadingProgress.set(100);
 		clearTimeout(timeout);
 		timeout = setTimeout(() => {
 			loading = false;
-			loadingProgress.set(0);
+			void loadingProgress.set(0);
 		}, 500);
 	});
 </script>
@@ -107,8 +116,8 @@
 		</a>
 
 		<!-- search -->
-		<div>
-			<Input placeholder={$T('common.search')} startIcon={Search} size="sm" />
+		<div class="flex-1 max-w-md">
+			<HeaderSearch />
 		</div>
 	</div>
 	<div class="w-1/2 flex justify-between">
@@ -126,6 +135,15 @@
 		</div>
 
 		<div class="flex items-center gap-3.5">
+			<a href={AppRoute.WISHLIST()} aria-label={$T('wishlist.title')}>
+				<IconButton size="sm" icon={Heart} variant="light" color="gray" class="relative indicator">
+					{#if $wishlistStore.length}
+						<span class="indicator-item badge badge-xs text-white! bg-red-500" in:scale>
+							{$wishlistStore.length}
+						</span>
+					{/if}
+				</IconButton>
+			</a>
 			<a href={AppRoute.SHOPPING_CART()}>
 				<IconButton
 					size="sm"

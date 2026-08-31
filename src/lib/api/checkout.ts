@@ -148,6 +148,9 @@ export const CHECKOUT_DETAIL_FRAGMENT = gql`
 			variant {
 				id
 				name
+				sku
+				quantityAvailable
+				quantityLimitPerCustomer
 				attributes(variantSelection: ALL) {
 					values {
 						name
@@ -157,6 +160,7 @@ export const CHECKOUT_DETAIL_FRAGMENT = gql`
 				}
 				product {
 					name
+					slug
 					media {
 						alt
 						type
@@ -171,6 +175,57 @@ export const CHECKOUT_DETAIL_FRAGMENT = gql`
 			}
 		}
 	}
+`;
+
+/** Update the checkout email. Must be called for guest checkouts before completing the order */
+export const CHECKOUT_EMAIL_UPDATE_MUTATION = gql`
+	mutation CheckoutEmailUpdate($id: ID!, $email: String!) {
+		checkoutEmailUpdate(id: $id, email: $email) {
+			errors {
+				field
+				code
+				message
+			}
+			checkout {
+				id
+				email
+			}
+		}
+	}
+`;
+
+/** Attach the logged-in customer to the checkout so the created order belongs to him */
+export const CHECKOUT_CUSTOMER_ATTACH_MUTATION = gql`
+	mutation CheckoutCustomerAttach($id: ID!, $customerId: ID!) {
+		checkoutCustomerAttach(id: $id, customerId: $customerId) {
+			errors {
+				field
+				code
+				message
+			}
+			checkout {
+				id
+				email
+			}
+		}
+	}
+`;
+
+/** Add a voucher / gift card code to the checkout */
+export const CHECKOUT_ADD_PROMO_CODE_MUTATION = gql`
+	mutation CheckoutAddPromoCode($id: ID!, $promoCode: String!) {
+		checkoutAddPromoCode(id: $id, promoCode: $promoCode) {
+			errors {
+				field
+				code
+				message
+			}
+			checkout {
+				...CheckoutDetailFragment
+			}
+		}
+	}
+	${CHECKOUT_DETAIL_FRAGMENT}
 `;
 
 /** this query should be used by shopping-cart page */
@@ -268,6 +323,13 @@ export const CHECKOUT_ADD_LINE_MUTATION = gql`
 				id
 				lines {
 					id
+					quantity
+				}
+				totalPrice {
+					gross {
+						currency
+						amount
+					}
 				}
 			}
 			errors {
@@ -301,81 +363,7 @@ export const CHECKOUT_LINES_UPDATE_MUTATION = gql`
 	mutation CheckoutLinesUpdate($lines: [CheckoutLineUpdateInput!]!, $id: ID!) {
 		checkoutLinesUpdate(lines: $lines, id: $id) {
 			checkout {
-				id
-				isShippingRequired
-				totalPrice {
-					gross {
-						currency
-						amount
-					}
-					tax {
-						currency
-						amount
-					}
-				}
-				shippingPrice {
-					gross {
-						currency
-						amount
-					}
-				}
-				subtotalPrice {
-					gross {
-						currency
-						amount
-					}
-				}
-				lines {
-					id
-					quantity
-					totalPrice {
-						gross {
-							currency
-							amount
-						}
-					}
-					undiscountedTotalPrice {
-						currency
-						amount
-					}
-					unitPrice {
-						gross {
-							currency
-							amount
-						}
-					}
-					undiscountedUnitPrice {
-						currency
-						amount
-					}
-					variant {
-						id
-						name
-						quantityAvailable
-						quantityLimitPerCustomer
-						attributes(variantSelection: ALL) {
-							values {
-								name
-								dateTime
-								boolean
-							}
-						}
-						product {
-							name
-							slug
-							media {
-								alt
-								type
-								url(size: 100, format: WEBP)
-							}
-						}
-						media {
-							alt
-							type
-							url(size: 100, format: WEBP)
-						}
-					}
-				}
+				...CheckoutDetailFragment
 			}
 			errors {
 				message
@@ -383,8 +371,9 @@ export const CHECKOUT_LINES_UPDATE_MUTATION = gql`
 			}
 		}
 	}
-`;
 
+	${CHECKOUT_DETAIL_FRAGMENT}
+`;
 export const CHECKOUT_LINES_DELETE_MUTATION = gql`
 	mutation CheckoutLineDelete($linesIds: [ID!]!, $id: ID!) {
 		checkoutLinesDelete(linesIds: $linesIds, id: $id) {
@@ -393,86 +382,13 @@ export const CHECKOUT_LINES_DELETE_MUTATION = gql`
 				field
 			}
 			checkout {
-				id
-				isShippingRequired
-				totalPrice {
-					gross {
-						currency
-						amount
-					}
-					tax {
-						currency
-						amount
-					}
-				}
-				shippingPrice {
-					gross {
-						currency
-						amount
-					}
-				}
-				subtotalPrice {
-					gross {
-						currency
-						amount
-					}
-				}
-				lines {
-					id
-					quantity
-					totalPrice {
-						gross {
-							currency
-							amount
-						}
-					}
-					undiscountedTotalPrice {
-						currency
-						amount
-					}
-					unitPrice {
-						gross {
-							currency
-							amount
-						}
-					}
-					undiscountedUnitPrice {
-						currency
-						amount
-					}
-					variant {
-						id
-						name
-						quantityAvailable
-						quantityLimitPerCustomer
-						attributes(variantSelection: ALL) {
-							values {
-								name
-								dateTime
-								boolean
-							}
-						}
-						product {
-							name
-							slug
-							media {
-								alt
-								type
-								url(size: 100, format: WEBP)
-							}
-						}
-						media {
-							alt
-							type
-							url(size: 100, format: WEBP)
-						}
-					}
-				}
+				...CheckoutDetailFragment
 			}
 		}
 	}
-`;
 
+	${CHECKOUT_DETAIL_FRAGMENT}
+`;
 export const CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION = gql`
 	mutation CheckoutShippingAddressUpdate(
 		$id: ID!
@@ -549,10 +465,12 @@ export const CHECKOUT_COMPLETE_MUTATION = gql`
 		checkoutComplete(id: $id) {
 			order {
 				id
+				number
 			}
 			errors {
 				field
 				message
+				code
 			}
 		}
 	}

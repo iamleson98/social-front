@@ -1,10 +1,21 @@
 <script lang="ts">
+	import { CHECKOUT_ADD_PROMO_CODE_MUTATION } from '$lib/api/checkout';
+	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { Button } from '$lib/components/ui';
 	import { AccordionList } from '$lib/components/ui/Accordion';
 	import { Input } from '$lib/components/ui/Input';
-	import type { Checkout, CheckoutLine, Money, OrderLine } from '$lib/gql/graphql';
+	import type {
+		Checkout,
+		CheckoutLine,
+		Money,
+		Mutation,
+		MutationCheckoutAddPromoCodeArgs,
+		OrderLine,
+	} from '$lib/gql/graphql';
 	import { T } from '$lib/i18n';
+	import { checkoutStore } from '$lib/stores/app';
 	import { defaultSlideShowState } from '$lib/stores/ui/slideshow';
+	import { checkIfGraphqlResultHasError } from '$lib/utils/utils';
 	import { formatMoney } from '$lib/utils/utils';
 	import MoneyComponent from './money.svelte';
 	import SummaryPromocodeRow from './summary-promocode-row.svelte';
@@ -13,15 +24,54 @@
 		PRODUCT_NAME_MAX_LENGTH,
 		useSummaryLineLineAttributesText,
 	} from './utils';
+	import { toast } from 'svelte-sonner';
 
-	type Props = {
+	interface Props {
 		editable?: boolean;
 		checkout: Checkout;
-	};
+		/** called after a promo code has been added/removed so the parent can refresh totals */
+		onCheckoutUpdated?: () => void;
+	}
 
-	let { editable = false, checkout }: Props = $props();
+	const { editable = false, checkout, onCheckoutUpdated }: Props = $props();
 
 	let discountCode = $state('');
+	let applyingCode = $state(false);
+
+	/** add a voucher / gift card code to the checkout and refresh the summary */
+	const handleApplyPromoCode = async (): Promise<void> => {
+		const promoCode = discountCode.trim();
+		if (!promoCode || applyingCode) {
+			return;
+		}
+
+		applyingCode = true;
+
+		const result = await GRAPHQL_CLIENT.mutation<
+			Pick<Mutation, 'checkoutAddPromoCode'>,
+			MutationCheckoutAddPromoCodeArgs
+		>(CHECKOUT_ADD_PROMO_CODE_MUTATION, { id: checkout.id, promoCode });
+
+		applyingCode = false;
+
+		if (
+			checkIfGraphqlResultHasError(result, 'checkoutAddPromoCode') ||
+			result.data?.checkoutAddPromoCode?.errors?.length
+		) {
+			toast.error(
+				result.data?.checkoutAddPromoCode?.errors?.[0]?.message || $T('cart.codeInvalid'),
+			);
+			return;
+		}
+
+		const updatedCheckout = result.data?.checkoutAddPromoCode?.checkout as Checkout | null;
+		if (updatedCheckout) {
+			checkoutStore.set(updatedCheckout);
+		}
+		discountCode = '';
+		toast.success($T('cart.codeApplied'));
+		onCheckoutUpdated?.();
+	};
 </script>
 
 {#snippet lineSummary(line: CheckoutLine | OrderLine)}
@@ -105,11 +155,7 @@
 
 <div class="w-1/2 max-tablet:w-full">
 	<div class="bg-white rounded-lg border p-4">
-		<AccordionList
-			header={$T('checkout.summary')}
-			items={checkout.lines}
-			child={lineSummary}
-		/>
+		<AccordionList header={$T('checkout.summary')} items={checkout.lines} child={lineSummary} />
 
 		<!-- discount code -->
 		{#if editable}
@@ -119,9 +165,13 @@
 					class="bg-white!"
 					placeholder={$T('checkout.addCodePlaceholder')}
 					bind:value={discountCode}
+					onkeydown={(evt) => evt.key === 'Enter' && handleApplyPromoCode()}
 				/>
-				<Button size="sm" variant="filled" disabled={!discountCode.trim()}
-					>{$T('btn.apply')}</Button
+				<Button
+					size="sm"
+					variant="filled"
+					disabled={!discountCode.trim() || applyingCode}
+					onclick={handleApplyPromoCode}>{$T('btn.apply')}</Button
 				>
 			</div>
 		{/if}
@@ -141,6 +191,7 @@
 				ariaLabel={$T('checkout.voucher')}
 				label={$T('checkout.voucherCodeLabel', { code: checkout.voucherCode })}
 				checkoutId={checkout.id}
+				{onCheckoutUpdated}
 			/>
 		{/if}
 
@@ -153,6 +204,7 @@
 				money={giftcard.currentBalance}
 				negative
 				checkoutId={checkout.id}
+				{onCheckoutUpdated}
 			/>
 		{/each}
 
@@ -166,10 +218,7 @@
 				<p class="font-bold">{$T('checkout.totalPrice')}</p>
 				<p class="ml-2 font-black">
 					{$T('checkout.includesTax', {
-						amount: formatMoney(
-							checkout.totalPrice.tax.currency as string,
-							checkout.totalPrice.tax.amount as number,
-						),
+						amount: formatMoney(checkout.totalPrice.tax.currency, checkout.totalPrice.tax.amount),
 					})}
 				</p>
 			</div>

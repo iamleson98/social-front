@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { T } from '$i18n';
 	import { CATEGORY_DETAIL_QUERY } from '$lib/api';
 	import { operationStore } from '$lib/api/operation';
+	import ProductCardSkeleton from '$lib/components/common/product/product-card-skeleton.svelte';
 	import {
 		ArrowDown,
 		ArrowUp,
@@ -11,6 +13,7 @@
 		Search,
 	} from '$lib/components/icons';
 	import Icon from '$lib/components/icons/icon.svelte';
+	import CategoryProductList from '$lib/components/pages/category/category-product-list.svelte';
 	import { ProductSortFields } from '$lib/components/pages/home/common';
 	import { Button } from '$lib/components/ui';
 	import { AccordionList } from '$lib/components/ui/Accordion';
@@ -25,8 +28,10 @@
 		ProductOrderField,
 		type CategoryCountableEdge,
 		type Channel,
+		type ProductFilterInput,
 		type Query,
 		type QueryCategoryArgs,
+		type QueryProductsArgs,
 	} from '$lib/gql/graphql';
 	import { AppRoute, getCookieByKey } from '$lib/utils';
 	import { CHANNEL_KEY } from '$lib/utils/consts';
@@ -36,7 +41,6 @@
 	const CategoryQuery = operationStore<
 		Pick<Query, 'category'>,
 		QueryCategoryArgs & {
-			productChannel?: string;
 			backgroundSize: number;
 			AUTHENTICATED_STAFF_USER?: boolean;
 		}
@@ -50,17 +54,13 @@
 		pause: !page.params.slug,
 		requestPolicy: 'cache-and-network',
 	});
+
+	const PAGE_SIZE = 12;
+
 	let channels = $state<Channel[]>([]);
 	let loading = $state(true);
 	let showError = $state(false);
 
-	// const ChannelQuery = operationStore<Pick<Query, 'channel'>, QueryChannelArgs>({
-	// 	query: CHANNEL_DETAILS_QUERY,
-	// 	variables: {
-	// 		slug: page.params.channel || getCookieByKey(CHANNEL_KEY),
-	// 	},
-	// 	requestPolicy: 'cache-and-network',
-	// });
 	onMount(async () => {
 		const result = await fetch('/api/channels', {
 			method: 'GET',
@@ -77,9 +77,78 @@
 			showError = true;
 		}
 	});
-	let sortField = $state<ProductOrderField>();
+
+	let sortField = $state<ProductOrderField>(ProductOrderField.Price);
 	let orderDirection = $state<OrderDirection>(OrderDirection.Asc);
+	let priceFrom = $state('');
+	let priceTo = $state('');
+	let appliedPriceRange = $state<{ gte?: number; lte?: number } | null>(null);
+
+	const categoryId = $derived($CategoryQuery.data?.category?.id);
+
+	/** build the product list variables (one entry per loaded page) */
+	let productPagesVariables = $state.raw<QueryProductsArgs[]>([]);
+
+	$effect(() => {
+		const id = categoryId;
+		if (!id) {
+			productPagesVariables = [];
+			return;
+		}
+
+		const filter: ProductFilterInput = {
+			categories: [id],
+			price: appliedPriceRange
+				? { gte: appliedPriceRange.gte ?? null, lte: appliedPriceRange.lte ?? null }
+				: {},
+			giftCard: false,
+		};
+
+		productPagesVariables = [
+			{
+				channel: page.params.channel || getCookieByKey(CHANNEL_KEY),
+				first: PAGE_SIZE,
+				filter,
+				sortBy: {
+					field: sortField,
+					direction: orderDirection,
+				},
+			},
+		];
+	});
+
+	const applyPriceRange = (): void => {
+		const from = priceFrom.trim();
+		const to = priceTo.trim();
+
+		if (!from && !to) {
+			appliedPriceRange = null;
+			return;
+		}
+
+		appliedPriceRange = {
+			gte: from && !isNaN(Number(from)) ? Number(from) : undefined,
+			lte: to && !isNaN(Number(to)) ? Number(to) : undefined,
+		};
+	};
+
+	const handleLoadMore = (endCursor: string): void => {
+		productPagesVariables = productPagesVariables.concat({
+			...productPagesVariables[productPagesVariables.length - 1],
+			first: PAGE_SIZE,
+			after: endCursor,
+		});
+	};
+
+	const isLastPage = (idx: number): boolean => idx === productPagesVariables.length - 1;
 </script>
+
+<svelte:head>
+	<title>{$CategoryQuery.data?.category?.name || $T('category.title')} - Sitename</title>
+	{#if $CategoryQuery.data?.category?.seoDescription}
+		<meta name="description" content={$CategoryQuery.data.category.seoDescription} />
+	{/if}
+</svelte:head>
 
 {#if $CategoryQuery.fetching}
 	<div class="flex gap-2">
@@ -112,13 +181,13 @@
 					</div>
 					<div class="flex items-center gap-1">
 						<Icon icon={RosetteDiscountChecked} class="text-green-600" size="md" />
-						<div class="text-xs text-gray-600">Official</div>
+						<div class="text-xs text-gray-600">{$T('category.official')}</div>
 					</div>
 				</div>
 			</div>
 
 			<AccordionList
-				header="Sub categories"
+				header={$T('category.subCategories')}
 				headerIcon={Category}
 				items={category?.children?.edges || []}
 				partialDisplay={5}
@@ -157,46 +226,66 @@
 					</span>
 				{/snippet}
 				<div
-					class="flex items-center gap-2 sticky h-fit top-16 bg-white rounded-lg border border-gray-200 p-2 shadow-xs"
+					class="flex items-center gap-2 sticky h-fit top-16 bg-white rounded-lg border border-gray-200 p-2 shadow-xs flex-wrap"
 				>
 					<Icon icon={FilterCog} size="md" class="text-gray-500" />
 					<div class="h-6 w-[2px] rounded-full bg-gray-300"></div>
-					<DropDown>
-						{#snippet trigger({ onclick })}
-							<div>
-								<Button size="xs" variant="outline" color="gray" {onclick}>
-									Select sub category
-								</Button>
-							</div>
-						{/snippet}
-						<div class="rounded-lg py-0.5">
-							{#each category?.children?.edges || [] as edge, idx (idx)}
-								<div
-									role="menuitem"
-									class="flex items-center cursor-pointer gap-2 py-1 px-1.5 text-sm transition-colors hover:bg-gray-100 active:bg-gray-200 focus:bg-gray-100 duration-150"
-								>
-									<img
-										src={edge.node.backgroundImage?.url}
-										alt={edge.node.backgroundImage?.alt || edge.node.name}
-										class="rounded-md border border-gray-200 h-7 w-7"
-									/>
-									<span>{edge.node.name}</span>
+
+					{#if category?.children?.edges?.length}
+						<DropDown>
+							{#snippet trigger({ onclick })}
+								<div>
+									<Button size="xs" variant="outline" color="gray" {onclick}>
+										{$T('category.selectSubCategory')}
+									</Button>
 								</div>
-							{/each}
-						</div>
-					</DropDown>
+							{/snippet}
+							<div class="rounded-lg py-0.5">
+								{#each category?.children?.edges || [] as edge, idx (idx)}
+									<a
+										href={AppRoute.CATEGORY_DETAILS(edge.node.slug)}
+										role="menuitem"
+										class="flex items-center cursor-pointer gap-2 py-1 px-1.5 text-sm transition-colors hover:bg-gray-100 active:bg-gray-200 focus:bg-gray-100 duration-150"
+									>
+										<img
+											src={edge.node.backgroundImage?.url}
+											alt={edge.node.backgroundImage?.alt || edge.node.name}
+											class="rounded-md border border-gray-200 h-7 w-7"
+										/>
+										<span>{edge.node.name}</span>
+									</a>
+								{/each}
+							</div>
+						</DropDown>
+					{/if}
 
 					<div class="flex items-center gap-1">
-						<div class="text-xs font-semibold text-gray-600">Price</div>
-						<Input size="xs" placeholder="from" type="number" class="max-w-30" min={0} {action} />
+						<div class="text-xs font-semibold text-gray-600">{$T('common.price')}</div>
+						<Input
+							size="xs"
+							placeholder={$T('common.from')}
+							type="number"
+							class="max-w-30"
+							min={0}
+							bind:value={priceFrom}
+							{action}
+						/>
 						<span>-</span>
-						<Input size="xs" placeholder="to" type="number" class="max-w-30" min={0} {action} />
+						<Input
+							size="xs"
+							placeholder={$T('common.to')}
+							type="number"
+							class="max-w-30"
+							min={0}
+							bind:value={priceTo}
+							{action}
+						/>
 					</div>
 
-					<dir class="flex items-center gap-1">
+					<div class="flex items-center gap-1">
 						<Select
 							options={$ProductSortFields}
-							placeholder="Sort field"
+							placeholder={$T('common.ordering')}
 							class="max-w-30"
 							size="xs"
 							bind:value={sortField}
@@ -205,18 +294,37 @@
 							icon={orderDirection === OrderDirection.Asc ? ArrowDown : ArrowUp}
 							size="xs"
 							color="gray"
+							aria-label={$T('common.ordering')}
 							onclick={() => (orderDirection = flipDirection(orderDirection))}
 						/>
-					</dir>
+					</div>
 
-					<Button startIcon={Search} size="xs">Search</Button>
+					<Button startIcon={Search} size="xs" onclick={applyPriceRange}
+						>{$T('common.search')}</Button
+					>
 				</div>
 			{:else if showError}
-				<Alert size="xs" variant="error">Error occured when fetching channels data</Alert>
+				<Alert size="xs" variant="error">{$T('error.channelFetchFailed')}</Alert>
 			{/if}
 
 			<div class={SitenameCommonClassName}>
-				<!-- {@render children()} -->
+				{#if !productPagesVariables.length}
+					<div class="flex flex-wrap flex-row justify-between">
+						{#each Array(4) as _, idx (idx)}
+							<div class="w-1/2 p-0.5">
+								<ProductCardSkeleton />
+							</div>
+						{/each}
+					</div>
+				{:else}
+					{#each productPagesVariables as variables, idx (idx)}
+						<CategoryProductList
+							{variables}
+							isLastPage={isLastPage(idx)}
+							onLoadMore={handleLoadMore}
+						/>
+					{/each}
+				{/if}
 			</div>
 		</div>
 	</div>

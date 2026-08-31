@@ -60,7 +60,9 @@ export const AppRoute = {
 	SETTINGS_CONFIGS_CATEGORY_DETAILS: (id: string) =>
 		buildLinkWithRespectToChannel(`settings/categories/${id}`),
 	SETTINGS_CONFIGS_CATEGORY_NEW: (parentId?: string) =>
-		buildLinkWithRespectToChannel('settings/categories/new' + (parentId ? `?parent=${parentId}` : '')),
+		buildLinkWithRespectToChannel(
+			'settings/categories/new' + (parentId ? `?parent=${parentId}` : ''),
+		),
 
 	SETTINGS_CONFIGS_COLLECTIONS: () => buildLinkWithRespectToChannel('settings/collections'),
 	SETTINGS_CONFIGS_COLLECTION_DETAILS: (id: string) =>
@@ -117,8 +119,11 @@ export const AppRoute = {
 
 	HOME: () => buildHomePageLink(),
 	TRENDING: () => buildLinkWithRespectToChannel('trending'),
+	WISHLIST: () => buildLinkWithRespectToChannel('wishlist'),
 	SETTINGS: () => buildLinkWithRespectToChannel('settings'),
 	SHOPPING_CART: () => buildLinkWithRespectToChannel('shopping-cart'),
+	ORDER_DETAILS: (id: string) => buildLinkWithRespectToChannel(`orders/${id}`),
+	ORDERS_HISTORY: () => buildLinkWithRespectToChannel('orders/history'),
 
 	STORE_SETTINGS: () => buildLinkWithRespectToChannel('settings/store-settings'),
 	APPS_SETTINGS: () => buildLinkWithRespectToChannel('settings/apps'),

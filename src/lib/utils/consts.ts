@@ -12,9 +12,8 @@ import {
 } from '$lib/components/icons';
 import { CountryCode, LanguageCodeEnum, type PaymentGatewayConfig } from '$lib/gql/graphql';
 import { type PaymentMethodsResponse } from '@adyen/adyen-web';
-import { AdyenCheckout } from '@adyen/adyen-web';
+import type { AdyenCheckout } from '@adyen/adyen-web';
 import dayjs from 'dayjs';
-
 
 export const EASEPICK_CORE_STYLE_v1_2_1 = '/css/easepick-core/1.2.1.css';
 export const EASEPICK_AMP_STYLE_v1_2_1 = '/css/easepick-amp/1.2.1.css';
@@ -27,11 +26,11 @@ export const IMAGE_EXTENSION_REGEX = /\.(jpg|jpeg|png|gif|bmp|tiff|webp|svg)$/g;
 /**
  * all server methods MUST return this type, for consistency
  */
-export type SocialResponse<T> = {
+export interface SocialResponse<T> {
 	status: number;
 	error?: string;
 	data?: T;
-};
+}
 
 export const HTTPStatusSuccess = 200,
 	HTTPStatusCreated = 201,
@@ -66,12 +65,12 @@ export enum SearchParamKey {
 	FIRST = 'first',
 	LAST = 'last',
 	SEARCH_QUERY = 'search',
-};
+}
 
 /**
  * NOTE: one channel has 1 country only
  */
-export type ChannelProps = {
+export interface ChannelProps {
 	slug: string;
 	currency: CurrencyCode;
 	currencySymbol: string;
@@ -79,7 +78,7 @@ export type ChannelProps = {
 	currencyIcon: IconContent;
 	defaultCountryCode: CountryCode;
 	capitalLatLong: number[];
-};
+}
 
 export const DEFAULT_CHANNEL: ChannelProps = {
 	slug: 'vn',
@@ -99,7 +98,7 @@ export const CHANNELS: ChannelProps[] = [
 	{
 		slug: 'pl',
 		currency: 'PLN',
-		currencySymbol: '€',
+		currencySymbol: 'zł',
 		locale: LanguageCodeEnum.Pl,
 		currencyIcon: CurrencyEuror,
 		defaultCountryCode: CountryCode.Pl,
@@ -135,23 +134,46 @@ export const CHANNELS: ChannelProps[] = [
 ];
 
 export type CurrencyCode = 'USD' | 'VND' | 'PLN' | 'EUR' | 'JPY' | 'KRW';
-type CurrencySymbol = '$' | '₫' | '€' | '¥' | '₩';
+type CurrencySymbol = '$' | '₫' | '€' | '¥' | '₩' | 'zł';
 
-export type Channel = {
+/**
+ * ISO 4217 minor units (decimal digits) per currency.
+ * Payment providers such as Adyen expect amounts expressed in minor units.
+ */
+export const CURRENCY_MINOR_UNITS: Record<CurrencyCode, number> = {
+	USD: 2,
+	VND: 0,
+	PLN: 2,
+	EUR: 2,
+	JPY: 0,
+	KRW: 0,
+};
+
+/**
+ * Convert a major-unit amount (e.g. `12.3` USD) into the minor units
+ * expected by payment providers (e.g. `1230`).
+ * Unknown currencies fall back to 2 decimal digits.
+ */
+export const toMinorUnits = (amount: number, currency: string): number => {
+	const decimals = CURRENCY_MINOR_UNITS[currency as CurrencyCode] ?? 2;
+	return Math.round(amount * 10 ** decimals);
+};
+
+export interface Channel {
 	name: string;
 	currency: CurrencyCode;
 	locale: LanguageCodeEnum;
 	slug: string;
 	currencySymbol: CurrencySymbol;
 	countryCode: CountryCode;
-};
+}
 
 export type WeightUnit = 'kg' | 'lb' | 'g' | 'oz';
 
 export const CurrencyIconMap = CHANNELS.reduce(
 	(acc, chan) => ({
 		...acc,
-		[chan.currency as CurrencyCode]: chan.currencyIcon,
+		[chan.currency]: chan.currencyIcon,
 	}),
 	{} as Record<CurrencyCode, IconContent>,
 );
@@ -200,8 +222,10 @@ export type ParsedStripeGateway = ParsedPaymentGateway<StripeGatewayId, Record<s
 
 export type ParsedPaymentGateways = ReadonlyArray<ParsedAdyenGateway | ParsedStripeGateway>;
 
-export interface ParsedPaymentGateway<ID extends string, TData extends Record<string, unknown>>
-	extends Omit<PaymentGatewayConfig, 'data' | 'id'> {
+export interface ParsedPaymentGateway<
+	ID extends string,
+	TData extends Record<string, unknown>,
+> extends Omit<PaymentGatewayConfig, 'data' | 'id'> {
 	data: TData;
 	id: ID;
 }
@@ -211,7 +235,7 @@ export type AdyenCheckoutInstance = Awaited<ReturnType<typeof AdyenCheckout>>;
 export const LATITUDE = 'LATITUDE';
 export const LONGITUDE = 'LONGITUDE';
 
-export type NominatimOsmProps = {
+export interface NominatimOsmProps {
 	place_id: number;
 	license: string;
 	osm_type: string;
@@ -233,7 +257,7 @@ export type NominatimOsmProps = {
 		country_code: string;
 	};
 	boundingbox: string[];
-};
+}
 
 export const SitenameTimeFormat = 'MMM D, YYYY hh:mm A';
 export const CommonEaseDatePickerFormat = 'YYYY-MM-DD hh:mm';
