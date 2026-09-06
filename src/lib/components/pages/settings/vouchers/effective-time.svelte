@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { T } from '$i18n';
-	import { RFC3339TimeFormat } from '$lib/api/graphql/utils';
+	import { RFC3339TimeFormat } from '$lib/utils/graphql-helpers';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { THIS_TIME_LAST_5_YEARS, THIS_TIME_NEXT_5_YEARS } from '$lib/utils/consts';

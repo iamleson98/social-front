@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { CHANNELS_QUERY } from '$lib/api/channels';
-	import { RFC3339TimeFormat } from '$lib/api/graphql/utils';
+	import { RFC3339TimeFormat } from '$lib/utils/graphql-helpers';
 	import { operationStore } from '$lib/api/operation';
 	import { Alert } from '$lib/components/ui/Alert';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';

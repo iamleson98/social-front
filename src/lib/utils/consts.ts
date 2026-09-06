@@ -1,14 +1,14 @@
 import {
-	CircleCheckFilled,
-	ExclamationCircleFilled,
-	InfoCircleFilled,
-	InfoTriangleFilled,
-	CurrencyDollar,
-	CurrencyDong,
-	CurrencyEuror,
-	CurrencyJpy,
-	CurrencyKrw,
-	type IconContent,
+        CircleCheckFilled,
+        ExclamationCircleFilled,
+        InfoCircleFilled,
+        InfoTriangleFilled,
+        CurrencyDollar,
+        CurrencyDong,
+        CurrencyEuror,
+        CurrencyJpy,
+        CurrencyKrw,
+        type IconContent,
 } from '$lib/components/icons';
 import { CountryCode, LanguageCodeEnum, type PaymentGatewayConfig } from '$lib/gql/graphql';
 import { type PaymentMethodsResponse } from '@adyen/adyen-web';
@@ -27,24 +27,26 @@ export const IMAGE_EXTENSION_REGEX = /\.(jpg|jpeg|png|gif|bmp|tiff|webp|svg)$/g;
  * all server methods MUST return this type, for consistency
  */
 export interface SocialResponse<T> {
-	status: number;
-	error?: string;
-	data?: T;
+        status: number;
+        error?: string;
+        data?: T;
 }
 
 export const HTTPStatusSuccess = 200,
-	HTTPStatusCreated = 201,
-	HTTPStatusNoContent = 204,
-	HTTPStatusBadRequest = 400,
-	HTTPStatusUnauthorized = 401,
-	HTTPStatusForbidden = 403,
-	HTTPStatusNotFound = 404,
-	HTTPStatusConflict = 409,
-	HTTPStatusServerError = 500,
-	HTTPStatusServiceUnavailable = 503,
-	HTTPStatusGatewayTimeout = 504,
-	HTTPStatusTemporaryRedirect = 307,
-	HTTPStatusPermanentRedirect = 308;
+        HTTPStatusCreated = 201,
+        HTTPStatusNoContent = 204,
+        HTTPStatusBadRequest = 400,
+        HTTPStatusUnauthorized = 401,
+        HTTPStatusForbidden = 403,
+        HTTPStatusNotFound = 404,
+        HTTPStatusConflict = 409,
+        HTTPStatusTooManyRequests = 429,
+        HTTPStatusServerError = 500,
+        HTTPStatusServiceUnavailable = 503,
+        HTTPStatusGatewayTimeout = 504,
+        HTTPStatusTemporaryRedirect = 307,
+        HTTPStatusPermanentRedirect = 308,
+        HTTPStatusSeeOther = 303;
 
 export type SocialVariant = 'success' | 'error' | 'warning' | 'info';
 
@@ -57,80 +59,80 @@ export const COUNTRY_CODE_KEY = 'country';
 
 /** Common keys used in search params. Mostly used in pages that show tabular data */
 export enum SearchParamKey {
-	ORDER_DIRECTION = 'sort',
-	ORDER_BY_FIELD = 'order-by',
-	PRICE_RANGE = 'price-range',
-	BEFORE = 'before',
-	AFTER = 'after',
-	FIRST = 'first',
-	LAST = 'last',
-	SEARCH_QUERY = 'search',
+        ORDER_DIRECTION = 'sort',
+        ORDER_BY_FIELD = 'order-by',
+        PRICE_RANGE = 'price-range',
+        BEFORE = 'before',
+        AFTER = 'after',
+        FIRST = 'first',
+        LAST = 'last',
+        SEARCH_QUERY = 'search',
 }
 
 /**
  * NOTE: one channel has 1 country only
  */
 export interface ChannelProps {
-	slug: string;
-	currency: CurrencyCode;
-	currencySymbol: string;
-	locale: LanguageCodeEnum;
-	currencyIcon: IconContent;
-	defaultCountryCode: CountryCode;
-	capitalLatLong: number[];
+        slug: string;
+        currency: CurrencyCode;
+        currencySymbol: string;
+        locale: LanguageCodeEnum;
+        currencyIcon: IconContent;
+        defaultCountryCode: CountryCode;
+        capitalLatLong: number[];
 }
 
 export const DEFAULT_CHANNEL: ChannelProps = {
-	slug: 'vn',
-	defaultCountryCode: CountryCode.Vn,
-	currency: 'VND',
-	currencySymbol: '₫',
-	locale: LanguageCodeEnum.Vi,
-	currencyIcon: CurrencyDong,
-	capitalLatLong: [21.0278, 105.8342],
+        slug: 'vn',
+        defaultCountryCode: CountryCode.Vn,
+        currency: 'VND',
+        currencySymbol: '₫',
+        locale: LanguageCodeEnum.Vi,
+        currencyIcon: CurrencyDong,
+        capitalLatLong: [21.0278, 105.8342],
 };
 
 /**
  * NOTE: Those channels must match channels defined in bakend
  */
 export const CHANNELS: ChannelProps[] = [
-	DEFAULT_CHANNEL,
-	{
-		slug: 'pl',
-		currency: 'PLN',
-		currencySymbol: 'zł',
-		locale: LanguageCodeEnum.Pl,
-		currencyIcon: CurrencyEuror,
-		defaultCountryCode: CountryCode.Pl,
-		capitalLatLong: [52.2297, 21.0122],
-	},
-	{
-		slug: 'us',
-		currency: 'USD',
-		currencySymbol: '$',
-		locale: LanguageCodeEnum.En,
-		currencyIcon: CurrencyDollar,
-		defaultCountryCode: CountryCode.Us,
-		capitalLatLong: [47.7511, 120.7401],
-	},
-	{
-		slug: 'kr',
-		currency: 'KRW',
-		currencySymbol: '₩',
-		locale: LanguageCodeEnum.Ko,
-		currencyIcon: CurrencyKrw,
-		defaultCountryCode: CountryCode.Kr,
-		capitalLatLong: [37.5503, 126.9971],
-	},
-	{
-		slug: 'jp',
-		currency: 'JPY',
-		currencySymbol: '¥',
-		locale: LanguageCodeEnum.Ja,
-		currencyIcon: CurrencyJpy,
-		defaultCountryCode: CountryCode.Jp,
-		capitalLatLong: [35.6764, 139.65],
-	},
+        DEFAULT_CHANNEL,
+        {
+                slug: 'pl',
+                currency: 'PLN',
+                currencySymbol: 'zł',
+                locale: LanguageCodeEnum.Pl,
+                currencyIcon: CurrencyEuror,
+                defaultCountryCode: CountryCode.Pl,
+                capitalLatLong: [52.2297, 21.0122],
+        },
+        {
+                slug: 'us',
+                currency: 'USD',
+                currencySymbol: '$',
+                locale: LanguageCodeEnum.En,
+                currencyIcon: CurrencyDollar,
+                defaultCountryCode: CountryCode.Us,
+                capitalLatLong: [47.7511, 120.7401],
+        },
+        {
+                slug: 'kr',
+                currency: 'KRW',
+                currencySymbol: '₩',
+                locale: LanguageCodeEnum.Ko,
+                currencyIcon: CurrencyKrw,
+                defaultCountryCode: CountryCode.Kr,
+                capitalLatLong: [37.5503, 126.9971],
+        },
+        {
+                slug: 'jp',
+                currency: 'JPY',
+                currencySymbol: '¥',
+                locale: LanguageCodeEnum.Ja,
+                currencyIcon: CurrencyJpy,
+                defaultCountryCode: CountryCode.Jp,
+                capitalLatLong: [35.6764, 139.65],
+        },
 ];
 
 export type CurrencyCode = 'USD' | 'VND' | 'PLN' | 'EUR' | 'JPY' | 'KRW';
@@ -141,12 +143,12 @@ type CurrencySymbol = '$' | '₫' | '€' | '¥' | '₩' | 'zł';
  * Payment providers such as Adyen expect amounts expressed in minor units.
  */
 export const CURRENCY_MINOR_UNITS: Record<CurrencyCode, number> = {
-	USD: 2,
-	VND: 0,
-	PLN: 2,
-	EUR: 2,
-	JPY: 0,
-	KRW: 0,
+        USD: 2,
+        VND: 0,
+        PLN: 2,
+        EUR: 2,
+        JPY: 0,
+        KRW: 0,
 };
 
 /**
@@ -155,34 +157,34 @@ export const CURRENCY_MINOR_UNITS: Record<CurrencyCode, number> = {
  * Unknown currencies fall back to 2 decimal digits.
  */
 export const toMinorUnits = (amount: number, currency: string): number => {
-	const decimals = CURRENCY_MINOR_UNITS[currency as CurrencyCode] ?? 2;
-	return Math.round(amount * 10 ** decimals);
+        const decimals = CURRENCY_MINOR_UNITS[currency as CurrencyCode] ?? 2;
+        return Math.round(amount * 10 ** decimals);
 };
 
 export interface Channel {
-	name: string;
-	currency: CurrencyCode;
-	locale: LanguageCodeEnum;
-	slug: string;
-	currencySymbol: CurrencySymbol;
-	countryCode: CountryCode;
+        name: string;
+        currency: CurrencyCode;
+        locale: LanguageCodeEnum;
+        slug: string;
+        currencySymbol: CurrencySymbol;
+        countryCode: CountryCode;
 }
 
 export type WeightUnit = 'kg' | 'lb' | 'g' | 'oz';
 
 export const CurrencyIconMap = CHANNELS.reduce(
-	(acc, chan) => ({
-		...acc,
-		[chan.currency]: chan.currencyIcon,
-	}),
-	{} as Record<CurrencyCode, IconContent>,
+        (acc, chan) => ({
+                ...acc,
+                [chan.currency]: chan.currencyIcon,
+        }),
+        {} as Record<CurrencyCode, IconContent>,
 );
 
 export const SocialVariantIconsMap: Record<SocialVariant, IconContent> = {
-	error: ExclamationCircleFilled,
-	info: InfoCircleFilled,
-	warning: InfoTriangleFilled,
-	success: CircleCheckFilled,
+        error: ExclamationCircleFilled,
+        info: InfoCircleFilled,
+        warning: InfoTriangleFilled,
+        success: CircleCheckFilled,
 };
 
 /**
@@ -209,25 +211,25 @@ export const supportedPaymentGateways = [adyenGatewayId, stripeGatewayId];
 export const paidStatuses: PaymentStatus[] = ['overpaid', 'paidInFull', 'authorized'];
 
 export interface AdyenGatewayInitializePayload extends Record<string, unknown> {
-	paymentMethodsResponse: PaymentMethodsResponse;
-	clientKey: string;
-	environment: string;
+        paymentMethodsResponse: PaymentMethodsResponse;
+        clientKey: string;
+        environment: string;
 }
 
 export type ParsedAdyenGateway = ParsedPaymentGateway<
-	AdyenGatewayId,
-	AdyenGatewayInitializePayload
+        AdyenGatewayId,
+        AdyenGatewayInitializePayload
 >;
 export type ParsedStripeGateway = ParsedPaymentGateway<StripeGatewayId, Record<string, unknown>>;
 
 export type ParsedPaymentGateways = ReadonlyArray<ParsedAdyenGateway | ParsedStripeGateway>;
 
 export interface ParsedPaymentGateway<
-	ID extends string,
-	TData extends Record<string, unknown>,
+        ID extends string,
+        TData extends Record<string, unknown>,
 > extends Omit<PaymentGatewayConfig, 'data' | 'id'> {
-	data: TData;
-	id: ID;
+        data: TData;
+        id: ID;
 }
 
 export type AdyenCheckoutInstance = Awaited<ReturnType<typeof AdyenCheckout>>;
@@ -236,27 +238,27 @@ export const LATITUDE = 'LATITUDE';
 export const LONGITUDE = 'LONGITUDE';
 
 export interface NominatimOsmProps {
-	place_id: number;
-	license: string;
-	osm_type: string;
-	osm_id: number;
-	lat: string;
-	lon: string;
-	class: string;
-	type: string;
-	place_rank: number;
-	importance: number;
-	addresstype: string;
-	name: string;
-	display_name: string;
-	address: {
-		village: string;
-		county: string;
-		city: string;
-		country: string;
-		country_code: string;
-	};
-	boundingbox: string[];
+        place_id: number;
+        license: string;
+        osm_type: string;
+        osm_id: number;
+        lat: string;
+        lon: string;
+        class: string;
+        type: string;
+        place_rank: number;
+        importance: number;
+        addresstype: string;
+        name: string;
+        display_name: string;
+        address: {
+                village: string;
+                county: string;
+                city: string;
+                country: string;
+                country_code: string;
+        };
+        boundingbox: string[];
 }
 
 export const SitenameTimeFormat = 'MMM D, YYYY hh:mm A';

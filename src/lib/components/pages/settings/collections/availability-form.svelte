@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { T } from '$i18n';
 	import { CHANNELS_QUERY } from '$lib/api/channels';
-	import { RFC3339TimeFormat } from '$lib/api/graphql/utils';
+	import { RFC3339TimeFormat } from '$lib/utils/graphql-helpers';
 	import { operationStore } from '$lib/api/operation';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { Trash } from '$lib/components/icons';

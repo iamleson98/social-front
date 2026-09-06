@@ -1,6 +1,12 @@
+/**
+ * Shared date / cursor / metadata helpers.
+ *
+ * Previously these lived in `src/lib/api/graphql/utils` next to a TypeORM +
+ * graphql-yoga backend that was never wired up — that backend was removed and
+ * only these pure functions, which the storefront actually imports, remain.
+ */
 import { OrderDirection, type MetadataItem, type PageInfo } from '$lib/gql/graphql';
 import type { PaginationOptions } from '$lib/utils/utils';
-import type { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
 
 /**
  * Split a string into an array of substrings based on a delimiter and a maximum number of splits.
@@ -47,29 +53,6 @@ export const decodeBase64Cursor = (cursor: string) => {
 	return { className, key };
 };
 
-export const addPaginOptionsToQuery = <T extends ObjectLiteral>(
-	query: SelectQueryBuilder<T>,
-	fieldName: string,
-	paginOpts?: PaginationOptions,
-) => {
-	if (!paginOpts) return query;
-
-	const limit = getLimit(paginOpts);
-	if (limit) query = query.limit(limit);
-
-	const [cursor, operator] = paginOpts.before ? [paginOpts.before, '<'] : [paginOpts.after, '>'];
-	if (cursor) {
-		const { key } = decodeBase64Cursor(cursor);
-		if (RFC3339TimeRegex.test(key)) {
-			const value = dateFromRFC3339(key);
-			query = query.andWhere(`${fieldName} ${operator} :value`, { value });
-		}
-	}
-
-	const orderDirection = getOrderDirection(paginOpts);
-	return query.orderBy(fieldName, orderDirection, 'NULLS LAST');
-};
-
 export const getLimit = (opts: PaginationOptions) => {
 	if (opts.first) return opts.first + 1;
 	if (opts.last) return opts.last + 1;
@@ -81,12 +64,12 @@ export const getOrderDirection = (opts: PaginationOptions): OrderDirection => {
 	return OrderDirection.Asc;
 };
 
-export const createGraphqlPageInfo = <T extends ObjectLiteral>(
+export const createGraphqlPageInfo = (
 	paginOpts: PaginationOptions,
-	results: T[],
+	resultCount: number,
 ): PageInfo => {
 	const limit = getLimit(paginOpts);
-	const hasNextPage = results.length >= (limit || 0);
+	const hasNextPage = resultCount >= (limit || 0);
 	const hasPreviousPage = !!paginOpts.before || !!paginOpts.after;
 	return {
 		hasNextPage,

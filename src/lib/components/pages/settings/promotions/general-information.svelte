@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { T } from '$i18n';
-	import { RFC3339TimeFormat } from '$lib/api/graphql/utils';
+	import { RFC3339TimeFormat } from '$lib/utils/graphql-helpers';
 	import { EditorJSComponent } from '$lib/components/common/editorjs';
 	import SectionHeader from '$lib/components/common/section-header.svelte';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';

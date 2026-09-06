@@ -9,29 +9,32 @@ import type { CookieSerializeOptions } from 'cookie';
  * @returns cookie value. If cookie does not have provided key, returns empty string
  */
 export function getCookieByKey(key: string): string {
-	if (!browser) return '';
+        if (!browser) return '';
 
-	const cookieSplit = document.cookie.split(';');
-	const matchCookie = cookieSplit.find((cookie) => cookie.trim().startsWith(`${key}=`));
-	if (!matchCookie) return '';
+        const cookieSplit = document.cookie.split(';');
+        const matchCookie = cookieSplit.find((cookie) => cookie.trim().startsWith(`${key}=`));
+        if (!matchCookie) return '';
 
-	return matchCookie.split('=')[1];
+        // NOTE: cookie values may contain '=' (base64 padding etc.) — only strip
+        // the leading `key=` prefix, keep the rest of the value intact.
+        const trimmed = matchCookie.trim();
+        return decodeURIComponent(trimmed.substring(key.length + 1));
 }
 
 export const clientSideGetCookieOrDefault = (key: string, defaultValue: string = '') => {
-	return getCookieByKey(key) || defaultValue;
+        return getCookieByKey(key) || defaultValue;
 };
 
 export const clientSideSetCookie = (key: string, value: string, opts?: CookieSerializeOptions) => {
-	if (!browser) return;
+        if (!browser) return;
 
-	let options = '';
+        let options = '';
 
-	if (opts?.expires) options += `; expires=${opts.expires.toUTCString()}`;
-	if (opts?.path) options += `; path=${opts.path}`;
-	if (opts?.domain) options += `; domain=${opts.domain}`;
-	if (opts?.secure) options += '; Secure';
-	if (opts?.sameSite) options += `; SameSite=${opts.sameSite}`;
+        if (opts?.expires) options += `; expires=${opts.expires.toUTCString()}`;
+        if (opts?.path) options += `; path=${opts.path}`;
+        if (opts?.domain) options += `; domain=${opts.domain}`;
+        if (opts?.secure) options += '; Secure';
+        if (opts?.sameSite) options += `; SameSite=${opts.sameSite}`;
 
-	document.cookie = `${key}=${value}${options}`;
+        document.cookie = `${key}=${value}${options}`;
 };

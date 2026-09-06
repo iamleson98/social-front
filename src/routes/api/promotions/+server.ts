@@ -5,11 +5,23 @@ import type {
 	Query,
 	QueryPromotionsArgs,
 } from '$lib/gql/graphql';
-import { getMiddleAccountAccessToken, tryRefreshToken } from '$lib/utils/server-side-only.js';
+import {
+	forbiddenJson,
+	getMiddleAccountAccessToken,
+	isSameOriginRequest,
+	rateLimit,
+	tooManyRequestsJson,
+	tryRefreshToken,
+} from '$lib/utils/server-side-only.js';
 import { json } from '@sveltejs/kit';
 
 
 export const POST = async (event) => {
+	// This endpoint signs in with a privileged service account internally:
+	// only same-origin calls are allowed and the rate is capped per client.
+	if (!isSameOriginRequest(event)) return forbiddenJson();
+	if (!rateLimit(`promotions:${event.getClientAddress()}`, 30, 60_000)) return tooManyRequestsJson();
+
 	const body: QueryPromotionsArgs = await event.request.json();
 
 	let token = await getMiddleAccountAccessToken();

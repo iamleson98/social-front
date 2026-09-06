@@ -5,9 +5,10 @@ import { redirect } from '@sveltejs/kit';
 // export const ssr = false;
 
 export const load = async () => {
-	// if (!dev) {
-	// 	return redirect(HTTPStatusPermanentRedirect, '/');
-	// }
+	// the lab is a developer playground — it must never ship to production
+	if (!dev) {
+		redirect(HTTPStatusPermanentRedirect, '/');
+	}
 
 	return {
 		meta: {

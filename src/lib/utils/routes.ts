@@ -164,5 +164,4 @@ export const AppRoute = {
 	 * uris below are for API calls
 	 */
 	CHECKOUT_GET_OR_CREATE: '/checkout/get-or-create',
-	GRAPHQL_API: '/api/graphql',
 };

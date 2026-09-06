@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	import { T } from '$i18n';
-	import { RFC3339TimeFormat } from '$lib/api/graphql/utils';
+	import { RFC3339TimeFormat } from '$lib/utils/graphql-helpers';
 	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
 	import { Checkbox, Input } from '$lib/components/ui/Input';
 	import { type Channel } from '$lib/gql/graphql';
