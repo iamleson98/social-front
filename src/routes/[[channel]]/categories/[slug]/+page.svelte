@@ -152,11 +152,11 @@
 
 {#if $CategoryQuery.fetching}
 	<div class="flex gap-2">
-		<div class="w-1/4 max-tablet:w-full space-y-2 sticky h-fit top-16">
+		<div class="w-1/4 max-tablet:w-full space-y-2 sticky h-fit top-[100px]">
 			<Skeleton class="w-full h-66" />
 		</div>
-		<div class="w-3/4 max-tablet:w-full space-y-2 sticky h-fit top-16">
-			<SkeletonContainer class="flex items-center gap-4 p-3! rounded-lg!">
+		<div class="w-3/4 max-tablet:w-full space-y-2 sticky h-fit top-[100px]">
+			<SkeletonContainer class="flex items-center gap-4 p-3! rounded-xl!">
 				<Skeleton class="w-1/3 h-5" />
 				<Skeleton class="w-1/3 h-5" />
 			</SkeletonContainer>
@@ -166,26 +166,28 @@
 	<Alert size="xs" variant="error">{$CategoryQuery.error.message}</Alert>
 {:else if $CategoryQuery.data?.category}
 	{@const { category } = $CategoryQuery.data}
-	<div class="flex gap-2">
-		<!-- sidebar -->
-		<div class="w-1/4 max-tablet:w-full space-y-2 sticky h-fit top-16">
-			<div class={SitenameCommonClassName}>
-				<div
-					class="h-66 mb-4 w-66 mx-auto rounded-sm bg-cover bg-center bg-no-repeat"
-					style={`background-image: url(${category?.backgroundImage?.url});`}
-				></div>
-
-				<div class="text-gray-700">
-					<div class="font-semibold">
-						{category?.name}
-					</div>
-					<div class="flex items-center gap-1">
-						<Icon icon={RosetteDiscountChecked} class="text-green-600" size="md" />
-						<div class="text-xs text-gray-600">{$T('category.official')}</div>
-					</div>
-				</div>
+	<!-- category header -->
+	<div class="card-surface flex items-center gap-4 p-4">
+		{#if category?.backgroundImage?.url}
+			<div
+				class="h-16 w-16 rounded-xl bg-cover bg-center bg-no-repeat shrink-0 border border-gray-100"
+				style={`background-image: url(${category.backgroundImage.url});`}
+			></div>
+		{/if}
+		<div class="min-w-0">
+			<h1 class="text-xl font-bold text-gray-900 tracking-tight">
+				{category?.name}
+			</h1>
+			<div class="flex items-center gap-1.5 mt-1">
+				<Icon icon={RosetteDiscountChecked} class="text-green-600 size-4" />
+				<span class="text-xs text-gray-500">{$T('category.official')}</span>
 			</div>
+		</div>
+	</div>
 
+	<div class="flex gap-4">
+		<!-- sidebar -->
+		<div class="w-1/4 max-tablet:w-full space-y-2 sticky h-fit top-[100px]">
 			<AccordionList
 				header={$T('category.subCategories')}
 				headerIcon={Category}
@@ -195,13 +197,13 @@
 				{#snippet child({ node }: CategoryCountableEdge)}
 					<a
 						href={`${AppRoute.CATEGORY_DETAILS(node.slug)}`}
-						class="block p-2 rounded-md bg-white border border-gray-200 break-all"
+						class="block p-2 rounded-xl bg-white border border-gray-200 break-all hover:border-brand-300 hover:text-brand-700 transition-colors"
 					>
 						<div class="flex items-center gap-2">
 							<img
 								src={node.backgroundImage?.url}
 								alt={node.backgroundImage?.alt || node.name}
-								class="rounded-md h-6 w-6"
+								class="rounded-lg h-6 w-6"
 							/>
 							<span>{node.name}</span>
 						</div>
@@ -213,11 +215,11 @@
 		<div class="w-3/4 max-tablet:w-full space-y-2">
 			<!-- Filter Bar -->
 			{#if loading}
-				<SkeletonContainer class="flex items-center gap-4 p-3! rounded-lg!">
+				<SkeletonContainer class="flex items-center gap-4 p-3! rounded-xl!">
 					<Skeleton class="w-1/3 h-5" />
 					<Skeleton class="w-1/3 h-5" />
 				</SkeletonContainer>
-			{:else if channels.length > 0}
+			{:else}
 				{#snippet action()}
 					<span class="text-[10px] font-semibold text-gray-600">
 						{channels.find(
@@ -225,11 +227,9 @@
 						)?.currencyCode || 'VND'}
 					</span>
 				{/snippet}
-				<div
-					class="flex items-center gap-2 sticky h-fit top-16 bg-white rounded-lg border border-gray-200 p-2 shadow-xs flex-wrap"
-				>
-					<Icon icon={FilterCog} size="md" class="text-gray-500" />
-					<div class="h-6 w-[2px] rounded-full bg-gray-300"></div>
+				<div class="flex items-center gap-2 sticky h-fit top-[100px] card-surface p-2.5 flex-wrap">
+					<Icon icon={FilterCog} size="md" class="text-brand-600" />
+					<div class="h-6 w-[2px] rounded-full bg-gray-200"></div>
 
 					{#if category?.children?.edges?.length}
 						<DropDown>
@@ -303,7 +303,9 @@
 						>{$T('common.search')}</Button
 					>
 				</div>
-			{:else if showError}
+			{/if}
+
+			{#if showError}
 				<Alert size="xs" variant="error">{$T('error.channelFetchFailed')}</Alert>
 			{/if}
 

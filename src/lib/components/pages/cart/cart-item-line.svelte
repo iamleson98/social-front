@@ -5,7 +5,7 @@
 		CHECKOUT_LINES_UPDATE_MUTATION,
 	} from '$lib/api/checkout';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { Minus, Plus } from '$lib/components/icons';
+	import { Minus, Plus, Trash } from '$lib/components/icons';
 	import { IconButton } from '$lib/components/ui/Button';
 	import { Input } from '$lib/components/ui/Input';
 	import { SkeletonContainer, Skeleton } from '$lib/components/ui/Skeleton';
@@ -17,7 +17,6 @@
 		MutationCheckoutLinesUpdateArgs,
 	} from '$lib/gql/graphql';
 	import { checkoutStore } from '$lib/stores/app';
-	import { ALERT_MODAL_STORE } from '$lib/stores/ui/alert-modal';
 	import { defaultSlideShowState } from '$lib/stores/ui/slideshow';
 	import { AppRoute } from '$lib/utils';
 	import { formatMoney, checkIfGraphqlResultHasError } from '$lib/utils/utils';
@@ -49,7 +48,7 @@
 	});
 
 	const handleDeleteCheckoutLine = async () => {
-		loading = true; //
+		loading = true;
 
 		const deleteResult = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'checkoutLinesDelete'>,
@@ -59,7 +58,7 @@
 			id: checkoutId,
 		});
 
-		loading = false; //
+		loading = false;
 
 		if (checkIfGraphqlResultHasError(deleteResult, 'checkoutLinesDelete')) return;
 
@@ -78,7 +77,7 @@
 	const handleUpdateCheckoutLine = async () => {
 		if (!validateQuantity(quantity)) return;
 
-		loading = true; //
+		loading = true;
 
 		const updateResult = await GRAPHQL_CLIENT.mutation<
 			Pick<Mutation, 'checkoutLinesUpdate'>,
@@ -88,7 +87,7 @@
 			id: checkoutId,
 		});
 
-		loading = false; //
+		loading = false;
 
 		if (checkIfGraphqlResultHasError(updateResult, 'checkoutLinesUpdate')) return;
 
@@ -96,7 +95,7 @@
 	};
 
 	const handleItemQuantityInput = () => {
-		let timeout: any;
+		let timeout: ReturnType<typeof setTimeout>;
 
 		return (evt: Event) => {
 			const { value } = evt.target as HTMLInputElement;
@@ -111,73 +110,70 @@
 	};
 
 	const handleQuantityBtnClick = (delta: -1 | 1) => {
-		let timeout: any;
+		let timeout: ReturnType<typeof setTimeout>;
 
 		return () => {
 			quantity += delta;
 
 			clearTimeout(timeout);
+			if (quantity <= 0) {
+				// keep the value at 1 — removal is done via the explicit trash button
+				quantity = 1;
+				return;
+			}
 			if (!validateQuantity(quantity)) return;
 
 			timeout = setTimeout(handleUpdateCheckoutLine, DEBOUNCE_TIME);
 		};
 	};
-
-	$effect(() => {
-		// in case user want to remove the item
-		if (quantity <= 0) {
-			ALERT_MODAL_STORE.openAlertModal({
-				content: $T('common.confirmRemoveProduct'),
-				onOk: handleDeleteCheckoutLine,
-				onCancel: () => {
-					quantity = 1;
-					handleUpdateCheckoutLine();
-				},
-			});
-		}
-	});
 </script>
 
-<div class="bg-white rounded-lg p-4 w-full border mb-2 overflow-hidden">
-	<div class="flex items-center gap-2">
+<div class="card-surface p-4 w-full mb-2 overflow-hidden transition-shadow hover:shadow-md">
+	<div class="flex items-center gap-3 max-tablet:gap-2">
 		<!-- MARK: IMAGE -->
-		<div class="w-1/12">
+		<div class="shrink-0">
 			<img
 				src={mediaUrl}
 				alt={mediaAlt}
-				class="w-16 h-16 object-cover rounded-sm overflow-hidden"
+				class="w-18 h-18 max-tablet:w-14 max-tablet:h-14 object-cover rounded-xl border border-gray-100"
+				loading="lazy"
 			/>
 		</div>
 
 		<!-- MARK: NAME -->
-		<div class="w-8/12">
+		<div class="flex-1 min-w-0">
 			<a
 				href={AppRoute.PRODUCT_DETAILS(line.variant.product.slug)}
-				class="text-gray-800 text-md hover:underline"
+				class="text-gray-800 font-medium text-md line-clamp-2 hover:text-brand-700 transition-colors"
 			>
 				{line.variant.product.name}
 			</a>
+			{#if line.variant.name && line.variant.name !== line.variant.product.name}
+				<p class="text-xs text-gray-500 mt-0.5 truncate">{line.variant.name}</p>
+			{/if}
 		</div>
 
 		<!-- MARK: QUANTITY -->
-		<div class="flex items-center gap-2 w-4/12">
-			<div class="flex items-center gap-2">
+		<div class="flex items-center gap-2 shrink-0 max-tablet:gap-1">
+			<div class="flex items-center gap-1">
 				<IconButton
 					icon={Minus}
 					size="sm"
 					color="red"
 					variant="light"
 					onclick={handleQuantityBtnClick(-1)}
-					disabled={quantity <= 0 || loading}
+					disabled={quantity <= 1 || loading}
+					aria-label="decrease quantity"
 				/>
 				<Input
 					size="sm"
 					bind:value={quantity}
-					min={0}
+					min={1}
 					oninput={handleItemQuantityInput()}
 					type="number"
-					class="w-16!"
+					class="w-16! text-center"
 					disabled={loading}
+					aria-label="quantity"
 				/>
 				<IconButton
 					icon={Plus}
@@ -185,19 +181,34 @@
 					variant="light"
 					onclick={handleQuantityBtnClick(1)}
 					disabled={(typeof QUANTITY_LIMIT === 'number' && QUANTITY_LIMIT <= quantity) || loading}
+					aria-label="increase quantity"
 				/>
 			</div>
+		</div>
 
-			<!-- total price of line -->
+		<!-- MARK: LINE TOTAL + REMOVE -->
+		<div class="flex items-center gap-2 shrink-0 w-32 max-tablet:w-24 justify-end">
 			{#if loading}
 				<SkeletonContainer>
 					<Skeleton class="w-12 h-3" />
 				</SkeletonContainer>
 			{:else}
-				<span class="text-blue-700 font-semibold">
+				<span class="text-brand-700 font-semibold tabular-nums whitespace-nowrap">
 					{formatMoney(line.totalPrice.gross.currency, line.totalPrice.gross.amount)}
 				</span>
 			{/if}
+
+			<IconButton
+				icon={Trash}
+				size="sm"
+				color="red"
+				variant="light"
+				onclick={handleDeleteCheckoutLine}
+				disabled={loading}
+				aria-label="remove from cart"
+				class="tooltip tooltip-left"
+				data-tip={$T('btn.delete')}
+			/>
 		</div>
 	</div>
 </div>

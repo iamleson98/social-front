@@ -25,7 +25,7 @@
 
 <svelte:head>
 	<title>{page.data?.meta?.title || 'Web'} - Sitename</title>
-	<meta name="theme-color" content="currentColor" />
+	<meta name="theme-color" content="#2f54eb" />
 
 	<link rel="canonical" href={page.url.origin + page.url.pathname} />
 	<meta property="og:url" content={page.url.origin + page.url.pathname} />
@@ -57,10 +57,13 @@
 
 <ShopQuery />
 
-<main class="pt-16 mx-auto min-h-screen max-w-[1350px]">
-	{@render children()}
-</main>
+<!-- sticky-footer layout: content pushes the footer down naturally -->
+<div class="flex min-h-screen flex-col">
+	<main class="pt-[86px] max-tablet:pt-[132px] mx-auto w-full max-w-[1350px] flex-1">
+		{@render children()}
+	</main>
 
-<Footer />
+	<Footer />
+</div>
 <AlertListener />
 <Toaster position="top-right" duration={3000} />

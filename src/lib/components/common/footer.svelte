@@ -37,108 +37,157 @@
 	});
 </script>
 
-<footer class="p-6 max-w-6xl mx-auto">
-	<div class="mx-auto max-w-[theme(screens.xl)]">
-		<div class="md:flex md:justify-between">
-			<div class="mb-6 md:mb-0">
-				<a href={buildHomePageLink()} class="flex items-center">
-					<img src="/logo.png" class="mr-3 h-8" alt="Sitename logo" />
+<footer class="mt-auto bg-gray-950 text-gray-300">
+	<!-- trust strip -->
+	<div class="border-b border-gray-800/80">
+		<div
+			class="mx-auto max-w-[1350px] px-4 py-6 grid grid-cols-2 gap-6 md:grid-cols-4 text-center md:text-left"
+		>
+			{#each ['footer.trustAuthentic', 'footer.trustDelivery', 'footer.trustReturns', 'footer.trustSupport'] as trustKey (trustKey)}
+				<div class="flex flex-col items-center md:flex-row gap-2.5 md:gap-3">
+					<span class="text-2xl leading-none">
+						{trustKey === 'footer.trustAuthentic'
+							? '🛡️'
+							: trustKey === 'footer.trustDelivery'
+								? '🚚'
+								: trustKey === 'footer.trustReturns'
+									? '↩️'
+									: '💬'}
+					</span>
+					<span class="text-sm text-gray-400">{$T(trustKey as never)}</span>
+				</div>
+			{/each}
+		</div>
+	</div>
+
+	<!-- main footer columns -->
+	<div class="mx-auto max-w-[1350px] px-4 py-10 md:py-12">
+		<div class="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
+			<!-- brand -->
+			<div class="lg:col-span-2">
+				<a href={buildHomePageLink()} class="inline-flex items-center gap-3" aria-label="Sitename">
+					<img src="/logo.png" class="h-9 w-auto brightness-0 invert" alt="Sitename logo" />
 				</a>
+				<p class="mt-4 text-sm leading-6 text-gray-400 max-w-xs">
+					{$T('footer.brandTagline')}
+				</p>
+				<div class="mt-5 flex gap-4">
+					<a
+						href="https://www.facebook.com/profile.php?id=61572273849445"
+						target="_blank"
+						aria-label="Facebook"
+						class="text-gray-400 hover:text-white transition-colors"
+					>
+						<Facebook />
+					</a>
+					<a
+						href="/"
+						aria-label="Instagram"
+						class="text-gray-400 hover:text-white transition-colors"
+					>
+						<Instagram />
+					</a>
+					<a
+						href="/"
+						aria-label="Twitter / X"
+						class="text-gray-400 hover:text-white transition-colors"
+					>
+						<Twitter />
+					</a>
+				</div>
 			</div>
-			<div class="grid grid-cols-4 gap-4 max-tablet:grid-cols-2">
-				<!-- resources -->
-				<div>
-					<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">
-						{$T('footer.socialMedia')}
-					</h2>
-					<ul class="text-gray-600">
-						<li class="mb-4">
-							<a href={AppRoute.HOME()} class="hover:underline">Sitename</a>
-						</li>
-						<li>
-							<a href="https://tailwindcss.com/" class="hover:underline">Tailwind CSS</a>
-						</li>
-					</ul>
-				</div>
-				<!-- social media -->
-				<div>
-					<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">
-						{$T('footer.socialMedia')}
-					</h2>
-					<ul class="text-gray-600">
-						<li class="mb-4">
-							<a
-								href="https://www.facebook.com/profile.php?id=61572273849445"
-								target="_blank"
-								class="hover:underline">Facebook</a
-							>
-						</li>
-						<li>
-							<a href="https://discord.gg/4eeurUVvTy" class="hover:underline">Discord</a>
-						</li>
-					</ul>
-				</div>
 
-				<div>
-					<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">
-						{$T('footer.legal')}
-					</h2>
-					<ul class="text-gray-600">
-						<li class="mb-4">
-							<a href="/" class="hover:underline">{$T('footer.policy')}</a>
-						</li>
-						<li>
-							<a href="/" class="hover:underline">{$T('footer.policy')}</a>
-						</li>
-					</ul>
+			<!-- shop links -->
+			<nav aria-label={$T('footer.shop')}>
+				<h2 class="text-sm font-semibold text-white uppercase tracking-wider">
+					{$T('footer.shop')}
+				</h2>
+				<ul class="mt-4 space-y-3 text-sm">
+					<li>
+						<a href={buildHomePageLink()} class="hover:text-white transition-colors"
+							>{$T('pages.home')}</a
+						>
+					</li>
+					<li>
+						<a href={AppRoute.TRENDING()} class="hover:text-white transition-colors"
+							>{$T('pages.trending')}</a
+						>
+					</li>
+					<li>
+						<a href={AppRoute.WISHLIST()} class="hover:text-white transition-colors"
+							>{$T('wishlist.title')}</a
+						>
+					</li>
+					<li>
+						<a href={AppRoute.SHOPPING_CART()} class="hover:text-white transition-colors"
+							>{$T('cart.title')}</a
+						>
+					</li>
+				</ul>
+			</nav>
+
+			<!-- social + community -->
+			<nav aria-label={$T('footer.socialMedia')}>
+				<h2 class="text-sm font-semibold text-white uppercase tracking-wider">
+					{$T('footer.socialMedia')}
+				</h2>
+				<ul class="mt-4 space-y-3 text-sm">
+					<li>
+						<a
+							href="https://www.facebook.com/profile.php?id=61572273849445"
+							target="_blank"
+							class="hover:text-white transition-colors">Facebook</a
+						>
+					</li>
+					<li>
+						<a
+							href="https://discord.gg/4eeurUVvTy"
+							target="_blank"
+							class="hover:text-white transition-colors"
+						>
+							Discord
+						</a>
+					</li>
+				</ul>
+			</nav>
+
+			<!-- language -->
+			<div>
+				<h2 class="text-sm font-semibold text-white uppercase tracking-wider">
+					{$T('footer.language')}
+				</h2>
+				<div class="mt-4">
+					<DropDown placement="top-end">
+						{#snippet trigger({ onclick, onfocus })}
+							<Button {onclick} {onfocus} size="xs" variant="outline" color="gray">
+								<activeLanguage.icon />
+								{activeLanguage.name}
+							</Button>
+						{/snippet}
+						{#each SUPPORTED_LANGUAGES as language, idx (idx)}
+							<MenuItem onclick={() => setLanguageByCode(idx)}>
+								<div class="flex items-center gap-2">
+									<language.icon />
+									<span class="text-nowrap">{language.name}</span>
+								</div>
+							</MenuItem>
+						{/each}
+					</DropDown>
 				</div>
-
-				{#if !$UserStoreManager}
-					<div>
-						<h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase">
-							{$T('footer.language')}
-						</h2>
-
-						<DropDown placement="bottom-end">
-							{#snippet trigger({ onclick, onfocus })}
-								<Button {onclick} {onfocus} size="xs" variant="outline">
-									<activeLanguage.icon />
-									{activeLanguage.name}
-								</Button>
-							{/snippet}
-							{#each SUPPORTED_LANGUAGES as language, idx (idx)}
-								<MenuItem onclick={() => setLanguageByCode(idx)}>
-									<div class="flex items-center gap-2">
-										<language.icon />
-										<span class="text-nowrap">{language.name}</span>
-									</div>
-								</MenuItem>
-							{/each}
-						</DropDown>
-					</div>
-				{/if}
 			</div>
 		</div>
-		<hr class="my-6 border-gray-200 sm:mx-auto lg:my-8" />
-		<div class="sm:flex sm:items-center sm:justify-between">
-			<span class="text-sm text-gray-500 text-right">
-				© 2024 - now <a href="/" class="hover:underline">Sitename™</a>. All Rights Reserved.
+
+		<div
+			class="mt-10 border-t border-gray-800/80 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4"
+		>
+			<span class="text-xs text-gray-500">
+				© 2024 - now <a href="/" class="hover:text-gray-300">Sitename™</a>. {$T(
+					'footer.allRightsReserved',
+				)}
 			</span>
-			<div class="flex mt-4 space-x-6 sm:justify-center sm:mt-0">
-				<a
-					href="https://www.facebook.com/profile.php?id=61572273849445"
-					target="_blank"
-					aria-label="Facebook"
-					class="text-gray-500 hover:text-gray-900"
-				>
-					<Facebook />
-				</a>
-				<a href="/" aria-label="Instagram" class="text-gray-500 hover:text-gray-900">
-					<Instagram />
-				</a>
-				<a href="/" aria-label="Twitter / X" class="text-gray-500 hover:text-gray-900">
-					<Twitter />
-				</a>
+			<div class="flex gap-5 text-xs text-gray-500">
+				<a href="/" class="hover:text-gray-300 transition-colors">{$T('footer.policy')}</a>
+				<a href="/" class="hover:text-gray-300 transition-colors">{$T('footer.terms')}</a>
 			</div>
 		</div>
 	</div>

@@ -70,7 +70,7 @@
 
 <div>
 	<div class="flex items-center justify-between mb-3">
-		<h1 class="text-lg font-semibold text-gray-700">{$T('wishlist.title')}</h1>
+		<h1 class="text-lg font-bold text-gray-900 tracking-tight">{$T('wishlist.title')}</h1>
 		{#if $wishlistStore.length}
 			<span class="text-xs text-gray-400">
 				{$T('wishlist.itemCount', { count: $wishlistStore.length })}

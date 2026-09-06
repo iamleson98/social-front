@@ -136,8 +136,9 @@
 
 <Location forceAskLocation />
 
-<div class="w-md rounded-md p-2">
-	<h1 class="p-2 mb-4">{$T('signup.title')}</h1>
+<div>
+	<h1 class="text-2xl font-bold text-gray-900 tracking-tight mb-1">{$T('signup.title')}</h1>
+	<p class="text-sm text-gray-500 mb-6">{$T('signup.subtitle')}</p>
 
 	{#if $signupQueryStore?.error}
 		<Alert variant="error" class="mb-3" bordered size="sm">
@@ -152,8 +153,7 @@
 			{$T('signup.signupSuccess')}
 		</Alert>
 	{/if}
-	<Alert class="mb-2" dismissable size="sm" bordered>{$T('signup.promtGeoAccessPerm')}</Alert
-	>
+	<Alert class="mb-2" dismissable size="sm" bordered>{$T('signup.promtGeoAccessPerm')}</Alert>
 	<div class="mb-4 space-y-2">
 		<div class="flex flex-row mobile-m:flex-col justify-between items-start gap-2">
 			<Input
@@ -265,10 +265,14 @@
 		</Button>
 	</div>
 
-	<div>
-		<span class="text-xs text-gray-500">
+	<div class="text-center mb-5">
+		<span class="text-sm text-gray-500">
 			{$T('signup.alreadyHasAccount')}
-			<a href={AppRoute.AUTH_SIGNIN()} class="text-blue-600">{$T('signin.title')}</a>
+			<a
+				href={AppRoute.AUTH_SIGNIN()}
+				class="font-semibold text-brand-600 hover:text-brand-700 hover:underline"
+				>{$T('signin.title')}</a
+			>
 		</span>
 	</div>
 </div>

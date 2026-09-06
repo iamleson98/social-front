@@ -15,7 +15,6 @@
 		children,
 		class: className = '',
 		size = 'md',
-		style,
 		...rest
 	}: Props = $props();
 </script>
@@ -23,12 +22,18 @@
 <Button
 	{...rest}
 	{size}
-	class={`${className} ${ICON_BTN_SIZE_MAP[size]} ${rounded ? 'rounded-full!' : ''}`}
-	style="padding: unset !important; {style}"
-	aria-label={rest['aria-label'] || 'Icon Button'}
+	class={`icon-button ${className} ${ICON_BTN_SIZE_MAP[size]} ${rounded ? 'rounded-full!' : ''}`}
 >
 	{#if icon}
 		<Icon {icon} {size} />
 	{/if}
 	{@render children?.()}
 </Button>
+
+<style lang="postcss">
+	@reference 'tailwindcss';
+
+	.icon-button {
+		@apply px-0!;
+	}
+</style>

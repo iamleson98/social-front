@@ -5,33 +5,33 @@ import type { PermissionEnum, Query, User } from '$lib/gql/graphql';
 import { UserStoreManager } from '$lib/stores/auth/user';
 import { AppRoute, getCookieByKey } from '$lib/utils';
 import {
-        ACCESS_TOKEN_KEY,
-        CSRF_TOKEN_KEY,
-        HTTPStatusTemporaryRedirect,
-        HTTPStatusUnauthorized,
-        REFRESH_TOKEN_KEY,
+	ACCESS_TOKEN_KEY,
+	CSRF_TOKEN_KEY,
+	HTTPStatusTemporaryRedirect,
+	HTTPStatusUnauthorized,
+	REFRESH_TOKEN_KEY,
 } from '$lib/utils/consts';
 import { checkUserHasPermissions } from '$lib/utils/utils';
 import { USER_ME_QUERY_STORE } from '.';
 import { error, redirect, type RequestEvent } from '@sveltejs/kit';
 import {
-        cacheExchange,
-        Client,
-        CombinedError,
-        createRequest,
-        fetchExchange,
-        type AnyVariables,
-        type DocumentInput,
-        type Operation,
-        type OperationContext,
-        type OperationResult,
-        type OperationType,
-        type TypedDocumentNode,
+	cacheExchange,
+	Client,
+	CombinedError,
+	createRequest,
+	fetchExchange,
+	type AnyVariables,
+	type DocumentInput,
+	type Operation,
+	type OperationContext,
+	type OperationResult,
+	type OperationType,
+	type TypedDocumentNode,
 } from '@urql/core';
 import { authExchange, type AuthUtilities } from '@urql/exchange-auth';
 import { retryExchange } from '@urql/exchange-retry';
 import type { CookieSerializeOptions } from 'cookie';
-import type { DefinitionNode } from 'graphql';
+import type { OperationDefinitionNode } from 'graphql';
 
 export const MAX_REFRESH_TOKEN_TRIES = 3;
 
@@ -41,10 +41,10 @@ export const MAX_REFRESH_TOKEN_TRIES = 3;
  * browser-side urql client attaches it as `Authorization: Bearer` header.
  */
 export const cookieOpts: Readonly<CookieSerializeOptions & { path: string }> = Object.freeze({
-        path: '/',
-        secure: true,
-        maxAge: 24 * 60 * 60,
-        httpOnly: false,
+	path: '/',
+	secure: true,
+	maxAge: 24 * 60 * 60,
+	httpOnly: false,
 });
 
 /**
@@ -53,12 +53,12 @@ export const cookieOpts: Readonly<CookieSerializeOptions & { path: string }> = O
  * httpOnly — inaccessible to JavaScript, which mitigates token theft via XSS.
  */
 export const authTokenCookieOpts: Readonly<CookieSerializeOptions & { path: string }> =
-        Object.freeze({
-                path: '/',
-                secure: true,
-                maxAge: 14 * 24 * 60 * 60,
-                httpOnly: true,
-        });
+	Object.freeze({
+		path: '/',
+		secure: true,
+		maxAge: 14 * 24 * 60 * 60,
+		httpOnly: true,
+	});
 
 /**
  * @NOTE In Sitename, unauthorized errors usually have form like this:
@@ -88,24 +88,24 @@ export const authTokenCookieOpts: Readonly<CookieSerializeOptions & { path: stri
         ],
  */
 const isAuthorError = (err: CombinedError): boolean => {
-        for (const gqlErr of err.graphQLErrors) {
-                if (gqlErr.message.toLowerCase().includes('to access this path, you need')) {
-                        return true;
-                }
+	for (const gqlErr of err.graphQLErrors) {
+		if (gqlErr.message.toLowerCase().includes('to access this path, you need')) {
+			return true;
+		}
 
-                if (Object.prototype.hasOwnProperty.call(gqlErr.extensions, 'exception')) {
-                        const exception = gqlErr.extensions.exception as Record<string, unknown>;
-                        if (Object.prototype.hasOwnProperty.call(exception, 'code')) {
-                                const code = exception.code as string;
-                                if (code.toLowerCase() === 'permissiondenied') {
-                                        return true;
-                                }
-                        }
-                        return false;
-                }
-        }
+		if (Object.prototype.hasOwnProperty.call(gqlErr.extensions, 'exception')) {
+			const exception = gqlErr.extensions.exception as Record<string, unknown>;
+			if (Object.prototype.hasOwnProperty.call(exception, 'code')) {
+				const code = exception.code as string;
+				if (code.toLowerCase() === 'permissiondenied') {
+					return true;
+				}
+			}
+			return false;
+		}
+	}
 
-        return false;
+	return false;
 };
 
 /**
@@ -132,120 +132,118 @@ const isAuthorError = (err: CombinedError): boolean => {
         ],
  */
 export const isAuthenError = (err: CombinedError): boolean => {
-        // some APIimmediately show that you don't have permission to access the resource
-        // Actually that is because you are not authenticated
-        if (isAuthorError(err)) {
-                return true;
-        }
+	// some APIimmediately show that you don't have permission to access the resource
+	// Actually that is because you are not authenticated
+	if (isAuthorError(err)) {
+		return true;
+	}
 
-        for (const gqlErr of err.graphQLErrors) {
-                if (gqlErr.message.toLowerCase().includes('signature has expired')) {
-                        return true;
-                }
+	for (const gqlErr of err.graphQLErrors) {
+		if (gqlErr.message.toLowerCase().includes('signature has expired')) {
+			return true;
+		}
 
-                if (Object.prototype.hasOwnProperty.call(gqlErr.extensions, 'exception')) {
-                        const exception = gqlErr.extensions.exception as Record<string, unknown>;
-                        if (Object.prototype.hasOwnProperty.call(exception, 'code')) {
-                                const code = exception.code as string;
-                                if (['expiredsignatureerror', 'invalidsignatureerror'].includes(code.toLowerCase())) {
-                                        return true;
-                                }
-                        }
-                        return false;
-                }
-        }
+		if (Object.prototype.hasOwnProperty.call(gqlErr.extensions, 'exception')) {
+			const exception = gqlErr.extensions.exception as Record<string, unknown>;
+			if (Object.prototype.hasOwnProperty.call(exception, 'code')) {
+				const code = exception.code as string;
+				if (['expiredsignatureerror', 'invalidsignatureerror'].includes(code.toLowerCase())) {
+					return true;
+				}
+			}
+			return false;
+		}
+	}
 
-        return false;
+	return false;
 };
 
 /** Guarding condition that designates if token refreshing is in progress, prevent request spam  */
 let isTokenRefreshingInProgress = false;
 
 const authExchangeInner = async (utils: AuthUtilities) => {
-        const addAuthToOperation = (operation: Operation) => {
-                const accessToken = getCookieByKey(ACCESS_TOKEN_KEY);
-                if (accessToken) {
-                        operation = utils.appendHeaders(operation, {
-                                Authorization: `Bearer ${accessToken}`,
-                        });
-                }
+	const addAuthToOperation = (operation: Operation) => {
+		const accessToken = getCookieByKey(ACCESS_TOKEN_KEY);
+		if (accessToken) {
+			operation = utils.appendHeaders(operation, {
+				Authorization: `Bearer ${accessToken}`,
+			});
+		}
 
-                return operation;
-        };
+		return operation;
+	};
 
-        const refreshAuth = async () => {
-                if (isTokenRefreshingInProgress || !browser) return; // this code executes on client-side only
-                isTokenRefreshingInProgress = true;
+	const refreshAuth = async () => {
+		if (isTokenRefreshingInProgress || !browser) return; // this code executes on client-side only
+		isTokenRefreshingInProgress = true;
 
-                try {
-                        // No tokens in the body: the httpOnly refresh/CSRF cookies are sent
-                        // automatically with this same-origin POST and read server-side.
-                        const refreshResult = await fetch(AppRoute.AUTH_REFRESH_TOKEN(), {
-                                method: 'POST',
-                                body: JSON.stringify({}),
-                        });
+		try {
+			// No tokens in the body: the httpOnly refresh/CSRF cookies are sent
+			// automatically with this same-origin POST and read server-side.
+			const refreshResult = await fetch(AppRoute.AUTH_REFRESH_TOKEN(), {
+				method: 'POST',
+				body: JSON.stringify({}),
+			});
 
-                        if (!refreshResult.ok) {
-                                isTokenRefreshingInProgress = false;
-                                return;
-                        }
+			if (!refreshResult.ok) {
+				isTokenRefreshingInProgress = false;
+				return;
+			}
 
-                        const result = (await refreshResult.json()) as Record<string, unknown>;
-                        UserStoreManager.setValue(result.user as User);
-                } catch {
-                        // network failure or non-JSON response: silently give up this round,
-                        // the next failed operation will retry the refresh
-                } finally {
-                        isTokenRefreshingInProgress = false;
-                }
-        };
+			const result = (await refreshResult.json()) as Record<string, unknown>;
+			UserStoreManager.setValue(result.user as User);
+		} catch {
+			// network failure or non-JSON response: silently give up this round,
+			// the next failed operation will retry the refresh
+		} finally {
+			isTokenRefreshingInProgress = false;
+		}
+	};
 
-        return {
-                addAuthToOperation,
-                refreshAuth,
-                didAuthError: (error: CombinedError) => isAuthenError(error),
-        };
+	return {
+		addAuthToOperation,
+		refreshAuth,
+		didAuthError: (error: CombinedError) => isAuthenError(error),
+	};
 };
 
 /**
  * GRAPHQL_CLIENT is similar to 'Client' of urql but with additional methods for server-side.
  */
 export const GRAPHQL_CLIENT = new Client({
-        url: PUBLIC_GRAPHQL_API_END_POINT,
-        exchanges: [
-                // NOTE: exchange order matters — cache must resolve before auth
-                // mutates the operation, retries must wrap fetch (urql docs).
-                cacheExchange,
-                authExchange(authExchangeInner),
-                retryExchange({
-                        initialDelayMs: 1000,
-                        maxDelayMs: 10000,
-                        randomDelay: true,
-                        maxNumberAttempts: 2,
-                        retryIf: (error): boolean => error && !!error.networkError,
-                }),
-                fetchExchange,
-        ],
+	url: PUBLIC_GRAPHQL_API_END_POINT,
+	exchanges: [
+		// NOTE: exchange order matters — cache must resolve before auth
+		// mutates the operation, retries must wrap fetch (urql docs).
+		cacheExchange,
+		authExchange(authExchangeInner),
+		retryExchange({
+			initialDelayMs: 1000,
+			maxDelayMs: 10000,
+			randomDelay: true,
+			maxNumberAttempts: 2,
+			retryIf: (error): boolean => error && !!error.networkError,
+		}),
+		fetchExchange,
+	],
 });
 
-const tryRefreshToken = async (
-        event: RequestEvent,
-) => {
-        const refreshToken = event.cookies.get(REFRESH_TOKEN_KEY);
-        const csrfToken = event.cookies.get(CSRF_TOKEN_KEY);
+const tryRefreshToken = async (event: RequestEvent) => {
+	const refreshToken = event.cookies.get(REFRESH_TOKEN_KEY);
+	const csrfToken = event.cookies.get(CSRF_TOKEN_KEY);
 
-        // don't worry if refresh token or csrf token are empty, the refresh-token API will handle that
-        const result = await event.fetch(`${AppRoute.AUTH_REFRESH_TOKEN()}`, {
-                method: 'POST',
-                body: JSON.stringify({
-                        refreshToken,
-                        csrfToken,
-                }),
-        });
+	// don't worry if refresh token or csrf token are empty, the refresh-token API will handle that
+	const result = await event.fetch(`${AppRoute.AUTH_REFRESH_TOKEN()}`, {
+		method: 'POST',
+		body: JSON.stringify({
+			refreshToken,
+			csrfToken,
+		}),
+	});
 
-        if (result.ok) return (await result.json()) as { user: User; [ACCESS_TOKEN_KEY]: string };
+	if (result.ok) return (await result.json()) as { user: User; [ACCESS_TOKEN_KEY]: string };
 
-        return null;
+	return null;
 };
 
 /**
@@ -254,65 +252,65 @@ const tryRefreshToken = async (
  * @returns `true` means callers MUST run the operation again, `false` otherwise.
  */
 const checkIsAuthenAuthorErrorAndRedirectIfNeeded = async <
-        Data = never,
-        Variables extends AnyVariables = AnyVariables,
+	Data = never,
+	Variables extends AnyVariables = AnyVariables,
 >(
-        result: OperationResult<Data, Variables>,
-        event: RequestEvent,
+	result: OperationResult<Data, Variables>,
+	event: RequestEvent,
 ): Promise<boolean> => {
-        const { error } = result;
+	const { error } = result;
 
-        if (!error || !(isAuthenError(error) || isAuthorError(error))) return false;
+	if (!error || !(isAuthenError(error) || isAuthorError(error))) return false;
 
-        await tryRefreshToken(event);
-        return true;
+	await tryRefreshToken(event);
+	return true;
 };
 
 const attachAuthorizationHeaderToRequestIfNeeded = (
-        event: RequestEvent,
-        context?: Partial<OperationContext>,
+	event: RequestEvent,
+	context?: Partial<OperationContext>,
 ) => {
-        const newContext = context || {};
-        const accessToken = event.cookies.get(ACCESS_TOKEN_KEY) || '';
+	const newContext = context || {};
+	const accessToken = event.cookies.get(ACCESS_TOKEN_KEY) || '';
 
-        if (accessToken) {
-                newContext.fetchOptions = {
-                        headers: {
-                                Authorization: `Bearer ${accessToken}`,
-                        },
-                };
-        }
+	if (accessToken) {
+		newContext.fetchOptions = {
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+			},
+		};
+	}
 
-        return newContext;
+	return newContext;
 };
 
 /**
  * NOTE: This method is used for server-side only
  */
 export const performServerSideGraphqlRequest = async <
-        Data = never,
-        Variables extends AnyVariables = AnyVariables,
+	Data = never,
+	Variables extends AnyVariables = AnyVariables,
 >(
-        query: DocumentInput<Data, Variables>,
-        variables: Variables,
-        event: RequestEvent,
-        context?: Partial<OperationContext>,
+	query: DocumentInput<Data, Variables>,
+	variables: Variables,
+	event: RequestEvent,
+	context?: Partial<OperationContext>,
 ): Promise<OperationResult<Data, Variables>> => {
-        const operationType = (query as TypedDocumentNode<Data, Variables>).definitions[0][
-                'operation' as keyof DefinitionNode
-        ] as unknown as OperationType;
-        const newContext = attachAuthorizationHeaderToRequestIfNeeded(event, context);
-        const request = createRequest(query, variables);
-        const operation = GRAPHQL_CLIENT.createRequestOperation(operationType, request, newContext);
-        const result = await GRAPHQL_CLIENT.executeRequestOperation(operation);
-        const mustRetryOperation = await checkIsAuthenAuthorErrorAndRedirectIfNeeded(result, event);
-        if (!mustRetryOperation) return result;
+	const operationType = (
+		(query as TypedDocumentNode<Data, Variables>).definitions[0] as OperationDefinitionNode
+	).operation;
+	const newContext = attachAuthorizationHeaderToRequestIfNeeded(event, context);
+	const request = createRequest(query, variables);
+	const operation = GRAPHQL_CLIENT.createRequestOperation(operationType, request, newContext);
+	const result = await GRAPHQL_CLIENT.executeRequestOperation(operation);
+	const mustRetryOperation = await checkIsAuthenAuthorErrorAndRedirectIfNeeded(result, event);
+	if (!mustRetryOperation) return result;
 
-        operation.context = {
-                ...operation.context,
-                ...attachAuthorizationHeaderToRequestIfNeeded(event, context),
-        };
-        return GRAPHQL_CLIENT.executeRequestOperation(operation);
+	operation.context = {
+		...operation.context,
+		...attachAuthorizationHeaderToRequestIfNeeded(event, context),
+	};
+	return GRAPHQL_CLIENT.executeRequestOperation(operation);
 };
 
 /**
@@ -320,55 +318,59 @@ export const performServerSideGraphqlRequest = async <
  * @param event
  * @returns
  */
-export const pageRequiresAuthentication = async (
-        event: RequestEvent,
-) => {
-        const accessToken = event.cookies.get(ACCESS_TOKEN_KEY);
+export const pageRequiresAuthentication = async (event: RequestEvent) => {
+	const accessToken = event.cookies.get(ACCESS_TOKEN_KEY);
 
-        // if there is no access token, we must try refresh token first
-        if (!accessToken) {
-                const result = await tryRefreshToken(event);
-                if (result) {
-                        await setJwtWithUser(result[ACCESS_TOKEN_KEY], result.user);
-                        return result.user;
-                }
-                redirect(HTTPStatusTemporaryRedirect, `${AppRoute.AUTH_SIGNIN()}?next=${event.url.pathname}${event.url.search}`);
-        }
+	// if there is no access token, we must try refresh token first
+	if (!accessToken) {
+		const result = await tryRefreshToken(event);
+		if (result) {
+			await setJwtWithUser(result[ACCESS_TOKEN_KEY], result.user);
+			return result.user;
+		}
+		redirect(
+			HTTPStatusTemporaryRedirect,
+			`${AppRoute.AUTH_SIGNIN()}?next=${event.url.pathname}${event.url.search}`,
+		);
+	}
 
-        // now we try looking up if the user existed in cache
-        const user = await getUserByJWT(accessToken!);
-        if (user) return user;
+	// now we try looking up if the user existed in cache
+	const user = await getUserByJWT(accessToken!);
+	if (user) return user;
 
-        // user not exist in cache, call to remote API backend
-        const meQueryResult = await performServerSideGraphqlRequest<Pick<Query, 'me'>>(
-                USER_ME_QUERY_STORE,
-                {},
-                event,
-                { requestPolicy: 'network-only' },
-        );
+	// user not exist in cache, call to remote API backend
+	const meQueryResult = await performServerSideGraphqlRequest<Pick<Query, 'me'>>(
+		USER_ME_QUERY_STORE,
+		{},
+		event,
+		{ requestPolicy: 'network-only' },
+	);
 
-        if (meQueryResult.error)
-                redirect(HTTPStatusTemporaryRedirect, `${AppRoute.AUTH_SIGNIN()}?next=${event.url.pathname}${event.url.search}`);
+	if (meQueryResult.error)
+		redirect(
+			HTTPStatusTemporaryRedirect,
+			`${AppRoute.AUTH_SIGNIN()}?next=${event.url.pathname}${event.url.search}`,
+		);
 
-        await setJwtWithUser(accessToken!, meQueryResult.data!.me!);
-        return meQueryResult.data?.me as User;
+	await setJwtWithUser(accessToken!, meQueryResult.data!.me!);
+	return meQueryResult.data?.me as User;
 };
 
 /**
  * Make sure user is authenticated AND has all given permisions
  */
 export const pageRequiresPermissions = async (
-        event: RequestEvent,
-        ...permissions: PermissionEnum[]
+	event: RequestEvent,
+	...permissions: PermissionEnum[]
 ) => {
-        const authenticatedUser = await pageRequiresAuthentication(event);
+	const authenticatedUser = await pageRequiresAuthentication(event);
 
-        if (!authenticatedUser.userPermissions?.length) {
-                return error(HTTPStatusUnauthorized, 'Unauthorized');
-        }
+	if (!authenticatedUser.userPermissions?.length) {
+		return error(HTTPStatusUnauthorized, 'Unauthorized');
+	}
 
-        if (!checkUserHasPermissions(authenticatedUser, ...permissions))
-                return error(HTTPStatusUnauthorized, 'Unauthorized');
+	if (!checkUserHasPermissions(authenticatedUser, ...permissions))
+		return error(HTTPStatusUnauthorized, 'Unauthorized');
 
-        return authenticatedUser;
+	return authenticatedUser;
 };

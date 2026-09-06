@@ -9,7 +9,8 @@ export type Shortcut = {
 	meta?: boolean;
 };
 
-export type KeyType = 'ArrowLeft' | 'ArrowRight' | 'ArrowUp' | 'ArrowDown' | 'Enter' | 'Escape';
+export type KeyType =
+	'ArrowLeft' | 'ArrowRight' | 'ArrowUp' | 'ArrowDown' | 'Enter' | 'Escape' | 'Tab';
 
 export type ShortcutOptions<T = HTMLElement> = {
 	shortcut: Shortcut;

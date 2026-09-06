@@ -10,7 +10,7 @@ import {
 	type RequestPolicy,
 	type TypedDocumentNode,
 } from '@urql/core';
-import type { DefinitionNode } from 'graphql';
+import type { DefinitionNode, OperationDefinitionNode } from 'graphql';
 import { derived, writable, type Readable, type Writable } from 'svelte/store';
 import {
 	concat,
@@ -25,8 +25,10 @@ import {
 	never,
 } from 'wonka';
 
-export interface OperationResultState<Data = unknown, Variables extends AnyVariables = AnyVariables>
-	extends OperationResult<Data, Variables> {
+export interface OperationResultState<
+	Data = unknown,
+	Variables extends AnyVariables = AnyVariables,
+> extends OperationResult<Data, Variables> {
 	fetching: boolean;
 }
 
@@ -94,9 +96,8 @@ export function operationStore<Data = unknown, Variables extends AnyVariables = 
 	};
 
 	const operation = GRAPHQL_CLIENT.createRequestOperation<Data, Variables>(
-		(args.query as TypedDocumentNode<Data, Variables>).definitions[0][
-		'operation' as keyof DefinitionNode
-		] as unknown as OperationType,
+		((args.query as TypedDocumentNode<Data, Variables>).definitions[0] as OperationDefinitionNode)
+			.operation,
 		request,
 		context,
 	);
@@ -124,17 +125,19 @@ export function operationStore<Data = unknown, Variables extends AnyVariables = 
 						return concat<Partial<OperationResultState<Data, Variables>>>([
 							fromValue({ fetching: true, stale: false }),
 							pipe(
-								GRAPHQL_CLIENT.executeRequestOperation(operation),
-								map((result) => {
+								GRAPHQL_CLIENT.executeRequestOperation(operation) as Source<
+									OperationResult<Data, Variables>
+								>,
+								map((result: OperationResult<Data, Variables>) => {
 									args.onResult?.(result);
 
 									return {
 										...result,
 										fetching: false,
 										stale: !!result.stale,
-									}
+									};
 								}),
-							),
+							) as Source<Partial<OperationResultState<Data, Variables>>>,
 							fromValue({ fetching: false, hasNext: false }),
 						]);
 					}),

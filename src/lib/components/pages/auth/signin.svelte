@@ -95,21 +95,22 @@
 </script>
 
 <div>
-	<h1 class="p-2 mb-4">{$T('signin.title')}</h1>
+	<h1 class="text-2xl font-bold text-gray-900 tracking-tight mb-1">{$T('signin.title')}</h1>
+	<p class="text-sm text-gray-500 mb-6">{$T('signin.subtitle')}</p>
 
 	{#if signinError}
-		<Alert variant="error" class="mb-3" size="sm" bordered>
+		<Alert variant="error" class="mb-4" size="sm" bordered>
 			{signinError}
 		</Alert>
 	{/if}
-	<div class="mb-3">
+	<div class="mb-4">
 		<Input
 			type="email"
 			placeholder={$T('common.emailPlaceholder')}
 			label={$T('common.email')}
 			onblur={SchemaValidator.validate}
 			inputDebounceOption={{ onInput: SchemaValidator.validate }}
-			class="mb-2"
+			class="mb-3"
 			bind:value={signinValue.email}
 			required
 			disabled={loading}
@@ -123,43 +124,60 @@
 			onblur={SchemaValidator.validate}
 			inputDebounceOption={{ onInput: SchemaValidator.validate }}
 			bind:value={signinValue.password}
-			class="mb-1"
+			class="mb-2"
 			disabled={loading}
 			variant={$SchemaValidator?.password?.length ? 'error' : 'info'}
 			required
 			showAction
 			subText={$SchemaValidator?.password?.[0]}
 		/>
-		<a href={AppRoute.AUTH_RESET_PASSWORD()} class="text-xs text-right block text-blue-600 mb-4">
-			{$T('signin.forgotPassword')}
-		</a>
+		<div class="flex items-center justify-between">
+			<Checkbox
+				label={$T('signin.rememberMe')}
+				size="sm"
+				bind:checked={signinValue.rememberMe}
+				disabled={loading}
+			/>
+			<a
+				href={AppRoute.AUTH_RESET_PASSWORD()}
+				class="text-xs font-medium text-brand-600 hover:text-brand-700 hover:underline"
+			>
+				{$T('signin.forgotPassword')}
+			</a>
+		</div>
 
-		<Checkbox
-			label={$T('signin.rememberMe')}
-			size="sm"
-			class="mb-3"
-			bind:checked={signinValue.rememberMe}
-			disabled={loading}
-		/>
-
-		<Button variant="filled" onclick={handleLogin} size="sm" fullWidth {loading}>
+		<Button variant="filled" onclick={handleLogin} size="md" fullWidth {loading} class="mt-4">
 			{$T('signin.signinButton')}
 		</Button>
 	</div>
 
-	<div class="mb-4">
-		<span class="text-xs text-gray-500">
+	<div class="mb-5 text-center">
+		<span class="text-sm text-gray-500">
 			{$T('signin.noAccount')}
-			<a href={AppRoute.AUTH_REGISTER()} class="text-blue-600">{$T('signup.title')}</a>
+			<a
+				href={AppRoute.AUTH_REGISTER()}
+				class="font-semibold text-brand-600 hover:text-brand-700 hover:underline"
+			>
+				{$T('signup.title')}
+			</a>
 		</span>
 	</div>
 
 	{#if !hideSocial}
-		<div class="flex flex-row justify-between items-center">
+		<div class="relative mb-4">
+			<div class="absolute inset-0 flex items-center" aria-hidden="true">
+				<div class="w-full border-t border-gray-200"></div>
+			</div>
+			<div class="relative flex justify-center">
+				<span class="bg-white px-4 text-xs text-gray-400">{$T('auth.orContinueWith')}</span>
+			</div>
+		</div>
+
+		<div class="grid grid-cols-3 gap-2">
 			{#each socialIons as item, idx (idx)}
-				<Button variant="outline" size="sm" disabled={loading}>
+				<Button variant="outline" size="sm" disabled={loading} class="justify-center">
 					<item.icon />
-					{item.text}
+					<span class="max-tablet:hidden">{item.text}</span>
 				</Button>
 			{/each}
 		</div>

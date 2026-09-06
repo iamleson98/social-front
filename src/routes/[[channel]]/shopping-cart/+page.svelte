@@ -4,7 +4,7 @@
 	import { CHECKOUT_ADD_PROMO_CODE_MUTATION } from '$lib/api/checkout';
 	import { GRAPHQL_CLIENT } from '$lib/api/client';
 	import { CheckoutSteps } from '$lib/components/common/checkout-steps';
-	import { ArrowNarrowRight, ChevronLeft, Icon } from '$lib/components/icons';
+	import { ArrowNarrowRight, ChevronLeft, Icon, Ticket } from '$lib/components/icons';
 	import { EmptyCart } from '$lib/components/icons/SvgOuterIcon';
 	import CartItemLine from '$lib/components/pages/cart/cart-item-line.svelte';
 	import CartPageSkeleton from '$lib/components/pages/cart/cart-page-skeleton.svelte';
@@ -77,12 +77,13 @@
 		checkoutStore.set(checkoutData.checkout);
 	});
 
-	type MoneyColor = 'red' | 'green' | 'gray';
+	type MoneyColor = 'red' | 'green' | 'gray' | 'brand';
 
 	const moneyColorMap: Record<MoneyColor, string> = {
 		red: 'text-red-600',
 		green: 'text-green-700',
 		gray: 'text-gray-500 line-through',
+		brand: 'text-brand-700',
 	};
 </script>
 
@@ -96,7 +97,7 @@
 	{@const negate = negative ? '-' : ''}
 	<dl class="flex items-center justify-between gap-4 mb-1.5" aria-label={title}>
 		<dt class="text-sm font-normal text-gray-500">{title}</dt>
-		<dd class={`text-base font-semibold ${moneyColorMap[color]}`}>
+		<dd class={`text-base font-semibold tabular-nums ${moneyColorMap[color]}`}>
 			{negate}{formatMoney(currency, amount)}
 		</dd>
 	</dl>
@@ -108,19 +109,18 @@
 	{:else if !$checkoutStore?.lines.length}
 		<!-- MARK: EMPTY -->
 		<div class="h-full w-full flex items-center justify-center">
-			<div class="text-center">
-				<div class="flex justify-center mt-36">
-					<EmptyCart dimension={100} />
+			<div class="text-center py-24">
+				<div class="flex justify-center">
+					<EmptyCart dimension={120} />
 				</div>
 
-				<div class="mt-2">
-					{$T('cart.emptyCart')}
-				</div>
-				<div class="mt-3">
+				<h1 class="mt-6 text-xl font-bold text-gray-900">{$T('cart.emptyCart')}</h1>
+				<p class="mt-2 text-sm text-gray-500">{$T('cart.emptyCartHint')}</p>
+				<div class="mt-6">
 					<Button
-						size="sm"
+						size="md"
 						onclick={() => goto(AppRoute.HOME())}
-						variant="outline"
+						variant="filled"
 						startIcon={ChevronLeft}
 					>
 						{$T('cart.continueShopping')}
@@ -133,11 +133,19 @@
 		{@const originalTotalPrice = lines
 			.map((line) => line.undiscountedTotalPrice.amount)
 			.reduce((a, b) => a + b, 0)}
+		{@const savings = originalTotalPrice - subtotalPrice.gross.amount}
+
 		<CheckoutSteps numberOfItemToEnable={1} />
 
-		<div class="flex flex-row justify-between max-tablet:flex-wrap max-tablet:flex-col gap-2">
+		<div class="flex flex-row justify-between max-tablet:flex-wrap max-tablet:flex-col gap-4">
 			<!-- MARK: PREVIEW AREA -->
 			<div class="w-3/4 max-tablet:w-full">
+				<h1 class="text-lg font-bold text-gray-900 mb-3">
+					{$T('cart.title')}
+					<span class="text-sm font-normal text-gray-500">
+						({$T('cart.itemsCount', { count: lines.length })})
+					</span>
+				</h1>
 				{#each lines as line, idx (idx)}
 					<CartItemLine {line} checkoutId={id} />
 				{/each}
@@ -145,8 +153,8 @@
 
 			<!-- MARK: SUMMARY -->
 			<div class="w-1/4 max-tablet:w-full">
-				<div class="p-4 mb-2 bg-white rounded-lg border">
-					<p class="text-lg font-semibold text-gray-800 mb-4">{$T('cart.cartSummary')}</p>
+				<div class="card-surface p-5 mb-2 sticky top-[100px]">
+					<p class="text-lg font-bold text-gray-900 mb-4">{$T('cart.cartSummary')}</p>
 
 					<div class="mb-4">
 						{@render MoneyField(
@@ -156,15 +164,17 @@
 							'gray',
 						)}
 
-						{@render MoneyField(
-							subtotalPrice.gross.currency,
-							originalTotalPrice - subtotalPrice.gross.amount,
-							$T('cart.savings'),
-							'green',
-							true,
-						)}
+						{#if savings > 0}
+							{@render MoneyField(
+								subtotalPrice.gross.currency,
+								savings,
+								$T('cart.savings'),
+								'green',
+								true,
+							)}
+						{/if}
 
-						<div class="border-t mb-2"></div>
+						<div class="border-t border-gray-100 my-2.5"></div>
 
 						{@render MoneyField(
 							subtotalPrice.gross.currency,
@@ -177,33 +187,40 @@
 					<Button
 						variant="filled"
 						fullWidth
-						size="sm"
+						size="md"
+						endIcon={ArrowNarrowRight}
 						onclick={() => goto(`${AppRoute.CHECKOUT()}/${$checkoutStore.id}`)}
 					>
 						{$T('cart.proceedCheckout')}
 					</Button>
 
-					<div class="flex items-center justify-center gap-1 mt-2">
+					<div class="flex items-center justify-center gap-1 mt-3">
 						<span class="text-sm font-normal text-gray-500"> {$T('cart.or')} </span>
-						<a href="/" class="flex items-center gap-1 text-xs font-medium text-gray-700 underline">
+						<a
+							href="/"
+							class="flex items-center gap-1 text-xs font-medium text-brand-600 hover:text-brand-700 underline"
+						>
 							<span>{$T('cart.continueShopping')}</span>
-							<Icon icon={ArrowNarrowRight} />
+							<Icon icon={ArrowNarrowRight} class="size-3.5" />
 						</a>
 					</div>
 				</div>
 
 				<!-- coupon -->
-				<div class="rounded-lg bg-white p-4 border">
+				<div class="card-surface p-5">
+					<div class="flex items-center gap-2 mb-2">
+						<Icon icon={Ticket} class="size-4 text-brand-600" />
+						<p class="text-sm font-semibold text-gray-800">{$T('cart.haveVoucherOrGiftcard')}</p>
+					</div>
 					<Input
 						placeholder={$T('cart.enterCode')}
 						size="md"
 						class="w-full mb-2"
-						label={$T('cart.haveVoucherOrGiftcard')}
 						bind:value={promoCodeInput}
 						onkeydown={(evt) => evt.key === 'Enter' && handleApplyPromoCode()}
 					/>
 					<Button
-						variant="filled"
+						variant="outline"
 						size="sm"
 						fullWidth
 						disabled={!promoCodeInput.trim() || applyingPromoCode}

@@ -54,6 +54,8 @@ export {
 	TablerInfoTriangleFilled as InfoTriangleFilled,
 	TablerInfoCircleFilled as InfoCircleFilled,
 	TablerArrowNarrowRight as ArrowNarrowRight,
+	TablerArrowRight as ArrowRight,
+	TablerShieldCheck as ShieldCheck,
 	TablerLogout as Logout,
 	TablerUserCog as UserCog,
 	TablerChevronUp as ChevronUp,

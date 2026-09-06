@@ -1,6 +1,22 @@
 export default {
+	header: {
+		announcement: 'Free shipping on orders over 500.000₫ — shop trending deals today',
+		signin: 'Sign in',
+	},
+	countdown: {
+		days: 'days',
+		hours: 'hrs',
+		min: 'min',
+		sec: 'sec',
+	},
+	auth: {
+		panelTitle: 'Shop smarter, not harder',
+		panelSubtitle: 'Join thousands of happy customers who shop with confidence every day.',
+		orContinueWith: 'or continue with',
+	},
 	signin: {
-		title: 'Signin',
+		title: 'Welcome back',
+		subtitle: 'Sign in to continue to your account',
 		signinButton: 'Let me in',
 		rememberMe: 'Remember me',
 		noAccount: "Don't have an account?",
@@ -8,7 +24,8 @@ export default {
 		welcomeBack: 'Welcome back, {{name}}',
 	},
 	signup: {
-		title: 'Signup',
+		title: 'Create your account',
+		subtitle: 'Join today — it only takes a minute',
 		signupButton: 'Create account',
 		confirmPasswordPlaceholder: 'Please confirm password',
 		agreeToTerms: 'I agree to the terms and conditions',
@@ -67,6 +84,7 @@ export default {
 		preorder: 'Preorder',
 		ok: 'OK',
 		cancel: 'Cancel',
+		close: 'Close',
 		confirmRemoveProduct: 'Are you sure you want to remove this product from cart?',
 		city: 'City',
 		firstName: 'First Name',
@@ -158,6 +176,7 @@ export default {
 	product: {
 		onSale: 'Sale',
 		quickView: 'Quick view',
+		rating: 'rating',
 		lowStock: 'Only {{quantity}} left',
 		outOfStock: 'Out of stock',
 		chooseAddress: 'Please choose address',
@@ -323,6 +342,14 @@ export default {
 		noData: 'There is no data',
 	},
 	footer: {
+		trustAuthentic: '100% authentic products',
+		trustDelivery: 'Nationwide fast delivery',
+		trustReturns: '30-day free returns',
+		trustSupport: '24/7 customer support',
+		terms: 'Terms of Service',
+		shop: 'Shop',
+		brandTagline: 'Great value, trusted service — everything you need for a better everyday life.',
+		allRightsReserved: 'All Rights Reserved.',
 		socialMedia: 'Social Media',
 		legal: 'Legal',
 		aboutUs: 'About us',
@@ -331,13 +358,17 @@ export default {
 		blog: 'Blog',
 	},
 	cart: {
+		title: 'Your shopping cart',
 		addedToCart: '{{name}} added to cart',
 		codeApplied: 'Code applied successfully',
 		codeInvalid: 'Invalid or expired code',
 		proceedCheckout: 'Proceed to checkout',
 		continueShopping: 'Continue shopping',
 		applyCode: 'Apply code',
-		emptyCart: 'You have 0 products in cart',
+		emptyCart: 'Your cart is empty',
+		emptyCartHint:
+			"Looks like you haven't added anything to your cart yet. Browse the shop and find something you love.",
+		itemsCount: '{{count}} items',
 		cartSummary: 'Cart Summary',
 		tempoTotalPrice: 'Temporary total price',
 		oldTotalPrice: 'Original total price',
@@ -853,6 +884,15 @@ export default {
 	},
 
 	home: {
+		heroBadge: 'Fresh deals every day',
+		heroTitle: 'Everything you love, delivered to your door',
+		heroSubtitle:
+			'Shop thousands of curated products at honest prices — with fast delivery, secure payments and effortless returns.',
+		heroCtaTrending: 'Shop trending',
+		heroCtaBrowse: 'Browse all products',
+		trustFastDelivery: 'Fast delivery',
+		trustSecurePayment: 'Secure payments',
+		trustEasyReturns: 'Easy returns',
 		featured: 'Featured',
 		selectedBy: 'selected by',
 		promotionsFailedToLoad: 'Failed to load promotions. Please try again later.',

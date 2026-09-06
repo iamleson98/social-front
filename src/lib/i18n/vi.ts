@@ -1,6 +1,22 @@
 export default {
+	header: {
+		announcement: 'Miễn phí giao hàng cho đơn từ 500.000₫ — mua sắm ưu đãi hot hôm nay',
+		signin: 'Đăng nhập',
+	},
+	countdown: {
+		days: 'ngày',
+		hours: 'giờ',
+		min: 'phút',
+		sec: 'giây',
+	},
+	auth: {
+		panelTitle: 'Mua sắm thông minh hơn',
+		panelSubtitle: 'Tham gia cùng hàng nghìn khách hàng mua sắm tự tin mỗi ngày.',
+		orContinueWith: 'hoặc tiếp tục với',
+	},
 	signin: {
-		title: 'Đăng nhập',
+		title: 'Chào mừng trở lại',
+		subtitle: 'Đăng nhập để tiếp tục với tài khoản của bạn',
 		signinButton: 'Đăng nhập',
 		rememberMe: 'Ghi nhớ đăng nhập',
 		noAccount: 'Bạn chưa có tài khoản?',
@@ -8,7 +24,8 @@ export default {
 		welcomeBack: 'Chào mừng bạn trở lại, {{name}}',
 	},
 	signup: {
-		title: 'Đăng ký',
+		title: 'Tạo tài khoản',
+		subtitle: 'Tham gia ngay — chỉ mất một phút',
 		signupButton: 'Tạo tài khoản',
 		confirmPasswordPlaceholder: 'Vui lòng xác nhận mật khẩu',
 		agreeToTerms: 'Tôi đồng ý với các điều khoản và điều kiện',
@@ -67,6 +84,7 @@ export default {
 		preorder: 'Đặt trước',
 		ok: 'Đồng ý',
 		cancel: 'Hủy',
+		close: 'Đóng',
 		confirmRemoveProduct: 'Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?',
 		city: 'Thành phố',
 		firstName: 'Tên',
@@ -158,6 +176,7 @@ export default {
 	product: {
 		onSale: 'Giảm giá',
 		quickView: 'Xem nhanh',
+		rating: 'đánh giá',
 		lowStock: 'Chỉ còn {{quantity}} sản phẩm',
 		outOfStock: 'Hết hàng',
 		chooseAddress: 'Vui lòng chọn địa chỉ',
@@ -324,6 +343,15 @@ export default {
 		noData: 'Không có dữ liệu',
 	},
 	footer: {
+		trustAuthentic: 'Sản phẩm chính hãng 100%',
+		trustDelivery: 'Giao hàng nhanh toàn quốc',
+		trustReturns: 'Đổi trả miễn phí 30 ngày',
+		trustSupport: 'Hỗ trợ khách hàng 24/7',
+		terms: 'Điều khoản dịch vụ',
+		shop: 'Mua sắm',
+		brandTagline:
+			'Giá trị tốt, dịch vụ đáng tin cậy — mọi thứ bạn cần cho cuộc sống tốt hơn mỗi ngày.',
+		allRightsReserved: 'Mọi quyền được bảo lưu.',
 		socialMedia: 'Mạng xã hội',
 		legal: 'Pháp lý',
 		aboutUs: 'Về chúng tôi',
@@ -332,13 +360,17 @@ export default {
 		blog: 'Blog',
 	},
 	cart: {
+		title: 'Giỏ hàng của bạn',
 		addedToCart: 'Đã thêm {{name}} vào giỏ hàng',
 		codeApplied: 'Áp dụng mã thành công',
 		codeInvalid: 'Mã không hợp lệ hoặc đã hết hạn',
 		proceedCheckout: 'Tiến hành thanh toán',
 		continueShopping: 'Tiếp tục mua sắm',
 		applyCode: 'Áp dụng mã giảm giá',
-		emptyCart: 'Bạn chưa có sản phẩm nào trong giỏ hàng',
+		emptyCart: 'Giỏ hàng của bạn đang trống',
+		emptyCartHint:
+			'Có vẻ bạn chưa thêm sản phẩm nào vào giỏ hàng. Khám phá cửa hàng và tìm điều bạn yêu thích nhé.',
+		itemsCount: '{{count}} sản phẩm',
 		cartSummary: 'Thông tin giỏ hàng',
 		tempoTotalPrice: 'Tạm tính',
 		oldTotalPrice: 'Tổng cộng',
@@ -855,6 +887,15 @@ export default {
 	},
 
 	home: {
+		heroBadge: 'Ưu đãi mới mỗi ngày',
+		heroTitle: 'Mọi thứ bạn yêu thích, giao tận cửa nhà',
+		heroSubtitle:
+			'Mua sắm hàng ngàn sản phẩm được tuyển chọn với giá hợp lý — giao nhanh, thanh toán an toàn và đổi trả dễ dàng.',
+		heroCtaTrending: 'Mua hot trend',
+		heroCtaBrowse: 'Xem tất cả sản phẩm',
+		trustFastDelivery: 'Giao hàng nhanh',
+		trustSecurePayment: 'Thanh toán an toàn',
+		trustEasyReturns: 'Đổi trả dễ dàng',
 		featured: 'Nổi bật',
 		selectedBy: 'lựa chọn bởi',
 		promotionsFailedToLoad: 'Không thể tải khuyến mãi. Vui lòng thử lại sau.',

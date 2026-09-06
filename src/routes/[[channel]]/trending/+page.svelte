@@ -78,7 +78,7 @@
 
 <div class="space-y-3">
 	<!-- hero -->
-	<div class="rounded-lg border border-orange-100 bg-gradient-to-r from-orange-50 to-red-50 p-6">
+	<div class="rounded-2xl border border-orange-100 bg-linear-to-r from-orange-50 to-red-50 p-6">
 		<div class="flex items-center gap-2 text-orange-600">
 			<Icon icon={IonFlame} size="lg" />
 			<h1 class="text-xl font-bold">{$T('pages.trending')}</h1>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { T } from '$i18n';
 	import dayjs from 'dayjs';
 	import duration from 'dayjs/plugin/duration';
 	import { onMount } from 'svelte';
@@ -13,7 +14,19 @@
 
 	const Future = destination ? dayjs(destination) : dayjs();
 
-	let countdown = $state.raw<Record<string, number>>({ days: 0, hours: 0, min: 0, sec: 0 });
+	const COUNTDOWN_KEYS = {
+		days: 'countdown.days',
+		hours: 'countdown.hours',
+		min: 'countdown.min',
+		sec: 'countdown.sec',
+	} as const;
+
+	let countdown = $state.raw<Record<keyof typeof COUNTDOWN_KEYS, number>>({
+		days: 0,
+		hours: 0,
+		min: 0,
+		sec: 0,
+	});
 	let interval = $state<NodeJS.Timeout>();
 
 	function updateCountdown() {
@@ -42,13 +55,15 @@
 	});
 </script>
 
-<div class="grid auto-cols-max grid-flow-col gap-1 text-center">
+<div class="flex items-center gap-1" aria-live="off">
 	{#each Object.entries(countdown) as [key, value], idx (idx)}
-		<div class="bg-black text-white rounded-sm flex items-center flex-col p-1">
-			<span class="font-mono countdown text-xs font-semibold" style="--value:{value};">
-				<span>{value}</span>
+		<div
+			class="flex flex-col items-center rounded-lg bg-brand-800 text-white min-w-9 px-1.5 py-1 shadow-sm"
+		>
+			<span class="font-mono text-sm font-bold tabular-nums leading-none">{value}</span>
+			<span class="text-[9px] uppercase tracking-wide text-white/70 mt-0.5">
+				{$T(COUNTDOWN_KEYS[key as keyof typeof COUNTDOWN_KEYS])}
 			</span>
-			<!-- <span class="text-[8px]">{key}</span> -->
 		</div>
 	{/each}
 </div>

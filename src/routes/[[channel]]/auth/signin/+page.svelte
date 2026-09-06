@@ -10,6 +10,4 @@
 	};
 </script>
 
-<div class="w-md rounded-md p-2">
-	<Signin {onSuccess} />
-</div>
+<Signin {onSuccess} />

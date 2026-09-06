@@ -71,24 +71,62 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<div class="flex flex-col gap-2">
+<div class="flex flex-col gap-2.5">
+	<!-- main image -->
 	<div
-		class="bg-no-repeat relative bg-contain bg-center bg-white justify-center pt-[100%] rounded-lg border w-full flex items-center"
-		style="background-image: url('{displayMedias[slideShowImages.activeIndex].url}');"
+		class="group relative w-full overflow-hidden rounded-2xl bg-white border border-gray-200 cursor-zoom-in"
 		role="img"
 		aria-label={displayMedias[slideShowImages.activeIndex].alt || 'product image'}
-	></div>
+	>
+		<div
+			class="bg-no-repeat bg-contain bg-center w-full pt-[100%] transition-transform duration-300 ease-out group-hover:scale-[1.04] motion-reduce:transform-none"
+			style="background-image: url('{displayMedias[slideShowImages.activeIndex].url}');"
+		></div>
 
-	<div class="w-full bg-white relative">
-		<div class="w-full bg-gray-100 overflow-hidden grid grid-cols-5 gap-0.5">
+		{#if displayMedias.length > 1}
+			<IconButton
+				icon={ChevronLeft}
+				size="sm"
+				variant="light"
+				class="absolute! left-2 top-1/2 -translate-y-1/2 z-10 bg-white/90! shadow-sm backdrop-blur-sm hover:bg-white!"
+				rounded
+				onclick={() => handleNavigate(-1)}
+				aria-label="navigate previous"
+			/>
+			<IconButton
+				icon={ChevronRight}
+				size="sm"
+				variant="light"
+				class="absolute! right-2 top-1/2 -translate-y-1/2 z-10 bg-white/90! shadow-sm backdrop-blur-sm hover:bg-white!"
+				rounded
+				onclick={() => handleNavigate(1)}
+				aria-label="navigate next"
+			/>
+
+			<!-- image counter -->
+			<span
+				class="absolute bottom-2 right-2 rounded-full bg-gray-900/60 text-white text-xs font-medium px-2.5 py-0.5 backdrop-blur-sm"
+			>
+				{slideShowImages.activeIndex + 1} / {slideShowImages.medias.length}
+			</span>
+		{/if}
+	</div>
+
+	<!-- thumbnails -->
+	<div class="w-full relative">
+		<div class="w-full overflow-hidden grid grid-cols-5 gap-1.5">
 			{#each displayMedias as picture, idx (idx)}
 				<div class="inline-block">
 					<div
-						class="relative bg-white rounded-md overflow-hidden cursor-pointer outline-hidden"
+						class="relative bg-white rounded-xl overflow-hidden cursor-pointer outline-hidden transition-[transform,border-color,box-shadow] duration-150 hover:-translate-y-px {idx ===
+						slideShowImages.activeIndex
+							? 'ring-2 ring-brand-500 shadow-sm'
+							: 'ring-1 ring-gray-200 hover:ring-gray-300'}"
 						onmouseover={() => handleFocus(idx)}
 						onfocus={() => handleFocus(idx)}
 						tabindex="0"
 						role="button"
+						aria-label={`view image ${idx + 1}`}
 					>
 						<div class="relative w-full pb-[100%]">
 							<picture>
@@ -105,35 +143,9 @@
 								/>
 							</picture>
 						</div>
-
-						<div
-							class="absolute left-0 top-0 bottom-0 right-0 rounded-md {idx ===
-							slideShowImages.activeIndex
-								? 'border-2 border-blue-500'
-								: 'border-1 border-gray-200'}"
-						></div>
 					</div>
 				</div>
 			{/each}
 		</div>
-
-		<IconButton
-			icon={ChevronLeft}
-			size="xs"
-			variant="outline"
-			class="absolute! left-1.5 top-1/2 -translate-y-1/2 z-10"
-			rounded
-			onclick={() => handleNavigate(-1)}
-			aria-label="navigate previous"
-		/>
-		<IconButton
-			icon={ChevronRight}
-			size="xs"
-			variant="outline"
-			class="absolute! right-1.5 top-1/2 -translate-y-1/2 z-10"
-			rounded
-			onclick={() => handleNavigate(1)}
-			aria-label="navigate next"
-		/>
 	</div>
 </div>

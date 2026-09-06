@@ -9,9 +9,9 @@
 	let { cardTitle, children }: Props = $props();
 </script>
 
-<div class="card">
-	<div class="card-body">
-		<div class="card-title">
+<div class="card-surface mt-3">
+	<div class="p-4 max-tablet:p-3">
+		<div class="card-title text-gray-900 font-semibold mb-2">
 			{cardTitle}
 		</div>
 		<div>

@@ -15,7 +15,7 @@
 		color = 'blue',
 		upper = false,
 		size = 'md',
-		radius = 'rounded-md',
+		radius = 'rounded-lg',
 		class: className = '',
 		loading = false,
 		fullWidth = false,
@@ -51,7 +51,7 @@
 
 {#snippet buttonIcon({ icon }: IconProps)}
 	{#if icon}
-		<span class={`text-xl`}>
+		<span class="inline-flex shrink-0 items-center justify-center">
 			<Icon {icon} {size} />
 		</span>
 	{/if}
@@ -61,52 +61,64 @@
 	this={href ? 'a' : 'button'}
 	bind:this={ref}
 	class={[
+		'button',
+		`button-${size}`,
+		INPUT_BUTTON_SIZE_MAP[size],
 		upper && 'uppercase',
 		fullWidth && 'w-full',
-		(!!disabled || loading) &&
-			'!text-gray-500 !bg-gray-200 !cursor-not-allowed !pointer-events-none !touch-none',
-		!disabled && !loading && BUTTON_VARIANT_COLORS_MAP[variant][color],
-		`button button-${size}`,
-		className,
-		INPUT_BUTTON_SIZE_MAP[size],
 		radius,
+		(!!disabled || loading) && 'button-disabled',
+		!disabled && !loading && BUTTON_VARIANT_COLORS_MAP[variant][color],
+		className,
 	]}
 	{type}
 	use:debounceClick={clickDebounceOptions}
 	{...restProps}
 	{...extraProps}
-	aria-label={restProps['aria-label'] || 'Button'}
+	aria-busy={loading || undefined}
+	aria-label={restProps['aria-label'] || undefined}
 >
 	{#if loading}
-		<div class="absolute inset-0 z-10 flex items-center justify-center">
-			<span class="loading loading-dots loading-sm"></span>
-		</div>
+		<span class="loading loading-dots loading-sm"></span>
+	{:else}
+		{@render buttonIcon({ icon: startIcon })}
+		{@render children()}
+		{@render buttonIcon({ icon: endIcon })}
 	{/if}
-	{@render buttonIcon({ icon: startIcon })}
-	{@render children()}
-	{@render buttonIcon({ icon: endIcon })}
 </svelte:element>
 
 <style lang="postcss">
 	@reference "tailwindcss";
 
 	.button {
-		@apply cursor-pointer relative font-semibold outline-hidden! !select-none gap-1.5 appearance-none text-center inline-flex justify-center items-center leading-none grow-0 focus:ring-4 transition-all ease-in-out duration-100;
+		@apply cursor-pointer relative font-semibold select-none gap-2 appearance-none text-center
+                        inline-flex justify-center items-center leading-none grow-0
+                        transition-[transform,background-color,border-color,box-shadow,color,filter] duration-150 ease-out
+                        active:scale-[0.98] motion-safe:active:duration-75;
 		-webkit-tap-highlight-color: transparent;
 	}
+
+	.button:not(.button-disabled):hover {
+		filter: brightness(0.97);
+	}
+
 	.button-xs {
 		@apply px-3;
 	}
 	.button-sm {
-		@apply px-3;
+		@apply px-3.5;
 	}
 	.button-md {
 		@apply px-5;
 	}
 	.button-lg {
-		@apply px-5;
+		@apply px-6;
 	}
 	.button-xl {
-		@apply px-6;
+		@apply px-7;
+	}
+
+	.button-disabled {
+		@apply !text-gray-400 !bg-gray-100 !border-transparent !cursor-not-allowed !pointer-events-none !touch-none !shadow-none;
 	}
 </style>

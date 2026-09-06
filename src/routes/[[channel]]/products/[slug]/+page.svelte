@@ -12,12 +12,12 @@
 
 <Card cardTitle={$T('product.prdDescription')}>
 	{#if data.description.length}
-		<div class="text-gray-700">
+		<div class="text-gray-700 leading-relaxed space-y-3">
 			{#each data.description as paragraph, index (index)}
 				<div>{@html paragraph}</div>
 			{/each}
 		</div>
 	{:else}
-		<p>{$T('product.noDescription')}</p>
+		<p class="text-gray-500">{$T('product.noDescription')}</p>
 	{/if}
 </Card>
