@@ -190,7 +190,7 @@
 				onclick={handleClickDeleteSelectedProducts}
 			/>
 		{/if}
-		<Settings bind:variables={productsFilterVariables} bind:selectedIds={selectedProducts} />
+		<Settings />
 	</dir>
 </div>
 

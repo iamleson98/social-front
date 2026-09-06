@@ -1,245 +1,245 @@
 <script lang="ts">
-	import { ORDER_ADD_NOTE_MUTATION, ORDER_HISTORY_QUERY } from '$lib/api/admin/orders';
-	import { GRAPHQL_CLIENT } from '$lib/api/client';
-	import { operationStore } from '$lib/api/operation';
-	import SectionHeader from '$lib/components/common/section-header.svelte';
-	import Thumbnail from '$lib/components/common/thumbnail.svelte';
-	import { CalendarClock, ChevronDown, ChevronUp, Send } from '$lib/components/icons';
-	import { Alert } from '$lib/components/ui/Alert';
-	import { Button, IconButton } from '$lib/components/ui/Button';
-	import { Input } from '$lib/components/ui/Input';
-	import { SelectSkeleton } from '$lib/components/ui/select';
-	import {
-		OrderEventsEnum,
-		type Mutation,
-		type MutationOrderAddNoteArgs,
-		type Query,
-		type QueryOrderArgs,
-	} from '$lib/gql/graphql';
-	import { UserStoreManager } from '$lib/stores/auth';
-	import { AppRoute } from '$lib/utils';
-	import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
-	import dayjs from 'dayjs';
-	import { SvelteSet } from 'svelte/reactivity';
-	import { slide } from 'svelte/transition';
+        import { ORDER_ADD_NOTE_MUTATION, ORDER_HISTORY_QUERY } from '$lib/api/admin/orders';
+        import { GRAPHQL_CLIENT } from '$lib/api/client';
+        import { operationStore } from '$lib/api/operation';
+        import SectionHeader from '$lib/components/common/section-header.svelte';
+        import Thumbnail from '$lib/components/common/thumbnail.svelte';
+        import { CalendarClock, ChevronDown, ChevronUp, Send } from '$lib/components/icons';
+        import { Alert } from '$lib/components/ui/Alert';
+        import { Button, IconButton } from '$lib/components/ui/Button';
+        import { Input } from '$lib/components/ui/Input';
+        import { SelectSkeleton } from '$lib/components/ui/select';
+        import {
+                OrderEventsEnum,
+                type Mutation,
+                type MutationOrderNoteAddArgs,
+                type Query,
+                type QueryOrderArgs,
+        } from '$lib/gql/graphql';
+        import { UserStoreManager } from '$lib/stores/auth';
+        import { AppRoute } from '$lib/utils';
+        import { checkIfGraphqlResultHasError, SitenameCommonClassName } from '$lib/utils/utils';
+        import dayjs from 'dayjs';
+        import { SvelteSet } from 'svelte/reactivity';
+        import { slide } from 'svelte/transition';
 
-	type Props = {
-		id: string;
-	};
+        type Props = {
+                id: string;
+        };
 
-	let { id }: Props = $props();
+        let { id }: Props = $props();
 
-	const ORDER_EVENTS_MAPPING: Record<OrderEventsEnum, string> = {
-		[OrderEventsEnum.AddedProducts]: 'Products were added to the order',
-		[OrderEventsEnum.Canceled]: 'The order was canceled',
-		[OrderEventsEnum.Confirmed]: 'The order was confirmed',
-		[OrderEventsEnum.DraftCreated]: 'A draft order was created',
-		[OrderEventsEnum.DraftCreatedFromReplace]: 'A draft order was created from a replacement',
-		[OrderEventsEnum.EmailSent]: 'An email was sent to the customer',
-		[OrderEventsEnum.Expired]: 'The order has expired',
-		[OrderEventsEnum.ExternalServiceNotification]: 'Notified an external service',
-		[OrderEventsEnum.FulfillmentAwaitsApproval]: 'Fulfillment is awaiting approval',
-		[OrderEventsEnum.FulfillmentCanceled]: 'A fulfillment was canceled',
-		[OrderEventsEnum.FulfillmentFulfilledItems]: 'Items were fulfilled',
-		[OrderEventsEnum.FulfillmentRefunded]: 'Fulfillment was refunded',
-		[OrderEventsEnum.FulfillmentReplaced]: 'Items were replaced',
-		[OrderEventsEnum.FulfillmentRestockedItems]: 'Items were restocked',
-		[OrderEventsEnum.FulfillmentReturned]: 'Items were returned',
-		[OrderEventsEnum.InvoiceGenerated]: 'Invoice was generated',
-		[OrderEventsEnum.InvoiceRequested]: 'Invoice was requested',
-		[OrderEventsEnum.InvoiceSent]: 'Invoice was sent',
-		[OrderEventsEnum.InvoiceUpdated]: 'Invoice was updated',
-		[OrderEventsEnum.NoteAdded]: 'A note was added to the order',
-		[OrderEventsEnum.NoteUpdated]: 'A note on the order was updated',
-		[OrderEventsEnum.OrderDiscountAdded]: 'A discount was added to the order',
-		[OrderEventsEnum.OrderDiscountAutomaticallyUpdated]: 'Order discount was updated automatically',
-		[OrderEventsEnum.OrderDiscountDeleted]: 'Order discount was removed',
-		[OrderEventsEnum.OrderDiscountUpdated]: 'Order discount was updated',
-		[OrderEventsEnum.OrderFullyPaid]: 'The order was fully paid',
-		[OrderEventsEnum.OrderLineDiscountRemoved]: 'Discount on an order line was removed',
-		[OrderEventsEnum.OrderLineDiscountUpdated]: 'Discount on an order line was updated',
-		[OrderEventsEnum.OrderLineProductDeleted]: 'A product in the order was deleted',
-		[OrderEventsEnum.OrderLineVariantDeleted]: 'A product variant in the order was deleted',
-		[OrderEventsEnum.OrderMarkedAsPaid]: 'Order was marked as paid',
-		[OrderEventsEnum.OrderReplacementCreated]: 'A replacement order was created',
-		[OrderEventsEnum.Other]: 'Other event',
-		[OrderEventsEnum.OversoldItems]: 'Oversold items in order',
-		[OrderEventsEnum.PaymentAuthorized]: 'Payment was authorized',
-		[OrderEventsEnum.PaymentCaptured]: 'Payment was captured',
-		[OrderEventsEnum.PaymentFailed]: 'Payment failed',
-		[OrderEventsEnum.PaymentRefunded]: 'Payment was refunded',
-		[OrderEventsEnum.PaymentVoided]: 'Payment was voided',
-		[OrderEventsEnum.Placed]: 'Order was placed',
-		[OrderEventsEnum.PlacedAutomaticallyFromPaidCheckout]:
-			'Order was automatically placed after paid checkout',
-		[OrderEventsEnum.PlacedFromDraft]: 'Order was placed from a draft',
-		[OrderEventsEnum.RemovedProducts]: 'Products were removed from the order',
-		[OrderEventsEnum.TrackingUpdated]: 'Tracking number was updated',
-		[OrderEventsEnum.TransactionCancelRequested]: 'Transaction cancel was requested',
-		[OrderEventsEnum.TransactionChargeRequested]: 'Transaction charge was requested',
-		[OrderEventsEnum.TransactionEvent]: 'Transaction event occurred',
-		[OrderEventsEnum.TransactionMarkAsPaidFailed]: 'Marking transaction as paid failed',
-		[OrderEventsEnum.TransactionRefundRequested]: 'Transaction refund was requested',
-		[OrderEventsEnum.UpdatedAddress]: 'The shipping or billing address was updated',
-	};
+        const ORDER_EVENTS_MAPPING: Record<OrderEventsEnum, string> = {
+                [OrderEventsEnum.AddedProducts]: 'Products were added to the order',
+                [OrderEventsEnum.Canceled]: 'The order was canceled',
+                [OrderEventsEnum.Confirmed]: 'The order was confirmed',
+                [OrderEventsEnum.DraftCreated]: 'A draft order was created',
+                [OrderEventsEnum.DraftCreatedFromReplace]: 'A draft order was created from a replacement',
+                [OrderEventsEnum.EmailSent]: 'An email was sent to the customer',
+                [OrderEventsEnum.Expired]: 'The order has expired',
+                [OrderEventsEnum.ExternalServiceNotification]: 'Notified an external service',
+                [OrderEventsEnum.FulfillmentAwaitsApproval]: 'Fulfillment is awaiting approval',
+                [OrderEventsEnum.FulfillmentCanceled]: 'A fulfillment was canceled',
+                [OrderEventsEnum.FulfillmentFulfilledItems]: 'Items were fulfilled',
+                [OrderEventsEnum.FulfillmentRefunded]: 'Fulfillment was refunded',
+                [OrderEventsEnum.FulfillmentReplaced]: 'Items were replaced',
+                [OrderEventsEnum.FulfillmentRestockedItems]: 'Items were restocked',
+                [OrderEventsEnum.FulfillmentReturned]: 'Items were returned',
+                [OrderEventsEnum.InvoiceGenerated]: 'Invoice was generated',
+                [OrderEventsEnum.InvoiceRequested]: 'Invoice was requested',
+                [OrderEventsEnum.InvoiceSent]: 'Invoice was sent',
+                [OrderEventsEnum.InvoiceUpdated]: 'Invoice was updated',
+                [OrderEventsEnum.NoteAdded]: 'A note was added to the order',
+                [OrderEventsEnum.NoteUpdated]: 'A note on the order was updated',
+                [OrderEventsEnum.OrderDiscountAdded]: 'A discount was added to the order',
+                [OrderEventsEnum.OrderDiscountAutomaticallyUpdated]: 'Order discount was updated automatically',
+                [OrderEventsEnum.OrderDiscountDeleted]: 'Order discount was removed',
+                [OrderEventsEnum.OrderDiscountUpdated]: 'Order discount was updated',
+                [OrderEventsEnum.OrderFullyPaid]: 'The order was fully paid',
+                [OrderEventsEnum.OrderLineDiscountRemoved]: 'Discount on an order line was removed',
+                [OrderEventsEnum.OrderLineDiscountUpdated]: 'Discount on an order line was updated',
+                [OrderEventsEnum.OrderLineProductDeleted]: 'A product in the order was deleted',
+                [OrderEventsEnum.OrderLineVariantDeleted]: 'A product variant in the order was deleted',
+                [OrderEventsEnum.OrderMarkedAsPaid]: 'Order was marked as paid',
+                [OrderEventsEnum.OrderReplacementCreated]: 'A replacement order was created',
+                [OrderEventsEnum.Other]: 'Other event',
+                [OrderEventsEnum.OversoldItems]: 'Oversold items in order',
+                [OrderEventsEnum.PaymentAuthorized]: 'Payment was authorized',
+                [OrderEventsEnum.PaymentCaptured]: 'Payment was captured',
+                [OrderEventsEnum.PaymentFailed]: 'Payment failed',
+                [OrderEventsEnum.PaymentRefunded]: 'Payment was refunded',
+                [OrderEventsEnum.PaymentVoided]: 'Payment was voided',
+                [OrderEventsEnum.Placed]: 'Order was placed',
+                [OrderEventsEnum.PlacedAutomaticallyFromPaidCheckout]:
+                        'Order was automatically placed after paid checkout',
+                [OrderEventsEnum.PlacedFromDraft]: 'Order was placed from a draft',
+                [OrderEventsEnum.RemovedProducts]: 'Products were removed from the order',
+                [OrderEventsEnum.TrackingUpdated]: 'Tracking number was updated',
+                [OrderEventsEnum.TransactionCancelRequested]: 'Transaction cancel was requested',
+                [OrderEventsEnum.TransactionChargeRequested]: 'Transaction charge was requested',
+                [OrderEventsEnum.TransactionEvent]: 'Transaction event occurred',
+                [OrderEventsEnum.TransactionMarkAsPaidFailed]: 'Marking transaction as paid failed',
+                [OrderEventsEnum.TransactionRefundRequested]: 'Transaction refund was requested',
+                [OrderEventsEnum.UpdatedAddress]: 'The shipping or billing address was updated',
+        };
 
-	let newNote = $state<string>();
-	let loading = $state(false);
-	let filterType = $state<OrderEventsEnum>();
+        let newNote = $state<string>();
+        let loading = $state(false);
+        let filterType = $state<OrderEventsEnum>();
 
-	let orderEventOpeningState = $state<SvelteSet<string>>(new SvelteSet());
+        let orderEventOpeningState = $state<SvelteSet<string>>(new SvelteSet());
 
-	const toggleShowHistoryEventDetail = (key: string) => {
-		if (orderEventOpeningState.has(key)) {
-			orderEventOpeningState.delete(key);
-		} else {
-			orderEventOpeningState.add(key);
-		}
-	};
+        const toggleShowHistoryEventDetail = (key: string) => {
+                if (orderEventOpeningState.has(key)) {
+                        orderEventOpeningState.delete(key);
+                } else {
+                        orderEventOpeningState.add(key);
+                }
+        };
 
-	const eventsQuery = operationStore<Pick<Query, 'order'>, QueryOrderArgs>({
-		query: ORDER_HISTORY_QUERY,
-		variables: { id },
-		requestPolicy: 'cache-and-network',
-	});
+        const eventsQuery = operationStore<Pick<Query, 'order'>, QueryOrderArgs>({
+                query: ORDER_HISTORY_QUERY,
+                variables: { id },
+                requestPolicy: 'cache-and-network',
+        });
 
-	const handleAddNote = async () => {
-		if (!newNote) return;
+        const handleAddNote = async () => {
+                if (!newNote) return;
 
-		loading = true;
-		const result = await GRAPHQL_CLIENT.mutation<
-			Pick<Mutation, 'orderAddNote'>,
-			MutationOrderAddNoteArgs
-		>(ORDER_ADD_NOTE_MUTATION, {
-			input: {
-				message: newNote,
-			},
-			order: id,
-		});
+                loading = true;
+                const result = await GRAPHQL_CLIENT.mutation<
+                        Pick<Mutation, 'orderNoteAdd'>,
+                        MutationOrderNoteAddArgs
+                >(ORDER_ADD_NOTE_MUTATION, {
+                        input: {
+                                message: newNote,
+                        },
+                        order: id,
+                });
 
-		loading = false;
+                loading = false;
 
-		if (
-			checkIfGraphqlResultHasError(result, 'orderAddNote', 'Successfully added new note to order')
-		)
-			return;
+                if (
+                        checkIfGraphqlResultHasError(result, 'orderNoteAdd', 'Successfully added new note to order')
+                )
+                        return;
 
-		newNote = ''; // reset note
-		eventsQuery.reexecute({ variables: { id } });
-	};
+                newNote = ''; // reset note
+                eventsQuery.reexecute({ variables: { id } });
+        };
 </script>
 
 <div class={SitenameCommonClassName}>
-	<SectionHeader>Order timeline</SectionHeader>
-	<Alert size="sm">
-		The timeline below shows the history of all events related to this order. Each entry represents
-		a single event along with its content or readable description.
-	</Alert>
+        <SectionHeader>Order timeline</SectionHeader>
+        <Alert size="sm">
+                The timeline below shows the history of all events related to this order. Each entry represents
+                a single event along with its content or readable description.
+        </Alert>
 
-	{#if $eventsQuery.fetching}
-		<SelectSkeleton size="sm" label />
-	{:else if $eventsQuery.error}
-		<Alert size="sm" variant="error">{$eventsQuery.error.message}</Alert>
-	{:else if $eventsQuery.data}
-		{@const events =
-			$eventsQuery.data.order?.events
-				.filter((event) => (filterType ? event.type === filterType : true))
-				.sort(
-					(a, b) => dayjs(b.date).valueOf() - dayjs(a.date).valueOf(), // latest first
-				) || []}
-		<!-- MARK: note form -->
-		<div class="flex gap-2 items-center">
-			<div class="flex-3/4 flex items-center gap-2">
-				<Thumbnail
-					size="sm"
-					src={$UserStoreManager?.avatar?.url}
-					alt={$UserStoreManager?.avatar?.alt || $UserStoreManager?.email || 'User'}
-				/>
-				<Input
-					size="sm"
-					placeholder="Add note"
-					class="w-full"
-					bind:value={newNote}
-					disabled={loading}
-				/>
-			</div>
-			<div class="flex-1/4">
-				<Button
-					size="sm"
-					endIcon={Send}
-					fullWidth
-					disabled={!newNote?.trim() || loading}
-					onclick={handleAddNote}
-				>
-					Send
-				</Button>
-			</div>
-		</div>
+        {#if $eventsQuery.fetching}
+                <SelectSkeleton size="sm" label />
+        {:else if $eventsQuery.error}
+                <Alert size="sm" variant="error">{$eventsQuery.error.message}</Alert>
+        {:else if $eventsQuery.data}
+                {@const events =
+                        $eventsQuery.data.order?.events
+                                .filter((event) => (filterType ? event.type === filterType : true))
+                                .sort(
+                                        (a, b) => dayjs(b.date).valueOf() - dayjs(a.date).valueOf(), // latest first
+                                ) || []}
+                <!-- MARK: note form -->
+                <div class="flex gap-2 items-center">
+                        <div class="flex-3/4 flex items-center gap-2">
+                                <Thumbnail
+                                        size="sm"
+                                        src={$UserStoreManager?.avatar?.url}
+                                        alt={$UserStoreManager?.avatar?.alt || $UserStoreManager?.email || 'User'}
+                                />
+                                <Input
+                                        size="sm"
+                                        placeholder="Add note"
+                                        class="w-full"
+                                        bind:value={newNote}
+                                        disabled={loading}
+                                />
+                        </div>
+                        <div class="flex-1/4">
+                                <Button
+                                        size="sm"
+                                        endIcon={Send}
+                                        fullWidth
+                                        disabled={!newNote?.trim() || loading}
+                                        onclick={handleAddNote}
+                                >
+                                        Send
+                                </Button>
+                        </div>
+                </div>
 
-		<!-- MARK: event history -->
-		<div class="relative w-full mx-auto dark:bg-gray-900 mt-5">
-			<ol class="relative mt-2 ml-5 border-s border-gray-200 dark:border-gray-700">
-				{#each events as event, idx (idx)}
-					{@const byName =
-						event.user?.firstName || event.user?.lastName
-							? `${event.user.firstName || ''} ${event.user.lastName || ''}`
-							: event.user?.email}
-					<li class="mb-4 ms-6 flex flex-row gap-7">
-						<IconButton
-							icon={CalendarClock}
-							size="xs"
-							variant="light"
-							color="orange"
-							class="absolute! -start-3.5 ring-4 ring-white"
-							rounded
-						/>
-						<div>
-							<div class="mb-1 font-medium text-sm dark:text-white text-gray-700">
-								{event.type ? ORDER_EVENTS_MAPPING[event.type] : '-'}
-							</div>
-							<div class="text-xs font-normal leading-none text-gray-400 dark:text-gray-500 mb-1">
-								{dayjs(event.date).fromNow()}
-							</div>
-							{#if event.type === OrderEventsEnum.NoteAdded}
-								<div class="border-l-4 border-gray-200 p-2 bg-gray-50 text-gray-600 text-sm mb-1">
-									<span>{event.message}</span>
-								</div>
-							{/if}
-							<div class="text-xs text-gray-600">
-								By <a
-									class="text-blue-600 text-sm font-semibold"
-									href={event.user ? AppRoute.SETTINGS_CONFIGS_STAFF_DETAILS(event.user.id) : '#'}
-								>
-									{byName}
-								</a>
-							</div>
-							{#if orderEventOpeningState.has(event.id) && event.discount}
-								<div class="mt-2 text-sm" transition:slide>
-									{#if event.discount?.amount}
-										<p>
-											Discount value: {event.discount.amount.amount}
-											{event.discount.amount.currency}
-										</p>
-									{/if}
-									{#if event.discount?.reason}
-										<p>Reason for discount: {event.discount.reason}</p>
-									{/if}
-								</div>
-							{/if}
-						</div>
-						{#if event.type === OrderEventsEnum.OrderDiscountAdded || event.type === OrderEventsEnum.OrderDiscountUpdated}
-							<IconButton
-								size="xs"
-								variant="outline"
-								color="gray"
-								icon={orderEventOpeningState.has(event.id) ? ChevronUp : ChevronDown}
-								class="w-3 h-3"
-								onclick={() => toggleShowHistoryEventDetail(event.id)}
-							/>
-						{/if}
-					</li>
-				{/each}
-			</ol>
-		</div>
-	{/if}
+                <!-- MARK: event history -->
+                <div class="relative w-full mx-auto dark:bg-gray-900 mt-5">
+                        <ol class="relative mt-2 ml-5 border-s border-gray-200 dark:border-gray-700">
+                                {#each events as event, idx (idx)}
+                                        {@const byName =
+                                                event.user?.firstName || event.user?.lastName
+                                                        ? `${event.user.firstName || ''} ${event.user.lastName || ''}`
+                                                        : event.user?.email}
+                                        <li class="mb-4 ms-6 flex flex-row gap-7">
+                                                <IconButton
+                                                        icon={CalendarClock}
+                                                        size="xs"
+                                                        variant="light"
+                                                        color="orange"
+                                                        class="absolute! -start-3.5 ring-4 ring-white"
+                                                        rounded
+                                                />
+                                                <div>
+                                                        <div class="mb-1 font-medium text-sm dark:text-white text-gray-700">
+                                                                {event.type ? ORDER_EVENTS_MAPPING[event.type] : '-'}
+                                                        </div>
+                                                        <div class="text-xs font-normal leading-none text-gray-400 dark:text-gray-500 mb-1">
+                                                                {dayjs(event.date).fromNow()}
+                                                        </div>
+                                                        {#if event.type === OrderEventsEnum.NoteAdded}
+                                                                <div class="border-l-4 border-gray-200 p-2 bg-gray-50 text-gray-600 text-sm mb-1">
+                                                                        <span>{event.message}</span>
+                                                                </div>
+                                                        {/if}
+                                                        <div class="text-xs text-gray-600">
+                                                                By <a
+                                                                        class="text-blue-600 text-sm font-semibold"
+                                                                        href={event.user ? AppRoute.SETTINGS_CONFIGS_STAFF_DETAILS(event.user.id) : '#'}
+                                                                >
+                                                                        {byName}
+                                                                </a>
+                                                        </div>
+                                                        {#if orderEventOpeningState.has(event.id) && event.discount}
+                                                                <div class="mt-2 text-sm" transition:slide>
+                                                                        {#if event.discount?.amount}
+                                                                                <p>
+                                                                                        Discount value: {event.discount.amount.amount}
+                                                                                        {event.discount.amount.currency}
+                                                                                </p>
+                                                                        {/if}
+                                                                        {#if event.discount?.reason}
+                                                                                <p>Reason for discount: {event.discount.reason}</p>
+                                                                        {/if}
+                                                                </div>
+                                                        {/if}
+                                                </div>
+                                                {#if event.type === OrderEventsEnum.OrderDiscountAdded || event.type === OrderEventsEnum.OrderDiscountUpdated}
+                                                        <IconButton
+                                                                size="xs"
+                                                                variant="outline"
+                                                                color="gray"
+                                                                icon={orderEventOpeningState.has(event.id) ? ChevronUp : ChevronDown}
+                                                                class="w-3 h-3"
+                                                                onclick={() => toggleShowHistoryEventDetail(event.id)}
+                                                        />
+                                                {/if}
+                                        </li>
+                                {/each}
+                        </ol>
+                </div>
+        {/if}
 </div>

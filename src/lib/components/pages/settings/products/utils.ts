@@ -4,7 +4,6 @@ import type { SelectItemProps } from '$lib/components/ui/MegaMenu/types';
 import type { SelectOption } from '$lib/components/ui/select';
 import {
 	type CategoryCountableConnection,
-	type PreorderSettingsInput,
 	type ProductVariantChannelListingAddInput,
 	type ProductVariantChannelListingUpdateInput,
 	type ProductVariantStocksUpdateInput,
@@ -72,7 +71,6 @@ export type QuickFillingProps = {
 	stocks: CustomStockInput[];
 	sku?: string;
 	weight?: number;
-	preOrder: PreorderSettingsInput;
 	trackInventory: boolean;
 	quantityLimitPerCustomer?: number;
 };
@@ -84,8 +82,6 @@ export type QuickFillingProps = {
 export const ProductPrivateMetadataVariantAttributeUsedKey = 'variantAttributeUsed';
 
 export const MAX_VARIANT_TYPES = 2;
-export const MIN_DAYS_FOR_PREORDER = 5;
-export const MAX_DAYS_FOR_PREORDER = 15;
 
 export const calculateStockInputForChannels = async () => {
 	const result = await GRAPHQL_CLIENT.query<Pick<Query, 'channels'>>(

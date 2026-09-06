@@ -38,7 +38,6 @@
 	});
 
 	const ProductTypeTypeOptions = [
-		ProductTypeEnum.Digital,
 		ProductTypeEnum.Shippable,
 	].map<SelectOption>((item) => ({
 		label: item.toLowerCase(),

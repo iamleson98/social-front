@@ -64,7 +64,6 @@
 	/** if existed state is false, then user change to true, we must update the product type itself first before
 	 * we can assign attributes to variants
 	 */
-	let initialHasVariants = $state(false);
 
 	const handleUpdateProductType = async () => {
 		// NOTE: we have to create a copy of current value of this state.
@@ -120,12 +119,6 @@
 		});
 	};
 
-	$effect(() => {
-		if (productTypeInput.hasVariants !== initialHasVariants) {
-			initialHasVariants = productTypeInput.hasVariants!;
-			handleUpdateProductType();
-		}
-	});
 
 	const onDeleteClick = async () => {
 		ALERT_MODAL_STORE.openAlertModal({
@@ -154,8 +147,6 @@
 		productTypeQuery.subscribe((result) => {
 			if (result.data?.productType) {
 				const {
-					hasVariants,
-					isDigital,
 					name,
 					slug,
 					isShippingRequired,
@@ -163,8 +154,6 @@
 					taxClass,
 					assignedVariantAttributes,
 				} = result.data.productType;
-
-				initialHasVariants = hasVariants; //
 
 				if (assignedVariantAttributes)
 					variantSelectionOperations =
@@ -174,8 +163,7 @@
 						}));
 
 				productTypeInput = {
-					hasVariants,
-					isDigital,
+					hasVariants: false,
 					name,
 					slug,
 					isShippingRequired,

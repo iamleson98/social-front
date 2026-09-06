@@ -83,7 +83,6 @@ export const PRODUCT_TYPES_QUERY = gql`
 					name
 					slug
 					isShippingRequired
-					isDigital
 					kind
 					taxClass {
 						name
@@ -117,10 +116,8 @@ export const PRODUCT_TYPE_QUERY = gql`
 			id
 			name
 			isShippingRequired
-			isDigital
 			kind
 			slug
-			hasVariants
 			productAttributes {
 				id
 				name
@@ -692,23 +689,6 @@ export const PRODUCT_TOTAL_COUNT_QUERY = gql`
 	}
 `;
 
-export const EXPORT_PRODUCTS_MUTATION = gql`
-	mutation ExportProducts($input: ExportProductsInput!) {
-		exportProducts(input: $input) {
-			errors {
-				field
-				message
-			}
-			exportFile {
-				id
-				status
-				createdAt
-				message
-				url
-			}
-		}
-	}
-`;
 
 export const PRODUCT_TYPE_ATTRIBUTE_ASSIGNMENT_UPDATE_MUTATION = gql`
 	mutation ProductAttributeAssignmentUpdate(

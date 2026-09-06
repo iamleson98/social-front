@@ -84,12 +84,6 @@
 				eq: CommonSnippets.yesNo,
 			},
 		},
-		isPreorder: {
-			label: 'Is preorder',
-			operations: {
-				eq: CommonSnippets.yesNo,
-			},
-		},
 		giftCardUsed: {
 			label: 'Gift card used',
 			operations: {
@@ -288,7 +282,6 @@
 			paymentStatus,
 			status,
 			isClickAndCollect,
-			isPreorder,
 			giftCardBought,
 			giftCardUsed,
 			authorizeStatus,
@@ -347,7 +340,6 @@
 		}
 		if (isClickAndCollect)
 			filterVariables.filter.isClickAndCollect = isClickAndCollect.value as boolean;
-		if (isPreorder) filterVariables.filter.isPreorder = isPreorder.value as boolean;
 		if (giftCardBought) filterVariables.filter.giftCardBought = giftCardBought.value as boolean;
 		if (giftCardUsed) filterVariables.filter.giftCardUsed = giftCardUsed.value as boolean;
 		if (authorizeStatus) {

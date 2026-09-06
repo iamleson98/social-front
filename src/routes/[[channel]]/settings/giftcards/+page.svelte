@@ -292,7 +292,7 @@
 				disabled={loading}
 			/>
 		{/if}
-		<Settings bind:variables={giftcardFilterVariables} bind:selectedIds={selectedGiftcards} />
+		<Settings />
 	</div>
 </div>
 
