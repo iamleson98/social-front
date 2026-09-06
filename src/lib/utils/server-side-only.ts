@@ -1,4 +1,4 @@
-import { PROMOTION_MANAGER_EMAIL, PROMOTION_MANAGER_PWD } from "$env/static/private";
+import { env as privateEnv } from "$env/dynamic/private";
 import { USER_LOGIN_MUTATION_STORE, USER_REFRESH_TOKEN_MUTATION_STORE } from "$lib/api";
 import { GRAPHQL_CLIENT } from "$lib/api/client";
 import { HTTPStatusForbidden, HTTPStatusTooManyRequests } from "$lib/utils/consts";
@@ -12,13 +12,21 @@ let refreshToken: string | null | undefined = null;
 let csrfToken: string | null | undefined = null;
 
 export const getMiddleAccountAccessToken = async () => {
+  const managerEmail = privateEnv.PROMOTION_MANAGER_EMAIL;
+  const managerPwd = privateEnv.PROMOTION_MANAGER_PWD;
+
+  // Service-account credentials are runtime config — when they are not
+  // configured (e.g. CI/preview deploys) we bail out instead of attempting
+  // an authenticated signin that can only fail.
+  if (!managerEmail || !managerPwd) return null;
+
   if (!token) {
     const signinResult = await GRAPHQL_CLIENT.mutation<
       Pick<Mutation, 'tokenCreate'>,
       MutationTokenCreateArgs
     >(USER_LOGIN_MUTATION_STORE, {
-      email: PROMOTION_MANAGER_EMAIL,
-      password: PROMOTION_MANAGER_PWD,
+      email: managerEmail,
+      password: managerPwd,
     });
     if (signinResult.error || !signinResult.data?.tokenCreate?.token)
       return null;
