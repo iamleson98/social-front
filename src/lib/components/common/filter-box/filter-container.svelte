@@ -82,7 +82,7 @@
 	};
 </script>
 
-<div class="bg-white rounded-lg p-2 shadow-md border border-gray-200 min-w-110">
+<div class="bg-white rounded-xl p-2.5 shadow-md border border-gray-200 min-w-110">
 	<dir class="flex items-center justify-between">
 		<span class="text-sm font-medium">{$T('common.filter')}</span>
 		<IconButton

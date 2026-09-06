@@ -39,7 +39,7 @@ const main = async () => {
     const { trans } = parseArgs();
 
     const translations = await Promise.all<{ name: string, trans: Translation }>(
-      trans.map(name => new Promise((resolve, reject) => {
+      trans.map(name => new Promise((resolve) => {
         import(`./${name}`)
           .then(raw => resolve({ name, trans: parseTranslationObject(raw.default, {}) }))
           .catch(err => {

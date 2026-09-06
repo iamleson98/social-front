@@ -33,7 +33,7 @@ export type TableProps<T extends Record<string, unknown>, K extends string = str
 	defaultSortState?: SortState<K>;
 	/** for example when your data is fetching, it is batter to temporary disable interactive items within the table */
 	disabled?: boolean;
-	/** 
+	/**
 	 * If provided, you can exchange positions of rows of your table. Default to `undefined`
 	 * NOTE: If your row contains interactive elements, you should provide `data-interactive` attribute to their html element
 	 */
@@ -45,6 +45,8 @@ export type TableProps<T extends Record<string, unknown>, K extends string = str
 	numOfRowsTitle?: string;
 	prevPageTitle?: string;
 	nextPageTitle?: string;
+	/** custom message for the table's empty state (defaults to "No data") */
+	emptyText?: string;
 };
 
 export type TableCellProps<T> = {
@@ -66,7 +68,7 @@ export type TableColumnProps<T extends Record<string, unknown>, K extends string
 	 * The content of each row in the column.
 	 * @param item the item of the row
 	 */
-	child: Snippet<[TableCellProps<T>]> | {render: (props: TableCellProps<T>) => any};
+	child: Snippet<[TableCellProps<T>]> | { render: (props: TableCellProps<T>) => any };
 	/** plain positive integer number */
 	width?: number | string;
 };

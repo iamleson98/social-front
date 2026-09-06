@@ -104,6 +104,7 @@
 <GraphqlPaginableTable
 	query={USER_ORDERS_QUERY}
 	columns={ORDER_TABLE_COLUMNS}
+	emptyText={$T('order.emptyOrders')}
 	bind:variables={filterVariables}
 	resultKey={'me.orders' as keyof Query}
 	autoFetchDataOnMount

@@ -6,6 +6,7 @@
 	let {
 		header,
 		class: className = '',
+		headerClass = '',
 		children,
 		open = $bindable(true),
 		fixed = false,
@@ -29,7 +30,7 @@
 		onclick={toggle}
 		onkeyup={(evt) => evt.key === 'Enter' && toggle()}
 	>
-		<div class="text-sm font-semibold flex items-center">
+		<div class="flex items-center text-sm font-semibold {headerClass}">
 			{#if headerIcon}
 				<Icon icon={headerIcon} class="mr-2" />
 			{/if}

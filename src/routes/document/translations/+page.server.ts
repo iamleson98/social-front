@@ -1,7 +1,6 @@
 // import { readFile } from 'node:fs/promises';
 import vi from '../../../lib/i18n/vi';
 
-
-export const load = async (event) => {
+export const load = async () => {
   // console.log(vi)
 };

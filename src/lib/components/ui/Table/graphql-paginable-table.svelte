@@ -71,6 +71,7 @@
 		dragEffectType,
 		disabled,
 		class: className,
+		emptyText,
 		autoRefetchOnPaginationParamsChange = false,
 		autoFetchDataOnMount = false,
 	}: Props = $props();
@@ -212,6 +213,7 @@
 		onSortChange={handleSortChange}
 		rowsPerPage={(variables.first || variables.last) as RowOptions}
 		defaultSortState={sortState as SortState<K>}
+		{emptyText}
 		class={className}
 		disabled={$queryOperationStore.fetching || disabled}
 		onDragEnd={onDragEnd ? innerHandleDragEnd : undefined}

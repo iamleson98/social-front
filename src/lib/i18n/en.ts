@@ -512,6 +512,7 @@ export default {
 		staffDeleteConfirm: 'Are you sure you want to delete the staff {{id}}?',
 	},
 	giftcard: {
+		emptyGiftcards: 'No gift cards yet — issued cards will show up here',
 		title: 'Gift Card',
 		newIssue: 'Issue new giftcard',
 		code: 'Gift Card Code',
@@ -817,6 +818,7 @@ export default {
 		Area: 'Area',
 	},
 	order: {
+		emptyOrders: 'No orders yet — your purchases will show up here',
 		thankYou: 'Thank you for your order!',
 		placedSuccessfully: 'Your order #{{number}} has been placed successfully',
 		placedSuccessfullyToast: 'Order placed successfully',

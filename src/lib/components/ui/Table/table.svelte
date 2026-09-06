@@ -8,7 +8,7 @@
 		GripVertical,
 		Icon,
 	} from '$lib/components/icons';
-	import { TablerDots } from '$lib/components/icons/consts';
+	import { TablerBox, TablerDots } from '$lib/components/icons/consts';
 	import { IconButton, Button } from '$lib/components/ui/Button';
 	import { DropDown, MenuItem } from '$lib/components/ui/Dropdown';
 	import { Sticky } from '$lib/components/ui/Popover';
@@ -25,6 +25,14 @@
 	import { Pagination } from 'bits-ui';
 	import { flip } from 'svelte/animate';
 	import { fade } from 'svelte/transition';
+
+	/**
+	 * Local mirror of bits-ui's (unexported) `PageItem` type — used to type the
+	 * `children` snippet params of `Pagination.Root`, which the language
+	 * server cannot infer on its own.
+	 */
+	type BitsPageItem = ({ type: 'page'; value: number } | { type: 'ellipsis' }) & { key: string };
+	type BitsButtonChildProps = { props: Record<string, any> };
 
 	let {
 		items = [],
@@ -46,6 +54,7 @@
 		numOfRowsTitle,
 		prevPageTitle,
 		nextPageTitle,
+		emptyText,
 	}: TableProps<T, K> = $props();
 
 	if (onDragEnd && dev) {
@@ -74,11 +83,11 @@
 			[columnKey]: dir,
 		} as SortState<K>;
 		// if (sortState[columnKey] === 'NEUTRAL') {
-		// 	colSortState[columnKey] = OrderDirection.Asc;
+		//      colSortState[columnKey] = OrderDirection.Asc;
 		// } else if (sortState[columnKey] === OrderDirection.Asc) {
-		// 	colSortState[columnKey] = OrderDirection.Desc;
+		//      colSortState[columnKey] = OrderDirection.Desc;
 		// } else {
-		// 	colSortState[columnKey] = 'NEUTRAL';
+		//      colSortState[columnKey] = 'NEUTRAL';
 		// }
 		if (sortMultiple) {
 			sortState = { ...sortState, ...colSortState };
@@ -119,15 +128,22 @@
 
 {#snippet noData()}
 	<tr>
-		<td class="text-sm select-none! text-gray-400 text-center" colspan={columns.length}>
-			No data
+		<td colspan={columns.length}>
+			<div class="py-12 text-center select-none!">
+				<div
+					class="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-400"
+				>
+					<Icon icon={TablerBox} size="sm" />
+				</div>
+				<div class="text-sm font-medium text-gray-500">{emptyText || 'No data'}</div>
+			</div>
 		</td>
 	</tr>
 {/snippet}
 
 <!--
-	NOTE: when table is empty, the "rows-per-page" dropdown will be affected by table overflow effect. 
- 	Using a sticky component outside of table, and attach it to the num per page button, when it is clicked, solves this issue
+        NOTE: when table is empty, the "rows-per-page" dropdown will be affected by table overflow effect. 
+        Using a sticky component outside of table, and attach it to the num per page button, when it is clicked, solves this issue
 -->
 <Sticky bind:target={numPerPageButtonRef} placement="bottom-start">
 	<div class="py-2 rounded-lg border border-gray-200 bg-white shadow-sm">
@@ -260,9 +276,9 @@
 		</table>
 	</div>
 
-	<!-- MARK: pagination -->
-	{#if graphqlPagination || restPagination}
-		<div class="mt-4 flex justify-between w-full items-center">
+	<!-- MARK: pagination (hidden when there is nothing to paginate) -->
+	{#if (graphqlPagination || restPagination) && items.length}
+		<div class="mt-3 mb-1 flex justify-between w-full items-center px-1">
 			<Button
 				size="xs"
 				variant="light"
@@ -300,10 +316,10 @@
 				</div>
 			{:else if restPagination}
 				<Pagination.Root count={restPagination.totalCount} perPage={restPagination.rowsPerPage}>
-					{#snippet children({ pages })}
+					{#snippet children({ pages }: { pages: BitsPageItem[] })}
 						<div class="flex items-center">
 							<Pagination.PrevButton>
-								{#snippet child({ props })}
+								{#snippet child({ props }: BitsButtonChildProps)}
 									<IconButton
 										icon={ChevronLeft}
 										variant="light"
@@ -321,7 +337,7 @@
 										<div class="text-foreground-alt select-none text-sm font-medium">...</div>
 									{:else}
 										<Pagination.Page {page}>
-											{#snippet child({ props })}
+											{#snippet child({ props }: BitsButtonChildProps)}
 												<IconButton
 													color="gray"
 													size="xs"
@@ -337,7 +353,7 @@
 								{/each}
 							</div>
 							<Pagination.NextButton>
-								{#snippet child({ props })}
+								{#snippet child({ props }: BitsButtonChildProps)}
 									<IconButton
 										icon={ChevronRight}
 										variant="light"
@@ -360,7 +376,7 @@
 <style lang="postcss">
 	@reference "tailwindcss"
 
-	:global(.dragging) {
+        :global(.dragging) {
 		@apply opacity-50 shadow-lg rounded-lg;
 	}
 
@@ -376,19 +392,26 @@
 		@apply pointer-events-none! cursor-not-allowed!;
 	}
 
-	th:not(:last-child) {
-		@apply border-r border-gray-200 py-1 px-1.5;
+	/*
+         * Design System v2 (admin): tables drop the zebra striping and the
+         * vertical column separators in favour of comfortable cell padding,
+         * a quiet header row and hairline row dividers with a soft hover.
+         */
+	th {
+		@apply text-xs font-semibold uppercase tracking-wider text-gray-500 bg-gray-50/75 py-2.5 px-3 text-nowrap;
 	}
 
-	tr:nth-child(even) {
-		@apply bg-gray-50;
+	tbody tr {
+		@apply border-b border-gray-100;
 	}
 
 	tbody > tr:hover {
-		@apply bg-gray-50;
+		/* bg-brand-50/40 — expressed via color-mix because `@apply` inside a
+		 * scoped style block cannot resolve custom theme utilities */
+		background-color: color-mix(in oklab, var(--color-brand-50) 40%, transparent);
 	}
 
 	td {
-		@apply p-1.5!;
+		@apply px-3 py-2.5!;
 	}
 </style>

@@ -1,222 +1,240 @@
 <script lang="ts" module>
-	import { T } from '$i18n';
-	import { RFC3339TimeFormat } from '$lib/utils/graphql-helpers';
-	import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
-	import { Checkbox, Input } from '$lib/components/ui/Input';
-	import { type Channel } from '$lib/gql/graphql';
-	import { BASIC_DATE_FORMAT } from '$lib/utils/consts';
-	import ChannelSelect from '../channel-select/channel-select.svelte';
-	import { type FilterComponentType, type FilterItemValue } from './types';
-	import dayjs from 'dayjs';
-	import { get } from 'svelte/store';
+        import { T } from '$i18n';
+        import { RFC3339TimeFormat } from '$lib/utils/graphql-helpers';
+        import { EaseDatePicker } from '$lib/components/ui/EaseDatePicker';
+        import { Checkbox, Input } from '$lib/components/ui/Input';
+        import { type Channel } from '$lib/gql/graphql';
+        import { BASIC_DATE_FORMAT } from '$lib/utils/consts';
+        import ChannelSelect from '../channel-select/channel-select.svelte';
+        import { type FilterComponentType, type FilterItemValue } from './types';
+        import dayjs from 'dayjs';
+        import { get } from 'svelte/store';
 
-	export const CommonSnippets = {
-		singleNumber,
-		numberRange,
-		yesNo,
-		singleChannelSlug,
-		singleChannelId,
-		multiChannelIds,
-		multiChannelSlugs,
-		metadata,
-		singleDate,
-		singleDatetime,
-		dateRange,
-		datetimeRange,
-	};
+        /**
+         * NOTE: these refer to the top-level `{#snippet}` declarations below.
+         * The Svelte compiler resolves and binds them at build time, but
+         * svelte-check's language server cannot see that binding — a known
+         * tooling limitation — hence the per-line `@ts-expect-error` guards.
+         */
+        export const CommonSnippets = {
+                // @ts-expect-error — markup-level snippet, see note above
+                singleNumber,
+                // @ts-expect-error — markup-level snippet, see note above
+                numberRange,
+                // @ts-expect-error — markup-level snippet, see note above
+                yesNo,
+                // @ts-expect-error — markup-level snippet, see note above
+                singleChannelSlug,
+                // @ts-expect-error — markup-level snippet, see note above
+                singleChannelId,
+                // @ts-expect-error — markup-level snippet, see note above
+                multiChannelIds,
+                // @ts-expect-error — markup-level snippet, see note above
+                multiChannelSlugs,
+                // @ts-expect-error — markup-level snippet, see note above
+                metadata,
+                // @ts-expect-error — markup-level snippet, see note above
+                singleDate,
+                // @ts-expect-error — markup-level snippet, see note above
+                singleDatetime,
+                // @ts-expect-error — markup-level snippet, see note above
+                dateRange,
+                // @ts-expect-error — markup-level snippet, see note above
+                datetimeRange,
+        };
 
-	const funcTran = $derived(get(T));
+        const funcTran = $derived(get(T));
 </script>
 
 {#snippet singleNumber({ onValue, initialValue, placeholder }: FilterComponentType)}
-	<Input
-		type="number"
-		{placeholder}
-		value={initialValue}
-		inputDebounceOption={{ onInput: (evt) => onValue((evt.target as HTMLInputElement).value) }}
-		size="xs"
-	/>
+        <Input
+                type="number"
+                {placeholder}
+                value={initialValue}
+                inputDebounceOption={{ onInput: (evt) => onValue((evt.target as HTMLInputElement).value) }}
+                size="xs"
+        />
 {/snippet}
 
 {#snippet numberRange({ onValue, initialValue = [] }: FilterComponentType)}
-	{@const bounds = initialValue as number[]}
-	<div class="flex gap-1 flex-col">
-		{@render singleNumber({
-			onValue: (value) => {
-				bounds[0] = value as number;
-				onValue(bounds);
-			},
-			initialValue: bounds[0],
-			placeholder: '>=',
-		})}
-		{@render singleNumber({
-			onValue: (value) => {
-				bounds[1] = value as number;
-				onValue(bounds);
-			},
-			initialValue: bounds[1],
-			placeholder: '<=',
-		})}
-	</div>
+        {@const bounds = initialValue as number[]}
+        <div class="flex gap-1 flex-col">
+                {@render singleNumber({
+                        onValue: (value) => {
+                                bounds[0] = value as number;
+                                onValue(bounds);
+                        },
+                        initialValue: bounds[0],
+                        placeholder: '>=',
+                })}
+                {@render singleNumber({
+                        onValue: (value) => {
+                                bounds[1] = value as number;
+                                onValue(bounds);
+                        },
+                        initialValue: bounds[1],
+                        placeholder: '<=',
+                })}
+        </div>
 {/snippet}
 
 {#snippet yesNo({ onValue, initialValue = false }: FilterComponentType)}
-	<Checkbox
-		size="sm"
-		label={funcTran('common.yes')}
-		checked={initialValue as boolean}
-		onCheckChange={onValue}
-	/>
+        <Checkbox
+                size="sm"
+                label={funcTran('common.yes')}
+                checked={initialValue as boolean}
+                onCheckChange={onValue}
+        />
 {/snippet}
 
 {#snippet singleChannelSlug({ onValue, initialValue = '' }: FilterComponentType)}
-	<ChannelSelect
-		size="xs"
-		valueType="slug"
-		placeholder={funcTran('voucher.specifyChan')}
-		value={initialValue as string}
-		onchange={(opt) => onValue((opt as Channel)?.slug as FilterItemValue)}
-	/>
+        <ChannelSelect
+                size="xs"
+                valueType="slug"
+                placeholder={funcTran('voucher.specifyChan')}
+                value={initialValue as string}
+                onchange={(opt) => onValue((opt as Channel)?.slug as FilterItemValue)}
+        />
 {/snippet}
 
 {#snippet multiChannelSlugs({ onValue, initialValue = '' }: FilterComponentType)}
-	<ChannelSelect
-		size="xs"
-		multiple
-		placeholder={funcTran('voucher.specifyChan')}
-		onchange={(opt) => {
-			if (opt && Array.isArray(opt)) {
-				onValue(opt.map((opt) => opt.slug as string));
-			}
-		}}
-		value={initialValue as string[]}
-		valueType="slug"
-	/>
+        <ChannelSelect
+                size="xs"
+                multiple
+                placeholder={funcTran('voucher.specifyChan')}
+                onchange={(opt) => {
+                        if (opt && Array.isArray(opt)) {
+                                onValue(opt.map((opt) => opt.slug as string));
+                        }
+                }}
+                value={initialValue as string[]}
+                valueType="slug"
+        />
 {/snippet}
 
 {#snippet multiChannelIds({ onValue, initialValue = [] }: FilterComponentType)}
-	<ChannelSelect
-		size="xs"
-		multiple
-		placeholder={funcTran('voucher.specifyChan')}
-		onchange={(opts) => {
-			let values: string[] = [];
-			if (opts && Array.isArray(opts)) {
-				values = opts.map((opt) => opt.id);
-			}
-			onValue(values);
-		}}
-		value={initialValue}
-		valueType="id"
-	/>
+        <ChannelSelect
+                size="xs"
+                multiple
+                placeholder={funcTran('voucher.specifyChan')}
+                onchange={(opts) => {
+                        let values: string[] = [];
+                        if (opts && Array.isArray(opts)) {
+                                values = opts.map((opt) => opt.id);
+                        }
+                        onValue(values);
+                }}
+                value={initialValue}
+                valueType="id"
+        />
 {/snippet}
 
 {#snippet singleChannelId({ onValue, initialValue = '' }: FilterComponentType)}
-	<ChannelSelect
-		size="xs"
-		valueType="id"
-		placeholder={funcTran('voucher.specifyChan')}
-		value={initialValue as string}
-		onchange={(opt) => onValue((opt as Channel)?.id as FilterItemValue)}
-	/>
+        <ChannelSelect
+                size="xs"
+                valueType="id"
+                placeholder={funcTran('voucher.specifyChan')}
+                value={initialValue as string}
+                onchange={(opt) => onValue((opt as Channel)?.id as FilterItemValue)}
+        />
 {/snippet}
 
 {#snippet singleDatetime({ onValue, initialValue = '' }: FilterComponentType)}
-	<EaseDatePicker
-		size="xs"
-		placeholder={funcTran('common.time')}
-		value={{ date: initialValue as string }}
-		onchange={(val) => onValue(dayjs(val.date).format(RFC3339TimeFormat))}
-		timeConfig={{
-			stepMinutes: 1,
-			format: 24,
-			stepHours: 1,
-		}}
-		allowSelectMonthYears={{
-			showMonths: true,
-			showResetBtn: true,
-			showYears: {
-				min: 2020,
-				max: 2050,
-			},
-		}}
-	/>
+        <EaseDatePicker
+                size="xs"
+                placeholder={funcTran('common.time')}
+                value={{ date: initialValue as string }}
+                onchange={(val) => onValue(dayjs(val.date).format(RFC3339TimeFormat))}
+                timeConfig={{
+                        stepMinutes: 1,
+                        format: 24,
+                        stepHours: 1,
+                }}
+                allowSelectMonthYears={{
+                        showMonths: true,
+                        showResetBtn: true,
+                        showYears: {
+                                min: 2020,
+                                max: 2050,
+                        },
+                }}
+        />
 {/snippet}
 
 {#snippet datetimeRange({ onValue, initialValue = ['', ''] }: FilterComponentType)}
-	{@const range = initialValue as string[]}
-	<EaseDatePicker
-		size="xs"
-		placeholder={funcTran('common.range')}
-		value={{ start: range[0], end: range[1] }}
-		onchange={(value) => {
-			range[0] = dayjs(value.start).format(RFC3339TimeFormat);
-			range[1] = dayjs(value.end).format(RFC3339TimeFormat);
-			onValue(range);
-		}}
-		timeConfig={{
-			stepMinutes: 1,
-			format: 24,
-			stepHours: 1,
-		}}
-		allowSelectRange
-		allowSelectMonthYears={{
-			showMonths: true,
-			showResetBtn: true,
-			showYears: {
-				min: 2020,
-				max: 2050,
-			},
-		}}
-	/>
+        {@const range = initialValue as string[]}
+        <EaseDatePicker
+                size="xs"
+                placeholder={funcTran('common.range')}
+                value={{ start: range[0], end: range[1] }}
+                onchange={(value) => {
+                        range[0] = dayjs(value.start).format(RFC3339TimeFormat);
+                        range[1] = dayjs(value.end).format(RFC3339TimeFormat);
+                        onValue(range);
+                }}
+                timeConfig={{
+                        stepMinutes: 1,
+                        format: 24,
+                        stepHours: 1,
+                }}
+                allowSelectRange
+                allowSelectMonthYears={{
+                        showMonths: true,
+                        showResetBtn: true,
+                        showYears: {
+                                min: 2020,
+                                max: 2050,
+                        },
+                }}
+        />
 {/snippet}
 
 {#snippet singleDate({ onValue, initialValue = '' }: FilterComponentType)}
-	<EaseDatePicker
-		size="xs"
-		placeholder={funcTran('settings.date')}
-		value={{ date: initialValue as string }}
-		onchange={(vl) => onValue(dayjs(vl.date).format(BASIC_DATE_FORMAT))}
-	/>
+        <EaseDatePicker
+                size="xs"
+                placeholder={funcTran('settings.date')}
+                value={{ date: initialValue as string }}
+                onchange={(vl) => onValue(dayjs(vl.date).format(BASIC_DATE_FORMAT))}
+        />
 {/snippet}
 
 {#snippet dateRange({ onValue, initialValue = ['', ''] }: FilterComponentType)}
-	{@const range = initialValue as string[]}
-	<EaseDatePicker
-		size="xs"
-		placeholder={funcTran('common.range')}
-		value={{ start: range[0], end: range[1] }}
-		onchange={(vl) => {
-			range[0] = dayjs(vl.start).format(BASIC_DATE_FORMAT);
-			range[1] = dayjs(vl.end).format(BASIC_DATE_FORMAT);
-			onValue(range);
-		}}
-		allowSelectRange
-	/>
+        {@const range = initialValue as string[]}
+        <EaseDatePicker
+                size="xs"
+                placeholder={funcTran('common.range')}
+                value={{ start: range[0], end: range[1] }}
+                onchange={(vl) => {
+                        range[0] = dayjs(vl.start).format(BASIC_DATE_FORMAT);
+                        range[1] = dayjs(vl.end).format(BASIC_DATE_FORMAT);
+                        onValue(range);
+                }}
+                allowSelectRange
+        />
 {/snippet}
 
 {#snippet metadata({ onValue, initialValue = [] }: FilterComponentType)}
-	{@const keyValue = [(initialValue as string[])[0] || '', (initialValue as string[])[1] || '']}
-	<div class="flex flex-col gap-1.5">
-		<Input
-			size="xs"
-			placeholder={funcTran('common.key')}
-			value={keyValue[0]}
-			onchange={(evt) => {
-				const { value } = evt.target as HTMLInputElement;
-				keyValue[0] = value;
-				onValue(keyValue);
-			}}
-		/>
-		<Input
-			size="xs"
-			placeholder={funcTran('common.value')}
-			value={keyValue[1]}
-			onchange={(evt) => {
-				const { value } = evt.target as HTMLInputElement;
-				keyValue[1] = value;
-				onValue(keyValue);
-			}}
-		/>
-	</div>
+        {@const keyValue = [(initialValue as string[])[0] || '', (initialValue as string[])[1] || '']}
+        <div class="flex flex-col gap-1.5">
+                <Input
+                        size="xs"
+                        placeholder={funcTran('common.key')}
+                        value={keyValue[0]}
+                        onchange={(evt) => {
+                                const { value } = evt.target as HTMLInputElement;
+                                keyValue[0] = value;
+                                onValue(keyValue);
+                        }}
+                />
+                <Input
+                        size="xs"
+                        placeholder={funcTran('common.value')}
+                        value={keyValue[1]}
+                        onchange={(evt) => {
+                                const { value } = evt.target as HTMLInputElement;
+                                keyValue[1] = value;
+                                onValue(keyValue);
+                        }}
+                />
+        </div>
 {/snippet}

@@ -514,6 +514,7 @@ export default {
 		staffDeleteConfirm: 'Bạn có chắc chắn muốn xoá nhân viên {{id}}?',
 	},
 	giftcard: {
+		emptyGiftcards: 'Chưa có thẻ quà tặng nào — thẻ được phát hành sẽ hiển thị ở đây',
 		title: 'Thẻ quà',
 		newIssue: 'Thêm thẻ quà',
 		code: 'Mã thẻ',
@@ -819,6 +820,7 @@ export default {
 		Area: 'Diện tích',
 	},
 	order: {
+		emptyOrders: 'Chưa có đơn hàng nào — các đơn mua của bạn sẽ hiển thị ở đây',
 		thankYou: 'Cảm ơn bạn đã đặt hàng!',
 		placedSuccessfully: 'Đơn hàng #{{number}} của bạn đã được đặt thành công',
 		placedSuccessfullyToast: 'Đặt hàng thành công',

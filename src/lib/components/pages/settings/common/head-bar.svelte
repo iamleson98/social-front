@@ -31,13 +31,14 @@
 	}: Props = $props();
 </script>
 
+<!-- Design System v2 (admin): page header — breadcrumb trail + primary action -->
 <div
-	class="rounded-lg bg-white border border-gray-200 px-3 py-1 flex items-center justify-between mb-3"
+	class="rounded-xl bg-white border border-gray-200 shadow-xs px-4 py-2.5 flex items-center justify-between mb-3"
 >
 	<div class="breadcrumbs text-sm overflow-x-visible">
 		<ul>
 			<li>
-				<a href={listingPageHref} class="link text-blue-600 font-medium">{listingPageLabel}</a>
+				<a href={listingPageHref} class="link font-medium text-brand-600">{listingPageLabel}</a>
 			</li>
 			{#if page.url.pathname === newPageHref}
 				<li>{newPageLabel}</li>

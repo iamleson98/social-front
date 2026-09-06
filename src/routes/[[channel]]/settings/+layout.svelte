@@ -59,6 +59,14 @@
 		return $ME_PAGE_USER_STORE?.email;
 	});
 
+	let userNameInitials = $derived.by(() => {
+		const first = $ME_PAGE_USER_STORE?.firstName?.[0] ?? '';
+		const last = $ME_PAGE_USER_STORE?.lastName?.[0] ?? '';
+		const initials = `${first}${last}`.toUpperCase();
+
+		return initials || ($ME_PAGE_USER_STORE?.email?.[0]?.toUpperCase() ?? '?');
+	});
+
 	type TabItem = {
 		icon?: IconContent;
 		name?: string;
@@ -66,6 +74,8 @@
 		shouldActive: boolean;
 		isPreview?: boolean;
 	};
+
+	const MICRO_LABEL_CLASSES = 'text-[11px]! font-bold! uppercase! tracking-wider! text-gray-400!';
 
 	const ACCOUNT_TAB_ITEMS: TabItem[] = $derived([
 		{
@@ -324,14 +334,21 @@
 		this={item.href ? 'a' : 'div'}
 		{...attrs}
 		class={[
-			'flex items-center gap-2 rounded-md p-2 py-2.5 hover:bg-blue-100 hover:text-blue-700 cursor-pointer relative transition-colors duration-200 ease-in-out select-none!',
-			active && 'bg-blue-100 text-blue-700 font-bold',
+			'flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 cursor-pointer relative transition-colors duration-150 select-none!',
+			active && 'bg-brand-50! text-brand-700! font-semibold',
 		]}
 	>
-		{#if item.icon}
-			<Icon icon={item.icon} />
+		{#if active}
+			<!-- active indicator bar -->
+			<span
+				class="absolute start-1 top-1/2 -translate-y-1/2 h-4 w-1 rounded-full bg-brand-500"
+				aria-hidden="true"
+			></span>
 		{/if}
-		<span>{item.name}</span>
+		{#if item.icon}
+			<Icon icon={item.icon} size="sm" class={active ? 'text-brand-600' : 'text-gray-400'} />
+		{/if}
+		<span class="truncate">{item.name}</span>
 		{#if item.isPreview}
 			<Badge text={$T('settings.preview')} color="orange" size="xs" rounded />
 		{/if}
@@ -343,97 +360,112 @@
 {:else}
 	<div class="flex flex-nowrap gap-2">
 		<!-- side bar -->
-		<div
-			class="w-1/4 sticky top-16 h-[calc(100vh-4rem)] p-2 space-y-2 max-tablet:hidden overflow-auto"
-			style="scrollbar-width: none; -ms-overflow-style: none;"
-			id="sidebar"
-		>
-			<!-- MARK: Avatar -->
-			<div class="flex items-start gap-2 text-gray-700 p-3">
-				<div class="rounded-full h-16 w-16 overflow-hidden">
-					<img
-						src={$ME_PAGE_USER_STORE?.avatar?.url}
-						alt={$ME_PAGE_USER_STORE?.avatar?.alt}
-						class="h-full w-full"
-					/>
-				</div>
-				<div>
-					<div class="text-lg font-semibold">
-						{userNameDisplay}
-					</div>
-					<div class="flex items-center gap-1">
-						{#if $ME_PAGE_USER_STORE?.isConfirmed}
-							<Icon icon={RosetteDiscountChecked} class="text-blue-500" size="md" />
-							<span class="text-sm text-gray-500">{$T('settings.verified')}</span>
+		<div class="w-1/4 max-w-72 shrink-0 max-tablet:hidden">
+			<div
+				class="sticky top-20 h-[calc(100vh-6rem)] overflow-auto space-y-1 bg-white border border-gray-200 shadow-xs rounded-xl p-3"
+				style="scrollbar-width: none; -ms-overflow-style: none;"
+				id="sidebar"
+			>
+				<!-- MARK: Avatar -->
+				<div class="flex items-center gap-3 p-3 mb-2 border-b border-gray-100 pb-4">
+					<div
+						class="shrink-0 rounded-full h-12 w-12 overflow-hidden bg-brand-100 text-brand-700 font-bold flex items-center justify-center text-lg select-none!"
+					>
+						{#if $ME_PAGE_USER_STORE?.avatar?.url}
+							<img
+								src={$ME_PAGE_USER_STORE.avatar.url}
+								alt={$ME_PAGE_USER_STORE.avatar.alt || userNameDisplay}
+								class="h-full w-full object-cover"
+							/>
 						{:else}
-							<Icon icon={CheckOff} class="text-red-500" size="md" />
-							<span class="text-sm text-gray-500">{$T('settings.unverified')}</span>
+							{userNameInitials}
 						{/if}
 					</div>
+					<div class="min-w-0">
+						<div class="text-base font-semibold text-gray-900 truncate">
+							{userNameDisplay}
+						</div>
+						<div class="flex items-center gap-1">
+							{#if $ME_PAGE_USER_STORE?.isConfirmed}
+								<Icon icon={RosetteDiscountChecked} class="text-brand-600" size="sm" />
+								<span class="text-xs text-gray-500">{$T('settings.verified')}</span>
+							{:else}
+								<Icon icon={CheckOff} class="text-red-500" size="sm" />
+								<span class="text-xs text-gray-500">{$T('settings.unverified')}</span>
+							{/if}
+						</div>
+					</div>
 				</div>
+
+				<AccordionList
+					header={$T('settings.account')}
+					headerClass={MICRO_LABEL_CLASSES}
+					child={sidebarItem}
+					items={ACCOUNT_TAB_ITEMS}
+					class="w-full"
+					open={ACCOUNT_TAB_ITEMS.some((item) => item.shouldActive)}
+				/>
+
+				<AccordionList
+					header={$T('settings.shopping')}
+					headerClass={MICRO_LABEL_CLASSES}
+					child={sidebarItem}
+					items={SHOPPING_TAB_ITEMS}
+					class="w-full"
+					open={SHOPPING_TAB_ITEMS.some((item) => item.shouldActive)}
+				/>
+
+				{#if $UserStoreManager && userIsShopAdmin($UserStoreManager)}
+					<AccordionList
+						header={$T('promotion.CATALOGUE')}
+						headerClass={MICRO_LABEL_CLASSES}
+						child={sidebarItem}
+						items={CATALOG_TAB_ITEMS}
+						class="w-full"
+						open={CATALOG_TAB_ITEMS.some((item) => item.shouldActive)}
+					/>
+
+					<AccordionList
+						header={$T('settings.fulfillments')}
+						headerClass={MICRO_LABEL_CLASSES}
+						child={sidebarItem}
+						items={SHOP_ORDERS_TAB_ITEMS}
+						class="w-full"
+						open={SHOP_ORDERS_TAB_ITEMS.some((item) => item.shouldActive)}
+					/>
+
+					<AccordionList
+						header={$T('settings.discounts')}
+						headerClass={MICRO_LABEL_CLASSES}
+						child={sidebarItem}
+						items={SHOP_DISCOUNTS_TAB_ITEMS}
+						class="w-full"
+						open={SHOP_DISCOUNTS_TAB_ITEMS.some((item) => item.shouldActive)}
+					/>
+
+					<AccordionList
+						header={$T('settings.blogs')}
+						headerClass={MICRO_LABEL_CLASSES}
+						child={sidebarItem}
+						items={BLOG_TAB_ITEMS}
+						class="w-full"
+						open={BLOG_TAB_ITEMS.some((item) => item.shouldActive)}
+					/>
+
+					<AccordionList
+						header={$T('settings.configs')}
+						headerClass={MICRO_LABEL_CLASSES}
+						child={sidebarItem}
+						items={SHOP_CONFIG_TAB_ITEMS}
+						class="w-full"
+						open={SHOP_CONFIG_TAB_ITEMS.some((item) => item.shouldActive)}
+					/>
+				{/if}
 			</div>
-
-			<AccordionList
-				header={$T('settings.account')}
-				child={sidebarItem}
-				items={ACCOUNT_TAB_ITEMS}
-				class="w-full p-3"
-				open={ACCOUNT_TAB_ITEMS.some((item) => item.shouldActive)}
-			/>
-
-			<AccordionList
-				header={$T('settings.shopping')}
-				child={sidebarItem}
-				items={SHOPPING_TAB_ITEMS}
-				class="w-full p-3"
-				open={SHOPPING_TAB_ITEMS.some((item) => item.shouldActive)}
-			/>
-
-			{#if $UserStoreManager && userIsShopAdmin($UserStoreManager)}
-				<AccordionList
-					header={$T('promotion.CATALOGUE')}
-					child={sidebarItem}
-					items={CATALOG_TAB_ITEMS}
-					class="w-full p-3"
-					open={CATALOG_TAB_ITEMS.some((item) => item.shouldActive)}
-				/>
-
-				<AccordionList
-					header={$T('settings.fulfillments')}
-					child={sidebarItem}
-					items={SHOP_ORDERS_TAB_ITEMS}
-					class="w-full p-3"
-					open={SHOP_ORDERS_TAB_ITEMS.some((item) => item.shouldActive)}
-				/>
-
-				<AccordionList
-					header={$T('settings.discounts')}
-					child={sidebarItem}
-					items={SHOP_DISCOUNTS_TAB_ITEMS}
-					class="w-full p-3"
-					open={SHOP_DISCOUNTS_TAB_ITEMS.some((item) => item.shouldActive)}
-				/>
-
-				<AccordionList
-					header={$T('settings.blogs')}
-					child={sidebarItem}
-					items={BLOG_TAB_ITEMS}
-					class="w-full p-3"
-					open={BLOG_TAB_ITEMS.some((item) => item.shouldActive)}
-				/>
-
-				<AccordionList
-					header={$T('settings.configs')}
-					child={sidebarItem}
-					items={SHOP_CONFIG_TAB_ITEMS}
-					class="w-full p-3"
-					open={SHOP_CONFIG_TAB_ITEMS.some((item) => item.shouldActive)}
-				/>
-			{/if}
 		</div>
 
 		<!-- main content -->
-		<div class="w-3/4 max-tablet:w-full">
+		<div class="flex-1 min-w-0 max-tablet:w-full">
 			{@render children()}
 		</div>
 	</div>

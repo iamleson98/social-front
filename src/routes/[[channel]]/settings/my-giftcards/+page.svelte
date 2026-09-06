@@ -48,6 +48,7 @@
 		<GraphqlPaginableTable
 			bind:variables
 			query={MY_GIFTCARDS_QUERY}
+			emptyText={$T('giftcard.emptyGiftcards')}
 			resultKey={'me.giftCards' as keyof Query}
 			columns={Columns}
 			autoFetchDataOnMount
