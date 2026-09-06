@@ -25,7 +25,8 @@ const currentOrigin = (): string | undefined =>
 	typeof window === 'undefined' ? undefined : window.location.origin;
 
 /** Canonical public URL of the storefront (falls back to the current origin in the browser). */
-export const getStoreFrontUrl = (): string => publicEnv.PUBLIC_STORE_FRONT_URL || currentOrigin() || '';
+export const getStoreFrontUrl = (): string =>
+	publicEnv.PUBLIC_STORE_FRONT_URL || currentOrigin() || '';
 
 /** Base URL used for auth e-mail redirects (falls back to the current origin in the browser). */
 export const getLocalUrl = (): string => publicEnv.PUBLIC_LOCAL_URL || currentOrigin() || '';
