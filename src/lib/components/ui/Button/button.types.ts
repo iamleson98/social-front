@@ -123,11 +123,16 @@ export const BUTTON_VARIANT_COLORS_MAP: Record<ButtonVariant, Record<SocialColor
 	},
 };
 
-export const ICON_OF_BUTTON_SIZE_MAP: Record<SocialSize | 'xxs', string> = {
-	xxs: 'size-2!',
-	xs: 'size-4!',
-	sm: 'size-4!',
-	md: 'size-5!',
-	lg: 'size-6!',
-	xl: 'size-7!',
+/**
+ * Icon size for ICON-ONLY buttons (no text inside). The glyph should fill
+ * ~55-60% of the button face — the Material/DaisyUI convention for confident
+ * tap targets — instead of matching the (smaller) text-baseline scale.
+ */
+export const ICON_ONLY_BUTTON_ICON_SIZE_MAP: Record<SocialSize | 'xxs', string> = {
+	xxs: 'size-3', // 12px inside w-6
+	xs: 'size-4.5', // 18px inside w-7 (28px) = 64%
+	sm: 'size-5', // 20px inside w-9 (36px) = 56%
+	md: 'size-6', // 24px inside w-10 (40px) = 60%
+	lg: 'size-7', // 28px inside w-12 (48px) = 58%
+	xl: 'size-8', // 32px inside w-14 (56px) = 57%
 };

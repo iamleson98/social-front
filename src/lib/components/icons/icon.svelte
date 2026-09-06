@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { ICON_OF_BUTTON_SIZE_MAP } from '$lib/components/ui/Button';
 	import type { SocialSize } from '$lib/components/ui/common';
 	import type { IconContent } from './consts';
 	import type { SVGAttributes } from 'svelte/elements';
@@ -17,6 +16,23 @@
 		size?: SocialSize | 'xxs';
 	};
 
+	/**
+	 * Icon size scale.
+	 * The classes are intentionally NOT `!important`: when the caller passes
+	 * an explicit sizing utility (`size-*`, `w-*`, `h-*`) via `class`, the
+	 * auto-size is skipped entirely — two same-property utilities on one
+	 * element would otherwise resolve by stylesheet order (unpredictable),
+	 * which is exactly how "icons rendered at the wrong size" crept in before.
+	 */
+	const ICON_SIZE_CLASS: Record<SocialSize | 'xxs', string> = {
+		xxs: 'size-2',
+		xs: 'size-4',
+		sm: 'size-4.5',
+		md: 'size-5',
+		lg: 'size-6',
+		xl: 'size-7',
+	};
+
 	let {
 		class: className,
 		icon,
@@ -27,12 +43,16 @@
 		flipped = false,
 		...restProps
 	}: Props & Omit<SVGAttributes<SVGSVGElement>, 'width' | 'height'> = $props();
+
+	const hasExplicitSizeClass = className ? /(?:^|\s)(?:size|w|h)-[\d.]/.test(className) : false;
 </script>
 
 <svg
 	{viewBox}
 	{fill}
-	class="{className} {flipped ? '-scale-x-100' : ''} {ICON_OF_BUTTON_SIZE_MAP[size]}"
+	class="{className} {flipped ? '-scale-x-100' : ''} {hasExplicitSizeClass
+		? ''
+		: ICON_SIZE_CLASS[size]}"
 	{...restProps}
 >
 	{#if title}

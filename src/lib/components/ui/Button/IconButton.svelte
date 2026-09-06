@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Icon, type IconContent } from '$lib/components/icons';
 	import Button from './Button.svelte';
-	import { ICON_BTN_SIZE_MAP } from './button.types';
+	import { ICON_BTN_SIZE_MAP, ICON_ONLY_BUTTON_ICON_SIZE_MAP } from './button.types';
 	import type { ButtonProps } from './button.types';
 
 	type Props = { icon?: IconContent; rounded?: boolean } & Omit<
@@ -25,15 +25,8 @@
 	class={`icon-button ${className} ${ICON_BTN_SIZE_MAP[size]} ${rounded ? 'rounded-full!' : ''}`}
 >
 	{#if icon}
-		<Icon {icon} {size} />
+		<!-- explicit size class: Icon skips its auto-scale and this wins deterministically -->
+		<Icon {icon} class={ICON_ONLY_BUTTON_ICON_SIZE_MAP[size]} />
 	{/if}
 	{@render children?.()}
 </Button>
-
-<style lang="postcss">
-	@reference 'tailwindcss';
-
-	.icon-button {
-		@apply px-0!;
-	}
-</style>

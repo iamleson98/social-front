@@ -118,6 +118,22 @@
 		@apply px-7;
 	}
 
+	/**
+         * Icon-only buttons (see IconButton.svelte) get a fixed square width
+         * (`w-N!`); their horizontal padding MUST be zero, otherwise the
+         * `.button-${size}` padding consumes the width and the icon collapses
+         * to a few pixels.
+         *
+         * NOTE: this rule intentionally lives HERE in Button.svelte. Svelte
+         * scopes component styles to elements owned by the same component —
+         * a `.icon-button { @apply px-0! }` declared inside IconButton.svelte
+         * never matches the `<button>` rendered by Button.svelte (child DOM),
+         * which is exactly how icons ended up rendering far too small.
+         */
+	.button.icon-button {
+		@apply px-0!;
+	}
+
 	.button-disabled {
 		@apply !text-gray-400 !bg-gray-100 !border-transparent !cursor-not-allowed !pointer-events-none !touch-none !shadow-none;
 	}
